@@ -27,7 +27,7 @@ import com.hedvig.android.navigation.compose.popUpTo
 import dev.zacsweers.metro.Inject
 
 @Inject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class EditBankAccountViewModel(
   setupNordeaPayoutUseCase: SetupNordeaPayoutUseCase,
   backstack: Backstack,

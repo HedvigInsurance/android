@@ -31,7 +31,6 @@ private const val HEDVIG_VIEW_MODEL_FQ_NAME = "com.hedvig.android.core.common.di
 private const val METRO_ASSISTED_FQ_NAME = "dev.zacsweers.metro.Assisted"
 private const val SAVED_STATE_HANDLE_FQ_NAME = "androidx.lifecycle.SavedStateHandle"
 
-private val defaultScope = ClassName("com.hedvig.android.core.common.di", "ActivityRetainedScope")
 private val viewModel = ClassName("androidx.lifecycle", "ViewModel")
 private val creationExtras = ClassName("androidx.lifecycle.viewmodel", "CreationExtras")
 private val createSavedStateHandle = MemberName("androidx.lifecycle", "createSavedStateHandle")
@@ -94,6 +93,10 @@ class HedvigViewModelProcessor(
       return
     }
     val scope = vm.hedvigViewModelScope()
+    if (scope == null) {
+      logger.error("@HedvigViewModel requires a scope argument", vm)
+      return
+    }
     val assistedParams = constructor.parameters.filter { it.hasAnnotation(METRO_ASSISTED_FQ_NAME) }
     val savedStateParams = assistedParams.filter { it.type.resolve().isSavedStateHandle() }
 
@@ -210,12 +213,12 @@ private fun KSValueParameter.toAssistedParameter(): ParameterSpec {
   return builder.build()
 }
 
-private fun KSClassDeclaration.hedvigViewModelScope(): TypeName {
+private fun KSClassDeclaration.hedvigViewModelScope(): TypeName? {
   val annotation = annotations.firstOrNull {
     it.annotationType.resolve().declaration.qualifiedName?.asString() == HEDVIG_VIEW_MODEL_FQ_NAME
-  } ?: return defaultScope
+  } ?: return null
   val scope = annotation.arguments.firstOrNull { it.name?.asString() == "scope" }?.value as? KSType
-    ?: return defaultScope
+    ?: return null
   return scope.toClassName()
 }
 

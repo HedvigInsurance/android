@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.design.system.hedvig.api.HedvigDatePickerState
 import com.hedvig.android.design.system.hedvig.api.HedvigSelectableDates
@@ -40,7 +41,7 @@ import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.StringResource
 
 @AssistedInject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class TravelCertificateDateInputViewModel(
   @Assisted contractId: String?,
   getTravelCertificateSpecificationsUseCase: GetTravelCertificateSpecificationsUseCase,

@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import arrow.core.raise.either
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.language.LanguageService
@@ -26,7 +27,7 @@ import com.hedvig.android.shared.foreverui.ui.ui.ForeverEvent.SubmitNewReferralC
 import dev.zacsweers.metro.Inject
 
 @Inject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 class ForeverViewModel(
   foreverRepositoryProvider: Provider<ForeverRepository>,
   private val languageService: LanguageService,

@@ -54,7 +54,7 @@ import octopus.type.MoveToAddressInput
 import octopus.type.MoveToHouseInput
 
 @AssistedInject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class AddHouseInformationViewModel(
   @Assisted moveIntentId: String,
   movingFlowRepository: MovingFlowRepository,

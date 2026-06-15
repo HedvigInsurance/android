@@ -73,7 +73,7 @@ import octopus.type.MoveToAddressInput
 import octopus.type.MoveToApartmentInput
 
 @AssistedInject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class EnterNewAddressViewModel(
   @Assisted moveIntentId: String,
   movingFlowRepository: MovingFlowRepository,

@@ -9,10 +9,10 @@ import kotlin.reflect.KClass
  * The processor then generates the map contribution (no-arg) or the assisted factory into a sibling
  * file, so no VM hand-writes `@ViewModelKey` / `@ContributesIntoMap` / a nested factory.
  *
- * [scope] defaults to [ActivityRetainedScope], centralizing the scope decision so individual VMs never
- * name a scope. The rare [AppScope] case (a VM resolved by its own standalone Activity) passes it
- * explicitly: `@HedvigViewModel(AppScope::class)`.
+ * [scope] is named explicitly at every call site, mirroring the other Metro DI annotations (e.g.
+ * `@ContributesBinding(AppScope::class)`). Almost every VM is [ActivityRetainedScope]; the rare
+ * [AppScope] case is a VM resolved by its own standalone Activity.
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
-annotation class HedvigViewModel(val scope: KClass<*> = ActivityRetainedScope::class)
+annotation class HedvigViewModel(val scope: KClass<*>)

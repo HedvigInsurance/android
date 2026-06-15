@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATION_BETTER_COVERAGE
@@ -40,7 +41,7 @@ import com.hedvig.android.navigation.compose.add
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
 
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class TerminationSurveyViewModel @AssistedInject constructor(
   @Assisted options: List<TerminationSurveyOption>,
   @Assisted action: TerminationAction,

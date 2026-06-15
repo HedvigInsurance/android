@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.help.center
 
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.feature.help.center.data.GetHelpCenterFAQUseCase
@@ -10,7 +11,7 @@ import com.hedvig.android.navigation.compose.Backstack
 import dev.zacsweers.metro.Inject
 
 @Inject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class HelpCenterViewModel(
   getQuickLinksUseCase: GetQuickLinksUseCase,
   hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,

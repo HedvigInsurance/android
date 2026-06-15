@@ -28,7 +28,7 @@ import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.flow.collectLatest
 
 @AssistedInject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class HousingTypeViewModel(
   @Assisted moveIntentId: String,
   movingFlowRepository: MovingFlowRepository,

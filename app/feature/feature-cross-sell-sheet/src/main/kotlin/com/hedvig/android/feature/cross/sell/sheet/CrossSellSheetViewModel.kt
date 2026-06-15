@@ -15,6 +15,7 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.ProdOrDemoProvider
@@ -48,7 +49,7 @@ import octopus.type.FlowSource
 import octopus.type.UserFlow
 
 @Inject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class CrossSellSheetViewModel(
   getCrossSellSheetDataUseCaseProvider: Provider<GetCrossSellSheetDataUseCase>,
   crossSellAfterFlowRepository: CrossSellAfterFlowRepository,

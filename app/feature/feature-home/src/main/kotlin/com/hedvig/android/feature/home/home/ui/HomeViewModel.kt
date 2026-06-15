@@ -2,6 +2,7 @@ package com.hedvig.android.feature.home.home.ui
 
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ApplicationScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
@@ -11,7 +12,7 @@ import com.hedvig.android.notification.badge.data.crosssell.home.CrossSellHomeNo
 import dev.zacsweers.metro.Inject
 
 @Inject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class HomeViewModel(
   getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
   seenImportantMessagesStorage: SeenImportantMessagesStorage,

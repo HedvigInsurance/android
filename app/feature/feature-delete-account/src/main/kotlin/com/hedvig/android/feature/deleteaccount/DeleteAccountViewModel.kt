@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.chat
 
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.deleteaccount.DeleteAccountEvent
 import com.hedvig.android.feature.deleteaccount.DeleteAccountPresenter
@@ -11,7 +12,7 @@ import com.hedvig.android.navigation.compose.Backstack
 import dev.zacsweers.metro.Inject
 
 @Inject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class DeleteAccountViewModel(
   private val requestAccountDeletionUseCase: RequestAccountDeletionUseCase,
   private val deleteAccountStateUseCase: DeleteAccountStateUseCase,

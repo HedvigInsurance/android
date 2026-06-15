@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
@@ -30,7 +31,7 @@ import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
 
 @AssistedInject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class StartTierFlowViewModel(
   @Assisted insuranceID: String,
   tierRepository: ChangeTierRepository,

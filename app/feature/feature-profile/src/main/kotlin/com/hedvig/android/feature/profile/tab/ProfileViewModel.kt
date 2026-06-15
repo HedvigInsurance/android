@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 
 @Inject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class ProfileViewModel(
   getEuroBonusStatusUseCase: GetEurobonusStatusUseCase,
   checkCertificatesAvailabilityUseCase: CheckCertificatesAvailabilityUseCase,

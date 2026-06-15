@@ -30,6 +30,7 @@ import androidx.paging.map
 import androidx.room.RoomDatabase
 import arrow.core.Either
 import com.benasher44.uuid.Uuid
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.chat.database.ChatDao
@@ -74,7 +75,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class CbmChatViewModel @AssistedInject constructor(
   @Assisted conversationId: String,
   val simpleVideoCache: SimpleCache,

@@ -20,7 +20,7 @@ import com.hedvig.android.navigation.compose.popUpTo
 import dev.zacsweers.metro.Inject
 
 @Inject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class SetupSwishPayoutViewModel(
   setupSwishPayoutUseCase: SetupSwishPayoutUseCase,
   backstack: Backstack,

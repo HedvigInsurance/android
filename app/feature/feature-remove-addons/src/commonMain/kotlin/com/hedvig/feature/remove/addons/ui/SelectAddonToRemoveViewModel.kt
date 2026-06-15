@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.productvariant.AddonVariant
@@ -28,7 +29,7 @@ import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
 
 @AssistedInject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class SelectAddonToRemoveViewModel(
   startAddonRemovalUseCase: StartAddonRemovalUseCase,
   backstack: Backstack,

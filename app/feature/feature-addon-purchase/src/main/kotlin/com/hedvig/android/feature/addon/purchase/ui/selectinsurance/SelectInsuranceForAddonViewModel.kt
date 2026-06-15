@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.addon.purchase.data.GetInsuranceForTravelAddonUseCase
 import com.hedvig.android.feature.addon.purchase.data.InsuranceForAddon
@@ -20,7 +21,7 @@ import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
 
 @AssistedInject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class SelectInsuranceForAddonViewModel(
   @Assisted ids: List<String>,
   @Assisted preselectedAddonDisplayNames: List<String>,

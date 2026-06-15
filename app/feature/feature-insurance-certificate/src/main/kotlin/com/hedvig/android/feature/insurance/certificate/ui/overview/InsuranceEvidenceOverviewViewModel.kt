@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.fileupload.DownloadPdfUseCase
 import com.hedvig.android.core.fileupload.DownloadedFile
@@ -19,7 +20,7 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Inject
 
 @Inject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class InsuranceEvidenceOverviewViewModel(
   downloadPdfUseCase: DownloadPdfUseCase,
 ) : MoleculeViewModel<InsuranceEvidenceOverviewEvent, InsuranceEvidenceOverviewState>(

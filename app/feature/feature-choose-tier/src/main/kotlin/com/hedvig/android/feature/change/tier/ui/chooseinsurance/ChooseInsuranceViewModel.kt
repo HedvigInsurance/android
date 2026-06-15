@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.SELF_SERVICE
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
@@ -28,7 +29,7 @@ import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import dev.zacsweers.metro.Inject
 
 @Inject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class ChooseInsuranceViewModel(
   getCustomizableInsurancesUseCase: GetCustomizableInsurancesUseCase,
   tierRepository: ChangeTierRepository,

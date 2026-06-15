@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
 import com.hedvig.android.feature.terminateinsurance.data.GetTerminationNotificationUseCase
@@ -29,7 +30,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class TerminationConfirmationViewModel @AssistedInject constructor(
   @Assisted terminationType: TerminationConfirmationKey.TerminationType,
   @Assisted insuranceInfo: TerminationGraphParameters,

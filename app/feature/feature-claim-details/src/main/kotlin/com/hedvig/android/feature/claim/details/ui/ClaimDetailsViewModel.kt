@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import arrow.fx.coroutines.parMap
 import com.eygraber.uri.Uri
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.fileupload.ClaimsServiceUploadFileUseCase
 import com.hedvig.android.core.fileupload.DownloadPdfUseCase
@@ -34,7 +35,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.datetime.LocalDateTime
 
 @AssistedInject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class ClaimDetailsViewModel(
   @Assisted claimId: String,
   getClaimDetailUiStateUseCase: GetClaimDetailUiStateUseCase,

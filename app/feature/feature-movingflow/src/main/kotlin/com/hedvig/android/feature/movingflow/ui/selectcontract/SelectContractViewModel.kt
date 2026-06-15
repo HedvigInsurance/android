@@ -33,7 +33,7 @@ import octopus.feature.movingflow.MoveIntentV2CreateMutation
 import octopus.feature.movingflow.fragment.MoveIntentFragment
 
 @Inject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class SelectContractViewModel(
   apolloClient: ApolloClient,
   movingFlowRepository: MovingFlowRepository,

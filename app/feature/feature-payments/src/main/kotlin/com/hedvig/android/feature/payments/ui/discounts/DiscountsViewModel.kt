@@ -7,7 +7,7 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Inject
 
 @Inject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class DiscountsViewModel(
   getDiscountsOverviewUseCase: GetDiscountsOverviewUseCase,
 ) : MoleculeViewModel<DiscountsEvent, DiscountsUiState>(

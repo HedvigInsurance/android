@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.travelcertificate.data.CoInsuredData
 import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
@@ -30,7 +31,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 @AssistedInject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class TravelCertificateTravellersInputViewModel(
   @Assisted primaryInput: TravelCertificateTravellersInputKey.TravelCertificatePrimaryInput,
   createTravelCertificateUseCase: CreateTravelCertificateUseCase,
