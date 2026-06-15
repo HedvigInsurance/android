@@ -72,17 +72,19 @@ private fun getStartOfThisYear(nowLocalDateTime: LocalDateTime, timeZone: TimeZo
     .atStartOfDayIn(timeZone)
 }
 
-internal fun Instant.formattedChatDateTime(locale: Locale): String {
+internal fun Instant.formattedChatDateTime(locale: Locale, todayLabel: String): String {
   val sentAt = this
   val now = Clock.System.now()
   val timeZone = TimeZone.currentSystemDefault()
   val nowLocalDateTime: LocalDateTime = now.toLocalDateTime(timeZone)
   val todayAtStartOfDay = nowLocalDateTime.date.atStartOfDayIn(timeZone)
+  val isToday = sentAt > todayAtStartOfDay
   val formatter = when {
-    sentAt > todayAtStartOfDay -> HedvigDateTimeFormatterDefaults.timeOnly(locale)
+    isToday -> HedvigDateTimeFormatterDefaults.timeOnly(locale)
     sentAt > todayAtStartOfDay.minus(3.days) -> HedvigDateTimeFormatterDefaults.dayOfTheWeekAndTime(locale)
     sentAt > getStartOfThisYear(nowLocalDateTime, timeZone) -> HedvigDateTimeFormatterDefaults.monthDateAndTime(locale)
     else -> HedvigDateTimeFormatterDefaults.yearMonthDateAndTime(locale)
   }
-  return formatter.format(sentAt.toLocalDateTime(timeZone))
+  val formatted = formatter.format(sentAt.toLocalDateTime(timeZone))
+  return if (isToday) "$todayLabel $formatted" else formatted
 }

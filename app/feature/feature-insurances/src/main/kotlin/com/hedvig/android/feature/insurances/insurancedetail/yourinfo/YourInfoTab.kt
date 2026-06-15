@@ -300,10 +300,11 @@ internal fun YourInfoTab(
       Column {
         CoverageRows(coverageItems, Modifier.padding(horizontal = 16.dp))
         PriceRow(
-          priceToShow,
-          showPriceInfoIcon,
-          onInfoIconClick,
-          Modifier.padding(horizontal = 16.dp),
+          priceToShow = priceToShow,
+          showInfoIcon = showPriceInfoIcon,
+          onInfoIconClick = onInfoIconClick,
+          isFirstRow = coverageItems.isEmpty(),
+          modifier = Modifier.padding(horizontal = 16.dp),
         )
         if (allowEditCoInsured && coInsured.isNotEmpty()) {
           HorizontalDivider(Modifier.padding(horizontal = 16.dp))
@@ -693,10 +694,14 @@ internal fun PriceRow(
   priceToShow: UiMoney,
   showInfoIcon: Boolean,
   onInfoIconClick: () -> Unit,
+  isFirstRow: Boolean,
   modifier: Modifier = Modifier,
 ) {
   HorizontalItemsWithMaximumSpaceTaken(
-    modifier = modifier.horizontalDivider(DividerPosition.Top),
+    modifier = modifier
+      .then (
+        if (isFirstRow) Modifier else Modifier.horizontalDivider(DividerPosition.Top)
+      ),
     startSlot = {
       Row(
         verticalAlignment = Alignment.CenterVertically,

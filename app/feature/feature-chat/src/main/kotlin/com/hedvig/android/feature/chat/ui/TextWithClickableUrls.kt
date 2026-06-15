@@ -16,6 +16,8 @@ internal fun TextWithClickableUrls(text: String, modifier: Modifier = Modifier, 
     HedvigMarkdownText(
       content = text,
       modifier = modifier,
+      // Chat messages are authored (and shown on iOS) with single newlines as real line breaks.
+      eolAsNewLine = true,
     )
   }
 }
