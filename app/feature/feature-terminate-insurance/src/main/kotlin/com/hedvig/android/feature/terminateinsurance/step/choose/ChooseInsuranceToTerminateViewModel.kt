@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.termination.data.GetTerminatableContractsUseCase
 import com.hedvig.android.data.termination.data.TerminatableInsurance
@@ -23,7 +24,7 @@ import com.hedvig.android.navigation.compose.add
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
 
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class ChooseInsuranceToTerminateViewModel @AssistedInject constructor(
   @Assisted insuranceId: String?,
   getTerminatableContractsUseCase: GetTerminatableContractsUseCase,

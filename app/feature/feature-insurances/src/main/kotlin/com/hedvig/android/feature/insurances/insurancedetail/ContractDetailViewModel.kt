@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
@@ -21,7 +22,7 @@ import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.flow.combine
 
 @AssistedInject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class ContractDetailViewModel(
   @Assisted contractId: String,
   featureManager: FeatureManager,

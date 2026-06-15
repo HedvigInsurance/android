@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.tracking.ActionType
 import com.hedvig.android.core.tracking.logAction
@@ -40,7 +41,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.LocalDate
 
 @AssistedInject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class AddonSummaryViewModel(
   @Assisted summaryParameters: SummaryParameters,
   @Assisted addonPurchaseSource: AddonBannerSource,

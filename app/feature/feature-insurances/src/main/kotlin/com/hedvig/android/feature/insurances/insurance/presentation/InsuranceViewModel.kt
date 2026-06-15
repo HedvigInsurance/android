@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.insurances.insurance.presentation
 
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
@@ -9,7 +10,7 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Inject
 
 @Inject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class InsuranceViewModel(
   getInsuranceContractsUseCaseProvider: Provider<GetInsuranceContractsUseCase>,
   getCrossSellsUseCaseProvider: Provider<GetCrossSellsUseCase>,

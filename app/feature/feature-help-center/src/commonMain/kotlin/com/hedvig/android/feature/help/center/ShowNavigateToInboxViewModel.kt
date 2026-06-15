@@ -5,6 +5,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import arrow.core.merge
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -14,7 +15,7 @@ import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.map
 
 @Inject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class ShowNavigateToInboxViewModel(
   hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
 ) : MoleculeViewModel<Unit, Boolean>(

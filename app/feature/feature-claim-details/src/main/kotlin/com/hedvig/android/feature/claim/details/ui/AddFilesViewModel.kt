@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import arrow.core.raise.either
 import com.eygraber.uri.Uri
 import com.hedvig.android.apollo.NetworkCacheManager
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.fileupload.ClaimsServiceUploadFileUseCase
 import com.hedvig.android.core.fileupload.FileService
@@ -18,7 +19,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @AssistedInject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class AddFilesViewModel(
   private val claimsServiceUploadFileUseCase: ClaimsServiceUploadFileUseCase,
   private val fileService: FileService,

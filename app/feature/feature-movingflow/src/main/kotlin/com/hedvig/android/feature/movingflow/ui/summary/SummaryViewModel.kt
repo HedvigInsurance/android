@@ -49,7 +49,7 @@ import kotlinx.datetime.LocalDate
 import octopus.feature.movingflow.MoveIntentV2CommitMutation
 
 @AssistedInject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class SummaryViewModel(
   @Assisted summaryRoute: SummaryKey,
   movingFlowRepository: MovingFlowRepository,

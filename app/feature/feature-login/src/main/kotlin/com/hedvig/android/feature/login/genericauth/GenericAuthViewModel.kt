@@ -2,6 +2,7 @@ package com.hedvig.android.feature.login.genericauth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.authlib.AuthAttemptResult
 import com.hedvig.authlib.AuthRepository
@@ -14,7 +15,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @Inject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class GenericAuthViewModel(
   private val authRepository: AuthRepository,
 ) : ViewModel() {

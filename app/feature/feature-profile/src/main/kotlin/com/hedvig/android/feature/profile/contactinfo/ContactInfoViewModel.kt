@@ -104,7 +104,7 @@ internal sealed interface ContactInfoUiState {
 }
 
 @Inject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class ContactInfoViewModel(
   repository: Provider<ContactInfoRepository>,
 ) : MoleculeViewModel<ContactInfoEvent, ContactInfoUiState>(

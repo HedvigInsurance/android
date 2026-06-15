@@ -18,7 +18,7 @@ import dev.zacsweers.metro.Inject
 import octopus.type.MemberPaymentProvider
 
 @Inject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class PayoutAccountOverviewViewModel(
   getPayoutAccountUseCase: GetPayoutAccountUseCase,
 ) : MoleculeViewModel<PayoutAccountOverviewEvent, PayoutAccountOverviewUiState>(

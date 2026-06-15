@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.map
 import octopus.MemberIdQuery
 
 @Inject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class AboutAppViewModel(
   apolloClient: ApolloClient,
   deviceIdDataStore: DeviceIdDataStore,

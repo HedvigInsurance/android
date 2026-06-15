@@ -19,7 +19,7 @@ import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
 
 @AssistedInject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class PaymentDetailsViewModel(
   @Assisted chargeId: String?,
   getChargeDetailsUseCase: GetChargeDetailsUseCase,

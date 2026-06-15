@@ -19,7 +19,7 @@ import com.hedvig.android.navigation.compose.popUpTo
 import dev.zacsweers.metro.Inject
 
 @Inject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class SetupInvoicePayoutViewModel(
   setupInvoicePayoutUseCase: SetupInvoicePayoutUseCase,
   backstack: Backstack,

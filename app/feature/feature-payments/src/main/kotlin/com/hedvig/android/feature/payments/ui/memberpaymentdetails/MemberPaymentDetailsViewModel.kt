@@ -17,7 +17,7 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Inject
 
 @Inject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class MemberPaymentDetailsViewModel(
   getMemberPaymentsDetailsUseCase: GetMemberPaymentsDetailsUseCase,
 ) : MoleculeViewModel<MemberPaymentDetailsEvent, MemberPaymentDetailsUiState>(

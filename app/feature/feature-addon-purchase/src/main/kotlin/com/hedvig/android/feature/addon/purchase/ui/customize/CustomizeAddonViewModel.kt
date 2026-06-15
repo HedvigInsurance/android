@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.UiCurrencyCode
@@ -34,7 +35,7 @@ import dev.zacsweers.metro.AssistedInject
 import kotlinx.datetime.LocalDate
 
 @AssistedInject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class CustomizeAddonViewModel(
   @Assisted insuranceId: String,
   @Assisted preselectedAddonDisplayNames: List<String>,

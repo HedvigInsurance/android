@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.editcoinsured.ui
 
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.feature.editcoinsured.data.CommitMidtermChangeUseCase
@@ -12,7 +13,7 @@ import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
 
 @AssistedInject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class EditCoInsuredViewModel(
   @Assisted contractId: String,
   @Assisted type: CoInsuredFlowType,

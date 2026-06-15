@@ -35,7 +35,7 @@ class HedvigViewModelProcessorTest {
     val text = compile(
       vm(
         """
-        @HedvigViewModel
+        @HedvigViewModel(ActivityRetainedScope::class)
         class HomeViewModel @Inject constructor(val dep: String) : ViewModel()
         """.trimIndent(),
       ),
@@ -54,7 +54,7 @@ class HedvigViewModelProcessorTest {
     val text = compile(
       vm(
         """
-        @HedvigViewModel
+        @HedvigViewModel(ActivityRetainedScope::class)
         class ContractViewModel @AssistedInject constructor(
           @Assisted val contractId: String,
           val dep: String,
@@ -79,7 +79,7 @@ class HedvigViewModelProcessorTest {
     val text = compile(
       vm(
         """
-        @HedvigViewModel
+        @HedvigViewModel(ActivityRetainedScope::class)
         class TopicViewModel @AssistedInject constructor(
           @Assisted("topicId") val id: String,
         ) : ViewModel()
@@ -95,7 +95,7 @@ class HedvigViewModelProcessorTest {
     val text = compile(
       vm(
         """
-        @HedvigViewModel
+        @HedvigViewModel(ActivityRetainedScope::class)
         class LoginViewModel @AssistedInject constructor(
           @Assisted val savedStateHandle: SavedStateHandle,
           val dep: String,
@@ -117,7 +117,7 @@ class HedvigViewModelProcessorTest {
     val text = compile(
       vm(
         """
-        @HedvigViewModel
+        @HedvigViewModel(ActivityRetainedScope::class)
         class CombinedViewModel @AssistedInject constructor(
           @Assisted val contractId: String,
           @Assisted val savedStateHandle: SavedStateHandle,
@@ -142,7 +142,7 @@ class HedvigViewModelProcessorTest {
   }
 
   @Test
-  fun `scope argument overrides the default scope in the generated code`() {
+  fun `scope argument selects the contribution scope in the generated code`() {
     val text = compile(
       vm(
         """
@@ -167,14 +167,14 @@ class HedvigViewModelProcessorTest {
       vmAt(
         "commonMain/CommonViewModels.kt",
         """
-        @HedvigViewModel
+        @HedvigViewModel(ActivityRetainedScope::class)
         class SharedViewModel @Inject constructor(val dep: String) : ViewModel()
         """.trimIndent(),
       ),
       vmAt(
         "androidMain/AndroidViewModels.kt",
         """
-        @HedvigViewModel
+        @HedvigViewModel(ActivityRetainedScope::class)
         class AndroidOnlyViewModel @Inject constructor(val dep: String) : ViewModel()
         """.trimIndent(),
       ),
@@ -189,7 +189,7 @@ class HedvigViewModelProcessorTest {
     val text = compile(
       vm(
         """
-        @HedvigViewModel
+        @HedvigViewModel(ActivityRetainedScope::class)
         internal class SecretViewModel @Inject constructor(val dep: String) : ViewModel()
         """.trimIndent(),
       ),
@@ -209,6 +209,7 @@ class HedvigViewModelProcessorTest {
 
     import androidx.lifecycle.SavedStateHandle
     import androidx.lifecycle.ViewModel
+    import com.hedvig.android.core.common.di.ActivityRetainedScope
     import com.hedvig.android.core.common.di.HedvigViewModel
     import dev.zacsweers.metro.AppScope
     import dev.zacsweers.metro.Assisted
@@ -254,7 +255,7 @@ class HedvigViewModelProcessorTest {
 
       class ActivityRetainedScope
 
-      annotation class HedvigViewModel(val scope: KClass<*> = ActivityRetainedScope::class)
+      annotation class HedvigViewModel(val scope: KClass<*>)
       """.trimIndent(),
     ),
     SourceFile.kotlin(

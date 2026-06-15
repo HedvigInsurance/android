@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.chip.id.data.GetContractsWithMissingChipIdUseCase
 import com.hedvig.android.feature.chip.id.data.PetContractForChipId
@@ -19,7 +20,7 @@ import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
 
 @AssistedInject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class AddChipIdViewModel(
   updateChipIdUseCase: UpdateChipIdUseCase,
   getContractsWithMissingChipIdUseCase: GetContractsWithMissingChipIdUseCase,

@@ -9,7 +9,7 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Inject
 
 @Inject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class PaymentsViewModel(
   getUpcomingPaymentUseCase: Provider<GetUpcomingPaymentUseCase>,
   getShouldShowPayoutUseCase: Provider<GetShouldShowPayoutUseCase>,

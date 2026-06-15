@@ -11,6 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.eygraber.uri.Uri
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.uidata.UiFile
@@ -160,7 +161,7 @@ internal sealed interface ClaimChatUiState {
 }
 
 @AssistedInject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class ClaimChatViewModel(
   @Assisted developmentFlow: Boolean,
   startClaimIntentUseCase: StartClaimIntentUseCase,

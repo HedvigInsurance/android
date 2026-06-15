@@ -10,6 +10,7 @@ import androidx.compose.runtime.setValue
 import arrow.core.Either
 import arrow.core.raise.either
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
@@ -25,7 +26,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onEach
 
 @Inject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class TerminatedContractsViewModel(
   getInsuranceContractsUseCaseProvider: Provider<GetInsuranceContractsUseCase>,
 ) : MoleculeViewModel<TerminatedContractsEvent, TerminatedContractsUiState>(

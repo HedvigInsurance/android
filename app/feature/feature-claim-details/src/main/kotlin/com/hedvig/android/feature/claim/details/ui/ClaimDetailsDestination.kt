@@ -496,6 +496,7 @@ private fun BeforeGridContent(
           modifier = Modifier.size(40.dp),
         ) {
           Icon(
+            tint = HedvigTheme.colorScheme.signalGreyElement,
             imageVector = HedvigIcons.InfoFilled,
             contentDescription = stringResource(Res.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
             modifier = Modifier.size(24.dp),

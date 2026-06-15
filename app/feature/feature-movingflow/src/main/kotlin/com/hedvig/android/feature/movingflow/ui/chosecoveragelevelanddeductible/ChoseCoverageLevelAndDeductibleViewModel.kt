@@ -45,7 +45,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AssistedInject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class ChoseCoverageLevelAndDeductibleViewModel(
   @Assisted intentId: String,
   movingFlowRepository: MovingFlowRepository,

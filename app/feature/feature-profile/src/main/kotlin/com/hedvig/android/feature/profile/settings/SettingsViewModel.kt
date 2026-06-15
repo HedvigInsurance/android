@@ -12,7 +12,7 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Inject
 
 @Inject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class SettingsViewModel(
   languageService: LanguageService,
   settingsDataStore: SettingsDataStore,

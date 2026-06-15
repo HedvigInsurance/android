@@ -23,7 +23,7 @@ import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import dev.zacsweers.metro.Inject
 
 @Inject
-@HedvigViewModel
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class ManualChargeViewModel(
   getManualChargeInfoUseCase: GetManualChargeInfoUseCase,
   triggerManualCharge: TriggerManualChargeUseCase,
