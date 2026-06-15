@@ -144,7 +144,7 @@ private fun InsuranceContractsQuery.Data.CurrentMember.PendingContract.toPending
         premium = UiMoney.fromMoneyFragment(it.premium),
       )
     },
-    cost = this.cost.toMonthlyCost(),
+    cost = this.itemCost?.toMonthlyCost(),
     basePremium = UiMoney.fromMoneyFragment(this.basePremium),
     chipId = ChipIdState.NotRequired,
     supportsTermination = supportsTermination,
@@ -185,7 +185,7 @@ private fun ContractFragment.toContract(
           premium = UiMoney.fromMoneyFragment(it.premium),
         )
       },
-      cost = currentAgreement.cost.toMonthlyCost(),
+      cost = currentAgreement.itemCost?.toMonthlyCost(),
       basePremium = UiMoney.fromMoneyFragment(currentAgreement.basePremium),
     ),
     upcomingInsuranceAgreement = upcomingChangedAgreement?.let {
@@ -204,7 +204,7 @@ private fun ContractFragment.toContract(
             premium = UiMoney.fromMoneyFragment(it.premium),
           )
         },
-        cost = it.cost.toMonthlyCost(),
+        cost = it.itemCost?.toMonthlyCost(),
         basePremium = UiMoney.fromMoneyFragment(it.basePremium),
       )
     },

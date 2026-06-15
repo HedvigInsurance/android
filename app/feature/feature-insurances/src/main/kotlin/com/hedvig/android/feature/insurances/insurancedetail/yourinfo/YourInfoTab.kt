@@ -153,7 +153,7 @@ internal fun YourInfoTab(
   isTerminated: Boolean,
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
-  priceToShow: UiMoney,
+  priceToShow: UiMoney?,
   showPriceInfoIcon: Boolean,
   onInfoIconClick: () -> Unit,
   existingAddons: List<ContractAddon>,
@@ -199,7 +199,8 @@ internal fun YourInfoTab(
   }
 
   val upcomingChangesBottomSheet = rememberHedvigBottomSheetState<Unit>()
-  if (upcomingChangesInsuranceAgreement != null) {
+  val upcomingChangesCost = upcomingChangesInsuranceAgreement?.cost
+  if (upcomingChangesInsuranceAgreement != null && upcomingChangesCost != null) {
     val upcomingPriceInfoForBottomSheet = PriceInfoForBottomSheet(
       displayItems = buildList {
         add(
@@ -299,13 +300,15 @@ internal fun YourInfoTab(
     ) {
       Column {
         CoverageRows(coverageItems, Modifier.padding(horizontal = 16.dp))
-        PriceRow(
-          priceToShow = priceToShow,
-          showInfoIcon = showPriceInfoIcon,
-          onInfoIconClick = onInfoIconClick,
-          isFirstRow = coverageItems.isEmpty(),
-          modifier = Modifier.padding(horizontal = 16.dp),
-        )
+        if (priceToShow != null) {
+          PriceRow(
+            priceToShow = priceToShow,
+            showInfoIcon = showPriceInfoIcon,
+            onInfoIconClick = onInfoIconClick,
+            isFirstRow = coverageItems.isEmpty(),
+            modifier = Modifier.padding(horizontal = 16.dp),
+          )
+        }
         if (allowEditCoInsured && coInsured.isNotEmpty()) {
           HorizontalDivider(Modifier.padding(horizontal = 16.dp))
           Spacer(Modifier.height(16.dp))

@@ -36,7 +36,7 @@ query InsuranceContracts(
           ...MoneyFragment
         }
       }
-      cost {
+      itemCost {
         ...MonthlyCostFragment
       }
       basePremium {
@@ -106,7 +106,7 @@ fragment AgreementFragment on Agreement {
       ...MoneyFragment
     }
   }
-  cost {
+  itemCost {
     ...MonthlyCostFragment
   }
   basePremium {

@@ -9,15 +9,20 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.paying.member.GetMemberTypeUseCase
+import com.hedvig.android.data.paying.member.MemberType
 import com.hedvig.android.feature.payments.data.ManualChargeToPrompt
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberChargeShortInfo
 import com.hedvig.android.feature.payments.data.PaymentConnection
+import com.hedvig.android.feature.payments.data.PaymentConnection.*
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.data.toFailedCharge
+import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.Inject
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
@@ -36,12 +41,14 @@ internal interface GetUpcomingPaymentUseCase {
 internal data class GetUpcomingPaymentUseCaseImpl(
   val apolloClient: ApolloClient,
   val clock: Clock,
+  val getMemberTypeUseCaseProvider: Provider<GetMemberTypeUseCase>,
 ) : GetUpcomingPaymentUseCase {
   override suspend fun invoke(): Either<ErrorMessage, PaymentOverview> = either {
     val result = apolloClient.query(UpcomingPaymentQuery())
       .fetchPolicy(FetchPolicy.NetworkFirst)
       .safeExecute(::ErrorMessage)
       .bind()
+    val memberType = getMemberTypeUseCaseProvider.provide().invoke().bind()
 
     val missedChargeIdToChargeManually: String? =
       result.currentMember.missedChargeIdToChargeManually
@@ -71,6 +78,9 @@ internal data class GetUpcomingPaymentUseCaseImpl(
         val paymentMethods = result.currentMember.paymentMethods
         val payinMethod = paymentMethods.defaultPayinMethod
           ?: paymentMethods.payinMethods.find { it.isDefault }
+        logcat {"Mariia: payinMethod $payinMethod"}
+        val payoutMethod = paymentMethods.defaultPayoutMethod
+          ?: paymentMethods.payoutMethods.find { it.isDefault }
         if (payinMethod == null) {
           val firstKnownTerminationDateForContractTerminatedDueToMissedPayments = result
             .currentMember
@@ -79,17 +89,37 @@ internal data class GetUpcomingPaymentUseCaseImpl(
             .mapNotNull { it.terminationDate }
             .sorted()
             .firstOrNull()
-          return@run PaymentConnection.NeedsSetup(
-            firstKnownTerminationDateForContractTerminatedDueToMissedPayments,
-          )
+
+          when (memberType) {
+
+            MemberType.STANDARD_MEMBER -> return@run NeedsPayinSetup(
+              firstKnownTerminationDateForContractTerminatedDueToMissedPayments,
+            )
+
+            MemberType.QASA_ONLY_MEMBER -> {
+              if (payoutMethod == null) {
+                return@run PaymentConnection.NeedsPayoutSetup
+              } else return@run PaymentConnection.Active
+            }
+
+            MemberType.STANDARD_TO_QASA_MEMBER -> TODO()
+          }
         }
         when (payinMethod.status) {
-          MemberPaymentMethodStatus.ACTIVE -> PaymentConnection.Active
+          MemberPaymentMethodStatus.ACTIVE -> {
+            logcat {"Mariia: MemberPaymentMethodStatus.ACTIVE"}
+            logcat {"Mariia: payoutMethod $payoutMethod"}
+            if (payoutMethod == null) {
+              return@run PaymentConnection.NeedsPayoutSetup
+            } else return@run PaymentConnection.Active
+          }
+
           MemberPaymentMethodStatus.PENDING -> PaymentConnection.Pending
           MemberPaymentMethodStatus.UNKNOWN__ -> PaymentConnection.Unknown
         }
       },
       isManualChargeAllowed = isManualChargeAllowed,
+      memberType = memberType
     )
   }
 }
@@ -124,6 +154,7 @@ internal class GetUpcomingPaymentUseCaseDemo(
       emptyList(),
       PaymentConnection.Unknown,
       isManualChargeAllowed = null,
+      memberType = MemberType.STANDARD_MEMBER
     ).right()
   }
 }
