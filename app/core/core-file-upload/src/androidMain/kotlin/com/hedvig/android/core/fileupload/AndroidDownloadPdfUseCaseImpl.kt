@@ -5,6 +5,7 @@ import arrow.core.Either
 import arrow.core.raise.either
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.BaseHttpClient
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
@@ -35,7 +36,7 @@ private const val FILE_EXT = ".pdf"
 internal class AndroidDownloadPdfUseCaseImpl(
   private val context: Context,
   private val clock: Clock,
-  private val httpClient: HttpClient,
+  @BaseHttpClient private val httpClient: HttpClient,
 ) : DownloadPdfUseCase {
   override suspend fun invoke(url: String): Either<ErrorMessage, DownloadedFile> = withContext(Dispatchers.IO) {
     either {

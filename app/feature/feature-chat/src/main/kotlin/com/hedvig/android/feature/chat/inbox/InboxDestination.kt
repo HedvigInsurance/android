@@ -93,6 +93,7 @@ import hedvig.resources.INBOX_NEW_MESSAGE_CLAIM_DESCRIPTION
 import hedvig.resources.INBOX_NEW_MESSAGE_SUPPORT_DESCRIPTION
 import hedvig.resources.Res
 import hedvig.resources.TALKBACK_CONVERSATION_DESCRIPTION
+import hedvig.resources.TERMINATION_FLOW_TODAY
 import hedvig.resources.claim_status_bar_closed
 import hedvig.resources.general_close_button
 import hedvig.resources.home_claim_card_pill_claim
@@ -416,10 +417,14 @@ private fun ConversationCard(
                 HighlightColor.Grey(HighlightShade.LIGHT),
               )
             } else {
-              val formattedLastMessageSent = conversation.lastMessageTimestamp.formattedChatDateTime(getLocale())
+              val formattedLastMessageSent = conversation.lastMessageTimestamp.formattedChatDateTime(
+                getLocale(),
+                stringResource(Res.string.TERMINATION_FLOW_TODAY),
+              )
               HedvigText(
                 text = formattedLastMessageSent,
                 style = HedvigTheme.typography.label,
+                color = HedvigTheme.colorScheme.textSecondary
               )
             }
           }
@@ -571,7 +576,7 @@ private val mockInboxConversation2 = InboxConversation(
 private val mockInboxConversation3 = InboxConversation(
   conversationId = "3",
   header = Header.ServiceConversation,
-  latestMessage = File(Sender.MEMBER, Clock.System.now()),
+  latestMessage = Text ("Thank you! Happy to hear that!",Sender.MEMBER, Clock.System.now()),
   hasNewMessages = false,
   createdAt = Clock.System.now(),
   isClosed = true,
