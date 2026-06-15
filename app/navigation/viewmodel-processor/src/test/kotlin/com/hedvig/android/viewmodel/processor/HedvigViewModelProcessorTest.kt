@@ -185,7 +185,12 @@ class HedvigViewModelProcessorTest {
   }
 
   @Test
-  fun `internal view model produces an internal generated declaration`() {
+  fun `internal view model still produces a public generated declaration`() {
+    // The generated contribution must always be public so Metro emits a public `metro/hints` marker,
+    // which is what makes the contribution discoverable from the merging `:app` graph. An internal
+    // declaration emits an internal hint that is invisible across module boundaries, silently dropping
+    // the VM from the graph (runtime "Unknown model class"). Exposing the internal VM through the public
+    // wrapper is allowed via the file-level @Suppress the processor emits.
     val text = compile(
       vm(
         """
@@ -195,7 +200,8 @@ class HedvigViewModelProcessorTest {
       ),
     ).generatedText("SecretViewModelModule.kt")
 
-    assertThat(text).contains("internal interface SecretViewModelModule")
+    assertThat(text).contains("public interface SecretViewModelModule")
+    assertThat(text).contains("EXPOSED_PARAMETER_TYPE")
   }
 
   private fun vm(body: String): SourceFile = vmAt("ViewModels.kt", body)

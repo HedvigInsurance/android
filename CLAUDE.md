@@ -186,6 +186,8 @@ internal class ContractDetailViewModel(
 
 A no-arg ViewModel uses `@Inject` + `@HedvigViewModel(ActivityRetainedScope::class)` instead. The rare `@HedvigViewModel(AppScope::class)` case is a ViewModel resolved by its own standalone Activity. The module must opt in with `viewModels()` in its `hedvig {}` block. A `MergedMetroViewModelFactory` (merging the app graph's and this Activity's `ActivityRetainedGraph` maps) is provided into the composition via `LocalMetroViewModelFactory` in `MainActivity` (read off `navRetainedViewModel.viewModelFactory`).
 
+The code the processor generates is always `public`, even though the VM is usually `internal`. This is required: Metro only discovers cross-module contributions whose `metro/hints` marker is public, so an `internal` generated contribution is silently dropped from `:app`'s graph and surfaces at runtime as `IllegalArgumentException: Unknown model class …`. Don't "fix" the generated wrapper to be `internal` — see `docs/architecture/navigation-and-di.md` §I.3.1.
+
 **Demo mode** is the one place we need two implementations of the same type. Use the `Provider<T>` fun interface and a `ProdOrDemoProvider<T>` (always `@SingleIn(AppScope::class)`), which picks `demoImpl` vs `prodImpl` off `DemoManager`. Inject `Provider<T>` and call `.provide()`. Do **not** reach for `Provider<T>` for anything else.
 
 **WorkManager** workers are built through `MetroWorkerFactory`, a multibound `Map<KClass<out ListenableWorker>, ChildWorkerFactory>`. A worker contributes an `@AssistedFactory` `ChildWorkerFactory` keyed with `@WorkerKey`.
@@ -567,6 +569,10 @@ Text("This is some text for feature X")
 **Metro "cannot find binding" / duplicate binding errors:**
 - Check the type is contributed (`@ContributesBinding`/`@Provides`/`@ContributesIntoMap`) into `AppScope`.
 - Confirm `metro.generateContributionProviders=true` is present in `gradle.properties`.
+
+**Runtime crash `IllegalArgumentException: Unknown model class …ViewModel` (at `MetroViewModelFactory`):**
+- The VM's contribution wasn't merged into `:app`'s graph. The usual cause is an `internal` generated contribution producing an `internal` (cross-module-invisible) `metro/hints` marker — the `:viewmodel-processor` must generate it `public`. See `docs/architecture/navigation-and-di.md` §I.3.1.
+- To diagnose: `javap -p -c` on `app/app/build/tmp/kotlin-classes/debug/.../AppGraph$Impl$ActivityRetainedGraphImpl.class` and check the VM is in the `viewModelProviders` map. Note `:app:compileDebugKotlin` is cacheable — verify it actually executed (not `FROM-CACHE`) before trusting the output.
 
 **Dependency resolution failures:**
 - Check `~/.gradle/gradle.properties` has GitHub PAT with `read:packages`.

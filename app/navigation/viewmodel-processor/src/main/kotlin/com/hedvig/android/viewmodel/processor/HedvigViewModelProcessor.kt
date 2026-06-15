@@ -1,6 +1,5 @@
 package com.hedvig.android.viewmodel.processor
 
-import com.google.devtools.ksp.getVisibility
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
@@ -11,11 +10,9 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.KSValueParameter
-import com.google.devtools.ksp.symbol.Visibility
 import com.google.devtools.ksp.validate
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
@@ -65,6 +62,16 @@ private val viewModelAssistedFactoryKey =
  *    `<VM>Factory : ManualViewModelAssistedFactory`. Nav args come from the call-site `create(...)`; a
  *    SavedStateHandle in the mix is just another `@Assisted` param, supplied at the call site via
  *    `extras.createSavedStateHandle()` (the manual-factory lambda receives the CreationExtras).
+ *
+ * Every generated declaration is `public`, never `internal`, *even when the VM is `internal`* (see
+ * [write]). Metro discovers contributions from other modules by reading the `metro/hints` markers it
+ * emits beside each `@ContributesTo`/`@ContributesIntoMap` type, and it only emits a *public* hint for a
+ * *public* type. An `internal` contribution gets an `internal` hint that is invisible across module
+ * boundaries, so the VM is silently dropped from the merged `:app` graph and `metroViewModel()` throws
+ * `IllegalArgumentException: Unknown model class` at runtime. This matches what Metro does for a
+ * class-level `@ContributesIntoMap` (it always generates a public contribution holder regardless of the
+ * annotated class's visibility); routing through a generated `@ContributesTo` interface here means we
+ * must reproduce that public-ness ourselves.
  */
 class HedvigViewModelProcessor(
   private val codeGenerator: CodeGenerator,
@@ -118,8 +125,12 @@ class HedvigViewModelProcessor(
       .returns(viewModel)
       .addStatement("return viewModel")
       .build()
+    // The generated contribution must be public, never `internal`, even when the VM is internal. Metro
+    // discovers cross-module contributions via the `metro/hints` marker it emits beside each
+    // `@ContributesTo`/`@ContributesIntoMap` type, and it only emits a *public* hint for a *public* type.
+    // An internal contribution gets an internal hint that is invisible across module boundaries, so the VM
+    // is silently dropped from the `:app` graph and `metroViewModel()` throws "Unknown model class" at runtime.
     val module = TypeSpec.interfaceBuilder(moduleName)
-      .addModifiers(vm.visibilityModifiers())
       .addAnnotation(contributesAnnotation(contributesTo, scope))
       .addFunction(provide)
       .build()
@@ -139,7 +150,6 @@ class HedvigViewModelProcessor(
       .apply { assistedParams.forEach { addParameter(it.toAssistedParameter()) } }
       .build()
     val factory = TypeSpec.funInterfaceBuilder(factoryName)
-      .addModifiers(vm.visibilityModifiers())
       .addSuperinterface(manualViewModelAssistedFactory)
       .addAnnotation(assistedFactory)
       .addAnnotation(manualViewModelAssistedFactoryKey)
@@ -168,7 +178,6 @@ class HedvigViewModelProcessor(
       .returns(vmClass)
       .build()
     val factory = TypeSpec.funInterfaceBuilder(factoryName)
-      .addModifiers(vm.visibilityModifiers())
       .addSuperinterface(viewModelAssistedFactory)
       .addAnnotation(assistedFactory)
       .addAnnotation(AnnotationSpec.builder(viewModelAssistedFactoryKey).addMember("%T::class", vmClass).build())
@@ -181,6 +190,17 @@ class HedvigViewModelProcessor(
 
   private fun write(vm: KSClassDeclaration, fileName: String, type: TypeSpec) {
     FileSpec.builder(vm.packageName.asString(), fileName)
+      // The generated module/factory is public (so Metro emits a public, cross-module-visible hint), but
+      // it references the VM, which is usually `internal`. A public declaration naming an internal type is
+      // normally an error; these suppressions allow it. It is safe because Metro routes construction
+      // through its own generated factory — consumers never touch the internal type directly.
+      .addAnnotation(
+        AnnotationSpec.builder(ClassName("kotlin", "Suppress"))
+          .useSiteTarget(AnnotationSpec.UseSiteTarget.FILE)
+          .addMember("%S", "EXPOSED_PARAMETER_TYPE")
+          .addMember("%S", "EXPOSED_FUNCTION_RETURN_TYPE")
+          .build(),
+      )
       .addType(type)
       .build()
       .writeTo(
@@ -220,12 +240,6 @@ private fun KSClassDeclaration.hedvigViewModelScope(): TypeName? {
   val scope = annotation.arguments.firstOrNull { it.name?.asString() == "scope" }?.value as? KSType
     ?: return null
   return scope.toClassName()
-}
-
-private fun KSClassDeclaration.visibilityModifiers(): List<KModifier> = when (getVisibility()) {
-  Visibility.PUBLIC -> emptyList()
-  Visibility.INTERNAL -> listOf(KModifier.INTERNAL)
-  else -> listOf(KModifier.INTERNAL)
 }
 
 private fun KSValueParameter.hasAnnotation(fqName: String): Boolean = annotations.any {
