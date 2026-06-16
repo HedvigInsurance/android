@@ -65,8 +65,8 @@ import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.popUpTo
 import com.hedvig.android.navigation.compose.removeAllOf
-import com.hedvig.feature.claim.chat.ClaimChatKey
-import com.hedvig.feature.claim.chat.claimChatEntries
+import com.hedvig.feature.claim.chat.navigation.ClaimChatKey
+import com.hedvig.feature.claim.chat.navigation.claimChatEntries
 import com.hedvig.feature.remove.addons.RemoveAddonsKey
 import com.hedvig.feature.remove.addons.removeAddonsEntries
 import kotlinx.coroutines.CoroutineScope

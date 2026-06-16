@@ -1,4 +1,4 @@
-package com.hedvig.feature.claim.chat
+package com.hedvig.feature.claim.chat.navigation
 
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.lifecycle.compose.dropUnlessResumed
