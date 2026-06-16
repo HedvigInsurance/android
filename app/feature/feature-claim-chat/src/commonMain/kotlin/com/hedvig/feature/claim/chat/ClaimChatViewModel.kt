@@ -11,7 +11,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.eygraber.uri.Uri
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.logger.logcat
@@ -48,11 +49,7 @@ import com.hedvig.feature.claim.chat.data.SubmitSelectUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSummaryUseCase
 import com.hedvig.feature.claim.chat.data.SubmitTaskUseCase
 import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
-import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlin.time.Instant
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
@@ -164,6 +161,7 @@ internal sealed interface ClaimChatUiState {
 }
 
 @AssistedInject
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class ClaimChatViewModel(
   @Assisted developmentFlow: Boolean,
   startClaimIntentUseCase: StartClaimIntentUseCase,
@@ -198,15 +196,6 @@ internal class ClaimChatViewModel(
       formFieldSearchUseCase,
     ),
   ) {
-  @AssistedFactory
-  @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(AppScope::class)
-  fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(
-      @Assisted developmentFlow: Boolean,
-    ): ClaimChatViewModel
-  }
-
   override fun onCleared() {
     super.onCleared()
     audioRecordingManager.reset()
@@ -1122,6 +1111,7 @@ private fun ClaimIntentStep.clearContent(): ClaimIntentStep = when (val content 
   is StepContent.Summary,
   is StepContent.Task,
   is StepContent.Deflect,
+  is StepContent.DeflectMessage,
   StepContent.Unknown,
   -> this
 }

@@ -12,13 +12,13 @@ import com.hedvig.android.feature.insurances.insurance.InsuranceDestination
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailDestination
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailViewModel
+import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailViewModelFactory
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsDestination
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
 import com.hedvig.android.navigation.compose.add
-import com.hedvig.android.navigation.compose.popBackstack
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
@@ -63,7 +63,7 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEntries(
   entry<InsuranceContractDetailKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) { key ->
     val contractDetail = key
     val viewModel: ContractDetailViewModel =
-      assistedMetroViewModel<ContractDetailViewModel, ContractDetailViewModel.Factory> {
+      assistedMetroViewModel<ContractDetailViewModel, ContractDetailViewModelFactory> {
         create(contractDetail.contractId)
       }
     ContractDetailDestination(

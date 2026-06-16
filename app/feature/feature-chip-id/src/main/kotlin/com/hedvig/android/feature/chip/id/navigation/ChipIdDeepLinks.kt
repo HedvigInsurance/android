@@ -16,6 +16,6 @@ internal class ChipIdDeepLinkMatcherProvider(
 ) : DeepLinkMatcherProvider {
   override fun matchers(): List<DeepLinkMatcher<out HedvigNavKey>> = uriDeepLinkMatchers(
     container.petIdWithoutContractId + container.petIdWithContractId,
-    AddChipIdTriageKey.serializer(),
+    ChipIdKey.serializer(),
   )
 }

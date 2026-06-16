@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -48,17 +47,12 @@ internal fun SelectInsuranceForAddonDestination(
   viewModel: SelectInsuranceForAddonViewModel,
   navigateUp: () -> Unit,
   popBackstack: () -> Unit,
-  navigateToCustomizeAddon: (chosenInsuranceId: String) -> Unit,
 ) {
   val uiState: SelectInsuranceForAddonState by viewModel.uiState.collectAsStateWithLifecycle()
   SelectInsuranceForAddonScreen(
     uiState = uiState,
     navigateUp = navigateUp,
     popBackstack = popBackstack,
-    navigateToCustomizeAddon = { id ->
-      navigateToCustomizeAddon(id)
-      viewModel.emit(SelectInsuranceForAddonEvent.ClearNavigation)
-    },
     selectInsurance = { selected ->
       viewModel.emit(SelectInsuranceForAddonEvent.SelectInsurance(selected))
     },
@@ -79,7 +73,6 @@ private fun SelectInsuranceForAddonScreen(
   reload: () -> Unit,
   selectInsurance: (selected: InsuranceForAddon) -> Unit,
   submitSelected: (selected: InsuranceForAddon) -> Unit,
-  navigateToCustomizeAddon: (chosenInsuranceId: String) -> Unit,
 ) {
   when (uiState) {
     Failure -> {
@@ -95,11 +88,6 @@ private fun SelectInsuranceForAddonScreen(
     }
 
     is Success -> {
-      LaunchedEffect(uiState.insuranceIdToContinue) {
-        if (uiState.insuranceIdToContinue != null) {
-          navigateToCustomizeAddon(uiState.insuranceIdToContinue)
-        }
-      }
       SelectInsuranceForAddonContentScreen(
         uiState = uiState,
         popBackstack = popBackstack,
@@ -189,7 +177,6 @@ private fun PreviewChooseInsuranceToTerminateScreen(
         {},
         {},
         {},
-        {},
       )
     }
   }
@@ -214,7 +201,6 @@ private class ChooseInsuranceForAddonUiStateProvider :
           ),
         ),
         currentlySelected = null,
-        insuranceIdToContinue = null,
       ),
       Success(
         listOfInsurances = listOf(
@@ -237,7 +223,6 @@ private class ChooseInsuranceForAddonUiStateProvider :
           contractExposure = "Opulullegatan 19",
           contractGroup = ContractGroup.HOUSE,
         ),
-        insuranceIdToContinue = null,
       ),
       Failure,
       Loading,

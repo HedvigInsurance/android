@@ -15,6 +15,7 @@ import octopus.fragment.ClaimIntentStepContentFragment
 import octopus.fragment.ContentSelectFragment
 import octopus.fragment.DeflectionFragment
 import octopus.fragment.DeflectionInfoBlockFragment
+import octopus.fragment.DeflectionMessageFragment
 import octopus.fragment.FileUploadFragment
 import octopus.fragment.FormFragment
 import octopus.fragment.SummaryFragment
@@ -180,6 +181,10 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
         ),
       )
     }
+
+    is DeflectionMessageFragment -> StepContent.DeflectMessage(
+      message = message
+    )
 
     else -> {
       logcat { "ClaimIntentStepContentFragment: Unknown step" }

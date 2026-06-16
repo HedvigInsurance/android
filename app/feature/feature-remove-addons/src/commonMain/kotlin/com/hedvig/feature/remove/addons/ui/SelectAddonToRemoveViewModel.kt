@@ -9,47 +9,40 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
-import com.hedvig.android.core.common.di.AppScope
-import com.hedvig.android.core.uidata.ItemCost
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.productvariant.AddonVariant
-import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
+import com.hedvig.android.navigation.compose.navigateAndPopUpTo
+import com.hedvig.feature.remove.addons.ChooseAddonToRemoveKey
+import com.hedvig.feature.remove.addons.RemoveAddonSummaryKey
+import com.hedvig.feature.remove.addons.SummaryParameters
 import com.hedvig.feature.remove.addons.data.CurrentlyActiveAddon
 import com.hedvig.feature.remove.addons.data.StartAddonRemovalResponse
 import com.hedvig.feature.remove.addons.data.StartAddonRemovalUseCase
 import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
-import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
-import kotlinx.datetime.LocalDate
 
 @AssistedInject
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class SelectAddonToRemoveViewModel(
   startAddonRemovalUseCase: StartAddonRemovalUseCase,
+  backstack: Backstack,
   @Assisted contractId: ContractId,
   @Assisted preselectedAddonVariant: AddonVariant?,
 ) : MoleculeViewModel<SelectAddonToRemoveEvent, SelectAddonToRemoveState>(
-    initialState = SelectAddonToRemoveState.Loading(),
-    presenter = SelectAddonToRemovePresenter(startAddonRemovalUseCase, contractId, preselectedAddonVariant),
-  ) {
-  @AssistedFactory
-  @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(AppScope::class)
-  fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(
-      @Assisted contractId: ContractId,
-      @Assisted preselectedAddonVariant: AddonVariant?,
-    ): SelectAddonToRemoveViewModel
-  }
-}
+    initialState = SelectAddonToRemoveState.Loading,
+    presenter = SelectAddonToRemovePresenter(startAddonRemovalUseCase, backstack, contractId, preselectedAddonVariant),
+  )
 
 private class SelectAddonToRemovePresenter(
   private val startAddonRemovalUseCase: StartAddonRemovalUseCase,
+  private val backstack: Backstack,
   private val contractId: ContractId,
   private val preselectedAddonVariant: AddonVariant?,
 ) : MoleculePresenter<SelectAddonToRemoveEvent, SelectAddonToRemoveState> {
@@ -67,7 +60,6 @@ private class SelectAddonToRemovePresenter(
       val addonsChosenForRemoval = (lastState as? SelectAddonToRemoveState.Success)?.addonsChosenForRemoval.orEmpty()
       mutableStateListOf(*addonsChosenForRemoval.toTypedArray())
     }
-    var paramsToNavigateToSummary by remember { mutableStateOf<CommonSummaryParameters?>(null) }
 
     LaunchedEffect(loadIteration) {
       if (loadIteration != 0) {
@@ -86,22 +78,24 @@ private class SelectAddonToRemovePresenter(
             )
           } ?: if (result.existingAddonsToRemove.size == 1) result.existingAddonsToRemove else emptyList()
 
-          val summaryParams = if (result.existingAddonsToRemove.size == 1) {
-            CommonSummaryParameters(
-              contractId = contractId,
-              addonsToRemove = result.existingAddonsToRemove,
-              activationDate = result.activationDate,
-              baseCost = result.baseCost,
-              currentTotalCost = result.currentTotalCost,
-              productVariant = result.productVariant,
-              existingAddons = result.existingAddonsToRemove,
-            )
-          } else {
-            null
-          }
-          if (summaryParams != null) {
+          if (result.existingAddonsToRemove.size == 1) {
+            // Single removable addon: skip the picker and jump straight to the summary, popping the
+            // picker so back leaves the flow.
             isLoading = true
-            paramsToNavigateToSummary = summaryParams
+            backstack.navigateAndPopUpTo<ChooseAddonToRemoveKey>(
+              RemoveAddonSummaryKey(
+                SummaryParameters(
+                  contractId = contractId,
+                  addonsToRemove = result.existingAddonsToRemove,
+                  activationDate = result.activationDate,
+                  baseCost = result.baseCost,
+                  currentTotalCost = result.currentTotalCost,
+                  productVariant = result.productVariant,
+                  existingAddons = result.existingAddonsToRemove,
+                ),
+              ),
+              inclusive = true,
+            )
           } else {
             Snapshot.withMutableSnapshot {
               response = result
@@ -121,22 +115,21 @@ private class SelectAddonToRemovePresenter(
           loadIteration++
         }
 
-        SelectAddonToRemoveEvent.ClearNavigation -> {
-          paramsToNavigateToSummary = null
-        }
-
         SelectAddonToRemoveEvent.Submit -> {
           val responseValue = response ?: return@CollectEvents
-          val summaryParams = CommonSummaryParameters(
-            contractId = contractId,
-            addonsToRemove = selectedToggleableOptions,
-            activationDate = responseValue.activationDate,
-            baseCost = responseValue.baseCost,
-            currentTotalCost = responseValue.currentTotalCost,
-            productVariant = responseValue.productVariant,
-            existingAddons = responseValue.existingAddonsToRemove,
+          backstack.add(
+            RemoveAddonSummaryKey(
+              SummaryParameters(
+                contractId = contractId,
+                addonsToRemove = selectedToggleableOptions,
+                activationDate = responseValue.activationDate,
+                baseCost = responseValue.baseCost,
+                currentTotalCost = responseValue.currentTotalCost,
+                productVariant = responseValue.productVariant,
+                existingAddons = responseValue.existingAddonsToRemove,
+              ),
+            ),
           )
-          paramsToNavigateToSummary = summaryParams
         }
 
         is SelectAddonToRemoveEvent.ToggleOption -> {
@@ -153,12 +146,11 @@ private class SelectAddonToRemovePresenter(
     return when {
       errorMessage != null -> SelectAddonToRemoveState.Error(errorMessage)
 
-      isLoading -> SelectAddonToRemoveState.Loading(paramsToNavigateToSummary = paramsToNavigateToSummary)
+      isLoading -> SelectAddonToRemoveState.Loading
 
       responseValue != null -> SelectAddonToRemoveState.Success(
         addonOffer = responseValue,
         addonsChosenForRemoval = selectedToggleableOptions,
-        paramsToNavigateToSummary = paramsToNavigateToSummary,
       )
 
       else -> SelectAddonToRemoveState.Error(null)
@@ -170,32 +162,17 @@ internal sealed interface SelectAddonToRemoveState {
   data class Success(
     val addonOffer: StartAddonRemovalResponse,
     val addonsChosenForRemoval: List<CurrentlyActiveAddon>,
-    val paramsToNavigateToSummary: CommonSummaryParameters? = null,
   ) : SelectAddonToRemoveState
 
   data class Error(val message: String?) : SelectAddonToRemoveState
 
-  data class Loading(
-    val paramsToNavigateToSummary: CommonSummaryParameters? = null,
-  ) : SelectAddonToRemoveState
+  data object Loading : SelectAddonToRemoveState
 }
 
 internal sealed interface SelectAddonToRemoveEvent {
   data object Retry : SelectAddonToRemoveEvent
 
-  data object ClearNavigation : SelectAddonToRemoveEvent
-
   data object Submit : SelectAddonToRemoveEvent
 
   data class ToggleOption(val option: CurrentlyActiveAddon) : SelectAddonToRemoveEvent
 }
-
-internal data class CommonSummaryParameters(
-  val contractId: ContractId,
-  val addonsToRemove: List<CurrentlyActiveAddon>,
-  val activationDate: LocalDate,
-  val baseCost: ItemCost,
-  val currentTotalCost: ItemCost,
-  val productVariant: ProductVariant,
-  val existingAddons: List<CurrentlyActiveAddon>,
-)

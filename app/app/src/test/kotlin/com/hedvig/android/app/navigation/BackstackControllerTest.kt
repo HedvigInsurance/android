@@ -19,7 +19,7 @@ import com.hedvig.android.feature.profile.navigation.ProfileKey
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.LoneDeepLinkChrome
-import com.hedvig.android.navigation.compose.popBackstack
+import com.hedvig.android.navigation.compose.popUpTo
 import org.junit.Test
 
 internal class BackstackControllerTest {
@@ -68,9 +68,62 @@ internal class BackstackControllerTest {
   }
 
   @Test
-  fun `system-back at the Home root exits the app`() {
-    val controller = controllerWith(HomeKey)
+  fun `system-back at the Home root finishes the app and keeps the root`() {
+    var finished = false
+    val controller = BackstackController(
+      mutableStateListOf(HomeKey),
+      mutableStateMapOf(),
+      mutableStateOf(null),
+      mutableStateOf(null),
+      finishApp = { finished = true },
+    )
     assertThat(controller.popBackstack()).isFalse()
+    assertThat(finished).isTrue()
+    assertThat(controller.entries.toList()).containsExactly(HomeKey)
+  }
+
+  @Test
+  fun `popUpTo clearing the whole stack finishes the app and keeps the base`() {
+    var finished = false
+    val controller = BackstackController(
+      mutableStateListOf(HelpCenterKey),
+      mutableStateMapOf(),
+      mutableStateOf(null),
+      mutableStateOf(null),
+      finishApp = { finished = true },
+    )
+    controller.popUpTo<HelpCenterKey>(inclusive = true)
+    assertThat(finished).isTrue()
+    assertThat(controller.entries.toList()).containsExactly(HelpCenterKey)
+  }
+
+  @Test
+  fun `popUpTo that leaves entries behind does not finish the app`() {
+    var finished = false
+    val controller = BackstackController(
+      mutableStateListOf(HomeKey, HelpCenterKey),
+      mutableStateMapOf(),
+      mutableStateOf(null),
+      mutableStateOf(null),
+      finishApp = { finished = true },
+    )
+    controller.popUpTo<HelpCenterKey>(inclusive = true)
+    assertThat(finished).isFalse()
+    assertThat(controller.entries.toList()).containsExactly(HomeKey)
+  }
+
+  @Test
+  fun `popUpToIndex with a negative index finishes the app and keeps the base`() {
+    var finished = false
+    val controller = BackstackController(
+      mutableStateListOf(HomeKey, HelpCenterKey),
+      mutableStateMapOf(),
+      mutableStateOf(null),
+      mutableStateOf(null),
+      finishApp = { finished = true },
+    )
+    controller.popUpToIndex(-1)
+    assertThat(finished).isTrue()
     assertThat(controller.entries.toList()).containsExactly(HomeKey)
   }
 
@@ -217,8 +270,8 @@ internal class BackstackControllerTest {
     val controller = BackstackController(
       mutableStateListOf(InsurancesKey),
       mutableStateMapOf(),
-      mutableStateOf(null),
-      mutableStateOf(null),
+      mutableStateOf(null), // pendingDeepLink
+      mutableStateOf(null), // stashedSession
       isOwnTask = { false },
       escapeToOwnTask = { escaped = it },
     )
@@ -234,8 +287,8 @@ internal class BackstackControllerTest {
     val controller = BackstackController(
       mutableStateListOf(InsurancesKey),
       mutableStateMapOf(),
-      mutableStateOf(null),
-      mutableStateOf(null),
+      mutableStateOf(null), // pendingDeepLink
+      mutableStateOf(null), // stashedSession
       isOwnTask = { true },
       escapeToOwnTask = { escaped = it },
     )
@@ -354,11 +407,67 @@ internal class BackstackControllerTest {
   }
 
   @Test
+  fun `loneDeepLinkChrome stays suppressed when a lone tab root drills into a child`() {
+    // Bug repro: a deep-linked tab root that pushes a child must NOT resurrect the suite — Home is
+    // not at the base, so the runs model (and the Home tab) would silently no-op.
+    val controller = controllerWith(InsurancesKey, HelpCenterKey)
+    assertThat(controller.loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowNothing)
+  }
+
+  @Test
+  fun `loneDeepLinkChrome shows up bar when a lone deep screen drills into a tab-root child`() {
+    val controller = controllerWith(HelpCenterKey, InsurancesKey)
+    // Top is a tab root with no own back affordance, but we are still outside the runs model.
+    assertThat(controller.loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowUpBar)
+  }
+
+  @Test
+  fun `loneDeepLinkChrome is ShowUpBar for a foreign-hosted lone Home`() {
+    val controller = BackstackController(
+      mutableStateListOf(HomeKey),
+      mutableStateMapOf(),
+      mutableStateOf(null), // pendingDeepLink
+      mutableStateOf(null), // stashedSession
+      isOwnTask = { false },
+    )
+    assertThat(controller.loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowUpBar)
+  }
+
+  @Test
+  fun `loneDeepLinkChrome is ShowSuite for a lone Home in our own task`() {
+    val controller = BackstackController(
+      mutableStateListOf(HomeKey),
+      mutableStateMapOf(),
+      mutableStateOf(null), // pendingDeepLink
+      mutableStateOf(null), // stashedSession
+      isOwnTask = { true },
+    )
+    assertThat(controller.loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowSuite)
+  }
+
+  @Test
   fun `navigateUp from a lone deep link drops the leaf and exposes the rebuilt ancestry`() {
     val controller = controllerWith(InsurancesKey)
     controller.navigateUp()
     assertThat(controller.entries.toList()).containsExactly(HomeKey)
     assertThat(controller.allLiveContentKeys).containsExactlyInAnyOrder(HomeKey.toString())
+  }
+
+  @Test
+  fun `navigateUp at a foreign-hosted lone Home escapes to own task seeded with Home`() {
+    var escaped: List<HedvigNavKey>? = null
+    val controller = BackstackController(
+      mutableStateListOf(HomeKey),
+      mutableStateMapOf(),
+      mutableStateOf(null), // pendingDeepLink
+      mutableStateOf(null), // stashedSession
+      isOwnTask = { false },
+      escapeToOwnTask = { escaped = it },
+    )
+    assertThat(controller.navigateUp()).isTrue()
+    assertThat(escaped).isEqualTo(listOf(HomeKey))
+    // The foreign-hosted stack is left untouched; the relaunched task owns the rebuilt root.
+    assertThat(controller.entries.toList()).containsExactly(HomeKey)
   }
 
   @Test

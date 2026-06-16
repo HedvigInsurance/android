@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.LineBreak
@@ -28,7 +27,6 @@ import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIcon
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedLinearProgress
-import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -43,7 +41,6 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.change.tier.data.CustomisableInsurance
-import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
 import com.hedvig.android.feature.change.tier.ui.stepstart.DeflectScreen
 import hedvig.resources.Res
 import hedvig.resources.TERMINATION_NO_TIER_QUOTES_SUBTITLE
@@ -59,7 +56,6 @@ import org.jetbrains.compose.resources.stringResource
 internal fun ChooseInsuranceToChangeTierDestination(
   viewModel: ChooseInsuranceViewModel,
   navigateUp: () -> Unit,
-  navigateToNextStep: (params: InsuranceCustomizationParameters) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   popBackstack: () -> Unit,
 ) {
@@ -71,10 +67,6 @@ internal fun ChooseInsuranceToChangeTierDestination(
     reload = { viewModel.emit(ChooseInsuranceToCustomizeEvent.RetryLoadData) },
     fetchTerminationStep = { viewModel.emit(ChooseInsuranceToCustomizeEvent.SubmitSelectedInsuranceToCustomize(it)) },
     selectInsurance = { id -> viewModel.emit(ChooseInsuranceToCustomizeEvent.SelectInsurance(id)) },
-    navigateToNextStep = { params ->
-      viewModel.emit(ChooseInsuranceToCustomizeEvent.ClearNavigationStep)
-      navigateToNextStep(params)
-    },
     onNavigateToNewConversation = onNavigateToNewConversation,
     popBackstack = popBackstack,
   )
@@ -87,7 +79,6 @@ private fun ChooseInsuranceScreen(
   reload: () -> Unit,
   fetchTerminationStep: (insurance: CustomisableInsurance) -> Unit,
   selectInsurance: (insuranceId: String) -> Unit,
-  navigateToNextStep: (params: InsuranceCustomizationParameters) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   popBackstack: () -> Unit,
 ) {
@@ -123,13 +114,10 @@ private fun ChooseInsuranceScreen(
       }
     }
 
-    is ChooseInsuranceUiState.Loading -> {
-      LaunchedEffect(uiState.paramsToNavigateToNextStep) {
-        if (uiState.paramsToNavigateToNextStep != null) {
-          navigateToNextStep(uiState.paramsToNavigateToNextStep)
-        }
-      }
-      LoadingScreen(uiState)
+    ChooseInsuranceUiState.Loading -> {
+      HedvigFullScreenCenterAlignedLinearProgress(
+        title = stringResource(Res.string.TIER_FLOW_PROCESSING),
+      )
     }
 
     is ChooseInsuranceUiState.Success -> {
@@ -228,17 +216,6 @@ private fun ChooseInsuranceScreen(
   }
 }
 
-@Composable
-private fun LoadingScreen(uiState: ChooseInsuranceUiState.Loading) {
-  if (uiState.paramsToNavigateToNextStep == null) {
-    HedvigFullScreenCenterAlignedLinearProgress(
-      title = stringResource(Res.string.TIER_FLOW_PROCESSING),
-    )
-  } else {
-    HedvigFullScreenCenterAlignedProgress()
-  }
-}
-
 @HedvigPreview
 @Composable
 private fun PreviewChooseInsuranceScreen(
@@ -250,7 +227,6 @@ private fun PreviewChooseInsuranceScreen(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ChooseInsuranceScreen(
         uiState,
-        {},
         {},
         {},
         {},
@@ -307,7 +283,7 @@ private class ChooseInsuranceUiStateProvider :
         changeTierIntentFailedToLoad = true,
       ),
       ChooseInsuranceUiState.Failure,
-      ChooseInsuranceUiState.Loading(),
+      ChooseInsuranceUiState.Loading,
       ChooseInsuranceUiState.NotAllowed,
       ChooseInsuranceUiState.Deflect(
         "How to change back to your previous coverage",

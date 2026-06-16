@@ -8,6 +8,7 @@ hedvig {
   serialization()
   compose()
   navKeys()
+  viewModels()
 }
 
 android {
@@ -37,6 +38,7 @@ dependencies {
   implementation(projects.coreUiData)
   implementation(projects.designSystemApi)
   implementation(projects.designSystemHedvig)
+  implementation(projects.featureEditCoinsuredNavigation)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)

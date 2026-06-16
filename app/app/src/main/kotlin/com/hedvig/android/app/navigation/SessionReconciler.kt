@@ -3,11 +3,12 @@ package com.hedvig.android.app.navigation
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import arrow.core.identity
 import arrow.fx.coroutines.raceN
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.MemberIdService
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.Inject
@@ -27,21 +28,24 @@ import kotlinx.coroutines.launch
  * Owns the auth↔backstack reconciliation that used to live as loose effects in `HedvigApp`. Two jobs,
  * both narrowly about the rendered root:
  *  1. [reconcile] picks the start scene (Home when logged in / in demo, Login otherwise) before the
- *     splash is dismissed, so the first frame is correct rather than the seeded Login root. It runs for
- *     every [BackstackController] handed in — not once per process — so a warm-process relaunch that
- *     seeds a fresh Login root can't strand a logged-in member on the marketing screen. [isReady] gates
- *     the Activity's splash keep-condition: it drops to false while resolving and latches true again
- *     once the root matches the auth state.
+ *     splash is dismissed, so the first frame is correct rather than the seeded Login root. This
+ *     reconciler is 1:1 with its Activity's [BackstackController] (both [ActivityRetainedScope]-scoped),
+ *     so [reconcile] runs once per Activity `onCreate` — a warm-process relaunch builds a fresh Activity
+ *     and so a fresh controller + reconciler, which can't strand a logged-in member on the marketing
+ *     screen. [isReady] gates the Activity's splash keep-condition: it drops to false while resolving
+ *     and latches true again once the root matches the auth state.
  *  2. [observeForcedLogout] keeps the root honest while running: log out when we leave demo mode and no
  *     longer hold tokens. It is lifecycle-gated so it only observes while the UI is STARTED.
  *
  * Deliberately narrow — only auth and the backstack root. Deep-links, notifications and the rest stay
- * in their own observers. [BackstackController] is composition + saved-state scoped, so it can't be a
- * constructor dependency; it (and the [Lifecycle]) are handed in by the composition.
+ * in their own observers. Scoped to the per-Activity [ActivityRetainedScope] so it shares this
+ * Activity's [BackstackController]; only the [Lifecycle] is handed in per call by the composition,
+ * keeping this reconciler free of any Android/Compose lifetime.
  */
-@SingleIn(AppScope::class)
+@SingleIn(ActivityRetainedScope::class)
 @Inject
 internal class SessionReconciler(
+  private val backstackController: BackstackController,
   private val authTokenService: AuthTokenService,
   private val demoManager: DemoManager,
   private val memberIdService: MemberIdService,
@@ -54,23 +58,23 @@ internal class SessionReconciler(
   private var lastKnownMemberId: String? = null
 
   /**
-   * Resolves the start scene for [backstackController] before the splash is dismissed, and re-runs for
-   * every controller instance handed in — not just the first.
+   * Resolves the start scene for this Activity's [backstackController] before the splash is dismissed.
    *
-   * [BackstackController] is composition + saved-state scoped, so a new MainActivity launched into an
-   * already-warm process (the process — and therefore this singleton — is still alive, but there is no
-   * saved instance state to restore) seeds a fresh `LoginKey` root. A once-per-process guard would
-   * skip such a controller and strand a still-logged-in member on the marketing screen. Re-running is
-   * safe because [determineStartScene] is idempotent — it only touches the root on a genuine mismatch.
+   * Both this reconciler and the controller are [ActivityRetainedScope]-scoped, so they are 1:1 and
+   * [reconcile] is called once from the Activity's `onCreate`. A config change reuses the retained
+   * controller — whose root already matches the auth state — and a warm-process relaunch builds a fresh
+   * Activity, hence a fresh controller and reconciler; there is no process-wide instance that a
+   * once-per-process guard could wrongly skip and strand a still-logged-in member on the marketing
+   * screen. Re-running on the same controller (e.g. a config change) is harmless because
+   * [determineStartScene] is idempotent — it only touches the root on a genuine mismatch.
    *
-   * [isReady] drops to false while resolving so the splash keep-condition holds for this controller too,
-   * then latches true once the root matches the auth state. The hosting `LaunchedEffect` is keyed on the
-   * controller, so this runs once per controller — [isReady] never flips back to false mid-session.
+   * [isReady] drops to false while resolving so the splash keep-condition holds, then latches true once
+   * the root matches the auth state.
    */
-  suspend fun reconcile(backstackController: BackstackController) {
+  suspend fun reconcile() {
     isReadyState.value = false
     memberIdService.getMemberId().first()?.let { lastKnownMemberId = it }
-    determineStartScene(backstackController)
+    determineStartScene()
     isReadyState.value = true
   }
 
@@ -78,14 +82,14 @@ internal class SessionReconciler(
    * Lifecycle-gated observers that keep the rendered root honest while the UI is STARTED: tracks the
    * latest member id and logs out when we leave demo mode without holding tokens.
    */
-  suspend fun observeForcedLogout(backstackController: BackstackController, lifecycle: Lifecycle) {
+  suspend fun observeForcedLogout(lifecycle: Lifecycle) {
     lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
       launch {
         memberIdService.getMemberId().collect { id ->
           if (id != null) lastKnownMemberId = id
         }
       }
-      logoutOnInvalidCredentials(backstackController)
+      logoutOnInvalidCredentials()
     }
   }
 
@@ -94,7 +98,7 @@ internal class SessionReconciler(
    * restore the back stack already reflects the previous session, so a matching root is left untouched
    * and any deeper stack is preserved.
    */
-  private suspend fun determineStartScene(backstackController: BackstackController) {
+  private suspend fun determineStartScene() {
     val showLoggedInScene = raceN(
       { authTokenService.authStatus.filterNotNull().first() is AuthStatus.LoggedIn },
       { demoManager.isDemoMode().first { it } },
@@ -116,7 +120,7 @@ internal class SessionReconciler(
    * Automatically logs out when we are no longer in demo mode and we are also not considered to have
    * active tokens.
    */
-  private suspend fun logoutOnInvalidCredentials(backstackController: BackstackController) {
+  private suspend fun logoutOnInvalidCredentials() {
     val authStatusLog: (AuthStatus?) -> Unit = { authStatus ->
       logcat {
         buildString {

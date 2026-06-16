@@ -1,51 +1,42 @@
 package com.hedvig.android.app.navigation
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSerializable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
-import androidx.savedstate.compose.serialization.serializers.MutableStateSerializer
-import androidx.savedstate.compose.serialization.serializers.SnapshotStateListSerializer
-import androidx.savedstate.compose.serialization.serializers.SnapshotStateMapSerializer
-import androidx.savedstate.serialization.SavedStateConfiguration
 import com.hedvig.android.app.ui.startDestination
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.login.navigation.LoginKey
 import com.hedvig.android.navigation.common.DeliberateLogoutOrigin
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.common.StashedSession
 import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.LoneDeepLinkChrome
-import com.hedvig.android.navigation.compose.popBackstack
-import kotlinx.serialization.Polymorphic
-import kotlinx.serialization.PolymorphicSerializer
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.builtins.nullable
 
 /**
- * The logged-in session captured at logout: the rendered [entries] plus all [parkedRuns], tagged
- * with the [memberId] (JWT `sub`) it belonged to. Held by [BackstackController.stashedSession],
- * which is intentionally absent from [BackstackController.allLiveContentKeys] so the retained
- * decorators dispose every key's per-entry state while the session sits here. Restored on a
- * same-member login by [BackstackController.setLoggedIn]; persisted across process death.
+ * The per-Activity source of truth for all navigation state and the one [Backstack] every caller in
+ * that Activity talks to — the UI via this concrete type, Presenters via the injected [Backstack]
+ * interface (bound in the per-Activity `ActivityRetainedGraph`).
+ *
+ * Why activity-retained instead of composition: the state used to live in `rememberSerializable`
+ * inside `MainActivity.setContent`, so a config change recreated the Activity and deserialized it into
+ * a brand-new instance — while Metro ViewModels survive a config change as the same instance via their
+ * per-entry `ViewModelStore`. Handing a long-lived Presenter a reference to the composition-scoped
+ * stack would therefore go stale on the next rotation. The controller is instead built by
+ * [com.hedvig.android.app.navigation.NavRetainedViewModel] (a retained `ViewModel`), so it outlives
+ * the composition and every screen ViewModel across a config change, yet — unlike the previous
+ * app-singleton — dies with its Activity. Two `MainActivity` instances therefore get two independent
+ * controllers instead of sharing one.
+ *
+ * Process-death persistence is bridged at the Activity seam: the retained instance is wiped when the
+ * process dies, so `MainActivity` serializes the four holders into its `SavedStateRegistry` and
+ * re-hydrates them on a cold start via [restoreFromSavedState]. A config change reuses the live
+ * retained instance untouched (the restore is a no-op once populated).
  */
-@Serializable
-internal data class StashedSession(
-  val memberId: String,
-  val entries: List<@Polymorphic HedvigNavKey>,
-  val parkedRuns: Map<TopLevelTab, List<@Polymorphic HedvigNavKey>>,
-)
-
 @Stable
 internal class BackstackController(
   override val entries: SnapshotStateList<HedvigNavKey>,
@@ -56,26 +47,37 @@ internal class BackstackController(
    * Whether this activity is the root of its own task. `false` means we were launched into the
    * caller's task by an external deep link, so an Up press must escape into our own task rather than
    * rebuilding the ancestry in place (which would leave our screens hosted under the foreign app).
-   * Defaults to `true` so unit tests and any non-Activity construction stay fully in-process.
+   *
+   * Attached by `MainActivity` in `onCreate` (see `attachBackstackTaskHooks`), not at construction: the
+   * controller is owned by this Activity's retained `ViewModel` and is 1:1 with the Activity, so there
+   * is no shared, process-wide controller a backgrounded Activity could steal — the hook is wired once
+   * at creation, with no resume re-attachment needed. Defaults to `true` so unit tests and any
+   * pre-attach use stay fully in-process.
    */
-  private val isOwnTask: () -> Boolean = { true },
+  var isOwnTask: () -> Boolean = { true },
   /**
    * Re-roots the app in its own task seeded with the given stack (see [navigateUp]). The Activity
    * owns the mechanics (relaunch with NEW_TASK|CLEAR_TASK + finish); the controller only supplies
-   * the target stack. No-op by default so the in-process path is the testable default.
+   * the target stack. Attached/replaced by the Activity like [isOwnTask]; no-op by default.
    */
-  private val escapeToOwnTask: (List<HedvigNavKey>) -> Unit = {},
+  var escapeToOwnTask: (List<HedvigNavKey>) -> Unit = {},
+  /**
+   * Finishes the host Activity, used by [popBackstack] when a Back/close lands on the root (nothing
+   * left to pop) so the app exits instead of stranding the user on a dead screen. Attached/replaced
+   * by the Activity like [isOwnTask] and [escapeToOwnTask]; no-op by default so unit tests and any
+   * pre-attach use never try to finish.
+   */
+  var finishApp: () -> Unit = {},
 ) : Backstack {
   /**
    * A deep link resolved while logged out, held until [setLoggedIn] consumes it (so it can land
-   * alone). Persisted across rotation / process death (e.g. mid-OTP) via [rememberHedvigBackstackController].
+   * alone). Persisted across rotation / process death (e.g. mid-OTP) — see the class KDoc.
    */
   internal var pendingDeepLink: HedvigNavKey? by pendingDeepLinkState
 
   /**
    * The previous logged-in session, held between logout and the next login. Excluded from
-   * [allLiveContentKeys] on purpose — see [StashedSession]. Persisted across process death via
-   * [rememberHedvigBackstackController].
+   * [allLiveContentKeys] on purpose — see [StashedSession]. Persisted across process death.
    */
   internal var stashedSession: StashedSession? by stashedSessionState
 
@@ -127,17 +129,26 @@ internal class BackstackController(
   }
 
   /**
-   * Drives the scene decorator (D11). A lone non-Home/non-Login key suppresses the rail: a tab root
-   * gets a decorator-supplied Up-bar, a deep bar-keeper (which renders its own Up) gets nothing.
+   * Drives the scene decorator (D11). The navigation suite (tab bar/rail) may render only while the
+   * stack is inside our runs model: our own task AND rooted at [HomeKey] (or [LoginKey], which never
+   * shows a suite anyway). A lone deep link — or any stack that grew from one before [navigateUp]
+   * re-rooted it at Home — is *outside* that model. The runs helpers in `TopLevelRunLogic` assume
+   * `HomeKey` at index 0 and silently no-op otherwise, so rendering the suite there strands the user
+   * (a dead Home tap). Outside the model we suppress the suite and instead key off the *top* (rendered)
+   * entry: a bare top-level root gets a decorator-supplied Up-bar (it has no back affordance of its
+   * own), a deeper screen gets nothing (it draws its own Up). A lone Home hosted in a foreign task is
+   * itself a top-level root, so it gets the Up-bar — letting the user escape back via Up (see
+   * [navigateUp]).
    */
   val loneDeepLinkChrome: LoneDeepLinkChrome
     get() {
       val first = entries.firstOrNull()
-      val isAlone = entries.size == 1 && first !is HomeKey && first !is LoginKey
-      return when {
-        !isAlone -> LoneDeepLinkChrome.ShowSuite
-        first?.topLevelTabOrNull() != null -> LoneDeepLinkChrome.ShowUpBar
-        else -> LoneDeepLinkChrome.ShowNothing
+      val insideRunsModel = isOwnTask() && (first is HomeKey || first is LoginKey)
+      if (insideRunsModel) return LoneDeepLinkChrome.ShowSuite
+      return if (entries.lastOrNull()?.topLevelTabOrNull() != null) {
+        LoneDeepLinkChrome.ShowUpBar
+      } else {
+        LoneDeepLinkChrome.ShowNothing
       }
     }
 
@@ -182,26 +193,54 @@ internal class BackstackController(
   }
 
   /**
-   * Task-aware Up. For a lone deep link (size 1 with a non-trivial synthetic stack) it materializes
-   * the parent ancestry — `[Home]` for a lone tab root, `[Home, Insurances]` for a lone contract
-   * detail — so Up behaves exactly like Back would have inside the app. When we were launched into a
-   * foreign task ([isOwnTask] is false) that parent stack is handed to [escapeToOwnTask], which
-   * re-roots the app in its own task; otherwise it is materialized in place. Everywhere else Up is a
-   * plain temporal pop, identical to Back.
+   * Task-aware Up. For a lone deep link it materializes the parent ancestry — `[Home]` for a lone
+   * tab root, `[Home, Insurances]` for a lone contract detail — so Up behaves exactly like Back would
+   * have inside the app. When we were launched into a foreign task ([isOwnTask] is false) that parent
+   * stack is handed to [escapeToOwnTask], which re-roots the app in its own task; otherwise it is
+   * materialized in place. A lone leaf with no ancestry (e.g. Home) hosted in a foreign task has no
+   * parent to rebuild, but must still escape so the runs model — and its nav bar — come alive; the
+   * escape is seeded with the leaf itself. Everywhere else Up is a plain temporal pop, identical to
+   * Back (a no-op at the root — it must not exit the app the way Back does).
    */
   override fun navigateUp(): Boolean {
     val top = entries.lastOrNull() ?: return false
-    val synthetic = syntheticStackFor(top)
-    if (entries.size == 1 && synthetic.size > 1) {
+    if (entries.size == 1) {
+      val synthetic = syntheticStackFor(top)
       val parentStack = synthetic.dropLast(1)
-      if (isOwnTask()) {
-        entries.replaceWith(parentStack)
-      } else {
-        escapeToOwnTask(parentStack)
+      when {
+        parentStack.isNotEmpty() -> {
+          if (isOwnTask()) entries.replaceWith(parentStack) else escapeToOwnTask(parentStack)
+          return true
+        }
+
+        !isOwnTask() -> {
+          escapeToOwnTask(synthetic)
+          return true
+        }
       }
-      return true
     }
-    return popBackstack()
+    // No escape needed (own-task lone root, or a normal multi-entry stack): a pure pop, a no-op at the root.
+    return super.popBackstack()
+  }
+
+  /**
+   * Back/close pop. Pops the top entry; if there is nothing to pop (we are at the root) the Activity
+   * is finished so the app exits rather than leaving the user on a screen where Back does nothing.
+   */
+  override fun popBackstack(): Boolean {
+    val popped = super.popBackstack()
+    if (!popped) finishApp()
+    return popped
+  }
+
+  /**
+   * Pops to [index] (see [Backstack.popUpToIndex]). A negative [index] means the caller asked to clear
+   * the base too; super keeps the base rendered (never an empty stack) and we finish the host so the
+   * app exits — same finish-at-root contract as [popBackstack].
+   */
+  override fun popUpToIndex(index: Int) {
+    super.popUpToIndex(index)
+    if (index < 0) finishApp()
   }
 
   /**
@@ -255,6 +294,51 @@ internal class BackstackController(
       entries.replaceWith(listOf(LoginKey))
     }
   }
+
+  /**
+   * Seeds the rendered stack the first time the process starts. A no-op once populated, so a
+   * recreated Activity (config change) reuses the live stack instead of re-seeding it.
+   */
+  fun seedIfEmpty(initial: List<HedvigNavKey>) {
+    if (entries.isEmpty()) {
+      Snapshot.withMutableSnapshot { entries.addAll(initial) }
+    }
+  }
+
+  /**
+   * Replaces the whole navigation state with a fresh root — used by the Activity for an explicit
+   * re-root (deep-link / escape into our own task). Clears the auxiliary state too: an escape
+   * relaunches with `CLEAR_TASK` while the process (and this singleton) may survive, so parked runs /
+   * pending deep link / stash from the old task must not bleed into the new root.
+   */
+  fun reseed(stack: List<HedvigNavKey>) {
+    Snapshot.withMutableSnapshot {
+      entries.replaceWith(stack)
+      parkedRuns.clear()
+      pendingDeepLink = null
+      stashedSession = null
+    }
+  }
+
+  /**
+   * Re-hydrates the full navigation state after process death. Only applies when the live state is
+   * empty (a genuine cold start); on a config change the singleton is already populated and this is a
+   * no-op, so the live state always wins over the serialized snapshot.
+   */
+  fun restoreFromSavedState(
+    entries: List<HedvigNavKey>,
+    parkedRuns: Map<TopLevelTab, List<HedvigNavKey>>,
+    pendingDeepLink: HedvigNavKey?,
+    stashedSession: StashedSession?,
+  ) {
+    if (this.entries.isNotEmpty()) return
+    Snapshot.withMutableSnapshot {
+      this.entries.addAll(entries)
+      this.parkedRuns.putAll(parkedRuns)
+      this.pendingDeepLink = pendingDeepLink
+      this.stashedSession = stashedSession
+    }
+  }
 }
 
 private fun SnapshotStateList<HedvigNavKey>.replaceWith(target: List<HedvigNavKey>) {
@@ -262,57 +346,5 @@ private fun SnapshotStateList<HedvigNavKey>.replaceWith(target: List<HedvigNavKe
   Snapshot.withMutableSnapshot {
     clear()
     addAll(target)
-  }
-}
-
-@Composable
-internal fun rememberHedvigBackstackController(
-  savedStateConfiguration: SavedStateConfiguration,
-  initialBackstack: List<HedvigNavKey>? = null,
-  isOwnTask: () -> Boolean = { true },
-  escapeToOwnTask: (List<HedvigNavKey>) -> Unit = {},
-): BackstackController {
-  val backstack = rememberSerializable(
-    configuration = savedStateConfiguration,
-    serializer = SnapshotStateListSerializer(PolymorphicSerializer(HedvigNavKey::class)),
-  ) {
-    // A fresh process relaunched by an Up-escape seeds the restored ancestry instead of the login
-    // root; tokens persist across the relaunch so the member is still logged in.
-    if (initialBackstack.isNullOrEmpty()) {
-      mutableStateListOf<HedvigNavKey>(LoginKey)
-    } else {
-      mutableStateListOf<HedvigNavKey>().apply { addAll(initialBackstack) }
-    }
-  }
-  val parkedRuns = rememberSerializable(
-    configuration = savedStateConfiguration,
-    serializer = SnapshotStateMapSerializer(
-      TopLevelTab.serializer(),
-      ListSerializer(PolymorphicSerializer(HedvigNavKey::class)),
-    ),
-  ) {
-    mutableStateMapOf<TopLevelTab, List<HedvigNavKey>>()
-  }
-  val pendingDeepLink = rememberSerializable(
-    configuration = savedStateConfiguration,
-    serializer = MutableStateSerializer(PolymorphicSerializer(HedvigNavKey::class).nullable),
-  ) {
-    mutableStateOf<HedvigNavKey?>(null)
-  }
-  val stashedSession = rememberSerializable(
-    configuration = savedStateConfiguration,
-    serializer = MutableStateSerializer(StashedSession.serializer().nullable),
-  ) {
-    mutableStateOf<StashedSession?>(null)
-  }
-  return remember(backstack, parkedRuns, pendingDeepLink, stashedSession) {
-    BackstackController(
-      entries = backstack,
-      parkedRuns = parkedRuns,
-      pendingDeepLinkState = pendingDeepLink,
-      stashedSessionState = stashedSession,
-      isOwnTask = isOwnTask,
-      escapeToOwnTask = escapeToOwnTask,
-    )
   }
 }

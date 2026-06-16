@@ -359,7 +359,11 @@ type Agreement {
   """
   The cost details of this agreement on today's date or the date it starts
   """
-  cost: ItemCost!
+  cost: ItemCost! @deprecated(reason: "Use itemCost instead")
+  """
+  The cost details of this agreement on today's date or the date it starts
+  """
+  itemCost: ItemCost
   """
   The date this agreement took effect.
   """
@@ -999,7 +1003,7 @@ type ClaimIntentStep {
 """
 A union of all the different kinds of "step content".
 """
-union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentSelect|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentFileUpload|ClaimIntentStepContentSummary|ClaimIntentStepContentDeflection
+union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentSelect|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentFileUpload|ClaimIntentStepContentSummary|ClaimIntentStepContentDeflection|ClaimIntentStepContentDeflectionMessage
 """
 An audio recording step is one where the user is meant to record some audio.
 Submitted using `Mutation.claimIntentSubmitAudio`.
@@ -1040,6 +1044,13 @@ type ClaimIntentStepContentDeflection {
 type ClaimIntentStepContentDeflectionInfoBlock {
   title: String!
   description: String!
+}
+"""
+A minimal variant of a deflection step which only carries a text message - no button.
+This is a terminal step - and cannot be submitted.
+"""
+type ClaimIntentStepContentDeflectionMessage {
+  message: String!
 }
 type ClaimIntentStepContentDeflectionPartner {
   id: ID!
@@ -2894,7 +2905,7 @@ type MemberPaymentChargeMethodInfo {
   """
   dueDate: Int
   """
-  Payment provider used for charging the member, eg Trustly or Kivra.
+  Payment provider used for charging the member, eg Trustly or Invoice.
   This is used to determine the charge schedule and mandate provider.
   """
   paymentProvider: String!
@@ -2939,7 +2950,7 @@ type MemberPaymentInformation {
 }
 type MemberPaymentMethod {
   """
-  Payment provider, eg Trustly, Swish, Nordea, Kivra etc.
+  Payment provider, eg Trustly, Swish, Nordea, Invoice etc.
   This is used as the "identifier" of the payment method since there can only be one ACTIVE or PENDING payment method
   per provider.
   """
@@ -3015,6 +3026,15 @@ type MemberPaymentMethods {
    The date of the month when member's premium will be charged (or due if invoice) 
   """
   chargingDay: Int
+  """
+  Indicates which payment connection the member is missing, if any. The rule is:
+  - If member has only QASA-paid agreements, the payin connection is irrelevant and only payout is checked.
+    Returns PAYOUT if no default payout method exists, else null.
+  - Otherwise (any non-QASA agreement, e.g. member-paid), payin takes priority:
+    Returns PAYIN if no default payin method exists, else PAYOUT if no default payout method exists, else null.
+  - If member has no ongoing (active or future) agreements, returns null.
+  """
+  missingConnection: MissingPaymentConnection
 }
 enum MemberPaymentMethodStatus {
   """
@@ -3158,6 +3178,10 @@ union MidtermChangePetIdOutput = MidtermChangePetIdActivationDate|UserError
 type MidtermChangePriceDetailItem {
   displayName: String!
   displayValue: String!
+}
+enum MissingPaymentConnection {
+  PAYIN
+  PAYOUT
 }
 """
 A monetary value with currency.
@@ -3725,7 +3749,7 @@ type Mutation {
   Optional `attribution` is merged field-by-field over `ShopSession.attribution` for this confirm only (quotes and
   `PriceIntentConfirmed` events use the merged result).
   """
-  priceIntentConfirm(priceIntentId: UUID!, attribution: PriceIntentConfirmAttributionInput): PriceIntentMutationOutput!
+  priceIntentConfirm(priceIntentId: UUID!, attribution: PriceIntentConfirmAttributionInput, generateRecommendations: Boolean): PriceIntentMutationOutput!
   """
   Change the start date of the given `ProductOffer`s by their ID.
   This is used because it's common to want to change the start date AFTER getting the offer.
@@ -3968,7 +3992,11 @@ type PendingContract {
   """
   Calculated based on the pending agreement
   """
-  cost: ItemCost!
+  cost: ItemCost! @deprecated(reason: "Use itemCost instead")
+  """
+  Calculated based on the pending agreement
+  """
+  itemCost: ItemCost
   discountsDetails: ContractDiscountDetails!
   """
   Same as `Contract.exposureDisplayName`.

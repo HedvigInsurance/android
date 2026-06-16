@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -34,26 +33,22 @@ import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
-import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
 import com.hedvig.android.feature.change.tier.ui.stepstart.FailureReason.GENERAL
 import com.hedvig.android.feature.change.tier.ui.stepstart.FailureReason.QUOTES_ARE_EMPTY
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeState.Loading
-import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeState.Success
 import hedvig.resources.DASHBOARD_OPEN_CHAT
 import hedvig.resources.Res
 import hedvig.resources.TERMINATION_FLOW_I_UNDERSTAND_TEXT
 import hedvig.resources.TERMINATION_NO_TIER_QUOTES_SUBTITLE
 import hedvig.resources.TIER_FLOW_PROCESSING
 import hedvig.resources.general_close_button
-import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun StartChangeTierFlowDestination(
   viewModel: StartTierFlowViewModel,
   popBackstack: () -> Unit,
-  launchFlow: (InsuranceCustomizationParameters) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateUp: () -> Unit,
 ) {
@@ -64,7 +59,6 @@ internal fun StartChangeTierFlowDestination(
     reload = {
       viewModel.emit(StartTierChangeEvent.Reload)
     },
-    launchFlow = launchFlow,
     onNavigateToNewConversation = onNavigateToNewConversation,
     navigateUp = navigateUp,
   )
@@ -75,7 +69,6 @@ private fun StartChangeTierFlowScreen(
   uiState: StartTierChangeState,
   popBackstack: () -> Unit,
   reload: () -> Unit,
-  launchFlow: (InsuranceCustomizationParameters) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateUp: () -> Unit,
 ) {
@@ -92,13 +85,6 @@ private fun StartChangeTierFlowScreen(
       HedvigFullScreenCenterAlignedLinearProgress(
         title = stringResource(Res.string.TIER_FLOW_PROCESSING),
       )
-    }
-
-    is Success -> {
-      LaunchedEffect(uiState.paramsToNavigate) {
-        val params = uiState.paramsToNavigate
-        launchFlow(params)
-      }
     }
 
     is StartTierChangeState.Deflect -> {
@@ -219,7 +205,6 @@ private fun StartTierFlowScreenPreview(
         {},
         {},
         {},
-        {},
       )
     }
   }
@@ -229,13 +214,6 @@ internal class StartTierChangeStateProvider :
   CollectionPreviewParameterProvider<StartTierChangeState>(
     listOf(
       Loading,
-      Success(
-        InsuranceCustomizationParameters(
-          "",
-          LocalDate(2024, 11, 11),
-          listOf("id", "id2"),
-        ),
-      ),
       Failure(GENERAL),
       Failure(QUOTES_ARE_EMPTY),
       StartTierChangeState.Deflect(

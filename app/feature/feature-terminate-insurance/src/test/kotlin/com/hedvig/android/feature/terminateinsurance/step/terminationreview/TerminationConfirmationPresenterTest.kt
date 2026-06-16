@@ -6,18 +6,22 @@ import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
-import assertk.assertions.isNotNull
+import assertk.assertions.isInstanceOf
 import assertk.assertions.isNull
-import assertk.assertions.isTrue
+import assertk.assertions.prop
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.ContractGroup.HOMEOWNER
+import com.hedvig.android.feature.terminateinsurance.TestBackstack
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminationResult
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyData
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceKey
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationConfirmationKey.TerminationType
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationSuccessKey
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
+import com.hedvig.android.navigation.compose.Backstack
 import kotlin.time.Clock
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -44,7 +48,6 @@ class TerminationConfirmationPresenterTest {
     insuranceInfo = testInsuranceInfo,
     extraCoverageItems = emptyList(),
     notificationMessage = null,
-    terminationSuccess = null,
     userError = null,
     isSubmittingContractTermination = false,
   )
@@ -54,18 +57,22 @@ class TerminationConfirmationPresenterTest {
     val repository = FakeTerminateInsuranceRepository(
       terminateResult = TerminationResult.Terminated(terminationDate).right(),
     )
+    val backstack = TestBackstack(mutableListOf(TerminateInsuranceKey()))
+    val scheduler = testScheduler
     val presenter = createPresenter(
       terminationType = TerminationType.Termination(terminationDate),
       repository = repository,
+      backstack = backstack,
     )
     presenter.test(initialState = initialState(TerminationType.Termination(terminationDate))) {
       skipItems(1)
       sendEvent(TerminationConfirmationEvent.Submit)
-      val states = cancelAndConsumeRemainingEvents().filterIsInstance<app.cash.turbine.Event.Item<OverviewUiState>>()
-      val lastState = states.last().value
-      assertThat(lastState.terminationSuccess).isNotNull()
-      assertThat(lastState.terminationSuccess!!.terminationDate).isEqualTo(terminationDate)
-      assertThat(lastState.userError).isNull()
+      scheduler.advanceUntilIdle()
+      assertThat(backstack.entries.last())
+        .isInstanceOf<TerminationSuccessKey>()
+        .prop(TerminationSuccessKey::terminationDate)
+        .isEqualTo(terminationDate)
+      cancelAndIgnoreRemainingEvents()
     }
   }
 
@@ -74,17 +81,22 @@ class TerminationConfirmationPresenterTest {
     val repository = FakeTerminateInsuranceRepository(
       deleteResult = TerminationResult.Deleted.right(),
     )
+    val backstack = TestBackstack(mutableListOf(TerminateInsuranceKey()))
+    val scheduler = testScheduler
     val presenter = createPresenter(
       terminationType = TerminationType.Deletion,
       repository = repository,
+      backstack = backstack,
     )
     presenter.test(initialState = initialState(TerminationType.Deletion)) {
       skipItems(1)
       sendEvent(TerminationConfirmationEvent.Submit)
-      val states = cancelAndConsumeRemainingEvents().filterIsInstance<app.cash.turbine.Event.Item<OverviewUiState>>()
-      val lastState = states.last().value
-      assertThat(lastState.terminationSuccess).isNotNull()
-      assertThat(lastState.terminationSuccess!!.terminationDate).isNull()
+      scheduler.advanceUntilIdle()
+      assertThat(backstack.entries.last())
+        .isInstanceOf<TerminationSuccessKey>()
+        .prop(TerminationSuccessKey::terminationDate)
+        .isNull()
+      cancelAndIgnoreRemainingEvents()
     }
   }
 
@@ -93,9 +105,11 @@ class TerminationConfirmationPresenterTest {
     val repository = FakeTerminateInsuranceRepository(
       terminateResult = TerminationResult.UserError("Cannot terminate this contract").right(),
     )
+    val backstack = TestBackstack(mutableListOf(TerminateInsuranceKey()))
     val presenter = createPresenter(
       terminationType = TerminationType.Termination(terminationDate),
       repository = repository,
+      backstack = backstack,
     )
     presenter.test(initialState = initialState(TerminationType.Termination(terminationDate))) {
       skipItems(1)
@@ -103,8 +117,8 @@ class TerminationConfirmationPresenterTest {
       val states = cancelAndConsumeRemainingEvents().filterIsInstance<app.cash.turbine.Event.Item<OverviewUiState>>()
       val lastState = states.last().value
       assertThat(lastState.userError).isEqualTo("Cannot terminate this contract")
-      assertThat(lastState.terminationSuccess).isNull()
       assertThat(lastState.isSubmittingContractTermination).isFalse()
+      assertThat(backstack.entries.last()).isInstanceOf<TerminateInsuranceKey>()
     }
   }
 
@@ -113,9 +127,11 @@ class TerminationConfirmationPresenterTest {
     val repository = FakeTerminateInsuranceRepository(
       terminateResult = ErrorMessage("Network error").left(),
     )
+    val backstack = TestBackstack(mutableListOf(TerminateInsuranceKey()))
     val presenter = createPresenter(
       terminationType = TerminationType.Termination(terminationDate),
       repository = repository,
+      backstack = backstack,
     )
     presenter.test(initialState = initialState(TerminationType.Termination(terminationDate))) {
       skipItems(1)
@@ -123,20 +139,24 @@ class TerminationConfirmationPresenterTest {
       val states = cancelAndConsumeRemainingEvents().filterIsInstance<app.cash.turbine.Event.Item<OverviewUiState>>()
       val lastState = states.last().value
       assertThat(lastState.userError).isEqualTo("Network error")
-      assertThat(lastState.terminationSuccess).isNull()
+      assertThat(backstack.entries.last()).isInstanceOf<TerminateInsuranceKey>()
     }
   }
 
-  private fun createPresenter(terminationType: TerminationType, repository: TerminateInsuranceRepository) =
-    TerminationConfirmationPresenter(
-      terminationType = terminationType,
-      insuranceInfo = testInsuranceInfo,
-      selectedReasonId = "reason1",
-      feedbackComment = null,
-      terminateInsuranceRepository = repository,
-      getTerminationNotificationUseCase = FakeGetTerminationNotificationUseCase(),
-      clock = Clock.System,
-    )
+  private fun createPresenter(
+    terminationType: TerminationType,
+    repository: TerminateInsuranceRepository,
+    backstack: Backstack,
+  ) = TerminationConfirmationPresenter(
+    terminationType = terminationType,
+    insuranceInfo = testInsuranceInfo,
+    selectedReasonId = "reason1",
+    feedbackComment = null,
+    terminateInsuranceRepository = repository,
+    getTerminationNotificationUseCase = FakeGetTerminationNotificationUseCase(),
+    clock = Clock.System,
+    backstack = backstack,
+  )
 }
 
 private class FakeTerminateInsuranceRepository(

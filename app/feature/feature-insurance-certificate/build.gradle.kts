@@ -8,6 +8,7 @@ hedvig {
   serialization()
   compose()
   navKeys()
+  viewModels()
 }
 
 android {

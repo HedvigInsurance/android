@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.LineBreak
@@ -43,12 +42,7 @@ import hedvig.resources.general_continue_button
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun EditCoInsuredTriageDestination(
-  viewModel: EditCoInsuredTriageViewModel,
-  navigateUp: () -> Unit,
-  navigateToAddMissingInfo: (InsuranceForEditOrAddCoInsured) -> Unit,
-  navigateToAddOrRemoveCoInsured: (InsuranceForEditOrAddCoInsured) -> Unit,
-) {
+internal fun EditCoInsuredTriageDestination(viewModel: EditCoInsuredTriageViewModel, navigateUp: () -> Unit) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   EditCoInsuredTriageScreen(
     uiState = uiState,
@@ -62,11 +56,6 @@ internal fun EditCoInsuredTriageDestination(
     selectInsurance = {
       viewModel.emit(EditCoInsuredTriageEvent.SelectInsurance(it))
     },
-    clearNavigation = {
-      viewModel.emit(EditCoInsuredTriageEvent.ClearNavigation)
-    },
-    navigateToAddMissingInfo = navigateToAddMissingInfo,
-    navigateToAddOrRemoveCoInsured = navigateToAddOrRemoveCoInsured,
   )
 }
 
@@ -75,11 +64,8 @@ private fun EditCoInsuredTriageScreen(
   uiState: EditCoInsuredTriageUiState,
   navigateUp: () -> Unit,
   reload: () -> Unit,
-  navigateToAddMissingInfo: (InsuranceForEditOrAddCoInsured) -> Unit,
-  navigateToAddOrRemoveCoInsured: (InsuranceForEditOrAddCoInsured) -> Unit,
   submitSelectedInsurance: () -> Unit,
   selectInsurance: (id: String) -> Unit,
-  clearNavigation: () -> Unit,
 ) {
   when (uiState) {
     Failure -> {
@@ -95,30 +81,12 @@ private fun EditCoInsuredTriageScreen(
     }
 
     is Success -> {
-      LaunchedEffect(uiState.insuranceToNavigateToAddOrRemoveCoInsured) {
-        if (uiState.insuranceToNavigateToAddOrRemoveCoInsured != null) {
-          clearNavigation()
-          navigateToAddOrRemoveCoInsured(uiState.insuranceToNavigateToAddOrRemoveCoInsured)
-        }
-      }
-      LaunchedEffect(uiState.insuranceToNavigateToAddMissingInfo) {
-        if (uiState.insuranceToNavigateToAddMissingInfo != null) {
-          clearNavigation()
-          navigateToAddMissingInfo(uiState.insuranceToNavigateToAddMissingInfo)
-        }
-      }
-      if (uiState.insuranceToNavigateToAddMissingInfo == null &&
-        uiState.insuranceToNavigateToAddOrRemoveCoInsured == null
-      ) {
-        SuccessScreen(
-          uiState = uiState,
-          navigateUp = navigateUp,
-          submitSelectedInsurance = submitSelectedInsurance,
-          selectInsurance = selectInsurance,
-        )
-      } else {
-        HedvigFullScreenCenterAlignedProgress()
-      }
+      SuccessScreen(
+        uiState = uiState,
+        navigateUp = navigateUp,
+        submitSelectedInsurance = submitSelectedInsurance,
+        selectInsurance = selectInsurance,
+      )
     }
   }
 }
@@ -221,16 +189,11 @@ private fun PreviewEditCoInsuredTriageScreen() {
           ),
           selected = null,
           type = CoInsuredFlowType.CoInsured,
-          null,
-          null,
         ),
         navigateUp = {},
         reload = {},
-        navigateToAddMissingInfo = {},
-        navigateToAddOrRemoveCoInsured = {},
         submitSelectedInsurance = {},
         selectInsurance = {},
-        clearNavigation = {},
       )
     }
   }

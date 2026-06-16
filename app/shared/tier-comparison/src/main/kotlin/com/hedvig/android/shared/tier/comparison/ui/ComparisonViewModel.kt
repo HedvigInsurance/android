@@ -7,7 +7,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -24,13 +25,10 @@ import com.hedvig.android.shared.tier.comparison.ui.ComparisonState.Success.Cove
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonState.Success.CoverageLevel.ComparisonItem.CoveredStatus.Checkmark
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonState.Success.CoverageLevel.ComparisonItem.CoveredStatus.Description
 import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
-import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 
 @AssistedInject
+@HedvigViewModel(ActivityRetainedScope::class)
 class ComparisonViewModel(
   @Assisted comparisonParameters: ComparisonParameters,
   getCoverageComparisonUseCase: GetCoverageComparisonUseCase,
@@ -41,16 +39,7 @@ class ComparisonViewModel(
       getCoverageComparisonUseCase = getCoverageComparisonUseCase,
       selectedTermVersion = comparisonParameters.selectedTermsVersion,
     ),
-  ) {
-  @AssistedFactory
-  @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(AppScope::class)
-  fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(
-      @Assisted comparisonParameters: ComparisonParameters,
-    ): ComparisonViewModel
-  }
-}
+  )
 
 private class ComparisonPresenter(
   private val termsIds: List<String>,

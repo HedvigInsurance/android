@@ -6,6 +6,7 @@ plugins {
 hedvig {
   androidResources()
   compose()
+  viewModels()
   serialization()
   navKeys()
 }

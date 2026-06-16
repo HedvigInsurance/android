@@ -34,7 +34,7 @@ sealed interface InsuranceContract {
   val existingAddons: List<ContractAddon>
   val availableAddons: List<AvailableAddon>
 
-  val cost: MonthlyCost
+  val cost: MonthlyCost?
 
   val basePremium: UiMoney
 
@@ -69,7 +69,7 @@ sealed interface InsuranceContract {
     override val coInsured: List<InsuranceAgreement.CoInsured> = currentInsuranceAgreement.coInsured
     override val coOwners: List<InsuranceAgreement.CoInsured> = currentInsuranceAgreement.coOwners
     override val addons: List<Addon>? = currentInsuranceAgreement.addons
-    override val cost: MonthlyCost = currentInsuranceAgreement.cost
+    override val cost: MonthlyCost? = currentInsuranceAgreement.cost
     override val basePremium: UiMoney = currentInsuranceAgreement.basePremium
     override val supportsRemovingAddon: Boolean = existingAddons.any {
       it.isRemovable && it.status !is ContractAddon.Status.EndsAt
@@ -86,7 +86,7 @@ sealed interface InsuranceContract {
     override val productVariant: ProductVariant,
     override val displayItems: List<DisplayItem>,
     override val addons: List<Addon>?,
-    override val cost: MonthlyCost,
+    override val cost: MonthlyCost?,
     override val basePremium: UiMoney,
     override val chipId: ChipIdState,
     override val supportsTermination: Boolean,
@@ -157,7 +157,7 @@ data class InsuranceAgreement(
   val coOwners: List<CoInsured>,
   val creationCause: CreationCause,
   val addons: List<Addon>?,
-  val cost: MonthlyCost,
+  val cost: MonthlyCost?,
   val basePremium: UiMoney,
 ) {
   data class CoInsured(

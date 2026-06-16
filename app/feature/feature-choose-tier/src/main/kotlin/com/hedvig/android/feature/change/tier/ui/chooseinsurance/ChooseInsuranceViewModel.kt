@@ -7,13 +7,15 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.SELF_SERVICE
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.feature.change.tier.data.CustomisableInsurance
 import com.hedvig.android.feature.change.tier.data.GetCustomizableInsurancesUseCase
+import com.hedvig.android.feature.change.tier.navigation.ChooseTierKey
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
+import com.hedvig.android.feature.change.tier.navigation.StartTierFlowChooseInsuranceKey
 import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsuranceUiState.Failure
 import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsuranceUiState.Loading
 import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsuranceUiState.NotAllowed
@@ -22,28 +24,29 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
-import dev.zacsweers.metro.ContributesIntoMap
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import dev.zacsweers.metro.Inject
-import dev.zacsweers.metro.binding
-import dev.zacsweers.metrox.viewmodel.ViewModelKey
 
 @Inject
-@ViewModelKey
-@ContributesIntoMap(AppScope::class, binding<ViewModel>())
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class ChooseInsuranceViewModel(
   getCustomizableInsurancesUseCase: GetCustomizableInsurancesUseCase,
   tierRepository: ChangeTierRepository,
+  backstack: Backstack,
 ) : MoleculeViewModel<ChooseInsuranceToCustomizeEvent, ChooseInsuranceUiState>(
-    initialState = Loading(),
+    initialState = Loading,
     presenter = ChooseInsurancePresenter(
       getCustomizableInsurancesUseCase = getCustomizableInsurancesUseCase,
       tierRepository = tierRepository,
+      backstack = backstack,
     ),
   )
 
 internal class ChooseInsurancePresenter(
   private val getCustomizableInsurancesUseCase: GetCustomizableInsurancesUseCase,
   private val tierRepository: ChangeTierRepository,
+  private val backstack: Backstack,
 ) : MoleculePresenter<ChooseInsuranceToCustomizeEvent, ChooseInsuranceUiState> {
   @Composable
   override fun MoleculePresenterScope<ChooseInsuranceToCustomizeEvent>.present(
@@ -80,21 +83,12 @@ internal class ChooseInsurancePresenter(
             )
           }
         }
-
-        ChooseInsuranceToCustomizeEvent.ClearNavigationStep -> {
-          val currentStateValue = currentState
-          if (currentStateValue is Loading) {
-            currentState = currentStateValue.copy(
-              paramsToNavigateToNextStep = null,
-            )
-          }
-        }
       }
     }
 
     LaunchedEffect(insuranceToFetchIntentFor) {
       val customisableInsurance = insuranceToFetchIntentFor ?: return@LaunchedEffect
-      currentState = Loading()
+      currentState = Loading
       tierRepository
         .startChangeTierIntentAndGetQuotesId(customisableInsurance.id, SELF_SERVICE)
         .fold(
@@ -122,7 +116,10 @@ internal class ChooseInsurancePresenter(
                   quoteIds = intent.quotes.map { it.id },
                 )
                 insuranceToFetchIntentFor = null
-                currentState = Loading(params)
+                backstack.navigateAndPopUpTo<StartTierFlowChooseInsuranceKey>(
+                  ChooseTierKey(params),
+                  inclusive = true,
+                )
               }
             }
           },
@@ -131,7 +128,7 @@ internal class ChooseInsurancePresenter(
 
     LaunchedEffect(loadIteration) {
       if (lastState !is ChooseInsuranceUiState.Success) {
-        currentState = Loading()
+        currentState = Loading
       }
       getCustomizableInsurancesUseCase.invoke().collect { contractsResult ->
         contractsResult.fold(
@@ -162,9 +159,7 @@ internal class ChooseInsurancePresenter(
 }
 
 internal sealed interface ChooseInsuranceUiState {
-  data class Loading(
-    val paramsToNavigateToNextStep: InsuranceCustomizationParameters? = null,
-  ) : ChooseInsuranceUiState
+  data object Loading : ChooseInsuranceUiState
 
   data class Success(
     val insuranceList: List<CustomisableInsurance>,
@@ -190,6 +185,4 @@ internal sealed interface ChooseInsuranceToCustomizeEvent {
 
   data class SubmitSelectedInsuranceToCustomize(val insurance: CustomisableInsurance) :
     ChooseInsuranceToCustomizeEvent
-
-  data object ClearNavigationStep : ChooseInsuranceToCustomizeEvent
 }

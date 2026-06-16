@@ -20,7 +20,7 @@ import org.junit.Test
 /**
  * Verifies the polymorphic [HedvigNavKey] registration that the back stack relies on for
  * process-death persistence: a flat list of keys round-trips through the same
- * [PolymorphicSerializer] + [SerializersModule] used by [rememberHedvigBackstackController].
+ * [PolymorphicSerializer] + [SerializersModule] used to persist the hoisted navigation state.
  *
  * The production code feeds this into a `SavedStateConfiguration`; the SavedState encoder itself
  * is androidx's concern and would require an Android `Bundle`. What we own — and what this test

@@ -7,11 +7,15 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.feature.editcoinsured.data.EditCoInsuredDestination
 import com.hedvig.android.feature.editcoinsured.data.GetInsurancesForEditCoInsuredUseCase
 import com.hedvig.android.feature.editcoinsured.data.InsuranceForEditOrAddCoInsured
+import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddInfoKey
+import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddOrRemoveKey
+import com.hedvig.android.feature.editcoinsured.navigation.navigateFromTriage
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageEvent.OnContinueWithSelected
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Failure
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Loading
@@ -19,16 +23,16 @@ import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiS
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.Backstack
 import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
-import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 
 @AssistedInject
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class EditCoInsuredTriageViewModel(
   getInsuranceForEditCoInsuredUseCase: GetInsurancesForEditCoInsuredUseCase,
+  backstack: Backstack,
   @Assisted insuranceId: String?,
   @Assisted type: CoInsuredFlowType,
 ) : MoleculeViewModel<
@@ -36,21 +40,12 @@ internal class EditCoInsuredTriageViewModel(
     EditCoInsuredTriageUiState,
   >(
     initialState = Loading,
-    presenter = EditCoInsuredTriagePresenter(getInsuranceForEditCoInsuredUseCase, insuranceId, type),
-  ) {
-  @AssistedFactory
-  @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(AppScope::class)
-  fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(
-      @Assisted insuranceId: String?,
-      @Assisted type: CoInsuredFlowType,
-    ): EditCoInsuredTriageViewModel
-  }
-}
+    presenter = EditCoInsuredTriagePresenter(getInsuranceForEditCoInsuredUseCase, backstack, insuranceId, type),
+  )
 
 internal class EditCoInsuredTriagePresenter(
   private val getInsuranceForEditCoInsuredUseCase: GetInsurancesForEditCoInsuredUseCase,
+  private val backstack: Backstack,
   private val insuranceId: String?,
   private val type: CoInsuredFlowType,
 ) : MoleculePresenter<
@@ -69,30 +64,12 @@ internal class EditCoInsuredTriagePresenter(
     CollectEvents { event ->
       when (event) {
         is OnContinueWithSelected -> {
-          val currentStateValue = currentState as? Success ?: return@CollectEvents
-          selected?.let {
-            currentState = when (it.destination) {
-              EditCoInsuredDestination.MISSING_INFO -> currentStateValue.copy(
-                insuranceToNavigateToAddMissingInfo = it,
-              )
-
-              EditCoInsuredDestination.ADD_OR_REMOVE -> currentStateValue.copy(
-                insuranceToNavigateToAddOrRemoveCoInsured = it,
-              )
-            }
-          }
+          currentState as? Success ?: return@CollectEvents
+          selected?.let { backstack.navigateFromTriage(it.toNavKey()) }
         }
 
         EditCoInsuredTriageEvent.Reload -> {
           loadIteration++
-        }
-
-        EditCoInsuredTriageEvent.ClearNavigation -> {
-          val currentStateValue = currentState as? Success ?: return@CollectEvents
-          currentState = currentStateValue.copy(
-            insuranceToNavigateToAddMissingInfo = null,
-            insuranceToNavigateToAddOrRemoveCoInsured = null,
-          )
         }
 
         is EditCoInsuredTriageEvent.SelectInsurance -> {
@@ -116,16 +93,17 @@ internal class EditCoInsuredTriagePresenter(
           } else {
             null
           }
-          val success = Success(
-            list = data,
-            selected = preselected,
-            type = type,
-            insuranceToNavigateToAddMissingInfo =
-              if (preselected?.destination == EditCoInsuredDestination.MISSING_INFO) preselected else null,
-            insuranceToNavigateToAddOrRemoveCoInsured =
-              if (preselected?.destination == EditCoInsuredDestination.ADD_OR_REMOVE) preselected else null,
-          )
-          currentState = success
+          if (preselected != null) {
+            // Single match (deep link or only one insurance): skip the picker and navigate directly,
+            // popping the triage entry so back leaves the flow.
+            backstack.navigateFromTriage(preselected.toNavKey())
+          } else {
+            currentState = Success(
+              list = data,
+              selected = null,
+              type = type,
+            )
+          }
         },
       )
     }
@@ -137,14 +115,17 @@ internal class EditCoInsuredTriagePresenter(
   }
 }
 
+private fun InsuranceForEditOrAddCoInsured.toNavKey(): HedvigNavKey = when (destination) {
+  EditCoInsuredDestination.MISSING_INFO -> CoInsuredAddInfoKey(id, type)
+  EditCoInsuredDestination.ADD_OR_REMOVE -> CoInsuredAddOrRemoveKey(id, type)
+}
+
 internal sealed interface EditCoInsuredTriageEvent {
   data object OnContinueWithSelected : EditCoInsuredTriageEvent
 
   data object Reload : EditCoInsuredTriageEvent
 
   data class SelectInsurance(val id: String) : EditCoInsuredTriageEvent
-
-  data object ClearNavigation : EditCoInsuredTriageEvent
 }
 
 internal sealed interface EditCoInsuredTriageUiState {
@@ -156,7 +137,5 @@ internal sealed interface EditCoInsuredTriageUiState {
     val list: List<InsuranceForEditOrAddCoInsured>,
     val selected: InsuranceForEditOrAddCoInsured?,
     val type: CoInsuredFlowType,
-    val insuranceToNavigateToAddMissingInfo: InsuranceForEditOrAddCoInsured? = null,
-    val insuranceToNavigateToAddOrRemoveCoInsured: InsuranceForEditOrAddCoInsured? = null,
   ) : EditCoInsuredTriageUiState
 }

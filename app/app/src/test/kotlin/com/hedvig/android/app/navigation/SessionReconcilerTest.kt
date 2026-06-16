@@ -41,36 +41,37 @@ internal class SessionReconcilerTest {
 
   @Test
   fun `reconcile flips a freshly seeded Login root to Home when logged in`() = runTest {
-    val reconciler = sessionReconciler(authStatus = loggedIn())
     val controller = controllerWith(LoginKey)
+    val reconciler = sessionReconciler(authStatus = loggedIn(), controller = controller)
 
-    reconciler.reconcile(controller)
+    reconciler.reconcile()
 
     assertThat(controller.entries.toList()).containsExactly(HomeKey)
   }
 
   @Test
   fun `reconcile leaves a logged-out seed on the Login root`() = runTest {
-    val reconciler = sessionReconciler(authStatus = AuthStatus.LoggedOut)
     val controller = controllerWith(LoginKey)
+    val reconciler = sessionReconciler(authStatus = AuthStatus.LoggedOut, controller = controller)
 
-    reconciler.reconcile(controller)
+    reconciler.reconcile()
 
     assertThat(controller.entries.toList()).containsExactly(LoginKey)
   }
 
-  // The regression: a new Activity launched into an already-warm process (same singleton reconciler, no
-  // saved state) seeds a fresh Login root. A once-per-process guard skipped it and stranded the member on
-  // the marketing screen; reconcile must resolve every controller it is handed.
+  // The regression: a new Activity launched into an already-warm process with no saved state seeds a fresh
+  // Login root. Each Activity now gets its own ActivityRetainedScope-scoped reconciler + controller (1:1),
+  // so that second Activity's reconciler must still resolve its fresh Login seed to Home rather than
+  // stranding the logged-in member on the marketing screen.
   @Test
-  fun `reconcile re-resolves a fresh Login seed for a second controller in a warm process`() = runTest {
-    val reconciler = sessionReconciler(authStatus = loggedIn())
+  fun `reconcile resolves a fresh Login seed for a second Activity in a warm process`() = runTest {
     // First Activity resolves to Home and latches readiness.
-    reconciler.reconcile(controllerWith(HomeKey))
+    val firstController = controllerWith(HomeKey)
+    sessionReconciler(authStatus = loggedIn(), controller = firstController).reconcile()
 
     // Second Activity in the same process, seeded to Login because there was no saved state to restore.
     val secondController = controllerWith(LoginKey)
-    reconciler.reconcile(secondController)
+    sessionReconciler(authStatus = loggedIn(), controller = secondController).reconcile()
 
     assertThat(secondController.entries.toList()).containsExactly(HomeKey)
   }
@@ -82,7 +83,10 @@ internal class SessionReconcilerTest {
     mutableStateOf(null), // stashedSession
   )
 
-  private fun TestScope.sessionReconciler(authStatus: AuthStatus): SessionReconciler {
+  private fun TestScope.sessionReconciler(
+    authStatus: AuthStatus,
+    controller: BackstackController,
+  ): SessionReconciler {
     val authTokenStorage = AuthTokenStorage(
       TestPreferencesDataStore(
         datastoreTestFileDirectory = testFolder.newFolder(),
@@ -90,6 +94,7 @@ internal class SessionReconcilerTest {
       ),
     )
     return SessionReconciler(
+      backstackController = controller,
       authTokenService = FakeAuthTokenService(authStatus),
       demoManager = FakeDemoManager(),
       memberIdService = MemberIdService(authTokenStorage),

@@ -1,6 +1,5 @@
 package com.hedvig.android.app
 
-import android.app.Activity
 import android.app.UiModeManager
 import android.app.UiModeManager.MODE_NIGHT_CUSTOM
 import android.content.Intent
@@ -16,22 +15,19 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.ComposeFoundationFlags
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.getSystemService
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.savedstate.serialization.SavedStateConfiguration
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import coil3.ImageLoader
-import com.google.android.play.core.review.ReviewException
-import com.google.android.play.core.review.ReviewManagerFactory
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.externalnavigator.ExternalNavigatorImpl
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
-import com.hedvig.android.app.navigation.SessionReconciler
-import com.hedvig.android.app.navigation.rememberHedvigBackstackController
+import com.hedvig.android.app.navigation.NavRetainedViewModel
 import com.hedvig.android.app.ui.HedvigApp
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.LogoutUseCase
@@ -41,7 +37,6 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.rive.RiveInitializer
-import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageLaunchCheckUseCase
@@ -49,7 +44,6 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.compose.HedvigDeepLinkMatcher
-import com.hedvig.android.navigation.compose.merge
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
 import com.hedvig.android.theme.Theme
 import dev.zacsweers.metro.Inject
@@ -69,9 +63,6 @@ class MainActivity : AppCompatActivity() {
 
   @Inject
   private lateinit var featureManager: FeatureManager
-
-  @Inject
-  private lateinit var getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>
 
   @Inject
   private lateinit var hedvigBuildConstants: HedvigBuildConstants
@@ -110,10 +101,23 @@ class MainActivity : AppCompatActivity() {
   private lateinit var currentDestinationHolder: CurrentDestinationHolder
 
   @Inject
-  private lateinit var sessionReconciler: SessionReconciler
-
-  @Inject
   private lateinit var serializersModules: Set<SerializersModule>
+
+  /**
+   * Per-Activity host for the navigation state. A retained `ViewModel`, so it (and the
+   * [BackstackController] it owns) survives a config change but dies with this Activity — giving each
+   * `MainActivity` instance its own back stack instead of sharing one app-singleton. Resolved at the
+   * top of [onCreate]; the controller, session reconciler and merged ViewModel factory are read off it.
+   */
+  private val navRetainedViewModel: NavRetainedViewModel by lazy {
+    ViewModelProvider(
+      this,
+      viewModelFactory { initializer { NavRetainedViewModel((application as HedvigApplication).appGraph) } },
+    )[NavRetainedViewModel::class.java]
+  }
+
+  private val backstackController get() = navRetainedViewModel.backstackController
+  private val sessionReconciler get() = navRetainedViewModel.sessionReconciler
 
   /**
    * External/notification VIEW intents are forwarded here as raw URI strings. [HedvigApp] collects them and routes
@@ -131,6 +135,14 @@ class MainActivity : AppCompatActivity() {
    */
   private val splashIsRemovedSignal = Channel<Unit>(Channel.UNLIMITED)
 
+  /**
+   * Per-Activity host for finish/relaunch mechanics, shared between the task hooks and HedvigApp.
+   * Lazy on purpose: a plain `val` initializer runs during construction, before `appGraph.inject(this)`
+   * in onCreate, so it must not touch any @Inject field. Deferring to first access (in/after onCreate)
+   * keeps this safe even if someone later gives AndroidAppHostImpl an injected dependency.
+   */
+  private val androidAppHost: AndroidAppHostImpl by lazy { AndroidAppHostImpl(this) }
+
   override fun onCreate(savedInstanceState: Bundle?) {
     (application as HedvigApplication).appGraph.inject(this)
     installSplashScreen().apply {
@@ -147,6 +159,10 @@ class MainActivity : AppCompatActivity() {
     )
     ComposeFoundationFlags.isNewContextMenuEnabled = false
     super.onCreate(savedInstanceState)
+    logcat(LogPriority.INFO) {
+      "MainActivity@${System.identityHashCode(this)} using " +
+        "BackstackController@${System.identityHashCode(backstackController)}"
+    }
     val defaultLocale = getSystemLocale(resources.configuration)
     languageLaunchCheckUseCase.invoke(defaultLocale)
     val uiModeManager = getSystemService<UiModeManager>()
@@ -162,51 +178,30 @@ class MainActivity : AppCompatActivity() {
     }
     addOnNewIntentListener { newIntent -> handleDeepLinkIntent(newIntent) }
 
+    attachBackstackTaskHooks()
     val externalNavigator = ExternalNavigatorImpl(this, hedvigBuildConstants.appPackageId)
-    val androidAppHost = object : AndroidAppHost {
-      override fun finishApp() = finish()
-
-      override fun applyEdgeToEdgeStyle(systemBarStyle: SystemBarStyle) {
-        enableEdgeToEdge(
-          statusBarStyle = systemBarStyle,
-          navigationBarStyle = systemBarStyle,
-        )
-      }
-
-      override fun shouldShowPermissionRationale(permission: String): Boolean =
-        shouldShowRequestPermissionRationale(permission)
-
-      override fun tryShowAppStoreReviewDialog() = tryShowPlayStoreReviewDialog()
-    }
     RiveInitializer.init(this)
-    val savedStateConfiguration = SavedStateConfiguration {
-      serializersModule = serializersModules.merge()
-    }
-    val restoredBackstack = if (savedInstanceState != null) {
-      null
-    } else {
-      RestoredBackstackTransfer.readFrom(intent, serializersModules)
+    NavigationStateBridge.restoreAndPersist(
+      backstackController = backstackController,
+      savedStateRegistry = savedStateRegistry,
+      intent = intent,
+      isColdStart = savedInstanceState == null,
+      serializersModules = serializersModules,
+    )
+    lifecycleScope.launch {
+      sessionReconciler.reconcile()
+      sessionReconciler.observeForcedLogout(lifecycle)
     }
     setContent {
       CompositionLocalProvider(
-        LocalMetroViewModelFactory provides (application as HedvigApplication).appGraph.metroViewModelFactory,
+        LocalMetroViewModelFactory provides navRetainedViewModel.viewModelFactory,
       ) {
         val windowSizeClass = calculateWindowSizeClass(this@MainActivity)
-        val backstackController = rememberHedvigBackstackController(
-          savedStateConfiguration = savedStateConfiguration,
-          initialBackstack = restoredBackstack,
-          isOwnTask = { isTaskRoot },
-          escapeToOwnTask = { parentStack ->
-            RestoredBackstackTransfer.escapeToOwnTask(this@MainActivity, parentStack, serializersModules)
-          },
-        )
         HedvigApp(
           backstackController = backstackController,
-          sessionReconciler = sessionReconciler,
           deepLinkChannel = deepLinkChannel,
           windowSizeClass = windowSizeClass,
           settingsDataStore = settingsDataStore,
-          getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
           featureManager = featureManager,
           splashIsRemovedSignal = splashIsRemovedSignal,
           authTokenService = authTokenService,
@@ -226,6 +221,21 @@ class MainActivity : AppCompatActivity() {
         )
       }
     }
+  }
+
+  /**
+   * Points this Activity's [com.hedvig.android.app.navigation.BackstackController] task hooks at
+   * *this* instance. The controller is owned by [navRetainedViewModel] and is 1:1 with this Activity
+   * (created with it, retained across config changes, dies on finish), so the hooks are attached once
+   * in onCreate — there is no shared, process-wide controller that a backgrounded Activity could
+   * steal, which is why no resume/top-resume re-attachment is needed.
+   */
+  private fun attachBackstackTaskHooks() {
+    backstackController.isOwnTask = { isTaskRoot }
+    backstackController.escapeToOwnTask = { parentStack ->
+      NavigationStateBridge.escapeToOwnTask(this@MainActivity, parentStack, serializersModules)
+    }
+    backstackController.finishApp = androidAppHost::finishApp
   }
 
   private fun handleDeepLinkIntent(intent: Intent) {
@@ -265,36 +275,6 @@ private fun applyTheme(theme: Theme?, uiModeManager: UiModeManager?) {
       }
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         uiModeManager?.setApplicationNightMode(MODE_NIGHT_CUSTOM)
-      }
-    }
-  }
-}
-
-private fun Activity.tryShowPlayStoreReviewDialog() {
-  val tag = "PlayStoreReview"
-  val manager = ReviewManagerFactory.create(this)
-  logcat(LogPriority.INFO) { "$tag: requestReviewFlow" }
-  manager.requestReviewFlow().apply {
-    addOnFailureListener { logcat(LogPriority.INFO, it) { "$tag: requestReviewFlow failed:${it.message}" } }
-    addOnCanceledListener { logcat(LogPriority.INFO) { "$tag: requestReviewFlow cancelled" } }
-    addOnCompleteListener { task ->
-      if (task.isSuccessful) {
-        logcat(LogPriority.INFO) { "$tag: requestReviewFlow completed" }
-        val reviewInfo = task.result
-        logcat(LogPriority.INFO) { "$tag: launchReviewFlow with ReviewInfo:$reviewInfo" }
-        manager.launchReviewFlow(this@tryShowPlayStoreReviewDialog, reviewInfo).apply {
-          addOnFailureListener { logcat(LogPriority.INFO, it) { "$tag: launchReviewFlow failed:${it.message}" } }
-          addOnCanceledListener { logcat(LogPriority.INFO) { "$tag: launchReviewFlow canceled" } }
-          addOnCompleteListener { logcat(LogPriority.INFO) { "$tag: launchReviewFlow completed" } }
-        }
-      } else {
-        val exception = task.exception
-        val errorMessage = if (exception != null && exception is ReviewException) {
-          "ReviewException:${exception.message}. ReviewException::errorCode:${exception.errorCode}"
-        } else {
-          "Unknown error with message: ${exception?.message}"
-        }
-        logcat(LogPriority.INFO, exception) { "$tag: requestReviewFlow failed. Error:$errorMessage" }
       }
     }
   }

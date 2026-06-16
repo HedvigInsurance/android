@@ -7,19 +7,20 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.insurance.certificate.data.GenerateInsuranceEvidenceUseCase
 import com.hedvig.android.feature.insurance.certificate.data.GetInsuranceEvidenceInitialEmailUseCase
+import com.hedvig.android.feature.insurance.certificate.navigation.InsuranceEvidenceKey
+import com.hedvig.android.feature.insurance.certificate.navigation.ShowCertificateKey
 import com.hedvig.android.feature.insurance.certificate.ui.email.InsuranceEvidenceEmailInputState.Loading
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.core.common.android.validation.validateEmail
-import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
-import dev.zacsweers.metro.binding
-import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import hedvig.resources.PROFILE_MY_INFO_INVALID_EMAIL
 import hedvig.resources.Res
 import hedvig.resources.something_went_wrong
@@ -27,22 +28,24 @@ import hedvig.resources.travel_certificate_email_empty_error
 import org.jetbrains.compose.resources.StringResource
 
 @Inject
-@ViewModelKey
-@ContributesIntoMap(AppScope::class, binding<ViewModel>())
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class InsuranceEvidenceEmailInputViewModel(
   generateInsuranceEvidenceUseCase: GenerateInsuranceEvidenceUseCase,
   getEmailUseCase: GetInsuranceEvidenceInitialEmailUseCase,
+  backstack: Backstack,
 ) : MoleculeViewModel<InsuranceEvidenceEmailInputEvent, InsuranceEvidenceEmailInputState>(
     initialState = Loading,
     presenter = InsuranceEvidenceEmailInputPresenter(
       generateInsuranceEvidenceUseCase,
       getEmailUseCase,
+      backstack,
     ),
   )
 
 internal class InsuranceEvidenceEmailInputPresenter(
   private val generateInsuranceEvidenceUseCase: GenerateInsuranceEvidenceUseCase,
   private val getEmailUseCase: GetInsuranceEvidenceInitialEmailUseCase,
+  private val backstack: Backstack,
 ) : MoleculePresenter<InsuranceEvidenceEmailInputEvent, InsuranceEvidenceEmailInputState> {
   @Composable
   override fun MoleculePresenterScope<InsuranceEvidenceEmailInputEvent>.present(
@@ -80,11 +83,6 @@ internal class InsuranceEvidenceEmailInputPresenter(
             email = event.email,
             emailValidationErrorMessage = null,
           )
-        }
-
-        InsuranceEvidenceEmailInputEvent.ClearNavigation -> {
-          val successScreenState = currentState as? InsuranceEvidenceEmailInputState.Success ?: return@CollectEvents
-          currentState = successScreenState.copy(fetchedCertificateUrl = null)
         }
 
         InsuranceEvidenceEmailInputEvent.RetryLoadData -> {
@@ -128,10 +126,9 @@ internal class InsuranceEvidenceEmailInputPresenter(
             )
           },
           ifRight = { url ->
-            currentState = successScreenState.copy(
-              generatingErrorMessage = null,
-              fetchedCertificateUrl = url,
-              buttonLoading = false,
+            backstack.navigateAndPopUpTo<InsuranceEvidenceKey>(
+              ShowCertificateKey(url),
+              inclusive = true,
             )
           },
         )
@@ -151,7 +148,6 @@ internal sealed interface InsuranceEvidenceEmailInputState {
     val emailValidationErrorMessage: StringResource? = null,
     val buttonLoading: Boolean = false,
     val generatingErrorMessage: StringResource? = null,
-    val fetchedCertificateUrl: String? = null,
   ) : InsuranceEvidenceEmailInputState
 }
 
@@ -163,6 +159,4 @@ internal sealed interface InsuranceEvidenceEmailInputEvent {
   data object RetryLoadData : InsuranceEvidenceEmailInputEvent
 
   data object ClearErrorMessage : InsuranceEvidenceEmailInputEvent
-
-  data object ClearNavigation : InsuranceEvidenceEmailInputEvent
 }
