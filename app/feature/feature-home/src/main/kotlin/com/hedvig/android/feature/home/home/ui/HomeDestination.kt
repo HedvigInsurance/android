@@ -817,7 +817,6 @@ private fun PreviewHomeScreen(
         navigateToChipIdScreen = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
-        navigateToClaimChatInDevMode = {},
       )
     }
   }
@@ -850,7 +849,6 @@ private fun PreviewHomeScreenWithError() {
         navigateToChipIdScreen = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
-        navigateToClaimChatInDevMode = {},
       )
     }
   }
@@ -904,7 +902,6 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToChipIdScreen = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
-        navigateToClaimChatInDevMode = {},
       )
     }
   }
