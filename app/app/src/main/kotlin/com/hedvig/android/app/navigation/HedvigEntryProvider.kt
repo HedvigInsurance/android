@@ -233,9 +233,6 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
     navigateToClaimChat = {
       backstack.add(ClaimChatKey(messageId = null, isDevelopmentFlow = false))
     },
-    navigateToClaimChatInDevMode = {
-      backstack.add(ClaimChatKey(messageId = null, isDevelopmentFlow = true))
-    },
     navigateToChipIdScreen = { backstack.add(ChipIdKey()) },
     openAppSettings = externalNavigator::openAppSettings,
     openUrl = openUrl,

@@ -156,7 +156,6 @@ internal fun HomeDestination(
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateToClaimChat: () -> Unit,
-  navigateToClaimChatInDevMode: () -> Unit,
   onClaimDetailCardClicked: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToConnectPayout: () -> Unit,
@@ -179,7 +178,6 @@ internal fun HomeDestination(
     onNavigateToInbox = onNavigateToInbox,
     onNavigateToNewConversation = onNavigateToNewConversation,
     navigateToClaimChat = navigateToClaimChat,
-    navigateToClaimChatInDevMode = navigateToClaimChatInDevMode,
     onClaimDetailCardClicked = onClaimDetailCardClicked,
     navigateToConnectPayment = navigateToConnectPayment,
     navigateToConnectPayout = navigateToConnectPayout,
@@ -208,7 +206,6 @@ private fun HomeScreen(
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateToClaimChat: () -> Unit,
-  navigateToClaimChatInDevMode: () -> Unit,
   onClaimDetailCardClicked: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToConnectPayout: () -> Unit,
@@ -244,8 +241,6 @@ private fun HomeScreen(
   StartClaimBottomSheet(
     state = startClaimBottomSheetState,
     navigateToClaimChat = navigateToClaimChat,
-    navigateToClaimChatInDevMode = navigateToClaimChatInDevMode,
-    isStagingEnvironment = (uiState as? Success)?.isProduction?.not() ?: false,
   )
   Box(Modifier.fillMaxSize()) {
     val toolbarHeight = 64.dp
