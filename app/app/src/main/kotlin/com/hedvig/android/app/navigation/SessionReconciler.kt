@@ -25,8 +25,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 /**
- * Owns the auth↔backstack reconciliation that used to live as loose effects in `HedvigApp`. Two jobs,
- * both narrowly about the rendered root:
+ * Owns the auth↔backstack reconciliation. Two jobs, both narrowly about the rendered root:
  *  1. [reconcile] picks the start scene (Home when logged in / in demo, Login otherwise) before the
  *     splash is dismissed, so the first frame is correct rather than the seeded Login root. This
  *     reconciler is 1:1 with its Activity's [BackstackController] (both [ActivityRetainedScope]-scoped),

@@ -22,15 +22,11 @@ import com.hedvig.android.navigation.compose.LoneDeepLinkChrome
  * that Activity talks to — the UI via this concrete type, Presenters via the injected [Backstack]
  * interface (bound in the per-Activity `ActivityRetainedGraph`).
  *
- * Why activity-retained instead of composition: the state used to live in `rememberSerializable`
- * inside `MainActivity.setContent`, so a config change recreated the Activity and deserialized it into
- * a brand-new instance — while Metro ViewModels survive a config change as the same instance via their
- * per-entry `ViewModelStore`. Handing a long-lived Presenter a reference to the composition-scoped
- * stack would therefore go stale on the next rotation. The controller is instead built by
+ * Why activity-retained rather than composition-scoped: the controller is built by
  * [com.hedvig.android.app.navigation.NavRetainedViewModel] (a retained `ViewModel`), so it outlives
- * the composition and every screen ViewModel across a config change, yet — unlike the previous
- * app-singleton — dies with its Activity. Two `MainActivity` instances therefore get two independent
- * controllers instead of sharing one.
+ * the composition and every screen ViewModel across a config change — a long-lived Presenter can hold
+ * a reference to it without it going stale on rotation — yet it dies with its Activity. Two
+ * `MainActivity` instances therefore get two independent controllers instead of sharing one.
  *
  * Process-death persistence is bridged at the Activity seam: the retained instance is wiped when the
  * process dies, so `MainActivity` serializes the four holders into its `SavedStateRegistry` and
@@ -87,7 +83,7 @@ internal class BackstackController(
   val currentTopLevel: TopLevelTab
     get() = nearestTopLevelTab(entries) ?: TopLevelTab.Home
 
-  /** The destination on top of the rendered stack — replaces Nav2's `navController.currentDestination`. */
+  /** The destination on top of the rendered stack. */
   val currentDestination: HedvigNavKey?
     get() = entries.lastOrNull()
 
