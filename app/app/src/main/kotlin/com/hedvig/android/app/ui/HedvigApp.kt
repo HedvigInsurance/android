@@ -49,7 +49,6 @@ import com.hedvig.android.app.navigation.hedvigEntryProvider
 import com.hedvig.android.app.navigation.shouldFadeThrough
 import com.hedvig.android.app.urihandler.AuthorizationCodeUriHandler
 import com.hedvig.android.app.urihandler.DeepLinkFirstUriHandler
-import com.hedvig.android.app.urihandler.ExternalDeepLinkHandler
 import com.hedvig.android.app.urihandler.SafeAndroidUriHandler
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
@@ -90,7 +89,6 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun HedvigApp(
   backstackController: BackstackController,
-  deepLinkChannel: Channel<String>,
   deepLinkReadySignal: StateFlow<Boolean>,
   windowSizeClass: WindowSizeClass,
   settingsDataStore: SettingsDataStore,
@@ -148,24 +146,6 @@ internal fun HedvigApp(
           delegate = deepLinkFirstUriHandler,
           scope = scope,
         )
-      }
-      val externalDeepLinkHandler = remember(
-        deepLinkMatcher,
-        backstackController,
-        deepLinkReadySignal,
-        hedvigBuildConstants,
-      ) {
-        ExternalDeepLinkHandler(
-          matcher = deepLinkMatcher,
-          backstackController = backstackController,
-          readySignal = deepLinkReadySignal,
-          deepLinkHosts = hedvigBuildConstants.deepLinkHosts,
-        )
-      }
-      LaunchedEffect(externalDeepLinkHandler, deepLinkChannel) {
-        deepLinkChannel.receiveAsFlow().collect { uri ->
-          externalDeepLinkHandler.handle(uri)
-        }
       }
       CrossSellSheet(
         isInScreenEligibleForCrossSells = hedvigAppState.isInScreenEligibleForCrossSells,

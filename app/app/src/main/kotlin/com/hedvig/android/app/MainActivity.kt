@@ -31,6 +31,7 @@ import com.hedvig.android.app.externalnavigator.ExternalNavigatorImpl
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
 import com.hedvig.android.app.navigation.NavRetainedViewModel
 import com.hedvig.android.app.ui.HedvigApp
+import com.hedvig.android.app.urihandler.ExternalDeepLinkHandler
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.auth.MemberIdService
@@ -53,6 +54,7 @@ import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import java.util.Locale
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.modules.SerializersModule
 
@@ -122,11 +124,25 @@ class MainActivity : AppCompatActivity() {
   private val sessionReconciler get() = navRetainedViewModel.sessionReconciler
 
   /**
-   * External/notification VIEW intents are forwarded here as raw URI strings. [HedvigApp] collects them and routes
-   * each through the in-app deep-link matcher once the member is logged in. Replaces Nav2's automatic launch-intent
-   * deep-link handling on the (now removed) NavController.
+   * External/notification VIEW intents are forwarded here as raw URI strings. The per-Activity collector in
+   * [onCreate] routes each through [externalDeepLinkHandler] once the start scene is resolved. Replaces Nav2's
+   * automatic launch-intent deep-link handling on the (now removed) NavController.
    */
   private val deepLinkChannel = Channel<String>(Channel.UNLIMITED)
+
+  /**
+   * Per-Activity router for external/notification deep links. Lives outside composition because it is
+   * auth/navigation reconciliation — a sibling of [sessionReconciler] — not UI, and only mutates this Activity's
+   * back stack. Lazy because it reads @Inject fields, which are only populated after `appGraph.inject(this)`.
+   */
+  private val externalDeepLinkHandler: ExternalDeepLinkHandler by lazy {
+    ExternalDeepLinkHandler(
+      matcher = deepLinkMatcher,
+      backstackController = backstackController,
+      readySignal = sessionReconciler.isReady,
+      deepLinkHosts = hedvigBuildConstants.deepLinkHosts,
+    )
+  }
 
   /**
    * A channel to report whenever the splash screen has stopped showing. This is used to let `enableEdgeToEdge` be run
@@ -200,6 +216,11 @@ class MainActivity : AppCompatActivity() {
       sessionReconciler.reconcile()
       sessionReconciler.observeForcedLogout(lifecycle)
     }
+    lifecycleScope.launch {
+      deepLinkChannel.receiveAsFlow().collect { uri ->
+        externalDeepLinkHandler.handle(uri)
+      }
+    }
     setContent {
       CompositionLocalProvider(
         LocalMetroViewModelFactory provides navRetainedViewModel.viewModelFactory,
@@ -207,7 +228,6 @@ class MainActivity : AppCompatActivity() {
         val windowSizeClass = calculateWindowSizeClass(this@MainActivity)
         HedvigApp(
           backstackController = backstackController,
-          deepLinkChannel = deepLinkChannel,
           deepLinkReadySignal = sessionReconciler.isReady,
           windowSizeClass = windowSizeClass,
           settingsDataStore = settingsDataStore,
