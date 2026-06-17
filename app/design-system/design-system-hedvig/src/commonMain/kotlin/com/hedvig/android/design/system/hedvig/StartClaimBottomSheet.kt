@@ -72,9 +72,9 @@ fun StartClaimPledgeScreen(
   var isChecked by remember { mutableStateOf(false) }
   Column(modifier
     .verticalScroll(rememberScrollState())) {
-  //  Spacer(Modifier.height(16.dp))
     PledgeNotes()
     Spacer(Modifier.weight(1f))
+    Spacer(Modifier.height(8.dp))
     StartClaimBottomContent(
       isChecked = isChecked,
       onCheckedChange = {
@@ -83,7 +83,8 @@ fun StartClaimPledgeScreen(
       navigateToClaimChat = navigateToClaimChat,
       dismiss = navigateUp,
     )
-    Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
 
