@@ -30,10 +30,11 @@ import kotlinx.coroutines.launch
  *  1. [reconcile] picks the start scene (Home when logged in / in demo, Login otherwise) before the
  *     splash is dismissed, so the first frame is correct rather than the seeded Login root. This
  *     reconciler is 1:1 with its Activity's [BackstackController] (both [ActivityRetainedScope]-scoped),
- *     so [reconcile] runs once per Activity `onCreate` — a warm-process relaunch builds a fresh Activity
- *     and so a fresh controller + reconciler, which can't strand a logged-in member on the marketing
- *     screen. [isReady] gates the Activity's splash keep-condition: it drops to false while resolving
- *     and latches true again once the root matches the auth state.
+ *     so a warm-process relaunch builds a fresh Activity and so a fresh controller + reconciler, which
+ *     can't strand a logged-in member on the marketing screen. [isReady] gates the Activity's splash
+ *     keep-condition: it starts false, latches true once the root matches the auth state, and then
+ *     stays true for this reconciler's life — so a config change (which reuses the retained reconciler)
+ *     resolves nothing and never dips [isReady] back to false.
  *  2. [observeForcedLogout] keeps the root honest while running: log out when we leave demo mode and no
  *     longer hold tokens. It is lifecycle-gated so it only observes while the UI is STARTED.
  *
@@ -58,21 +59,19 @@ internal class SessionReconciler(
   private var lastKnownMemberId: String? = null
 
   /**
-   * Resolves the start scene for this Activity's [backstackController] before the splash is dismissed.
+   * Resolves the start scene for this Activity's [backstackController] before the splash is dismissed,
+   * then latches [isReady]. Runs its body at most once per instance — the early return makes a second
+   * call (e.g. after a config change reuses the retained instance) a no-op, so [isReady] never dips back
+   * to false and the content gate keyed on it never blanks.
    *
-   * Both this reconciler and the controller are [ActivityRetainedScope]-scoped, so they are 1:1 and
-   * [reconcile] is called once from the Activity's `onCreate`. A config change reuses the retained
-   * controller — whose root already matches the auth state — and a warm-process relaunch builds a fresh
-   * Activity, hence a fresh controller and reconciler; there is no process-wide instance that a
-   * once-per-process guard could wrongly skip and strand a still-logged-in member on the marketing
-   * screen. Re-running on the same controller (e.g. a config change) is harmless because
-   * [determineStartScene] is idempotent — it only touches the root on a genuine mismatch.
-   *
-   * [isReady] drops to false while resolving so the splash keep-condition holds, then latches true once
-   * the root matches the auth state.
+   * The guard is correct because this reconciler is [ActivityRetainedScope]-scoped, 1:1 with its
+   * Activity. A config change reuses the retained reconciler, whose [backstackController] root already
+   * matches the auth state, so re-resolving would be redundant. Anything that seeds a fresh `LoginKey`
+   * root — a cold start or a warm-process relaunch — builds a new Activity and therefore a new
+   * reconciler whose [isReady] starts false, so the guard never skips a root that still needs resolving.
    */
   suspend fun reconcile() {
-    isReadyState.value = false
+    if (isReadyState.value) return
     memberIdService.getMemberId().first()?.let { lastKnownMemberId = it }
     determineStartScene()
     isReadyState.value = true

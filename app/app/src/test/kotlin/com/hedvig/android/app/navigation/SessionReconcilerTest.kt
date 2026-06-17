@@ -83,10 +83,7 @@ internal class SessionReconcilerTest {
     mutableStateOf(null), // stashedSession
   )
 
-  private fun TestScope.sessionReconciler(
-    authStatus: AuthStatus,
-    controller: BackstackController,
-  ): SessionReconciler {
+  private fun TestScope.sessionReconciler(authStatus: AuthStatus, controller: BackstackController): SessionReconciler {
     val authTokenStorage = AuthTokenStorage(
       TestPreferencesDataStore(
         datastoreTestFileDirectory = testFolder.newFolder(),
