@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,8 +56,9 @@ fun StartClaimBottomSheet(
           state.dismiss {
             navigateToClaimChat()
           }
-        })
-    }
+        },
+      )
+    },
   )
 }
 
@@ -64,12 +67,23 @@ fun StartClaimBottomSheet(
 fun StartClaimPledgeScreen(
   navigateUp: () -> Unit,
   navigateToClaimChat: () -> Unit,
-  modifier: Modifier = Modifier) {
-  Column(modifier) {
-    StartClaimBottomSheetContent(
-      dismiss = navigateUp,
+  modifier: Modifier = Modifier,
+) {
+  var isChecked by remember { mutableStateOf(false) }
+  Column(modifier
+    .verticalScroll(rememberScrollState())) {
+  //  Spacer(Modifier.height(16.dp))
+    PledgeNotes()
+    Spacer(Modifier.weight(1f))
+    StartClaimBottomContent(
+      isChecked = isChecked,
+      onCheckedChange = {
+        isChecked = !isChecked
+      },
       navigateToClaimChat = navigateToClaimChat,
+      dismiss = navigateUp,
     )
+    Spacer(Modifier.height(16.dp))
   }
 }
 
@@ -91,11 +105,30 @@ private fun StartClaimBottomSheetContent(
     Spacer(Modifier.height(16.dp))
     PledgeNotes()
     Spacer(Modifier.height(16.dp))
-    ImportantInfoCheckBox(
+    StartClaimBottomContent(
       isChecked = isChecked,
       onCheckedChange = {
         isChecked = !isChecked
       },
+      navigateToClaimChat = navigateToClaimChat,
+      dismiss = dismiss,
+    )
+    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+  }
+}
+
+@Composable
+private fun StartClaimBottomContent(
+  isChecked: Boolean,
+  onCheckedChange: () -> Unit,
+  navigateToClaimChat: () -> Unit,
+  dismiss: () -> Unit,
+) {
+  Column {
+    ImportantInfoCheckBox(
+      isChecked = isChecked,
+      onCheckedChange = onCheckedChange,
     )
     Spacer(Modifier.height(16.dp))
     HedvigButton(
@@ -116,8 +149,6 @@ private fun StartClaimBottomSheetContent(
       },
       modifier = Modifier.fillMaxWidth(),
     )
-    Spacer(Modifier.height(8.dp))
-    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
 
