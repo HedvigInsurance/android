@@ -195,6 +195,21 @@ internal class BackstackController(
   }
 
   /**
+   * Routes an external or notification deep link, which must land *alone* — it is an entry into the
+   * app from outside, not navigation within a live session. Logged out, stash it as [pendingDeepLink]
+   * so [setLoggedIn] still lands it alone after authentication; logged in, [reseed] to just this key.
+   * The ancestry is rebuilt on demand by [navigateUp] (the runs model and nav bar come back with it),
+   * so a lone deep link never sits on top of Home.
+   */
+  fun navigateToExternalDeepLink(key: HedvigNavKey) {
+    if (!isLoggedIn) {
+      pendingDeepLink = key
+      return
+    }
+    reseed(listOf(key))
+  }
+
+  /**
    * Task-aware Up. For a lone deep link it materializes the parent ancestry — `[Home]` for a lone
    * tab root, `[Home, Insurances]` for a lone contract detail — so Up behaves exactly like Back would
    * have inside the app. When we were launched into a foreign task ([isOwnTask] is false) that parent

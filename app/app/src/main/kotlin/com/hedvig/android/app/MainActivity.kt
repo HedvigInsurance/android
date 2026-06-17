@@ -15,6 +15,8 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.ComposeFoundationFlags
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.retain.retain
 import androidx.core.content.getSystemService
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
@@ -176,6 +178,12 @@ class MainActivity : AppCompatActivity() {
     if (savedInstanceState == null) {
       handleDeepLinkIntent(intent)
     }
+    // onNewIntent fires (instead of a fresh onCreate) when the existing instance is reused: a caller
+    // sets FLAG_ACTIVITY_SINGLE_TOP while this Activity is top-of-task, or the launch config gains a
+    // singleTop/singleTask launchMode. None of our own callers (notification PendingIntents, App Link
+    // ACTION_VIEW) set that flag today, so those currently arrive via onCreate above — but an external
+    // caller can still trigger this path. Routed through the same handler either way so a deep link is
+    // never silently dropped.
     addOnNewIntentListener { newIntent -> handleDeepLinkIntent(newIntent) }
 
     attachBackstackTaskHooks()
@@ -200,6 +208,7 @@ class MainActivity : AppCompatActivity() {
         HedvigApp(
           backstackController = backstackController,
           deepLinkChannel = deepLinkChannel,
+          deepLinkReadySignal = sessionReconciler.isReady,
           windowSizeClass = windowSizeClass,
           settingsDataStore = settingsDataStore,
           featureManager = featureManager,
@@ -241,7 +250,6 @@ class MainActivity : AppCompatActivity() {
   private fun handleDeepLinkIntent(intent: Intent) {
     if (intent.action != Intent.ACTION_VIEW) return
     val uri = intent.data?.toString() ?: return
-    logcat { "MainActivity received deep-link intent for uri:$uri" }
     deepLinkChannel.trySend(uri)
   }
 }

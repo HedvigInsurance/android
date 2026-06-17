@@ -388,6 +388,23 @@ internal class BackstackControllerTest {
   }
 
   @Test
+  fun `navigateToExternalDeepLink while logged in lands the target alone`() {
+    val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
+    controller.navigateToExternalDeepLink(HelpCenterKey)
+    assertThat(controller.entries.toList()).containsExactly(HelpCenterKey)
+    assertThat(controller.pendingDeepLink).isEqualTo(null)
+    assertThat(controller.parkedRuns).isEmpty()
+  }
+
+  @Test
+  fun `navigateToExternalDeepLink while logged out stashes and leaves the stack untouched`() {
+    val controller = controllerWith(LoginKey)
+    controller.navigateToExternalDeepLink(HelpCenterKey)
+    assertThat(controller.entries.toList()).containsExactly(LoginKey)
+    assertThat(controller.pendingDeepLink).isEqualTo(HelpCenterKey)
+  }
+
+  @Test
   fun `loneDeepLinkChrome is ShowUpBar for a lone tab root`() {
     assertThat(controllerWith(InsurancesKey).loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowUpBar)
   }

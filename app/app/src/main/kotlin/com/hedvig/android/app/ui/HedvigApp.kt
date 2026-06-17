@@ -49,6 +49,7 @@ import com.hedvig.android.app.navigation.hedvigEntryProvider
 import com.hedvig.android.app.navigation.shouldFadeThrough
 import com.hedvig.android.app.urihandler.AuthorizationCodeUriHandler
 import com.hedvig.android.app.urihandler.DeepLinkFirstUriHandler
+import com.hedvig.android.app.urihandler.ExternalDeepLinkHandler
 import com.hedvig.android.app.urihandler.SafeAndroidUriHandler
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
@@ -79,6 +80,7 @@ import hedvig.resources.Res
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -89,6 +91,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun HedvigApp(
   backstackController: BackstackController,
   deepLinkChannel: Channel<String>,
+  deepLinkReadySignal: StateFlow<Boolean>,
   windowSizeClass: WindowSizeClass,
   settingsDataStore: SettingsDataStore,
   featureManager: FeatureManager,
@@ -146,9 +149,22 @@ internal fun HedvigApp(
           scope = scope,
         )
       }
-      LaunchedEffect(deepLinkFirstUriHandler, deepLinkChannel) {
+      val externalDeepLinkHandler = remember(
+        deepLinkMatcher,
+        backstackController,
+        deepLinkReadySignal,
+        hedvigBuildConstants,
+      ) {
+        ExternalDeepLinkHandler(
+          matcher = deepLinkMatcher,
+          backstackController = backstackController,
+          readySignal = deepLinkReadySignal,
+          deepLinkHosts = hedvigBuildConstants.deepLinkHosts,
+        )
+      }
+      LaunchedEffect(externalDeepLinkHandler, deepLinkChannel) {
         deepLinkChannel.receiveAsFlow().collect { uri ->
-          deepLinkFirstUriHandler.openUri(uri)
+          externalDeepLinkHandler.handle(uri)
         }
       }
       CrossSellSheet(
