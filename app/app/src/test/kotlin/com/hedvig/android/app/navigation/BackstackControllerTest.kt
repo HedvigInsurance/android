@@ -312,9 +312,9 @@ internal class BackstackControllerTest {
   }
 
   @Test
-  fun `navigateToDeepLink while logged out stashes and leaves the stack untouched`() {
+  fun `navigateToInAppLink while logged out stashes and leaves the stack untouched`() {
     val controller = controllerWith(LoginKey)
-    controller.navigateToDeepLink(HelpCenterKey)
+    controller.navigateToInAppLink(HelpCenterKey)
     assertThat(controller.entries.toList()).containsExactly(LoginKey)
     assertThat(controller.pendingDeepLink).isEqualTo(HelpCenterKey)
   }
@@ -322,7 +322,7 @@ internal class BackstackControllerTest {
   @Test
   fun `setLoggedIn consumes the stash and lands the target alone`() {
     val controller = controllerWith(LoginKey)
-    controller.navigateToDeepLink(InsurancesKey)
+    controller.navigateToInAppLink(InsurancesKey)
     controller.setLoggedIn("mem-1")
     assertThat(controller.entries.toList()).containsExactly(InsurancesKey)
     assertThat(controller.pendingDeepLink).isEqualTo(null)
@@ -371,7 +371,7 @@ internal class BackstackControllerTest {
   fun `setLoggedIn lands a pending deep link alone even when a same-member stash exists`() {
     val controller = controllerWith(HomeKey, ProfileKey)
     controller.setLoggedOut("mem-1")
-    controller.navigateToDeepLink(HelpCenterKey) // logged out → stashed as pendingDeepLink
+    controller.navigateToInAppLink(HelpCenterKey) // logged out → stashed as pendingDeepLink
     controller.setLoggedIn("mem-1")
     assertThat(controller.entries.toList()).containsExactly(HelpCenterKey)
     assertThat(controller.parkedRuns).isEmpty()
@@ -379,9 +379,9 @@ internal class BackstackControllerTest {
   }
 
   @Test
-  fun `navigateToDeepLink while logged in appends onto the live stack`() {
+  fun `navigateToInAppLink while logged in appends onto the live stack`() {
     val controller = controllerWith(HomeKey, InsurancesKey)
-    controller.navigateToDeepLink(HelpCenterKey)
+    controller.navigateToInAppLink(HelpCenterKey)
     assertThat(controller.entries.toList())
       .containsExactly(HomeKey, InsurancesKey, HelpCenterKey)
     assertThat(controller.pendingDeepLink).isEqualTo(null)
