@@ -125,8 +125,7 @@ class MainActivity : AppCompatActivity() {
 
   /**
    * External/notification VIEW intents are forwarded here as raw URI strings. The per-Activity collector in
-   * [onCreate] routes each through [externalDeepLinkHandler] once the start scene is resolved. Replaces Nav2's
-   * automatic launch-intent deep-link handling on the (now removed) NavController.
+   * [onCreate] routes each through [externalDeepLinkHandler] once the start scene is resolved.
    */
   private val deepLinkChannel = Channel<String>(Channel.UNLIMITED)
 

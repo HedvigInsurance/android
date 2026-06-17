@@ -180,7 +180,7 @@ internal class BackstackController(
   /**
    * Routes an in-app link tap (Compose `LocalUriHandler`). The member is navigating *within* a live
    * session, so we join the current task: logged out, stash it (consumed by [setLoggedIn] to land
-   * alone); logged in, dedup and append onto the live stack (Nav2 parity). External / notification
+   * alone); logged in, dedup and append onto the live stack. External / notification
    * deep links use [navigateToExternalDeepLink] instead — they must land alone.
    */
   fun navigateToInAppLink(key: HedvigNavKey) {
