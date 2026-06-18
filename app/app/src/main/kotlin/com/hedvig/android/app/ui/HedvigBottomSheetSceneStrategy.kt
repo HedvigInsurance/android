@@ -2,6 +2,7 @@ package com.hedvig.android.app.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -23,6 +24,7 @@ import com.hedvig.android.navigation.compose.BottomSheetSceneStrategy
  * - scrimColor: Scrim at 32 % opacity (ScrimTokens.ContainerColor × ContainerOpacity)
  * - shape: CornerXLargeTop (BottomSheetTokens.ContainerShape)
  * - dragHandle: Hedvig chip (40×4 dp, SurfaceSecondary, CornerSmall, padded 8/20 dp)
+ * - contentPadding: 16 dp horizontal (HedvigBottomSheet's default contentPadding)
  */
 @Composable
 internal fun rememberHedvigBottomSheetSceneStrategy(): BottomSheetSceneStrategy<HedvigNavKey> {
@@ -50,6 +52,7 @@ internal fun rememberHedvigBottomSheetSceneStrategy(): BottomSheetSceneStrategy<
             .background(shape = chipShape, color = chipColor),
         )
       },
+      contentPadding = PaddingValues(horizontal = 16.dp),
     )
   }
 }

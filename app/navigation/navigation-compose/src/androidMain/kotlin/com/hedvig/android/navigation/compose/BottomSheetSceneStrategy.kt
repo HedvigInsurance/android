@@ -1,12 +1,17 @@
 package com.hedvig.android.navigation.compose
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavMetadataKey
 import androidx.navigation3.runtime.contains
@@ -33,6 +38,7 @@ class BottomSheetSceneStrategy<T : Any>(
   private val scrimColor: Color,
   private val shape: Shape,
   private val dragHandle: @Composable () -> Unit,
+  private val contentPadding: PaddingValues = PaddingValues(0.dp),
 ) : SceneStrategy<T> {
   override fun SceneStrategyScope<T>.calculateScene(entries: List<NavEntry<T>>): Scene<T>? {
     val entry = entries.lastOrNull() ?: return null
@@ -47,6 +53,7 @@ class BottomSheetSceneStrategy<T : Any>(
       scrimColor = scrimColor,
       shape = shape,
       dragHandle = dragHandle,
+      contentPadding = contentPadding,
     )
   }
 
@@ -69,6 +76,7 @@ private class BottomSheetScene<T : Any>(
   private val scrimColor: Color,
   private val shape: Shape,
   private val dragHandle: @Composable () -> Unit,
+  private val contentPadding: PaddingValues,
 ) : OverlayScene<T> {
   override val entries: List<NavEntry<T>> = listOf(entry)
   override val overlaidEntries: List<NavEntry<T>> = previousEntries
@@ -86,7 +94,9 @@ private class BottomSheetScene<T : Any>(
       shape = shape,
       dragHandle = dragHandle,
     ) {
-      entry.Content()
+      Column(Modifier.padding(contentPadding)) {
+        entry.Content()
+      }
     }
   }
 
