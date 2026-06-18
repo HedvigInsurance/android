@@ -1,7 +1,5 @@
 package com.hedvig.android.app.navigation
 
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.scene.OverlayScene
 import androidx.navigation3.scene.SceneStrategyScope
@@ -13,13 +11,7 @@ import com.hedvig.android.navigation.compose.BottomSheetSceneStrategy
 import org.junit.Test
 
 internal class BottomSheetSceneStrategyTest {
-  private fun strategy() = BottomSheetSceneStrategy<String>(
-    containerColor = Color.White,
-    contentColor = Color.Black,
-    scrimColor = Color.Black,
-    shape = RectangleShape,
-    dragHandle = {},
-  )
+  private fun strategy() = BottomSheetSceneStrategy<String>()
 
   private fun entry(key: String, metadata: Map<String, Any> = emptyMap()) = NavEntry(key = key, metadata = metadata) { }
 

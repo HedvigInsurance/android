@@ -72,6 +72,7 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.BottomSheetSceneStrategy
 import com.hedvig.android.navigation.compose.HedvigDeepLinkMatcher
 import com.hedvig.android.navigation.compose.entryDecorators
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
@@ -164,10 +165,9 @@ internal fun HedvigApp(
             hedvigAppState = hedvigAppState,
             sharedTransitionScope = this@SharedTransitionLayout,
           )
-          val bottomSheetSceneStrategy = rememberHedvigBottomSheetSceneStrategy()
-          val sceneStrategies = remember(bottomSheetSceneStrategy) {
+          val sceneStrategies = remember {
             listOf(
-              bottomSheetSceneStrategy,
+              BottomSheetSceneStrategy<HedvigNavKey>(),
               DialogSceneStrategy<HedvigNavKey>(),
               SinglePaneSceneStrategy(),
             )

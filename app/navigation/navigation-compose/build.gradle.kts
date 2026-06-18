@@ -23,9 +23,9 @@ kotlin {
       implementation(libs.kotlin.test)
     }
     androidMain.dependencies {
-      implementation(libs.androidx.compose.material3)
       implementation(libs.androidx.navigation3.ui)
       implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+      implementation(projects.designSystemHedvig)
     }
     jvmMain.dependencies {
       implementation(libs.ktor.client.core)

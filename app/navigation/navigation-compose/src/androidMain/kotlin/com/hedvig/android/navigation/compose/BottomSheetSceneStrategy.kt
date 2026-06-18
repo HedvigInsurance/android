@@ -1,17 +1,6 @@
 package com.hedvig.android.navigation.compose
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SheetState
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavMetadataKey
 import androidx.navigation3.runtime.contains
@@ -20,26 +9,21 @@ import androidx.navigation3.scene.OverlayScene
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategy
 import androidx.navigation3.scene.SceneStrategyScope
+import com.hedvig.android.design.system.hedvig.HedvigOverlayBottomSheet
+import com.hedvig.android.design.system.hedvig.api.HedvigOverlaySheetController
+import com.hedvig.android.design.system.hedvig.rememberHedvigOverlaySheetController
 
 /**
- * A [SceneStrategy] that renders any entry whose metadata carries [bottomSheet] inside a
- * [ModalBottomSheet], on top of the entry beneath it. Modeled on the framework
- * `AnimatedBottomSheetSample` and the metadata-opt-in pattern of [NavSuiteSceneDecoratorStrategy].
+ * A [SceneStrategy] that renders any entry whose metadata carries [bottomSheet] as a Hedvig bottom
+ * sheet overlay, on top of the entry beneath it. Modeled on the framework `AnimatedBottomSheetSample`
+ * and the metadata-opt-in pattern of [NavSuiteSceneDecoratorStrategy].
  *
- * Styling is passed in as plain values so this KMP module needs no dependency on `design-system`;
- * `:app` supplies the Hedvig tokens via `rememberHedvigBottomSheetSceneStrategy`.
+ * All styling lives in `design-system-hedvig` ([HedvigOverlayBottomSheet]); this module never
+ * touches material3.
  *
  * Must be placed before non-overlay strategies in `NavDisplay(sceneStrategies = ...)`.
  */
-@OptIn(ExperimentalMaterial3Api::class)
-class BottomSheetSceneStrategy<T : Any>(
-  private val containerColor: Color,
-  private val contentColor: Color,
-  private val scrimColor: Color,
-  private val shape: Shape,
-  private val dragHandle: @Composable () -> Unit,
-  private val contentPadding: PaddingValues = PaddingValues(0.dp),
-) : SceneStrategy<T> {
+class BottomSheetSceneStrategy<T : Any> : SceneStrategy<T> {
   override fun SceneStrategyScope<T>.calculateScene(entries: List<NavEntry<T>>): Scene<T>? {
     val entry = entries.lastOrNull() ?: return null
     if (BottomSheetKey !in entry.metadata) return null
@@ -48,12 +32,6 @@ class BottomSheetSceneStrategy<T : Any>(
       entry = entry,
       previousEntries = entries.dropLast(1),
       onBack = onBack,
-      containerColor = containerColor,
-      contentColor = contentColor,
-      scrimColor = scrimColor,
-      shape = shape,
-      dragHandle = dragHandle,
-      contentPadding = contentPadding,
     )
   }
 
@@ -65,44 +43,28 @@ class BottomSheetSceneStrategy<T : Any>(
 
 internal object BottomSheetKey : NavMetadataKey<Unit>
 
-@OptIn(ExperimentalMaterial3Api::class)
 private class BottomSheetScene<T : Any>(
   override val key: Any,
   private val entry: NavEntry<T>,
   override val previousEntries: List<NavEntry<T>>,
   private val onBack: () -> Unit,
-  private val containerColor: Color,
-  private val contentColor: Color,
-  private val scrimColor: Color,
-  private val shape: Shape,
-  private val dragHandle: @Composable () -> Unit,
-  private val contentPadding: PaddingValues,
 ) : OverlayScene<T> {
   override val entries: List<NavEntry<T>> = listOf(entry)
   override val overlaidEntries: List<NavEntry<T>> = previousEntries
 
-  private lateinit var sheetState: SheetState
+  private var sheetController: HedvigOverlaySheetController? = null
 
   override val content: @Composable () -> Unit = {
-    sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    ModalBottomSheet(
-      onDismissRequest = onBack,
-      sheetState = sheetState,
-      containerColor = containerColor,
-      contentColor = contentColor,
-      scrimColor = scrimColor,
-      shape = shape,
-      dragHandle = dragHandle,
-    ) {
-      Column(Modifier.padding(contentPadding)) {
-        entry.Content()
-      }
+    val controller = rememberHedvigOverlaySheetController()
+    sheetController = controller
+    HedvigOverlayBottomSheet(controller = controller, onDismissRequest = onBack) {
+      entry.Content()
     }
   }
 
   // Run the hide animation before the overlay leaves composition when popped.
   override suspend fun onRemove() {
-    if (::sheetState.isInitialized) sheetState.hide()
+    sheetController?.hide()
   }
 
   override fun equals(other: Any?): Boolean {
@@ -111,5 +73,10 @@ private class BottomSheetScene<T : Any>(
     return key == other.key && previousEntries == other.previousEntries && entry == other.entry
   }
 
-  override fun hashCode(): Int = key.hashCode() * 31 + previousEntries.hashCode() * 31 + entry.hashCode()
+  override fun hashCode(): Int {
+    var result = key.hashCode()
+    result = 31 * result + previousEntries.hashCode()
+    result = 31 * result + entry.hashCode()
+    return result
+  }
 }
