@@ -75,7 +75,7 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
     )
   }
 
-  entry<PaymentDetailsKey> { key ->
+  entry<PaymentDetailsKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) { key ->
     val memberChargeId = key.memberChargeId
     val viewModel: PaymentDetailsViewModel =
       assistedMetroViewModel<PaymentDetailsViewModel, PaymentDetailsViewModelFactory> { create(memberChargeId) }
@@ -85,7 +85,7 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
     )
   }
 
-  entry<PaymentHistoryKey> {
+  entry<PaymentHistoryKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
     val viewModel: PaymentHistoryViewModel = metroViewModel()
     PaymentHistoryDestination(
       viewModel = viewModel,
@@ -101,7 +101,7 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
     ForeverDestination(viewModel = viewModel)
   }
 
-  entry<DiscountsKey> {
+  entry<DiscountsKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
     val viewModel: DiscountsViewModel = metroViewModel()
     DiscountsDestination(
       viewModel = viewModel,
@@ -112,7 +112,7 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
     )
   }
 
-  entry<MemberPaymentDetailsKey> {
+  entry<MemberPaymentDetailsKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
     val viewModel: MemberPaymentDetailsViewModel = metroViewModel()
     MemberPaymentDetailsDestination(
       viewModel,
