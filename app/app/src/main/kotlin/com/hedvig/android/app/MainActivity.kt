@@ -15,6 +15,8 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.ComposeFoundationFlags
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.retain.retain
 import androidx.core.content.getSystemService
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
@@ -29,6 +31,7 @@ import com.hedvig.android.app.externalnavigator.ExternalNavigatorImpl
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
 import com.hedvig.android.app.navigation.NavRetainedViewModel
 import com.hedvig.android.app.ui.HedvigApp
+import com.hedvig.android.app.urihandler.ExternalDeepLinkHandler
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.auth.MemberIdService
@@ -51,6 +54,7 @@ import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import java.util.Locale
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.modules.SerializersModule
 
@@ -120,11 +124,24 @@ class MainActivity : AppCompatActivity() {
   private val sessionReconciler get() = navRetainedViewModel.sessionReconciler
 
   /**
-   * External/notification VIEW intents are forwarded here as raw URI strings. [HedvigApp] collects them and routes
-   * each through the in-app deep-link matcher once the member is logged in. Replaces Nav2's automatic launch-intent
-   * deep-link handling on the (now removed) NavController.
+   * External/notification VIEW intents are forwarded here as raw URI strings. The per-Activity collector in
+   * [onCreate] routes each through [externalDeepLinkHandler] once the start scene is resolved.
    */
   private val deepLinkChannel = Channel<String>(Channel.UNLIMITED)
+
+  /**
+   * Per-Activity router for external/notification deep links. Lives outside composition because it is
+   * auth/navigation reconciliation — a sibling of [sessionReconciler] — not UI, and only mutates this Activity's
+   * back stack. Lazy because it reads @Inject fields, which are only populated after `appGraph.inject(this)`.
+   */
+  private val externalDeepLinkHandler: ExternalDeepLinkHandler by lazy {
+    ExternalDeepLinkHandler(
+      matcher = deepLinkMatcher,
+      backstackController = backstackController,
+      readySignal = sessionReconciler.isReady,
+      deepLinkHosts = hedvigBuildConstants.deepLinkHosts,
+    )
+  }
 
   /**
    * A channel to report whenever the splash screen has stopped showing. This is used to let `enableEdgeToEdge` be run
@@ -176,6 +193,12 @@ class MainActivity : AppCompatActivity() {
     if (savedInstanceState == null) {
       handleDeepLinkIntent(intent)
     }
+    // onNewIntent fires (instead of a fresh onCreate) when the existing instance is reused: a caller
+    // sets FLAG_ACTIVITY_SINGLE_TOP while this Activity is top-of-task, or the launch config gains a
+    // singleTop/singleTask launchMode. None of our own callers (notification PendingIntents, App Link
+    // ACTION_VIEW) set that flag today, so those currently arrive via onCreate above — but an external
+    // caller can still trigger this path. Routed through the same handler either way so a deep link is
+    // never silently dropped.
     addOnNewIntentListener { newIntent -> handleDeepLinkIntent(newIntent) }
 
     attachBackstackTaskHooks()
@@ -192,6 +215,11 @@ class MainActivity : AppCompatActivity() {
       sessionReconciler.reconcile()
       sessionReconciler.observeForcedLogout(lifecycle)
     }
+    lifecycleScope.launch {
+      deepLinkChannel.receiveAsFlow().collect { uri ->
+        externalDeepLinkHandler.handle(uri)
+      }
+    }
     setContent {
       CompositionLocalProvider(
         LocalMetroViewModelFactory provides navRetainedViewModel.viewModelFactory,
@@ -199,7 +227,7 @@ class MainActivity : AppCompatActivity() {
         val windowSizeClass = calculateWindowSizeClass(this@MainActivity)
         HedvigApp(
           backstackController = backstackController,
-          deepLinkChannel = deepLinkChannel,
+          deepLinkReadySignal = sessionReconciler.isReady,
           windowSizeClass = windowSizeClass,
           settingsDataStore = settingsDataStore,
           featureManager = featureManager,
@@ -241,7 +269,6 @@ class MainActivity : AppCompatActivity() {
   private fun handleDeepLinkIntent(intent: Intent) {
     if (intent.action != Intent.ACTION_VIEW) return
     val uri = intent.data?.toString() ?: return
-    logcat { "MainActivity received deep-link intent for uri:$uri" }
     deepLinkChannel.trySend(uri)
   }
 }
