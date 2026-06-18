@@ -1,6 +1,7 @@
 package com.hedvig.android.navigation.compose
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavMetadataKey
 import androidx.navigation3.runtime.contains
@@ -17,9 +18,6 @@ import com.hedvig.android.design.system.hedvig.rememberHedvigOverlaySheetControl
  * A [SceneStrategy] that renders any entry whose metadata carries [bottomSheet] as a Hedvig bottom
  * sheet overlay, on top of the entry beneath it. Modeled on the framework `AnimatedBottomSheetSample`
  * and the metadata-opt-in pattern of [NavSuiteSceneDecoratorStrategy].
- *
- * All styling lives in `design-system-hedvig` ([HedvigOverlayBottomSheet]); this module never
- * touches material3.
  *
  * Must be placed before non-overlay strategies in `NavDisplay(sceneStrategies = ...)`.
  */
@@ -56,7 +54,7 @@ private class BottomSheetScene<T : Any>(
 
   override val content: @Composable () -> Unit = {
     val controller = rememberHedvigOverlaySheetController()
-    sheetController = controller
+    SideEffect { sheetController = controller }
     HedvigOverlayBottomSheet(controller = controller, onDismissRequest = onBack) {
       entry.Content()
     }

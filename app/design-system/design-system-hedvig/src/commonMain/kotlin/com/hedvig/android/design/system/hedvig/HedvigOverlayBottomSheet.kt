@@ -15,11 +15,12 @@ import com.hedvig.android.design.system.internals.rememberOverlaySheetController
 
 /**
  * A presence-driven Hedvig bottom sheet for content whose visibility is owned by the caller
- * (e.g. a navigation back-stack entry) rather than a [HedvigBottomSheetState]. Styled identically
+ * (e.g. a navigation back-stack entry) rather than a
+ * [com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState]. Styled identically
  * to [HedvigBottomSheet]: BackgroundPrimary container, TextPrimary content, Scrim @ 32 %,
  * CornerXLargeTop shape, the Hedvig drag handle, and 16 dp horizontal content padding.
  *
- * Animate it closed with [controller].hide() before the content leaves composition.
+ * Animate it closed with [controller].hide() before the content leaves the composition.
  */
 @Composable
 fun HedvigOverlayBottomSheet(
