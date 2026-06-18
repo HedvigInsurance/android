@@ -45,7 +45,9 @@ internal class ExternalDeepLinkHandler(
       return
     }
     if (targetsOwnDeepLink(uri)) {
-      logcat(LogPriority.WARN) { "ExternalDeepLinkHandler no specific match for own-host uri:$uri — falling back to Home" }
+      logcat(LogPriority.WARN) {
+        "ExternalDeepLinkHandler no specific match for own-host uri:$uri — falling back to Home"
+      }
       backstackController.navigateToExternalDeepLink(HomeKey)
       return
     }
