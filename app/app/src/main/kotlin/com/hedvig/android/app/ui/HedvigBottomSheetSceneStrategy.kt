@@ -2,6 +2,7 @@ package com.hedvig.android.app.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -42,6 +43,7 @@ internal fun rememberHedvigBottomSheetSceneStrategy(): BottomSheetSceneStrategy<
       dragHandle = {
         Box(
           modifier = Modifier
+            .fillMaxWidth()
             .wrapContentWidth(Alignment.CenterHorizontally)
             .padding(top = 8.dp, bottom = 20.dp)
             .size(width = 40.dp, height = 4.dp)
