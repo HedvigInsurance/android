@@ -5,6 +5,7 @@ import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailsDestination
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailsViewModel
+import com.hedvig.android.feature.payments.ui.details.PaymentDetailsViewModelFactory
 import com.hedvig.android.feature.payments.ui.discounts.DiscountsDestination
 import com.hedvig.android.feature.payments.ui.discounts.DiscountsViewModel
 import com.hedvig.android.feature.payments.ui.history.PaymentHistoryDestination
@@ -20,7 +21,6 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
 import com.hedvig.android.navigation.compose.add
-import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverDestination
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverViewModel
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
@@ -64,14 +64,6 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
       onNavigateToPaymentDetails = dropUnlessResumed { chargeId: String ->
         backstack.add(PaymentDetailsKey(chargeId))
       },
-      onNavigateToSuccess = { showCancellationWarning ->
-        backstack.navigateAndPopUpTo<ManualChargeKey>(
-          ManualChargeSuccessKey(
-            showCancellationWarning = showCancellationWarning,
-          ),
-          inclusive = true,
-        )
-      },
       openConversation = openConversation,
     )
   }
@@ -86,7 +78,7 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
   entry<PaymentDetailsKey> { key ->
     val memberChargeId = key.memberChargeId
     val viewModel: PaymentDetailsViewModel =
-      assistedMetroViewModel<PaymentDetailsViewModel, PaymentDetailsViewModel.Factory> { create(memberChargeId) }
+      assistedMetroViewModel<PaymentDetailsViewModel, PaymentDetailsViewModelFactory> { create(memberChargeId) }
     PaymentDetailsDestination(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,

@@ -2,6 +2,7 @@ package com.hedvig.android.feature.payments
 
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.paying.member.MemberType
 import com.hedvig.android.feature.payments.data.Discount
 import com.hedvig.android.feature.payments.data.ManualChargeToPrompt
 import com.hedvig.android.feature.payments.data.MemberCharge
@@ -280,6 +281,7 @@ internal val paymentOverViewPreviewData: PaymentOverview
       ongoingCharges = listOf(OngoingCharge("id", LocalDate.fromEpochDays(401), UiMoney(200.0, UiCurrencyCode.SEK))),
       paymentConnection = PaymentConnection.Active,
       isManualChargeAllowed = ManualChargeToPrompt(UiMoney(200.0, UiCurrencyCode.SEK)),
+      memberType = MemberType.STANDARD_MEMBER
     )
   }
 

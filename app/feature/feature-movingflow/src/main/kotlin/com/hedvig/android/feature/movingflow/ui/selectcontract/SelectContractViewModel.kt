@@ -8,14 +8,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
-import androidx.lifecycle.ViewModel
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.feature.movingflow.HousingTypeKey
+import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
 import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
 import com.hedvig.android.feature.movingflow.ui.selectcontract.SelectContractState.NotEmpty
 import com.hedvig.android.feature.movingflow.ui.selectcontract.SelectContractState.NotEmpty.Content
@@ -23,27 +25,28 @@ import com.hedvig.android.feature.movingflow.ui.selectcontract.SelectContractSta
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
-import dev.zacsweers.metro.ContributesIntoMap
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
+import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import dev.zacsweers.metro.Inject
-import dev.zacsweers.metro.binding
-import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import octopus.feature.movingflow.MoveIntentV2CreateMutation
 import octopus.feature.movingflow.fragment.MoveIntentFragment
 
 @Inject
-@ViewModelKey
-@ContributesIntoMap(AppScope::class, binding<ViewModel>())
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class SelectContractViewModel(
   apolloClient: ApolloClient,
   movingFlowRepository: MovingFlowRepository,
+  backstack: Backstack,
 ) : MoleculeViewModel<SelectContractEvent, SelectContractState>(
-    presenter = SelectContractPresenter(apolloClient, movingFlowRepository),
+    presenter = SelectContractPresenter(apolloClient, movingFlowRepository, backstack),
     initialState = SelectContractState.Loading,
   )
 
 internal class SelectContractPresenter(
   private val apolloClient: ApolloClient,
   private val movingFlowRepository: MovingFlowRepository,
+  private val backstack: Backstack,
 ) : MoleculePresenter<SelectContractEvent, SelectContractState> {
   @Composable
   override fun MoleculePresenterScope<SelectContractEvent>.present(
@@ -55,11 +58,6 @@ internal class SelectContractPresenter(
 
     CollectEvents { event ->
       when (event) {
-        SelectContractEvent.ClearNavigation -> {
-          val state = currentState as? Content ?: return@CollectEvents
-          currentState = state.copy(navigateToHousingType = false)
-        }
-
         is SelectContractEvent.SelectContract -> {
           val state = currentState as? Content ?: return@CollectEvents
           currentState = state.copy(
@@ -89,9 +87,17 @@ internal class SelectContractPresenter(
         val moveIntent = state.intent
         movingFlowRepository.initiateNewMovingFlow(moveIntent, id)
         submittingAddressId = null
-        currentState = when (state) {
-          is Content -> state.copy(navigateToHousingType = true, buttonLoading = false)
-          is Redirecting -> state.copy(navigateToHousingType = true)
+        if (state is Content) {
+          currentState = state.copy(buttonLoading = false)
+        }
+        val shouldPopUp = moveIntent.currentHomeAddresses.size < 2
+        if (shouldPopUp) {
+          backstack.navigateAndPopUpTo<SelectContractForMovingKey>(
+            HousingTypeKey(moveIntent.id),
+            inclusive = true,
+          )
+        } else {
+          backstack.add(HousingTypeKey(moveIntent.id))
         }
       }
     }
@@ -130,7 +136,6 @@ internal class SelectContractPresenter(
                 currentState = Content(
                   intent = intent,
                   selectedAddress = null,
-                  navigateToHousingType = false,
                   buttonLoading = false,
                 )
               }
@@ -141,7 +146,6 @@ internal class SelectContractPresenter(
                   currentState = Redirecting(
                     intent = intent,
                     selectedAddress = intent.currentHomeAddresses[0],
-                    navigateToHousingType = false,
                   )
                 }
               }
@@ -165,8 +169,6 @@ internal sealed interface SelectContractEvent {
 
   data object SubmitContract : SelectContractEvent
 
-  data object ClearNavigation : SelectContractEvent
-
   data object RetryLoadData : SelectContractEvent
 }
 
@@ -182,18 +184,15 @@ internal sealed interface SelectContractState {
   sealed interface NotEmpty : SelectContractState {
     val intent: MoveIntentFragment
     val selectedAddress: MoveIntentFragment.CurrentHomeAddress?
-    val navigateToHousingType: Boolean
 
     data class Redirecting(
       override val intent: MoveIntentFragment,
       override val selectedAddress: MoveIntentFragment.CurrentHomeAddress,
-      override val navigateToHousingType: Boolean,
     ) : NotEmpty
 
     data class Content(
       override val intent: MoveIntentFragment,
       override val selectedAddress: MoveIntentFragment.CurrentHomeAddress?,
-      override val navigateToHousingType: Boolean,
       val buttonLoading: Boolean,
     ) : NotEmpty
   }

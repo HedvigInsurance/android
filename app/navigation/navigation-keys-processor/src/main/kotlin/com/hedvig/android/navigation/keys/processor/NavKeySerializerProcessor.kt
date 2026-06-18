@@ -90,10 +90,15 @@ class NavKeySerializerProcessor(
 
     val packageName = keys.first().packageName.asString()
     // The generated interface is merged into the app-wide Metro graph alongside every other module's
-    // generated provider. A shared method name would make the graph inherit conflicting same-signature
-    // default methods (a diamond), so derive a per-package token to keep the interface and provide
-    // method names unique across modules.
-    val uniqueToken = packageName.toUniqueToken()
+    // generated provider, so its name and provide-method name must be unique across modules or the
+    // graph inherits a duplicate type / same-signature method diamond. The package alone is not enough:
+    // a feature and its `feature-x-navigation` sister legitimately share a package (e.g. `.navigation`).
+    // A nav-key class is declared in exactly one module and KSP only processes the current compilation's
+    // declarations, so this module's set of key FQNs is globally unique by construction — fold it into
+    // the token. This keeps the processor self-contained (no Gradle module name to inject) and impossible
+    // to silently de-duplicate wrong.
+    val keyFqns = keys.mapNotNull { it.qualifiedName?.asString() }
+    val uniqueToken = "${packageName.toUniqueToken()}_${keyFqns.joinToString("\n").stableHash()}"
 
     val provideFunction = FunSpec.builder("provide${uniqueToken}NavKeySerializersModule")
       .addAnnotation(provides)
@@ -137,6 +142,18 @@ class NavKeySerializerProcessor(
 private fun String.toUniqueToken(): String = split('.')
   .dropWhile { it == "com" || it == "hedvig" }
   .joinToString("") { segment -> segment.replaceFirstChar { it.uppercaseChar() } }
+
+// Deterministic, dependency-free FNV-1a 32-bit hash rendered as hex. Stable across machines and JVM
+// versions (unlike a salted hash), and only changes when the module's key set changes — which already
+// regenerates this file anyway.
+private fun String.stableHash(): String {
+  var hash = -2128831035 // FNV-1a 32-bit offset basis
+  for (char in this) {
+    hash = hash xor char.code
+    hash *= 16777619 // FNV-1a 32-bit prime
+  }
+  return Integer.toHexString(hash)
+}
 
 class NavKeySerializerProcessorProvider : SymbolProcessorProvider {
   override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor =

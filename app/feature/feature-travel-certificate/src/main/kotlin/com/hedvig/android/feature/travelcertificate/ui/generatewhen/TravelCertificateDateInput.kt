@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,8 +36,6 @@ import com.hedvig.android.design.system.hedvig.api.HedvigDatePickerState
 import com.hedvig.android.design.system.hedvig.api.HedvigDisplayMode
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
-import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
-import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateTravellersInputKey
 import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputUiState.Success
 import hedvig.resources.PROFILE_MY_INFO_EMAIL_LABEL
 import hedvig.resources.Res
@@ -53,20 +50,13 @@ import org.jetbrains.compose.resources.stringResource
 internal fun TravelCertificateDateInputDestination(
   viewModel: TravelCertificateDateInputViewModel,
   navigateUp: () -> Unit,
-  onNavigateToFellowTravellers: (
-    TravelCertificateTravellersInputKey.TravelCertificatePrimaryInput,
-  ) -> Unit,
-  onNavigateToOverview: (TravelCertificateUrl) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   TravelCertificateDateInput(
     uiState = uiState,
     reload = { viewModel.emit(TravelCertificateDateInputEvent.RetryLoadData) },
     navigateUp = navigateUp,
-    onNavigateToFellowTravellers = onNavigateToFellowTravellers,
-    onNavigateToOverview = onNavigateToOverview,
     submitInput = { viewModel.emit(TravelCertificateDateInputEvent.Submit) },
-    nullifyPrimaryInput = { viewModel.emit(TravelCertificateDateInputEvent.NullifyPrimaryInput) },
     onEmailChanged = { viewModel.emit(TravelCertificateDateInputEvent.ChangeEmailInput(it)) },
   )
 }
@@ -77,12 +67,7 @@ private fun TravelCertificateDateInput(
   onEmailChanged: (String) -> Unit,
   reload: () -> Unit,
   navigateUp: () -> Unit,
-  onNavigateToFellowTravellers: (
-    TravelCertificateTravellersInputKey.TravelCertificatePrimaryInput,
-  ) -> Unit,
-  onNavigateToOverview: (TravelCertificateUrl) -> Unit,
   submitInput: () -> Unit,
-  nullifyPrimaryInput: () -> Unit,
 ) {
   when (uiState) {
     TravelCertificateDateInputUiState.Failure -> {
@@ -97,22 +82,7 @@ private fun TravelCertificateDateInput(
       HedvigFullScreenCenterAlignedProgress()
     }
 
-    is TravelCertificateDateInputUiState.UrlFetched -> {
-      LaunchedEffect(Unit) {
-        onNavigateToOverview(uiState.travelCertificateUrl)
-      }
-    }
-
     is Success -> {
-      LaunchedEffect(uiState.primaryInput) {
-        if (uiState.errorMessageRes == null) {
-          if (uiState.primaryInput != null) {
-            onNavigateToFellowTravellers(uiState.primaryInput)
-            nullifyPrimaryInput()
-          }
-        }
-      }
-
       var emailInput by remember {
         mutableStateOf(uiState.email ?: "")
       }
@@ -237,9 +207,6 @@ private fun PreviewTravelCertificateDateInput(
         {},
         {},
         {},
-        {},
-        {},
-        {},
       )
     }
   }
@@ -256,10 +223,8 @@ private class ChooseInsuranceForAddonUiStateProvider :
         travelDate = LocalDate(2023, 1, 1),
         daysValid = 40,
         errorMessageRes = null,
-        primaryInput = null,
       ),
       TravelCertificateDateInputUiState.Failure,
       TravelCertificateDateInputUiState.Loading,
-      TravelCertificateDateInputUiState.UrlFetched(TravelCertificateUrl("")),
     ),
   )

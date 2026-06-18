@@ -8,6 +8,7 @@ hedvig {
   serialization()
   compose()
   navKeys()
+  viewModels()
 }
 
 dependencies {
@@ -33,6 +34,7 @@ dependencies {
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlags)
   implementation(projects.languageCore)
+  implementation(projects.featureTravelCertificateNavigation)
   implementation(projects.moleculePublic)
   implementation(projects.navigationActivity)
   implementation(projects.navigationCommon)

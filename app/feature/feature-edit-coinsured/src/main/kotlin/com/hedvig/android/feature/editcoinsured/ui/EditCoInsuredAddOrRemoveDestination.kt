@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -75,11 +74,7 @@ import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun EditCoInsuredAddOrRemoveDestination(
-  viewModel: EditCoInsuredViewModel,
-  navigateToSuccessScreen: (LocalDate) -> Unit,
-  navigateUp: () -> Unit,
-) {
+internal fun EditCoInsuredAddOrRemoveDestination(viewModel: EditCoInsuredViewModel, navigateUp: () -> Unit) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
   EditCoInsuredScreen(
@@ -102,9 +97,6 @@ internal fun EditCoInsuredAddOrRemoveDestination(
     },
     onCommitChanges = {
       viewModel.emit(EditCoInsuredEvent.OnCommitChanges)
-    },
-    onCompleted = {
-      navigateToSuccessScreen(it)
     },
     onDismissError = {
       viewModel.emit(EditCoInsuredEvent.OnDismissError)
@@ -146,7 +138,6 @@ private fun EditCoInsuredScreen(
   onRemoveCoInsuredClicked: (CoInsured) -> Unit,
   onAddCoInsuredClicked: () -> Unit,
   onCommitChanges: () -> Unit,
-  onCompleted: (LocalDate) -> Unit,
   onDismissError: () -> Unit,
   onResetAddBottomSheetState: () -> Unit,
   onResetRemoveBottomSheetState: () -> Unit,
@@ -186,11 +177,6 @@ private fun EditCoInsuredScreen(
             .nestedScroll(remember { object : NestedScrollConnection {} })
             .verticalScroll(state = rememberScrollState()),
         ) {
-          LaunchedEffect(uiState.contractUpdateDate) {
-            if (uiState.contractUpdateDate != null) {
-              onCompleted(uiState.contractUpdateDate)
-            }
-          }
           val addHedvigBottomSheetState =
             rememberHedvigBottomSheetState<EditCoInsuredState.Loaded.AddBottomSheetContentState>()
           DismissSheetOnSuccessfulInfoChangeEffect(
@@ -421,7 +407,6 @@ private fun EditCoInsuredScreenErrorPreview() {
         onRemoveCoInsuredClicked = {},
         onAddCoInsuredClicked = {},
         onCommitChanges = {},
-        onCompleted = {},
         onDismissError = {},
         onResetAddBottomSheetState = {},
         onResetRemoveBottomSheetState = {},
@@ -512,7 +497,6 @@ private fun EditCoInsuredScreenEditablePreview() {
         onRemoveCoInsuredClicked = {},
         onAddCoInsuredClicked = {},
         onCommitChanges = {},
-        onCompleted = {},
         onDismissError = {},
         onResetAddBottomSheetState = {},
         onResetRemoveBottomSheetState = {},
@@ -577,7 +561,6 @@ private fun EditCoInsuredScreenNonEditablePreview() {
         onRemoveCoInsuredClicked = {},
         onAddCoInsuredClicked = {},
         onCommitChanges = {},
-        onCompleted = {},
         onDismissError = {},
         onResetAddBottomSheetState = {},
         onResetRemoveBottomSheetState = {},

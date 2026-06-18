@@ -25,6 +25,7 @@ kotlin {
       implementation(projects.featureFlags)
       implementation(projects.featureHelpCenter)
       implementation(projects.languageCore)
+      implementation(projects.navigationCompose)
       implementation(projects.networkClients)
       implementation(projects.permissionCore)
     }

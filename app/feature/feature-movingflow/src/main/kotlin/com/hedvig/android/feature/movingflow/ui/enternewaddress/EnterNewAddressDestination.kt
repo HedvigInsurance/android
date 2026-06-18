@@ -107,22 +107,8 @@ internal fun EnterNewAddressDestination(
   navigateUp: () -> Unit,
   popBackstack: () -> Unit,
   exitFlow: () -> Unit,
-  onNavigateToAddHouseInformation: () -> Unit,
-  onNavigateToChoseCoverageLevelAndDeductible: () -> Unit,
 ) {
   val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
-  if (uiState is Content && uiState.navigateToChoseCoverage) {
-    LaunchedEffect(uiState.navigateToChoseCoverage) {
-      viewModel.emit(EnterNewAddressEvent.NavigatedToChoseCoverage)
-      onNavigateToChoseCoverageLevelAndDeductible()
-    }
-  }
-  if (uiState is Content && uiState.navigateToAddHouseInformation) {
-    LaunchedEffect(uiState.navigateToAddHouseInformation) {
-      viewModel.emit(EnterNewAddressEvent.NavigatedToAddHouseInformation)
-      onNavigateToAddHouseInformation()
-    }
-  }
   EnterNewAddressScreen(
     uiState = uiState,
     navigateUp = navigateUp,
@@ -448,8 +434,6 @@ fun PreviewEnterNewAddressScreen() {
       propertyType = PropertyType.House,
       submittingInfoFailure = null,
       isLoadingNextStep = false,
-      navigateToChoseCoverage = false,
-      navigateToAddHouseInformation = false,
     ),
     submitInput = {},
     dismissSubmissionError = {},

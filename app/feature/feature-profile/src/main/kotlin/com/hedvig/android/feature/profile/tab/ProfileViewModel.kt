@@ -7,9 +7,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
 import com.hedvig.android.auth.LogoutUseCase
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.profile.data.CheckCertificatesAvailabilityUseCase
 import com.hedvig.android.feature.profile.tab.ProfileUiEvent.Logout
 import com.hedvig.android.feature.profile.tab.ProfileUiEvent.Reload
@@ -22,17 +22,13 @@ import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
-import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
-import dev.zacsweers.metro.binding
-import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 
 @Inject
-@ViewModelKey
-@ContributesIntoMap(AppScope::class, binding<ViewModel>())
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class ProfileViewModel(
   getEuroBonusStatusUseCase: GetEurobonusStatusUseCase,
   checkCertificatesAvailabilityUseCase: CheckCertificatesAvailabilityUseCase,

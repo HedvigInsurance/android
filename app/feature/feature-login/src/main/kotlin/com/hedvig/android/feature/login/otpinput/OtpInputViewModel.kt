@@ -4,18 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
 import com.hedvig.authlib.ResendOtpResult.Error
 import com.hedvig.authlib.ResendOtpResult.Success
 import com.hedvig.authlib.SubmitOtpResult
 import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
-import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,6 +28,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @AssistedInject
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class OtpInputViewModel(
   @Assisted private val verifyUrl: String,
   @Assisted private val resendUrl: String,
@@ -155,16 +153,5 @@ internal class OtpInputViewModel(
 
   sealed class Event {
     object CodeResent : Event()
-  }
-
-  @AssistedFactory
-  @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(AppScope::class)
-  fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(
-      @Assisted verifyUrl: String,
-      @Assisted resendUrl: String,
-      @Assisted credential: String,
-    ): OtpInputViewModel
   }
 }

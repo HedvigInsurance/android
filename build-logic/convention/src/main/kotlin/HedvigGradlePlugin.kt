@@ -87,6 +87,13 @@ private fun Project.configureFeatureModuleGuidelines() {
   fun String.isFeatureModule(): Boolean {
     return startsWith("feature-") && !startsWith("feature-flags")
   }
+  // A `feature-x-navigation` module hosts only the nav keys of `feature-x` that are meant to be
+  // reached from other feature modules. It is intentionally depend-able cross-feature so that a
+  // presenter can navigate directly to another feature's entry point, while the owning feature
+  // keeps its entries/screens and internal-only keys private.
+  fun String.isFeatureNavigationModule(): Boolean {
+    return isFeatureModule() && endsWith("-navigation")
+  }
 
   val thisModuleName = this.name
   if (!thisModuleName.isFeatureModule()) return
@@ -95,13 +102,16 @@ private fun Project.configureFeatureModuleGuidelines() {
       eachDependency {
         if (requested.group != "hedvigandroid") return@eachDependency // Only check for our own modules
         if (requested.name == thisModuleName) return@eachDependency // Only check deps to other modules
+        // A `-navigation` module exists precisely to be depended on across features.
+        if (requested.name.isFeatureNavigationModule()) return@eachDependency
         val requestedModuleIsAFeatureModule = requested.name.isFeatureModule()
         require(!requestedModuleIsAFeatureModule) {
           "Hedvig build error on a module marked as featureModule() in HGP." +
             "\nYou are trying to depend on another feature module from a feature module." +
             "\nThis is not allowed as it breaks our ability to properly share code between modules." +
             "\nIn particular, $thisModuleName is trying to depend on ${requested.name}." +
-            "\nIf you need to share code between feature modules, consider moving the shared code to a library module."
+            "\nIf you need to share code between feature modules, consider moving the shared code to a library module." +
+            "\nIf you only need that feature's navigation keys, depend on its `feature-x-navigation` module instead."
         }
       }
     }

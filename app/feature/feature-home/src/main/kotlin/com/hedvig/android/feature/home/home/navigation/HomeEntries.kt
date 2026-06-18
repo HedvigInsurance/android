@@ -12,7 +12,6 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
 import com.hedvig.android.navigation.compose.add
-import com.hedvig.android.navigation.compose.popBackstack
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.homeEntries(
@@ -27,7 +26,6 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToHelpCenter: () -> Unit,
   navigateToClaimChat: () -> Unit,
-  navigateToClaimChatInDevMode: () -> Unit,
   navigateToChipIdScreen: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
@@ -41,7 +39,6 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
       onNavigateToInbox = dropUnlessResumed { onNavigateToInbox() },
       onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
       navigateToClaimChat = dropUnlessResumed { navigateToClaimChat() },
-      navigateToClaimChatInDevMode = dropUnlessResumed { navigateToClaimChatInDevMode() },
       onClaimDetailCardClicked = dropUnlessResumed { claimId: String ->
         navigateToClaimDetails(claimId)
       },

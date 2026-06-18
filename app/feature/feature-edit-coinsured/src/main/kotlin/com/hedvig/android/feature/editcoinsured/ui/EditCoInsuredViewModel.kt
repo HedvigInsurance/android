@@ -1,20 +1,19 @@
 package com.hedvig.android.feature.editcoinsured.ui
 
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.feature.editcoinsured.data.CommitMidtermChangeUseCase
 import com.hedvig.android.feature.editcoinsured.data.CreateMidtermChangeUseCase
 import com.hedvig.android.feature.editcoinsured.data.FetchCoInsuredPersonalInformationUseCase
 import com.hedvig.android.feature.editcoinsured.data.GetCoInsuredUseCase
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.navigation.compose.Backstack
 import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
-import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 
 @AssistedInject
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class EditCoInsuredViewModel(
   @Assisted contractId: String,
   @Assisted type: CoInsuredFlowType,
@@ -22,6 +21,7 @@ internal class EditCoInsuredViewModel(
   fetchCoInsuredPersonalInformationUseCaseProvider: FetchCoInsuredPersonalInformationUseCase,
   createMidtermChangeUseCase: CreateMidtermChangeUseCase,
   commitMidtermChangeUseCase: CommitMidtermChangeUseCase,
+  backstack: Backstack,
 ) : MoleculeViewModel<EditCoInsuredEvent, EditCoInsuredState>(
     EditCoInsuredState.Loading,
     EditCoInsuredPresenter(
@@ -31,15 +31,6 @@ internal class EditCoInsuredViewModel(
       fetchCoInsuredPersonalInformationUseCase = fetchCoInsuredPersonalInformationUseCaseProvider,
       createMidtermChangeUseCase = createMidtermChangeUseCase,
       commitMidtermChangeUseCase = commitMidtermChangeUseCase,
+      backstack = backstack,
     ),
-  ) {
-  @AssistedFactory
-  @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(AppScope::class)
-  fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(
-      @Assisted contractId: String,
-      @Assisted type: CoInsuredFlowType,
-    ): EditCoInsuredViewModel
-  }
-}
+  )

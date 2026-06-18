@@ -5,7 +5,6 @@ import com.hedvig.android.feature.chat.DeleteAccountViewModel
 import com.hedvig.android.feature.deleteaccount.DeleteAccountDestination
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
-import com.hedvig.android.navigation.compose.popBackstack
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.deleteAccountEntries(backstack: Backstack) {

@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -112,14 +111,8 @@ internal fun SummaryDestination(
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
   exitFlow: () -> Unit,
-  onNavigateToFinishedScreen: (LocalDate) -> Unit,
 ) {
   val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
-  if (uiState is SummaryUiState.Content && uiState.navigateToFinishedScreenWithDate != null) {
-    LaunchedEffect(uiState.navigateToFinishedScreenWithDate) {
-      onNavigateToFinishedScreen(uiState.navigateToFinishedScreenWithDate)
-    }
-  }
   SummaryScreen(
     uiState = uiState,
     navigateUp = navigateUp,
@@ -509,7 +502,6 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
       ),
       isSubmitting = false,
       submitError = null,
-      navigateToFinishedScreenWithDate = null,
       moveIntentCost = MoveIntentCost(
         monthlyNet = UiMoney(199.0, SEK),
         monthlyGross = UiMoney(249.0, SEK),

@@ -8,10 +8,10 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
 import arrow.core.raise.either
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
@@ -24,14 +24,10 @@ import com.hedvig.android.shared.foreverui.ui.data.ForeverRepository
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverEvent.RetryLoadReferralData
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverEvent.ShowedReferralCodeSubmissionError
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverEvent.SubmitNewReferralCode
-import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
-import dev.zacsweers.metro.binding
-import dev.zacsweers.metrox.viewmodel.ViewModelKey
 
 @Inject
-@ViewModelKey
-@ContributesIntoMap(AppScope::class, binding<ViewModel>())
+@HedvigViewModel(ActivityRetainedScope::class)
 class ForeverViewModel(
   foreverRepositoryProvider: Provider<ForeverRepository>,
   private val languageService: LanguageService,

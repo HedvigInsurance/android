@@ -20,6 +20,8 @@ import com.hedvig.android.feature.editcoinsured.data.FetchCoInsuredPersonalInfor
 import com.hedvig.android.feature.editcoinsured.data.GetCoInsuredUseCase
 import com.hedvig.android.feature.editcoinsured.data.Member
 import com.hedvig.android.feature.editcoinsured.data.MonthlyCost
+import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredSuccessKey
+import com.hedvig.android.feature.editcoinsured.navigation.navigateToEditCoInsuredSuccess
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredEvent.OnAddCoInsuredClicked
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredEvent.OnDismissError
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredEvent.OnRemoveCoInsuredClicked
@@ -33,6 +35,7 @@ import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.Man
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loading
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.navigation.compose.Backstack
 import kotlinx.datetime.LocalDate
 
 internal class EditCoInsuredPresenter(
@@ -42,6 +45,7 @@ internal class EditCoInsuredPresenter(
   private val fetchCoInsuredPersonalInformationUseCase: FetchCoInsuredPersonalInformationUseCase,
   private val createMidtermChangeUseCase: CreateMidtermChangeUseCase,
   private val commitMidtermChangeUseCase: CommitMidtermChangeUseCase,
+  private val backstack: Backstack,
 ) : MoleculePresenter<EditCoInsuredEvent, EditCoInsuredState> {
   @Composable
   override fun MoleculePresenterScope<EditCoInsuredEvent>.present(lastState: EditCoInsuredState): EditCoInsuredState {
@@ -72,7 +76,6 @@ internal class EditCoInsuredPresenter(
     var intentId by remember { mutableStateOf<String?>(null) }
     var selectedCoInsuredId by remember { mutableStateOf<String?>(null) }
     var commit by remember { mutableStateOf(false) }
-    var contractUpdateDate by remember { mutableStateOf<LocalDate?>(null) }
     var editedCoInsuredList by remember { mutableStateOf<List<CoInsured>?>(null) }
 
     LaunchedEffect(Unit) {
@@ -343,10 +346,8 @@ internal class EditCoInsuredPresenter(
                 }
               },
               ifRight = {
-                Snapshot.withMutableSnapshot {
-                  listState = listState.copy(isCommittingUpdate = false)
-                  contractUpdateDate = it.contractUpdateDate
-                }
+                listState = listState.copy(isCommittingUpdate = false)
+                backstack.navigateToEditCoInsuredSuccess(EditCoInsuredSuccessKey(it.contractUpdateDate, type))
               },
             )
         }
@@ -361,7 +362,6 @@ internal class EditCoInsuredPresenter(
         listState = listState,
         addBottomSheetContentState = addBottomSheetContentState,
         removeBottomSheetContentState = removeBottomSheetContentState,
-        contractUpdateDate = contractUpdateDate,
         finishedAdding = finishedAdding,
         finishedRemoving = finishedRemoving,
       )
@@ -478,7 +478,6 @@ internal sealed interface EditCoInsuredState {
     val listState: CoInsuredListState,
     val addBottomSheetContentState: AddBottomSheetContentState,
     val removeBottomSheetContentState: RemoveBottomSheetContentState,
-    val contractUpdateDate: LocalDate? = null,
     val finishedAdding: Boolean = false,
     val finishedRemoving: Boolean = false,
   ) : EditCoInsuredState {

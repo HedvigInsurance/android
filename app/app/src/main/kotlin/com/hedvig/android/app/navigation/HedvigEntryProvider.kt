@@ -15,7 +15,6 @@ import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseKey
 import com.hedvig.android.feature.addon.purchase.navigation.addonPurchaseEntries
 import com.hedvig.android.feature.change.tier.navigation.ChooseTierKey
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
-import com.hedvig.android.feature.change.tier.navigation.StartTierFlowChooseInsuranceKey
 import com.hedvig.android.feature.change.tier.navigation.StartTierFlowKey
 import com.hedvig.android.feature.change.tier.navigation.changeTierEntries
 import com.hedvig.android.feature.chat.navigation.ChatKey
@@ -36,17 +35,6 @@ import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddOrRemoveK
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredTriageKey
 import com.hedvig.android.feature.editcoinsured.navigation.editCoInsuredEntries
 import com.hedvig.android.feature.forever.navigation.foreverEntries
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoInsured
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoOwners
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkChangeAddress
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkChangeTier
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddInfo
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddOrRemove
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkCoOwnerAddInfo
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkCoOwnerAddOrRemove
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkConnectPayment
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkTermination
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate
 import com.hedvig.android.feature.help.center.helpCenterEntries
 import com.hedvig.android.feature.help.center.navigation.HelpCenterKey
 import com.hedvig.android.feature.home.home.navigation.homeEntries
@@ -74,13 +62,11 @@ import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.add
-import com.hedvig.android.navigation.compose.findLastOrNull
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
-import com.hedvig.android.navigation.compose.popBackstack
 import com.hedvig.android.navigation.compose.popUpTo
 import com.hedvig.android.navigation.compose.removeAllOf
-import com.hedvig.feature.claim.chat.ClaimChatKey
-import com.hedvig.feature.claim.chat.claimChatEntries
+import com.hedvig.feature.claim.chat.navigation.ClaimChatKey
+import com.hedvig.feature.claim.chat.navigation.claimChatEntries
 import com.hedvig.feature.remove.addons.RemoveAddonsKey
 import com.hedvig.feature.remove.addons.removeAddonsEntries
 import kotlinx.coroutines.CoroutineScope
@@ -108,7 +94,6 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
 ) {
-  val finishApp: () -> Unit = androidAppHost::finishApp
   val shouldShowRequestPermissionRationale: (String) -> Boolean = androidAppHost::shouldShowPermissionRationale
   val navigateToConnectPayment: () -> Unit = { backstack.add(TrustlyKey) }
   val navigateToPayoutAccount: () -> Unit = { backstack.add(PayoutAccountKey) }
@@ -119,13 +104,6 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   val onNavigateToImageViewer: (String, String) -> Unit = { imageUrl, cacheKey ->
     backstack.add(ImageViewerKey(imageUrl, cacheKey))
   }
-  val popBackstackOrFinish = {
-    if (!backstack.popBackstack()) {
-      finishApp()
-    }
-    Unit
-  }
-
   addLoginEntries(backstack, hedvigBuildConstants, openUrl, externalNavigator, scope, memberIdService)
   addHomeEntries(
     backstack = backstack,
@@ -149,7 +127,6 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     openUrl = openUrl,
     openCrossSellUrl = openCrossSellUrl,
     externalNavigator = externalNavigator,
-    finishApp = finishApp,
     navigateToNewConversation = navigateToNewConversation,
     navigateToMovingFlow = navigateToMovingFlow,
   )
@@ -168,7 +145,6 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     languageService = languageService,
     externalNavigator = externalNavigator,
     openUrl = openUrl,
-    popBackstackOrFinish = popBackstackOrFinish,
     navigateToConnectPayment = navigateToConnectPayment,
     navigateToPayoutAccount = navigateToPayoutAccount,
     navigateToNewConversation = navigateToNewConversation,
@@ -187,10 +163,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     imageLoader = imageLoader,
     openUrl = openUrl,
     externalNavigator = externalNavigator,
-    finishApp = finishApp,
-    popBackstackOrFinish = popBackstackOrFinish,
     navigateToNewConversation = navigateToNewConversation,
-    navigateToMovingFlow = navigateToMovingFlow,
     navigateToInbox = navigateToInbox,
   )
 }
@@ -260,9 +233,6 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
     navigateToClaimChat = {
       backstack.add(ClaimChatKey(messageId = null, isDevelopmentFlow = false))
     },
-    navigateToClaimChatInDevMode = {
-      backstack.add(ClaimChatKey(messageId = null, isDevelopmentFlow = true))
-    },
     navigateToChipIdScreen = { backstack.add(ChipIdKey()) },
     openAppSettings = externalNavigator::openAppSettings,
     openUrl = openUrl,
@@ -303,7 +273,6 @@ private fun EntryProviderScope<HedvigNavKey>.addNestedHomeEntries(
     imageLoader = imageLoader,
     openUrl = openUrl,
     onNavigateToImageViewer = onNavigateToImageViewer,
-    navigateUp = backstack::navigateUp,
     appPackageId = appPackageId,
     navigateToConversation = { conversationId -> navigateToConversation(conversationId) },
     backstack = backstack,
@@ -338,7 +307,6 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
   openUrl: (String) -> Unit,
   openCrossSellUrl: (String) -> Unit,
   externalNavigator: ExternalNavigator,
-  finishApp: () -> Unit,
   navigateToNewConversation: () -> Unit,
   navigateToMovingFlow: () -> Unit,
 ) {
@@ -358,15 +326,7 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
           backstack.navigateAndPopUpTo<TerminateInsuranceKey>(SelectContractForMovingKey, inclusive = true)
         },
         closeTerminationFlow = {
-          // If we fail to pop the backstack including TerminateInsuranceKey here it means we were deep
-          //  linked into this screen only, and they do not wish to continue with the flow they were deep linked to.
-          //  The right way to handle this is to simply finish the app as per the docs:
-          //  https://developer.android.com/guide/navigation/backstack#handle-failure
-          if (backstack.findLastOrNull<TerminateInsuranceKey>() != null) {
-            backstack.popUpTo<TerminateInsuranceKey>(inclusive = true)
-          } else {
-            finishApp()
-          }
+          backstack.popUpTo<TerminateInsuranceKey>(inclusive = true)
         },
         redirectToChangeTierFlow = { idWithIntent ->
           backstack.navigateAndPopUpTo<TerminateInsuranceKey>(
@@ -448,7 +408,6 @@ private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
     backstack = backstack,
     globalSnackBarState = globalSnackBarState,
     navigateToConnectPayment = navigateToConnectPayment,
-    navigateUp = backstack::navigateUp,
   )
   connectPaymentEntries(backstack = backstack)
 }
@@ -460,7 +419,6 @@ private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
   languageService: LanguageService,
   externalNavigator: ExternalNavigator,
   openUrl: (String) -> Unit,
-  popBackstackOrFinish: () -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
   navigateToNewConversation: () -> Unit,
@@ -471,13 +429,12 @@ private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
     },
     nestedEntries = {
       claimHistoryEntries(
-        navigateUp = backstack::navigateUp,
+        backstack = backstack,
         navigateToClaimDetails = { claimId -> backstack.add(ClaimDetailsKey(claimId)) },
       )
     },
     globalSnackBarState = globalSnackBarState,
     backstack = backstack,
-    popBackstackOrFinish = popBackstackOrFinish,
     hedvigBuildConstants = hedvigBuildConstants,
     navigateToConnectPayment = navigateToConnectPayment,
     navigateToConnectPayout = navigateToPayoutAccount,
@@ -531,16 +488,11 @@ private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
   externalNavigator: ExternalNavigator,
-  finishApp: () -> Unit,
-  popBackstackOrFinish: () -> Unit,
   navigateToNewConversation: () -> Unit,
-  navigateToMovingFlow: () -> Unit,
   navigateToInbox: () -> Unit,
 ) {
   addonPurchaseEntries(
     backstack = backstack,
-    popBackstack = popBackstackOrFinish,
-    finishApp = finishApp,
     onNavigateToNewConversation = navigateToNewConversation,
     onNavigateToChangeTier = { contractId ->
       backstack.add(StartTierFlowKey(insuranceId = contractId))
@@ -553,8 +505,6 @@ private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
   chipIdEntries(
     backstack = backstack,
     globalSnackBarState = globalSnackBarState,
-    navigateUp = backstack::navigateUp,
-    popBackstackOrFinish = popBackstackOrFinish,
     goHome = {
       backstack.popUpTo<ChipIdKey>(inclusive = true)
       backstack.selectTopLevel(TopLevelTab.Home)
@@ -567,56 +517,6 @@ private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
   editCoInsuredEntries(backstack)
   helpCenterEntries(
     backstack = backstack,
-    onNavigateUp = backstack::navigateUp,
-    onNavigateToQuickLink = onNavigateToQuickLink@{ quickLinkDestination ->
-      val destination: HedvigNavKey = when (quickLinkDestination) {
-        QuickLinkChangeAddress -> {
-          navigateToMovingFlow()
-          return@onNavigateToQuickLink
-        }
-
-        is QuickLinkCoInsuredAddInfo -> {
-          CoInsuredAddInfoKey(quickLinkDestination.contractId, CoInsuredFlowType.CoInsured)
-        }
-
-        is QuickLinkCoInsuredAddOrRemove -> {
-          CoInsuredAddOrRemoveKey(quickLinkDestination.contractId, CoInsuredFlowType.CoInsured)
-        }
-
-        is QuickLinkCoOwnerAddInfo -> {
-          CoInsuredAddInfoKey(quickLinkDestination.contractId, CoInsuredFlowType.CoOwners)
-        }
-
-        is QuickLinkCoOwnerAddOrRemove -> {
-          CoInsuredAddOrRemoveKey(quickLinkDestination.contractId, CoInsuredFlowType.CoOwners)
-        }
-
-        QuickLinkConnectPayment -> {
-          TrustlyKey
-        }
-
-        QuickLinkTermination -> {
-          TerminateInsuranceKey(null)
-        }
-
-        QuickLinkTravelCertificate -> {
-          TravelCertificateKey
-        }
-
-        QuickLinkChangeTier -> {
-          StartTierFlowChooseInsuranceKey
-        }
-
-        ChooseInsuranceForEditCoInsured -> {
-          EditCoInsuredTriageKey()
-        }
-
-        ChooseInsuranceForEditCoOwners -> {
-          EditCoInsuredTriageKey(type = CoInsuredFlowType.CoOwners)
-        }
-      }
-      backstack.add(destination)
-    },
     onNavigateToNewConversation = navigateToNewConversation,
     onNavigateToInbox = navigateToInbox,
     openUrl = openUrl,

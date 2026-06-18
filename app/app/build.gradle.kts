@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "14.3.6"
+    versionName = "14.3.7"
 
     resourceConfigurations.addAll(listOf("en", "sv-rSE"))
   }
@@ -110,6 +110,7 @@ dependencies {
   implementation(libs.androidx.compose.animationCore)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3.windowSizeClass)
+  implementation(libs.androidx.compose.runtime.retain)
   implementation(libs.androidx.compose.uiToolingPreview)
   implementation(libs.androidx.lifecycle.process)
   implementation(libs.androidx.navigation.common)
@@ -188,13 +189,16 @@ dependencies {
   implementation(projects.featureChat)
   implementation(projects.featureChipId)
   implementation(projects.featureChooseTier)
+  implementation(projects.featureChooseTierNavigation)
   implementation(projects.featureClaimChat)
   implementation(projects.featureClaimDetails)
   implementation(projects.featureClaimHistory)
   implementation(projects.featureConnectPaymentTrustly)
+  implementation(projects.featureConnectPaymentTrustlyNavigation)
   implementation(projects.featureCrossSellSheet)
   implementation(projects.featureDeleteAccount)
   implementation(projects.featureEditCoinsured)
+  implementation(projects.featureEditCoinsuredNavigation)
   implementation(projects.featureFlags)
   implementation(projects.featureForever)
   implementation(projects.featureHelpCenter)
@@ -204,13 +208,16 @@ dependencies {
   implementation(projects.featureInsurances)
   implementation(projects.featureLogin)
   implementation(projects.featureMovingflow)
+  implementation(projects.featureMovingflowNavigation)
 
   implementation(projects.featureRemoveAddons)
   implementation(projects.featurePayoutAccount)
   implementation(projects.featurePayments)
   implementation(projects.featureProfile)
   implementation(projects.featureTerminateInsurance)
+  implementation(projects.featureTerminateInsuranceNavigation)
   implementation(projects.featureTravelCertificate)
+  implementation(projects.featureTravelCertificateNavigation)
   implementation(projects.foreverUi)
   implementation(projects.initializable)
   implementation(projects.languageCore)

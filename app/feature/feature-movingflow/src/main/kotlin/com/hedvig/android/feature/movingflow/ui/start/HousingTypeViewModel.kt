@@ -8,36 +8,40 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
-import androidx.lifecycle.ViewModel
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.feature.movingflow.EnterNewAddressKey
 import com.hedvig.android.feature.movingflow.data.HousingType
 import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
 import com.hedvig.android.feature.movingflow.ui.start.HousingTypeEvent.DismissStartError
-import com.hedvig.android.feature.movingflow.ui.start.HousingTypeEvent.NavigatedToNextStep
 import com.hedvig.android.feature.movingflow.ui.start.HousingTypeEvent.SelectHousingType
 import com.hedvig.android.feature.movingflow.ui.start.HousingTypeEvent.SubmitHousingType
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
-import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metro.Inject
-import dev.zacsweers.metro.binding
-import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.flow.collectLatest
 
-@Inject
-@ViewModelKey
-@ContributesIntoMap(AppScope::class, binding<ViewModel>())
+@AssistedInject
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class HousingTypeViewModel(
+  @Assisted moveIntentId: String,
   movingFlowRepository: MovingFlowRepository,
+  backstack: Backstack,
 ) : MoleculeViewModel<HousingTypeEvent, HousingTypeUiState>(
     HousingTypeUiState.Loading,
-    HousingTypePresenter(movingFlowRepository),
+    HousingTypePresenter(moveIntentId, movingFlowRepository, backstack),
   )
 
 private class HousingTypePresenter(
+  private val moveIntentId: String,
   private val movingFlowRepository: MovingFlowRepository,
+  private val backstack: Backstack,
 ) : MoleculePresenter<HousingTypeEvent, HousingTypeUiState> {
   @Suppress("NAME_SHADOWING")
   @Composable
@@ -58,11 +62,6 @@ private class HousingTypePresenter(
           submittingHousingType = state.selectedHousingType
         }
 
-        NavigatedToNextStep -> {
-          val state = currentState as? HousingTypeUiState.Content ?: return@CollectEvents
-          currentState = state.copy(navigateToNextStep = false)
-        }
-
         DismissStartError -> {
           loadIteration++
         }
@@ -77,7 +76,6 @@ private class HousingTypePresenter(
             currentState = HousingTypeUiState.Content(
               possibleHousingTypes = HousingType.entries,
               selectedHousingType = HousingType.entries.first(),
-              navigateToNextStep = false,
             )
             submittingHousingType = null
           }
@@ -91,7 +89,7 @@ private class HousingTypePresenter(
         currentState = state.copy(buttonLoading = true)
         movingFlowRepository.updateWithHousingType(submittingHousingTypeValue)
         submittingHousingType = null
-        currentState = state.copy(navigateToNextStep = true, buttonLoading = false)
+        backstack.add(EnterNewAddressKey(moveIntentId))
       }
     }
     return currentState
@@ -102,8 +100,6 @@ internal sealed interface HousingTypeEvent {
   data class SelectHousingType(val housingType: HousingType) : HousingTypeEvent
 
   data object SubmitHousingType : HousingTypeEvent
-
-  data object NavigatedToNextStep : HousingTypeEvent
 
   data object DismissStartError : HousingTypeEvent
 }
@@ -120,7 +116,6 @@ internal sealed interface HousingTypeUiState {
   data class Content(
     val possibleHousingTypes: List<HousingType>,
     val selectedHousingType: HousingType,
-    val navigateToNextStep: Boolean,
     val buttonLoading: Boolean = false,
   ) : HousingTypeUiState
 }

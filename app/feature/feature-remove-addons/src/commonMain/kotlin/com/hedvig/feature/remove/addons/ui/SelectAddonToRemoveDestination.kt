@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -67,19 +66,9 @@ internal fun SelectAddonToRemoveDestination(
   contractId: ContractId,
   preselectedAddonProduct: AddonVariant?,
   navigateUp: () -> Unit,
-  navigateToSummary: (
-    ContractId,
-    List<CurrentlyActiveAddon>,
-    LocalDate,
-    ItemCost,
-    ItemCost,
-    ProductVariant,
-    List<CurrentlyActiveAddon>,
-    Boolean,
-  ) -> Unit,
 ) {
   val viewModel: SelectAddonToRemoveViewModel =
-    assistedMetroViewModel<SelectAddonToRemoveViewModel, SelectAddonToRemoveViewModel.Factory> {
+    assistedMetroViewModel<SelectAddonToRemoveViewModel, SelectAddonToRemoveViewModelFactory> {
       create(contractId, preselectedAddonProduct)
     }
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -88,19 +77,6 @@ internal fun SelectAddonToRemoveDestination(
     navigateUp = navigateUp,
     reload = {
       viewModel.emit(SelectAddonToRemoveEvent.Retry)
-    },
-    navigateToSummary = { params, popDestination ->
-      viewModel.emit(SelectAddonToRemoveEvent.ClearNavigation)
-      navigateToSummary(
-        params.contractId,
-        params.addonsToRemove,
-        params.activationDate,
-        params.baseCost,
-        params.currentTotalCost,
-        params.productVariant,
-        params.existingAddons,
-        popDestination,
-      )
     },
     onSubmit = {
       viewModel.emit(SelectAddonToRemoveEvent.Submit)
@@ -118,10 +94,6 @@ private fun SelectAddonToRemoveScreen(
   reload: () -> Unit,
   onSubmit: () -> Unit,
   onToggleOption: (CurrentlyActiveAddon) -> Unit,
-  navigateToSummary: (
-    params: CommonSummaryParameters,
-    popThisDestination: Boolean,
-  ) -> Unit,
 ) {
   when (uiState) {
     is SelectAddonToRemoveState.Error -> {
@@ -143,23 +115,11 @@ private fun SelectAddonToRemoveScreen(
       }
     }
 
-    is SelectAddonToRemoveState.Loading -> {
-      LaunchedEffect(uiState.paramsToNavigateToSummary) {
-        val summaryParams = uiState.paramsToNavigateToSummary
-        if (summaryParams != null) {
-          navigateToSummary(summaryParams, true)
-        }
-      }
+    SelectAddonToRemoveState.Loading -> {
       HedvigFullScreenCenterAlignedProgress()
     }
 
     is SelectAddonToRemoveState.Success -> {
-      LaunchedEffect(uiState.paramsToNavigateToSummary) {
-        val summaryParams = uiState.paramsToNavigateToSummary
-        if (summaryParams != null) {
-          navigateToSummary(summaryParams, false)
-        }
-      }
       SelectAddonToRemoveSuccessScreen(
         uiState = uiState,
         navigateUp = navigateUp,
@@ -296,7 +256,6 @@ private fun PreviewChooseInsuranceToRemoveAddonScreen(
         {},
         {},
         {},
-        { _, _ -> },
       )
     }
   }
@@ -305,7 +264,7 @@ private fun PreviewChooseInsuranceToRemoveAddonScreen(
 private class SelectAddonToRemoveStateProvider :
   CollectionPreviewParameterProvider<SelectAddonToRemoveState>(
     listOf(
-      SelectAddonToRemoveState.Loading(),
+      SelectAddonToRemoveState.Loading,
       SelectAddonToRemoveState.Error(null),
       SelectAddonToRemoveState.Error("Big error message"),
       SelectAddonToRemoveState.Success(
@@ -370,7 +329,6 @@ private class SelectAddonToRemoveStateProvider :
             id = AddonId("id1"),
           ),
         ),
-        paramsToNavigateToSummary = null,
       ),
     ),
   )

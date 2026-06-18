@@ -6,8 +6,10 @@ import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForC
 import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForCertificateViewModel
 import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputDestination
 import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputViewModel
+import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputViewModelFactory
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertificateTravellersInputDestination
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertificateTravellersInputViewModel
+import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertificateTravellersInputViewModelFactory
 import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryEvent
 import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryViewModel
 import com.hedvig.android.feature.travelcertificate.ui.history.TravelCertificateHistoryDestination
@@ -16,7 +18,6 @@ import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificat
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
-import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.core.common.android.sharePDF
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
@@ -61,25 +62,12 @@ fun EntryProviderScope<HedvigNavKey>.travelCertificateEntries(
   entry<TravelCertificateDateInputKey> { key ->
     val contractId = key.contractId
     val viewModel: TravelCertificateDateInputViewModel =
-      assistedMetroViewModel<TravelCertificateDateInputViewModel, TravelCertificateDateInputViewModel.Factory> {
+      assistedMetroViewModel<TravelCertificateDateInputViewModel, TravelCertificateDateInputViewModelFactory> {
         create(contractId)
       }
     TravelCertificateDateInputDestination(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
-      onNavigateToFellowTravellers = { travelCertificatePrimaryInput ->
-        backstack.add(
-          TravelCertificateTravellersInputKey(
-            travelCertificatePrimaryInput,
-          ),
-        )
-      },
-      onNavigateToOverview = { travelCertificateUrl ->
-        backstack.navigateAndPopUpTo<TravelCertificateKey>(
-          ShowCertificateKey(travelCertificateUrl),
-          inclusive = false,
-        )
-      },
     )
   }
 
@@ -88,19 +76,13 @@ fun EntryProviderScope<HedvigNavKey>.travelCertificateEntries(
     val viewModel: TravelCertificateTravellersInputViewModel =
       assistedMetroViewModel<
         TravelCertificateTravellersInputViewModel,
-        TravelCertificateTravellersInputViewModel.Factory,
+        TravelCertificateTravellersInputViewModelFactory,
       > {
         create(primaryInput)
       }
     TravelCertificateTravellersInputDestination(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
-      onNavigateToOverview = { travelCertificateUrl ->
-        backstack.navigateAndPopUpTo<TravelCertificateKey>(
-          ShowCertificateKey(travelCertificateUrl),
-          inclusive = false,
-        )
-      },
       onNavigateToCoInsuredAddInfo = { onNavigateToCoInsuredAddInfo(primaryInput.contractId) },
     )
   }

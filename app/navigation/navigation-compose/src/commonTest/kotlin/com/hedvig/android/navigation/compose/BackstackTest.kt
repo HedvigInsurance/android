@@ -49,10 +49,55 @@ class BackstackTest {
     assertEquals(listOf<HedvigNavKey>(A, C), stack.entries)
   }
 
-  @Test fun navigateAndPopUpTo_popsThenPushes() {
+  @Test fun popUpTo_inclusiveOfBase_keepsBaseInsteadOfEmptying() {
+    val stack = backstackOf(A, B("x"))
+    stack.popUpTo<A>(inclusive = true)
+    // Targets popUpToIndex(-1); the default keeps the base (and :app finishes the app). Never empty.
+    assertEquals(listOf<HedvigNavKey>(A), stack.entries)
+  }
+
+  @Test fun popUpToIndex_keepsEntryAtIndexAsTop() {
+    val stack = backstackOf(A, B("x"), C)
+    stack.popUpToIndex(1)
+    assertEquals(listOf<HedvigNavKey>(A, B("x")), stack.entries)
+  }
+
+  @Test fun popUpToIndex_negative_keepsBaseInsteadOfEmptying() {
+    val stack = backstackOf(A, B("x"))
+    stack.popUpToIndex(-1)
+    // Clearing the base would empty the stack; the default keeps the base (and :app finishes the app).
+    assertEquals(listOf<HedvigNavKey>(A), stack.entries)
+  }
+
+  @Test fun popUpToIndex_atOrBeyondTop_isNoOp() {
+    val stack = backstackOf(A, B("x"))
+    stack.popUpToIndex(5)
+    assertEquals(listOf<HedvigNavKey>(A, B("x")), stack.entries)
+  }
+
+  @Test fun navigateAndPopUpTo_exclusive_popsThenPushes() {
     val stack = backstackOf(A, B("x"), C)
     stack.navigateAndPopUpTo<A>(B("y"), inclusive = false)
     assertEquals(listOf<HedvigNavKey>(A, B("y")), stack.entries)
+  }
+
+  @Test fun navigateAndPopUpTo_inclusive_replacesTarget() {
+    val stack = backstackOf(A, B("x"), C)
+    stack.navigateAndPopUpTo<B>(C, inclusive = true)
+    assertEquals(listOf<HedvigNavKey>(A, C), stack.entries)
+  }
+
+  @Test fun navigateAndPopUpTo_inclusiveOfBase_emptiesThenRepopulates() {
+    val stack = backstackOf(A, B("x"))
+    stack.navigateAndPopUpTo<A>(C, inclusive = true)
+    // Unlike popUpTo, this clears the whole stack and lands on the pushed key — never finishes.
+    assertEquals(listOf<HedvigNavKey>(C), stack.entries)
+  }
+
+  @Test fun navigateAndPopUpTo_absentTarget_justAppends() {
+    val stack = backstackOf(A, B("x"))
+    stack.navigateAndPopUpTo<C>(B("y"), inclusive = true)
+    assertEquals(listOf<HedvigNavKey>(A, B("x"), B("y")), stack.entries)
   }
 
   @Test fun findLastOrNull_returnsMostRecentOfType() {

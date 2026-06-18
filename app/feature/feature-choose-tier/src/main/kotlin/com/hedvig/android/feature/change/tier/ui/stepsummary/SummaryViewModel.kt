@@ -7,14 +7,17 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
 import com.hedvig.android.feature.change.tier.data.GetCurrentContractDataUseCase
+import com.hedvig.android.feature.change.tier.navigation.ChooseTierKey
+import com.hedvig.android.feature.change.tier.navigation.SubmitFailureKey
+import com.hedvig.android.feature.change.tier.navigation.SubmitSuccessKey
 import com.hedvig.android.feature.change.tier.navigation.SummaryParameters
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.ContractData
-import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryEvent.ClearNavigation
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryEvent.Reload
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryEvent.SubmitQuote
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Failure
@@ -26,41 +29,35 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
+import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
-import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.datetime.LocalDate
 
 @AssistedInject
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class SummaryViewModel(
   @Assisted params: SummaryParameters,
   tierRepository: ChangeTierRepository,
   getCurrentContractDataUseCase: GetCurrentContractDataUseCase,
+  backstack: Backstack,
 ) : MoleculeViewModel<SummaryEvent, SummaryState>(
     initialState = Loading,
     presenter = SummaryPresenter(
       params = params,
       tierRepository = tierRepository,
       getCurrentContractDataUseCase = getCurrentContractDataUseCase,
+      backstack = backstack,
     ),
-  ) {
-  @AssistedFactory
-  @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(AppScope::class)
-  fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(
-      @Assisted params: SummaryParameters,
-    ): SummaryViewModel
-  }
-}
+  )
 
 private class SummaryPresenter(
   private val params: SummaryParameters,
   private val tierRepository: ChangeTierRepository,
   private val getCurrentContractDataUseCase: GetCurrentContractDataUseCase,
+  private val backstack: Backstack,
 ) : MoleculePresenter<SummaryEvent, SummaryState> {
   @Composable
   override fun MoleculePresenterScope<SummaryEvent>.present(lastState: SummaryState): SummaryState {
@@ -77,35 +74,22 @@ private class SummaryPresenter(
         SubmitQuote -> {
           submitIteration++
         }
-
-        ClearNavigation -> {
-          if (currentState is MakingChanges) {
-            currentState = (currentState as MakingChanges).copy(
-              navigateToSuccess = false,
-            )
-          } else if (currentState is Success) {
-            currentState = (currentState as Success).copy(
-              navigateToFail = false,
-            )
-          } else {
-            return@CollectEvents
-          }
-        }
       }
     }
 
     LaunchedEffect(submitIteration) {
       if (submitIteration > 0) {
         val previousState = currentState
-        currentState = MakingChanges()
+        currentState = MakingChanges
         tierRepository.submitChangeTierQuote(params.quoteIdToSubmit).fold(
           ifLeft = {
-            currentState =
-              (previousState as Success).copy(navigateToFail = true)
+            currentState = previousState
+            backstack.add(SubmitFailureKey)
           },
           ifRight = {
-            currentState = MakingChanges(
-              navigateToSuccess = true,
+            backstack.navigateAndPopUpTo<ChooseTierKey>(
+              SubmitSuccessKey(params.activationDate),
+              inclusive = true,
             )
           },
         )
@@ -159,15 +143,12 @@ private class SummaryPresenter(
 internal sealed interface SummaryState {
   data object Loading : SummaryState
 
-  data class MakingChanges(
-    val navigateToSuccess: Boolean = false,
-  ) : SummaryState
+  data object MakingChanges : SummaryState
 
   data class Success(
     val quote: TierDeductibleQuote,
     val currentContractData: ContractData,
     val activationDate: LocalDate,
-    val navigateToFail: Boolean = false,
   ) : SummaryState {
     val totalNet: UiMoney = quote.newTotalCost.monthlyNet
   }
@@ -179,6 +160,4 @@ internal sealed interface SummaryEvent {
   data object SubmitQuote : SummaryEvent
 
   data object Reload : SummaryEvent
-
-  data object ClearNavigation : SummaryEvent
 }
