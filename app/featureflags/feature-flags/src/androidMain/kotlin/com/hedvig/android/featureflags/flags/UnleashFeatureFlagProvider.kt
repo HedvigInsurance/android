@@ -1,11 +1,18 @@
 package com.hedvig.android.featureflags.flags
 
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.HedvigUnleashClient
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
+@Inject
+@SingleIn(AppScope::class)
+@ContributesBinding(AppScope::class)
 internal class UnleashFeatureFlagProvider(
   private val hedvigUnleashClient: HedvigUnleashClient,
 ) : FeatureManager {
