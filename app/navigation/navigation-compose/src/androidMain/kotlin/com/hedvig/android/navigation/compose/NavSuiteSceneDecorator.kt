@@ -95,7 +95,7 @@ class NavSuiteSceneDecoratorStrategy<T : Any> internal constructor(
           scene = scene,
           sharedTransitionScope = sharedTransitionScope,
           navigationSuiteType = navigationSuiteType,
-          chromeContent = chromeContent
+          chromeContent = chromeContent,
         )
       }
 
