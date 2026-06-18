@@ -23,7 +23,6 @@ kotlin {
       implementation(libs.jetbrains.compose.foundation)
       implementation(libs.jetbrains.compose.ui)
       implementation(libs.jetbrains.compose.ui.tooling.preview)
-      implementation(libs.jetbrains.navigationevent.compose)
       implementation(libs.metro.viewmodel)
       implementation(libs.metro.viewmodel.compose)
       implementation(libs.kotlinx.serialization.core)
@@ -44,8 +43,6 @@ kotlin {
       implementation(projects.navigationCompose)
     }
     androidMain.dependencies {
-      api(libs.androidx.navigation.common)
-      implementation(libs.androidx.navigation.compose)
       implementation(libs.bundles.kmpPreviewBugWorkaround)
       implementation(projects.composeUi)
       implementation(projects.navigationCore)

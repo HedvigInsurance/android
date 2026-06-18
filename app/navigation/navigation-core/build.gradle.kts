@@ -10,7 +10,6 @@ hedvig {
 kotlin {
   sourceSets {
     commonMain.dependencies {
-      api(libs.jetbrains.navigation.common)
       implementation(projects.coreBuildConstants)
       implementation(projects.coreCommonPublic)
       implementation(projects.navigationCommon)

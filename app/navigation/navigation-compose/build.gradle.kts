@@ -13,7 +13,6 @@ kotlin {
   sourceSets {
     commonMain.dependencies {
       api(libs.androidx.navigation3.runtime)
-      implementation(libs.jetbrains.navigation.compose)
       implementation(libs.jetbrains.compose.runtime)
       implementation(libs.kotlinx.serialization.core)
       implementation(libs.kotlinx.serialization.json)
