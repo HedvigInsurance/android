@@ -12,7 +12,6 @@ import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.apollo.safeFlow
-import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedCrossSell
@@ -59,7 +58,7 @@ internal class GetHomeDataUseCaseImpl(
   private val featureManager: FeatureManager,
   private val clock: Clock,
   private val timeZone: TimeZone,
-  private val getTravelAddonBannerInfoUseCaseProvider: Provider<GetAddonBannerInfoUseCase>,
+  private val getAddonBannerInfoUseCase: GetAddonBannerInfoUseCase,
   private val hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
 ) : GetHomeDataUseCase {
   override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>> {
@@ -81,7 +80,7 @@ internal class GetHomeDataUseCaseImpl(
       },
       getMemberRemindersUseCase.invoke(),
       flow {
-        emitAll(getTravelAddonBannerInfoUseCaseProvider.provide().invoke(AddonBannerSource.INSURANCES_TAB))
+        emitAll(getAddonBannerInfoUseCase.invoke(AddonBannerSource.INSURANCES_TAB))
       },
       featureManager.isFeatureEnabled(Feature.HELP_CENTER),
       featureManager.isFeatureEnabled(Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT),

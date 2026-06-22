@@ -60,7 +60,6 @@ import com.hedvig.android.compose.ui.LocalSharedTransitionScope
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
-import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.design.system.hedvig.DemoModeLabel
 import com.hedvig.android.design.system.hedvig.Surface
@@ -109,7 +108,7 @@ internal fun HedvigApp(
   externalNavigator: ExternalNavigator,
   logoutUseCase: LogoutUseCase,
   getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase,
-  missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>,
+  missedPaymentNotificationService: MissedPaymentNotificationService,
   currentDestinationHolder: CurrentDestinationHolder,
 ) {
   ReportCurrentDestinationEffect(backstackController, currentDestinationHolder)
@@ -118,7 +117,7 @@ internal fun HedvigApp(
     windowSizeClass = windowSizeClass,
     settingsDataStore = settingsDataStore,
     featureManager = featureManager,
-    missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
+    missedPaymentNotificationService = missedPaymentNotificationService,
   )
   val darkTheme = hedvigAppState.darkTheme
   HedvigTheme(darkTheme = darkTheme) {

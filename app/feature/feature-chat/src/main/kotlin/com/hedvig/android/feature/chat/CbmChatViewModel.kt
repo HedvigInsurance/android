@@ -32,7 +32,6 @@ import arrow.core.Either
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
-import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.chat.database.ChatDao
 import com.hedvig.android.data.chat.database.ChatMessageEntity
 import com.hedvig.android.data.chat.database.RemoteKeyDao
@@ -82,7 +81,7 @@ internal class CbmChatViewModel @AssistedInject constructor(
   database: RoomDatabase,
   chatDao: ChatDao,
   remoteKeyDao: RemoteKeyDao,
-  chatRepository: Provider<CbmChatRepository>,
+  chatRepository: CbmChatRepository,
   featureManager: FeatureManager,
   clock: Clock,
   context: Context,
@@ -114,7 +113,7 @@ private fun cbmChatPresenterPagingData(
   database: RoomDatabase,
   chatDao: ChatDao,
   remoteKeyDao: RemoteKeyDao,
-  chatRepository: Provider<CbmChatRepository>,
+  chatRepository: CbmChatRepository,
   clock: Clock,
   scope: CoroutineScope,
 ): Flow<PagingData<CbmUiChatMessage>> {
@@ -143,7 +142,7 @@ internal class CbmChatPresenter(
   private val conversationId: Uuid,
   private val pagingData: Flow<PagingData<CbmUiChatMessage>>,
   private val chatDao: ChatDao,
-  private val chatRepository: Provider<CbmChatRepository>,
+  private val chatRepository: CbmChatRepository,
   private val featureManager: FeatureManager,
   private val context: Context,
 ) : MoleculePresenter<CbmChatEvent, CbmChatUiState> {
@@ -178,7 +177,7 @@ internal class CbmChatPresenter(
         return@LaunchedEffect
       }
       conversationInfoStatus = Initializing
-      chatRepository.provide().getConversationInfo(conversationId).collect { result ->
+      chatRepository.getConversationInfo(conversationId).collect { result ->
         result.fold(
           ifLeft = {
             conversationInfoStatus = Failed
@@ -210,7 +209,7 @@ internal class CbmChatPresenter(
           }
         }
         if (!conversationAlreadyStarted) {
-          chatRepository.provide().createConversation(conversationId).onRight { backendConversationInfo ->
+          chatRepository.createConversation(conversationId).onRight { backendConversationInfo ->
             conversationInfoStatus = Loaded(backendConversationInfo)
           }
         }
@@ -224,7 +223,7 @@ internal class CbmChatPresenter(
           launch {
             numberOfOngoingUploads.update { it + 1 }
             startConversationIfNecessary()
-            chatRepository.provide().sendText(conversationId, null, event.message)
+            chatRepository.sendText(conversationId, null, event.message)
             numberOfOngoingUploads.update { it - 1 }
           }
         }
@@ -233,7 +232,7 @@ internal class CbmChatPresenter(
           launch {
             numberOfOngoingUploads.update { it + 1 }
             startConversationIfNecessary()
-            chatRepository.provide().sendPhotos(conversationId, event.uriList)
+            chatRepository.sendPhotos(conversationId, event.uriList)
             numberOfOngoingUploads.update { it - 1 }
           }
         }
@@ -242,7 +241,7 @@ internal class CbmChatPresenter(
           launch {
             numberOfOngoingUploads.update { it + 1 }
             startConversationIfNecessary()
-            val result = chatRepository.provide().sendMedia(conversationId, event.uriList)
+            val result = chatRepository.sendMedia(conversationId, event.uriList)
             Snapshot.withMutableSnapshot {
               for (result in result) {
                 result.onError(
@@ -259,7 +258,7 @@ internal class CbmChatPresenter(
           launch {
             numberOfOngoingUploads.update { it + 1 }
             startConversationIfNecessary()
-            val result = chatRepository.provide().retrySendMessage(conversationId, event.messageId)
+            val result = chatRepository.retrySendMessage(conversationId, event.messageId)
             result.onError(
               onFailedToPersistUriPermissionError = { showFileFailedToBeSendToast = true },
               onFileTooBigError = { showFileTooBigErrorToast = true },
@@ -317,7 +316,7 @@ private fun presentLoadedChat(
   enableInlineMediaPlayer: Boolean,
   conversationId: Uuid,
   chatDao: ChatDao,
-  chatRepository: Provider<CbmChatRepository>,
+  chatRepository: CbmChatRepository,
   showUploading: Boolean,
   showFileTooBigErrorToast: Boolean,
   hideBanner: Boolean,
@@ -329,7 +328,7 @@ private fun presentLoadedChat(
 
   val bannerText by if (!hideBanner) {
     remember(conversationId, chatRepository) {
-      flow { emitAll(chatRepository.provide().bannerText(conversationId)) }
+      flow { emitAll(chatRepository.bannerText(conversationId)) }
     }.collectAsState(null)
   } else {
     remember { mutableStateOf(null) }
@@ -348,7 +347,7 @@ private fun presentLoadedChat(
       .distinctUntilChanged()
       .collectLatest { poll ->
         if (poll) {
-          chatRepository.provide().pollNewestMessages(conversationId).collect {
+          chatRepository.pollNewestMessages(conversationId).collect {
             logcat { "Polling error: $it" }
           }
         }

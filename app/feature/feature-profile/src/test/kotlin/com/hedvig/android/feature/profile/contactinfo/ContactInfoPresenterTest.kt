@@ -17,7 +17,6 @@ import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.apollo.test.registerSuspendingTestNetworkError
 import com.hedvig.android.apollo.test.registerSuspendingTestResponse
-import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.NoopNetworkCacheManager
 import com.hedvig.android.feature.profile.data.ContactInfoRepositoryImpl
 import com.hedvig.android.feature.profile.data.ContactInformation.Email
@@ -47,7 +46,7 @@ class ContactInfoPresenterTest {
   @Test
   fun `Changing the info to a new valid input should be reflected in the state after it`() = runTest {
     val repository = ContactInfoRepositoryImpl(apolloClient, NoopNetworkCacheManager)
-    val presenter = ContactInfoPresenter(Provider { repository })
+    val presenter = ContactInfoPresenter(repository)
     val originalEmail = "test@hedvig.com"
     val originalPhoneNumber = "+123"
     val alteredEmail = "test2@hedvig.com"
@@ -121,7 +120,7 @@ class ContactInfoPresenterTest {
   @Test
   fun `Allowing submission should depend on if the input is valid`() = runTest {
     val repository = ContactInfoRepositoryImpl(apolloClient, NoopNetworkCacheManager)
-    val presenter = ContactInfoPresenter(Provider { repository })
+    val presenter = ContactInfoPresenter(repository)
     val originalEmail = "test@hedvig.com"
     val originalPhoneNumber = "+123"
     val validEmails = listOf(
@@ -189,7 +188,7 @@ class ContactInfoPresenterTest {
   @Test
   fun `Retrying does fetch the new state after an initial failure`() = runTest {
     val repository = ContactInfoRepositoryImpl(apolloClient, NoopNetworkCacheManager)
-    val presenter = ContactInfoPresenter(Provider { repository })
+    val presenter = ContactInfoPresenter(repository)
     presenter.test(ContactInfoUiState.Error) {
       assertThat(awaitItem()).isEqualTo(ContactInfoUiState.Error)
       // By default, coming back to a failed screen should automatically trigger a refresh and go into a loading state
@@ -216,7 +215,7 @@ class ContactInfoPresenterTest {
     @TestParameter testingNullPhoneNumber: Boolean,
   ) = runTest {
     val repository = ContactInfoRepositoryImpl(apolloClient, NoopNetworkCacheManager)
-    val presenter = ContactInfoPresenter(Provider { repository })
+    val presenter = ContactInfoPresenter(repository)
     val backendEmail = ""
     val backendPhoneNumber = "".takeIf { !testingNullPhoneNumber }
     apolloClient.registerSuspendingTestResponse(
@@ -244,7 +243,7 @@ class ContactInfoPresenterTest {
   @Test
   fun `Can not submit new contact info if that would mean deleting some previously present info`() = runTest {
     val repository = ContactInfoRepositoryImpl(apolloClient, NoopNetworkCacheManager)
-    val presenter = ContactInfoPresenter(Provider { repository })
+    val presenter = ContactInfoPresenter(repository)
     val backendEmail = "test@hedvig.com"
     val backendPhoneNumber = "+123"
     apolloClient.registerSuspendingTestResponse(

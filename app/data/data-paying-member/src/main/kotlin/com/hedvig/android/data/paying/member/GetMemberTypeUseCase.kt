@@ -9,15 +9,12 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.DemoManager
-import com.hedvig.android.core.demomode.ProdOrDemoProvider
-import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.toContractType
-import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
-import dev.zacsweers.metro.binding
+import kotlinx.coroutines.flow.first
 import octopus.ActiveInsuranceContractTypesQuery
 
 interface GetMemberTypeUseCase {
@@ -34,7 +31,7 @@ enum class MemberType {
   STANDARD_MEMBER,
 
   // current logic
-  STANDARD_TO_QASA_MEMBER
+  STANDARD_TO_QASA_MEMBER,
   // in Payments: if no upcoming payments: hide discounts and member payment details
   // in Payments: if upcoming payment and missing payin: show connect payin reminder,
   // else show connect payout reminder if missing
@@ -43,12 +40,16 @@ enum class MemberType {
 
 @Inject
 @SingleIn(AppScope::class)
-@ContributesBinding(AppScope::class, binding<Provider<GetMemberTypeUseCase>>())
-internal class GetMemberTypeUseCaseProvider(
-  override val demoManager: DemoManager,
-  override val demoImpl: GetMemberTypeUseCaseDemo,
-  override val prodImpl: GetMemberTypeUseCaseImpl,
-) : ProdOrDemoProvider<GetMemberTypeUseCase>
+@ContributesBinding(AppScope::class)
+internal class SwitchingGetMemberTypeUseCase(
+  private val demoManager: DemoManager,
+  private val demoImpl: GetMemberTypeUseCaseDemo,
+  private val prodImpl: GetMemberTypeUseCaseImpl,
+) : GetMemberTypeUseCase {
+  override suspend fun invoke() = pick().invoke()
+
+  private suspend fun pick(): GetMemberTypeUseCase = if (demoManager.isDemoMode().first()) demoImpl else prodImpl
+}
 
 @SingleIn(AppScope::class)
 @Inject
@@ -67,9 +68,11 @@ internal class GetMemberTypeUseCaseImpl(
         .terminatedContracts
         .map { it.currentAgreement.productVariant.typeOfContract.toContractType() }
 
-      val onlyQasaContracts = (activeContractsTypes.isNotEmpty()
-        || terminatedContractsTypes.isNotEmpty()) &&
-      activeContractsTypes.all { it == ContractType.SE_QASA_LANDLORD } &&
+      val onlyQasaContracts = (
+        activeContractsTypes.isNotEmpty() ||
+          terminatedContractsTypes.isNotEmpty()
+      ) &&
+        activeContractsTypes.all { it == ContractType.SE_QASA_LANDLORD } &&
         terminatedContractsTypes.all { it == ContractType.SE_QASA_LANDLORD }
       if (onlyQasaContracts) return@either MemberType.QASA_ONLY_MEMBER
 

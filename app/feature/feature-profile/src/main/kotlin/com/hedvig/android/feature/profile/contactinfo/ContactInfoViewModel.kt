@@ -18,7 +18,6 @@ import arrow.core.getOrElse
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
-import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoEvent.RetryLoadData
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoEvent.SubmitData
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoUiState.Content
@@ -106,14 +105,14 @@ internal sealed interface ContactInfoUiState {
 @Inject
 @HedvigViewModel(ActivityRetainedScope::class)
 internal class ContactInfoViewModel(
-  repository: Provider<ContactInfoRepository>,
+  repository: ContactInfoRepository,
 ) : MoleculeViewModel<ContactInfoEvent, ContactInfoUiState>(
     Loading,
     ContactInfoPresenter(repository),
   )
 
 internal class ContactInfoPresenter(
-  private val repository: Provider<ContactInfoRepository>,
+  private val repository: ContactInfoRepository,
 ) : MoleculePresenter<ContactInfoEvent, ContactInfoUiState> {
   @Composable
   override fun MoleculePresenterScope<ContactInfoEvent>.present(lastState: ContactInfoUiState): ContactInfoUiState {
@@ -158,7 +157,7 @@ internal class ContactInfoPresenter(
       }
       errorSnackBarText = null
       dataFetchingState = Fetching
-      repository.provide().contactInfo().fold(
+      repository.contactInfo().fold(
         ifLeft = {
           dataFetchingState = Error
         },
@@ -180,7 +179,6 @@ internal class ContactInfoPresenter(
         }
         errorSnackBarText = null
         repository
-          .provide()
           .updateInfo(
             phoneNumber = submittingPhoneNumber,
             email = submittingEmail,
