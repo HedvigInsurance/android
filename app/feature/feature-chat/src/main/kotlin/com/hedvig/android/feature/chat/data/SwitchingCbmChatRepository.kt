@@ -4,21 +4,22 @@ import android.net.Uri
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.core.demomode.DemoSwitcher
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
+import dev.zacsweers.metro.binding
 import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 
 @Inject
 @SingleIn(AppScope::class)
-@ContributesBinding(AppScope::class)
+@ContributesBinding(AppScope::class, binding = binding<CbmChatRepository>())
 internal class SwitchingCbmChatRepository(
-  private val demoManager: DemoManager,
-  private val prodImpl: CbmChatRepositoryImpl,
-  private val demoImpl: CbmChatRepositoryDemo,
-) : CbmChatRepository {
+  override val demoManager: DemoManager,
+  override val prodImpl: CbmChatRepositoryImpl,
+  override val demoImpl: CbmChatRepositoryDemo,
+) : CbmChatRepository, DemoSwitcher<CbmChatRepository> {
   override suspend fun createConversation(conversationId: Uuid) = pick().createConversation(conversationId)
 
   override fun getConversationInfo(conversationId: Uuid) = flow {
@@ -45,6 +46,4 @@ internal class SwitchingCbmChatRepository(
   override suspend fun sendPhotos(conversationId: Uuid, uriList: List<Uri>) = pick().sendPhotos(conversationId, uriList)
 
   override suspend fun sendMedia(conversationId: Uuid, uriList: List<Uri>) = pick().sendMedia(conversationId, uriList)
-
-  private suspend fun pick(): CbmChatRepository = if (demoManager.isDemoMode().first()) demoImpl else prodImpl
 }

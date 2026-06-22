@@ -9,12 +9,13 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.core.demomode.DemoSwitcher
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.toContractType
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
-import kotlinx.coroutines.flow.first
+import dev.zacsweers.metro.binding
 import octopus.ActiveInsuranceContractTypesQuery
 
 interface GetMemberTypeUseCase {
@@ -40,15 +41,13 @@ enum class MemberType {
 
 @Inject
 @SingleIn(AppScope::class)
-@ContributesBinding(AppScope::class)
+@ContributesBinding(AppScope::class, binding = binding<GetMemberTypeUseCase>())
 internal class SwitchingGetMemberTypeUseCase(
-  private val demoManager: DemoManager,
-  private val demoImpl: GetMemberTypeUseCaseDemo,
-  private val prodImpl: GetMemberTypeUseCaseImpl,
-) : GetMemberTypeUseCase {
+  override val demoManager: DemoManager,
+  override val demoImpl: GetMemberTypeUseCaseDemo,
+  override val prodImpl: GetMemberTypeUseCaseImpl,
+) : GetMemberTypeUseCase, DemoSwitcher<GetMemberTypeUseCase> {
   override suspend fun invoke() = pick().invoke()
-
-  private suspend fun pick(): GetMemberTypeUseCase = if (demoManager.isDemoMode().first()) demoImpl else prodImpl
 }
 
 @SingleIn(AppScope::class)

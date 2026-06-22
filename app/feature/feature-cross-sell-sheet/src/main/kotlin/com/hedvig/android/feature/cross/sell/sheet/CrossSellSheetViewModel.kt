@@ -18,6 +18,7 @@ import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.core.demomode.DemoSwitcher
 import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedCrossSell
@@ -31,10 +32,10 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
+import dev.zacsweers.metro.binding
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
@@ -130,16 +131,13 @@ internal fun CrossSellInfoType.toCrossSellSource(): CrossSellInput {
 
 @Inject
 @SingleIn(AppScope::class)
-@ContributesBinding(AppScope::class)
+@ContributesBinding(AppScope::class, binding = binding<GetCrossSellSheetDataUseCase>())
 internal class SwitchingGetCrossSellSheetDataUseCase(
-  private val demoManager: DemoManager,
-  private val prodImpl: GetCrossSellSheetDataUseCaseImpl,
-  private val demoImpl: DemoGetCrossSellSheetDataUseCase,
-) : GetCrossSellSheetDataUseCase {
+  override val demoManager: DemoManager,
+  override val prodImpl: GetCrossSellSheetDataUseCaseImpl,
+  override val demoImpl: DemoGetCrossSellSheetDataUseCase,
+) : GetCrossSellSheetDataUseCase, DemoSwitcher<GetCrossSellSheetDataUseCase> {
   override suspend fun invoke(source: CrossSellInput) = pick().invoke(source)
-
-  private suspend fun pick(): GetCrossSellSheetDataUseCase =
-    if (demoManager.isDemoMode().first()) demoImpl else prodImpl
 }
 
 internal interface GetCrossSellSheetDataUseCase {

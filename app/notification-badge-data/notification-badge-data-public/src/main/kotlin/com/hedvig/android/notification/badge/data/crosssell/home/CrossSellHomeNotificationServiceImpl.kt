@@ -6,27 +6,28 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.core.demomode.DemoSwitcher
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellNotificationBadgeService
 import com.hedvig.android.notification.badge.data.storage.NotificationBadge
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
+import dev.zacsweers.metro.binding
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 @Inject
 @SingleIn(AppScope::class)
-@ContributesBinding(AppScope::class)
+@ContributesBinding(AppScope::class, binding = binding<CrossSellHomeNotificationService>())
 internal class SwitchingCrossSellHomeNotificationService(
-  private val demoManager: DemoManager,
-  private val prodImpl: CrossSellHomeNotificationServiceImpl,
-  private val demoImpl: DemoCrossSellHomeNotificationService,
-) : CrossSellHomeNotificationService {
+  override val demoManager: DemoManager,
+  override val prodImpl: CrossSellHomeNotificationServiceImpl,
+  override val demoImpl: DemoCrossSellHomeNotificationService,
+) : CrossSellHomeNotificationService, DemoSwitcher<CrossSellHomeNotificationService> {
   override fun showRedDotNotification() = flow {
     emitAll(pick().showRedDotNotification())
   }
@@ -39,9 +40,6 @@ internal class SwitchingCrossSellHomeNotificationService(
 
   override suspend fun setLastEpochDayNewRecommendationNotificationWasShown(epochDay: Long) =
     pick().setLastEpochDayNewRecommendationNotificationWasShown(epochDay)
-
-  private suspend fun pick(): CrossSellHomeNotificationService =
-    if (demoManager.isDemoMode().first()) demoImpl else prodImpl
 }
 
 @Inject
