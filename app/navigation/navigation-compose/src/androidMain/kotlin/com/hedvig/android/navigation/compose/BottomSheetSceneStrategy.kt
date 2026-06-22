@@ -1,7 +1,7 @@
 package com.hedvig.android.navigation.compose
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavMetadataKey
 import androidx.navigation3.runtime.contains
@@ -54,8 +54,11 @@ private class BottomSheetScene<T : Any>(
 
   override val content: @Composable () -> Unit = {
     val controller = rememberHedvigOverlaySheetController()
-    SideEffect { sheetController = controller }
-    HedvigOverlayBottomSheet(controller = controller, onDismissRequest = onBack) {
+    sheetController = controller
+    HedvigOverlayBottomSheet(
+      controller = controller,
+      onDismissRequest = dropUnlessResumed { onBack() },
+    ) {
       entry.Content()
     }
   }
