@@ -15,6 +15,6 @@ internal class SwitchingGetUpcomingPaymentUseCase(
   override val demoManager: DemoManager,
   override val prodImpl: GetUpcomingPaymentUseCaseImpl,
   override val demoImpl: GetUpcomingPaymentUseCaseDemo,
-) : GetUpcomingPaymentUseCase, DemoSwitcher<GetUpcomingPaymentUseCase> {
+) : GetUpcomingPaymentUseCase, DemoSwitcher<GetUpcomingPaymentUseCase>() {
   override suspend fun invoke() = pick().invoke()
 }

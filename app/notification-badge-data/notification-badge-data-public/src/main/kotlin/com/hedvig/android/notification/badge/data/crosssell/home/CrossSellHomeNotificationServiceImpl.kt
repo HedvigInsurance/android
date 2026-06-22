@@ -15,8 +15,6 @@ import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metro.binding
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
@@ -27,14 +25,11 @@ internal class SwitchingCrossSellHomeNotificationService(
   override val demoManager: DemoManager,
   override val prodImpl: CrossSellHomeNotificationServiceImpl,
   override val demoImpl: DemoCrossSellHomeNotificationService,
-) : CrossSellHomeNotificationService, DemoSwitcher<CrossSellHomeNotificationService> {
-  override fun showRedDotNotification() = flow {
-    emitAll(pick().showRedDotNotification())
-  }
+) : CrossSellHomeNotificationService, DemoSwitcher<CrossSellHomeNotificationService>() {
+  override fun showRedDotNotification() = pickFlow { it.showRedDotNotification() }
 
-  override fun getLastEpochDayNewRecommendationNotificationWasShown() = flow {
-    emitAll(pick().getLastEpochDayNewRecommendationNotificationWasShown())
-  }
+  override fun getLastEpochDayNewRecommendationNotificationWasShown() =
+    pickFlow { it.getLastEpochDayNewRecommendationNotificationWasShown() }
 
   override suspend fun markAsSeen() = pick().markAsSeen()
 

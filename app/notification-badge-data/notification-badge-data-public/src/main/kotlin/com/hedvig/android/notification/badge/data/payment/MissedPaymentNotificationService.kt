@@ -8,8 +8,6 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metro.binding
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 
 @Inject
@@ -19,10 +17,8 @@ internal class SwitchingMissedPaymentNotificationService(
   override val demoManager: DemoManager,
   override val demoImpl: DemoMissedPaymentNotificationService,
   override val prodImpl: MissedPaymentNotificationServiceImpl,
-) : MissedPaymentNotificationService, DemoSwitcher<MissedPaymentNotificationService> {
-  override fun showRedDotNotification() = flow {
-    emitAll(pick().showRedDotNotification())
-  }
+) : MissedPaymentNotificationService, DemoSwitcher<MissedPaymentNotificationService>() {
+  override fun showRedDotNotification() = pickFlow { it.showRedDotNotification() }
 }
 
 interface MissedPaymentNotificationService {

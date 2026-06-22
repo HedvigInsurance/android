@@ -46,7 +46,7 @@ internal class SwitchingGetMemberTypeUseCase(
   override val demoManager: DemoManager,
   override val demoImpl: GetMemberTypeUseCaseDemo,
   override val prodImpl: GetMemberTypeUseCaseImpl,
-) : GetMemberTypeUseCase, DemoSwitcher<GetMemberTypeUseCase> {
+) : GetMemberTypeUseCase, DemoSwitcher<GetMemberTypeUseCase>() {
   override suspend fun invoke() = pick().invoke()
 }
 

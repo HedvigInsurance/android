@@ -15,6 +15,6 @@ internal class SwitchingGetShouldShowPayoutUseCase(
   override val demoManager: DemoManager,
   override val prodImpl: GetShouldShowPayoutUseCaseImpl,
   override val demoImpl: GetShouldShowPayoutUseCaseDemo,
-) : GetShouldShowPayoutUseCase, DemoSwitcher<GetShouldShowPayoutUseCase> {
+) : GetShouldShowPayoutUseCase, DemoSwitcher<GetShouldShowPayoutUseCase>() {
   override suspend fun invoke() = pick().invoke()
 }

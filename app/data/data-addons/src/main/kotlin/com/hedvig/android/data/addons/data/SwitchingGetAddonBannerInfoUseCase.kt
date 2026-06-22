@@ -7,8 +7,6 @@ import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metro.binding
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
 
 @Inject
 @SingleIn(AppScope::class)
@@ -17,8 +15,6 @@ internal class SwitchingGetAddonBannerInfoUseCase(
   override val demoManager: DemoManager,
   override val demoImpl: DemoGetAddonBannerInfoUseCase,
   override val prodImpl: GetAddonBannerInfoUseCaseImpl,
-) : GetAddonBannerInfoUseCase, DemoSwitcher<GetAddonBannerInfoUseCase> {
-  override fun invoke(source: AddonBannerSource) = flow {
-    emitAll(pick().invoke(source))
-  }
+) : GetAddonBannerInfoUseCase, DemoSwitcher<GetAddonBannerInfoUseCase>() {
+  override fun invoke(source: AddonBannerSource) = pickFlow { it.invoke(source) }
 }

@@ -136,8 +136,8 @@ internal class SwitchingGetCrossSellSheetDataUseCase(
   override val demoManager: DemoManager,
   override val prodImpl: GetCrossSellSheetDataUseCaseImpl,
   override val demoImpl: DemoGetCrossSellSheetDataUseCase,
-) : GetCrossSellSheetDataUseCase, DemoSwitcher<GetCrossSellSheetDataUseCase> {
-  override suspend fun invoke(source: CrossSellInput) = pick().invoke(source)
+) : GetCrossSellSheetDataUseCase, DemoSwitcher<GetCrossSellSheetDataUseCase>() {
+  override suspend fun invoke(source: CrossSellInput) = pickFlow { it.invoke(source) }
 }
 
 internal interface GetCrossSellSheetDataUseCase {

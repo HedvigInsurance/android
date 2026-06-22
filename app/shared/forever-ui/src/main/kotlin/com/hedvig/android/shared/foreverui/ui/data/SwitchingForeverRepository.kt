@@ -15,7 +15,7 @@ internal class SwitchingForeverRepository(
   override val demoManager: DemoManager,
   override val prodImpl: ForeverRepositoryImpl,
   override val demoImpl: ForeverRepositoryDemo,
-) : ForeverRepository, DemoSwitcher<ForeverRepository> {
+) : ForeverRepository, DemoSwitcher<ForeverRepository>() {
   override suspend fun getReferralsData() = pick().getReferralsData()
 
   override suspend fun updateCode(newCode: String) = pick().updateCode(newCode)

@@ -10,8 +10,6 @@ import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metro.binding
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
 
 @Inject
 @SingleIn(AppScope::class)
@@ -20,8 +18,6 @@ internal class SwitchingGetInsuranceContractsUseCase(
   override val demoManager: DemoManager,
   override val prodImpl: GetInsuranceContractsUseCaseImpl,
   override val demoImpl: GetInsuranceContractsUseCaseDemo,
-) : GetInsuranceContractsUseCase, DemoSwitcher<GetInsuranceContractsUseCase> {
-  override fun invoke() = flow {
-    emitAll(pick().invoke())
-  }
+) : GetInsuranceContractsUseCase, DemoSwitcher<GetInsuranceContractsUseCase>() {
+  override fun invoke() = pickFlow { it.invoke() }
 }

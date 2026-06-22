@@ -10,8 +10,6 @@ import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metro.binding
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
 
 @Inject
 @SingleIn(AppScope::class)
@@ -20,8 +18,6 @@ internal class SwitchingGetHomeDataUseCase(
   override val demoManager: DemoManager,
   override val prodImpl: GetHomeDataUseCaseImpl,
   override val demoImpl: GetHomeDataUseCaseDemo,
-) : GetHomeDataUseCase, DemoSwitcher<GetHomeDataUseCase> {
-  override fun invoke(forceNetworkFetch: Boolean) = flow {
-    emitAll(pick().invoke(forceNetworkFetch))
-  }
+) : GetHomeDataUseCase, DemoSwitcher<GetHomeDataUseCase>() {
+  override fun invoke(forceNetworkFetch: Boolean) = pickFlow { it.invoke(forceNetworkFetch) }
 }

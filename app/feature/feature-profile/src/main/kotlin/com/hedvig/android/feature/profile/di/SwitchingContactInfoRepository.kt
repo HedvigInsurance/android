@@ -20,7 +20,7 @@ internal class SwitchingContactInfoRepository(
   override val demoManager: DemoManager,
   override val prodImpl: ContactInfoRepositoryImpl,
   override val demoImpl: ContactInfoRepositoryDemo,
-) : ContactInfoRepository, DemoSwitcher<ContactInfoRepository> {
+) : ContactInfoRepository, DemoSwitcher<ContactInfoRepository>() {
   override suspend fun contactInfo() = pick().contactInfo()
 
   override suspend fun updateInfo(phoneNumber: PhoneNumber, email: Email) = pick().updateInfo(phoneNumber, email)

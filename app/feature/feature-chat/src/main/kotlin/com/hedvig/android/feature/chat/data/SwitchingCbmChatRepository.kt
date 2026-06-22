@@ -9,8 +9,6 @@ import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metro.binding
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
 
 @Inject
 @SingleIn(AppScope::class)
@@ -19,23 +17,17 @@ internal class SwitchingCbmChatRepository(
   override val demoManager: DemoManager,
   override val prodImpl: CbmChatRepositoryImpl,
   override val demoImpl: CbmChatRepositoryDemo,
-) : CbmChatRepository, DemoSwitcher<CbmChatRepository> {
+) : CbmChatRepository, DemoSwitcher<CbmChatRepository>() {
   override suspend fun createConversation(conversationId: Uuid) = pick().createConversation(conversationId)
 
-  override fun getConversationInfo(conversationId: Uuid) = flow {
-    emitAll(pick().getConversationInfo(conversationId))
-  }
+  override fun getConversationInfo(conversationId: Uuid) = pickFlow { it.getConversationInfo(conversationId) }
 
-  override fun bannerText(conversationId: Uuid) = flow {
-    emitAll(pick().bannerText(conversationId))
-  }
+  override fun bannerText(conversationId: Uuid) = pickFlow { it.bannerText(conversationId) }
 
   override suspend fun chatMessages(conversationId: Uuid, pagingToken: PagingToken?) =
     pick().chatMessages(conversationId, pagingToken)
 
-  override fun pollNewestMessages(conversationId: Uuid) = flow {
-    emitAll(pick().pollNewestMessages(conversationId))
-  }
+  override fun pollNewestMessages(conversationId: Uuid) = pickFlow { it.pollNewestMessages(conversationId) }
 
   override suspend fun retrySendMessage(conversationId: Uuid, messageId: String) =
     pick().retrySendMessage(conversationId, messageId)
