@@ -84,7 +84,9 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
     PaymentDetailsDestination(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
-      onShowExplanation = { title, body -> backstack.add(PaymentDetailExplanationKey(title, body)) },
+      onShowExplanation = dropUnlessResumed { title: String, body: String ->
+        backstack.add(PaymentDetailExplanationKey(title, body))
+      },
     )
   }
 
