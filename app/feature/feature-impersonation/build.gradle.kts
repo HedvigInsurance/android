@@ -5,6 +5,7 @@ plugins {
 
 hedvig {
   compose()
+  viewModels()
 }
 
 dependencies {

@@ -24,7 +24,6 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountEntries(
   backstack: Backstack,
   globalSnackBarState: GlobalSnackBarState,
   navigateToConnectPayment: () -> Unit,
-  navigateUp: () -> Unit,
 ) {
   entry<PayoutAccountKey> {
     val viewModel: PayoutAccountOverviewViewModel = metroViewModel()
@@ -42,7 +41,7 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountEntries(
         backstack.popUpTo<PayoutAccountKey>(inclusive = true)
         navigateToConnectPayment()
       },
-      navigateUp = navigateUp,
+      navigateUp = backstack::navigateUp,
     )
   }
 
@@ -65,9 +64,6 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountEntries(
     EditBankAccountDestination(
       viewModel = viewModel,
       globalSnackBarState = globalSnackBarState,
-      onSuccessfullyConnected = {
-        backstack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
-      },
       navigateUp = backstack::navigateUp,
     )
   }
@@ -77,9 +73,6 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountEntries(
     SetupSwishPayoutDestination(
       viewModel = viewModel,
       globalSnackBarState = globalSnackBarState,
-      onSuccessfullyConnected = {
-        backstack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
-      },
       navigateUp = backstack::navigateUp,
     )
   }
@@ -89,9 +82,6 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountEntries(
     SetupInvoicePayoutDestination(
       viewModel = viewModel,
       globalSnackBarState = globalSnackBarState,
-      onSuccessfullyConnected = {
-        backstack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
-      },
       navigateUp = backstack::navigateUp,
     )
   }

@@ -7,37 +7,25 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.insurances.data.InsuranceContract
-import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
 import com.hedvig.android.feature.insurances.insurancedetail.GetContractForContractIdUseCaseImpl.GetContractForContractIdError
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
-import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 
 @AssistedInject
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class ContractDetailViewModel(
   @Assisted contractId: String,
   getContractForContractIdUseCase: GetContractForContractIdUseCase,
 ) : MoleculeViewModel<ContractDetailsEvent, ContractDetailsUiState>(
     initialState = ContractDetailsUiState.Loading,
     presenter = ContractDetailPresenter(contractId, getContractForContractIdUseCase),
-  ) {
-  @AssistedFactory
-  @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(AppScope::class)
-  fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(
-      @Assisted contractId: String,
-    ): ContractDetailViewModel
-  }
-}
+  )
 
 internal class ContractDetailPresenter(
   private val contractId: String,

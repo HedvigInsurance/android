@@ -20,6 +20,7 @@ doctor = "0.12.1"
 easylauncher = "6.4.1"
 googleServices = "4.4.4"
 gradleDevelocity = "4.3.2"
+kctfork = "0.7.1"
 kmpNativeCoroutines = "1.0.3"
 kotlin = "2.3.21"
 kotlinpoet = "2.2.0"
@@ -38,6 +39,7 @@ androidx-activity-compose = "1.13.0"
 androidx-activity-core = "1.13.0"
 androidx-annotation = "1.9.1"
 androidx-composeBom = "2026.04.01"
+androidx-compose-runtime-retain = "1.11.1"
 androidx-datastore = "1.2.0"
 androidx-junit = "1.3.0"
 androidx-lifecycle = "2.10.0"
@@ -108,6 +110,7 @@ androidx-annotation = { module = "androidx.annotation:annotation", version.ref =
 androidx-compose-animation = { module = "androidx.compose.animation:animation" }
 androidx-compose-animationCore = { module = "androidx.compose.animation:animation-core" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidx-composeBom" }
+androidx-compose-runtime-retain = { module = "androidx.compose.runtime:runtime-retain", version.ref = "androidx-compose-runtime-retain" }
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation" }
 androidx-compose-foundationLayout = { module = "androidx.compose.foundation:foundation-layout" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
@@ -198,6 +201,7 @@ jetbrains-navigation-common = { module = "org.jetbrains.androidx.navigation:navi
 jetbrains-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "jetbrains-navigation" }
 jetbrains-navigationevent-compose = { module = "org.jetbrains.androidx.navigationevent:navigationevent-compose", version.ref = "jetbrains-navigationevent" }
 junit = { module = "junit:junit", version.ref = "junit" }
+kctfork-ksp = { module = "dev.zacsweers.kctfork:ksp", version.ref = "kctfork" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

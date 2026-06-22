@@ -97,7 +97,10 @@ internal class HedvigDeepLinkContainerImpl(
 ) : HedvigDeepLinkContainer {
   private val baseDeepLinkDomains = hedvigBuildConstants.deepLinkHosts.map { "https://$it" }
 
-  // Home does not have some special text, acts as the fallback to all unknown deep links
+  // Home matches ONLY the bare deep-link domain (no path). It is not a catch-all: an unrecognised path
+  // (e.g. ".../home" or ".../something-new") matches no pattern and the matcher returns null. The real
+  // "unknown link on one of our hosts -> land on Home" fallback lives in ExternalDeepLinkHandler (:app),
+  // because Nav3 patterns are exact and cannot express a wildcard here.
   override val home: List<String> = baseDeepLinkDomains
   override val helpCenter: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/help-center"

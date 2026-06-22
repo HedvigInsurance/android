@@ -42,13 +42,12 @@ import androidx.navigation3.ui.NavDisplay
 import coil3.ImageLoader
 import com.hedvig.android.app.AndroidAppHost
 import com.hedvig.android.app.GlobalHedvigSnackBar
-import com.hedvig.android.app.crosssell.CrossSellUriOpener
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
-import com.hedvig.android.app.navigation.SessionReconciler
 import com.hedvig.android.app.navigation.hedvigEntryProvider
 import com.hedvig.android.app.navigation.shouldFadeThrough
+import com.hedvig.android.app.urihandler.AuthorizationCodeUriHandler
 import com.hedvig.android.app.urihandler.DeepLinkFirstUriHandler
 import com.hedvig.android.app.urihandler.SafeAndroidUriHandler
 import com.hedvig.android.auth.AuthStatus
@@ -60,7 +59,6 @@ import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedU
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.design.system.hedvig.DemoModeLabel
 import com.hedvig.android.design.system.hedvig.Surface
@@ -74,7 +72,6 @@ import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.HedvigDeepLinkMatcher
 import com.hedvig.android.navigation.compose.entryDecorators
-import com.hedvig.android.navigation.compose.popBackstack
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
 import com.hedvig.android.ui.force.upgrade.ForceUpgradeBlockingScreen
 import hedvig.resources.EXIT_DEMO_MODE_BUTTON
@@ -82,6 +79,7 @@ import hedvig.resources.Res
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -91,11 +89,9 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun HedvigApp(
   backstackController: BackstackController,
-  sessionReconciler: SessionReconciler,
-  deepLinkChannel: Channel<String>,
+  deepLinkReadySignal: StateFlow<Boolean>,
   windowSizeClass: WindowSizeClass,
   settingsDataStore: SettingsDataStore,
-  getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
   featureManager: FeatureManager,
   splashIsRemovedSignal: Channel<Unit>,
   authTokenService: AuthTokenService,
@@ -118,14 +114,9 @@ internal fun HedvigApp(
     backstackController = backstackController,
     windowSizeClass = windowSizeClass,
     settingsDataStore = settingsDataStore,
-    getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
     featureManager = featureManager,
     missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
   )
-  val lifecycle = LocalLifecycleOwner.current.lifecycle
-  LaunchedEffect(sessionReconciler, backstackController) {
-    sessionReconciler.reconcile(backstackController)
-  }
   val darkTheme = hedvigAppState.darkTheme
   HedvigTheme(darkTheme = darkTheme) {
     EnableEdgeToEdgeSideEffect(darkTheme, splashIsRemovedSignal, androidAppHost::applyEdgeToEdgeStyle)
@@ -135,9 +126,6 @@ internal fun HedvigApp(
         goToPlayStore = externalNavigator::tryOpenPlayStore,
       )
     } else {
-      LaunchedEffect(sessionReconciler, backstackController, lifecycle) {
-        sessionReconciler.observeForcedLogout(backstackController, lifecycle)
-      }
       TryShowAppStoreReviewDialogEffect(
         authTokenService,
         waitUntilAppReviewDialogShouldBeOpenedUseCase,
@@ -152,26 +140,21 @@ internal fun HedvigApp(
           delegate = SafeAndroidUriHandler(context),
         )
       }
-      val crossSellUriOpener = remember(getMemberAuthorizationCodeUseCase, deepLinkFirstUriHandler, scope) {
-        CrossSellUriOpener(
+      val authorizationCodeUriHandler = remember(getMemberAuthorizationCodeUseCase, deepLinkFirstUriHandler, scope) {
+        AuthorizationCodeUriHandler(
           getMemberAuthorizationCodeUseCase = getMemberAuthorizationCodeUseCase,
-          uriHandler = deepLinkFirstUriHandler,
+          delegate = deepLinkFirstUriHandler,
           scope = scope,
         )
       }
-      LaunchedEffect(deepLinkFirstUriHandler, deepLinkChannel) {
-        deepLinkChannel.receiveAsFlow().collect { uri ->
-          deepLinkFirstUriHandler.openUri(uri)
-        }
-      }
       CrossSellSheet(
         isInScreenEligibleForCrossSells = hedvigAppState.isInScreenEligibleForCrossSells,
-        onCrossSellClick = crossSellUriOpener::open,
+        onCrossSellClick = authorizationCodeUriHandler::openUri,
         imageLoader,
       )
       SharedTransitionLayout(Modifier.fillMaxSize()) {
         CompositionLocalProvider(
-          LocalUriHandler provides deepLinkFirstUriHandler,
+          LocalUriHandler provides authorizationCodeUriHandler,
           LocalSharedTransitionScope provides this,
         ) {
           val globalSnackBarState = rememberGlobalSnackBarState()
@@ -181,6 +164,11 @@ internal fun HedvigApp(
           )
           val density = LocalDensity.current
           val popSpec = hedvigPopTransitionSpec(backstackController, density)
+          // Hold the first frame on the themed background until SessionReconciler resolves the start
+          // scene. NavDisplay would otherwise render the seeded LoginKey root for a few frames before
+          // reconcile flips it — invisible behind the OS splash on a normal cold start, but exposed
+          // when launched via an App Link into another app's task (no splash is shown there).
+          val isReady by deepLinkReadySignal.collectAsStateWithLifecycle()
           Box(Modifier.fillMaxSize()) {
             Surface(
               color = com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme.backgroundPrimary,
@@ -188,36 +176,34 @@ internal fun HedvigApp(
             ) {
               Box(propagateMinConstraints = true, modifier = Modifier.fillMaxSize()) {
                 GlobalHedvigSnackBar(globalSnackBarState = globalSnackBarState)
-                NavDisplay(
-                  backStack = backstackController.entries,
-                  onBack = {
-                    if (!backstackController.popBackstack()) {
-                      androidAppHost.finishApp()
-                    }
-                  },
-                  entryDecorators = entryDecorators { backstackController.allLiveContentKeys },
-                  sharedTransitionScope = this@SharedTransitionLayout,
-                  sceneDecoratorStrategies = sceneDecoratorStrategies,
-                  transitionSpec = hedvigTransitionSpec(backstackController, density),
-                  popTransitionSpec = popSpec,
-                  predictivePopTransitionSpec = { popSpec() },
-                  entryProvider = entryProvider {
-                    hedvigEntryProvider(
-                      backstack = backstackController,
-                      scope = scope,
-                      windowSizeClass = windowSizeClass,
-                      memberIdService = memberIdService,
-                      globalSnackBarState = globalSnackBarState,
-                      externalNavigator = externalNavigator,
-                      androidAppHost = androidAppHost,
-                      openUrl = deepLinkFirstUriHandler::openUri,
-                      openCrossSellUrl = crossSellUriOpener::open,
-                      imageLoader = imageLoader,
-                      languageService = languageService,
-                      hedvigBuildConstants = hedvigBuildConstants,
-                    )
-                  },
-                )
+                if (isReady) {
+                  NavDisplay(
+                    backStack = backstackController.entries,
+                    onBack = backstackController::popBackstack,
+                    entryDecorators = entryDecorators { backstackController.allLiveContentKeys },
+                    sharedTransitionScope = this@SharedTransitionLayout,
+                    sceneDecoratorStrategies = sceneDecoratorStrategies,
+                    transitionSpec = hedvigTransitionSpec(backstackController, density),
+                    popTransitionSpec = popSpec,
+                    predictivePopTransitionSpec = { popSpec() },
+                    entryProvider = entryProvider {
+                      hedvigEntryProvider(
+                        backstack = backstackController,
+                        scope = scope,
+                        windowSizeClass = windowSizeClass,
+                        memberIdService = memberIdService,
+                        globalSnackBarState = globalSnackBarState,
+                        externalNavigator = externalNavigator,
+                        androidAppHost = androidAppHost,
+                        openUrl = authorizationCodeUriHandler::openUri,
+                        openCrossSellUrl = authorizationCodeUriHandler::openUri,
+                        imageLoader = imageLoader,
+                        languageService = languageService,
+                        hedvigBuildConstants = hedvigBuildConstants,
+                      )
+                    },
+                  )
+                }
               }
             }
             DemoModeOverlay(demoManager, logoutUseCase)

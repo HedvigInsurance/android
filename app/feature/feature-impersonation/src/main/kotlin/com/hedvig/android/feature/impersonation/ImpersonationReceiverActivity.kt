@@ -19,6 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.common.di.MetroGraphProvider
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -30,13 +31,9 @@ import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
 import com.hedvig.authlib.AuthorizationCodeGrant
 import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
-import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import dev.zacsweers.metrox.viewmodel.MetroViewModelFactory
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlin.time.Duration.Companion.milliseconds
@@ -69,7 +66,7 @@ class ImpersonationReceiverActivity : ComponentActivity() {
       CompositionLocalProvider(
         LocalMetroViewModelFactory provides entryPoint.metroViewModelFactory,
       ) {
-        val viewModel = assistedMetroViewModel<ImpersonationReceiverViewModel, ImpersonationReceiverViewModel.Factory> {
+        val viewModel = assistedMetroViewModel<ImpersonationReceiverViewModel, ImpersonationReceiverViewModelFactory> {
           create(token)
         }
         val state by viewModel.state.collectAsStateWithLifecycle()
@@ -101,20 +98,12 @@ class ImpersonationReceiverActivity : ComponentActivity() {
 }
 
 @AssistedInject
+@HedvigViewModel(AppScope::class)
 internal class ImpersonationReceiverViewModel(
   @Assisted exchangeToken: String,
   authTokenService: AuthTokenService,
   authRepository: AuthRepository,
 ) : ViewModel() {
-  @AssistedFactory
-  @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(AppScope::class)
-  fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(
-      @Assisted exchangeToken: String,
-    ): ImpersonationReceiverViewModel
-  }
-
   sealed class ViewState {
     object Loading : ViewState()
 

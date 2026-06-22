@@ -5,6 +5,7 @@ import com.hedvig.android.design.system.hedvig.IosDiHolder
 import com.hedvig.android.design.system.hedvig.api.IosSwipeBackController
 import com.hedvig.android.feature.help.center.puppyguide.PuppyArticleDestination
 import com.hedvig.android.feature.help.center.puppyguide.PuppyArticleViewModel
+import com.hedvig.android.feature.help.center.puppyguide.PuppyArticleViewModelFactory
 import com.hedvig.android.feature.help.center.puppyguide.PuppyGuideDestination
 import com.hedvig.android.feature.help.center.puppyguide.PuppyGuideViewModel
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
@@ -38,7 +39,7 @@ fun PuppyArticleViewController(
   onScrollOffsetChanged: (Float) -> Unit,
 ): UIViewController {
   return HedvigComposeUIViewController(swipeBackController) {
-    val viewModel = assistedMetroViewModel<PuppyArticleViewModel, PuppyArticleViewModel.Factory> {
+    val viewModel = assistedMetroViewModel<PuppyArticleViewModel, PuppyArticleViewModelFactory> {
       create(storyName)
     }
     PuppyArticleDestination(

@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -76,16 +75,10 @@ import org.jetbrains.compose.resources.stringResource
 internal fun TerminationConfirmationDestination(
   viewModel: TerminationConfirmationViewModel,
   onContinue: () -> Unit,
-  navigateToSuccess: (LocalDate?) -> Unit,
   navigateUp: () -> Unit,
   closeTerminationFlow: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  LaunchedEffect(uiState.terminationSuccess) {
-    val success = uiState.terminationSuccess ?: return@LaunchedEffect
-    navigateToSuccess(success.terminationDate)
-  }
-
   TerminationConfirmationScreen(
     uiState = uiState,
     onContinue = onContinue,
@@ -101,9 +94,7 @@ private fun TerminationConfirmationScreen(
   navigateBack: () -> Unit,
   closeTerminationFlow: () -> Unit,
 ) {
-  val isSubmittingTerminationOrNavigatingForward =
-    uiState.isSubmittingContractTermination || uiState.terminationSuccess != null
-  if (isSubmittingTerminationOrNavigatingForward) {
+  if (uiState.isSubmittingContractTermination) {
     HedvigFullScreenCenterAlignedLinearProgress(
       title = stringResource(Res.string.TERMINATE_CONTRACT_TERMINATING_PROGRESS),
     )
@@ -339,7 +330,6 @@ private fun PreviewTerminationConfirmationScreen(
             ExtraCoverageItem(displayName = "displayName#$it", displayValue = "displayValue#$it")
           },
           notificationMessage = "Your insurance will be deactivated when you no longer have two insurances with us",
-          terminationSuccess = null,
           userError = null,
           isSubmittingContractTermination = isLoading,
         ),

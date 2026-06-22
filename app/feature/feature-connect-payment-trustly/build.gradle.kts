@@ -8,6 +8,7 @@ hedvig {
   serialization()
   compose()
   navKeys()
+  viewModels()
 }
 
 dependencies {
@@ -39,6 +40,7 @@ dependencies {
   implementation(projects.coreCommonPublic)
   implementation(projects.coreResources)
   implementation(projects.designSystemHedvig)
+  implementation(projects.featureConnectPaymentTrustlyNavigation)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)

@@ -229,6 +229,7 @@ private fun ContractDetailScreen(
 
         is Success -> {
           val contract = state.insuranceContract
+          val cost = contract.cost
           val consumedWindowInsets = remember { MutableWindowInsets() }
           LazyColumn(
             contentPadding = WindowInsets
@@ -286,30 +287,34 @@ private fun ContractDetailScreen(
               ) { pageIndex ->
                 when (pageIndex) {
                   0 -> {
-                    val priceInfoForBottomSheet = PriceInfoForBottomSheet(
-                      displayItems = buildList {
-                        add(
-                          contract.displayName to stringResource(
-                            Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                            contract.basePremium.toString(),
-                          ),
-                        )
-                        contract.addons?.forEach { addon ->
+                    val priceInfoForBottomSheet = if (cost != null) {
+                      PriceInfoForBottomSheet(
+                        displayItems = buildList {
                           add(
-                            addon.addonVariant.displayName
-                              to stringResource(
-                                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                                addon.premium.toString(),
-                              ),
+                            contract.displayName to stringResource(
+                              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                              contract.basePremium.toString(),
+                            ),
                           )
-                        }
-                        contract.cost.discounts.forEach { discount ->
-                          add(discount.displayName to discount.displayValue)
-                        }
-                      },
-                      totalGross = contract.cost.monthlyGross,
-                      totalNet = contract.cost.monthlyNet,
-                    )
+                          contract.addons?.forEach { addon ->
+                            add(
+                              addon.addonVariant.displayName
+                                to stringResource(
+                                  Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                                  addon.premium.toString(),
+                                ),
+                            )
+                          }
+                          cost.discounts.forEach { discount ->
+                            add(discount.displayName to discount.displayValue)
+                          }
+                        },
+                        totalGross = cost.monthlyGross,
+                        totalNet = cost.monthlyNet,
+                      )
+                    } else {
+                      null
+                    }
                     YourInfoTab(
                       contractId = contract.id,
                       coverageItems = contract.displayItems,
@@ -351,11 +356,15 @@ private fun ContractDetailScreen(
                       isTerminated = contract.isTerminated,
                       contractHolderDisplayName = contract.contractHolderDisplayName,
                       contractHolderSSN = contract.contractHolderSSN,
-                      priceToShow = contract.cost.monthlyNet,
-                      showPriceInfoIcon = contract.cost.monthlyNet != contract.cost.monthlyGross ||
-                        contract.basePremium != contract.cost.monthlyNet,
+                      priceToShow = cost?.monthlyNet,
+                      showPriceInfoIcon = cost != null && (
+                        cost.monthlyNet != cost.monthlyGross ||
+                          contract.basePremium != cost.monthlyNet
+                      ),
                       onInfoIconClick = {
-                        costBreakdownBottomSheetState.show(priceInfoForBottomSheet)
+                        if (priceInfoForBottomSheet != null) {
+                          costBreakdownBottomSheetState.show(priceInfoForBottomSheet)
+                        }
                       },
                       existingAddons = contract.existingAddons,
                       availableAddons = contract.availableAddons,

@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.payments.data
 
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.paying.member.MemberType
 import kotlinx.datetime.LocalDate
 
 data class PaymentOverview(
@@ -8,6 +9,7 @@ data class PaymentOverview(
   val ongoingCharges: List<OngoingCharge>,
   val paymentConnection: PaymentConnection,
   val isManualChargeAllowed: ManualChargeToPrompt?,
+  val memberType: MemberType
 ) {
   data class OngoingCharge(
     val id: String,

@@ -6,6 +6,7 @@ import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.feature.chat.CbmChatDestination
 import com.hedvig.android.feature.chat.CbmChatViewModel
+import com.hedvig.android.feature.chat.CbmChatViewModelFactory
 import com.hedvig.android.feature.chat.inbox.InboxDestination
 import com.hedvig.android.feature.chat.inbox.InboxViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
@@ -38,7 +39,7 @@ fun EntryProviderScope<HedvigNavKey>.cbmChatEntries(
   }
   entry<ChatKey> { key ->
     val conversationId = key.conversationId
-    val viewModel = assistedMetroViewModel<CbmChatViewModel, CbmChatViewModel.Factory> {
+    val viewModel = assistedMetroViewModel<CbmChatViewModel, CbmChatViewModelFactory> {
       create(conversationId)
     }
     CbmChatDestination(

@@ -17,12 +17,6 @@ data class StartTierFlowKey(
   val insuranceId: String,
 ) : HedvigNavKey
 
-/**
- * The start of the flow, where we have can choose insurance to change its tier
- */
-@Serializable
-data object StartTierFlowChooseInsuranceKey : HedvigNavKey
-
 @Serializable
 data class ChooseTierKey(
   /**

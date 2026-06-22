@@ -1,9 +1,7 @@
 package com.hedvig.android.app.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -12,16 +10,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.navigation.common.CrossSellEligibleDestination
 import com.hedvig.android.navigation.common.TopLevelTab
-import com.hedvig.android.navigation.compose.NavigationSuiteType
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
 import com.hedvig.android.theme.Theme
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emitAll
@@ -33,7 +30,6 @@ internal fun rememberHedvigAppState(
   backstackController: BackstackController,
   windowSizeClass: WindowSizeClass,
   settingsDataStore: SettingsDataStore,
-  getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
   featureManager: FeatureManager,
   missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>,
   coroutineScope: CoroutineScope = rememberCoroutineScope(),
@@ -43,7 +39,6 @@ internal fun rememberHedvigAppState(
     windowSizeClass,
     coroutineScope,
     settingsDataStore,
-    getOnlyHasNonPayingContractsUseCase,
     featureManager,
     missedPaymentNotificationServiceProvider,
   ) {
@@ -52,7 +47,6 @@ internal fun rememberHedvigAppState(
       windowSizeClass = windowSizeClass,
       coroutineScope = coroutineScope,
       settingsDataStore = settingsDataStore,
-      getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
       featureManager = featureManager,
       missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
     )
@@ -66,20 +60,9 @@ internal class HedvigAppState(
   val windowSizeClass: WindowSizeClass,
   coroutineScope: CoroutineScope,
   private val settingsDataStore: SettingsDataStore,
-  getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
   featureManager: FeatureManager,
   missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>,
 ) {
-  val navigationSuiteType: NavigationSuiteType
-    get() = when (windowSizeClass.widthSizeClass) {
-      WindowWidthSizeClass.Compact -> NavigationSuiteType.NavigationBar
-
-      else -> when (windowSizeClass.heightSizeClass) {
-        WindowHeightSizeClass.Expanded -> NavigationSuiteType.NavigationRailXLarge
-        else -> NavigationSuiteType.NavigationRail
-      }
-    }
-
   /**
    * App kill-switch. If this is enabled we must show nothing in the app but a button to try to update the app
    */
@@ -94,25 +77,11 @@ internal class HedvigAppState(
   val isInScreenEligibleForCrossSells: Boolean
     get() = backstackController.currentDestination is CrossSellEligibleDestination
 
-  val topLevelTabs: StateFlow<Set<TopLevelTab>> = flow {
-    val onlyHasNonPayingContracts = getOnlyHasNonPayingContractsUseCase.provide().invoke().getOrNull()
-    emit(
-      buildList {
-        add(TopLevelTab.Home)
-        add(TopLevelTab.Insurances)
-        if (onlyHasNonPayingContracts != true) {
-          add(TopLevelTab.Forever)
-        }
-        add(TopLevelTab.Payments)
-        add(TopLevelTab.Profile)
-      }.toSet(),
-    )
-  }.stateIn(
-    coroutineScope,
-    SharingStarted.Eagerly,
+  val topLevelTabs: StateFlow<Set<TopLevelTab>> = MutableStateFlow(
     setOf(
       TopLevelTab.Home,
       TopLevelTab.Insurances,
+      TopLevelTab.Forever,
       TopLevelTab.Payments,
       TopLevelTab.Profile,
     ),

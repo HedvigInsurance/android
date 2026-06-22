@@ -16,7 +16,13 @@ import com.hedvig.android.data.changetier.data.TotalCost
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
+
+internal class TestBackstack(
+  override val entries: MutableList<HedvigNavKey> = mutableListOf(),
+) : Backstack
 
 internal class FakeChangeTierRepository() : ChangeTierRepository {
   val changeTierIntentTurbine = Turbine<Either<ErrorMessage, ChangeTierDeductibleIntent>>()

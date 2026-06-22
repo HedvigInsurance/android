@@ -3,11 +3,12 @@ package com.hedvig.android.app.navigation
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import arrow.core.identity
 import arrow.fx.coroutines.raceN
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.MemberIdService
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.Inject
@@ -24,21 +25,27 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 /**
- * Owns the auth↔backstack reconciliation that used to live as loose effects in `HedvigApp`. Two jobs,
- * both narrowly about the rendered root:
+ * Owns the auth↔backstack reconciliation. Two jobs, both narrowly about the rendered root:
  *  1. [reconcile] picks the start scene (Home when logged in / in demo, Login otherwise) before the
- *     splash is dismissed, so the first frame is correct rather than the seeded Login root. [isReady]
- *     flips true once that resolves and drives the Activity's splash keep-condition.
+ *     splash is dismissed, so the first frame is correct rather than the seeded Login root. This
+ *     reconciler is 1:1 with its Activity's [BackstackController] (both [ActivityRetainedScope]-scoped),
+ *     so a warm-process relaunch builds a fresh Activity and so a fresh controller + reconciler, which
+ *     can't strand a logged-in member on the marketing screen. [isReady] gates the Activity's splash
+ *     keep-condition: it starts false, latches true once the root matches the auth state, and then
+ *     stays true for this reconciler's life — so a config change (which reuses the retained reconciler)
+ *     resolves nothing and never dips [isReady] back to false.
  *  2. [observeForcedLogout] keeps the root honest while running: log out when we leave demo mode and no
  *     longer hold tokens. It is lifecycle-gated so it only observes while the UI is STARTED.
  *
  * Deliberately narrow — only auth and the backstack root. Deep-links, notifications and the rest stay
- * in their own observers. [BackstackController] is composition + saved-state scoped, so it can't be a
- * constructor dependency; it (and the [Lifecycle]) are handed in by the composition.
+ * in their own observers. Scoped to the per-Activity [ActivityRetainedScope] so it shares this
+ * Activity's [BackstackController]; only the [Lifecycle] is handed in per call by the composition,
+ * keeping this reconciler free of any Android/Compose lifetime.
  */
-@SingleIn(AppScope::class)
+@SingleIn(ActivityRetainedScope::class)
 @Inject
 internal class SessionReconciler(
+  private val backstackController: BackstackController,
   private val authTokenService: AuthTokenService,
   private val demoManager: DemoManager,
   private val memberIdService: MemberIdService,
@@ -51,13 +58,21 @@ internal class SessionReconciler(
   private var lastKnownMemberId: String? = null
 
   /**
-   * Resolves the start scene once, before the splash is dismissed. A no-op on subsequent calls because
-   * [isReady] has already latched true.
+   * Resolves the start scene for this Activity's [backstackController] before the splash is dismissed,
+   * then latches [isReady]. Runs its body at most once per instance — the early return makes a second
+   * call (e.g. after a config change reuses the retained instance) a no-op, so [isReady] never dips back
+   * to false and the content gate keyed on it never blanks.
+   *
+   * The guard is correct because this reconciler is [ActivityRetainedScope]-scoped, 1:1 with its
+   * Activity. A config change reuses the retained reconciler, whose [backstackController] root already
+   * matches the auth state, so re-resolving would be redundant. Anything that seeds a fresh `LoginKey`
+   * root — a cold start or a warm-process relaunch — builds a new Activity and therefore a new
+   * reconciler whose [isReady] starts false, so the guard never skips a root that still needs resolving.
    */
-  suspend fun reconcile(backstackController: BackstackController) {
+  suspend fun reconcile() {
     if (isReadyState.value) return
     memberIdService.getMemberId().first()?.let { lastKnownMemberId = it }
-    determineStartScene(backstackController)
+    determineStartScene()
     isReadyState.value = true
   }
 
@@ -65,14 +80,14 @@ internal class SessionReconciler(
    * Lifecycle-gated observers that keep the rendered root honest while the UI is STARTED: tracks the
    * latest member id and logs out when we leave demo mode without holding tokens.
    */
-  suspend fun observeForcedLogout(backstackController: BackstackController, lifecycle: Lifecycle) {
+  suspend fun observeForcedLogout(lifecycle: Lifecycle) {
     lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
       launch {
         memberIdService.getMemberId().collect { id ->
           if (id != null) lastKnownMemberId = id
         }
       }
-      logoutOnInvalidCredentials(backstackController)
+      logoutOnInvalidCredentials()
     }
   }
 
@@ -81,7 +96,7 @@ internal class SessionReconciler(
    * restore the back stack already reflects the previous session, so a matching root is left untouched
    * and any deeper stack is preserved.
    */
-  private suspend fun determineStartScene(backstackController: BackstackController) {
+  private suspend fun determineStartScene() {
     val showLoggedInScene = raceN(
       { authTokenService.authStatus.filterNotNull().first() is AuthStatus.LoggedIn },
       { demoManager.isDemoMode().first { it } },
@@ -103,7 +118,7 @@ internal class SessionReconciler(
    * Automatically logs out when we are no longer in demo mode and we are also not considered to have
    * active tokens.
    */
-  private suspend fun logoutOnInvalidCredentials(backstackController: BackstackController) {
+  private suspend fun logoutOnInvalidCredentials() {
     val authStatusLog: (AuthStatus?) -> Unit = { authStatus ->
       logcat {
         buildString {

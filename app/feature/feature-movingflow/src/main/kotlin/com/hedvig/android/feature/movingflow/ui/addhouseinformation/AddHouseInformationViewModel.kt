@@ -17,7 +17,9 @@ import arrow.core.raise.ensure
 import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.feature.movingflow.ChoseCoverageLevelAndDeductibleKey
 import com.hedvig.android.feature.movingflow.compose.BooleanInput
 import com.hedvig.android.feature.movingflow.compose.ConstrainedNumberInput
 import com.hedvig.android.feature.movingflow.compose.ListInput
@@ -27,7 +29,6 @@ import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType
 import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationEvent.DismissSubmissionError
-import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationEvent.NavigatedToChoseCoverage
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationEvent.Submit
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationUiState.Content
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationUiState.Content.SubmittingInfoFailure
@@ -37,12 +38,15 @@ import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInfo
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import octopus.feature.movingflow.MoveIntentV2RequestMutation
 import octopus.type.MoveExtraBuildingInput
@@ -51,32 +55,27 @@ import octopus.type.MoveToAddressInput
 import octopus.type.MoveToHouseInput
 
 @AssistedInject
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class AddHouseInformationViewModel(
   @Assisted moveIntentId: String,
   movingFlowRepository: MovingFlowRepository,
   apolloClient: ApolloClient,
+  backstack: Backstack,
 ) : MoleculeViewModel<AddHouseInformationEvent, AddHouseInformationUiState>(
     Loading,
     AddHouseInformationPresenter(
       moveIntentId,
       movingFlowRepository,
       apolloClient,
+      backstack,
     ),
-  ) {
-  @AssistedFactory
-  @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(AppScope::class)
-  fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(
-      @Assisted moveIntentId: String,
-    ): AddHouseInformationViewModel
-  }
-}
+  )
 
 internal class AddHouseInformationPresenter(
   private val moveIntentId: String,
   private val movingFlowRepository: MovingFlowRepository,
   private val apolloClient: ApolloClient,
+  private val backstack: Backstack,
 ) : MoleculePresenter<AddHouseInformationEvent, AddHouseInformationUiState> {
   @Composable
   override fun MoleculePresenterScope<AddHouseInformationEvent>.present(
@@ -92,7 +91,6 @@ internal class AddHouseInformationPresenter(
       )
     }
     var submittingInfoFailure: SubmittingInfoFailure? by remember { mutableStateOf(null) }
-    var navigateToChoseCoverage by remember { mutableStateOf(false) }
     var inputForSubmission: InputForSubmission? by remember { mutableStateOf(null) }
 
     LaunchedEffect(Unit) {
@@ -123,10 +121,6 @@ internal class AddHouseInformationPresenter(
               submittingInfoFailure = NetworkFailure
             }
           }
-        }
-
-        NavigatedToChoseCoverage -> {
-          navigateToChoseCoverage = false
         }
 
         DismissSubmissionError -> {
@@ -164,7 +158,7 @@ internal class AddHouseInformationPresenter(
 
                 else -> {
                   movingFlowRepository.updateWithMoveIntentQuotes(moveIntentQuotesFragment)
-                  navigateToChoseCoverage = true
+                  backstack.add(ChoseCoverageLevelAndDeductibleKey(moveIntentId))
                 }
               }
             },
@@ -187,7 +181,6 @@ internal class AddHouseInformationPresenter(
             addressInput = value,
             isLoadingNextStep = inputForSubmission != null,
             submittingInfoFailure = submittingInfoFailure,
-            navigateToChoseCoverage = navigateToChoseCoverage,
           )
         }
       }
@@ -232,8 +225,6 @@ internal sealed interface AddHouseInformationEvent {
   data object Submit : AddHouseInformationEvent
 
   data object DismissSubmissionError : AddHouseInformationEvent
-
-  data object NavigatedToChoseCoverage : AddHouseInformationEvent
 }
 
 @Stable
@@ -247,11 +238,9 @@ internal sealed interface AddHouseInformationUiState {
     val addressInput: AddressInput,
     val isLoadingNextStep: Boolean,
     val submittingInfoFailure: SubmittingInfoFailure?,
-    val navigateToChoseCoverage: Boolean,
   ) : AddHouseInformationUiState {
     val shouldDisableInput: Boolean = submittingInfoFailure != null ||
-      isLoadingNextStep == true ||
-      navigateToChoseCoverage == true
+      isLoadingNextStep == true
 
     sealed interface SubmittingInfoFailure {
       data object NetworkFailure : SubmittingInfoFailure

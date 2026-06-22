@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -68,7 +67,6 @@ internal fun ManualChargeDestination(
   viewModel: ManualChargeViewModel,
   navigateUp: () -> Unit,
   onNavigateToPaymentDetails: (chargeId: String) -> Unit,
-  onNavigateToSuccess: (Boolean) -> Unit,
   openConversation: () -> Unit,
 ) {
   val uiState = viewModel.uiState.collectAsStateWithLifecycle()
@@ -78,10 +76,6 @@ internal fun ManualChargeDestination(
     navigateUp = navigateUp,
     reload = { viewModel.emit(ManualChargeEvent.Retry) },
     onNavigateToPaymentDetails = onNavigateToPaymentDetails,
-    onNavigateToSuccess = { showCancellationWarning ->
-      viewModel.emit(ManualChargeEvent.ClearNav)
-      onNavigateToSuccess(showCancellationWarning)
-    },
     onTriggerPayment = {
       viewModel.emit(ManualChargeEvent.TriggerCharge)
     },
@@ -96,7 +90,6 @@ private fun ManualChargeScreen(
   reload: () -> Unit,
   openConversation: () -> Unit,
   onNavigateToPaymentDetails: (chargeId: String) -> Unit,
-  onNavigateToSuccess: (Boolean) -> Unit,
   onTriggerPayment: () -> Unit,
 ) {
   HedvigScaffold(
@@ -140,17 +133,11 @@ private fun ManualChargeScreen(
       }
 
       is ManualChargeUiState.Success -> {
-        if (uiState.navigateToSuccess != null) {
-          LaunchedEffect(uiState.navigateToSuccess) {
-            onNavigateToSuccess(uiState.manualChargeInfo.showCancellationWarning)
-          }
-        } else {
-          ManualChargeSuccessScreen(
-            uiState,
-            onNavigateToPaymentDetails = onNavigateToPaymentDetails,
-            onTriggerPayment = onTriggerPayment,
-          )
-        }
+        ManualChargeSuccessScreen(
+          uiState,
+          onNavigateToPaymentDetails = onNavigateToPaymentDetails,
+          onTriggerPayment = onTriggerPayment,
+        )
       }
     }
   }
@@ -339,11 +326,9 @@ private fun ManualChargeScreenSuccessPreview(
             bankAccountDisplayValue = "Swedbank",
             showCancellationWarning = showCancellationWarning,
           ),
-          navigateToSuccess = null,
         ),
         navigateUp = {},
         reload = {},
-        {},
         {},
         {},
         {},
@@ -362,7 +347,6 @@ private fun ManualChargeScreenLoadingPreview() {
         uiState = ManualChargeUiState.Loading,
         navigateUp = {},
         reload = {},
-        {},
         {},
         {},
         {},
@@ -394,7 +378,6 @@ private fun ManualChargeScreenFailurePreview(
         ),
         navigateUp = {},
         reload = {},
-        {},
         {},
         {},
         {},

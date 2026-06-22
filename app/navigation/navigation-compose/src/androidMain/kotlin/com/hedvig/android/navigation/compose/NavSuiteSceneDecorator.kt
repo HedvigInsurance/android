@@ -91,11 +91,16 @@ class NavSuiteSceneDecoratorStrategy<T : Any> internal constructor(
     if (!scene.metadata.showsNavBar()) return scene
     return when (loneDeepLinkChrome()) {
       LoneDeepLinkChrome.ShowSuite -> {
-        NavSuiteScene(scene, sharedTransitionScope, navigationSuiteType, chromeContent)
+        NavSuiteScene(
+          scene = scene,
+          sharedTransitionScope = sharedTransitionScope,
+          navigationSuiteType = navigationSuiteType,
+          chromeContent = chromeContent
+        )
       }
 
       LoneDeepLinkChrome.ShowUpBar -> {
-        NavUpBarScene(scene, upBarContent)
+        NavUpBarScene(scene = scene, upBarContent = upBarContent)
       }
 
       LoneDeepLinkChrome.ShowNothing -> {
@@ -133,11 +138,11 @@ fun <T : Any> rememberNavSuiteSceneDecoratorStrategy(
   val movableUpBar = remember { movableContentOf { currentUpBar() } }
   return remember(sharedTransitionScope) {
     NavSuiteSceneDecoratorStrategy(
-      sharedTransitionScope,
-      { currentType() },
-      movableChrome,
-      movableUpBar,
-      { currentLoneChrome() },
+      sharedTransitionScope = sharedTransitionScope,
+      navigationSuiteType = { currentType() },
+      chromeContent = movableChrome,
+      upBarContent = movableUpBar,
+      loneDeepLinkChrome = { currentLoneChrome() },
     )
   }
 }

@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.insurances.insurance
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -27,6 +28,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,6 +44,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import arrow.core.nonEmptyListOf
@@ -328,6 +333,12 @@ private fun ContractsSection(
         text = stringResource(Res.string.INSURANCES_NO_ACTIVE),
         description = null,
       )
+    } else if (contracts.size == 1) {
+      InsuranceCardWrapper(
+        contract = contracts[0],
+        imageLoader = imageLoader,
+        onClick = { onInsuranceCardClick(contracts[0].id) },
+      )
     } else {
       InsuranceCardsPile(
         contracts = contracts,
@@ -347,10 +358,18 @@ private fun InsuranceCardsPile(
   val peekTopPadding = 10.dp
   val peekBottomPadding = 16.dp
   val textSpacer = 4.dp
+  val expandedSpacing = 8.dp
+
+  var expanded by rememberSaveable { mutableStateOf(false) }
+  val progress by animateFloatAsState(
+    targetValue = if (expanded) 1f else 0f,
+    label = "insuranceCardsPileExpandProgress",
+  )
 
   SubcomposeLayout(
     modifier = Modifier.fillMaxWidth(),
   ) { constraints ->
+    val expandedSpacingPx = expandedSpacing.roundToPx()
 
     val peekHeights = contracts.indices.drop(1).map { idx ->
       val contract = contracts[idx]
@@ -370,21 +389,39 @@ private fun InsuranceCardsPile(
         InsuranceCardWrapper(
           contract = contract,
           imageLoader = imageLoader,
-          onInsuranceCardClick = onInsuranceCardClick,
+          onClick = {
+            if (expanded) onInsuranceCardClick(contract.id) else expanded = true
+          },
         )
       }.first().measure(constraints)
     }
 
     val firstCardHeight = cardPlaceables[0].height
-    val totalHeight = firstCardHeight + peekHeights.sum()
+
+    // Y position of each card when collapsed into a pile (only the first card is fully visible,
+    // the rest peek out below it).
+    val collapsedY = IntArray(contracts.size)
+    var peekAccumulated = 0
+    for (i in 1 until contracts.size) {
+      peekAccumulated += peekHeights[i - 1]
+      collapsedY[i] = firstCardHeight + peekAccumulated - cardPlaceables[i].height
+    }
+    val collapsedHeight = firstCardHeight + peekHeights.sum()
+
+    // Y position of each card when expanded into a column with [expandedSpacing] between cards.
+    val expandedY = IntArray(contracts.size)
+    var expandedAccumulated = 0
+    for (i in contracts.indices) {
+      expandedY[i] = expandedAccumulated
+      expandedAccumulated += cardPlaceables[i].height + expandedSpacingPx
+    }
+    val expandedHeight = (expandedAccumulated - expandedSpacingPx).coerceAtLeast(0)
+
+    val totalHeight = lerp(collapsedHeight, expandedHeight, progress)
 
     layout(constraints.maxWidth, totalHeight) {
-      cardPlaceables[0].placeRelative(0, 0, zIndex = contracts.size.toFloat())
-
-      var peekAccumulated = 0
-      for (i in 1 until contracts.size) {
-        peekAccumulated += peekHeights[i - 1]
-        val y = firstCardHeight + peekAccumulated - cardPlaceables[i].height
+      for (i in contracts.indices) {
+        val y = lerp(collapsedY[i], expandedY[i], progress)
         cardPlaceables[i].placeRelative(0, y, zIndex = (contracts.size - i).toFloat())
       }
     }
@@ -400,8 +437,8 @@ private fun InsuranceContract.topText(): String = when (this) {
 private fun InsuranceCardWrapper(
   contract: InsuranceContract,
   imageLoader: ImageLoader,
+  onClick: () -> Unit,
   modifier: Modifier = Modifier,
-  onInsuranceCardClick: (contractId: String) -> Unit,
 ) {
   Box(
     modifier = modifier
@@ -424,7 +461,7 @@ private fun InsuranceCardWrapper(
           role = Role.Button,
           onClickLabel = description,
         ) {
-          onInsuranceCardClick(contract.id)
+          onClick()
         },
     )
   }
