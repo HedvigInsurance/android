@@ -43,8 +43,8 @@ private class PuppyGuidePresenter(
   override fun MoleculePresenterScope<PuppyGuideEvent>.present(lastState: PuppyGuideUiState): PuppyGuideUiState {
     var currentState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
-    val puppyGuideEnabled by remember(featureManager) {
-      featureManager.isFeatureEnabled(Feature.PUPPY_GUIDE)
+    val puppyGuideDisabled by remember(featureManager) {
+      featureManager.isFeatureEnabled(Feature.DISABLE_PUPPY_GUIDE)
     }.collectAsState(null)
 
     CollectEvents { event ->
@@ -53,18 +53,18 @@ private class PuppyGuidePresenter(
       }
     }
 
-    LaunchedEffect(loadIteration, puppyGuideEnabled) {
-      when (puppyGuideEnabled) {
+    LaunchedEffect(loadIteration, puppyGuideDisabled) {
+      when (puppyGuideDisabled) {
         // Flag not resolved yet, keep showing the loading state.
         null -> {
           currentState = PuppyGuideUiState.Loading
         }
 
-        false -> {
+        true -> {
           currentState = PuppyGuideUiState.Disabled
         }
 
-        true -> {
+        false -> {
           currentState = PuppyGuideUiState.Loading
           getPuppyGuideUseCase.invoke().collect { response ->
             currentState = response.fold(

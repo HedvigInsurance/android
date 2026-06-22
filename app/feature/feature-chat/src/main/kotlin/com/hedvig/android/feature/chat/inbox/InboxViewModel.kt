@@ -59,7 +59,7 @@ internal class InboxPresenter(
       }
       combine(
         getAllConversationsUseCase.invoke(),
-        featureManager.isFeatureEnabled(Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT),
+        featureManager.isFeatureEnabled(Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX),
       ) { conversations, newChatButtonAvailable ->
         conversations to newChatButtonAvailable
       }.collectLatest { (conversations, newChatButtonAvailable) ->

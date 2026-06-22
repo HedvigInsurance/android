@@ -71,7 +71,7 @@ class HedvigUnleashClient(
     }
     // Bootstrap the puppy guide kill switch to on, so the feature stays hidden until the first
     // successful fetch. Once toggles are fetched, the remote value takes over.
-    client.start(bootstrap = listOf(Toggle(name = Feature.PUPPY_GUIDE.unleashKey, enabled = true)))
+    client.start(bootstrap = listOf(Toggle(name = Feature.DISABLE_PUPPY_GUIDE.unleashKey, enabled = true)))
   }
 
   private fun createConfig(): UnleashConfig {

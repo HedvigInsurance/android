@@ -245,22 +245,14 @@ internal class GetHomeUseCaseTest {
   }
 
   @Test
-  fun `when there are existing claims, show them as ClaimStatusCards`(
-    @TestParameter claimsHistoryFlag: Boolean,
-  ) = runTest {
-    val getHomeDataUseCase = testUseCaseWithoutReminders(
-      featureManager = FakeFeatureManager(
-        fixedMap = Feature.entries.associateWith { true }.plus(
-          Feature.ENABLE_CLAIM_HISTORY to claimsHistoryFlag,
-        ),
-      ),
-    )
+  fun `when there are existing claims, show them as ClaimStatusCards`() = runTest {
+    val getHomeDataUseCase = testUseCaseWithoutReminders()
 
     apolloClient.registerTestResponse(
-      HomeQuery(claimsHistoryFlag),
+      HomeQuery(true),
       HomeQuery.Data(OctopusFakeResolver) {
         currentMember = buildMember {
-          val claimsList = listOf(
+          claimsActive = listOf(
             buildClaim {
               id = "claim id#1"
             },
@@ -268,11 +260,6 @@ internal class GetHomeUseCaseTest {
               id = "claim id#2"
             },
           )
-          if (!claimsHistoryFlag) {
-            claims = claimsList
-          } else {
-            claimsActive = claimsList
-          }
         }
       },
     )
@@ -300,26 +287,14 @@ internal class GetHomeUseCaseTest {
   }
 
   @Test
-  fun `when there are no existing claims, don't show them`(
-    @TestParameter claimsHistoryFlag: Boolean,
-  ) = runTest {
-    val getHomeDataUseCase = testUseCaseWithoutReminders(
-      featureManager = FakeFeatureManager(
-        fixedMap = Feature.entries.associateWith { true }.plus(
-          Feature.ENABLE_CLAIM_HISTORY to claimsHistoryFlag,
-        ),
-      ),
-    )
+  fun `when there are no existing claims, don't show them`() = runTest {
+    val getHomeDataUseCase = testUseCaseWithoutReminders()
 
     apolloClient.registerTestResponse(
-      HomeQuery(claimsHistoryFlag),
+      HomeQuery(true),
       HomeQuery.Data(OctopusFakeResolver) {
         currentMember = buildMember {
-          if (claimsHistoryFlag) {
-            claimsActive = emptyList()
-          } else {
-            claims = emptyList()
-          }
+          claimsActive = emptyList()
         }
       },
     )
@@ -478,9 +453,8 @@ internal class GetHomeUseCaseTest {
   ) = runTest {
     val featureManager = FakeFeatureManager(
       mapOf(
-        Feature.ENABLE_CLAIM_HISTORY to true,
         // With the inbox-always-available kill switch off, the icon depends purely on existing conversations
-        Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT to false,
+        Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX to false,
       ),
     )
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
@@ -542,8 +516,7 @@ internal class GetHomeUseCaseTest {
   ) = runTest {
     val featureManager = FakeFeatureManager(
       mapOf(
-        Feature.ENABLE_CLAIM_HISTORY to true,
-        Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT to inboxAlwaysAvailable,
+        Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX to inboxAlwaysAvailable,
       ),
     )
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
@@ -602,9 +575,8 @@ internal class GetHomeUseCaseTest {
   ) = runTest {
     val featureManager = FakeFeatureManager(
       mapOf(
-        Feature.ENABLE_CLAIM_HISTORY to true,
         // Inbox-always-available off, so the icon reflects the conversation state being tested here
-        Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT to false,
+        Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX to false,
       ),
     )
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)

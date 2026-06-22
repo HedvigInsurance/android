@@ -14,8 +14,6 @@ import com.hedvig.android.feature.profile.data.CheckCertificatesAvailabilityUseC
 import com.hedvig.android.feature.profile.tab.ProfileUiEvent.Logout
 import com.hedvig.android.feature.profile.tab.ProfileUiEvent.Reload
 import com.hedvig.android.feature.profile.tab.ProfileUiEvent.SnoozeNotificationPermission
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.memberreminders.EnableNotificationsReminderSnoozeManager
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
 import com.hedvig.android.memberreminders.MemberReminders
@@ -38,7 +36,6 @@ internal class ProfileViewModel(
   checkCertificatesAvailabilityUseCase: CheckCertificatesAvailabilityUseCase,
   getMemberRemindersUseCase: GetMemberRemindersUseCase,
   enableNotificationsReminderSnoozeManager: EnableNotificationsReminderSnoozeManager,
-  featureManager: FeatureManager,
   logoutUseCase: LogoutUseCase,
 ) : MoleculeViewModel<ProfileUiEvent, ProfileUiState>(
     initialState = ProfileUiState.Loading,
@@ -47,7 +44,6 @@ internal class ProfileViewModel(
       checkCertificatesAvailabilityUseCase = checkCertificatesAvailabilityUseCase,
       getMemberRemindersUseCase = getMemberRemindersUseCase,
       enableNotificationsReminderSnoozeManager = enableNotificationsReminderSnoozeManager,
-      featureManager = featureManager,
       logoutUseCase = logoutUseCase,
     ),
   )
@@ -57,7 +53,6 @@ internal class ProfilePresenter(
   private val checkCertificatesAvailabilityUseCase: CheckCertificatesAvailabilityUseCase,
   private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
   private val enableNotificationsReminderSnoozeManager: EnableNotificationsReminderSnoozeManager,
-  private val featureManager: FeatureManager,
   private val logoutUseCase: LogoutUseCase,
 ) : MoleculePresenter<ProfileUiEvent, ProfileUiState> {
   @Composable
@@ -80,12 +75,10 @@ internal class ProfilePresenter(
       }
       combine(
         getMemberRemindersUseCase.invoke(),
-        featureManager.isFeatureEnabled(Feature.ENABLE_CLAIM_HISTORY),
         flow { emit(getEuroBonusStatusUseCase.invoke()) },
         flow { emit(checkCertificatesAvailabilityUseCase.invoke()) },
       ) {
         memberReminders,
-        isClaimHistoryFeatureEnabled,
         eurobonusResponse,
         certificatesAvailability,
         ->
@@ -93,7 +86,7 @@ internal class ProfilePresenter(
           euroBonus = eurobonusResponse.getOrNull(),
           showPaymentScreen = true,
           memberReminders = memberReminders,
-          showClaimHistory = isClaimHistoryFeatureEnabled,
+          showClaimHistory = true,
           certificatesAvailable = certificatesAvailability.isRight(),
         )
       }.collectLatest { state ->

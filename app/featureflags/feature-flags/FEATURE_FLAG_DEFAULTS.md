@@ -10,10 +10,12 @@ returns, etc.). Read this before adding a new flag.
 - We **only** call `client.isEnabled(name)`. We **never** call the
   `isEnabled(name, defaultValue)` overload — it's broken with the Frontend API.
 - An absent toggle reads as `false`. We control the real default through two levers:
-  1. **Flag naming polarity** (`enable_x` vs `disable_x`) + explicit negation at the
-     read site in `UnleashFeatureFlagProvider`.
+  1. **Flag naming polarity** (`enable_x` vs `disable_x`). Each `Feature` enum value is
+     named to mirror its underlying Unleash key, and `UnleashFeatureFlagProvider` returns
+     the raw `isEnabled(key)` value with no per-flag negation. A `disable_x` flag therefore
+     reports "is the kill switch on"; the consumer inverts at the read site.
   2. **Bootstrap** — only for the one flag where polarity alone gives the wrong default.
-- Only `PUPPY_GUIDE` is bootstrapped today. Adding others is usually noise and, for
+- Only `DISABLE_PUPPY_GUIDE` is bootstrapped today. Adding others is usually noise and, for
   app-gating flags like `UPDATE_NECESSARY`, actively dangerous.
 
 ## The bug: Unleash Android SDK issue #141
@@ -30,17 +32,20 @@ hasn't seen. As long as we never pass a `defaultValue`, we're not exposed to #14
 
 ## How a flag resolves to a value
 
-`isEnabled(name)` returns `false` for an absent toggle. We turn that into a
-feature-enabled boolean in `UnleashFeatureFlagProvider`, choosing the polarity per flag:
+`isEnabled(name)` returns `false` for an absent toggle. `UnleashFeatureFlagProvider`
+returns that raw value unchanged — the `Feature` name mirrors the key's polarity, so the
+toggle value *is* the flag value. The polarity convention then determines the default:
 
-- **Positive flags** (`enable_x`, `payment_screen`, `moving_flow`, `update_necessary`…)
-  read `isEnabled(key)` directly. Absent → `false` → feature **off**. Good default for
-  new features: they stay off until we explicitly turn them on remotely.
+- **Positive flags** (`enable_x`, `update_necessary`…) read `isEnabled(key)`. Absent →
+  `false` → feature **off**. Good default for new features: they stay off until we
+  explicitly turn them on remotely.
 
-- **Kill switches** (`disable_x`) read `!isEnabled(key)`. Absent → `true` → feature
-  **on**. The feature is normally available, and the remote toggle is a switch we flip to
-  turn it *off*. When offline we can't fetch the switch, so the feature stays on — that's
-  an inherent and acceptable property of a kill switch.
+- **Kill switches** (`disable_x`) also read `isEnabled(key)`, which reports "is the kill
+  switch on". Absent → `false` → switch **off** → feature **on**. The consumer inverts at
+  the read site (`if (!disableX)`), so the feature is normally available and the remote
+  toggle is a switch we flip to turn it *off*. When offline we can't fetch the switch, so
+  it stays off and the feature stays on — an inherent and acceptable property of a kill
+  switch.
 
 ## When the "never fetched" default actually matters
 
@@ -63,7 +68,7 @@ Bootstrap is only needed when the **desired** never-fetched default differs from
 Today the only entry is:
 
 ```kotlin
-client.start(bootstrap = listOf(Toggle(name = Feature.PUPPY_GUIDE.unleashKey, enabled = true)))
+client.start(bootstrap = listOf(Toggle(name = Feature.DISABLE_PUPPY_GUIDE.unleashKey, enabled = true)))
 ```
 
 `disable_puppy_guide` is a kill switch, so its natural absent default is "feature on".
@@ -81,11 +86,12 @@ is offline on first launch. Leave it alone.
 
 ## Adding a new flag — checklist
 
-1. Add the enum value to `Feature` (commonMain) with a short explanation.
-2. Add its raw Unleash key to `Feature.unleashKey` (androidMain).
-3. Add it to the correct arm in `UnleashFeatureFlagProvider`:
-   - positive `isEnabled(key)`, or
-   - kill switch `!isEnabled(key)`.
+1. Add the enum value to `Feature` (commonMain), named to mirror its Unleash key polarity
+   (`ENABLE_X` for `enable_x`, `DISABLE_X` for `disable_x`), with a short explanation.
+2. Add its raw Unleash key to `Feature.unleashKey` (androidMain). `UnleashFeatureFlagProvider`
+   needs no change — it returns `isEnabled(key)` for every flag.
+3. At the read site, use the value directly for a positive flag, or invert it
+   (`if (!disableX)`) for a kill switch.
 4. Ask: **what should this be when never fetched / offline on first launch?**
    - If the natural polarity default is acceptable → done, no bootstrap.
    - If you need the opposite default during rollout → add a `Toggle(...)` to the

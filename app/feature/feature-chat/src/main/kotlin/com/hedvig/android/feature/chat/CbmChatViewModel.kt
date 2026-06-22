@@ -49,8 +49,6 @@ import com.hedvig.android.feature.chat.model.Sender
 import com.hedvig.android.feature.chat.model.toChatMessage
 import com.hedvig.android.feature.chat.model.toLatestChatMessage
 import com.hedvig.android.feature.chat.paging.ChatRemoteMediator
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -73,7 +71,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -85,7 +82,6 @@ internal class CbmChatViewModel @AssistedInject constructor(
   chatDao: ChatDao,
   remoteKeyDao: RemoteKeyDao,
   chatRepository: Provider<CbmChatRepository>,
-  featureManager: FeatureManager,
   clock: Clock,
   context: Context,
   coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + AndroidUiDispatcher.Main),
@@ -104,7 +100,6 @@ internal class CbmChatViewModel @AssistedInject constructor(
       ),
       chatDao = chatDao,
       chatRepository = chatRepository,
-      featureManager = featureManager,
       context,
     ),
     coroutineScope = coroutineScope,
@@ -155,7 +150,6 @@ internal class CbmChatPresenter(
   private val pagingData: Flow<PagingData<CbmUiChatMessage>>,
   private val chatDao: ChatDao,
   private val chatRepository: Provider<CbmChatRepository>,
-  private val featureManager: FeatureManager,
   private val context: Context,
 ) : MoleculePresenter<CbmChatEvent, CbmChatUiState> {
   @OptIn(ExperimentalPagingApi::class)
@@ -176,13 +170,7 @@ internal class CbmChatPresenter(
     var hideBanner by remember { mutableStateOf(false) }
     var showFileFailedToBeSendToast by remember { mutableStateOf(false) }
     val a11yOn = isAccessibilityEnabled(context)
-    val enableInlineMediaPlayer by remember(featureManager) {
-      if (!a11yOn) {
-        featureManager.isFeatureEnabled(Feature.ENABLE_VIDEO_PLAYER_IN_CHAT_MESSAGES)
-      } else {
-        flowOf(false)
-      }
-    }.collectAsState(false)
+    val enableInlineMediaPlayer = !a11yOn
 
     LaunchedEffect(conversationIdStatusLoadIteration) {
       if (conversationInfoStatus is Loaded && conversationIdStatusLoadIteration == 0) {

@@ -38,7 +38,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import kotlinx.datetime.LocalDate
@@ -64,11 +63,9 @@ internal class GetHomeDataUseCaseImpl(
 ) : GetHomeDataUseCase {
   override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>> {
     return combine(
-      featureManager.isFeatureEnabled(Feature.ENABLE_CLAIM_HISTORY).flatMapLatest { enableClaimHistory ->
-        apolloClient.query(HomeQuery(enableClaimHistory))
-          .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheAndNetwork)
-          .safeFlow()
-      },
+      apolloClient.query(HomeQuery(true))
+        .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheAndNetwork)
+        .safeFlow(),
       flow {
         while (currentCoroutineContext().isActive) {
           emitAll(
@@ -83,7 +80,7 @@ internal class GetHomeDataUseCaseImpl(
       flow {
         emitAll(getTravelAddonBannerInfoUseCaseProvider.provide().invoke(AddonBannerSource.INSURANCES_TAB))
       },
-      featureManager.isFeatureEnabled(Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT),
+      featureManager.isFeatureEnabled(Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX),
       hasAnyActiveConversationUseCase.invoke(alwaysHitTheNetwork = true),
     ) {
       homeQueryDataResult,

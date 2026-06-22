@@ -174,8 +174,8 @@ internal class HelpCenterPresenter(
         flow = flow { emit(getQuickLinksUseCase.invoke()) },
         flow2 = flow { emit(getHelpCenterFAQUseCase.invoke()) },
         flow3 = getPuppyGuideUseCase.invoke(),
-        flow4 = featureManager.isFeatureEnabled(Feature.PUPPY_GUIDE),
-      ) { quickLinks, faq, puppyGuideResult, puppyGuideEnabled ->
+        flow4 = featureManager.isFeatureEnabled(Feature.DISABLE_PUPPY_GUIDE),
+      ) { quickLinks, faq, puppyGuideResult, puppyGuideDisabled ->
         quickLinksUiState = quickLinks.fold(
           ifLeft = {
             HelpCenterUiState.QuickLinkUiState.NoQuickLinks
@@ -195,7 +195,7 @@ internal class HelpCenterPresenter(
         val questions = faq.getOrNull()?.commonFAQ ?: listOf()
         val puppyGuide = puppyGuideResult.getOrNull()
         val puppyGuidePresentation = when {
-          !puppyGuideEnabled -> null
+          puppyGuideDisabled -> null
           puppyGuide == null || puppyGuide.stories.isEmpty() -> null
           puppyGuide.isForYoungDog == true -> HelpCenterUiState.PuppyGuidePresentation.FullCard
           else -> HelpCenterUiState.PuppyGuidePresentation.QuickAction

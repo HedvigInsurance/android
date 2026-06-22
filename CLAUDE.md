@@ -493,10 +493,12 @@ the SDK's `defaultValue` parameter (Unleash Android SDK issue #141), how a flag'
 resolved when Unleash has never been fetched, and when bootstrap is required.
 
 To add a new flag:
-1. Add the enum value to `Feature` (commonMain) with a short explanation.
+1. Add the enum value to `Feature` (commonMain), named to mirror its Unleash key polarity
+   (`ENABLE_X` for `enable_x`, `DISABLE_X` for `disable_x`), with a short explanation.
 2. Map it to its raw Unleash key in `Feature.unleashKey` (androidMain).
-3. Add it to the correct arm in `UnleashFeatureFlagProvider`: positive `isEnabled(key)` or
-   kill switch `!isEnabled(key)`.
+3. `UnleashFeatureFlagProvider` needs no change — it returns the raw `isEnabled(key)` for
+   every flag. At the read site, use the value directly for a positive flag, or invert it
+   (`if (!disableX)`) for a kill switch.
 
 **IMPORTANT — always reconsider bootstrap when adding a feature:** Decide what the flag
 should resolve to when it has *never been fetched* (offline first launch / fresh install

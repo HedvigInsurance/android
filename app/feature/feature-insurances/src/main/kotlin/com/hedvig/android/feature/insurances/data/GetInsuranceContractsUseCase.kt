@@ -20,8 +20,6 @@ import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
 import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
 import com.hedvig.android.feature.insurances.data.InsuranceContract.PendingInsuranceContract
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
@@ -30,7 +28,6 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
@@ -51,30 +48,27 @@ internal interface GetInsuranceContractsUseCase {
 @SingleIn(AppScope::class)
 internal class GetInsuranceContractsUseCaseImpl(
   private val apolloClient: ApolloClient,
-  private val featureManager: FeatureManager,
 ) : GetInsuranceContractsUseCase {
   override fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
-    return featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).flatMapLatest { areAddonsEnabled ->
-      flow {
-        while (currentCoroutineContext().isActive) {
-          emitAll(
-            apolloClient
-              .query(
-                InsuranceContractsQuery(
-                  addonsEnabled = areAddonsEnabled,
-                  options = Optional.present(
-                    DisplayItemOptions(
-                      hidePrice = Optional.present(true),
-                      hideAddons = Optional.present(true),
-                    ),
+    return flow {
+      while (currentCoroutineContext().isActive) {
+        emitAll(
+          apolloClient
+            .query(
+              InsuranceContractsQuery(
+                addonsEnabled = true,
+                options = Optional.present(
+                  DisplayItemOptions(
+                    hidePrice = Optional.present(true),
+                    hideAddons = Optional.present(true),
                   ),
                 ),
-              )
-              .fetchPolicy(FetchPolicy.CacheAndNetwork)
-              .safeFlow(::ErrorMessage),
-          )
-          delay(3.seconds)
-        }
+              ),
+            )
+            .fetchPolicy(FetchPolicy.CacheAndNetwork)
+            .safeFlow(::ErrorMessage),
+        )
+        delay(3.seconds)
       }
     }.map { insuranceQueryResponse ->
       either {

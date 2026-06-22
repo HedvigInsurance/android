@@ -7,19 +7,12 @@ import arrow.core.right
 import assertk.assertAll
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
-import assertk.assertions.isTrue
-import assertk.assertions.prop
-import com.google.testing.junit.testparameterinjector.TestParameter
-import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.MainCoroutineRule
 import com.hedvig.android.feature.profile.data.CheckCertificatesAvailabilityUseCase
-import com.hedvig.android.featureflags.flags.Feature
-import com.hedvig.android.featureflags.test.FakeFeatureManager
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.memberreminders.test.TestEnableNotificationsReminderSnoozeManager
@@ -29,9 +22,7 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(TestParameterInjector::class)
 class ProfilePresenterTest {
   @get:Rule
   val mainCoroutineRule = MainCoroutineRule()
@@ -39,35 +30,6 @@ class ProfilePresenterTest {
   private val noopLogoutUseCase = object : LogoutUseCase {
     override fun invoke() {
       // no-op
-    }
-  }
-
-  @Test
-  fun `claims history feature flag hides the navigation option`(
-    @TestParameter claimHistoryFlag: Boolean,
-  ) = runTest {
-    val presenter = ProfilePresenter(
-      FakeGetEurobonusStatusUseCase().apply { turbine.add(GetEurobonusError.EurobonusNotApplicable.left()) },
-      FakeCheckCertificatesAvailabilityUseCase().apply { turbine.add(Unit.right()) },
-      TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
-      TestEnableNotificationsReminderSnoozeManager(),
-      FakeFeatureManager(
-        mapOf(
-          Feature.ENABLE_CLAIM_HISTORY to claimHistoryFlag,
-        ),
-      ),
-      noopLogoutUseCase,
-    )
-
-    presenter.test(ProfileUiState.Loading) {
-      assertThat(awaitItem()).isInstanceOf<ProfileUiState.Loading>()
-      runCurrent()
-      assertThat(awaitItem())
-        .isInstanceOf<ProfileUiState.Success>()
-        .prop(ProfileUiState.Success::showClaimHistory)
-        .run {
-          if (claimHistoryFlag) isTrue() else isFalse()
-        }
     }
   }
 
@@ -81,7 +43,6 @@ class ProfilePresenterTest {
       certificatesAvailabilityUseCase.apply { turbine.add(Unit.right()) },
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
       TestEnableNotificationsReminderSnoozeManager(),
-      FakeFeatureManager(fixedReturnForAll = false),
       noopLogoutUseCase,
     )
 
@@ -93,7 +54,7 @@ class ProfilePresenterTest {
           euroBonus = null,
           certificatesAvailable = true,
           showPaymentScreen = true,
-          showClaimHistory = false,
+          showClaimHistory = true,
           memberReminders = MemberReminders(),
         ),
       )
@@ -111,7 +72,6 @@ class ProfilePresenterTest {
       certificatesAvailabilityUseCase.apply { turbine.add(Unit.right()) },
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
       TestEnableNotificationsReminderSnoozeManager(),
-      FakeFeatureManager(fixedReturnForAll = false),
       noopLogoutUseCase,
     )
 
@@ -123,7 +83,7 @@ class ProfilePresenterTest {
           euroBonus = EuroBonus("code1234"),
           certificatesAvailable = true,
           showPaymentScreen = true,
-          showClaimHistory = false,
+          showClaimHistory = true,
           memberReminders = MemberReminders(),
         ),
       )
@@ -141,7 +101,6 @@ class ProfilePresenterTest {
       certificatesAvailabilityUseCase.apply { turbine.add(Unit.right()) },
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
       TestEnableNotificationsReminderSnoozeManager(),
-      FakeFeatureManager(fixedReturnForAll = false),
       noopLogoutUseCase,
     )
     presenter.test(ProfileUiState.Loading) {
@@ -152,7 +111,7 @@ class ProfilePresenterTest {
           euroBonus = EuroBonus("code1234"),
           certificatesAvailable = true,
           showPaymentScreen = true,
-          showClaimHistory = false,
+          showClaimHistory = true,
           memberReminders = MemberReminders(),
         ),
       )
@@ -172,7 +131,6 @@ class ProfilePresenterTest {
       },
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
       TestEnableNotificationsReminderSnoozeManager(),
-      FakeFeatureManager(fixedReturnForAll = false),
       noopLogoutUseCase,
     )
     presenter.test(ProfileUiState.Loading) {
@@ -183,7 +141,7 @@ class ProfilePresenterTest {
           euroBonus = EuroBonus("code1234"),
           certificatesAvailable = false,
           showPaymentScreen = true,
-          showClaimHistory = false,
+          showClaimHistory = true,
           memberReminders = MemberReminders(),
         ),
       )
@@ -193,11 +151,6 @@ class ProfilePresenterTest {
 
   @Test
   fun `Initially all optional items are off, and as they come in, they show one by one`() = runTest {
-    val featureManager = FakeFeatureManager(
-      fixedMap = mapOf(
-        Feature.ENABLE_CLAIM_HISTORY to false,
-      ),
-    )
     val euroBonusStatusUseCase = FakeGetEurobonusStatusUseCase()
     val getMemberRemindersUseCase = TestGetMemberRemindersUseCase()
     val certificatesAvailabilityUseCase = FakeCheckCertificatesAvailabilityUseCase()
@@ -207,7 +160,6 @@ class ProfilePresenterTest {
       certificatesAvailabilityUseCase,
       getMemberRemindersUseCase,
       TestEnableNotificationsReminderSnoozeManager(),
-      featureManager,
       noopLogoutUseCase,
     )
 
@@ -227,7 +179,7 @@ class ProfilePresenterTest {
             upcomingRenewals = null,
             enableNotifications = null,
           ),
-          showClaimHistory = false,
+          showClaimHistory = true,
           showPaymentScreen = true,
         ),
       )
@@ -254,11 +206,6 @@ class ProfilePresenterTest {
       },
       getMemberRemindersUseCase,
       TestEnableNotificationsReminderSnoozeManager(),
-      FakeFeatureManager(
-        mapOf(
-          Feature.ENABLE_CLAIM_HISTORY to false,
-        ),
-      ),
       noopLogoutUseCase,
     )
 
@@ -273,7 +220,7 @@ class ProfilePresenterTest {
           euroBonus = null,
           certificatesAvailable = false,
           memberReminders = MemberReminders(),
-          showClaimHistory = false,
+          showClaimHistory = true,
           showPaymentScreen = true,
         ),
       )
@@ -293,11 +240,6 @@ class ProfilePresenterTest {
       },
       getMemberRemindersUseCase,
       TestEnableNotificationsReminderSnoozeManager(),
-      FakeFeatureManager(
-        mapOf(
-          Feature.ENABLE_CLAIM_HISTORY to false,
-        ),
-      ),
       noopLogoutUseCase,
     )
 
@@ -328,13 +270,11 @@ class ProfilePresenterTest {
     val getMemberRemindersUseCase = TestGetMemberRemindersUseCase()
     val getEurobonusStatusUseCase = FakeGetEurobonusStatusUseCase()
     val certificatesAvailabilityUseCase = FakeCheckCertificatesAvailabilityUseCase()
-    val featureManager = FakeFeatureManager(mapOf(Feature.ENABLE_CLAIM_HISTORY to false))
     val presenter = ProfilePresenter(
       getEurobonusStatusUseCase,
       certificatesAvailabilityUseCase,
       getMemberRemindersUseCase,
       TestEnableNotificationsReminderSnoozeManager(),
-      featureManager,
       noopLogoutUseCase,
     )
     val testId = "test"
@@ -353,7 +293,7 @@ class ProfilePresenterTest {
           euroBonus = null,
           certificatesAvailable = false,
           showPaymentScreen = true,
-          showClaimHistory = false,
+          showClaimHistory = true,
           memberReminders = MemberReminders(),
         ),
       )
@@ -371,7 +311,7 @@ class ProfilePresenterTest {
           euroBonus = EuroBonus("abc"),
           certificatesAvailable = true,
           showPaymentScreen = true,
-          showClaimHistory = false,
+          showClaimHistory = true,
           memberReminders = MemberReminders(
             connectPayment = MemberReminder.PaymentReminder.ConnectPayment(id = testId),
           ),
