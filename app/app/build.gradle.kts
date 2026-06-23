@@ -238,6 +238,7 @@ dependencies {
   implementation(projects.tierComparison)
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
+  implementation(projects.trackingFirebase)
   implementation(projects.uiForceUpgrade)
 
   // OkHttp for ProGuard rules only - not available at compile time
