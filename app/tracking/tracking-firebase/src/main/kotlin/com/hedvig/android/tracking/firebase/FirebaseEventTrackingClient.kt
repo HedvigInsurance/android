@@ -27,9 +27,12 @@ internal class FirebaseEventTrackingClient(
     firebaseAnalytics.logEvent(name, parameters.toBundle())
   }
 
-  override fun trackScreen(name: String, parameters: Map<String, Any?>) {
+  override fun trackScreen(name: String, screenClass: String?, parameters: Map<String, Any?>) {
     val bundle = parameters.toBundle()
     bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, name)
+    if (screenClass != null) {
+      bundle.putString(FirebaseAnalytics.Param.SCREEN_CLASS, screenClass)
+    }
     firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle)
   }
 

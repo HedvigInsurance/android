@@ -301,8 +301,9 @@ private fun TrackScreenViewEffect(backstackController: BackstackController, even
     snapshotFlow { backstackController.currentDestination }
       .filterNotNull()
       .collect { destination ->
-        val screenName = destination::class.simpleName?.removeSuffix("Key") ?: destination.toString()
-        eventTrackingClient.trackScreen(screenName)
+        val screenClass = destination::class.simpleName ?: destination.toString()
+        val screenName = screenClass.removeSuffix("Key")
+        eventTrackingClient.trackScreen(name = screenName, screenClass = screenClass)
       }
   }
 }

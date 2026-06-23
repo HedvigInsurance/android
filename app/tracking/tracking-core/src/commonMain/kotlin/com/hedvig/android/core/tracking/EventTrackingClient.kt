@@ -16,7 +16,7 @@ interface EventTrackingClient {
 
   fun trackEvent(name: String, parameters: Map<String, Any?> = emptyMap())
 
-  fun trackScreen(name: String, parameters: Map<String, Any?> = emptyMap())
+  fun trackScreen(name: String, screenClass: String? = null, parameters: Map<String, Any?> = emptyMap())
 
   fun setUserId(userId: String?)
 
