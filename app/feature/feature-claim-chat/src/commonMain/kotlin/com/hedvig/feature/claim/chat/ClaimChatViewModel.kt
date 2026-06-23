@@ -45,6 +45,7 @@ import com.hedvig.feature.claim.chat.data.StepId
 import com.hedvig.feature.claim.chat.data.SubmitAudioRecordingUseCase
 import com.hedvig.feature.claim.chat.data.SubmitFileUploadUseCase
 import com.hedvig.feature.claim.chat.data.SubmitFormUseCase
+import com.hedvig.feature.claim.chat.data.SubmitInformationUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSelectUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSummaryUseCase
 import com.hedvig.feature.claim.chat.data.SubmitTaskUseCase
@@ -95,6 +96,8 @@ internal sealed interface ClaimChatEvent {
   data class ShowConfirmEditDialog(val id: StepId) : ClaimChatEvent
 
   data object DismissConfirmEditDialog : ClaimChatEvent
+
+  data class SubmitInformation(val id: StepId): ClaimChatEvent
 
   data class SubmitForm(
     val stepId: StepId,
@@ -177,6 +180,7 @@ internal class ClaimChatViewModel(
   regretStepUseCase: RegretStepUseCase,
   formFieldSearchUseCase: FormFieldSearchUseCase,
   fileService: FileService,
+  submitInformationUseCase: SubmitInformationUseCase
 ) : MoleculeViewModel<ClaimChatEvent, ClaimChatUiState>(
     ClaimChatUiState.Initializing,
     ClaimChatPresenter(
@@ -194,6 +198,7 @@ internal class ClaimChatViewModel(
       fileService,
       regretStepUseCase,
       formFieldSearchUseCase,
+      submitInformationUseCase
     ),
   ) {
   override fun onCleared() {
@@ -217,6 +222,7 @@ internal class ClaimChatPresenter(
   private val fileService: FileService,
   private val regretStepUseCase: RegretStepUseCase,
   private val formFieldSearchUseCase: FormFieldSearchUseCase,
+  private val submitInformationUseCase: SubmitInformationUseCase
 ) : MoleculePresenter<ClaimChatEvent, ClaimChatUiState> {
   @Composable
   override fun MoleculePresenterScope<ClaimChatEvent>.present(lastState: ClaimChatUiState): ClaimChatUiState {
@@ -936,6 +942,34 @@ internal class ClaimChatPresenter(
             )
           }
         }
+
+        is ClaimChatEvent.SubmitInformation -> {
+          val stepContent = steps.find { it.id == event.id }?.stepContent as? StepContent.Information
+          if (stepContent == null) {
+            logcat { "Step content not found or not Information" }
+            return@CollectEvents
+          }
+          currentContinueButtonLoading = true
+          launch {
+            submitInformationUseCase
+              .invoke(event.id)
+              .fold(
+                ifLeft = {
+                  errorSubmittingStep = it
+                  currentContinueButtonLoading = false
+                  logcat { "ClaimChatEvent.SubmitInformation error: $it" }
+                },
+                ifRight = { claimIntent ->
+                  currentContinueButtonLoading = false
+                  handleNext(
+                    steps,
+                    setOutcome,
+                    claimIntent,
+                  ) { progress = it }
+                },
+              )
+          }
+        }
       }
     }
 
@@ -1112,7 +1146,8 @@ private fun ClaimIntentStep.clearContent(): ClaimIntentStep = when (val content 
   is StepContent.Task,
   is StepContent.Deflect,
   is StepContent.DeflectMessage,
-  StepContent.Unknown,
+  is StepContent.Information,
+  StepContent.Unknown
   -> this
 }
 

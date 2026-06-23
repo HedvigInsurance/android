@@ -69,11 +69,13 @@ import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
+import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.design.system.hedvig.TopAppBarColors
@@ -116,12 +118,14 @@ import hedvig.resources.GENERAL_ARE_YOU_SURE
 import hedvig.resources.NETWORK_ERROR_ALERT_MESSAGE
 import hedvig.resources.Res
 import hedvig.resources.claims_alert_body
+import hedvig.resources.claims_skip_button
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_close_button
 import hedvig.resources.general_error
 import kotlin.time.Clock
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import octopus.type.ClaimIntentStepContentInformationSeverity
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -717,6 +721,19 @@ private fun StepTopContent(
       Spacer(Modifier.height(4.dp))
     }
 
+    if (stepItem.stepContent is StepContent.Information) {
+      val priority = when(stepItem.stepContent.severity) {
+        ClaimIntentStepContentInformationSeverity.CRITICAL -> NotificationDefaults.NotificationPriority.Error
+        else -> NotificationDefaults.NotificationPriority.InfoInline
+      }
+      HedvigNotificationCard(
+        message = stepItem.stepContent.notice,
+        priority = priority,
+        withIcon = true
+      )
+      Spacer(Modifier.height(4.dp))
+    }
+
     AnimatedVisibility(
       stepItem.stepContent is StepContent.Summary,
       enter = if (hasAnimation) fadeIn(animationSpec = tween()) else EnterTransition.None,
@@ -899,15 +916,41 @@ private fun StepBottomContent(
       }
 
       is StepContent.DeflectMessage -> {
-        HedvigButton(
-          modifier = modifier.fillMaxWidth(),
-          text = stringResource(Res.string.general_close_button),
-          onClick = dropUnlessResumed {
-            closeFlow()
-          },
-          enabled = true,
-          buttonStyle = ButtonDefaults.ButtonStyle.Secondary
-        )
+          HedvigButton(
+            modifier = modifier.fillMaxWidth(),
+            text = stringResource(Res.string.general_close_button),
+            onClick = dropUnlessResumed {
+              closeFlow()
+            },
+            enabled = true,
+            buttonStyle = ButtonDefaults.ButtonStyle.Secondary
+          )
+      }
+
+      is StepContent.Information -> {
+        Column {
+          HedvigButton(
+            modifier = modifier.fillMaxWidth(),
+            text = stepItem.stepContent.buttonTitle,
+            onClick = dropUnlessResumed {
+              onEvent(SubmitInformation(stepItem.id))
+            },
+            enabled = !currentContinueButtonLoading
+          )
+          Spacer(Modifier.height(16.dp))
+          if (stepItem.stepContent.isSkippable) {
+            HedvigButton(
+              modifier = modifier.fillMaxWidth(),
+              text = stringResource(Res.string.claims_skip_button),
+              onClick = dropUnlessResumed {
+                onEvent(Skip(stepItem.id))
+              },
+              enabled = true,
+              buttonStyle = ButtonDefaults.ButtonStyle.Secondary
+            )
+          }
+        }
+
       }
     }
   }

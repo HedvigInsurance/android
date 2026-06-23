@@ -7,6 +7,7 @@ import kotlin.jvm.JvmInline
 import kotlin.time.Instant
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import octopus.type.ClaimIntentStepContentInformationSeverity
 
 @JvmInline
 value class ClaimIntentId(val value: String)
@@ -177,6 +178,15 @@ internal sealed interface StepContent {
   }
 
   object Unknown : StepContent {
+    override val isSkippable: Boolean = false
+  }
+
+  @Serializable
+  data class Information(
+    val notice: String,
+    val buttonTitle: String,
+    val severity: ClaimIntentStepContentInformationSeverity
+  ): StepContent {
     override val isSkippable: Boolean = false
   }
 }

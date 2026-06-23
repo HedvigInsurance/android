@@ -25,6 +25,7 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
   ...SummaryFragment
   ...DeflectionFragment
   ...DeflectionMessageFragment
+  ...InformationFragment
 }
 
 fragment DeflectionMessageFragment on ClaimIntentStepContentDeflectionMessage {
@@ -131,4 +132,10 @@ fragment DeflectionFragment on ClaimIntentStepContentDeflection {
 fragment DeflectionInfoBlockFragment on ClaimIntentStepContentDeflectionInfoBlock {
   title
   description
+}
+
+fragment InformationFragment on ClaimIntentStepContentInformation {
+  notice
+  buttonTitle
+  severity
 }

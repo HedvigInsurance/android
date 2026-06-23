@@ -18,6 +18,7 @@ import octopus.fragment.DeflectionInfoBlockFragment
 import octopus.fragment.DeflectionMessageFragment
 import octopus.fragment.FileUploadFragment
 import octopus.fragment.FormFragment
+import octopus.fragment.InformationFragment
 import octopus.fragment.SummaryFragment
 import octopus.fragment.TaskFragment
 import octopus.type.ClaimIntentStepContentFormFieldType
@@ -184,6 +185,12 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
 
     is DeflectionMessageFragment -> StepContent.DeflectMessage(
       message = message
+    )
+
+    is InformationFragment -> StepContent.Information(
+      notice = notice,
+      buttonTitle = buttonTitle,
+      severity = severity
     )
 
     else -> {
