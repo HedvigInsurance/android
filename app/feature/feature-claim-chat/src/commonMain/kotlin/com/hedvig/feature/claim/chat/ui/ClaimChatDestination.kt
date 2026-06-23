@@ -726,10 +726,12 @@ private fun StepTopContent(
         ClaimIntentStepContentInformationSeverity.CRITICAL -> NotificationDefaults.NotificationPriority.Error
         else -> NotificationDefaults.NotificationPriority.InfoInline
       }
+      Spacer(Modifier.height(16.dp))
       HedvigNotificationCard(
         message = stepItem.stepContent.notice,
         priority = priority,
-        withIcon = true
+        withIcon = true,
+        modifier = Modifier.fillMaxWidth()
       )
       Spacer(Modifier.height(4.dp))
     }
