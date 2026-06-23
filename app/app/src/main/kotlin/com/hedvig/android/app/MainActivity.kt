@@ -39,6 +39,7 @@ import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedU
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.rive.RiveInitializer
+import com.hedvig.android.core.tracking.EventTrackingClient
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageLaunchCheckUseCase
@@ -102,6 +103,9 @@ class MainActivity : AppCompatActivity() {
 
   @Inject
   private lateinit var currentDestinationHolder: CurrentDestinationHolder
+
+  @Inject
+  private lateinit var eventTrackingClient: EventTrackingClient
 
   @Inject
   private lateinit var serializersModules: Set<SerializersModule>
@@ -245,6 +249,7 @@ class MainActivity : AppCompatActivity() {
           getMemberAuthorizationCodeUseCase = getMemberAuthorizationCodeUseCase,
           missedPaymentNotificationService = missedPaymentNotificationService,
           currentDestinationHolder = currentDestinationHolder,
+          eventTrackingClient = eventTrackingClient,
         )
       }
     }

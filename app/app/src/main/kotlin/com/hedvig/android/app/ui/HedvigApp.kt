@@ -60,6 +60,7 @@ import com.hedvig.android.compose.ui.LocalSharedTransitionScope
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.core.tracking.EventTrackingClient
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.design.system.hedvig.DemoModeLabel
 import com.hedvig.android.design.system.hedvig.Surface
@@ -83,6 +84,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import org.jetbrains.compose.resources.stringResource
@@ -110,8 +112,10 @@ internal fun HedvigApp(
   getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase,
   missedPaymentNotificationService: MissedPaymentNotificationService,
   currentDestinationHolder: CurrentDestinationHolder,
+  eventTrackingClient: EventTrackingClient,
 ) {
   ReportCurrentDestinationEffect(backstackController, currentDestinationHolder)
+  TrackScreenViewEffect(backstackController, eventTrackingClient)
   val hedvigAppState = rememberHedvigAppState(
     backstackController = backstackController,
     windowSizeClass = windowSizeClass,
@@ -284,6 +288,22 @@ private fun ReportCurrentDestinationEffect(
       logcat { "Navigated to destination:$destination" }
       currentDestinationHolder.update(destination)
     }
+  }
+}
+
+/**
+ * Sends a Firebase `screen_view` whenever the destination on top of the rendered stack changes, deriving the screen
+ * name from the key type (the `{Feature}Key` suffix is dropped).
+ */
+@Composable
+private fun TrackScreenViewEffect(backstackController: BackstackController, eventTrackingClient: EventTrackingClient) {
+  LaunchedEffect(backstackController, eventTrackingClient) {
+    snapshotFlow { backstackController.currentDestination }
+      .filterNotNull()
+      .collect { destination ->
+        val screenName = destination::class.simpleName?.removeSuffix("Key") ?: destination.toString()
+        eventTrackingClient.trackScreen(screenName)
+      }
   }
 }
 
