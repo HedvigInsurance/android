@@ -328,7 +328,7 @@ private fun presentLoadedChat(
 
   val bannerText by if (!hideBanner) {
     remember(conversationId, chatRepository) {
-      flow { emitAll(chatRepository.bannerText(conversationId)) }
+      chatRepository.bannerText(conversationId)
     }.collectAsState(null)
   } else {
     remember { mutableStateOf(null) }
