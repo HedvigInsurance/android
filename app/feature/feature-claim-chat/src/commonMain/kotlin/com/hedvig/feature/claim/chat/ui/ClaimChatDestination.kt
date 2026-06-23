@@ -722,18 +722,20 @@ private fun StepTopContent(
     }
 
     if (stepItem.stepContent is StepContent.Information) {
-      val priority = when(stepItem.stepContent.severity) {
-        ClaimIntentStepContentInformationSeverity.CRITICAL -> NotificationDefaults.NotificationPriority.Error
-        else -> NotificationDefaults.NotificationPriority.InfoInline
+      if (isAnimationComplete) {
+        val priority = when(stepItem.stepContent.severity) {
+          ClaimIntentStepContentInformationSeverity.CRITICAL -> NotificationDefaults.NotificationPriority.Error
+          else -> NotificationDefaults.NotificationPriority.InfoInline
+        }
+        Spacer(Modifier.height(16.dp))
+        HedvigNotificationCard(
+          message = stepItem.stepContent.notice,
+          priority = priority,
+          withIcon = true,
+          modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(Modifier.height(4.dp))
       }
-      Spacer(Modifier.height(16.dp))
-      HedvigNotificationCard(
-        message = stepItem.stepContent.notice,
-        priority = priority,
-        withIcon = true,
-        modifier = Modifier.fillMaxWidth()
-      )
-      Spacer(Modifier.height(4.dp))
     }
 
     AnimatedVisibility(
