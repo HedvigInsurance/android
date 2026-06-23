@@ -30,6 +30,7 @@ import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.externalnavigator.ExternalNavigatorImpl
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
 import com.hedvig.android.app.navigation.NavRetainedViewModel
+import com.hedvig.android.app.navigation.ScreenParameterExtractor
 import com.hedvig.android.app.ui.HedvigApp
 import com.hedvig.android.app.urihandler.ExternalDeepLinkHandler
 import com.hedvig.android.auth.AuthTokenService
@@ -106,6 +107,9 @@ class MainActivity : AppCompatActivity() {
 
   @Inject
   private lateinit var eventTrackingClient: EventTrackingClient
+
+  @Inject
+  private lateinit var screenParameterExtractor: ScreenParameterExtractor
 
   @Inject
   private lateinit var serializersModules: Set<SerializersModule>
@@ -250,6 +254,7 @@ class MainActivity : AppCompatActivity() {
           missedPaymentNotificationService = missedPaymentNotificationService,
           currentDestinationHolder = currentDestinationHolder,
           eventTrackingClient = eventTrackingClient,
+          screenParameterExtractor = screenParameterExtractor,
         )
       }
     }

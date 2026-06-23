@@ -47,6 +47,7 @@ import com.hedvig.android.app.GlobalHedvigSnackBar
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
+import com.hedvig.android.app.navigation.ScreenParameterExtractor
 import com.hedvig.android.app.navigation.hedvigEntryProvider
 import com.hedvig.android.app.navigation.shouldFadeThrough
 import com.hedvig.android.app.urihandler.AuthorizationCodeUriHandler
@@ -113,9 +114,10 @@ internal fun HedvigApp(
   missedPaymentNotificationService: MissedPaymentNotificationService,
   currentDestinationHolder: CurrentDestinationHolder,
   eventTrackingClient: EventTrackingClient,
+  screenParameterExtractor: ScreenParameterExtractor,
 ) {
   ReportCurrentDestinationEffect(backstackController, currentDestinationHolder)
-  TrackScreenViewEffect(backstackController, eventTrackingClient)
+  TrackScreenViewEffect(backstackController, eventTrackingClient, screenParameterExtractor)
   val hedvigAppState = rememberHedvigAppState(
     backstackController = backstackController,
     windowSizeClass = windowSizeClass,
@@ -293,17 +295,27 @@ private fun ReportCurrentDestinationEffect(
 
 /**
  * Sends a Firebase `screen_view` whenever the destination on top of the rendered stack changes, deriving the screen
- * name from the key type (the `{Feature}Key` suffix is dropped).
+ * name from the key type (the `{Feature}Key` suffix is dropped) and the parameters from
+ * [ScreenParameterExtractor]. Parameters ride along the single `screen_view` event keyed by screen name, acting as
+ * breakdown dimensions rather than fragmenting a screen into separate entries.
  */
 @Composable
-private fun TrackScreenViewEffect(backstackController: BackstackController, eventTrackingClient: EventTrackingClient) {
-  LaunchedEffect(backstackController, eventTrackingClient) {
+private fun TrackScreenViewEffect(
+  backstackController: BackstackController,
+  eventTrackingClient: EventTrackingClient,
+  screenParameterExtractor: ScreenParameterExtractor,
+) {
+  LaunchedEffect(backstackController, eventTrackingClient, screenParameterExtractor) {
     snapshotFlow { backstackController.currentDestination }
       .filterNotNull()
       .collect { destination ->
         val screenClass = destination::class.simpleName ?: destination.toString()
         val screenName = screenClass.removeSuffix("Key")
-        eventTrackingClient.trackScreen(name = screenName, screenClass = screenClass)
+        eventTrackingClient.trackScreen(
+          name = screenName,
+          screenClass = screenClass,
+          parameters = screenParameterExtractor.parametersFor(destination),
+        )
       }
   }
 }
