@@ -185,10 +185,15 @@ internal sealed interface StepContent {
   data class Information(
     val notice: String,
     val buttonTitle: String,
-    val severity: ClaimIntentStepContentInformationSeverity
+    val severity: InformationSeverity,
   ): StepContent {
     override val isSkippable: Boolean = false
   }
+  }
+
+
+enum class InformationSeverity {
+  Critical, Info
 }
 
 sealed interface AudioRecordingStepState {

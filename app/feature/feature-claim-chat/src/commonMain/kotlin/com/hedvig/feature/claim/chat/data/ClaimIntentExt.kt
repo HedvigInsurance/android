@@ -22,6 +22,7 @@ import octopus.fragment.InformationFragment
 import octopus.fragment.SummaryFragment
 import octopus.fragment.TaskFragment
 import octopus.type.ClaimIntentStepContentFormFieldType
+import octopus.type.ClaimIntentStepContentInformationSeverity
 import octopus.type.ClaimIntentStepContentSelectStyle
 
 context(raise: Raise<ClaimChatErrorMessage>)
@@ -190,7 +191,10 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
     is InformationFragment -> StepContent.Information(
       notice = notice,
       buttonTitle = buttonTitle,
-      severity = severity
+      severity = when (severity) {
+        ClaimIntentStepContentInformationSeverity.CRITICAL ->  InformationSeverity.Critical
+        else -> InformationSeverity.Info
+      }
     )
 
     else -> {

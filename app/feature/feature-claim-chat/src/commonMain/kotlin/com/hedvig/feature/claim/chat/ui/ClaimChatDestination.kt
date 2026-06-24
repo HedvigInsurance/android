@@ -93,6 +93,7 @@ import com.hedvig.feature.claim.chat.ClaimChatViewModelFactory
 import com.hedvig.feature.claim.chat.data.ClaimChatErrorMessage
 import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
 import com.hedvig.feature.claim.chat.data.ClaimIntentStep
+import com.hedvig.feature.claim.chat.data.InformationSeverity
 import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.data.StepId
 import com.hedvig.feature.claim.chat.ui.common.HelipadRiveAnimation
@@ -724,8 +725,8 @@ private fun StepTopContent(
     if (stepItem.stepContent is StepContent.Information) {
       if (isAnimationComplete) {
         val priority = when(stepItem.stepContent.severity) {
-          ClaimIntentStepContentInformationSeverity.CRITICAL -> NotificationDefaults.NotificationPriority.Error
-          else -> NotificationDefaults.NotificationPriority.InfoInline
+          InformationSeverity.Critical -> NotificationDefaults.NotificationPriority.Error
+          InformationSeverity.Info -> NotificationDefaults.NotificationPriority.InfoInline
         }
         Spacer(Modifier.height(16.dp))
         HedvigNotificationCard(
@@ -941,18 +942,6 @@ private fun StepBottomContent(
             },
             enabled = !currentContinueButtonLoading
           )
-          Spacer(Modifier.height(16.dp))
-          if (stepItem.stepContent.isSkippable) {
-            HedvigButton(
-              modifier = modifier.fillMaxWidth(),
-              text = stringResource(Res.string.claims_skip_button),
-              onClick = dropUnlessResumed {
-                onEvent(Skip(stepItem.id))
-              },
-              enabled = true,
-              buttonStyle = ButtonDefaults.ButtonStyle.Secondary
-            )
-          }
         }
 
       }
