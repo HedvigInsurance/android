@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.MutableWindowInsets
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -22,7 +23,9 @@ import androidx.compose.foundation.layout.onConsumedWindowInsetsChanged
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -42,6 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.hideFromAccessibility
@@ -56,6 +60,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
 import coil3.ImageLoader
+import coil3.compose.AsyncImage
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
 import com.hedvig.android.compose.ui.plus
@@ -71,6 +76,7 @@ import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
@@ -78,6 +84,8 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigTooltip
+import com.hedvig.android.design.system.hedvig.HighlightLabel
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
@@ -287,6 +295,8 @@ private fun HomeScreen(
             markMessageAsSeen = markMessageAsSeen,
             navigateToContactInfo = navigateToContactInfo,
             navigateToChipIdScreen = navigateToChipIdScreen,
+            openCrossSellUrl = openCrossSellUrl,
+            imageLoader = imageLoader,
           )
         }
       }
@@ -435,6 +445,8 @@ private fun HomeScreenSuccess(
   onNavigateToNewConversation: () -> Unit,
   navigateToContactInfo: () -> Unit,
   navigateToChipIdScreen: () -> Unit,
+  openCrossSellUrl: (String) -> Unit,
+  imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
   val consumedWindowInsets = remember { MutableWindowInsets() }
@@ -469,6 +481,10 @@ private fun HomeScreenSuccess(
 
         HomeSection.MemberReminders -> {
           uiState.homeText is HomeText.ActiveInFuture || applicableReminders.isNotEmpty()
+        }
+
+        HomeSection.Offers -> {
+          uiState.crossSellsPartition.offersCrossSell != null
         }
 
         HomeSection.StartClaimButton -> {
@@ -519,6 +535,15 @@ private fun HomeScreenSuccess(
               horizontalInsets = horizontalInsets,
             )
 
+            HomeSection.Offers -> uiState.crossSellsPartition.offersCrossSell?.let { recommended ->
+              OffersSection(
+                recommendedCrossSell = recommended,
+                onCrossSellClick = openCrossSellUrl,
+                imageLoader = imageLoader,
+                horizontalInsets = horizontalInsets,
+              )
+            }
+
             HomeSection.StartClaimButton -> StartClaimButtonSection(openClaimFlowSheet)
 
             HomeSection.HelpCenterButton -> HelpCenterButtonSection(navigateToHelpCenter)
@@ -534,6 +559,7 @@ private enum class HomeSection {
   ClaimStatusCards,
   VeryImportantMessages,
   MemberReminders,
+  Offers,
   StartClaimButton,
   HelpCenterButton,
 }
@@ -544,6 +570,7 @@ private val homeSectionOrder: List<HomeSection> = listOf(
   HomeSection.ClaimStatusCards,
   HomeSection.VeryImportantMessages,
   HomeSection.MemberReminders,
+  HomeSection.Offers,
   HomeSection.StartClaimButton,
   HomeSection.HelpCenterButton,
 )
@@ -556,6 +583,7 @@ private fun gapBefore(section: HomeSection, previous: HomeSection?): Dp {
     HomeSection.ClaimStatusCards -> 24.dp
     HomeSection.VeryImportantMessages -> 16.dp
     HomeSection.MemberReminders -> if (previous == HomeSection.VeryImportantMessages) 8.dp else 16.dp
+    HomeSection.Offers -> 16.dp
     HomeSection.StartClaimButton -> 16.dp
     HomeSection.HelpCenterButton -> 8.dp
   }
@@ -693,6 +721,61 @@ private fun HelpCenterButtonSection(navigateToHelpCenter: () -> Unit) {
       .padding(horizontal = 16.dp)
       .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
   )
+}
+
+@Composable
+private fun OffersSection(
+  recommendedCrossSell: RecommendedCrossSell,
+  onCrossSellClick: (String) -> Unit,
+  imageLoader: ImageLoader,
+  horizontalInsets: PaddingValues,
+) {
+  val crossSell = recommendedCrossSell.crossSell
+  HedvigCard(
+    onClick = { onCrossSellClick(crossSell.storeUrl) },
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp)
+      .padding(horizontalInsets),
+  ) {
+    Column(Modifier.padding(16.dp)) {
+      Row(verticalAlignment = Alignment.CenterVertically) {
+        AsyncImage(
+          model = crossSell.pillowImage.src,
+          contentDescription = null,
+          imageLoader = imageLoader,
+          contentScale = ContentScale.Fit,
+          modifier = Modifier.size(48.dp),
+        )
+        Spacer(Modifier.width(12.dp))
+        Column(Modifier.weight(1f)) {
+          HedvigText(text = crossSell.title, style = HedvigTheme.typography.bodySmall)
+          HedvigText(
+            text = recommendedCrossSell.bannerText,
+            style = HedvigTheme.typography.label,
+            color = HedvigTheme.colorScheme.textSecondary,
+          )
+        }
+        val discountText = recommendedCrossSell.discountText
+        if (discountText != null) {
+          Spacer(Modifier.width(8.dp))
+          HighlightLabel(
+            labelText = discountText,
+            size = HighlightLabelDefaults.HighLightSize.Small,
+            color = HighlightLabelDefaults.HighlightColor.Green(HighlightLabelDefaults.HighlightShade.LIGHT),
+          )
+        }
+      }
+      Spacer(Modifier.height(12.dp))
+      HedvigButton(
+        text = recommendedCrossSell.buttonText,
+        onClick = { onCrossSellClick(crossSell.storeUrl) },
+        buttonStyle = Secondary,
+        enabled = true,
+        modifier = Modifier.fillMaxWidth(),
+      )
+    }
+  }
 }
 
 @Composable
