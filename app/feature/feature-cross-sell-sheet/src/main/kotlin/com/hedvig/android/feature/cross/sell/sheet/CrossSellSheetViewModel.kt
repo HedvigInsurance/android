@@ -120,14 +120,15 @@ internal fun CrossSellInfoType.toCrossSellSource(): CrossSellInput {
       userFlow = UserFlow.SMART_X_SELL,
       flowSource = Optional.present(flowSource),
       experiments = emptyList(),
+      contractId = Optional.present(this.contractId)
     )
   }
   return when (this) {
     CrossSellInfoType.Addon -> smartCrossSellInput(FlowSource.ADDON)
-    CrossSellInfoType.ChangeTier -> smartCrossSellInput(FlowSource.CHANGE_TIER)
+    is CrossSellInfoType.ChangeTier -> smartCrossSellInput(FlowSource.CHANGE_TIER)
     is CrossSellInfoType.ClosedClaim -> smartCrossSellInput(FlowSource.CLOSED_CLAIM)
     CrossSellInfoType.EditCoInsured -> smartCrossSellInput(FlowSource.EDIT_COINSURED)
-    CrossSellInfoType.MovingFlow -> smartCrossSellInput(FlowSource.MOVING)
+    is CrossSellInfoType.MovingFlow -> smartCrossSellInput(FlowSource.MOVING)
   }
 }
 

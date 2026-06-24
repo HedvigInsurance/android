@@ -20,6 +20,8 @@ interface CrossSellAfterFlowRepository {
 
 sealed class CrossSellInfoType() {
   abstract val source: String
+
+  abstract val contractId: String?
   protected abstract val extraInfo: Map<String, Any?>?
   val attributes: Map<String, Any?>
     get() = buildMap {
@@ -33,6 +35,7 @@ sealed class CrossSellInfoType() {
     val info: ClaimInfo,
   ) : CrossSellInfoType() {
     override val source: String = "closedClaim"
+    override val contractId: String? = null //todo!
     override val extraInfo: Map<String, Any?> = with(info) {
       buildMap {
         this.put("id", id)
@@ -52,7 +55,9 @@ sealed class CrossSellInfoType() {
     )
   }
 
-  data object ChangeTier : CrossSellInfoType() {
+  data class ChangeTier(
+    override val contractId: String?
+  ) : CrossSellInfoType() {
     override val source: String = "changeTier"
     override val extraInfo: Map<String, Any?>? = null
   }
@@ -60,14 +65,18 @@ sealed class CrossSellInfoType() {
   data object Addon : CrossSellInfoType() {
     override val source: String = "addon"
     override val extraInfo: Map<String, Any?>? = null
+    override val contractId: String? = null //todo!
   }
 
   data object EditCoInsured : CrossSellInfoType() {
     override val source: String = "editCoInsured"
     override val extraInfo: Map<String, Any?>? = null
+    override val contractId: String? = null //todo!
   }
 
-  data object MovingFlow : CrossSellInfoType() {
+  data class MovingFlow(
+    override val contractId: String?
+  ) : CrossSellInfoType() {
     override val source: String = "movingFlow"
     override val extraInfo: Map<String, Any?>? = null
   }
