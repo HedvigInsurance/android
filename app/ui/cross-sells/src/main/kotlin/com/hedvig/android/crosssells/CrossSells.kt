@@ -212,7 +212,7 @@ private fun CrossSellsSheetContent(
         Spacer(Modifier.height(36.dp))
         AddonRecommendationSection(
           recommendedAddon,
-          onButtonClick = onCrossSellClick, //todo: check!
+          onButtonClick = onCrossSellClick,
           dismissSheet = dismissSheet,
           imageLoader = imageLoader,
         )
@@ -280,7 +280,7 @@ private fun CrossSellsFloatingSheetContent(
         if (recommendedAddon != null) {
           AddonRecommendationSection(
             recommendedAddon,
-            onButtonClick = onCrossSellClick, //todo: check!
+            onButtonClick = onCrossSellClick,
             dismissSheet = dismissSheet,
             imageLoader = imageLoader,
           )
