@@ -145,6 +145,7 @@ internal class GetHomeDataUseCaseImpl(
         val crossSells = CrossSellSheetData(
           recommendedCrossSell = recommendedCrossSell,
           otherCrossSells = otherCrossSellsData,
+          recommendedAddon = null
         )
         val showChatIcon = shouldShowChatButton(
           isInboxEnabledFromKillSwitch = inboxAlwaysAvailable,

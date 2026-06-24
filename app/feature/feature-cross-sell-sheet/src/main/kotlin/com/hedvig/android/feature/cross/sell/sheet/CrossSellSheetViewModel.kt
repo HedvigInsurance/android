@@ -22,6 +22,7 @@ import com.hedvig.android.core.demomode.ProdOrDemoProvider
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellSheetData
+import com.hedvig.android.crosssells.RecommendedAddon
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
@@ -177,9 +178,21 @@ internal class GetCrossSellSheetDataUseCaseImpl(
           val otherCrossSellsData = allData.otherCrossSells.map {
             it.toCrossSell()
           }
+          val recommendedAddon = allData.recommendedAddon?.let {
+            RecommendedAddon(
+              id = it.id,
+              title = it.title,
+              buttonTitle = it.buttonTitle,
+              description = it.description,
+              deepLink = it.deepLink,
+              pillowImageSmall = it.pillowImageSmall.src,
+              pillowImageLarge = it.pillowImageLarge.src
+            )
+          }
           CrossSellSheetData(
             recommendedCrossSell = recommendedData,
             otherCrossSells = otherCrossSellsData,
+            recommendedAddon = recommendedAddon
           )
         }
       }

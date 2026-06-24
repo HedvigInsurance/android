@@ -53,6 +53,7 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
             ImageAsset("", "", ""),
           ),
         ),
+        null
       ),
       travelBannerInfo = null,
       showChatIcon = false,

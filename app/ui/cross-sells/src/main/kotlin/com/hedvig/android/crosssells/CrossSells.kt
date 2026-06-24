@@ -103,6 +103,17 @@ import org.jetbrains.compose.resources.stringResource
 data class CrossSellSheetData(
   val recommendedCrossSell: RecommendedCrossSell?,
   val otherCrossSells: List<CrossSell>,
+  val recommendedAddon: RecommendedAddon?
+)
+
+data class RecommendedAddon(
+  val id: String,
+  val title: String,
+  val buttonTitle: String,
+  val description: String,
+  val deepLink: String,
+  val pillowImageSmall: String,
+  val pillowImageLarge: String,
 )
 
 data class RecommendedCrossSell(
