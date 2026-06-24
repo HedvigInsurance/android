@@ -498,8 +498,7 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
               ),
             ),
           ),
-        ),
-        currentInsuranceId = "sds"
+        )
       ),
       isSubmitting = false,
       submitError = null,

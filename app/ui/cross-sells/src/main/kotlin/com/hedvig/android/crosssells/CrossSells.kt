@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -61,6 +62,7 @@ import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.StepProgressItem
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.debugBorder
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.Campaign
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -207,6 +209,7 @@ private fun CrossSellsSheetContent(
       modifier = Modifier.padding(bottom = 24.dp),
     ) {
       if (recommendedAddon != null) {
+        Spacer(Modifier.height(36.dp))
         AddonRecommendationSection(
           recommendedAddon,
           onButtonClick = onCrossSellClick, //todo: check!
@@ -348,23 +351,30 @@ private fun AddonRecommendationSection(
         imageLoader = imageLoader,
         contentScale = ContentScale.Crop,
         modifier = Modifier
-          .size(96.dp),
+          .padding(8.dp)
+          .size(140.dp),
       )
-      Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
+      Row(
+        Modifier
           .align(Alignment.TopEnd)
-          .hedvigDropShadow(CircleShape)
-          .size(30.dp)
-          .background(HedvigTheme.colorScheme.fillNegative, CircleShape)
-          .border(1.dp, HedvigTheme.colorScheme.borderPrimary, CircleShape),
+          .padding(top = 16.dp)
       ) {
-        Icon(
-          imageVector = HedvigIcons.Plus,
-          contentDescription = EmptyContentDescription,
-          tint = HedvigTheme.colorScheme.fillPrimary,
-          modifier = Modifier.size(16.dp),
-        )
+        Box(
+          contentAlignment = Alignment.Center,
+          modifier = Modifier
+            .hedvigDropShadow(CircleShape)
+            .size(30.dp)
+            .background(HedvigTheme.colorScheme.fillNegative, CircleShape)
+            .border(1.dp, HedvigTheme.colorScheme.borderPrimary, CircleShape),
+        ) {
+          Icon(
+            imageVector = HedvigIcons.Plus,
+            contentDescription = EmptyContentDescription,
+            tint = HedvigTheme.colorScheme.fillPrimary,
+            modifier = Modifier.size(24.dp),
+          )
+        }
+        Spacer(Modifier.width(16.dp))
       }
     }
     Spacer(Modifier.height(24.dp))
