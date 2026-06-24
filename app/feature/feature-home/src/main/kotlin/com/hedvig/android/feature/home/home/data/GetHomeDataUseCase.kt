@@ -15,6 +15,7 @@ import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellSheetData
+import com.hedvig.android.crosssells.RecommendedAddon
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.AddonBannerSource
@@ -142,10 +143,21 @@ internal class GetHomeDataUseCaseImpl(
         val otherCrossSellsData = crossSellsData.otherCrossSells.map {
           it.toCrossSell()
         }
+        val recommendedAddon = crossSellsData.recommendedAddon?.let {
+          RecommendedAddon(
+            id = it.id,
+            title = it.title,
+            buttonTitle = it.buttonTitle,
+            description = it.description,
+            deepLink = it.deepLink,
+            pillowImageSmall = it.pillowImageSmall.src,
+            pillowImageLarge = it.pillowImageLarge.src
+          )
+        }
         val crossSells = CrossSellSheetData(
           recommendedCrossSell = recommendedCrossSell,
           otherCrossSells = otherCrossSellsData,
-          recommendedAddon = null
+          recommendedAddon = recommendedAddon
         )
         val showChatIcon = shouldShowChatButton(
           isInboxEnabledFromKillSwitch = inboxAlwaysAvailable,

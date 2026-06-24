@@ -58,6 +58,19 @@ query Home($claimsHistoryFlag: Boolean!) {
       otherCrossSells {
         ...HomeCrossSellFragment
       }
+      recommendedAddon {
+        id
+        title
+        description
+        buttonTitle
+        deepLink
+        pillowImageLarge {
+          src
+        }
+        pillowImageSmall {
+          src
+        }
+      }
     }
     memberActions {
       firstVetAction {
