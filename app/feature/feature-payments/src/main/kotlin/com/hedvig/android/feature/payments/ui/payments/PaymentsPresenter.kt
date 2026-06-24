@@ -125,6 +125,7 @@ private fun PaymentConnection.toConnectedPaymentInfo(): ConnectedPaymentInfo {
     )
 
     Unknown -> ConnectedPaymentInfo.Unknown
+
     PaymentConnection.NeedsPayoutSetup -> ConnectedPaymentInfo.NeedsPayoutSetup
   }
 }
@@ -145,7 +146,7 @@ internal sealed interface PaymentsUiState {
     val ongoingCharges: List<OngoingCharge>,
     val connectedPaymentInfo: ConnectedPaymentInfo,
     val showPayoutButton: Boolean,
-    val memberType: MemberType
+    val memberType: MemberType,
   ) : PaymentsUiState {
     sealed interface UpcomingPayment {
       data object NoUpcomingPayment : UpcomingPayment
@@ -180,7 +181,7 @@ internal sealed interface PaymentsUiState {
 
       data object Active : ConnectedPaymentInfo
 
-      data object NeedsPayoutSetup: ConnectedPaymentInfo
+      data object NeedsPayoutSetup : ConnectedPaymentInfo
     }
   }
 }

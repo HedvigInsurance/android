@@ -77,7 +77,7 @@ internal data class GetUpcomingPaymentUseCaseImpl(
         val paymentMethods = result.currentMember.paymentMethods
         val payinMethod = paymentMethods.defaultPayinMethod
           ?: paymentMethods.payinMethods.find { it.isDefault }
-        logcat {"Mariia: payinMethod $payinMethod"}
+        logcat { "Mariia: payinMethod $payinMethod" }
         val payoutMethod = paymentMethods.defaultPayoutMethod
           ?: paymentMethods.payoutMethods.find { it.isDefault }
         if (payinMethod == null) {
@@ -90,35 +90,47 @@ internal data class GetUpcomingPaymentUseCaseImpl(
             .firstOrNull()
 
           when (memberType) {
-
-            MemberType.STANDARD_MEMBER -> return@run NeedsPayinSetup(
-              firstKnownTerminationDateForContractTerminatedDueToMissedPayments,
-            )
+            MemberType.STANDARD_MEMBER -> {
+              return@run NeedsPayinSetup(
+                firstKnownTerminationDateForContractTerminatedDueToMissedPayments,
+              )
+            }
 
             MemberType.QASA_ONLY_MEMBER -> {
               if (payoutMethod == null) {
                 return@run PaymentConnection.NeedsPayoutSetup
-              } else return@run PaymentConnection.Active
+              } else {
+                return@run PaymentConnection.Active
+              }
             }
 
-            MemberType.STANDARD_TO_QASA_MEMBER -> TODO()
+            MemberType.STANDARD_TO_QASA_MEMBER -> {
+              TODO()
+            }
           }
         }
         when (payinMethod.status) {
           MemberPaymentMethodStatus.ACTIVE -> {
-            logcat {"Mariia: MemberPaymentMethodStatus.ACTIVE"}
-            logcat {"Mariia: payoutMethod $payoutMethod"}
+            logcat { "Mariia: MemberPaymentMethodStatus.ACTIVE" }
+            logcat { "Mariia: payoutMethod $payoutMethod" }
             if (payoutMethod == null) {
               return@run PaymentConnection.NeedsPayoutSetup
-            } else return@run PaymentConnection.Active
+            } else {
+              return@run PaymentConnection.Active
+            }
           }
 
-          MemberPaymentMethodStatus.PENDING -> PaymentConnection.Pending
-          MemberPaymentMethodStatus.UNKNOWN__ -> PaymentConnection.Unknown
+          MemberPaymentMethodStatus.PENDING -> {
+            PaymentConnection.Pending
+          }
+
+          MemberPaymentMethodStatus.UNKNOWN__ -> {
+            PaymentConnection.Unknown
+          }
         }
       },
       isManualChargeAllowed = isManualChargeAllowed,
-      memberType = memberType
+      memberType = memberType,
     )
   }
 }
@@ -153,7 +165,7 @@ internal class GetUpcomingPaymentUseCaseDemo(
       emptyList(),
       PaymentConnection.Unknown,
       isManualChargeAllowed = null,
-      memberType = MemberType.STANDARD_MEMBER
+      memberType = MemberType.STANDARD_MEMBER,
     ).right()
   }
 }
