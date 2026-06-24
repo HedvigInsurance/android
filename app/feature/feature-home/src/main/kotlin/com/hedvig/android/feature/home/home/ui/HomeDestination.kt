@@ -3,6 +3,7 @@ package com.hedvig.android.feature.home.home.ui
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -135,7 +137,11 @@ import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
 import hedvig.resources.ADDON_FLOW_SEE_PRICE_BUTTON
 import hedvig.resources.CHAT_NEW_MESSAGE
+import hedvig.resources.DASHBOARD_OPEN_CHAT
+import hedvig.resources.HC_QUICK_ACTIONS_TITLE
+import hedvig.resources.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE
 import hedvig.resources.Res
+import hedvig.resources.TAB_REFERRALS_TITLE
 import hedvig.resources.TOAST_NEW_OFFER
 import hedvig.resources.home_tab_active_in_future_info
 import hedvig.resources.home_tab_claim_button_text
@@ -299,6 +305,7 @@ private fun HomeScreen(
             navigateToConnectPayment = navigateToConnectPayment,
             navigateToConnectPayout = navigateToConnectPayout,
             navigateToHelpCenter = navigateToHelpCenter,
+            onNavigateToInbox = onNavigateToInbox,
             openClaimFlowSheet = startClaimBottomSheetState::show,
             openAppSettings = openAppSettings,
             openUrl = openUrl,
@@ -452,6 +459,7 @@ private fun HomeScreenSuccess(
   navigateToConnectPayment: () -> Unit,
   navigateToConnectPayout: () -> Unit,
   navigateToHelpCenter: () -> Unit,
+  onNavigateToInbox: () -> Unit,
   openClaimFlowSheet: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
@@ -489,6 +497,10 @@ private fun HomeScreenSuccess(
           true
         }
 
+        HomeSection.QuickActionCarousel -> {
+          true
+        }
+
         HomeSection.ClaimStatusCards -> {
           uiState.claimStatusCardsData != null
         }
@@ -513,6 +525,10 @@ private fun HomeScreenSuccess(
           uiState.addonBannerInfos.isNotEmpty()
         }
 
+        HomeSection.QuickActionTiles -> {
+          true
+        }
+
         HomeSection.StartClaimButton -> {
           true
         }
@@ -534,6 +550,15 @@ private fun HomeScreenSuccess(
           Spacer(Modifier.height(gapBefore(section, visibleSections.getOrNull(index - 1))))
           when (section) {
             HomeSection.Welcome -> WelcomeSection(uiState.firstName, uiState.homeText)
+
+            HomeSection.QuickActionCarousel -> QuickActionCarouselSection(
+              isHelpCenterEnabled = uiState.isHelpCenterEnabled,
+              onMakeClaim = openClaimFlowSheet,
+              onHelpAndSupport = navigateToHelpCenter,
+              onContactUs = onNavigateToInbox,
+              onForever = navigateToForever,
+              horizontalInsets = horizontalInsets,
+            )
 
             HomeSection.ClaimStatusCards -> ClaimStatusCardsSection(
               claimStatusCardsData = uiState.claimStatusCardsData,
@@ -582,6 +607,14 @@ private fun HomeScreenSuccess(
               horizontalInsets = horizontalInsets,
             )
 
+            HomeSection.QuickActionTiles -> QuickActionTilesSection(
+              isHelpCenterEnabled = uiState.isHelpCenterEnabled,
+              onHelpAndSupport = navigateToHelpCenter,
+              onChangeAddress = navigateToContactInfo,
+              onTravelCertificate = navigateToTravelCertificate,
+              horizontalInsets = horizontalInsets,
+            )
+
             HomeSection.StartClaimButton -> StartClaimButtonSection(openClaimFlowSheet)
 
             HomeSection.HelpCenterButton -> HelpCenterButtonSection(navigateToHelpCenter)
@@ -594,12 +627,14 @@ private fun HomeScreenSuccess(
 
 private enum class HomeSection {
   Welcome,
+  QuickActionCarousel,
   ClaimStatusCards,
   VeryImportantMessages,
   MemberReminders,
   Offers,
   DiscoverInsurances,
   Addons,
+  QuickActionTiles,
   StartClaimButton,
   HelpCenterButton,
 }
@@ -607,10 +642,12 @@ private enum class HomeSection {
 // The single source of truth for the home section order; reorder here.
 private val homeSectionOrder: List<HomeSection> = listOf(
   HomeSection.Welcome,
+  HomeSection.QuickActionCarousel,
   HomeSection.ClaimStatusCards,
   HomeSection.VeryImportantMessages,
   HomeSection.MemberReminders,
   HomeSection.Offers,
+  HomeSection.QuickActionTiles,
   HomeSection.DiscoverInsurances,
   HomeSection.Addons,
   HomeSection.StartClaimButton,
@@ -622,12 +659,14 @@ private fun gapBefore(section: HomeSection, previous: HomeSection?): Dp {
   if (previous == null) return 0.dp
   return when (section) {
     HomeSection.Welcome -> 0.dp
+    HomeSection.QuickActionCarousel -> 8.dp
     HomeSection.ClaimStatusCards -> 24.dp
     HomeSection.VeryImportantMessages -> 16.dp
     HomeSection.MemberReminders -> if (previous == HomeSection.VeryImportantMessages) 8.dp else 16.dp
     HomeSection.Offers -> 16.dp
     HomeSection.DiscoverInsurances -> 16.dp
     HomeSection.Addons -> 16.dp
+    HomeSection.QuickActionTiles -> 16.dp
     HomeSection.StartClaimButton -> 16.dp
     HomeSection.HelpCenterButton -> 8.dp
   }
@@ -819,6 +858,94 @@ private fun OffersSection(
         modifier = Modifier.fillMaxWidth(),
       )
     }
+  }
+}
+
+@Composable
+private fun QuickActionTilesSection(
+  isHelpCenterEnabled: Boolean,
+  onHelpAndSupport: () -> Unit,
+  onChangeAddress: () -> Unit,
+  onTravelCertificate: () -> Unit,
+  horizontalInsets: PaddingValues,
+) {
+  Column(
+    verticalArrangement = Arrangement.spacedBy(8.dp),
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp)
+      .padding(horizontalInsets),
+  ) {
+    HedvigText(text = stringResource(Res.string.HC_QUICK_ACTIONS_TITLE), style = HedvigTheme.typography.headlineSmall)
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+      if (isHelpCenterEnabled) {
+        HomeActionTile(stringResource(Res.string.home_tab_get_help), onHelpAndSupport, Modifier.weight(1f))
+      }
+      // TODO: Add "Change address" / "Byt adress" to Lokalise.
+      HomeActionTile("Change address", onChangeAddress, Modifier.weight(1f))
+      HomeActionTile(
+        stringResource(Res.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE),
+        onTravelCertificate,
+        Modifier.weight(1f),
+      )
+    }
+  }
+}
+
+@Composable
+private fun HomeActionTile(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+  // TODO: add the per-tile icon (Helipad / Reload / Travel) from the design once icon names are confirmed.
+  HedvigCard(onClick = onClick, modifier = modifier) {
+    HedvigText(
+      text = text,
+      style = HedvigTheme.typography.label,
+      textAlign = TextAlign.Center,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(vertical = 16.dp, horizontal = 8.dp),
+    )
+  }
+}
+
+@Composable
+private fun HomeActionChip(text: String, onClick: () -> Unit) {
+  // TODO: tonal-glass chip interpretation (no live blur); swap to a DS chip/glass button when it exists.
+  Surface(
+    onClick = onClick,
+    shape = HedvigTheme.shapes.cornerXLarge,
+    color = HedvigTheme.colorScheme.surfacePrimaryTransparent,
+  ) {
+    HedvigText(
+      text = text,
+      style = HedvigTheme.typography.label,
+      modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+    )
+  }
+}
+
+@Composable
+private fun QuickActionCarouselSection(
+  isHelpCenterEnabled: Boolean,
+  onMakeClaim: () -> Unit,
+  onHelpAndSupport: () -> Unit,
+  onContactUs: () -> Unit,
+  onForever: () -> Unit,
+  horizontalInsets: PaddingValues,
+) {
+  Row(
+    horizontalArrangement = Arrangement.spacedBy(8.dp),
+    modifier = Modifier
+      .fillMaxWidth()
+      .horizontalScroll(rememberScrollState())
+      .padding(horizontal = 16.dp)
+      .padding(horizontalInsets),
+  ) {
+    HomeActionChip(stringResource(Res.string.home_tab_claim_button_text), onMakeClaim)
+    if (isHelpCenterEnabled) {
+      HomeActionChip(stringResource(Res.string.home_tab_get_help), onHelpAndSupport)
+    }
+    HomeActionChip(stringResource(Res.string.DASHBOARD_OPEN_CHAT), onContactUs)
+    HomeActionChip(stringResource(Res.string.TAB_REFERRALS_TITLE), onForever)
   }
 }
 
