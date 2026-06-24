@@ -25,11 +25,11 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.systemGestureExclusion
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -42,10 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
@@ -54,7 +51,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -106,6 +102,7 @@ import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.ChatAction
 import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.CrossSellsAction
 import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.FirstVetAction
 import com.hedvig.android.feature.home.home.ui.HomeUiState.Success
+import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminder.PaymentReminder.ConnectPayment
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.memberreminders.ui.MemberReminderCardsWithoutNotification
@@ -440,131 +437,237 @@ private fun HomeScreenSuccess(
   navigateToChipIdScreen: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val isInPreview = LocalInspectionMode.current
-  val windowInfo = LocalWindowInfo.current
-  var fullScreenSize: IntSize? by remember { mutableStateOf(if (isInPreview) windowInfo.containerSize else null) }
   val consumedWindowInsets = remember { MutableWindowInsets() }
   Box(
     modifier = modifier
       .fillMaxSize()
-      .layout { measurable, constraints ->
-        fullScreenSize = IntSize(constraints.maxWidth, constraints.maxHeight)
-        val placeable = measurable.measure(constraints)
-        layout(placeable.width, placeable.height) {
-          placeable.place(0, 0)
-        }
-      }
       .onConsumedWindowInsetsChanged { consumedWindowInsets.insets = it }
-      .pullRefresh(pullRefreshState)
-      .verticalScroll(rememberScrollState()),
+      .pullRefresh(pullRefreshState),
   ) {
     NotificationPermissionDialog(notificationPermissionState, openAppSettings)
-    val fullScreenSizeValue = fullScreenSize
-    if (fullScreenSizeValue != null) {
-      val horizontalInsets =
-        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).exclude(consumedWindowInsets).asPaddingValues()
-      HomeLayout(
-        fullScreenSize = fullScreenSizeValue,
-        welcomeMessage = {
-          WelcomeMessage(
-            homeText = uiState.homeText,
-            modifier = Modifier
-              .padding(horizontal = 24.dp)
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-              .testTag("welcome_message")
-              .semantics {
-                hideFromAccessibility()
-              },
-          )
-        },
-        claimStatusCards = {
-          if (uiState.claimStatusCardsData != null) {
-            ClaimStatusCards(
-              onClick = onClaimDetailCardClicked,
-              claimStatusCardsUiState = uiState.claimStatusCardsData.claimStatusCardsUiState,
-              contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
+    val horizontalInsets =
+      WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).exclude(consumedWindowInsets).asPaddingValues()
+    val topInsets =
+      WindowInsets.safeDrawing.only(WindowInsetsSides.Top).exclude(consumedWindowInsets).asPaddingValues()
+    val bottomInsets =
+      WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).exclude(consumedWindowInsets).asPaddingValues()
+    val applicableReminders =
+      uiState.memberReminders.onlyApplicableReminders(notificationPermissionState.status.isGranted)
+    val visibleSections = homeSectionOrder.filter { section ->
+      when (section) {
+        HomeSection.Welcome -> {
+          true
+        }
+
+        HomeSection.ClaimStatusCards -> {
+          uiState.claimStatusCardsData != null
+        }
+
+        HomeSection.VeryImportantMessages -> {
+          uiState.veryImportantMessages.isNotEmpty()
+        }
+
+        HomeSection.MemberReminders -> {
+          uiState.homeText is HomeText.ActiveInFuture || applicableReminders.isNotEmpty()
+        }
+
+        HomeSection.StartClaimButton -> {
+          true
+        }
+
+        HomeSection.HelpCenterButton -> {
+          uiState.isHelpCenterEnabled
+        }
+      }
+    }
+    LazyColumn(
+      modifier = Modifier.fillMaxSize(),
+      contentPadding = PaddingValues(
+        top = toolbarHeight + topInsets.calculateTopPadding(),
+        bottom = 16.dp + bottomInsets.calculateBottomPadding(),
+      ),
+    ) {
+      itemsIndexed(visibleSections, key = { _, section -> section }) { index, section ->
+        Column {
+          Spacer(Modifier.height(gapBefore(section, visibleSections.getOrNull(index - 1))))
+          when (section) {
+            HomeSection.Welcome -> WelcomeSection(uiState.homeText)
+
+            HomeSection.ClaimStatusCards -> ClaimStatusCardsSection(
+              claimStatusCardsData = uiState.claimStatusCardsData,
+              onClaimDetailCardClicked = onClaimDetailCardClicked,
+              horizontalInsets = horizontalInsets,
             )
-          }
-        },
-        veryImportantMessages = {
-          ImportantMessages(
-            list = uiState.veryImportantMessages,
-            openUrl = openUrl,
-            hideImportantMessage = markMessageAsSeen,
-            contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
-          )
-        },
-        memberReminderCards = {
-          Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            if (uiState.homeText is HomeText.ActiveInFuture) {
-              HedvigNotificationCard(
-                message = stringResource(Res.string.home_tab_active_in_future_info, uiState.homeText.inception),
-                priority = NotificationPriority.Info,
-                modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(horizontal = 16.dp)
-                  .padding(horizontalInsets),
-              )
-            }
-            val memberReminders =
-              uiState.memberReminders.onlyApplicableReminders(notificationPermissionState.status.isGranted)
-            MemberReminderCardsWithoutNotification(
-              memberReminders = memberReminders,
+
+            HomeSection.VeryImportantMessages -> VeryImportantMessagesSection(
+              list = uiState.veryImportantMessages,
+              openUrl = openUrl,
+              markMessageAsSeen = markMessageAsSeen,
+              horizontalInsets = horizontalInsets,
+            )
+
+            HomeSection.MemberReminders -> MemberRemindersSection(
+              homeText = uiState.homeText,
+              applicableReminders = applicableReminders,
               navigateToConnectPayment = navigateToConnectPayment,
               navigateToConnectPayout = navigateToConnectPayout,
-              navigateToAddMissingInfo = navigateToMissingInfo,
+              navigateToMissingInfo = navigateToMissingInfo,
               onNavigateToNewConversation = onNavigateToNewConversation,
               openUrl = openUrl,
-              contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
               navigateToContactInfo = navigateToContactInfo,
-              navigateToChipId = navigateToChipIdScreen,
+              navigateToChipIdScreen = navigateToChipIdScreen,
+              horizontalInsets = horizontalInsets,
             )
+
+            HomeSection.StartClaimButton -> StartClaimButtonSection(openClaimFlowSheet)
+
+            HomeSection.HelpCenterButton -> HelpCenterButtonSection(navigateToHelpCenter)
           }
-        },
-        startClaimButton = {
-          HedvigButton(
-            text = stringResource(Res.string.home_tab_claim_button_text),
-            onClick = {
-              openClaimFlowSheet()
-            },
-            enabled = true,
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp)
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-          )
-        },
-        helpCenterButton = {
-          if (uiState.isHelpCenterEnabled) {
-            HedvigButton(
-              text = stringResource(Res.string.home_tab_get_help),
-              onClick = navigateToHelpCenter,
-              buttonStyle = Secondary,
-              enabled = true,
-              modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-            )
-          }
-        },
-        topSpacer = {
-          Spacer(
-            Modifier
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
-              .height(toolbarHeight),
-          )
-        },
-        bottomSpacer = {
-          Spacer(
-            Modifier
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
-              .height(16.dp),
-          )
-        },
-      )
+        }
+      }
     }
   }
+}
+
+private enum class HomeSection {
+  Welcome,
+  ClaimStatusCards,
+  VeryImportantMessages,
+  MemberReminders,
+  StartClaimButton,
+  HelpCenterButton,
+}
+
+// The single source of truth for the home section order; reorder here.
+private val homeSectionOrder: List<HomeSection> = listOf(
+  HomeSection.Welcome,
+  HomeSection.ClaimStatusCards,
+  HomeSection.VeryImportantMessages,
+  HomeSection.MemberReminders,
+  HomeSection.StartClaimButton,
+  HomeSection.HelpCenterButton,
+)
+
+// Reproduces the inter-section gaps of the previous layout, now in a top-aligned list.
+private fun gapBefore(section: HomeSection, previous: HomeSection?): Dp {
+  if (previous == null) return 0.dp
+  return when (section) {
+    HomeSection.Welcome -> 0.dp
+    HomeSection.ClaimStatusCards -> 24.dp
+    HomeSection.VeryImportantMessages -> 16.dp
+    HomeSection.MemberReminders -> if (previous == HomeSection.VeryImportantMessages) 8.dp else 16.dp
+    HomeSection.StartClaimButton -> 16.dp
+    HomeSection.HelpCenterButton -> 8.dp
+  }
+}
+
+@Composable
+private fun WelcomeSection(homeText: HomeText) {
+  WelcomeMessage(
+    homeText = homeText,
+    modifier = Modifier
+      .padding(horizontal = 24.dp)
+      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+      .testTag("welcome_message")
+      .semantics {
+        hideFromAccessibility()
+      },
+  )
+}
+
+@Composable
+private fun ClaimStatusCardsSection(
+  claimStatusCardsData: ClaimStatusCardsData?,
+  onClaimDetailCardClicked: (claimId: String) -> Unit,
+  horizontalInsets: PaddingValues,
+) {
+  if (claimStatusCardsData != null) {
+    ClaimStatusCards(
+      onClick = onClaimDetailCardClicked,
+      claimStatusCardsUiState = claimStatusCardsData.claimStatusCardsUiState,
+      contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
+    )
+  }
+}
+
+@Composable
+private fun VeryImportantMessagesSection(
+  list: List<VeryImportantMessage>,
+  openUrl: (String) -> Unit,
+  markMessageAsSeen: (String) -> Unit,
+  horizontalInsets: PaddingValues,
+) {
+  ImportantMessages(
+    list = list,
+    openUrl = openUrl,
+    hideImportantMessage = markMessageAsSeen,
+    contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
+  )
+}
+
+@Composable
+private fun MemberRemindersSection(
+  homeText: HomeText,
+  applicableReminders: List<MemberReminder>,
+  navigateToConnectPayment: () -> Unit,
+  navigateToConnectPayout: () -> Unit,
+  navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
+  onNavigateToNewConversation: () -> Unit,
+  openUrl: (String) -> Unit,
+  navigateToContactInfo: () -> Unit,
+  navigateToChipIdScreen: () -> Unit,
+  horizontalInsets: PaddingValues,
+) {
+  Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    if (homeText is HomeText.ActiveInFuture) {
+      HedvigNotificationCard(
+        message = stringResource(Res.string.home_tab_active_in_future_info, homeText.inception),
+        priority = NotificationPriority.Info,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp)
+          .padding(horizontalInsets),
+      )
+    }
+    MemberReminderCardsWithoutNotification(
+      memberReminders = applicableReminders,
+      navigateToConnectPayment = navigateToConnectPayment,
+      navigateToConnectPayout = navigateToConnectPayout,
+      navigateToAddMissingInfo = navigateToMissingInfo,
+      onNavigateToNewConversation = onNavigateToNewConversation,
+      openUrl = openUrl,
+      contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
+      navigateToContactInfo = navigateToContactInfo,
+      navigateToChipId = navigateToChipIdScreen,
+    )
+  }
+}
+
+@Composable
+private fun StartClaimButtonSection(openClaimFlowSheet: () -> Unit) {
+  HedvigButton(
+    text = stringResource(Res.string.home_tab_claim_button_text),
+    onClick = { openClaimFlowSheet() },
+    enabled = true,
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp)
+      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+  )
+}
+
+@Composable
+private fun HelpCenterButtonSection(navigateToHelpCenter: () -> Unit) {
+  HedvigButton(
+    text = stringResource(Res.string.home_tab_get_help),
+    onClick = navigateToHelpCenter,
+    buttonStyle = Secondary,
+    enabled = true,
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp)
+      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+  )
 }
 
 @Composable
