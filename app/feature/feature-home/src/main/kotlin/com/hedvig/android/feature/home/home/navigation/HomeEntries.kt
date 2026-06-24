@@ -32,6 +32,9 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
   openUrl: (String) -> Unit,
   openCrossSellUrl: (String) -> Unit,
   imageLoader: ImageLoader,
+  navigateToForever: () -> Unit,
+  navigateToTravelCertificate: () -> Unit,
+  navigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
   entry<HomeKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
     val viewModel: HomeViewModel = metroViewModel()
@@ -59,6 +62,9 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
       },
       imageLoader = imageLoader,
       navigateToChipId = navigateToChipIdScreen,
+      navigateToForever = dropUnlessResumed { navigateToForever() },
+      navigateToTravelCertificate = dropUnlessResumed { navigateToTravelCertificate() },
+      navigateToAddonPurchaseFlow = dropUnlessResumed { ids -> navigateToAddonPurchaseFlow(ids) },
     )
   }
   entry<FirstVetKey> { key ->

@@ -76,6 +76,7 @@ import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
+import com.hedvig.android.design.system.hedvig.FeatureAddonBanner
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -132,6 +133,7 @@ import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentText.
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentType.INACTIVE
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
+import hedvig.resources.ADDON_FLOW_SEE_PRICE_BUTTON
 import hedvig.resources.CHAT_NEW_MESSAGE
 import hedvig.resources.Res
 import hedvig.resources.TOAST_NEW_OFFER
@@ -175,6 +177,9 @@ internal fun HomeDestination(
   navigateToContactInfo: () -> Unit,
   navigateToChipId: () -> Unit,
   imageLoader: ImageLoader,
+  navigateToForever: () -> Unit,
+  navigateToTravelCertificate: () -> Unit,
+  navigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val notificationPermissionState = rememberNotificationPermissionState()
@@ -203,6 +208,9 @@ internal fun HomeDestination(
       viewModel.emit(HomeEvent.CrossSellToolTipShown(epochDay))
     },
     imageLoader = imageLoader,
+    navigateToForever = navigateToForever,
+    navigateToTravelCertificate = navigateToTravelCertificate,
+    navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
   )
 }
 
@@ -230,6 +238,9 @@ private fun HomeScreen(
   markCrossSellsNotificationAsSeen: () -> Unit,
   setEpochDayWhenLastToolTipShown: (Long) -> Unit,
   imageLoader: ImageLoader,
+  navigateToForever: () -> Unit,
+  navigateToTravelCertificate: () -> Unit,
+  navigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
   val systemBarInsetTopDp = with(LocalDensity.current) {
     WindowInsets.systemBars.getTop(this).toDp()
@@ -298,6 +309,9 @@ private fun HomeScreen(
             navigateToChipIdScreen = navigateToChipIdScreen,
             openCrossSellUrl = openCrossSellUrl,
             imageLoader = imageLoader,
+            navigateToForever = navigateToForever,
+            navigateToTravelCertificate = navigateToTravelCertificate,
+            navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
           )
         }
       }
@@ -448,6 +462,9 @@ private fun HomeScreenSuccess(
   navigateToChipIdScreen: () -> Unit,
   openCrossSellUrl: (String) -> Unit,
   imageLoader: ImageLoader,
+  navigateToForever: () -> Unit,
+  navigateToTravelCertificate: () -> Unit,
+  navigateToAddonPurchaseFlow: (List<String>) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val consumedWindowInsets = remember { MutableWindowInsets() }
@@ -490,6 +507,10 @@ private fun HomeScreenSuccess(
 
         HomeSection.DiscoverInsurances -> {
           uiState.crossSellsPartition.discoverCrossSells.isNotEmpty()
+        }
+
+        HomeSection.Addons -> {
+          uiState.addonBannerInfos.isNotEmpty()
         }
 
         HomeSection.StartClaimButton -> {
@@ -555,6 +576,12 @@ private fun HomeScreenSuccess(
               imageLoader = imageLoader,
             )
 
+            HomeSection.Addons -> AddonsSection(
+              addonBannerInfos = uiState.addonBannerInfos,
+              navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
+              horizontalInsets = horizontalInsets,
+            )
+
             HomeSection.StartClaimButton -> StartClaimButtonSection(openClaimFlowSheet)
 
             HomeSection.HelpCenterButton -> HelpCenterButtonSection(navigateToHelpCenter)
@@ -572,6 +599,7 @@ private enum class HomeSection {
   MemberReminders,
   Offers,
   DiscoverInsurances,
+  Addons,
   StartClaimButton,
   HelpCenterButton,
 }
@@ -584,6 +612,7 @@ private val homeSectionOrder: List<HomeSection> = listOf(
   HomeSection.MemberReminders,
   HomeSection.Offers,
   HomeSection.DiscoverInsurances,
+  HomeSection.Addons,
   HomeSection.StartClaimButton,
   HomeSection.HelpCenterButton,
 )
@@ -598,6 +627,7 @@ private fun gapBefore(section: HomeSection, previous: HomeSection?): Dp {
     HomeSection.MemberReminders -> if (previous == HomeSection.VeryImportantMessages) 8.dp else 16.dp
     HomeSection.Offers -> 16.dp
     HomeSection.DiscoverInsurances -> 16.dp
+    HomeSection.Addons -> 16.dp
     HomeSection.StartClaimButton -> 16.dp
     HomeSection.HelpCenterButton -> 8.dp
   }
@@ -786,6 +816,34 @@ private fun OffersSection(
         onClick = { onCrossSellClick(crossSell.storeUrl) },
         buttonStyle = Secondary,
         enabled = true,
+        modifier = Modifier.fillMaxWidth(),
+      )
+    }
+  }
+}
+
+@Composable
+private fun AddonsSection(
+  addonBannerInfos: List<AddonBannerInfo>,
+  navigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  horizontalInsets: PaddingValues,
+) {
+  Column(
+    verticalArrangement = Arrangement.spacedBy(16.dp),
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp)
+      .padding(horizontalInsets),
+  ) {
+    // TODO: Add an "Addons" / "Tillägg" section header to Lokalise.
+    HedvigText(text = "Addons", style = HedvigTheme.typography.headlineSmall)
+    addonBannerInfos.forEach { addon ->
+      FeatureAddonBanner(
+        title = addon.title,
+        description = addon.description,
+        buttonText = stringResource(Res.string.ADDON_FLOW_SEE_PRICE_BUTTON),
+        labels = addon.labels,
+        onButtonClick = { navigateToAddonPurchaseFlow(addon.eligibleInsurancesIds) },
         modifier = Modifier.fillMaxWidth(),
       )
     }
@@ -1067,6 +1125,9 @@ private fun PreviewHomeScreen(
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
         navigateToClaimChatInDevMode = {},
+        navigateToForever = {},
+        navigateToTravelCertificate = {},
+        navigateToAddonPurchaseFlow = {},
       )
     }
   }
@@ -1100,6 +1161,9 @@ private fun PreviewHomeScreenWithError() {
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
         navigateToClaimChatInDevMode = {},
+        navigateToForever = {},
+        navigateToTravelCertificate = {},
+        navigateToAddonPurchaseFlow = {},
       )
     }
   }
@@ -1154,6 +1218,9 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
         navigateToClaimChatInDevMode = {},
+        navigateToForever = {},
+        navigateToTravelCertificate = {},
+        navigateToAddonPurchaseFlow = {},
       )
     }
   }
