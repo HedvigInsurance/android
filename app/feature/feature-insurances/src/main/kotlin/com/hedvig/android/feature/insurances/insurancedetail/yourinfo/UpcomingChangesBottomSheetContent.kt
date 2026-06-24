@@ -74,7 +74,7 @@ internal fun UpcomingChangesBottomSheetContent(
         onInfoIconClick = {
           priceInfoBottomSheetState.show(it)
         },
-        isFirstRow = sections.isEmpty()
+        isFirstRow = sections.isEmpty(),
       )
     }
     Spacer(modifier = Modifier.height(16.dp))

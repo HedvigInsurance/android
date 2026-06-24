@@ -2,6 +2,7 @@ package com.hedvig.android.feature.help.center.puppyguide
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -11,6 +12,8 @@ import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.help.center.data.GetPuppyGuideUseCase
 import com.hedvig.android.feature.help.center.data.PuppyGuideStory
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -21,19 +24,24 @@ import kotlinx.coroutines.flow.SharingStarted
 @HedvigViewModel(ActivityRetainedScope::class)
 internal class PuppyGuideViewModel(
   getPuppyGuideUseCase: GetPuppyGuideUseCase,
+  featureManager: FeatureManager,
 ) : MoleculeViewModel<PuppyGuideEvent, PuppyGuideUiState>(
-    presenter = PuppyGuidePresenter(getPuppyGuideUseCase),
+    presenter = PuppyGuidePresenter(getPuppyGuideUseCase, featureManager),
     initialState = PuppyGuideUiState.Loading,
     sharingStarted = SharingStarted.WhileSubscribed(),
   )
 
 private class PuppyGuidePresenter(
   private val getPuppyGuideUseCase: GetPuppyGuideUseCase,
+  private val featureManager: FeatureManager,
 ) : MoleculePresenter<PuppyGuideEvent, PuppyGuideUiState> {
   @Composable
   override fun MoleculePresenterScope<PuppyGuideEvent>.present(lastState: PuppyGuideUiState): PuppyGuideUiState {
     var currentState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
+    val puppyGuideDisabled by remember(featureManager) {
+      featureManager.isFeatureEnabled(Feature.DISABLE_PUPPY_GUIDE)
+    }.collectAsState(null)
 
     CollectEvents { event ->
       when (event) {
@@ -41,12 +49,26 @@ private class PuppyGuidePresenter(
       }
     }
 
-    LaunchedEffect(loadIteration) {
-      getPuppyGuideUseCase.invoke().collect { response ->
-        currentState = response.fold(
-          ifLeft = { PuppyGuideUiState.Failure },
-          ifRight = { puppyGuide -> PuppyGuideUiState.Success(puppyGuide.stories) },
-        )
+    LaunchedEffect(loadIteration, puppyGuideDisabled) {
+      when (puppyGuideDisabled) {
+        // Flag not resolved yet, keep showing the loading state.
+        null -> {
+          currentState = PuppyGuideUiState.Loading
+        }
+
+        true -> {
+          currentState = PuppyGuideUiState.Disabled
+        }
+
+        false -> {
+          currentState = PuppyGuideUiState.Loading
+          getPuppyGuideUseCase.invoke().collect { response ->
+            currentState = response.fold(
+              ifLeft = { PuppyGuideUiState.Failure },
+              ifRight = { puppyGuide -> PuppyGuideUiState.Success(puppyGuide.stories) },
+            )
+          }
+        }
       }
     }
 
@@ -64,4 +86,6 @@ internal sealed interface PuppyGuideUiState {
   data object Loading : PuppyGuideUiState
 
   data object Failure : PuppyGuideUiState
+
+  data object Disabled : PuppyGuideUiState
 }

@@ -45,6 +45,8 @@ import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDes
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkTermination
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate
 import com.hedvig.android.feature.help.center.model.QuickAction
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.feature.help.center.navigation.EmergencyKey
 import com.hedvig.android.feature.help.center.navigation.FirstVetKey
 import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
@@ -124,6 +126,7 @@ internal class HelpCenterPresenter(
   private val hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
   private val getHelpCenterFAQUseCase: GetHelpCenterFAQUseCase,
   private val getPuppyGuideUseCase: GetPuppyGuideUseCase,
+  private val featureManager: FeatureManager,
   private val backstack: Backstack,
 ) : MoleculePresenter<HelpCenterEvent, HelpCenterUiState> {
   @Composable
@@ -242,7 +245,8 @@ internal class HelpCenterPresenter(
         flow = flow { emit(getQuickLinksUseCase.invoke()) },
         flow2 = flow { emit(getHelpCenterFAQUseCase.invoke()) },
         flow3 = getPuppyGuideUseCase.invoke(),
-      ) { quickLinks, faq, puppyGuideResult ->
+        flow4 = featureManager.isFeatureEnabled(Feature.DISABLE_PUPPY_GUIDE),
+      ) { quickLinks, faq, puppyGuideResult, puppyGuideDisabled ->
         quickLinksUiState = quickLinks.fold(
           ifLeft = {
             HelpCenterUiState.QuickLinkUiState.NoQuickLinks
@@ -262,6 +266,7 @@ internal class HelpCenterPresenter(
         val questions = faq.getOrNull()?.commonFAQ ?: listOf()
         val puppyGuide = puppyGuideResult.getOrNull()
         val puppyGuidePresentation = when {
+          puppyGuideDisabled -> null
           puppyGuide == null || puppyGuide.stories.isEmpty() -> null
           puppyGuide.isForYoungDog == true -> HelpCenterUiState.PuppyGuidePresentation.FullCard
           else -> HelpCenterUiState.PuppyGuidePresentation.QuickAction

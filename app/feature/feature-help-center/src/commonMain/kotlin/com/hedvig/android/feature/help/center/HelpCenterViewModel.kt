@@ -6,6 +6,7 @@ import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.feature.help.center.data.GetHelpCenterFAQUseCase
 import com.hedvig.android.feature.help.center.data.GetPuppyGuideUseCase
 import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCase
+import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.navigation.compose.Backstack
 import dev.zacsweers.metro.Inject
@@ -17,6 +18,7 @@ internal class HelpCenterViewModel(
   hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
   getHelpCenterFAQUseCase: GetHelpCenterFAQUseCase,
   getPuppyGuideUseCase: GetPuppyGuideUseCase,
+  featureManager: FeatureManager,
   backstack: Backstack,
 ) : MoleculeViewModel<HelpCenterEvent, HelpCenterUiState>(
     initialState = HelpCenterUiState(
@@ -32,6 +34,7 @@ internal class HelpCenterViewModel(
       getQuickLinksUseCase = getQuickLinksUseCase,
       hasAnyActiveConversationUseCase = hasAnyActiveConversationUseCase,
       getHelpCenterFAQUseCase = getHelpCenterFAQUseCase,
+      featureManager = featureManager,
       getPuppyGuideUseCase = getPuppyGuideUseCase,
       backstack = backstack,
     ),

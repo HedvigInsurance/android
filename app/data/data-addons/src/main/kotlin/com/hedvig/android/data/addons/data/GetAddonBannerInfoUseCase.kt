@@ -11,14 +11,11 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
 import octopus.AddonBannersQuery
@@ -32,7 +29,6 @@ interface GetAddonBannerInfoUseCase {
 @Inject
 internal class GetAddonBannerInfoUseCaseImpl(
   private val apolloClient: ApolloClient,
-  private val featureManager: FeatureManager,
 ) : GetAddonBannerInfoUseCase {
   override fun invoke(source: AddonBannerSource): Flow<Either<ErrorMessage, List<AddonBannerInfo>>> {
     val mappedSource = when (source) {
@@ -49,59 +45,48 @@ internal class GetAddonBannerInfoUseCaseImpl(
 
       AddonBannerSource.CAR_ADDON_DEEPLINK -> listOf(AddonFlow.APP_CAR_PLUS)
     }
-    return combine(
-      featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON),
-      apolloClient
-        .query(AddonBannersQuery(mappedSource))
-        .fetchPolicy(CacheAndNetwork)
-        .safeFlow()
-        .map {
-          it.mapLeft { error ->
+    return apolloClient
+      .query(AddonBannersQuery(mappedSource))
+      .fetchPolicy(CacheAndNetwork)
+      .safeFlow()
+      .map { addonBannersQueryResult ->
+        either {
+          val bannerData = addonBannersQueryResult.mapLeft { error ->
             logcat(LogPriority.WARN, error) {
               "Error from AddonBannersQuery " +
                 "from source: $mappedSource: $error"
             }
             ErrorMessage()
+          }.bind().currentMember.addonBanners
+          if (bannerData.isEmpty()) {
+            logcat(LogPriority.DEBUG) { "Got empty response from AddonBannersQuery" }
+            return@either emptyList()
           }
-        },
-    ) { isAddonFlagOn, addonBannersQueryResult ->
-      either {
-        if (!isAddonFlagOn) {
-          logcat(LogPriority.INFO) {
-            "Tried AddonBannersQuery but travel addon feature flag is off"
-          }
-          return@either emptyList()
-        }
-        val bannerData = addonBannersQueryResult.bind().currentMember.addonBanners
-        if (bannerData.isEmpty()) {
-          logcat(LogPriority.DEBUG) { "Got empty response from AddonBannersQuery" }
-          return@either emptyList()
-        }
-        bannerData.mapNotNull { banner ->
-          val flowType = when (banner.flow) {
-            AddonFlow.APP_TRAVEL_PLUS_SELL_ONLY -> FlowType.APP_TRAVEL_PLUS_SELL_ONLY
-            AddonFlow.APP_TRAVEL_PLUS_SELL_OR_UPGRADE -> FlowType.APP_TRAVEL_PLUS_SELL_OR_UPGRADE
-            AddonFlow.APP_CAR_PLUS -> FlowType.APP_CAR_PLUS
-            AddonFlow.UNKNOWN__ -> null
-          }
-          val eligibleInsurancesIds = banner.contractIds.toNonEmptyListOrNull()
-          if (flowType == null || eligibleInsurancesIds == null) {
-            logcat(LogPriority.DEBUG) {
-              "Got AddonFlow.UNKNOWN or empty contractIds from AddonBannersQuery"
+          bannerData.mapNotNull { banner ->
+            val flowType = when (banner.flow) {
+              AddonFlow.APP_TRAVEL_PLUS_SELL_ONLY -> FlowType.APP_TRAVEL_PLUS_SELL_ONLY
+              AddonFlow.APP_TRAVEL_PLUS_SELL_OR_UPGRADE -> FlowType.APP_TRAVEL_PLUS_SELL_OR_UPGRADE
+              AddonFlow.APP_CAR_PLUS -> FlowType.APP_CAR_PLUS
+              AddonFlow.UNKNOWN__ -> null
             }
-            null
-          } else {
-            AddonBannerInfo(
-              title = banner.displayTitleName,
-              description = banner.descriptionDisplayName,
-              labels = banner.badges,
-              eligibleInsurancesIds = eligibleInsurancesIds,
-              flowType = flowType,
-            )
+            val eligibleInsurancesIds = banner.contractIds.toNonEmptyListOrNull()
+            if (flowType == null || eligibleInsurancesIds == null) {
+              logcat(LogPriority.DEBUG) {
+                "Got AddonFlow.UNKNOWN or empty contractIds from AddonBannersQuery"
+              }
+              null
+            } else {
+              AddonBannerInfo(
+                title = banner.displayTitleName,
+                description = banner.descriptionDisplayName,
+                labels = banner.badges,
+                eligibleInsurancesIds = eligibleInsurancesIds,
+                flowType = flowType,
+              )
+            }
           }
         }
       }
-    }
   }
 }
 
