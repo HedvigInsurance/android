@@ -1,0 +1,124 @@
+# New Home Screen Overhaul — Implementation Plan
+
+**Branch:** `feature/new-home-screen` → merges into `develop` as one coherent cut.
+**Module:** primarily `feature-home` (presentation layer); `:app` navigation wiring (new lambdas); `data-addons` consumption.
+**Design source:** FigJam critique *"Critique 24/06/26 – New Home Screen"* (`E8j1i2FXoJf31t1ZdLe5yY`, node `2001-349`) for intent + open questions; detail design *App-P2-2026* (`SogcacjzOxkCC46XcZP8lQ`, node `20-4489`) for component-level truth. Four density variants (Mini/Medium/Max/Mega) — the same screen at increasing content. **This plan has been adversarially reviewed against source; verified facts are marked ✓.**
+
+---
+
+## 1. Summary
+
+Rebuild the **presentation layer** of the home screen, in place, on this branch. The **data layer stays largely intact** — most content is already fetched, order stays client-side. New data work is small: one GraphQL field (`firstName`) and one data-shape change (addon banner list). The bespoke centering `HomeLayout` is retired for a top-aligned scrolling section list.
+
+## 2. Scope & non-goals
+
+**In scope:** retire `HomeLayout`; decompose `HomeScreenSuccess` into per-section composables; restyle every existing section; add new sections (all backed by existing or trivially-added data); render the currently-dead addon data; a targeted data-resilience fix.
+
+**Explicit non-goals (out of this branch):**
+- **Navigation IA / tab restructure** (5 → 3 tabs, Profile/Forever leaving nav) — separate later workstream; home is built on the current 5-tab nav.
+- **"New message" inbox-preview card** — cut (won't be in final design).
+- **A distinct content feed for the carousel** (campaigns/news/guides) — backend fast-follow; v1 backs the carousel with existing cross-sell data (D12).
+- **Per-section impression/click analytics** — the app has no such mechanism; screen tracking is automatic + key-driven via `ScreenParameterExtractor`, and `HomeKey` is unchanged. ✓
+- **KMP/iOS changes** — `feature-home` is Android-only; iOS has its own independent Home. ✓
+- **Server-driven layout, a screenshot-test framework, literal iOS "Liquid Glass".**
+
+## 3. Locked decisions
+
+| # | Decision | Notes |
+|---|---|---|
+| D1 | Replace `HomeLayout.kt` with a top-aligned **section list**; **`LazyColumn` preferred** (long feed). WS0 settles the container, restating the invariants it affects: the toolbar overlay, the ~64dp top spacer / window-insets, and the pull-to-refresh overlay (contentPadding vs verticalScroll). | Centering algorithm is gone. |
+| D2 | Keep the single 7-way `combine()` in `GetHomeDataUseCase`. **Targeted resilience only.** | — |
+| D3 | Fold the two **auxiliary** signals (`anyActiveConversations`, the 5 s `unreadMessageCount` poll) to safe defaults so they can't blank the screen; core `HomeQuery` still gates. ✓ `travelBannerInfo` is already `getOrNull()`-safe. | Seam: `GetHomeDataUseCase.kt` ~L98 (gate), L150/L152 (fold). |
+| D4 | **Android-native interpretation**: reuse nearest DS; wrap missing ones behind a home-local composable + `// TODO: swap to <DS component>`. | — |
+| D5 | *Section order — see D16.* | (kept for reference) |
+| D6 | **To-do list = show all reminders, no truncation, no new dismissal.** | Pure restyle. |
+| D7 | *Quick-action carousel/tiles — see D14.* | (kept for reference) |
+| D8 | **Addons section = full addon list.** `HomeData.travelBannerInfo: AddonBannerInfo?` becomes a **`List<AddonBannerInfo>` (rename → `addonBannerInfos`)**; ✓ `GetAddonBannerInfoUseCase` already returns the full list — `feature-home` truncates it with `firstOrNull()`. Render **`FeatureAddonBanner` (design-system-hedvig) directly** — this is **new-UI, not reuse** (the Insurances-tab renderer is a *private* composable in a feature we can't depend on ✓). Needs a **new `navigateToAddonPurchaseFlow` (`AddonPurchaseKey`) lambda**. Covers car + travel addons (source = `INSURANCES_TAB`). | Type change ripples: `HomeData`, presenter mapping, demo impl, previews, tests. |
+| D9 | **"Discover our insurances" and "Addons" duplicate** Insurances-tab content. Accepted. | #10 reuses the shared `CrossSellsSection` (✓ legitimately reusable). |
+| D10 | **Tests = extend `HomePresenterTest` (state mapping) + `@Preview`.** The **resilience invariant** belongs in **`GetHomeUseCaseTest`** (real `GetHomeDataUseCaseImpl`), not `HomePresenterTest` (which injects a fake and can't observe the fold). ✓ | No screenshot framework. |
+| D11 | Land as **one coherent cut**; branch buildable throughout. **Any `HomeData` change updates `GetHomeDataUseCaseDemo` in the same commit** (it's a real runtime-selected impl via `SwitchingGetHomeDataUseCase`). ✓ | In-place, no flag. |
+| D12 | **Campaign/Discover carousel ships in v1, backed by existing cross-sell data** (`otherCrossSells`), rendered as a **pillow-icon carousel** (accepted lower fidelity — the data has only 48dp pillow icons, no banner imagery; discount text exists only on the single `recommendedCrossSell`). ✓ A real banner/content feed is a backend fast-follow. | — |
+| D13 | **Liquid-glass = rounded tonal/solid surface** (DS squircle shapes), **no live blur**; wrap + `// TODO`. | Applies to the restyled toolbar icons too. |
+| D14 | **Quick-action carousel (#3) = 4 static chips: Make a claim · Help & support · Contact us · Forever** (✓ real labels, detail design node `1:10786`). **Tiles (#9) = Help & support · Change address · Travel certificate** — "Help & support" intentionally in both. | Routes in §4. |
+| D15 | **Toolbar = keep the existing three icons (FirstVet · Cross-sell · Chat), restyled to tonal glass.** Cross-sell icon **retains** its bottom sheet + red-dot badge + once-per-day tooltip; FirstVet and Chat (+unread badge) keep today's behaviour. **(Reverses the earlier remove-cross-sell call.)** | Pure restyle — no presenter-state removal. |
+| D16 | **Section order = a single declarative section list.** Default = "Mega" order; design-owned, trivially reorderable. | — |
+| D17 | **Greeting keeps the 5 contract-status variants** (Active/Pending/Switching/Terminated + the active-in-future Hedvig-logo case), restyled, **plus `firstName`**. No collapse to a single static greeting. ✓ `Member.firstName: String!` exists, absent from `QueryHome` today. | Threads through `HomeText` mapping. |
+
+## 4. Target sections (top → bottom, "Mega" default order)
+
+| # | Section | Data | Reuse / new | DS note |
+|---|---|---|---|---|
+| 1 | **Top-bar icons** — FirstVet · Cross-sell (+sheet/badge/tooltip) · Chat (+unread badge) | HAVE | restyle existing 3 icons (D15) | tonal rounded icon button (D13) |
+| 2 | **Greeting** "Hi `<name>`…" — keeps 5 status variants + active-in-future logo | **`+firstName`** | restyle + thread name (D17) | `HedvigText` |
+| 3 | **Quick-action carousel** (Make a claim · Help & support · Contact us · Forever) | HAVE | new UI | chip → wrap `HedvigButton` (tonal) + TODO |
+| 4 | **Info Card** (announcement) | HAVE (`veryImportantMessages`; Hide = `MarkMessageAsSeen`, **in-memory only** ✓ — non-persistent, as today) | restyle | `HedvigNotificationCard` |
+| 5 | **Claim card(s)** (+ loader dots) | HAVE | reuse `ClaimStatusCards` | — |
+| 6 | **To-do list** (rows; show all) | HAVE (`memberReminders`) | restyle rows | row → wrap nearest list-row + TODO |
+| 7 | **Offers** (recommended cross-sell card) | HAVE (`recommendedCrossSell`) | reuse cross-sells UI | product card+badge → `HedvigCard`+`HighlightLabel` |
+| 8 | **Campaign/Discover carousel** (pillow-icon, D12) | HAVE (`otherCrossSells`) | new UI | `HorizontalPager` + pillow card |
+| 9 | **Quick-actions tiles** — Help & support · Change address · Travel certificate | HAVE (`showHelpCenter` flag; nav lambdas) | new UI | tile → wrap `HedvigCard`/`Surface` + TODO |
+| 10 | **Discover our insurances** | HAVE (`otherCrossSells`) | reuse `CrossSellsSection` ✓ | — |
+| 11 | **Addons** (full list, D8) | HAVE→`List` (D8) | **new-UI**: render `FeatureAddonBanner` (DS) + new `navigateToAddonPurchaseFlow` | `FeatureAddonBanner` |
+| — | **Pull-to-refresh · Loading · Error · active-in-future notification card** | HAVE | **retained** (do not drop when `HomeLayout`/`HomeScreenSuccess` are rewritten) | keep `PreviewHomeScreenWithError` |
+
+**Navigation lambdas:**
+- **Already wired (reuse):** Make a claim → `StartClaimBottomSheet`; Help & support → `navigateToHelpCenter`; Change address → `navigateToContactInfo`; **Contact us → `onNavigateToInbox`** (✓ already exists — *not* a new lambda; decide inbox vs `onNavigateToNewConversation`); cross-sell/FirstVet/chat toolbar actions.
+- **Genuinely new (each co-lands its `homeEntries(...)` + `:app HedvigEntryProvider` signature change atomically — D11):** `navigateToForever` (→ `ForeverKey`; it's a `TopLevelTabRoot`, so use the **tab-switch** API, not a bare push ✓), `navigateToTravelCertificate`, `navigateToAddonPurchaseFlow` (→ `AddonPurchaseKey`).
+
+## 5. Architecture changes (the three seams)
+
+1. **Layout container** — delete `HomeLayout.kt`; render an ordered, declarative list (D16) of `HomeXSection` composables (container per D1 + its invariants). Per-section visibility stays modelled as today (nullability / list-emptiness), extended for new sections. Retain pull-to-refresh, Loading, Error, and the active-in-future card.
+2. **Presenter / data mapping** — extend `SuccessData` → `HomeUiState.Success` with `firstName`, the `List<AddonBannerInfo>`, and a **centralised cross-sell → section partitioning** (which cross-sells go to Offers #7 vs carousel #8 vs Discover #10 — one place, built in WS0). No cross-sell tooltip/badge removal (D15 reversed).
+3. **Data resilience** — fold `anyActiveConversations` / `unreadMessageCount` to defaults; keep `HomeQuery.bind()` gating; combine not decomposed (D2/D3).
+
+## 6. Build order
+
+| Phase | Workstream | Effort | Depends on |
+|---|---|---|---|
+| **1** | **WS0 — Foundation.** Delete `HomeLayout`; section-list container (D1 + invariants) + declarative section-order list (D16) + per-section visibility model + **centralised cross-sell→section mapping**; targeted resilience fix; rewire existing sections. **Update `GetHomeDataUseCaseDemo` for every `HomeData` change.** One cohesive PR. | M | — |
+| **2** | **WS1 — Restyle on existing data:** toolbar (restyle 3 icons, D15) · greeting (keep status variants + `firstName`, D17) · Info Card · claim cards · Offers · Discover insurances · **Addons** (`FeatureAddonBanner` + new `navigateToAddonPurchaseFlow`, D8). + **WS3 — `firstName` GraphQL** (`QueryHome` + demo value). | M | WS0 |
+| **3** | **WS2 — New-UI sections:** To-do rows · quick-action carousel (chips; reuse `onNavigateToInbox`, new `navigateToForever`) · quick-action tiles (new `navigateToTravelCertificate`) · campaign/discover **pillow-icon** carousel (D12). | M | WS0 |
+| **4** | **Coherent cut + cleanup.** Verify `HomeLayout` gone, all sections via the declarative list, demo impl builds, presenter tests + `GetHomeUseCaseTest` resilience test + previews green, `ktlintFormat` + `lint` + `:feature-home:test`. Confirm `ExhaustiveBackStackSerializationTest` still passes (no new keys — verify). | S | WS0–WS2 |
+| — | **Tests — woven throughout** (each PR ships its presenter-test/`@Preview` deltas; resilience invariant in `GetHomeUseCaseTest`). | — | each WS |
+
+**Why this order:** WS0 owns the three central files (`GetHomeDataUseCase`/demo, `HomePresenter`, `HomeDestination`) and the shared mapping, so later PRs don't re-edit them. Each new `:app` lambda co-lands its `homeEntries` signature change atomically (so the branch never breaks). Restyle-on-existing-data sections (WS1) maximise low-risk progress; new-UI sections (WS2) follow.
+
+## 7. Open items (non-blocking)
+
+| Item | Owner | Note |
+|---|---|---|
+| Which cross-sells surface in Offers (#7) vs carousel (#8) vs Discover (#10) | Design | Centralised mapping (WS0) makes it a one-place change |
+| Final section priority/order | Design/Product | D16 declarative list; default Mega |
+| Contact-us chip target (inbox vs new conversation) | Eng/Design | Default `onNavigateToInbox`; both already plumbed |
+| Carousel fidelity (pillow icons now) | Design/Backend | Revisit when a real banner/content feed exists (D12) |
+| Distinct content feed (campaigns/news/guides) | Backend | Fast-follow |
+
+## 8. Risks & mitigations
+
+- **Branch buildability (WS0 + demo).** WS0 edits `HomeData`/`HomePresenter`/`HomeDestination` **and the demo impl** together. *Mitigation:* WS0 is one PR that rewires existing sections + updates demo; every later `HomeData` change updates demo in the same commit.
+- **Resilience regression.** *Mitigation:* assert in `GetHomeUseCaseTest` (real impl) that an auxiliary-signal failure keeps the `Either` `Right` with safe defaults.
+- **Cross-sell repetition** across #7/#8/#10. *Mitigation:* centralised mapping (WS0) + design differentiates which items go where.
+- **Insurances-tab duplication** (Discover/Addons) looking like a bug. *Mitigation:* accepted (D9); flag to QA.
+- **Carousel lower fidelity** (pillow icons, no banners/discounts on `otherCrossSells`). *Mitigation:* accepted for v1 (D12); revisit with real content.
+- **DS-gap drift.** *Mitigation:* one shared home-local components file + consistent `// TODO: swap to <DS>` markers.
+- **Lambda signature churn.** Each new lambda touches `homeEntries` + `:app`. *Mitigation:* co-land atomically (D11); ✓ no new module dependency needed (`ForeverKey`/`AddonPurchaseKey`/travel-cert already importable in `:app`).
+
+## 9. Testing strategy
+
+`HomePresenterTest`: extend state-mapping coverage (new-section visibility, `firstName`, `List<AddonBannerInfo>` mapping, status-variant greeting). `GetHomeUseCaseTest`: the resilience invariant (auxiliary failure ⇒ still `Right`/`Success`). `@Preview` per new `HomeXSection` (keep the error preview). Pre-merge: `:feature-home:test`, `ktlintFormat`, `lint`; confirm `ExhaustiveBackStackSerializationTest` + `BackstackTest` pass.
+
+## 10. Strings, accessibility, demo
+
+- **Strings (Lokalise):** reuse existing keys where present (claim button, get-help, open-chat, referrals, quick-actions/travel-certificate, offers headings, welcome titles). For net-new text (the named greeting with `firstName`, any new "To do" header), **hardcode English + `// TODO: Add "<EN>" / "<SV>" to Lokalise`** per CLAUDE.md — never touch `strings.xml`. Decide: greeting via a `%1$s` placeholder (new key) vs client-side `"Hi " + firstName`.
+- **Accessibility:** each new chip/tile gets a `contentDescription` or `mergeDescendants`; carousel exposes page semantics; decide whether the greeting headline stays `hideFromAccessibility` or becomes a heading.
+- **Demo mode:** `GetHomeDataUseCaseDemo` must populate `firstName` and a sample `addonBannerInfos` list so the new sections aren't empty in demo (D11). ✓
+
+## 11. Design-system gap inventory
+
+**Reuse as-is:** `HedvigButton`, `HedvigIconButton`, `HedvigCard`, `HedvigNotificationCard`, `HedvigText`, `HorizontalPager`, `LazyVerticalGrid`, `HighlightLabel`, `MemberReminderCards`, `ClaimStatusCards`, `CrossSellsSection`, **`FeatureAddonBanner`**.
+
+**Missing → wrap nearest + `// TODO`:**
+- Rounded / tonal "liquid-glass" icon button (toolbar) & chip → `HedvigIconButton`/`HedvigButton` in a DS-squircle tonal `Surface` (no live blur, D13).
+- Product card with sales badge → `HedvigCard` + `HighlightLabel`.
+- Quick-action tile → `HedvigCard`/`Surface` with icon+text.
+- Section header / drag-handle hint → `HedvigText` / `Divider` (acceptable hardcode for v1).
