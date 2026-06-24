@@ -174,6 +174,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           addonBannerInfo = null,
           isProduction = false,
+          crossSellsPartition = CrossSellsPartition(offersCrossSell = testCrossSell),
         ),
       )
     }
@@ -444,6 +445,11 @@ internal class HomePresenterTest {
           ),
           addonBannerInfo = null,
           isProduction = false,
+          crossSellsPartition = CrossSellsPartition(
+            offersCrossSell = testCrossSell,
+            carouselCrossSells = listOf(crossSell),
+            discoverCrossSells = listOf(crossSell),
+          ),
         ),
       )
     }
@@ -538,6 +544,44 @@ internal class HomePresenterTest {
           isProduction = false,
         ),
       )
+    }
+  }
+
+  @Test
+  fun `crossSells are partitioned into offers, carousel and discover buckets`() = runTest {
+    val getHomeDataUseCase = TestGetHomeDataUseCase()
+    val homePresenter = HomePresenter(
+      getHomeDataUseCase,
+      SeenImportantMessagesStorageImpl(),
+      FakeCrossSellHomeNotificationService(),
+      ApplicationScope(backgroundScope),
+      false,
+    )
+    val otherCrossSell = CrossSell(
+      id = "other",
+      title = "title",
+      subtitle = "subt",
+      storeUrl = "url",
+      pillowImage = ImageAsset("", "", ""),
+    )
+    homePresenter.test(HomeUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
+
+      getHomeDataUseCase.responseTurbine.add(
+        someIrrelevantHomeDataInstance.copy(
+          crossSells = CrossSellSheetData(testCrossSell, listOf(otherCrossSell)),
+        ).right(),
+      )
+      assertThat(awaitItem())
+        .isInstanceOf<HomeUiState.Success>()
+        .prop(HomeUiState.Success::crossSellsPartition)
+        .isEqualTo(
+          CrossSellsPartition(
+            offersCrossSell = testCrossSell,
+            carouselCrossSells = listOf(otherCrossSell),
+            discoverCrossSells = listOf(otherCrossSell),
+          ),
+        )
     }
   }
 
