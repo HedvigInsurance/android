@@ -68,6 +68,7 @@ import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterPr
 import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellBottomSheet
 import com.hedvig.android.crosssells.CrossSellSheetData
+import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.FlowType
@@ -487,6 +488,10 @@ private fun HomeScreenSuccess(
           uiState.crossSellsPartition.offersCrossSell != null
         }
 
+        HomeSection.DiscoverInsurances -> {
+          uiState.crossSellsPartition.discoverCrossSells.isNotEmpty()
+        }
+
         HomeSection.StartClaimButton -> {
           true
         }
@@ -544,6 +549,12 @@ private fun HomeScreenSuccess(
               )
             }
 
+            HomeSection.DiscoverInsurances -> DiscoverInsurancesSection(
+              crossSells = uiState.crossSellsPartition.discoverCrossSells,
+              onCrossSellClick = openCrossSellUrl,
+              imageLoader = imageLoader,
+            )
+
             HomeSection.StartClaimButton -> StartClaimButtonSection(openClaimFlowSheet)
 
             HomeSection.HelpCenterButton -> HelpCenterButtonSection(navigateToHelpCenter)
@@ -560,6 +571,7 @@ private enum class HomeSection {
   VeryImportantMessages,
   MemberReminders,
   Offers,
+  DiscoverInsurances,
   StartClaimButton,
   HelpCenterButton,
 }
@@ -571,6 +583,7 @@ private val homeSectionOrder: List<HomeSection> = listOf(
   HomeSection.VeryImportantMessages,
   HomeSection.MemberReminders,
   HomeSection.Offers,
+  HomeSection.DiscoverInsurances,
   HomeSection.StartClaimButton,
   HomeSection.HelpCenterButton,
 )
@@ -584,6 +597,7 @@ private fun gapBefore(section: HomeSection, previous: HomeSection?): Dp {
     HomeSection.VeryImportantMessages -> 16.dp
     HomeSection.MemberReminders -> if (previous == HomeSection.VeryImportantMessages) 8.dp else 16.dp
     HomeSection.Offers -> 16.dp
+    HomeSection.DiscoverInsurances -> 16.dp
     HomeSection.StartClaimButton -> 16.dp
     HomeSection.HelpCenterButton -> 8.dp
   }
@@ -776,6 +790,23 @@ private fun OffersSection(
       )
     }
   }
+}
+
+@Composable
+private fun DiscoverInsurancesSection(
+  crossSells: List<CrossSell>,
+  onCrossSellClick: (String) -> Unit,
+  imageLoader: ImageLoader,
+) {
+  CrossSellsSection(
+    // TODO: Add "Discover our insurances" / "Upptäck våra försäkringar" to Lokalise.
+    title = "Discover our insurances",
+    crossSells = crossSells,
+    onCrossSellClick = onCrossSellClick,
+    modifier = Modifier.padding(horizontal = 16.dp),
+    onSheetDismissed = {},
+    imageLoader = imageLoader,
+  )
 }
 
 @Composable
