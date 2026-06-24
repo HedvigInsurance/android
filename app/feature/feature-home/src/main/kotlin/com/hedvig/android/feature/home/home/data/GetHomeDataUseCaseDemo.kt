@@ -56,6 +56,7 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
       ),
       travelBannerInfo = null,
       showChatIcon = false,
+      firstName = "Demo",
     ).right(),
   )
 }

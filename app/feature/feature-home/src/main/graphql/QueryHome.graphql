@@ -1,5 +1,6 @@
 query Home($claimsHistoryFlag: Boolean!) {
   currentMember {
+    firstName
     claims@skip(if: $claimsHistoryFlag) {
       ...ClaimFragment
     }

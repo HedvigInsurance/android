@@ -141,6 +141,7 @@ internal class HomePresenter(
           addonBannerInfo = successData.addonBannerInfo,
           isProduction = isProduction,
           crossSellsPartition = successData.crossSellsPartition,
+          firstName = successData.firstName,
         )
       }
     }
@@ -181,6 +182,7 @@ internal sealed interface HomeUiState {
     override val isHelpCenterEnabled: Boolean,
     override val hasUnseenChatMessages: Boolean,
     val crossSellsPartition: CrossSellsPartition = CrossSellsPartition(),
+    val firstName: String = "",
   ) : HomeUiState
 
   data class Error(val message: String?) : HomeUiState
@@ -200,6 +202,7 @@ private data class SuccessData(
   val hasUnseenChatMessages: Boolean,
   val addonBannerInfo: AddonBannerInfo?,
   val crossSellsPartition: CrossSellsPartition,
+  val firstName: String,
 ) {
   companion object {
     fun fromLastState(lastState: HomeUiState): SuccessData? {
@@ -216,6 +219,7 @@ private data class SuccessData(
         addonBannerInfo = lastState.addonBannerInfo,
         chatAction = lastState.chatAction,
         crossSellsPartition = lastState.crossSellsPartition,
+        firstName = lastState.firstName,
       )
     }
 
@@ -264,6 +268,7 @@ private data class SuccessData(
         addonBannerInfo = homeData.travelBannerInfo,
         chatAction = if (homeData.showChatIcon) HomeTopBarAction.ChatAction else null,
         crossSellsPartition = partitionCrossSells(homeData.crossSells),
+        firstName = homeData.firstName,
       )
     }
   }

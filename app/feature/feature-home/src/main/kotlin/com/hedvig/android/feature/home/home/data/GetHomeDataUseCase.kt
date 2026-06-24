@@ -183,6 +183,7 @@ internal class GetHomeDataUseCaseImpl(
           crossSells = crossSells,
           travelBannerInfo = travelBannerInfo?.firstOrNull(),
           showChatIcon = showChatIcon,
+          firstName = homeQueryData.currentMember.firstName,
         )
       }.onLeft { error: ApolloOperationError ->
         logcat(operationError = error) { "GetHomeDataUseCase failed with $error" }
@@ -291,6 +292,8 @@ data class HomeData(
   val firstVetSections: List<FirstVetSection>,
   val crossSells: CrossSellSheetData,
   val travelBannerInfo: AddonBannerInfo?,
+  // Always populated from the backend; defaulted only so test/demo construction sites stay terse.
+  val firstName: String = "",
 ) {
   @Immutable
   data class ClaimStatusCardsData(
