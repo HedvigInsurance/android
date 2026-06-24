@@ -3,6 +3,7 @@ package com.hedvig.android.feature.home.home.ui
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -48,6 +49,9 @@ fun ToolbarChatIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
       .size(40.dp)
       .shadow(4.dp, CircleShape)
       .clip(CircleShape)
+      // TODO: tonal-glass interpretation of the iOS design (no live blur). Final glass treatment + icon
+      //  sizing/contrast needs design specs + visual QA; swap to a DS "glass icon button" when it exists.
+      .background(HedvigTheme.colorScheme.surfacePrimaryTransparent)
       .clickable(onClick = onClick),
   )
 }
@@ -61,6 +65,9 @@ fun ToolbarFirstVetIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
       .size(40.dp)
       .shadow(4.dp, CircleShape)
       .clip(CircleShape)
+      // TODO: tonal-glass interpretation of the iOS design (no live blur). Final glass treatment + icon
+      //  sizing/contrast needs design specs + visual QA; swap to a DS "glass icon button" when it exists.
+      .background(HedvigTheme.colorScheme.surfacePrimaryTransparent)
       .clickable(onClick = onClick),
   )
 }
@@ -79,6 +86,9 @@ fun ToolbarCrossSellsIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
       .size(40.dp)
       .shadow(4.dp, CircleShape)
       .clip(CircleShape)
+      // TODO: tonal-glass interpretation of the iOS design (no live blur). Final glass treatment + icon
+      //  sizing/contrast needs design specs + visual QA; swap to a DS "glass icon button" when it exists.
+      .background(HedvigTheme.colorScheme.surfacePrimaryTransparent)
       .clickable(onClick = onClick)
       .graphicsLayer {
         rotationZ = fullRotation
