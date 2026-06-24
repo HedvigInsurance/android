@@ -181,7 +181,7 @@ internal class GetHomeDataUseCaseImpl(
           showHelpCenter = isHelpCenterEnabled,
           firstVetSections = firstVetActions,
           crossSells = crossSells,
-          travelBannerInfo = travelBannerInfo?.firstOrNull(),
+          addonBannerInfos = travelBannerInfo.orEmpty(),
           showChatIcon = showChatIcon,
           firstName = homeQueryData.currentMember.firstName,
         )
@@ -291,7 +291,7 @@ data class HomeData(
   val showHelpCenter: Boolean,
   val firstVetSections: List<FirstVetSection>,
   val crossSells: CrossSellSheetData,
-  val travelBannerInfo: AddonBannerInfo?,
+  val addonBannerInfos: List<AddonBannerInfo>,
   // Always populated from the backend; defaulted only so test/demo construction sites stay terse.
   val firstName: String = "",
 ) {

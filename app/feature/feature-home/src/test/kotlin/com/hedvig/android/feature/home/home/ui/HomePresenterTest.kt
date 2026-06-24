@@ -142,7 +142,7 @@ internal class HomePresenterTest {
           showHelpCenter = false,
           crossSells = CrossSellSheetData(testCrossSell, listOf()),
           firstVetSections = listOf(),
-          travelBannerInfo = null,
+          addonBannerInfos = emptyList(),
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -172,7 +172,7 @@ internal class HomePresenterTest {
           ),
           chatAction = HomeTopBarAction.ChatAction,
           hasUnseenChatMessages = false,
-          addonBannerInfo = null,
+          addonBannerInfos = emptyList(),
           isProduction = false,
           crossSellsPartition = CrossSellsPartition(offersCrossSell = testCrossSell),
         ),
@@ -207,7 +207,7 @@ internal class HomePresenterTest {
           crossSells = CrossSellSheetData(null, listOf()),
           firstVetSections = listOf(),
           showHelpCenter = false,
-          travelBannerInfo = null,
+          addonBannerInfos = emptyList(),
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -224,7 +224,7 @@ internal class HomePresenterTest {
           chatAction = null,
           firstVetAction = null,
           crossSellsAction = null,
-          addonBannerInfo = null,
+          addonBannerInfos = emptyList(),
           isProduction = false,
         ),
       )
@@ -282,7 +282,7 @@ internal class HomePresenterTest {
           showHelpCenter = false,
           firstVetSections = listOf(),
           crossSells = CrossSellSheetData(null, listOf()),
-          travelBannerInfo = null,
+          addonBannerInfos = emptyList(),
         ).right(),
       )
       assertThat(awaitItem())
@@ -317,7 +317,7 @@ internal class HomePresenterTest {
           crossSells = CrossSellSheetData(null, listOf()),
           firstVetSections = listOf(),
           showHelpCenter = false,
-          travelBannerInfo = null,
+          addonBannerInfos = emptyList(),
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -332,7 +332,7 @@ internal class HomePresenterTest {
           chatAction = null,
           firstVetAction = null,
           crossSellsAction = null,
-          addonBannerInfo = null,
+          addonBannerInfos = emptyList(),
           isProduction = false,
         ),
       )
@@ -371,7 +371,7 @@ internal class HomePresenterTest {
             firstVet,
           ),
           showHelpCenter = false,
-          travelBannerInfo = null,
+          addonBannerInfos = emptyList(),
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -386,7 +386,7 @@ internal class HomePresenterTest {
           chatAction = null,
           firstVetAction = HomeTopBarAction.FirstVetAction(listOf(firstVet)),
           crossSellsAction = null,
-          addonBannerInfo = null,
+          addonBannerInfos = emptyList(),
           isProduction = false,
         ),
       )
@@ -424,7 +424,7 @@ internal class HomePresenterTest {
           crossSells = CrossSellSheetData(testCrossSell, listOf(crossSell)),
           firstVetSections = listOf(),
           showHelpCenter = false,
-          travelBannerInfo = null,
+          addonBannerInfos = emptyList(),
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -443,7 +443,7 @@ internal class HomePresenterTest {
             crossSellRecommendationNotification = CrossSellRecommendationNotification
               (true, 1L),
           ),
-          addonBannerInfo = null,
+          addonBannerInfos = emptyList(),
           isProduction = false,
           crossSellsPartition = CrossSellsPartition(
             offersCrossSell = testCrossSell,
@@ -479,7 +479,7 @@ internal class HomePresenterTest {
           crossSells = CrossSellSheetData(null, emptyList()),
           firstVetSections = listOf(),
           showHelpCenter = false,
-          travelBannerInfo = null,
+          addonBannerInfos = emptyList(),
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -494,7 +494,7 @@ internal class HomePresenterTest {
           chatAction = HomeTopBarAction.ChatAction,
           firstVetAction = null,
           crossSellsAction = null,
-          addonBannerInfo = null,
+          addonBannerInfos = emptyList(),
           isProduction = false,
         ),
       )
@@ -525,7 +525,7 @@ internal class HomePresenterTest {
           crossSells = CrossSellSheetData(null, emptyList()),
           firstVetSections = listOf(),
           showHelpCenter = false,
-          travelBannerInfo = null,
+          addonBannerInfos = emptyList(),
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -540,7 +540,7 @@ internal class HomePresenterTest {
           chatAction = null,
           firstVetAction = null,
           crossSellsAction = null,
-          addonBannerInfo = null,
+          addonBannerInfos = emptyList(),
           isProduction = false,
         ),
       )
@@ -628,7 +628,7 @@ internal class HomePresenterTest {
     showHelpCenter = false,
     firstVetSections = listOf(),
     crossSells = CrossSellSheetData(null, emptyList()),
-    travelBannerInfo = null,
+    addonBannerInfos = emptyList(),
   )
 }
 
