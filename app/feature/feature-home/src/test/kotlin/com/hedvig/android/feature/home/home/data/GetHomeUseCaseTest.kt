@@ -16,6 +16,7 @@ import assertk.assertions.isTrue
 import assertk.assertions.prop
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.annotations.ApolloExperimental
+import com.apollographql.apollo.testing.registerTestNetworkError
 import com.apollographql.apollo.testing.registerTestResponse
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
@@ -740,6 +741,35 @@ internal class GetHomeUseCaseTest {
         }
       }
   }
+
+  @Test
+  fun `when the auxiliary chat signals fail, the screen still loads with safe defaults instead of erroring`() =
+    runTest {
+      // Inbox-always-available off, so showChatIcon depends purely on the (failing) active-conversation signal.
+      val featureManager = FakeFeatureManager(
+        mapOf(
+          Feature.HELP_CENTER to true,
+          Feature.ENABLE_CLAIM_HISTORY to true,
+          Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT to false,
+        ),
+      )
+      val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
+
+      // The primary HomeQuery gate succeeds; the two auxiliary chat signals fail at the network level.
+      // The screen must still load (Right) with those signals folded to safe defaults rather than blanking.
+      apolloClient.registerTestResponse(
+        HomeQuery(true),
+        HomeQuery.Data(OctopusFakeResolver),
+      )
+      apolloClient.registerTestNetworkError(UnreadMessageCountQuery())
+      apolloClient.registerTestNetworkError(CbmNumberOfChatMessagesQuery())
+
+      val result = getHomeDataUseCase.invoke(true).first()
+
+      val homeData = assertThat(result).isNotNull().isRight()
+      homeData.prop(HomeData::hasUnseenChatMessages).isFalse()
+      homeData.prop(HomeData::showChatIcon).isFalse()
+    }
 
   // Used as a convenience to get a use case without any enqueued apollo responses, but some sane defaults for the
   // other dependencies

@@ -147,15 +147,21 @@ internal class GetHomeDataUseCaseImpl(
         )
         val showChatIcon = shouldShowChatButton(
           isInboxEnabledFromKillSwitch = inboxAlwaysAvailable,
-          hasActiveConversations = anyActiveConversations.bind(),
+          // Auxiliary signal: if the active-conversation lookup fails, default to false rather than failing the screen.
+          hasActiveConversations = anyActiveConversations.getOrNull() ?: false,
         )
-        val unreadMessageCountData = unreadMessageCountResult.bind()
-        val hasUnseenChatMessages = unreadMessageCountData
-          .currentMember
-          .conversations
-          .map { it.unreadMessageCount }
-          .plus(unreadMessageCountData.currentMember.legacyConversation?.unreadMessageCount)
-          .any { it != null && it > 0 }
+        // Auxiliary signal: a failed or transient unread-count poll must not blank the whole screen.
+        val unreadMessageCountData = unreadMessageCountResult.getOrNull()
+        val hasUnseenChatMessages = if (unreadMessageCountData == null) {
+          false
+        } else {
+          unreadMessageCountData
+            .currentMember
+            .conversations
+            .map { it.unreadMessageCount }
+            .plus(unreadMessageCountData.currentMember.legacyConversation?.unreadMessageCount)
+            .any { it != null && it > 0 }
+        }
         val firstVetActions = homeQueryData.currentMember.memberActions
           ?.firstVetAction?.sections?.map { section ->
             FirstVetSection(
