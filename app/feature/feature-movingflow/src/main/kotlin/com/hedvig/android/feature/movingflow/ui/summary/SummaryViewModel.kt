@@ -108,6 +108,7 @@ internal class SummaryPresenter(
     LaunchedEffect(Unit) {
       movingFlowRepository.movingFlowState().collect { movingFlowState ->
         val movingFlowQuotes = movingFlowState?.movingFlowQuotes
+        val contractId = movingFlowState?.moveFromAddressId
         if (movingFlowQuotes == null) {
           logcat(LogPriority.ERROR) { "In moving flow summary, no moving flow quotes found." }
           summaryInfo = SummaryInfoState.Error.MissingOngoingMovingFlow
@@ -123,6 +124,7 @@ internal class SummaryPresenter(
             SummaryInfo(
               moveHomeQuote = matchingMoveHomeQuote,
               moveMtaQuotes = moveMtaQuotes,
+              currentInsuranceId = contractId
             ),
           )
         }
@@ -176,8 +178,9 @@ internal class SummaryPresenter(
                   submitChangesError = SubmitError.WithMessage(userErrorMessage)
                 }
               } else {
+                val currentContractId = (summaryInfo as? SummaryInfoState.Content)?.summaryInfo?.currentInsuranceId
                 crossSellAfterFlowRepository.completedCrossSellTriggeringSelfServiceSuccessfully(
-                  CrossSellInfoType.MovingFlow,
+                  CrossSellInfoType.MovingFlow(currentContractId),
                 )
                 submitChangesWithData = null
                 backstack.popUpTo<SelectContractForMovingKey>(inclusive = true)
@@ -352,6 +355,7 @@ internal sealed interface SummaryEvent {
 internal data class SummaryInfo(
   val moveHomeQuote: MoveHomeQuote,
   val moveMtaQuotes: List<MoveMtaQuote>,
+  val currentInsuranceId: String?
 )
 
 private data class SubmitChangesData(
