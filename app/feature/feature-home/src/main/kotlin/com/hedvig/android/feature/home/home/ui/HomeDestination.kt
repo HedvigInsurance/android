@@ -46,6 +46,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
@@ -71,8 +72,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.lerp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
 import coil3.ImageLoader
@@ -502,9 +503,19 @@ private fun HomeScreenSuccess(
   modifier: Modifier = Modifier,
 ) {
   val consumedWindowInsets = remember { MutableWindowInsets() }
+  // Capture the viewport height in the layout phase (cheaper than BoxWithConstraints, and available on
+  // the first frame) so the greeting hero below can size itself relative to the screen.
+  var viewportHeightPx by remember { mutableIntStateOf(0) }
   Box(
     modifier = modifier
       .fillMaxSize()
+      .layout { measurable, constraints ->
+        if (constraints.hasBoundedHeight) {
+          viewportHeightPx = constraints.maxHeight
+        }
+        val placeable = measurable.measure(constraints)
+        layout(placeable.width, placeable.height) { placeable.place(0, 0) }
+      }
       .onConsumedWindowInsetsChanged { consumedWindowInsets.insets = it }
       .pullRefresh(pullRefreshState),
   ) {
@@ -593,22 +604,29 @@ private fun HomeScreenSuccess(
       // so the pinned pills clear the icons and the greeting stays visually centered.
       if (HomeSection.Welcome in visibleSections) {
         item(key = HomeSection.Welcome, contentType = "welcome") {
-          Column(Modifier.fillMaxWidth()) {
-            Spacer(Modifier.height(pinnedTopOffset * 2))
-            Box(
-              modifier = Modifier
-                .fillMaxWidth()
-                .layout { measurable, constraints ->
-                  // Layout-phase read: re-layout (not recomposition) as the collapse fraction changes.
-                  val verticalPaddingPx = lerp(48.dp, 0.dp, greetingCollapseFraction.value).roundToPx()
-                  val placeable = measurable.measure(constraints)
-                  layout(placeable.width, placeable.height + verticalPaddingPx * 2) {
-                    placeable.place(0, verticalPaddingPx)
-                  }
-                },
-            ) {
-              WelcomeSection(uiState.firstName, uiState.homeText)
-            }
+          // Center the greeting in the viewport, reserving the toolbar clearance plus a peek for the
+          // pills + sheet so a slice of content stays visible at rest. Collapses toward the greeting's
+          // natural height as the first item scrolls away. All computed in the layout phase, so it
+          // re-lays-out (no recomposition) and is correct on the first frame.
+          Box(
+            modifier = Modifier
+              .fillMaxWidth()
+              .layout { measurable, constraints ->
+                val placeable = measurable.measure(constraints)
+                val clearancePx = pinnedTopOffset.roundToPx()
+                val minPadPx = 8.dp.roundToPx()
+                val reservedPx = (pinnedTopOffset + 132.dp).roundToPx()
+                val collapsedHero = clearancePx + placeable.height + minPadPx * 2
+                val fullHero = (viewportHeightPx - reservedPx).coerceAtLeast(collapsedHero)
+                val heroHeight = lerp(fullHero, collapsedHero, greetingCollapseFraction.value)
+                layout(placeable.width, heroHeight) {
+                  val y = (clearancePx + (heroHeight - clearancePx - placeable.height) / 2)
+                    .coerceAtLeast(clearancePx + minPadPx)
+                  placeable.place(0, y)
+                }
+              },
+          ) {
+            WelcomeSection(uiState.firstName, uiState.homeText)
           }
         }
       }
