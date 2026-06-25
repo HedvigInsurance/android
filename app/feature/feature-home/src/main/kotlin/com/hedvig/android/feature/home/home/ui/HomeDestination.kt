@@ -618,7 +618,7 @@ private fun HomeScreenSuccess(
                 // The space we ADD above the greeting, on top of the mandatory inset + icons clearance.
                 // A moderate, fixed amount — NOT the leftover viewport — otherwise tall portrait screens
                 // leave a huge void above the greeting. This is the main resting-position knob.
-                val addedSpacePx = 160.dp.roundToPx()
+                val addedSpacePx = 80.dp.roundToPx()
                 // Scroll-feel knob: how much the hero shrinks while scrolling (speed-up = 1 + this/dist).
                 val maxCollapsePx = 80.dp.roundToPx()
                 // Floor on short/landscape windows so the greeting still hugs the top there.
