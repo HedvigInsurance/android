@@ -21,7 +21,6 @@ dependencies {
   implementation(projects.coreBuildConstants)
   implementation(libs.jetbrains.compose.runtime)
   implementation(libs.jetbrains.lifecycle.runtime.compose)
-  implementation(libs.jetbrains.navigation.compose)
   implementation(projects.composeUi)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreResources)

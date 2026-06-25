@@ -12,15 +12,12 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.toContractGroup
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
-import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import octopus.InsurancesForTravelAddonQuery
 
 internal interface GetInsuranceForTravelAddonUseCase {
@@ -32,23 +29,14 @@ internal interface GetInsuranceForTravelAddonUseCase {
 @Inject
 internal class GetInsuranceForTravelAddonUseCaseImpl(
   private val apolloClient: ApolloClient,
-  private val featureManager: FeatureManager,
 ) : GetInsuranceForTravelAddonUseCase {
   override suspend fun invoke(ids: List<String>): Flow<Either<ErrorMessage, List<InsuranceForAddon>>> {
-    return combine(
-      featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON),
-      apolloClient
-        .query(InsurancesForTravelAddonQuery())
-        .fetchPolicy(FetchPolicy.NetworkOnly)
-        .safeFlow(::ErrorMessage),
-    ) { isEnabled, memberResponse ->
-      either {
-        if (!isEnabled) {
-          logcat(LogPriority.ERROR) {
-            "Tried to get list of insurances for addon purchase but the addon feature flag id off!"
-          }
-          raise(ErrorMessage())
-        } else {
+    return apolloClient
+      .query(InsurancesForTravelAddonQuery())
+      .fetchPolicy(FetchPolicy.NetworkOnly)
+      .safeFlow(::ErrorMessage)
+      .map { memberResponse ->
+        either {
           val result = memberResponse.bind().currentMember.toInsurancesForAddon(ids)
           ensure(result.isNotEmpty()) {
             logcat { "Tried to get list of insurances for addon purchase but the list is empty!" }
@@ -57,7 +45,6 @@ internal class GetInsuranceForTravelAddonUseCaseImpl(
           result
         }
       }
-    }
   }
 }
 

@@ -2,8 +2,7 @@ package com.hedvig.android.feature.insurances.di
 
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.DemoManager
-import com.hedvig.android.core.demomode.ProdOrDemoProvider
-import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.core.demomode.DemoSwitcher
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCaseDemo
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCaseImpl
@@ -14,9 +13,11 @@ import dev.zacsweers.metro.binding
 
 @Inject
 @SingleIn(AppScope::class)
-@ContributesBinding(AppScope::class, binding<Provider<GetCrossSellsUseCase>>())
-internal class GetCrossSellsUseCaseProvider(
+@ContributesBinding(AppScope::class, binding = binding<GetCrossSellsUseCase>())
+internal class SwitchingGetCrossSellsUseCase(
   override val demoManager: DemoManager,
   override val prodImpl: GetCrossSellsUseCaseImpl,
   override val demoImpl: GetCrossSellsUseCaseDemo,
-) : ProdOrDemoProvider<GetCrossSellsUseCase>
+) : GetCrossSellsUseCase, DemoSwitcher<GetCrossSellsUseCase>() {
+  override suspend fun invoke() = pick().invoke()
+}

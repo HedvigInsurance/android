@@ -14,12 +14,11 @@ import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.demomode.DemoManager
-import com.hedvig.android.core.demomode.ProdOrDemoProvider
-import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.core.demomode.DemoSwitcher
 import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedAddon
@@ -52,11 +51,11 @@ import octopus.type.UserFlow
 @Inject
 @HedvigViewModel(ActivityRetainedScope::class)
 internal class CrossSellSheetViewModel(
-  getCrossSellSheetDataUseCaseProvider: Provider<GetCrossSellSheetDataUseCase>,
+  getCrossSellSheetDataUseCase: GetCrossSellSheetDataUseCase,
   crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
 ) : MoleculeViewModel<CrossSellSheetEvent, CrossSellSheetState>(
     CrossSellSheetState.Loading,
-    CrossSellSheetPresenter(getCrossSellSheetDataUseCaseProvider, crossSellAfterFlowRepository),
+    CrossSellSheetPresenter(getCrossSellSheetDataUseCase, crossSellAfterFlowRepository),
   )
 
 internal sealed interface CrossSellSheetEvent {
@@ -74,7 +73,7 @@ internal sealed interface CrossSellSheetState {
 }
 
 private class CrossSellSheetPresenter(
-  private val getCrossSellSheetDataUseCaseProvider: Provider<GetCrossSellSheetDataUseCase>,
+  private val getCrossSellSheetDataUseCase: GetCrossSellSheetDataUseCase,
   private val crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
 ) : MoleculePresenter<CrossSellSheetEvent, CrossSellSheetState> {
   @Composable
@@ -98,7 +97,7 @@ private class CrossSellSheetPresenter(
           return@transformLatest
         }
         emitAll(
-          getCrossSellSheetDataUseCaseProvider.provide().invoke(infoType.toCrossSellSource())
+          getCrossSellSheetDataUseCase.invoke(infoType.toCrossSellSource())
             .mapLatest { result ->
               result.fold(
                 ifLeft = { error -> CrossSellSheetState.Error(error) },
@@ -134,12 +133,14 @@ internal fun CrossSellInfoType.toCrossSellSource(): CrossSellInput {
 
 @Inject
 @SingleIn(AppScope::class)
-@ContributesBinding(AppScope::class, binding<Provider<GetCrossSellSheetDataUseCase>>())
-internal class GetCrossSellSheetDataUseCaseProvider(
+@ContributesBinding(AppScope::class, binding = binding<GetCrossSellSheetDataUseCase>())
+internal class SwitchingGetCrossSellSheetDataUseCase(
   override val demoManager: DemoManager,
   override val prodImpl: GetCrossSellSheetDataUseCaseImpl,
   override val demoImpl: DemoGetCrossSellSheetDataUseCase,
-) : ProdOrDemoProvider<GetCrossSellSheetDataUseCase>
+) : GetCrossSellSheetDataUseCase, DemoSwitcher<GetCrossSellSheetDataUseCase>() {
+  override suspend fun invoke(source: CrossSellInput) = pickFlow { it.invoke(source) }
+}
 
 internal interface GetCrossSellSheetDataUseCase {
   suspend fun invoke(source: CrossSellInput): Flow<Either<ErrorMessage, CrossSellSheetData>>

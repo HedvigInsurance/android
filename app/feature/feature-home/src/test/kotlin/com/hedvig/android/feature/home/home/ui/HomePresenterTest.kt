@@ -58,9 +58,9 @@ internal class HomePresenterTest {
   fun `asking to refresh successfully asks for a fetch from the network`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
-      { getHomeDataUseCase },
+      getHomeDataUseCase,
       SeenImportantMessagesStorageImpl(),
-      { FakeCrossSellHomeNotificationService() },
+      FakeCrossSellHomeNotificationService(),
       ApplicationScope(backgroundScope),
       false,
     )
@@ -85,9 +85,9 @@ internal class HomePresenterTest {
   fun `getting a failed response and retrying, should result in a successful state`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
-      { getHomeDataUseCase },
+      getHomeDataUseCase,
       SeenImportantMessagesStorageImpl(),
-      { FakeCrossSellHomeNotificationService() },
+      FakeCrossSellHomeNotificationService(),
       ApplicationScope(backgroundScope),
       false,
     )
@@ -110,9 +110,9 @@ internal class HomePresenterTest {
   fun `a successful response, properly propagates the info to the UI State`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
-      { getHomeDataUseCase },
+      getHomeDataUseCase,
       SeenImportantMessagesStorageImpl(),
-      { FakeCrossSellHomeNotificationService() },
+      FakeCrossSellHomeNotificationService(),
       ApplicationScope(backgroundScope),
       false,
     )
@@ -183,9 +183,9 @@ internal class HomePresenterTest {
   fun `the notification member reminder must not show for the home presenter`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
-      { getHomeDataUseCase },
+      getHomeDataUseCase,
       SeenImportantMessagesStorageImpl(),
-      { FakeCrossSellHomeNotificationService() },
+      FakeCrossSellHomeNotificationService(),
       ApplicationScope(backgroundScope),
       false,
     )
@@ -234,9 +234,9 @@ internal class HomePresenterTest {
   fun `receiving a failed state and then a successful one propagates the success without having to retry`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
-      { getHomeDataUseCase },
+      getHomeDataUseCase,
       SeenImportantMessagesStorageImpl(),
-      { FakeCrossSellHomeNotificationService() },
+      FakeCrossSellHomeNotificationService(),
       ApplicationScope(backgroundScope),
       false,
     )
@@ -258,9 +258,9 @@ internal class HomePresenterTest {
   ) = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
-      { getHomeDataUseCase },
+      getHomeDataUseCase,
       SeenImportantMessagesStorageImpl(),
-      { FakeCrossSellHomeNotificationService() },
+      FakeCrossSellHomeNotificationService(),
       ApplicationScope(backgroundScope),
       false,
     )
@@ -295,9 +295,9 @@ internal class HomePresenterTest {
   fun `if firstVet sections and crossSells lists are empty do not show first vet icon and crossSells icon`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
-      { getHomeDataUseCase },
+      getHomeDataUseCase,
       SeenImportantMessagesStorageImpl(),
-      { FakeCrossSellHomeNotificationService() },
+      FakeCrossSellHomeNotificationService(),
       ApplicationScope(backgroundScope),
       false,
     )
@@ -342,9 +342,9 @@ internal class HomePresenterTest {
   fun `if not empty firstVet sections list state should have first vet action with same firstVetSections`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
-      { getHomeDataUseCase },
+      getHomeDataUseCase,
       SeenImportantMessagesStorageImpl(),
-      { FakeCrossSellHomeNotificationService() },
+      FakeCrossSellHomeNotificationService(),
       ApplicationScope(backgroundScope),
       false,
     )
@@ -396,9 +396,9 @@ internal class HomePresenterTest {
   fun `if crossSell has recommendation or otherCrossSells list show crossSells icon`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
-      { getHomeDataUseCase },
+      getHomeDataUseCase,
       SeenImportantMessagesStorageImpl(),
-      { FakeCrossSellHomeNotificationService() },
+      FakeCrossSellHomeNotificationService(),
       ApplicationScope(backgroundScope),
       false,
     )
@@ -453,9 +453,9 @@ internal class HomePresenterTest {
   fun `if should show chat show chat icon`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
-      { getHomeDataUseCase },
+      getHomeDataUseCase,
       SeenImportantMessagesStorageImpl(),
-      { FakeCrossSellHomeNotificationService() },
+      FakeCrossSellHomeNotificationService(),
       ApplicationScope(backgroundScope),
       false,
     )
@@ -499,9 +499,9 @@ internal class HomePresenterTest {
   fun `if shouldn't show chat do not show chat icon`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
-      { getHomeDataUseCase },
+      getHomeDataUseCase,
       SeenImportantMessagesStorageImpl(),
-      { FakeCrossSellHomeNotificationService() },
+      FakeCrossSellHomeNotificationService(),
       ApplicationScope(backgroundScope),
       false,
     )

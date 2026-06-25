@@ -91,7 +91,7 @@ fun EntryProviderScope<HedvigNavKey>.profileEntries(
       navigateUp = backstack::navigateUp,
     )
   }
-  entry<ContactInfoKey> {
+  entry<ContactInfoKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
     val viewModel: ContactInfoViewModel = metroViewModel()
     ContactInfoDestination(
       viewModel = viewModel,
@@ -100,7 +100,7 @@ fun EntryProviderScope<HedvigNavKey>.profileEntries(
       popBackstack = backstack::popBackstack,
     )
   }
-  entry<InformationKey> {
+  entry<InformationKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
     val viewModel: AboutAppViewModel = metroViewModel()
     InformationDestination(
       viewModel = viewModel,
@@ -114,12 +114,12 @@ fun EntryProviderScope<HedvigNavKey>.profileEntries(
       openUrl = openUrl,
     )
   }
-  entry<LicensesKey> {
+  entry<LicensesKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
     LicensesDestination(
       onBackPressed = backstack::navigateUp,
     )
   }
-  entry<CertificatesKey> {
+  entry<CertificatesKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
     val viewModel: CertificatesViewModel = metroViewModel()
     CertificatesDestination(
       viewModel = viewModel,
@@ -128,7 +128,7 @@ fun EntryProviderScope<HedvigNavKey>.profileEntries(
       onNavigateToTravelCertificate = dropUnlessResumed { onNavigateToTravelCertificate() },
     )
   }
-  entry<SettingsKey> {
+  entry<SettingsKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
     val viewModel: SettingsViewModel = metroViewModel()
     SettingsDestination(
       viewModel = viewModel,

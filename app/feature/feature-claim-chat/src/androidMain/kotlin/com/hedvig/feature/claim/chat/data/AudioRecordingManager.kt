@@ -3,14 +3,21 @@ package com.hedvig.feature.claim.chat.data
 import android.content.Context
 import android.media.MediaPlayer
 import android.media.MediaRecorder
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.fileupload.AndroidFile
 import com.hedvig.android.core.fileupload.CommonFile
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import java.io.File
 import java.util.Timer
 import java.util.TimerTask
 import java.util.UUID
 import kotlin.time.Clock
 
+@Inject
+@SingleIn(AppScope::class)
+@ContributesBinding(AppScope::class)
 internal class AndroidAudioRecordingManager(
   private val clock: Clock,
 ) : AudioRecordingManager {

@@ -25,3 +25,13 @@ interface SuppressesChatPushNotification
  * `destinationToExcludeFromSavingState`.
  */
 interface DeliberateLogoutOrigin
+
+/**
+ * Opt-in override for the analytics parameters sent with a key's `screen_view` event. By default, the
+ * tracker reflects a key's own serialized properties as parameters; a key implementing this takes full
+ * control instead, returning exactly the parameters to attach. Use it when the serialized shape isn't
+ * what you want reported — to rename, drop, derive, or coarsen high-cardinality values.
+ */
+interface TrackedScreen {
+  val screenParameters: Map<String, Any?>
+}

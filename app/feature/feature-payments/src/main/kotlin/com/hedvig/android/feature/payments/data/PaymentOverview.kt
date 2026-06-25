@@ -9,7 +9,7 @@ data class PaymentOverview(
   val ongoingCharges: List<OngoingCharge>,
   val paymentConnection: PaymentConnection,
   val isManualChargeAllowed: ManualChargeToPrompt?,
-  val memberType: MemberType
+  val memberType: MemberType,
 ) {
   data class OngoingCharge(
     val id: String,

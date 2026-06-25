@@ -12,12 +12,9 @@ hedvig {
 }
 
 dependencies {
-  api(libs.androidx.navigation.common)
-
   implementation(libs.androidx.compose.animation)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.foundationLayout)
-  implementation(libs.androidx.navigation.compose)
   implementation(libs.androidx.other.browser)
   implementation(libs.apollo.api)
   implementation(libs.apollo.runtime)

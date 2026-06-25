@@ -16,10 +16,7 @@ android {
 }
 
 dependencies {
-  api(libs.androidx.navigation.common)
-
   implementation(libs.androidx.compose.foundation)
-  implementation(libs.androidx.navigation.compose)
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
   implementation(libs.coroutines.core)

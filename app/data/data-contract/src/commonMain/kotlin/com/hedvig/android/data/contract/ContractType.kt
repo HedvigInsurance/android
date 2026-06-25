@@ -134,7 +134,7 @@ fun ContractType.isTrialContract() = when (this) {
   SE_DOG_PREMIUM,
   SE_DOG_STANDARD,
   UNKNOWN,
-  ContractType.SE_QASA_LANDLORD
+  ContractType.SE_QASA_LANDLORD,
   -> false
 
   SE_CAR_TRIAL_FULL,

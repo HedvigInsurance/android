@@ -37,7 +37,9 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.scene.Scene
+import androidx.navigation3.scene.SinglePaneSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import coil3.ImageLoader
 import com.hedvig.android.app.AndroidAppHost
@@ -45,6 +47,7 @@ import com.hedvig.android.app.GlobalHedvigSnackBar
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
+import com.hedvig.android.app.navigation.ScreenParameterExtractor
 import com.hedvig.android.app.navigation.hedvigEntryProvider
 import com.hedvig.android.app.navigation.shouldFadeThrough
 import com.hedvig.android.app.urihandler.AuthorizationCodeUriHandler
@@ -58,7 +61,7 @@ import com.hedvig.android.compose.ui.LocalSharedTransitionScope
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
-import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.core.tracking.EventTrackingClient
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.design.system.hedvig.DemoModeLabel
 import com.hedvig.android.design.system.hedvig.Surface
@@ -70,6 +73,7 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.BottomSheetSceneStrategy
 import com.hedvig.android.navigation.compose.HedvigDeepLinkMatcher
 import com.hedvig.android.navigation.compose.entryDecorators
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
@@ -81,6 +85,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import org.jetbrains.compose.resources.stringResource
@@ -106,16 +111,19 @@ internal fun HedvigApp(
   externalNavigator: ExternalNavigator,
   logoutUseCase: LogoutUseCase,
   getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase,
-  missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>,
+  missedPaymentNotificationService: MissedPaymentNotificationService,
   currentDestinationHolder: CurrentDestinationHolder,
+  eventTrackingClient: EventTrackingClient,
+  screenParameterExtractor: ScreenParameterExtractor,
 ) {
   ReportCurrentDestinationEffect(backstackController, currentDestinationHolder)
+  TrackScreenViewEffect(backstackController, eventTrackingClient, screenParameterExtractor)
   val hedvigAppState = rememberHedvigAppState(
     backstackController = backstackController,
     windowSizeClass = windowSizeClass,
     settingsDataStore = settingsDataStore,
     featureManager = featureManager,
-    missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
+    missedPaymentNotificationService = missedPaymentNotificationService,
   )
   val darkTheme = hedvigAppState.darkTheme
   HedvigTheme(darkTheme = darkTheme) {
@@ -162,6 +170,13 @@ internal fun HedvigApp(
             hedvigAppState = hedvigAppState,
             sharedTransitionScope = this@SharedTransitionLayout,
           )
+          val sceneStrategies = remember {
+            listOf(
+              BottomSheetSceneStrategy<HedvigNavKey>(),
+              DialogSceneStrategy<HedvigNavKey>(),
+              SinglePaneSceneStrategy(),
+            )
+          }
           val density = LocalDensity.current
           val popSpec = hedvigPopTransitionSpec(backstackController, density)
           // Hold the first frame on the themed background until SessionReconciler resolves the start
@@ -182,6 +197,7 @@ internal fun HedvigApp(
                     onBack = backstackController::popBackstack,
                     entryDecorators = entryDecorators { backstackController.allLiveContentKeys },
                     sharedTransitionScope = this@SharedTransitionLayout,
+                    sceneStrategies = sceneStrategies,
                     sceneDecoratorStrategies = sceneDecoratorStrategies,
                     transitionSpec = hedvigTransitionSpec(backstackController, density),
                     popTransitionSpec = popSpec,
@@ -274,6 +290,33 @@ private fun ReportCurrentDestinationEffect(
       logcat { "Navigated to destination:$destination" }
       currentDestinationHolder.update(destination)
     }
+  }
+}
+
+/**
+ * Sends a Firebase `screen_view` whenever the destination on top of the rendered stack changes, deriving the screen
+ * name from the key type (the `{Feature}Key` suffix is dropped) and the parameters from
+ * [ScreenParameterExtractor]. Parameters ride along the single `screen_view` event keyed by screen name, acting as
+ * breakdown dimensions rather than fragmenting a screen into separate entries.
+ */
+@Composable
+private fun TrackScreenViewEffect(
+  backstackController: BackstackController,
+  eventTrackingClient: EventTrackingClient,
+  screenParameterExtractor: ScreenParameterExtractor,
+) {
+  LaunchedEffect(backstackController, eventTrackingClient, screenParameterExtractor) {
+    snapshotFlow { backstackController.currentDestination }
+      .filterNotNull()
+      .collect { destination ->
+        val screenClass = destination::class.simpleName ?: destination.toString()
+        val screenName = screenClass.removeSuffix("Key")
+        eventTrackingClient.trackScreen(
+          name = screenName,
+          screenClass = screenClass,
+          parameters = screenParameterExtractor.parametersFor(destination),
+        )
+      }
   }
 }
 

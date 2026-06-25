@@ -182,9 +182,11 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
       )
     }
 
-    is DeflectionMessageFragment -> StepContent.DeflectMessage(
-      message = message
-    )
+    is DeflectionMessageFragment -> {
+      StepContent.DeflectMessage(
+        message = message,
+      )
+    }
 
     else -> {
       logcat { "ClaimIntentStepContentFragment: Unknown step" }

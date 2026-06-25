@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "190369814613",
     "project_id": "hedvig-dev",
-    "storage_bucket": "hedvig-dev.appspot.com"
+    "storage_bucket": "hedvig-dev.firebasestorage.app"
   },
   "client": [
     {

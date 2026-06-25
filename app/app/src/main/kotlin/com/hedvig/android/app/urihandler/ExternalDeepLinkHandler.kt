@@ -2,6 +2,7 @@ package com.hedvig.android.app.urihandler
 
 import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.feature.home.home.navigation.HomeKey
+import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.compose.HedvigDeepLinkMatcher
 import java.net.URI
@@ -44,11 +45,13 @@ internal class ExternalDeepLinkHandler(
       return
     }
     if (targetsOwnDeepLink(uri)) {
-      logcat { "ExternalDeepLinkHandler no specific match for own-host uri:$uri — falling back to Home" }
+      logcat(LogPriority.WARN) {
+        "ExternalDeepLinkHandler no specific match for own-host uri:$uri — falling back to Home"
+      }
       backstackController.navigateToExternalDeepLink(HomeKey)
       return
     }
-    logcat { "ExternalDeepLinkHandler ignoring unmatched foreign-host external deep link uri:$uri" }
+    logcat(LogPriority.ERROR) { "ExternalDeepLinkHandler ignoring unmatched foreign-host external deep link uri:$uri" }
   }
 
   /**
