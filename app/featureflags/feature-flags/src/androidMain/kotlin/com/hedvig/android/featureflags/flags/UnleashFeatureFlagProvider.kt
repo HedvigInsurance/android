@@ -17,35 +17,10 @@ internal class UnleashFeatureFlagProvider(
   private val hedvigUnleashClient: HedvigUnleashClient,
 ) : FeatureManager {
   override fun isFeatureEnabled(feature: Feature): Flow<Boolean> {
+    // Each Feature's name mirrors the polarity of its underlying Unleash key (enable_* / disable_*),
+    // so the raw toggle value is the feature value. Callers of a disable_* flag invert at the read site.
     return hedvigUnleashClient.featureUpdatedFlow
-      .map {
-        when (feature) {
-          Feature.MOVING_FLOW -> hedvigUnleashClient.client.isEnabled("moving_flow")
-
-          Feature.PAYMENT_SCREEN -> hedvigUnleashClient.client.isEnabled("payment_screen")
-
-          Feature.TERMINATION_FLOW -> !hedvigUnleashClient.client.isEnabled("disable_termination_flow")
-
-          Feature.UPDATE_NECESSARY -> hedvigUnleashClient.client.isEnabled("update_necessary")
-
-          Feature.EDIT_COINSURED -> hedvigUnleashClient.client.isEnabled("edit_coinsured")
-
-          Feature.HELP_CENTER -> !hedvigUnleashClient.client.isEnabled("disable_help_center")
-
-          Feature.TRAVEL_ADDON -> hedvigUnleashClient.client.isEnabled("enable_addons")
-
-          Feature.ENABLE_VIDEO_PLAYER_IN_CHAT_MESSAGES -> hedvigUnleashClient.client.isEnabled(
-            "enable_video_player_in_chat_messages",
-          )
-
-          Feature.DISABLE_REDEEM_CAMPAIGN -> hedvigUnleashClient.client.isEnabled("disable_redeem_campaign")
-
-          Feature.ENABLE_CLAIM_HISTORY -> hedvigUnleashClient.client.isEnabled("enable_claim_history")
-
-          Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT -> hedvigUnleashClient.client.isEnabled(
-            "enable_new_conversation_from_inbox",
-          )
-        }
-      }.distinctUntilChanged()
+      .map { hedvigUnleashClient.client.isEnabled(feature.unleashKey) }
+      .distinctUntilChanged()
   }
 }

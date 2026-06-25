@@ -156,8 +156,6 @@ private fun InboxScreen(
       startClaimBottomSheetState.dismiss()
       navigateToClaimChat()
     },
-    navigateToClaimChatInDevMode = {},
-    isStagingEnvironment = false,
   )
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,

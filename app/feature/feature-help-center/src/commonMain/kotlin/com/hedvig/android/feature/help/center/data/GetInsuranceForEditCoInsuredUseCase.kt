@@ -7,14 +7,11 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
-import kotlinx.coroutines.flow.first
 import octopus.AvailableSelfServiceOnContractsQuery
 
 internal interface GetInsuranceForEditCoInsuredUseCase {
@@ -26,9 +23,7 @@ internal interface GetInsuranceForEditCoInsuredUseCase {
 @Inject
 internal class GetInsuranceForEditCoInsuredUseCaseImpl(
   private val apolloClient: ApolloClient,
-  private val featureManager: FeatureManager,
-) :
-  GetInsuranceForEditCoInsuredUseCase {
+) : GetInsuranceForEditCoInsuredUseCase {
   override suspend fun invoke(): Either<ErrorMessage, List<InsuranceForEditOrAddCoInsured>> {
     return either {
       val contracts = apolloClient.query(AvailableSelfServiceOnContractsQuery())
@@ -38,38 +33,35 @@ internal class GetInsuranceForEditCoInsuredUseCaseImpl(
         .currentMember
         .activeContracts
       buildList {
-        val isEditCoInsuredEnabled = featureManager.isFeatureEnabled(Feature.EDIT_COINSURED).first()
-        if (isEditCoInsuredEnabled) {
-          contracts.filter { it.supportsCoInsured }.forEach { contract ->
-            val destination = if (contract.coInsured?.any { it.hasMissingInfo } == true) {
-              QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddInfo(contract.id)
-            } else {
-              QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddOrRemove(contract.id)
-            }
-            add(
-              InsuranceForEditOrAddCoInsured(
-                quickLinkDestination = destination,
-                displayName = contract.currentAgreement.productVariant.displayName,
-                exposureName = contract.exposureDisplayName,
-                id = contract.id,
-              ),
-            )
+        contracts.filter { it.supportsCoInsured }.forEach { contract ->
+          val destination = if (contract.coInsured?.any { it.hasMissingInfo } == true) {
+            QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddInfo(contract.id)
+          } else {
+            QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddOrRemove(contract.id)
           }
-          contracts.filter { it.supportsCoOwners }.forEach { contract ->
-            val destination = if (contract.coOwners?.any { it.hasMissingInfo } == true) {
-              QuickLinkDestination.OuterDestination.QuickLinkCoOwnerAddInfo(contract.id)
-            } else {
-              QuickLinkDestination.OuterDestination.QuickLinkCoOwnerAddOrRemove(contract.id)
-            }
-            add(
-              InsuranceForEditOrAddCoInsured(
-                quickLinkDestination = destination,
-                displayName = contract.currentAgreement.productVariant.displayName,
-                exposureName = contract.exposureDisplayName,
-                id = contract.id,
-              ),
-            )
+          add(
+            InsuranceForEditOrAddCoInsured(
+              quickLinkDestination = destination,
+              displayName = contract.currentAgreement.productVariant.displayName,
+              exposureName = contract.exposureDisplayName,
+              id = contract.id,
+            ),
+          )
+        }
+        contracts.filter { it.supportsCoOwners }.forEach { contract ->
+          val destination = if (contract.coOwners?.any { it.hasMissingInfo } == true) {
+            QuickLinkDestination.OuterDestination.QuickLinkCoOwnerAddInfo(contract.id)
+          } else {
+            QuickLinkDestination.OuterDestination.QuickLinkCoOwnerAddOrRemove(contract.id)
           }
+          add(
+            InsuranceForEditOrAddCoInsured(
+              quickLinkDestination = destination,
+              displayName = contract.currentAgreement.productVariant.displayName,
+              exposureName = contract.exposureDisplayName,
+              id = contract.id,
+            ),
+          )
         }
       }
     }
