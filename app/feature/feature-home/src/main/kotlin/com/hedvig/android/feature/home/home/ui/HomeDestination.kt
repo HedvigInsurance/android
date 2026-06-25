@@ -568,9 +568,9 @@ private fun HomeScreenSuccess(
       if (HomeSection.Welcome in visibleSections) {
         item(key = HomeSection.Welcome, contentType = "welcome") {
           Column(Modifier.fillMaxWidth()) {
-            Spacer(Modifier.height(pinnedTopOffset))
+            Spacer(Modifier.height(pinnedTopOffset * 2))
             Box(
-              Modifier
+              modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 48.dp),
             ) {
