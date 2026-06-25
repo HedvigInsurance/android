@@ -574,7 +574,7 @@ private fun HomeScreenSuccess(
     val listState = rememberLazyListState()
     // Squish the greeting's internal vertical padding as the first item scrolls away (collapsing hero).
     // Read off the scroll state, applied in the layout phase below so the greeting doesn't recompose.
-    val greetingCollapseDistancePx = with(LocalDensity.current) { 150.dp.toPx() }
+    val greetingCollapseDistancePx = with(LocalDensity.current) { 192.dp.toPx() }
     val greetingCollapseFraction = remember(greetingCollapseDistancePx) {
       derivedStateOf {
         if (listState.firstVisibleItemIndex > 0) {
@@ -600,7 +600,7 @@ private fun HomeScreenSuccess(
                 .fillMaxWidth()
                 .layout { measurable, constraints ->
                   // Layout-phase read: re-layout (not recomposition) as the collapse fraction changes.
-                  val verticalPaddingPx = lerp(48.dp, 8.dp, greetingCollapseFraction.value).roundToPx()
+                  val verticalPaddingPx = lerp(48.dp, 0.dp, greetingCollapseFraction.value).roundToPx()
                   val placeable = measurable.measure(constraints)
                   layout(placeable.width, placeable.height + verticalPaddingPx * 2) {
                     placeable.place(0, verticalPaddingPx)
