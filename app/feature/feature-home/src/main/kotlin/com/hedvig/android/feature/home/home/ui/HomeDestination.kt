@@ -153,6 +153,7 @@ import hedvig.resources.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE
 import hedvig.resources.Res
 import hedvig.resources.TAB_REFERRALS_TITLE
 import hedvig.resources.TOAST_NEW_OFFER
+import hedvig.resources.blur_background
 import hedvig.resources.home_tab_active_in_future_info
 import hedvig.resources.home_tab_claim_button_text
 import hedvig.resources.home_tab_get_help
@@ -172,6 +173,7 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -497,6 +499,14 @@ private fun HomeScreenSuccess(
       .onConsumedWindowInsetsChanged { consumedWindowInsets.insets = it }
       .pullRefresh(pullRefreshState),
   ) {
+    // Full-screen blur gradient behind the whole home screen. Sections that need a solid surface draw
+    // their own background on top to "hide" it (the content cards already do; so do the pinned pills).
+    Image(
+      painter = painterResource(Res.drawable.blur_background),
+      contentDescription = null,
+      contentScale = ContentScale.Crop,
+      modifier = Modifier.matchParentSize(),
+    )
     NotificationPermissionDialog(notificationPermissionState, openAppSettings)
     val horizontalInsets =
       WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).exclude(consumedWindowInsets).asPaddingValues()
