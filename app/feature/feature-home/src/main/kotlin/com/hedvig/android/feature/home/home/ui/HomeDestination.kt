@@ -517,10 +517,6 @@ private fun HomeScreenSuccess(
           uiState.crossSellsPartition.offersCrossSell != null
         }
 
-        HomeSection.CampaignCarousel -> {
-          uiState.crossSellsPartition.carouselCrossSells.isNotEmpty()
-        }
-
         HomeSection.DiscoverInsurances -> {
           uiState.crossSellsPartition.discoverCrossSells.isNotEmpty()
         }
@@ -591,13 +587,6 @@ private fun HomeScreenSuccess(
               )
             }
 
-            HomeSection.CampaignCarousel -> CampaignCarouselSection(
-              crossSells = uiState.crossSellsPartition.carouselCrossSells,
-              onCrossSellClick = openCrossSellUrl,
-              imageLoader = imageLoader,
-              horizontalInsets = horizontalInsets,
-            )
-
             HomeSection.DiscoverInsurances -> DiscoverInsurancesSection(
               crossSells = uiState.crossSellsPartition.discoverCrossSells,
               onCrossSellClick = openCrossSellUrl,
@@ -631,7 +620,6 @@ private enum class HomeSection {
   VeryImportantMessages,
   MemberReminders,
   Offers,
-  CampaignCarousel,
   DiscoverInsurances,
   Addons,
   QuickActionTiles,
@@ -645,7 +633,6 @@ private val homeSectionOrder: List<HomeSection> = listOf(
   HomeSection.ClaimStatusCards,
   HomeSection.MemberReminders,
   HomeSection.Offers,
-  HomeSection.CampaignCarousel,
   HomeSection.QuickActionTiles,
   HomeSection.DiscoverInsurances,
   HomeSection.Addons,
@@ -661,7 +648,6 @@ private fun gapBefore(section: HomeSection, previous: HomeSection?): Dp {
     HomeSection.VeryImportantMessages -> 16.dp
     HomeSection.MemberReminders -> if (previous == HomeSection.VeryImportantMessages) 8.dp else 16.dp
     HomeSection.Offers -> 16.dp
-    HomeSection.CampaignCarousel -> 16.dp
     HomeSection.DiscoverInsurances -> 16.dp
     HomeSection.Addons -> 16.dp
     HomeSection.QuickActionTiles -> 16.dp
@@ -915,45 +901,6 @@ private fun QuickActionCarouselSection(
     }
     HomeActionChip(stringResource(Res.string.DASHBOARD_OPEN_CHAT), onContactUs)
     HomeActionChip(stringResource(Res.string.TAB_REFERRALS_TITLE), onForever)
-  }
-}
-
-@Composable
-private fun CampaignCarouselSection(
-  crossSells: List<CrossSell>,
-  onCrossSellClick: (String) -> Unit,
-  imageLoader: ImageLoader,
-  horizontalInsets: PaddingValues,
-) {
-  // TODO (D12): low-fidelity pillow-icon carousel backed by cross-sell data; swap to real banner
-  //  imagery once a campaigns/news/guides content feed exists, and dedupe vs Offers/Discover.
-  Row(
-    horizontalArrangement = Arrangement.spacedBy(12.dp),
-    modifier = Modifier
-      .fillMaxWidth()
-      .horizontalScroll(rememberScrollState())
-      .padding(horizontal = 16.dp)
-      .padding(horizontalInsets),
-  ) {
-    crossSells.forEach { crossSell ->
-      HedvigCard(
-        onClick = { onCrossSellClick(crossSell.storeUrl) },
-        modifier = Modifier.width(160.dp),
-      ) {
-        Column(Modifier.padding(16.dp)) {
-          AsyncImage(
-            model = crossSell.pillowImage.src,
-            contentDescription = null,
-            imageLoader = imageLoader,
-            contentScale = ContentScale.Fit,
-            modifier = Modifier.size(48.dp),
-          )
-          Spacer(Modifier.height(8.dp))
-          HedvigText(text = crossSell.title, style = HedvigTheme.typography.bodySmall)
-          HedvigText(text = crossSell.subtitle, style = HedvigTheme.typography.label)
-        }
-      }
-    }
   }
 }
 

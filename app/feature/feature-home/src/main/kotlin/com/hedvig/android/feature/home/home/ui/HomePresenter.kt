@@ -280,7 +280,6 @@ private data class SuccessData(
  */
 internal data class CrossSellsPartition(
   val offersCrossSell: RecommendedCrossSell? = null,
-  val carouselCrossSells: List<CrossSell> = emptyList(),
   val discoverCrossSells: List<CrossSell> = emptyList(),
 )
 
@@ -289,7 +288,6 @@ internal data class CrossSellsPartition(
 internal fun partitionCrossSells(crossSells: CrossSellSheetData): CrossSellsPartition {
   return CrossSellsPartition(
     offersCrossSell = crossSells.recommendedCrossSell,
-    carouselCrossSells = crossSells.otherCrossSells,
     discoverCrossSells = crossSells.otherCrossSells,
   )
 }

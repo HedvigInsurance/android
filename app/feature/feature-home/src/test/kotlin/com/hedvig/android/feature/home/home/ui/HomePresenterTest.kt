@@ -447,7 +447,6 @@ internal class HomePresenterTest {
           isProduction = false,
           crossSellsPartition = CrossSellsPartition(
             offersCrossSell = testCrossSell,
-            carouselCrossSells = listOf(crossSell),
             discoverCrossSells = listOf(crossSell),
           ),
         ),
@@ -578,7 +577,6 @@ internal class HomePresenterTest {
         .isEqualTo(
           CrossSellsPartition(
             offersCrossSell = testCrossSell,
-            carouselCrossSells = listOf(otherCrossSell),
             discoverCrossSells = listOf(otherCrossSell),
           ),
         )
