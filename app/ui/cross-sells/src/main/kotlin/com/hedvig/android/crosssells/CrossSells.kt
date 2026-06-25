@@ -209,7 +209,7 @@ private fun CrossSellsSheetContent(
       modifier = Modifier.padding(bottom = 24.dp),
     ) {
       if (recommendedAddon != null) {
-        Spacer(Modifier.height(36.dp))
+        Spacer(Modifier.height(16.dp))
         AddonRecommendationSection(
           recommendedAddon,
           onButtonClick = onCrossSellClick,
@@ -351,13 +351,13 @@ private fun AddonRecommendationSection(
         imageLoader = imageLoader,
         contentScale = ContentScale.Crop,
         modifier = Modifier
-          .padding(8.dp)
+          .padding(horizontal = 8.dp)
           .size(140.dp),
       )
       Row(
         Modifier
           .align(Alignment.TopEnd)
-          .padding(top = 16.dp)
+          .padding(top = 8.dp)
       ) {
         Box(
           contentAlignment = Alignment.Center,
@@ -374,7 +374,7 @@ private fun AddonRecommendationSection(
             modifier = Modifier.size(24.dp),
           )
         }
-        Spacer(Modifier.width(16.dp))
+        Spacer(Modifier.width(12.dp))
       }
     }
     Spacer(Modifier.height(24.dp))
