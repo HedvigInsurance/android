@@ -8,7 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -25,7 +24,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.onConsumedWindowInsetsChanged
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -45,6 +43,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
@@ -53,7 +52,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -67,7 +67,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -169,7 +168,6 @@ import hedvig.resources.home_tab_terminated_welcome_title_without_name
 import hedvig.resources.home_tab_welcome_title_without_name
 import hedvig.resources.important_message_hide
 import hedvig.resources.important_message_read_more
-import kotlin.math.roundToInt
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -500,13 +498,12 @@ private fun HomeScreenSuccess(
   modifier: Modifier = Modifier,
 ) {
   val consumedWindowInsets = remember { MutableWindowInsets() }
-  BoxWithConstraints(
+  Box(
     modifier = modifier
       .fillMaxSize()
       .onConsumedWindowInsetsChanged { consumedWindowInsets.insets = it }
       .pullRefresh(pullRefreshState),
   ) {
-    val screenHeight = maxHeight
     // Full-screen blur gradient behind the whole home screen. Sections that need a solid surface draw
     // their own background on top to "hide" it (the content cards already do; so do the pinned pills).
     Image(
@@ -567,6 +564,9 @@ private fun HomeScreenSuccess(
     // (instead of contentPadding) because a stickyHeader pins at the viewport top and ignores
     // contentPadding.top — so without this the pills would pin OVER the floating icons.
     val pinnedTopOffset = toolbarHeight + topInsets.calculateTopPadding()
+    // The pinned sticky header's bottom edge, in LazyColumn coordinates. Scrolling sections clip their
+    // content to below this line so nothing bleeds through the transparent pills as it scrolls up.
+    var stickyHeaderBottomPx by remember { mutableFloatStateOf(0f) }
     LazyColumn(
       modifier = Modifier.fillMaxSize(),
       contentPadding = PaddingValues(bottom = 16.dp + bottomInsets.calculateBottomPadding()),
@@ -589,49 +589,33 @@ private fun HomeScreenSuccess(
       }
       if (HomeSection.QuickActionCarousel in visibleSections) {
         stickyHeader(key = HomeSection.QuickActionCarousel, contentType = "pills") {
-          var headerTopPx by remember { mutableStateOf(0f) }
-          Box(
+          // Pills float transparently on the blur; the sheet "lid" (drag handle) is part of the same
+          // pinned header. We record the header's bottom edge so scrolling sections can clip to it.
+          Column(
             Modifier
               .fillMaxWidth()
-              .clipToBounds()
-              .onGloballyPositioned { headerTopPx = it.positionInParent().y },
+              .onGloballyPositioned {
+                stickyHeaderBottomPx = it.positionInParent().y + it.size.height
+              },
           ) {
-            // Opaque blur backdrop, kept aligned with the fixed full-screen background by offsetting it
-            // by the header's own scroll position. This lets the floating pills look like they sit on the
-            // gradient while the pinned header still hides any content scrolling up behind it.
-            Image(
-              painter = painterResource(Res.drawable.blur_background),
-              contentDescription = null,
-              contentScale = ContentScale.Crop,
-              modifier = Modifier
-                .fillMaxWidth()
-                .height(screenHeight)
-                .offset { IntOffset(0, -headerTopPx.roundToInt()) },
+            Spacer(Modifier.height(pinnedTopOffset))
+            QuickActionCarouselSection(
+              isHelpCenterEnabled = uiState.isHelpCenterEnabled,
+              onMakeClaim = openClaimFlowSheet,
+              onHelpAndSupport = navigateToHelpCenter,
+              onContactUs = onNavigateToInbox,
+              onForever = navigateToForever,
+              horizontalInsets = horizontalInsets,
+              modifier = Modifier.padding(bottom = 8.dp),
             )
-            Column(Modifier.fillMaxWidth()) {
-              Spacer(Modifier.height(pinnedTopOffset))
-              QuickActionCarouselSection(
-                isHelpCenterEnabled = uiState.isHelpCenterEnabled,
-                onMakeClaim = openClaimFlowSheet,
-                onHelpAndSupport = navigateToHelpCenter,
-                onContactUs = onNavigateToInbox,
-                onForever = navigateToForever,
-                horizontalInsets = horizontalInsets,
-                modifier = Modifier.padding(bottom = 8.dp),
-              )
-              // The sheet "lid": rounded-top opaque surface with the drag handle. It lives in the sticky
-              // header so it stays pinned with the pills and scrolling content disappears cleanly under it.
-              Column(
-                Modifier
-                  .fillMaxWidth()
-                  .background(
-                    color = HedvigTheme.colorScheme.backgroundPrimary,
-                    shape = HedvigTheme.shapes.cornerXLargeTop,
-                  ),
-              ) {
-                HomeSheetDragHandle()
-              }
-            }
+            HomeSheetDragHandle(
+              Modifier
+                .fillMaxWidth()
+                .background(
+                  color = HedvigTheme.colorScheme.backgroundPrimary,
+                  shape = HedvigTheme.shapes.cornerXLargeTop,
+                ),
+            )
           }
         }
       }
@@ -640,11 +624,17 @@ private fun HomeScreenSuccess(
       }
       itemsIndexed(scrollingSections, key = { _, section -> section }) { index, section ->
         val previous = if (index == 0) HomeSection.QuickActionCarousel else scrollingSections[index - 1]
-        // Every scrolling section continues the opaque sheet surface, so the blur stays hidden below the
-        // pinned pills + drag handle.
+        // Every scrolling section continues the opaque sheet surface, and clips its own content (and
+        // background) to below the pinned header so nothing bleeds through the transparent pills.
+        var itemTopPx by remember { mutableFloatStateOf(0f) }
         Column(
           Modifier
             .fillMaxWidth()
+            .onGloballyPositioned { itemTopPx = it.positionInParent().y }
+            .drawWithContent {
+              val clipTop = (stickyHeaderBottomPx - itemTopPx).coerceIn(0f, size.height)
+              clipRect(top = clipTop) { this@drawWithContent.drawContent() }
+            }
             .background(HedvigTheme.colorScheme.backgroundPrimary),
         ) {
           Spacer(Modifier.height(gapBefore(section, previous)))
