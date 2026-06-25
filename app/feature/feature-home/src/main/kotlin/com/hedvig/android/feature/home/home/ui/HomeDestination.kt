@@ -1153,6 +1153,7 @@ private fun WelcomeMessage(homeText: HomeText, modifier: Modifier = Modifier) {
         fontSize = 28.0.sp,
         lineBreak = LineBreak.Heading,
         textAlign = TextAlign.Center,
+        color = HedvigTheme.colorScheme.textSecondary,
       ),
       modifier = modifier.fillMaxWidth(),
     )
