@@ -56,7 +56,7 @@ kotlin {
     }
     androidMain.dependencies {
       implementation(libs.accompanist.permissions)
-      implementation(libs.androidx.navigation.compose)
+      implementation(libs.androidx.activity.compose)
       implementation(libs.bundles.kmpPreviewBugWorkaround)
       implementation(libs.rive.android)
       implementation(projects.composeUi)

@@ -16,11 +16,8 @@ android {
 }
 
 dependencies {
-  api(libs.androidx.navigation.common)
-
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.compose.foundation)
-  implementation(libs.androidx.navigation.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)

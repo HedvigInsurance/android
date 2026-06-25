@@ -5,9 +5,7 @@ import com.hedvig.android.auth.MemberIdService
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.di.AppScope
-import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.HedvigUnleashClient
-import com.hedvig.android.featureflags.flags.UnleashFeatureFlagProvider
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
@@ -28,9 +26,4 @@ interface FeatureFlagsAndroidMetroProviders {
     coroutineScope = applicationScope,
     memberIdService = memberIdService,
   )
-
-  @Provides
-  @SingleIn(AppScope::class)
-  fun provideFeatureManager(hedvigUnleashClient: HedvigUnleashClient): FeatureManager =
-    UnleashFeatureFlagProvider(hedvigUnleashClient)
 }

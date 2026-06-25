@@ -113,8 +113,6 @@ dependencies {
   implementation(libs.androidx.compose.runtime.retain)
   implementation(libs.androidx.compose.uiToolingPreview)
   implementation(libs.androidx.lifecycle.process)
-  implementation(libs.androidx.navigation.common)
-  implementation(libs.androidx.navigation.compose)
   implementation(libs.androidx.navigation3.runtime)
   implementation(libs.androidx.navigation3.ui)
   implementation(libs.androidx.lifecycle.viewmodel.navigation3)

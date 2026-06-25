@@ -20,7 +20,6 @@ kotlin {
       implementation(libs.jetbrains.compose.foundation)
       implementation(libs.jetbrains.compose.ui)
       implementation(libs.jetbrains.compose.ui.tooling.preview)
-      implementation(libs.jetbrains.navigationevent.compose)
       implementation(projects.coreCommonPublic)
       implementation(projects.coreResources)
       implementation(projects.coreUiData)

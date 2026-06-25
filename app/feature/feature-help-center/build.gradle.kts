@@ -34,8 +34,6 @@ kotlin {
       implementation(libs.coroutines.core)
       implementation(libs.jetbrains.compose.ui.tooling.preview)
       implementation(libs.jetbrains.lifecycle.runtime.compose)
-      implementation(libs.jetbrains.navigation.common)
-      implementation(libs.jetbrains.navigation.compose)
       implementation(libs.jetbrains.navigationevent.compose)
       implementation(libs.metro.viewmodel)
       implementation(libs.metro.viewmodel.compose)

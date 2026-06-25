@@ -11,7 +11,6 @@ hedvig {
 
 dependencies {
   implementation(libs.androidx.compose.foundation)
-  implementation(libs.androidx.navigation.compose)
   implementation(libs.coil.coil)
   implementation(libs.coil.compose)
   implementation(libs.kotlinx.serialization.core)
