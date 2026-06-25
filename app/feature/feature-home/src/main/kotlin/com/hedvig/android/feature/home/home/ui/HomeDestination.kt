@@ -35,12 +35,14 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
@@ -56,7 +58,8 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -68,6 +71,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
@@ -567,7 +571,21 @@ private fun HomeScreenSuccess(
     // The pinned sticky header's bottom edge, in LazyColumn coordinates. Scrolling sections clip their
     // content to below this line so nothing bleeds through the transparent pills as it scrolls up.
     var stickyHeaderBottomPx by remember { mutableFloatStateOf(0f) }
+    val listState = rememberLazyListState()
+    // Squish the greeting's internal vertical padding as the first item scrolls away (collapsing hero).
+    // Read off the scroll state, applied in the layout phase below so the greeting doesn't recompose.
+    val greetingCollapseDistancePx = with(LocalDensity.current) { 150.dp.toPx() }
+    val greetingCollapseFraction = remember(greetingCollapseDistancePx) {
+      derivedStateOf {
+        if (listState.firstVisibleItemIndex > 0) {
+          1f
+        } else {
+          (listState.firstVisibleItemScrollOffset / greetingCollapseDistancePx).coerceIn(0f, 1f)
+        }
+      }
+    }
     LazyColumn(
+      state = listState,
       modifier = Modifier.fillMaxSize(),
       contentPadding = PaddingValues(bottom = 16.dp + bottomInsets.calculateBottomPadding()),
     ) {
@@ -580,7 +598,14 @@ private fun HomeScreenSuccess(
             Box(
               modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 48.dp),
+                .layout { measurable, constraints ->
+                  // Layout-phase read: re-layout (not recomposition) as the collapse fraction changes.
+                  val verticalPaddingPx = lerp(48.dp, 8.dp, greetingCollapseFraction.value).roundToPx()
+                  val placeable = measurable.measure(constraints)
+                  layout(placeable.width, placeable.height + verticalPaddingPx * 2) {
+                    placeable.place(0, verticalPaddingPx)
+                  }
+                },
             ) {
               WelcomeSection(uiState.firstName, uiState.homeText)
             }
@@ -594,7 +619,7 @@ private fun HomeScreenSuccess(
           Column(
             Modifier
               .fillMaxWidth()
-              .onGloballyPositioned {
+              .onPlaced {
                 stickyHeaderBottomPx = it.positionInParent().y + it.size.height
               },
           ) {
@@ -630,7 +655,7 @@ private fun HomeScreenSuccess(
         Column(
           Modifier
             .fillMaxWidth()
-            .onGloballyPositioned { itemTopPx = it.positionInParent().y }
+            .onPlaced { itemTopPx = it.positionInParent().y }
             .drawWithContent {
               val clipTop = (stickyHeaderBottomPx - itemTopPx).coerceIn(0f, size.height)
               clipRect(top = clipTop) { this@drawWithContent.drawContent() }
