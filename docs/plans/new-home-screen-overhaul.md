@@ -148,3 +148,41 @@ All workstreams are implemented on `feature/new-home-screen` and the branch is *
 6. Run in demo mode + a real account to sanity-check empty/populated states.
 
 **Detail pass (round 2, vs the App-P2-2026 `44:6378` reference):** Offers section now has a title above the card + a Small (40dp) CTA; quick-action tiles have the per-tile icons (Helipad/Reload/Travel) above the labels and equal heights (`IntrinsicSize.Max`); the greeting is a tall scroll-away item with the quick-action pills pinned as a `stickyHeader` below the toolbar/insets. **Still deferred / needs visual QA:** card **background/border styling** (the Figma leans on borders; ours uses fills — deferred per request); exact greeting vertical spacing + the sticky-pin appearance (incl. content scrolling under the pinned pills, and whether a hero gradient background is wanted); tile icon tint/sizing; the carousel pills' height vs the 48dp design.
+
+**Detail pass (round 3) — hero + blur + sheet, DONE since round 2:** full-screen `blur_background` behind the screen; greeting + pills float transparently on it; from the first scrolling section down content sits on an opaque "bottom-sheet" surface with a rounded top + drag handle, and the **drag-handle lid is part of the sticky header** so it pins with the pills. Scrolling sections **clip** their content below the pinned header (`stickyHeaderBottomPx` via `onPlaced` + `drawWithContent`/`clipRect`) so nothing bleeds through the transparent pills. **Collapsing hero:** the greeting sits low in a tall hero (fixed `addedSpacePx` above it, not viewport-fill) and the hero shrinks by a **bounded** amount on scroll (`maxCollapsePx`, speed-up `1 + maxCollapse/distance`), so portrait/landscape both behave and the scroll doesn't race the finger. Sparse/empty state confirmed acceptable (sheet ends, blur shows below). Position tracking uses `onPlaced` (not `onGloballyPositioned`); viewport height captured by intercepting the outer Box's `.layout`.
+
+## 13. Next-steps scoping (questions awaiting input — opened 2026-06-26)
+
+Each item: **Q** = decision needed, **Default** = recommendation if no override, **Decision** = filled in as answered.
+
+### A. Layout & responsiveness
+1. **Wide/rail layout.** Content is a full-width `LazyColumn` on expanded-width windows (rail nav). **Q:** in scope for this cut or follow-up? If in scope — max content width (default ~600dp centered)? Pills + sheet also capped, or full-bleed while only cards cap? **Default:** follow-up; if done, ~600dp cards, blur full-bleed. **Decision:** _pending_
+
+### B. Visual / design-system fidelity
+2. **Card backgrounds/borders.** Figma uses borders; we use fills. **Q:** wait for the design-system to ship bordered cards and swap, or hand-roll in feature-home now? **Default:** wait for DS. **Decision:** _pending_
+3. **"Discover our insurances" rows over the blur** (currently transparent). **Q:** give them a surface or intentionally show the blur through? **Default:** leave transparent. **Decision:** _pending_
+4. **Toolbar "glass."** Minimal tonal fill today, not full frosted. **Q:** accept minimal for v1 or do the full treatment (need design specs)? **Default:** ship minimal. **Decision:** _pending_
+5. **Component fine-tuning** (tile icon tint/size, chip pill height vs 48dp, sheet corner radius). **Q:** dedicated polish pass or close enough? **Default:** close enough; revisit with DS pass. **Decision:** _pending_
+
+### C. Content / data decisions (need product/design)
+6. **Cross-sell allocation** (Offers vs Discover). **Q:** is "recommended → Offers, others → Discover" correct, or explicit rules? **Default:** keep current split. **Decision:** _pending_
+7. **Section order** (default "Mega"). **Q:** keep, or finalized order from design? **Default:** keep Mega. **Decision:** _pending_
+8. **"Contact us" chip target** (currently inbox). **Q:** inbox or new conversation? **Default:** inbox. **Decision:** _pending_
+9. **Final quick-action set** (chips + tiles, with Help & support in both). **Q:** locked? **Default:** locked as-is. **Decision:** _pending_
+
+### D. Deferred features (blocked / larger)
+10. **Campaign / curated-content carousel** (removed from v1, needs content-feed backend). **Q:** backend timeline? Leave a marked seam or fully out of mind? **Default:** out of mind; re-add when backend exists. **Decision:** _pending_
+11. **5→3 tab restructure** (separate workstream). **Q:** coming soon (design home with it in mind) or genuinely later? **Default:** later. **Decision:** _pending_
+
+### E. Strings & accessibility
+12. **Lokalise strings** (`"Hi <name>"`, `"Your quotes"`, `"Change address"`, `"Discover our insurances"`, `"Addons"` hardcoded w/ TODOs). **Q:** merge blocker or fast-follow? Want a prepared key list (EN/SV)? **Default:** fast-follow; I prep the list. **Decision:** _pending_
+13. **Accessibility pass** (semantics for pinned header, drag handle, tiles, toolbar icons). **Q:** before merge or follow-up? Scope = new components or full-screen audit? **Default:** follow-up, new components. **Decision:** _pending_
+
+### F. Code-quality / robustness
+14. **`reservedPx` floor** (`pinnedTopOffset + 132.dp` guess; breaks if greeting grows, e.g. two-line `ActiveInFuture`). **Q:** derive from measured greeting or keep constant? **Default:** derive it. **Decision:** _pending_
+15. **Extract `CollapsingHero` + dedup helpers** (Insurances tab reportedly has same overlap). **Q:** extract now or leave inline until a second consumer appears? **Default:** leave inline (YAGNI). **Decision:** _pending_
+16. **Nested-scroll collapsing toolbar** (big hero + true 1× scroll). **Q:** current bounded collapse final, or revisit later? **Default:** final for now. **Decision:** _pending_
+
+### G. Shipping
+17. **Visual QA** (loading/error/active-in-future/terminated/pending; demo + real; Mini/Medium/Max/Mega). **Q:** who runs it, when; is design sign-off part of the gate? **Decision:** _pending_
+18. **Merge to `develop`** (nothing pushed yet). **Q:** what's the gate to open the PR (QA + strings + design sign-off, or merge sooner + fast-follow)? **Decision:** _pending_
