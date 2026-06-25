@@ -146,3 +146,5 @@ All workstreams are implemented on `feature/new-home-screen` and the branch is *
 4. Offers (recommended) vs Discover (others) read as distinct. (Campaign carousel deferred — re-add later as a curated-content feed, not cross-sells.)
 5. Tile icons + the hardcoded strings get finalized in Lokalise.
 6. Run in demo mode + a real account to sanity-check empty/populated states.
+
+**Detail pass (round 2, vs the App-P2-2026 `44:6378` reference):** Offers section now has a title above the card + a Small (40dp) CTA; quick-action tiles have the per-tile icons (Helipad/Reload/Travel) above the labels and equal heights (`IntrinsicSize.Max`); the greeting is a tall scroll-away item with the quick-action pills pinned as a `stickyHeader` below the toolbar/insets. **Still deferred / needs visual QA:** card **background/border styling** (the Figma leans on borders; ours uses fills — deferred per request); exact greeting vertical spacing + the sticky-pin appearance (incl. content scrolling under the pinned pills, and whether a hero gradient background is wanted); tile icon tint/sizing; the carousel pills' height vs the 48dp design.
