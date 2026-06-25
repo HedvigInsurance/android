@@ -192,3 +192,30 @@ Run once the in-scope work above lands, on a debug build, **demo mode + a real a
 - **Scroll behaviour:** pills + drag-handle pin under the toolbar; no content bleed through the transparent pills; hero collapse feels controlled; sticky/clip correct while flinging.
 - **Sections:** order/spacing vs FigJam; Offers (recommended) vs Discover (others) read as distinct; Addons present (real account) / absent (demo).
 - **Gate:** design sign-off + (eventually) finalized Lokalise strings before opening the PR (item 18).
+
+### 13.2 Nested-scroll collapsing header — exploration (item 16)
+
+**Current behaviour.** The greeting hero is item 0 in the `LazyColumn`; its height shrinks by a bounded `maxCollapsePx` (80dp) as the list scrolls, driven by `firstVisibleItemScrollOffset`. Because the hero shrinks *while* the list scrolls, content below moves at `1 + maxCollapse/distance ≈ 1.42×` the finger during the first ~192dp of scroll. This was accepted as "good enough."
+
+**The idea.** A proper collapsing header: scroll is **first consumed to collapse the hero** (content below stays put), and only once the hero is fully collapsed does the list scroll at a true **1×**. Scrolling back to the top re-expands it. This decouples "how big/dramatic the hero collapse is" from "how fast the list scrolls" — you could have a larger, more expressive collapse with zero scroll speed-up.
+
+**How it'd be built (no existing helper — the app has no collapsing-toolbar; would be hand-rolled):**
+- Move the greeting hero (and likely the pills) **out of the `LazyColumn`** into a header composable above it, in a shared parent.
+- Attach a `NestedScrollConnection` to the parent: `onPreScroll` consumes upward delta to reduce a `headerHeightPx` state until collapsed (returning the consumed amount so the list doesn't move); pass-through once collapsed. `onPreScroll`/`onPostScroll` re-expands on downward delta when the list is at the top. (This is the hand-rolled equivalent of Material's `exitUntilCollapsedScrollBehavior`.)
+
+**Cost / risk (why it's a spike, not a quick edit):**
+- The pills are currently a `stickyHeader` *inside* the list, and the sheet sections **clip below the pinned header** (`stickyHeaderBottomPx`). Moving the hero/pills out of the list means rebuilding that pin+clip relationship against the new header (the clip seam is the trickiest part).
+- Interactions with the full-bleed blur, the opaque sheet surface, and the §1 width cap all need re-verification.
+- Fling/over-scroll/settle edge cases in the `NestedScrollConnection` need care.
+- This naturally produces the reusable `CollapsingHero` from item 15, so 15 + 16 are best done together.
+
+**Recommendation.** Treat as a **dedicated spike on a branch**, because "does it improve the experience" is a feel judgment that only a working prototype can answer — and the current bounded-collapse was already accepted. Cheap interim alternatives if the 1.42× ever feels off: lower `maxCollapsePx` (less squish, closer to 1×) or raise `greetingCollapseDistancePx` (gentler). **Open question for input:** appetite for the spike now, or park it until there's a clear UX complaint?
+
+### 13.3 Implemented in this autonomous pass (2026-06-26)
+- **#1 Wide/rail:** `LazyColumn` capped to `widthIn(max = 600.dp).align(TopCenter)` (no-op on phones), blur full-bleed. Done.
+- **#4 Toolbar/pills de-glass:** translucent `surfacePrimaryTransparent` → solid `surfacePrimary` (kept the circular shadow). Done.
+- **#11 Forever tab removed:** dropped from the tab set; home chip now pushes the non-top-level `ForeverKey` (made public). Done. **Open:** (a) the pushed Forever has no visible back affordance (`ForeverDestination` takes no `navigateUp`; system back only — same as the existing Discounts→Forever) — decide whether to add a back/top-bar to the non-top-level Forever; (b) the `/forever` deep link still lands on the now-tabless top-level Forever — re-home to the non-top-level screen, or leave?
+- **#13 A11y first pass:** drag handle hidden from a11y; `Role.Button` on the icon-only toolbar buttons. Done. (Pills/tiles already have text labels; explicit role is a minor later add.)
+- **#14 `reservedPx`:** no code change — greeting growth is already handled by `collapsedHero` (measured greeting). Clarifying comment added.
+- **#15 / #16:** see §13.2 — left as a spike; not started.
+- All build/test-verified (`:feature-home` tests + ktlint; `:app` compile + full unit tests + `assembleDebug`).
