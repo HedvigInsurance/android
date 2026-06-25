@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.preview.TripleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.TripleCase
-import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
@@ -45,7 +44,6 @@ import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarColors
-import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.minimumInteractiveComponentSize
@@ -85,7 +83,11 @@ import hedvig.resources.payments_settlement_adjustment_info
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun PaymentDetailsDestination(viewModel: PaymentDetailsViewModel, navigateUp: () -> Unit) {
+internal fun PaymentDetailsDestination(
+  viewModel: PaymentDetailsViewModel,
+  navigateUp: () -> Unit,
+  onShowExplanation: (title: String, body: String) -> Unit,
+) {
   var selectedCharge by remember { mutableStateOf<MemberCharge.ChargeBreakdown?>(null) }
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -101,6 +103,7 @@ internal fun PaymentDetailsDestination(viewModel: PaymentDetailsViewModel, navig
       }
     },
     reload = { viewModel.emit(PaymentDetailsEvent.Reload) },
+    onShowExplanation = onShowExplanation,
   )
 }
 
@@ -111,6 +114,7 @@ private fun MemberChargeDetailsScreen(
   onCardClick: (MemberCharge.ChargeBreakdown) -> Unit,
   reload: () -> Unit,
   navigateUp: () -> Unit,
+  onShowExplanation: (title: String, body: String) -> Unit,
 ) {
   when (uiState) {
     PaymentDetailsUiState.Failure -> {
@@ -128,8 +132,6 @@ private fun MemberChargeDetailsScreen(
     is PaymentDetailsUiState.Success -> {
       val foreverInfoBottomSheetState = rememberHedvigBottomSheetState<Unit>()
       ForeverExplanationBottomSheet(foreverInfoBottomSheetState)
-      val paymentDetailsExplanationBottomSheetState = rememberHedvigBottomSheetState<String>()
-      PaymentDetailsExplanationBottomSheet(paymentDetailsExplanationBottomSheetState)
 
       val dateTimeFormatter = rememberHedvigDateTimeFormatter()
       HedvigScaffold(
@@ -275,10 +277,11 @@ private fun MemberChargeDetailsScreen(
 
             MemberCharge.MemberChargeStatus.UNKNOWN -> {}
           }
+          val explanationTitle = stringResource(Res.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE)
           Spacer(Modifier.height(8.dp))
           HorizontalItemsWithMaximumSpaceTaken(
             startSlot = {
-              HedvigText(stringResource(Res.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE))
+              HedvigText(explanationTitle)
             },
             endSlot = {
               when (uiState.paymentDetails.memberCharge.chargeMethod) {
@@ -299,7 +302,7 @@ private fun MemberChargeDetailsScreen(
                       .wrapContentSize(Alignment.CenterEnd)
                       .size(24.dp)
                       .clip(HedvigTheme.shapes.cornerXLarge)
-                      .clickable { paymentDetailsExplanationBottomSheetState.show(textToShow) }
+                      .clickable { onShowExplanation(explanationTitle, textToShow) }
                       .minimumInteractiveComponentSize(),
                   )
                 }
@@ -433,27 +436,21 @@ private fun MemberChargeDetailsScreen(
 }
 
 @Composable
-private fun PaymentDetailsExplanationBottomSheet(
-  paymentDetailsExplanationBottomSheetState: HedvigBottomSheetState<String>,
-) {
-  HedvigBottomSheet(
-    hedvigBottomSheetState = paymentDetailsExplanationBottomSheetState,
-  ) { data ->
-    HedvigText(text = stringResource(Res.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE))
-    HedvigText(
-      text = data,
-      color = HedvigTheme.colorScheme.textSecondary,
-    )
-    Spacer(Modifier.height(8.dp))
-    HedvigTextButton(
-      text = stringResource(Res.string.general_close_button),
-      enabled = true,
-      modifier = Modifier.fillMaxWidth(),
-      onClick = paymentDetailsExplanationBottomSheetState::dismiss,
-    )
-    Spacer(Modifier.height(8.dp))
-    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
-  }
+internal fun PaymentDetailExplanationContent(title: String, body: String, onClose: () -> Unit) {
+  HedvigText(text = title)
+  HedvigText(
+    text = body,
+    color = HedvigTheme.colorScheme.textSecondary,
+  )
+  Spacer(Modifier.height(8.dp))
+  HedvigTextButton(
+    text = stringResource(Res.string.general_close_button),
+    enabled = true,
+    modifier = Modifier.fillMaxWidth(),
+    onClick = onClose,
+  )
+  Spacer(Modifier.height(8.dp))
+  Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
 }
 
 @Composable
@@ -505,6 +502,7 @@ private fun PaymentDetailsScreenPreview(
         onCardClick = {},
         navigateUp = {},
         reload = {},
+        onShowExplanation = { _, _ -> },
       )
     }
   }
@@ -521,6 +519,7 @@ private fun PaymentDetailsScreenFailurePreview() {
         onCardClick = {},
         navigateUp = {},
         reload = {},
+        onShowExplanation = { _, _ -> },
       )
     }
   }

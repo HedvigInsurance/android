@@ -37,7 +37,9 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.scene.Scene
+import androidx.navigation3.scene.SinglePaneSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import coil3.ImageLoader
 import com.hedvig.android.app.AndroidAppHost
@@ -70,6 +72,7 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.BottomSheetSceneStrategy
 import com.hedvig.android.navigation.compose.HedvigDeepLinkMatcher
 import com.hedvig.android.navigation.compose.entryDecorators
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
@@ -162,6 +165,13 @@ internal fun HedvigApp(
             hedvigAppState = hedvigAppState,
             sharedTransitionScope = this@SharedTransitionLayout,
           )
+          val sceneStrategies = remember {
+            listOf(
+              BottomSheetSceneStrategy<HedvigNavKey>(),
+              DialogSceneStrategy<HedvigNavKey>(),
+              SinglePaneSceneStrategy(),
+            )
+          }
           val density = LocalDensity.current
           val popSpec = hedvigPopTransitionSpec(backstackController, density)
           // Hold the first frame on the themed background until SessionReconciler resolves the start
@@ -182,6 +192,7 @@ internal fun HedvigApp(
                     onBack = backstackController::popBackstack,
                     entryDecorators = entryDecorators { backstackController.allLiveContentKeys },
                     sharedTransitionScope = this@SharedTransitionLayout,
+                    sceneStrategies = sceneStrategies,
                     sceneDecoratorStrategies = sceneDecoratorStrategies,
                     transitionSpec = hedvigTransitionSpec(backstackController, density),
                     popTransitionSpec = popSpec,

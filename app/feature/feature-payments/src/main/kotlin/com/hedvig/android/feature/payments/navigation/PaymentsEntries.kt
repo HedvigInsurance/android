@@ -3,6 +3,7 @@ package com.hedvig.android.feature.payments.navigation
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.compose.ui.dropUnlessResumed
+import com.hedvig.android.feature.payments.ui.details.PaymentDetailExplanationContent
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailsDestination
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailsViewModel
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailsViewModelFactory
@@ -19,6 +20,7 @@ import com.hedvig.android.feature.payments.ui.payments.PaymentsDestination
 import com.hedvig.android.feature.payments.ui.payments.PaymentsViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.BottomSheetSceneStrategy
 import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
 import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverDestination
@@ -82,6 +84,17 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
     PaymentDetailsDestination(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
+      onShowExplanation = dropUnlessResumed { title: String, body: String ->
+        backstack.add(PaymentDetailExplanationKey(title, body))
+      },
+    )
+  }
+
+  entry<PaymentDetailExplanationKey>(metadata = BottomSheetSceneStrategy.bottomSheet()) { key ->
+    PaymentDetailExplanationContent(
+      title = key.title,
+      body = key.body,
+      onClose = backstack::popBackstack,
     )
   }
 

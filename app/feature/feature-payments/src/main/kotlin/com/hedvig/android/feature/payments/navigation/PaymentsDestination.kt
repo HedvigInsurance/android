@@ -34,3 +34,9 @@ internal data object ManualChargeKey : HedvigNavKey
 internal data class ManualChargeSuccessKey(
   val showCancellationWarning: Boolean,
 ) : HedvigNavKey
+
+@Serializable
+internal data class PaymentDetailExplanationKey(
+  val title: String,
+  val body: String,
+) : HedvigNavKey
