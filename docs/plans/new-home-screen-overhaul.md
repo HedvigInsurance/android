@@ -127,13 +127,15 @@ Rebuild the **presentation layer** of the home screen, in place, on this branch.
 
 All workstreams are implemented on `feature/new-home-screen` and the branch is **build/test-verified** (`:feature-home` unit tests, `:app:compileDebugKotlin`, the nav `ExhaustiveBackStackSerializationTest`/`BackstackControllerTest`, ktlint, `:feature-home:lint`, and `:app:assembleDebug` all green). Commits are local; **not pushed / no PR opened**. **Pixel/visual QA is still required** (no screenshot framework — see checklist).
 
-**Sections built (final Mega order):** greeting (+firstName) · quick-action carousel (Make a claim · Help & support · Contact us · Forever) · Info Card · claim cards · To-do · Offers (recommended cross-sell) · campaign carousel (pillow-icon) · quick-action tiles (Help & support · Change address · Travel certificate) · Discover insurances · Addons. Toolbar (FirstVet · cross-sell · chat) restyled with a tonal-glass background.
+**Sections built (final Mega order):** greeting (+firstName) · quick-action carousel (Make a claim · Help & support · Contact us · Forever) · Info Card · claim cards · To-do · Offers (recommended cross-sell) · quick-action tiles (Help & support · Change address · Travel certificate) · Discover insurances · Addons. Toolbar (FirstVet · cross-sell · chat) restyled with a tonal-glass background. **The campaign carousel is deferred (see below).**
+
+**Post-implementation product clarifications (confirmed, no code change needed):** the top-right **cross-sell icon stays "same as today"** — it still opens the cross-sell bottom sheet alongside the inline sections (our code already does this). **Help & support appearing in both the carousel and the tiles is acceptable** and the exact quick-action chip/button set is "not final" — a one-place edit when finalized.
 
 **Judgment calls made autonomously (please review):**
 - **Greeting:** renders a hardcoded `"Hi <name>"` line above the existing localized status text (no `_with_name` Lokalise string exists). `// TODO` left.
 - **Toolbar glass:** minimal translucent fill behind the existing circular icons — *not* the full iOS frosted-glass; `// TODO` for design specs.
 - **Quick-action tiles:** text-only cards — per-tile icons (Helipad/Reload/Travel) deferred (`// TODO`) since exact DS icon names weren't confirmed.
-- **Campaign carousel:** low-fidelity pillow-icon cards from `otherCrossSells` (D12). Cross-sells now appear in Offers + carousel + Discover — **dedupe/differentiate is a design follow-up**.
+- **Campaign carousel:** **DEFERRED from v1.** Per product it's a curated/news-content feed (new products, selected content) — not cross-sells — and that backend feed doesn't exist yet. The cross-sell-backed placeholder was removed to avoid an Offers/Discover overlap; re-add as a content feed when the backend provides one.
 - **Hardcoded strings (Lokalise `// TODO`s):** `"Hi <name>"`, `"Change address"`, the `"Discover our insurances"` and `"Addons"` headers. Other labels reuse existing keys (claim/help/inbox/referrals/travel-certificate/quick-actions title).
 - **Demo mode:** `firstName="Demo"`; `addonBannerInfos=emptyList()` (Addons section not shown in demo).
 
@@ -141,6 +143,6 @@ All workstreams are implemented on `feature/new-home-screen` and the branch is *
 1. Section order/spacing match the FigJam across the Mini/Medium/Max/Mega densities.
 2. Greeting "Hi <name>" reads correctly per contract status (Active/Pending/Switching/Terminated/active-in-future).
 3. Toolbar glass + chip/tile styling vs the iOS design (expected to need refinement).
-4. Campaign carousel vs Offers vs Discover don't feel repetitive (may need design to split which cross-sells go where).
+4. Offers (recommended) vs Discover (others) read as distinct. (Campaign carousel deferred — re-add later as a curated-content feed, not cross-sells.)
 5. Tile icons + the hardcoded strings get finalized in Lokalise.
 6. Run in demo mode + a real account to sanity-check empty/populated states.
