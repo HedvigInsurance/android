@@ -2,7 +2,9 @@ package com.hedvig.android.feature.home.home.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -456,7 +458,7 @@ private fun getCrossSellsToolTipEndPadding(uiState: Success): Int {
   return endPadding
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable
 private fun HomeScreenSuccess(
   uiState: Success,
@@ -545,20 +547,45 @@ private fun HomeScreenSuccess(
         bottom = 16.dp + bottomInsets.calculateBottomPadding(),
       ),
     ) {
-      itemsIndexed(visibleSections, key = { _, section -> section }) { index, section ->
+      // Greeting is a tall item that scrolls away; the pills below pin under the toolbar/top insets.
+      if (HomeSection.Welcome in visibleSections) {
+        item(key = HomeSection.Welcome, contentType = "welcome") {
+          Box(
+            Modifier
+              .fillMaxWidth()
+              .padding(vertical = 56.dp),
+          ) {
+            WelcomeSection(uiState.firstName, uiState.homeText)
+          }
+        }
+      }
+      if (HomeSection.QuickActionCarousel in visibleSections) {
+        stickyHeader(key = HomeSection.QuickActionCarousel, contentType = "pills") {
+          QuickActionCarouselSection(
+            isHelpCenterEnabled = uiState.isHelpCenterEnabled,
+            onMakeClaim = openClaimFlowSheet,
+            onHelpAndSupport = navigateToHelpCenter,
+            onContactUs = onNavigateToInbox,
+            onForever = navigateToForever,
+            horizontalInsets = horizontalInsets,
+            modifier = Modifier
+              .fillMaxWidth()
+              .background(HedvigTheme.colorScheme.backgroundPrimary)
+              .padding(vertical = 8.dp),
+          )
+        }
+      }
+      val scrollingSections = visibleSections.filterNot {
+        it == HomeSection.Welcome || it == HomeSection.QuickActionCarousel
+      }
+      itemsIndexed(scrollingSections, key = { _, section -> section }) { index, section ->
         Column {
-          Spacer(Modifier.height(gapBefore(section, visibleSections.getOrNull(index - 1))))
+          val previous = if (index == 0) HomeSection.QuickActionCarousel else scrollingSections[index - 1]
+          Spacer(Modifier.height(gapBefore(section, previous)))
           when (section) {
-            HomeSection.Welcome -> WelcomeSection(uiState.firstName, uiState.homeText)
+            HomeSection.Welcome, HomeSection.QuickActionCarousel -> Unit
 
-            HomeSection.QuickActionCarousel -> QuickActionCarouselSection(
-              isHelpCenterEnabled = uiState.isHelpCenterEnabled,
-              onMakeClaim = openClaimFlowSheet,
-              onHelpAndSupport = navigateToHelpCenter,
-              onContactUs = onNavigateToInbox,
-              onForever = navigateToForever,
-              horizontalInsets = horizontalInsets,
-            )
+            // pinned above the scrolling content
 
             HomeSection.ClaimStatusCards -> ClaimStatusCardsSection(
               claimStatusCardsData = uiState.claimStatusCardsData,
@@ -919,10 +946,11 @@ private fun QuickActionCarouselSection(
   onContactUs: () -> Unit,
   onForever: () -> Unit,
   horizontalInsets: PaddingValues,
+  modifier: Modifier = Modifier,
 ) {
   Row(
     horizontalArrangement = Arrangement.spacedBy(8.dp),
-    modifier = Modifier
+    modifier = modifier
       .fillMaxWidth()
       .horizontalScroll(rememberScrollState())
       .padding(horizontal = 16.dp)
