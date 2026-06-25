@@ -545,39 +545,48 @@ private fun HomeScreenSuccess(
         }
       }
     }
+    // Status-bar inset + floating-toolbar height. Baked into the greeting and the sticky pills
+    // (instead of contentPadding) because a stickyHeader pins at the viewport top and ignores
+    // contentPadding.top — so without this the pills would pin OVER the floating icons.
+    val pinnedTopOffset = toolbarHeight + topInsets.calculateTopPadding()
     LazyColumn(
       modifier = Modifier.fillMaxSize(),
-      contentPadding = PaddingValues(
-        top = toolbarHeight + topInsets.calculateTopPadding(),
-        bottom = 16.dp + bottomInsets.calculateBottomPadding(),
-      ),
+      contentPadding = PaddingValues(bottom = 16.dp + bottomInsets.calculateBottomPadding()),
     ) {
-      // Greeting is a tall item that scrolls away; the pills below pin under the toolbar/top insets.
+      // Greeting scrolls away; the pills below pin under the toolbar. Both carry the same top offset
+      // so the pinned pills clear the icons and the greeting stays visually centered.
       if (HomeSection.Welcome in visibleSections) {
         item(key = HomeSection.Welcome, contentType = "welcome") {
-          Box(
-            Modifier
-              .fillMaxWidth()
-              .padding(vertical = 56.dp),
-          ) {
-            WelcomeSection(uiState.firstName, uiState.homeText)
+          Column(Modifier.fillMaxWidth()) {
+            Spacer(Modifier.height(pinnedTopOffset))
+            Box(
+              Modifier
+                .fillMaxWidth()
+                .padding(vertical = 48.dp),
+            ) {
+              WelcomeSection(uiState.firstName, uiState.homeText)
+            }
           }
         }
       }
       if (HomeSection.QuickActionCarousel in visibleSections) {
         stickyHeader(key = HomeSection.QuickActionCarousel, contentType = "pills") {
-          QuickActionCarouselSection(
-            isHelpCenterEnabled = uiState.isHelpCenterEnabled,
-            onMakeClaim = openClaimFlowSheet,
-            onHelpAndSupport = navigateToHelpCenter,
-            onContactUs = onNavigateToInbox,
-            onForever = navigateToForever,
-            horizontalInsets = horizontalInsets,
-            modifier = Modifier
+          Column(
+            Modifier
               .fillMaxWidth()
-              .background(HedvigTheme.colorScheme.backgroundPrimary)
-              .padding(vertical = 8.dp),
-          )
+              .background(HedvigTheme.colorScheme.backgroundPrimary),
+          ) {
+            Spacer(Modifier.height(pinnedTopOffset))
+            QuickActionCarouselSection(
+              isHelpCenterEnabled = uiState.isHelpCenterEnabled,
+              onMakeClaim = openClaimFlowSheet,
+              onHelpAndSupport = navigateToHelpCenter,
+              onContactUs = onNavigateToInbox,
+              onForever = navigateToForever,
+              horizontalInsets = horizontalInsets,
+              modifier = Modifier.padding(bottom = 8.dp),
+            )
+          }
         }
       }
       val scrollingSections = visibleSections.filterNot {
