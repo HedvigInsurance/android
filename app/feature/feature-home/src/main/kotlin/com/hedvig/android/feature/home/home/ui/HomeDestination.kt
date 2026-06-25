@@ -581,11 +581,7 @@ private fun HomeScreenSuccess(
       }
       if (HomeSection.QuickActionCarousel in visibleSections) {
         stickyHeader(key = HomeSection.QuickActionCarousel, contentType = "pills") {
-          Column(
-            Modifier
-              .fillMaxWidth()
-              .background(HedvigTheme.colorScheme.backgroundPrimary),
-          ) {
+          Column(Modifier.fillMaxWidth()) {
             Spacer(Modifier.height(pinnedTopOffset))
             QuickActionCarouselSection(
               isHelpCenterEnabled = uiState.isHelpCenterEnabled,
