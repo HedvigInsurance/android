@@ -599,72 +599,110 @@ private fun HomeScreenSuccess(
         it == HomeSection.Welcome || it == HomeSection.QuickActionCarousel
       }
       itemsIndexed(scrollingSections, key = { _, section -> section }) { index, section ->
-        Column {
-          val previous = if (index == 0) HomeSection.QuickActionCarousel else scrollingSections[index - 1]
-          Spacer(Modifier.height(gapBefore(section, previous)))
-          when (section) {
-            HomeSection.Welcome, HomeSection.QuickActionCarousel -> Unit
+        val previous = if (index == 0) HomeSection.QuickActionCarousel else scrollingSections[index - 1]
+        // From the first scrolling section down, content sits on a bottom-sheet-style surface that hides
+        // the blur background: the first item rounds its top and shows a drag handle, the rest continue it.
+        Column(Modifier.fillMaxWidth()) {
+          if (index == 0) {
+            Spacer(Modifier.height(gapBefore(section, previous)))
+          }
+          Column(
+            Modifier
+              .fillMaxWidth()
+              .background(
+                color = HedvigTheme.colorScheme.backgroundPrimary,
+                shape = if (index == 0) HedvigTheme.shapes.cornerXLargeTop else HedvigTheme.shapes.cornerNone,
+              ),
+          ) {
+            if (index == 0) {
+              HomeSheetDragHandle()
+            } else {
+              Spacer(Modifier.height(gapBefore(section, previous)))
+            }
+            when (section) {
+              HomeSection.Welcome, HomeSection.QuickActionCarousel -> Unit
 
-            // pinned above the scrolling content
+              // pinned above the scrolling content
 
-            HomeSection.ClaimStatusCards -> ClaimStatusCardsSection(
-              claimStatusCardsData = uiState.claimStatusCardsData,
-              onClaimDetailCardClicked = onClaimDetailCardClicked,
-              horizontalInsets = horizontalInsets,
-            )
+              HomeSection.ClaimStatusCards -> ClaimStatusCardsSection(
+                claimStatusCardsData = uiState.claimStatusCardsData,
+                onClaimDetailCardClicked = onClaimDetailCardClicked,
+                horizontalInsets = horizontalInsets,
+              )
 
-            HomeSection.VeryImportantMessages -> VeryImportantMessagesSection(
-              list = uiState.veryImportantMessages,
-              openUrl = openUrl,
-              markMessageAsSeen = markMessageAsSeen,
-              horizontalInsets = horizontalInsets,
-            )
+              HomeSection.VeryImportantMessages -> VeryImportantMessagesSection(
+                list = uiState.veryImportantMessages,
+                openUrl = openUrl,
+                markMessageAsSeen = markMessageAsSeen,
+                horizontalInsets = horizontalInsets,
+              )
 
-            HomeSection.MemberReminders -> MemberRemindersSection(
-              homeText = uiState.homeText,
-              applicableReminders = applicableReminders,
-              navigateToConnectPayment = navigateToConnectPayment,
-              navigateToConnectPayout = navigateToConnectPayout,
-              navigateToMissingInfo = navigateToMissingInfo,
-              onNavigateToNewConversation = onNavigateToNewConversation,
-              openUrl = openUrl,
-              navigateToContactInfo = navigateToContactInfo,
-              navigateToChipIdScreen = navigateToChipIdScreen,
-              horizontalInsets = horizontalInsets,
-            )
+              HomeSection.MemberReminders -> MemberRemindersSection(
+                homeText = uiState.homeText,
+                applicableReminders = applicableReminders,
+                navigateToConnectPayment = navigateToConnectPayment,
+                navigateToConnectPayout = navigateToConnectPayout,
+                navigateToMissingInfo = navigateToMissingInfo,
+                onNavigateToNewConversation = onNavigateToNewConversation,
+                openUrl = openUrl,
+                navigateToContactInfo = navigateToContactInfo,
+                navigateToChipIdScreen = navigateToChipIdScreen,
+                horizontalInsets = horizontalInsets,
+              )
 
-            HomeSection.Offers -> uiState.crossSellsPartition.offersCrossSell?.let { recommended ->
-              OffersSection(
-                recommendedCrossSell = recommended,
+              HomeSection.Offers -> uiState.crossSellsPartition.offersCrossSell?.let { recommended ->
+                OffersSection(
+                  recommendedCrossSell = recommended,
+                  onCrossSellClick = openCrossSellUrl,
+                  imageLoader = imageLoader,
+                  horizontalInsets = horizontalInsets,
+                )
+              }
+
+              HomeSection.DiscoverInsurances -> DiscoverInsurancesSection(
+                crossSells = uiState.crossSellsPartition.discoverCrossSells,
                 onCrossSellClick = openCrossSellUrl,
                 imageLoader = imageLoader,
+              )
+
+              HomeSection.Addons -> AddonsSection(
+                addonBannerInfos = uiState.addonBannerInfos,
+                navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
+                horizontalInsets = horizontalInsets,
+              )
+
+              HomeSection.QuickActionTiles -> QuickActionTilesSection(
+                isHelpCenterEnabled = uiState.isHelpCenterEnabled,
+                onHelpAndSupport = navigateToHelpCenter,
+                onChangeAddress = navigateToMovingFlow,
+                onTravelCertificate = navigateToTravelCertificate,
                 horizontalInsets = horizontalInsets,
               )
             }
-
-            HomeSection.DiscoverInsurances -> DiscoverInsurancesSection(
-              crossSells = uiState.crossSellsPartition.discoverCrossSells,
-              onCrossSellClick = openCrossSellUrl,
-              imageLoader = imageLoader,
-            )
-
-            HomeSection.Addons -> AddonsSection(
-              addonBannerInfos = uiState.addonBannerInfos,
-              navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
-              horizontalInsets = horizontalInsets,
-            )
-
-            HomeSection.QuickActionTiles -> QuickActionTilesSection(
-              isHelpCenterEnabled = uiState.isHelpCenterEnabled,
-              onHelpAndSupport = navigateToHelpCenter,
-              onChangeAddress = navigateToMovingFlow,
-              onTravelCertificate = navigateToTravelCertificate,
-              horizontalInsets = horizontalInsets,
-            )
           }
         }
       }
     }
+  }
+}
+
+@Composable
+private fun HomeSheetDragHandle(modifier: Modifier = Modifier) {
+  Box(
+    modifier = modifier
+      .fillMaxWidth()
+      .padding(vertical = 12.dp),
+    contentAlignment = Alignment.Center,
+  ) {
+    Box(
+      Modifier
+        .width(40.dp)
+        .height(4.dp)
+        .background(
+          color = HedvigTheme.colorScheme.surfaceSecondary,
+          shape = HedvigTheme.shapes.cornerSmall,
+        ),
+    )
   }
 }
 
