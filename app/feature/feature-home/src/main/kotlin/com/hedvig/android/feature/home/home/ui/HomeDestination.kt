@@ -604,9 +604,9 @@ private fun HomeScreenSuccess(
       // so the pinned pills clear the icons and the greeting stays visually centered.
       if (HomeSection.Welcome in visibleSections) {
         item(key = HomeSection.Welcome, contentType = "welcome") {
-          // Center the greeting in the viewport, reserving the toolbar clearance plus a peek for the
-          // pills + sheet so a slice of content stays visible at rest. Collapses toward the greeting's
-          // natural height as the first item scrolls away. All computed in the layout phase, so it
+          // The greeting sits low in a tall hero (collapsible space ABOVE it), so it reads as centered
+          // in the area below the toolbar like the design. The hero only shrinks by a bounded amount on
+          // scroll, so the list doesn't race the finger. All computed in the layout phase, so it
           // re-lays-out (no recomposition) and is correct on the first frame.
           Box(
             modifier = Modifier
@@ -614,18 +614,17 @@ private fun HomeScreenSuccess(
               .layout { measurable, constraints ->
                 val placeable = measurable.measure(constraints)
                 val clearancePx = pinnedTopOffset.roundToPx()
-                val minPadPx = 8.dp.roundToPx()
-                val reservedPx = (pinnedTopOffset + 132.dp).roundToPx()
-                val collapsedHero = clearancePx + placeable.height + minPadPx * 2
-                // Cap how tall the expanded hero gets. Without this, tall portrait screens center the
-                // greeting in a huge void, and the scroll-collapse then shrinks so much that the list
-                // races up far faster than the finger. The extra space (80dp) bounds the collapse amount.
-                val expandedHero = clearancePx + placeable.height + 80.dp.roundToPx()
-                val fullHero = (viewportHeightPx - reservedPx).coerceIn(collapsedHero, expandedHero)
-                val heroHeight = lerp(fullHero, collapsedHero, greetingCollapseFraction.value)
+                // Resting-position knob: more reserved space -> shorter hero -> greeting sits higher.
+                val reservedPx = (pinnedTopOffset + 200.dp).roundToPx()
+                // Scroll-feel knob: how much the hero shrinks while scrolling (speed-up = 1 + this/dist).
+                val maxCollapsePx = 80.dp.roundToPx()
+                val collapsedHero = clearancePx + placeable.height
+                val fullHero = (viewportHeightPx - reservedPx).coerceAtLeast(collapsedHero)
+                val heroHeight = (fullHero - lerp(0, maxCollapsePx, greetingCollapseFraction.value))
+                  .coerceAtLeast(collapsedHero)
                 layout(placeable.width, heroHeight) {
-                  val y = (clearancePx + (heroHeight - clearancePx - placeable.height) / 2)
-                    .coerceAtLeast(clearancePx + minPadPx)
+                  // Greeting near the hero's bottom; the gap down to the pills comes from the sticky header.
+                  val y = (heroHeight - placeable.height).coerceAtLeast(clearancePx)
                   placeable.place(0, y)
                 }
               },
