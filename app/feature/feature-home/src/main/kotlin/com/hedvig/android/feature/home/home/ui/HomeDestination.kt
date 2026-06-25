@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.MutableWindowInsets
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.exclude
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -47,6 +49,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -77,6 +80,7 @@ import com.hedvig.android.data.addons.data.FlowType
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Small
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.FeatureAddonBanner
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -90,6 +94,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigTooltip
 import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
+import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
@@ -102,6 +107,9 @@ import com.hedvig.android.design.system.hedvig.TopAppBarLayoutForActions
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HedvigLogotype
+import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
+import com.hedvig.android.design.system.hedvig.icon.Reload
+import com.hedvig.android.design.system.hedvig.icon.Travel
 import com.hedvig.android.design.system.hedvig.notificationCircle
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
@@ -769,49 +777,57 @@ private fun OffersSection(
   horizontalInsets: PaddingValues,
 ) {
   val crossSell = recommendedCrossSell.crossSell
-  HedvigCard(
-    onClick = { onCrossSellClick(crossSell.storeUrl) },
+  Column(
+    verticalArrangement = Arrangement.spacedBy(8.dp),
     modifier = Modifier
       .fillMaxWidth()
       .padding(horizontal = 16.dp)
       .padding(horizontalInsets),
   ) {
-    Column(Modifier.padding(16.dp)) {
-      Row(verticalAlignment = Alignment.CenterVertically) {
-        AsyncImage(
-          model = crossSell.pillowImage.src,
-          contentDescription = null,
-          imageLoader = imageLoader,
-          contentScale = ContentScale.Fit,
-          modifier = Modifier.size(48.dp),
+    // TODO: Add "Your quotes" / "Dina prisförslag" to Lokalise.
+    HedvigText(text = "Your quotes", style = HedvigTheme.typography.headlineSmall)
+    HedvigCard(
+      onClick = { onCrossSellClick(crossSell.storeUrl) },
+      modifier = Modifier.fillMaxWidth(),
+    ) {
+      Column(Modifier.padding(16.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          AsyncImage(
+            model = crossSell.pillowImage.src,
+            contentDescription = null,
+            imageLoader = imageLoader,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier.size(48.dp),
+          )
+          Spacer(Modifier.width(12.dp))
+          Column(Modifier.weight(1f)) {
+            HedvigText(text = crossSell.title, style = HedvigTheme.typography.bodySmall)
+            HedvigText(
+              text = recommendedCrossSell.bannerText,
+              style = HedvigTheme.typography.label,
+              color = HedvigTheme.colorScheme.textSecondary,
+            )
+          }
+          val discountText = recommendedCrossSell.discountText
+          if (discountText != null) {
+            Spacer(Modifier.width(8.dp))
+            HighlightLabel(
+              labelText = discountText,
+              size = HighlightLabelDefaults.HighLightSize.Small,
+              color = HighlightLabelDefaults.HighlightColor.Green(HighlightLabelDefaults.HighlightShade.LIGHT),
+            )
+          }
+        }
+        Spacer(Modifier.height(12.dp))
+        HedvigButton(
+          text = recommendedCrossSell.buttonText,
+          onClick = { onCrossSellClick(crossSell.storeUrl) },
+          buttonStyle = Secondary,
+          buttonSize = Small,
+          enabled = true,
+          modifier = Modifier.fillMaxWidth(),
         )
-        Spacer(Modifier.width(12.dp))
-        Column(Modifier.weight(1f)) {
-          HedvigText(text = crossSell.title, style = HedvigTheme.typography.bodySmall)
-          HedvigText(
-            text = recommendedCrossSell.bannerText,
-            style = HedvigTheme.typography.label,
-            color = HedvigTheme.colorScheme.textSecondary,
-          )
-        }
-        val discountText = recommendedCrossSell.discountText
-        if (discountText != null) {
-          Spacer(Modifier.width(8.dp))
-          HighlightLabel(
-            labelText = discountText,
-            size = HighlightLabelDefaults.HighLightSize.Small,
-            color = HighlightLabelDefaults.HighlightColor.Green(HighlightLabelDefaults.HighlightShade.LIGHT),
-          )
-        }
       }
-      Spacer(Modifier.height(12.dp))
-      HedvigButton(
-        text = recommendedCrossSell.buttonText,
-        onClick = { onCrossSellClick(crossSell.storeUrl) },
-        buttonStyle = Secondary,
-        enabled = true,
-        modifier = Modifier.fillMaxWidth(),
-      )
     }
   }
 }
@@ -832,33 +848,50 @@ private fun QuickActionTilesSection(
       .padding(horizontalInsets),
   ) {
     HedvigText(text = stringResource(Res.string.HC_QUICK_ACTIONS_TITLE), style = HedvigTheme.typography.headlineSmall)
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+    Row(
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(IntrinsicSize.Max),
+    ) {
       if (isHelpCenterEnabled) {
-        HomeActionTile(stringResource(Res.string.home_tab_get_help), onHelpAndSupport, Modifier.weight(1f))
+        HomeActionTile(
+          icon = HedvigIcons.HelipadOutline,
+          text = stringResource(Res.string.home_tab_get_help),
+          onClick = onHelpAndSupport,
+          modifier = Modifier.weight(1f).fillMaxHeight(),
+        )
       }
       // TODO: Add "Change address" / "Byt adress" to Lokalise.
-      HomeActionTile("Change address", onChangeAddress, Modifier.weight(1f))
       HomeActionTile(
-        stringResource(Res.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE),
-        onTravelCertificate,
-        Modifier.weight(1f),
+        icon = HedvigIcons.Reload,
+        text = "Change address",
+        onClick = onChangeAddress,
+        modifier = Modifier.weight(1f).fillMaxHeight(),
+      )
+      HomeActionTile(
+        icon = HedvigIcons.Travel,
+        text = stringResource(Res.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE),
+        onClick = onTravelCertificate,
+        modifier = Modifier.weight(1f).fillMaxHeight(),
       )
     }
   }
 }
 
 @Composable
-private fun HomeActionTile(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
-  // TODO: add the per-tile icon (Helipad / Reload / Travel) from the design once icon names are confirmed.
+private fun HomeActionTile(icon: ImageVector, text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
   HedvigCard(onClick = onClick, modifier = modifier) {
-    HedvigText(
-      text = text,
-      style = HedvigTheme.typography.label,
-      textAlign = TextAlign.Center,
+    Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
       modifier = Modifier
         .fillMaxWidth()
         .padding(vertical = 16.dp, horizontal = 8.dp),
-    )
+    ) {
+      Icon(imageVector = icon, contentDescription = null, tint = HedvigTheme.colorScheme.fillPrimary)
+      Spacer(Modifier.height(8.dp))
+      HedvigText(text = text, style = HedvigTheme.typography.label, textAlign = TextAlign.Center)
+    }
   }
 }
 
