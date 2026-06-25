@@ -617,7 +617,11 @@ private fun HomeScreenSuccess(
                 val minPadPx = 8.dp.roundToPx()
                 val reservedPx = (pinnedTopOffset + 132.dp).roundToPx()
                 val collapsedHero = clearancePx + placeable.height + minPadPx * 2
-                val fullHero = (viewportHeightPx - reservedPx).coerceAtLeast(collapsedHero)
+                // Cap how tall the expanded hero gets. Without this, tall portrait screens center the
+                // greeting in a huge void, and the scroll-collapse then shrinks so much that the list
+                // races up far faster than the finger. The extra space (80dp) bounds the collapse amount.
+                val expandedHero = clearancePx + placeable.height + 80.dp.roundToPx()
+                val fullHero = (viewportHeightPx - reservedPx).coerceIn(collapsedHero, expandedHero)
                 val heroHeight = lerp(fullHero, collapsedHero, greetingCollapseFraction.value)
                 layout(placeable.width, heroHeight) {
                   val y = (clearancePx + (heroHeight - clearancePx - placeable.height) / 2)
