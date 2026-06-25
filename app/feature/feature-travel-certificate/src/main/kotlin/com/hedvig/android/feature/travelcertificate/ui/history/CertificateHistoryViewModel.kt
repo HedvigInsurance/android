@@ -9,7 +9,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
-import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.fileupload.DownloadPdfUseCase
 import com.hedvig.android.core.fileupload.DownloadedFile
 import com.hedvig.android.data.addons.data.AddonBannerInfo
@@ -37,7 +36,7 @@ internal class CertificateHistoryViewModel(
   checkTravelCertificateAvailabilityForCurrentContractsUseCase:
     CheckTravelCertificateAvailabilityForCurrentContractsUseCase,
   getEligibleContractsWithAddressUseCase: GetEligibleContractsWithAddressUseCase,
-  getAddonBannerInfoUseCaseProvider: Provider<GetAddonBannerInfoUseCase>,
+  getAddonBannerInfoUseCase: GetAddonBannerInfoUseCase,
 ) : MoleculeViewModel<CertificateHistoryEvent, CertificateHistoryUiState>(
     initialState = CertificateHistoryUiState.Loading,
     presenter = CertificateHistoryPresenter(
@@ -45,7 +44,7 @@ internal class CertificateHistoryViewModel(
       downloadPdfUseCase,
       getEligibleContractsWithAddressUseCase,
       checkTravelCertificateAvailabilityForCurrentContractsUseCase,
-      getAddonBannerInfoUseCaseProvider,
+      getAddonBannerInfoUseCase,
     ),
   )
 
@@ -55,7 +54,7 @@ internal class CertificateHistoryPresenter(
   private val getEligibleContractsWithAddressUseCase: GetEligibleContractsWithAddressUseCase,
   private val checkTravelCertificateAvailabilityForCurrentContractsUseCase:
     CheckTravelCertificateAvailabilityForCurrentContractsUseCase,
-  private val getAddonBannerInfoUseCaseProvider: Provider<GetAddonBannerInfoUseCase>,
+  private val getAddonBannerInfoUseCase: GetAddonBannerInfoUseCase,
 ) :
   MoleculePresenter<CertificateHistoryEvent, CertificateHistoryUiState> {
   @Composable
@@ -144,7 +143,7 @@ internal class CertificateHistoryPresenter(
         flow { emit(getTravelCertificatesHistoryUseCase.invoke()) },
         flow { emit(checkTravelCertificateAvailabilityForCurrentContractsUseCase.invoke()) },
         flow { emit(getEligibleContractsWithAddressUseCase.invoke()) },
-        getAddonBannerInfoUseCaseProvider.provide().invoke(AddonBannerSource.TRAVEL_CERTIFICATES),
+        getAddonBannerInfoUseCase.invoke(AddonBannerSource.TRAVEL_CERTIFICATES),
       ) { travelCertificateHistoryResult, eligibilityResult, eligibleContractsResult, travelAddonBannerResult ->
         val history = travelCertificateHistoryResult.getOrNull()
         val eligibility = eligibilityResult.getOrNull()

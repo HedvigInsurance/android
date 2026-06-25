@@ -38,7 +38,6 @@ import com.hedvig.android.auth.MemberIdService
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
-import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.rive.RiveInitializer
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.featureflags.FeatureManager
@@ -99,7 +98,7 @@ class MainActivity : AppCompatActivity() {
   private lateinit var memberIdService: MemberIdService
 
   @Inject
-  private lateinit var missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>
+  private lateinit var missedPaymentNotificationService: MissedPaymentNotificationService
 
   @Inject
   private lateinit var currentDestinationHolder: CurrentDestinationHolder
@@ -244,7 +243,7 @@ class MainActivity : AppCompatActivity() {
           externalNavigator = externalNavigator,
           logoutUseCase = logoutUseCase,
           getMemberAuthorizationCodeUseCase = getMemberAuthorizationCodeUseCase,
-          missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
+          missedPaymentNotificationService = missedPaymentNotificationService,
           currentDestinationHolder = currentDestinationHolder,
         )
       }

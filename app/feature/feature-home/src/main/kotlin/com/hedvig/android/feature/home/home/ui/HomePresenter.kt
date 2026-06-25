@@ -12,7 +12,6 @@ import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.Either
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.core.common.ApplicationScope
-import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
@@ -32,9 +31,9 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 internal class HomePresenter(
-  private val getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
+  private val getHomeDataUseCase: GetHomeDataUseCase,
   private val seenImportantMessagesStorage: SeenImportantMessagesStorage,
-  private val crossSellHomeNotificationServiceProvider: Provider<CrossSellHomeNotificationService>,
+  private val crossSellHomeNotificationService: CrossSellHomeNotificationService,
   private val applicationScope: ApplicationScope,
   private val isProduction: Boolean,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
@@ -60,7 +59,7 @@ internal class HomePresenter(
 
         HomeEvent.MarkCardCrossSellsAsSeen -> {
           applicationScope.launch {
-            crossSellHomeNotificationServiceProvider.provide().markAsSeen()
+            crossSellHomeNotificationService.markAsSeen()
           }
         }
 
@@ -72,7 +71,7 @@ internal class HomePresenter(
     LaunchedEffect(crossSellToolTipShownEpochDay) {
       val epochDay = crossSellToolTipShownEpochDay
       if (epochDay != null) {
-        crossSellHomeNotificationServiceProvider.provide().setLastEpochDayNewRecommendationNotificationWasShown(
+        crossSellHomeNotificationService.setLastEpochDayNewRecommendationNotificationWasShown(
           epochDay,
         )
       }
@@ -84,9 +83,9 @@ internal class HomePresenter(
         hasError = false
       }
       combine(
-        getHomeDataUseCaseProvider.provide().invoke(forceNetworkFetch),
-        crossSellHomeNotificationServiceProvider.provide().showRedDotNotification(),
-        crossSellHomeNotificationServiceProvider.provide().getLastEpochDayNewRecommendationNotificationWasShown(),
+        getHomeDataUseCase.invoke(forceNetworkFetch),
+        crossSellHomeNotificationService.showRedDotNotification(),
+        crossSellHomeNotificationService.getLastEpochDayNewRecommendationNotificationWasShown(),
       ) { homeResult: Either<ApolloOperationError, HomeData>, showRedDot: Boolean, epochDay: Long? ->
         homeResult to CrossSellRecommendationNotification(
           showRedDot,

@@ -4,7 +4,6 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
-import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -14,17 +13,17 @@ import dev.zacsweers.metro.Inject
 @Inject
 @HedvigViewModel(ActivityRetainedScope::class)
 internal class HomeViewModel(
-  getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
+  getHomeDataUseCase: GetHomeDataUseCase,
   seenImportantMessagesStorage: SeenImportantMessagesStorage,
-  crossSellHomeNotificationServiceProvider: Provider<CrossSellHomeNotificationService>,
+  crossSellHomeNotificationService: CrossSellHomeNotificationService,
   applicationScope: ApplicationScope,
   hedvigBuildConstants: HedvigBuildConstants,
 ) : MoleculeViewModel<HomeEvent, HomeUiState>(
     HomeUiState.Loading,
     HomePresenter(
-      getHomeDataUseCaseProvider,
+      getHomeDataUseCase,
       seenImportantMessagesStorage,
-      crossSellHomeNotificationServiceProvider,
+      crossSellHomeNotificationService,
       applicationScope,
       hedvigBuildConstants.isProduction,
     ),

@@ -9,7 +9,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
-import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -22,15 +21,15 @@ import kotlinx.coroutines.flow.first
 @AssistedInject
 @HedvigViewModel(ActivityRetainedScope::class)
 internal class TravelAddonTriageViewModel(
-  getAddonBannerInfoUseCaseProvider: Provider<GetAddonBannerInfoUseCase>,
+  getAddonBannerInfoUseCase: GetAddonBannerInfoUseCase,
   @Assisted addonBannerSource: AddonBannerSource,
 ) : MoleculeViewModel<TravelAddonTriageEvent, TravelAddonTriageState>(
     initialState = TravelAddonTriageState.Loading,
-    presenter = TravelAddonTriagePresenter(getAddonBannerInfoUseCaseProvider, addonBannerSource),
+    presenter = TravelAddonTriagePresenter(getAddonBannerInfoUseCase, addonBannerSource),
   )
 
 internal class TravelAddonTriagePresenter(
-  private val getAddonBannerInfoUseCaseProvider: Provider<GetAddonBannerInfoUseCase>,
+  private val getAddonBannerInfoUseCase: GetAddonBannerInfoUseCase,
   private val addonBannerSource: AddonBannerSource,
 ) : MoleculePresenter<TravelAddonTriageEvent, TravelAddonTriageState> {
   @Composable
@@ -42,7 +41,7 @@ internal class TravelAddonTriagePresenter(
 
     LaunchedEffect(loadIteration) {
       currentState = TravelAddonTriageState.Loading
-      val result = getAddonBannerInfoUseCaseProvider.provide().invoke(addonBannerSource)
+      val result = getAddonBannerInfoUseCase.invoke(addonBannerSource)
       result.first().fold(
         ifLeft = { _ ->
           currentState = TravelAddonTriageState.Failure(FailureReason.GENERAL)

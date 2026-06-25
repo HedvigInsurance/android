@@ -11,7 +11,6 @@ import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.Either
 import arrow.core.raise.either
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
@@ -61,9 +60,9 @@ internal data class InsuranceUiState(
 }
 
 internal class InsurancePresenter(
-  private val getInsuranceContractsUseCaseProvider: Provider<GetInsuranceContractsUseCase>,
-  private val getCrossSellsUseCaseProvider: Provider<GetCrossSellsUseCase>,
-  private val getAddonBannerInfoUseCase: Provider<GetAddonBannerInfoUseCase>,
+  private val getInsuranceContractsUseCase: GetInsuranceContractsUseCase,
+  private val getCrossSellsUseCase: GetCrossSellsUseCase,
+  private val getAddonBannerInfoUseCase: GetAddonBannerInfoUseCase,
 ) : MoleculePresenter<InsuranceScreenEvent, InsuranceUiState> {
   @Composable
   override fun MoleculePresenterScope<InsuranceScreenEvent>.present(lastState: InsuranceUiState): InsuranceUiState {
@@ -90,9 +89,9 @@ internal class InsurancePresenter(
         isRetrying = isRetryingIteration
       }
       loadInsuranceData(
-        getInsuranceContractsUseCase = getInsuranceContractsUseCaseProvider.provide(),
-        getCrossSellsUseCase = getCrossSellsUseCaseProvider.provide(),
-        getAddonBannerInfoUseCase = getAddonBannerInfoUseCase.provide(),
+        getInsuranceContractsUseCase = getInsuranceContractsUseCase,
+        getCrossSellsUseCase = getCrossSellsUseCase,
+        getAddonBannerInfoUseCase = getAddonBannerInfoUseCase,
       ).collectLatest { result ->
         result.fold(
           ifLeft = {

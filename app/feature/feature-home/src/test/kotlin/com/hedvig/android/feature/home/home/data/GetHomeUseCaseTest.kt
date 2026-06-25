@@ -25,7 +25,6 @@ import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.isRight
-import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
@@ -71,15 +70,13 @@ internal class GetHomeUseCaseTest {
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
 
-  val travelBannerProvider = Provider<GetAddonBannerInfoUseCase> {
-    object : GetAddonBannerInfoUseCase {
-      override fun invoke(source: AddonBannerSource): Flow<Either<ErrorMessage, List<AddonBannerInfo>>> {
-        return flowOf(
-          either {
-            emptyList()
-          },
-        )
-      }
+  val travelBannerUseCase = object : GetAddonBannerInfoUseCase {
+    override fun invoke(source: AddonBannerSource): Flow<Either<ErrorMessage, List<AddonBannerInfo>>> {
+      return flowOf(
+        either {
+          emptyList()
+        },
+      )
     }
   }
 
@@ -110,7 +107,7 @@ internal class GetHomeUseCaseTest {
       FakeFeatureManager(true),
       TestClock(),
       TimeZone.UTC,
-      getTravelAddonBannerInfoUseCaseProvider = travelBannerProvider,
+      getAddonBannerInfoUseCase = travelBannerUseCase,
       HasAnyActiveConversationUseCase(apolloClient),
     )
     val testId = "test"
@@ -159,7 +156,7 @@ internal class GetHomeUseCaseTest {
       FakeFeatureManager(true),
       TestClock(),
       TimeZone.UTC,
-      travelBannerProvider,
+      travelBannerUseCase,
       HasAnyActiveConversationUseCase(apolloClient),
     )
 
@@ -685,7 +682,7 @@ internal class GetHomeUseCaseTest {
       featureManager,
       testClock,
       timeZone,
-      travelBannerProvider,
+      travelBannerUseCase,
       HasAnyActiveConversationUseCase(apolloClient),
     )
   }
