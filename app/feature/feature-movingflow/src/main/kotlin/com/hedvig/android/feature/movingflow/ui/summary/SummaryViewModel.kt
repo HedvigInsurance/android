@@ -178,8 +178,7 @@ internal class SummaryPresenter(
               } else {
                 crossSellAfterFlowRepository.completedCrossSellTriggeringSelfServiceSuccessfully(
                   CrossSellInfoType.MovingFlow(
-                    null
-                   // moveIntentCommit.newContractId //todo!!!
+                    moveIntentCommit.newContractId
                   ),
                 )
                 submitChangesWithData = null

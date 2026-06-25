@@ -888,6 +888,7 @@ type Claim {
   isUploadingFilesEnabled: Boolean!
   infoText: String
   displayItems: [ClaimDisplayItem!]!
+  contractId: String
   """
   Terms & conditions for the claim found using claims contractId and dateOfOccurrence, otherwise null.
   """
@@ -3514,6 +3515,10 @@ type MoveIntentMutationOutput {
    Fail case 
   """
   userError: UserError
+  """
+   Id of the new contract if it was created after finalizing the move 
+  """
+  newContractId: ID
 }
 type MoveIntentQuoteCost {
   quoteId: ID!
