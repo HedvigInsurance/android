@@ -583,15 +583,17 @@ private fun HomeScreenSuccess(
     // content to below this line so nothing bleeds through the transparent pills as it scrolls up.
     var stickyHeaderBottomPx by remember { mutableFloatStateOf(0f) }
     val listState = rememberLazyListState()
-    // Squish the greeting's internal vertical padding as the first item scrolls away (collapsing hero).
-    // Read off the scroll state, applied in the layout phase below so the greeting doesn't recompose.
-    val greetingCollapseDistancePx = with(LocalDensity.current) { 192.dp.toPx() }
-    val greetingCollapseFraction = remember(greetingCollapseDistancePx) {
+    val density = LocalDensity.current
+    // How far the greeting hero has collapsed (0 = expanded, 1 = collapsed), derived from the scroll
+    // offset and read in the layout phase below so scrolling re-lays-out rather than recomposing.
+    val greetingCollapseFraction = remember(density) {
+      val collapseScrollDistancePx = with(density) { 192.dp.toPx() }
       derivedStateOf {
+        // Stays collapsed once the hero has scrolled off the top of the list.
         if (listState.firstVisibleItemIndex > 0) {
           1f
         } else {
-          (listState.firstVisibleItemScrollOffset / greetingCollapseDistancePx).coerceIn(0f, 1f)
+          (listState.firstVisibleItemScrollOffset / collapseScrollDistancePx).coerceIn(0f, 1f)
         }
       }
     }
@@ -624,7 +626,6 @@ private fun HomeScreenSuccess(
                 // Floor on short/landscape windows so the greeting still hugs the top there.
                 val reservedPx = (pinnedTopOffset + 132.dp).roundToPx()
                 val fullHero = minOf(collapsedHero + addedSpacePx, viewportHeightPx - reservedPx)
-                  .coerceAtLeast(collapsedHero)
                 val heroHeight = (fullHero - lerp(0, maxCollapsePx, greetingCollapseFraction.value))
                   .coerceAtLeast(collapsedHero)
                 layout(placeable.width, heroHeight) {
