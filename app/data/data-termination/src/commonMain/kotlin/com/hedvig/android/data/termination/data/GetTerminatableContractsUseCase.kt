@@ -13,13 +13,11 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.toContractGroup
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import octopus.ContractsToTerminateQuery
 
 interface GetTerminatableContractsUseCase {
@@ -31,21 +29,17 @@ interface GetTerminatableContractsUseCase {
 @Inject
 internal class GetTerminatableContractsUseCaseImpl(
   private val apolloClient: ApolloClient,
-  private val featureManager: FeatureManager,
 ) : GetTerminatableContractsUseCase {
   override suspend fun invoke(): Flow<Either<ErrorMessage, NonEmptyList<TerminatableInsurance>?>> {
-    return combine(
-      featureManager.isFeatureEnabled(Feature.TERMINATION_FLOW),
-      apolloClient
-        .query(ContractsToTerminateQuery())
-        .fetchPolicy(FetchPolicy.NetworkOnly)
-        .safeFlow(::ErrorMessage),
-    ) { isEnabled, memberResponse ->
-      either {
-        if (!isEnabled) return@either null
-        memberResponse.bind().currentMember.toInsurancesForCancellation().toNonEmptyListOrNull()
+    return apolloClient
+      .query(ContractsToTerminateQuery())
+      .fetchPolicy(FetchPolicy.NetworkOnly)
+      .safeFlow(::ErrorMessage)
+      .map { memberResponse ->
+        either {
+          memberResponse.bind().currentMember.toInsurancesForCancellation().toNonEmptyListOrNull()
+        }
       }
-    }
   }
 }
 

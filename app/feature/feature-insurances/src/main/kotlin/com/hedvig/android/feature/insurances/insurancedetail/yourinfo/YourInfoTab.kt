@@ -702,8 +702,8 @@ internal fun PriceRow(
 ) {
   HorizontalItemsWithMaximumSpaceTaken(
     modifier = modifier
-      .then (
-        if (isFirstRow) Modifier else Modifier.horizontalDivider(DividerPosition.Top)
+      .then(
+        if (isFirstRow) Modifier else Modifier.horizontalDivider(DividerPosition.Top),
       ),
     startSlot = {
       Row(
