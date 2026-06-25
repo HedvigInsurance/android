@@ -82,7 +82,7 @@ import com.hedvig.android.data.addons.data.FlowType
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
-import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Small
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.FeatureAddonBanner
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -185,6 +185,7 @@ internal fun HomeDestination(
   navigateToConnectPayment: () -> Unit,
   navigateToConnectPayout: () -> Unit,
   navigateToHelpCenter: () -> Unit,
+  navigateToMovingFlow: () -> Unit,
   openUrl: (String) -> Unit,
   openCrossSellUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
@@ -211,6 +212,7 @@ internal fun HomeDestination(
     navigateToConnectPayment = navigateToConnectPayment,
     navigateToConnectPayout = navigateToConnectPayout,
     navigateToHelpCenter = navigateToHelpCenter,
+    navigateToMovingFlow = navigateToMovingFlow,
     openUrl = openUrl,
     openCrossSellUrl = openCrossSellUrl,
     openAppSettings = openAppSettings,
@@ -243,6 +245,7 @@ private fun HomeScreen(
   navigateToConnectPayment: () -> Unit,
   navigateToConnectPayout: () -> Unit,
   navigateToHelpCenter: () -> Unit,
+  navigateToMovingFlow: () -> Unit,
   openUrl: (String) -> Unit,
   openCrossSellUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
@@ -315,6 +318,7 @@ private fun HomeScreen(
             navigateToConnectPayment = navigateToConnectPayment,
             navigateToConnectPayout = navigateToConnectPayout,
             navigateToHelpCenter = navigateToHelpCenter,
+            navigateToMovingFlow = navigateToMovingFlow,
             onNavigateToInbox = onNavigateToInbox,
             openClaimFlowSheet = startClaimBottomSheetState::show,
             openAppSettings = openAppSettings,
@@ -469,6 +473,7 @@ private fun HomeScreenSuccess(
   navigateToConnectPayment: () -> Unit,
   navigateToConnectPayout: () -> Unit,
   navigateToHelpCenter: () -> Unit,
+  navigateToMovingFlow: () -> Unit,
   onNavigateToInbox: () -> Unit,
   openClaimFlowSheet: () -> Unit,
   openAppSettings: () -> Unit,
@@ -637,7 +642,7 @@ private fun HomeScreenSuccess(
             HomeSection.QuickActionTiles -> QuickActionTilesSection(
               isHelpCenterEnabled = uiState.isHelpCenterEnabled,
               onHelpAndSupport = navigateToHelpCenter,
-              onChangeAddress = navigateToContactInfo,
+              onChangeAddress = navigateToMovingFlow,
               onTravelCertificate = navigateToTravelCertificate,
               horizontalInsets = horizontalInsets,
             )
@@ -850,7 +855,7 @@ private fun OffersSection(
           text = recommendedCrossSell.buttonText,
           onClick = { onCrossSellClick(crossSell.storeUrl) },
           buttonStyle = Secondary,
-          buttonSize = Small,
+          buttonSize = ButtonSize.Medium,
           enabled = true,
           modifier = Modifier.fillMaxWidth(),
         )
@@ -886,7 +891,9 @@ private fun QuickActionTilesSection(
           icon = HedvigIcons.HelipadOutline,
           text = stringResource(Res.string.home_tab_get_help),
           onClick = onHelpAndSupport,
-          modifier = Modifier.weight(1f).fillMaxHeight(),
+          modifier = Modifier
+            .weight(1f)
+            .fillMaxHeight(),
         )
       }
       // TODO: Add "Change address" / "Byt adress" to Lokalise.
@@ -894,13 +901,17 @@ private fun QuickActionTilesSection(
         icon = HedvigIcons.Reload,
         text = "Change address",
         onClick = onChangeAddress,
-        modifier = Modifier.weight(1f).fillMaxHeight(),
+        modifier = Modifier
+          .weight(1f)
+          .fillMaxHeight(),
       )
       HomeActionTile(
         icon = HedvigIcons.Travel,
         text = stringResource(Res.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE),
         onClick = onTravelCertificate,
-        modifier = Modifier.weight(1f).fillMaxHeight(),
+        modifier = Modifier
+          .weight(1f)
+          .fillMaxHeight(),
       )
     }
   }
@@ -910,14 +921,18 @@ private fun QuickActionTilesSection(
 private fun HomeActionTile(icon: ImageVector, text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
   HedvigCard(onClick = onClick, modifier = modifier) {
     Column(
-      horizontalAlignment = Alignment.CenterHorizontally,
       modifier = Modifier
         .fillMaxWidth()
-        .padding(vertical = 16.dp, horizontal = 8.dp),
+        .padding(vertical = 14.dp, horizontal = 12.dp),
     ) {
-      Icon(imageVector = icon, contentDescription = null, tint = HedvigTheme.colorScheme.fillPrimary)
-      Spacer(Modifier.height(8.dp))
-      HedvigText(text = text, style = HedvigTheme.typography.label, textAlign = TextAlign.Center)
+      Icon(
+        imageVector = icon,
+        contentDescription = null,
+        tint = HedvigTheme.colorScheme.fillPrimary,
+        modifier = Modifier.size(24.dp),
+      )
+      Spacer(Modifier.height(6.dp))
+      HedvigText(text = text, style = HedvigTheme.typography.label)
     }
   }
 }
@@ -1256,6 +1271,7 @@ private fun PreviewHomeScreen(
         navigateToConnectPayment = {},
         navigateToConnectPayout = {},
         navigateToHelpCenter = {},
+        navigateToMovingFlow = {},
         openUrl = {},
         openCrossSellUrl = {},
         openAppSettings = {},
@@ -1292,6 +1308,7 @@ private fun PreviewHomeScreenWithError() {
         navigateToConnectPayment = {},
         navigateToConnectPayout = {},
         navigateToHelpCenter = {},
+        navigateToMovingFlow = {},
         openUrl = {},
         openCrossSellUrl = {},
         openAppSettings = {},
@@ -1349,6 +1366,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToConnectPayment = {},
         navigateToConnectPayout = {},
         navigateToHelpCenter = {},
+        navigateToMovingFlow = {},
         openUrl = {},
         openCrossSellUrl = {},
         openAppSettings = {},

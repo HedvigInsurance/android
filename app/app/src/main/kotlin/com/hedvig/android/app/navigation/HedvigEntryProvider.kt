@@ -247,6 +247,7 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
       backstack.add(CoInsuredAddInfoKey(contractId, type))
     },
     navigateToHelpCenter = { backstack.add(HelpCenterKey) },
+    navigateToMovingFlow = { backstack.add(SelectContractForMovingKey) },
     navigateToClaimChat = {
       backstack.add(ClaimChatKey(messageId = null, isDevelopmentFlow = false))
     },
