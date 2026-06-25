@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -599,7 +600,12 @@ private fun HomeScreenSuccess(
     }
     LazyColumn(
       state = listState,
-      modifier = Modifier.fillMaxSize(),
+      // Cap the content to a comfortable column on wide/expanded windows (no-op on phones); the blur
+      // stays full-bleed behind it. The pills + sheet live inside, so they follow the same width.
+      modifier = Modifier
+        .fillMaxHeight()
+        .widthIn(max = 600.dp)
+        .align(Alignment.TopCenter),
       contentPadding = PaddingValues(bottom = 16.dp + bottomInsets.calculateBottomPadding()),
     ) {
       // Greeting scrolls away; the pills below pin under the toolbar. Both carry the same top offset
@@ -623,7 +629,9 @@ private fun HomeScreenSuccess(
                 val addedSpacePx = 80.dp.roundToPx()
                 // Scroll-feel knob: how much the hero shrinks while scrolling (speed-up = 1 + this/dist).
                 val maxCollapsePx = 80.dp.roundToPx()
-                // Floor on short/landscape windows so the greeting still hugs the top there.
+                // Room kept below the hero for the pills + a sheet peek on short/landscape windows (so the
+                // greeting hugs the top there). Independent of the greeting's size — that's handled by
+                // collapsedHero (measured greeting height), so a taller greeting still fits.
                 val reservedPx = (pinnedTopOffset + 132.dp).roundToPx()
                 val fullHero = minOf(collapsedHero + addedSpacePx, viewportHeightPx - reservedPx)
                 val heroHeight = (fullHero - lerp(0, maxCollapsePx, greetingCollapseFraction.value))
@@ -761,7 +769,9 @@ private fun HomeSheetDragHandle(modifier: Modifier = Modifier) {
   Box(
     modifier = modifier
       .fillMaxWidth()
-      .padding(vertical = 12.dp),
+      .padding(vertical = 12.dp)
+      // Purely decorative handle; not interactive and there's no real sheet to drag.
+      .semantics { hideFromAccessibility() },
     contentAlignment = Alignment.Center,
   ) {
     Box(
@@ -1062,11 +1072,10 @@ private fun HomeActionTile(icon: ImageVector, text: String, onClick: () -> Unit,
 
 @Composable
 private fun HomeActionChip(text: String, onClick: () -> Unit) {
-  // TODO: tonal-glass chip interpretation (no live blur); swap to a DS chip/glass button when it exists.
   Surface(
     onClick = onClick,
     shape = HedvigTheme.shapes.cornerXLarge,
-    color = HedvigTheme.colorScheme.surfacePrimaryTransparent,
+    color = HedvigTheme.colorScheme.surfacePrimary,
   ) {
     HedvigText(
       text = text,

@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -49,10 +50,9 @@ fun ToolbarChatIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
       .size(40.dp)
       .shadow(4.dp, CircleShape)
       .clip(CircleShape)
-      // TODO: tonal-glass interpretation of the iOS design (no live blur). Final glass treatment + icon
-      //  sizing/contrast needs design specs + visual QA; swap to a DS "glass icon button" when it exists.
-      .background(HedvigTheme.colorScheme.surfacePrimaryTransparent)
-      .clickable(onClick = onClick),
+      // Solid circular surface (Android-style), not the iOS glass. Final icon sizing/contrast pending design.
+      .background(HedvigTheme.colorScheme.surfacePrimary)
+      .clickable(role = Role.Button, onClick = onClick),
   )
 }
 
@@ -65,10 +65,9 @@ fun ToolbarFirstVetIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
       .size(40.dp)
       .shadow(4.dp, CircleShape)
       .clip(CircleShape)
-      // TODO: tonal-glass interpretation of the iOS design (no live blur). Final glass treatment + icon
-      //  sizing/contrast needs design specs + visual QA; swap to a DS "glass icon button" when it exists.
-      .background(HedvigTheme.colorScheme.surfacePrimaryTransparent)
-      .clickable(onClick = onClick),
+      // Solid circular surface (Android-style), not the iOS glass. Final icon sizing/contrast pending design.
+      .background(HedvigTheme.colorScheme.surfacePrimary)
+      .clickable(role = Role.Button, onClick = onClick),
   )
 }
 
@@ -86,10 +85,9 @@ fun ToolbarCrossSellsIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
       .size(40.dp)
       .shadow(4.dp, CircleShape)
       .clip(CircleShape)
-      // TODO: tonal-glass interpretation of the iOS design (no live blur). Final glass treatment + icon
-      //  sizing/contrast needs design specs + visual QA; swap to a DS "glass icon button" when it exists.
-      .background(HedvigTheme.colorScheme.surfacePrimaryTransparent)
-      .clickable(onClick = onClick)
+      // Solid circular surface (Android-style), not the iOS glass. Final icon sizing/contrast pending design.
+      .background(HedvigTheme.colorScheme.surfacePrimary)
+      .clickable(role = Role.Button, onClick = onClick)
       .graphicsLayer {
         rotationZ = fullRotation
       },
@@ -107,7 +105,7 @@ fun ToolbarClaimChatIcon(onClick: () -> Unit, modifier: Modifier = Modifier, isD
         .size(40.dp)
         .shadow(4.dp, CircleShape)
         .clip(CircleShape)
-        .clickable(onClick = onClick),
+        .clickable(role = Role.Button, onClick = onClick),
     )
     if (isDev) {
       HedvigText(
