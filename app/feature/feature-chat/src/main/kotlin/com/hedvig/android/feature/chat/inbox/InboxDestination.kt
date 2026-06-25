@@ -422,7 +422,7 @@ private fun ConversationCard(
               HedvigText(
                 text = formattedLastMessageSent,
                 style = HedvigTheme.typography.label,
-                color = HedvigTheme.colorScheme.textSecondary
+                color = HedvigTheme.colorScheme.textSecondary,
               )
             }
           }
@@ -574,7 +574,7 @@ private val mockInboxConversation2 = InboxConversation(
 private val mockInboxConversation3 = InboxConversation(
   conversationId = "3",
   header = Header.ServiceConversation,
-  latestMessage = Text ("Thank you! Happy to hear that!",Sender.MEMBER, Clock.System.now()),
+  latestMessage = Text("Thank you! Happy to hear that!", Sender.MEMBER, Clock.System.now()),
   hasNewMessages = false,
   createdAt = Clock.System.now(),
   isClosed = true,

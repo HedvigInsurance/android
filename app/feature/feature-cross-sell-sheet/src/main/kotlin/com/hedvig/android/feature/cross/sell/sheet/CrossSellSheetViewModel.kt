@@ -14,8 +14,8 @@ import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.DemoSwitcher

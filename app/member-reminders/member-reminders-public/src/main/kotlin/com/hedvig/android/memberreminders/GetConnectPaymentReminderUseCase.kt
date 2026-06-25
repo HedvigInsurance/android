@@ -26,7 +26,8 @@ internal interface GetConnectPaymentReminderUseCase {
 @SingleIn(AppScope::class)
 @Inject
 internal class GetConnectPaymentReminderUseCaseImpl(
-  private val apolloClient: ApolloClient) : GetConnectPaymentReminderUseCase {
+  private val apolloClient: ApolloClient,
+) : GetConnectPaymentReminderUseCase {
   override suspend fun invoke(): Either<ConnectPaymentReminderError, PaymentReminder> {
     return either {
       val result = apolloClient.query(GetPayinMethodStatusQuery())
@@ -48,9 +49,8 @@ internal class GetConnectPaymentReminderUseCaseImpl(
       when (missingConnection) {
         MissingPaymentConnection.PAYIN -> return@either PaymentReminder.ShowConnectPaymentReminder
         MissingPaymentConnection.PAYOUT -> return@either PaymentReminder.ShowConnectPayoutReminder
-        MissingPaymentConnection.UNKNOWN__ , null -> raise(ConnectPaymentReminderError.DomainError.AlreadySetup)
+        MissingPaymentConnection.UNKNOWN__, null -> raise(ConnectPaymentReminderError.DomainError.AlreadySetup)
       }
-
     }.onLeft {
       if (it !is ConnectPaymentReminderError.DomainError) {
         logcat { "GetConnectPaymentReminderUseCase failed with error:$it" }

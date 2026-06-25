@@ -404,7 +404,7 @@ private fun ClaimChatScreenContent(
           } else {
             navigateUp()
           }
-        }
+        },
       )
     }
     if (showScrollArrow) {
@@ -505,7 +505,7 @@ private fun ClaimChatScrollableContent(
           } else {
             Modifier
           },
-          closeFlow = closeFlow
+          closeFlow = closeFlow,
         )
       }
     }
@@ -767,7 +767,7 @@ private fun StepBottomContent(
   appPackageId: String,
   imageLoader: ImageLoader,
   openAppSettings: () -> Unit,
-  closeFlow: ()-> Unit,
+  closeFlow: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
@@ -906,7 +906,7 @@ private fun StepBottomContent(
             closeFlow()
           },
           enabled = true,
-          buttonStyle = ButtonDefaults.ButtonStyle.Secondary
+          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
         )
       }
     }
