@@ -614,12 +614,17 @@ private fun HomeScreenSuccess(
               .layout { measurable, constraints ->
                 val placeable = measurable.measure(constraints)
                 val clearancePx = pinnedTopOffset.roundToPx()
-                // Resting-position knob: more reserved space -> shorter hero -> greeting sits higher.
-                val reservedPx = (pinnedTopOffset + 200.dp).roundToPx()
+                val collapsedHero = clearancePx + placeable.height
+                // The space we ADD above the greeting, on top of the mandatory inset + icons clearance.
+                // A moderate, fixed amount — NOT the leftover viewport — otherwise tall portrait screens
+                // leave a huge void above the greeting. This is the main resting-position knob.
+                val addedSpacePx = 160.dp.roundToPx()
                 // Scroll-feel knob: how much the hero shrinks while scrolling (speed-up = 1 + this/dist).
                 val maxCollapsePx = 80.dp.roundToPx()
-                val collapsedHero = clearancePx + placeable.height
-                val fullHero = (viewportHeightPx - reservedPx).coerceAtLeast(collapsedHero)
+                // Floor on short/landscape windows so the greeting still hugs the top there.
+                val reservedPx = (pinnedTopOffset + 132.dp).roundToPx()
+                val fullHero = minOf(collapsedHero + addedSpacePx, viewportHeightPx - reservedPx)
+                  .coerceAtLeast(collapsedHero)
                 val heroHeight = (fullHero - lerp(0, maxCollapsePx, greetingCollapseFraction.value))
                   .coerceAtLeast(collapsedHero)
                 layout(placeable.width, heroHeight) {
