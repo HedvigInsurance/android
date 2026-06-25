@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -24,6 +25,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.onConsumedWindowInsetsChanged
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -51,8 +53,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.hideFromAccessibility
@@ -62,6 +67,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -163,6 +169,7 @@ import hedvig.resources.home_tab_terminated_welcome_title_without_name
 import hedvig.resources.home_tab_welcome_title_without_name
 import hedvig.resources.important_message_hide
 import hedvig.resources.important_message_read_more
+import kotlin.math.roundToInt
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -493,12 +500,13 @@ private fun HomeScreenSuccess(
   modifier: Modifier = Modifier,
 ) {
   val consumedWindowInsets = remember { MutableWindowInsets() }
-  Box(
+  BoxWithConstraints(
     modifier = modifier
       .fillMaxSize()
       .onConsumedWindowInsetsChanged { consumedWindowInsets.insets = it }
       .pullRefresh(pullRefreshState),
   ) {
+    val screenHeight = maxHeight
     // Full-screen blur gradient behind the whole home screen. Sections that need a solid surface draw
     // their own background on top to "hide" it (the content cards already do; so do the pinned pills).
     Image(
@@ -581,17 +589,49 @@ private fun HomeScreenSuccess(
       }
       if (HomeSection.QuickActionCarousel in visibleSections) {
         stickyHeader(key = HomeSection.QuickActionCarousel, contentType = "pills") {
-          Column(Modifier.fillMaxWidth()) {
-            Spacer(Modifier.height(pinnedTopOffset))
-            QuickActionCarouselSection(
-              isHelpCenterEnabled = uiState.isHelpCenterEnabled,
-              onMakeClaim = openClaimFlowSheet,
-              onHelpAndSupport = navigateToHelpCenter,
-              onContactUs = onNavigateToInbox,
-              onForever = navigateToForever,
-              horizontalInsets = horizontalInsets,
-              modifier = Modifier.padding(bottom = 8.dp),
+          var headerTopPx by remember { mutableStateOf(0f) }
+          Box(
+            Modifier
+              .fillMaxWidth()
+              .clipToBounds()
+              .onGloballyPositioned { headerTopPx = it.positionInParent().y },
+          ) {
+            // Opaque blur backdrop, kept aligned with the fixed full-screen background by offsetting it
+            // by the header's own scroll position. This lets the floating pills look like they sit on the
+            // gradient while the pinned header still hides any content scrolling up behind it.
+            Image(
+              painter = painterResource(Res.drawable.blur_background),
+              contentDescription = null,
+              contentScale = ContentScale.Crop,
+              modifier = Modifier
+                .fillMaxWidth()
+                .height(screenHeight)
+                .offset { IntOffset(0, -headerTopPx.roundToInt()) },
             )
+            Column(Modifier.fillMaxWidth()) {
+              Spacer(Modifier.height(pinnedTopOffset))
+              QuickActionCarouselSection(
+                isHelpCenterEnabled = uiState.isHelpCenterEnabled,
+                onMakeClaim = openClaimFlowSheet,
+                onHelpAndSupport = navigateToHelpCenter,
+                onContactUs = onNavigateToInbox,
+                onForever = navigateToForever,
+                horizontalInsets = horizontalInsets,
+                modifier = Modifier.padding(bottom = 8.dp),
+              )
+              // The sheet "lid": rounded-top opaque surface with the drag handle. It lives in the sticky
+              // header so it stays pinned with the pills and scrolling content disappears cleanly under it.
+              Column(
+                Modifier
+                  .fillMaxWidth()
+                  .background(
+                    color = HedvigTheme.colorScheme.backgroundPrimary,
+                    shape = HedvigTheme.shapes.cornerXLargeTop,
+                  ),
+              ) {
+                HomeSheetDragHandle()
+              }
+            }
           }
         }
       }
@@ -600,85 +640,73 @@ private fun HomeScreenSuccess(
       }
       itemsIndexed(scrollingSections, key = { _, section -> section }) { index, section ->
         val previous = if (index == 0) HomeSection.QuickActionCarousel else scrollingSections[index - 1]
-        // From the first scrolling section down, content sits on a bottom-sheet-style surface that hides
-        // the blur background: the first item rounds its top and shows a drag handle, the rest continue it.
-        Column(Modifier.fillMaxWidth()) {
-          if (index == 0) {
-            Spacer(Modifier.height(gapBefore(section, previous)))
-          }
-          Column(
-            Modifier
-              .fillMaxWidth()
-              .background(
-                color = HedvigTheme.colorScheme.backgroundPrimary,
-                shape = if (index == 0) HedvigTheme.shapes.cornerXLargeTop else HedvigTheme.shapes.cornerNone,
-              ),
-          ) {
-            if (index == 0) {
-              HomeSheetDragHandle()
-            } else {
-              Spacer(Modifier.height(gapBefore(section, previous)))
-            }
-            when (section) {
-              HomeSection.Welcome, HomeSection.QuickActionCarousel -> Unit
+        // Every scrolling section continues the opaque sheet surface, so the blur stays hidden below the
+        // pinned pills + drag handle.
+        Column(
+          Modifier
+            .fillMaxWidth()
+            .background(HedvigTheme.colorScheme.backgroundPrimary),
+        ) {
+          Spacer(Modifier.height(gapBefore(section, previous)))
+          when (section) {
+            HomeSection.Welcome, HomeSection.QuickActionCarousel -> Unit
 
-              // pinned above the scrolling content
+            // pinned above the scrolling content
 
-              HomeSection.ClaimStatusCards -> ClaimStatusCardsSection(
-                claimStatusCardsData = uiState.claimStatusCardsData,
-                onClaimDetailCardClicked = onClaimDetailCardClicked,
-                horizontalInsets = horizontalInsets,
-              )
+            HomeSection.ClaimStatusCards -> ClaimStatusCardsSection(
+              claimStatusCardsData = uiState.claimStatusCardsData,
+              onClaimDetailCardClicked = onClaimDetailCardClicked,
+              horizontalInsets = horizontalInsets,
+            )
 
-              HomeSection.VeryImportantMessages -> VeryImportantMessagesSection(
-                list = uiState.veryImportantMessages,
-                openUrl = openUrl,
-                markMessageAsSeen = markMessageAsSeen,
-                horizontalInsets = horizontalInsets,
-              )
+            HomeSection.VeryImportantMessages -> VeryImportantMessagesSection(
+              list = uiState.veryImportantMessages,
+              openUrl = openUrl,
+              markMessageAsSeen = markMessageAsSeen,
+              horizontalInsets = horizontalInsets,
+            )
 
-              HomeSection.MemberReminders -> MemberRemindersSection(
-                homeText = uiState.homeText,
-                applicableReminders = applicableReminders,
-                navigateToConnectPayment = navigateToConnectPayment,
-                navigateToConnectPayout = navigateToConnectPayout,
-                navigateToMissingInfo = navigateToMissingInfo,
-                onNavigateToNewConversation = onNavigateToNewConversation,
-                openUrl = openUrl,
-                navigateToContactInfo = navigateToContactInfo,
-                navigateToChipIdScreen = navigateToChipIdScreen,
-                horizontalInsets = horizontalInsets,
-              )
+            HomeSection.MemberReminders -> MemberRemindersSection(
+              homeText = uiState.homeText,
+              applicableReminders = applicableReminders,
+              navigateToConnectPayment = navigateToConnectPayment,
+              navigateToConnectPayout = navigateToConnectPayout,
+              navigateToMissingInfo = navigateToMissingInfo,
+              onNavigateToNewConversation = onNavigateToNewConversation,
+              openUrl = openUrl,
+              navigateToContactInfo = navigateToContactInfo,
+              navigateToChipIdScreen = navigateToChipIdScreen,
+              horizontalInsets = horizontalInsets,
+            )
 
-              HomeSection.Offers -> uiState.crossSellsPartition.offersCrossSell?.let { recommended ->
-                OffersSection(
-                  recommendedCrossSell = recommended,
-                  onCrossSellClick = openCrossSellUrl,
-                  imageLoader = imageLoader,
-                  horizontalInsets = horizontalInsets,
-                )
-              }
-
-              HomeSection.DiscoverInsurances -> DiscoverInsurancesSection(
-                crossSells = uiState.crossSellsPartition.discoverCrossSells,
+            HomeSection.Offers -> uiState.crossSellsPartition.offersCrossSell?.let { recommended ->
+              OffersSection(
+                recommendedCrossSell = recommended,
                 onCrossSellClick = openCrossSellUrl,
                 imageLoader = imageLoader,
-              )
-
-              HomeSection.Addons -> AddonsSection(
-                addonBannerInfos = uiState.addonBannerInfos,
-                navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
-                horizontalInsets = horizontalInsets,
-              )
-
-              HomeSection.QuickActionTiles -> QuickActionTilesSection(
-                isHelpCenterEnabled = uiState.isHelpCenterEnabled,
-                onHelpAndSupport = navigateToHelpCenter,
-                onChangeAddress = navigateToMovingFlow,
-                onTravelCertificate = navigateToTravelCertificate,
                 horizontalInsets = horizontalInsets,
               )
             }
+
+            HomeSection.DiscoverInsurances -> DiscoverInsurancesSection(
+              crossSells = uiState.crossSellsPartition.discoverCrossSells,
+              onCrossSellClick = openCrossSellUrl,
+              imageLoader = imageLoader,
+            )
+
+            HomeSection.Addons -> AddonsSection(
+              addonBannerInfos = uiState.addonBannerInfos,
+              navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
+              horizontalInsets = horizontalInsets,
+            )
+
+            HomeSection.QuickActionTiles -> QuickActionTilesSection(
+              isHelpCenterEnabled = uiState.isHelpCenterEnabled,
+              onHelpAndSupport = navigateToHelpCenter,
+              onChangeAddress = navigateToMovingFlow,
+              onTravelCertificate = navigateToTravelCertificate,
+              horizontalInsets = horizontalInsets,
+            )
           }
         }
       }
