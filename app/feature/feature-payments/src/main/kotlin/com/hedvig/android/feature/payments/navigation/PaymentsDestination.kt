@@ -22,7 +22,7 @@ internal data object PaymentHistoryKey : HedvigNavKey
 internal data object DiscountsKey : HedvigNavKey
 
 @Serializable
-internal data object ForeverKey : HedvigNavKey
+data object ForeverKey : HedvigNavKey
 
 @Serializable
 internal data object MemberPaymentDetailsKey : HedvigNavKey

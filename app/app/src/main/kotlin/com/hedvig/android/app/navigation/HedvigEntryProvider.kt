@@ -47,6 +47,7 @@ import com.hedvig.android.feature.insurances.navigation.insuranceEntries
 import com.hedvig.android.feature.login.navigation.loginEntries
 import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
 import com.hedvig.android.feature.movingflow.movingFlowEntries
+import com.hedvig.android.feature.payments.navigation.ForeverKey
 import com.hedvig.android.feature.payments.navigation.paymentsEntries
 import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountKey
 import com.hedvig.android.feature.payoutaccount.navigation.payoutAccountEntries
@@ -100,7 +101,8 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   val navigateToInbox: () -> Unit = { backstack.add(InboxKey) }
   val navigateToNewConversation: () -> Unit = { backstack.add(ChatKey(Uuid.randomUUID().toString())) }
   val navigateToConversation: (String) -> Unit = { conversationId -> backstack.add(ChatKey(conversationId)) }
-  val navigateToForever: () -> Unit = { backstack.selectTopLevel(TopLevelTab.Forever) }
+  // Forever is no longer a top-level tab — open it as a normal pushed (non-top-level) screen.
+  val navigateToForever: () -> Unit = { backstack.add(ForeverKey) }
   val navigateToTravelCertificate: () -> Unit = { backstack.add(TravelCertificateKey) }
   val navigateToAddonPurchaseFlow: (List<String>) -> Unit = { ids ->
     backstack.add(
