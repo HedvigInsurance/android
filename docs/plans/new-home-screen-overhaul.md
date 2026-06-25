@@ -151,38 +151,44 @@ All workstreams are implemented on `feature/new-home-screen` and the branch is *
 
 **Detail pass (round 3) — hero + blur + sheet, DONE since round 2:** full-screen `blur_background` behind the screen; greeting + pills float transparently on it; from the first scrolling section down content sits on an opaque "bottom-sheet" surface with a rounded top + drag handle, and the **drag-handle lid is part of the sticky header** so it pins with the pills. Scrolling sections **clip** their content below the pinned header (`stickyHeaderBottomPx` via `onPlaced` + `drawWithContent`/`clipRect`) so nothing bleeds through the transparent pills. **Collapsing hero:** the greeting sits low in a tall hero (fixed `addedSpacePx` above it, not viewport-fill) and the hero shrinks by a **bounded** amount on scroll (`maxCollapsePx`, speed-up `1 + maxCollapse/distance`), so portrait/landscape both behave and the scroll doesn't race the finger. Sparse/empty state confirmed acceptable (sheet ends, blur shows below). Position tracking uses `onPlaced` (not `onGloballyPositioned`); viewport height captured by intercepting the outer Box's `.layout`.
 
-## 13. Next-steps scoping (questions awaiting input — opened 2026-06-26)
+## 13. Next-steps scoping — decisions (2026-06-26)
 
-Each item: **Q** = decision needed, **Default** = recommendation if no override, **Decision** = filled in as answered.
+All 18 items answered. **Decision** captures the call; ▶ marks work taken on in this autonomous pass.
 
 ### A. Layout & responsiveness
-1. **Wide/rail layout.** Content is a full-width `LazyColumn` on expanded-width windows (rail nav). **Q:** in scope for this cut or follow-up? If in scope — max content width (default ~600dp centered)? Pills + sheet also capped, or full-bleed while only cards cap? **Default:** follow-up; if done, ~600dp cards, blur full-bleed. **Decision:** _pending_
+1. **Wide/rail layout.** **Decision:** ▶ IN SCOPE — give it a shot. Cap content to ~600dp centered on expanded-width windows; blur stays full-bleed behind it; pills + sheet follow the same content width. Gated on width size class.
 
 ### B. Visual / design-system fidelity
-2. **Card backgrounds/borders.** Figma uses borders; we use fills. **Q:** wait for the design-system to ship bordered cards and swap, or hand-roll in feature-home now? **Default:** wait for DS. **Decision:** _pending_
-3. **"Discover our insurances" rows over the blur** (currently transparent). **Q:** give them a surface or intentionally show the blur through? **Default:** leave transparent. **Decision:** _pending_
-4. **Toolbar "glass."** Minimal tonal fill today, not full frosted. **Q:** accept minimal for v1 or do the full treatment (need design specs)? **Default:** ship minimal. **Decision:** _pending_
-5. **Component fine-tuning** (tile icon tint/size, chip pill height vs 48dp, sheet corner radius). **Q:** dedicated polish pass or close enough? **Default:** close enough; revisit with DS pass. **Decision:** _pending_
+2. **Card backgrounds/borders.** **Decision:** Wait for a design-system update, then swap. Deferred (no code now).
+3. **"Discover our insurances" rows over the blur.** **Decision:** No change — every scrolling section now sits on the opaque bottom-sheet surface (`backgroundPrimary`), so these rows are already on the sheet, not the blur. The earlier "transparent" concern predates the sheet work.
+4. **Toolbar "glass."** **Decision:** ▶ No glass. Replace the translucent tonal fill with a solid, Android-appropriate treatment for the circular toolbar icons.
+5. **Component fine-tuning** (tile icon tint/size, chip pill height, sheet corner radius). **Decision:** Revisit after a final design spec. Deferred.
 
-### C. Content / data decisions (need product/design)
-6. **Cross-sell allocation** (Offers vs Discover). **Q:** is "recommended → Offers, others → Discover" correct, or explicit rules? **Default:** keep current split. **Decision:** _pending_
-7. **Section order** (default "Mega"). **Q:** keep, or finalized order from design? **Default:** keep Mega. **Decision:** _pending_
-8. **"Contact us" chip target** (currently inbox). **Q:** inbox or new conversation? **Default:** inbox. **Decision:** _pending_
-9. **Final quick-action set** (chips + tiles, with Help & support in both). **Q:** locked? **Default:** locked as-is. **Decision:** _pending_
+### C. Content / data decisions
+6. **Cross-sell allocation** (Offers vs Discover). **Decision:** Keep "recommended → Offers, all others → Discover." Rationale: the single backend-recommended cross-sell reads as the hero "offer"; the rest are a browsable list. Revisit if design wants explicit rules (one-place change in the WS0 partition).
+7. **Section order.** **Decision:** Keep the default Mega order.
+8. **"Contact us" chip target.** **Decision:** Inbox (current default).
+9. **Final quick-action set.** **Decision:** Locked as per Figma for now; cheap to change later.
 
-### D. Deferred features (blocked / larger)
-10. **Campaign / curated-content carousel** (removed from v1, needs content-feed backend). **Q:** backend timeline? Leave a marked seam or fully out of mind? **Default:** out of mind; re-add when backend exists. **Decision:** _pending_
-11. **5→3 tab restructure** (separate workstream). **Q:** coming soon (design home with it in mind) or genuinely later? **Default:** later. **Decision:** _pending_
-
-### E. Strings & accessibility
-12. **Lokalise strings** (`"Hi <name>"`, `"Your quotes"`, `"Change address"`, `"Discover our insurances"`, `"Addons"` hardcoded w/ TODOs). **Q:** merge blocker or fast-follow? Want a prepared key list (EN/SV)? **Default:** fast-follow; I prep the list. **Decision:** _pending_
-13. **Accessibility pass** (semantics for pinned header, drag handle, tiles, toolbar icons). **Q:** before merge or follow-up? Scope = new components or full-screen audit? **Default:** follow-up, new components. **Decision:** _pending_
+### D. Deferred features
+10. **Campaign / curated-content carousel.** **Decision:** Wait for more design input. Deferred.
+11. **Remove the Forever bottom-nav tab.** **Decision:** ▶ Remove Forever as a top-level tab (Home · Insurances · Payments · Profile remain). Keep the non-top-level Forever screen reachable (e.g. the home "Forever" chip). NOTE: there were two Forever screens (top-level + non-top-level) to control bottom-nav visibility — handle carefully. Investigating before changing.
+12. **Lokalise strings.** **Decision:** Later. Deferred (no key prep now).
+13. **Accessibility pass.** **Decision:** ▶ Do a sensible first-step pass on the new components (pinned header / pills / drag handle / tiles / toolbar icons); fix non-obvious gaps later.
 
 ### F. Code-quality / robustness
-14. **`reservedPx` floor** (`pinnedTopOffset + 132.dp` guess; breaks if greeting grows, e.g. two-line `ActiveInFuture`). **Q:** derive from measured greeting or keep constant? **Default:** derive it. **Decision:** _pending_
-15. **Extract `CollapsingHero` + dedup helpers** (Insurances tab reportedly has same overlap). **Q:** extract now or leave inline until a second consumer appears? **Default:** leave inline (YAGNI). **Decision:** _pending_
-16. **Nested-scroll collapsing toolbar** (big hero + true 1× scroll). **Q:** current bounded collapse final, or revisit later? **Default:** final for now. **Decision:** _pending_
+14. **`reservedPx` floor.** **Decision:** Keep the constant. The greeting-growth concern is already handled — `collapsedHero = clearance + measured greeting height`, so a taller greeting (two-line `ActiveInFuture`) already enlarges the floor. `reservedPx` only sizes the pills/sheet peek room, independent of the greeting. Add a clarifying comment.
+15. **Extract `CollapsingHero` + dedup helpers.** **Decision:** Leave inline (YAGNI) until a second consumer (e.g. Insurances) actually needs it.
+16. **Nested-scroll collapsing toolbar.** **Decision:** ▶ EXPLORE — prototype/assess whether a proper nested-scroll collapsing header (scroll consumed by the collapse first, then the list; true 1× feel + bigger hero) improves the experience. Present findings before committing.
 
 ### G. Shipping
-17. **Visual QA** (loading/error/active-in-future/terminated/pending; demo + real; Mini/Medium/Max/Mega). **Q:** who runs it, when; is design sign-off part of the gate? **Decision:** _pending_
-18. **Merge to `develop`** (nothing pushed yet). **Q:** what's the gate to open the PR (QA + strings + design sign-off, or merge sooner + fast-follow)? **Decision:** _pending_
+17. **Visual QA.** **Decision:** Plan written below (§13.1). Owner/date TBD with design sign-off as part of the gate.
+18. **Merge to `develop`.** **Decision:** Much later, after a final design. Deferred.
+
+### 13.1 Visual QA plan (for item 17)
+Run once the in-scope work above lands, on a debug build, **demo mode + a real account**:
+- **States:** Loading, Error (+ retry), and each greeting/contract status — Active, Pending, Switching, Terminated, active-in-future — plus populated vs sparse/empty content.
+- **Form factors:** compact portrait, compact landscape, and an expanded/foldable width (rail nav) — verify the §1 max-width and the collapsing hero on each.
+- **Scroll behaviour:** pills + drag-handle pin under the toolbar; no content bleed through the transparent pills; hero collapse feels controlled; sticky/clip correct while flinging.
+- **Sections:** order/spacing vs FigJam; Offers (recommended) vs Discover (others) read as distinct; Addons present (real account) / absent (demo).
+- **Gate:** design sign-off + (eventually) finalized Lokalise strings before opening the PR (item 18).
