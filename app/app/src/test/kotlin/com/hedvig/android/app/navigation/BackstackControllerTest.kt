@@ -16,13 +16,18 @@ import com.hedvig.android.feature.insurances.navigation.InsurancesKey
 import com.hedvig.android.feature.login.navigation.LoginKey
 import com.hedvig.android.feature.payments.navigation.PaymentsKey
 import com.hedvig.android.feature.profile.navigation.ProfileKey
+import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.LoneDeepLinkChrome
 import com.hedvig.android.navigation.compose.popUpTo
+import org.junit.Rule
 import org.junit.Test
 
 internal class BackstackControllerTest {
+  @get:Rule
+  val testLogcatLogger = TestLogcatLoggingRule()
+
   private fun controllerWith(vararg keys: HedvigNavKey) = BackstackController(
     mutableStateListOf(*keys),
     mutableStateMapOf(),
