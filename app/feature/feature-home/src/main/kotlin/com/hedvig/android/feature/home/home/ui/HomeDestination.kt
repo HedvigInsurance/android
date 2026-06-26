@@ -5,6 +5,7 @@ import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -65,6 +66,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onPlaced
@@ -705,7 +707,10 @@ private fun HomeScreenSuccess(
               .fillMaxWidth()
               .onPlaced {
                 stickyHeaderBottomPx = it.positionInParent().y + it.size.height
-              },
+              }
+              // Swallow taps over the lid so they don't fall through to the section clipped behind it.
+              // Children (the pills) are hit first and keep their clicks; drags still scroll the list.
+              .pointerInput(Unit) { detectTapGestures {} },
           ) {
             Spacer(Modifier.height(pinnedTopOffset))
             QuickActionCarouselSection(
