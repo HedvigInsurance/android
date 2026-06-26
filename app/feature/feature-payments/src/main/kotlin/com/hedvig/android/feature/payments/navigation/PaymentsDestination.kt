@@ -6,6 +6,9 @@ import com.hedvig.android.navigation.common.TopLevelTabRoot
 import kotlinx.serialization.Serializable
 
 @Serializable
+data object ForeverKey : HedvigNavKey
+
+@Serializable
 data object PaymentsKey : HedvigNavKey, TopLevelTabRoot {
   override val topLevelTab: TopLevelTab = TopLevelTab.Payments
 }
@@ -20,9 +23,6 @@ internal data object PaymentHistoryKey : HedvigNavKey
 
 @Serializable
 internal data object DiscountsKey : HedvigNavKey
-
-@Serializable
-data object ForeverKey : HedvigNavKey
 
 @Serializable
 internal data object MemberPaymentDetailsKey : HedvigNavKey

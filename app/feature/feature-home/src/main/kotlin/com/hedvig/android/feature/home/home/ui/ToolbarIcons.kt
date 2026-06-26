@@ -50,7 +50,6 @@ fun ToolbarChatIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
       .size(40.dp)
       .shadow(4.dp, CircleShape)
       .clip(CircleShape)
-      // Solid circular surface (Android-style), not the iOS glass. Final icon sizing/contrast pending design.
       .background(HedvigTheme.colorScheme.surfacePrimary)
       .clickable(role = Role.Button, onClick = onClick),
   )
