@@ -679,8 +679,9 @@ private fun HomeScreenSuccess(
                 // Resting floor: greeting fully visible just below the toolbar clearance.
                 val restingFloor = clearancePx + placeable.height
                 // Fixed space added above the greeting at rest (NOT the leftover viewport, which would
-                // void out tall screens). Resting-position knob; large is fine since the collapse is 1:1.
-                val addedSpacePx = 200.dp.roundToPx()
+                // void out tall screens). This is both the resting breathing room AND the extra collapse
+                // drag, so keep it modest. Mainly affects portrait; landscape is viewport-capped below.
+                val addedSpacePx = 56.dp.roundToPx()
                 // Room kept below the hero for the pills + a sheet peek on short/landscape windows.
                 val reservedPx = (pinnedTopOffset + 132.dp).roundToPx()
                 val fullHero = minOf(restingFloor + addedSpacePx, viewportHeightPx - reservedPx)
