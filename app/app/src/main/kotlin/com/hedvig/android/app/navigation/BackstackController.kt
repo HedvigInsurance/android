@@ -74,12 +74,7 @@ internal class BackstackController(
    * an early-launch read returning a not-yet-settled value). Defaults to `true` so unit tests and any
    * pre-attach use stay fully in-process.
    */
-  private val isOwnTaskState = mutableStateOf(initialIsOwnTask)
-  var isOwnTask: Boolean
-    get() = isOwnTaskState.value
-    set(value) {
-      isOwnTaskState.value = value
-    }
+  var isOwnTask: Boolean by mutableStateOf(initialIsOwnTask)
 
   /**
    * A deep link resolved while logged out, held until [setLoggedIn] consumes it (so it can land

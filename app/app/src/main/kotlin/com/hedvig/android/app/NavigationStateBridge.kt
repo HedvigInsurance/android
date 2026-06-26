@@ -14,6 +14,7 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.StashedSession
 import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.merge
+import kotlin.time.Duration.Companion.minutes
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.Serializable
@@ -41,7 +42,7 @@ internal object NavigationStateBridge {
    * to a few minutes) while discarding a link stashed long ago, which would otherwise bleed into an
    * unrelated later login and strand the member on a lone deep-link stack. See [restoreAndPersist].
    */
-  private const val MAX_PENDING_DEEP_LINK_AGE_MS = 30L * 60L * 1000L // 30 minutes
+  private val MAX_PENDING_DEEP_LINK_AGE = 30.minutes
 
   private val handoffSerializer = ListSerializer(PolymorphicSerializer(HedvigNavKey::class))
 
@@ -83,16 +84,17 @@ internal object NavigationStateBridge {
       if (snapshot != null) {
         // Discard a pending deep link that is too old to still belong to an in-flight login, so it
         // can't bleed into an unrelated later login as a lone deep-link stack.
+        val now = System.currentTimeMillis()
         val stashedAt = snapshot.pendingDeepLinkStashedAtEpochMs
-        val ageMs = if (stashedAt != null) System.currentTimeMillis() - stashedAt else null
+        val ageMs = if (stashedAt != null) now - stashedAt else null
         val pendingStillValid = snapshot.pendingDeepLink != null &&
-          isPendingDeepLinkStashTimeFresh(stashedAt, System.currentTimeMillis())
-        val restoredPending = if (pendingStillValid) snapshot.pendingDeepLink else null
-        val restoredPendingStashedAt = if (pendingStillValid) stashedAt else null
+          isPendingDeepLinkStashTimeFresh(stashedAt, now)
+        val restoredPending = snapshot.pendingDeepLink.takeIf { pendingStillValid }
+        val restoredPendingStashedAt = stashedAt.takeIf { pendingStillValid }
         if (snapshot.pendingDeepLink != null && !pendingStillValid) {
           logcat(LogPriority.WARN, tag = DEEP_LINK_STACK_DEBUG_TAG) {
             "NavigationStateBridge.restoreAndPersist: DROPPING stale restored " +
-              "pendingDeepLink=${snapshot.pendingDeepLink} (ageMs=$ageMs, max=$MAX_PENDING_DEEP_LINK_AGE_MS) " +
+              "pendingDeepLink=${snapshot.pendingDeepLink} (ageMs=$ageMs, max=$MAX_PENDING_DEEP_LINK_AGE) " +
               "— it would otherwise have landed as a lone deep-link stack at the next login"
           }
         }
@@ -175,7 +177,7 @@ internal object NavigationStateBridge {
   internal fun isPendingDeepLinkStashTimeFresh(stashedAtEpochMs: Long?, nowEpochMs: Long): Boolean {
     if (stashedAtEpochMs == null) return false
     val ageMs = nowEpochMs - stashedAtEpochMs
-    return ageMs in 0..MAX_PENDING_DEEP_LINK_AGE_MS
+    return ageMs in 0..MAX_PENDING_DEEP_LINK_AGE.inWholeMilliseconds
   }
 }
 

@@ -121,9 +121,16 @@ class MainActivity : AppCompatActivity() {
    * top of [onCreate]; the controller, session reconciler and merged ViewModel factory are read off it.
    */
   private val navRetainedViewModel: NavRetainedViewModel by lazy {
+    // Seed isOwnTask with isTaskRoot at construction so the controller never starts from a guessed
+    // default; it is refreshed authoritatively on every onResume (see refreshIsOwnTask). Captured as a
+    // value here because the initializer lambda's receiver is not this Activity. Only used on the
+    // genuine first creation — a config change reuses the retained instance and skips the initializer.
+    val isOwnTaskAtCreation = isTaskRoot
     ViewModelProvider(
       this,
-      viewModelFactory { initializer { NavRetainedViewModel((application as HedvigApplication).appGraph) } },
+      viewModelFactory {
+        initializer { NavRetainedViewModel((application as HedvigApplication).appGraph, isOwnTaskAtCreation) }
+      },
     )[NavRetainedViewModel::class.java]
   }
 
