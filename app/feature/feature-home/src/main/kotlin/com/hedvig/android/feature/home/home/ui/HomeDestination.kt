@@ -52,6 +52,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -595,7 +596,7 @@ private fun HomeScreenSuccess(
     // stays put, so content tracks the finger 1:1), then released to the list once fully collapsed;
     // scrolling back to the top expands it again. `heroCollapsePx` is the current shrink; the hero's
     // layout below publishes `maxHeroCollapsePx` (its full collapsible range) for the connection to clamp.
-    val heroCollapsePx = remember { mutableFloatStateOf(0f) }
+    val heroCollapsePx = rememberSaveable { mutableFloatStateOf(0f) }
     val maxHeroCollapsePx = remember { mutableFloatStateOf(0f) }
     val heroCollapseConnection = remember {
       object : NestedScrollConnection {
@@ -684,15 +685,24 @@ private fun HomeScreenSuccess(
                 val reservedPx = (pinnedTopOffset + 132.dp).roundToPx()
                 val fullHero = minOf(restingFloor + addedSpacePx, viewportHeightPx - reservedPx)
                   .coerceAtLeast(restingFloor)
-                // Collapse all the way down to the toolbar clearance (the greeting slides up under the
-                // toolbar and fades out), and publish the range for the nested-scroll connection to clamp.
-                maxHeroCollapsePx.floatValue = (fullHero - clearancePx).toFloat()
-                val heroHeight = (fullHero - heroCollapsePx.floatValue.roundToInt()).coerceIn(clearancePx, fullHero)
+                // Collapse the hero all the way to zero, so at full collapse the pills sit at a SINGLE
+                // toolbar clearance (supplied by the sticky header) instead of a doubled one. Publish the
+                // range for the nested-scroll connection to clamp.
+                maxHeroCollapsePx.floatValue = fullHero.toFloat()
+                val heroHeight = (fullHero - heroCollapsePx.floatValue.roundToInt()).coerceIn(0, fullHero)
+                val parallaxPx = 24.dp.toPx()
                 layout(placeable.width, heroHeight) {
                   val y = (heroHeight - placeable.height).coerceAtLeast(0)
-                  // Fade the greeting over the final phase, as its own space is squeezed into the clearance.
+                  // Greeting fades over the final phase (as its space is squeezed into the clearance) and
+                  // parallaxes: lifts slightly and scales down as it goes.
                   val greetingAlpha = ((heroHeight - clearancePx).toFloat() / placeable.height).coerceIn(0f, 1f)
-                  placeable.placeWithLayer(0, y) { alpha = greetingAlpha }
+                  val fade = 1f - greetingAlpha
+                  placeable.placeWithLayer(0, y) {
+                    alpha = greetingAlpha
+                    scaleX = 1f - 0.12f * fade
+                    scaleY = 1f - 0.12f * fade
+                    translationY = -fade * parallaxPx
+                  }
                 }
               },
           ) {
