@@ -46,7 +46,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
@@ -79,6 +78,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -514,17 +514,13 @@ private fun HomeScreenSuccess(
   // Capture the viewport size in the layout phase (cheaper than BoxWithConstraints, and available on
   // the first frame) so the greeting hero can size itself relative to the screen height, and the list
   // can center+cap its content to the screen width.
-  var viewportHeightPx by remember { mutableIntStateOf(0) }
-  var viewportWidthPx by remember { mutableIntStateOf(0) }
+  var viewportSize by remember { mutableStateOf(IntSize.Zero) }
   Box(
     modifier = modifier
       .fillMaxSize()
       .layout { measurable, constraints ->
-        if (constraints.hasBoundedHeight) {
-          viewportHeightPx = constraints.maxHeight
-        }
-        if (constraints.hasBoundedWidth) {
-          viewportWidthPx = constraints.maxWidth
+        if (constraints.hasBoundedWidth && constraints.hasBoundedHeight) {
+          viewportSize = IntSize(constraints.maxWidth, constraints.maxHeight)
         }
         val placeable = measurable.measure(constraints)
         layout(placeable.width, placeable.height) { placeable.place(0, 0) }
@@ -646,7 +642,7 @@ private fun HomeScreenSuccess(
     // full-bleed behind it. The list itself fills the full width so dragging anywhere (incl. the side
     // margins on landscape) scrolls it — the cap is applied to the CONTENT via horizontal padding instead.
     val horizontalContentPadding = with(LocalDensity.current) {
-      ((viewportWidthPx.toDp() - contentMaxWidth) / 2).coerceAtLeast(0.dp)
+      ((viewportSize.width.toDp() - contentMaxWidth) / 2).coerceAtLeast(0.dp)
     }
     LazyColumn(
       state = listState,
@@ -681,7 +677,7 @@ private fun HomeScreenSuccess(
                 val addedSpacePx = 56.dp.roundToPx()
                 // Room kept below the hero for the pills + a sheet peek on short/landscape windows.
                 val reservedPx = (pinnedTopOffset + 132.dp).roundToPx()
-                val fullHero = minOf(restingFloor + addedSpacePx, viewportHeightPx - reservedPx)
+                val fullHero = minOf(restingFloor + addedSpacePx, viewportSize.height - reservedPx)
                   .coerceAtLeast(restingFloor)
                 // Collapse the hero all the way to zero, so at full collapse the pills sit at a SINGLE
                 // toolbar clearance (supplied by the sticky header) instead of a doubled one. Publish the
