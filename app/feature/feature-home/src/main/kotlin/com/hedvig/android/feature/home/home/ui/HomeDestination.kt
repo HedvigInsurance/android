@@ -71,6 +71,8 @@ import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.LineBreak
@@ -1028,7 +1030,11 @@ private fun OffersSection(
       .padding(horizontalInsets),
   ) {
     // TODO: Add "Your quotes" / "Dina prisförslag" to Lokalise.
-    HedvigText(text = "Your quotes", style = HedvigTheme.typography.headlineSmall)
+    HedvigText(
+      text = "Your quotes",
+      style = HedvigTheme.typography.headlineSmall,
+      modifier = Modifier.semantics { heading() },
+    )
     HedvigCard(
       onClick = { onCrossSellClick(crossSell.storeUrl) },
       modifier = Modifier.fillMaxWidth(),
@@ -1090,7 +1096,11 @@ private fun QuickActionTilesSection(
       .padding(horizontal = 16.dp)
       .padding(horizontalInsets),
   ) {
-    HedvigText(text = stringResource(Res.string.HC_QUICK_ACTIONS_TITLE), style = HedvigTheme.typography.headlineSmall)
+    HedvigText(
+      text = stringResource(Res.string.HC_QUICK_ACTIONS_TITLE),
+      style = HedvigTheme.typography.headlineSmall,
+      modifier = Modifier.semantics { heading() },
+    )
     Row(
       horizontalArrangement = Arrangement.spacedBy(8.dp),
       modifier = Modifier
@@ -1154,6 +1164,7 @@ private fun HomeActionChip(text: String, onClick: () -> Unit) {
     onClick = onClick,
     shape = HedvigTheme.shapes.cornerXLarge,
     color = HedvigTheme.colorScheme.surfacePrimaryTransparent,
+    role = Role.Button,
   ) {
     HedvigText(
       text = text,
@@ -1204,7 +1215,11 @@ private fun AddonsSection(
       .padding(horizontalInsets),
   ) {
     // TODO: Add an "Addons" / "Tillägg" section header to Lokalise.
-    HedvigText(text = "Addons", style = HedvigTheme.typography.headlineSmall)
+    HedvigText(
+      text = "Addons",
+      style = HedvigTheme.typography.headlineSmall,
+      modifier = Modifier.semantics { heading() },
+    )
     addonBannerInfos.forEach { addon ->
       FeatureAddonBanner(
         title = addon.title,
