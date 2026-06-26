@@ -338,6 +338,45 @@ internal class SetArticleRatingUseCaseImpl(...) : SetArticleRatingUseCase {
 }
 ```
 
+### Logging
+
+All logging in the app goes through a single KMP entrypoint: the `logcat` function in `:logging-public`. **Never call Timber, `android.util.Log`, or `println` directly** — Timber is installed only as a set of trees (Crashlytics, Datadog breadcrumbs, debug `DebugTree`) at startup; `logcat` fans out to them on Android and to `NSLog` on iOS.
+
+**Setup:** add `implementation(projects.loggingPublic)` to the module's `build.gradle.kts`, then:
+
+```kotlin
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
+```
+
+**API** (signature in `Logcat.kt`):
+
+```kotlin
+inline fun logcat(
+  priority: LogPriority = LogPriority.INFO,   // VERBOSE, DEBUG, INFO, WARN, ERROR, ASSERT
+  throwable: Throwable? = null,
+  tag: String? = null,                        // null → caller's class name is used
+  noinline message: () -> String,             // lazy; only evaluated if the log is emitted
+)
+```
+
+The message is a lambda, so build strings inline without guarding on build type — it isn't evaluated unless the line is actually logged.
+
+**Common patterns:**
+
+```kotlin
+logcat { "Plain info-level message" }                              // defaults to INFO
+logcat(LogPriority.DEBUG) { "GraphQL ${operation.name()} START" }  // explicit priority
+logcat(LogPriority.ERROR, throwable) { "Failed to load X: ${throwable.message}" }
+logcat(LogPriority.INFO, tag = DEEP_LINK_STACK_DEBUG_TAG) { "…" }  // greppable custom tag
+```
+
+Tag is optional — for a one-off log, just omit it (the caller's class name is used). When you want a greppable trace that spans several call sites or files, a shared `const val SOMETHING_DEBUG_TAG = "…"` passed as `tag` everywhere is a handy tool (see `DEEP_LINK_STACK_DEBUG_TAG` usage across `MainActivity`/`BackstackController`). It's a convenience, not a requirement; don't introduce a const for a single isolated log.
+
+There is also an Apollo overload, `logcat(priority, operationError: ApolloOperationError, tag, message)`, which auto-downgrades to at most `WARN` for unauthenticated errors. Use it when logging a failed `safeExecute`/`safeFlow` result.
+
+**Don't log PII.** There is no automatic redaction. Log identifiers (contractId, operation names) over user content; never log credentials, tokens, or full GraphQL response bodies.
+
 ## Technology Stack
 
 ### UI
@@ -367,7 +406,7 @@ internal class SetArticleRatingUseCaseImpl(...) : SetArticleRatingUseCase {
 
 ### Other
 - **kotlinx.serialization** - JSON serialization, polymorphic back-stack persistence
-- **Timber** - Logging
+- **Timber** - Logging backend (installed as trees only; always log through `logcat`, see the Logging section above)
 - **Datadog** - Analytics and RUM
 - **Firebase** - Crashlytics, Analytics, Messaging
 - **Kotlin Multiplatform** - Many modules support KMP
