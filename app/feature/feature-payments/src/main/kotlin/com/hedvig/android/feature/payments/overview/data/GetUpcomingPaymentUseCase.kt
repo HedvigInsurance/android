@@ -17,7 +17,6 @@ import com.hedvig.android.feature.payments.data.ManualChargeToPrompt
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberChargeShortInfo
 import com.hedvig.android.feature.payments.data.PaymentConnection
-import com.hedvig.android.feature.payments.data.PaymentConnection.*
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.data.toFailedCharge
@@ -86,12 +85,11 @@ internal data class GetUpcomingPaymentUseCaseImpl(
             .activeContracts
             .filter { it.terminationDueToMissedPayments }
             .mapNotNull { it.terminationDate }
-            .sorted()
-            .firstOrNull()
+            .minOrNull()
 
           when (memberType) {
             MemberType.STANDARD_MEMBER -> {
-              return@run NeedsPayinSetup(
+              return@run PaymentConnection.NeedsPayinSetup(
                 firstKnownTerminationDateForContractTerminatedDueToMissedPayments,
               )
             }
