@@ -26,6 +26,7 @@ internal class NavRetainedViewModel(appGraph: AppGraph) : ViewModel() {
     entries = mutableStateListOf(),
     parkedRuns = mutableStateMapOf(),
     pendingDeepLinkState = mutableStateOf(null),
+    pendingDeepLinkStashedAtState = mutableStateOf(null),
     stashedSessionState = mutableStateOf(null),
   )
 

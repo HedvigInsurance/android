@@ -35,6 +35,14 @@ internal object NavigationStateBridge {
   private const val EXTRA_RESTORE_STACK = "com.hedvig.android.app.RESTORE_STACK"
   private const val NAV_STATE_REGISTRY_KEY = "com.hedvig.android.app.NAV_STATE"
 
+  /**
+   * How long a [BackstackController.pendingDeepLink] may survive a process death and still be landed at
+   * the next login. Covers a real "killed mid-login" window (switching to BankID, OTP, etc., is seconds
+   * to a few minutes) while discarding a link stashed long ago, which would otherwise bleed into an
+   * unrelated later login and strand the member on a lone deep-link stack. See [restoreAndPersist].
+   */
+  private const val MAX_PENDING_DEEP_LINK_AGE_MS = 30L * 60L * 1000L // 30 minutes
+
   private val handoffSerializer = ListSerializer(PolymorphicSerializer(HedvigNavKey::class))
 
   /**
@@ -73,18 +81,33 @@ internal object NavigationStateBridge {
       val snapshot = savedStateRegistry.consumeRestoredStateForKey(NAV_STATE_REGISTRY_KEY)
         ?.let { decodeFromSavedState(NavStateSnapshot.serializer(), it, savedStateConfiguration) }
       if (snapshot != null) {
+        // Discard a pending deep link that is too old to still belong to an in-flight login, so it
+        // can't bleed into an unrelated later login as a lone deep-link stack.
+        val stashedAt = snapshot.pendingDeepLinkStashedAtEpochMs
+        val ageMs = if (stashedAt != null) System.currentTimeMillis() - stashedAt else null
+        val pendingStillValid = snapshot.pendingDeepLink != null &&
+          isPendingDeepLinkStashTimeFresh(stashedAt, System.currentTimeMillis())
+        val restoredPending = if (pendingStillValid) snapshot.pendingDeepLink else null
+        val restoredPendingStashedAt = if (pendingStillValid) stashedAt else null
+        if (snapshot.pendingDeepLink != null && !pendingStillValid) {
+          logcat(LogPriority.WARN, tag = DEEP_LINK_STACK_DEBUG_TAG) {
+            "NavigationStateBridge.restoreAndPersist: DROPPING stale restored " +
+              "pendingDeepLink=${snapshot.pendingDeepLink} (ageMs=$ageMs, max=$MAX_PENDING_DEEP_LINK_AGE_MS) " +
+              "— it would otherwise have landed as a lone deep-link stack at the next login"
+          }
+        }
         logcat(LogPriority.INFO, tag = DEEP_LINK_STACK_DEBUG_TAG) {
           "NavigationStateBridge.restoreAndPersist: restoring snapshot from SavedStateRegistry " +
             "(process-death restore): entries=${snapshot.entries} | " +
-            "pendingDeepLink=${snapshot.pendingDeepLink} | " +
+            "pendingDeepLink=$restoredPending (raw=${snapshot.pendingDeepLink}, ageMs=$ageMs) | " +
             "stashedSession.member=${snapshot.stashedSession?.memberId} | " +
-            "parkedRuns=${snapshot.parkedRuns.keys} " +
-            "(pendingDeepLink!=null here => a stale pending link will land at next login)"
+            "parkedRuns=${snapshot.parkedRuns.keys}"
         }
         backstackController.restoreFromSavedState(
           entries = snapshot.entries,
           parkedRuns = snapshot.parkedRuns,
-          pendingDeepLink = snapshot.pendingDeepLink,
+          pendingDeepLink = restoredPending,
+          pendingDeepLinkStashedAtEpochMs = restoredPendingStashedAt,
           stashedSession = snapshot.stashedSession,
         )
       } else {
@@ -104,6 +127,7 @@ internal object NavigationStateBridge {
           entries = backstackController.entries.toList(),
           parkedRuns = backstackController.parkedRuns.toMap(),
           pendingDeepLink = backstackController.pendingDeepLink,
+          pendingDeepLinkStashedAtEpochMs = backstackController.pendingDeepLinkStashedAtEpochMs,
           stashedSession = backstackController.stashedSession,
         ),
         savedStateConfiguration,
@@ -141,12 +165,28 @@ internal object NavigationStateBridge {
   private fun json(serializersModules: Set<SerializersModule>): Json = Json {
     serializersModule = serializersModules.merge()
   }
+
+  /**
+   * Whether a pending deep link stashed at [stashedAtEpochMs] is recent enough (as of [nowEpochMs]) to
+   * still be landed after a process-death restore. `null` (no timestamp — e.g. a pre-upgrade snapshot)
+   * and a negative age (clock moved backwards) both count as not-fresh, so the link is dropped rather
+   * than risk landing a stale one. Pure and clock-injected so it is unit-testable without Android.
+   */
+  internal fun isPendingDeepLinkStashTimeFresh(stashedAtEpochMs: Long?, nowEpochMs: Long): Boolean {
+    if (stashedAtEpochMs == null) return false
+    val ageMs = nowEpochMs - stashedAtEpochMs
+    return ageMs in 0..MAX_PENDING_DEEP_LINK_AGE_MS
+  }
 }
 
 /**
  * The full hoisted navigation state, serialized into the Activity's SavedStateRegistry so the
- * in-memory [BackstackController] singleton can be re-hydrated after process death. Mirrors the four
+ * in-memory [BackstackController] singleton can be re-hydrated after process death. Mirrors the
  * holders the controller owns.
+ *
+ * [pendingDeepLinkStashedAtEpochMs] defaults to `null` so snapshots written before this field existed
+ * still decode; a missing timestamp means an age can't be computed, so such a restored pending link is
+ * treated as stale and dropped (see [NavigationStateBridge.restoreAndPersist]).
  */
 @Serializable
 private data class NavStateSnapshot(
@@ -154,4 +194,5 @@ private data class NavStateSnapshot(
   val parkedRuns: Map<TopLevelTab, List<@Polymorphic HedvigNavKey>>,
   val pendingDeepLink: (@Polymorphic HedvigNavKey)?,
   val stashedSession: StashedSession?,
+  val pendingDeepLinkStashedAtEpochMs: Long? = null,
 )

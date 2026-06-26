@@ -277,8 +277,24 @@ class MainActivity : AppCompatActivity() {
    * in onCreate — there is no shared, process-wide controller that a backgrounded Activity could
    * steal, which is why no resume/top-resume re-attachment is needed.
    */
+  override fun onResume() {
+    super.onResume()
+    refreshIsOwnTask()
+  }
+
+  /**
+   * Pushes the current [isTaskRoot] into the controller. Unlike the one-time hooks in
+   * [attachBackstackTaskHooks], this is a *value* that can change over the Activity's life (e.g. an
+   * Activity below us finishes, or [isTaskRoot] reads more reliably once resumed than at onCreate), so
+   * it is refreshed on every onResume to keep the snapshot-backed value honest — otherwise the
+   * lone-deep-link chrome can latch a stale "not own task" reading. See [BackstackController.isOwnTask].
+   */
+  private fun refreshIsOwnTask() {
+    backstackController.isOwnTask = isTaskRoot
+  }
+
   private fun attachBackstackTaskHooks() {
-    backstackController.isOwnTask = { isTaskRoot }
+    refreshIsOwnTask()
     backstackController.escapeToOwnTask = { parentStack ->
       NavigationStateBridge.escapeToOwnTask(this@MainActivity, parentStack, serializersModules)
     }
