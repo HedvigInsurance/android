@@ -621,13 +621,17 @@ private fun HomeScreenSuccess(
     // when the content is short (e.g. landscape) — no blur gap below the last section. Drawn behind the
     // LazyColumn (on top of the blur); the hero + pills above the lid stay transparent on the gradient.
     val sheetColor = HedvigTheme.colorScheme.backgroundPrimary
+    val contentMaxWidth = 600.dp
     Box(
       Modifier
         .matchParentSize()
         .drawBehind {
           val top = stickyHeaderBottomPx
           if (top > 0f && top < size.height) {
-            drawRect(color = sheetColor, topLeft = Offset(0f, top), size = Size(size.width, size.height - top))
+            // Match the LazyColumn's capped, centered width so the backdrop doesn't span the full screen.
+            val width = contentMaxWidth.toPx().coerceAtMost(size.width)
+            val left = (size.width - width) / 2f
+            drawRect(color = sheetColor, topLeft = Offset(left, top), size = Size(width, size.height - top))
           }
         },
     )
@@ -637,7 +641,7 @@ private fun HomeScreenSuccess(
       // stays full-bleed behind it. The pills + sheet live inside, so they follow the same width.
       modifier = Modifier
         .fillMaxHeight()
-        .widthIn(max = 600.dp)
+        .widthIn(max = contentMaxWidth)
         .align(Alignment.TopCenter)
         .nestedScroll(heroCollapseConnection),
       contentPadding = PaddingValues(bottom = 16.dp + bottomInsets.calculateBottomPadding()),
