@@ -32,7 +32,6 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -512,15 +511,20 @@ private fun HomeScreenSuccess(
   modifier: Modifier = Modifier,
 ) {
   val consumedWindowInsets = remember { MutableWindowInsets() }
-  // Capture the viewport height in the layout phase (cheaper than BoxWithConstraints, and available on
-  // the first frame) so the greeting hero below can size itself relative to the screen.
+  // Capture the viewport size in the layout phase (cheaper than BoxWithConstraints, and available on
+  // the first frame) so the greeting hero can size itself relative to the screen height, and the list
+  // can center+cap its content to the screen width.
   var viewportHeightPx by remember { mutableIntStateOf(0) }
+  var viewportWidthPx by remember { mutableIntStateOf(0) }
   Box(
     modifier = modifier
       .fillMaxSize()
       .layout { measurable, constraints ->
         if (constraints.hasBoundedHeight) {
           viewportHeightPx = constraints.maxHeight
+        }
+        if (constraints.hasBoundedWidth) {
+          viewportWidthPx = constraints.maxWidth
         }
         val placeable = measurable.measure(constraints)
         layout(placeable.width, placeable.height) { placeable.place(0, 0) }
@@ -638,16 +642,22 @@ private fun HomeScreenSuccess(
           }
         },
     )
+    // Cap the content to a comfortable column on wide/expanded windows (no-op on phones); the blur stays
+    // full-bleed behind it. The list itself fills the full width so dragging anywhere (incl. the side
+    // margins on landscape) scrolls it — the cap is applied to the CONTENT via horizontal padding instead.
+    val horizontalContentPadding = with(LocalDensity.current) {
+      ((viewportWidthPx.toDp() - contentMaxWidth) / 2).coerceAtLeast(0.dp)
+    }
     LazyColumn(
       state = listState,
-      // Cap the content to a comfortable column on wide/expanded windows (no-op on phones); the blur
-      // stays full-bleed behind it. The pills + sheet live inside, so they follow the same width.
       modifier = Modifier
-        .fillMaxHeight()
-        .widthIn(max = contentMaxWidth)
-        .align(Alignment.TopCenter)
+        .fillMaxSize()
         .nestedScroll(heroCollapseConnection),
-      contentPadding = PaddingValues(bottom = 16.dp + bottomInsets.calculateBottomPadding()),
+      contentPadding = PaddingValues(
+        start = horizontalContentPadding,
+        end = horizontalContentPadding,
+        bottom = 16.dp + bottomInsets.calculateBottomPadding(),
+      ),
     ) {
       // Greeting scrolls away; the pills below pin under the toolbar. Both carry the same top offset
       // so the pinned pills clear the icons and the greeting stays visually centered.
