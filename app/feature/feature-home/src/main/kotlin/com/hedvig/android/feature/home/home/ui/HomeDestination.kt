@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.home.home.ui
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -79,7 +78,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -617,19 +615,6 @@ private fun HomeScreenSuccess(
           if (release <= 0f) return Offset.Zero
           heroCollapsePx.floatValue -= release
           return Offset(0f, release)
-        }
-
-        override suspend fun onPreFling(available: Velocity): Velocity {
-          val current = heroCollapsePx.floatValue
-          val max = maxHeroCollapsePx.floatValue
-          if (current <= 0f || current >= max) return Velocity.Zero
-          // Released mid-collapse: settle to whichever end is nearer. The list is at the top while the
-          // hero is mid-collapse, so consuming the velocity loses no list scrolling.
-          val target = if (current >= max / 2f) max else 0f
-          animate(initialValue = current, targetValue = target) { value, _ ->
-            heroCollapsePx.floatValue = value
-          }
-          return available
         }
       }
     }
