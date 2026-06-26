@@ -49,7 +49,9 @@ internal class CrossSellAfterClaimClosedRepositoryImpl(
                 status = claim.status?.name,
                 type = claim.claimType,
                 typeOfContract = claim.productVariant?.typeOfContract,
+
               ),
+              contractId = claim.contractId
             ),
           )
         }

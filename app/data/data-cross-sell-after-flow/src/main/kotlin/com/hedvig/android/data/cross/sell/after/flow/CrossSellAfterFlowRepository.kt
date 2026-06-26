@@ -33,9 +33,9 @@ sealed class CrossSellInfoType() {
 
   data class ClosedClaim(
     val info: ClaimInfo,
+    override val contractId: String?
   ) : CrossSellInfoType() {
     override val source: String = "closedClaim"
-    override val contractId: String? = null //todo!
     override val extraInfo: Map<String, Any?> = with(info) {
       buildMap {
         this.put("id", id)
@@ -65,13 +65,13 @@ sealed class CrossSellInfoType() {
   data object Addon : CrossSellInfoType() {
     override val source: String = "addon"
     override val extraInfo: Map<String, Any?>? = null
-    override val contractId: String? = null //todo!
+    override val contractId: String? = null
   }
 
   data object EditCoInsured : CrossSellInfoType() {
     override val source: String = "editCoInsured"
     override val extraInfo: Map<String, Any?>? = null
-    override val contractId: String? = null //todo!
+    override val contractId: String? = null
   }
 
   data class MovingFlow(
