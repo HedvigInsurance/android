@@ -50,7 +50,8 @@ fun ToolbarChatIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
       .size(40.dp)
       .shadow(4.dp, CircleShape)
       .clip(CircleShape)
-      .background(HedvigTheme.colorScheme.surfacePrimary)
+      // Translucent tonal circle, matching the quick-action pills (not the iOS liquid glass).
+      .background(HedvigTheme.colorScheme.surfacePrimaryTransparent)
       .clickable(role = Role.Button, onClick = onClick),
   )
 }

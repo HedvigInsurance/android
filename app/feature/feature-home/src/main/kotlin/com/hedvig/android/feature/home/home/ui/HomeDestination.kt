@@ -370,10 +370,14 @@ private fun HomeScreen(
           actionsList.forEach { action ->
             when (action) {
               ChatAction -> {
-                ToolbarChatIcon(
-                  onClick = onNavigateToInbox,
-                  modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
-                )
+                // The FirstVet/cross-sell icons are colored images (theme-independent), but this one is a
+                // tinted glyph on a tonal surface, so it must use the light scheme on the light gradient.
+                OnHeroGradient {
+                  ToolbarChatIcon(
+                    onClick = onNavigateToInbox,
+                    modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
+                  )
+                }
               }
 
               is CrossSellsAction -> {
@@ -700,7 +704,9 @@ private fun HomeScreenSuccess(
                 }
               },
           ) {
-            WelcomeSection(uiState.firstName, uiState.homeText)
+            OnHeroGradient {
+              WelcomeSection(uiState.firstName, uiState.homeText)
+            }
           }
         }
       }
@@ -719,15 +725,17 @@ private fun HomeScreenSuccess(
               .pointerInput(Unit) { detectTapGestures {} },
           ) {
             Spacer(Modifier.height(pinnedTopOffset))
-            QuickActionCarouselSection(
-              isHelpCenterEnabled = uiState.isHelpCenterEnabled,
-              onMakeClaim = openClaimFlowSheet,
-              onHelpAndSupport = navigateToHelpCenter,
-              onContactUs = onNavigateToInbox,
-              onForever = navigateToForever,
-              horizontalInsets = horizontalInsets,
-              modifier = Modifier.padding(bottom = 8.dp),
-            )
+            OnHeroGradient {
+              QuickActionCarouselSection(
+                isHelpCenterEnabled = uiState.isHelpCenterEnabled,
+                onMakeClaim = openClaimFlowSheet,
+                onHelpAndSupport = navigateToHelpCenter,
+                onContactUs = onNavigateToInbox,
+                onForever = navigateToForever,
+                horizontalInsets = horizontalInsets,
+                modifier = Modifier.padding(bottom = 8.dp),
+              )
+            }
             HomeSheetDragHandle(
               Modifier
                 .fillMaxWidth()
@@ -885,6 +893,16 @@ private fun gapBefore(section: HomeSection, previous: HomeSection?): Dp {
     HomeSection.Addons -> 16.dp
     HomeSection.QuickActionTiles -> 16.dp
   }
+}
+
+/**
+ * The hero gradient ([Res.drawable.blur_background]) is the same light image in both light and dark
+ * themes, so content drawn on it (greeting, pills, the tonal chat icon) must always render with the
+ * light color scheme. Otherwise dark-theme text and tints turn near-invisible against the light gradient.
+ */
+@Composable
+private fun OnHeroGradient(content: @Composable () -> Unit) {
+  HedvigTheme(darkTheme = false, content = content)
 }
 
 @Composable
