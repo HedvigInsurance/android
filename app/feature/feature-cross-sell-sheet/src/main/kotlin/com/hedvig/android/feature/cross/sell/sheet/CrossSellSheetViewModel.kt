@@ -47,6 +47,8 @@ import octopus.type.CrossSellInput
 import octopus.type.CrossSellSource
 import octopus.type.FlowSource
 import octopus.type.UserFlow
+import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.fetchPolicy
 
 @Inject
 @HedvigViewModel(ActivityRetainedScope::class)
@@ -153,6 +155,7 @@ internal class GetCrossSellSheetDataUseCaseImpl(
   override suspend fun invoke(source: CrossSellInput): Flow<Either<ErrorMessage, CrossSellSheetData>> {
     return apolloClient
       .query(BottomSheetCrossSellsQuery(source))
+      .fetchPolicy(FetchPolicy.NetworkOnly)
       .safeFlow(::ErrorMessage)
       .map { response ->
         either {
