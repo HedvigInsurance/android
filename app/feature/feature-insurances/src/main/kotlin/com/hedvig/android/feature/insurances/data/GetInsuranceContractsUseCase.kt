@@ -146,7 +146,6 @@ private fun ContractFragment.toContract(
   contractHolderSSN: String?,
   isMovingFlowEnabled: Boolean,
 ): EstablishedInsuranceContract {
-  logcat { "Mariia: contract type: ${currentAgreement.productVariant.typeOfContract}" }
   return EstablishedInsuranceContract(
     id = id,
     tierName = currentAgreement.productVariant.displayNameTier,
