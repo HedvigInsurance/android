@@ -155,7 +155,7 @@ private fun ForeverScreen(
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
   Column(Modifier.fillMaxSize()) {
-    TopAppBarWithBack(onClick = navigateUp)
+    TopAppBarWithBack(onClick = navigateUp, title = stringResource(Res.string.TAB_REFERRALS_TITLE))
     AnimatedContent(
       targetState = uiState,
       label = "forever_ui_state",
@@ -203,22 +203,6 @@ internal fun LoadingForeverContent() {
       .verticalScroll(rememberScrollState())
       .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
   ) {
-    Row(
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier
-        .height(64.dp)
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp)
-        .semantics(mergeDescendants = true) {
-          heading()
-        },
-    ) {
-      HedvigText(
-        text = stringResource(Res.string.TAB_REFERRALS_TITLE),
-        style = HedvigTheme.typography.headlineSmall,
-      )
-    }
     Spacer(Modifier.height(16.dp))
     HedvigText(
       text = "-",
@@ -320,22 +304,14 @@ private fun ForeverScrollableContent(
       .verticalScroll(rememberScrollState())
       .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
   ) {
-    Row(
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier
-        .height(64.dp)
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp)
-        .semantics(mergeDescendants = true) {
-          heading()
-        },
-    ) {
-      HedvigText(
-        text = stringResource(Res.string.TAB_REFERRALS_TITLE),
-        style = HedvigTheme.typography.headlineSmall,
-      )
-      if (uiState.foreverData?.incentive != null) {
+    if (uiState.foreverData?.incentive != null) {
+      Row(
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      ) {
         IconButton(
           onClick = { referralExplanationBottomSheetState.show(uiState.foreverData.incentive) },
           modifier = Modifier.size(40.dp),
