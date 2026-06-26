@@ -1124,7 +1124,7 @@ private fun HomeActionChip(text: String, onClick: () -> Unit) {
   Surface(
     onClick = onClick,
     shape = HedvigTheme.shapes.cornerXLarge,
-    color = HedvigTheme.colorScheme.surfacePrimary,
+    color = HedvigTheme.colorScheme.surfacePrimaryTransparent,
   ) {
     HedvigText(
       text = text,
