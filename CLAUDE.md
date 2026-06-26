@@ -423,6 +423,16 @@ Configuration in `.editorconfig`:
 - **Entry functions:** `{feature}Entries`
 - **Use cases:** `{Action}{Domain}UseCase` (e.g., `GetHomeDataUseCase`)
 
+### Comments
+
+Code comments and KDoc must describe the **current** code and stand on their own. Before writing one, apply the test: *would this make sense to someone reading the file cold, with no knowledge of the PR, the conversation, or what was decided against?* If not, it does not belong in the source. Do not reference:
+
+- **History / migration:** "Replaces Nav2…", "used to live in…".
+- **Rejected alternatives:** "…not the iOS glass", "instead of the old Y".
+- **Conversation / design-process state:** "pending design", "for now", "TBD".
+
+When tempted to write "X instead of Y", drop the Y half and justify X on its own terms. If that leaves nothing, the code was self-explanatory, so delete the comment. Migration/history/process context belongs in the commit message.
+
 ## Working with GraphQL
 
 ### Apollo Schema
