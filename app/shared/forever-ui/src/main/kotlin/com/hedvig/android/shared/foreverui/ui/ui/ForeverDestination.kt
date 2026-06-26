@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -62,6 +61,7 @@ import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.a11y.getDescription
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.icon.Copy
@@ -103,13 +103,14 @@ import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun ForeverDestination(viewModel: ForeverViewModel) {
+fun ForeverDestination(viewModel: ForeverViewModel, navigateUp: () -> Unit) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val context = LocalContext.current
   val shareSheetTitle = stringResource(Res.string.REFERRALS_SHARE_SHEET_TITLE)
   val coroutineScope = rememberCoroutineScope()
   ForeverScreen(
     uiState = uiState,
+    navigateUp = navigateUp,
     reload = { viewModel.emit(ForeverEvent.RetryLoadReferralData) },
     onSubmitCode = { viewModel.emit(ForeverEvent.SubmitNewReferralCode(it)) },
     showedReferralCodeSubmissionError = { viewModel.emit(ForeverEvent.ShowedReferralCodeSubmissionError) },
@@ -138,6 +139,7 @@ fun ForeverDestination(viewModel: ForeverViewModel) {
 @Composable
 private fun ForeverScreen(
   uiState: ForeverUiState,
+  navigateUp: () -> Unit,
   reload: () -> Unit,
   onSubmitCode: (String) -> Unit,
   showedReferralCodeSubmissionError: () -> Unit,
@@ -153,6 +155,7 @@ private fun ForeverScreen(
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
   Column(Modifier.fillMaxSize()) {
+    TopAppBarWithBack(onClick = navigateUp)
     AnimatedContent(
       targetState = uiState,
       label = "forever_ui_state",
@@ -200,7 +203,6 @@ internal fun LoadingForeverContent() {
       .verticalScroll(rememberScrollState())
       .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
   ) {
-    Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
     Row(
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically,
@@ -318,7 +320,6 @@ private fun ForeverScrollableContent(
       .verticalScroll(rememberScrollState())
       .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
   ) {
-    Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
     Row(
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically,
@@ -507,6 +508,7 @@ private fun PreviewForeverContent(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ForeverScreen(
         foreverUiState,
+        navigateUp = {},
         onShareCodeClick = { _, _ -> },
         reload = {},
         onSubmitCode = {},

@@ -16,5 +16,7 @@ internal class PaymentsDeepLinkMatcherProvider(
 ) : DeepLinkMatcherProvider {
   override fun matchers(): List<DeepLinkMatcher<out HedvigNavKey>> =
     uriDeepLinkMatchers(container.payments, PaymentsKey.serializer()) +
-      uriDeepLinkMatchers(container.manualCharge, ManualChargeKey.serializer())
+      uriDeepLinkMatchers(container.manualCharge, ManualChargeKey.serializer()) +
+      // Forever/referrals is no longer a top-level tab; its deep link now lands on the standalone key.
+      uriDeepLinkMatchers(container.forever, ForeverKey.serializer())
 }

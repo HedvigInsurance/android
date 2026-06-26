@@ -111,7 +111,7 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
 
   entry<ForeverKey> {
     val viewModel: ForeverViewModel = metroViewModel()
-    ForeverDestination(viewModel = viewModel)
+    ForeverDestination(viewModel = viewModel, navigateUp = backstack::navigateUp)
   }
 
   entry<DiscountsKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {

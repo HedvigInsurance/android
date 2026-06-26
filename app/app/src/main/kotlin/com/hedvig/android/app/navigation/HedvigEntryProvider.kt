@@ -34,7 +34,6 @@ import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddInfoKey
 import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddOrRemoveKey
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredTriageKey
 import com.hedvig.android.feature.editcoinsured.navigation.editCoInsuredEntries
-import com.hedvig.android.feature.forever.navigation.foreverEntries
 import com.hedvig.android.feature.help.center.helpCenterEntries
 import com.hedvig.android.feature.help.center.navigation.HelpCenterKey
 import com.hedvig.android.feature.home.home.navigation.homeEntries
@@ -146,7 +145,6 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     navigateToNewConversation = navigateToNewConversation,
     navigateToMovingFlow = navigateToMovingFlow,
   )
-  foreverEntries()
   addPaymentsEntries(
     backstack = backstack,
     globalSnackBarState = globalSnackBarState,

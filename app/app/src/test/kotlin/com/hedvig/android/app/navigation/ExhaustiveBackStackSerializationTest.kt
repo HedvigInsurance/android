@@ -9,7 +9,6 @@ import com.hedvig.android.feature.chip.id.navigation.ChipIdKey
 import com.hedvig.android.feature.claimhistory.nav.ClaimHistoryKey
 import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyKey
 import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountKey
-import com.hedvig.android.feature.forever.navigation.ForeverKey
 import com.hedvig.android.feature.help.center.navigation.HelpCenterKey
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.imageviewer.navigation.ImageViewerKey
@@ -265,7 +264,6 @@ internal class ExhaustiveBackstackSerializationTest {
     val sample: List<HedvigNavKey> = listOf(
       HomeKey,
       InsurancesKey,
-      ForeverKey,
       PaymentsKey,
       ProfileKey,
       ContactInfoKey,

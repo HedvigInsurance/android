@@ -5,7 +5,6 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
-import com.hedvig.android.feature.forever.navigation.ForeverKey
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.insurances.navigation.InsurancesKey
 import com.hedvig.android.feature.payments.navigation.PaymentsKey
@@ -21,7 +20,6 @@ class TopLevelRunLogicTest {
   @Test fun topLevelTabOrNull_mapsTabRoots() {
     assertThat(HomeKey.topLevelTabOrNull()).isEqualTo(TopLevelTab.Home)
     assertThat(InsurancesKey.topLevelTabOrNull()).isEqualTo(TopLevelTab.Insurances)
-    assertThat(ForeverKey.topLevelTabOrNull()).isEqualTo(TopLevelTab.Forever)
     assertThat(PaymentsKey.topLevelTabOrNull()).isEqualTo(TopLevelTab.Payments)
     assertThat(ProfileKey.topLevelTabOrNull()).isEqualTo(TopLevelTab.Profile)
     assertThat(Drill("x").topLevelTabOrNull()).isNull()
@@ -62,7 +60,7 @@ class TopLevelRunLogicTest {
   }
 
   @Test fun shouldFadeThrough_trueWhenTabsDiffer() {
-    assertThat(shouldFadeThrough(TopLevelTab.Forever, TopLevelTab.Insurances)).isTrue()
+    assertThat(shouldFadeThrough(TopLevelTab.Payments, TopLevelTab.Insurances)).isTrue()
     assertThat(shouldFadeThrough(TopLevelTab.Home, TopLevelTab.Profile)).isTrue()
   }
 

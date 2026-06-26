@@ -6,7 +6,6 @@ import kotlinx.serialization.Serializable
 enum class TopLevelTab {
   Home,
   Insurances,
-  Forever,
   Payments,
   Profile,
 }
