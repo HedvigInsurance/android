@@ -642,9 +642,10 @@ private fun HomeScreenSuccess(
                 val clearancePx = pinnedTopOffset.roundToPx()
                 val collapsedHero = clearancePx + placeable.height
                 // The space we ADD above the greeting, on top of the mandatory inset + icons clearance.
-                // A moderate, fixed amount — NOT the leftover viewport — otherwise tall portrait screens
-                // leave a huge void above the greeting. This is the main resting-position knob.
-                val addedSpacePx = 80.dp.roundToPx()
+                // A fixed amount (NOT the leftover viewport, which would void out tall screens). This is
+                // both the resting-position knob AND the hero's collapse range, affordable to make large
+                // now that the nested-scroll collapse tracks the finger 1:1 (no speed-up penalty).
+                val addedSpacePx = 200.dp.roundToPx()
                 // Room kept below the hero for the pills + a sheet peek on short/landscape windows (so the
                 // greeting hugs the top there). Independent of the greeting's size — that's handled by
                 // collapsedHero (measured greeting height), so a taller greeting still fits.
