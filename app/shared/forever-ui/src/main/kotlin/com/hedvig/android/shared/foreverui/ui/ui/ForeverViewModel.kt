@@ -12,7 +12,6 @@ import arrow.core.raise.either
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
-import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -29,13 +28,13 @@ import dev.zacsweers.metro.Inject
 @Inject
 @HedvigViewModel(ActivityRetainedScope::class)
 class ForeverViewModel(
-  foreverRepositoryProvider: Provider<ForeverRepository>,
+  foreverRepository: ForeverRepository,
   private val languageService: LanguageService,
   private val hedvigBuildConstants: HedvigBuildConstants,
 ) : MoleculeViewModel<ForeverEvent, ForeverUiState>(
     ForeverUiState.Loading,
     ForeverPresenter(
-      foreverRepositoryProvider = foreverRepositoryProvider,
+      foreverRepository = foreverRepository,
     ),
   ) {
   fun referralShareUrl(code: String): String = buildString {
@@ -48,7 +47,7 @@ class ForeverViewModel(
 }
 
 internal class ForeverPresenter(
-  private val foreverRepositoryProvider: Provider<ForeverRepository>,
+  private val foreverRepository: ForeverRepository,
 ) : MoleculePresenter<ForeverEvent, ForeverUiState> {
   @Composable
   override fun MoleculePresenterScope<ForeverEvent>.present(lastState: ForeverUiState): ForeverUiState {
@@ -86,7 +85,7 @@ internal class ForeverPresenter(
         state.copy(reloading = true)
       }
       either {
-        val referralsData = foreverRepositoryProvider.provide().getReferralsData().bind()
+        val referralsData = foreverRepository.getReferralsData().bind()
         ForeverData(referralsData = referralsData)
       }.fold(
         ifLeft = {
@@ -109,7 +108,7 @@ internal class ForeverPresenter(
       val codeToSubmit = referralCodeToSubmit ?: return@LaunchedEffect
       val state = currentState as? ForeverUiState.Success ?: return@LaunchedEffect
       currentState = state.copy(referralCodeLoading = true)
-      foreverRepositoryProvider.provide().updateCode(codeToSubmit).fold(
+      foreverRepository.updateCode(codeToSubmit).fold(
         ifLeft = {
           referralCodeToSubmit = null
           currentState = state.copy(

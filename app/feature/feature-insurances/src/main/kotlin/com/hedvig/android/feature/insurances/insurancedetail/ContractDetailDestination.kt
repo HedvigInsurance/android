@@ -287,7 +287,7 @@ private fun ContractDetailScreen(
               ) { pageIndex ->
                 when (pageIndex) {
                   0 -> {
-                    val priceInfoForBottomSheet = if (cost!=null) {
+                    val priceInfoForBottomSheet = if (cost != null) {
                       PriceInfoForBottomSheet(
                         displayItems = buildList {
                           add(
@@ -300,9 +300,9 @@ private fun ContractDetailScreen(
                             add(
                               addon.addonVariant.displayName
                                 to stringResource(
-                                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                                addon.premium.toString(),
-                              ),
+                                  Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                                  addon.premium.toString(),
+                                ),
                             )
                           }
                           cost.discounts.forEach { discount ->
@@ -312,7 +312,9 @@ private fun ContractDetailScreen(
                         totalGross = cost.monthlyGross,
                         totalNet = cost.monthlyNet,
                       )
-                    } else null
+                    } else {
+                      null
+                    }
                     YourInfoTab(
                       contractId = contract.id,
                       coverageItems = contract.displayItems,
@@ -355,10 +357,12 @@ private fun ContractDetailScreen(
                       contractHolderDisplayName = contract.contractHolderDisplayName,
                       contractHolderSSN = contract.contractHolderSSN,
                       priceToShow = cost?.monthlyNet,
-                      showPriceInfoIcon = cost!=null && (cost.monthlyNet != cost.monthlyGross ||
-                        contract.basePremium != cost.monthlyNet),
+                      showPriceInfoIcon = cost != null && (
+                        cost.monthlyNet != cost.monthlyGross ||
+                          contract.basePremium != cost.monthlyNet
+                      ),
                       onInfoIconClick = {
-                        if (priceInfoForBottomSheet!=null) {
+                        if (priceInfoForBottomSheet != null) {
                           costBreakdownBottomSheetState.show(priceInfoForBottomSheet)
                         }
                       },

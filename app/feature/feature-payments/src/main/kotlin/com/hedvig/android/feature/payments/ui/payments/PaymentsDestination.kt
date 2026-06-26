@@ -347,7 +347,7 @@ private fun PaymentsContent(
 
         ConnectedPaymentInfo.Unknown,
         is ConnectedPaymentInfo.Active,
-          -> {}
+        -> {}
       }
     }
 
@@ -440,7 +440,7 @@ private fun PaymentsListItems(
       val showDiscountsItem = when (uiState.memberType) {
         MemberType.QASA_ONLY_MEMBER,
         MemberType.STANDARD_TO_QASA_MEMBER,
-          -> false
+        -> false
 
         MemberType.STANDARD_MEMBER -> true
       }
@@ -464,12 +464,12 @@ private fun PaymentsListItems(
         HorizontalDivider(modifier = listItemsSideSpacingModifier)
       }
 
-
       val showPaymentHistoryItem = when (uiState.memberType) {
         MemberType.QASA_ONLY_MEMBER -> false
+
         MemberType.STANDARD_MEMBER,
         MemberType.STANDARD_TO_QASA_MEMBER,
-          -> true
+        -> true
       }
       if (showPaymentHistoryItem) {
         PaymentsListItem(
@@ -492,9 +492,10 @@ private fun PaymentsListItems(
 
       val showPaymentDetailsItem = when (uiState.memberType) {
         MemberType.QASA_ONLY_MEMBER -> false
+
         MemberType.STANDARD_MEMBER,
         MemberType.STANDARD_TO_QASA_MEMBER,
-          -> uiState.connectedPaymentInfo is ConnectedPaymentInfo.Active
+        -> uiState.connectedPaymentInfo is ConnectedPaymentInfo.Active
       }
       if (showPaymentDetailsItem) {
         PaymentsListItem(
@@ -518,7 +519,7 @@ private fun PaymentsListItems(
       val showPayoutItem = when (uiState.memberType) {
         MemberType.QASA_ONLY_MEMBER,
         MemberType.STANDARD_TO_QASA_MEMBER,
-          -> true
+        -> true
 
         MemberType.STANDARD_MEMBER -> showPayoutButton
       }

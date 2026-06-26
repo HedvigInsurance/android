@@ -281,7 +281,7 @@ internal val paymentOverViewPreviewData: PaymentOverview
       ongoingCharges = listOf(OngoingCharge("id", LocalDate.fromEpochDays(401), UiMoney(200.0, UiCurrencyCode.SEK))),
       paymentConnection = PaymentConnection.Active,
       isManualChargeAllowed = ManualChargeToPrompt(UiMoney(200.0, UiCurrencyCode.SEK)),
-      memberType = MemberType.STANDARD_MEMBER
+      memberType = MemberType.STANDARD_MEMBER,
     )
   }
 

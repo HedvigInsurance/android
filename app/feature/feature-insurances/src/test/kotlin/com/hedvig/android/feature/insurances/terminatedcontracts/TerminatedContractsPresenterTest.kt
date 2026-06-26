@@ -34,7 +34,7 @@ class TerminatedContractsPresenterTest {
   @Test
   fun `if there are no terminated insurances we get no terminated insurances state`() = runTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
-    val presenter = TerminatedContractsPresenter { getInsuranceContractsUseCase }
+    val presenter = TerminatedContractsPresenter(getInsuranceContractsUseCase)
     presenter.test(TerminatedContractsUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(TerminatedContractsUiState.Loading)
       getInsuranceContractsUseCase.addOnlyActiveInsurancesToResponse()
@@ -48,7 +48,7 @@ class TerminatedContractsPresenterTest {
   fun `with an initial success state, if there is an error, we are able to retry and get back in success state again`() =
     runTest {
       val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
-      val presenter = TerminatedContractsPresenter { getInsuranceContractsUseCase }
+      val presenter = TerminatedContractsPresenter(getInsuranceContractsUseCase)
       presenter.test(TerminatedContractsUiState.Success(getInsuranceContractsUseCase.getTerminatedInsurances())) {
         assertThat(awaitItem()).isInstanceOf<TerminatedContractsUiState.Success>()
         getInsuranceContractsUseCase.addErrorToResponse()
@@ -63,7 +63,7 @@ class TerminatedContractsPresenterTest {
   @Test
   fun `with an initial error state, we are able to retry and if response is successful show success state`() = runTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
-    val presenter = TerminatedContractsPresenter { getInsuranceContractsUseCase }
+    val presenter = TerminatedContractsPresenter(getInsuranceContractsUseCase)
     presenter.test(TerminatedContractsUiState.Error) {
       assertThat(awaitItem()).isInstanceOf<TerminatedContractsUiState.Error>()
       sendEvent(TerminatedContractsEvent.Retry)
@@ -76,7 +76,7 @@ class TerminatedContractsPresenterTest {
   @Test
   fun `with an initial error state, if there comes a successful response in flow, show success state`() = runTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
-    val presenter = TerminatedContractsPresenter { getInsuranceContractsUseCase }
+    val presenter = TerminatedContractsPresenter(getInsuranceContractsUseCase)
     presenter.test(TerminatedContractsUiState.Error) {
       assertThat(awaitItem()).isInstanceOf<TerminatedContractsUiState.Error>()
       assertThat(awaitItem()).isInstanceOf<TerminatedContractsUiState.Loading>()
@@ -88,7 +88,7 @@ class TerminatedContractsPresenterTest {
   @Test
   fun `with an initial success state, if there comes the same response, do not show loading`() = runTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
-    val presenter = TerminatedContractsPresenter { getInsuranceContractsUseCase }
+    val presenter = TerminatedContractsPresenter(getInsuranceContractsUseCase)
     val successState = TerminatedContractsUiState.Success(getInsuranceContractsUseCase.getTerminatedInsurances())
     presenter.test(successState) {
       assertThat(awaitItem()).isInstanceOf<TerminatedContractsUiState.Success>()
@@ -101,7 +101,7 @@ class TerminatedContractsPresenterTest {
   @Test
   fun `with an initial success state, if there comes a different successful response, do not show loading`() = runTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
-    val presenter = TerminatedContractsPresenter { getInsuranceContractsUseCase }
+    val presenter = TerminatedContractsPresenter(getInsuranceContractsUseCase)
     val successStateFirst = TerminatedContractsUiState.Success(getInsuranceContractsUseCase.getTerminatedInsurances())
     val successStateSecond = TerminatedContractsUiState.Success(
       getInsuranceContractsUseCase.getAnotherSetOfTerminatedInsurances(),
@@ -116,7 +116,7 @@ class TerminatedContractsPresenterTest {
   @Test
   fun `if there are terminated insurances they are all passed to success state`() = runTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
-    val presenter = TerminatedContractsPresenter { getInsuranceContractsUseCase }
+    val presenter = TerminatedContractsPresenter(getInsuranceContractsUseCase)
     presenter.test(TerminatedContractsUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(TerminatedContractsUiState.Loading)
       getInsuranceContractsUseCase.addTerminatedInsurancesToResponse()
@@ -131,7 +131,7 @@ class TerminatedContractsPresenterTest {
   @Test
   fun `if there are terminated and active insurances success state has no active insurances`() = runTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
-    val presenter = TerminatedContractsPresenter { getInsuranceContractsUseCase }
+    val presenter = TerminatedContractsPresenter(getInsuranceContractsUseCase)
     presenter.test(TerminatedContractsUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(TerminatedContractsUiState.Loading)
       getInsuranceContractsUseCase.addTerminatedAndActiveInsurancesToResponse()
@@ -146,7 +146,7 @@ class TerminatedContractsPresenterTest {
   @Test
   fun `if receive error show error uiState`() = runTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
-    val presenter = TerminatedContractsPresenter { getInsuranceContractsUseCase }
+    val presenter = TerminatedContractsPresenter(getInsuranceContractsUseCase)
     presenter.test(TerminatedContractsUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(TerminatedContractsUiState.Loading)
       getInsuranceContractsUseCase.addErrorToResponse()

@@ -20,8 +20,7 @@ import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
 import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
 import com.hedvig.android.feature.insurances.data.InsuranceContract.PendingInsuranceContract
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
+import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
@@ -29,10 +28,9 @@ import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
 import octopus.InsuranceContractsQuery
 import octopus.fragment.AgreementDisplayItemFragment
@@ -51,49 +49,41 @@ internal interface GetInsuranceContractsUseCase {
 @SingleIn(AppScope::class)
 internal class GetInsuranceContractsUseCaseImpl(
   private val apolloClient: ApolloClient,
-  private val featureManager: FeatureManager,
 ) : GetInsuranceContractsUseCase {
   override fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
-    return combine(
-      featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).flatMapLatest { areAddonsEnabled ->
-        flow {
-          while (currentCoroutineContext().isActive) {
-            emitAll(
-              apolloClient
-                .query(
-                  InsuranceContractsQuery(
-                    addonsEnabled = areAddonsEnabled,
-                    options = Optional.present(
-                      DisplayItemOptions(
-                        hidePrice = Optional.present(true),
-                        hideAddons = Optional.present(true),
-                      ),
-                    ),
+    return flow {
+      while (currentCoroutineContext().isActive) {
+        emitAll(
+          apolloClient
+            .query(
+              InsuranceContractsQuery(
+                addonsEnabled = true,
+                options = Optional.present(
+                  DisplayItemOptions(
+                    hidePrice = Optional.present(true),
+                    hideAddons = Optional.present(true),
                   ),
-                )
-                .fetchPolicy(FetchPolicy.CacheAndNetwork)
-                .safeFlow(::ErrorMessage),
+                ),
+              ),
             )
-            delay(3.seconds)
-          }
-        }
-      },
-      featureManager.isFeatureEnabled(Feature.EDIT_COINSURED),
-      featureManager.isFeatureEnabled(Feature.MOVING_FLOW),
-    ) { insuranceQueryResponse, isEditCoInsuredEnabled, isMovingFlowFlagEnabled ->
+            .fetchPolicy(FetchPolicy.CacheAndNetwork)
+            .safeFlow(::ErrorMessage),
+        )
+        delay(3.seconds)
+      }
+    }.map { insuranceQueryResponse ->
       either {
         val insuranceQueryData = insuranceQueryResponse.bind()
         val contractHolderDisplayName = insuranceQueryData.getContractHolderDisplayName()
         val contractHolderSSN = insuranceQueryData.currentMember.ssn?.let { formatSsn(it) }
         val isMovingEnabledForMember =
-          insuranceQueryData.currentMember.memberActions?.isMovingEnabled == true && isMovingFlowFlagEnabled
+          insuranceQueryData.currentMember.memberActions?.isMovingEnabled == true
 
         val terminatedContracts = insuranceQueryData.currentMember.terminatedContracts.map {
           it.toContract(
             isTerminated = true,
             contractHolderDisplayName = contractHolderDisplayName,
             contractHolderSSN = contractHolderSSN,
-            isEditCoInsuredEnabled = isEditCoInsuredEnabled,
             isMovingFlowEnabled = isMovingEnabledForMember,
           )
         }
@@ -103,7 +93,6 @@ internal class GetInsuranceContractsUseCaseImpl(
             isTerminated = false,
             contractHolderDisplayName = contractHolderDisplayName,
             contractHolderSSN = contractHolderSSN,
-            isEditCoInsuredEnabled = isEditCoInsuredEnabled,
             isMovingFlowEnabled = isMovingEnabledForMember,
           )
         }
@@ -155,7 +144,6 @@ private fun ContractFragment.toContract(
   isTerminated: Boolean,
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
-  isEditCoInsuredEnabled: Boolean,
   isMovingFlowEnabled: Boolean,
 ): EstablishedInsuranceContract {
   return EstablishedInsuranceContract(
@@ -209,8 +197,8 @@ private fun ContractFragment.toContract(
       )
     },
     supportsAddressChange = supportsMoving && isMovingFlowEnabled,
-    supportsEditCoInsured = supportsCoInsured && isEditCoInsuredEnabled,
-    supportsEditCoOwners = supportsCoOwners && isEditCoInsuredEnabled,
+    supportsEditCoInsured = supportsCoInsured,
+    supportsEditCoOwners = supportsCoOwners,
     isTerminated = isTerminated,
     supportsTierChange = supportsChangeTier,
     existingAddons = existingAddons?.map {

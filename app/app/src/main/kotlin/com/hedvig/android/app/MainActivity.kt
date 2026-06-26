@@ -30,6 +30,7 @@ import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.externalnavigator.ExternalNavigatorImpl
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
 import com.hedvig.android.app.navigation.NavRetainedViewModel
+import com.hedvig.android.app.navigation.ScreenParameterExtractor
 import com.hedvig.android.app.ui.HedvigApp
 import com.hedvig.android.app.urihandler.ExternalDeepLinkHandler
 import com.hedvig.android.auth.AuthTokenService
@@ -38,8 +39,8 @@ import com.hedvig.android.auth.MemberIdService
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
-import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.rive.RiveInitializer
+import com.hedvig.android.core.tracking.EventTrackingClient
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageLaunchCheckUseCase
@@ -99,10 +100,16 @@ class MainActivity : AppCompatActivity() {
   private lateinit var memberIdService: MemberIdService
 
   @Inject
-  private lateinit var missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>
+  private lateinit var missedPaymentNotificationService: MissedPaymentNotificationService
 
   @Inject
   private lateinit var currentDestinationHolder: CurrentDestinationHolder
+
+  @Inject
+  private lateinit var eventTrackingClient: EventTrackingClient
+
+  @Inject
+  private lateinit var screenParameterExtractor: ScreenParameterExtractor
 
   @Inject
   private lateinit var serializersModules: Set<SerializersModule>
@@ -244,8 +251,10 @@ class MainActivity : AppCompatActivity() {
           externalNavigator = externalNavigator,
           logoutUseCase = logoutUseCase,
           getMemberAuthorizationCodeUseCase = getMemberAuthorizationCodeUseCase,
-          missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
+          missedPaymentNotificationService = missedPaymentNotificationService,
           currentDestinationHolder = currentDestinationHolder,
+          eventTrackingClient = eventTrackingClient,
+          screenParameterExtractor = screenParameterExtractor,
         )
       }
     }

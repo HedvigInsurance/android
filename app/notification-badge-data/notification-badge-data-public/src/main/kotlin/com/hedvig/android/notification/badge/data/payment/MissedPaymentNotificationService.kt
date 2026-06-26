@@ -2,8 +2,7 @@ package com.hedvig.android.notification.badge.data.payment
 
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.DemoManager
-import com.hedvig.android.core.demomode.ProdOrDemoProvider
-import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.core.demomode.DemoSwitcher
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
@@ -13,12 +12,14 @@ import kotlinx.coroutines.flow.flowOf
 
 @Inject
 @SingleIn(AppScope::class)
-@ContributesBinding(AppScope::class, binding<Provider<MissedPaymentNotificationService>>())
-internal class MissedPaymentNotificationServiceProvider(
+@ContributesBinding(AppScope::class, binding = binding<MissedPaymentNotificationService>())
+internal class SwitchingMissedPaymentNotificationService(
   override val demoManager: DemoManager,
   override val demoImpl: DemoMissedPaymentNotificationService,
   override val prodImpl: MissedPaymentNotificationServiceImpl,
-) : ProdOrDemoProvider<MissedPaymentNotificationService>
+) : MissedPaymentNotificationService, DemoSwitcher<MissedPaymentNotificationService>() {
+  override fun showRedDotNotification() = pickFlow { it.showRedDotNotification() }
+}
 
 interface MissedPaymentNotificationService {
   fun showRedDotNotification(): Flow<Boolean>

@@ -11,7 +11,7 @@ sealed interface PaymentConnection {
     val terminationDateIfNotConnected: LocalDate?,
   ) : PaymentConnection
 
-  data object NeedsPayoutSetup: PaymentConnection
+  data object NeedsPayoutSetup : PaymentConnection
 
   data object Unknown : PaymentConnection
 }

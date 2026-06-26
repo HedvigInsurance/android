@@ -12,7 +12,6 @@ import arrow.core.raise.either
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
-import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
@@ -28,14 +27,14 @@ import kotlinx.coroutines.flow.onEach
 @Inject
 @HedvigViewModel(ActivityRetainedScope::class)
 internal class TerminatedContractsViewModel(
-  getInsuranceContractsUseCaseProvider: Provider<GetInsuranceContractsUseCase>,
+  getInsuranceContractsUseCase: GetInsuranceContractsUseCase,
 ) : MoleculeViewModel<TerminatedContractsEvent, TerminatedContractsUiState>(
     initialState = TerminatedContractsUiState.Loading,
-    presenter = TerminatedContractsPresenter(getInsuranceContractsUseCaseProvider),
+    presenter = TerminatedContractsPresenter(getInsuranceContractsUseCase),
   )
 
 internal class TerminatedContractsPresenter(
-  private val getInsuranceContractsUseCaseProvider: Provider<GetInsuranceContractsUseCase>,
+  private val getInsuranceContractsUseCase: GetInsuranceContractsUseCase,
 ) : MoleculePresenter<TerminatedContractsEvent, TerminatedContractsUiState> {
   @Composable
   override fun MoleculePresenterScope<TerminatedContractsEvent>.present(
@@ -54,8 +53,7 @@ internal class TerminatedContractsPresenter(
       if (currentState !is TerminatedContractsUiState.Success) {
         currentState = TerminatedContractsUiState.Loading
       }
-      getInsuranceContractsUseCaseProvider
-        .provide()
+      getInsuranceContractsUseCase
         .invoke()
         .onEach { result: Either<ErrorMessage, List<InsuranceContract>> ->
           result.onLeft { errorMessage ->

@@ -35,8 +35,6 @@ import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInfo
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationUiState.Content.SubmittingInfoFailure.NetworkFailure
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationUiState.Loading
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationUiState.MissingOngoingMovingFlow
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -45,6 +43,9 @@ import com.hedvig.android.navigation.compose.add
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import octopus.feature.movingflow.MoveIntentV2RequestMutation
@@ -59,7 +60,6 @@ internal class AddHouseInformationViewModel(
   @Assisted moveIntentId: String,
   movingFlowRepository: MovingFlowRepository,
   apolloClient: ApolloClient,
-  featureManager: FeatureManager,
   backstack: Backstack,
 ) : MoleculeViewModel<AddHouseInformationEvent, AddHouseInformationUiState>(
     Loading,
@@ -67,7 +67,6 @@ internal class AddHouseInformationViewModel(
       moveIntentId,
       movingFlowRepository,
       apolloClient,
-      featureManager,
       backstack,
     ),
   )
@@ -76,7 +75,6 @@ internal class AddHouseInformationPresenter(
   private val moveIntentId: String,
   private val movingFlowRepository: MovingFlowRepository,
   private val apolloClient: ApolloClient,
-  private val featureManager: FeatureManager,
   private val backstack: Backstack,
 ) : MoleculePresenter<AddHouseInformationEvent, AddHouseInformationUiState> {
   @Composable
@@ -135,13 +133,12 @@ internal class AddHouseInformationPresenter(
       LaunchedEffect(inputForSubmission) {
         @Suppress("NAME_SHADOWING")
         val inputForSubmissionValue = inputForSubmission ?: return@LaunchedEffect
-        val isAddonFlagEnabled = featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).first()
         apolloClient
           .mutation(
             MoveIntentV2RequestMutation(
               intentId = moveIntentId,
               moveIntentRequestInput = inputForSubmissionValue.moveIntentRequestInput,
-              addonsFlagOn = isAddonFlagEnabled,
+              addonsFlagOn = true,
             ),
           )
           .safeExecute()
