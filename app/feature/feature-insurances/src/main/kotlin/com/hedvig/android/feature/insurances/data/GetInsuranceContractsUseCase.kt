@@ -20,6 +20,7 @@ import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
 import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
 import com.hedvig.android.feature.insurances.data.InsuranceContract.PendingInsuranceContract
+import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
@@ -145,6 +146,7 @@ private fun ContractFragment.toContract(
   contractHolderSSN: String?,
   isMovingFlowEnabled: Boolean,
 ): EstablishedInsuranceContract {
+  logcat { "Mariia: contract type: ${currentAgreement.productVariant.typeOfContract}" }
   return EstablishedInsuranceContract(
     id = id,
     tierName = currentAgreement.productVariant.displayNameTier,
