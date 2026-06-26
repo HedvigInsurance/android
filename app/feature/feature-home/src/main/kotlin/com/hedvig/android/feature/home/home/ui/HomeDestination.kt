@@ -660,25 +660,24 @@ private fun HomeScreenSuccess(
               .layout { measurable, constraints ->
                 val placeable = measurable.measure(constraints)
                 val clearancePx = pinnedTopOffset.roundToPx()
-                val collapsedHero = clearancePx + placeable.height
-                // The space we ADD above the greeting, on top of the mandatory inset + icons clearance.
-                // A fixed amount (NOT the leftover viewport, which would void out tall screens). This is
-                // both the resting-position knob AND the hero's collapse range, affordable to make large
-                // now that the nested-scroll collapse tracks the finger 1:1 (no speed-up penalty).
+                // Resting floor: greeting fully visible just below the toolbar clearance.
+                val restingFloor = clearancePx + placeable.height
+                // Fixed space added above the greeting at rest (NOT the leftover viewport, which would
+                // void out tall screens). Resting-position knob; large is fine since the collapse is 1:1.
                 val addedSpacePx = 200.dp.roundToPx()
-                // Room kept below the hero for the pills + a sheet peek on short/landscape windows (so the
-                // greeting hugs the top there). Independent of the greeting's size — that's handled by
-                // collapsedHero (measured greeting height), so a taller greeting still fits.
+                // Room kept below the hero for the pills + a sheet peek on short/landscape windows.
                 val reservedPx = (pinnedTopOffset + 132.dp).roundToPx()
-                val fullHero = minOf(collapsedHero + addedSpacePx, viewportHeightPx - reservedPx)
-                  .coerceAtLeast(collapsedHero)
-                // Publish the collapsible range; the nested-scroll connection clamps its consumption to it.
-                maxHeroCollapsePx.floatValue = (fullHero - collapsedHero).toFloat()
-                val heroHeight = (fullHero - heroCollapsePx.floatValue.roundToInt()).coerceIn(collapsedHero, fullHero)
+                val fullHero = minOf(restingFloor + addedSpacePx, viewportHeightPx - reservedPx)
+                  .coerceAtLeast(restingFloor)
+                // Collapse all the way down to the toolbar clearance (the greeting slides up under the
+                // toolbar and fades out), and publish the range for the nested-scroll connection to clamp.
+                maxHeroCollapsePx.floatValue = (fullHero - clearancePx).toFloat()
+                val heroHeight = (fullHero - heroCollapsePx.floatValue.roundToInt()).coerceIn(clearancePx, fullHero)
                 layout(placeable.width, heroHeight) {
-                  // Greeting near the hero's bottom; the gap down to the pills comes from the sticky header.
-                  val y = (heroHeight - placeable.height).coerceAtLeast(clearancePx)
-                  placeable.place(0, y)
+                  val y = (heroHeight - placeable.height).coerceAtLeast(0)
+                  // Fade the greeting over the final phase, as its own space is squeezed into the clearance.
+                  val greetingAlpha = ((heroHeight - clearancePx).toFloat() / placeable.height).coerceIn(0f, 1f)
+                  placeable.placeWithLayer(0, y) { alpha = greetingAlpha }
                 }
               },
           ) {
