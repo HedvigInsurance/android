@@ -43,7 +43,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
@@ -57,8 +56,12 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onPlaced
@@ -74,7 +77,6 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.util.lerp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
 import coil3.ImageLoader
@@ -174,6 +176,7 @@ import hedvig.resources.home_tab_terminated_welcome_title_without_name
 import hedvig.resources.home_tab_welcome_title_without_name
 import hedvig.resources.important_message_hide
 import hedvig.resources.important_message_read_more
+import kotlin.math.roundToInt
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -584,17 +587,31 @@ private fun HomeScreenSuccess(
     // content to below this line so nothing bleeds through the transparent pills as it scrolls up.
     var stickyHeaderBottomPx by remember { mutableFloatStateOf(0f) }
     val listState = rememberLazyListState()
-    val density = LocalDensity.current
-    // How far the greeting hero has collapsed (0 = expanded, 1 = collapsed), derived from the scroll
-    // offset and read in the layout phase below so scrolling re-lays-out rather than recomposing.
-    val greetingCollapseFraction = remember(density) {
-      val collapseScrollDistancePx = with(density) { 192.dp.toPx() }
-      derivedStateOf {
-        // Stays collapsed once the hero has scrolled off the top of the list.
-        if (listState.firstVisibleItemIndex > 0) {
-          1f
-        } else {
-          (listState.firstVisibleItemScrollOffset / collapseScrollDistancePx).coerceIn(0f, 1f)
+    // Collapsing hero via nested scroll: upward scroll is first consumed to shrink the hero (the list
+    // stays put, so content tracks the finger 1:1), then released to the list once fully collapsed;
+    // scrolling back to the top expands it again. `heroCollapsePx` is the current shrink; the hero's
+    // layout below publishes `maxHeroCollapsePx` (its full collapsible range) for the connection to clamp.
+    val heroCollapsePx = remember { mutableFloatStateOf(0f) }
+    val maxHeroCollapsePx = remember { mutableFloatStateOf(0f) }
+    val heroCollapseConnection = remember {
+      object : NestedScrollConnection {
+        override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+          val delta = available.y
+          if (delta >= 0f) return Offset.Zero // only collapse on upward scroll
+          val room = (maxHeroCollapsePx.floatValue - heroCollapsePx.floatValue).coerceAtLeast(0f)
+          val consume = (-delta).coerceAtMost(room)
+          if (consume <= 0f) return Offset.Zero
+          heroCollapsePx.floatValue += consume
+          return Offset(0f, -consume)
+        }
+
+        override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
+          val delta = available.y
+          if (delta <= 0f) return Offset.Zero // expand only with leftover downward scroll (list at top)
+          val release = delta.coerceAtMost(heroCollapsePx.floatValue)
+          if (release <= 0f) return Offset.Zero
+          heroCollapsePx.floatValue -= release
+          return Offset(0f, release)
         }
       }
     }
@@ -605,7 +622,8 @@ private fun HomeScreenSuccess(
       modifier = Modifier
         .fillMaxHeight()
         .widthIn(max = 600.dp)
-        .align(Alignment.TopCenter),
+        .align(Alignment.TopCenter)
+        .nestedScroll(heroCollapseConnection),
       contentPadding = PaddingValues(bottom = 16.dp + bottomInsets.calculateBottomPadding()),
     ) {
       // Greeting scrolls away; the pills below pin under the toolbar. Both carry the same top offset
@@ -627,15 +645,15 @@ private fun HomeScreenSuccess(
                 // A moderate, fixed amount — NOT the leftover viewport — otherwise tall portrait screens
                 // leave a huge void above the greeting. This is the main resting-position knob.
                 val addedSpacePx = 80.dp.roundToPx()
-                // Scroll-feel knob: how much the hero shrinks while scrolling (speed-up = 1 + this/dist).
-                val maxCollapsePx = 80.dp.roundToPx()
                 // Room kept below the hero for the pills + a sheet peek on short/landscape windows (so the
                 // greeting hugs the top there). Independent of the greeting's size — that's handled by
                 // collapsedHero (measured greeting height), so a taller greeting still fits.
                 val reservedPx = (pinnedTopOffset + 132.dp).roundToPx()
                 val fullHero = minOf(collapsedHero + addedSpacePx, viewportHeightPx - reservedPx)
-                val heroHeight = (fullHero - lerp(0, maxCollapsePx, greetingCollapseFraction.value))
                   .coerceAtLeast(collapsedHero)
+                // Publish the collapsible range; the nested-scroll connection clamps its consumption to it.
+                maxHeroCollapsePx.floatValue = (fullHero - collapsedHero).toFloat()
+                val heroHeight = (fullHero - heroCollapsePx.floatValue.roundToInt()).coerceIn(collapsedHero, fullHero)
                 layout(placeable.width, heroHeight) {
                   // Greeting near the hero's bottom; the gap down to the pills comes from the sticky header.
                   val y = (heroHeight - placeable.height).coerceAtLeast(clearancePx)
