@@ -7,9 +7,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
+import com.hedvig.android.app.DEEP_LINK_STACK_DEBUG_TAG
 import com.hedvig.android.app.ui.startDestination
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.login.navigation.LoginKey
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.common.DeliberateLogoutOrigin
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.StashedSession
@@ -111,6 +114,9 @@ internal class BackstackController(
    */
   private val owningTabByContentKey = mutableMapOf<String, TopLevelTab>()
 
+  /** Last value logged by [loneDeepLinkChrome], so the (frequently-read) getter only logs on change. */
+  private var lastLoggedChrome: LoneDeepLinkChrome? = null
+
   fun owningTopLevelTabForContentKey(contentKey: Any?): TopLevelTab? {
     if (contentKey == null) return null
     var tab: TopLevelTab? = null
@@ -139,13 +145,25 @@ internal class BackstackController(
   val loneDeepLinkChrome: LoneDeepLinkChrome
     get() {
       val first = entries.firstOrNull()
-      val insideRunsModel = isOwnTask() && (first is HomeKey || first is LoginKey)
-      if (insideRunsModel) return LoneDeepLinkChrome.ShowSuite
-      return if (entries.lastOrNull()?.topLevelTabOrNull() != null) {
-        LoneDeepLinkChrome.ShowUpBar
-      } else {
-        LoneDeepLinkChrome.ShowNothing
+      val ownTask = isOwnTask()
+      val insideRunsModel = ownTask && (first is HomeKey || first is LoginKey)
+      val result = when {
+        insideRunsModel -> LoneDeepLinkChrome.ShowSuite
+        entries.lastOrNull()?.topLevelTabOrNull() != null -> LoneDeepLinkChrome.ShowUpBar
+        else -> LoneDeepLinkChrome.ShowNothing
       }
+      if (result != lastLoggedChrome) {
+        lastLoggedChrome = result
+        val priority = if (result == LoneDeepLinkChrome.ShowSuite) LogPriority.INFO else LogPriority.WARN
+        logcat(priority, tag = DEEP_LINK_STACK_DEBUG_TAG) {
+          "BackstackController.loneDeepLinkChrome -> $result | isOwnTask=$ownTask | " +
+            "first=${first?.let { it::class.simpleName }} | " +
+            "last=${entries.lastOrNull()?.let { it::class.simpleName }} | " +
+            "pendingDeepLink=$pendingDeepLink | entries=${entries.toList()} " +
+            "(ShowUpBar with isOwnTask=false on a normal Home stack => NO deep link needed)"
+        }
+      }
+      return result
     }
 
   /**
@@ -181,6 +199,10 @@ internal class BackstackController(
    */
   fun navigateToInAppLink(key: HedvigNavKey) {
     if (!isLoggedIn) {
+      logcat(LogPriority.WARN, tag = DEEP_LINK_STACK_DEBUG_TAG) {
+        "BackstackController.navigateToInAppLink while LOGGED OUT -> stashing pendingDeepLink=$key " +
+          "(will land ALONE after login)"
+      }
       pendingDeepLink = key
       return
     }
@@ -199,8 +221,15 @@ internal class BackstackController(
    */
   fun navigateToExternalDeepLink(key: HedvigNavKey) {
     if (!isLoggedIn) {
+      logcat(LogPriority.WARN, tag = DEEP_LINK_STACK_DEBUG_TAG) {
+        "BackstackController.navigateToExternalDeepLink while LOGGED OUT -> stashing pendingDeepLink=$key " +
+          "(will land ALONE after login)"
+      }
       pendingDeepLink = key
       return
+    }
+    logcat(LogPriority.WARN, tag = DEEP_LINK_STACK_DEBUG_TAG) {
+      "BackstackController.navigateToExternalDeepLink while LOGGED IN -> reseed to lone [$key]"
     }
     reseed(listOf(key))
   }
@@ -271,15 +300,26 @@ internal class BackstackController(
       parkedRuns.clear()
       when {
         pending != null -> {
+          logcat(LogPriority.WARN, tag = DEEP_LINK_STACK_DEBUG_TAG) {
+            "BackstackController.setLoggedIn: landing pendingDeepLink ALONE -> entries=[$pending] " +
+              "(memberId=$memberId). THIS is the lone/deep-link stack (back arrow, no nav bar)."
+          }
           entries.replaceWith(listOf(pending))
         }
 
         stash != null -> {
+          logcat(LogPriority.INFO, tag = DEEP_LINK_STACK_DEBUG_TAG) {
+            "BackstackController.setLoggedIn: restoring stashed session (memberId=$memberId) -> " +
+              "entries=${stash.entries}"
+          }
           parkedRuns.putAll(stash.parkedRuns)
           entries.replaceWith(stash.entries)
         }
 
         else -> {
+          logcat(LogPriority.INFO, tag = DEEP_LINK_STACK_DEBUG_TAG) {
+            "BackstackController.setLoggedIn: fresh Home root (memberId=$memberId)"
+          }
           entries.replaceWith(listOf(HomeKey))
         }
       }

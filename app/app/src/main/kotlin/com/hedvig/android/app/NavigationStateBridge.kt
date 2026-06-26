@@ -8,6 +8,8 @@ import androidx.savedstate.serialization.decodeFromSavedState
 import androidx.savedstate.serialization.encodeToSavedState
 import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.feature.login.navigation.LoginKey
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.StashedSession
 import com.hedvig.android.navigation.common.TopLevelTab
@@ -63,18 +65,33 @@ internal object NavigationStateBridge {
       null
     }
     if (!handoff.isNullOrEmpty()) {
+      logcat(tag = DEEP_LINK_STACK_DEBUG_TAG) {
+        "NavigationStateBridge.restoreAndPersist: escape-to-own-task handoff present, reseeding with $handoff"
+      }
       backstackController.reseed(handoff)
     } else {
-      savedStateRegistry.consumeRestoredStateForKey(NAV_STATE_REGISTRY_KEY)
+      val snapshot = savedStateRegistry.consumeRestoredStateForKey(NAV_STATE_REGISTRY_KEY)
         ?.let { decodeFromSavedState(NavStateSnapshot.serializer(), it, savedStateConfiguration) }
-        ?.let { snapshot ->
-          backstackController.restoreFromSavedState(
-            entries = snapshot.entries,
-            parkedRuns = snapshot.parkedRuns,
-            pendingDeepLink = snapshot.pendingDeepLink,
-            stashedSession = snapshot.stashedSession,
-          )
+      if (snapshot != null) {
+        logcat(LogPriority.INFO, tag = DEEP_LINK_STACK_DEBUG_TAG) {
+          "NavigationStateBridge.restoreAndPersist: restoring snapshot from SavedStateRegistry " +
+            "(process-death restore): entries=${snapshot.entries} | " +
+            "pendingDeepLink=${snapshot.pendingDeepLink} | " +
+            "stashedSession.member=${snapshot.stashedSession?.memberId} | " +
+            "parkedRuns=${snapshot.parkedRuns.keys} " +
+            "(pendingDeepLink!=null here => a stale pending link will land at next login)"
         }
+        backstackController.restoreFromSavedState(
+          entries = snapshot.entries,
+          parkedRuns = snapshot.parkedRuns,
+          pendingDeepLink = snapshot.pendingDeepLink,
+          stashedSession = snapshot.stashedSession,
+        )
+      } else {
+        logcat(tag = DEEP_LINK_STACK_DEBUG_TAG) {
+          "NavigationStateBridge.restoreAndPersist: no saved snapshot to restore (isColdStart=$isColdStart)"
+        }
+      }
       backstackController.seedIfEmpty(listOf(LoginKey))
     }
 
