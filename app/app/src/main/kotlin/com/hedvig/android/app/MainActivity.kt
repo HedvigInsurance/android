@@ -210,9 +210,11 @@ class MainActivity : AppCompatActivity() {
         "isColdStart(savedInstanceState==null)=${savedInstanceState == null} | " +
         "isTaskRoot=$isTaskRoot | " +
         "intent.action=${intent.action} | " +
+        "intent.categories=${intent.categories} | " +
         "intent.data=${intent.data} | " +
         "launchedFromHistory=$launchedFromHistory | " +
-        "intent.flags=0x${Integer.toHexString(intent.flags)}"
+        "intent.flags=0x${Integer.toHexString(intent.flags)} | " +
+        "computedIsOwnTask=${isOwnTaskForLaunch(isTaskRoot, intent.flags)}"
     }
     if (savedInstanceState == null) {
       handleDeepLinkIntent(intent)
@@ -290,14 +292,15 @@ class MainActivity : AppCompatActivity() {
   }
 
   /**
-   * Pushes the current [isTaskRoot] into the controller. Unlike the one-time hooks in
-   * [attachBackstackTaskHooks], this is a *value* that can change over the Activity's life (e.g. an
-   * Activity below us finishes, or [isTaskRoot] reads more reliably once resumed than at onCreate), so
-   * it is refreshed on every onResume to keep the snapshot-backed value honest — otherwise the
-   * lone-deep-link chrome can latch a stale "not own task" reading. See [BackstackController.isOwnTask].
+   * Pushes the current own-task value into the controller (see [isOwnTaskForLaunch] for why this is
+   * not just [isTaskRoot]). Unlike the one-time hooks in [attachBackstackTaskHooks], this is a *value*
+   * that can change over the Activity's life (e.g. an Activity below us finishes, or [isTaskRoot] reads
+   * more reliably once resumed than at onCreate), so it is refreshed on every onResume to keep the
+   * snapshot-backed value honest — otherwise the lone-deep-link chrome can latch a stale reading. See
+   * [BackstackController.isOwnTask].
    */
   private fun refreshIsOwnTask() {
-    backstackController.isOwnTask = isTaskRoot
+    backstackController.isOwnTask = isOwnTaskForLaunch(isTaskRoot, intent.flags)
   }
 
   private fun attachBackstackTaskHooks() {
@@ -311,17 +314,35 @@ class MainActivity : AppCompatActivity() {
   private fun handleDeepLinkIntent(intent: Intent) {
     if (intent.action != Intent.ACTION_VIEW) return
     val uri = intent.data?.toString() ?: return
-    val launchedFromHistory = intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY != 0
-    logcat(priority = LogPriority.VERBOSE, tag = DEEP_LINK_STACK_DEBUG_TAG) {
-      "handleDeepLinkIntent forwarding ACTION_VIEW uri=$uri | launchedFromHistory=$launchedFromHistory " +
-        "(launchedFromHistory=true => STALE re-delivered deep link, NOT a fresh user action)"
-    }
     deepLinkChannel.trySend(uri)
   }
 }
 
-/** Shared logcat tag for the cold-start/login deep-link-stack investigation. Grep this to follow the flow. */
+/**
+ * Logcat tag for the per-launch navigation breadcrumb emitted in [MainActivity.onCreate]. Grep this to
+ * see how each launch was classified (action/flags/isTaskRoot -> computedIsOwnTask) when diagnosing
+ * task/back-stack oddities like the deep-link-stack-on-Home report.
+ */
 internal const val DEEP_LINK_STACK_DEBUG_TAG = "DeepLinkStackDebug"
+
+/**
+ * Whether this Activity should be treated as running in its own task, given the task-root position and
+ * the [launchFlags] of the intent that started it.
+ *
+ * [isTaskRoot] alone is ambiguous: it is `false` both when we are genuinely hosted in the *caller's*
+ * task by an external deep link (where we want the Up/escape affordance) and when we are merely a
+ * non-root second `MainActivity` stacked in our *own* task (a launcher relaunch, or a notification tap
+ * that brought our existing task to the front). The discriminator is [Intent.FLAG_ACTIVITY_NEW_TASK]:
+ * when it is set the system placed us in our own task (a fresh one, or an existing one brought forward),
+ * so we are own-task even when not its root; only a launch *without* `NEW_TASK` joins the caller's task,
+ * which combined with not being task-root is the one genuinely foreign-hosted case.
+ *
+ * This keeps the Up/escape affordance for real foreign deep links (e.g. an https link tapped in another
+ * app, launched with no flags) while treating launcher relaunches and notification-fronted tasks as
+ * own-task, so neither renders the lone-deep-link Up bar on a normal Home nor escapes on Up.
+ */
+internal fun isOwnTaskForLaunch(isTaskRoot: Boolean, launchFlags: Int): Boolean =
+  isTaskRoot || (launchFlags and Intent.FLAG_ACTIVITY_NEW_TASK) != 0
 
 /**
  * Applies the theme in two ways:

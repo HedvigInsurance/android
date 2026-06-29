@@ -8,8 +8,6 @@ import androidx.savedstate.serialization.decodeFromSavedState
 import androidx.savedstate.serialization.encodeToSavedState
 import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.feature.login.navigation.LoginKey
-import com.hedvig.android.logger.LogPriority
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.StashedSession
 import com.hedvig.android.navigation.common.TopLevelTab
@@ -74,9 +72,6 @@ internal object NavigationStateBridge {
       null
     }
     if (!handoff.isNullOrEmpty()) {
-      logcat(priority = LogPriority.VERBOSE, tag = DEEP_LINK_STACK_DEBUG_TAG) {
-        "NavigationStateBridge.restoreAndPersist: escape-to-own-task handoff present, reseeding with $handoff"
-      }
       backstackController.reseed(handoff)
     } else {
       val snapshot = savedStateRegistry.consumeRestoredStateForKey(NAV_STATE_REGISTRY_KEY)
@@ -86,36 +81,15 @@ internal object NavigationStateBridge {
         // can't bleed into an unrelated later login as a lone deep-link stack.
         val now = System.currentTimeMillis()
         val stashedAt = snapshot.pendingDeepLinkStashedAtEpochMs
-        val ageMs = if (stashedAt != null) now - stashedAt else null
         val pendingStillValid = snapshot.pendingDeepLink != null &&
           isPendingDeepLinkStashTimeFresh(stashedAt, now)
-        val restoredPending = snapshot.pendingDeepLink.takeIf { pendingStillValid }
-        val restoredPendingStashedAt = stashedAt.takeIf { pendingStillValid }
-        if (snapshot.pendingDeepLink != null && !pendingStillValid) {
-          logcat(priority = LogPriority.VERBOSE, tag = DEEP_LINK_STACK_DEBUG_TAG) {
-            "NavigationStateBridge.restoreAndPersist: DROPPING stale restored " +
-              "pendingDeepLink=${snapshot.pendingDeepLink} (ageMs=$ageMs, max=$MAX_PENDING_DEEP_LINK_AGE) " +
-              "— it would otherwise have landed as a lone deep-link stack at the next login"
-          }
-        }
-        logcat(priority = LogPriority.VERBOSE, tag = DEEP_LINK_STACK_DEBUG_TAG) {
-          "NavigationStateBridge.restoreAndPersist: restoring snapshot from SavedStateRegistry " +
-            "(process-death restore): entries=${snapshot.entries} | " +
-            "pendingDeepLink=$restoredPending (raw=${snapshot.pendingDeepLink}, ageMs=$ageMs) | " +
-            "stashedSession.member=${snapshot.stashedSession?.memberId} | " +
-            "parkedRuns=${snapshot.parkedRuns.keys}"
-        }
         backstackController.restoreFromSavedState(
           entries = snapshot.entries,
           parkedRuns = snapshot.parkedRuns,
-          pendingDeepLink = restoredPending,
-          pendingDeepLinkStashedAtEpochMs = restoredPendingStashedAt,
+          pendingDeepLink = snapshot.pendingDeepLink.takeIf { pendingStillValid },
+          pendingDeepLinkStashedAtEpochMs = stashedAt.takeIf { pendingStillValid },
           stashedSession = snapshot.stashedSession,
         )
-      } else {
-        logcat(priority = LogPriority.VERBOSE, tag = DEEP_LINK_STACK_DEBUG_TAG) {
-          "NavigationStateBridge.restoreAndPersist: no saved snapshot to restore (isColdStart=$isColdStart)"
-        }
       }
       backstackController.seedIfEmpty(listOf(LoginKey))
     }

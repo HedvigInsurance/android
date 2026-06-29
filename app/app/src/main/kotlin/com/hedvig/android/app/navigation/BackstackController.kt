@@ -8,12 +8,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
-import com.hedvig.android.app.DEEP_LINK_STACK_DEBUG_TAG
 import com.hedvig.android.app.ui.startDestination
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.login.navigation.LoginKey
-import com.hedvig.android.logger.LogPriority
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.common.DeliberateLogoutOrigin
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.StashedSession
@@ -66,13 +63,14 @@ internal class BackstackController(
    * caller's task by an external deep link, so an Up press must escape into our own task rather than
    * rebuilding the ancestry in place (which would leave our screens hosted under the foreign app).
    *
-   * Snapshot-backed on purpose, rather than a live `() -> isTaskRoot` lambda: [loneDeepLinkChrome]
-   * derives the whole back-arrow-vs-nav-bar decision partly from this, so it must (a) be observable so
-   * Compose recomposes the chrome when it changes, and (b) never sample a stale value. `MainActivity`
-   * pushes `isTaskRoot` here in `onCreate` (see `attachBackstackTaskHooks`) AND on every `onResume` —
-   * onResume because the value can settle or change after creation (an Activity below us finishing, or
-   * an early-launch read returning a not-yet-settled value). Defaults to `true` so unit tests and any
-   * pre-attach use stay fully in-process.
+   * Snapshot-backed on purpose, rather than a live lambda: [loneDeepLinkChrome] derives the whole
+   * back-arrow-vs-nav-bar decision partly from this, so it must (a) be observable so Compose recomposes
+   * the chrome when it changes, and (b) never sample a stale value. `MainActivity` pushes the computed
+   * own-task value here (see `isOwnTaskForLaunch`, which is *not* just `isTaskRoot`) in `onCreate` (see
+   * `attachBackstackTaskHooks`) AND on every `onResume` — onResume because the value can settle or
+   * change after creation (an Activity below us finishing, or an early-launch read returning a
+   * not-yet-settled value). Defaults to `true` so unit tests and any pre-attach use stay fully
+   * in-process.
    */
   var isOwnTask: Boolean by mutableStateOf(initialIsOwnTask)
 
@@ -144,9 +142,6 @@ internal class BackstackController(
    */
   private val owningTabByContentKey = mutableMapOf<String, TopLevelTab>()
 
-  /** Last value logged by [loneDeepLinkChrome], so the (frequently-read) getter only logs on change. */
-  private var lastLoggedChrome: LoneDeepLinkChrome? = null
-
   fun owningTopLevelTabForContentKey(contentKey: Any?): TopLevelTab? {
     if (contentKey == null) return null
     var tab: TopLevelTab? = null
@@ -175,24 +170,12 @@ internal class BackstackController(
   val loneDeepLinkChrome: LoneDeepLinkChrome
     get() {
       val first = entries.firstOrNull()
-      val ownTask = isOwnTask
-      val insideRunsModel = ownTask && (first is HomeKey || first is LoginKey)
-      val result = when {
+      val insideRunsModel = isOwnTask && (first is HomeKey || first is LoginKey)
+      return when {
         insideRunsModel -> LoneDeepLinkChrome.ShowSuite
         entries.lastOrNull()?.topLevelTabOrNull() != null -> LoneDeepLinkChrome.ShowUpBar
         else -> LoneDeepLinkChrome.ShowNothing
       }
-      if (result != lastLoggedChrome) {
-        lastLoggedChrome = result
-        logcat(priority = LogPriority.VERBOSE, tag = DEEP_LINK_STACK_DEBUG_TAG) {
-          "BackstackController.loneDeepLinkChrome -> $result | isOwnTask=$ownTask | " +
-            "first=${first?.let { it::class.simpleName }} | " +
-            "last=${entries.lastOrNull()?.let { it::class.simpleName }} | " +
-            "pendingDeepLink=$pendingDeepLink | entries=${entries.toList()} " +
-            "(ShowUpBar with isOwnTask=false on a normal Home stack => NO deep link needed)"
-        }
-      }
-      return result
     }
 
   /**
@@ -228,10 +211,6 @@ internal class BackstackController(
    */
   fun navigateToInAppLink(key: HedvigNavKey) {
     if (!isLoggedIn) {
-      logcat(priority = LogPriority.VERBOSE, tag = DEEP_LINK_STACK_DEBUG_TAG) {
-        "BackstackController.navigateToInAppLink while LOGGED OUT -> stashing pendingDeepLink=$key " +
-          "(will land ALONE after login)"
-      }
       stashPendingDeepLink(key)
       return
     }
@@ -250,15 +229,8 @@ internal class BackstackController(
    */
   fun navigateToExternalDeepLink(key: HedvigNavKey) {
     if (!isLoggedIn) {
-      logcat(priority = LogPriority.VERBOSE, tag = DEEP_LINK_STACK_DEBUG_TAG) {
-        "BackstackController.navigateToExternalDeepLink while LOGGED OUT -> stashing pendingDeepLink=$key " +
-          "(will land ALONE after login)"
-      }
       stashPendingDeepLink(key)
       return
-    }
-    logcat(priority = LogPriority.VERBOSE, tag = DEEP_LINK_STACK_DEBUG_TAG) {
-      "BackstackController.navigateToExternalDeepLink while LOGGED IN -> reseed to lone [$key]"
     }
     reseed(listOf(key))
   }
@@ -329,26 +301,15 @@ internal class BackstackController(
       parkedRuns.clear()
       when {
         pending != null -> {
-          logcat(priority = LogPriority.VERBOSE, tag = DEEP_LINK_STACK_DEBUG_TAG) {
-            "BackstackController.setLoggedIn: landing pendingDeepLink ALONE -> entries=[$pending] " +
-              "(memberId=$memberId). THIS is the lone/deep-link stack (back arrow, no nav bar)."
-          }
           entries.replaceWith(listOf(pending))
         }
 
         stash != null -> {
-          logcat(priority = LogPriority.VERBOSE, tag = DEEP_LINK_STACK_DEBUG_TAG) {
-            "BackstackController.setLoggedIn: restoring stashed session (memberId=$memberId) -> " +
-              "entries=${stash.entries}"
-          }
           parkedRuns.putAll(stash.parkedRuns)
           entries.replaceWith(stash.entries)
         }
 
         else -> {
-          logcat(priority = LogPriority.VERBOSE, tag = DEEP_LINK_STACK_DEBUG_TAG) {
-            "BackstackController.setLoggedIn: fresh Home root (memberId=$memberId)"
-          }
           entries.replaceWith(listOf(HomeKey))
         }
       }
