@@ -29,11 +29,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun InsuranceContract.createExposure() {
-
-}
-
-@Composable
 internal fun InsuranceContract.createChips(): List<ChipUiData> {
   val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
   val listOfChips =
