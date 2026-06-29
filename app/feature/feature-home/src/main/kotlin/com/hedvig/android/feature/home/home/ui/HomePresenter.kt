@@ -138,6 +138,7 @@ internal class HomePresenter(
           crossSellsAction = successData.crossSellsAction,
           addonBannerInfo = successData.addonBannerInfo,
           isProduction = isProduction,
+          resumableClaimId = successData.resumableClaimId
         )
       }
     }
@@ -177,6 +178,7 @@ internal sealed interface HomeUiState {
     val isProduction: Boolean,
     override val isHelpCenterEnabled: Boolean,
     override val hasUnseenChatMessages: Boolean,
+    val resumableClaimId: String?
   ) : HomeUiState
 
   data class Error(val message: String?) : HomeUiState
@@ -195,6 +197,7 @@ private data class SuccessData(
   val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
   val hasUnseenChatMessages: Boolean,
   val addonBannerInfo: AddonBannerInfo?,
+  val resumableClaimId: String?
 ) {
   companion object {
     fun fromLastState(lastState: HomeUiState): SuccessData? {
@@ -210,6 +213,7 @@ private data class SuccessData(
         hasUnseenChatMessages = lastState.hasUnseenChatMessages,
         addonBannerInfo = lastState.addonBannerInfo,
         chatAction = lastState.chatAction,
+        resumableClaimId = lastState.resumableClaimId
       )
     }
 
@@ -257,6 +261,7 @@ private data class SuccessData(
         hasUnseenChatMessages = homeData.hasUnseenChatMessages,
         addonBannerInfo = homeData.travelBannerInfo,
         chatAction = if (homeData.showChatIcon) HomeTopBarAction.ChatAction else null,
+        resumableClaimId = homeData.resumableClaimId
       )
     }
   }

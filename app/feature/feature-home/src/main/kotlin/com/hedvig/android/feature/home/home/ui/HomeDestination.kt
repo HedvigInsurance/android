@@ -86,6 +86,7 @@ import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.StartClaimBottomSheet
+import com.hedvig.android.design.system.hedvig.StartClaimSheetData
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TooltipDefaults
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.TopEnd
@@ -155,7 +156,7 @@ internal fun HomeDestination(
   viewModel: HomeViewModel,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
-  navigateToClaimChat: () -> Unit,
+  navigateToClaimChat: (String?) -> Unit,
   onClaimDetailCardClicked: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToConnectPayout: () -> Unit,
@@ -205,7 +206,7 @@ private fun HomeScreen(
   reload: () -> Unit,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
-  navigateToClaimChat: () -> Unit,
+  navigateToClaimChat: (String?) -> Unit,
   onClaimDetailCardClicked: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToConnectPayout: () -> Unit,
@@ -237,10 +238,17 @@ private fun HomeScreen(
     onCrossSellClick = openCrossSellUrl,
     imageLoader = imageLoader,
   )
-  val startClaimBottomSheetState = rememberHedvigBottomSheetState<Unit>()
+
+  val resumableClaimId = (uiState as? Success)?.resumableClaimId
+  val startClaimBottomSheetState = rememberHedvigBottomSheetState<StartClaimSheetData>()
   StartClaimBottomSheet(
     state = startClaimBottomSheetState,
-    navigateToClaimChat = navigateToClaimChat,
+    navigateToOldClaim = {
+      navigateToClaimChat(resumableClaimId)
+    },
+    navigateToClaimChat = {
+      navigateToClaimChat(null)
+    },
   )
   Box(Modifier.fillMaxSize()) {
     val toolbarHeight = 64.dp
@@ -277,7 +285,9 @@ private fun HomeScreen(
             navigateToConnectPayment = navigateToConnectPayment,
             navigateToConnectPayout = navigateToConnectPayout,
             navigateToHelpCenter = navigateToHelpCenter,
-            openClaimFlowSheet = startClaimBottomSheetState::show,
+            openClaimFlowSheet = {
+              startClaimBottomSheetState.show(StartClaimSheetData(resumableClaimId))
+            },
             openAppSettings = openAppSettings,
             openUrl = openUrl,
             navigateToMissingInfo = navigateToMissingInfo,
@@ -796,6 +806,7 @@ private fun PreviewHomeScreen(
             flowType = FlowType.APP_TRAVEL_PLUS_SELL_OR_UPGRADE,
           ),
           isProduction = true,
+          resumableClaimId = null
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
@@ -881,6 +892,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
           chatAction = ChatAction,
           addonBannerInfo = null,
           isProduction = true,
+          resumableClaimId = null
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},

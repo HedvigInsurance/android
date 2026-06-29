@@ -61,6 +61,7 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightS
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.StartClaimBottomSheet
+import com.hedvig.android.design.system.hedvig.StartClaimSheetData
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
@@ -131,7 +132,7 @@ private fun InboxScreen(
   navigateToClaimChat: () -> Unit,
 ) {
   val newChatSelectBottomSheetState = rememberHedvigBottomSheetState<Unit>()
-  val startClaimBottomSheetState = rememberHedvigBottomSheetState<Unit>()
+  val startClaimBottomSheetState = rememberHedvigBottomSheetState<StartClaimSheetData>()
   HedvigBottomSheet(
     newChatSelectBottomSheetState,
     content = {
@@ -142,7 +143,7 @@ private fun InboxScreen(
         },
         onStartNewClaim = {
           newChatSelectBottomSheetState.dismiss()
-          startClaimBottomSheetState.show(Unit)
+          startClaimBottomSheetState.show(StartClaimSheetData(null))
         },
         dismiss = {
           newChatSelectBottomSheetState.dismiss()
@@ -156,6 +157,7 @@ private fun InboxScreen(
       startClaimBottomSheetState.dismiss()
       navigateToClaimChat()
     },
+    navigateToOldClaim = {}
   )
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,

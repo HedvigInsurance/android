@@ -1,5 +1,8 @@
 query Home($claimsHistoryFlag: Boolean!) {
   currentMember {
+    resumableClaimIntent {
+      id
+    }
     claims@skip(if: $claimsHistoryFlag) {
       ...ClaimFragment
     }

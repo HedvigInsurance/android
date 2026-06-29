@@ -23,8 +23,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -40,10 +42,12 @@ import hedvig.resources.general_cancel_button
 import hedvig.resources.general_continue_button
 import org.jetbrains.compose.resources.stringResource
 
+data class StartClaimSheetData(val resumableClaimId: String?)
 @Composable
 fun StartClaimBottomSheet(
-  state: HedvigBottomSheetState<Unit>,
+  state: HedvigBottomSheetState<StartClaimSheetData>,
   navigateToClaimChat: () -> Unit,
+  navigateToOldClaim: () -> Unit,
 ) {
   HedvigBottomSheet(
     hedvigBottomSheetState = state,
@@ -57,6 +61,12 @@ fun StartClaimBottomSheet(
             navigateToClaimChat()
           }
         },
+        navigateToOldClaim = {
+          state.dismiss {
+            navigateToOldClaim()
+          }
+        },
+        resumableClaimId = state.data?.resumableClaimId
       )
     },
   )
@@ -82,6 +92,8 @@ fun StartClaimPledgeScreen(
       },
       navigateToClaimChat = navigateToClaimChat,
       dismiss = navigateUp,
+      resumableClaimId = null,
+      navigateToOldClaim = {}
     )
     Spacer(Modifier.height(8.dp))
     Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
@@ -92,6 +104,8 @@ fun StartClaimPledgeScreen(
 private fun StartClaimBottomSheetContent(
   dismiss: () -> Unit,
   navigateToClaimChat: () -> Unit,
+  navigateToOldClaim: () -> Unit,
+  resumableClaimId: String?
 ) {
   var isChecked by remember { mutableStateOf(false) }
   Column {
@@ -113,6 +127,8 @@ private fun StartClaimBottomSheetContent(
       },
       navigateToClaimChat = navigateToClaimChat,
       dismiss = dismiss,
+      navigateToOldClaim = navigateToOldClaim,
+      resumableClaimId = resumableClaimId
     )
     Spacer(Modifier.height(8.dp))
     Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
@@ -125,6 +141,8 @@ private fun StartClaimBottomContent(
   onCheckedChange: () -> Unit,
   navigateToClaimChat: () -> Unit,
   dismiss: () -> Unit,
+  navigateToOldClaim: () -> Unit,
+  resumableClaimId: String?
 ) {
   Column {
     ImportantInfoCheckBox(
@@ -141,6 +159,18 @@ private fun StartClaimBottomContent(
       modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
+    if (resumableClaimId!=null) {
+      HedvigButton(
+        buttonStyle = ButtonDefaults.ButtonStyle.PrimaryAlt,
+        text = "Continue with the draft claim",
+        enabled = true,
+        onClick = dropUnlessResumed {
+          navigateToOldClaim()
+        },
+        modifier = Modifier.fillMaxWidth(),
+      )
+      Spacer(Modifier.height(16.dp))
+    }
     HedvigButton(
       text = stringResource(Res.string.general_cancel_button),
       enabled = true,
@@ -216,12 +246,18 @@ private fun ImportantInfoCheckBox(isChecked: Boolean, onCheckedChange: () -> Uni
 
 @HedvigPreview
 @Composable
-private fun PreviewStartClaimBottomSheetContent() {
+private fun PreviewStartClaimBottomSheetContent(
+  @PreviewParameter(
+    BooleanCollectionPreviewParameterProvider::class,
+  ) hasResumableClaim: Boolean,
+) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       StartClaimBottomSheetContent(
         {},
         navigateToClaimChat = {},
+        navigateToOldClaim = {},
+        resumableClaimId = if (hasResumableClaim) "" else null
       )
     }
   }

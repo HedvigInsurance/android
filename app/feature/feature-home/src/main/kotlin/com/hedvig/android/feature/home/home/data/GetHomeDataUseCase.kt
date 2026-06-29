@@ -172,6 +172,7 @@ internal class GetHomeDataUseCaseImpl(
           crossSells = crossSells,
           travelBannerInfo = travelBannerInfo?.firstOrNull(),
           showChatIcon = showChatIcon,
+          resumableClaimId = homeQueryData.currentMember.resumableClaimIntent?.id
         )
       }.onLeft { error: ApolloOperationError ->
         logcat(operationError = error) { "GetHomeDataUseCase failed with $error" }
@@ -280,6 +281,7 @@ data class HomeData(
   val firstVetSections: List<FirstVetSection>,
   val crossSells: CrossSellSheetData,
   val travelBannerInfo: AddonBannerInfo?,
+  val resumableClaimId: String?
 ) {
   @Immutable
   data class ClaimStatusCardsData(

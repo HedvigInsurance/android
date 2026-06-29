@@ -21,6 +21,7 @@ import kotlinx.serialization.Serializable
 data class ClaimChatKey(
   val isDevelopmentFlow: Boolean = false,
   val messageId: String? = null,
+  val resumableClaimId: String? = null,
 ) : HedvigNavKey
 
 @Serializable

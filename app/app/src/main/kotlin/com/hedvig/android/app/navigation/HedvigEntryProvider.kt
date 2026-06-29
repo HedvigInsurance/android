@@ -230,8 +230,12 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
       backstack.add(CoInsuredAddInfoKey(contractId, type))
     },
     navigateToHelpCenter = { backstack.add(HelpCenterKey) },
-    navigateToClaimChat = {
-      backstack.add(ClaimChatKey(messageId = null, isDevelopmentFlow = false))
+    navigateToClaimChat = { resumableClaimId ->
+      backstack.add(ClaimChatKey(
+        messageId = null,
+        isDevelopmentFlow = false,
+        resumableClaimId = resumableClaimId,
+      ))
     },
     navigateToChipIdScreen = { backstack.add(ChipIdKey()) },
     openAppSettings = externalNavigator::openAppSettings,
