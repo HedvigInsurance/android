@@ -74,7 +74,7 @@ internal object NavigationStateBridge {
       null
     }
     if (!handoff.isNullOrEmpty()) {
-      logcat(tag = DEEP_LINK_STACK_DEBUG_TAG) {
+      logcat(priority = LogPriority.VERBOSE, tag = DEEP_LINK_STACK_DEBUG_TAG) {
         "NavigationStateBridge.restoreAndPersist: escape-to-own-task handoff present, reseeding with $handoff"
       }
       backstackController.reseed(handoff)
@@ -92,13 +92,13 @@ internal object NavigationStateBridge {
         val restoredPending = snapshot.pendingDeepLink.takeIf { pendingStillValid }
         val restoredPendingStashedAt = stashedAt.takeIf { pendingStillValid }
         if (snapshot.pendingDeepLink != null && !pendingStillValid) {
-          logcat(LogPriority.WARN, tag = DEEP_LINK_STACK_DEBUG_TAG) {
+          logcat(priority = LogPriority.VERBOSE, tag = DEEP_LINK_STACK_DEBUG_TAG) {
             "NavigationStateBridge.restoreAndPersist: DROPPING stale restored " +
               "pendingDeepLink=${snapshot.pendingDeepLink} (ageMs=$ageMs, max=$MAX_PENDING_DEEP_LINK_AGE) " +
               "— it would otherwise have landed as a lone deep-link stack at the next login"
           }
         }
-        logcat(LogPriority.INFO, tag = DEEP_LINK_STACK_DEBUG_TAG) {
+        logcat(priority = LogPriority.VERBOSE, tag = DEEP_LINK_STACK_DEBUG_TAG) {
           "NavigationStateBridge.restoreAndPersist: restoring snapshot from SavedStateRegistry " +
             "(process-death restore): entries=${snapshot.entries} | " +
             "pendingDeepLink=$restoredPending (raw=${snapshot.pendingDeepLink}, ageMs=$ageMs) | " +
@@ -113,7 +113,7 @@ internal object NavigationStateBridge {
           stashedSession = snapshot.stashedSession,
         )
       } else {
-        logcat(tag = DEEP_LINK_STACK_DEBUG_TAG) {
+        logcat(priority = LogPriority.VERBOSE, tag = DEEP_LINK_STACK_DEBUG_TAG) {
           "NavigationStateBridge.restoreAndPersist: no saved snapshot to restore (isColdStart=$isColdStart)"
         }
       }

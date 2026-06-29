@@ -368,10 +368,10 @@ The message is a lambda, so build strings inline without guarding on build type 
 logcat { "Plain info-level message" }                              // defaults to INFO
 logcat(LogPriority.DEBUG) { "GraphQL ${operation.name()} START" }  // explicit priority
 logcat(LogPriority.ERROR, throwable) { "Failed to load X: ${throwable.message}" }
-logcat(LogPriority.INFO, tag = DEEP_LINK_STACK_DEBUG_TAG) { "…" }  // greppable custom tag
+logcat(LogPriority.INFO, tag = SOMETHING_DEBUG_TAG) { "…" }  // greppable custom tag
 ```
 
-Tag is optional — for a one-off log, just omit it (the caller's class name is used). When you want a greppable trace that spans several call sites or files, a shared `const val SOMETHING_DEBUG_TAG = "…"` passed as `tag` everywhere is a handy tool (see `DEEP_LINK_STACK_DEBUG_TAG` usage across `MainActivity`/`BackstackController`). It's a convenience, not a requirement; don't introduce a const for a single isolated log.
+Tag is optional — for a one-off log, just omit it (the caller's class name is used). When you want a greppable trace that spans several call sites or files, a shared `const val SOMETHING_DEBUG_TAG = "…"` passed as `tag` everywhere is a handy tool. It's a convenience, not a requirement; don't introduce a const for a single isolated log.
 
 There is also an Apollo overload, `logcat(priority, operationError: ApolloOperationError, tag, message)`, which auto-downgrades to at most `WARN` for unauthenticated errors. Use it when logging a failed `safeExecute`/`safeFlow` result.
 

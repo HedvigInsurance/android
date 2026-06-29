@@ -205,7 +205,7 @@ class MainActivity : AppCompatActivity() {
       }
     }
     val launchedFromHistory = intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY != 0
-    logcat(LogPriority.INFO, tag = DEEP_LINK_STACK_DEBUG_TAG) {
+    logcat(priority = LogPriority.VERBOSE, tag = DEEP_LINK_STACK_DEBUG_TAG) {
       "MainActivity.onCreate launch context: " +
         "isColdStart(savedInstanceState==null)=${savedInstanceState == null} | " +
         "isTaskRoot=$isTaskRoot | " +
@@ -312,7 +312,7 @@ class MainActivity : AppCompatActivity() {
     if (intent.action != Intent.ACTION_VIEW) return
     val uri = intent.data?.toString() ?: return
     val launchedFromHistory = intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY != 0
-    logcat(LogPriority.WARN, tag = DEEP_LINK_STACK_DEBUG_TAG) {
+    logcat(priority = LogPriority.VERBOSE, tag = DEEP_LINK_STACK_DEBUG_TAG) {
       "handleDeepLinkIntent forwarding ACTION_VIEW uri=$uri | launchedFromHistory=$launchedFromHistory " +
         "(launchedFromHistory=true => STALE re-delivered deep link, NOT a fresh user action)"
     }
