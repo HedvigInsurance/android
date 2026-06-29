@@ -241,13 +241,14 @@ private fun List<ContentSelectFragment.Option>.toOptions(): List<StepContent.Con
 context(raise: Raise<ClaimChatErrorMessage>)
 private fun List<FormFragment.Field>.toFields(locale: CommonLocale): List<StepContent.Form.Field> {
   return this.map { field ->
+    val defaultValues = if(field.currentValues.isNotEmpty()) field.currentValues.toFieldOptions(field.options)
+    else field.defaultValues.toFieldOptions(field.options)
     StepContent.Form.Field(
       id = FieldId(field.id),
       isRequired = field.isRequired,
       suffix = field.suffix,
       title = field.title,
-      defaultValues = if(field.currentValues.isNotEmpty()) field.currentValues.toFieldOptions(field.options)
-      else field.defaultValues.toFieldOptions(field.options),
+      defaultValues = defaultValues,
       maxValue = field.maxValue,
       minValue = field.minValue,
       type = when (field.type) {
@@ -295,12 +296,12 @@ private fun List<FormFragment.Field>.toFields(locale: CommonLocale): List<StepCo
           subtitle = it.subtitle,
         )
       } ?: emptyList(),
-      selectedOptions = field.defaultValues.toFieldOptions(field.options),
+      selectedOptions = defaultValues,
       datePickerUiState = when (field.type) {
         ClaimIntentStepContentFormFieldType.DATE -> {
           DatePickerUiState(
             locale = locale,
-            initiallySelectedDate = field.defaultValues.getOrNull(0)?.let { LocalDate.parse(it) },
+            initiallySelectedDate = defaultValues.getOrNull(0)?.let { LocalDate.parse(it.text) },
             minDate = field.minValue?.let { LocalDate.parse(it) } ?: LocalDate(1900, 1, 1),
             maxDate = field.maxValue?.let { LocalDate.parse(it) } ?: LocalDate(2100, 1, 1),
           )
