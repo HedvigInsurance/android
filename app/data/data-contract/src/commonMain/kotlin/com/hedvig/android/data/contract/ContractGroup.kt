@@ -130,5 +130,7 @@ fun String.toContractGroup(): ContractGroup = when (this) {
   "SE_VACATION_HOME_STANDARD",
     -> ContractGroup.COUNTRY_HOME
 
+  "SE_QASA_LANDLORD" -> ContractGroup.QASA_LANDLORD
+
   else -> ContractGroup.UNKNOWN
 }
