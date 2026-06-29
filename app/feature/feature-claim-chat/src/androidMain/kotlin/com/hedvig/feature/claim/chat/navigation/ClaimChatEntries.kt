@@ -37,7 +37,7 @@ internal data class ClaimOutcomeNewClaimKey(
 internal data object UpdateAppKey : HedvigNavKey
 
 @Serializable
-internal data object StartClaimPledgeKey: HedvigNavKey
+internal data object StartClaimPledgeKey : HedvigNavKey
 
 fun EntryProviderScope<HedvigNavKey>.claimChatEntries(
   backstack: Backstack,
@@ -110,7 +110,7 @@ fun EntryProviderScope<HedvigNavKey>.claimChatEntries(
           ClaimChatKey(),
           inclusive = true,
         )
-      }
+      },
     )
   }
 }
