@@ -66,7 +66,7 @@ internal class BackstackController(
    * Snapshot-backed on purpose, rather than a live lambda: [loneDeepLinkChrome] derives the whole
    * back-arrow-vs-nav-bar decision partly from this, so it must (a) be observable so Compose recomposes
    * the chrome when it changes, and (b) never sample a stale value. `MainActivity` pushes the computed
-   * own-task value here (see `isOwnTaskForLaunch`, which is *not* just `isTaskRoot`) in `onCreate` (see
+   * own-task value here (see `isHostedInForeignTask`, which is *not* just `isTaskRoot`) in `onCreate` (see
    * `attachBackstackTaskHooks`) AND on every `onResume` — onResume because the value can settle or
    * change after creation (an Activity below us finishing, or an early-launch read returning a
    * not-yet-settled value). Defaults to `true` so unit tests and any pre-attach use stay fully

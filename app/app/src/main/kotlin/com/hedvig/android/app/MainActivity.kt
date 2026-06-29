@@ -214,7 +214,7 @@ class MainActivity : AppCompatActivity() {
         "intent.data=${intent.data} | " +
         "launchedFromHistory=$launchedFromHistory | " +
         "intent.flags=0x${Integer.toHexString(intent.flags)} | " +
-        "computedIsOwnTask=${isOwnTaskForLaunch(isTaskRoot, intent.flags)}"
+        "isHostedInForeignTask=${isHostedInForeignTask(isTaskRoot, intent.flags)}"
     }
     if (savedInstanceState == null) {
       handleDeepLinkIntent(intent)
@@ -292,7 +292,7 @@ class MainActivity : AppCompatActivity() {
   }
 
   /**
-   * Pushes the current own-task value into the controller (see [isOwnTaskForLaunch] for why this is
+   * Pushes the current own-task value into the controller (see [isHostedInForeignTask] for why this is
    * not just [isTaskRoot]). Unlike the one-time hooks in [attachBackstackTaskHooks], this is a *value*
    * that can change over the Activity's life (e.g. an Activity below us finishes, or [isTaskRoot] reads
    * more reliably once resumed than at onCreate), so it is refreshed on every onResume to keep the
@@ -300,7 +300,7 @@ class MainActivity : AppCompatActivity() {
    * [BackstackController.isOwnTask].
    */
   private fun refreshIsOwnTask() {
-    backstackController.isOwnTask = isOwnTaskForLaunch(isTaskRoot, intent.flags)
+    backstackController.isOwnTask = !isHostedInForeignTask(isTaskRoot, intent.flags)
   }
 
   private fun attachBackstackTaskHooks() {
@@ -320,29 +320,29 @@ class MainActivity : AppCompatActivity() {
 
 /**
  * Logcat tag for the per-launch navigation breadcrumb emitted in [MainActivity.onCreate]. Grep this to
- * see how each launch was classified (action/flags/isTaskRoot -> computedIsOwnTask) when diagnosing
+ * see how each launch was classified (action/flags/isTaskRoot -> isHostedInForeignTask) when diagnosing
  * task/back-stack oddities like the deep-link-stack-on-Home report.
  */
 internal const val DEEP_LINK_STACK_DEBUG_TAG = "DeepLinkStackDebug"
 
 /**
- * Whether this Activity should be treated as running in its own task, given the task-root position and
- * the [launchFlags] of the intent that started it.
+ * Whether this Activity was launched into another app's task (genuinely foreign-hosted), given the
+ * task-root position and the [launchFlags] of the intent that started it. This is the one case that
+ * wants the lone-deep-link Up/escape affordance; everything else is our own task.
  *
- * [isTaskRoot] alone is ambiguous: it is `false` both when we are genuinely hosted in the *caller's*
- * task by an external deep link (where we want the Up/escape affordance) and when we are merely a
- * non-root second `MainActivity` stacked in our *own* task (a launcher relaunch, or a notification tap
- * that brought our existing task to the front). The discriminator is [Intent.FLAG_ACTIVITY_NEW_TASK]:
- * when it is set the system placed us in our own task (a fresh one, or an existing one brought forward),
- * so we are own-task even when not its root; only a launch *without* `NEW_TASK` joins the caller's task,
- * which combined with not being task-root is the one genuinely foreign-hosted case.
+ * Both conditions must hold to be foreign-hosted:
+ *  - **not the task root** (`!isTaskRoot`): some other activity sits below us in the task; and
+ *  - **launched without [Intent.FLAG_ACTIVITY_NEW_TASK]**: Android's default for that is to place us in
+ *    the *caller's* task rather than one of our own, so we joined whoever started us.
  *
- * This keeps the Up/escape affordance for real foreign deep links (e.g. an https link tapped in another
- * app, launched with no flags) while treating launcher relaunches and notification-fronted tasks as
- * own-task, so neither renders the lone-deep-link Up bar on a normal Home nor escapes on Up.
+ * `NEW_TASK` being set means the system gave us our own task (a fresh one, or an existing one brought
+ * forward), so we are NOT foreign-hosted even when not its root. That is why a launcher relaunch or a
+ * notification tap that fronted our task (both carry `NEW_TASK`, both can be non-root) is correctly
+ * treated as own-task and does not render the Up bar on a normal Home. Only a real foreign deep link
+ * (e.g. an https link tapped in another app, launched with no flags) is foreign-hosted.
  */
-internal fun isOwnTaskForLaunch(isTaskRoot: Boolean, launchFlags: Int): Boolean =
-  isTaskRoot || (launchFlags and Intent.FLAG_ACTIVITY_NEW_TASK) != 0
+internal fun isHostedInForeignTask(isTaskRoot: Boolean, launchFlags: Int): Boolean =
+  !isTaskRoot && (launchFlags and Intent.FLAG_ACTIVITY_NEW_TASK) == 0
 
 /**
  * Applies the theme in two ways:
