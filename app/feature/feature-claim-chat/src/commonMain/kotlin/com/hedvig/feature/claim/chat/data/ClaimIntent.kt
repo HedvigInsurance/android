@@ -62,8 +62,7 @@ internal sealed interface StepContent {
   data class FileUpload(
     val uploadUri: String,
     override val isSkippable: Boolean,
-    val localFiles: List<UiFile>,
-    val remoteFiles: List<RemoteFile>? //TODO: reuse!!
+    val localFiles: List<UiFile>
   ) : StepContent {
     data class RemoteFile(val url: String, val contentType: String, val fileName: String)
   }
@@ -87,7 +86,6 @@ internal sealed interface StepContent {
       val suffix: String?,
       val title: String,
       val defaultValues: List<FieldOption>,
-      val currentValues: List<FieldOption>,
       val maxValue: String?,
       val minValue: String?,
       val type: FieldType?,

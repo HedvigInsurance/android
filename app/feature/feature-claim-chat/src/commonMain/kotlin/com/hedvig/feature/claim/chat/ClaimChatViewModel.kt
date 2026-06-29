@@ -282,7 +282,9 @@ internal class ClaimChatPresenter(
                     failedToStart = false
                     claimIntentId = claimIntent.id
                     steps.clear()
-                    steps.addAll(claimIntent.previousSteps)
+                    steps.addAll(claimIntent.previousSteps.filter {
+                      it.stepContent !is StepContent.Task
+                    })
                     progress = claimIntent.progress
                     when (val next = claimIntent.next) {
                       is ClaimIntent.Next.Outcome -> {

@@ -4,6 +4,7 @@ import arrow.core.raise.Raise
 import arrow.core.raise.context.raise
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.locale.CommonLocale
+import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.shared.partners.deflect.DeflectData
@@ -140,14 +141,15 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
       StepContent.FileUpload(
         uploadUri = uploadUri,
         isSkippable = isSkippable,
-        localFiles = emptyList(),
-        remoteFiles = this.currentFiles?.map {
-          StepContent.FileUpload.RemoteFile(
-            it.url,
-            it.contentType,
-            it.fileName,
-          )
-        }
+        localFiles = this.currentFiles?.map {
+            UiFile(
+              name = it.fileName,
+              localPath = null,
+              url = it.url,
+              mimeType = it.contentType,
+              id = it.url,
+            )
+        } ?: emptyList()
       )
     }
 
@@ -244,8 +246,8 @@ private fun List<FormFragment.Field>.toFields(locale: CommonLocale): List<StepCo
       isRequired = field.isRequired,
       suffix = field.suffix,
       title = field.title,
-      defaultValues = field.defaultValues.toFieldOptions(field.options),
-      currentValues = field.currentValues.toFieldOptions(field.options),
+      defaultValues = if(field.currentValues.isNotEmpty()) field.currentValues.toFieldOptions(field.options)
+      else field.defaultValues.toFieldOptions(field.options),
       maxValue = field.maxValue,
       minValue = field.minValue,
       type = when (field.type) {
