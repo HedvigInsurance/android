@@ -25,10 +25,7 @@ import hedvig.resources.Res
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun StartClaimPledgeDestination(
-  navigateUp: () -> Unit,
-  navigateToClaimChat: () -> Unit
-) {
+internal fun StartClaimPledgeDestination(navigateUp: () -> Unit, navigateToClaimChat: () -> Unit) {
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,
   ) {
@@ -47,21 +44,18 @@ internal fun StartClaimPledgeDestination(
         navigateToClaimChat = navigateToClaimChat,
         modifier = Modifier
           .weight(1f)
-          .padding(horizontal = 16.dp)
+          .padding(horizontal = 16.dp),
       )
     }
   }
 }
 
-
 @HedvigShortMultiScreenPreview
 @Composable
-private fun PreviewStartClaimPledgeDestination(
-) {
+private fun PreviewStartClaimPledgeDestination() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      StartClaimPledgeDestination({},{}
-      )
+      StartClaimPledgeDestination({}, {})
     }
   }
 }
