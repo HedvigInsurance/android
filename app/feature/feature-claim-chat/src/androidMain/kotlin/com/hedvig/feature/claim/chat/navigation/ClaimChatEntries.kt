@@ -59,6 +59,7 @@ fun EntryProviderScope<HedvigNavKey>.claimChatEntries(
 ) {
   entry<ClaimChatKey> { key ->
     ClaimChatDestination(
+      resumableClaimId = key.resumableClaimId,
       isDevelopmentFlow = key.isDevelopmentFlow,
       shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
       openAppSettings = openAppSettings,

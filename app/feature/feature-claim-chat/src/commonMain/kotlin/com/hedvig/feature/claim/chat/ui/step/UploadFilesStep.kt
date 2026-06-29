@@ -361,6 +361,7 @@ private fun PreviewUploadFilesStep(
               id = "1",
             ),
           ).takeIf { hasFiles }.orEmpty(),
+          remoteFiles = null
         ),
         appPackageId = "",
         isCurrentStep = true,

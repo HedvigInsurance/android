@@ -34,6 +34,7 @@ import com.hedvig.feature.claim.chat.data.FormSubmissionData.FieldToSubmit
 import com.hedvig.feature.claim.chat.data.FreeTextErrorType.TooShort
 import com.hedvig.feature.claim.chat.data.GetClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.RegretStepUseCase
+import com.hedvig.feature.claim.chat.data.ResumeClaimUseCase
 import com.hedvig.feature.claim.chat.data.SkipStepUseCase
 import com.hedvig.feature.claim.chat.data.StartClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.StepContent
@@ -164,6 +165,7 @@ internal sealed interface ClaimChatUiState {
 @HedvigViewModel(ActivityRetainedScope::class)
 internal class ClaimChatViewModel(
   @Assisted developmentFlow: Boolean,
+  @Assisted resumableClaimId: String?,
   startClaimIntentUseCase: StartClaimIntentUseCase,
   getClaimIntentUseCase: GetClaimIntentUseCase,
   submitTaskUseCase: SubmitTaskUseCase,
@@ -177,6 +179,7 @@ internal class ClaimChatViewModel(
   regretStepUseCase: RegretStepUseCase,
   formFieldSearchUseCase: FormFieldSearchUseCase,
   fileService: FileService,
+  resumeClaimUseCase: ResumeClaimUseCase
 ) : MoleculeViewModel<ClaimChatEvent, ClaimChatUiState>(
     ClaimChatUiState.Initializing,
     ClaimChatPresenter(
@@ -194,6 +197,8 @@ internal class ClaimChatViewModel(
       fileService,
       regretStepUseCase,
       formFieldSearchUseCase,
+      resumableClaimId,
+      resumeClaimUseCase
     ),
   ) {
   override fun onCleared() {
@@ -217,6 +222,8 @@ internal class ClaimChatPresenter(
   private val fileService: FileService,
   private val regretStepUseCase: RegretStepUseCase,
   private val formFieldSearchUseCase: FormFieldSearchUseCase,
+  private val resumableClaimId: String?,
+  private val resumeClaimUseCase: ResumeClaimUseCase
 ) : MoleculePresenter<ClaimChatEvent, ClaimChatUiState> {
   @Composable
   override fun MoleculePresenterScope<ClaimChatEvent>.present(lastState: ClaimChatUiState): ClaimChatUiState {
@@ -254,34 +261,70 @@ internal class ClaimChatPresenter(
 
     var searchQuery by remember { mutableStateOf<SearchObject?>(null) }
 
-    if (initializing) {
+    if (initializing) { //TODO
       LaunchedEffect(Unit) {
-        startClaimIntentUseCase
-          .invoke(developmentFlow)
-          .fold(
-            ifLeft = {
-              initializing = false
-              failedToStart = true
-            },
-            ifRight = { claimIntent ->
-              Snapshot.withMutableSnapshot {
+        val isResumingClaim = resumableClaimId!=null
+        if (isResumingClaim) {
+          resumeClaimUseCase
+            .invoke()
+            .fold(
+              ifLeft = {
                 initializing = false
-                failedToStart = false
-                claimIntentId = claimIntent.id
-                steps.clear()
-                progress = claimIntent.progress
-                when (val next = claimIntent.next) {
-                  is ClaimIntent.Next.Outcome -> {
-                    outcome = next.claimIntentOutcome
-                  }
+                failedToStart = true
+              },
+              ifRight = { claimIntent ->
+                if (claimIntent==null) {
+                  initializing = false
+                  failedToStart = true
+                } else {
+                  Snapshot.withMutableSnapshot {
+                    initializing = false
+                    failedToStart = false
+                    claimIntentId = claimIntent.id
+                    steps.clear()
+                    steps.addAll(claimIntent.previousSteps)
+                    progress = claimIntent.progress
+                    when (val next = claimIntent.next) {
+                      is ClaimIntent.Next.Outcome -> {
+                        outcome = next.claimIntentOutcome
+                      }
 
-                  is ClaimIntent.Next.Step -> {
-                    steps.add(next.claimIntentStep)
+                      is ClaimIntent.Next.Step -> {
+                        steps.add(next.claimIntentStep)
+                      }
+                    }
                   }
                 }
-              }
-            },
-          )
+              },
+            )
+        } else {
+          startClaimIntentUseCase
+            .invoke(developmentFlow)
+            .fold(
+              ifLeft = {
+                initializing = false
+                failedToStart = true
+              },
+              ifRight = { claimIntent ->
+                Snapshot.withMutableSnapshot {
+                  initializing = false
+                  failedToStart = false
+                  claimIntentId = claimIntent.id
+                  steps.clear()
+                  progress = claimIntent.progress
+                  when (val next = claimIntent.next) {
+                    is ClaimIntent.Next.Outcome -> {
+                      outcome = next.claimIntentOutcome
+                    }
+
+                    is ClaimIntent.Next.Step -> {
+                      steps.add(next.claimIntentStep)
+                    }
+                  }
+                }
+              },
+            )
+        }
       }
     }
 

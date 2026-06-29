@@ -56,11 +56,25 @@ internal fun ClaimIntentFragment.toClaimIntent(locale: CommonLocale): ClaimInten
       else -> error("ClaimIntentFragment contained null currentStep and null outcome")
     },
     progress = progress?.toFloat(),
+    previousSteps = previousSteps.map {
+      it.toClaimIntentStep(locale)
+    }
   )
 }
 
 context(raise: Raise<ClaimChatErrorMessage>)
 private fun ClaimIntentFragment.CurrentStep.toClaimIntentStep(locale: CommonLocale): ClaimIntentStep {
+  return ClaimIntentStep(
+    id = StepId(id),
+    text = text,
+    stepContent = this.content.toStepContent(locale),
+    isRegrettable = this.isRegrettable,
+    hint = hint,
+  )
+}
+
+context(raise: Raise<ClaimChatErrorMessage>)
+private fun ClaimIntentFragment.PreviousStep.toClaimIntentStep(locale: CommonLocale): ClaimIntentStep {
   return ClaimIntentStep(
     id = StepId(id),
     text = text,
@@ -83,7 +97,7 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
     is ContentSelectFragment -> {
       StepContent.ContentSelect(
         options = options.toOptions(),
-        selectedOptionId = defaultSelectedId,
+        selectedOptionId = currentSelectedId ?: defaultSelectedId,
         isSkippable = isSkippable,
         style = when (style) {
           ClaimIntentStepContentSelectStyle.PILL -> StepContent.ContentSelectStyle.PILL
@@ -102,10 +116,21 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
     }
 
     is AudioRecordingFragment -> {
+      val audioIrl = this.currentAudioUrl
+      val freeText = this.currentFreeText
+      val recordingState = if(audioIrl!=null) AudioRecordingStepState.AudioRecording.Playback(
+        audioPath = AudioPath.RemoteUrl(audioIrl),
+        isPlaying = false,
+        isPrepared = true, //TODO: check
+        hasError = false
+      )
+      //else if (freeText!=null) AudioRecordingStepState.FreeTextDescription() //TODO: fix freeText - move it to
+      // FreeTextDescription instead of hanging in UiState
+      else AudioRecordingStepState.AudioRecording.NotRecording
       StepContent.AudioRecording(
         uploadUri = uploadUri,
         isSkippable = isSkippable,
-        recordingState = AudioRecordingStepState.AudioRecording.NotRecording,
+        recordingState = recordingState,
         freeTextMinLength = freeTextMinLength,
         freeTextMaxLength = freeTextMaxLength,
       )
@@ -116,6 +141,13 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
         uploadUri = uploadUri,
         isSkippable = isSkippable,
         localFiles = emptyList(),
+        remoteFiles = this.currentFiles?.map {
+          StepContent.FileUpload.RemoteFile(
+            it.url,
+            it.contentType,
+            it.fileName,
+          )
+        }
       )
     }
 
@@ -213,6 +245,7 @@ private fun List<FormFragment.Field>.toFields(locale: CommonLocale): List<StepCo
       suffix = field.suffix,
       title = field.title,
       defaultValues = field.defaultValues.toFieldOptions(field.options),
+      currentValues = field.currentValues.toFieldOptions(field.options),
       maxValue = field.maxValue,
       minValue = field.minValue,
       type = when (field.type) {

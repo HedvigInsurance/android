@@ -136,10 +136,11 @@ internal fun ClaimChatDestination(
   isDevelopmentFlow: Boolean,
   navigateUp: () -> Unit,
   openPlayStore: () -> Unit,
+  resumableClaimId: String?
 ) {
   val claimChatViewModel =
     assistedMetroViewModel<ClaimChatViewModel, ClaimChatViewModelFactory> {
-      create(isDevelopmentFlow)
+      create(isDevelopmentFlow, resumableClaimId)
     }
   Box(Modifier.fillMaxSize(), propagateMinConstraints = true) {
     BlurredGradientBackground()

@@ -98,8 +98,10 @@ import com.hedvig.audio.player.data.AudioPlayer
 import com.hedvig.audio.player.data.AudioPlayerState
 import com.hedvig.audio.player.data.PlayableAudioSource
 import com.hedvig.audio.player.data.ProgressPercentage
+import com.hedvig.audio.player.data.SignedAudioUrl
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.FreeTextRestrictions
+import com.hedvig.feature.claim.chat.data.AudioPath
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.FreeTextErrorType
@@ -284,9 +286,15 @@ internal fun AudioRecorderBubble(
               }
             } else {
               if (recordingState is AudioRecordingStepState.AudioRecording.Playback) {
-                val audioPlayer = rememberAudioPlayer(
-                  PlayableAudioSource.LocalFilePath(recordingState.filePath),
-                )
+                val audioPlayer = when (recordingState.audioPath) {
+                  is AudioPath.FilePath -> rememberAudioPlayer(
+                    PlayableAudioSource.LocalFilePath(recordingState.audioPath.filePath))
+                  is AudioPath.RemoteUrl -> rememberAudioPlayer(
+                    PlayableAudioSource.RemoteUrl(
+                      SignedAudioUrl.fromSignedAudioUrlString(recordingState.audioPath.remoteUrl),
+                    ),
+                  )
+                }
                 HedvigAudioPlayer(
                   audioPlayer = audioPlayer,
                   Modifier.padding(start = sentAnswersStartPadding),
@@ -355,9 +363,11 @@ private fun AudioRecordingBottomSheet(
   }
 
   val audioPlayer = (audioRecordingState as? AudioRecordingStepState.AudioRecording.Playback)?.let {
-    rememberAudioPlayer(
-      PlayableAudioSource.LocalFilePath(it.filePath),
-    )
+    if (it.audioPath is AudioPath.FilePath) {
+      rememberAudioPlayer(
+        PlayableAudioSource.LocalFilePath(it.audioPath.filePath),
+      )
+    } else null
   }
 
   LaunchedEffect(bottomSheetState.isVisible) {
@@ -1156,19 +1166,19 @@ private class AudioRecordingSheetContentStateProvider :
         filePath = "/path/to/recording.mp4",
       ),
       AudioRecordingStepState.AudioRecording.Playback(
-        filePath = "/path/to/recording.mp4",
+        audioPath = AudioPath.FilePath("/path/to/recording.mp4"),
         isPlaying = false,
         isPrepared = true,
         hasError = false,
       ),
       AudioRecordingStepState.AudioRecording.Playback(
-        filePath = "/path/to/recording.mp4",
+        audioPath = AudioPath.FilePath("/path/to/recording.mp4"),
         isPlaying = false,
         isPrepared = false,
         hasError = false,
       ),
       AudioRecordingStepState.AudioRecording.Playback(
-        filePath = "/path/to/recording.mp4",
+        audioPath = AudioPath.FilePath("/path/to/recording.mp4"),
         isPlaying = false,
         isPrepared = false,
         hasError = true,

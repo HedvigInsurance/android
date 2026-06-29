@@ -15,6 +15,7 @@ internal data class ClaimIntent(
   val id: ClaimIntentId,
   val next: Next,
   val progress: Float?,
+  val previousSteps: List<ClaimIntentStep>
 ) {
   sealed interface Next {
     val step: Step?
@@ -62,7 +63,10 @@ internal sealed interface StepContent {
     val uploadUri: String,
     override val isSkippable: Boolean,
     val localFiles: List<UiFile>,
-  ) : StepContent
+    val remoteFiles: List<RemoteFile>?
+  ) : StepContent {
+    data class RemoteFile(val url: String, val contentType: String, val fileName: String)
+  }
 
   data class Task(
     val descriptions: List<String>,
@@ -83,6 +87,7 @@ internal sealed interface StepContent {
       val suffix: String?,
       val title: String,
       val defaultValues: List<FieldOption>,
+      val currentValues: List<FieldOption>,
       val maxValue: String?,
       val minValue: String?,
       val type: FieldType?,
@@ -198,12 +203,17 @@ sealed interface AudioRecordingStepState {
     ) : AudioRecording
 
     data class Playback(
-      val filePath: String,
+      val audioPath: AudioPath,
       val isPlaying: Boolean,
       val isPrepared: Boolean,
       val hasError: Boolean,
     ) : AudioRecording
   }
+}
+
+sealed interface AudioPath {
+  data class FilePath(val filePath: String): AudioPath
+  data class RemoteUrl(val remoteUrl: String): AudioPath
 }
 
 sealed interface FreeTextErrorType {
