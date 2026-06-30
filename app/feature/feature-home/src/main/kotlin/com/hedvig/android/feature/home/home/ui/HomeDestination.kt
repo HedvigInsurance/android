@@ -166,9 +166,11 @@ import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
 import hedvig.resources.ADDON_FLOW_SEE_PRICE_BUTTON
 import hedvig.resources.CHAT_NEW_MESSAGE
+import hedvig.resources.CROSS_SELL_SUBTITLE
 import hedvig.resources.DASHBOARD_OPEN_CHAT
 import hedvig.resources.HC_QUICK_ACTIONS_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE
+import hedvig.resources.HC_QUICK_ACTIONS_UPDATE_ADDRESS
 import hedvig.resources.Res
 import hedvig.resources.TAB_REFERRALS_TITLE
 import hedvig.resources.TOAST_NEW_OFFER
@@ -369,37 +371,37 @@ private fun HomeScreen(
             if (currentState.firstVetAction != null) add(currentState.firstVetAction)
             if (currentState.chatAction != null) add(currentState.chatAction)
           }
-          actionsList.forEach { action ->
-            when (action) {
-              ChatAction -> {
-                // The FirstVet/cross-sell icons are colored images (theme-independent), but this one is a
-                // tinted glyph on a tonal surface, so it must use the light scheme on the light gradient.
-                OnHeroGradient {
+          OnHeroGradient {
+            actionsList.forEach { action ->
+              when (action) {
+                ChatAction -> {
+                  // The FirstVet/cross-sell icons are colored images (theme-independent), but this one is a
+                  // tinted glyph on a tonal surface, so it must use the light scheme on the light gradient.
                   ToolbarChatIcon(
                     onClick = onNavigateToInbox,
                     modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
                   )
                 }
-              }
 
-              is CrossSellsAction -> {
-                ToolbarCrossSellsIcon(
-                  onClick = {
-                    crossSellBottomSheetState.show(
-                      action.crossSells,
-                    )
-                  },
-                  modifier = Modifier.notificationCircle(
-                    action.crossSellRecommendationNotification.hasUnreadRecommendation,
-                  ),
-                )
-              }
+                is CrossSellsAction -> {
+                  ToolbarCrossSellsIcon(
+                    onClick = {
+                      crossSellBottomSheetState.show(
+                        action.crossSells,
+                      )
+                    },
+                    modifier = Modifier.notificationCircle(
+                      action.crossSellRecommendationNotification.hasUnreadRecommendation,
+                    ),
+                  )
+                }
 
-              is FirstVetAction -> {
-                val sections = action.sections
-                ToolbarFirstVetIcon(
-                  onClick = { navigateToFirstVet(sections) },
-                )
+                is FirstVetAction -> {
+                  val sections = action.sections
+                  ToolbarFirstVetIcon(
+                    onClick = { navigateToFirstVet(sections) },
+                  )
+                }
               }
             }
           }
@@ -1117,10 +1119,9 @@ private fun QuickActionTilesSection(
             .fillMaxHeight(),
         )
       }
-      // TODO: Add "Change address" / "Byt adress" to Lokalise.
       HomeActionTile(
         icon = HedvigIcons.Reload,
-        text = "Change address",
+        text = stringResource(Res.string.HC_QUICK_ACTIONS_UPDATE_ADDRESS),
         onClick = onChangeAddress,
         modifier = Modifier
           .weight(1f)
@@ -1240,8 +1241,7 @@ private fun DiscoverInsurancesSection(
   imageLoader: ImageLoader,
 ) {
   CrossSellsSection(
-    // TODO: Add "Discover our insurances" / "Upptäck våra försäkringar" to Lokalise.
-    title = "Discover our insurances",
+    title = stringResource(Res.string.CROSS_SELL_SUBTITLE),
     crossSells = crossSells,
     onCrossSellClick = onCrossSellClick,
     modifier = Modifier.padding(horizontal = 16.dp),
