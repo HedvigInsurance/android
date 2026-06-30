@@ -95,6 +95,7 @@ import hedvig.resources.TIER_FLOW_SELECT_COVERAGE_SUBTITLE
 import hedvig.resources.TIER_FLOW_SELECT_COVERAGE_TITLE
 import hedvig.resources.TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE
 import hedvig.resources.TIER_FLOW_SELECT_DEDUCTIBLE_TITLE
+import hedvig.resources.TIER_FLOW_SHOW_COVERAGE_BUTTON
 import hedvig.resources.TIER_FLOW_SUBTITLE
 import hedvig.resources.TIER_FLOW_TITLE
 import hedvig.resources.TIER_FLOW_TOTAL
@@ -333,7 +334,7 @@ private fun CustomizationCard(
       Spacer(Modifier.height(16.dp))
       val tierSimpleItems = buildList {
         for (tier in tiers) {
-          add(SimpleDropdownItem(tier.first.tierDisplayName ?: "-"))
+          add(SimpleDropdownItem(tier.first.tierDisplayName ?: tier.first.tierName))
         }
       }
       val hintText = stringResource(Res.string.TIER_FLOW_COVERAGE_PLACEHOLDER)
@@ -549,7 +550,7 @@ private fun TierCoverageRadioGroup(
     options = tiers.map { pair ->
       RadioOption(
         id = RadioOptionId(pair.first.tierName),
-        text = pair.first.tierDisplayName ?: "-",
+        text = pair.first.tierDisplayName ?: pair.first.tierName,
         label = pair.first.tierDescription,
       )
     },
