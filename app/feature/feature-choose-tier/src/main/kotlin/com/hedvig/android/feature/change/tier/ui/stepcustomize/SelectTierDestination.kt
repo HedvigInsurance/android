@@ -270,14 +270,20 @@ private fun SelectTierScreen(
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
     )
-    if (uiState.tiers.size > 1) {
+    if (uiState.showCompareCoverage) {
       Spacer(Modifier.height(8.dp))
       HedvigTextButton(
         buttonSize = Large,
         modifier = Modifier
           .fillMaxWidth()
           .padding(horizontal = 16.dp),
-        text = stringResource(Res.string.TIER_FLOW_COMPARE_BUTTON),
+        text = stringResource(
+          if (uiState.tiers.size == 1) {
+            Res.string.TIER_FLOW_SHOW_COVERAGE_BUTTON
+          } else {
+            Res.string.TIER_FLOW_COMPARE_BUTTON
+          },
+        ),
         onClick = {
           onCompareClick()
         },
@@ -753,6 +759,7 @@ private fun SelectTierScreenPreview() {
         ),
         quotesForChosenTier = listOf(quotesForPreview[0]),
         isTierChoiceEnabled = true,
+        showCompareCoverage = true,
         chosenTier = Tier(
           "BAS",
           tierLevel = 0,

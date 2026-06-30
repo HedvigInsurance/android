@@ -219,6 +219,7 @@ internal class SelectCoveragePresenter(
             ),
             quotesForChosenTier = currentPartialStateValue.map[chosenTier]!!,
             isTierChoiceEnabled = currentPartialStateValue.map.keys.size > 1,
+            showCompareCoverage = currentPartialStateValue.map.keys.any { it.tierDisplayName != null },
             contractData = currentPartialStateValue.contractData,
             chosenInDialogQuote = chosenQuoteInDialog,
             chosenInDialogTier = chosenTierInDialog,
@@ -326,6 +327,8 @@ internal data class SelectCoverageSuccessUiState(
   val chosenInDialogQuote: TierDeductibleQuote?,
   val isCurrentChosen: Boolean,
   val isTierChoiceEnabled: Boolean,
+  // whether to show the compare/show-coverage button (true when any tier has a display name)
+  val showCompareCoverage: Boolean,
   // sorted list of tiers with corresponding premiums (depending on selected deductible)
   val tiers: List<Pair<Tier, UiMoney>>,
   val quotesForChosenTier: List<TierDeductibleQuote>,
