@@ -148,7 +148,6 @@ internal sealed interface ClaimChatUiState {
     val claimIntentId: ClaimIntentId,
     val steps: List<ClaimIntentStep>,
     val currentStep: ClaimIntentStep?,
-    val freeText: String?,
     val outcome: ClaimIntentOutcome?,
     val errorSubmittingStep: ClaimChatErrorMessage?,
     val currentContinueButtonLoading: Boolean = false,
@@ -179,7 +178,7 @@ internal class ClaimChatViewModel(
   regretStepUseCase: RegretStepUseCase,
   formFieldSearchUseCase: FormFieldSearchUseCase,
   fileService: FileService,
-  resumeClaimUseCase: ResumeClaimUseCase
+  resumeClaimUseCase: ResumeClaimUseCase,
 ) : MoleculeViewModel<ClaimChatEvent, ClaimChatUiState>(
     ClaimChatUiState.Initializing,
     ClaimChatPresenter(
@@ -198,7 +197,7 @@ internal class ClaimChatViewModel(
       regretStepUseCase,
       formFieldSearchUseCase,
       resumableClaimId,
-      resumeClaimUseCase
+      resumeClaimUseCase,
     ),
   ) {
   override fun onCleared() {
@@ -223,7 +222,7 @@ internal class ClaimChatPresenter(
   private val regretStepUseCase: RegretStepUseCase,
   private val formFieldSearchUseCase: FormFieldSearchUseCase,
   private val resumableClaimId: String?,
-  private val resumeClaimUseCase: ResumeClaimUseCase
+  private val resumeClaimUseCase: ResumeClaimUseCase,
 ) : MoleculePresenter<ClaimChatEvent, ClaimChatUiState> {
   @Composable
   override fun MoleculePresenterScope<ClaimChatEvent>.present(lastState: ClaimChatUiState): ClaimChatUiState {
@@ -247,7 +246,6 @@ internal class ClaimChatPresenter(
     var currentContinueButtonLoading by remember { mutableStateOf(false) }
     var currentSkipButtonLoading by remember { mutableStateOf(false) }
     var errorSubmittingStep by remember { mutableStateOf<ClaimChatErrorMessage?>(null) }
-    var freeText by remember { mutableStateOf<String?>(null) }
     var showConfirmEditDialogForStep by remember { mutableStateOf<StepId?>(null) }
     var progress by remember {
       mutableStateOf<Float?>(
@@ -261,9 +259,9 @@ internal class ClaimChatPresenter(
 
     var searchQuery by remember { mutableStateOf<SearchObject?>(null) }
 
-    if (initializing) { //TODO
+    if (initializing) {
       LaunchedEffect(Unit) {
-        val isResumingClaim = resumableClaimId!=null
+        val isResumingClaim = resumableClaimId != null
         if (isResumingClaim) {
           resumeClaimUseCase
             .invoke()
@@ -273,7 +271,7 @@ internal class ClaimChatPresenter(
                 failedToStart = true
               },
               ifRight = { claimIntent ->
-                if (claimIntent==null) {
+                if (claimIntent == null) {
                   initializing = false
                   failedToStart = true
                 } else {
@@ -282,9 +280,11 @@ internal class ClaimChatPresenter(
                     failedToStart = false
                     claimIntentId = claimIntent.id
                     steps.clear()
-                    steps.addAll(claimIntent.previousSteps.filter {
-                      it.stepContent !is StepContent.Task
-                    })
+                    steps.addAll(
+                      claimIntent.previousSteps.filter {
+                        it.stepContent !is StepContent.Task
+                      },
+                    )
                     progress = claimIntent.progress
                     when (val next = claimIntent.next) {
                       is ClaimIntent.Next.Outcome -> {
@@ -476,7 +476,10 @@ internal class ClaimChatPresenter(
             }
 
             is ClaimChatEvent.AudioRecording.SubmitTextInput -> {
-              val freeTextInput = freeText ?: return@CollectEvents
+              val recordingState = steps.find { it.id == event.id }
+                ?.stepContent.let { it as? StepContent.AudioRecording }
+                ?.recordingState as? FreeTextDescription
+              val freeTextInput = recordingState?.freeText ?: return@CollectEvents
               currentContinueButtonLoading = true
               launch {
                 submitAudioRecordingUseCase
@@ -524,13 +527,7 @@ internal class ClaimChatPresenter(
             }
 
             is ClaimChatEvent.AudioRecording.SwitchToFreeText -> {
-              val currentContent = currentStep?.stepContent as? StepContent.AudioRecording
-                ?: return@CollectEvents
-              val textTooShort = freeText?.length?.let {
-                currentContent.freeTextMinLength > it
-              } ?: true
               steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
-                val canSubmit = !currentContinueButtonLoading && !freeText.isNullOrEmpty() && !textTooShort
                 showFreeTextOverlay = FreeTextRestrictions(
                   content.freeTextMinLength,
                   content.freeTextMaxLength,
@@ -539,7 +536,8 @@ internal class ClaimChatPresenter(
                   stepContent = content.copy(
                     recordingState = FreeTextDescription(
                       errorType = null,
-                      canSubmit = canSubmit,
+                      canSubmit = false,
+                      freeText = null,
                     ),
                   ),
                 )
@@ -735,11 +733,11 @@ internal class ClaimChatPresenter(
                       null
                     },
                     canSubmit = canSubmit,
+                    freeText = event.text,
                   ),
                 ),
               )
             }
-            freeText = event.text
           }
         }
 
@@ -788,7 +786,6 @@ internal class ClaimChatPresenter(
                     val index = steps.indexOf(stepToUpdate)
                     if (index >= 0) {
                       steps.subList(index, steps.size).clear()
-                      if (steps.none { it.stepContent is StepContent.AudioRecording }) freeText = null
                     }
                     currentContinueButtonLoading = false
                     currentSkipButtonLoading = false
@@ -995,7 +992,6 @@ internal class ClaimChatPresenter(
         currentStep = currentStep,
         outcome = outcome,
         showFreeTextOverlay = showFreeTextOverlay,
-        freeText = freeText,
         errorSubmittingStep = errorSubmittingStep,
         currentContinueButtonLoading = currentContinueButtonLoading,
         currentSkipButtonLoading = currentSkipButtonLoading,

@@ -88,6 +88,7 @@ import com.hedvig.feature.claim.chat.ClaimChatEvent.AudioRecording.*
 import com.hedvig.feature.claim.chat.ClaimChatUiState
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
 import com.hedvig.feature.claim.chat.ClaimChatViewModelFactory
+import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.data.ClaimChatErrorMessage
 import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
 import com.hedvig.feature.claim.chat.data.ClaimIntentStep
@@ -136,7 +137,7 @@ internal fun ClaimChatDestination(
   isDevelopmentFlow: Boolean,
   navigateUp: () -> Unit,
   openPlayStore: () -> Unit,
-  resumableClaimId: String?
+  resumableClaimId: String?,
 ) {
   val claimChatViewModel =
     assistedMetroViewModel<ClaimChatViewModel, ClaimChatViewModelFactory> {
@@ -228,9 +229,12 @@ private fun ClaimChatScreen(
   openAppSettings: () -> Unit,
   openPlayStore: () -> Unit,
 ) {
+  val currentFreeText = (uiState.currentStep?.stepContent as? StepContent.AudioRecording)
+    ?.recordingState.let { it as? AudioRecordingStepState.FreeTextDescription }
+    ?.freeText
   FreeTextOverlay(
     freeTextMaxLength = uiState.showFreeTextOverlay?.maxLength ?: 2000,
-    freeTextValue = uiState.freeText,
+    freeTextValue = currentFreeText,
     freeTextHint = stringResource(Res.string.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER),
     freeTextTitle = stringResource(Res.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
     freeTextOnCancelClick = {
@@ -486,7 +490,6 @@ private fun ClaimChatScrollableContent(
 
         StepContentSection(
           stepItem = item,
-          freeText = uiState.freeText,
           isCurrentStep = isCurrentStep,
           showAnimationSequence = showAnimationSequence,
           currentContinueButtonLoading = uiState.currentContinueButtonLoading,
@@ -544,7 +547,6 @@ private fun ScrollToBottomButton(onClick: () -> Unit, modifier: Modifier = Modif
 @Composable
 private fun StepContentSection(
   stepItem: ClaimIntentStep,
-  freeText: String?,
   isCurrentStep: Boolean,
   showAnimationSequence: Boolean,
   currentContinueButtonLoading: Boolean,
@@ -620,7 +622,6 @@ private fun StepContentSection(
     ) {
       StepBottomContent(
         stepItem = stepItem,
-        freeText = freeText,
         isCurrentStep = isCurrentStep,
         currentContinueButtonLoading = currentContinueButtonLoading,
         currentSkipButtonLoading = currentSkipButtonLoading,
@@ -757,7 +758,6 @@ private fun CommonPaddingWrapper(content: @Composable () -> Unit) {
 @Composable
 private fun StepBottomContent(
   stepItem: ClaimIntentStep,
-  freeText: String?,
   isCurrentStep: Boolean,
   currentContinueButtonLoading: Boolean,
   currentSkipButtonLoading: Boolean,
@@ -808,7 +808,6 @@ private fun StepBottomContent(
           clock = Clock.System,
           onShouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           openAppSettings = openAppSettings,
-          freeText = freeText,
           onEvent = onEvent,
           continueButtonLoading = currentContinueButtonLoading,
           skipButtonLoading = currentSkipButtonLoading,

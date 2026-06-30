@@ -255,8 +255,8 @@ private fun Playback(
       HedvigCircularProgressIndicator()
     } else {
       val audioPlayer = when (uiState.audioPath) {
-        is AudioPath.FilePath -> rememberAudioPlayer(
-          PlayableAudioSource.LocalFilePath(uiState.audioPath.filePath))
+        is AudioPath.FilePath -> rememberAudioPlayer(PlayableAudioSource.LocalFilePath(uiState.audioPath.filePath))
+
         is AudioPath.RemoteUrl -> rememberAudioPlayer(
           PlayableAudioSource.RemoteUrl(
             SignedAudioUrl.fromSignedAudioUrlString(uiState.audioPath.remoteUrl),

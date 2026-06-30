@@ -142,7 +142,6 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun AudioRecordingStep(
   item: ClaimIntentStep,
-  freeText: String?,
   stepContent: StepContent.AudioRecording,
   onShowFreeText: () -> Unit,
   onSwitchToAudioRecording: () -> Unit,
@@ -187,7 +186,6 @@ internal fun AudioRecordingStep(
       canSkip = stepContent.isSkippable,
       onSkip = onSkip,
       isCurrentStep = isCurrentStep,
-      freeText = freeText,
       continueButtonLoading = continueButtonLoading,
       skipButtonLoading = skipButtonLoading,
     )
@@ -203,7 +201,6 @@ internal fun AudioRecordingStep(
 @Composable
 internal fun AudioRecorderBubble(
   recordingState: AudioRecordingStepState,
-  freeText: String?,
   clock: Clock,
   onShouldShowRequestPermissionRationale: (String) -> Boolean,
   startRecording: () -> Unit,
@@ -240,7 +237,7 @@ internal fun AudioRecorderBubble(
             submitFreeText = submitFreeText,
             showAudioRecording = onSwitchToAudioRecording,
             onLaunchFullScreenEditText = onLaunchFullScreenEditText,
-            freeText = freeText,
+            freeText = recordingState.freeText,
             hasError = recordingState.hasError,
             errorType = recordingState.errorType,
             isCurrentStep = isCurrentStep,
@@ -288,7 +285,9 @@ internal fun AudioRecorderBubble(
               if (recordingState is AudioRecordingStepState.AudioRecording.Playback) {
                 val audioPlayer = when (recordingState.audioPath) {
                   is AudioPath.FilePath -> rememberAudioPlayer(
-                    PlayableAudioSource.LocalFilePath(recordingState.audioPath.filePath))
+                    PlayableAudioSource.LocalFilePath(recordingState.audioPath.filePath),
+                  )
+
                   is AudioPath.RemoteUrl -> rememberAudioPlayer(
                     PlayableAudioSource.RemoteUrl(
                       SignedAudioUrl.fromSignedAudioUrlString(recordingState.audioPath.remoteUrl),
@@ -367,7 +366,9 @@ private fun AudioRecordingBottomSheet(
       rememberAudioPlayer(
         PlayableAudioSource.LocalFilePath(it.audioPath.filePath),
       )
-    } else null
+    } else {
+      null
+    }
   }
 
   LaunchedEffect(bottomSheetState.isVisible) {

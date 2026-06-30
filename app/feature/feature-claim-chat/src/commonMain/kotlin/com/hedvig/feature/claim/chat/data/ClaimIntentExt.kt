@@ -59,7 +59,7 @@ internal fun ClaimIntentFragment.toClaimIntent(locale: CommonLocale): ClaimInten
     progress = progress?.toFloat(),
     previousSteps = previousSteps.map {
       it.toClaimIntentStep(locale)
-    }
+    },
   )
 }
 
@@ -117,17 +117,24 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
     }
 
     is AudioRecordingFragment -> {
-      val audioIrl = this.currentAudioUrl
+      val audioUrl = this.currentAudioUrl
       val freeText = this.currentFreeText
-      val recordingState = if(audioIrl!=null) AudioRecordingStepState.AudioRecording.Playback(
-        audioPath = AudioPath.RemoteUrl(audioIrl),
-        isPlaying = false,
-        isPrepared = true, //TODO: check
-        hasError = false
-      )
-      //else if (freeText!=null) AudioRecordingStepState.FreeTextDescription() //TODO: fix freeText - move it to
-      // FreeTextDescription instead of hanging in UiState
-      else AudioRecordingStepState.AudioRecording.NotRecording
+      val recordingState = if (audioUrl != null) {
+        AudioRecordingStepState.AudioRecording.Playback(
+          audioPath = AudioPath.RemoteUrl(audioUrl),
+          isPlaying = false,
+          isPrepared = true, // TODO: check
+          hasError = false,
+        )
+      } else if (freeText != null) {
+        AudioRecordingStepState.FreeTextDescription(
+          errorType = null,
+          canSubmit = true,
+          freeText = freeText,
+        )
+      } else {
+        AudioRecordingStepState.AudioRecording.NotRecording
+      }
       StepContent.AudioRecording(
         uploadUri = uploadUri,
         isSkippable = isSkippable,
@@ -142,14 +149,14 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
         uploadUri = uploadUri,
         isSkippable = isSkippable,
         localFiles = this.currentFiles?.map {
-            UiFile(
-              name = it.fileName,
-              localPath = null,
-              url = it.url,
-              mimeType = it.contentType,
-              id = it.url,
-            )
-        } ?: emptyList()
+          UiFile(
+            name = it.fileName,
+            localPath = null,
+            url = it.url,
+            mimeType = it.contentType,
+            id = it.url,
+          )
+        } ?: emptyList(),
       )
     }
 
@@ -241,8 +248,11 @@ private fun List<ContentSelectFragment.Option>.toOptions(): List<StepContent.Con
 context(raise: Raise<ClaimChatErrorMessage>)
 private fun List<FormFragment.Field>.toFields(locale: CommonLocale): List<StepContent.Form.Field> {
   return this.map { field ->
-    val defaultValues = if(field.currentValues.isNotEmpty()) field.currentValues.toFieldOptions(field.options)
-    else field.defaultValues.toFieldOptions(field.options)
+    val defaultValues = if (field.currentValues.isNotEmpty()) {
+      field.currentValues.toFieldOptions(field.options)
+    } else {
+      field.defaultValues.toFieldOptions(field.options)
+    }
     StepContent.Form.Field(
       id = FieldId(field.id),
       isRequired = field.isRequired,
