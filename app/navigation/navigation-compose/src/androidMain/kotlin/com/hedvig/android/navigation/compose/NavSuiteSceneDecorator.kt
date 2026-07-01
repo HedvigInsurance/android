@@ -152,10 +152,9 @@ fun <T : Any> rememberNavSuiteSceneDecoratorStrategy(
 // Key-based equality: two NavSuiteScene wrappers are the same scene if they wrap a scene of the
 // same class and the same key, regardless of NavEntry.content lambda identity. A data class default
 // would delegate to the wrapped scene's equals, which in turn compares NavEntry references. Because
-// NavEntry.content is a lambda created fresh each recomposition, two logically-identical entries
-// can differ by identity, making the wrapping scene look "new" mid-transition and triggering the
-// SaveableStateProvider "Key used multiple times" crash (b/516312097). NavSuiteScene uses the
-// same equals/hashCode logic as NavUpBarScene below.
+// NavEntry.content is a lambda created fresh each recomposition, two logically-identical entries can
+// differ by identity, making the wrapping scene look "new" mid-transition. NavUpBarScene below uses
+// the same equals/hashCode logic.
 internal class NavSuiteScene<T : Any>(
   val scene: Scene<T>,
   val sharedTransitionScope: SharedTransitionScope,
@@ -222,11 +221,10 @@ internal class NavSuiteScene<T : Any>(
 
 // Key-based equality: two NavUpBarScene wrappers are the same scene if they wrap a scene of the
 // same class and the same key, regardless of NavEntry.content lambda identity. See the comment on
-// NavSuiteScene above for the full rationale (b/516312097). NavSuiteScene uses identical
-// equals/hashCode logic; the only reason it is not tested directly is that its constructor requires
-// a SharedTransitionScope which is hard to build outside a Compose host. Coverage by the
-// identical-logic argument is provided there; direct test coverage lives in
-// NavUpBarSceneEqualityTest.
+// NavSuiteScene above for the full rationale. NavSuiteScene uses identical equals/hashCode logic; it
+// is not tested directly because its constructor requires a SharedTransitionScope that is hard to
+// build outside a Compose host, so it relies on that identical-logic argument while direct test
+// coverage lives in NavUpBarSceneEqualityTest.
 internal class NavUpBarScene<T : Any>(
   val scene: Scene<T>,
   val upBarContent: @Composable () -> Unit,
