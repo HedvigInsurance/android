@@ -323,7 +323,8 @@ private fun ClaimChatScreenContent(
   if (showCloseFlowDialog) {
     HedvigAlertDialog(
       title = stringResource(Res.string.GENERAL_ARE_YOU_SURE),
-      text = stringResource(Res.string.claims_alert_body),
+      // text = stringResource(Res.string.claims_alert_body),
+      text = "Your answers will be saved in a draft claim", //TODO
       onDismissRequest = {
         showCloseFlowDialog = false
       },
