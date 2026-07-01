@@ -36,4 +36,17 @@ internal class BottomSheetSceneStrategyTest {
     assertThat(overlay.overlaidEntries.map { it.contentKey } == listOf<Any>("a")).isTrue()
     assertThat(overlay.entries.map { it.contentKey } == listOf<Any>("b")).isTrue()
   }
+
+  @Test
+  fun `bottom-sheet scenes for the same content keys are equal despite distinct content lambdas`() {
+    fun buildScene() = with(strategy()) {
+      with(SceneStrategyScope<String>()) {
+        calculateScene(listOf(entry("a"), entry("b", BottomSheetSceneStrategy.bottomSheet())))
+      }
+    }
+    val first = buildScene()!!
+    val second = buildScene()!!
+    assertThat(first == second).isTrue()
+    assertThat(first.hashCode() == second.hashCode()).isTrue()
+  }
 }
