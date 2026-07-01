@@ -16,6 +16,7 @@ import com.hedvig.authlib.RefreshTokenGrant
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
+import kotlin.time.Clock
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -30,11 +31,22 @@ internal class AuthTokenServiceImpl(
   private val authRepository: AuthRepository,
   private val authEventStorage: AuthEventStorage,
   coroutineScope: ApplicationScope,
+  private val clock: Clock = Clock.System,
 ) : AuthTokenService {
   override val authStatus: StateFlow<AuthStatus?> = authTokenStorage.getTokens()
     .mapLatest { authTokens ->
-      val (accessToken, refreshToken) = authTokens ?: return@mapLatest AuthStatus.LoggedOut
-      AuthStatus.LoggedIn(accessToken, refreshToken)
+      val tokens = authTokens ?: return@mapLatest AuthStatus.LoggedOut
+      // A stored session whose refresh token has already expired is unrecoverable. There is no valid
+      // grant left to exchange, so the next authenticated request would fail its refresh and clear the
+      // tokens anyway. Reporting LoggedIn here roots the app in the logged-in scene for a few frames,
+      // then the forced logout flips it back to Login, a rapid re-root that crashes Nav3's scene
+      // SaveableStateHolder ("Key <X> was used multiple times", b/516312097). Treat it as logged out up
+      // front. Expiry is evaluated whenever storage emits; an in-session expiry is still handled by the
+      // request-path refresh failure, which clears tokens and re-triggers this mapping.
+      if (tokens.refreshToken.expiryDate <= clock.now()) {
+        return@mapLatest AuthStatus.LoggedOut
+      }
+      AuthStatus.LoggedIn(tokens.accessToken, tokens.refreshToken)
     }
     .stateIn(
       coroutineScope,
