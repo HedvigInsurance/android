@@ -148,7 +148,14 @@ fun <T : Any> rememberNavSuiteSceneDecoratorStrategy(
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-private data class NavSuiteScene<T : Any>(
+// Key-based equality: two NavSuiteScene wrappers are the same scene if they wrap a scene of the
+// same class and the same key, regardless of NavEntry.content lambda identity. A data class default
+// would delegate to the wrapped scene's equals, which in turn compares NavEntry references. Because
+// NavEntry.content is a lambda created fresh each recomposition, two logically-identical entries
+// can differ by identity, making the wrapping scene look "new" mid-transition and triggering the
+// SaveableStateProvider "Key used multiple times" crash (b/516312097). NavSuiteScene uses the
+// same equals/hashCode logic as NavUpBarScene below.
+internal class NavSuiteScene<T : Any>(
   val scene: Scene<T>,
   val sharedTransitionScope: SharedTransitionScope,
   val navigationSuiteType: () -> NavigationSuiteType,
@@ -202,9 +209,24 @@ private data class NavSuiteScene<T : Any>(
       }
     }
   }
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is NavSuiteScene<*>) return false
+    return key == other.key
+  }
+
+  override fun hashCode(): Int = key.hashCode()
 }
 
-private data class NavUpBarScene<T : Any>(
+// Key-based equality: two NavUpBarScene wrappers are the same scene if they wrap a scene of the
+// same class and the same key, regardless of NavEntry.content lambda identity. See the comment on
+// NavSuiteScene above for the full rationale (b/516312097). NavSuiteScene uses identical
+// equals/hashCode logic; the only reason it is not tested directly is that its constructor requires
+// a SharedTransitionScope which is hard to build outside a Compose host. Coverage by the
+// identical-logic argument is provided there; direct test coverage lives in
+// NavUpBarSceneEqualityTest.
+internal class NavUpBarScene<T : Any>(
   val scene: Scene<T>,
   val upBarContent: @Composable () -> Unit,
 ) : Scene<T> by scene {
@@ -223,7 +245,26 @@ private data class NavUpBarScene<T : Any>(
       }
     }
   }
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is NavUpBarScene<*>) return false
+    return key == other.key
+  }
+
+  override fun hashCode(): Int = key.hashCode()
 }
+
+/**
+ * A standalone [SceneDecoratorStrategy] that wraps nav-bar-opted-in scenes with an up bar, without
+ * needing a [SharedTransitionScope]. Equivalent to the [LoneDeepLinkChrome.ShowUpBar] path inside
+ * [NavSuiteSceneDecoratorStrategy], extracted so tests and callers that only need the up-bar
+ * decoration can use it without standing up the full suite chrome.
+ */
+fun <T : Any> navUpBarSceneDecoratorStrategy(upBarContent: @Composable () -> Unit = {}): SceneDecoratorStrategy<T> =
+  SceneDecoratorStrategy { scene ->
+    if (!scene.metadata.showsNavBar()) scene else NavUpBarScene(scene = scene, upBarContent = upBarContent)
+  }
 
 private const val NavSuiteSharedKey = "nav-suite-chrome"
 
