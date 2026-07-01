@@ -143,6 +143,7 @@ internal class HomePresenterTest {
           crossSells = CrossSellSheetData(testCrossSell, listOf()),
           firstVetSections = listOf(),
           travelBannerInfo = null,
+          resumableClaimId = null
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -174,6 +175,8 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           addonBannerInfo = null,
           isProduction = false,
+          resumableClaimId = null
+
         ),
       )
     }
@@ -207,6 +210,8 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
+          resumableClaimId = null
+
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -225,6 +230,8 @@ internal class HomePresenterTest {
           crossSellsAction = null,
           addonBannerInfo = null,
           isProduction = false,
+          resumableClaimId = null
+
         ),
       )
     }
@@ -282,6 +289,8 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           crossSells = CrossSellSheetData(null, listOf()),
           travelBannerInfo = null,
+          resumableClaimId = null
+
         ).right(),
       )
       assertThat(awaitItem())
@@ -317,6 +326,8 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
+          resumableClaimId = null
+
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -333,6 +344,8 @@ internal class HomePresenterTest {
           crossSellsAction = null,
           addonBannerInfo = null,
           isProduction = false,
+          resumableClaimId = null
+
         ),
       )
     }
@@ -371,6 +384,8 @@ internal class HomePresenterTest {
           ),
           showHelpCenter = false,
           travelBannerInfo = null,
+          resumableClaimId = null
+
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -387,6 +402,8 @@ internal class HomePresenterTest {
           crossSellsAction = null,
           addonBannerInfo = null,
           isProduction = false,
+          resumableClaimId = null
+
         ),
       )
     }
@@ -424,6 +441,8 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
+          resumableClaimId = null
+
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -444,6 +463,7 @@ internal class HomePresenterTest {
           ),
           addonBannerInfo = null,
           isProduction = false,
+          resumableClaimId = null
         ),
       )
     }
@@ -474,6 +494,8 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
+          resumableClaimId = null
+
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -490,6 +512,8 @@ internal class HomePresenterTest {
           crossSellsAction = null,
           addonBannerInfo = null,
           isProduction = false,
+          resumableClaimId = null
+
         ),
       )
     }
@@ -520,6 +544,8 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
+          resumableClaimId = null
+
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -536,6 +562,8 @@ internal class HomePresenterTest {
           crossSellsAction = null,
           addonBannerInfo = null,
           isProduction = false,
+          resumableClaimId = null
+
         ),
       )
     }
@@ -562,6 +590,8 @@ internal class HomePresenterTest {
     firstVetSections = listOf(),
     crossSells = CrossSellSheetData(null, emptyList()),
     travelBannerInfo = null,
+    resumableClaimId = null
+
   )
 }
 
