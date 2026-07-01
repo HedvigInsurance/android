@@ -36,13 +36,10 @@ internal class AuthTokenServiceImpl(
   override val authStatus: StateFlow<AuthStatus?> = authTokenStorage.getTokens()
     .mapLatest { authTokens ->
       val tokens = authTokens ?: return@mapLatest AuthStatus.LoggedOut
-      // A stored session whose refresh token has already expired is unrecoverable. There is no valid
-      // grant left to exchange, so the next authenticated request would fail its refresh and clear the
-      // tokens anyway. Reporting LoggedIn here roots the app in the logged-in scene for a few frames,
-      // then the forced logout flips it back to Login, a rapid re-root that crashes Nav3's scene
-      // SaveableStateHolder ("Key <X> was used multiple times", b/516312097). Treat it as logged out up
-      // front. Expiry is evaluated whenever storage emits; an in-session expiry is still handled by the
-      // request-path refresh failure, which clears tokens and re-triggers this mapping.
+      // A stored session whose refresh token has already expired is unrecoverable: there is no valid
+      // grant left to exchange, so report it as logged out rather than logged in. Expiry is evaluated
+      // whenever storage emits; an in-session expiry is handled by the request path clearing the
+      // tokens, which re-triggers this mapping.
       if (tokens.refreshToken.expiryDate <= clock.now()) {
         return@mapLatest AuthStatus.LoggedOut
       }
