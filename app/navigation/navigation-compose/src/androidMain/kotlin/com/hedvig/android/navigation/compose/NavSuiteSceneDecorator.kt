@@ -1,5 +1,6 @@
 package com.hedvig.android.navigation.compose
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -256,11 +257,13 @@ internal class NavUpBarScene<T : Any>(
 }
 
 /**
- * A standalone [SceneDecoratorStrategy] that wraps nav-bar-opted-in scenes with an up bar, without
- * needing a [SharedTransitionScope]. Equivalent to the [LoneDeepLinkChrome.ShowUpBar] path inside
- * [NavSuiteSceneDecoratorStrategy], extracted so tests and callers that only need the up-bar
- * decoration can use it without standing up the full suite chrome.
+ * Test seam. Exposes the [LoneDeepLinkChrome.ShowUpBar] decoration path (wrapping a nav-bar scene in
+ * a [NavUpBarScene]) so [NavUpBarScene]'s key-based equality can be unit tested from `:app`. It
+ * cannot be tested inside `:navigation-compose`: that KMP android-library target has no host
+ * unit-test source set, and [NavUpBarScene] is `internal`. There is no production caller. The full
+ * suite chrome path is exercised through [rememberNavSuiteSceneDecoratorStrategy] in the app.
  */
+@VisibleForTesting
 fun <T : Any> navUpBarSceneDecoratorStrategy(upBarContent: @Composable () -> Unit = {}): SceneDecoratorStrategy<T> =
   SceneDecoratorStrategy { scene ->
     if (!scene.metadata.showsNavBar()) scene else NavUpBarScene(scene = scene, upBarContent = upBarContent)
