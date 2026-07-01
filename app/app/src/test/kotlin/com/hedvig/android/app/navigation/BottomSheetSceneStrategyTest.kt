@@ -15,6 +15,9 @@ internal class BottomSheetSceneStrategyTest {
 
   private fun entry(key: String, metadata: Map<String, Any> = emptyMap()) = NavEntry(key = key, metadata = metadata) { }
 
+  private fun capturingEntry(key: String, capture: String, metadata: Map<String, Any> = emptyMap()) =
+    NavEntry(key = key, metadata = metadata) { capture.length }
+
   @Test
   fun `bottomSheet metadata is recognized as a bottom-sheet marker`() {
     assertThat(BottomSheetSceneStrategy.bottomSheet().keys).isNotEmpty()
@@ -39,13 +42,18 @@ internal class BottomSheetSceneStrategyTest {
 
   @Test
   fun `bottom-sheet scenes for the same content keys are equal despite distinct content lambdas`() {
-    fun buildScene() = with(strategy()) {
+    fun buildScene(capture: String) = with(strategy()) {
       with(SceneStrategyScope<String>()) {
-        calculateScene(listOf(entry("a"), entry("b", BottomSheetSceneStrategy.bottomSheet())))
+        calculateScene(
+          listOf(
+            capturingEntry("a", capture),
+            capturingEntry("b", capture, BottomSheetSceneStrategy.bottomSheet()),
+          ),
+        )
       }
     }
-    val first = buildScene()!!
-    val second = buildScene()!!
+    val first = buildScene("first")!!
+    val second = buildScene("second")!!
     assertThat(first == second).isTrue()
     assertThat(first.hashCode() == second.hashCode()).isTrue()
   }
