@@ -95,6 +95,7 @@ import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellBottomSheet
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.CrossSellsSection
+import com.hedvig.android.crosssells.PillowRow
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.FlowType
@@ -103,7 +104,6 @@ import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
-import com.hedvig.android.design.system.hedvig.FeatureAddonBanner
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -164,7 +164,7 @@ import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentText.
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentType.INACTIVE
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
-import hedvig.resources.ADDON_FLOW_SEE_PRICE_BUTTON
+import hedvig.resources.ADDON_FLOW_LEARN_MORE_BUTTON
 import hedvig.resources.CHAT_NEW_MESSAGE
 import hedvig.resources.CROSS_SELL_SUBTITLE
 import hedvig.resources.DASHBOARD_OPEN_CHAT
@@ -820,6 +820,7 @@ private fun HomeScreenSuccess(
               addonBannerInfos = uiState.addonBannerInfos,
               navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
               horizontalInsets = horizontalInsets,
+              imageLoader = imageLoader,
             )
 
             HomeSection.QuickActionTiles -> QuickActionTilesSection(
@@ -1187,6 +1188,7 @@ private fun AddonsSection(
   addonBannerInfos: List<AddonBannerInfo>,
   navigateToAddonPurchaseFlow: (List<String>) -> Unit,
   horizontalInsets: PaddingValues,
+  imageLoader: ImageLoader,
 ) {
   Column(
     verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -1195,19 +1197,21 @@ private fun AddonsSection(
       .padding(horizontal = 16.dp)
       .padding(horizontalInsets),
   ) {
-    // TODO: Add an "Addons" / "Tillägg" section header to Lokalise.
+    // TODO: Add an "Addons" / "Tilläggsförsäkringar" section header to Lokalise.
     HedvigText(
       text = "Addons",
       style = HedvigTheme.typography.headlineSmall,
       modifier = Modifier.semantics { heading() },
     )
     addonBannerInfos.forEach { addon ->
-      FeatureAddonBanner(
+      // Addons carry no imagery, so the pillow falls back to a generic placeholder.
+      PillowRow(
         title = addon.title,
-        description = addon.description,
-        buttonText = stringResource(Res.string.ADDON_FLOW_SEE_PRICE_BUTTON),
-        labels = addon.labels,
+        subtitle = addon.description,
+        pillowImage = null,
+        buttonText = stringResource(Res.string.ADDON_FLOW_LEARN_MORE_BUTTON),
         onButtonClick = { navigateToAddonPurchaseFlow(addon.eligibleInsurancesIds) },
+        imageLoader = imageLoader,
         modifier = Modifier.fillMaxWidth(),
       )
     }

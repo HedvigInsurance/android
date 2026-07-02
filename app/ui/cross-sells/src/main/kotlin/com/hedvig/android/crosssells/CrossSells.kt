@@ -569,7 +569,40 @@ private fun CrossSellItem(
   onSheetDismissed: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val description = "$crossSellTitle $crossSellSubtitle"
+  PillowRow(
+    title = crossSellTitle,
+    subtitle = crossSellSubtitle,
+    pillowImage = crossSellImageAsset,
+    buttonText = stringResource(Res.string.cross_sell_get_price),
+    onButtonClick = {
+      onCrossSellClick(storeUrl)
+      onSheetDismissed()
+    },
+    imageLoader = imageLoader,
+    onButtonClickLabel = stringResource(Res.string.TALKBACK_OPEN_EXTERNAL_LINK),
+    isLoading = isLoading,
+    modifier = modifier,
+  )
+}
+
+/**
+ * A pillow icon, a title/subtitle, and a trailing button in one row. The shape shared by the cross-sell
+ * list and the home addons list. [pillowImage] falls back to a generic pillow placeholder when null.
+ */
+@Composable
+fun PillowRow(
+  title: String,
+  subtitle: String,
+  pillowImage: ImageAsset?,
+  buttonText: String,
+  onButtonClick: () -> Unit,
+  imageLoader: ImageLoader,
+  modifier: Modifier = Modifier,
+  onButtonClickLabel: String? = null,
+  buttonStyle: ButtonDefaults.ButtonStyle = ButtonDefaults.ButtonStyle.Secondary,
+  isLoading: Boolean = false,
+) {
+  val description = "$title $subtitle"
   Row(
     modifier = modifier
       .heightIn(64.dp)
@@ -579,8 +612,8 @@ private fun CrossSellItem(
     verticalAlignment = Alignment.CenterVertically,
   ) {
     AsyncImage(
-      model = crossSellImageAsset?.src,
-      contentDescription = crossSellImageAsset?.description ?: EmptyContentDescription,
+      model = pillowImage?.src,
+      contentDescription = pillowImage?.description ?: EmptyContentDescription,
       placeholder = crossSellPainterFallback(),
       error = crossSellPainterFallback(),
       fallback = crossSellPainterFallback(),
@@ -599,7 +632,7 @@ private fun CrossSellItem(
       verticalArrangement = Arrangement.Center,
     ) {
       HedvigText(
-        text = crossSellTitle,
+        text = title,
         style = HedvigTheme.typography.bodySmall,
         modifier = Modifier.hedvigPlaceholder(
           visible = isLoading,
@@ -609,7 +642,7 @@ private fun CrossSellItem(
       )
       Spacer(Modifier.height(4.dp))
       HedvigText(
-        text = crossSellSubtitle,
+        text = subtitle,
         style = HedvigTheme.typography.label,
         color = HedvigTheme.colorScheme.textSecondary,
         modifier = Modifier.hedvigPlaceholder(
@@ -621,14 +654,11 @@ private fun CrossSellItem(
     }
     Spacer(Modifier.width(16.dp))
     HedvigButton(
-      text = stringResource(Res.string.cross_sell_get_price),
-      onClick = {
-        onCrossSellClick(storeUrl)
-        onSheetDismissed()
-      },
-      onClickLabel = stringResource(Res.string.TALKBACK_OPEN_EXTERNAL_LINK),
+      text = buttonText,
+      onClick = onButtonClick,
+      onClickLabel = onButtonClickLabel,
       buttonSize = ButtonDefaults.ButtonSize.Medium,
-      buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+      buttonStyle = buttonStyle,
       modifier = Modifier.hedvigPlaceholder(
         visible = isLoading,
         shape = HedvigTheme.shapes.cornerSmall,
