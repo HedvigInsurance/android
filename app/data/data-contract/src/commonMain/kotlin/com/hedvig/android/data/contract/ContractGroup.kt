@@ -43,7 +43,7 @@ fun ContractGroup.gradientResource(): DrawableResource = when (this) {
   ContractGroup.COUNTRY_HOME -> Res.drawable.vacation
   ContractGroup.UNKNOWN -> Res.drawable.home
   ContractGroup.QASA_LANDLORD -> Res.drawable.home
-  ContractGroup.PAYMENT_PROTECTION ->Res.drawable.safety
+  ContractGroup.PAYMENT_PROTECTION -> Res.drawable.safety
 }
 
 fun ContractGroup.pillowResource(): DrawableResource = when (this) {
@@ -59,7 +59,7 @@ fun ContractGroup.pillowResource(): DrawableResource = when (this) {
   ContractGroup.COUNTRY_HOME -> Res.drawable.vacation
   ContractGroup.UNKNOWN -> Res.drawable.home
   ContractGroup.QASA_LANDLORD -> Res.drawable.home
-  ContractGroup.PAYMENT_PROTECTION ->Res.drawable.safety
+  ContractGroup.PAYMENT_PROTECTION -> Res.drawable.safety
 }
 
 fun String.toContractGroup(): ContractGroup = when (this) {
