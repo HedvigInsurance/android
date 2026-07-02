@@ -97,6 +97,7 @@ import hedvig.resources.TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE
 import hedvig.resources.TIER_FLOW_SELECT_DEDUCTIBLE_TITLE
 import hedvig.resources.TIER_FLOW_SHOW_COVERAGE_BUTTON
 import hedvig.resources.TIER_FLOW_SUBTITLE
+import hedvig.resources.TIER_FLOW_SUBTITLE_WITHOUT_DEDUCTIBLE
 import hedvig.resources.TIER_FLOW_TITLE
 import hedvig.resources.TIER_FLOW_TOTAL
 import hedvig.resources.general_cancel_button
@@ -235,7 +236,12 @@ private fun SelectTierScreen(
         lineBreak = LineBreak.Heading,
         color = HedvigTheme.colorScheme.textSecondary,
       ),
-      text = stringResource(Res.string.TIER_FLOW_SUBTITLE),
+      // Payment protection has no deductible, so the standard "…level and deductible" subtitle over-promises.
+      text = if (uiState.isPaymentProtection) {
+        stringResource(Res.string.TIER_FLOW_SUBTITLE_WITHOUT_DEDUCTIBLE)
+      } else {
+        stringResource(Res.string.TIER_FLOW_SUBTITLE)
+      },
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))
@@ -271,7 +277,7 @@ private fun SelectTierScreen(
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
     )
-    if (uiState.showCompareCoverage) {
+    if (!uiState.isPaymentProtection) {
       Spacer(Modifier.height(8.dp))
       HedvigTextButton(
         buttonSize = Large,
@@ -760,7 +766,7 @@ private fun SelectTierScreenPreview() {
         ),
         quotesForChosenTier = listOf(quotesForPreview[0]),
         isTierChoiceEnabled = true,
-        showCompareCoverage = true,
+        isPaymentProtection = false,
         chosenTier = Tier(
           "BAS",
           tierLevel = 0,

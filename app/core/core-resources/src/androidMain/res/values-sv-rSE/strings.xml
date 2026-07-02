@@ -986,6 +986,7 @@
   <string name="TIER_FLOW_SELECT_INSURANCE_SUBTITLE">Välj den försäkring du vill uppdatera</string>
   <string name="TIER_FLOW_SHOW_COVERAGE_BUTTON">Visa ditt skydd</string>
   <string name="TIER_FLOW_SUBTITLE">Välj din skyddsnivå och självrisk</string>
+  <string name="TIER_FLOW_SUBTITLE_WITHOUT_DEDUCTIBLE">Välj din skyddsnivå</string>
   <string name="TIER_FLOW_SUMMARY_CONFIRM_BUTTON">Godkänn ändringar</string>
   <string name="TIER_FLOW_SUMMARY_COVERAGE_SUBTITLE">Skyddet</string>
   <string name="TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE">Dokument</string>
