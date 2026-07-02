@@ -14,12 +14,15 @@ import com.hedvig.android.core.common.formatName
 import com.hedvig.android.core.common.formatSsn
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ChipIdState
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractId
+import com.hedvig.android.data.contract.toContractGroup
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
 import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
 import com.hedvig.android.feature.insurances.data.InsuranceContract.PendingInsuranceContract
+import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
@@ -145,13 +148,18 @@ private fun ContractFragment.toContract(
   contractHolderSSN: String?,
   isMovingFlowEnabled: Boolean,
 ): EstablishedInsuranceContract {
+  val contractGroup = this.currentAgreement.productVariant.typeOfContract.toContractGroup()
+  val exposure = when (contractGroup) {
+    ContractGroup.QASA_LANDLORD -> exposureDisplayNameShort
+    else -> exposureDisplayName
+  }
   return EstablishedInsuranceContract(
     id = id,
     tierName = currentAgreement.productVariant.displayNameTier,
     displayName = currentAgreement.productVariant.displayName,
     contractHolderDisplayName = contractHolderDisplayName,
     contractHolderSSN = contractHolderSSN,
-    exposureDisplayName = exposureDisplayName,
+    exposureDisplayName = exposure,
     inceptionDate = masterInceptionDate,
     renewalDate = upcomingChangedAgreement?.activeFrom,
     terminationDate = terminationDate,

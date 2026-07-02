@@ -695,6 +695,10 @@ type ChangeTierDeductibleFromAgreement {
   """
   tierLevel: Int
   """
+  Optional tier description, if set use that rather than productVariant->tierDescription
+  """
+  tierDescription: String
+  """
    List of display items for the quote 
   """
   displayItems: [ChangeTierDeductibleDisplayItem!]!
@@ -730,6 +734,10 @@ type ChangeTierDeductibleQuote {
    The tier level, a smaller number means lower coverage. Use this to sort the tier list. 
   """
   tierLevel: Int
+  """
+  Optional tier description, if set use that rather than productVariant->tierDescription
+  """
+  tierDescription: String
   """
    The deductible if any 
   """

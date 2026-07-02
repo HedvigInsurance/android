@@ -45,13 +45,13 @@ import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDes
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkTermination
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate
 import com.hedvig.android.feature.help.center.model.QuickAction
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.feature.help.center.navigation.EmergencyKey
 import com.hedvig.android.feature.help.center.navigation.FirstVetKey
 import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceKey
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateKey
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.navigation.common.HedvigNavKey
