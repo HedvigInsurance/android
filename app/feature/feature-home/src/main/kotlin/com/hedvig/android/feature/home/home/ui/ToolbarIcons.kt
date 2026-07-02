@@ -80,14 +80,14 @@ fun ToolbarCrossSellsIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
     imageVector = HedvigIcons.ColoredCampaign,
     contentDescription = stringResource(Res.string.insurance_tab_cross_sells_title),
     modifier = modifier
+      // Spin the whole circular icon as one unit (outermost transform), so the rotation stays within
+      // the circular clip and shadow.
+      .graphicsLayer { rotationZ = fullRotation }
       .size(40.dp)
       .shadow(4.dp, CircleShape)
       .clip(CircleShape)
       .background(HedvigTheme.colorScheme.surfacePrimary)
-      .clickable(role = Role.Button, onClick = onClick)
-      .graphicsLayer {
-        rotationZ = fullRotation
-      },
+      .clickable(role = Role.Button, onClick = onClick),
   )
 }
 
