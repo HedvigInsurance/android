@@ -242,3 +242,32 @@ Hero/scroll interaction tuned live against on-device screenshots, then a dark-mo
 - **Card surfaces (#2): STILL OPEN, reframed.** This is blocked on a **design-system update**. We need DS **color tokens** for the card surface/border treatment so light/dark are handled by tokens (not ad-hoc fills); until those exist we can't do it gracefully. This is the main remaining design dependency for the card visuals.
 
 **Design-gap review vs Figma `44:6378` ("Mega"):** structure matches (toolbar · greeting · pills · info card · new-message card [OUT] · claim card · To-do · Offers · campaign carousel [deferred] · quick-action tiles · Discover · Addons · tab bar). Open design asks captured in the designer message: Android glass spec (resolved → translucent), card-surface DS tokens, dark-mode specs (gradient + components + cards), campaign-carousel content source + ship-now-or-wait, and final redlines (pill height, sheet corner radius, tile icon tint/size).
+
+## 14. Resume checklist (paused 2026-07-02, awaiting design input)
+
+Branch `feature/new-home-screen`. **Engineering is complete and green** (`:app:assembleDebug` passes, `:feature-home` unit tests pass, lint clean, working tree committed). The wildcard-import PR blocker is fixed. The branch is paused **only** for design input + Lokalise, not for more code. Pick up by reading this section.
+
+**Done since 13.4 (committed):** reused `HC_QUICK_ACTIONS_UPDATE_ADDRESS` (Change-address tile) + `CROSS_SELL_SUBTITLE` (Discover title); reverted the greeting to the name-less `home_tab_welcome_title_without_name` (dropped the hardcoded "Hi %s" + double-"Hi"; `firstName` data plumbing kept but unused so re-adding is a one-liner); addons now render via a **shared public `PillowRow`** in `:cross-sells` (cross-sell rows delegate to it; addon button → `ADDON_FLOW_LEARN_MORE_BUTTON`; addon pillow is a placeholder since addon data has no imagery); cross-sell campaign toolbar icon rotates as a whole (artifact fixed).
+
+**Blocked on designer, each with its landing action:**
+| Awaiting from design | Then do |
+|---|---|
+| Card-surface **DS color tokens** (light+dark) | Swap card fills → tokens; complete the dark-mode card/sheet pass. Main visual blocker. |
+| **Campaign/curated carousel**: content source + ship-now-or-wait | If ship-now, build the pillow/banner carousel section (data source TBD); else keep deferred. |
+| **Addon pillow imagery** (per-addon art, or "omit") | Feed real image into `PillowRow(pillowImage=…)`; today all addons show the same placeholder. |
+| **Final redlines**: pill height, sheet corner radius, tile icon tint/size | Apply the exact values (currently best-guess). |
+
+**Lokalise batch (parked as "later"):** add keys, then replace the `// TODO: … to Lokalise` markers.
+- "Your quotes" / "Dina prisförslag" (Offers title, `HomeDestination.OffersSection`)
+- "Addons" / "Tilläggsförsäkringar" (Addons header, `HomeDestination.AddonsSection`)
+- "Hej %s" greeting-with-name — only if the name is re-added (see open decision).
+
+**Open decisions (need the user, not design):**
+1. Offers title: interim-reuse `INSURANCE_OFFERS_SUBHEADING` ("Offers"/"Erbjudanden") vs wait for a "Dina prisförslag" key.
+2. Name greeting: permanently name-less, or restore once "Hej %s" exists (plumbing is still in place).
+
+**Optional quality follow-ups (no external dep):**
+- Add a `role` param to DS `HedvigCard` → gives the quick-action tiles + Offers card a Button a11y role (last a11y gap).
+- Dark-mode audit of cards/sheet (ties into the card-token work).
+
+**Merge gate (plan item #18):** hold for design sign-off + the on-device QA pass (§13.1: density variants, dark mode, populated/empty states). Then merge to `develop`.
