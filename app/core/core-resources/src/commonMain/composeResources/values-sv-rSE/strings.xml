@@ -502,8 +502,8 @@
   <string name="INBOX_EMPTY_STATE_SUBTITLE">Inga konversationer än. Starta en genom att skriva ett meddelande</string>
   <string name="INBOX_EMPTY_STATE_TITLE">Din inkorg är tom</string>
   <string name="INBOX_NEW_MESSAGE">Nytt</string>
-  <string name="INBOX_NEW_MESSAGE_CLAIM_DESCRIPTION">Anmäl något som har hänt med dig eller dina saker</string>
-  <string name="INBOX_NEW_MESSAGE_SUPPORT_DESCRIPTION">Frågor om din försäkring, betalningar och annat</string>
+  <string name="INBOX_NEW_MESSAGE_CLAIM_DESCRIPTION">Anmäl något som hänt dig eller dina saker</string>
+  <string name="INBOX_NEW_MESSAGE_SUPPORT_DESCRIPTION">Frågor om din försäkring, betalningar eller annat</string>
   <string name="INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE">Erbjudanden</string>
   <string name="INSURANCES_NO_ACTIVE">Du har ingen aktiv försäkring</string>
   <string name="INSURANCE_ADDONS_SUBHEADING">Tillägg</string>
