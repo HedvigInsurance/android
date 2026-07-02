@@ -4,6 +4,7 @@ import com.hedvig.android.auth.event.AuthEventStorage
 import com.hedvig.android.auth.storage.AuthTokenStorage
 import com.hedvig.android.auth.token.AuthTokens
 import com.hedvig.android.auth.token.LocalRefreshToken
+import com.hedvig.android.auth.token.isTokenExpired
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.LogPriority
@@ -36,11 +37,12 @@ internal class AuthTokenServiceImpl(
   override val authStatus: StateFlow<AuthStatus?> = authTokenStorage.getTokens()
     .mapLatest { authTokens ->
       val tokens = authTokens ?: return@mapLatest AuthStatus.LoggedOut
-      // A stored session whose refresh token has already expired is unrecoverable: there is no valid
-      // grant left to exchange, so report it as logged out rather than logged in. Expiry is evaluated
-      // whenever storage emits; an in-session expiry is handled by the request path clearing the
-      // tokens, which re-triggers this mapping.
-      if (tokens.refreshToken.expiryDate <= clock.now()) {
+      // A stored session whose refresh token has expired (or is within the expiration buffer) can no
+      // longer be exchanged for a new grant, so report it as logged out rather than logged in. Uses the
+      // same buffered expiry the request path uses, so both agree on when a refresh token is usable.
+      // Expiry is evaluated whenever storage emits; an in-session expiry is handled by the request path
+      // clearing the tokens, which re-triggers this mapping.
+      if (tokens.refreshToken.expiryDate.isTokenExpired(clock)) {
         return@mapLatest AuthStatus.LoggedOut
       }
       AuthStatus.LoggedIn(tokens.accessToken, tokens.refreshToken)

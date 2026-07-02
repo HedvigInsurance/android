@@ -61,6 +61,23 @@ internal class AuthTokenServiceImplTest {
     assertThat(status).isInstanceOf(AuthStatus.LoggedIn::class)
   }
 
+  @Test
+  fun `authStatus is LoggedOut when the stored refresh token is within the expiration buffer`() = runTest {
+    val clock = TestClock()
+    val storage = authTokenStorage(clock)
+    storage.updateTokens(
+      accessToken = AccessToken("access", expiryInSeconds = 60),
+      refreshToken = RefreshToken("refresh", expiryInSeconds = 120),
+    )
+    // 70s in, the refresh token is not yet past its 120s expiry, but it is inside the 60s buffer.
+    clock.advanceTimeBy(70.seconds)
+    val service = authTokenService(storage, clock)
+
+    val status = service.authStatus.filterNotNull().first()
+
+    assertThat(status).isEqualTo(AuthStatus.LoggedOut)
+  }
+
   private fun TestScope.authTokenService(storage: AuthTokenStorage, clock: Clock): AuthTokenService =
     AuthTokenServiceImpl(
       storage,
