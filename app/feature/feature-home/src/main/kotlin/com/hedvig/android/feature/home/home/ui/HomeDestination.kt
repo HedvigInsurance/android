@@ -709,7 +709,7 @@ private fun HomeScreenSuccess(
               },
           ) {
             OnHeroGradient {
-              WelcomeSection(uiState.firstName, uiState.homeText)
+              WelcomeSection(uiState.homeText)
             }
           }
         }
@@ -910,31 +910,11 @@ private fun OnHeroGradient(content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun WelcomeSection(firstName: String, homeText: HomeText) {
+private fun WelcomeSection(homeText: HomeText) {
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
     modifier = Modifier.fillMaxWidth(),
   ) {
-    if (firstName.isNotBlank() && homeText !is HomeText.ActiveInFuture) {
-      // TODO: Add "Hi %1$s" / "Hej %1$s" to Lokalise — no with-name welcome string exists yet.
-      HedvigText(
-        text = "Hi $firstName",
-        style = HedvigTheme.typography.headlineMedium.copy(
-          fontFamily = HedvigTheme.typography.serif,
-          fontSize = 28.0.sp,
-          lineBreak = LineBreak.Heading,
-          textAlign = TextAlign.Center,
-        ),
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 24.dp)
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-          .testTag("welcome_greeting")
-          .semantics {
-            hideFromAccessibility()
-          },
-      )
-    }
     WelcomeMessage(
       homeText = homeText,
       modifier = Modifier
