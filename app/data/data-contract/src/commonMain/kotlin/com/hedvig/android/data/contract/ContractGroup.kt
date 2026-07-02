@@ -63,22 +63,22 @@ fun String.toContractGroup(): ContractGroup = when (this) {
   "DK_HOUSE",
   "SE_HOUSE",
   "SE_HOUSE_BAS",
-  "SE_HOUSE_MAX"
-    -> ContractGroup.HOUSE
+  "SE_HOUSE_MAX",
+  -> ContractGroup.HOUSE
 
   "DK_ACCIDENT",
   "NO_ACCIDENT",
   "SE_ACCIDENT",
   "SE_ACCIDENT_STUDENT",
   "DK_ACCIDENT_STUDENT",
-    -> ContractGroup.ACCIDENT
+  -> ContractGroup.ACCIDENT
 
   "DK_TRAVEL",
   "DK_TRAVEL_STUDENT",
   "NO_TRAVEL",
   "NO_TRAVEL_STUDENT",
   "NO_TRAVEL_YOUTH",
-    -> ContractGroup.TRAVEL
+  -> ContractGroup.TRAVEL
 
   "DK_HOME_CONTENT_RENT",
   "DK_HOME_CONTENT_STUDENT_RENT",
@@ -90,7 +90,7 @@ fun String.toContractGroup(): ContractGroup = when (this) {
   "SE_QASA_LONG_TERM_RENTAL",
   "SE_QASA_SHORT_TERM_RENTAL",
   "NO_HOME_CONTENT_YOUTH_RENT",
-    -> ContractGroup.RENTAL
+  -> ContractGroup.RENTAL
 
   "NO_HOME_CONTENT_YOUTH_OWN",
   "DK_HOME_CONTENT_STUDENT_OWN",
@@ -100,13 +100,13 @@ fun String.toContractGroup(): ContractGroup = when (this) {
   "SE_APARTMENT_BRF_BAS",
   "SE_APARTMENT_BRF_MAX",
   "SE_GROUP_APARTMENT_BRF",
-    -> ContractGroup.HOMEOWNER
+  -> ContractGroup.HOMEOWNER
 
   "NO_HOME_CONTENT_STUDENT_OWN",
   "NO_HOME_CONTENT_STUDENT_RENT",
   "SE_APARTMENT_STUDENT_BRF",
   "SE_APARTMENT_STUDENT_RENT",
-    -> ContractGroup.STUDENT
+  -> ContractGroup.STUDENT
 
   "SE_CAR_FULL",
   "SE_CAR_HALF",
@@ -114,21 +114,21 @@ fun String.toContractGroup(): ContractGroup = when (this) {
   "SE_CAR_TRIAL_HALF",
   "SE_CAR_TRIAL_FULL",
   "SE_CAR_DECOMMISSIONED",
-    -> ContractGroup.CAR
+  -> ContractGroup.CAR
 
   "SE_CAT_BASIC",
   "SE_CAT_PREMIUM",
   "SE_CAT_STANDARD",
-    -> ContractGroup.CAT
+  -> ContractGroup.CAT
 
   "SE_DOG_BASIC",
   "SE_DOG_PREMIUM",
   "SE_DOG_STANDARD",
-    -> ContractGroup.DOG
+  -> ContractGroup.DOG
 
   "SE_VACATION_HOME_BAS",
   "SE_VACATION_HOME_STANDARD",
-    -> ContractGroup.COUNTRY_HOME
+  -> ContractGroup.COUNTRY_HOME
 
   "SE_QASA_LANDLORD" -> ContractGroup.QASA_LANDLORD
 
