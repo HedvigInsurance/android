@@ -74,7 +74,7 @@ internal sealed interface CrossSellSheetState {
   data class Content(val crossSellSheetData: CrossSellSheetData, val infoType: CrossSellInfoType) : CrossSellSheetState
 }
 
-private class CrossSellSheetPresenter(
+internal class CrossSellSheetPresenter(
   private val getCrossSellSheetDataUseCase: GetCrossSellSheetDataUseCase,
   private val crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
 ) : MoleculePresenter<CrossSellSheetEvent, CrossSellSheetState> {
@@ -103,7 +103,13 @@ private class CrossSellSheetPresenter(
             .mapLatest { result ->
               result.fold(
                 ifLeft = { error -> CrossSellSheetState.Error(error) },
-                ifRight = { data -> CrossSellSheetState.Content(data, infoType) },
+                ifRight = { data ->
+                  if (data.isEmpty) {
+                    CrossSellSheetState.DontShow
+                  } else {
+                    CrossSellSheetState.Content(data, infoType)
+                  }
+                },
               )
             },
         )

@@ -91,7 +91,10 @@ data class CrossSellSheetData(
   val recommendedCrossSell: RecommendedCrossSell?,
   val otherCrossSells: List<CrossSell>,
   val recommendedAddon: RecommendedAddon?,
-)
+) {
+  val isEmpty: Boolean
+    get() = recommendedCrossSell == null && recommendedAddon == null && otherCrossSells.isEmpty()
+}
 
 data class RecommendedAddon(
   val id: String,
