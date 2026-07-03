@@ -57,6 +57,8 @@ internal fun ClaimIntentFragment.toClaimIntent(locale: CommonLocale): ClaimInten
       else -> error("ClaimIntentFragment contained null currentStep and null outcome")
     },
     progress = progress?.toFloat(),
+    displayName = displayName,
+    resumable = resumable,
     previousSteps = previousSteps.map {
       it.toClaimIntentStep(locale)
     },

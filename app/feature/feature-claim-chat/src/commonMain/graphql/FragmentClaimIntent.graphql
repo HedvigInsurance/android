@@ -1,6 +1,8 @@
 fragment ClaimIntentFragment on ClaimIntent {
   id
   progress
+  displayName
+  resumable
   currentStep {
     id
     text

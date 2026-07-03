@@ -15,6 +15,8 @@ internal data class ClaimIntent(
   val id: ClaimIntentId,
   val next: Next,
   val progress: Float?,
+  val displayName: String?,
+  val resumable: Boolean,
   val previousSteps: List<ClaimIntentStep>,
 ) {
   sealed interface Next {

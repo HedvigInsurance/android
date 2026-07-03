@@ -2,6 +2,7 @@ package com.hedvig.feature.claim.chat
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -15,6 +16,8 @@ import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.uidata.UiFile
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -157,6 +160,9 @@ internal sealed interface ClaimChatUiState {
     val stepsWithShownAnimations: List<StepId>,
     val progress: Float?,
     val searchQuery: SearchObject?,
+    val title: String?,
+    val isResumable: Boolean,
+    val resumeClaimEnabled: Boolean,
   ) : ClaimChatUiState
 }
 
@@ -179,6 +185,7 @@ internal class ClaimChatViewModel(
   formFieldSearchUseCase: FormFieldSearchUseCase,
   fileService: FileService,
   resumeClaimUseCase: ResumeClaimUseCase,
+  featureManager: FeatureManager,
 ) : MoleculeViewModel<ClaimChatEvent, ClaimChatUiState>(
     ClaimChatUiState.Initializing,
     ClaimChatPresenter(
@@ -198,6 +205,7 @@ internal class ClaimChatViewModel(
       formFieldSearchUseCase,
       resumeClaim,
       resumeClaimUseCase,
+      featureManager,
     ),
   ) {
   override fun onCleared() {
@@ -223,6 +231,7 @@ internal class ClaimChatPresenter(
   private val formFieldSearchUseCase: FormFieldSearchUseCase,
   private val resumeClaim: Boolean,
   private val resumeClaimUseCase: ResumeClaimUseCase,
+  private val featureManager: FeatureManager,
 ) : MoleculePresenter<ClaimChatEvent, ClaimChatUiState> {
   @Composable
   override fun MoleculePresenterScope<ClaimChatEvent>.present(lastState: ClaimChatUiState): ClaimChatUiState {
@@ -253,6 +262,19 @@ internal class ClaimChatPresenter(
           ?: 0f,
       )
     }
+    var title by remember { mutableStateOf((lastState as? ClaimChatUiState.ClaimChat)?.title) }
+    var isResumable by remember {
+      mutableStateOf((lastState as? ClaimChatUiState.ClaimChat)?.isResumable ?: false)
+    }
+    val updateIntentMetadata: (ClaimIntent) -> Unit = { intent ->
+      progress = intent.progress
+      // Keep the previous title when a step comes back without one, matching iOS.
+      title = intent.displayName ?: title
+      isResumable = intent.resumable
+    }
+    val resumeClaimEnabled by remember {
+      featureManager.isFeatureEnabled(Feature.ENABLE_CLAIM_INTENT_RESUME)
+    }.collectAsState(initial = false)
     val stepsWithShownAnimations = remember { mutableStateListOf<StepId>() }
 
     val setOutcome: (ClaimIntentOutcome) -> Unit = { outcome = it }
@@ -285,7 +307,7 @@ internal class ClaimChatPresenter(
                         it.stepContent !is StepContent.Task
                       },
                     )
-                    progress = claimIntent.progress
+                    updateIntentMetadata(claimIntent)
                     when (val next = claimIntent.next) {
                       is ClaimIntent.Next.Outcome -> {
                         outcome = next.claimIntentOutcome
@@ -313,7 +335,7 @@ internal class ClaimChatPresenter(
                   failedToStart = false
                   claimIntentId = claimIntent.id
                   steps.clear()
-                  progress = claimIntent.progress
+                  updateIntentMetadata(claimIntent)
                   when (val next = claimIntent.next) {
                     is ClaimIntent.Next.Outcome -> {
                       outcome = next.claimIntentOutcome
@@ -350,7 +372,8 @@ internal class ClaimChatPresenter(
           steps,
           setOutcome,
           claimIntent,
-        ) { progress = it }
+          updateIntentMetadata,
+        )
       },
     )
 
@@ -433,7 +456,8 @@ internal class ClaimChatPresenter(
                     steps,
                     setOutcome,
                     claimIntent,
-                  ) { progress = it }
+                    updateIntentMetadata,
+                  )
                 },
               )
           }
@@ -469,7 +493,8 @@ internal class ClaimChatPresenter(
                         steps,
                         setOutcome,
                         claimIntent,
-                      ) { progress = it }
+                        updateIntentMetadata,
+                      )
                     },
                   )
               }
@@ -497,7 +522,8 @@ internal class ClaimChatPresenter(
                         steps,
                         setOutcome,
                         claimIntent,
-                      ) { progress = it }
+                        updateIntentMetadata,
+                      )
                     },
                   )
               }
@@ -638,7 +664,8 @@ internal class ClaimChatPresenter(
                       steps,
                       setOutcome,
                       claimIntent,
-                    ) { progress = it }
+                      updateIntentMetadata,
+                    )
                   },
                 )
             }
@@ -699,7 +726,8 @@ internal class ClaimChatPresenter(
                     steps,
                     setOutcome,
                     claimIntent,
-                  ) { progress = it }
+                    updateIntentMetadata,
+                  )
                 },
               )
           }
@@ -758,7 +786,8 @@ internal class ClaimChatPresenter(
                     steps,
                     setOutcome,
                     claimIntent,
-                  ) { progress = it }
+                    updateIntentMetadata,
+                  )
                 },
               )
           }
@@ -793,7 +822,8 @@ internal class ClaimChatPresenter(
                       steps,
                       setOutcome,
                       claimIntent,
-                    ) { progress = it }
+                      updateIntentMetadata,
+                    )
                   },
                 )
             }
@@ -897,7 +927,8 @@ internal class ClaimChatPresenter(
                     steps,
                     setOutcome,
                     claimIntent,
-                  ) { progress = it }
+                    updateIntentMetadata,
+                  )
                 },
               )
           }
@@ -999,6 +1030,9 @@ internal class ClaimChatPresenter(
         stepsWithShownAnimations = stepsWithShownAnimations,
         progress = progress,
         searchQuery = searchQuery,
+        title = title,
+        isResumable = isResumable,
+        resumeClaimEnabled = resumeClaimEnabled,
       )
 
       else -> error("")
@@ -1075,10 +1109,10 @@ private fun handleNext(
   steps: SnapshotStateList<ClaimIntentStep>,
   setOutcome: (outcome: ClaimIntentOutcome) -> Unit,
   intent: ClaimIntent,
-  setProgress: (Float?) -> Unit,
+  updateIntentMetadata: (ClaimIntent) -> Unit,
 ) {
   val next = intent.next
-  setProgress(intent.progress)
+  updateIntentMetadata(intent)
   when (next) {
     is ClaimIntent.Next.Outcome -> {
       setOutcome(next.claimIntentOutcome)

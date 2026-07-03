@@ -115,6 +115,9 @@ import hedvig.resources.EMBARK_UPDATE_APP_BODY
 import hedvig.resources.EMBARK_UPDATE_APP_BUTTON
 import hedvig.resources.GENERAL_ARE_YOU_SURE
 import hedvig.resources.NETWORK_ERROR_ALERT_MESSAGE
+import hedvig.resources.RESUME_CLAIM_LEAVE_BODY
+import hedvig.resources.RESUME_CLAIM_LEAVE_CONFIRM
+import hedvig.resources.RESUME_CLAIM_LEAVE_TITLE
 import hedvig.resources.Res
 import hedvig.resources.claims_alert_body
 import hedvig.resources.general_cancel_button
@@ -278,9 +281,13 @@ private fun ClaimChatScreenContent(
 ) {
   var showCloseFlowDialog by rememberSaveable { mutableStateOf(false) }
 
+  // Flag on: only a resumable draft warrants a leave confirmation (it will be saved).
+  // Flag off: legacy behavior, always confirm.
+  val showLeaveConfirmation = if (uiState.resumeClaimEnabled) uiState.isResumable else true
+
   NavigationEventHandler(
     state = rememberNavigationEventState(NavigationEventInfo.None),
-    isBackEnabled = uiState.steps.size > 1,
+    isBackEnabled = uiState.steps.size > 1 && showLeaveConfirmation,
   ) {
     showCloseFlowDialog = true
   }
@@ -321,15 +328,22 @@ private fun ClaimChatScreenContent(
     )
   }
   if (showCloseFlowDialog) {
-    HedvigAlertDialog(
-      title = stringResource(Res.string.GENERAL_ARE_YOU_SURE),
-      // text = stringResource(Res.string.claims_alert_body),
-      text = "Your answers will be saved in a draft claim", // TODO
-      onDismissRequest = {
-        showCloseFlowDialog = false
-      },
-      onConfirmClick = navigateUp,
-    )
+    if (uiState.resumeClaimEnabled) {
+      HedvigAlertDialog(
+        title = stringResource(Res.string.RESUME_CLAIM_LEAVE_TITLE),
+        text = stringResource(Res.string.RESUME_CLAIM_LEAVE_BODY),
+        confirmButtonLabel = stringResource(Res.string.RESUME_CLAIM_LEAVE_CONFIRM),
+        onDismissRequest = { showCloseFlowDialog = false },
+        onConfirmClick = navigateUp,
+      )
+    } else {
+      HedvigAlertDialog(
+        title = stringResource(Res.string.GENERAL_ARE_YOU_SURE),
+        text = stringResource(Res.string.claims_alert_body),
+        onDismissRequest = { showCloseFlowDialog = false },
+        onConfirmClick = navigateUp,
+      )
+    }
   }
   val lazyListState = rememberLazyListState()
   val coroutineScope = rememberCoroutineScope()
@@ -356,12 +370,13 @@ private fun ClaimChatScreenContent(
 
   Box(modifier = modifier.fillMaxSize()) {
     Column(Modifier.matchParentSize()) {
-      val title = stringResource(Res.string.CHAT_CONVERSATION_CLAIM_TITLE)
+      val legacyTitle = stringResource(Res.string.CHAT_CONVERSATION_CLAIM_TITLE)
+      val title = if (uiState.resumeClaimEnabled) uiState.title ?: legacyTitle else legacyTitle
       TopAppBar(
         title = title,
         actionType = TopAppBarActionType.BACK,
         onActionClick = {
-          if (uiState.steps.size > 1) {
+          if (uiState.steps.size > 1 && showLeaveConfirmation) {
             showCloseFlowDialog = true
           } else {
             navigateUp()
@@ -405,7 +420,7 @@ private fun ClaimChatScreenContent(
         openAppSettings = openAppSettings,
         modifier = Modifier.fillMaxSize(),
         closeFlow = {
-          if (uiState.steps.size > 1) {
+          if (uiState.steps.size > 1 && showLeaveConfirmation) {
             showCloseFlowDialog = true
           } else {
             navigateUp()
