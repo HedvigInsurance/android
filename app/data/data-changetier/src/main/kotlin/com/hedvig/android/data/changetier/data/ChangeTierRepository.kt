@@ -28,7 +28,7 @@ interface ChangeTierRepository {
 
   suspend fun addQuotesToStorage(quotes: List<TierDeductibleQuote>)
 
-  suspend fun submitChangeTierQuote(quoteId: String, insuranceId: String): Either<ErrorMessage, Unit>
+  suspend fun submitChangeTierQuote(quoteId: String, contractId: String): Either<ErrorMessage, Unit>
 
   suspend fun getCurrentQuoteId(): String
 }

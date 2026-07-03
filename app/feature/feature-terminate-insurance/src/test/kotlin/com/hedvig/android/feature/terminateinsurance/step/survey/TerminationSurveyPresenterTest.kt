@@ -493,7 +493,7 @@ private class FakeChangeTierRepository() : ChangeTierRepository {
   override suspend fun addQuotesToStorage(quotes: List<TierDeductibleQuote>) {
   }
 
-  override suspend fun submitChangeTierQuote(quoteId: String, insuranceId: String): Either<ErrorMessage, Unit> {
+  override suspend fun submitChangeTierQuote(quoteId: String, contractId: String): Either<ErrorMessage, Unit> {
     return either {}
   }
 

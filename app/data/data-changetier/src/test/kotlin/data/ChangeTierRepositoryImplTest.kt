@@ -45,7 +45,7 @@ class ChangeTierRepositoryImplTest {
   val testApolloClientRule = TestApolloClientRule(TestNetworkTransportType.MAP)
 
   private val testId = "testId"
-  private val testInsuranceId = "testInsuranceId"
+  private val testContractId = "testContractId"
 
   private val apolloClientWithBadResponseToSubmit: ApolloClient
     get() = testApolloClientRule.apolloClient.apply {
@@ -75,7 +75,7 @@ class ChangeTierRepositoryImplTest {
       crossSellAfterFlowRepository = CrossSellAfterFlowRepositoryImpl(),
       changeTierQuoteStorage = storage,
     )
-    val result = repository.submitChangeTierQuote(testId, testInsuranceId)
+    val result = repository.submitChangeTierQuote(testId, testContractId)
     assertThat(result)
       .isLeft()
   }
@@ -99,10 +99,10 @@ class ChangeTierRepositoryImplTest {
         }
       },
     )
-    val result = repository.submitChangeTierQuote(testId, testInsuranceId)
+    val result = repository.submitChangeTierQuote(testId, testContractId)
     assertThat(result).isRight().isEqualTo(Unit)
     assertThat(crossSellAfterFlowRepository.shouldShowCrossSellSheetWithInfo().first())
-      .isEqualTo(CrossSellInfoType.ChangeTier(testInsuranceId))
+      .isEqualTo(CrossSellInfoType.ChangeTier(testContractId))
   }
 
   @Test
