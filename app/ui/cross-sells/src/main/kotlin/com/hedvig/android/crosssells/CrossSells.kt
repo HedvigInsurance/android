@@ -310,7 +310,7 @@ private fun CrossSellsFloatingSheetContent(
               onCrossSellClick = onCrossSellClick,
               withSubHeader = false,
               onSheetDismissed = dismissSheet,
-              imageLoader = rememberPreviewImageLoader(),
+              imageLoader = imageLoader,
             )
           }
         }
