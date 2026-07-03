@@ -459,7 +459,11 @@ internal class GetHomeUseCaseTest {
 
     apolloClient.registerTestResponse(
       HomeQuery(true, false),
-      HomeQuery.Data(OctopusFakeResolver),
+      HomeQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          resumableClaimIntent = null
+        }
+      },
     )
     apolloClient.registerTestResponse(
       UnreadMessageCountQuery(),
@@ -505,6 +509,11 @@ internal class GetHomeUseCaseTest {
           isFalse()
         }
       }
+    assertThat(result)
+      .isNotNull()
+      .isRight()
+      .prop(HomeData::draftClaim)
+      .isNull()
   }
 
   @Test

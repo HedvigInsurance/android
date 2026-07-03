@@ -16,7 +16,6 @@ fragment ClaimIntentFragment on ClaimIntent {
     id
     submittedAt
   }
-  createdAt
   previousSteps {
     id
     text

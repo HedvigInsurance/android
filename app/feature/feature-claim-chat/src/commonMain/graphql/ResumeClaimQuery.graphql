@@ -1,7 +1,7 @@
 query ResumeClaim {
   currentMember {
     resumableClaimIntent {
-     ...ClaimIntentFragment
+    ...ClaimIntentFragment
     }
   }
 }

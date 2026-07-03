@@ -315,7 +315,7 @@ private fun List<FormFragment.Field>.toFields(locale: CommonLocale): List<StepCo
         ClaimIntentStepContentFormFieldType.DATE -> {
           DatePickerUiState(
             locale = locale,
-            initiallySelectedDate = defaultValues.getOrNull(0)?.let { LocalDate.parse(it.text) },
+            initiallySelectedDate = defaultValues.getOrNull(0)?.let { LocalDate.parse(it.value) },
             minDate = field.minValue?.let { LocalDate.parse(it) } ?: LocalDate(1900, 1, 1),
             maxDate = field.maxValue?.let { LocalDate.parse(it) } ?: LocalDate(2100, 1, 1),
           )

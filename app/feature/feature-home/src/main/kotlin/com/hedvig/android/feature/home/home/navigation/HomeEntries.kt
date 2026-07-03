@@ -38,7 +38,7 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
       viewModel = viewModel,
       onNavigateToInbox = dropUnlessResumed { onNavigateToInbox() },
       onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
-      navigateToClaimChat = navigateToClaimChat,
+      navigateToClaimChat = dropUnlessResumed { resumeClaim -> navigateToClaimChat(resumeClaim) },
       onClaimDetailCardClicked = dropUnlessResumed { claimId: String ->
         navigateToClaimDetails(claimId)
       },
