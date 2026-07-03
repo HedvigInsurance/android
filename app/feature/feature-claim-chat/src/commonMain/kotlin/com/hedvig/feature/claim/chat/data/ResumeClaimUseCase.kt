@@ -27,8 +27,8 @@ internal class ResumeClaimUseCase(
         )
         .fetchPolicy(FetchPolicy.NetworkOnly)
         .safeExecute()
-        .mapLeft {
-          logcat { "StartClaimIntentUseCase error: $it" }
+        .mapLeft { error ->
+          logcat(operationError = error) { "ResumeClaimUseCase failed with $error" }
           ClaimChatErrorMessage.GeneralError
         }
         .bind()

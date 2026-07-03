@@ -125,7 +125,9 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
         AudioRecordingStepState.AudioRecording.Playback(
           audioPath = AudioPath.RemoteUrl(audioUrl),
           isPlaying = false,
-          isPrepared = true, // TODO: check
+          // A resumed remote recording has no local MediaPlayer to prepare; the remote audio player
+          // handles its own buffering, so the playback UI can show immediately.
+          isPrepared = true,
           hasError = false,
         )
       } else if (freeText != null) {
