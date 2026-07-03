@@ -25,4 +25,6 @@ dependencies {
   implementation(projects.designSystemHedvig)
   implementation(projects.moleculePublic)
 
+  testImplementation(libs.assertK)
+  testImplementation(libs.junit)
 }

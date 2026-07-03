@@ -121,7 +121,7 @@ internal fun CrossSellInfoType.toCrossSellSource(): CrossSellInput {
       userFlow = UserFlow.SMART_X_SELL,
       flowSource = Optional.present(flowSource),
       experiments = emptyList(),
-      contractId = Optional.present(this.contractId),
+      contractId = Optional.presentIfNotNull(this.contractId),
     )
   }
   return when (this) {
