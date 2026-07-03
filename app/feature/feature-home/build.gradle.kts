@@ -39,6 +39,7 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.crossSells)
   implementation(projects.dataAddons)
+  implementation(projects.dataClaimIntent)
   implementation(projects.dataContract)
   implementation(projects.dataConversations)
   implementation(projects.dataCrossSellAfterClaimClosed)

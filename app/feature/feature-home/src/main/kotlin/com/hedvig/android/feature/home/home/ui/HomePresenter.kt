@@ -14,9 +14,12 @@ import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.data.addons.data.AddonBannerInfo
+import com.hedvig.android.data.claimintent.DeleteClaimIntentDraftUseCase
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -36,6 +39,7 @@ internal class HomePresenter(
   private val crossSellHomeNotificationService: CrossSellHomeNotificationService,
   private val applicationScope: ApplicationScope,
   private val isProduction: Boolean,
+  private val deleteClaimIntentDraftUseCase: DeleteClaimIntentDraftUseCase,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
   override fun MoleculePresenterScope<HomeEvent>.present(lastState: HomeUiState): HomeUiState {
@@ -65,6 +69,15 @@ internal class HomePresenter(
 
         is HomeEvent.CrossSellToolTipShown -> {
           crossSellToolTipShownEpochDay = homeEvent.epochDay
+        }
+
+        is HomeEvent.DeleteDraftClaim -> {
+          launch {
+            deleteClaimIntentDraftUseCase.invoke(homeEvent.draftId).fold(
+              ifLeft = { logcat(LogPriority.ERROR) { "Failed to delete draft claim: $it" } },
+              ifRight = { loadIteration++ },
+            )
+          }
         }
       }
     }
@@ -153,6 +166,8 @@ internal sealed interface HomeEvent {
   data object MarkCardCrossSellsAsSeen : HomeEvent
 
   data class CrossSellToolTipShown(val epochDay: Long) : HomeEvent
+
+  data class DeleteDraftClaim(val draftId: String) : HomeEvent
 }
 
 internal sealed interface HomeUiState {
