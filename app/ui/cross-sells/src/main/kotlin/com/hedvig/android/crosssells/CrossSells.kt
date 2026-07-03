@@ -132,7 +132,8 @@ fun CrossSellFloatingBottomSheet(
     hedvigBottomSheetState = state,
     dragHandle = {
       CrossSellDragHandle(
-        text = state.data?.recommendedCrossSell?.bannerText,
+        text = state.data?.recommendedCrossSell?.bannerText
+          ?: state.data?.recommendedAddon?.let { stringResource(Res.string.CROSS_SELL_BANNER_TEXT) },
         modifier = Modifier
           .padding(horizontal = 16.dp)
           .clip(HedvigTheme.shapes.cornerXLargeTop),
@@ -165,11 +166,12 @@ fun CrossSellBottomSheet(
   imageLoader: ImageLoader,
 ) {
   val dragHandle: @Composable (() -> Unit)? =
-    if (state.data?.recommendedCrossSell != null) {
+    if (state.data?.recommendedCrossSell != null || state.data?.recommendedAddon != null) {
       {
         CrossSellDragHandle(
           contentPadding = PaddingValues(horizontal = 16.dp),
-          text = state.data?.recommendedCrossSell?.bannerText,
+          text = state.data?.recommendedCrossSell?.bannerText
+            ?: stringResource(Res.string.CROSS_SELL_BANNER_TEXT),
         )
       }
     } else {
@@ -207,13 +209,15 @@ private fun CrossSellsSheetContent(
       modifier = Modifier.padding(bottom = 24.dp),
     ) {
       if (recommendedAddon != null) {
-        Spacer(Modifier.height(16.dp))
-        AddonRecommendationSection(
-          recommendedAddon,
-          onButtonClick = onCrossSellClick,
-          dismissSheet = dismissSheet,
-          imageLoader = imageLoader,
-        )
+        Column {
+          Spacer(Modifier.height(48.dp))
+          AddonRecommendationSection(
+            recommendedAddon,
+            onButtonClick = onCrossSellClick,
+            dismissSheet = dismissSheet,
+            imageLoader = imageLoader,
+          )
+        }
       } else if (recommendedCrossSell != null) {
         Column {
           Spacer(Modifier.height(48.dp))
@@ -276,12 +280,15 @@ private fun CrossSellsFloatingSheetContent(
         verticalArrangement = Arrangement.spacedBy(40.dp),
       ) {
         if (recommendedAddon != null) {
-          AddonRecommendationSection(
-            recommendedAddon,
-            onButtonClick = onCrossSellClick,
-            dismissSheet = dismissSheet,
-            imageLoader = imageLoader,
-          )
+          Column {
+            Spacer(Modifier.height(48.dp))
+            AddonRecommendationSection(
+              recommendedAddon,
+              onButtonClick = onCrossSellClick,
+              dismissSheet = dismissSheet,
+              imageLoader = imageLoader,
+            )
+          }
         } else if (recommendedCrossSell != null) {
           Column {
             Spacer(Modifier.height(48.dp))
