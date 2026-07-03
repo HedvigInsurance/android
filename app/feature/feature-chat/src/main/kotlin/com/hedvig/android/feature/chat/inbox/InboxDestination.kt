@@ -24,6 +24,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,6 +47,7 @@ import com.hedvig.android.compose.ui.preview.TripleBooleanCollectionPreviewParam
 import com.hedvig.android.compose.ui.preview.TripleCase
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.DividerPosition
+import com.hedvig.android.design.system.hedvig.DraftClaimDialog
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
@@ -132,6 +136,20 @@ private fun InboxScreen(
 ) {
   val newChatSelectBottomSheetState = rememberHedvigBottomSheetState<Unit>()
   val startClaimBottomSheetState = rememberHedvigBottomSheetState<Unit>()
+  var showDraftClaimDialog by remember { mutableStateOf(false) }
+  if (showDraftClaimDialog) {
+    DraftClaimDialog(
+      onDismissRequest = { showDraftClaimDialog = false },
+      onContinueDraft = {
+        showDraftClaimDialog = false
+        navigateToClaimChat(true)
+      },
+      onStartNewClaim = {
+        showDraftClaimDialog = false
+        startClaimBottomSheetState.show(Unit)
+      },
+    )
+  }
   HedvigBottomSheet(
     newChatSelectBottomSheetState,
     content = {
@@ -142,7 +160,11 @@ private fun InboxScreen(
         },
         onStartNewClaim = {
           newChatSelectBottomSheetState.dismiss()
-          startClaimBottomSheetState.show(Unit)
+          if ((uiState as? InboxUiState.Success)?.hasDraftClaim == true) {
+            showDraftClaimDialog = true
+          } else {
+            startClaimBottomSheetState.show(Unit)
+          }
         },
         dismiss = {
           newChatSelectBottomSheetState.dismiss()
@@ -479,6 +501,7 @@ private fun EmptyInboxSuccessScreenPreview(
         InboxUiState.Success(
           listOf(),
           case,
+          hasDraftClaim = false,
         ),
         {},
         {},
@@ -518,6 +541,7 @@ private fun InboxSuccessScreenPreview(
             mockInboxConversationLegacy,
           ),
           newConversationButtonAvailable = case,
+          hasDraftClaim = false,
         ),
         {},
         {},
