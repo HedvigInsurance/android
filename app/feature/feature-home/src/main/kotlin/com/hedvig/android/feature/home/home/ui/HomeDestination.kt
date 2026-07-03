@@ -86,7 +86,6 @@ import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.StartClaimBottomSheet
-import com.hedvig.android.design.system.hedvig.StartClaimSheetData
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TooltipDefaults
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.TopEnd
@@ -239,13 +238,9 @@ private fun HomeScreen(
     imageLoader = imageLoader,
   )
 
-  val resumableClaimId = (uiState as? Success)?.resumableClaimId
-  val startClaimBottomSheetState = rememberHedvigBottomSheetState<StartClaimSheetData>()
+  val startClaimBottomSheetState = rememberHedvigBottomSheetState<Unit>()
   StartClaimBottomSheet(
     state = startClaimBottomSheetState,
-    navigateToOldClaim = {
-      navigateToClaimChat(resumableClaimId)
-    },
     navigateToClaimChat = {
       navigateToClaimChat(null)
     },
@@ -286,7 +281,7 @@ private fun HomeScreen(
             navigateToConnectPayout = navigateToConnectPayout,
             navigateToHelpCenter = navigateToHelpCenter,
             openClaimFlowSheet = {
-              startClaimBottomSheetState.show(StartClaimSheetData(resumableClaimId))
+              startClaimBottomSheetState.show(Unit)
             },
             openAppSettings = openAppSettings,
             openUrl = openUrl,
@@ -806,7 +801,7 @@ private fun PreviewHomeScreen(
             flowType = FlowType.APP_TRAVEL_PLUS_SELL_OR_UPGRADE,
           ),
           isProduction = true,
-          resumableClaimId = null
+          resumableClaimId = null,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
@@ -892,7 +887,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
           chatAction = ChatAction,
           addonBannerInfo = null,
           isProduction = true,
-          resumableClaimId = null
+          resumableClaimId = null,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
