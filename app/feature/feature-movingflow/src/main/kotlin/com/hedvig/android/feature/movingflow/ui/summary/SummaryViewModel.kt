@@ -178,7 +178,7 @@ internal class SummaryPresenter(
               } else {
                 crossSellAfterFlowRepository.completedCrossSellTriggeringSelfServiceSuccessfully(
                   CrossSellInfoType.MovingFlow(
-                    moveIntentCommit.newContractId
+                    moveIntentCommit.newContractId,
                   ),
                 )
                 submitChangesWithData = null
@@ -353,7 +353,7 @@ internal sealed interface SummaryEvent {
 
 internal data class SummaryInfo(
   val moveHomeQuote: MoveHomeQuote,
-  val moveMtaQuotes: List<MoveMtaQuote>
+  val moveMtaQuotes: List<MoveMtaQuote>,
 )
 
 private data class SubmitChangesData(

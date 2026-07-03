@@ -145,13 +145,13 @@ internal class GetHomeDataUseCaseImpl(
             description = it.description,
             deepLink = it.deepLink,
             pillowImageSmall = it.pillowImageSmall.src,
-            pillowImageLarge = it.pillowImageLarge.src
+            pillowImageLarge = it.pillowImageLarge.src,
           )
         }
         val crossSells = CrossSellSheetData(
           recommendedCrossSell = recommendedCrossSell,
           otherCrossSells = otherCrossSellsData,
-          recommendedAddon = recommendedAddon
+          recommendedAddon = recommendedAddon,
         )
         val showChatIcon = shouldShowChatButton(
           isInboxEnabledFromKillSwitch = inboxAlwaysAvailable,

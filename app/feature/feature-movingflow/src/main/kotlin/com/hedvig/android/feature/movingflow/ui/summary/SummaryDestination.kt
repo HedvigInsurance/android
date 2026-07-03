@@ -498,7 +498,7 @@ private class SummaryUiStateProvider : PreviewParameterProvider<SummaryUiState> 
               ),
             ),
           ),
-        )
+        ),
       ),
       isSubmitting = false,
       submitError = null,

@@ -28,7 +28,7 @@ interface ChangeTierRepository {
 
   suspend fun addQuotesToStorage(quotes: List<TierDeductibleQuote>)
 
-  suspend fun submitChangeTierQuote(quoteId: String, insuranceId: String,): Either<ErrorMessage, Unit>
+  suspend fun submitChangeTierQuote(quoteId: String, insuranceId: String): Either<ErrorMessage, Unit>
 
   suspend fun getCurrentQuoteId(): String
 }
@@ -74,7 +74,7 @@ internal class ChangeTierRepositoryImpl(
     changeTierQuoteStorage.insertAll(quotes)
   }
 
-  override suspend fun submitChangeTierQuote(quoteId: String, insuranceId: String,): Either<ErrorMessage, Unit> {
+  override suspend fun submitChangeTierQuote(quoteId: String, contractId: String): Either<ErrorMessage, Unit> {
     return either {
       apolloClient
         .mutation(ChangeTierDeductibleCommitIntentMutation(quoteId))
@@ -85,7 +85,8 @@ internal class ChangeTierRepositoryImpl(
         }
         .bind()
       crossSellAfterFlowRepository.completedCrossSellTriggeringSelfServiceSuccessfully(
-        CrossSellInfoType.ChangeTier(insuranceId),)
+        CrossSellInfoType.ChangeTier(contractId),
+      )
     }
   }
 

@@ -11,6 +11,8 @@ import arrow.core.left
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
+import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
@@ -47,8 +49,6 @@ import octopus.type.CrossSellInput
 import octopus.type.CrossSellSource
 import octopus.type.FlowSource
 import octopus.type.UserFlow
-import com.apollographql.apollo.cache.normalized.FetchPolicy
-import com.apollographql.apollo.cache.normalized.fetchPolicy
 
 @Inject
 @HedvigViewModel(ActivityRetainedScope::class)
@@ -121,7 +121,7 @@ internal fun CrossSellInfoType.toCrossSellSource(): CrossSellInput {
       userFlow = UserFlow.SMART_X_SELL,
       flowSource = Optional.present(flowSource),
       experiments = emptyList(),
-      contractId = Optional.present(this.contractId)
+      contractId = Optional.present(this.contractId),
     )
   }
   return when (this) {
@@ -191,13 +191,13 @@ internal class GetCrossSellSheetDataUseCaseImpl(
               description = it.description,
               deepLink = it.deepLink,
               pillowImageSmall = it.pillowImageSmall.src,
-              pillowImageLarge = it.pillowImageLarge.src
+              pillowImageLarge = it.pillowImageLarge.src,
             )
           }
           CrossSellSheetData(
             recommendedCrossSell = recommendedData,
             otherCrossSells = otherCrossSellsData,
-            recommendedAddon = recommendedAddon
+            recommendedAddon = recommendedAddon,
           )
         }
       }

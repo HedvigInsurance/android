@@ -166,7 +166,7 @@ internal class HomePresenterTest {
           isHelpCenterEnabled = false,
           firstVetAction = null,
           crossSellsAction = HomeTopBarAction.CrossSellsAction(
-            CrossSellSheetData(testCrossSell, listOf(),null),
+            CrossSellSheetData(testCrossSell, listOf(), null),
             crossSellRecommendationNotification = CrossSellRecommendationNotification
               (true, 1L),
           ),
@@ -203,7 +203,7 @@ internal class HomePresenterTest {
           ),
           showChatIcon = false,
           hasUnseenChatMessages = false,
-          crossSells = CrossSellSheetData(null, listOf(),null),
+          crossSells = CrossSellSheetData(null, listOf(), null),
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
@@ -280,7 +280,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = hasNotification,
           showHelpCenter = false,
           firstVetSections = listOf(),
-          crossSells = CrossSellSheetData(null, listOf(),null),
+          crossSells = CrossSellSheetData(null, listOf(), null),
           travelBannerInfo = null,
         ).right(),
       )
@@ -313,7 +313,7 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           showChatIcon = false,
           hasUnseenChatMessages = false,
-          crossSells = CrossSellSheetData(null, listOf(),null),
+          crossSells = CrossSellSheetData(null, listOf(), null),
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
@@ -365,7 +365,7 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           showChatIcon = false,
           hasUnseenChatMessages = false,
-          crossSells = CrossSellSheetData(null, listOf(),null),
+          crossSells = CrossSellSheetData(null, listOf(), null),
           firstVetSections = listOf(
             firstVet,
           ),
@@ -420,7 +420,7 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           showChatIcon = false,
           hasUnseenChatMessages = false,
-          crossSells = CrossSellSheetData(testCrossSell, listOf(crossSell),null),
+          crossSells = CrossSellSheetData(testCrossSell, listOf(crossSell), null),
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
@@ -438,7 +438,7 @@ internal class HomePresenterTest {
           chatAction = null,
           firstVetAction = null,
           crossSellsAction = HomeTopBarAction.CrossSellsAction(
-            CrossSellSheetData(testCrossSell, listOf(crossSell),null),
+            CrossSellSheetData(testCrossSell, listOf(crossSell), null),
             crossSellRecommendationNotification = CrossSellRecommendationNotification
               (true, 1L),
           ),
@@ -470,7 +470,7 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           showChatIcon = true,
           hasUnseenChatMessages = false,
-          crossSells = CrossSellSheetData(null, emptyList(),null),
+          crossSells = CrossSellSheetData(null, emptyList(), null),
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
@@ -516,7 +516,7 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           showChatIcon = false,
           hasUnseenChatMessages = false,
-          crossSells = CrossSellSheetData(null, emptyList(),null),
+          crossSells = CrossSellSheetData(null, emptyList(), null),
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
@@ -560,7 +560,7 @@ internal class HomePresenterTest {
     hasUnseenChatMessages = false,
     showHelpCenter = false,
     firstVetSections = listOf(),
-    crossSells = CrossSellSheetData(null, emptyList(),null),
+    crossSells = CrossSellSheetData(null, emptyList(), null),
     travelBannerInfo = null,
   )
 }

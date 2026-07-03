@@ -26,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -62,7 +61,6 @@ import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.StepProgressItem
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
-import com.hedvig.android.design.system.hedvig.debugBorder
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.Campaign
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -154,7 +152,7 @@ fun CrossSellFloatingBottomSheet(
         onCrossSellClick = onCrossSellClick,
         dismissSheet = { state.dismiss() },
         imageLoader = imageLoader,
-        recommendedAddon = crossSellSheetData.recommendedAddon
+        recommendedAddon = crossSellSheetData.recommendedAddon,
       )
     },
   )
@@ -357,7 +355,7 @@ private fun AddonRecommendationSection(
       Row(
         Modifier
           .align(Alignment.TopEnd)
-          .padding(top = 8.dp)
+          .padding(top = 8.dp),
       ) {
         Box(
           contentAlignment = Alignment.Center,
@@ -406,7 +404,7 @@ private fun AddonRecommendationSection(
       },
       enabled = true,
       modifier = Modifier
-        .fillMaxWidth()
+        .fillMaxWidth(),
     )
   }
 }
@@ -917,7 +915,7 @@ private fun PreviewCrossSellsSheetContent(
           onCrossSellClick = {},
           dismissSheet = {},
           imageLoader = rememberPreviewImageLoader(),
-          recommendedAddon = null
+          recommendedAddon = null,
         )
       }
     }
@@ -957,7 +955,7 @@ private fun PreviewCrossSellsFloatingSheetContent(
             ImageAsset("", "", ""),
           ),
         ).takeIf { case != TripleCase.FIRST }.orEmpty(),
-        dismissSheet =  {},
+        dismissSheet = {},
         onCrossSellClick = {},
         imageLoader = rememberPreviewImageLoader(),
       )
@@ -1052,7 +1050,7 @@ private fun PreviewRecommendedAddon(
           description = "Best addon in the world",
           deepLink = "deep",
           pillowImageSmall = "src",
-          pillowImageLarge = "src"
+          pillowImageLarge = "src",
         ),
         onCrossSellClick = {},
         dismissSheet = {},
