@@ -230,12 +230,14 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
       backstack.add(CoInsuredAddInfoKey(contractId, type))
     },
     navigateToHelpCenter = { backstack.add(HelpCenterKey) },
-    navigateToClaimChat = { resumableClaimId ->
-      backstack.add(ClaimChatKey(
-        messageId = null,
-        isDevelopmentFlow = false,
-        resumableClaimId = resumableClaimId,
-      ))
+    navigateToClaimChat = { resumeClaim ->
+      backstack.add(
+        ClaimChatKey(
+          messageId = null,
+          isDevelopmentFlow = false,
+          resumeClaim = resumeClaim,
+        ),
+      )
     },
     navigateToChipIdScreen = { backstack.add(ChipIdKey()) },
     openAppSettings = externalNavigator::openAppSettings,
@@ -475,8 +477,8 @@ private fun EntryProviderScope<HedvigNavKey>.addChatEntries(
     },
     onNavigateToImageViewer = onNavigateToImageViewer,
     onNavigateToNewConversation = navigateToNewConversation,
-    navigateToClaimChat = {
-      backstack.add(ClaimChatKey(messageId = null, isDevelopmentFlow = false))
+    navigateToClaimChat = { resumeClaim ->
+      backstack.add(ClaimChatKey(messageId = null, isDevelopmentFlow = false, resumeClaim = resumeClaim))
     },
     backstack = backstack,
   )

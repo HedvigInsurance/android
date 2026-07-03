@@ -164,7 +164,7 @@ internal sealed interface ClaimChatUiState {
 @HedvigViewModel(ActivityRetainedScope::class)
 internal class ClaimChatViewModel(
   @Assisted developmentFlow: Boolean,
-  @Assisted resumableClaimId: String?,
+  @Assisted resumeClaim: Boolean,
   startClaimIntentUseCase: StartClaimIntentUseCase,
   getClaimIntentUseCase: GetClaimIntentUseCase,
   submitTaskUseCase: SubmitTaskUseCase,
@@ -196,7 +196,7 @@ internal class ClaimChatViewModel(
       fileService,
       regretStepUseCase,
       formFieldSearchUseCase,
-      resumableClaimId,
+      resumeClaim,
       resumeClaimUseCase,
     ),
   ) {
@@ -221,7 +221,7 @@ internal class ClaimChatPresenter(
   private val fileService: FileService,
   private val regretStepUseCase: RegretStepUseCase,
   private val formFieldSearchUseCase: FormFieldSearchUseCase,
-  private val resumableClaimId: String?,
+  private val resumeClaim: Boolean,
   private val resumeClaimUseCase: ResumeClaimUseCase,
 ) : MoleculePresenter<ClaimChatEvent, ClaimChatUiState> {
   @Composable
@@ -261,7 +261,7 @@ internal class ClaimChatPresenter(
 
     if (initializing) {
       LaunchedEffect(Unit) {
-        val isResumingClaim = resumableClaimId != null
+        val isResumingClaim = resumeClaim
         if (isResumingClaim) {
           resumeClaimUseCase
             .invoke()

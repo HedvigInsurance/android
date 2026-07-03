@@ -157,7 +157,7 @@ internal fun HomeDestination(
   viewModel: HomeViewModel,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
-  navigateToClaimChat: (String?) -> Unit,
+  navigateToClaimChat: (resumeClaim: Boolean) -> Unit,
   onClaimDetailCardClicked: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToConnectPayout: () -> Unit,
@@ -207,7 +207,7 @@ private fun HomeScreen(
   reload: () -> Unit,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
-  navigateToClaimChat: (String?) -> Unit,
+  navigateToClaimChat: (resumeClaim: Boolean) -> Unit,
   onClaimDetailCardClicked: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToConnectPayout: () -> Unit,
@@ -244,7 +244,7 @@ private fun HomeScreen(
   StartClaimBottomSheet(
     state = startClaimBottomSheetState,
     navigateToClaimChat = {
-      navigateToClaimChat(null)
+      navigateToClaimChat(false)
     },
   )
   Box(Modifier.fillMaxSize()) {

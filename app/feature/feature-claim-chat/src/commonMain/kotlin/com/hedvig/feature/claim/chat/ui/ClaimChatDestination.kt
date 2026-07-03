@@ -137,11 +137,11 @@ internal fun ClaimChatDestination(
   isDevelopmentFlow: Boolean,
   navigateUp: () -> Unit,
   openPlayStore: () -> Unit,
-  resumableClaimId: String?,
+  resumeClaim: Boolean,
 ) {
   val claimChatViewModel =
     assistedMetroViewModel<ClaimChatViewModel, ClaimChatViewModelFactory> {
-      create(isDevelopmentFlow, resumableClaimId)
+      create(isDevelopmentFlow, resumeClaim)
     }
   Box(Modifier.fillMaxSize(), propagateMinConstraints = true) {
     BlurredGradientBackground()
@@ -324,7 +324,7 @@ private fun ClaimChatScreenContent(
     HedvigAlertDialog(
       title = stringResource(Res.string.GENERAL_ARE_YOU_SURE),
       // text = stringResource(Res.string.claims_alert_body),
-      text = "Your answers will be saved in a draft claim", //TODO
+      text = "Your answers will be saved in a draft claim", // TODO
       onDismissRequest = {
         showCloseFlowDialog = false
       },

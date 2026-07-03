@@ -108,7 +108,7 @@ internal fun InboxDestination(
   navigateUp: () -> Unit,
   onConversationClick: (id: String) -> Unit,
   onNavigateToNewConversation: () -> Unit,
-  navigateToClaimChat: () -> Unit,
+  navigateToClaimChat: (resumeClaim: Boolean) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   InboxScreen(
@@ -128,7 +128,7 @@ private fun InboxScreen(
   onConversationClick: (id: String) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   reload: () -> Unit,
-  navigateToClaimChat: () -> Unit,
+  navigateToClaimChat: (resumeClaim: Boolean) -> Unit,
 ) {
   val newChatSelectBottomSheetState = rememberHedvigBottomSheetState<Unit>()
   val startClaimBottomSheetState = rememberHedvigBottomSheetState<Unit>()
@@ -154,7 +154,7 @@ private fun InboxScreen(
     state = startClaimBottomSheetState,
     navigateToClaimChat = {
       startClaimBottomSheetState.dismiss()
-      navigateToClaimChat()
+      navigateToClaimChat(false)
     },
   )
   Surface(

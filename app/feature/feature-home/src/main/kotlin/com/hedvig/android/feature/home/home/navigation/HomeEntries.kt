@@ -25,7 +25,7 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
   navigateToContactInfo: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToHelpCenter: () -> Unit,
-  navigateToClaimChat: (String?) -> Unit,
+  navigateToClaimChat: (resumeClaim: Boolean) -> Unit,
   navigateToChipIdScreen: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
