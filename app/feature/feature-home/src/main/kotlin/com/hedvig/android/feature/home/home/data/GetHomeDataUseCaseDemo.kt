@@ -56,7 +56,7 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
       ),
       travelBannerInfo = null,
       showChatIcon = false,
-      resumableClaimId = null
+      resumableClaimId = null,
     ).right(),
   )
 }

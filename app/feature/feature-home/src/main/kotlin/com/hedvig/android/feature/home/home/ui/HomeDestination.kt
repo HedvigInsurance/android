@@ -59,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
+import arrow.core.toNonEmptyListOrNull
 import coil3.ImageLoader
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
@@ -119,6 +120,7 @@ import com.hedvig.android.pullrefresh.PullRefreshState
 import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import com.hedvig.android.ui.claimstatus.ClaimStatusCards
+import com.hedvig.android.ui.claimstatus.model.ClaimCardUiState
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType.Claim
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType.Closed.NotCompensated
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
@@ -478,10 +480,15 @@ private fun HomeScreenSuccess(
           )
         },
         claimStatusCards = {
-          if (uiState.claimStatusCardsData != null) {
+          val claimCards = uiState.claimStatusCardsData?.claimStatusCardsUiState
+            ?.map<ClaimCardUiState> { ClaimCardUiState.Claim(it) }
+            ?.toNonEmptyListOrNull()
+          if (claimCards != null) {
             ClaimStatusCards(
               onClick = onClaimDetailCardClicked,
-              claimStatusCardsUiState = uiState.claimStatusCardsData.claimStatusCardsUiState,
+              onContinueDraftClaim = {},
+              onDeleteDraftClaim = {},
+              claimCardsUiState = claimCards,
               contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
             )
           }

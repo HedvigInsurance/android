@@ -25,6 +25,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentText.BeingHandled
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentText.Closed
+import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentText.Started
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentText.Submitted
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentType
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentType.ACTIVE
@@ -79,8 +80,13 @@ private fun ClaimProgress(
   }
   val text = when (segmentText) {
     Submitted -> stringResource(Res.string.claim_status_detail_submitted)
+
     BeingHandled -> stringResource(Res.string.claim_status_bar_being_handled)
+
     Closed -> stringResource(Res.string.claim_status_detail_closed)
+
+    // TODO: Add "Started" / "Påbörjad" to Lokalise
+    Started -> "Started"
   }
   ClaimProgress(
     text = text,
