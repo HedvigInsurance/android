@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import arrow.core.NonEmptyList
 import arrow.core.nonEmptyListOf
 import arrow.core.toNonEmptyListOrNull
 import coil3.ImageLoader
@@ -75,6 +76,9 @@ import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
+import com.hedvig.android.design.system.hedvig.DraftClaimDialog
+import com.hedvig.android.design.system.hedvig.ErrorDialog
+import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
@@ -129,8 +133,14 @@ import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentType.
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
 import hedvig.resources.CHAT_NEW_MESSAGE
+import hedvig.resources.RESUME_CLAIM_DELETE_BODY
+import hedvig.resources.RESUME_CLAIM_DELETE_BUTTON
+import hedvig.resources.RESUME_CLAIM_DELETE_TITLE
+import hedvig.resources.RESUME_CLAIM_EXPIRED_BODY
+import hedvig.resources.RESUME_CLAIM_EXPIRED_TITLE
 import hedvig.resources.Res
 import hedvig.resources.TOAST_NEW_OFFER
+import hedvig.resources.general_cancel_button
 import hedvig.resources.home_tab_active_in_future_info
 import hedvig.resources.home_tab_claim_button_text
 import hedvig.resources.home_tab_get_help
@@ -189,6 +199,7 @@ internal fun HomeDestination(
     openAppSettings = openAppSettings,
     navigateToMissingInfo = navigateToMissingInfo,
     markMessageAsSeen = { viewModel.emit(HomeEvent.MarkMessageAsSeen(it)) },
+    deleteDraftClaim = { draftId -> viewModel.emit(HomeEvent.DeleteDraftClaim(draftId)) },
     navigateToFirstVet = navigateToFirstVet,
     markCrossSellsNotificationAsSeen = { viewModel.emit(HomeEvent.MarkCardCrossSellsAsSeen) },
     navigateToContactInfo = navigateToContactInfo,
@@ -215,6 +226,7 @@ private fun HomeScreen(
   openUrl: (String) -> Unit,
   openCrossSellUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
+  deleteDraftClaim: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
@@ -247,6 +259,44 @@ private fun HomeScreen(
       navigateToClaimChat(false)
     },
   )
+  val draftClaim = (uiState as? Success)?.draftClaim
+  var showDraftClaimDialog by remember { mutableStateOf(false) }
+  var showDraftExpiredDialog by remember { mutableStateOf(false) }
+  var draftIdPendingDeleteConfirmation by remember { mutableStateOf<String?>(null) }
+  if (showDraftClaimDialog) {
+    DraftClaimDialog(
+      onDismissRequest = { showDraftClaimDialog = false },
+      onContinueDraft = {
+        showDraftClaimDialog = false
+        navigateToClaimChat(true)
+      },
+      onStartNewClaim = {
+        showDraftClaimDialog = false
+        startClaimBottomSheetState.show(Unit)
+      },
+    )
+  }
+  if (showDraftExpiredDialog) {
+    ErrorDialog(
+      title = stringResource(Res.string.RESUME_CLAIM_EXPIRED_TITLE),
+      message = stringResource(Res.string.RESUME_CLAIM_EXPIRED_BODY),
+      onDismiss = { showDraftExpiredDialog = false },
+    )
+  }
+  val draftIdToDelete = draftIdPendingDeleteConfirmation
+  if (draftIdToDelete != null) {
+    HedvigAlertDialog(
+      title = stringResource(Res.string.RESUME_CLAIM_DELETE_TITLE),
+      text = stringResource(Res.string.RESUME_CLAIM_DELETE_BODY),
+      confirmButtonLabel = stringResource(Res.string.RESUME_CLAIM_DELETE_BUTTON),
+      dismissButtonLabel = stringResource(Res.string.general_cancel_button),
+      onDismissRequest = { draftIdPendingDeleteConfirmation = null },
+      onConfirmClick = {
+        draftIdPendingDeleteConfirmation = null
+        deleteDraftClaim(draftIdToDelete)
+      },
+    )
+  }
   Box(Modifier.fillMaxSize()) {
     val toolbarHeight = 64.dp
     val transition = updateTransition(targetState = uiState, label = "home ui state")
@@ -283,8 +333,22 @@ private fun HomeScreen(
             navigateToConnectPayout = navigateToConnectPayout,
             navigateToHelpCenter = navigateToHelpCenter,
             openClaimFlowSheet = {
-              startClaimBottomSheetState.show(Unit)
+              if (draftClaim != null) {
+                showDraftClaimDialog = true
+              } else {
+                startClaimBottomSheetState.show(Unit)
+              }
             },
+            onContinueDraftClaim = {
+              if (draftClaim != null) {
+                if (draftClaim.isExpired(Clock.System.now())) {
+                  showDraftExpiredDialog = true
+                } else {
+                  navigateToClaimChat(true)
+                }
+              }
+            },
+            onDeleteDraftClaim = { draftId -> draftIdPendingDeleteConfirmation = draftId },
             openAppSettings = openAppSettings,
             openUrl = openUrl,
             navigateToMissingInfo = navigateToMissingInfo,
@@ -433,6 +497,8 @@ private fun HomeScreenSuccess(
   navigateToConnectPayout: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   openClaimFlowSheet: () -> Unit,
+  onContinueDraftClaim: () -> Unit,
+  onDeleteDraftClaim: (String) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
@@ -480,14 +546,17 @@ private fun HomeScreenSuccess(
           )
         },
         claimStatusCards = {
-          val claimCards = uiState.claimStatusCardsData?.claimStatusCardsUiState
-            ?.map<ClaimCardUiState> { ClaimCardUiState.Claim(it) }
-            ?.toNonEmptyListOrNull()
+          val claimCards: NonEmptyList<ClaimCardUiState>? = buildList {
+            uiState.draftClaim?.let { draftClaim ->
+              add(ClaimCardUiState.Draft(draftClaim.id, draftClaim.displayName, draftClaim.startedAt))
+            }
+            uiState.claimStatusCardsData?.claimStatusCardsUiState?.forEach { add(ClaimCardUiState.Claim(it)) }
+          }.toNonEmptyListOrNull()
           if (claimCards != null) {
             ClaimStatusCards(
               onClick = onClaimDetailCardClicked,
-              onContinueDraftClaim = {},
-              onDeleteDraftClaim = {},
+              onContinueDraftClaim = onContinueDraftClaim,
+              onDeleteDraftClaim = onDeleteDraftClaim,
               claimCardsUiState = claimCards,
               contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
             )
@@ -824,6 +893,7 @@ private fun PreviewHomeScreen(
         openAppSettings = {},
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
+        deleteDraftClaim = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
@@ -856,6 +926,7 @@ private fun PreviewHomeScreenWithError() {
         openAppSettings = {},
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
+        deleteDraftClaim = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
@@ -910,6 +981,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         openAppSettings = {},
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
+        deleteDraftClaim = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
