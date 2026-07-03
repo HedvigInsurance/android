@@ -25,6 +25,8 @@ import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.isRight
+import com.hedvig.android.crosssells.CrossSellSheetData
+import com.hedvig.android.crosssells.RecommendedAddon
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
@@ -56,10 +58,13 @@ import octopus.type.buildChatMessageText
 import octopus.type.buildClaim
 import octopus.type.buildContract
 import octopus.type.buildConversation
+import octopus.type.buildCrossSellV2
 import octopus.type.buildLinkInfo
 import octopus.type.buildMember
 import octopus.type.buildMemberImportantMessage
 import octopus.type.buildPendingContract
+import octopus.type.buildRecommendedAddonCrossSell
+import octopus.type.buildStoryblokImageAsset
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -667,6 +672,57 @@ internal class GetHomeUseCaseTest {
           isFalse()
         }
       }
+  }
+
+  @Test
+  fun `when a recommended addon is present, it is mapped into the cross sells data`() = runTest {
+    val getHomeDataUseCase = testUseCaseWithoutReminders()
+
+    apolloClient.registerTestResponse(
+      HomeQuery(true),
+      HomeQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          crossSellV2 = buildCrossSellV2 {
+            recommendedAddon = buildRecommendedAddonCrossSell {
+              id = "addonId"
+              title = "Travel Insurance Plus"
+              description = "For a safer trip abroad"
+              buttonTitle = "See offer"
+              deepLink = "https://hedvig.com/addon"
+              pillowImageSmall = buildStoryblokImageAsset { src = "smallSrc" }
+              pillowImageLarge = buildStoryblokImageAsset { src = "largeSrc" }
+            }
+          }
+        }
+      },
+    )
+    apolloClient.registerTestResponse(
+      UnreadMessageCountQuery(),
+      UnreadMessageCountQuery.Data(OctopusFakeResolver),
+    )
+    apolloClient.registerTestResponse(
+      CbmNumberOfChatMessagesQuery(),
+      CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+    )
+
+    val result = getHomeDataUseCase.invoke(true).first()
+
+    assertThat(result)
+      .isNotNull()
+      .isRight()
+      .prop(HomeData::crossSells)
+      .prop(CrossSellSheetData::recommendedAddon)
+      .isEqualTo(
+        RecommendedAddon(
+          id = "addonId",
+          title = "Travel Insurance Plus",
+          buttonTitle = "See offer",
+          description = "For a safer trip abroad",
+          deepLink = "https://hedvig.com/addon",
+          pillowImageSmall = "smallSrc",
+          pillowImageLarge = "largeSrc",
+        ),
+      )
   }
 
   // Used as a convenience to get a use case without any enqueued apollo responses, but some sane defaults for the

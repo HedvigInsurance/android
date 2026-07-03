@@ -16,6 +16,7 @@ import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.crosssells.CrossSellSheetData
+import com.hedvig.android.crosssells.RecommendedAddon
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
@@ -52,6 +53,16 @@ internal class HomePresenterTest {
     buttonDescription = "Limited time offer",
     backgroundPillowImages = null,
     bundleProgress = null,
+  )
+
+  val testAddon = RecommendedAddon(
+    id = "addonId",
+    title = "Travel Insurance Plus",
+    buttonTitle = "See offer",
+    description = "For a safer trip abroad",
+    deepLink = "https://hedvig.com/addon",
+    pillowImageSmall = "smallSrc",
+    pillowImageLarge = "largeSrc",
   )
 
   @Test
@@ -176,6 +187,47 @@ internal class HomePresenterTest {
           isProduction = false,
         ),
       )
+    }
+  }
+
+  @Test
+  fun `a recommended addon without any cross sells still shows the cross sells top bar action`() = runTest {
+    val getHomeDataUseCase = TestGetHomeDataUseCase()
+    val homePresenter = HomePresenter(
+      getHomeDataUseCase,
+      SeenImportantMessagesStorageImpl(),
+      FakeCrossSellHomeNotificationService(),
+      ApplicationScope(backgroundScope),
+      false,
+    )
+    val addonOnlyCrossSells = CrossSellSheetData(null, listOf(), testAddon)
+
+    homePresenter.test(HomeUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
+
+      getHomeDataUseCase.responseTurbine.add(
+        HomeData(
+          contractStatus = HomeData.ContractStatus.Active,
+          claimStatusCardsData = null,
+          veryImportantMessages = listOf(),
+          memberReminders = MemberReminders(),
+          showChatIcon = false,
+          hasUnseenChatMessages = false,
+          crossSells = addonOnlyCrossSells,
+          firstVetSections = listOf(),
+          showHelpCenter = false,
+          travelBannerInfo = null,
+        ).right(),
+      )
+      assertThat(awaitItem())
+        .isInstanceOf<HomeUiState.Success>()
+        .prop(HomeUiState.Success::crossSellsAction)
+        .isEqualTo(
+          HomeTopBarAction.CrossSellsAction(
+            addonOnlyCrossSells,
+            CrossSellRecommendationNotification(true, 1L),
+          ),
+        )
     }
   }
 
