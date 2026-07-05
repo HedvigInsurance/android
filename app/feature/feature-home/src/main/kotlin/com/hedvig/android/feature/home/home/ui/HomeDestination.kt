@@ -77,7 +77,6 @@ import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.DraftClaimDialog
-import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -136,6 +135,7 @@ import hedvig.resources.CHAT_NEW_MESSAGE
 import hedvig.resources.RESUME_CLAIM_DELETE_BODY
 import hedvig.resources.RESUME_CLAIM_DELETE_BUTTON
 import hedvig.resources.RESUME_CLAIM_DELETE_TITLE
+import hedvig.resources.RESUME_CLAIM_DRAFT_ALERT_START_NEW
 import hedvig.resources.RESUME_CLAIM_EXPIRED_BODY
 import hedvig.resources.RESUME_CLAIM_EXPIRED_TITLE
 import hedvig.resources.Res
@@ -277,10 +277,19 @@ private fun HomeScreen(
     )
   }
   if (showDraftExpiredDialog) {
-    ErrorDialog(
+    HedvigAlertDialog(
       title = stringResource(Res.string.RESUME_CLAIM_EXPIRED_TITLE),
-      message = stringResource(Res.string.RESUME_CLAIM_EXPIRED_BODY),
-      onDismiss = { showDraftExpiredDialog = false },
+      text = stringResource(Res.string.RESUME_CLAIM_EXPIRED_BODY),
+      confirmButtonLabel = stringResource(Res.string.RESUME_CLAIM_DRAFT_ALERT_START_NEW),
+      dismissButtonLabel = stringResource(Res.string.general_cancel_button),
+      onDismissRequest = { showDraftExpiredDialog = false },
+      onConfirmClick = {
+        showDraftExpiredDialog = false
+        // Starting a new claim from the expired notice is the member's confirmation to drop the
+        // stale draft, so the expired draft is deleted without a second confirmation dialog.
+        draftClaim?.let { deleteDraftClaim(it.id) }
+        startClaimBottomSheetState.show(Unit)
+      },
     )
   }
   val draftIdToDelete = draftIdPendingDeleteConfirmation
