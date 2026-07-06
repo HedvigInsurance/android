@@ -13,7 +13,6 @@ data class ClaimProgressSegment(
     Submitted,
     BeingHandled,
     Closed,
-    Started,
   }
 
   enum class SegmentType {

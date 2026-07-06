@@ -12,11 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Primary
-import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigSecondaryRedTextButton
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabel
@@ -73,18 +73,16 @@ fun DraftClaimCard(
       Spacer(Modifier.height(18.dp))
       ClaimProgressRow(
         claimProgressItemsUiState = listOf(
-          ClaimProgressSegment(SegmentText.Started, INACTIVE),
+          ClaimProgressSegment(SegmentText.Submitted, INACTIVE),
           ClaimProgressSegment(SegmentText.BeingHandled, INACTIVE),
           ClaimProgressSegment(SegmentText.Closed, INACTIVE),
         ),
       )
       Spacer(Modifier.height(16.dp))
       Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        HedvigButton(
+        HedvigSecondaryRedTextButton(
           text = stringResource(Res.string.RESUME_CLAIM_DELETE_BUTTON),
           onClick = onDeleteClick,
-          enabled = true,
-          buttonStyle = Secondary,
           buttonSize = Medium,
           modifier = Modifier.weight(1f),
         )

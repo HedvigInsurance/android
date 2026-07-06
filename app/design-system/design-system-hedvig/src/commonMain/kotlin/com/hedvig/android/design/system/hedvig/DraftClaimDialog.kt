@@ -13,7 +13,6 @@ import hedvig.resources.RESUME_CLAIM_DRAFT_ALERT_CONTINUE
 import hedvig.resources.RESUME_CLAIM_DRAFT_ALERT_START_NEW
 import hedvig.resources.RESUME_CLAIM_DRAFT_ALERT_TITLE
 import hedvig.resources.Res
-import hedvig.resources.general_cancel_button
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -54,14 +53,6 @@ fun DraftClaimDialog(
         onClick = onStartNewClaim,
         enabled = true,
         buttonStyle = ButtonDefaults.ButtonStyle.Red,
-        modifier = Modifier.fillMaxWidth(),
-      )
-      Spacer(Modifier.height(8.dp))
-      HedvigButton(
-        text = stringResource(Res.string.general_cancel_button),
-        onClick = onDismissRequest,
-        enabled = true,
-        buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
         modifier = Modifier.fillMaxWidth(),
       )
     }
