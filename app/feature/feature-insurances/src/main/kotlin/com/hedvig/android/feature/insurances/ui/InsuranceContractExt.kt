@@ -48,6 +48,17 @@ internal fun InsuranceContract.createChips(): List<ChipUiData> {
           tierName?.let {
             ChipUiData(chipText = it, chipType = TIER)
           },
+          inceptionDate.let { inceptionDate ->
+            if (inceptionDate > today) {
+              val text = stringResource(Res.string.CONTRACT_STATUS_ACTIVE_IN_FUTURE, inceptionDate)
+              ChipUiData(text, GENERAL)
+            } else if (terminationDate == null) {
+              val text = stringResource(Res.string.DASHBOARD_INSURANCE_STATUS_ACTIVE)
+              ChipUiData(text, GENERAL)
+            } else {
+              null
+            }
+          },
           terminationDate?.let { terminationDate ->
             val text = if (terminationDate == today) {
               if (currentInsuranceAgreement.productVariant.contractType.isTrialContract()) {
@@ -69,17 +80,6 @@ internal fun InsuranceContract.createChips(): List<ChipUiData> {
           upcomingInsuranceAgreement?.activeFrom?.let { activeFromDate ->
             val text = stringResource(Res.string.DASHBOARD_INSURANCE_STATUS_ACTIVE_UPDATE_DATE, activeFromDate)
             ChipUiData(text, GENERAL)
-          },
-          inceptionDate.let { inceptionDate ->
-            if (inceptionDate > today) {
-              val text = stringResource(Res.string.CONTRACT_STATUS_ACTIVE_IN_FUTURE, inceptionDate)
-              ChipUiData(text, GENERAL)
-            } else if (terminationDate == null) {
-              val text = stringResource(Res.string.DASHBOARD_INSURANCE_STATUS_ACTIVE)
-              ChipUiData(text, GENERAL)
-            } else {
-              null
-            }
           },
         )
       }
