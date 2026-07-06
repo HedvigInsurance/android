@@ -724,7 +724,7 @@
   <string name="RESUME_CLAIM_DRAFT_ALERT_START_NEW">Start new claim</string>
   <string name="RESUME_CLAIM_DRAFT_ALERT_TITLE">You have a draft claim</string>
   <string name="RESUME_CLAIM_EXPIRED_BODY">Please make a new claim</string>
-  <string name="RESUME_CLAIM_EXPIRED_TITLE">Please make a new claim</string>
+  <string name="RESUME_CLAIM_EXPIRED_TITLE">Your draft has expired</string>
   <string name="RESUME_CLAIM_FALLBACK_TITLE">Continue where you stopped</string>
   <string name="RESUME_CLAIM_LEAVE_BODY">Your claim is automatically saved for 7 days.</string>
   <string name="RESUME_CLAIM_LEAVE_CONFIRM">Yes, leave</string>
