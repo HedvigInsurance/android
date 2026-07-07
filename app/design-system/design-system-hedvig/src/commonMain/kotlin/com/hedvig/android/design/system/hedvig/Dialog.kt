@@ -291,6 +291,9 @@ object DialogDefaults {
       val onConfirmButtonClick: () -> Unit,
       val confirmButtonText: String,
       val buttonSize: ButtonSize = defaultButtonSize,
+      // When true the confirm button renders with a destructive (red) label on a secondary fill,
+      // instead of the default primary style. For dialogs where the confirm action is destructive.
+      val confirmButtonRedText: Boolean = false,
     ) : DialogStyle()
 
     /**
@@ -368,6 +371,7 @@ private fun HedvigDialogContent(
                   dismissButtonText = style.dismissButtonText,
                   onConfirmButtonClick = style.onConfirmButtonClick,
                   confirmButtonText = style.confirmButtonText,
+                  confirmButtonRedText = style.confirmButtonRedText,
                 )
               }
 
@@ -377,6 +381,7 @@ private fun HedvigDialogContent(
                   dismissButtonText = style.dismissButtonText,
                   onConfirmButtonClick = style.onConfirmButtonClick,
                   confirmButtonText = style.confirmButtonText,
+                  confirmButtonRedText = style.confirmButtonRedText,
                 )
               }
             }
@@ -465,6 +470,7 @@ private fun SmallHorizontalPreferringButtons(
   dismissButtonText: String,
   onConfirmButtonClick: () -> Unit,
   confirmButtonText: String,
+  confirmButtonRedText: Boolean = false,
 ) {
   val textMeasurer = rememberTextMeasurer(cacheSize = 2)
   val textStyle = LocalTextStyle.current
@@ -477,13 +483,21 @@ private fun SmallHorizontalPreferringButtons(
         buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
         buttonSize = ButtonDefaults.ButtonSize.Medium,
       )
-      HedvigButton(
-        onClick = onConfirmButtonClick,
-        text = confirmButtonText,
-        enabled = true,
-        buttonStyle = ButtonDefaults.ButtonStyle.Primary,
-        buttonSize = ButtonDefaults.ButtonSize.Medium,
-      )
+      if (confirmButtonRedText) {
+        HedvigSecondaryRedTextButton(
+          onClick = onConfirmButtonClick,
+          text = confirmButtonText,
+          buttonSize = ButtonDefaults.ButtonSize.Medium,
+        )
+      } else {
+        HedvigButton(
+          onClick = onConfirmButtonClick,
+          text = confirmButtonText,
+          enabled = true,
+          buttonStyle = ButtonDefaults.ButtonStyle.Primary,
+          buttonSize = ButtonDefaults.ButtonSize.Medium,
+        )
+      }
     },
   ) { measurables, constraints ->
     val spaceBetween = 8.dp
@@ -531,16 +545,26 @@ private fun BigVerticalButtons(
   dismissButtonText: String,
   onConfirmButtonClick: () -> Unit,
   confirmButtonText: String,
+  confirmButtonRedText: Boolean = false,
 ) {
   Column {
-    HedvigButton(
-      modifier = Modifier.fillMaxWidth(),
-      onClick = onConfirmButtonClick,
-      text = confirmButtonText,
-      enabled = true,
-      buttonStyle = ButtonDefaults.ButtonStyle.Primary,
-      buttonSize = ButtonDefaults.ButtonSize.Large,
-    )
+    if (confirmButtonRedText) {
+      HedvigSecondaryRedTextButton(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onConfirmButtonClick,
+        text = confirmButtonText,
+        buttonSize = ButtonDefaults.ButtonSize.Large,
+      )
+    } else {
+      HedvigButton(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onConfirmButtonClick,
+        text = confirmButtonText,
+        enabled = true,
+        buttonStyle = ButtonDefaults.ButtonStyle.Primary,
+        buttonSize = ButtonDefaults.ButtonSize.Large,
+      )
+    }
     Spacer(Modifier.height(8.dp))
     HedvigButton(
       modifier = Modifier.fillMaxWidth(),

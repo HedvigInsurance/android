@@ -277,11 +277,11 @@ private fun HomeScreen(
     )
   }
   if (showDraftExpiredDialog) {
+    // The draft is expired, so acknowledging the notice (Close button, scrim, or back) removes it.
+    // Matches the Ready-for-dev design: single Close, closing removes the draft claim card.
     ErrorDialog(
       title = stringResource(Res.string.RESUME_CLAIM_EXPIRED_TITLE),
       message = stringResource(Res.string.RESUME_CLAIM_EXPIRED_BODY),
-      // The draft is expired, so acknowledging the notice (Close button, scrim, or back) removes
-      // it. Matches the Ready-for-dev design: single Close, closing removes the draft claim card.
       onDismiss = {
         showDraftExpiredDialog = false
         draftClaim?.let { deleteDraftClaim(it.id) }
