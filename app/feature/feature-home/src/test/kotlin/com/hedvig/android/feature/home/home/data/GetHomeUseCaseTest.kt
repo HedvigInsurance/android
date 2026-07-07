@@ -689,6 +689,8 @@ internal class GetHomeUseCaseTest {
               description = "For a safer trip abroad"
               buttonTitle = "See offer"
               deepLink = "https://hedvig.com/addon"
+              banner = "Add extra safety when traveling"
+              benefits = listOf("Travel up to 60 days in a row", "Delayed bags and flights covered")
               pillowImageSmall = buildStoryblokImageAsset { src = "smallSrc" }
               pillowImageLarge = buildStoryblokImageAsset { src = "largeSrc" }
             }
@@ -719,6 +721,8 @@ internal class GetHomeUseCaseTest {
           buttonTitle = "See offer",
           description = "For a safer trip abroad",
           deepLink = "https://hedvig.com/addon",
+          banner = "Add extra safety when traveling",
+          benefits = listOf("Travel up to 60 days in a row", "Delayed bags and flights covered"),
           pillowImageSmall = "smallSrc",
           pillowImageLarge = "largeSrc",
         ),

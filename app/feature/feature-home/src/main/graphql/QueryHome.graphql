@@ -64,6 +64,8 @@ query Home($claimsHistoryFlag: Boolean!) {
         description
         buttonTitle
         deepLink
+        banner
+        benefits
         pillowImageLarge {
           src
         }

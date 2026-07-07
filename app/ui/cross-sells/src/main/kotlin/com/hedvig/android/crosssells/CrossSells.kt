@@ -63,6 +63,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.Campaign
+import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Plus
 import com.hedvig.android.design.system.hedvig.placeholder.crossSellPainterFallback
@@ -102,6 +103,8 @@ data class RecommendedAddon(
   val buttonTitle: String,
   val description: String,
   val deepLink: String,
+  val banner: String?,
+  val benefits: List<String>,
   val pillowImageSmall: String,
   val pillowImageLarge: String,
 )
@@ -136,7 +139,7 @@ fun CrossSellFloatingBottomSheet(
     dragHandle = {
       CrossSellDragHandle(
         text = state.data?.recommendedCrossSell?.bannerText
-          ?: state.data?.recommendedAddon?.let { stringResource(Res.string.CROSS_SELL_BANNER_TEXT) },
+          ?: state.data?.recommendedAddon?.let { it.banner ?: stringResource(Res.string.CROSS_SELL_BANNER_TEXT) },
         modifier = Modifier
           .padding(horizontal = 16.dp)
           .clip(HedvigTheme.shapes.cornerXLargeTop),
@@ -174,6 +177,7 @@ fun CrossSellBottomSheet(
         CrossSellDragHandle(
           contentPadding = PaddingValues(horizontal = 16.dp),
           text = state.data?.recommendedCrossSell?.bannerText
+            ?: state.data?.recommendedAddon?.banner
             ?: stringResource(Res.string.CROSS_SELL_BANNER_TEXT),
         )
       }
@@ -405,6 +409,27 @@ private fun AddonRecommendationSection(
       modifier = Modifier.padding(horizontal = 16.dp),
       textAlign = TextAlign.Center,
     )
+    if (recommendedAddon.benefits.isNotEmpty()) {
+      Spacer(Modifier.height(32.dp))
+      Column(
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 24.dp),
+      ) {
+        for (benefit in recommendedAddon.benefits) {
+          Row(verticalAlignment = Alignment.Top) {
+            Icon(
+              imageVector = HedvigIcons.Checkmark,
+              contentDescription = EmptyContentDescription,
+              modifier = Modifier.size(24.dp),
+            )
+            Spacer(Modifier.width(12.dp))
+            HedvigText(benefit)
+          }
+        }
+      }
+    }
     Spacer(Modifier.height(48.dp))
     HedvigButton(
       text = recommendedAddon.buttonTitle,
@@ -1059,6 +1084,12 @@ private fun PreviewRecommendedAddon(
           buttonTitle = "Check the addon",
           description = "Best addon in the world",
           deepLink = "deep",
+          banner = "Add extra safety when traveling",
+          benefits = listOf(
+            "Travel up to 60 days in a row",
+            "Delayed bags and flights covered",
+            "Applies to your whole household",
+          ),
           pillowImageSmall = "src",
           pillowImageLarge = "src",
         ),
