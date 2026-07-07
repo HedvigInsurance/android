@@ -430,7 +430,7 @@ private fun AddonRecommendationSection(
         }
       }
     }
-    Spacer(Modifier.height(48.dp))
+    Spacer(Modifier.height(if (recommendedAddon.benefits.isEmpty()) 48.dp else 32.dp))
     HedvigButton(
       text = recommendedAddon.buttonTitle,
       onClick = {
