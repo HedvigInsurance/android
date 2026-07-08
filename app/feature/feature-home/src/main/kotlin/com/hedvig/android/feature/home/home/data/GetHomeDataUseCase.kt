@@ -144,6 +144,8 @@ internal class GetHomeDataUseCaseImpl(
             buttonTitle = it.buttonTitle,
             description = it.description,
             deepLink = it.deepLink,
+            banner = it.banner,
+            benefits = it.benefits,
             pillowImageSmall = it.pillowImageSmall.src,
             pillowImageLarge = it.pillowImageLarge.src,
           )

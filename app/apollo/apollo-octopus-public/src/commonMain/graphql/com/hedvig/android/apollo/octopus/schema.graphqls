@@ -4817,6 +4817,14 @@ type RecommendedAddonCrossSell {
   deepLink: String!
   pillowImageSmall: StoryblokImageAsset!
   pillowImageLarge: StoryblokImageAsset!
+  """
+  Optional banner text shown above the card; clients fall back to a default when null
+  """
+  banner: String
+  """
+  Benefit rows shown as a checkmark list; empty when none
+  """
+  benefits: [String!]!
 }
 type RecommendedCrossSell {
   crossSell: CrossSell!

@@ -61,6 +61,8 @@ internal class HomePresenterTest {
     buttonTitle = "See offer",
     description = "For a safer trip abroad",
     deepLink = "https://hedvig.com/addon",
+    banner = "Add extra safety when traveling",
+    benefits = listOf("Travel up to 60 days in a row"),
     pillowImageSmall = "smallSrc",
     pillowImageLarge = "largeSrc",
   )
