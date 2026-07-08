@@ -628,6 +628,13 @@ Example:
 Text("This is some text for feature X")
 ```
 
+**Verifying whether a string key is "real" (already in Lokalise):** if you find a key in a
+`strings.xml` and are unsure whether it actually exists in Lokalise or was hand-added, run
+`./gradlew downloadStrings` and re-check the file. Because `downloadStrings` regenerates every
+`strings.xml` from Lokalise, a key that **survives** the run exists in Lokalise; a key that
+**disappears** was only added locally and would break the build once someone else syncs. Use this
+before relying on (or committing code that references) a key you didn't personally add to Lokalise.
+
 ## Debugging
 
 ### Common Issues

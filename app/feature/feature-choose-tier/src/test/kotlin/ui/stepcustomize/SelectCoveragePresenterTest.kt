@@ -12,6 +12,7 @@ import assertk.assertions.isNull
 import assertk.assertions.prop
 import basTier
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.feature.change.tier.data.CurrentContractData
 import com.hedvig.android.feature.change.tier.data.GetCurrentContractDataUseCase
 import com.hedvig.android.feature.change.tier.navigation.ComparisonKey
@@ -264,7 +265,55 @@ class SelectCoveragePresenterTest {
         .isNull()
     }
   }
+
+  @Test
+  fun `when the contract is payment protection isPaymentProtection is true`() = runTest {
+    val tierRepo = FakeChangeTierRepository()
+    val presenter = SelectCoveragePresenter(
+      params = params,
+      tierRepository = tierRepo,
+      getCurrentContractDataUseCase = FakeGetCurrentContractDataUseCase(),
+      backstack = TestBackstack(),
+    )
+    presenter.test(SelectCoverageState.Loading) {
+      tierRepo.quoteListTurbine.add(listOf(paymentProtectionQuote))
+      skipItems(1)
+      assertThat(awaitItem())
+        .isInstanceOf(SelectCoverageState.Success::class)
+        .prop(SelectCoverageState.Success::uiState)
+        .isInstanceOf(SelectCoverageSuccessUiState::class.java)
+        .prop(SelectCoverageSuccessUiState::isPaymentProtection)
+        .isEqualTo(true)
+    }
+  }
+
+  @Test
+  fun `when the contract is not payment protection isPaymentProtection is false`() = runTest {
+    val tierRepo = FakeChangeTierRepository()
+    val presenter = SelectCoveragePresenter(
+      params = params,
+      tierRepository = tierRepo,
+      getCurrentContractDataUseCase = FakeGetCurrentContractDataUseCase(),
+      backstack = TestBackstack(),
+    )
+    presenter.test(SelectCoverageState.Loading) {
+      tierRepo.quoteListTurbine.add(listOf(testQuote, testQuote2, currentQuote))
+      skipItems(1)
+      assertThat(awaitItem())
+        .isInstanceOf(SelectCoverageState.Success::class)
+        .prop(SelectCoverageState.Success::uiState)
+        .isInstanceOf(SelectCoverageSuccessUiState::class.java)
+        .prop(SelectCoverageSuccessUiState::isPaymentProtection)
+        .isEqualTo(false)
+    }
+  }
 }
+
+// A current quote whose contract group is payment protection, which reuses the tier flow only to pick an
+// insured amount. Its id must match FakeChangeTierRepository.getCurrentQuoteId() so it is treated as current.
+private val paymentProtectionQuote = currentQuote.copy(
+  productVariant = currentQuote.productVariant.copy(contractGroup = ContractGroup.PAYMENT_PROTECTION),
+)
 
 private class FakeGetCurrentContractDataUseCase() : GetCurrentContractDataUseCase {
   override suspend fun invoke(insuranceId: String): Either<ErrorMessage, CurrentContractData> {
