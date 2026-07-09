@@ -198,6 +198,7 @@ dependencies {
   implementation(projects.featureEditCoinsured)
   implementation(projects.featureEditCoinsuredNavigation)
   implementation(projects.featureFlags)
+  implementation(projects.featureForever)
   implementation(projects.featureHelpCenter)
   implementation(projects.featureHome)
   implementation(projects.featureImageViewer)

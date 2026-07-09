@@ -2,6 +2,7 @@ package com.hedvig.android.app.navigation
 
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import com.hedvig.android.feature.forever.navigation.ForeverKey
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.insurances.navigation.InsurancesKey
 import com.hedvig.android.feature.login.navigation.LoginKey
@@ -32,6 +33,7 @@ internal class BackstackSerializationTest {
       polymorphic(HedvigNavKey::class) {
         subclass(HomeKey::class)
         subclass(InsurancesKey::class)
+        subclass(ForeverKey::class)
         subclass(PaymentsKey::class)
         subclass(ProfileKey::class)
         subclass(LoginKey::class)

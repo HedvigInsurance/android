@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payments.navigation
+package com.hedvig.android.feature.forever.navigation
 
 import androidx.navigation3.runtime.deeplink.DeepLinkMatcher
 import com.hedvig.android.core.common.di.AppScope
@@ -11,10 +11,9 @@ import dev.zacsweers.metro.Inject
 
 @ContributesIntoSet(AppScope::class)
 @Inject
-internal class PaymentsDeepLinkMatcherProvider(
+internal class ForeverDeepLinkMatcherProvider(
   private val container: HedvigDeepLinkContainer,
 ) : DeepLinkMatcherProvider {
   override fun matchers(): List<DeepLinkMatcher<out HedvigNavKey>> =
-    uriDeepLinkMatchers(container.payments, PaymentsKey.serializer()) +
-      uriDeepLinkMatchers(container.manualCharge, ManualChargeKey.serializer())
+    uriDeepLinkMatchers(container.forever, ForeverKey.serializer())
 }

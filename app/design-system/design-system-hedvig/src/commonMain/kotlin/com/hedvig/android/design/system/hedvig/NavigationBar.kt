@@ -46,6 +46,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Density
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.design.system.hedvig.icon.ForeverFilled
+import com.hedvig.android.design.system.hedvig.icon.ForeverOutline
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadFilled
 import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
@@ -282,6 +284,7 @@ private fun TopLevelTab.selectedIcon(): ImageVector {
   return when (this) {
     TopLevelTab.Home -> HedvigIcons.HelipadFilled
     TopLevelTab.Insurances -> HedvigIcons.ShieldFilled
+    TopLevelTab.Forever -> HedvigIcons.ForeverFilled
     TopLevelTab.Payments -> HedvigIcons.PaymentFilled
     TopLevelTab.Profile -> HedvigIcons.ProfileFilled
   }
@@ -291,6 +294,7 @@ private fun TopLevelTab.unselectedIcon(): ImageVector {
   return when (this) {
     TopLevelTab.Home -> HedvigIcons.HelipadOutline
     TopLevelTab.Insurances -> HedvigIcons.ShieldOutline
+    TopLevelTab.Forever -> HedvigIcons.ForeverOutline
     TopLevelTab.Payments -> HedvigIcons.PaymentOutline
     TopLevelTab.Profile -> HedvigIcons.ProfileOutline
   }
@@ -300,6 +304,7 @@ private fun TopLevelTab.titleTextId(): StringResource {
   return when (this) {
     TopLevelTab.Home -> Res.string.TAB_HOME_TITLE
     TopLevelTab.Insurances -> Res.string.TAB_INSURANCES_TITLE
+    TopLevelTab.Forever -> Res.string.TAB_REFERRALS_TITLE
     TopLevelTab.Payments -> Res.string.TAB_PAYMENTS_TITLE
     TopLevelTab.Profile -> Res.string.TAB_PROFILE_TITLE
   }

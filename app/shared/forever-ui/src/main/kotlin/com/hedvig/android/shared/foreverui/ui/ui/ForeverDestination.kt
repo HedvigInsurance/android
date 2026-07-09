@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -61,8 +62,6 @@ import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.TopAppBar
-import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.design.system.hedvig.a11y.getDescription
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.icon.Copy
@@ -104,14 +103,13 @@ import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun ForeverDestination(viewModel: ForeverViewModel, navigateUp: () -> Unit) {
+fun ForeverDestination(viewModel: ForeverViewModel) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val context = LocalContext.current
   val shareSheetTitle = stringResource(Res.string.REFERRALS_SHARE_SHEET_TITLE)
   val coroutineScope = rememberCoroutineScope()
   ForeverScreen(
     uiState = uiState,
-    navigateUp = navigateUp,
     reload = { viewModel.emit(ForeverEvent.RetryLoadReferralData) },
     onSubmitCode = { viewModel.emit(ForeverEvent.SubmitNewReferralCode(it)) },
     showedReferralCodeSubmissionError = { viewModel.emit(ForeverEvent.ShowedReferralCodeSubmissionError) },
@@ -140,7 +138,6 @@ fun ForeverDestination(viewModel: ForeverViewModel, navigateUp: () -> Unit) {
 @Composable
 private fun ForeverScreen(
   uiState: ForeverUiState,
-  navigateUp: () -> Unit,
   reload: () -> Unit,
   onSubmitCode: (String) -> Unit,
   showedReferralCodeSubmissionError: () -> Unit,
@@ -155,29 +152,7 @@ private fun ForeverScreen(
     onRefresh = reload,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
-  val referralExplanationBottomSheetState = rememberHedvigBottomSheetState<UiMoney>()
-  ForeverExplanationBottomSheet(referralExplanationBottomSheetState)
   Column(Modifier.fillMaxSize()) {
-    TopAppBar(
-      actionType = TopAppBarActionType.BACK,
-      onActionClick = navigateUp,
-      title = stringResource(Res.string.TAB_REFERRALS_TITLE),
-      topAppBarActions = {
-        val incentive = (uiState as? Success)?.foreverData?.incentive
-        if (incentive != null) {
-          IconButton(
-            onClick = { referralExplanationBottomSheetState.show(incentive) },
-            modifier = Modifier.size(40.dp),
-          ) {
-            Icon(
-              imageVector = HedvigIcons.InfoOutline,
-              contentDescription = stringResource(Res.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
-              modifier = Modifier.size(24.dp),
-            )
-          }
-        }
-      },
-    )
     AnimatedContent(
       targetState = uiState,
       label = "forever_ui_state",
@@ -225,6 +200,23 @@ internal fun LoadingForeverContent() {
       .verticalScroll(rememberScrollState())
       .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
   ) {
+    Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
+    Row(
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier
+        .height(64.dp)
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp)
+        .semantics(mergeDescendants = true) {
+          heading()
+        },
+    ) {
+      HedvigText(
+        text = stringResource(Res.string.TAB_REFERRALS_TITLE),
+        style = HedvigTheme.typography.headlineSmall,
+      )
+    }
     Spacer(Modifier.height(16.dp))
     HedvigText(
       text = "-",
@@ -281,10 +273,13 @@ internal fun ForeverContent(
     isLoading = uiState.referralCodeLoading,
   )
 
+  val referralExplanationBottomSheetState = rememberHedvigBottomSheetState<UiMoney>()
+  ForeverExplanationBottomSheet(referralExplanationBottomSheetState)
   Box(Modifier.fillMaxSize()) {
     ForeverScrollableContent(
       uiState = uiState,
       pullRefreshState = pullRefreshState,
+      referralExplanationBottomSheetState = referralExplanationBottomSheetState,
       referralCodeBottomSheetState = referralCodeBottomSheetState,
       onShareCodeClick = onShareCodeClick,
       modifier = Modifier.matchParentSize(),
@@ -312,6 +307,7 @@ internal fun ForeverContent(
 private fun ForeverScrollableContent(
   uiState: Success,
   pullRefreshState: PullRefreshState,
+  referralExplanationBottomSheetState: HedvigBottomSheetState<UiMoney>,
   referralCodeBottomSheetState: HedvigBottomSheetState<String>,
   onShareCodeClick: (code: String, incentive: UiMoney) -> Unit,
   modifier: Modifier = Modifier,
@@ -322,6 +318,35 @@ private fun ForeverScrollableContent(
       .verticalScroll(rememberScrollState())
       .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
   ) {
+    Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
+    Row(
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier
+        .height(64.dp)
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp)
+        .semantics(mergeDescendants = true) {
+          heading()
+        },
+    ) {
+      HedvigText(
+        text = stringResource(Res.string.TAB_REFERRALS_TITLE),
+        style = HedvigTheme.typography.headlineSmall,
+      )
+      if (uiState.foreverData?.incentive != null) {
+        IconButton(
+          onClick = { referralExplanationBottomSheetState.show(uiState.foreverData.incentive) },
+          modifier = Modifier.size(40.dp),
+        ) {
+          Icon(
+            imageVector = HedvigIcons.InfoOutline,
+            contentDescription = stringResource(Res.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
+            modifier = Modifier.size(24.dp),
+          )
+        }
+      }
+    }
     val discount = uiState.foreverData?.currentDiscount
     if (discount != null) {
       val yourDiscountDescription = stringResource(Res.string.TALKBACK_YOUR_REFERRAL_DISCOUNT)
@@ -482,7 +507,6 @@ private fun PreviewForeverContent(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ForeverScreen(
         foreverUiState,
-        navigateUp = {},
         onShareCodeClick = { _, _ -> },
         reload = {},
         onSubmitCode = {},
