@@ -172,7 +172,6 @@ import hedvig.resources.HC_QUICK_ACTIONS_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE
 import hedvig.resources.HC_QUICK_ACTIONS_UPDATE_ADDRESS
 import hedvig.resources.Res
-import hedvig.resources.TAB_REFERRALS_TITLE
 import hedvig.resources.TOAST_NEW_OFFER
 import hedvig.resources.blur_background
 import hedvig.resources.home_tab_active_in_future_info
@@ -217,7 +216,6 @@ internal fun HomeDestination(
   navigateToContactInfo: () -> Unit,
   navigateToChipId: () -> Unit,
   imageLoader: ImageLoader,
-  navigateToForever: () -> Unit,
   navigateToTravelCertificate: () -> Unit,
   navigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
@@ -248,7 +246,6 @@ internal fun HomeDestination(
       viewModel.emit(HomeEvent.CrossSellToolTipShown(epochDay))
     },
     imageLoader = imageLoader,
-    navigateToForever = navigateToForever,
     navigateToTravelCertificate = navigateToTravelCertificate,
     navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
   )
@@ -278,7 +275,6 @@ private fun HomeScreen(
   markCrossSellsNotificationAsSeen: () -> Unit,
   setEpochDayWhenLastToolTipShown: (Long) -> Unit,
   imageLoader: ImageLoader,
-  navigateToForever: () -> Unit,
   navigateToTravelCertificate: () -> Unit,
   navigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
@@ -349,7 +345,6 @@ private fun HomeScreen(
             navigateToChipIdScreen = navigateToChipIdScreen,
             openCrossSellUrl = openCrossSellUrl,
             imageLoader = imageLoader,
-            navigateToForever = navigateToForever,
             navigateToTravelCertificate = navigateToTravelCertificate,
             navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
           )
@@ -508,7 +503,6 @@ private fun HomeScreenSuccess(
   navigateToChipIdScreen: () -> Unit,
   openCrossSellUrl: (String) -> Unit,
   imageLoader: ImageLoader,
-  navigateToForever: () -> Unit,
   navigateToTravelCertificate: () -> Unit,
   navigateToAddonPurchaseFlow: (List<String>) -> Unit,
   modifier: Modifier = Modifier,
@@ -730,7 +724,6 @@ private fun HomeScreenSuccess(
                 onMakeClaim = openClaimFlowSheet,
                 onHelpAndSupport = navigateToHelpCenter,
                 onContactUs = onNavigateToInbox,
-                onForever = navigateToForever,
                 horizontalInsets = horizontalInsets,
                 modifier = Modifier.padding(bottom = 8.dp),
               )
@@ -1157,7 +1150,6 @@ private fun QuickActionCarouselSection(
   onMakeClaim: () -> Unit,
   onHelpAndSupport: () -> Unit,
   onContactUs: () -> Unit,
-  onForever: () -> Unit,
   horizontalInsets: PaddingValues,
   modifier: Modifier = Modifier,
 ) {
@@ -1174,7 +1166,6 @@ private fun QuickActionCarouselSection(
       HomeActionChip(stringResource(Res.string.home_tab_get_help), onHelpAndSupport)
     }
     HomeActionChip(stringResource(Res.string.DASHBOARD_OPEN_CHAT), onContactUs)
-    HomeActionChip(stringResource(Res.string.TAB_REFERRALS_TITLE), onForever)
   }
 }
 
@@ -1489,7 +1480,6 @@ private fun PreviewHomeScreen(
         navigateToChipIdScreen = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
-        navigateToForever = {},
         navigateToTravelCertificate = {},
         navigateToAddonPurchaseFlow = {},
       )
@@ -1525,7 +1515,6 @@ private fun PreviewHomeScreenWithError() {
         navigateToChipIdScreen = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
-        navigateToForever = {},
         navigateToTravelCertificate = {},
         navigateToAddonPurchaseFlow = {},
       )
@@ -1582,7 +1571,6 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToChipIdScreen = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
-        navigateToForever = {},
         navigateToTravelCertificate = {},
         navigateToAddonPurchaseFlow = {},
       )
