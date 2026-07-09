@@ -271,3 +271,23 @@ Branch `feature/new-home-screen`. **Engineering is complete and green** (`:app:a
 - Dark-mode audit of cards/sheet (ties into the card-token work).
 
 **Merge gate (plan item #18):** hold for design sign-off + the on-device QA pass (§13.1: density variants, dark mode, populated/empty states). Then merge to `develop`.
+
+### 14.1 Handover meeting decisions (2026-07-09) + new order (Figma `429-7853`)
+
+**Applied:** section order updated so **open claims sit above the blue box** (`homeSectionOrder`); the rest already matched (Info → To-do → Offers → Quick-action tiles → Discover → Addons). Also fixed a **clean-compile break** in `feature-home` main (a preview passed the removed `navigateToClaimChatInDevMode` param, masked by build cache).
+
+**Confirmed already-aligned:** news row + campaign/article carousel excluded from release 1 (we don't render them); resume-quote / message block are non-required (Offers renders conditionally; new-message card cut).
+
+**DECIDED — re-add Forever as a bottom-nav tab** (reverses the earlier removal). Figma `429-7853` shows 5 tabs (Home·Insurances·Forever·Payments·Profile) and drops Forever from the quick-action pills (3 pills). Plan to execute as a focused piece:
+1. `git revert 1e0c3d8aae` ("Complete Forever removal") is the base — it cleanly restores the `feature-forever` module, `TopLevelTab.Forever`, `NavigationBar`/start-destination branches, and the Forever deep-link provider. Deep-link conflict in `PaymentsDeepLinks.kt` resolves to the revert side (drop the payments forever matcher). **Conflict in `shared/forever-ui/ForeverDestination.kt` needs a MANUAL merge**: the revert wants the original no-chrome top-level screen, but later commits moved the title + incentive-info button into a `TopAppBar` (with a back button). For a top-level tab: keep title + info button in the bar, **remove the back button** (`actionType=BACK`/`onActionClick=navigateUp`) — needs a no-back `TopAppBar` variant.
+2. Drop the Forever quick-action pill from `QuickActionCarouselSection` + remove the now-unused `navigateToForever` (home) wiring in `homeEntries`/`HedvigEntryProvider` (the tab handles Forever now).
+3. Verify: restored `feature-forever` compiles against current APIs (possible drift since the removal), `ExhaustiveBackStackSerializationTest` + `BackstackTest` + `TopLevelRunLogicTest` pass, `:app:assembleDebug`.
+
+**Other deltas (pending input/deps):**
+- **Greeting name is back** in the new Figma ("Hi Richard / How can we help?"), 2nd line has no repeated "Hi"/no "you". Restore the name once Lokalise has "Hej %s" + a name-less "How can we help?"; `firstName` plumbing is still in place.
+- **Quick-action tiles:** first tile is now **"Edit insurance"** (was Help & support) — needs an edit-insurance destination + string.
+- **Rounded-corner XL token:** Richard is adding a fully-rounded DS token (not fixed 24px); swap pill/button corners to it when it lands.
+
+**BLOCKER — `feature-home` tests have rotted (cache-masked), must fix before PR:**
+- `GetHomeUseCaseTest`: `Feature.HELP_CENTER`, `Feature.ENABLE_CLAIM_HISTORY`, `Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT` no longer exist (e.g. → `ENABLE_NEW_CONVERSATION_FROM_INBOX`); map to current flags.
+- `HomePresenterTest`: constructor drift — `travelBannerInfo` → `addonBannerInfos`, and a new required `recommendedAddon`.
