@@ -736,9 +736,7 @@ internal class GetHomeUseCaseTest {
       // Inbox-always-available off, so showChatIcon depends purely on the (failing) active-conversation signal.
       val featureManager = FakeFeatureManager(
         mapOf(
-          Feature.HELP_CENTER to true,
-          Feature.ENABLE_CLAIM_HISTORY to true,
-          Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT to false,
+          Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX to false,
         ),
       )
       val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)

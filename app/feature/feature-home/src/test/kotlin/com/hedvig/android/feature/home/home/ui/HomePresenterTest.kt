@@ -219,7 +219,7 @@ internal class HomePresenterTest {
           crossSells = addonOnlyCrossSells,
           firstVetSections = listOf(),
           showHelpCenter = false,
-          travelBannerInfo = null,
+          addonBannerInfos = listOf(),
         ).right(),
       )
       assertThat(awaitItem())
@@ -622,7 +622,7 @@ internal class HomePresenterTest {
 
       getHomeDataUseCase.responseTurbine.add(
         someIrrelevantHomeDataInstance.copy(
-          crossSells = CrossSellSheetData(testCrossSell, listOf(otherCrossSell)),
+          crossSells = CrossSellSheetData(testCrossSell, listOf(otherCrossSell), recommendedAddon = null),
         ).right(),
       )
       assertThat(awaitItem())
