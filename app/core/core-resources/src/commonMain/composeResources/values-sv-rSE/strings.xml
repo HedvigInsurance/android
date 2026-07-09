@@ -25,6 +25,10 @@
   <string name="ADDON_ADD_COVERAGE">Lägg till skydd</string>
   <string name="ADDON_BADGE">Populär</string>
   <string name="ADDON_BADGE_ACTIVE">Aktiv</string>
+  <string name="ADDON_CAR_CROSS_SELL_BANNER">Mer skydd för bilen</string>
+  <string name="ADDON_CAR_CROSS_SELL_BENEFIT_1">Drulle: kupé, nycklar, feltankning</string>
+  <string name="ADDON_CAR_CROSS_SELL_BENEFIT_2">Hyrbil när din egen bil repareras</string>
+  <string name="ADDON_CAR_CROSS_SELL_BENEFIT_3">Självriskreducering vid kollision</string>
   <string name="ADDON_CAR_PLUS_DISPLAY_NAME">Bil Plus</string>
   <string name="ADDON_FLOW_ADD_TO_INSURANCE_BUTTON">Fortsätt</string>
   <string name="ADDON_FLOW_ALREADY_ACTIVE_EXPLANATION_SUBTITLE">Den här tilläggsförsäkringen är aktiv och gäller ihop med din försäkring.\n\nVill du ta bort den behöver du göra det från försäkringen den är kopplad till.</string>
@@ -62,6 +66,10 @@
   <string name="ADDON_REMOVE_CONFIRM_BUTTON">Avsluta %1$s</string>
   <string name="ADDON_REMOVE_DESCRIPTION">Om du avslutar detta tillägg ingår inte det extra skyddet längre i din hemförsäkring.</string>
   <string name="ADDON_REMOVE_TITLE">Avsluta %1$s</string>
+  <string name="ADDON_TRAVEL_CROSS_SELL_BANNER">Extra trygghet när du reser</string>
+  <string name="ADDON_TRAVEL_CROSS_SELL_BENEFIT_1">Res upp till 60 dagar i sträck</string>
+  <string name="ADDON_TRAVEL_CROSS_SELL_BENEFIT_2">Försenat flyg och bagage</string>
+  <string name="ADDON_TRAVEL_CROSS_SELL_BENEFIT_3">Gäller för alla medförsäkrade</string>
   <string name="ALERT_OK">OK</string>
   <string name="AUDIO_RECORDER_LISTEN">Lyssna</string>
   <string name="AUDIO_RECORDER_SEND">Skicka</string>
@@ -729,7 +737,7 @@
   <string name="RESUME_CLAIM_LEAVE_BODY">Din anmälan sparas automatiskt i 7 dagar.</string>
   <string name="RESUME_CLAIM_LEAVE_CONFIRM">Ja, lämna</string>
   <string name="RESUME_CLAIM_LEAVE_TITLE">Lämna anmälan?</string>
-  <string name="RESUME_CLAIM_STATED">Borjade %1$s</string>
+  <string name="RESUME_CLAIM_STATED">Började %1$s</string>
   <string name="SAVE_AND_CONTINUE_BUTTON_LABEL">Spara och fortsätt</string>
   <string name="SEARCH_NOTHING_FOUND">Inga träffar på din sökning</string>
   <string name="SEARCH_PLACEHOLDER">Sök</string>

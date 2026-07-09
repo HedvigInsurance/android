@@ -26,6 +26,10 @@
   <string name="ADDON_ADD_COVERAGE">Add coverage</string>
   <string name="ADDON_BADGE">Popular</string>
   <string name="ADDON_BADGE_ACTIVE">Active</string>
+  <string name="ADDON_CAR_CROSS_SELL_BANNER">More for your car insurance</string>
+  <string name="ADDON_CAR_CROSS_SELL_BENEFIT_1">All-risk: interior, keys, misfuelling</string>
+  <string name="ADDON_CAR_CROSS_SELL_BENEFIT_2">Compensation for rental car</string>
+  <string name="ADDON_CAR_CROSS_SELL_BENEFIT_3">Lower deductible for collision</string>
   <string name="ADDON_CAR_PLUS_DISPLAY_NAME">Car Plus</string>
   <string name="ADDON_FLOW_ADD_TO_INSURANCE_BUTTON">Continue</string>
   <string name="ADDON_FLOW_ALREADY_ACTIVE_EXPLANATION_SUBTITLE">This addon is active and linked to your insurance.\n\nTo remove it, go to the insurance it’s linked to.</string>
@@ -63,6 +67,10 @@
   <string name="ADDON_REMOVE_CONFIRM_BUTTON">Cancel %1$s</string>
   <string name="ADDON_REMOVE_DESCRIPTION">By canceling this extended coverage, your home insurance will no longer include this extra protection.</string>
   <string name="ADDON_REMOVE_TITLE">Cancel %1$s</string>
+  <string name="ADDON_TRAVEL_CROSS_SELL_BANNER">Add extra safety when traveling</string>
+  <string name="ADDON_TRAVEL_CROSS_SELL_BENEFIT_1">Travel up to 60 days in a row</string>
+  <string name="ADDON_TRAVEL_CROSS_SELL_BENEFIT_2">Delayed bags and flights</string>
+  <string name="ADDON_TRAVEL_CROSS_SELL_BENEFIT_3">Applies to all co-insured</string>
   <string name="ALERT_OK">OK</string>
   <string name="AUDIO_RECORDER_LISTEN">Listen</string>
   <string name="AUDIO_RECORDER_SEND">Send</string>
