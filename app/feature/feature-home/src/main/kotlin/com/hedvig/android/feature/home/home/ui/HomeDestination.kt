@@ -857,6 +857,7 @@ private fun PreviewHomeScreen(
                   ImageAsset("", "", ""),
                 ),
               ),
+              recommendedAddon = null,
             ),
             crossSellRecommendationNotification = CrossSellRecommendationNotification(
               true,

@@ -17,6 +17,7 @@ import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.crosssells.CrossSellSheetData
+import com.hedvig.android.crosssells.RecommendedAddon
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.claimintent.DeleteClaimIntentDraftUseCase
 import com.hedvig.android.data.contract.CrossSell
@@ -58,6 +59,18 @@ internal class HomePresenterTest {
     buttonDescription = "Limited time offer",
     backgroundPillowImages = null,
     bundleProgress = null,
+  )
+
+  val testAddon = RecommendedAddon(
+    id = "addonId",
+    title = "Travel Insurance Plus",
+    buttonTitle = "See offer",
+    description = "For a safer trip abroad",
+    deepLink = "https://hedvig.com/addon",
+    banner = "Add extra safety when traveling",
+    benefits = listOf("Travel up to 60 days in a row"),
+    pillowImageSmall = "smallSrc",
+    pillowImageLarge = "largeSrc",
   )
 
   @Test
@@ -149,7 +162,7 @@ internal class HomePresenterTest {
           showChatIcon = true,
           hasUnseenChatMessages = false,
           showHelpCenter = false,
-          crossSells = CrossSellSheetData(testCrossSell, listOf()),
+          crossSells = CrossSellSheetData(testCrossSell, listOf(), null),
           firstVetSections = listOf(),
           travelBannerInfo = null,
           draftClaim = null,
@@ -176,7 +189,7 @@ internal class HomePresenterTest {
           isHelpCenterEnabled = false,
           firstVetAction = null,
           crossSellsAction = HomeTopBarAction.CrossSellsAction(
-            CrossSellSheetData(testCrossSell, listOf()),
+            CrossSellSheetData(testCrossSell, listOf(), null),
             crossSellRecommendationNotification = CrossSellRecommendationNotification
               (true, 1L),
           ),
@@ -187,6 +200,47 @@ internal class HomePresenterTest {
           draftClaim = null,
         ),
       )
+    }
+  }
+
+  @Test
+  fun `a recommended addon without any cross sells still shows the cross sells top bar action`() = runTest {
+    val getHomeDataUseCase = TestGetHomeDataUseCase()
+    val homePresenter = HomePresenter(
+      getHomeDataUseCase,
+      SeenImportantMessagesStorageImpl(),
+      FakeCrossSellHomeNotificationService(),
+      ApplicationScope(backgroundScope),
+      false,
+    )
+    val addonOnlyCrossSells = CrossSellSheetData(null, listOf(), testAddon)
+
+    homePresenter.test(HomeUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
+
+      getHomeDataUseCase.responseTurbine.add(
+        HomeData(
+          contractStatus = HomeData.ContractStatus.Active,
+          claimStatusCardsData = null,
+          veryImportantMessages = listOf(),
+          memberReminders = MemberReminders(),
+          showChatIcon = false,
+          hasUnseenChatMessages = false,
+          crossSells = addonOnlyCrossSells,
+          firstVetSections = listOf(),
+          showHelpCenter = false,
+          travelBannerInfo = null,
+        ).right(),
+      )
+      assertThat(awaitItem())
+        .isInstanceOf<HomeUiState.Success>()
+        .prop(HomeUiState.Success::crossSellsAction)
+        .isEqualTo(
+          HomeTopBarAction.CrossSellsAction(
+            addonOnlyCrossSells,
+            CrossSellRecommendationNotification(true, 1L),
+          ),
+        )
     }
   }
 
@@ -215,7 +269,7 @@ internal class HomePresenterTest {
           ),
           showChatIcon = false,
           hasUnseenChatMessages = false,
-          crossSells = CrossSellSheetData(null, listOf()),
+          crossSells = CrossSellSheetData(null, listOf(), null),
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
@@ -296,7 +350,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = hasNotification,
           showHelpCenter = false,
           firstVetSections = listOf(),
-          crossSells = CrossSellSheetData(null, listOf()),
+          crossSells = CrossSellSheetData(null, listOf(), null),
           travelBannerInfo = null,
           draftClaim = null,
         ).right(),
@@ -331,7 +385,7 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           showChatIcon = false,
           hasUnseenChatMessages = false,
-          crossSells = CrossSellSheetData(null, listOf()),
+          crossSells = CrossSellSheetData(null, listOf(), null),
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
@@ -386,7 +440,7 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           showChatIcon = false,
           hasUnseenChatMessages = false,
-          crossSells = CrossSellSheetData(null, listOf()),
+          crossSells = CrossSellSheetData(null, listOf(), null),
           firstVetSections = listOf(
             firstVet,
           ),
@@ -444,7 +498,7 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           showChatIcon = false,
           hasUnseenChatMessages = false,
-          crossSells = CrossSellSheetData(testCrossSell, listOf(crossSell)),
+          crossSells = CrossSellSheetData(testCrossSell, listOf(crossSell), null),
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
@@ -463,7 +517,7 @@ internal class HomePresenterTest {
           chatAction = null,
           firstVetAction = null,
           crossSellsAction = HomeTopBarAction.CrossSellsAction(
-            CrossSellSheetData(testCrossSell, listOf(crossSell)),
+            CrossSellSheetData(testCrossSell, listOf(crossSell), null),
             crossSellRecommendationNotification = CrossSellRecommendationNotification
               (true, 1L),
           ),
@@ -497,7 +551,7 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           showChatIcon = true,
           hasUnseenChatMessages = false,
-          crossSells = CrossSellSheetData(null, emptyList()),
+          crossSells = CrossSellSheetData(null, emptyList(), null),
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
@@ -546,7 +600,7 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           showChatIcon = false,
           hasUnseenChatMessages = false,
-          crossSells = CrossSellSheetData(null, emptyList()),
+          crossSells = CrossSellSheetData(null, emptyList(), null),
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
@@ -647,7 +701,7 @@ internal class HomePresenterTest {
     hasUnseenChatMessages = false,
     showHelpCenter = false,
     firstVetSections = listOf(),
-    crossSells = CrossSellSheetData(null, emptyList()),
+    crossSells = CrossSellSheetData(null, emptyList(), null),
     travelBannerInfo = null,
     draftClaim = null,
   )

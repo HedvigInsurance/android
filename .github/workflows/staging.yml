@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - develop
-      - eng/metro-nav3-pr2-nav2-to-nav3
+      - feat/xsell-addon-rec
   workflow_dispatch:
 
 concurrency:

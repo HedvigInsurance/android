@@ -9,8 +9,13 @@ hedvig {
   viewModels()
 }
 
+android {
+  testOptions.unitTests.isReturnDefaultValues = true
+}
+
 dependencies {
   implementation(libs.apollo.runtime)
+  implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
   implementation(projects.apolloCore)
@@ -23,4 +28,10 @@ dependencies {
   implementation(projects.dataCrossSellAfterFlow)
   implementation(projects.designSystemHedvig)
   implementation(projects.moleculePublic)
+
+  testImplementation(libs.assertK)
+  testImplementation(libs.coroutines.test)
+  testImplementation(libs.junit)
+  testImplementation(libs.turbine)
+  testImplementation(projects.moleculeTest)
 }

@@ -8,6 +8,7 @@ import hedvigandroid.data_contract.generated.resources.dog
 import hedvigandroid.data_contract.generated.resources.home
 import hedvigandroid.data_contract.generated.resources.homeowner
 import hedvigandroid.data_contract.generated.resources.rental
+import hedvigandroid.data_contract.generated.resources.safety
 import hedvigandroid.data_contract.generated.resources.student
 import hedvigandroid.data_contract.generated.resources.vacation
 import hedvigandroid.data_contract.generated.resources.villa
@@ -25,6 +26,7 @@ enum class ContractGroup {
   STUDENT,
   COUNTRY_HOME,
   QASA_LANDLORD,
+  PAYMENT_PROTECTION,
   UNKNOWN,
 }
 
@@ -41,6 +43,7 @@ fun ContractGroup.gradientResource(): DrawableResource = when (this) {
   ContractGroup.COUNTRY_HOME -> Res.drawable.vacation
   ContractGroup.UNKNOWN -> Res.drawable.home
   ContractGroup.QASA_LANDLORD -> Res.drawable.home
+  ContractGroup.PAYMENT_PROTECTION -> Res.drawable.safety
 }
 
 fun ContractGroup.pillowResource(): DrawableResource = when (this) {
@@ -56,6 +59,7 @@ fun ContractGroup.pillowResource(): DrawableResource = when (this) {
   ContractGroup.COUNTRY_HOME -> Res.drawable.vacation
   ContractGroup.UNKNOWN -> Res.drawable.home
   ContractGroup.QASA_LANDLORD -> Res.drawable.home
+  ContractGroup.PAYMENT_PROTECTION -> Res.drawable.safety
 }
 
 fun String.toContractGroup(): ContractGroup = when (this) {
@@ -131,6 +135,8 @@ fun String.toContractGroup(): ContractGroup = when (this) {
   -> ContractGroup.COUNTRY_HOME
 
   "SE_QASA_LANDLORD" -> ContractGroup.QASA_LANDLORD
+
+  "SE_PAYMENT_PROTECTION" -> ContractGroup.PAYMENT_PROTECTION
 
   else -> ContractGroup.UNKNOWN
 }
