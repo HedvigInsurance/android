@@ -971,6 +971,11 @@ type ClaimIntent {
   """
   displayName: String
   """
+  Whether this draft is resumable by the member. A draft that has been deleted (see `claimIntentDeleteDraft`)
+  is no longer resumable.
+  """
+  resumable: Boolean!
+  """
   The created claim of this intent.
   Once this value is returned, the intent is effectively over, and no steps
   can be produced or interacted with.
@@ -3712,6 +3717,10 @@ type Mutation {
   Should only be called if the step is marked as `isRegrettable: true`.
   """
   claimIntentRegretStep(stepId: ID!): ClaimIntentMutationOutput!
+  """
+  Delete a draft claim intent from the member's perspective (a soft delete) so it is no longer returned by `resumableClaimIntent`.
+  """
+  claimIntentDeleteDraft(id: ID!): Boolean!
   """
   Submit a step containing a `ClaimIntentStepContentForm`.
   """

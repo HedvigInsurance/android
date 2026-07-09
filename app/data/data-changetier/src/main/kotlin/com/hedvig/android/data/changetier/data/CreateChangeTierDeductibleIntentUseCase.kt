@@ -100,7 +100,7 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
           tier = Tier(
             tierName = tierName,
             tierLevel = tierLevel,
-            tierDescription = productVariant.tierDescription,
+            tierDescription = tierDescription ?: productVariant.tierDescription,
             tierDisplayName = productVariant.displayNameTier,
           ),
           displayItems = displayItems.toDisplayItems(),
@@ -126,7 +126,7 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
           tier = Tier(
             tierName = it.tierName,
             tierLevel = it.tierLevel,
-            tierDescription = it.productVariant.tierDescription,
+            tierDescription = it.tierDescription ?: it.productVariant.tierDescription,
             tierDisplayName = it.productVariant.displayNameTier,
           ),
           addons = it.addons?.map { addon ->
