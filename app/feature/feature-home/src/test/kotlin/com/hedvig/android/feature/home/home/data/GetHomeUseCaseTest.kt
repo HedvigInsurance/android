@@ -691,7 +691,7 @@ internal class GetHomeUseCaseTest {
     val getHomeDataUseCase = testUseCaseWithoutReminders()
 
     apolloClient.registerTestResponse(
-      HomeQuery(true),
+      HomeQuery(true, true),
       HomeQuery.Data(OctopusFakeResolver) {
         currentMember = buildMember {
           crossSellV2 = buildCrossSellV2 {

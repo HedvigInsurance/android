@@ -212,6 +212,7 @@ internal class HomePresenterTest {
       FakeCrossSellHomeNotificationService(),
       ApplicationScope(backgroundScope),
       false,
+      TestDeleteClaimIntentDraftUseCase(),
     )
     val addonOnlyCrossSells = CrossSellSheetData(null, listOf(), testAddon)
 
@@ -230,6 +231,7 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
+          draftClaim = null,
         ).right(),
       )
       assertThat(awaitItem())

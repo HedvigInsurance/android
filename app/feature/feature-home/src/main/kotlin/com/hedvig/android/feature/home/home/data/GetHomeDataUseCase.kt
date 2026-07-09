@@ -90,12 +90,12 @@ internal class GetHomeDataUseCaseImpl(
           featureManager.isFeatureEnabled(Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX),
           hasAnyActiveConversationUseCase.invoke(alwaysHitTheNetwork = true),
         ) {
-            homeQueryDataResult,
-            unreadMessageCountResult,
-            memberReminders,
-            travelBannerInfo,
-            inboxAlwaysAvailable,
-            anyActiveConversations,
+          homeQueryDataResult,
+          unreadMessageCountResult,
+          memberReminders,
+          travelBannerInfo,
+          inboxAlwaysAvailable,
+          anyActiveConversations,
           ->
           either {
             val homeQueryData: HomeQuery.Data = homeQueryDataResult.bind()
