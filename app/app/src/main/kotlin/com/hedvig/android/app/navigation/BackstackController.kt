@@ -3,6 +3,7 @@ package com.hedvig.android.app.navigation
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -39,18 +40,10 @@ internal class BackstackController(
   internal val parkedRuns: SnapshotStateMap<TopLevelTab, List<HedvigNavKey>>,
   pendingDeepLinkState: MutableState<HedvigNavKey?>,
   stashedSessionState: MutableState<StashedSession?>,
-  /**
-   * Whether this activity is the root of its own task. `false` means we were launched into the
-   * caller's task by an external deep link, so an Up press must escape into our own task rather than
-   * rebuilding the ancestry in place (which would leave our screens hosted under the foreign app).
-   *
-   * Attached by `MainActivity` in `onCreate` (see `attachBackstackTaskHooks`), not at construction: the
-   * controller is owned by this Activity's retained `ViewModel` and is 1:1 with the Activity, so there
-   * is no shared, process-wide controller a backgrounded Activity could steal — the hook is wired once
-   * at creation, with no resume re-attachment needed. Defaults to `true` so unit tests and any
-   * pre-attach use stay fully in-process.
-   */
-  var isOwnTask: () -> Boolean = { true },
+  // Defaulted (and placed after the required states) so the many positional test constructions need no
+  // change; the real construction in NavRetainedViewModel passes it explicitly by name.
+  pendingDeepLinkStashedAtState: MutableState<Long?> = mutableStateOf(null),
+  initialIsOwnTask: Boolean = true,
   /**
    * Re-roots the app in its own task seeded with the given stack (see [navigateUp]). The Activity
    * owns the mechanics (relaunch with NEW_TASK|CLEAR_TASK + finish); the controller only supplies
@@ -66,10 +59,48 @@ internal class BackstackController(
   var finishApp: () -> Unit = {},
 ) : Backstack {
   /**
+   * Whether this Activity is the root of its own task. `false` means we were launched into the
+   * caller's task by an external deep link, so an Up press must escape into our own task rather than
+   * rebuilding the ancestry in place (which would leave our screens hosted under the foreign app).
+   *
+   * Snapshot-backed on purpose, rather than a live lambda: [loneDeepLinkChrome] derives the whole
+   * back-arrow-vs-nav-bar decision partly from this, so it must (a) be observable so Compose recomposes
+   * the chrome when it changes, and (b) never sample a stale value. `MainActivity` pushes the computed
+   * own-task value here (see `isHostedInForeignTask`, which is *not* just `isTaskRoot`) in `onCreate` (see
+   * `attachBackstackTaskHooks`) AND on every `onResume` — onResume because the value can settle or
+   * change after creation (an Activity below us finishing, or an early-launch read returning a
+   * not-yet-settled value). Defaults to `true` so unit tests and any pre-attach use stay fully
+   * in-process.
+   */
+  var isOwnTask: Boolean by mutableStateOf(initialIsOwnTask)
+
+  /**
    * A deep link resolved while logged out, held until [setLoggedIn] consumes it (so it can land
-   * alone). Persisted across rotation / process death (e.g. mid-OTP) — see the class KDoc.
+   * alone). Persisted across rotation / process death (e.g. mid-OTP) — see the class KDoc. Always set
+   * via [stashPendingDeepLink] so its companion timestamp [pendingDeepLinkStashedAtEpochMs] stays in
+   * sync; cleared (with the timestamp) when consumed by [setLoggedIn] or wiped by [reseed].
    */
   internal var pendingDeepLink: HedvigNavKey? by pendingDeepLinkState
+
+  /**
+   * Wall-clock time ([System.currentTimeMillis]) when [pendingDeepLink] was last stashed, or `null`
+   * when there is none. Persisted alongside [pendingDeepLink] so a process-death restore can discard a
+   * link that is too old to still belong to the in-flight login (see `NavigationStateBridge`), which
+   * stops a long-abandoned pending link from bleeding into an unrelated later login.
+   */
+  internal var pendingDeepLinkStashedAtEpochMs: Long? by pendingDeepLinkStashedAtState
+
+  /** Stashes [key] as the [pendingDeepLink], stamping [pendingDeepLinkStashedAtEpochMs] with now. */
+  private fun stashPendingDeepLink(key: HedvigNavKey) {
+    pendingDeepLink = key
+    pendingDeepLinkStashedAtEpochMs = System.currentTimeMillis()
+  }
+
+  /** Clears [pendingDeepLink] and its companion timestamp together. */
+  private fun clearPendingDeepLink() {
+    pendingDeepLink = null
+    pendingDeepLinkStashedAtEpochMs = null
+  }
 
   /**
    * The previous logged-in session, held between logout and the next login. Excluded from
@@ -139,12 +170,11 @@ internal class BackstackController(
   val loneDeepLinkChrome: LoneDeepLinkChrome
     get() {
       val first = entries.firstOrNull()
-      val insideRunsModel = isOwnTask() && (first is HomeKey || first is LoginKey)
-      if (insideRunsModel) return LoneDeepLinkChrome.ShowSuite
-      return if (entries.lastOrNull()?.topLevelTabOrNull() != null) {
-        LoneDeepLinkChrome.ShowUpBar
-      } else {
-        LoneDeepLinkChrome.ShowNothing
+      val insideRunsModel = isOwnTask && (first is HomeKey || first is LoginKey)
+      return when {
+        insideRunsModel -> LoneDeepLinkChrome.ShowSuite
+        entries.lastOrNull()?.topLevelTabOrNull() != null -> LoneDeepLinkChrome.ShowUpBar
+        else -> LoneDeepLinkChrome.ShowNothing
       }
     }
 
@@ -181,7 +211,7 @@ internal class BackstackController(
    */
   fun navigateToInAppLink(key: HedvigNavKey) {
     if (!isLoggedIn) {
-      pendingDeepLink = key
+      stashPendingDeepLink(key)
       return
     }
     Snapshot.withMutableSnapshot {
@@ -199,7 +229,7 @@ internal class BackstackController(
    */
   fun navigateToExternalDeepLink(key: HedvigNavKey) {
     if (!isLoggedIn) {
-      pendingDeepLink = key
+      stashPendingDeepLink(key)
       return
     }
     reseed(listOf(key))
@@ -222,11 +252,11 @@ internal class BackstackController(
       val parentStack = synthetic.dropLast(1)
       when {
         parentStack.isNotEmpty() -> {
-          if (isOwnTask()) entries.replaceWith(parentStack) else escapeToOwnTask(parentStack)
+          if (isOwnTask) entries.replaceWith(parentStack) else escapeToOwnTask(parentStack)
           return true
         }
 
-        !isOwnTask() -> {
+        !isOwnTask -> {
           escapeToOwnTask(synthetic)
           return true
         }
@@ -265,7 +295,7 @@ internal class BackstackController(
   fun setLoggedIn(memberId: String?) {
     Snapshot.withMutableSnapshot {
       val pending = pendingDeepLink
-      pendingDeepLink = null
+      clearPendingDeepLink()
       val stash = stashedSession?.takeIf { memberId != null && it.memberId == memberId }
       stashedSession = null
       parkedRuns.clear()
@@ -328,7 +358,7 @@ internal class BackstackController(
     Snapshot.withMutableSnapshot {
       entries.replaceWith(stack)
       parkedRuns.clear()
-      pendingDeepLink = null
+      clearPendingDeepLink()
       stashedSession = null
     }
   }
@@ -342,6 +372,7 @@ internal class BackstackController(
     entries: List<HedvigNavKey>,
     parkedRuns: Map<TopLevelTab, List<HedvigNavKey>>,
     pendingDeepLink: HedvigNavKey?,
+    pendingDeepLinkStashedAtEpochMs: Long?,
     stashedSession: StashedSession?,
   ) {
     if (this.entries.isNotEmpty()) return
@@ -349,6 +380,7 @@ internal class BackstackController(
       this.entries.addAll(entries)
       this.parkedRuns.putAll(parkedRuns)
       this.pendingDeepLink = pendingDeepLink
+      this.pendingDeepLinkStashedAtEpochMs = pendingDeepLinkStashedAtEpochMs
       this.stashedSession = stashedSession
     }
   }

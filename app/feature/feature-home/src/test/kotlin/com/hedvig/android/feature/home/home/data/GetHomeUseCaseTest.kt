@@ -26,6 +26,8 @@ import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.isRight
+import com.hedvig.android.crosssells.CrossSellSheetData
+import com.hedvig.android.crosssells.RecommendedAddon
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
@@ -57,10 +59,13 @@ import octopus.type.buildChatMessageText
 import octopus.type.buildClaim
 import octopus.type.buildContract
 import octopus.type.buildConversation
+import octopus.type.buildCrossSellV2
 import octopus.type.buildLinkInfo
 import octopus.type.buildMember
 import octopus.type.buildMemberImportantMessage
 import octopus.type.buildPendingContract
+import octopus.type.buildRecommendedAddonCrossSell
+import octopus.type.buildStoryblokImageAsset
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -243,22 +248,14 @@ internal class GetHomeUseCaseTest {
   }
 
   @Test
-  fun `when there are existing claims, show them as ClaimStatusCards`(
-    @TestParameter claimsHistoryFlag: Boolean,
-  ) = runTest {
-    val getHomeDataUseCase = testUseCaseWithoutReminders(
-      featureManager = FakeFeatureManager(
-        fixedMap = Feature.entries.associateWith { true }.plus(
-          Feature.ENABLE_CLAIM_HISTORY to claimsHistoryFlag,
-        ),
-      ),
-    )
+  fun `when there are existing claims, show them as ClaimStatusCards`() = runTest {
+    val getHomeDataUseCase = testUseCaseWithoutReminders()
 
     apolloClient.registerTestResponse(
-      HomeQuery(claimsHistoryFlag),
+      HomeQuery(true),
       HomeQuery.Data(OctopusFakeResolver) {
         currentMember = buildMember {
-          val claimsList = listOf(
+          claimsActive = listOf(
             buildClaim {
               id = "claim id#1"
             },
@@ -266,11 +263,6 @@ internal class GetHomeUseCaseTest {
               id = "claim id#2"
             },
           )
-          if (!claimsHistoryFlag) {
-            claims = claimsList
-          } else {
-            claimsActive = claimsList
-          }
         }
       },
     )
@@ -298,26 +290,14 @@ internal class GetHomeUseCaseTest {
   }
 
   @Test
-  fun `when there are no existing claims, don't show them`(
-    @TestParameter claimsHistoryFlag: Boolean,
-  ) = runTest {
-    val getHomeDataUseCase = testUseCaseWithoutReminders(
-      featureManager = FakeFeatureManager(
-        fixedMap = Feature.entries.associateWith { true }.plus(
-          Feature.ENABLE_CLAIM_HISTORY to claimsHistoryFlag,
-        ),
-      ),
-    )
+  fun `when there are no existing claims, don't show them`() = runTest {
+    val getHomeDataUseCase = testUseCaseWithoutReminders()
 
     apolloClient.registerTestResponse(
-      HomeQuery(claimsHistoryFlag),
+      HomeQuery(true),
       HomeQuery.Data(OctopusFakeResolver) {
         currentMember = buildMember {
-          if (claimsHistoryFlag) {
-            claimsActive = emptyList()
-          } else {
-            claims = emptyList()
-          }
+          claimsActive = emptyList()
         }
       },
     )
@@ -476,10 +456,8 @@ internal class GetHomeUseCaseTest {
   ) = runTest {
     val featureManager = FakeFeatureManager(
       mapOf(
-        Feature.HELP_CENTER to true,
-        Feature.ENABLE_CLAIM_HISTORY to true,
         // With the inbox-always-available kill switch off, the icon depends purely on existing conversations
-        Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT to false,
+        Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX to false,
       ),
     )
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
@@ -541,9 +519,7 @@ internal class GetHomeUseCaseTest {
   ) = runTest {
     val featureManager = FakeFeatureManager(
       mapOf(
-        Feature.HELP_CENTER to true,
-        Feature.ENABLE_CLAIM_HISTORY to true,
-        Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT to inboxAlwaysAvailable,
+        Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX to inboxAlwaysAvailable,
       ),
     )
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
@@ -596,57 +572,14 @@ internal class GetHomeUseCaseTest {
   }
 
   @Test
-  fun `the disable help center feature flag determines if we show it or not`(
-    @TestParameter helpCenterIsEnabled: Boolean,
-  ) = runTest {
-    val featureManager = FakeFeatureManager(
-      mapOf(
-        Feature.HELP_CENTER to helpCenterIsEnabled,
-        Feature.ENABLE_CLAIM_HISTORY to true,
-        Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT to false,
-      ),
-    )
-    val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
-
-    apolloClient.registerTestResponse(
-      HomeQuery(true),
-      HomeQuery.Data(OctopusFakeResolver),
-    )
-    apolloClient.registerTestResponse(
-      UnreadMessageCountQuery(),
-      UnreadMessageCountQuery.Data(OctopusFakeResolver),
-    )
-    apolloClient.registerTestResponse(
-      CbmNumberOfChatMessagesQuery(),
-      CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
-    )
-
-    val result = getHomeDataUseCase.invoke(true).first()
-
-    assertThat(result)
-      .isNotNull()
-      .isRight()
-      .prop(HomeData::showHelpCenter)
-      .apply {
-        if (helpCenterIsEnabled) {
-          isTrue()
-        } else {
-          isFalse()
-        }
-      }
-  }
-
-  @Test
   fun `without legacy conversations, show the chat icon depending on the other conversations status`(
     @TestParameter hasAtLeastOneOpenConversation: Boolean,
     @TestParameter closedConversationHasAtLeastOneMessage: Boolean,
   ) = runTest {
     val featureManager = FakeFeatureManager(
       mapOf(
-        Feature.HELP_CENTER to true,
-        Feature.ENABLE_CLAIM_HISTORY to true,
         // Inbox-always-available off, so the icon reflects the conversation state being tested here
-        Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT to false,
+        Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX to false,
       ),
     )
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
@@ -740,6 +673,61 @@ internal class GetHomeUseCaseTest {
           isFalse()
         }
       }
+  }
+
+  @Test
+  fun `when a recommended addon is present, it is mapped into the cross sells data`() = runTest {
+    val getHomeDataUseCase = testUseCaseWithoutReminders()
+
+    apolloClient.registerTestResponse(
+      HomeQuery(true),
+      HomeQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          crossSellV2 = buildCrossSellV2 {
+            recommendedAddon = buildRecommendedAddonCrossSell {
+              id = "addonId"
+              title = "Travel Insurance Plus"
+              description = "For a safer trip abroad"
+              buttonTitle = "See offer"
+              deepLink = "https://hedvig.com/addon"
+              banner = "Add extra safety when traveling"
+              benefits = listOf("Travel up to 60 days in a row", "Delayed bags and flights covered")
+              pillowImageSmall = buildStoryblokImageAsset { src = "smallSrc" }
+              pillowImageLarge = buildStoryblokImageAsset { src = "largeSrc" }
+            }
+          }
+        }
+      },
+    )
+    apolloClient.registerTestResponse(
+      UnreadMessageCountQuery(),
+      UnreadMessageCountQuery.Data(OctopusFakeResolver),
+    )
+    apolloClient.registerTestResponse(
+      CbmNumberOfChatMessagesQuery(),
+      CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+    )
+
+    val result = getHomeDataUseCase.invoke(true).first()
+
+    assertThat(result)
+      .isNotNull()
+      .isRight()
+      .prop(HomeData::crossSells)
+      .prop(CrossSellSheetData::recommendedAddon)
+      .isEqualTo(
+        RecommendedAddon(
+          id = "addonId",
+          title = "Travel Insurance Plus",
+          buttonTitle = "See offer",
+          description = "For a safer trip abroad",
+          deepLink = "https://hedvig.com/addon",
+          banner = "Add extra safety when traveling",
+          benefits = listOf("Travel up to 60 days in a row", "Delayed bags and flights covered"),
+          pillowImageSmall = "smallSrc",
+          pillowImageLarge = "largeSrc",
+        ),
+      )
   }
 
   @Test

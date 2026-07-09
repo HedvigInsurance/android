@@ -1,15 +1,17 @@
 package com.hedvig.android.data.contract
 
 import hedvigandroid.data_contract.generated.resources.Res
-import hedvigandroid.data_contract.generated.resources.ic_pillow_accident
-import hedvigandroid.data_contract.generated.resources.ic_pillow_car
-import hedvigandroid.data_contract.generated.resources.ic_pillow_cat
-import hedvigandroid.data_contract.generated.resources.ic_pillow_countryhome
-import hedvigandroid.data_contract.generated.resources.ic_pillow_dog
-import hedvigandroid.data_contract.generated.resources.ic_pillow_homeowner
-import hedvigandroid.data_contract.generated.resources.ic_pillow_rental
-import hedvigandroid.data_contract.generated.resources.ic_pillow_student
-import hedvigandroid.data_contract.generated.resources.ic_pillow_villa
+import hedvigandroid.data_contract.generated.resources.accident
+import hedvigandroid.data_contract.generated.resources.car
+import hedvigandroid.data_contract.generated.resources.cat
+import hedvigandroid.data_contract.generated.resources.dog
+import hedvigandroid.data_contract.generated.resources.home
+import hedvigandroid.data_contract.generated.resources.homeowner
+import hedvigandroid.data_contract.generated.resources.rental
+import hedvigandroid.data_contract.generated.resources.safety
+import hedvigandroid.data_contract.generated.resources.student
+import hedvigandroid.data_contract.generated.resources.vacation
+import hedvigandroid.data_contract.generated.resources.villa
 import org.jetbrains.compose.resources.DrawableResource
 
 enum class ContractGroup {
@@ -23,41 +25,49 @@ enum class ContractGroup {
   DOG,
   STUDENT,
   COUNTRY_HOME,
+  QASA_LANDLORD,
+  PAYMENT_PROTECTION,
   UNKNOWN,
 }
 
 fun ContractGroup.gradientResource(): DrawableResource = when (this) {
-  ContractGroup.HOMEOWNER -> Res.drawable.ic_pillow_homeowner
-  ContractGroup.HOUSE -> Res.drawable.ic_pillow_villa
-  ContractGroup.RENTAL -> Res.drawable.ic_pillow_rental
-  ContractGroup.STUDENT -> Res.drawable.ic_pillow_student
-  ContractGroup.ACCIDENT -> Res.drawable.ic_pillow_accident
-  ContractGroup.CAR -> Res.drawable.ic_pillow_car
-  ContractGroup.CAT -> Res.drawable.ic_pillow_cat
-  ContractGroup.DOG -> Res.drawable.ic_pillow_dog
-  ContractGroup.TRAVEL -> Res.drawable.ic_pillow_homeowner
-  ContractGroup.COUNTRY_HOME -> Res.drawable.ic_pillow_countryhome
-  ContractGroup.UNKNOWN -> Res.drawable.ic_pillow_homeowner
+  ContractGroup.HOMEOWNER -> Res.drawable.homeowner
+  ContractGroup.HOUSE -> Res.drawable.villa
+  ContractGroup.RENTAL -> Res.drawable.rental
+  ContractGroup.STUDENT -> Res.drawable.student
+  ContractGroup.ACCIDENT -> Res.drawable.accident
+  ContractGroup.CAR -> Res.drawable.car
+  ContractGroup.CAT -> Res.drawable.cat
+  ContractGroup.DOG -> Res.drawable.dog
+  ContractGroup.TRAVEL -> Res.drawable.homeowner
+  ContractGroup.COUNTRY_HOME -> Res.drawable.vacation
+  ContractGroup.UNKNOWN -> Res.drawable.home
+  ContractGroup.QASA_LANDLORD -> Res.drawable.home
+  ContractGroup.PAYMENT_PROTECTION -> Res.drawable.safety
 }
 
 fun ContractGroup.pillowResource(): DrawableResource = when (this) {
-  ContractGroup.HOMEOWNER -> Res.drawable.ic_pillow_homeowner
-  ContractGroup.HOUSE -> Res.drawable.ic_pillow_villa
-  ContractGroup.RENTAL -> Res.drawable.ic_pillow_rental
-  ContractGroup.STUDENT -> Res.drawable.ic_pillow_student
-  ContractGroup.ACCIDENT -> Res.drawable.ic_pillow_accident
-  ContractGroup.CAR -> Res.drawable.ic_pillow_car
-  ContractGroup.CAT -> Res.drawable.ic_pillow_cat
-  ContractGroup.DOG -> Res.drawable.ic_pillow_dog
-  ContractGroup.TRAVEL -> Res.drawable.ic_pillow_homeowner
-  ContractGroup.COUNTRY_HOME -> Res.drawable.ic_pillow_countryhome
-  ContractGroup.UNKNOWN -> Res.drawable.ic_pillow_homeowner
+  ContractGroup.HOMEOWNER -> Res.drawable.homeowner
+  ContractGroup.HOUSE -> Res.drawable.villa
+  ContractGroup.RENTAL -> Res.drawable.rental
+  ContractGroup.STUDENT -> Res.drawable.student
+  ContractGroup.ACCIDENT -> Res.drawable.accident
+  ContractGroup.CAR -> Res.drawable.car
+  ContractGroup.CAT -> Res.drawable.cat
+  ContractGroup.DOG -> Res.drawable.dog
+  ContractGroup.TRAVEL -> Res.drawable.homeowner
+  ContractGroup.COUNTRY_HOME -> Res.drawable.vacation
+  ContractGroup.UNKNOWN -> Res.drawable.home
+  ContractGroup.QASA_LANDLORD -> Res.drawable.home
+  ContractGroup.PAYMENT_PROTECTION -> Res.drawable.safety
 }
 
 fun String.toContractGroup(): ContractGroup = when (this) {
   "NO_HOUSE",
   "DK_HOUSE",
   "SE_HOUSE",
+  "SE_HOUSE_BAS",
+  "SE_HOUSE_MAX",
   -> ContractGroup.HOUSE
 
   "DK_ACCIDENT",
@@ -78,6 +88,8 @@ fun String.toContractGroup(): ContractGroup = when (this) {
   "DK_HOME_CONTENT_STUDENT_RENT",
   "NO_HOME_CONTENT_RENT",
   "SE_APARTMENT_RENT",
+  "SE_APARTMENT_RENT_MAX",
+  "SE_APARTMENT_RENT_BAS",
   "SE_GROUP_APARTMENT_RENT",
   "SE_QASA_LONG_TERM_RENTAL",
   "SE_QASA_SHORT_TERM_RENTAL",
@@ -89,6 +101,8 @@ fun String.toContractGroup(): ContractGroup = when (this) {
   "DK_HOME_CONTENT_OWN",
   "NO_HOME_CONTENT_OWN",
   "SE_APARTMENT_BRF",
+  "SE_APARTMENT_BRF_BAS",
+  "SE_APARTMENT_BRF_MAX",
   "SE_GROUP_APARTMENT_BRF",
   -> ContractGroup.HOMEOWNER
 
@@ -119,6 +133,10 @@ fun String.toContractGroup(): ContractGroup = when (this) {
   "SE_VACATION_HOME_BAS",
   "SE_VACATION_HOME_STANDARD",
   -> ContractGroup.COUNTRY_HOME
+
+  "SE_QASA_LANDLORD" -> ContractGroup.QASA_LANDLORD
+
+  "SE_PAYMENT_PROTECTION" -> ContractGroup.PAYMENT_PROTECTION
 
   else -> ContractGroup.UNKNOWN
 }

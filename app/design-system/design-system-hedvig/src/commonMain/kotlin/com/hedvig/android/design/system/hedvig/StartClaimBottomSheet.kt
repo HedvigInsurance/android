@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,32 +41,49 @@ import hedvig.resources.general_continue_button
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun StartClaimBottomSheet(
-  state: HedvigBottomSheetState<Unit>,
-  navigateToClaimChat: () -> Unit,
-  navigateToClaimChatInDevMode: () -> Unit,
-  isStagingEnvironment: Boolean,
-) {
+fun StartClaimBottomSheet(state: HedvigBottomSheetState<Unit>, navigateToClaimChat: () -> Unit) {
   HedvigBottomSheet(
     hedvigBottomSheetState = state,
     content = {
       StartClaimBottomSheetContent(
-        state,
-        navigateToClaimChat,
-        isStagingEnvironment,
-        navigateToClaimChatInDevMode,
+        dismiss = {
+          state.dismiss()
+        },
+        navigateToClaimChat = {
+          state.dismiss {
+            navigateToClaimChat()
+          }
+        },
       )
     },
   )
 }
 
 @Composable
-private fun StartClaimBottomSheetContent(
-  state: HedvigBottomSheetState<Unit>,
-  navigateToClaimChat: () -> Unit,
-  isStagingEnvironment: Boolean,
-  navigateToClaimChatInDevMode: () -> Unit,
-) {
+fun StartClaimPledgeScreen(navigateUp: () -> Unit, navigateToClaimChat: () -> Unit, modifier: Modifier = Modifier) {
+  var isChecked by remember { mutableStateOf(false) }
+  Column(
+    modifier
+      .verticalScroll(rememberScrollState()),
+  ) {
+    PledgeNotes()
+    Spacer(Modifier.weight(1f))
+    Spacer(Modifier.height(8.dp))
+    StartClaimBottomContent(
+      isChecked = isChecked,
+      onCheckedChange = {
+        isChecked = !isChecked
+      },
+      navigateToClaimChat = navigateToClaimChat,
+      dismiss = navigateUp,
+    )
+    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+  }
+}
+
+@Composable
+private fun StartClaimBottomSheetContent(dismiss: () -> Unit, navigateToClaimChat: () -> Unit) {
   var isChecked by remember { mutableStateOf(false) }
   Column {
     Spacer(Modifier.height(16.dp))
@@ -78,38 +97,13 @@ private fun StartClaimBottomSheetContent(
     Spacer(Modifier.height(16.dp))
     PledgeNotes()
     Spacer(Modifier.height(16.dp))
-    ImportantInfoCheckBox(
+    StartClaimBottomContent(
       isChecked = isChecked,
       onCheckedChange = {
         isChecked = !isChecked
       },
-    )
-    Spacer(Modifier.height(16.dp))
-    HedvigButton(
-      text = stringResource(Res.string.general_continue_button),
-      enabled = isChecked,
-      onClick = dropUnlessResumed {
-        state.dismiss {
-          navigateToClaimChat()
-        }
-      },
-      modifier = Modifier.fillMaxWidth(),
-    )
-    if (isStagingEnvironment) {
-      StagingButtons(
-        state,
-        navigateToClaimChatInDevMode,
-      )
-    }
-    Spacer(Modifier.height(16.dp))
-    HedvigButton(
-      text = stringResource(Res.string.general_cancel_button),
-      enabled = true,
-      buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-      onClick = {
-        state.dismiss()
-      },
-      modifier = Modifier.fillMaxWidth(),
+      navigateToClaimChat = navigateToClaimChat,
+      dismiss = dismiss,
     )
     Spacer(Modifier.height(8.dp))
     Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
@@ -117,26 +111,36 @@ private fun StartClaimBottomSheetContent(
 }
 
 @Composable
-private fun StagingButtons(state: HedvigBottomSheetState<Unit>, navigateToClaimChatInDevMode: () -> Unit) {
+private fun StartClaimBottomContent(
+  isChecked: Boolean,
+  onCheckedChange: () -> Unit,
+  navigateToClaimChat: () -> Unit,
+  dismiss: () -> Unit,
+) {
   Column {
+    ImportantInfoCheckBox(
+      isChecked = isChecked,
+      onCheckedChange = onCheckedChange,
+    )
     Spacer(Modifier.height(16.dp))
-    Row(
-      horizontalArrangement = Arrangement.spacedBy(8.dp),
+    HedvigButton(
+      text = stringResource(Res.string.general_continue_button),
+      enabled = isChecked,
+      onClick = dropUnlessResumed {
+        navigateToClaimChat()
+      },
       modifier = Modifier.fillMaxWidth(),
-    ) {
-      HedvigButton(
-        text = "Claim Chat (Dev)",
-        enabled = true,
-        buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-        buttonSize = ButtonDefaults.ButtonSize.Small,
-        onClick = dropUnlessResumed {
-          state.dismiss {
-            navigateToClaimChatInDevMode()
-          }
-        },
-        modifier = Modifier.weight(1f),
-      )
-    }
+    )
+    Spacer(Modifier.height(16.dp))
+    HedvigButton(
+      text = stringResource(Res.string.general_cancel_button),
+      enabled = true,
+      buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+      onClick = {
+        dismiss()
+      },
+      modifier = Modifier.fillMaxWidth(),
+    )
   }
 }
 
@@ -207,10 +211,8 @@ private fun PreviewStartClaimBottomSheetContent() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       StartClaimBottomSheetContent(
-        state = rememberHedvigBottomSheetState(),
+        {},
         navigateToClaimChat = {},
-        isStagingEnvironment = true,
-        navigateToClaimChatInDevMode = {},
       )
     }
   }

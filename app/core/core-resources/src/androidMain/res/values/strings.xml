@@ -986,6 +986,7 @@
   <string name="TIER_FLOW_SELECT_INSURANCE_SUBTITLE">Select the insurance you want to edit</string>
   <string name="TIER_FLOW_SHOW_COVERAGE_BUTTON">Show coverage</string>
   <string name="TIER_FLOW_SUBTITLE">Set your coverage level and deductible</string>
+  <string name="TIER_FLOW_SUBTITLE_WITHOUT_DEDUCTIBLE">Set your coverage level</string>
   <string name="TIER_FLOW_SUMMARY_CONFIRM_BUTTON">Confirm changes</string>
   <string name="TIER_FLOW_SUMMARY_COVERAGE_SUBTITLE">Coverage</string>
   <string name="TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE">Documents</string>

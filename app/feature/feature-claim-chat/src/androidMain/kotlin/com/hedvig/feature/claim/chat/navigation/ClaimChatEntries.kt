@@ -1,4 +1,4 @@
-package com.hedvig.feature.claim.chat
+package com.hedvig.feature.claim.chat.navigation
 
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.lifecycle.compose.dropUnlessResumed
@@ -12,6 +12,7 @@ import com.hedvig.android.ui.force.upgrade.ForceUpgradeBlockingScreen
 import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
 import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.ui.ClaimChatDestination
+import com.hedvig.feature.claim.chat.ui.StartClaimPledgeDestination
 import com.hedvig.feature.claim.chat.ui.outcome.ClaimOutcomeDeflectDestination
 import com.hedvig.feature.claim.chat.ui.outcome.ClaimOutcomeNewClaimDestination
 import kotlinx.serialization.Serializable
@@ -34,6 +35,9 @@ internal data class ClaimOutcomeNewClaimKey(
 
 @Serializable
 internal data object UpdateAppKey : HedvigNavKey
+
+@Serializable
+internal data object StartClaimPledgeKey : HedvigNavKey
 
 fun EntryProviderScope<HedvigNavKey>.claimChatEntries(
   backstack: Backstack,
@@ -96,6 +100,17 @@ fun EntryProviderScope<HedvigNavKey>.claimChatEntries(
   entry<UpdateAppKey> {
     ForceUpgradeBlockingScreen(
       goToPlayStore = tryOpenPlayStore,
+    )
+  }
+  entry<StartClaimPledgeKey> { _ ->
+    StartClaimPledgeDestination(
+      navigateUp = backstack::navigateUp,
+      navigateToClaimChat = {
+        backstack.navigateAndPopUpTo<StartClaimPledgeKey>(
+          ClaimChatKey(),
+          inclusive = true,
+        )
+      },
     )
   }
 }

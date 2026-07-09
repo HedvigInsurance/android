@@ -53,6 +53,7 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
             ImageAsset("", "", ""),
           ),
         ),
+        recommendedAddon = null,
       ),
       addonBannerInfos = emptyList(),
       showChatIcon = false,

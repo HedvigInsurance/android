@@ -8,7 +8,9 @@ import assertk.assertions.containsExactly
 import com.hedvig.android.feature.help.center.navigation.HelpCenterKey
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.insurances.navigation.InsurancesKey
+import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.navigation.common.HedvigNavKey
+import org.junit.Rule
 import org.junit.Test
 
 /**
@@ -18,6 +20,9 @@ import org.junit.Test
  * to a key already on the stack must therefore never blind-append.
  */
 internal class DeepLinkNavigationTest {
+  @get:Rule
+  val testLogcatLogger = TestLogcatLoggingRule()
+
   private fun controllerWith(vararg keys: HedvigNavKey) = BackstackController(
     mutableStateListOf(*keys),
     mutableStateMapOf(),

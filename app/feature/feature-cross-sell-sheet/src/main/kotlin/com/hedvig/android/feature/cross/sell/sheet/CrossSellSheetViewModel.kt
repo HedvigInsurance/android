@@ -11,6 +11,8 @@ import arrow.core.left
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
+import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
@@ -21,6 +23,7 @@ import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.DemoSwitcher
 import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellSheetData
+import com.hedvig.android.crosssells.RecommendedAddon
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
@@ -71,7 +74,7 @@ internal sealed interface CrossSellSheetState {
   data class Content(val crossSellSheetData: CrossSellSheetData, val infoType: CrossSellInfoType) : CrossSellSheetState
 }
 
-private class CrossSellSheetPresenter(
+internal class CrossSellSheetPresenter(
   private val getCrossSellSheetDataUseCase: GetCrossSellSheetDataUseCase,
   private val crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
 ) : MoleculePresenter<CrossSellSheetEvent, CrossSellSheetState> {
@@ -100,7 +103,13 @@ private class CrossSellSheetPresenter(
             .mapLatest { result ->
               result.fold(
                 ifLeft = { error -> CrossSellSheetState.Error(error) },
-                ifRight = { data -> CrossSellSheetState.Content(data, infoType) },
+                ifRight = { data ->
+                  if (data.isEmpty) {
+                    CrossSellSheetState.DontShow
+                  } else {
+                    CrossSellSheetState.Content(data, infoType)
+                  }
+                },
               )
             },
         )
@@ -118,14 +127,15 @@ internal fun CrossSellInfoType.toCrossSellSource(): CrossSellInput {
       userFlow = UserFlow.SMART_X_SELL,
       flowSource = Optional.present(flowSource),
       experiments = emptyList(),
+      contractId = Optional.presentIfNotNull(this.contractId),
     )
   }
   return when (this) {
     CrossSellInfoType.Addon -> smartCrossSellInput(FlowSource.ADDON)
-    CrossSellInfoType.ChangeTier -> smartCrossSellInput(FlowSource.CHANGE_TIER)
+    is CrossSellInfoType.ChangeTier -> smartCrossSellInput(FlowSource.CHANGE_TIER)
     is CrossSellInfoType.ClosedClaim -> smartCrossSellInput(FlowSource.CLOSED_CLAIM)
     CrossSellInfoType.EditCoInsured -> smartCrossSellInput(FlowSource.EDIT_COINSURED)
-    CrossSellInfoType.MovingFlow -> smartCrossSellInput(FlowSource.MOVING)
+    is CrossSellInfoType.MovingFlow -> smartCrossSellInput(FlowSource.MOVING)
   }
 }
 
@@ -151,6 +161,7 @@ internal class GetCrossSellSheetDataUseCaseImpl(
   override suspend fun invoke(source: CrossSellInput): Flow<Either<ErrorMessage, CrossSellSheetData>> {
     return apolloClient
       .query(BottomSheetCrossSellsQuery(source))
+      .fetchPolicy(FetchPolicy.NetworkOnly)
       .safeFlow(::ErrorMessage)
       .map { response ->
         either {
@@ -178,9 +189,23 @@ internal class GetCrossSellSheetDataUseCaseImpl(
           val otherCrossSellsData = allData.otherCrossSells.map {
             it.toCrossSell()
           }
+          val recommendedAddon = allData.recommendedAddon?.let {
+            RecommendedAddon(
+              id = it.id,
+              title = it.title,
+              buttonTitle = it.buttonTitle,
+              description = it.description,
+              deepLink = it.deepLink,
+              banner = it.banner,
+              benefits = it.benefits,
+              pillowImageSmall = it.pillowImageSmall.src,
+              pillowImageLarge = it.pillowImageLarge.src,
+            )
+          }
           CrossSellSheetData(
             recommendedCrossSell = recommendedData,
             otherCrossSells = otherCrossSellsData,
+            recommendedAddon = recommendedAddon,
           )
         }
       }
