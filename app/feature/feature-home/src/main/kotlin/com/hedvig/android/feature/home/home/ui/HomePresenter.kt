@@ -218,6 +218,7 @@ private data class SuccessData(
       crossSellRecommendationNotification: CrossSellRecommendationNotification,
     ): SuccessData {
       val crossSellsAction = if (homeData.crossSells.recommendedCrossSell != null ||
+        homeData.crossSells.recommendedAddon != null ||
         homeData.crossSells.otherCrossSells.isNotEmpty()
       ) {
         HomeTopBarAction.CrossSellsAction(homeData.crossSells, crossSellRecommendationNotification)
