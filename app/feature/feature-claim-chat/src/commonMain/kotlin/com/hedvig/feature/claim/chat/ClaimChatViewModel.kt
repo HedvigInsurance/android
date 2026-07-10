@@ -45,6 +45,7 @@ import com.hedvig.feature.claim.chat.data.StepId
 import com.hedvig.feature.claim.chat.data.SubmitAudioRecordingUseCase
 import com.hedvig.feature.claim.chat.data.SubmitFileUploadUseCase
 import com.hedvig.feature.claim.chat.data.SubmitFormUseCase
+import com.hedvig.feature.claim.chat.data.SubmitInformationUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSelectUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSummaryUseCase
 import com.hedvig.feature.claim.chat.data.SubmitTaskUseCase
@@ -116,6 +117,8 @@ internal sealed interface ClaimChatEvent {
 
   data class SubmitClaim(val id: StepId) : ClaimChatEvent
 
+  data class AcknowledgeInformation(val id: StepId) : ClaimChatEvent
+
   data object HandledOutcomeNavigation : ClaimChatEvent
 
   data class HandledDeflectNavigation(val stepId: StepId) : ClaimChatEvent
@@ -172,6 +175,7 @@ internal class ClaimChatViewModel(
   submitFormUseCase: SubmitFormUseCase,
   submitSelectUseCase: SubmitSelectUseCase,
   submitSummaryUseCase: SubmitSummaryUseCase,
+  submitInformationUseCase: SubmitInformationUseCase,
   private val audioRecordingManager: AudioRecordingManager,
   skipStepUseCase: SkipStepUseCase,
   regretStepUseCase: RegretStepUseCase,
@@ -189,6 +193,7 @@ internal class ClaimChatViewModel(
       submitFormUseCase,
       submitSelectUseCase,
       submitSummaryUseCase,
+      submitInformationUseCase,
       skipStepUseCase,
       audioRecordingManager,
       fileService,
@@ -212,6 +217,7 @@ internal class ClaimChatPresenter(
   private val submitFormUseCase: SubmitFormUseCase,
   private val submitSelectUseCase: SubmitSelectUseCase,
   private val submitSummaryUseCase: SubmitSummaryUseCase,
+  private val submitInformationUseCase: SubmitInformationUseCase,
   private val skipStepUseCase: SkipStepUseCase,
   private val audioRecordingManager: AudioRecordingManager,
   private val fileService: FileService,
@@ -721,6 +727,29 @@ internal class ClaimChatPresenter(
           }
         }
 
+        is ClaimChatEvent.AcknowledgeInformation -> {
+          currentContinueButtonLoading = true
+          launch {
+            submitInformationUseCase
+              .invoke(event.id)
+              .fold(
+                ifLeft = {
+                  currentContinueButtonLoading = false
+                  errorSubmittingStep = it
+                  logcat { "AcknowledgeInformation error: $it" }
+                },
+                ifRight = { claimIntent ->
+                  currentContinueButtonLoading = false
+                  handleNext(
+                    steps,
+                    setOutcome,
+                    claimIntent,
+                  ) { progress = it }
+                },
+              )
+          }
+        }
+
         is ClaimChatEvent.Regret -> {
           Snapshot.withMutableSnapshot {
             val stepToUpdate = steps.find { it.id == event.id } ?: return@CollectEvents
@@ -1112,6 +1141,7 @@ private fun ClaimIntentStep.clearContent(): ClaimIntentStep = when (val content 
   is StepContent.Task,
   is StepContent.Deflect,
   is StepContent.DeflectMessage,
+  is StepContent.Information,
   StepContent.Unknown,
   -> this
 }

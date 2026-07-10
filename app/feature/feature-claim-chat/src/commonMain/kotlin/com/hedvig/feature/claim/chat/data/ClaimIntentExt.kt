@@ -18,9 +18,11 @@ import octopus.fragment.DeflectionInfoBlockFragment
 import octopus.fragment.DeflectionMessageFragment
 import octopus.fragment.FileUploadFragment
 import octopus.fragment.FormFragment
+import octopus.fragment.InformationFragment
 import octopus.fragment.SummaryFragment
 import octopus.fragment.TaskFragment
 import octopus.type.ClaimIntentStepContentFormFieldType
+import octopus.type.ClaimIntentStepContentInformationSeverity
 import octopus.type.ClaimIntentStepContentSelectStyle
 
 context(raise: Raise<ClaimChatErrorMessage>)
@@ -185,6 +187,20 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
     is DeflectionMessageFragment -> {
       StepContent.DeflectMessage(
         message = message,
+      )
+    }
+
+    is InformationFragment -> {
+      StepContent.Information(
+        notice = notice,
+        severity = when (severity) {
+          ClaimIntentStepContentInformationSeverity.CRITICAL -> StepContent.Information.Severity.CRITICAL
+
+          ClaimIntentStepContentInformationSeverity.INFO,
+          ClaimIntentStepContentInformationSeverity.UNKNOWN__,
+          -> StepContent.Information.Severity.INFO
+        },
+        buttonTitle = buttonTitle,
       )
     }
 

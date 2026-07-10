@@ -1,0 +1,5 @@
+mutation ClaimIntentSubmitInformation($stepId: ID!) {
+  claimIntentSubmitInformation(input: {stepId: $stepId}) {
+    ...ClaimIntentMutationOutputFragment
+  }
+}
