@@ -46,6 +46,7 @@ kotlin {
       implementation(projects.coreResources)
       implementation(projects.coreUiData)
       implementation(projects.designSystemHedvig)
+      implementation(projects.featureFlags)
       implementation(projects.languageCore)
       implementation(projects.moleculePublic)
       implementation(projects.navigationCore)
@@ -56,7 +57,7 @@ kotlin {
     }
     androidMain.dependencies {
       implementation(libs.accompanist.permissions)
-      implementation(libs.androidx.navigation.compose)
+      implementation(libs.androidx.activity.compose)
       implementation(libs.bundles.kmpPreviewBugWorkaround)
       implementation(libs.rive.android)
       implementation(projects.composeUi)

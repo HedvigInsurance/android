@@ -90,6 +90,7 @@ import hedvig.resources.PUPPY_GUIDE_INFO
 import hedvig.resources.PUPPY_GUIDE_LABEL_READ
 import hedvig.resources.PUPPY_GUIDE_TITLE
 import hedvig.resources.Res
+import hedvig.resources.general_back_button
 import hedvig.resources.hundar_badar_pet
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
@@ -130,6 +131,14 @@ private fun PuppyGuideScreen(
     PuppyGuideUiState.Failure -> PuppyScaffold(navigateUp = onNavigateUp) {
       HedvigErrorSection(
         onButtonClick = reload,
+        modifier = Modifier.weight(1f),
+      )
+    }
+
+    PuppyGuideUiState.Disabled -> PuppyScaffold(navigateUp = onNavigateUp) {
+      HedvigErrorSection(
+        onButtonClick = onNavigateUp,
+        buttonText = stringResource(Res.string.general_back_button),
         modifier = Modifier.weight(1f),
       )
     }
@@ -522,5 +531,6 @@ private class PuppyGuideUiStatePreviewProvider :
       ),
       PuppyGuideUiState.Loading,
       PuppyGuideUiState.Failure,
+      PuppyGuideUiState.Disabled,
     ),
   )

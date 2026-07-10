@@ -30,6 +30,7 @@ import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.externalnavigator.ExternalNavigatorImpl
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
 import com.hedvig.android.app.navigation.NavRetainedViewModel
+import com.hedvig.android.app.navigation.ScreenParameterExtractor
 import com.hedvig.android.app.ui.HedvigApp
 import com.hedvig.android.app.urihandler.ExternalDeepLinkHandler
 import com.hedvig.android.auth.AuthTokenService
@@ -38,8 +39,8 @@ import com.hedvig.android.auth.MemberIdService
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
-import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.rive.RiveInitializer
+import com.hedvig.android.core.tracking.EventTrackingClient
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageLaunchCheckUseCase
@@ -99,10 +100,16 @@ class MainActivity : AppCompatActivity() {
   private lateinit var memberIdService: MemberIdService
 
   @Inject
-  private lateinit var missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>
+  private lateinit var missedPaymentNotificationService: MissedPaymentNotificationService
 
   @Inject
   private lateinit var currentDestinationHolder: CurrentDestinationHolder
+
+  @Inject
+  private lateinit var eventTrackingClient: EventTrackingClient
+
+  @Inject
+  private lateinit var screenParameterExtractor: ScreenParameterExtractor
 
   @Inject
   private lateinit var serializersModules: Set<SerializersModule>
@@ -114,9 +121,16 @@ class MainActivity : AppCompatActivity() {
    * top of [onCreate]; the controller, session reconciler and merged ViewModel factory are read off it.
    */
   private val navRetainedViewModel: NavRetainedViewModel by lazy {
+    // Seed isOwnTask with isTaskRoot at construction so the controller never starts from a guessed
+    // default; it is refreshed authoritatively on every onResume (see refreshIsOwnTask). Captured as a
+    // value here because the initializer lambda's receiver is not this Activity. Only used on the
+    // genuine first creation — a config change reuses the retained instance and skips the initializer.
+    val isOwnTaskAtCreation = isTaskRoot
     ViewModelProvider(
       this,
-      viewModelFactory { initializer { NavRetainedViewModel((application as HedvigApplication).appGraph) } },
+      viewModelFactory {
+        initializer { NavRetainedViewModel((application as HedvigApplication).appGraph, isOwnTaskAtCreation) }
+      },
     )[NavRetainedViewModel::class.java]
   }
 
@@ -190,6 +204,18 @@ class MainActivity : AppCompatActivity() {
         }
       }
     }
+    val launchedFromHistory = intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY != 0
+    logcat(priority = LogPriority.VERBOSE, tag = DEEP_LINK_STACK_DEBUG_TAG) {
+      "MainActivity.onCreate launch context: " +
+        "isColdStart(savedInstanceState==null)=${savedInstanceState == null} | " +
+        "isTaskRoot=$isTaskRoot | " +
+        "intent.action=${intent.action} | " +
+        "intent.categories=${intent.categories} | " +
+        "intent.data=${intent.data} | " +
+        "launchedFromHistory=$launchedFromHistory | " +
+        "intent.flags=0x${Integer.toHexString(intent.flags)} | " +
+        "isHostedInForeignTask=${isHostedInForeignTask(isTaskRoot, intent.flags)}"
+    }
     if (savedInstanceState == null) {
       handleDeepLinkIntent(intent)
     }
@@ -244,8 +270,10 @@ class MainActivity : AppCompatActivity() {
           externalNavigator = externalNavigator,
           logoutUseCase = logoutUseCase,
           getMemberAuthorizationCodeUseCase = getMemberAuthorizationCodeUseCase,
-          missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
+          missedPaymentNotificationService = missedPaymentNotificationService,
           currentDestinationHolder = currentDestinationHolder,
+          eventTrackingClient = eventTrackingClient,
+          screenParameterExtractor = screenParameterExtractor,
         )
       }
     }
@@ -258,8 +286,25 @@ class MainActivity : AppCompatActivity() {
    * in onCreate — there is no shared, process-wide controller that a backgrounded Activity could
    * steal, which is why no resume/top-resume re-attachment is needed.
    */
+  override fun onResume() {
+    super.onResume()
+    refreshIsOwnTask()
+  }
+
+  /**
+   * Pushes the current own-task value into the controller (see [isHostedInForeignTask] for why this is
+   * not just [isTaskRoot]). Unlike the one-time hooks in [attachBackstackTaskHooks], this is a *value*
+   * that can change over the Activity's life (e.g. an Activity below us finishes, or [isTaskRoot] reads
+   * more reliably once resumed than at onCreate), so it is refreshed on every onResume to keep the
+   * snapshot-backed value honest — otherwise the lone-deep-link chrome can latch a stale reading. See
+   * [BackstackController.isOwnTask].
+   */
+  private fun refreshIsOwnTask() {
+    backstackController.isOwnTask = !isHostedInForeignTask(isTaskRoot, intent.flags)
+  }
+
   private fun attachBackstackTaskHooks() {
-    backstackController.isOwnTask = { isTaskRoot }
+    refreshIsOwnTask()
     backstackController.escapeToOwnTask = { parentStack ->
       NavigationStateBridge.escapeToOwnTask(this@MainActivity, parentStack, serializersModules)
     }
@@ -272,6 +317,32 @@ class MainActivity : AppCompatActivity() {
     deepLinkChannel.trySend(uri)
   }
 }
+
+/**
+ * Logcat tag for the per-launch navigation breadcrumb emitted in [MainActivity.onCreate]. Grep this to
+ * see how each launch was classified (action/flags/isTaskRoot -> isHostedInForeignTask) when diagnosing
+ * task/back-stack oddities like the deep-link-stack-on-Home report.
+ */
+internal const val DEEP_LINK_STACK_DEBUG_TAG = "DeepLinkStackDebug"
+
+/**
+ * Whether this Activity was launched into another app's task (genuinely foreign-hosted), given the
+ * task-root position and the [launchFlags] of the intent that started it. This is the one case that
+ * wants the lone-deep-link Up/escape affordance; everything else is our own task.
+ *
+ * Both conditions must hold to be foreign-hosted:
+ *  - **not the task root** (`!isTaskRoot`): some other activity sits below us in the task; and
+ *  - **launched without [Intent.FLAG_ACTIVITY_NEW_TASK]**: Android's default for that is to place us in
+ *    the *caller's* task rather than one of our own, so we joined whoever started us.
+ *
+ * `NEW_TASK` being set means the system gave us our own task (a fresh one, or an existing one brought
+ * forward), so we are NOT foreign-hosted even when not its root. That is why a launcher relaunch or a
+ * notification tap that fronted our task (both carry `NEW_TASK`, both can be non-root) is correctly
+ * treated as own-task and does not render the Up bar on a normal Home. Only a real foreign deep link
+ * (e.g. an https link tapped in another app, launched with no flags) is foreign-hosted.
+ */
+internal fun isHostedInForeignTask(isTaskRoot: Boolean, launchFlags: Int): Boolean =
+  !isTaskRoot && (launchFlags and Intent.FLAG_ACTIVITY_NEW_TASK) == 0
 
 /**
  * Applies the theme in two ways:

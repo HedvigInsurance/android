@@ -2,6 +2,7 @@ package com.hedvig.feature.claim.chat
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -15,6 +16,8 @@ import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.uidata.UiFile
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -34,6 +37,7 @@ import com.hedvig.feature.claim.chat.data.FormSubmissionData.FieldToSubmit
 import com.hedvig.feature.claim.chat.data.FreeTextErrorType.TooShort
 import com.hedvig.feature.claim.chat.data.GetClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.RegretStepUseCase
+import com.hedvig.feature.claim.chat.data.ResumeClaimUseCase
 import com.hedvig.feature.claim.chat.data.SkipStepUseCase
 import com.hedvig.feature.claim.chat.data.StartClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.StepContent
@@ -150,7 +154,6 @@ internal sealed interface ClaimChatUiState {
     val claimIntentId: ClaimIntentId,
     val steps: List<ClaimIntentStep>,
     val currentStep: ClaimIntentStep?,
-    val freeText: String?,
     val outcome: ClaimIntentOutcome?,
     val errorSubmittingStep: ClaimChatErrorMessage?,
     val currentContinueButtonLoading: Boolean = false,
@@ -160,6 +163,9 @@ internal sealed interface ClaimChatUiState {
     val stepsWithShownAnimations: List<StepId>,
     val progress: Float?,
     val searchQuery: SearchObject?,
+    val title: String?,
+    val isResumable: Boolean,
+    val resumeClaimEnabled: Boolean,
   ) : ClaimChatUiState
 }
 
@@ -167,6 +173,7 @@ internal sealed interface ClaimChatUiState {
 @HedvigViewModel(ActivityRetainedScope::class)
 internal class ClaimChatViewModel(
   @Assisted developmentFlow: Boolean,
+  @Assisted resumeClaim: Boolean,
   startClaimIntentUseCase: StartClaimIntentUseCase,
   getClaimIntentUseCase: GetClaimIntentUseCase,
   submitTaskUseCase: SubmitTaskUseCase,
@@ -181,6 +188,8 @@ internal class ClaimChatViewModel(
   formFieldSearchUseCase: FormFieldSearchUseCase,
   fileService: FileService,
   submitInformationUseCase: SubmitInformationUseCase
+  resumeClaimUseCase: ResumeClaimUseCase,
+  featureManager: FeatureManager,
 ) : MoleculeViewModel<ClaimChatEvent, ClaimChatUiState>(
     ClaimChatUiState.Initializing,
     ClaimChatPresenter(
@@ -198,7 +207,10 @@ internal class ClaimChatViewModel(
       fileService,
       regretStepUseCase,
       formFieldSearchUseCase,
-      submitInformationUseCase
+      submitInformationUseCase,
+      resumeClaim,
+      resumeClaimUseCase,
+      featureManager,
     ),
   ) {
   override fun onCleared() {
@@ -223,6 +235,9 @@ internal class ClaimChatPresenter(
   private val regretStepUseCase: RegretStepUseCase,
   private val formFieldSearchUseCase: FormFieldSearchUseCase,
   private val submitInformationUseCase: SubmitInformationUseCase
+  private val resumeClaim: Boolean,
+  private val resumeClaimUseCase: ResumeClaimUseCase,
+  private val featureManager: FeatureManager,
 ) : MoleculePresenter<ClaimChatEvent, ClaimChatUiState> {
   @Composable
   override fun MoleculePresenterScope<ClaimChatEvent>.present(lastState: ClaimChatUiState): ClaimChatUiState {
@@ -246,7 +261,6 @@ internal class ClaimChatPresenter(
     var currentContinueButtonLoading by remember { mutableStateOf(false) }
     var currentSkipButtonLoading by remember { mutableStateOf(false) }
     var errorSubmittingStep by remember { mutableStateOf<ClaimChatErrorMessage?>(null) }
-    var freeText by remember { mutableStateOf<String?>(null) }
     var showConfirmEditDialogForStep by remember { mutableStateOf<StepId?>(null) }
     var progress by remember {
       mutableStateOf<Float?>(
@@ -254,6 +268,19 @@ internal class ClaimChatPresenter(
           ?: 0f,
       )
     }
+    var title by remember { mutableStateOf((lastState as? ClaimChatUiState.ClaimChat)?.title) }
+    var isResumable by remember {
+      mutableStateOf((lastState as? ClaimChatUiState.ClaimChat)?.isResumable ?: false)
+    }
+    val updateIntentMetadata: (ClaimIntent) -> Unit = { intent ->
+      progress = intent.progress
+      // Keep the previous title when a step comes back without one, matching iOS.
+      title = intent.displayName ?: title
+      isResumable = intent.resumable
+    }
+    val resumeClaimEnabled by remember {
+      featureManager.isFeatureEnabled(Feature.ENABLE_CLAIM_INTENT_RESUME)
+    }.collectAsState(initial = false)
     val stepsWithShownAnimations = remember { mutableStateListOf<StepId>() }
 
     val setOutcome: (ClaimIntentOutcome) -> Unit = { outcome = it }
@@ -262,32 +289,72 @@ internal class ClaimChatPresenter(
 
     if (initializing) {
       LaunchedEffect(Unit) {
-        startClaimIntentUseCase
-          .invoke(developmentFlow)
-          .fold(
-            ifLeft = {
-              initializing = false
-              failedToStart = true
-            },
-            ifRight = { claimIntent ->
-              Snapshot.withMutableSnapshot {
+        val isResumingClaim = resumeClaim
+        if (isResumingClaim) {
+          resumeClaimUseCase
+            .invoke()
+            .fold(
+              ifLeft = {
                 initializing = false
-                failedToStart = false
-                claimIntentId = claimIntent.id
-                steps.clear()
-                progress = claimIntent.progress
-                when (val next = claimIntent.next) {
-                  is ClaimIntent.Next.Outcome -> {
-                    outcome = next.claimIntentOutcome
-                  }
+                failedToStart = true
+              },
+              ifRight = { claimIntent ->
+                if (claimIntent == null) {
+                  initializing = false
+                  failedToStart = true
+                } else {
+                  Snapshot.withMutableSnapshot {
+                    initializing = false
+                    failedToStart = false
+                    claimIntentId = claimIntent.id
+                    steps.clear()
+                    steps.addAll(
+                      claimIntent.previousSteps.filter {
+                        it.stepContent !is StepContent.Task
+                      },
+                    )
+                    updateIntentMetadata(claimIntent)
+                    when (val next = claimIntent.next) {
+                      is ClaimIntent.Next.Outcome -> {
+                        outcome = next.claimIntentOutcome
+                      }
 
-                  is ClaimIntent.Next.Step -> {
-                    steps.add(next.claimIntentStep)
+                      is ClaimIntent.Next.Step -> {
+                        steps.add(next.claimIntentStep)
+                      }
+                    }
                   }
                 }
-              }
-            },
-          )
+              },
+            )
+        } else {
+          startClaimIntentUseCase
+            .invoke(developmentFlow)
+            .fold(
+              ifLeft = {
+                initializing = false
+                failedToStart = true
+              },
+              ifRight = { claimIntent ->
+                Snapshot.withMutableSnapshot {
+                  initializing = false
+                  failedToStart = false
+                  claimIntentId = claimIntent.id
+                  steps.clear()
+                  updateIntentMetadata(claimIntent)
+                  when (val next = claimIntent.next) {
+                    is ClaimIntent.Next.Outcome -> {
+                      outcome = next.claimIntentOutcome
+                    }
+
+                    is ClaimIntent.Next.Step -> {
+                      steps.add(next.claimIntentStep)
+                    }
+                  }
+                }
+              },
+            )
+        }
       }
     }
 
@@ -311,7 +378,8 @@ internal class ClaimChatPresenter(
           steps,
           setOutcome,
           claimIntent,
-        ) { progress = it }
+          updateIntentMetadata,
+        )
       },
     )
 
@@ -394,7 +462,8 @@ internal class ClaimChatPresenter(
                     steps,
                     setOutcome,
                     claimIntent,
-                  ) { progress = it }
+                    updateIntentMetadata,
+                  )
                 },
               )
           }
@@ -430,14 +499,18 @@ internal class ClaimChatPresenter(
                         steps,
                         setOutcome,
                         claimIntent,
-                      ) { progress = it }
+                        updateIntentMetadata,
+                      )
                     },
                   )
               }
             }
 
             is ClaimChatEvent.AudioRecording.SubmitTextInput -> {
-              val freeTextInput = freeText ?: return@CollectEvents
+              val recordingState = steps.find { it.id == event.id }
+                ?.stepContent.let { it as? StepContent.AudioRecording }
+                ?.recordingState as? FreeTextDescription
+              val freeTextInput = recordingState?.freeText ?: return@CollectEvents
               currentContinueButtonLoading = true
               launch {
                 submitAudioRecordingUseCase
@@ -455,7 +528,8 @@ internal class ClaimChatPresenter(
                         steps,
                         setOutcome,
                         claimIntent,
-                      ) { progress = it }
+                        updateIntentMetadata,
+                      )
                     },
                   )
               }
@@ -485,13 +559,7 @@ internal class ClaimChatPresenter(
             }
 
             is ClaimChatEvent.AudioRecording.SwitchToFreeText -> {
-              val currentContent = currentStep?.stepContent as? StepContent.AudioRecording
-                ?: return@CollectEvents
-              val textTooShort = freeText?.length?.let {
-                currentContent.freeTextMinLength > it
-              } ?: true
               steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
-                val canSubmit = !currentContinueButtonLoading && !freeText.isNullOrEmpty() && !textTooShort
                 showFreeTextOverlay = FreeTextRestrictions(
                   content.freeTextMinLength,
                   content.freeTextMaxLength,
@@ -500,7 +568,8 @@ internal class ClaimChatPresenter(
                   stepContent = content.copy(
                     recordingState = FreeTextDescription(
                       errorType = null,
-                      canSubmit = canSubmit,
+                      canSubmit = false,
+                      freeText = null,
                     ),
                   ),
                 )
@@ -601,7 +670,8 @@ internal class ClaimChatPresenter(
                       steps,
                       setOutcome,
                       claimIntent,
-                    ) { progress = it }
+                      updateIntentMetadata,
+                    )
                   },
                 )
             }
@@ -662,7 +732,8 @@ internal class ClaimChatPresenter(
                     steps,
                     setOutcome,
                     claimIntent,
-                  ) { progress = it }
+                    updateIntentMetadata,
+                  )
                 },
               )
           }
@@ -696,11 +767,11 @@ internal class ClaimChatPresenter(
                       null
                     },
                     canSubmit = canSubmit,
+                    freeText = event.text,
                   ),
                 ),
               )
             }
-            freeText = event.text
           }
         }
 
@@ -721,7 +792,8 @@ internal class ClaimChatPresenter(
                     steps,
                     setOutcome,
                     claimIntent,
-                  ) { progress = it }
+                    updateIntentMetadata,
+                  )
                 },
               )
           }
@@ -749,7 +821,6 @@ internal class ClaimChatPresenter(
                     val index = steps.indexOf(stepToUpdate)
                     if (index >= 0) {
                       steps.subList(index, steps.size).clear()
-                      if (steps.none { it.stepContent is StepContent.AudioRecording }) freeText = null
                     }
                     currentContinueButtonLoading = false
                     currentSkipButtonLoading = false
@@ -757,7 +828,8 @@ internal class ClaimChatPresenter(
                       steps,
                       setOutcome,
                       claimIntent,
-                    ) { progress = it }
+                      updateIntentMetadata,
+                    )
                   },
                 )
             }
@@ -861,7 +933,8 @@ internal class ClaimChatPresenter(
                     steps,
                     setOutcome,
                     claimIntent,
-                  ) { progress = it }
+                    updateIntentMetadata,
+                  )
                 },
               )
           }
@@ -984,7 +1057,6 @@ internal class ClaimChatPresenter(
         currentStep = currentStep,
         outcome = outcome,
         showFreeTextOverlay = showFreeTextOverlay,
-        freeText = freeText,
         errorSubmittingStep = errorSubmittingStep,
         currentContinueButtonLoading = currentContinueButtonLoading,
         currentSkipButtonLoading = currentSkipButtonLoading,
@@ -992,6 +1064,9 @@ internal class ClaimChatPresenter(
         stepsWithShownAnimations = stepsWithShownAnimations,
         progress = progress,
         searchQuery = searchQuery,
+        title = title,
+        isResumable = isResumable,
+        resumeClaimEnabled = resumeClaimEnabled,
       )
 
       else -> error("")
@@ -1068,10 +1143,10 @@ private fun handleNext(
   steps: SnapshotStateList<ClaimIntentStep>,
   setOutcome: (outcome: ClaimIntentOutcome) -> Unit,
   intent: ClaimIntent,
-  setProgress: (Float?) -> Unit,
+  updateIntentMetadata: (ClaimIntent) -> Unit,
 ) {
   val next = intent.next
-  setProgress(intent.progress)
+  updateIntentMetadata(intent)
   when (next) {
     is ClaimIntent.Next.Outcome -> {
       setOutcome(next.claimIntentOutcome)
@@ -1147,7 +1222,7 @@ private fun ClaimIntentStep.clearContent(): ClaimIntentStep = when (val content 
   is StepContent.Deflect,
   is StepContent.DeflectMessage,
   is StepContent.Information,
-  StepContent.Unknown
+  StepContent.Unknown,
   -> this
 }
 

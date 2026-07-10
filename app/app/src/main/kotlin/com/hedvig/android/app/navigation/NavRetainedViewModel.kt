@@ -20,13 +20,18 @@ import dev.zacsweers.metrox.viewmodel.MetroViewModelFactory
  * spins up a per-Activity [ActivityRetainedGraph] seeded with that controller. Everything that must
  * talk to this Activity's stack — the [sessionReconciler] and every back-stack ViewModel resolved by
  * [viewModelFactory] — comes from that extension, so two `MainActivity` instances never share state.
+ *
+ * [isOwnTask] seeds [BackstackController.isOwnTask] with the Activity's `isTaskRoot` at first creation
+ * (so it never starts from a guessed default); `MainActivity` refreshes it authoritatively on resume.
  */
-internal class NavRetainedViewModel(appGraph: AppGraph) : ViewModel() {
+internal class NavRetainedViewModel(appGraph: AppGraph, isOwnTask: Boolean) : ViewModel() {
   val backstackController: BackstackController = BackstackController(
     entries = mutableStateListOf(),
     parkedRuns = mutableStateMapOf(),
     pendingDeepLinkState = mutableStateOf(null),
+    pendingDeepLinkStashedAtState = mutableStateOf(null),
     stashedSessionState = mutableStateOf(null),
+    initialIsOwnTask = isOwnTask,
   )
 
   private val activityGraph: ActivityRetainedGraph =

@@ -1,0 +1,3 @@
+mutation ClaimIntentDeleteDraft($id: ID!) {
+  claimIntentDeleteDraft(id: $id)
+}

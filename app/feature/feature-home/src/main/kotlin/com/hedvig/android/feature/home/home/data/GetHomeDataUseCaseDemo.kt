@@ -53,9 +53,11 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
             ImageAsset("", "", ""),
           ),
         ),
+        recommendedAddon = null,
       ),
       travelBannerInfo = null,
       showChatIcon = false,
+      draftClaim = null,
     ).right(),
   )
 }

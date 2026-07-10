@@ -9,7 +9,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import com.hedvig.android.app.navigation.BackstackController
-import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
@@ -31,7 +30,7 @@ internal fun rememberHedvigAppState(
   windowSizeClass: WindowSizeClass,
   settingsDataStore: SettingsDataStore,
   featureManager: FeatureManager,
-  missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>,
+  missedPaymentNotificationService: MissedPaymentNotificationService,
   coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ): HedvigAppState {
   val appState = remember(
@@ -40,7 +39,7 @@ internal fun rememberHedvigAppState(
     coroutineScope,
     settingsDataStore,
     featureManager,
-    missedPaymentNotificationServiceProvider,
+    missedPaymentNotificationService,
   ) {
     HedvigAppState(
       backstackController = backstackController,
@@ -48,7 +47,7 @@ internal fun rememberHedvigAppState(
       coroutineScope = coroutineScope,
       settingsDataStore = settingsDataStore,
       featureManager = featureManager,
-      missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
+      missedPaymentNotificationService = missedPaymentNotificationService,
     )
   }
   return appState
@@ -61,7 +60,7 @@ internal class HedvigAppState(
   coroutineScope: CoroutineScope,
   private val settingsDataStore: SettingsDataStore,
   featureManager: FeatureManager,
-  missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>,
+  missedPaymentNotificationService: MissedPaymentNotificationService,
 ) {
   /**
    * App kill-switch. If this is enabled we must show nothing in the app but a button to try to update the app
@@ -88,9 +87,7 @@ internal class HedvigAppState(
   )
 
   val showPaymentsBadge: StateFlow<Boolean> = flow {
-    val service = missedPaymentNotificationServiceProvider
-      .provide()
-    emitAll(service.showRedDotNotification())
+    emitAll(missedPaymentNotificationService.showRedDotNotification())
   }.stateIn(
     coroutineScope,
     SharingStarted.WhileSubscribed(5_000),

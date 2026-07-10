@@ -2,7 +2,6 @@ package com.hedvig.android.feature.insurances.insurance.presentation
 
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
-import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
@@ -12,14 +11,14 @@ import dev.zacsweers.metro.Inject
 @Inject
 @HedvigViewModel(ActivityRetainedScope::class)
 internal class InsuranceViewModel(
-  getInsuranceContractsUseCaseProvider: Provider<GetInsuranceContractsUseCase>,
-  getCrossSellsUseCaseProvider: Provider<GetCrossSellsUseCase>,
-  getAddonBannerInfoUseCase: Provider<GetAddonBannerInfoUseCase>,
+  getInsuranceContractsUseCase: GetInsuranceContractsUseCase,
+  getCrossSellsUseCase: GetCrossSellsUseCase,
+  getAddonBannerInfoUseCase: GetAddonBannerInfoUseCase,
 ) : MoleculeViewModel<InsuranceScreenEvent, InsuranceUiState>(
     initialState = InsuranceUiState.initialState,
     presenter = InsurancePresenter(
-      getInsuranceContractsUseCaseProvider = getInsuranceContractsUseCaseProvider,
-      getCrossSellsUseCaseProvider = getCrossSellsUseCaseProvider,
+      getInsuranceContractsUseCase = getInsuranceContractsUseCase,
+      getCrossSellsUseCase = getCrossSellsUseCase,
       getAddonBannerInfoUseCase = getAddonBannerInfoUseCase,
     ),
   )

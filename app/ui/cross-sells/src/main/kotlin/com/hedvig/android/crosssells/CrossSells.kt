@@ -1,11 +1,7 @@
 package com.hedvig.android.crosssells
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,20 +23,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -50,7 +37,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import coil3.ImageLoader
@@ -75,8 +61,11 @@ import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.StepProgressItem
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.Campaign
+import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.Plus
 import com.hedvig.android.design.system.hedvig.placeholder.crossSellPainterFallback
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
@@ -96,13 +85,28 @@ import hedvig.resources.TALKBACK_OPEN_EXTERNAL_LINK
 import hedvig.resources.cross_sell_get_price
 import hedvig.resources.general_close_button
 import hedvig.resources.insurance_tab_cross_sells_title
-import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 data class CrossSellSheetData(
   val recommendedCrossSell: RecommendedCrossSell?,
   val otherCrossSells: List<CrossSell>,
+  val recommendedAddon: RecommendedAddon?,
+) {
+  val isEmpty: Boolean
+    get() = recommendedCrossSell == null && recommendedAddon == null && otherCrossSells.isEmpty()
+}
+
+data class RecommendedAddon(
+  val id: String,
+  val title: String,
+  val buttonTitle: String,
+  val description: String,
+  val deepLink: String,
+  val banner: String?,
+  val benefits: List<String>,
+  val pillowImageSmall: String,
+  val pillowImageLarge: String,
 )
 
 data class RecommendedCrossSell(
@@ -134,7 +138,8 @@ fun CrossSellFloatingBottomSheet(
     hedvigBottomSheetState = state,
     dragHandle = {
       CrossSellDragHandle(
-        text = state.data?.recommendedCrossSell?.bannerText,
+        text = state.data?.recommendedCrossSell?.bannerText
+          ?: state.data?.recommendedAddon?.let { it.banner ?: stringResource(Res.string.CROSS_SELL_BANNER_TEXT) },
         modifier = Modifier
           .padding(horizontal = 16.dp)
           .clip(HedvigTheme.shapes.cornerXLargeTop),
@@ -154,6 +159,7 @@ fun CrossSellFloatingBottomSheet(
         onCrossSellClick = onCrossSellClick,
         dismissSheet = { state.dismiss() },
         imageLoader = imageLoader,
+        recommendedAddon = crossSellSheetData.recommendedAddon,
       )
     },
   )
@@ -166,11 +172,13 @@ fun CrossSellBottomSheet(
   imageLoader: ImageLoader,
 ) {
   val dragHandle: @Composable (() -> Unit)? =
-    if (state.data?.recommendedCrossSell != null) {
+    if (state.data?.recommendedCrossSell != null || state.data?.recommendedAddon != null) {
       {
         CrossSellDragHandle(
           contentPadding = PaddingValues(horizontal = 16.dp),
-          text = state.data?.recommendedCrossSell?.bannerText,
+          text = state.data?.recommendedCrossSell?.bannerText
+            ?: state.data?.recommendedAddon?.banner
+            ?: stringResource(Res.string.CROSS_SELL_BANNER_TEXT),
         )
       }
     } else {
@@ -183,6 +191,7 @@ fun CrossSellBottomSheet(
       CrossSellsSheetContent(
         recommendedCrossSell = crossSellSheetData.recommendedCrossSell,
         otherCrossSells = crossSellSheetData.otherCrossSells,
+        recommendedAddon = crossSellSheetData.recommendedAddon,
         onCrossSellClick = onCrossSellClick,
         dismissSheet = { state.dismiss() },
         imageLoader,
@@ -196,6 +205,7 @@ fun CrossSellBottomSheet(
 private fun CrossSellsSheetContent(
   recommendedCrossSell: RecommendedCrossSell?,
   otherCrossSells: List<CrossSell>,
+  recommendedAddon: RecommendedAddon?,
   onCrossSellClick: (String) -> Unit,
   dismissSheet: () -> Unit,
   imageLoader: ImageLoader,
@@ -205,7 +215,17 @@ private fun CrossSellsSheetContent(
       verticalArrangement = Arrangement.spacedBy(40.dp),
       modifier = Modifier.padding(bottom = 24.dp),
     ) {
-      if (recommendedCrossSell != null) {
+      if (recommendedAddon != null) {
+        Column {
+          Spacer(Modifier.height(48.dp))
+          AddonRecommendationSection(
+            recommendedAddon,
+            onButtonClick = onCrossSellClick,
+            dismissSheet = dismissSheet,
+            imageLoader = imageLoader,
+          )
+        }
+      } else if (recommendedCrossSell != null) {
         Column {
           Spacer(Modifier.height(48.dp))
           RecommendationSection(
@@ -246,6 +266,7 @@ private fun CrossSellsSheetContent(
 @Composable
 private fun CrossSellsFloatingSheetContent(
   recommendedCrossSell: RecommendedCrossSell?,
+  recommendedAddon: RecommendedAddon?,
   otherCrossSells: List<CrossSell>,
   onCrossSellClick: (String) -> Unit,
   dismissSheet: () -> Unit,
@@ -265,7 +286,17 @@ private fun CrossSellsFloatingSheetContent(
           .padding(bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(40.dp),
       ) {
-        if (recommendedCrossSell != null) {
+        if (recommendedAddon != null) {
+          Column {
+            Spacer(Modifier.height(48.dp))
+            AddonRecommendationSection(
+              recommendedAddon,
+              onButtonClick = onCrossSellClick,
+              dismissSheet = dismissSheet,
+              imageLoader = imageLoader,
+            )
+          }
+        } else if (recommendedCrossSell != null) {
           Column {
             Spacer(Modifier.height(48.dp))
             RecommendationSection(
@@ -286,7 +317,7 @@ private fun CrossSellsFloatingSheetContent(
               onCrossSellClick = onCrossSellClick,
               withSubHeader = false,
               onSheetDismissed = dismissSheet,
-              imageLoader = rememberPreviewImageLoader(),
+              imageLoader = imageLoader,
             )
           }
         }
@@ -306,6 +337,110 @@ private fun CrossSellsFloatingSheetContent(
     }
     Spacer(Modifier.height(8.dp))
     Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+  }
+}
+
+@Composable
+private fun AddonRecommendationSection(
+  recommendedAddon: RecommendedAddon,
+  onButtonClick: (String) -> Unit,
+  dismissSheet: () -> Unit,
+  imageLoader: ImageLoader,
+  modifier: Modifier = Modifier,
+) {
+  Column(
+    horizontalAlignment = Alignment.CenterHorizontally,
+    modifier = modifier.fillMaxWidth(),
+  ) {
+    val placeholder = crossSellPainterFallback(shape = HedvigTheme.shapes.cornerXXLarge)
+    Box {
+      AsyncImage(
+        model = recommendedAddon.pillowImageLarge,
+        contentDescription = EmptyContentDescription,
+        placeholder = placeholder,
+        error = placeholder,
+        fallback = placeholder,
+        imageLoader = imageLoader,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+          .padding(horizontal = 8.dp)
+          .size(140.dp),
+      )
+      Row(
+        Modifier
+          .align(Alignment.TopEnd)
+          .padding(top = 8.dp),
+      ) {
+        Box(
+          contentAlignment = Alignment.Center,
+          modifier = Modifier
+            .hedvigDropShadow(CircleShape)
+            .size(30.dp)
+            .background(HedvigTheme.colorScheme.fillNegative, CircleShape)
+            .border(1.dp, HedvigTheme.colorScheme.borderPrimary, CircleShape),
+        ) {
+          Icon(
+            imageVector = HedvigIcons.Plus,
+            contentDescription = EmptyContentDescription,
+            tint = HedvigTheme.colorScheme.fillPrimary,
+            modifier = Modifier.size(24.dp),
+          )
+        }
+        Spacer(Modifier.width(12.dp))
+      }
+    }
+    Spacer(Modifier.height(24.dp))
+    val headingDescription = stringResource(Res.string.CROSS_SELL_TITLE) +
+      ": ${recommendedAddon.title}"
+    HedvigText(
+      text = recommendedAddon.title,
+      modifier = Modifier
+        .clearAndSetSemantics {
+          contentDescription = headingDescription
+          heading()
+        },
+    )
+    HedvigText(
+      recommendedAddon.description,
+      style = LocalTextStyle.current.copy(
+        lineBreak = LineBreak.Heading,
+        color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+      ),
+      modifier = Modifier.padding(horizontal = 16.dp),
+      textAlign = TextAlign.Center,
+    )
+    if (recommendedAddon.benefits.isNotEmpty()) {
+      Spacer(Modifier.height(32.dp))
+      Column(
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 24.dp),
+      ) {
+        for (benefit in recommendedAddon.benefits) {
+          Row(verticalAlignment = Alignment.Top) {
+            Icon(
+              imageVector = HedvigIcons.Checkmark,
+              contentDescription = EmptyContentDescription,
+              modifier = Modifier.size(24.dp),
+            )
+            Spacer(Modifier.width(12.dp))
+            HedvigText(benefit)
+          }
+        }
+      }
+    }
+    Spacer(Modifier.height(if (recommendedAddon.benefits.isEmpty()) 48.dp else 32.dp))
+    HedvigButton(
+      text = recommendedAddon.buttonTitle,
+      onClick = {
+        onButtonClick(recommendedAddon.deepLink)
+        dismissSheet()
+      },
+      enabled = true,
+      modifier = Modifier
+        .fillMaxWidth(),
+    )
   }
 }
 
@@ -815,6 +950,7 @@ private fun PreviewCrossSellsSheetContent(
           onCrossSellClick = {},
           dismissSheet = {},
           imageLoader = rememberPreviewImageLoader(),
+          recommendedAddon = null,
         )
       }
     }
@@ -829,7 +965,8 @@ private fun PreviewCrossSellsFloatingSheetContent(
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       CrossSellsFloatingSheetContent(
-        RecommendedCrossSell(
+        recommendedAddon = null,
+        recommendedCrossSell = RecommendedCrossSell(
           crossSell = CrossSell(
             "rh",
             "Car Insurance",
@@ -844,7 +981,7 @@ private fun PreviewCrossSellsFloatingSheetContent(
           backgroundPillowImages = ("ds" to "ds"),
           bundleProgress = BundleProgress(1, 15),
         ).takeIf { case != TripleCase.THIRD },
-        listOf(
+        otherCrossSells = listOf(
           CrossSell(
             "id",
             "title",
@@ -853,8 +990,8 @@ private fun PreviewCrossSellsFloatingSheetContent(
             ImageAsset("", "", ""),
           ),
         ).takeIf { case != TripleCase.FIRST }.orEmpty(),
-        {},
-        {},
+        dismissSheet = {},
+        onCrossSellClick = {},
         imageLoader = rememberPreviewImageLoader(),
       )
     }
@@ -926,6 +1063,39 @@ private fun PreviewCrossSellDragHandle() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       CrossSellDragHandle()
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewRecommendedAddon(
+  @PreviewParameter(TripleBooleanCollectionPreviewParameterProvider::class) case: TripleCase,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      CrossSellsSheetContent(
+        imageLoader = rememberPreviewImageLoader(),
+        recommendedCrossSell = null,
+        otherCrossSells = emptyList(),
+        recommendedAddon = RecommendedAddon(
+          id = "ifsf",
+          title = "Addon title",
+          buttonTitle = "Check the addon",
+          description = "Best addon in the world",
+          deepLink = "deep",
+          banner = "Add extra safety when traveling",
+          benefits = listOf(
+            "Travel up to 60 days in a row",
+            "Delayed bags and flights covered",
+            "Applies to your whole household",
+          ),
+          pillowImageSmall = "src",
+          pillowImageLarge = "src",
+        ),
+        onCrossSellClick = {},
+        dismissSheet = {},
+      )
     }
   }
 }

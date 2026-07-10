@@ -4,23 +4,18 @@ enum class Feature(
   // Used to easier get a context of what it's for.
   @Suppress("unused") val explanation: String,
 ) {
-  @Suppress("ktlint:standard:max-line-length")
-  MOVING_FLOW("Lets a user change their address and get a new offer"),
-  PAYMENT_SCREEN("Controls whether the payment screen should be accessible from the profile tab"),
-  TERMINATION_FLOW("Shows the button which enters the insurance termination flow from the insurance tab"),
-  UPDATE_NECESSARY(
-    "Defines the lowest supported app version. Should prompt a user to update if it uses an outdated version.",
+  DISABLE_PUPPY_GUIDE(
+    "Kill switch for the puppy guide in the help center. When the toggle is on, the puppy guide is hidden.",
   ),
-  EDIT_COINSURED("Let member edit co insured"),
-  HELP_CENTER("Enable the help center screens"),
-  TRAVEL_ADDON("Let members purchase addons"),
-  ENABLE_VIDEO_PLAYER_IN_CHAT_MESSAGES(
-    "When enabled, it allows the chat to show media in inline video players in the chat messages",
+  ENABLE_CLAIM_INTENT_RESUME(
+    "Enables resuming a draft claim: the draft card on the home screen, the draft-claim dialogs, " +
+      "and the resumable-aware leave dialog in the claim chat.",
   ),
-  DISABLE_REDEEM_CAMPAIGN("Disables the ability to redeem a campaign code"),
-  ENABLE_CLAIM_HISTORY("Enables claim history"),
-  ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT(
+  ENABLE_NEW_CONVERSATION_FROM_INBOX(
     "Enables inbox icon always available on the Home screen " +
       "and New conversation button inside the inbox",
+  ),
+  UPDATE_NECESSARY(
+    "Defines the lowest supported app version. Should prompt a user to update if it uses an outdated version.",
   ),
 }

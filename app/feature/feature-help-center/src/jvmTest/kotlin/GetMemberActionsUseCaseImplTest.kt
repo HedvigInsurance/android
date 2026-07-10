@@ -10,8 +10,6 @@ import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.feature.help.center.data.GetMemberActionsUseCaseImpl
 import com.hedvig.android.feature.help.center.data.MemberAction
-import com.hedvig.android.featureflags.flags.Feature
-import com.hedvig.android.featureflags.test.FakeFeatureManager
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.test.runTest
 import octopus.MemberActionsQuery
@@ -75,16 +73,8 @@ class GetMemberActionsUseCaseImplTest {
 
   @Test
   fun `when response has isChangeTierEnabled as true MemberAction should have isTierChangeEnabled as true`() = runTest {
-    val featureManager = FakeFeatureManager(
-      fixedMap = mapOf(
-        Feature.MOVING_FLOW to true,
-        Feature.EDIT_COINSURED to true,
-        Feature.PAYMENT_SCREEN to true,
-      ),
-    )
     val subjectUseCase = GetMemberActionsUseCaseImpl(
       apolloClient = apolloClientWithGoodResponseTierChangeTrue,
-      featureManager = featureManager,
     )
     val result = subjectUseCase.invoke()
     assertk.assertThat(result)
@@ -96,16 +86,8 @@ class GetMemberActionsUseCaseImplTest {
   @Test
   fun `when response has isChangeTierEnabled as false MemberAction should have isTierChangeEnabled as false`() =
     runTest {
-      val featureManager = FakeFeatureManager(
-        fixedMap = mapOf(
-          Feature.MOVING_FLOW to true,
-          Feature.EDIT_COINSURED to true,
-          Feature.PAYMENT_SCREEN to true,
-        ),
-      )
       val subjectUseCase = GetMemberActionsUseCaseImpl(
         apolloClient = apolloClientWithGoodResponseTierChangeFalse,
-        featureManager = featureManager,
       )
       val result = subjectUseCase.invoke()
       assertk.assertThat(result)

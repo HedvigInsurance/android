@@ -14,11 +14,10 @@ hedvig {
 }
 
 dependencies {
-  api(libs.androidx.navigation.common)
   api(libs.coil.coil)
 
+  implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.datastore.core)
-  implementation(libs.androidx.navigation.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
@@ -47,6 +46,7 @@ dependencies {
   implementation(projects.coreMarkdown)
   implementation(projects.coreResources)
   implementation(projects.dataChat)
+  implementation(projects.dataClaimIntent)
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlags)
   implementation(projects.languageCore)

@@ -85,11 +85,31 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.feature.claim.chat.ClaimChatEvent
-import com.hedvig.feature.claim.chat.ClaimChatEvent.*
-import com.hedvig.feature.claim.chat.ClaimChatEvent.AudioRecording.*
+import com.hedvig.feature.claim.chat.ClaimChatEvent.AddToShownAnimations
+import com.hedvig.feature.claim.chat.ClaimChatEvent.AudioRecording.RedoRecording
+import com.hedvig.feature.claim.chat.ClaimChatEvent.AudioRecording.StartRecording
+import com.hedvig.feature.claim.chat.ClaimChatEvent.AudioRecording.StopRecording
+import com.hedvig.feature.claim.chat.ClaimChatEvent.AudioRecording.SubmitAudioFile
+import com.hedvig.feature.claim.chat.ClaimChatEvent.AudioRecording.SubmitTextInput
+import com.hedvig.feature.claim.chat.ClaimChatEvent.AudioRecording.SwitchToAudioRecording
+import com.hedvig.feature.claim.chat.ClaimChatEvent.AudioRecording.SwitchToFreeText
+import com.hedvig.feature.claim.chat.ClaimChatEvent.CloseFreeChatOverlay
+import com.hedvig.feature.claim.chat.ClaimChatEvent.DismissConfirmEditDialog
+import com.hedvig.feature.claim.chat.ClaimChatEvent.DismissErrorDialog
+import com.hedvig.feature.claim.chat.ClaimChatEvent.FinishTaskAnimation
+import com.hedvig.feature.claim.chat.ClaimChatEvent.HandledDeflectNavigation
+import com.hedvig.feature.claim.chat.ClaimChatEvent.HandledOutcomeNavigation
+import com.hedvig.feature.claim.chat.ClaimChatEvent.OpenFreeTextOverlay
+import com.hedvig.feature.claim.chat.ClaimChatEvent.Regret
+import com.hedvig.feature.claim.chat.ClaimChatEvent.RetryInitializing
+import com.hedvig.feature.claim.chat.ClaimChatEvent.RetrySubmittingTaskStep
+import com.hedvig.feature.claim.chat.ClaimChatEvent.Skip
+import com.hedvig.feature.claim.chat.ClaimChatEvent.SubmitClaim
+import com.hedvig.feature.claim.chat.ClaimChatEvent.UpdateFreeText
 import com.hedvig.feature.claim.chat.ClaimChatUiState
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
 import com.hedvig.feature.claim.chat.ClaimChatViewModelFactory
+import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.data.ClaimChatErrorMessage
 import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
 import com.hedvig.feature.claim.chat.data.ClaimIntentStep
@@ -117,6 +137,9 @@ import hedvig.resources.EMBARK_UPDATE_APP_BODY
 import hedvig.resources.EMBARK_UPDATE_APP_BUTTON
 import hedvig.resources.GENERAL_ARE_YOU_SURE
 import hedvig.resources.NETWORK_ERROR_ALERT_MESSAGE
+import hedvig.resources.RESUME_CLAIM_LEAVE_BODY
+import hedvig.resources.RESUME_CLAIM_LEAVE_CONFIRM
+import hedvig.resources.RESUME_CLAIM_LEAVE_TITLE
 import hedvig.resources.Res
 import hedvig.resources.claims_alert_body
 import hedvig.resources.claims_skip_button
@@ -141,10 +164,11 @@ internal fun ClaimChatDestination(
   isDevelopmentFlow: Boolean,
   navigateUp: () -> Unit,
   openPlayStore: () -> Unit,
+  resumeClaim: Boolean,
 ) {
   val claimChatViewModel =
     assistedMetroViewModel<ClaimChatViewModel, ClaimChatViewModelFactory> {
-      create(isDevelopmentFlow)
+      create(isDevelopmentFlow, resumeClaim)
     }
   Box(Modifier.fillMaxSize(), propagateMinConstraints = true) {
     BlurredGradientBackground()
@@ -232,9 +256,12 @@ private fun ClaimChatScreen(
   openAppSettings: () -> Unit,
   openPlayStore: () -> Unit,
 ) {
+  val currentFreeText = (uiState.currentStep?.stepContent as? StepContent.AudioRecording)
+    ?.recordingState.let { it as? AudioRecordingStepState.FreeTextDescription }
+    ?.freeText
   FreeTextOverlay(
     freeTextMaxLength = uiState.showFreeTextOverlay?.maxLength ?: 2000,
-    freeTextValue = uiState.freeText,
+    freeTextValue = currentFreeText,
     freeTextHint = stringResource(Res.string.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER),
     freeTextTitle = stringResource(Res.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
     freeTextOnCancelClick = {
@@ -278,9 +305,13 @@ private fun ClaimChatScreenContent(
 ) {
   var showCloseFlowDialog by rememberSaveable { mutableStateOf(false) }
 
+  // Flag on: only a resumable draft warrants a leave confirmation (it will be saved).
+  // Flag off: legacy behavior, always confirm.
+  val showLeaveConfirmation = if (uiState.resumeClaimEnabled) uiState.isResumable else true
+
   NavigationEventHandler(
     state = rememberNavigationEventState(NavigationEventInfo.None),
-    isBackEnabled = uiState.steps.size > 1,
+    isBackEnabled = uiState.steps.size > 1 && showLeaveConfirmation,
   ) {
     showCloseFlowDialog = true
   }
@@ -321,14 +352,22 @@ private fun ClaimChatScreenContent(
     )
   }
   if (showCloseFlowDialog) {
-    HedvigAlertDialog(
-      title = stringResource(Res.string.GENERAL_ARE_YOU_SURE),
-      text = stringResource(Res.string.claims_alert_body),
-      onDismissRequest = {
-        showCloseFlowDialog = false
-      },
-      onConfirmClick = navigateUp,
-    )
+    if (uiState.resumeClaimEnabled) {
+      HedvigAlertDialog(
+        title = stringResource(Res.string.RESUME_CLAIM_LEAVE_TITLE),
+        text = stringResource(Res.string.RESUME_CLAIM_LEAVE_BODY),
+        confirmButtonLabel = stringResource(Res.string.RESUME_CLAIM_LEAVE_CONFIRM),
+        onDismissRequest = { showCloseFlowDialog = false },
+        onConfirmClick = navigateUp,
+      )
+    } else {
+      HedvigAlertDialog(
+        title = stringResource(Res.string.GENERAL_ARE_YOU_SURE),
+        text = stringResource(Res.string.claims_alert_body),
+        onDismissRequest = { showCloseFlowDialog = false },
+        onConfirmClick = navigateUp,
+      )
+    }
   }
   val lazyListState = rememberLazyListState()
   val coroutineScope = rememberCoroutineScope()
@@ -355,12 +394,13 @@ private fun ClaimChatScreenContent(
 
   Box(modifier = modifier.fillMaxSize()) {
     Column(Modifier.matchParentSize()) {
-      val title = stringResource(Res.string.CHAT_CONVERSATION_CLAIM_TITLE)
+      val legacyTitle = stringResource(Res.string.CHAT_CONVERSATION_CLAIM_TITLE)
+      val title = if (uiState.resumeClaimEnabled) uiState.title ?: legacyTitle else legacyTitle
       TopAppBar(
         title = title,
         actionType = TopAppBarActionType.BACK,
         onActionClick = {
-          if (uiState.steps.size > 1) {
+          if (uiState.steps.size > 1 && showLeaveConfirmation) {
             showCloseFlowDialog = true
           } else {
             navigateUp()
@@ -404,12 +444,12 @@ private fun ClaimChatScreenContent(
         openAppSettings = openAppSettings,
         modifier = Modifier.fillMaxSize(),
         closeFlow = {
-          if (uiState.steps.size > 1) {
+          if (uiState.steps.size > 1 && showLeaveConfirmation) {
             showCloseFlowDialog = true
           } else {
             navigateUp()
           }
-        }
+        },
       )
     }
     if (showScrollArrow) {
@@ -490,7 +530,6 @@ private fun ClaimChatScrollableContent(
 
         StepContentSection(
           stepItem = item,
-          freeText = uiState.freeText,
           isCurrentStep = isCurrentStep,
           showAnimationSequence = showAnimationSequence,
           currentContinueButtonLoading = uiState.currentContinueButtonLoading,
@@ -510,7 +549,7 @@ private fun ClaimChatScrollableContent(
           } else {
             Modifier
           },
-          closeFlow = closeFlow
+          closeFlow = closeFlow,
         )
       }
     }
@@ -548,7 +587,6 @@ private fun ScrollToBottomButton(onClick: () -> Unit, modifier: Modifier = Modif
 @Composable
 private fun StepContentSection(
   stepItem: ClaimIntentStep,
-  freeText: String?,
   isCurrentStep: Boolean,
   showAnimationSequence: Boolean,
   currentContinueButtonLoading: Boolean,
@@ -624,7 +662,6 @@ private fun StepContentSection(
     ) {
       StepBottomContent(
         stepItem = stepItem,
-        freeText = freeText,
         isCurrentStep = isCurrentStep,
         currentContinueButtonLoading = currentContinueButtonLoading,
         currentSkipButtonLoading = currentSkipButtonLoading,
@@ -778,7 +815,6 @@ private fun CommonPaddingWrapper(content: @Composable () -> Unit) {
 @Composable
 private fun StepBottomContent(
   stepItem: ClaimIntentStep,
-  freeText: String?,
   isCurrentStep: Boolean,
   currentContinueButtonLoading: Boolean,
   currentSkipButtonLoading: Boolean,
@@ -789,7 +825,7 @@ private fun StepBottomContent(
   appPackageId: String,
   imageLoader: ImageLoader,
   openAppSettings: () -> Unit,
-  closeFlow: ()-> Unit,
+  closeFlow: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
@@ -829,7 +865,6 @@ private fun StepBottomContent(
           clock = Clock.System,
           onShouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           openAppSettings = openAppSettings,
-          freeText = freeText,
           onEvent = onEvent,
           continueButtonLoading = currentContinueButtonLoading,
           skipButtonLoading = currentSkipButtonLoading,
@@ -921,15 +956,15 @@ private fun StepBottomContent(
       }
 
       is StepContent.DeflectMessage -> {
-          HedvigButton(
-            modifier = modifier.fillMaxWidth(),
-            text = stringResource(Res.string.general_close_button),
-            onClick = dropUnlessResumed {
-              closeFlow()
-            },
-            enabled = true,
-            buttonStyle = ButtonDefaults.ButtonStyle.Secondary
-          )
+        HedvigButton(
+          modifier = modifier.fillMaxWidth(),
+          text = stringResource(Res.string.general_close_button),
+          onClick = dropUnlessResumed {
+            closeFlow()
+          },
+          enabled = true,
+          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+        )
       }
 
       is StepContent.Information -> {

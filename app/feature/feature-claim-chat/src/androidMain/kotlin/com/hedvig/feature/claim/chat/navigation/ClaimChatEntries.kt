@@ -21,6 +21,7 @@ import kotlinx.serialization.Serializable
 data class ClaimChatKey(
   val isDevelopmentFlow: Boolean = false,
   val messageId: String? = null,
+  val resumeClaim: Boolean = false,
 ) : HedvigNavKey
 
 @Serializable
@@ -37,7 +38,7 @@ internal data class ClaimOutcomeNewClaimKey(
 internal data object UpdateAppKey : HedvigNavKey
 
 @Serializable
-internal data object StartClaimPledgeKey: HedvigNavKey
+internal data object StartClaimPledgeKey : HedvigNavKey
 
 fun EntryProviderScope<HedvigNavKey>.claimChatEntries(
   backstack: Backstack,
@@ -58,6 +59,7 @@ fun EntryProviderScope<HedvigNavKey>.claimChatEntries(
 ) {
   entry<ClaimChatKey> { key ->
     ClaimChatDestination(
+      resumeClaim = key.resumeClaim,
       isDevelopmentFlow = key.isDevelopmentFlow,
       shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
       openAppSettings = openAppSettings,
@@ -110,7 +112,7 @@ fun EntryProviderScope<HedvigNavKey>.claimChatEntries(
           ClaimChatKey(),
           inclusive = true,
         )
-      }
+      },
     )
   }
 }

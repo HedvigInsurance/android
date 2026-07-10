@@ -6,5 +6,6 @@ mutation MoveIntentV2Commit($intentId: ID!, $homeQuoteId: ID!, $excludedAddons: 
     userError {
       message
     }
+    newContractId
   }
 }

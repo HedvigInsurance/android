@@ -4,6 +4,7 @@ import arrow.core.raise.Raise
 import arrow.core.raise.context.raise
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.locale.CommonLocale
+import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.shared.partners.deflect.DeflectData
@@ -58,11 +59,27 @@ internal fun ClaimIntentFragment.toClaimIntent(locale: CommonLocale): ClaimInten
       else -> error("ClaimIntentFragment contained null currentStep and null outcome")
     },
     progress = progress?.toFloat(),
+    displayName = displayName,
+    resumable = resumable,
+    previousSteps = previousSteps.map {
+      it.toClaimIntentStep(locale)
+    },
   )
 }
 
 context(raise: Raise<ClaimChatErrorMessage>)
 private fun ClaimIntentFragment.CurrentStep.toClaimIntentStep(locale: CommonLocale): ClaimIntentStep {
+  return ClaimIntentStep(
+    id = StepId(id),
+    text = text,
+    stepContent = this.content.toStepContent(locale),
+    isRegrettable = this.isRegrettable,
+    hint = hint,
+  )
+}
+
+context(raise: Raise<ClaimChatErrorMessage>)
+private fun ClaimIntentFragment.PreviousStep.toClaimIntentStep(locale: CommonLocale): ClaimIntentStep {
   return ClaimIntentStep(
     id = StepId(id),
     text = text,
@@ -85,7 +102,7 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
     is ContentSelectFragment -> {
       StepContent.ContentSelect(
         options = options.toOptions(),
-        selectedOptionId = defaultSelectedId,
+        selectedOptionId = currentSelectedId ?: defaultSelectedId,
         isSkippable = isSkippable,
         style = when (style) {
           ClaimIntentStepContentSelectStyle.PILL -> StepContent.ContentSelectStyle.PILL
@@ -104,10 +121,30 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
     }
 
     is AudioRecordingFragment -> {
+      val audioUrl = this.currentAudioUrl
+      val freeText = this.currentFreeText
+      val recordingState = if (audioUrl != null) {
+        AudioRecordingStepState.AudioRecording.Playback(
+          audioPath = AudioPath.RemoteUrl(audioUrl),
+          isPlaying = false,
+          // A resumed remote recording has no local MediaPlayer to prepare; the remote audio player
+          // handles its own buffering, so the playback UI can show immediately.
+          isPrepared = true,
+          hasError = false,
+        )
+      } else if (freeText != null) {
+        AudioRecordingStepState.FreeTextDescription(
+          errorType = null,
+          canSubmit = true,
+          freeText = freeText,
+        )
+      } else {
+        AudioRecordingStepState.AudioRecording.NotRecording
+      }
       StepContent.AudioRecording(
         uploadUri = uploadUri,
         isSkippable = isSkippable,
-        recordingState = AudioRecordingStepState.AudioRecording.NotRecording,
+        recordingState = recordingState,
         freeTextMinLength = freeTextMinLength,
         freeTextMaxLength = freeTextMaxLength,
       )
@@ -117,7 +154,15 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
       StepContent.FileUpload(
         uploadUri = uploadUri,
         isSkippable = isSkippable,
-        localFiles = emptyList(),
+        localFiles = this.currentFiles?.map {
+          UiFile(
+            name = it.fileName,
+            localPath = null,
+            url = it.url,
+            mimeType = it.contentType,
+            id = it.url,
+          )
+        } ?: emptyList(),
       )
     }
 
@@ -184,9 +229,11 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
       )
     }
 
-    is DeflectionMessageFragment -> StepContent.DeflectMessage(
-      message = message
-    )
+    is DeflectionMessageFragment -> {
+      StepContent.DeflectMessage(
+        message = message,
+      )
+    }
 
     is InformationFragment -> StepContent.Information(
       notice = notice,
@@ -216,12 +263,17 @@ private fun List<ContentSelectFragment.Option>.toOptions(): List<StepContent.Con
 context(raise: Raise<ClaimChatErrorMessage>)
 private fun List<FormFragment.Field>.toFields(locale: CommonLocale): List<StepContent.Form.Field> {
   return this.map { field ->
+    val defaultValues = if (field.currentValues.isNotEmpty()) {
+      field.currentValues.toFieldOptions(field.options)
+    } else {
+      field.defaultValues.toFieldOptions(field.options)
+    }
     StepContent.Form.Field(
       id = FieldId(field.id),
       isRequired = field.isRequired,
       suffix = field.suffix,
       title = field.title,
-      defaultValues = field.defaultValues.toFieldOptions(field.options),
+      defaultValues = defaultValues,
       maxValue = field.maxValue,
       minValue = field.minValue,
       type = when (field.type) {
@@ -269,12 +321,12 @@ private fun List<FormFragment.Field>.toFields(locale: CommonLocale): List<StepCo
           subtitle = it.subtitle,
         )
       } ?: emptyList(),
-      selectedOptions = field.defaultValues.toFieldOptions(field.options),
+      selectedOptions = defaultValues,
       datePickerUiState = when (field.type) {
         ClaimIntentStepContentFormFieldType.DATE -> {
           DatePickerUiState(
             locale = locale,
-            initiallySelectedDate = field.defaultValues.getOrNull(0)?.let { LocalDate.parse(it) },
+            initiallySelectedDate = defaultValues.getOrNull(0)?.let { LocalDate.parse(it.value) },
             minDate = field.minValue?.let { LocalDate.parse(it) } ?: LocalDate(1900, 1, 1),
             maxDate = field.maxValue?.let { LocalDate.parse(it) } ?: LocalDate(2100, 1, 1),
           )

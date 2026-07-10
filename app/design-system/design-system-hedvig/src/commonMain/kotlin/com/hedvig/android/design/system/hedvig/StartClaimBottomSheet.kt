@@ -41,10 +41,7 @@ import hedvig.resources.general_continue_button
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun StartClaimBottomSheet(
-  state: HedvigBottomSheetState<Unit>,
-  navigateToClaimChat: () -> Unit,
-) {
+fun StartClaimBottomSheet(state: HedvigBottomSheetState<Unit>, navigateToClaimChat: () -> Unit) {
   HedvigBottomSheet(
     hedvigBottomSheetState = state,
     content = {
@@ -62,16 +59,13 @@ fun StartClaimBottomSheet(
   )
 }
 
-
 @Composable
-fun StartClaimPledgeScreen(
-  navigateUp: () -> Unit,
-  navigateToClaimChat: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
+fun StartClaimPledgeScreen(navigateUp: () -> Unit, navigateToClaimChat: () -> Unit, modifier: Modifier = Modifier) {
   var isChecked by remember { mutableStateOf(false) }
-  Column(modifier
-    .verticalScroll(rememberScrollState())) {
+  Column(
+    modifier
+      .verticalScroll(rememberScrollState()),
+  ) {
     PledgeNotes()
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(8.dp))
@@ -89,10 +83,7 @@ fun StartClaimPledgeScreen(
 }
 
 @Composable
-private fun StartClaimBottomSheetContent(
-  dismiss: () -> Unit,
-  navigateToClaimChat: () -> Unit,
-) {
+private fun StartClaimBottomSheetContent(dismiss: () -> Unit, navigateToClaimChat: () -> Unit) {
   var isChecked by remember { mutableStateOf(false) }
   Column {
     Spacer(Modifier.height(16.dp))

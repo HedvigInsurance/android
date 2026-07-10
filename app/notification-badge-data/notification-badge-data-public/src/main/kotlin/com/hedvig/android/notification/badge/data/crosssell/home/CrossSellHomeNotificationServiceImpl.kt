@@ -6,8 +6,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.DemoManager
-import com.hedvig.android.core.demomode.ProdOrDemoProvider
-import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.core.demomode.DemoSwitcher
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellNotificationBadgeService
 import com.hedvig.android.notification.badge.data.storage.NotificationBadge
 import dev.zacsweers.metro.ContributesBinding
@@ -21,12 +20,22 @@ import kotlinx.coroutines.flow.map
 
 @Inject
 @SingleIn(AppScope::class)
-@ContributesBinding(AppScope::class, binding<Provider<CrossSellHomeNotificationService>>())
-internal class CrossSellHomeNotificationServiceProvider(
+@ContributesBinding(AppScope::class, binding = binding<CrossSellHomeNotificationService>())
+internal class SwitchingCrossSellHomeNotificationService(
   override val demoManager: DemoManager,
   override val prodImpl: CrossSellHomeNotificationServiceImpl,
   override val demoImpl: DemoCrossSellHomeNotificationService,
-) : ProdOrDemoProvider<CrossSellHomeNotificationService>
+) : CrossSellHomeNotificationService, DemoSwitcher<CrossSellHomeNotificationService>() {
+  override fun showRedDotNotification() = pickFlow { it.showRedDotNotification() }
+
+  override fun getLastEpochDayNewRecommendationNotificationWasShown() =
+    pickFlow { it.getLastEpochDayNewRecommendationNotificationWasShown() }
+
+  override suspend fun markAsSeen() = pick().markAsSeen()
+
+  override suspend fun setLastEpochDayNewRecommendationNotificationWasShown(epochDay: Long) =
+    pick().setLastEpochDayNewRecommendationNotificationWasShown(epochDay)
+}
 
 @Inject
 internal class DemoCrossSellHomeNotificationService() : CrossSellHomeNotificationService {

@@ -16,11 +16,8 @@ android {
 }
 
 dependencies {
-  api(libs.androidx.navigation.common)
-
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.compose.foundation)
-  implementation(libs.androidx.navigation.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
@@ -42,6 +39,7 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.crossSells)
   implementation(projects.dataAddons)
+  implementation(projects.dataClaimIntent)
   implementation(projects.dataContract)
   implementation(projects.dataConversations)
   implementation(projects.dataCrossSellAfterClaimClosed)

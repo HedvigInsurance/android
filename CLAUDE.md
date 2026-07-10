@@ -235,6 +235,16 @@ backstack.removeAllOf<InboxKey>()
 
 Never hold a long-lived reference to `entries` snapshot contents; mutate through the controller/extensions so changes are observed and persisted.
 
+**Critical navigation rule — `navigateUp` is reserved for the top app bar back button:**
+
+`backstack.navigateUp()` may **only** be wired to the back arrow in a screen's top app bar. In every other case — "done"/"close"/"continue" buttons, success screens, dismissing a flow, programmatic pops after an action — call `backstack.popBackstack()` instead.
+
+**Why:** `navigateUp` carries deep-link/synthetic-stack semantics (the `:app` `BackstackController` overrides it to rebuild a parent stack when the user arrived via a lone deep link). That behavior is correct for the top app bar's "up" affordance, but wrong for an in-content button, where the user expects a plain temporal pop of the current entry. Mixing them makes a button behave differently depending on how the screen was reached, and can diverge from predictive (system) back.
+
+**How to apply:** When arranging the backstack for a flow, do it *at navigation time* (when navigating to a screen), so that a later plain `popBackstack()` and the system back gesture always land in the same place — never special-case the pop inside a button handler.
+
+### Dependency Injection
+
 **Registering destinations.** Each feature exposes a `fun EntryProviderScope<HedvigNavKey>.featureEntries(...)` that calls `entry<Key> { }` for each of its screens. `:app` calls all of them from `hedvigEntryProvider`. Cross-feature navigation is done by `:app` passing `navigateToX` lambdas into each feature's entries function — features never import each other's keys.
 
 ```kotlin
@@ -255,6 +265,14 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEntries(backstack: Backstack, /* n
 - `NavigationStateBridge.kt` — the single seam between Activity lifecycle and the controller (seed/restore/persist + escape-to-own-task handoff).
 - `SessionReconciler.kt` — auth↔back-stack reconciliation; gates the splash via `isReady`; forced logout.
 - `HedvigEntryProvider.kt` — all destination registration and cross-feature lambda wiring.
+
+**Critical Metro KMP rule — never put a platform-overridable `@ContributesBinding` default in `commonMain`:**
+
+If an interface needs a different implementation per platform, bind it **per-platform** with explicit `@Provides`/`@ContributesBinding` in each platform source set (`androidMain`, `iosMain`/`nativeMain`, `jvmMain`) — the way `:featureflags:feature-flags` binds `FeatureManager` (`UnleashFeatureFlagProvider` on Android, provided via `FeatureFlagsAndroidMetroProviders`). Do **not** annotate a `commonMain` default impl with `@ContributesBinding`.
+
+**Why:** a `commonMain` `@ContributesBinding` contributes that binding to **every** target. A platform-specific impl (e.g. an `androidMain` class) that forgets its own contribution annotation is then **silently shadowed** by the common default at runtime — no compile error, just wrong behavior. This actually happened: `NoopPermissionManager` (commonMain, `isPermissionGranted` always `false`) shadowed the real `ActivityCompatPermissionManager` on Android, so every notification sender behaved as if `POST_NOTIFICATIONS` was never granted. With per-platform binding instead, a missing binding is a **compile-time** error (loud), not a silent fallback.
+
+**How to apply:** When you see a `commonMain` interface with platform-specific impls, bind per-platform and keep `commonMain` free of the default binding. If you must keep a `commonMain` default (Metro 1.1.1 has no `rank`), the platform override **must** carry `@ContributesBinding(AppScope::class, replaces = [TheCommonDefault::class])` — but prefer the per-platform pattern, since `replaces` only protects the impls that exist today and silently re-breaks if a future platform impl forgets to contribute.
 
 ### Deep Links
 
@@ -320,6 +338,45 @@ internal class SetArticleRatingUseCaseImpl(...) : SetArticleRatingUseCase {
 }
 ```
 
+### Logging
+
+All logging in the app goes through a single KMP entrypoint: the `logcat` function in `:logging-public`. **Never call Timber, `android.util.Log`, or `println` directly** — Timber is installed only as a set of trees (Crashlytics, Datadog breadcrumbs, debug `DebugTree`) at startup; `logcat` fans out to them on Android and to `NSLog` on iOS.
+
+**Setup:** add `implementation(projects.loggingPublic)` to the module's `build.gradle.kts`, then:
+
+```kotlin
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
+```
+
+**API** (signature in `Logcat.kt`):
+
+```kotlin
+inline fun logcat(
+  priority: LogPriority = LogPriority.INFO,   // VERBOSE, DEBUG, INFO, WARN, ERROR, ASSERT
+  throwable: Throwable? = null,
+  tag: String? = null,                        // null → caller's class name is used
+  noinline message: () -> String,             // lazy; only evaluated if the log is emitted
+)
+```
+
+The message is a lambda, so build strings inline without guarding on build type — it isn't evaluated unless the line is actually logged.
+
+**Common patterns:**
+
+```kotlin
+logcat { "Plain info-level message" }                              // defaults to INFO
+logcat(LogPriority.DEBUG) { "GraphQL ${operation.name()} START" }  // explicit priority
+logcat(LogPriority.ERROR, throwable) { "Failed to load X: ${throwable.message}" }
+logcat(LogPriority.INFO, tag = SOMETHING_DEBUG_TAG) { "…" }  // greppable custom tag
+```
+
+Tag is optional — for a one-off log, just omit it (the caller's class name is used). When you want a greppable trace that spans several call sites or files, a shared `const val SOMETHING_DEBUG_TAG = "…"` passed as `tag` everywhere is a handy tool. It's a convenience, not a requirement; don't introduce a const for a single isolated log.
+
+There is also an Apollo overload, `logcat(priority, operationError: ApolloOperationError, tag, message)`, which auto-downgrades to at most `WARN` for unauthenticated errors. Use it when logging a failed `safeExecute`/`safeFlow` result.
+
+**Don't log PII.** There is no automatic redaction. Log identifiers (contractId, operation names) over user content; never log credentials, tokens, or full GraphQL response bodies.
+
 ## Technology Stack
 
 ### UI
@@ -349,7 +406,7 @@ internal class SetArticleRatingUseCaseImpl(...) : SetArticleRatingUseCase {
 
 ### Other
 - **kotlinx.serialization** - JSON serialization, polymorphic back-stack persistence
-- **Timber** - Logging
+- **Timber** - Logging backend (installed as trees only; always log through `logcat`, see the Logging section above)
 - **Datadog** - Analytics and RUM
 - **Firebase** - Crashlytics, Analytics, Messaging
 - **Kotlin Multiplatform** - Many modules support KMP
@@ -530,6 +587,28 @@ dependencies {
 3. Build generates type-safe Kotlin code.
 4. Use the generated query in an internal repository/use case impl; return a project-owned type.
 
+### Working with Feature Flags
+
+Feature flags are backed by Unleash. Before adding or changing a flag, read
+`app/featureflags/feature-flags/FEATURE_FLAG_DEFAULTS.md` — it explains why we never use
+the SDK's `defaultValue` parameter (Unleash Android SDK issue #141), how a flag's value is
+resolved when Unleash has never been fetched, and when bootstrap is required.
+
+To add a new flag:
+1. Add the enum value to `Feature` (commonMain), named to mirror its Unleash key polarity
+   (`ENABLE_X` for `enable_x`, `DISABLE_X` for `disable_x`), with a short explanation.
+2. Map it to its raw Unleash key in `Feature.unleashKey` (androidMain).
+3. `UnleashFeatureFlagProvider` needs no change — it returns the raw `isEnabled(key)` for
+   every flag. At the read site, use the value directly for a positive flag, or invert it
+   (`if (!disableX)`) for a kill switch.
+
+**IMPORTANT — always reconsider bootstrap when adding a feature:** Decide what the flag
+should resolve to when it has *never been fetched* (offline first launch / fresh install
+before the first poll returns). If the natural polarity default is acceptable, do nothing.
+If a rollout needs the opposite default, add a `Toggle(...)` to the bootstrap list in
+`HedvigUnleashClient.start(...)`. Never bootstrap an app-gating flag (e.g.
+`UPDATE_NECESSARY`) into its blocking state — that can brick the app for offline users.
+
 ### Working with Translations
 
 ```bash
@@ -548,6 +627,13 @@ Example:
 // TODO: Add "This is some text for feature X" / "Detta är lite text för feature X" to Lokalise
 Text("This is some text for feature X")
 ```
+
+**Verifying whether a string key is "real" (already in Lokalise):** if you find a key in a
+`strings.xml` and are unsure whether it actually exists in Lokalise or was hand-added, run
+`./gradlew downloadStrings` and re-check the file. Because `downloadStrings` regenerates every
+`strings.xml` from Lokalise, a key that **survives** the run exists in Lokalise; a key that
+**disappears** was only added locally and would break the build once someone else syncs. Use this
+before relying on (or committing code that references) a key you didn't personally add to Lokalise.
 
 ## Debugging
 

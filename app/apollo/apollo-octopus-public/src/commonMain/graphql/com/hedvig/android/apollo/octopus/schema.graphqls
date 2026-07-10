@@ -695,6 +695,10 @@ type ChangeTierDeductibleFromAgreement {
   """
   tierLevel: Int
   """
+  Optional tier description, if set use that rather than productVariant->tierDescription
+  """
+  tierDescription: String
+  """
    List of display items for the quote 
   """
   displayItems: [ChangeTierDeductibleDisplayItem!]!
@@ -730,6 +734,10 @@ type ChangeTierDeductibleQuote {
    The tier level, a smaller number means lower coverage. Use this to sort the tier list. 
   """
   tierLevel: Int
+  """
+  Optional tier description, if set use that rather than productVariant->tierDescription
+  """
+  tierDescription: String
   """
    The deductible if any 
   """
@@ -888,6 +896,7 @@ type Claim {
   isUploadingFilesEnabled: Boolean!
   infoText: String
   displayItems: [ClaimDisplayItem!]!
+  contractId: String
   """
   Terms & conditions for the claim found using claims contractId and dateOfOccurrence, otherwise null.
   """
@@ -961,6 +970,11 @@ type ClaimIntent {
   A short summary of the contents of this flow. Null when the flow is completely new (typically pre triage).
   """
   displayName: String
+  """
+  Whether this draft is resumable by the member. A draft that has been deleted (see `claimIntentDeleteDraft`)
+  is no longer resumable.
+  """
+  resumable: Boolean!
   """
   The created claim of this intent.
   Once this value is returned, the intent is effectively over, and no steps
@@ -1697,6 +1711,10 @@ input CrossSellInput {
   A/B test experiments for attribution tracking
   """
   experiments: [CrossSellExperimentInput!]!
+  """
+  The contract that was changed in the flow. When set, enables addon recommendations for that contract.
+  """
+  contractId: ID
 }
 enum CrossSellSource {
   HOME
@@ -1711,6 +1729,10 @@ type CrossSellV2 {
   Prioritized recommendation (null for INSURANCES)
   """
   recommendedCrossSell: RecommendedCrossSell
+  """
+  Addon recommendation for the contract in input.contractId (null when not applicable)
+  """
+  recommendedAddon: RecommendedAddonCrossSell
   """
   Other available cross-sells (behavior varies by userFlow)
   """
@@ -3506,6 +3528,10 @@ type MoveIntentMutationOutput {
    Fail case 
   """
   userError: UserError
+  """
+   Id of the new contract if it was created after finalizing the move 
+  """
+  newContractId: ID
 }
 type MoveIntentQuoteCost {
   quoteId: ID!
@@ -3691,6 +3717,10 @@ type Mutation {
   Should only be called if the step is marked as `isRegrettable: true`.
   """
   claimIntentRegretStep(stepId: ID!): ClaimIntentMutationOutput!
+  """
+  Delete a draft claim intent from the member's perspective (a soft delete) so it is no longer returned by `resumableClaimIntent`.
+  """
+  claimIntentDeleteDraft(id: ID!): Boolean!
   """
   Submit a step containing a `ClaimIntentStepContentForm`.
   """
@@ -4781,6 +4811,29 @@ input RecommendationInput {
   tier: String
   productPageUrl: String!
   priceCalculatorUrl: String!
+}
+"""
+A recommendation to add an addon to an existing contract. The button opens the addon flow via an app deep link.
+"""
+type RecommendedAddonCrossSell {
+  id: ID!
+  title: String!
+  description: String!
+  buttonTitle: String!
+  """
+  App deep link to the addon flow for this contract
+  """
+  deepLink: String!
+  pillowImageSmall: StoryblokImageAsset!
+  pillowImageLarge: StoryblokImageAsset!
+  """
+  Optional banner text shown above the card; clients fall back to a default when null
+  """
+  banner: String
+  """
+  Benefit rows shown as a checkmark list; empty when none
+  """
+  benefits: [String!]!
 }
 type RecommendedCrossSell {
   crossSell: CrossSell!

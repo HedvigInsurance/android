@@ -1,5 +1,10 @@
-query Home($claimsHistoryFlag: Boolean!) {
+query Home($claimsHistoryFlag: Boolean!, $resumeClaimEnabled: Boolean!) {
   currentMember {
+    resumableClaimIntent @include(if: $resumeClaimEnabled) {
+      id
+      displayName
+      createdAt
+    }
     claims@skip(if: $claimsHistoryFlag) {
       ...ClaimFragment
     }
@@ -57,6 +62,21 @@ query Home($claimsHistoryFlag: Boolean!) {
       }
       otherCrossSells {
         ...HomeCrossSellFragment
+      }
+      recommendedAddon {
+        id
+        title
+        description
+        buttonTitle
+        deepLink
+        banner
+        benefits
+        pillowImageLarge {
+          src
+        }
+        pillowImageSmall {
+          src
+        }
       }
     }
     memberActions {
