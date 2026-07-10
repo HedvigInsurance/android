@@ -15,14 +15,17 @@ import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.core.common.ApplicationScope
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedAddon
 import com.hedvig.android.crosssells.RecommendedCrossSell
+import com.hedvig.android.data.claimintent.DeleteClaimIntentDraftUseCase
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorageImpl
+import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.test.test
@@ -34,11 +37,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.runTest
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(TestParameterInjector::class)
 internal class HomePresenterTest {
+  @get:Rule
+  val testLogcatLogger = TestLogcatLoggingRule()
   val testCrossSell = RecommendedCrossSell(
     crossSell = CrossSell(
       "id",
@@ -76,6 +82,7 @@ internal class HomePresenterTest {
       FakeCrossSellHomeNotificationService(),
       ApplicationScope(backgroundScope),
       false,
+      TestDeleteClaimIntentDraftUseCase(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -103,6 +110,7 @@ internal class HomePresenterTest {
       FakeCrossSellHomeNotificationService(),
       ApplicationScope(backgroundScope),
       false,
+      TestDeleteClaimIntentDraftUseCase(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -128,6 +136,7 @@ internal class HomePresenterTest {
       FakeCrossSellHomeNotificationService(),
       ApplicationScope(backgroundScope),
       false,
+      TestDeleteClaimIntentDraftUseCase(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -156,6 +165,7 @@ internal class HomePresenterTest {
           crossSells = CrossSellSheetData(testCrossSell, listOf(), null),
           firstVetSections = listOf(),
           travelBannerInfo = null,
+          draftClaim = null,
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -187,6 +197,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           addonBannerInfo = null,
           isProduction = false,
+          draftClaim = null,
         ),
       )
     }
@@ -201,6 +212,7 @@ internal class HomePresenterTest {
       FakeCrossSellHomeNotificationService(),
       ApplicationScope(backgroundScope),
       false,
+      TestDeleteClaimIntentDraftUseCase(),
     )
     val addonOnlyCrossSells = CrossSellSheetData(null, listOf(), testAddon)
 
@@ -219,6 +231,7 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
+          draftClaim = null,
         ).right(),
       )
       assertThat(awaitItem())
@@ -242,6 +255,7 @@ internal class HomePresenterTest {
       FakeCrossSellHomeNotificationService(),
       ApplicationScope(backgroundScope),
       false,
+      TestDeleteClaimIntentDraftUseCase(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -261,6 +275,7 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
+          draftClaim = null,
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -279,6 +294,7 @@ internal class HomePresenterTest {
           crossSellsAction = null,
           addonBannerInfo = null,
           isProduction = false,
+          draftClaim = null,
         ),
       )
     }
@@ -293,6 +309,7 @@ internal class HomePresenterTest {
       FakeCrossSellHomeNotificationService(),
       ApplicationScope(backgroundScope),
       false,
+      TestDeleteClaimIntentDraftUseCase(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -317,6 +334,7 @@ internal class HomePresenterTest {
       FakeCrossSellHomeNotificationService(),
       ApplicationScope(backgroundScope),
       false,
+      TestDeleteClaimIntentDraftUseCase(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -336,6 +354,7 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           crossSells = CrossSellSheetData(null, listOf(), null),
           travelBannerInfo = null,
+          draftClaim = null,
         ).right(),
       )
       assertThat(awaitItem())
@@ -354,6 +373,7 @@ internal class HomePresenterTest {
       FakeCrossSellHomeNotificationService(),
       ApplicationScope(backgroundScope),
       false,
+      TestDeleteClaimIntentDraftUseCase(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -371,6 +391,7 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
+          draftClaim = null,
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -387,6 +408,7 @@ internal class HomePresenterTest {
           crossSellsAction = null,
           addonBannerInfo = null,
           isProduction = false,
+          draftClaim = null,
         ),
       )
     }
@@ -401,6 +423,7 @@ internal class HomePresenterTest {
       FakeCrossSellHomeNotificationService(),
       ApplicationScope(backgroundScope),
       false,
+      TestDeleteClaimIntentDraftUseCase(),
     )
     val firstVet = FirstVetSection(
       buttonTitle = "ButtonTitle",
@@ -425,6 +448,7 @@ internal class HomePresenterTest {
           ),
           showHelpCenter = false,
           travelBannerInfo = null,
+          draftClaim = null,
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -441,6 +465,7 @@ internal class HomePresenterTest {
           crossSellsAction = null,
           addonBannerInfo = null,
           isProduction = false,
+          draftClaim = null,
         ),
       )
     }
@@ -455,6 +480,7 @@ internal class HomePresenterTest {
       FakeCrossSellHomeNotificationService(),
       ApplicationScope(backgroundScope),
       false,
+      TestDeleteClaimIntentDraftUseCase(),
     )
     val crossSell = CrossSell(
       id = "id",
@@ -478,6 +504,7 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
+          draftClaim = null,
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -498,6 +525,7 @@ internal class HomePresenterTest {
           ),
           addonBannerInfo = null,
           isProduction = false,
+          draftClaim = null,
         ),
       )
     }
@@ -512,6 +540,7 @@ internal class HomePresenterTest {
       FakeCrossSellHomeNotificationService(),
       ApplicationScope(backgroundScope),
       false,
+      TestDeleteClaimIntentDraftUseCase(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -528,6 +557,7 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
+          draftClaim = null,
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -544,6 +574,7 @@ internal class HomePresenterTest {
           crossSellsAction = null,
           addonBannerInfo = null,
           isProduction = false,
+          draftClaim = null,
         ),
       )
     }
@@ -558,6 +589,7 @@ internal class HomePresenterTest {
       FakeCrossSellHomeNotificationService(),
       ApplicationScope(backgroundScope),
       false,
+      TestDeleteClaimIntentDraftUseCase(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -574,6 +606,7 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
+          draftClaim = null,
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -590,8 +623,64 @@ internal class HomePresenterTest {
           crossSellsAction = null,
           addonBannerInfo = null,
           isProduction = false,
+          draftClaim = null,
         ),
       )
+    }
+  }
+
+  @Test
+  fun `deleting the draft claim calls the use case and reloads home on success`() = runTest {
+    val getHomeDataUseCase = TestGetHomeDataUseCase()
+    val deleteClaimIntentDraftUseCase = TestDeleteClaimIntentDraftUseCase()
+    val homePresenter = HomePresenter(
+      getHomeDataUseCase,
+      SeenImportantMessagesStorageImpl(),
+      FakeCrossSellHomeNotificationService(),
+      ApplicationScope(backgroundScope),
+      false,
+      deleteClaimIntentDraftUseCase,
+    )
+    homePresenter.test(HomeUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
+      assertThat(getHomeDataUseCase.forceNetworkFetchTurbine.awaitItem()).isFalse()
+      getHomeDataUseCase.responseTurbine.add(
+        someIrrelevantHomeDataInstance.copy(
+          draftClaim = HomeData.DraftClaim("draft-id", "My things", Instant.parse("2026-07-01T00:00:00Z")),
+        ).right(),
+      )
+      assertThat(awaitItem()).isInstanceOf<HomeUiState.Success>()
+
+      sendEvent(HomeEvent.DeleteDraftClaim("draft-id"))
+      assertThat(deleteClaimIntentDraftUseCase.deletedIdsTurbine.awaitItem()).isEqualTo("draft-id")
+      assertThat(getHomeDataUseCase.forceNetworkFetchTurbine.awaitItem()).isTrue()
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `a failed draft deletion does not reload home`() = runTest {
+    val getHomeDataUseCase = TestGetHomeDataUseCase()
+    val deleteClaimIntentDraftUseCase = TestDeleteClaimIntentDraftUseCase().apply {
+      result = ErrorMessage().left()
+    }
+    val homePresenter = HomePresenter(
+      getHomeDataUseCase,
+      SeenImportantMessagesStorageImpl(),
+      FakeCrossSellHomeNotificationService(),
+      ApplicationScope(backgroundScope),
+      false,
+      deleteClaimIntentDraftUseCase,
+    )
+    homePresenter.test(HomeUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
+      assertThat(getHomeDataUseCase.forceNetworkFetchTurbine.awaitItem()).isFalse()
+      getHomeDataUseCase.responseTurbine.add(someIrrelevantHomeDataInstance.right())
+      assertThat(awaitItem()).isInstanceOf<HomeUiState.Success>()
+
+      sendEvent(HomeEvent.DeleteDraftClaim("draft-id"))
+      assertThat(deleteClaimIntentDraftUseCase.deletedIdsTurbine.awaitItem()).isEqualTo("draft-id")
+      getHomeDataUseCase.forceNetworkFetchTurbine.expectNoEvents()
     }
   }
 
@@ -616,6 +705,7 @@ internal class HomePresenterTest {
     firstVetSections = listOf(),
     crossSells = CrossSellSheetData(null, emptyList(), null),
     travelBannerInfo = null,
+    draftClaim = null,
   )
 }
 
@@ -632,5 +722,15 @@ private class FakeCrossSellHomeNotificationService : CrossSellHomeNotificationSe
   }
 
   override suspend fun setLastEpochDayNewRecommendationNotificationWasShown(epochDay: Long) {
+  }
+}
+
+private class TestDeleteClaimIntentDraftUseCase : DeleteClaimIntentDraftUseCase {
+  val deletedIdsTurbine = Turbine<String>()
+  var result: Either<ErrorMessage, Unit> = Unit.right()
+
+  override suspend fun invoke(id: String): Either<ErrorMessage, Unit> {
+    deletedIdsTurbine.add(id)
+    return result
   }
 }

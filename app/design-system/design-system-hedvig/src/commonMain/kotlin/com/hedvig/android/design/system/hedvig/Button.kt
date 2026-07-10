@@ -195,6 +195,31 @@ fun HedvigRedTextButton(
   }
 }
 
+/**
+ * A secondary-fill button with a destructive (red) label, e.g. a "Delete" action that sits next to
+ * a primary action. Reuses the secondary style's red content token rather than a bespoke color.
+ */
+@Composable
+fun HedvigSecondaryRedTextButton(
+  text: String,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  enabled: Boolean = true,
+  buttonSize: ButtonSize = ButtonSize.Medium,
+  interactionSource: MutableInteractionSource? = null,
+) {
+  HedvigButton(
+    onClick = onClick,
+    enabled = enabled,
+    modifier = modifier,
+    buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+    buttonSize = buttonSize,
+    interactionSource = interactionSource,
+  ) {
+    HedvigText(text, color = ButtonDefaults.ButtonStyle.Secondary.style.buttonColors.redTextColor)
+  }
+}
+
 @Composable
 fun HedvigButtonGhostWithBorder(
   text: String,
