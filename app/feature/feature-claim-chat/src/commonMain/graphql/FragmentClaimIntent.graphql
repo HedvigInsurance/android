@@ -1,6 +1,8 @@
 fragment ClaimIntentFragment on ClaimIntent {
   id
   progress
+  displayName
+  resumable
   currentStep {
     id
     text
@@ -14,6 +16,15 @@ fragment ClaimIntentFragment on ClaimIntent {
     id
     submittedAt
   }
+  previousSteps {
+    id
+    text
+    hint
+    content {
+      ...ClaimIntentStepContentFragment
+    }
+    isRegrettable
+  }
 }
 
 fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
@@ -25,6 +36,7 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
   ...SummaryFragment
   ...DeflectionFragment
   ...DeflectionMessageFragment
+  ...InformationFragment
 }
 
 fragment DeflectionMessageFragment on ClaimIntentStepContentDeflectionMessage {
@@ -44,6 +56,7 @@ fragment FormFragment on ClaimIntentStepContentForm {
       value
     }
     defaultValues
+    currentValues
     minValue
     maxValue
     searchData {
@@ -63,6 +76,7 @@ fragment ContentSelectFragment on ClaimIntentStepContentSelect {
   isSkippable
   style
   defaultSelectedId
+  currentSelectedId
 }
 
 fragment TaskFragment on ClaimIntentStepContentTask {
@@ -75,11 +89,18 @@ fragment AudioRecordingFragment on ClaimIntentStepContentAudioRecording {
   isSkippable
   freeTextMinLength
   freeTextMaxLength
+  currentAudioUrl
+  currentFreeText
 }
 
 fragment FileUploadFragment on ClaimIntentStepContentFileUpload {
   uploadUri
   isSkippable
+  currentFiles {
+    url
+    contentType
+    fileName
+  }
 }
 
 fragment SummaryFragment on ClaimIntentStepContentSummary {
@@ -131,4 +152,10 @@ fragment DeflectionFragment on ClaimIntentStepContentDeflection {
 fragment DeflectionInfoBlockFragment on ClaimIntentStepContentDeflectionInfoBlock {
   title
   description
+}
+
+fragment InformationFragment on ClaimIntentStepContentInformation {
+  notice
+  buttonTitle
+  severity
 }

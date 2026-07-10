@@ -7,6 +7,7 @@ import kotlin.jvm.JvmInline
 import kotlin.time.Instant
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import octopus.type.ClaimIntentStepContentInformationSeverity
 
 @JvmInline
 value class ClaimIntentId(val value: String)
@@ -15,6 +16,9 @@ internal data class ClaimIntent(
   val id: ClaimIntentId,
   val next: Next,
   val progress: Float?,
+  val displayName: String?,
+  val resumable: Boolean,
+  val previousSteps: List<ClaimIntentStep>,
 ) {
   sealed interface Next {
     val step: Step?
@@ -62,7 +66,9 @@ internal sealed interface StepContent {
     val uploadUri: String,
     override val isSkippable: Boolean,
     val localFiles: List<UiFile>,
-  ) : StepContent
+  ) : StepContent {
+    data class RemoteFile(val url: String, val contentType: String, val fileName: String)
+  }
 
   data class Task(
     val descriptions: List<String>,
@@ -179,6 +185,20 @@ internal sealed interface StepContent {
   object Unknown : StepContent {
     override val isSkippable: Boolean = false
   }
+
+  @Serializable
+  data class Information(
+    val notice: String,
+    val buttonTitle: String,
+    val severity: InformationSeverity,
+  ) : StepContent {
+    override val isSkippable: Boolean = false
+  }
+}
+
+enum class InformationSeverity {
+  Critical,
+  Info,
 }
 
 sealed interface AudioRecordingStepState {
@@ -186,6 +206,7 @@ sealed interface AudioRecordingStepState {
     val errorType: FreeTextErrorType?,
     val canSubmit: Boolean,
     val hasError: Boolean = false,
+    val freeText: String? = null,
   ) : AudioRecordingStepState
 
   sealed interface AudioRecording : AudioRecordingStepState {
@@ -198,12 +219,18 @@ sealed interface AudioRecordingStepState {
     ) : AudioRecording
 
     data class Playback(
-      val filePath: String,
+      val audioPath: AudioPath,
       val isPlaying: Boolean,
       val isPrepared: Boolean,
       val hasError: Boolean,
     ) : AudioRecording
   }
+}
+
+sealed interface AudioPath {
+  data class FilePath(val filePath: String) : AudioPath
+
+  data class RemoteUrl(val remoteUrl: String) : AudioPath
 }
 
 sealed interface FreeTextErrorType {

@@ -63,6 +63,8 @@ import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
 import com.hedvig.audio.player.data.PlayableAudioSource
+import com.hedvig.audio.player.data.SignedAudioUrl
+import com.hedvig.feature.claim.chat.data.AudioPath
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.ui.common.SkippedLabel
 import hedvig.resources.A11Y_AUDIO_RECORDING
@@ -252,7 +254,15 @@ private fun Playback(
     if (!uiState.isPrepared) {
       HedvigCircularProgressIndicator()
     } else {
-      val audioPlayer = rememberAudioPlayer(PlayableAudioSource.LocalFilePath(uiState.filePath))
+      val audioPlayer = when (uiState.audioPath) {
+        is AudioPath.FilePath -> rememberAudioPlayer(PlayableAudioSource.LocalFilePath(uiState.audioPath.filePath))
+
+        is AudioPath.RemoteUrl -> rememberAudioPlayer(
+          PlayableAudioSource.RemoteUrl(
+            SignedAudioUrl.fromSignedAudioUrlString(uiState.audioPath.remoteUrl),
+          ),
+        )
+      }
       if (!isCurrentStep) {
         HedvigAudioPlayer(
           audioPlayer = audioPlayer,

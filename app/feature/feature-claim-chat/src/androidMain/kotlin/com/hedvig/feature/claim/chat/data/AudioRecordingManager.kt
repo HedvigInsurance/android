@@ -86,7 +86,7 @@ internal class AndroidAudioRecordingManager(
     if (!file.exists()) {
       onStateUpdate(
         AudioRecordingStepState.AudioRecording.Playback(
-          filePath = filePath,
+          audioPath = AudioPath.FilePath(filePath),
           isPlaying = false,
           isPrepared = false,
           hasError = true,
@@ -100,7 +100,7 @@ internal class AndroidAudioRecordingManager(
       setOnPreparedListener {
         onStateUpdate(
           AudioRecordingStepState.AudioRecording.Playback(
-            filePath = filePath,
+            audioPath = AudioPath.FilePath(filePath),
             isPlaying = false,
             isPrepared = true,
             hasError = false,

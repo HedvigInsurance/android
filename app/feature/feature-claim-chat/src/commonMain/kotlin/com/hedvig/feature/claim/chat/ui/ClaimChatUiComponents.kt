@@ -43,6 +43,7 @@ private fun PreviewClaimChatComponents() {
           recordingState = AudioRecordingStepState.FreeTextDescription(
             errorType = null,
             canSubmit = true,
+            freeText = "some not really long free text",
           ),
           clock = Clock.System,
           onShouldShowRequestPermissionRationale = {
@@ -60,7 +61,6 @@ private fun PreviewClaimChatComponents() {
           onLaunchFullScreenEditText = {},
           canSkip = true,
           onSkip = {},
-          freeText = "some not really long free text",
           continueButtonLoading = false,
           skipButtonLoading = false,
         )
