@@ -176,6 +176,19 @@ internal sealed interface StepContent {
     override val isSkippable: Boolean = false
   }
 
+  data class Information(
+    val notice: String,
+    val severity: Severity,
+    val buttonTitle: String,
+  ) : StepContent {
+    override val isSkippable: Boolean = false
+
+    enum class Severity {
+      INFO,
+      CRITICAL,
+    }
+  }
+
   object Unknown : StepContent {
     override val isSkippable: Boolean = false
   }

@@ -99,6 +99,7 @@ import com.hedvig.feature.claim.chat.ui.step.ChatClaimSummaryTopContent
 import com.hedvig.feature.claim.chat.ui.step.ContentSelectStep
 import com.hedvig.feature.claim.chat.ui.step.DeflectStep
 import com.hedvig.feature.claim.chat.ui.step.FormStep
+import com.hedvig.feature.claim.chat.ui.step.InformationStep
 import com.hedvig.feature.claim.chat.ui.step.TaskStepBottomContent
 import com.hedvig.feature.claim.chat.ui.step.TaskStepTopContent
 import com.hedvig.feature.claim.chat.ui.step.UploadFilesStep
@@ -887,6 +888,18 @@ private fun StepBottomContent(
           stepItem.stepContent,
           onRetrySubmittingTask = {
             onEvent(RetrySubmittingTaskStep(stepItem.id))
+          },
+          modifier = Modifier.fillMaxWidth(),
+        )
+      }
+
+      is StepContent.Information -> {
+        InformationStep(
+          information = stepItem.stepContent,
+          isCurrentStep = isCurrentStep,
+          continueButtonLoading = currentContinueButtonLoading,
+          onAcknowledge = {
+            onEvent(ClaimChatEvent.AcknowledgeInformation(stepItem.id))
           },
           modifier = Modifier.fillMaxWidth(),
         )

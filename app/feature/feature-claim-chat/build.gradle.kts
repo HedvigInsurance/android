@@ -54,6 +54,13 @@ kotlin {
       implementation(projects.uiForceUpgrade)
       implementation(projects.partnersDeflect)
     }
+    commonTest.dependencies {
+      implementation(libs.assertK)
+      implementation(libs.kotlin.test)
+    }
+    jvmTest.dependencies {
+      implementation(org.jetbrains.compose.ComposePlugin.Dependencies(project).desktop.currentOs)
+    }
     androidMain.dependencies {
       implementation(libs.accompanist.permissions)
       implementation(libs.androidx.activity.compose)

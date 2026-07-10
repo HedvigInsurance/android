@@ -25,10 +25,17 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
   ...SummaryFragment
   ...DeflectionFragment
   ...DeflectionMessageFragment
+  ...InformationFragment
 }
 
 fragment DeflectionMessageFragment on ClaimIntentStepContentDeflectionMessage {
   message
+}
+
+fragment InformationFragment on ClaimIntentStepContentInformation {
+  notice
+  severity
+  buttonTitle
 }
 
 fragment FormFragment on ClaimIntentStepContentForm {
