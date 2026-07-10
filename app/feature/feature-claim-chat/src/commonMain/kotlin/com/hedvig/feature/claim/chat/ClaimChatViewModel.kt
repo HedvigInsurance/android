@@ -101,7 +101,7 @@ internal sealed interface ClaimChatEvent {
 
   data object DismissConfirmEditDialog : ClaimChatEvent
 
-  data class SubmitInformation(val id: StepId): ClaimChatEvent
+  data class SubmitInformation(val id: StepId) : ClaimChatEvent
 
   data class SubmitForm(
     val stepId: StepId,
@@ -187,7 +187,7 @@ internal class ClaimChatViewModel(
   regretStepUseCase: RegretStepUseCase,
   formFieldSearchUseCase: FormFieldSearchUseCase,
   fileService: FileService,
-  submitInformationUseCase: SubmitInformationUseCase
+  submitInformationUseCase: SubmitInformationUseCase,
   resumeClaimUseCase: ResumeClaimUseCase,
   featureManager: FeatureManager,
 ) : MoleculeViewModel<ClaimChatEvent, ClaimChatUiState>(
@@ -234,7 +234,7 @@ internal class ClaimChatPresenter(
   private val fileService: FileService,
   private val regretStepUseCase: RegretStepUseCase,
   private val formFieldSearchUseCase: FormFieldSearchUseCase,
-  private val submitInformationUseCase: SubmitInformationUseCase
+  private val submitInformationUseCase: SubmitInformationUseCase,
   private val resumeClaim: Boolean,
   private val resumeClaimUseCase: ResumeClaimUseCase,
   private val featureManager: FeatureManager,
@@ -1038,7 +1038,8 @@ internal class ClaimChatPresenter(
                     steps,
                     setOutcome,
                     claimIntent,
-                  ) { progress = it }
+                    updateIntentMetadata,
+                  )
                 },
               )
           }

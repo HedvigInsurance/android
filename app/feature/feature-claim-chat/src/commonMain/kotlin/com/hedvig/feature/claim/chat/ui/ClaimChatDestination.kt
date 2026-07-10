@@ -105,6 +105,7 @@ import com.hedvig.feature.claim.chat.ClaimChatEvent.RetryInitializing
 import com.hedvig.feature.claim.chat.ClaimChatEvent.RetrySubmittingTaskStep
 import com.hedvig.feature.claim.chat.ClaimChatEvent.Skip
 import com.hedvig.feature.claim.chat.ClaimChatEvent.SubmitClaim
+import com.hedvig.feature.claim.chat.ClaimChatEvent.SubmitInformation
 import com.hedvig.feature.claim.chat.ClaimChatEvent.UpdateFreeText
 import com.hedvig.feature.claim.chat.ClaimChatUiState
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
@@ -761,7 +762,7 @@ private fun StepTopContent(
 
     if (stepItem.stepContent is StepContent.Information) {
       if (isAnimationComplete) {
-        val priority = when(stepItem.stepContent.severity) {
+        val priority = when (stepItem.stepContent.severity) {
           InformationSeverity.Critical -> NotificationDefaults.NotificationPriority.Error
           InformationSeverity.Info -> NotificationDefaults.NotificationPriority.InfoInline
         }
@@ -770,7 +771,7 @@ private fun StepTopContent(
           message = stepItem.stepContent.notice,
           priority = priority,
           withIcon = true,
-          modifier = Modifier.fillMaxWidth()
+          modifier = Modifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(4.dp))
       }
@@ -975,10 +976,9 @@ private fun StepBottomContent(
             onClick = dropUnlessResumed {
               onEvent(SubmitInformation(stepItem.id))
             },
-            enabled = !currentContinueButtonLoading
+            enabled = !currentContinueButtonLoading,
           )
         }
-
       }
     }
   }

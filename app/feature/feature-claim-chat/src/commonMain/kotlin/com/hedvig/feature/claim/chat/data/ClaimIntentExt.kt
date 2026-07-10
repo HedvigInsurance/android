@@ -235,14 +235,16 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
       )
     }
 
-    is InformationFragment -> StepContent.Information(
-      notice = notice,
-      buttonTitle = buttonTitle,
-      severity = when (severity) {
-        ClaimIntentStepContentInformationSeverity.CRITICAL ->  InformationSeverity.Critical
-        else -> InformationSeverity.Info
-      }
-    )
+    is InformationFragment -> {
+      StepContent.Information(
+        notice = notice,
+        buttonTitle = buttonTitle,
+        severity = when (severity) {
+          ClaimIntentStepContentInformationSeverity.CRITICAL -> InformationSeverity.Critical
+          else -> InformationSeverity.Info
+        },
+      )
+    }
 
     else -> {
       logcat { "ClaimIntentStepContentFragment: Unknown step" }
