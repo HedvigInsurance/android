@@ -1280,6 +1280,8 @@ type ClaimIntentStepContentSummary {
   audioRecordings: [ClaimIntentStepContentSummaryAudioRecording!]!
   freeTexts: [String!]!
   fileUploads: [ClaimIntentStepContentSummaryFileUpload!]!
+  keyDetails: [ClaimIntentStepContentSummaryItem!]!
+  answers: [ClaimIntentStepContentSummaryAnswer!]!
 }
 type ClaimIntentStepContentSummaryAudioRecording {
   url: Url!
@@ -1292,6 +1294,21 @@ type ClaimIntentStepContentSummaryFileUpload {
 type ClaimIntentStepContentSummaryItem {
   title: String!
   value: String!
+}
+type ClaimIntentStepContentSummaryAnswer {
+  title: String!
+  value: ClaimIntentStepContentSummaryAnswerValue!
+}
+union ClaimIntentStepContentSummaryAnswerValue = ClaimIntentStepContentSummaryAnswerText|ClaimIntentStepContentSummaryAnswerAudio|ClaimIntentStepContentSummaryAnswerFiles
+type ClaimIntentStepContentSummaryAnswerText {
+  text: String!
+}
+type ClaimIntentStepContentSummaryAnswerAudio {
+  url: Url!
+  transcript: String
+}
+type ClaimIntentStepContentSummaryAnswerFiles {
+  files: [ClaimIntentStepContentSummaryFileUpload!]!
 }
 """
 A task step is one that eventually completes itself.
