@@ -1786,6 +1786,18 @@ type EmailMessage {
   createdAt: DateTime
   category: String
 }
+"""
+Employment type for Payment Protection, mirroring underwriter's `SwedishPaymentProtection.EmploymentType`.
+`UNEMPLOYED` and `HOURLY_EMPLOYED` are ineligible and rejected by underwriter.
+"""
+enum EmploymentType {
+  UNEMPLOYED
+  PROBATIONARY_EMPLOYED
+  HOURLY_EMPLOYED
+  CONTRACT_EMPLOYED
+  PERMANENT_EMPLOYED
+  SELF_EMPLOYED
+}
 type Entrypoint {
   id: ID!
   displayName: String!
@@ -3851,6 +3863,14 @@ type Mutation {
   """
   productOffersStartDateUpdate(productOfferIds: [UUID!]!, startDate: Date!): ProductOffersMutationOutput!
   """
+  Patch the employment type onto the underwriter quote(s) backing the given Payment Protection
+  `ProductOffer`s, and persist it onto each offer's `priceIntentData` snapshot so it round-trips to clients.
+  Employment type is not a pricing input, so this patches the existing quote (no re-quote) and leaves cost
+  unchanged. Ineligible types (`UNEMPLOYED`, `HOURLY_EMPLOYED`) are rejected by underwriter and surface as a
+  `userError`.
+  """
+  productOffersEmploymentTypeUpdate(productOfferIds: [UUID!]!, employmentType: EmploymentType!): ProductOffersMutationOutput!
+  """
   Overwrite the selected addon state for the given `productOfferId`.
   For instance:
   - sending `addonIds = ["abc"]` will select exactly the addon with ID "abc", and no others
@@ -4416,6 +4436,10 @@ type ProductOffer {
   """
   deductible: ProductOfferDeductible
   """
+  The insurance amount description of this offer, if there is one.
+  """
+  insuranceAmount: ProductOfferInsuranceAmount
+  """
   Unique Selling Points, a list of strings that can be shown as bullets to drill home the "buy me"-message.
   """
   usps: [String!]!
@@ -4546,6 +4570,13 @@ type ProductOfferExposure {
   Ex. 'Fakestreet 124 * You+1' for home
   """
   displayNameFull: String!
+}
+type ProductOfferInsuranceAmount {
+  displayName: String!
+  """
+  The insurance amount in the currency's unit (e.g., SEK)
+  """
+  amount: Int!
 }
 type ProductOfferPriceMatch {
   externalPrice: Money!
