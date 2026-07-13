@@ -22,24 +22,28 @@ import coil3.ImageLoader
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.core.uidata.UiFile
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.audio.player.data.PlayableAudioSource
 import com.hedvig.audio.player.data.SignedAudioUrl
+import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.ui.common.FilesRow
-import com.hedvig.feature.claim.chat.ui.common.RoundCornersPill
 import hedvig.resources.CLAIM_CHAT_FILE_TITLE
 import hedvig.resources.CLAIM_CHAT_RECORDING_TITLE
 import hedvig.resources.EMBARK_SUBMIT_CLAIM
 import hedvig.resources.Res
 import hedvig.resources.claim_status_claim_details_title
+import hedvig.resources.claim_status_show_all_answers
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -64,14 +68,22 @@ internal fun ChatClaimSummaryBottomContent(
 
 @Composable
 internal fun ChatClaimSummaryTopContent(
+  keyDetails: List<StepContent.Summary.Item>,
+  answers: List<StepContent.Summary.Answer>,
   recordingUrls: List<String>,
   fileUploads: List<UiFile>,
-  freeTexts: List<String>,
-  displayItems: List<Pair<String, String>>,
   imageLoader: ImageLoader,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val answersSheetState = rememberHedvigBottomSheetState<List<StepContent.Summary.Answer>>()
+  HedvigBottomSheet(answersSheetState) { sheetAnswers ->
+    ClaimSummaryAnswersContent(
+      answers = sheetAnswers,
+      imageLoader = imageLoader,
+      onNavigateToImageViewer = onNavigateToImageViewer,
+    )
+  }
   Column(modifier) {
     HedvigCard(
       color = HedvigTheme.colorScheme.fillNegative,
@@ -87,7 +99,7 @@ internal fun ChatClaimSummaryTopContent(
         ),
     ) {
       Column(Modifier.padding(vertical = 16.dp)) {
-        if (displayItems.isNotEmpty()) {
+        if (keyDetails.isNotEmpty()) {
           HedvigText(
             stringResource(Res.string.claim_status_claim_details_title),
             modifier = Modifier.padding(horizontal = 16.dp).semantics {
@@ -97,15 +109,15 @@ internal fun ChatClaimSummaryTopContent(
           Spacer(Modifier.height(8.dp))
           CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textSecondary) {
             Column(Modifier.padding(horizontal = 16.dp)) {
-              for (displayItem in displayItems) {
+              for (keyDetail in keyDetails) {
                 HorizontalItemsWithMaximumSpaceTaken(
                   spaceBetween = 8.dp,
                   startSlot = {
-                    HedvigText(text = displayItem.first)
+                    HedvigText(text = keyDetail.title)
                   },
                   endSlot = {
                     HedvigText(
-                      text = displayItem.second,
+                      text = keyDetail.value,
                       textAlign = TextAlign.End,
                     )
                   },
@@ -114,6 +126,14 @@ internal fun ChatClaimSummaryTopContent(
               }
             }
           }
+        }
+        if (answers.isNotEmpty()) {
+          Spacer(Modifier.height(8.dp))
+          HedvigTextButton(
+            text = stringResource(Res.string.claim_status_show_all_answers),
+            onClick = { answersSheetState.show(answers) },
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+          )
         }
         if (recordingUrls.isNotEmpty()) {
           Spacer(Modifier.height(24.dp))
@@ -131,23 +151,6 @@ internal fun ChatClaimSummaryTopContent(
             HedvigAudioPlayer(audioPlayer = audioPlayer, Modifier.padding(horizontal = 16.dp))
             if (index != recordingUrls.lastIndex) {
               Spacer(Modifier.height(8.dp))
-            }
-          }
-        }
-        if (freeTexts.isNotEmpty()) {
-          Column(
-            Modifier.padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-          ) {
-            freeTexts.forEach { string ->
-              Spacer(Modifier.height(24.dp))
-              RoundCornersPill(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = null,
-                isSelected = false,
-              ) {
-                HedvigText(string)
-              }
             }
           }
         }
@@ -172,6 +175,81 @@ internal fun ChatClaimSummaryTopContent(
   }
 }
 
+@Composable
+internal fun ClaimSummaryAnswersContent(
+  answers: List<StepContent.Summary.Answer>,
+  imageLoader: ImageLoader,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Column(modifier.fillMaxWidth()) {
+    HedvigText(
+      stringResource(Res.string.claim_status_claim_details_title),
+      textAlign = TextAlign.Center,
+      modifier = Modifier.fillMaxWidth().semantics { heading() },
+    )
+    Spacer(Modifier.height(24.dp))
+    answers.forEachIndexed { index, answer ->
+      HedvigText(text = answer.title)
+      Spacer(Modifier.height(4.dp))
+      CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textSecondary) {
+        AnswerValue(
+          value = answer.value,
+          imageLoader = imageLoader,
+          onNavigateToImageViewer = onNavigateToImageViewer,
+        )
+      }
+      if (index != answers.lastIndex) {
+        Spacer(Modifier.height(24.dp))
+      }
+    }
+  }
+}
+
+@Composable
+private fun AnswerValue(
+  value: StepContent.Summary.Answer.Value,
+  imageLoader: ImageLoader,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+) {
+  when (value) {
+    is StepContent.Summary.Answer.Value.Text -> {
+      HedvigText(text = value.text)
+    }
+
+    is StepContent.Summary.Answer.Value.Audio -> {
+      val audioPlayer = rememberAudioPlayer(
+        PlayableAudioSource.RemoteUrl(
+          SignedAudioUrl.fromSignedAudioUrlString(value.url),
+        ),
+      )
+      HedvigAudioPlayer(audioPlayer = audioPlayer)
+      value.transcript?.let { transcript ->
+        Spacer(Modifier.height(8.dp))
+        HedvigText(text = transcript)
+      }
+    }
+
+    is StepContent.Summary.Answer.Value.Files -> {
+      FilesRow(
+        uiFiles = value.files.map {
+          UiFile(
+            name = it.fileName,
+            localPath = null,
+            url = it.url,
+            mimeType = it.contentType,
+            id = it.url,
+          )
+        },
+        imageLoader = imageLoader,
+        onNavigateToImageViewer = onNavigateToImageViewer,
+        onRemoveFile = null,
+        alignment = Alignment.Start,
+      )
+    }
+  }
+}
+
 @HedvigPreview
 @Composable
 private fun PreviewSummaryTopContent() {
@@ -184,17 +262,55 @@ private fun PreviewSummaryTopContent() {
         modifier = Modifier.padding(horizontal = 16.dp),
       ) {
         ChatClaimSummaryTopContent(
-          recordingUrls = listOf("", ""),
-          displayItems = listOf(
-            "Locked" to "Yes",
-            "Electric bike" to "Yes",
+          keyDetails = listOf(
+            StepContent.Summary.Item("Type of claim", "Theft"),
+            StepContent.Summary.Item("Date", "2026-07-13"),
+            StepContent.Summary.Item("Location", "Stockholm"),
           ),
-          fileUploads = listOf(),
+          answers = previewAnswers(),
+          recordingUrls = listOf(""),
+          fileUploads = listOf(
+            UiFile("receipt.pdf", null, "https://example.com/receipt.pdf", "application/pdf", "file-1"),
+          ),
           imageLoader = rememberPreviewImageLoader(),
           onNavigateToImageViewer = { _, _ -> },
-          freeTexts = listOf("A quite short text short text short text short text"),
         )
       }
     }
   }
 }
+
+@HedvigPreview
+@Composable
+private fun PreviewSummaryAnswersContent() {
+  HedvigTheme {
+    Surface(
+      color = HedvigTheme.colorScheme.backgroundPrimary,
+    ) {
+      ClaimSummaryAnswersContent(
+        answers = previewAnswers(),
+        imageLoader = rememberPreviewImageLoader(),
+        onNavigateToImageViewer = { _, _ -> },
+        modifier = Modifier.padding(16.dp),
+      )
+    }
+  }
+}
+
+internal fun previewAnswers(): List<StepContent.Summary.Answer> = listOf(
+  StepContent.Summary.Answer(
+    title = "Was the bike locked?",
+    value = StepContent.Summary.Answer.Value.Text("No"),
+  ),
+  StepContent.Summary.Answer(
+    title = "Where did it happen?",
+    value = StepContent.Summary.Answer.Value.Text("Outside the central station in Stockholm"),
+  ),
+  StepContent.Summary.Answer(
+    title = "Describe what happened",
+    value = StepContent.Summary.Answer.Value.Audio(
+      url = "",
+      transcript = "I parked my bike and when I came back it was gone.",
+    ),
+  ),
+)
