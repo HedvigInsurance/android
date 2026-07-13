@@ -117,6 +117,29 @@ fragment SummaryFragment on ClaimIntentStepContentSummary {
     fileName
   }
   freeTexts
+  keyDetails {
+    title
+    value
+  }
+  answers {
+    title
+    value {
+      ... on ClaimIntentStepContentSummaryAnswerText {
+        text
+      }
+      ... on ClaimIntentStepContentSummaryAnswerAudio {
+        url
+        transcript
+      }
+      ... on ClaimIntentStepContentSummaryAnswerFiles {
+        files {
+          url
+          contentType
+          fileName
+        }
+      }
+    }
+  }
 }
 
 fragment DeflectionFragment on ClaimIntentStepContentDeflection {

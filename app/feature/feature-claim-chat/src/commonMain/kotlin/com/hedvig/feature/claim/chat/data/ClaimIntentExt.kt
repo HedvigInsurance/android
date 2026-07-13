@@ -178,6 +178,34 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
           )
         },
         freeTexts = freeTexts,
+        keyDetails = keyDetails.map { StepContent.Summary.Item(it.title, it.value) },
+        answers = answers.map { answer ->
+          StepContent.Summary.Answer(
+            title = answer.title,
+            value = when (val value = answer.value) {
+              is SummaryFragment.Answer.ClaimIntentStepContentSummaryAnswerTextValue -> {
+                StepContent.Summary.Answer.Value.Text(value.text)
+              }
+
+              is SummaryFragment.Answer.ClaimIntentStepContentSummaryAnswerAudioValue -> {
+                StepContent.Summary.Answer.Value.Audio(value.url, value.transcript)
+              }
+
+              is SummaryFragment.Answer.ClaimIntentStepContentSummaryAnswerFilesValue -> {
+                StepContent.Summary.Answer.Value.Files(
+                  value.files.map {
+                    StepContent.Summary.FileUpload(it.url, it.contentType, it.fileName)
+                  },
+                )
+              }
+
+              else -> {
+                logcat { "SummaryFragment.Answer: Unknown answer value type" }
+                raise(ClaimChatErrorMessage.NeedsUpdate)
+              }
+            },
+          )
+        },
       )
     }
 

@@ -156,6 +156,8 @@ internal sealed interface StepContent {
     val audioRecordings: List<AudioRecording>,
     val fileUploads: List<FileUpload>,
     val freeTexts: List<String>,
+    val keyDetails: List<Item>,
+    val answers: List<Answer>,
   ) : StepContent {
     override val isSkippable: Boolean = false
 
@@ -164,6 +166,16 @@ internal sealed interface StepContent {
     data class AudioRecording(val url: String)
 
     data class FileUpload(val url: String, val contentType: String, val fileName: String)
+
+    data class Answer(val title: String, val value: Value) {
+      sealed interface Value {
+        data class Text(val text: String) : Value
+
+        data class Audio(val url: String, val transcript: String?) : Value
+
+        data class Files(val files: List<FileUpload>) : Value
+      }
+    }
   }
 
   @Serializable
