@@ -1068,6 +1068,7 @@
   <string name="claim_status_claim_details_info_text">Is something missing? Send us a message here in the app.</string>
   <string name="claim_status_claim_details_submitted">Submitted</string>
   <string name="claim_status_claim_details_title">Claim details</string>
+  <string name="claim_status_show_all_answers">Show all answers</string>
   <string name="claim_status_closed_support_text">The claim is closed. Do you have any questions regarding your claim? Please ask them directly in the chat.</string>
   <string name="claim_status_files">Files</string>
   <string name="claim_status_files_claim_audio_footer">You can listen to your recorded claim audio here.</string>
