@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.Color
 internal object ColorLightTokens {
   val TextPrimary: Color = PaletteTokens.Black
   val TextNegative: Color = PaletteTokens.White
-  val TextSecondary: Color = PaletteTokens.G750
+  val TextSecondary: Color = PaletteTokens.G700
   val TextAccordion: Color = PaletteTokens.G750
   val TextTertiary: Color = PaletteTokens.G500
   val TextDisabled: Color = PaletteTokens.G400
