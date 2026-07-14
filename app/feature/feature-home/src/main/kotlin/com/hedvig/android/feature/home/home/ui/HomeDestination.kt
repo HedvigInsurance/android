@@ -126,6 +126,7 @@ import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.Top
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Inbox
 import com.hedvig.android.design.system.hedvig.TopAppBarLayoutForActions
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HedvigLogotype
 import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
@@ -1008,7 +1009,11 @@ private fun OffersSection(
     )
     HedvigCard(
       onClick = { onCrossSellClick(crossSell.storeUrl) },
-      modifier = Modifier.fillMaxWidth(),
+      color = HedvigTheme.colorScheme.fillNegative,
+      borderColor = HedvigTheme.colorScheme.borderPrimary,
+      modifier = Modifier
+        .fillMaxWidth()
+        .hedvigDropShadow(HedvigTheme.shapes.cornerXLarge),
     ) {
       Column(Modifier.padding(16.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1045,6 +1050,7 @@ private fun OffersSection(
           buttonStyle = Secondary,
           buttonSize = ButtonSize.Medium,
           enabled = true,
+          shape = HedvigTheme.shapes.cornerFull,
           modifier = Modifier.fillMaxWidth(),
         )
       }
@@ -1110,7 +1116,12 @@ private fun QuickActionTilesSection(
 
 @Composable
 private fun HomeActionTile(icon: ImageVector, text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
-  HedvigCard(onClick = onClick, modifier = modifier) {
+  HedvigCard(
+    onClick = onClick,
+    color = HedvigTheme.colorScheme.fillNegative,
+    borderColor = HedvigTheme.colorScheme.borderPrimary,
+    modifier = modifier.hedvigDropShadow(HedvigTheme.shapes.cornerXLarge),
+  ) {
     Column(
       modifier = Modifier
         .fillMaxWidth()
@@ -1199,6 +1210,8 @@ private fun AddonsSection(
         onButtonClick = { navigateToAddonPurchaseFlow(addon.eligibleInsurancesIds) },
         imageLoader = imageLoader,
         modifier = Modifier.fillMaxWidth(),
+        buttonSize = ButtonSize.Small,
+        buttonShape = HedvigTheme.shapes.cornerFull,
       )
     }
   }
@@ -1217,6 +1230,8 @@ private fun DiscoverInsurancesSection(
     modifier = Modifier.padding(horizontal = 16.dp),
     onSheetDismissed = {},
     imageLoader = imageLoader,
+    buttonSize = ButtonSize.Small,
+    buttonShape = HedvigTheme.shapes.cornerFull,
   )
 }
 
