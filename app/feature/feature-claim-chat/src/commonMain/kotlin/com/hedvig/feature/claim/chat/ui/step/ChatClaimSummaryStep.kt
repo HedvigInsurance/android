@@ -24,10 +24,10 @@ import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigButtonGhostWithBorder
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
-import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.LocalContentColor
@@ -128,8 +128,8 @@ internal fun ChatClaimSummaryTopContent(
           }
         }
         if (answers.isNotEmpty()) {
-          Spacer(Modifier.height(8.dp))
-          HedvigTextButton(
+          Spacer(Modifier.height(16.dp))
+          HedvigButtonGhostWithBorder(
             text = stringResource(Res.string.claim_status_show_all_answers),
             onClick = { answersSheetState.show(answers) },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
@@ -224,10 +224,6 @@ private fun AnswerValue(
         ),
       )
       HedvigAudioPlayer(audioPlayer = audioPlayer)
-      value.transcript?.let { transcript ->
-        Spacer(Modifier.height(8.dp))
-        HedvigText(text = transcript)
-      }
     }
 
     is StepContent.Summary.Answer.Value.Files -> {
