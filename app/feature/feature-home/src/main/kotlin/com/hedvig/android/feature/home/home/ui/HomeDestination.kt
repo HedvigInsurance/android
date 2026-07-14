@@ -744,21 +744,26 @@ private fun HomeScreenSuccess(
         it == HomeSection.Welcome || it == HomeSection.QuickActionCarousel
       }
       itemsIndexed(scrollingSections, key = { _, section -> section }) { index, section ->
-        val previous = if (index == 0) HomeSection.QuickActionCarousel else scrollingSections[index - 1]
-        // Every scrolling section continues the opaque sheet surface, and clips its own content (and
-        // background) to below the pinned header so nothing bleeds through the transparent pills.
+        val next = scrollingSections.getOrNull(index + 1)
         var itemTopPx by remember { mutableFloatStateOf(0f) }
         Column(
           Modifier
             .fillMaxWidth()
             .onPlaced { itemTopPx = it.positionInParent().y }
             .drawWithContent {
+              // Clip content sliding up under the transparent pinned pills. Section spacing is carried as
+              // trailing room (below the content), so a card's drop-shadow renders inside the section's own
+              // bounds instead of bleeding past the clip or under the pinned header.
               val clipTop = (stickyHeaderBottomPx - itemTopPx).coerceIn(0f, size.height)
               clipRect(top = clipTop) { this@drawWithContent.drawContent() }
             }
             .background(HedvigTheme.colorScheme.backgroundPrimary),
         ) {
-          Spacer(Modifier.height(gapBefore(section, previous)))
+          // The first scrolling section keeps a leading gap below the pinned lid; every section then carries
+          // its gap to the NEXT one as trailing room, giving drop-shadows space within the section.
+          if (index == 0) {
+            Spacer(Modifier.height(gapBefore(section, HomeSection.QuickActionCarousel)))
+          }
           when (section) {
             HomeSection.Welcome, HomeSection.QuickActionCarousel -> Unit
 
@@ -819,6 +824,9 @@ private fun HomeScreenSuccess(
               onTravelCertificate = navigateToTravelCertificate,
               horizontalInsets = horizontalInsets,
             )
+          }
+          if (next != null) {
+            Spacer(Modifier.height(gapBefore(next, section)))
           }
         }
       }
