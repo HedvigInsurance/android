@@ -208,7 +208,7 @@ internal fun ClaimSummaryAnswersContent(
         Spacer(Modifier.height(24.dp))
       }
     }
-    Spacer(Modifier.height(24.dp))
+    Spacer(Modifier.height(32.dp))
     HedvigButton(
       text = stringResource(Res.string.general_close_button),
       onClick = onClose,
