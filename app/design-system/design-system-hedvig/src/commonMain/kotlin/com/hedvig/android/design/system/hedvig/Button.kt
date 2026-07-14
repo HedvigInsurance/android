@@ -62,6 +62,7 @@ fun HedvigButton(
   border: Color? = null,
   onClickLabel: String? = null,
   isLoading: Boolean = false,
+  shape: Shape? = null,
 ) {
   HedvigButton(
     onClick = onClick,
@@ -72,6 +73,7 @@ fun HedvigButton(
     interactionSource = interactionSource,
     border = border,
     onClickLabel = onClickLabel,
+    shape = shape,
   ) {
     val buttonColors = buttonStyle.style.buttonColors
     val loadingTransition = updateTransition(isLoading, label = "loading transition")
@@ -112,6 +114,7 @@ fun HedvigButton(
   interactionSource: MutableInteractionSource? = null,
   border: Color? = null,
   onClickLabel: String? = null,
+  shape: Shape? = null,
   content: @Composable RowScope.() -> Unit,
 ) {
   @Suppress("NAME_SHADOWING")
@@ -134,7 +137,7 @@ fun HedvigButton(
     onClickLabel = onClickLabel,
     role = Role.Button,
     enabled = enabled,
-    shape = buttonSize.size.shape,
+    shape = shape ?: buttonSize.size.shape,
     border = border,
     color = color,
     contentColor = contentColor,
