@@ -63,6 +63,7 @@ internal object ColorDarkTokens {
   val BorderSecondary: Color = PaletteTokens.G800TDark
   val BorderHighlight: Color = PaletteTokens.G200TLight
   val ShadowLightOnly: Color = PaletteTokens.Transparent
+  val ShadowSoftLightOnly: Color = PaletteTokens.Transparent
   val SignalRedFill: Color = PaletteTokens.Red200
   val SignalRedHighlight: Color = PaletteTokens.Red650
   val SignalRedElement: Color = PaletteTokens.Red650

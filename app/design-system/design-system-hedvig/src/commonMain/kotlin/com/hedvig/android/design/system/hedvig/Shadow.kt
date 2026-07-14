@@ -22,15 +22,15 @@ fun Modifier.hedvigDropShadow(shape: Shape = HedvigTheme.shapes.cornerLarge): Mo
           Shadow(
             radius = 10.dp,
             offset = DpOffset(0.dp, 4.dp),
-            color = HedvigTheme.colorScheme.borderPrimary,
+            color = HedvigTheme.colorScheme.shadowSoftLightOnly,
             spread = (-2).dp,
           ),
         ).dropShadow(
-          HedvigTheme.shapes.cornerLarge,
+          shape,
           Shadow(
             radius = 2.dp,
             offset = DpOffset(0.dp, 2.dp),
-            color = HedvigTheme.colorScheme.borderSecondary,
+            color = HedvigTheme.colorScheme.shadowLightOnly,
             spread = (-1).dp,
           ),
         )
