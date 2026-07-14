@@ -24,6 +24,7 @@ import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButtonGhostWithBorder
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -44,6 +45,7 @@ import hedvig.resources.EMBARK_SUBMIT_CLAIM
 import hedvig.resources.Res
 import hedvig.resources.claim_status_claim_details_title
 import hedvig.resources.claim_status_show_all_answers
+import hedvig.resources.general_close_button
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -82,6 +84,7 @@ internal fun ChatClaimSummaryTopContent(
       answers = sheetAnswers,
       imageLoader = imageLoader,
       onNavigateToImageViewer = onNavigateToImageViewer,
+      onClose = { answersSheetState.dismiss() },
     )
   }
   Column(modifier) {
@@ -180,9 +183,11 @@ internal fun ClaimSummaryAnswersContent(
   answers: List<StepContent.Summary.Answer>,
   imageLoader: ImageLoader,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  onClose: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier.fillMaxWidth()) {
+    Spacer(Modifier.height(16.dp))
     HedvigText(
       stringResource(Res.string.claim_status_claim_details_title),
       textAlign = TextAlign.Center,
@@ -203,6 +208,14 @@ internal fun ClaimSummaryAnswersContent(
         Spacer(Modifier.height(24.dp))
       }
     }
+    Spacer(Modifier.height(24.dp))
+    HedvigButton(
+      text = stringResource(Res.string.general_close_button),
+      onClick = onClose,
+      enabled = true,
+      buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+      modifier = Modifier.fillMaxWidth(),
+    )
   }
 }
 
@@ -287,6 +300,7 @@ private fun PreviewSummaryAnswersContent() {
         answers = previewAnswers(),
         imageLoader = rememberPreviewImageLoader(),
         onNavigateToImageViewer = { _, _ -> },
+        onClose = {},
         modifier = Modifier.padding(16.dp),
       )
     }
