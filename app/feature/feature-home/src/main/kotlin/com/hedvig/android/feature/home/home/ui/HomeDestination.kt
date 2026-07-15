@@ -563,7 +563,7 @@ private fun HomeScreenSuccess(
         }
 
         HomeSection.MemberReminders -> {
-          uiState.homeText is HomeText.ActiveInFuture || applicableReminders.isNotEmpty()
+          uiState.homeText is HomeText.ActiveInFuture || applicableReminders.homeActionRequiredReminders().isNotEmpty()
         }
 
         HomeSection.Offers -> {
