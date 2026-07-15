@@ -753,6 +753,7 @@ fun PillowRow(
   isLoading: Boolean = false,
   buttonSize: ButtonDefaults.ButtonSize = ButtonDefaults.ButtonSize.Medium,
   buttonShape: Shape? = null,
+  pillow: (@Composable () -> Unit)? = null,
 ) {
   val description = "$title $subtitle"
   Row(
@@ -763,17 +764,21 @@ fun PillowRow(
       },
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    AsyncImage(
-      model = pillowImage?.src,
-      contentDescription = pillowImage?.description ?: EmptyContentDescription,
-      placeholder = crossSellPainterFallback(),
-      error = crossSellPainterFallback(),
-      fallback = crossSellPainterFallback(),
-      imageLoader = imageLoader,
-      contentScale = ContentScale.Crop,
-      modifier = Modifier
-        .size(48.dp),
-    )
+    if (pillow != null) {
+      pillow()
+    } else {
+      AsyncImage(
+        model = pillowImage?.src,
+        contentDescription = pillowImage?.description ?: EmptyContentDescription,
+        placeholder = crossSellPainterFallback(),
+        error = crossSellPainterFallback(),
+        fallback = crossSellPainterFallback(),
+        imageLoader = imageLoader,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+          .size(48.dp),
+      )
+    }
     Spacer(Modifier.width(16.dp))
     Column(
       modifier = Modifier

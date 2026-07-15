@@ -62,6 +62,21 @@ fun ContractGroup.pillowResource(): DrawableResource = when (this) {
   ContractGroup.PAYMENT_PROTECTION -> Res.drawable.safety
 }
 
+/**
+ * A pillow illustration exposed for callers that need one without an owning contract, e.g. the home
+ * add-on banners, which carry no imagery from the backend. The drawable resources are internal to
+ * this module, so callers pick a pillow through this enum instead.
+ */
+enum class PillowType {
+  CAR,
+  VACATION,
+}
+
+fun PillowType.pillowResource(): DrawableResource = when (this) {
+  PillowType.CAR -> Res.drawable.car
+  PillowType.VACATION -> Res.drawable.vacation
+}
+
 fun String.toContractGroup(): ContractGroup = when (this) {
   "NO_HOUSE",
   "DK_HOUSE",
