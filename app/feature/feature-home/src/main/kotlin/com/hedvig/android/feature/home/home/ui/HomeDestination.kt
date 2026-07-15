@@ -5,7 +5,6 @@ import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -41,7 +40,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -104,8 +102,6 @@ import com.hedvig.android.data.addons.data.FlowType
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
-import com.hedvig.android.data.contract.PillowType
-import com.hedvig.android.data.contract.pillowResource
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -134,7 +130,6 @@ import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HedvigLogotype
 import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
-import com.hedvig.android.design.system.hedvig.icon.Plus
 import com.hedvig.android.design.system.hedvig.icon.Reload
 import com.hedvig.android.design.system.hedvig.icon.Travel
 import com.hedvig.android.design.system.hedvig.notificationCircle
@@ -1230,50 +1225,13 @@ private fun AddonsSection(
         title = addon.title,
         subtitle = addon.description,
         pillowImage = null,
-        pillow = { AddonPillow(addon.flowType.pillowType()) },
+        pillow = { AddonPillow(addon.flowType) },
         buttonText = stringResource(Res.string.ADDON_FLOW_LEARN_MORE_BUTTON),
         onButtonClick = { navigateToAddonPurchaseFlow(addon.eligibleInsurancesIds) },
         imageLoader = imageLoader,
         modifier = Modifier.fillMaxWidth(),
         buttonSize = ButtonSize.Small,
         buttonShape = HedvigTheme.shapes.cornerFull,
-      )
-    }
-  }
-}
-
-// Add-ons carry no imagery from the backend, so each add-on flow reuses the pillow of the insurance
-// it relates to.
-private fun FlowType.pillowType(): PillowType = when (this) {
-  FlowType.APP_CAR_PLUS -> PillowType.CAR
-
-  FlowType.APP_TRAVEL_PLUS_SELL_ONLY,
-  FlowType.APP_TRAVEL_PLUS_SELL_OR_UPGRADE,
-  -> PillowType.VACATION
-}
-
-@Composable
-private fun AddonPillow(pillowType: PillowType, modifier: Modifier = Modifier) {
-  Box(modifier.size(48.dp)) {
-    Image(
-      painter = painterResource(pillowType.pillowResource()),
-      contentDescription = null,
-      modifier = Modifier.size(48.dp),
-    )
-    Box(
-      modifier = Modifier
-        .align(Alignment.TopEnd)
-        .hedvigDropShadow(CircleShape)
-        .size(17.dp)
-        .background(HedvigTheme.colorScheme.fillNegative, CircleShape)
-        .border(1.dp, HedvigTheme.colorScheme.borderPrimary, CircleShape),
-      contentAlignment = Alignment.Center,
-    ) {
-      Icon(
-        imageVector = HedvigIcons.Plus,
-        contentDescription = null,
-        tint = HedvigTheme.colorScheme.fillPrimary,
-        modifier = Modifier.size(10.dp),
       )
     }
   }
