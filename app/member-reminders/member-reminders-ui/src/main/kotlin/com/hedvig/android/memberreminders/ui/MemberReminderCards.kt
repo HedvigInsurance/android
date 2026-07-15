@@ -132,35 +132,6 @@ fun rememberMaxLineCountForReminders(memberReminders: List<MemberReminder>, maxW
 }
 
 @Composable
-fun MemberReminderCardsWithoutNotification(
-  memberReminders: List<MemberReminder>,
-  navigateToConnectPayment: () -> Unit,
-  navigateToConnectPayout: () -> Unit,
-  openUrl: (String) -> Unit,
-  navigateToAddMissingInfo: (String, CoInsuredFlowType) -> Unit,
-  onNavigateToNewConversation: () -> Unit,
-  contentPadding: PaddingValues,
-  navigateToContactInfo: () -> Unit,
-  navigateToChipId: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  MemberReminderCards(
-    memberReminders = memberReminders,
-    navigateToConnectPayment = navigateToConnectPayment,
-    navigateToConnectPayout = navigateToConnectPayout,
-    openUrl = openUrl,
-    navigateToAddMissingInfo = navigateToAddMissingInfo,
-    onNavigateToNewConversation = onNavigateToNewConversation,
-    snoozeNotificationPermissionReminder = {},
-    notificationPermissionState = null,
-    contentPadding = contentPadding,
-    navigateToContactInfo = navigateToContactInfo,
-    navigateToChipId = navigateToChipId,
-    modifier = modifier,
-  )
-}
-
-@Composable
 fun MemberReminderCards(
   memberReminders: List<MemberReminder>,
   navigateToConnectPayment: () -> Unit,

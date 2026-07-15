@@ -147,7 +147,8 @@ import com.hedvig.android.feature.home.home.ui.HomeUiState.Success
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminder.PaymentReminder.ConnectPayment
 import com.hedvig.android.memberreminders.MemberReminders
-import com.hedvig.android.memberreminders.ui.MemberReminderCardsWithoutNotification
+import com.hedvig.android.memberreminders.ui.MemberReminderToDoList
+import com.hedvig.android.memberreminders.ui.homeActionRequiredReminders
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
@@ -789,7 +790,6 @@ private fun HomeScreenSuccess(
               navigateToConnectPayout = navigateToConnectPayout,
               navigateToMissingInfo = navigateToMissingInfo,
               onNavigateToNewConversation = onNavigateToNewConversation,
-              openUrl = openUrl,
               navigateToContactInfo = navigateToContactInfo,
               navigateToChipIdScreen = navigateToChipIdScreen,
               horizontalInsets = horizontalInsets,
@@ -964,11 +964,11 @@ private fun MemberRemindersSection(
   navigateToConnectPayout: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   onNavigateToNewConversation: () -> Unit,
-  openUrl: (String) -> Unit,
   navigateToContactInfo: () -> Unit,
   navigateToChipIdScreen: () -> Unit,
   horizontalInsets: PaddingValues,
 ) {
+  val toDoReminders = applicableReminders.homeActionRequiredReminders()
   Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
     if (homeText is HomeText.ActiveInFuture) {
       HedvigNotificationCard(
@@ -980,17 +980,31 @@ private fun MemberRemindersSection(
           .padding(horizontalInsets),
       )
     }
-    MemberReminderCardsWithoutNotification(
-      memberReminders = applicableReminders,
-      navigateToConnectPayment = navigateToConnectPayment,
-      navigateToConnectPayout = navigateToConnectPayout,
-      navigateToAddMissingInfo = navigateToMissingInfo,
-      onNavigateToNewConversation = onNavigateToNewConversation,
-      openUrl = openUrl,
-      contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
-      navigateToContactInfo = navigateToContactInfo,
-      navigateToChipId = navigateToChipIdScreen,
-    )
+    if (toDoReminders.isNotEmpty()) {
+      Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp)
+          .padding(horizontalInsets),
+      ) {
+        // TODO: Add "To do" / "Att göra" to Lokalise
+        HedvigText(
+          text = "To do",
+          style = HedvigTheme.typography.headlineSmall,
+          modifier = Modifier.semantics { heading() },
+        )
+        MemberReminderToDoList(
+          memberReminders = toDoReminders,
+          navigateToConnectPayment = navigateToConnectPayment,
+          navigateToConnectPayout = navigateToConnectPayout,
+          navigateToAddMissingInfo = navigateToMissingInfo,
+          onNavigateToNewConversation = onNavigateToNewConversation,
+          navigateToContactInfo = navigateToContactInfo,
+          navigateToChipId = navigateToChipIdScreen,
+        )
+      }
+    }
   }
 }
 
