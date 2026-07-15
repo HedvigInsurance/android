@@ -763,7 +763,7 @@ private fun HomeScreenSuccess(
           // The first scrolling section keeps a leading gap below the pinned lid; every section then carries
           // its gap to the NEXT one as trailing room, giving drop-shadows space within the section.
           if (index == 0) {
-            Spacer(Modifier.height(gapBefore(section, HomeSection.QuickActionCarousel)))
+            Spacer(Modifier.height(gapAfter(HomeSection.QuickActionCarousel)))
           }
           when (section) {
             HomeSection.Welcome, HomeSection.QuickActionCarousel -> Unit
@@ -826,7 +826,7 @@ private fun HomeScreenSuccess(
             )
           }
           if (next != null) {
-            Spacer(Modifier.height(gapBefore(next, section)))
+            Spacer(Modifier.height(gapAfter(section)))
           }
         }
       }
@@ -881,20 +881,18 @@ private val homeSectionOrder: List<HomeSection> = listOf(
   HomeSection.Addons,
 )
 
-// Reproduces the inter-section gaps of the previous layout, now in a top-aligned list.
-private fun gapBefore(section: HomeSection, previous: HomeSection?): Dp {
-  if (previous == null) return 0.dp
-  return when (section) {
-    HomeSection.Welcome -> 0.dp
-    HomeSection.QuickActionCarousel -> 8.dp
-    HomeSection.ClaimStatusCards -> 24.dp
-    HomeSection.VeryImportantMessages -> 16.dp
-    HomeSection.MemberReminders -> if (previous == HomeSection.VeryImportantMessages) 8.dp else 16.dp
-    HomeSection.Offers -> 16.dp
-    HomeSection.DiscoverInsurances -> 16.dp
-    HomeSection.Addons -> 16.dp
-    HomeSection.QuickActionTiles -> 16.dp
-  }
+// Gap below the pinned lid before the first scrolling section.
+private val homeSectionLeadInGap = 24.dp
+
+// Uniform gap between two consecutive scrolling sections.
+private val homeSectionGap = 40.dp
+
+// The gap that follows [section], carried as trailing room below its content so a card's drop-shadow
+// renders inside the section's own bounds. The pinned lid (QuickActionCarousel) gets the smaller
+// lead-in gap; every scrolling section is followed by the uniform section gap.
+private fun gapAfter(section: HomeSection): Dp = when (section) {
+  HomeSection.QuickActionCarousel -> homeSectionLeadInGap
+  else -> homeSectionGap
 }
 
 /**
