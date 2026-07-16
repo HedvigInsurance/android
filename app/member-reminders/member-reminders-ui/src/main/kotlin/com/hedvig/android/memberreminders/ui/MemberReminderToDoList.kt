@@ -90,6 +90,14 @@ fun List<MemberReminder>.homeActionRequiredReminders(): List<MemberReminder> {
   return filter { it.homeToDoOrder() != null }.sortedBy { it.homeToDoOrder() }
 }
 
+/**
+ * Reminders shown as cards in the home important-messages carousel rather than the To do list, i.e.
+ * the informational reminders that don't demand a direct action.
+ */
+fun List<MemberReminder>.homeInformationalReminders(): List<MemberReminder.UpcomingRenewal> {
+  return filterIsInstance<MemberReminder.UpcomingRenewal>()
+}
+
 private fun MemberReminder.homeToDoOrder(): Int? = when (this) {
   is MemberReminder.PaymentReminder.TerminationDueToMissedPayments -> 0
   is MemberReminder.PaymentReminder.ConnectPayment -> 1

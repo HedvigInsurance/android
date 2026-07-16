@@ -3,6 +3,15 @@
 Date: 2026-07-15
 Branch: feature/new-home-screen
 
+## Update 2026-07-16 (design feedback)
+
+After review with design: `UpcomingRenewal` reminders are no longer dropped from home. Instead they
+render as cards in the same horizontal carousel as the very important messages (the "important
+messages" section at the top of the content), alongside any future informational reminder cards.
+Only action-required reminders remain in the "To do" list. `EnableNotifications` stays off home (the
+presenter nulls it out). The confirmed copy (including the always-"Requires action" subtitle) is
+final pending real Lokalise key IDs.
+
 ## Problem
 
 The new home design (Figma `App P2 2026`, node `429-7853`, "To do" section) renders

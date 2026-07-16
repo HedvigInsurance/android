@@ -37,14 +37,10 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -88,7 +84,6 @@ import arrow.core.nonEmptyListOf
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import com.google.accompanist.permissions.isGranted
-import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.crosssells.BundleProgress
@@ -116,8 +111,6 @@ import com.hedvig.android.design.system.hedvig.HedvigTooltip
 import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.Icon
-import com.hedvig.android.design.system.hedvig.LocalContentColor
-import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.StartClaimBottomSheet
 import com.hedvig.android.design.system.hedvig.Surface
@@ -149,6 +142,7 @@ import com.hedvig.android.memberreminders.MemberReminder.PaymentReminder.Connect
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.memberreminders.ui.MemberReminderToDoList
 import com.hedvig.android.memberreminders.ui.homeActionRequiredReminders
+import com.hedvig.android.memberreminders.ui.homeInformationalReminders
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
@@ -183,8 +177,6 @@ import hedvig.resources.home_tab_pending_switchable_welcome_title_without_name
 import hedvig.resources.home_tab_pending_unknown_title_without_name
 import hedvig.resources.home_tab_terminated_welcome_title_without_name
 import hedvig.resources.home_tab_welcome_title_without_name
-import hedvig.resources.important_message_hide
-import hedvig.resources.important_message_read_more
 import kotlin.math.roundToInt
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -544,6 +536,7 @@ private fun HomeScreenSuccess(
       WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).exclude(consumedWindowInsets).asPaddingValues()
     val applicableReminders =
       uiState.memberReminders.onlyApplicableReminders(notificationPermissionState.status.isGranted)
+    val informationalReminders = applicableReminders.homeInformationalReminders()
     val visibleSections = homeSectionOrder.filter { section ->
       when (section) {
         HomeSection.Welcome -> {
@@ -559,7 +552,7 @@ private fun HomeScreenSuccess(
         }
 
         HomeSection.VeryImportantMessages -> {
-          uiState.veryImportantMessages.isNotEmpty()
+          uiState.veryImportantMessages.isNotEmpty() || informationalReminders.isNotEmpty()
         }
 
         HomeSection.MemberReminders -> {
@@ -778,6 +771,7 @@ private fun HomeScreenSuccess(
 
             HomeSection.VeryImportantMessages -> VeryImportantMessagesSection(
               list = uiState.veryImportantMessages,
+              informationalReminders = informationalReminders,
               openUrl = openUrl,
               markMessageAsSeen = markMessageAsSeen,
               horizontalInsets = horizontalInsets,
@@ -942,12 +936,15 @@ private fun ClaimStatusCardsSection(
 @Composable
 private fun VeryImportantMessagesSection(
   list: List<VeryImportantMessage>,
+  informationalReminders: List<MemberReminder.UpcomingRenewal>,
   openUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
   horizontalInsets: PaddingValues,
 ) {
-  ImportantMessages(
-    list = list,
+  val cards = list.map { HomeNoticeCard.Important(it) } +
+    informationalReminders.map { HomeNoticeCard.Renewal(it) }
+  HomeNoticeCarousel(
+    cards = cards,
     openUrl = openUrl,
     hideImportantMessage = markMessageAsSeen,
     contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
@@ -1253,89 +1250,6 @@ private fun DiscoverInsurancesSection(
     buttonSize = ButtonSize.Small,
     buttonShape = HedvigTheme.shapes.cornerFull,
   )
-}
-
-@Composable
-private fun ImportantMessages(
-  list: List<VeryImportantMessage>,
-  openUrl: (String) -> Unit,
-  hideImportantMessage: (id: String) -> Unit,
-  contentPadding: PaddingValues,
-  modifier: Modifier = Modifier,
-) {
-  AnimatedContent(
-    targetState = list,
-    modifier = modifier,
-  ) { animatedList ->
-    if (animatedList.size == 1) {
-      VeryImportantMessageCard(
-        openUrl = openUrl,
-        hideImportantMessage = hideImportantMessage,
-        veryImportantMessage = animatedList.first(),
-        modifier = Modifier.padding(contentPadding),
-      )
-    } else { // todo: should we probably check for else if (animatedList.size>1) here?
-      val pagerState = rememberPagerState(pageCount = { animatedList.size })
-      Column {
-        HorizontalPager(
-          state = pagerState,
-          contentPadding = contentPadding,
-          beyondViewportPageCount = 1,
-          pageSpacing = 8.dp,
-          modifier = Modifier
-            .fillMaxWidth()
-            .systemGestureExclusion(),
-        ) { page: Int ->
-          val currentMessage = animatedList[page]
-          VeryImportantMessageCard(
-            openUrl = openUrl,
-            hideImportantMessage = hideImportantMessage,
-            veryImportantMessage = currentMessage,
-          )
-        }
-        Spacer(Modifier.height(16.dp))
-        HorizontalPagerIndicator(
-          pagerState = pagerState,
-          pageCount = animatedList.size,
-          activeColor = LocalContentColor.current,
-          modifier = Modifier
-            .align(Alignment.CenterHorizontally)
-            .padding(contentPadding),
-        )
-      }
-    }
-  }
-}
-
-@Composable
-private fun VeryImportantMessageCard(
-  openUrl: (String) -> Unit,
-  hideImportantMessage: (id: String) -> Unit,
-  veryImportantMessage: VeryImportantMessage,
-  modifier: Modifier = Modifier,
-) {
-  key(veryImportantMessage.id) {
-    HedvigNotificationCard(
-      message = veryImportantMessage.message,
-      priority = NotificationPriority.Attention,
-      modifier = modifier.fillMaxSize(),
-      withIcon = false,
-      style = if (veryImportantMessage.linkInfo != null) {
-        NotificationDefaults.InfoCardStyle.Buttons(
-          leftButtonText = stringResource(Res.string.important_message_hide),
-          rightButtonText = veryImportantMessage.linkInfo.buttonText
-            ?: stringResource(Res.string.important_message_read_more),
-          onLeftButtonClick = { hideImportantMessage(veryImportantMessage.id) },
-          onRightButtonClick = { openUrl(veryImportantMessage.linkInfo.link) },
-        )
-      } else {
-        NotificationDefaults.InfoCardStyle.Button(
-          buttonText = stringResource(Res.string.important_message_hide),
-          onButtonClick = { hideImportantMessage(veryImportantMessage.id) },
-        )
-      },
-    )
-  }
 }
 
 @Composable
