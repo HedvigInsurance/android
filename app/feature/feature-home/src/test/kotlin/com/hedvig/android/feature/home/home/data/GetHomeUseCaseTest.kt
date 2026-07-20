@@ -97,7 +97,7 @@ internal class GetHomeUseCaseTest {
     val getHomeDataUseCase = GetHomeDataUseCaseImpl(
       apolloClient.apply {
         registerTestResponse(
-          HomeQuery(true),
+          HomeQuery(true, true),
           HomeQuery.Data(OctopusFakeResolver),
         )
         apolloClient.registerTestResponse(
@@ -146,7 +146,7 @@ internal class GetHomeUseCaseTest {
     val getHomeDataUseCase = GetHomeDataUseCaseImpl(
       apolloClient.apply {
         registerTestResponse(
-          HomeQuery(true),
+          HomeQuery(true, true),
           HomeQuery.Data(OctopusFakeResolver),
         )
         apolloClient.registerTestResponse(
@@ -181,7 +181,7 @@ internal class GetHomeUseCaseTest {
     val getHomeDataUseCase = testUseCaseWithoutReminders()
 
     apolloClient.registerTestResponse(
-      HomeQuery(true),
+      HomeQuery(true, true),
       HomeQuery.Data(OctopusFakeResolver) {
         currentMember = buildMember {
           importantMessages = List(3) { index ->
@@ -223,7 +223,7 @@ internal class GetHomeUseCaseTest {
     val getHomeDataUseCase = testUseCaseWithoutReminders()
 
     apolloClient.registerTestResponse(
-      HomeQuery(true),
+      HomeQuery(true, true),
       HomeQuery.Data(OctopusFakeResolver) {
         currentMember = buildMember {
           importantMessages = emptyList()
@@ -252,7 +252,7 @@ internal class GetHomeUseCaseTest {
     val getHomeDataUseCase = testUseCaseWithoutReminders()
 
     apolloClient.registerTestResponse(
-      HomeQuery(true),
+      HomeQuery(true, true),
       HomeQuery.Data(OctopusFakeResolver) {
         currentMember = buildMember {
           claimsActive = listOf(
@@ -294,7 +294,7 @@ internal class GetHomeUseCaseTest {
     val getHomeDataUseCase = testUseCaseWithoutReminders()
 
     apolloClient.registerTestResponse(
-      HomeQuery(true),
+      HomeQuery(true, true),
       HomeQuery.Data(OctopusFakeResolver) {
         currentMember = buildMember {
           claimsActive = emptyList()
@@ -323,7 +323,7 @@ internal class GetHomeUseCaseTest {
     val getHomeDataUseCase = testUseCaseWithoutReminders()
 
     apolloClient.registerTestResponse(
-      HomeQuery(true),
+      HomeQuery(true, true),
       HomeQuery.Data(OctopusFakeResolver) {
         currentMember = buildMember {
           activeContracts = emptyList()
@@ -370,7 +370,7 @@ internal class GetHomeUseCaseTest {
       testClock.now().toLocalDateTime(timeZone).date
     }
     apolloClient.registerTestResponse(
-      HomeQuery(true),
+      HomeQuery(true, true),
       HomeQuery.Data(OctopusFakeResolverWithFilledLists) {
         currentMember = buildMember {
           activeContracts = listOf(
@@ -412,7 +412,7 @@ internal class GetHomeUseCaseTest {
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
 
     apolloClient.registerTestResponse(
-      HomeQuery(true),
+      HomeQuery(true, true),
       HomeQuery.Data(OctopusFakeResolver) {
         currentMember = buildMember {
           activeContracts = emptyList()
@@ -458,13 +458,18 @@ internal class GetHomeUseCaseTest {
       mapOf(
         // With the inbox-always-available kill switch off, the icon depends purely on existing conversations
         Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX to false,
+        Feature.ENABLE_CLAIM_INTENT_RESUME to false,
       ),
     )
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
 
     apolloClient.registerTestResponse(
-      HomeQuery(true),
-      HomeQuery.Data(OctopusFakeResolver),
+      HomeQuery(true, false),
+      HomeQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          resumableClaimIntent = null
+        }
+      },
     )
     apolloClient.registerTestResponse(
       UnreadMessageCountQuery(),
@@ -510,6 +515,11 @@ internal class GetHomeUseCaseTest {
           isFalse()
         }
       }
+    assertThat(result)
+      .isNotNull()
+      .isRight()
+      .prop(HomeData::draftClaim)
+      .isNull()
   }
 
   @Test
@@ -520,12 +530,13 @@ internal class GetHomeUseCaseTest {
     val featureManager = FakeFeatureManager(
       mapOf(
         Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX to inboxAlwaysAvailable,
+        Feature.ENABLE_CLAIM_INTENT_RESUME to false,
       ),
     )
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
 
     apolloClient.registerTestResponse(
-      HomeQuery(true),
+      HomeQuery(true, false),
       HomeQuery.Data(OctopusFakeResolver),
     )
     apolloClient.registerTestResponse(
@@ -580,12 +591,13 @@ internal class GetHomeUseCaseTest {
       mapOf(
         // Inbox-always-available off, so the icon reflects the conversation state being tested here
         Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX to false,
+        Feature.ENABLE_CLAIM_INTENT_RESUME to false,
       ),
     )
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
 
     apolloClient.registerTestResponse(
-      HomeQuery(true),
+      HomeQuery(true, false),
       HomeQuery.Data(OctopusFakeResolver),
     )
     apolloClient.registerTestResponse(
@@ -637,7 +649,7 @@ internal class GetHomeUseCaseTest {
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
 
     apolloClient.registerTestResponse(
-      HomeQuery(true),
+      HomeQuery(true, true),
       HomeQuery.Data(OctopusFakeResolver),
     )
     apolloClient.registerTestResponse(
@@ -680,7 +692,7 @@ internal class GetHomeUseCaseTest {
     val getHomeDataUseCase = testUseCaseWithoutReminders()
 
     apolloClient.registerTestResponse(
-      HomeQuery(true),
+      HomeQuery(true, true),
       HomeQuery.Data(OctopusFakeResolver) {
         currentMember = buildMember {
           crossSellV2 = buildCrossSellV2 {
@@ -688,9 +700,9 @@ internal class GetHomeUseCaseTest {
               id = "addonId"
               title = "Travel Insurance Plus"
               description = "For a safer trip abroad"
-              buttonTitle = "See offer"
+              buttonText = "See offer"
               deepLink = "https://hedvig.com/addon"
-              banner = "Add extra safety when traveling"
+              bannerText = "Add extra safety when traveling"
               benefits = listOf("Travel up to 60 days in a row", "Delayed bags and flights covered")
               pillowImageSmall = buildStoryblokImageAsset { src = "smallSrc" }
               pillowImageLarge = buildStoryblokImageAsset { src = "largeSrc" }
@@ -719,10 +731,10 @@ internal class GetHomeUseCaseTest {
         RecommendedAddon(
           id = "addonId",
           title = "Travel Insurance Plus",
-          buttonTitle = "See offer",
+          buttonText = "See offer",
           description = "For a safer trip abroad",
           deepLink = "https://hedvig.com/addon",
-          banner = "Add extra safety when traveling",
+          bannerText = "Add extra safety when traveling",
           benefits = listOf("Travel up to 60 days in a row", "Delayed bags and flights covered"),
           pillowImageSmall = "smallSrc",
           pillowImageLarge = "largeSrc",
@@ -737,6 +749,7 @@ internal class GetHomeUseCaseTest {
       val featureManager = FakeFeatureManager(
         mapOf(
           Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX to false,
+          Feature.ENABLE_CLAIM_INTENT_RESUME to false,
         ),
       )
       val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
@@ -744,7 +757,7 @@ internal class GetHomeUseCaseTest {
       // The primary HomeQuery gate succeeds; the two auxiliary chat signals fail at the network level.
       // The screen must still load (Right) with those signals folded to safe defaults rather than blanking.
       apolloClient.registerTestResponse(
-        HomeQuery(true),
+        HomeQuery(true, false),
         HomeQuery.Data(OctopusFakeResolver),
       )
       apolloClient.registerTestNetworkError(UnreadMessageCountQuery())

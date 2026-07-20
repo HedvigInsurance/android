@@ -58,6 +58,7 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
       addonBannerInfos = emptyList(),
       showChatIcon = false,
       firstName = "Demo",
+      draftClaim = null,
     ).right(),
   )
 }

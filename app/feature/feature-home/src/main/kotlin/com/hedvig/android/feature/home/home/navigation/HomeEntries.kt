@@ -26,7 +26,7 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToHelpCenter: () -> Unit,
   navigateToMovingFlow: () -> Unit,
-  navigateToClaimChat: () -> Unit,
+  navigateToClaimChat: (resumeClaim: Boolean) -> Unit,
   navigateToChipIdScreen: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
@@ -41,7 +41,7 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
       viewModel = viewModel,
       onNavigateToInbox = dropUnlessResumed { onNavigateToInbox() },
       onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
-      navigateToClaimChat = dropUnlessResumed { navigateToClaimChat() },
+      navigateToClaimChat = dropUnlessResumed { resumeClaim -> navigateToClaimChat(resumeClaim) },
       onClaimDetailCardClicked = dropUnlessResumed { claimId: String ->
         navigateToClaimDetails(claimId)
       },

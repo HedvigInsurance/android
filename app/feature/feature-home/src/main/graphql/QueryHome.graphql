@@ -1,6 +1,11 @@
-query Home($claimsHistoryFlag: Boolean!) {
+query Home($claimsHistoryFlag: Boolean!, $resumeClaimEnabled: Boolean!) {
   currentMember {
     firstName
+    resumableClaimIntent @include(if: $resumeClaimEnabled) {
+      id
+      displayName
+      createdAt
+    }
     claims@skip(if: $claimsHistoryFlag) {
       ...ClaimFragment
     }
@@ -63,9 +68,9 @@ query Home($claimsHistoryFlag: Boolean!) {
         id
         title
         description
-        buttonTitle
+        buttonText
         deepLink
-        banner
+        bannerText
         benefits
         pillowImageLarge {
           src

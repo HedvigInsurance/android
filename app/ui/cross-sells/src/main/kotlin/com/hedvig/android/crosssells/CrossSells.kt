@@ -101,10 +101,10 @@ data class CrossSellSheetData(
 data class RecommendedAddon(
   val id: String,
   val title: String,
-  val buttonTitle: String,
+  val buttonText: String,
   val description: String,
   val deepLink: String,
-  val banner: String?,
+  val bannerText: String?,
   val benefits: List<String>,
   val pillowImageSmall: String,
   val pillowImageLarge: String,
@@ -140,7 +140,7 @@ fun CrossSellFloatingBottomSheet(
     dragHandle = {
       CrossSellDragHandle(
         text = state.data?.recommendedCrossSell?.bannerText
-          ?: state.data?.recommendedAddon?.let { it.banner ?: stringResource(Res.string.CROSS_SELL_BANNER_TEXT) },
+          ?: state.data?.recommendedAddon?.let { it.bannerText ?: stringResource(Res.string.CROSS_SELL_BANNER_TEXT) },
         modifier = Modifier
           .padding(horizontal = 16.dp)
           .clip(HedvigTheme.shapes.cornerXLargeTop),
@@ -178,7 +178,7 @@ fun CrossSellBottomSheet(
         CrossSellDragHandle(
           contentPadding = PaddingValues(horizontal = 16.dp),
           text = state.data?.recommendedCrossSell?.bannerText
-            ?: state.data?.recommendedAddon?.banner
+            ?: state.data?.recommendedAddon?.bannerText
             ?: stringResource(Res.string.CROSS_SELL_BANNER_TEXT),
         )
       }
@@ -433,7 +433,7 @@ private fun AddonRecommendationSection(
     }
     Spacer(Modifier.height(if (recommendedAddon.benefits.isEmpty()) 48.dp else 32.dp))
     HedvigButton(
-      text = recommendedAddon.buttonTitle,
+      text = recommendedAddon.buttonText,
       onClick = {
         onButtonClick(recommendedAddon.deepLink)
         dismissSheet()
@@ -1137,10 +1137,10 @@ private fun PreviewRecommendedAddon(
         recommendedAddon = RecommendedAddon(
           id = "ifsf",
           title = "Addon title",
-          buttonTitle = "Check the addon",
+          buttonText = "Check the addon",
           description = "Best addon in the world",
           deepLink = "deep",
-          banner = "Add extra safety when traveling",
+          bannerText = "Add extra safety when traveling",
           benefits = listOf(
             "Travel up to 60 days in a row",
             "Delayed bags and flights covered",

@@ -193,10 +193,10 @@ internal class GetCrossSellSheetDataUseCaseImpl(
             RecommendedAddon(
               id = it.id,
               title = it.title,
-              buttonTitle = it.buttonTitle,
+              buttonText = it.buttonText,
               description = it.description,
               deepLink = it.deepLink,
-              banner = it.banner,
+              bannerText = it.bannerText,
               benefits = it.benefits,
               pillowImageSmall = it.pillowImageSmall.src,
               pillowImageLarge = it.pillowImageLarge.src,

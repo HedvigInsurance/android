@@ -1280,7 +1280,37 @@ type ClaimIntentStepContentSummary {
   audioRecordings: [ClaimIntentStepContentSummaryAudioRecording!]!
   freeTexts: [String!]!
   fileUploads: [ClaimIntentStepContentSummaryFileUpload!]!
+  """
+  Key facts for the collapsed "Claim details" card.
+  """
+  keyDetails: [ClaimIntentStepContentSummaryItem!]!
+  """
+  All question/answer pairs in the order they were asked.
+  Rendered behind "Show all answers".
+  """
+  answers: [ClaimIntentStepContentSummaryAnswer!]!
 }
+type ClaimIntentStepContentSummaryAnswer {
+  """
+  The question as it was asked to the member.
+  """
+  title: String!
+  value: ClaimIntentStepContentSummaryAnswerValue!
+}
+type ClaimIntentStepContentSummaryAnswerAudio {
+  url: Url!
+  """
+  Transcript of the recording, when available.
+  """
+  transcript: String
+}
+type ClaimIntentStepContentSummaryAnswerFiles {
+  files: [ClaimIntentStepContentSummaryFileUpload!]!
+}
+type ClaimIntentStepContentSummaryAnswerText {
+  text: String!
+}
+union ClaimIntentStepContentSummaryAnswerValue = ClaimIntentStepContentSummaryAnswerText|ClaimIntentStepContentSummaryAnswerAudio|ClaimIntentStepContentSummaryAnswerFiles
 type ClaimIntentStepContentSummaryAudioRecording {
   url: Url!
 }
@@ -1785,6 +1815,18 @@ type EmailMessage {
   deliveryType: String
   createdAt: DateTime
   category: String
+}
+"""
+Employment type for Payment Protection, mirroring underwriter's `SwedishPaymentProtection.EmploymentType`.
+`UNEMPLOYED` and `HOURLY_EMPLOYED` are ineligible and rejected by underwriter.
+"""
+enum EmploymentType {
+  UNEMPLOYED
+  PROBATIONARY_EMPLOYED
+  HOURLY_EMPLOYED
+  CONTRACT_EMPLOYED
+  PERMANENT_EMPLOYED
+  SELF_EMPLOYED
 }
 type Entrypoint {
   id: ID!
@@ -3851,6 +3893,14 @@ type Mutation {
   """
   productOffersStartDateUpdate(productOfferIds: [UUID!]!, startDate: Date!): ProductOffersMutationOutput!
   """
+  Patch the employment type onto the underwriter quote(s) backing the given Payment Protection
+  `ProductOffer`s, and persist it onto each offer's `priceIntentData` snapshot so it round-trips to clients.
+  Employment type is not a pricing input, so this patches the existing quote (no re-quote) and leaves cost
+  unchanged. Ineligible types (`UNEMPLOYED`, `HOURLY_EMPLOYED`) are rejected by underwriter and surface as a
+  `userError`.
+  """
+  productOffersEmploymentTypeUpdate(productOfferIds: [UUID!]!, employmentType: EmploymentType!): ProductOffersMutationOutput!
+  """
   Overwrite the selected addon state for the given `productOfferId`.
   For instance:
   - sending `addonIds = ["abc"]` will select exactly the addon with ID "abc", and no others
@@ -4416,6 +4466,10 @@ type ProductOffer {
   """
   deductible: ProductOfferDeductible
   """
+  The insurance amount description of this offer, if there is one.
+  """
+  insuranceAmount: ProductOfferInsuranceAmount
+  """
   Unique Selling Points, a list of strings that can be shown as bullets to drill home the "buy me"-message.
   """
   usps: [String!]!
@@ -4546,6 +4600,13 @@ type ProductOfferExposure {
   Ex. 'Fakestreet 124 * You+1' for home
   """
   displayNameFull: String!
+}
+type ProductOfferInsuranceAmount {
+  displayName: String!
+  """
+  The insurance amount in the currency's unit (e.g., SEK)
+  """
+  amount: Int!
 }
 type ProductOfferPriceMatch {
   externalPrice: Money!
@@ -4819,7 +4880,7 @@ type RecommendedAddonCrossSell {
   id: ID!
   title: String!
   description: String!
-  buttonTitle: String!
+  buttonText: String!
   """
   App deep link to the addon flow for this contract
   """
@@ -4829,7 +4890,7 @@ type RecommendedAddonCrossSell {
   """
   Optional banner text shown above the card; clients fall back to a default when null
   """
-  banner: String
+  bannerText: String
   """
   Benefit rows shown as a checkmark list; empty when none
   """
