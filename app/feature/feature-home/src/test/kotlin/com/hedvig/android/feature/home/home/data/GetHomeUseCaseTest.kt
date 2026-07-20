@@ -699,9 +699,9 @@ internal class GetHomeUseCaseTest {
               id = "addonId"
               title = "Travel Insurance Plus"
               description = "For a safer trip abroad"
-              buttonTitle = "See offer"
+              buttonText = "See offer"
               deepLink = "https://hedvig.com/addon"
-              banner = "Add extra safety when traveling"
+              bannerText = "Add extra safety when traveling"
               benefits = listOf("Travel up to 60 days in a row", "Delayed bags and flights covered")
               pillowImageSmall = buildStoryblokImageAsset { src = "smallSrc" }
               pillowImageLarge = buildStoryblokImageAsset { src = "largeSrc" }
@@ -730,10 +730,10 @@ internal class GetHomeUseCaseTest {
         RecommendedAddon(
           id = "addonId",
           title = "Travel Insurance Plus",
-          buttonTitle = "See offer",
+          buttonText = "See offer",
           description = "For a safer trip abroad",
           deepLink = "https://hedvig.com/addon",
-          banner = "Add extra safety when traveling",
+          bannerText = "Add extra safety when traveling",
           benefits = listOf("Travel up to 60 days in a row", "Delayed bags and flights covered"),
           pillowImageSmall = "smallSrc",
           pillowImageLarge = "largeSrc",

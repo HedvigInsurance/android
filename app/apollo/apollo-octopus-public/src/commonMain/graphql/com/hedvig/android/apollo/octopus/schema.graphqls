@@ -4880,7 +4880,7 @@ type RecommendedAddonCrossSell {
   id: ID!
   title: String!
   description: String!
-  buttonTitle: String!
+  buttonText: String!
   """
   App deep link to the addon flow for this contract
   """
@@ -4890,7 +4890,7 @@ type RecommendedAddonCrossSell {
   """
   Optional banner text shown above the card; clients fall back to a default when null
   """
-  banner: String
+  bannerText: String
   """
   Benefit rows shown as a checkmark list; empty when none
   """
