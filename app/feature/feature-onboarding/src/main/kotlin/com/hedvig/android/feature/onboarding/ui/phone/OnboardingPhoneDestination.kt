@@ -198,6 +198,7 @@ internal fun OnboardingPhoneDestination(viewModel: OnboardingPhoneViewModel, nav
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         )
+        Spacer(Modifier.weight(1f))
         OnboardingStepButtons(
           // TODO: Add "Save" / "Spara" to Lokalise
           primaryText = "Save",

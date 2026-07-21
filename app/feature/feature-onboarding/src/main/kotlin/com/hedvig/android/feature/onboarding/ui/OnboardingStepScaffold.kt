@@ -165,7 +165,6 @@ internal fun ColumnScope.OnboardingStepButtons(
   secondaryText: String? = null,
   onSecondaryClick: (() -> Unit)? = null,
 ) {
-  Spacer(Modifier.weight(1f))
   Spacer(Modifier.height(16.dp))
   HedvigButton(
     text = primaryText,
@@ -203,6 +202,7 @@ private fun PreviewOnboardingStepScaffold() {
         title = "Step title",
         description = "Step description with some helpful text.",
       )
+      Spacer(Modifier.weight(1f))
       OnboardingStepButtons(
         primaryText = "Continue",
         onPrimaryClick = {},
@@ -227,6 +227,7 @@ private fun PreviewOnboardingStepScaffoldNoProgress() {
         title = "Welcome",
         description = "Welcome to Hedvig onboarding.",
       )
+      Spacer(Modifier.weight(1f))
       OnboardingStepButtons(
         primaryText = "Get started",
         onPrimaryClick = {},

@@ -138,11 +138,12 @@ internal fun OnboardingInviteDestination(viewModel: OnboardingInviteViewModel, n
           // TODO: Add the body copy below (and its Swedish translation) to Lokalise
           description = "With Hedvig Forever, you get ${content.incentiveDisplay} off for every friend you invite",
         )
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.weight(1f))
         HedvigText(
           text = content.code,
           modifier = Modifier.align(Alignment.CenterHorizontally),
         )
+        Spacer(Modifier.weight(1f))
         OnboardingStepButtons(
           // TODO: Add "Continue" / "Fortsätt" to Lokalise
           primaryText = "Continue",

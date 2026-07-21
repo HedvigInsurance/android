@@ -135,6 +135,7 @@ internal fun OnboardingWelcomeDestination(viewModel: OnboardingWelcomeViewModel)
             color = HedvigTheme.colorScheme.textSecondary,
           )
         }
+        Spacer(Modifier.weight(1f))
         // TODO: Add "Get started" / "Kom igång" to Lokalise
         OnboardingStepButtons(
           primaryText = "Get started",

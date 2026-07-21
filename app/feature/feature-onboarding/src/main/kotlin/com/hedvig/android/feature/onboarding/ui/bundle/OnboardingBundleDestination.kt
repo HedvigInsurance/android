@@ -157,6 +157,7 @@ internal fun OnboardingBundleDestination(
             )
           }
         }
+        Spacer(Modifier.weight(1f))
         OnboardingStepButtons(
           // TODO: Add "Continue to app" / "Fortsätt till appen" to Lokalise
           primaryText = "Continue to app",
