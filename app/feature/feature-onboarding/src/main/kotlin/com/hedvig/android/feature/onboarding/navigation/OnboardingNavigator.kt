@@ -1,6 +1,8 @@
 package com.hedvig.android.feature.onboarding.navigation
 
 import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
+import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddInfoKey
 import com.hedvig.android.feature.onboarding.data.CompleteOnboardingUseCase
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.logger.logcat
@@ -47,6 +49,11 @@ internal class OnboardingNavigator(
     completeOnboardingUseCase.invoke()
     backstack.removeAllOf<OnboardingStepKey>()
     backstack.removeAllOf<OnboardingKey>()
+  }
+
+  /** Pushes the existing edit-co-insured flow; it pops itself back here when done. */
+  fun openAddCoInsured(contractId: String) {
+    backstack.add(CoInsuredAddInfoKey(contractId, CoInsuredFlowType.CoInsured))
   }
 
   /** Reserved for the top app bar back arrow only, per the navigation rule. */
