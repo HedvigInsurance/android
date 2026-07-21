@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.layout.onVisibilityChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
@@ -53,7 +54,10 @@ import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterPr
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.crosssells.CROSS_SELL_IMPRESSION_MIN_DURATION_MS
+import com.hedvig.android.crosssells.CROSS_SELL_IMPRESSION_MIN_FRACTION_VISIBLE
 import com.hedvig.android.crosssells.CrossSellItemPlaceholder
+import com.hedvig.android.crosssells.CrossSellType
 import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.FlowType
@@ -129,6 +133,13 @@ internal fun InsuranceDestination(
     onNavigateToMovingFlow = onNavigateToMovingFlow,
     imageLoader = imageLoader,
     onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
+    onCrossSellImpression = { crossSell ->
+      viewModel.emit(InsuranceScreenEvent.CrossSellShown(crossSell.id, CrossSellType.NewPromise))
+    },
+    onAddonImpression = { bannerInfo ->
+      // Addon banners carry no per-offer id, so the flow type identifies the addon offer.
+      viewModel.emit(InsuranceScreenEvent.CrossSellShown(bannerInfo.flowType.name, CrossSellType.Addon))
+    },
   )
 }
 
@@ -142,6 +153,8 @@ private fun InsuranceScreen(
   onNavigateToMovingFlow: () -> Unit,
   imageLoader: ImageLoader,
   onNavigateToAddonPurchaseFlow: (List<ContractId>) -> Unit,
+  onCrossSellImpression: (CrossSell) -> Unit = {},
+  onAddonImpression: (AddonBannerInfo) -> Unit = {},
 ) {
   val isRetrying = uiState.isRetrying
   val systemBarInsetTopDp = with(LocalDensity.current) {
@@ -188,6 +201,8 @@ private fun InsuranceScreen(
             modifier = Modifier.fillMaxSize(),
             pullRefreshState = pullRefreshState,
             onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
+            onCrossSellImpression = onCrossSellImpression,
+            onAddonImpression = onAddonImpression,
           )
         }
       }
@@ -212,6 +227,8 @@ private fun InsuranceScreenContent(
   navigateToCancelledInsurances: () -> Unit,
   onNavigateToMovingFlow: () -> Unit,
   onNavigateToAddonPurchaseFlow: (List<ContractId>) -> Unit,
+  onCrossSellImpression: (CrossSell) -> Unit = {},
+  onAddonImpression: (AddonBannerInfo) -> Unit = {},
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -265,6 +282,7 @@ private fun InsuranceScreenContent(
               onSheetDismissed = {},
               imageLoader = imageLoader,
               hasCrossSellDiscounts = uiState.hasCrossSellDiscounts,
+              onCrossSellImpression = onCrossSellImpression,
             )
           }
           if (uiState.addonBannerInfoList.isNotEmpty()) {
@@ -287,6 +305,12 @@ private fun InsuranceScreenContent(
                 },
                 modifier = Modifier
                   .fillMaxWidth()
+                  .onVisibilityChanged(
+                    minDurationMs = CROSS_SELL_IMPRESSION_MIN_DURATION_MS,
+                    minFractionVisible = CROSS_SELL_IMPRESSION_MIN_FRACTION_VISIBLE,
+                  ) { visible ->
+                    if (visible) onAddonImpression(bannerInfo)
+                  }
                   .padding(horizontal = 16.dp),
               )
               if (index != uiState.addonBannerInfoList.lastIndex) {
