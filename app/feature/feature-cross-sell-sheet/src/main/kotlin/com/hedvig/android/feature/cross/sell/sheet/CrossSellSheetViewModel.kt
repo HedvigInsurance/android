@@ -22,9 +22,13 @@ import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.DemoSwitcher
 import com.hedvig.android.crosssells.BundleProgress
+import com.hedvig.android.crosssells.CrossSellFlowSource
+import com.hedvig.android.crosssells.CrossSellImpressionTracker
 import com.hedvig.android.crosssells.CrossSellSheetData
+import com.hedvig.android.crosssells.CrossSellUserFlow
 import com.hedvig.android.crosssells.RecommendedAddon
 import com.hedvig.android.crosssells.RecommendedCrossSell
+import com.hedvig.android.crosssells.crossSellSheetShown
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
@@ -55,9 +59,10 @@ import octopus.type.UserFlow
 internal class CrossSellSheetViewModel(
   getCrossSellSheetDataUseCase: GetCrossSellSheetDataUseCase,
   crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
+  crossSellImpressionTracker: CrossSellImpressionTracker,
 ) : MoleculeViewModel<CrossSellSheetEvent, CrossSellSheetState>(
     CrossSellSheetState.Loading,
-    CrossSellSheetPresenter(getCrossSellSheetDataUseCase, crossSellAfterFlowRepository),
+    CrossSellSheetPresenter(getCrossSellSheetDataUseCase, crossSellAfterFlowRepository, crossSellImpressionTracker),
   )
 
 internal sealed interface CrossSellSheetEvent {
@@ -77,6 +82,7 @@ internal sealed interface CrossSellSheetState {
 internal class CrossSellSheetPresenter(
   private val getCrossSellSheetDataUseCase: GetCrossSellSheetDataUseCase,
   private val crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
+  private val crossSellImpressionTracker: CrossSellImpressionTracker,
 ) : MoleculePresenter<CrossSellSheetEvent, CrossSellSheetState> {
   @Composable
   override fun MoleculePresenterScope<CrossSellSheetEvent>.present(
@@ -87,7 +93,15 @@ internal class CrossSellSheetPresenter(
     CollectEvents { event ->
       when (event) {
         is CrossSellSheetEvent.CrossSellSheetShown -> {
-          crossSellAfterFlowRepository.showedCrossSellSheet((state as? CrossSellSheetState.Content)?.infoType)
+          val content = state as? CrossSellSheetState.Content
+          crossSellAfterFlowRepository.showedCrossSellSheet(content?.infoType)
+          if (content != null) {
+            crossSellImpressionTracker.crossSellSheetShown(
+              data = content.crossSellSheetData,
+              userFlow = CrossSellUserFlow.SmartXSell,
+              flowSource = content.infoType.toFlowSource(),
+            )
+          }
         }
       }
     }
@@ -118,6 +132,16 @@ internal class CrossSellSheetPresenter(
       }
     }
     return state
+  }
+}
+
+internal fun CrossSellInfoType.toFlowSource(): CrossSellFlowSource {
+  return when (this) {
+    CrossSellInfoType.Addon -> CrossSellFlowSource.Addon
+    is CrossSellInfoType.ChangeTier -> CrossSellFlowSource.ChangeTier
+    is CrossSellInfoType.ClosedClaim -> CrossSellFlowSource.ClosedClaim
+    CrossSellInfoType.EditCoInsured -> CrossSellFlowSource.EditCoInsured
+    is CrossSellInfoType.MovingFlow -> CrossSellFlowSource.Moving
   }
 }
 
