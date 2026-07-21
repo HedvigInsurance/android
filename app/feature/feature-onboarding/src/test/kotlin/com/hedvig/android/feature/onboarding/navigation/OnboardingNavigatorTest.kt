@@ -120,5 +120,4 @@ internal class OnboardingNavigatorTest {
   }
 }
 
-@kotlinx.serialization.Serializable
-internal data object NonOnboardingKey : HedvigNavKey
+private data object NonOnboardingKey : HedvigNavKey
