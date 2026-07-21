@@ -11,6 +11,10 @@ hedvig {
   viewModels()
 }
 
+android {
+  testOptions.unitTests.isReturnDefaultValues = true
+}
+
 dependencies {
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
