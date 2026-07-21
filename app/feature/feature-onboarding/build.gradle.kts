@@ -12,6 +12,7 @@ hedvig {
 }
 
 dependencies {
+  implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
   implementation(libs.coroutines.core)
