@@ -12,12 +12,14 @@ import com.hedvig.android.feature.onboarding.data.OnboardingRepository
 internal class FakeOnboardingRepository : OnboardingRepository {
   val onboardingDataResponses = Turbine<Either<ErrorMessage, OnboardingData>>()
   val updateContactInfoResponses = Turbine<Either<ErrorMessage, Unit>>()
+  var updateContactInfoCallCount: Int = 0
 
   override suspend fun getOnboardingData(): Either<ErrorMessage, OnboardingData> {
     return onboardingDataResponses.awaitItem()
   }
 
   override suspend fun updateContactInfo(email: String, phoneNumber: String): Either<ErrorMessage, Unit> {
+    updateContactInfoCallCount++
     return updateContactInfoResponses.awaitItem()
   }
 }
