@@ -12,8 +12,12 @@ import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.Either
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.core.common.ApplicationScope
+import com.hedvig.android.crosssells.CrossSellImpressionTracker
 import com.hedvig.android.crosssells.CrossSellSheetData
+import com.hedvig.android.crosssells.CrossSellType
+import com.hedvig.android.crosssells.CrossSellUserFlow
 import com.hedvig.android.crosssells.RecommendedCrossSell
+import com.hedvig.android.crosssells.crossSellSheetShown
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.claimintent.DeleteClaimIntentDraftUseCase
 import com.hedvig.android.data.contract.CrossSell
@@ -42,6 +46,7 @@ internal class HomePresenter(
   private val applicationScope: ApplicationScope,
   private val isProduction: Boolean,
   private val deleteClaimIntentDraftUseCase: DeleteClaimIntentDraftUseCase,
+  private val crossSellImpressionTracker: CrossSellImpressionTracker,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
   override fun MoleculePresenterScope<HomeEvent>.present(lastState: HomeUiState): HomeUiState {
@@ -50,6 +55,7 @@ internal class HomePresenter(
     var successData: SuccessData? by remember { mutableStateOf(SuccessData.fromLastState(lastState)) }
     var loadIteration by remember { mutableIntStateOf(0) }
     var crossSellToolTipShownEpochDay by remember { mutableStateOf<Long?>(null) }
+    val trackedHomeImpressions = remember { mutableSetOf<String>() }
     val alreadySeenImportantMessages: List<String>
       by seenImportantMessagesStorage.seenMessages.collectAsState()
 
@@ -66,6 +72,22 @@ internal class HomePresenter(
         HomeEvent.MarkCardCrossSellsAsSeen -> {
           applicationScope.launch {
             crossSellHomeNotificationService.markAsSeen()
+          }
+        }
+
+        is HomeEvent.CrossSellsShown -> {
+          crossSellImpressionTracker.crossSellSheetShown(homeEvent.crossSells, CrossSellUserFlow.InsuranceCard)
+        }
+
+        is HomeEvent.HomeCrossSellImpression -> {
+          val impressionKey = "${homeEvent.crossSellType.analyticsValue}:${homeEvent.offerId}"
+          if (trackedHomeImpressions.add(impressionKey)) {
+            crossSellImpressionTracker.crossSellShown(
+              userFlow = CrossSellUserFlow.HomeScreen,
+              crossSellType = homeEvent.crossSellType,
+              offerId = homeEvent.offerId,
+              flowSource = null,
+            )
           }
         }
 
@@ -168,6 +190,10 @@ internal sealed interface HomeEvent {
   data class MarkMessageAsSeen(val messageId: String) : HomeEvent
 
   data object MarkCardCrossSellsAsSeen : HomeEvent
+
+  data class CrossSellsShown(val crossSells: CrossSellSheetData) : HomeEvent
+
+  data class HomeCrossSellImpression(val offerId: String, val crossSellType: CrossSellType) : HomeEvent
 
   data class CrossSellToolTipShown(val epochDay: Long) : HomeEvent
 
