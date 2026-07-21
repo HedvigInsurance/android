@@ -29,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.PermissionStatus.Granted
 import com.google.accompanist.permissions.isGranted
+import com.hedvig.android.data.settings.datastore.AnalyticsConsent
 import com.hedvig.android.design.system.hedvig.DialogDefaults.ButtonSize.BIG
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigBigCard
@@ -94,6 +95,7 @@ internal fun SettingsDestination(
     changeSubscriptionPreference = {
       viewModel.emit(SettingsEvent.ChangeSubscriptionPreference(it))
     },
+    onChangeAnalyticsConsent = { viewModel.emit(SettingsEvent.ChangeAnalyticsConsent(it)) },
   )
 }
 
@@ -103,6 +105,7 @@ private fun SettingsScreen(
   notificationPermissionState: NotificationPermissionState,
   navigateUp: () -> Unit,
   changeSubscriptionPreference: (Boolean) -> Unit,
+  onChangeAnalyticsConsent: (AnalyticsConsent) -> Unit,
   openAppSettings: () -> Unit,
   onNotificationInfoDismissed: () -> Unit,
   onLanguageSelected: (Language) -> Unit,
@@ -170,6 +173,30 @@ private fun SettingsScreen(
           isSubscribedToEmails = uiState.isSubscribedToEmails ?: true,
           enabled = true,
           hasError = uiState.emailSubscriptionPreferenceError,
+        )
+        Spacer(Modifier.height(4.dp))
+        HedvigBigCard(
+          onClick = {
+            val newConsent = if (uiState.analyticsConsent == AnalyticsConsent.GRANTED) {
+              AnalyticsConsent.DENIED
+            } else {
+              AnalyticsConsent.GRANTED
+            }
+            onChangeAnalyticsConsent(newConsent)
+          },
+          inputText = if (uiState.analyticsConsent == AnalyticsConsent.GRANTED) {
+            // TODO: Add "On" / "På" to Lokalise
+            "On"
+          } else {
+            // NOT_DECIDED renders as "Off": nothing is forwarded to Firebase in that state.
+            // TODO: Add "Off" / "Av" to Lokalise
+            "Off"
+          },
+          // TODO: Add "Product analytics" / "Produktanalys" to Lokalise
+          labelText = "Product analytics",
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(16.dp))
 
@@ -382,6 +409,7 @@ fun PreviewSettingsScreen() {
           showNotificationReminder = true,
           isSubscribedToEmails = true,
           emailSubscriptionPreferenceError = true,
+          analyticsConsent = null,
         ),
         notificationPermissionState = object : NotificationPermissionState {
           override val showDialog = false
@@ -400,6 +428,7 @@ fun PreviewSettingsScreen() {
         onThemeSelected = {},
         onTerminateAccountClicked = {},
         changeSubscriptionPreference = {},
+        onChangeAnalyticsConsent = {},
       )
     }
   }
