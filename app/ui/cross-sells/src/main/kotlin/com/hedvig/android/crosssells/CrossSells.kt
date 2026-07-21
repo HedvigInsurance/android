@@ -29,6 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.layout.onVisibilityChanged
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -612,35 +613,47 @@ fun CrossSellsSection(
   title: String? = null,
   buttonSize: ButtonDefaults.ButtonSize = ButtonDefaults.ButtonSize.Medium,
   buttonShape: Shape? = null,
+  onCrossSellImpression: ((CrossSell) -> Unit)? = null,
 ) {
   Column(modifier) {
     if (withSubHeader) {
       CrossSellsSubHeaderWithDivider(title)
     }
     for ((index, crossSell) in crossSells.withIndex()) {
-      if (hasCrossSellDiscounts) {
-        CrossSellItemWithDiscounts(
-          crossSellTitle = crossSell.title,
-          crossSellSubtitle = crossSell.subtitle,
-          storeUrl = crossSell.storeUrl,
-          onCrossSellClick = onCrossSellClick,
-          isLoading = false,
-          imageLoader = imageLoader,
-          crossSellImageAsset = crossSell.pillowImage,
-          onSheetDismissed = onSheetDismissed,
-          buttonText = crossSell.buttonText,
-          buttonSize = buttonSize,
-          buttonShape = buttonShape,
-        )
-      } else {
-        CrossSellItem(
-          crossSell,
-          onCrossSellClick,
-          onSheetDismissed = onSheetDismissed,
-          imageLoader = imageLoader,
-          buttonSize = buttonSize,
-          buttonShape = buttonShape,
-        )
+      Box(
+        Modifier
+          .fillMaxWidth()
+          .onVisibilityChanged(
+            minDurationMs = CROSS_SELL_IMPRESSION_MIN_DURATION_MS,
+            minFractionVisible = CROSS_SELL_IMPRESSION_MIN_FRACTION_VISIBLE,
+          ) { visible ->
+            if (visible) onCrossSellImpression?.invoke(crossSell)
+          },
+      ) {
+        if (hasCrossSellDiscounts) {
+          CrossSellItemWithDiscounts(
+            crossSellTitle = crossSell.title,
+            crossSellSubtitle = crossSell.subtitle,
+            storeUrl = crossSell.storeUrl,
+            onCrossSellClick = onCrossSellClick,
+            isLoading = false,
+            imageLoader = imageLoader,
+            crossSellImageAsset = crossSell.pillowImage,
+            onSheetDismissed = onSheetDismissed,
+            buttonText = crossSell.buttonText,
+            buttonSize = buttonSize,
+            buttonShape = buttonShape,
+          )
+        } else {
+          CrossSellItem(
+            crossSell,
+            onCrossSellClick,
+            onSheetDismissed = onSheetDismissed,
+            imageLoader = imageLoader,
+            buttonSize = buttonSize,
+            buttonShape = buttonShape,
+          )
+        }
       }
       if (index != crossSells.lastIndex) {
         Spacer(Modifier.height(16.dp))
