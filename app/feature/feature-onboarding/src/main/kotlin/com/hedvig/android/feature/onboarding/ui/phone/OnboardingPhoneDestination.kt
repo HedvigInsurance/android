@@ -85,9 +85,13 @@ internal class OnboardingPhonePresenter(
         phoneNumber = content.phoneNumber,
       ).fold(
         ifLeft = {
-          currentState = content.copy(isSubmitting = false, showSubmissionError = true)
+          // Derive from the live state so digits typed while submitting are not lost.
+          currentState = (currentState as? OnboardingPhoneUiState.Content ?: content)
+            .copy(isSubmitting = false, showSubmissionError = true)
         },
         ifRight = {
+          // Reset before navigating so returning to this retained entry does not leave Save disabled.
+          currentState = content.copy(isSubmitting = false)
           navigator.continueFrom(OnboardingStepId.PhoneNumber)
         },
       )

@@ -72,6 +72,9 @@ internal class OnboardingPhonePresenterTest {
       repository.updateContactInfoResponses.add(Unit.right())
       awaitItem() // phone number updated, not yet submitting
       awaitItem() // isSubmitting = true; continueFrom already ran during runCurrent() above
+      val settled = awaitItem() // isSubmitting reset to false before navigating away
+      assertThat(settled).isInstanceOf<OnboardingPhoneUiState.Content>()
+      assertThat((settled as OnboardingPhoneUiState.Content).isSubmitting).isEqualTo(false)
       assertThat(backstack.entries.last()).isEqualTo(OnboardingStepKey(OnboardingStepId.Theme))
     }
   }
