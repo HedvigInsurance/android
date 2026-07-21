@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.onboarding.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +31,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.ArrowLeft
 import com.hedvig.android.design.system.hedvig.icon.Close
@@ -82,17 +82,18 @@ internal fun OnboardingStepScaffold(
           .padding(horizontal = 16.dp),
       ) {
         if (showBackButton) {
-          Icon(
-            imageVector = HedvigIcons.ArrowLeft,
-            // TODO: Add "Go back" / "Gå tillbaka" to Lokalise (or reuse an existing a11y string)
-            contentDescription = "Go back",
-            modifier = Modifier
-              .size(24.dp)
-              .clip(CircleShape)
-              .clickable(onClick = onBackClick),
-          )
+          IconButton(
+            onClick = onBackClick,
+          ) {
+            Icon(
+              imageVector = HedvigIcons.ArrowLeft,
+              // TODO: Add "Go back" / "Gå tillbaka" to Lokalise (or reuse an existing a11y string)
+              contentDescription = "Go back",
+              modifier = Modifier.size(24.dp),
+            )
+          }
         } else {
-          Spacer(Modifier.size(24.dp))
+          Spacer(Modifier.size(40.dp))
         }
         if (progress != null) {
           OnboardingProgressBar(
@@ -104,15 +105,16 @@ internal fun OnboardingStepScaffold(
         } else {
           Spacer(Modifier.weight(1f))
         }
-        Icon(
-          imageVector = HedvigIcons.Close,
-          // TODO: Add "Close" / "Stäng" to Lokalise (or reuse an existing a11y string)
-          contentDescription = "Close",
-          modifier = Modifier
-            .size(24.dp)
-            .clip(CircleShape)
-            .clickable(onClick = onCloseClick),
-        )
+        IconButton(
+          onClick = onCloseClick,
+        ) {
+          Icon(
+            imageVector = HedvigIcons.Close,
+            // TODO: Add "Close" / "Stäng" to Lokalise (or reuse an existing a11y string)
+            contentDescription = "Close",
+            modifier = Modifier.size(24.dp),
+          )
+        }
       }
       Column(
         modifier = Modifier
