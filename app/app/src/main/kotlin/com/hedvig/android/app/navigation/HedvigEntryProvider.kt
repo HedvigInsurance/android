@@ -47,6 +47,7 @@ import com.hedvig.android.feature.insurances.navigation.insuranceEntries
 import com.hedvig.android.feature.login.navigation.loginEntries
 import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
 import com.hedvig.android.feature.movingflow.movingFlowEntries
+import com.hedvig.android.feature.onboarding.navigation.onboardingEntries
 import com.hedvig.android.feature.payments.navigation.paymentsEntries
 import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountKey
 import com.hedvig.android.feature.payoutaccount.navigation.payoutAccountEntries
@@ -56,6 +57,7 @@ import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuran
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceEntries
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateKey
 import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateEntries
+import com.hedvig.android.language.Language
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.activity.ExternalNavigator
@@ -165,7 +167,17 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     externalNavigator = externalNavigator,
     navigateToNewConversation = navigateToNewConversation,
     navigateToInbox = navigateToInbox,
+    openPrivacyPolicy = { openUrl(privacyPolicyUrl(languageService.getLanguage())) },
   )
+}
+
+/**
+ * The public privacy-policy page, per language. Mirrors the links used by the profile "about app"
+ * screen; kept here so `:app` owns the URL rather than `feature-onboarding`.
+ */
+private fun privacyPolicyUrl(language: Language): String = when (language) {
+  Language.SV_SE -> "https://www.hedvig.com/se/hedvig/personuppgifter"
+  Language.EN_SE -> "https://www.hedvig.com/se-en/hedvig/privacy-policy"
 }
 
 private fun EntryProviderScope<HedvigNavKey>.addLoginEntries(
@@ -496,6 +508,7 @@ private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
   externalNavigator: ExternalNavigator,
   navigateToNewConversation: () -> Unit,
   navigateToInbox: () -> Unit,
+  openPrivacyPolicy: () -> Unit,
 ) {
   addonPurchaseEntries(
     backstack = backstack,
@@ -531,4 +544,10 @@ private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
   )
   imageViewerEntries(backstack, imageLoader)
   removeAddonsEntries(backstack = backstack)
+  onboardingEntries(
+    backstack = backstack,
+    openUrl = openUrl,
+    openPrivacyPolicy = openPrivacyPolicy,
+    navigateToChipId = { contractId -> backstack.add(ChipIdKey(contractId)) },
+  )
 }

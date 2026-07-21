@@ -207,6 +207,7 @@ dependencies {
   implementation(projects.featureLogin)
   implementation(projects.featureMovingflow)
   implementation(projects.featureMovingflowNavigation)
+  implementation(projects.featureOnboarding)
 
   implementation(projects.featureRemoveAddons)
   implementation(projects.featurePayoutAccount)

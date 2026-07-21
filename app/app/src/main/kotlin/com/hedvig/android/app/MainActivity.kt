@@ -274,6 +274,7 @@ class MainActivity : AppCompatActivity() {
           currentDestinationHolder = currentDestinationHolder,
           eventTrackingClient = eventTrackingClient,
           screenParameterExtractor = screenParameterExtractor,
+          onboardingGate = navRetainedViewModel.onboardingGate,
         )
       }
     }

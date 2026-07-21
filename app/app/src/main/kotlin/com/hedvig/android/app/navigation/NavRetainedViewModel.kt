@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.hedvig.android.app.di.ActivityRetainedGraph
 import com.hedvig.android.app.di.AppGraph
 import com.hedvig.android.app.di.MergedMetroViewModelFactory
+import com.hedvig.android.feature.onboarding.gate.OnboardingGate
 import dev.zacsweers.metro.asContribution
 import dev.zacsweers.metrox.viewmodel.MetroViewModelFactory
 
@@ -38,6 +39,8 @@ internal class NavRetainedViewModel(appGraph: AppGraph, isOwnTask: Boolean) : Vi
     appGraph.asContribution<ActivityRetainedGraph.Factory>().create(backstackController)
 
   val sessionReconciler: SessionReconciler = activityGraph.sessionReconciler
+
+  val onboardingGate: OnboardingGate = activityGraph.onboardingGate
 
   val viewModelFactory: MetroViewModelFactory = MergedMetroViewModelFactory(appGraph, activityGraph)
 }
