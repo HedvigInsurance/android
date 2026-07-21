@@ -130,17 +130,16 @@ internal fun OnboardingInviteDestination(viewModel: OnboardingInviteViewModel, n
       }
 
       is OnboardingInviteUiState.Content -> {
-        val content = state
         Spacer(Modifier.height(8.dp))
         OnboardingStepHeader(
           // TODO: Add "Invite a friend" / "Bjud in en vän" to Lokalise
           title = "Invite a friend",
           // TODO: Add the body copy below (and its Swedish translation) to Lokalise
-          description = "With Hedvig Forever, you get ${content.incentiveDisplay} off for every friend you invite",
+          description = "With Hedvig Forever, you get ${state.incentiveDisplay} off for every friend you invite",
         )
         Spacer(Modifier.weight(1f))
         HedvigText(
-          text = content.code,
+          text = state.code,
           modifier = Modifier.align(Alignment.CenterHorizontally),
         )
         Spacer(Modifier.weight(1f))
@@ -155,7 +154,7 @@ internal fun OnboardingInviteDestination(viewModel: OnboardingInviteViewModel, n
             //  REFERRAL_SMS_MESSAGE once product confirms.
             context.showShareSheet(
               title = "Invite a friend",
-              text = "With my code you get a discount at Hedvig. Use code ${content.code}.",
+              text = "With my code you get a discount at Hedvig. Use code ${state.code}.",
             )
           },
         )

@@ -130,7 +130,6 @@ internal fun OnboardingBundleDestination(
       }
 
       is OnboardingBundleUiState.Content -> {
-        val content = state
         Spacer(Modifier.height(8.dp))
         OnboardingStepHeader(
           // TODO: Add "Get bundle discount" / "Få paketrabatt" to Lokalise
@@ -139,7 +138,7 @@ internal fun OnboardingBundleDestination(
           description = "You get a bundle discount when you have two or more insurances with us",
         )
         Spacer(Modifier.height(16.dp))
-        for (crossSell in content.crossSells) {
+        for (crossSell in state.crossSells) {
           Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier

@@ -61,9 +61,4 @@ internal class OnboardingNavigator(
   fun openConnectPayment() {
     backstack.add(TrustlyKey)
   }
-
-  /** Reserved for the top app bar back arrow only, per the navigation rule. */
-  fun navigateBack() {
-    backstack.navigateUp()
-  }
 }

@@ -84,7 +84,8 @@ internal class OnboardingThemePresenter(
         ifRight = { session ->
           currentState = OnboardingThemeUiState.Content(
             progress = session.progressFor(OnboardingStepId.Theme),
-            selectedTheme = storedTheme ?: Theme.SYSTEM_DEFAULT,
+            // Placeholder; the return site merges the live stored theme.
+            selectedTheme = Theme.SYSTEM_DEFAULT,
           )
         },
       )
@@ -218,7 +219,7 @@ private fun ThemeOptionRow(
       .fillMaxWidth()
       .clip(HedvigTheme.shapes.cornerMedium)
       .clickable(onClick = onClick)
-      .padding(16.dp),
+      .padding(vertical = 16.dp),
   ) {
     Column(Modifier.weight(1f)) {
       HedvigText(title)

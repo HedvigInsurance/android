@@ -12,6 +12,7 @@ hedvig {
 }
 
 android {
+  // Compose's Recomposer logs via android.util.Log in unit tests; return defaults instead of throwing.
   testOptions.unitTests.isReturnDefaultValues = true
 }
 

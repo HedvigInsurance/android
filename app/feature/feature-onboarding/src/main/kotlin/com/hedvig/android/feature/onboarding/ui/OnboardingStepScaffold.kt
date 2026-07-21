@@ -152,6 +152,7 @@ private fun OnboardingProgressBar(progress: OnboardingProgress, modifier: Modifi
 internal fun OnboardingStepHeader(title: String, description: String, modifier: Modifier = Modifier) {
   Column(modifier.padding(horizontal = 16.dp)) {
     HedvigText(text = title)
+    Spacer(Modifier.height(4.dp))
     HedvigText(text = description, color = HedvigTheme.colorScheme.textSecondary)
   }
 }

@@ -151,6 +151,7 @@ internal class ConsentAwareEventTrackingClient(
   }
 }
 
+// Must stay public: Metro only discovers cross-module contributions with public hints (see CLAUDE.md).
 @ContributesTo(AppScope::class)
 @Suppress("EXPOSED_PARAMETER_TYPE")
 interface ConsentAwareEventTrackingClientProviders {
