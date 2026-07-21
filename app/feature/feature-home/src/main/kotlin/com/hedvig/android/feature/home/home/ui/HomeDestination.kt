@@ -257,8 +257,9 @@ internal fun HomeDestination(
       viewModel.emit(HomeEvent.HomeCrossSellImpression(crossSell.id, CrossSellType.NewPromise))
     },
     onHomeAddonImpression = { bannerInfo ->
-      // Addon banners carry no per-offer id, so the flow type identifies the addon offer.
-      viewModel.emit(HomeEvent.HomeCrossSellImpression(bannerInfo.flowType.name, CrossSellType.Addon))
+      // Addon banners carry no per-offer id, so the flow type (lowercased to match enum-value casing)
+      // identifies the addon offer.
+      viewModel.emit(HomeEvent.HomeCrossSellImpression(bannerInfo.flowType.name.lowercase(), CrossSellType.Addon))
     },
     navigateToContactInfo = navigateToContactInfo,
     navigateToChipIdScreen = navigateToChipId,

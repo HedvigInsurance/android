@@ -137,8 +137,9 @@ internal fun InsuranceDestination(
       viewModel.emit(InsuranceScreenEvent.CrossSellShown(crossSell.id, CrossSellType.NewPromise))
     },
     onAddonImpression = { bannerInfo ->
-      // Addon banners carry no per-offer id, so the flow type identifies the addon offer.
-      viewModel.emit(InsuranceScreenEvent.CrossSellShown(bannerInfo.flowType.name, CrossSellType.Addon))
+      // Addon banners carry no per-offer id, so the flow type (lowercased to match enum-value casing)
+      // identifies the addon offer.
+      viewModel.emit(InsuranceScreenEvent.CrossSellShown(bannerInfo.flowType.name.lowercase(), CrossSellType.Addon))
     },
   )
 }
