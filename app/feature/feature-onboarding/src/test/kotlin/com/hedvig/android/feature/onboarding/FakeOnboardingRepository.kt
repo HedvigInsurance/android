@@ -6,8 +6,14 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.onboarding.data.OnboardingContract
 import com.hedvig.android.feature.onboarding.data.OnboardingCrossSell
 import com.hedvig.android.feature.onboarding.data.OnboardingData
+import com.hedvig.android.feature.onboarding.data.OnboardingMemberIdProvider
 import com.hedvig.android.feature.onboarding.data.OnboardingReferralInformation
 import com.hedvig.android.feature.onboarding.data.OnboardingRepository
+import kotlinx.coroutines.flow.flowOf
+
+internal class FakeOnboardingMemberIdProvider(var memberId: String? = "test-member-id") : OnboardingMemberIdProvider {
+  override fun memberId() = flowOf(memberId)
+}
 
 internal class FakeOnboardingRepository : OnboardingRepository {
   val onboardingDataResponses = Turbine<Either<ErrorMessage, OnboardingData>>()

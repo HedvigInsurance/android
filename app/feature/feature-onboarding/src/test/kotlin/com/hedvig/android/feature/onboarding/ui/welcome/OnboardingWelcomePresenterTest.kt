@@ -7,6 +7,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.feature.onboarding.FakeOnboardingMemberIdProvider
 import com.hedvig.android.feature.onboarding.FakeOnboardingRepository
 import com.hedvig.android.feature.onboarding.data.CompleteOnboardingUseCase
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
@@ -39,7 +40,7 @@ internal class OnboardingWelcomePresenterTest {
   @Test
   fun `session fetch success shows content with the progress of the whole path`() = runTest {
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository)
+    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(TestBackstack(), sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingWelcomePresenter(sessionStore, navigator)
 
@@ -57,7 +58,7 @@ internal class OnboardingWelcomePresenterTest {
   @Test
   fun `session fetch failure shows error, retry refetches`() = runTest {
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository)
+    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(TestBackstack(), sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingWelcomePresenter(sessionStore, navigator)
 
@@ -76,7 +77,7 @@ internal class OnboardingWelcomePresenterTest {
   fun `get started pushes the first path step onto the backstack`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingKey) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository)
+    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingWelcomePresenter(sessionStore, navigator)
 

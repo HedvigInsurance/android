@@ -7,6 +7,7 @@ import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
+import com.hedvig.android.feature.onboarding.FakeOnboardingMemberIdProvider
 import com.hedvig.android.feature.onboarding.FakeOnboardingRepository
 import com.hedvig.android.feature.onboarding.data.CompleteOnboardingUseCase
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
@@ -50,7 +51,7 @@ internal class OnboardingBundlePresenterTest {
       entries.add(OnboardingStepKey(OnboardingStepId.BundleDiscount))
     }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository)
+    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingBundlePresenter(sessionStore, navigator)
 
@@ -73,7 +74,7 @@ internal class OnboardingBundlePresenterTest {
       entries.add(OnboardingStepKey(OnboardingStepId.BundleDiscount))
     }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository)
+    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, completeOnboarding)
     val presenter = OnboardingBundlePresenter(sessionStore, navigator)
 

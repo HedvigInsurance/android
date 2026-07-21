@@ -5,6 +5,7 @@ import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
+import com.hedvig.android.feature.onboarding.FakeOnboardingMemberIdProvider
 import com.hedvig.android.feature.onboarding.FakeOnboardingRepository
 import com.hedvig.android.feature.onboarding.data.CompleteOnboardingUseCase
 import com.hedvig.android.feature.onboarding.data.OnboardingContract
@@ -38,7 +39,7 @@ internal class OnboardingPetIdPresenterTest {
   fun `rows are pinned from the contracts missing pet id at load`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.PetIds)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository)
+    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingPetIdPresenter(sessionStore, navigator)
 
@@ -70,7 +71,7 @@ internal class OnboardingPetIdPresenterTest {
   fun `refresh marks completed rows instead of removing them`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.PetIds)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository)
+    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingPetIdPresenter(sessionStore, navigator)
 
@@ -119,7 +120,7 @@ internal class OnboardingPetIdPresenterTest {
   fun `continue advances to InviteFriend`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.PetIds)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository)
+    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingPetIdPresenter(sessionStore, navigator)
 

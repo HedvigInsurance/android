@@ -8,6 +8,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.feature.onboarding.FakeOnboardingMemberIdProvider
 import com.hedvig.android.feature.onboarding.FakeOnboardingRepository
 import com.hedvig.android.feature.onboarding.data.CompleteOnboardingUseCase
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
@@ -40,7 +41,7 @@ internal class OnboardingPhonePresenterTest {
   fun `content pre-fills the member's phone number`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.PhoneNumber)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository)
+    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingPhonePresenter(sessionStore, navigator, repository)
 
@@ -57,7 +58,7 @@ internal class OnboardingPhonePresenterTest {
   fun `save success advances to the next step`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.PhoneNumber)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository)
+    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingPhonePresenter(sessionStore, navigator, repository)
 
@@ -79,7 +80,7 @@ internal class OnboardingPhonePresenterTest {
   fun `save failure shows inline error and does not advance`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.PhoneNumber)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository)
+    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingPhonePresenter(sessionStore, navigator, repository)
 
@@ -102,7 +103,7 @@ internal class OnboardingPhonePresenterTest {
   fun `do this later advances without calling the mutation`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.PhoneNumber)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository)
+    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingPhonePresenter(sessionStore, navigator, repository)
 

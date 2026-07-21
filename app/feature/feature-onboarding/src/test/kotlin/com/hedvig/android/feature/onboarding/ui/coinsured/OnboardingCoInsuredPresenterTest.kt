@@ -9,6 +9,7 @@ import assertk.assertions.isInstanceOf
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddInfoKey
+import com.hedvig.android.feature.onboarding.FakeOnboardingMemberIdProvider
 import com.hedvig.android.feature.onboarding.FakeOnboardingRepository
 import com.hedvig.android.feature.onboarding.data.CompleteOnboardingUseCase
 import com.hedvig.android.feature.onboarding.data.OnboardingContract
@@ -42,7 +43,7 @@ internal class OnboardingCoInsuredPresenterTest {
   fun `rows are pinned from the contracts missing co-insured at load`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.CoInsured)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository)
+    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingCoInsuredPresenter(sessionStore, navigator)
 
@@ -61,7 +62,7 @@ internal class OnboardingCoInsuredPresenterTest {
   fun `add navigates to the edit co-insured flow`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.CoInsured)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository)
+    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingCoInsuredPresenter(sessionStore, navigator)
 
@@ -79,7 +80,7 @@ internal class OnboardingCoInsuredPresenterTest {
   fun `refresh marks completed rows instead of removing them`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.CoInsured)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository)
+    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingCoInsuredPresenter(sessionStore, navigator)
 
@@ -115,7 +116,7 @@ internal class OnboardingCoInsuredPresenterTest {
   fun `continue advances to InviteFriend (PetIds skipped for default data)`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.CoInsured)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository)
+    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingCoInsuredPresenter(sessionStore, navigator)
 

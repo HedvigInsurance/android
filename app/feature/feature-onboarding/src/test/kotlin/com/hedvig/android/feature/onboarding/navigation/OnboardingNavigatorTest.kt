@@ -8,6 +8,7 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
+import com.hedvig.android.feature.onboarding.FakeOnboardingMemberIdProvider
 import com.hedvig.android.feature.onboarding.FakeOnboardingRepository
 import com.hedvig.android.feature.onboarding.data.CompleteOnboardingUseCase
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
@@ -36,7 +37,7 @@ internal class OnboardingNavigatorTest {
   }
 
   private suspend fun sessionStoreWithData(repository: FakeOnboardingRepository): OnboardingSessionStore {
-    val store = OnboardingSessionStore(repository)
+    val store = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
     repository.onboardingDataResponses.add(testOnboardingData().right())
     store.getOrFetchSession()
     return store
@@ -109,7 +110,7 @@ internal class OnboardingNavigatorTest {
     val completeOnboarding = FakeCompleteOnboardingUseCase()
     val navigator = OnboardingNavigator(
       backstack,
-      OnboardingSessionStore(FakeOnboardingRepository()),
+      OnboardingSessionStore(FakeOnboardingRepository(), FakeOnboardingMemberIdProvider()),
       completeOnboarding,
     )
 

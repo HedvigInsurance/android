@@ -6,6 +6,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import com.hedvig.android.data.settings.datastore.AnalyticsConsent
+import com.hedvig.android.feature.onboarding.FakeOnboardingMemberIdProvider
 import com.hedvig.android.feature.onboarding.FakeOnboardingRepository
 import com.hedvig.android.feature.onboarding.FakeSettingsDataStore
 import com.hedvig.android.feature.onboarding.data.CompleteOnboardingUseCase
@@ -39,7 +40,7 @@ internal class OnboardingConsentPresenterTest {
   fun `allow stores GRANTED and advances to the next step`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.AnalyticsConsent)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository)
+    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
     val settingsDataStore = FakeSettingsDataStore()
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingConsentPresenter(sessionStore, navigator, settingsDataStore)
@@ -59,7 +60,7 @@ internal class OnboardingConsentPresenterTest {
   fun `deny stores DENIED and still advances`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.AnalyticsConsent)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository)
+    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
     val settingsDataStore = FakeSettingsDataStore()
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingConsentPresenter(sessionStore, navigator, settingsDataStore)

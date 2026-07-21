@@ -5,6 +5,7 @@ import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
+import com.hedvig.android.feature.onboarding.FakeOnboardingMemberIdProvider
 import com.hedvig.android.feature.onboarding.FakeOnboardingRepository
 import com.hedvig.android.feature.onboarding.FakeSettingsDataStore
 import com.hedvig.android.feature.onboarding.data.CompleteOnboardingUseCase
@@ -39,7 +40,7 @@ internal class OnboardingThemePresenterTest {
   fun `selected theme defaults to SYSTEM_DEFAULT when nothing stored`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.Theme)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository)
+    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
     val settingsDataStore = FakeSettingsDataStore()
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingThemePresenter(sessionStore, navigator, settingsDataStore)
@@ -57,7 +58,7 @@ internal class OnboardingThemePresenterTest {
   fun `selecting a theme persists it and updates the selection`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.Theme)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository)
+    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
     val settingsDataStore = FakeSettingsDataStore()
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingThemePresenter(sessionStore, navigator, settingsDataStore)
@@ -77,7 +78,7 @@ internal class OnboardingThemePresenterTest {
   fun `continue advances to the next path step`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.Theme)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository)
+    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
     val settingsDataStore = FakeSettingsDataStore()
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingThemePresenter(sessionStore, navigator, settingsDataStore)
