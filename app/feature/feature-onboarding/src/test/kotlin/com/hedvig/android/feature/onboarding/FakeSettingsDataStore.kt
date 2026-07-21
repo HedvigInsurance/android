@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 internal class FakeSettingsDataStore : SettingsDataStore {
   val consent = MutableStateFlow(AnalyticsConsent.NOT_DECIDED)
+  val theme = MutableStateFlow<Theme?>(null)
 
   override suspend fun setAnalyticsConsent(consent: AnalyticsConsent) {
     this.consent.value = consent
@@ -15,9 +16,11 @@ internal class FakeSettingsDataStore : SettingsDataStore {
 
   override fun observeAnalyticsConsent(): Flow<AnalyticsConsent> = consent
 
-  override suspend fun setTheme(theme: Theme) = error("unused")
+  override suspend fun setTheme(theme: Theme) {
+    this.theme.value = theme
+  }
 
-  override fun observeTheme(): Flow<Theme?> = error("unused")
+  override fun observeTheme(): Flow<Theme?> = theme
 
   override suspend fun setEmailSubscriptionPreference(subscribe: Boolean) = error("unused")
 
