@@ -2,6 +2,7 @@ package com.hedvig.android.feature.onboarding.navigation
 
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
+import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyKey
 import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddInfoKey
 import com.hedvig.android.feature.onboarding.data.CompleteOnboardingUseCase
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
@@ -54,6 +55,11 @@ internal class OnboardingNavigator(
   /** Pushes the existing edit-co-insured flow; it pops itself back here when done. */
   fun openAddCoInsured(contractId: String) {
     backstack.add(CoInsuredAddInfoKey(contractId, CoInsuredFlowType.CoInsured))
+  }
+
+  /** Pushes the Trustly connect-payment flow; it pops itself back here when done. */
+  fun openConnectPayment() {
+    backstack.add(TrustlyKey)
   }
 
   /** Reserved for the top app bar back arrow only, per the navigation rule. */
