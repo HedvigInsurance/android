@@ -69,8 +69,8 @@ internal class OnboardingPhonePresenterTest {
       sendEvent(OnboardingPhoneEvent.Save)
       runCurrent()
       repository.updateContactInfoResponses.add(Unit.right())
-      awaitItem() // isSubmitting = true
-      awaitItem() // navigation happens
+      awaitItem() // phone number updated, not yet submitting
+      awaitItem() // isSubmitting = true; continueFrom already ran during runCurrent() above
       assertThat(backstack.entries.last()).isEqualTo(OnboardingStepKey(OnboardingStepId.Theme))
     }
   }
