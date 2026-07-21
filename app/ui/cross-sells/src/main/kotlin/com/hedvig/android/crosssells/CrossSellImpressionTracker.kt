@@ -83,7 +83,7 @@ internal class CrossSellImpressionTrackerImpl(
       name = CROSS_SELL_SHOWN_EVENT,
       parameters = buildMap {
         put("user_flow", userFlow.analyticsValue)
-        put("cross_sell_type", crossSellType.analyticsValue)
+        put("offer_type", crossSellType.analyticsValue)
         put("offer_id", offerId)
         if (flowSource != null) {
           put("flow_source", flowSource.analyticsValue)
