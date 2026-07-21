@@ -38,5 +38,6 @@ dependencies {
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
   testImplementation(libs.turbine)
+  testImplementation(projects.loggingTest)
   testImplementation(projects.moleculeTest)
 }
