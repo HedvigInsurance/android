@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.onboarding.navigation
 
 import androidx.navigation3.runtime.EntryProviderScope
+import coil3.ImageLoader
 import com.hedvig.android.feature.onboarding.ui.bundle.OnboardingBundleDestination
 import com.hedvig.android.feature.onboarding.ui.bundle.OnboardingBundleViewModel
 import com.hedvig.android.feature.onboarding.ui.coinsured.OnboardingCoInsuredDestination
@@ -27,6 +28,7 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.onboardingEntries(
   backstack: Backstack,
+  imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
   openPrivacyPolicy: () -> Unit,
   navigateToChipId: (contractId: String) -> Unit,
@@ -80,7 +82,7 @@ fun EntryProviderScope<HedvigNavKey>.onboardingEntries(
 
       OnboardingStepId.BundleDiscount -> {
         val viewModel: OnboardingBundleViewModel = metroViewModel()
-        OnboardingBundleDestination(viewModel, backstack::navigateUp, openUrl)
+        OnboardingBundleDestination(viewModel, imageLoader, backstack::navigateUp, openUrl)
       }
     }
   }

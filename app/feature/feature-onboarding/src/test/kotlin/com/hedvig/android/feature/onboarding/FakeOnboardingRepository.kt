@@ -44,7 +44,15 @@ internal fun testOnboardingData(
   ),
   referralInformation: OnboardingReferralInformation? = OnboardingReferralInformation("CODE", 10.0, "SEK"),
   hasConnectedPayinMethod: Boolean = false,
-  crossSells: List<OnboardingCrossSell> = listOf(OnboardingCrossSell("cs", "Pet", "For your pet", "https://x")),
+  crossSells: List<OnboardingCrossSell> = listOf(
+    OnboardingCrossSell(
+      id = "cs",
+      title = "Pet",
+      description = "For your pet",
+      storeUrl = "https://x",
+      pillowImageUrl = "https://x",
+    ),
+  ),
 ): OnboardingData = OnboardingData(
   email = "member@example.com",
   phoneNumber = phoneNumber,

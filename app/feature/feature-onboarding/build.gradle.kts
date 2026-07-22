@@ -30,6 +30,8 @@ dependencies {
   implementation(projects.authCorePublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreResources)
+  implementation(libs.coil.coil)
+  implementation(libs.coil.compose)
   implementation(projects.dataContract)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.designSystemHedvig)

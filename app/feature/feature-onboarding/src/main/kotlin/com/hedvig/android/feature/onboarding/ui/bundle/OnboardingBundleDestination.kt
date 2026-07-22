@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -15,15 +18,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.ImageLoader
+import coil3.compose.AsyncImage
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
+import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigText
-import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.placeholder.crossSellPainterFallback
 import com.hedvig.android.feature.onboarding.data.OnboardingCrossSell
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
@@ -108,6 +116,7 @@ internal sealed interface OnboardingBundleEvent {
 @Composable
 internal fun OnboardingBundleDestination(
   viewModel: OnboardingBundleViewModel,
+  imageLoader: ImageLoader,
   navigateUp: () -> Unit,
   openUrl: (String) -> Unit,
 ) {
@@ -137,24 +146,16 @@ internal fun OnboardingBundleDestination(
           // TODO: Add "You get a bundle discount when you have two or more insurances with us" / "Du får paketrabatt när du har två eller fler försäkringar hos oss" to Lokalise
           description = "You get a bundle discount when you have two or more insurances with us",
         )
-        Spacer(Modifier.height(16.dp))
-        for (crossSell in state.crossSells) {
-          Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp, vertical = 8.dp),
-          ) {
-            Column(Modifier.weight(1f)) {
-              HedvigText(crossSell.title)
-              HedvigText(crossSell.description, color = HedvigTheme.colorScheme.textSecondary)
-            }
-            HedvigTextButton(
-              // TODO: Add "See price" / "Se pris" to Lokalise
-              text = "See price",
-              onClick = { openUrl(crossSell.storeUrl) },
-            )
+        Spacer(Modifier.weight(1f))
+        for ((index, crossSell) in state.crossSells.withIndex()) {
+          if (index > 0) {
+            Spacer(Modifier.height(8.dp))
           }
+          OnboardingCrossSellRow(
+            crossSell = crossSell,
+            imageLoader = imageLoader,
+            openUrl = openUrl,
+          )
         }
         Spacer(Modifier.weight(1f))
         OnboardingStepButtons(
@@ -164,5 +165,52 @@ internal fun OnboardingBundleDestination(
         )
       }
     }
+  }
+}
+
+@Composable
+private fun OnboardingCrossSellRow(
+  crossSell: OnboardingCrossSell,
+  imageLoader: ImageLoader,
+  openUrl: (String) -> Unit,
+) {
+  Row(
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp),
+  ) {
+    if (crossSell.pillowImageUrl != null) {
+      val placeholder = crossSellPainterFallback()
+      AsyncImage(
+        model = crossSell.pillowImageUrl,
+        contentDescription = null,
+        placeholder = placeholder,
+        error = placeholder,
+        fallback = placeholder,
+        imageLoader = imageLoader,
+        modifier = Modifier.size(40.dp),
+      )
+    } else {
+      Spacer(Modifier.size(40.dp))
+    }
+    Spacer(Modifier.width(12.dp))
+    Column(Modifier.weight(1f)) {
+      HedvigText(crossSell.title, style = HedvigTheme.typography.bodySmall)
+      HedvigText(
+        crossSell.description,
+        style = HedvigTheme.typography.bodySmall,
+        color = HedvigTheme.colorScheme.textSecondary,
+      )
+    }
+    HedvigButton(
+      // TODO: Add "See price" / "Se pris" to Lokalise
+      text = "See price",
+      onClick = { openUrl(crossSell.storeUrl) },
+      enabled = true,
+      buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+      buttonSize = ButtonDefaults.ButtonSize.Small,
+      modifier = Modifier.clip(CircleShape),
+    )
   }
 }

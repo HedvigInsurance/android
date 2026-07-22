@@ -557,6 +557,7 @@ private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
   removeAddonsEntries(backstack = backstack)
   onboardingEntries(
     backstack = backstack,
+    imageLoader = imageLoader,
     openUrl = openUrl,
     openPrivacyPolicy = openPrivacyPolicy,
     navigateToChipId = { contractId -> backstack.add(ChipIdKey(contractId)) },

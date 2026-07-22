@@ -35,6 +35,9 @@ query Onboarding {
         title
         description
         storeUrl
+        pillowImageLarge {
+          src
+        }
       }
     }
   }
