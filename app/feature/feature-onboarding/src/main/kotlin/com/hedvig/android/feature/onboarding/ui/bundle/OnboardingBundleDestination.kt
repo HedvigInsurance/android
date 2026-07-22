@@ -130,7 +130,7 @@ internal fun OnboardingBundleDestination(
       }
 
       is OnboardingBundleUiState.Content -> {
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(16.dp))
         OnboardingStepHeader(
           // TODO: Add "Get bundle discount" / "Få paketrabatt" to Lokalise
           title = "Get bundle discount",

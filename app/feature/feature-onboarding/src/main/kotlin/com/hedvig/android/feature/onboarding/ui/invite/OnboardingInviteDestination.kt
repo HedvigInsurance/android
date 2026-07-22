@@ -130,7 +130,7 @@ internal fun OnboardingInviteDestination(viewModel: OnboardingInviteViewModel, n
       }
 
       is OnboardingInviteUiState.Content -> {
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(16.dp))
         OnboardingStepHeader(
           // TODO: Add "Invite a friend" / "Bjud in en vän" to Lokalise
           title = "Invite a friend",
@@ -149,6 +149,7 @@ internal fun OnboardingInviteDestination(viewModel: OnboardingInviteViewModel, n
           onPrimaryClick = { viewModel.emit(OnboardingInviteEvent.Continue) },
           // TODO: Add "Invite a friend" / "Bjud in en vän" to Lokalise
           secondaryText = "Invite a friend",
+          secondaryAbovePrimary = true,
           onSecondaryClick = {
             // TODO: Add the share message to Lokalise; align copy with the Forever screen's
             //  REFERRAL_SMS_MESSAGE once product confirms.

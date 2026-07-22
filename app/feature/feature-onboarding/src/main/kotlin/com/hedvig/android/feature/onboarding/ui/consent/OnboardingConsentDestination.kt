@@ -1,7 +1,18 @@
 package com.hedvig.android.feature.onboarding.ui.consent
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -11,20 +22,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.settings.datastore.AnalyticsConsent
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
+import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
-import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
-import com.hedvig.android.feature.onboarding.ui.OnboardingStepButtons
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepHeader
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepScaffold
 import com.hedvig.android.feature.onboarding.ui.progressFor
@@ -133,7 +151,7 @@ internal fun OnboardingConsentDestination(
       }
 
       is OnboardingConsentUiState.Content -> {
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(16.dp))
         OnboardingStepHeader(
           // TODO: Add "Help us make the app better" / "Hjälp oss göra appen bättre" to Lokalise
           title = "Help us make the app better",
@@ -144,19 +162,51 @@ internal fun OnboardingConsentDestination(
         )
         Spacer(Modifier.weight(1f))
         // TODO: Add "Privacy policy" / "Integritetspolicy" to Lokalise
-        HedvigTextButton(
-          text = "Privacy policy",
-          onClick = openPrivacyPolicy,
-          modifier = Modifier.align(Alignment.CenterHorizontally),
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier
+            .align(Alignment.CenterHorizontally)
+            .clip(CircleShape)
+            .clickable(onClick = openPrivacyPolicy)
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        ) {
+          HedvigText(
+            text = "Privacy policy",
+            style = HedvigTheme.typography.bodySmall,
+            textDecoration = TextDecoration.Underline,
+          )
+          Icon(
+            imageVector = HedvigIcons.ArrowNorthEast,
+            contentDescription = null,
+            modifier = Modifier.size(16.dp),
+          )
+        }
+        Spacer(Modifier.height(16.dp))
+        // TODO: Add "Allow" / "Tillåt" to Lokalise
+        HedvigButton(
+          text = "Allow",
+          onClick = { viewModel.emit(OnboardingConsentEvent.Allow) },
+          enabled = true,
+          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .clip(CircleShape),
         )
-        OnboardingStepButtons(
-          // TODO: Add "Allow" / "Tillåt" to Lokalise
-          primaryText = "Allow",
-          onPrimaryClick = { viewModel.emit(OnboardingConsentEvent.Allow) },
-          // TODO: Add "Deny" / "Neka" to Lokalise
-          secondaryText = "Deny",
-          onSecondaryClick = { viewModel.emit(OnboardingConsentEvent.Deny) },
+        Spacer(Modifier.height(8.dp))
+        // TODO: Add "Deny" / "Neka" to Lokalise
+        HedvigButton(
+          text = "Deny",
+          onClick = { viewModel.emit(OnboardingConsentEvent.Deny) },
+          enabled = true,
+          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .clip(CircleShape),
         )
+        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
       }
     }
   }

@@ -172,7 +172,7 @@ internal fun OnboardingPhoneDestination(viewModel: OnboardingPhoneViewModel, nav
       }
 
       is OnboardingPhoneUiState.Content -> {
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(16.dp))
         OnboardingStepHeader(
           // TODO: Add "Phone number" / "Telefonnummer" to Lokalise
           title = "Phone number",

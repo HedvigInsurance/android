@@ -25,10 +25,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
-import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
@@ -157,7 +157,7 @@ internal fun OnboardingStepHeader(title: String, description: String, modifier: 
   }
 }
 
-/** Bottom-anchored button area: primary on top, optional ghost secondary below, matching Figma. */
+/** Bottom-anchored button area with full-pill shapes. Primary and optional secondary buttons. */
 @Composable
 internal fun ColumnScope.OnboardingStepButtons(
   primaryText: String,
@@ -165,25 +165,46 @@ internal fun ColumnScope.OnboardingStepButtons(
   primaryEnabled: Boolean = true,
   secondaryText: String? = null,
   onSecondaryClick: (() -> Unit)? = null,
+  secondaryAbovePrimary: Boolean = false,
 ) {
   Spacer(Modifier.height(16.dp))
-  HedvigButton(
-    text = primaryText,
-    onClick = onPrimaryClick,
-    enabled = primaryEnabled,
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(horizontal = 16.dp),
-  )
-  if (secondaryText != null && onSecondaryClick != null) {
-    Spacer(Modifier.height(8.dp))
-    HedvigTextButton(
-      text = secondaryText,
-      onClick = onSecondaryClick,
+  val primaryButton = @Composable {
+    HedvigButton(
+      text = primaryText,
+      onClick = onPrimaryClick,
+      enabled = primaryEnabled,
       modifier = Modifier
         .fillMaxWidth()
-        .padding(horizontal = 16.dp),
+        .padding(horizontal = 16.dp)
+        .clip(CircleShape),
     )
+  }
+  val secondaryButton: (@Composable () -> Unit)? = if (secondaryText != null && onSecondaryClick != null) {
+    @Composable {
+      HedvigButton(
+        text = secondaryText,
+        onClick = onSecondaryClick,
+        enabled = true,
+        buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp)
+          .clip(CircleShape),
+      )
+    }
+  } else {
+    null
+  }
+  if (secondaryAbovePrimary && secondaryButton != null) {
+    secondaryButton()
+    Spacer(Modifier.height(8.dp))
+    primaryButton()
+  } else {
+    primaryButton()
+    if (secondaryButton != null) {
+      Spacer(Modifier.height(8.dp))
+      secondaryButton()
+    }
   }
   Spacer(Modifier.height(16.dp))
   Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))

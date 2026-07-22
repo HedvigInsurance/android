@@ -153,7 +153,7 @@ internal fun OnboardingThemeDestination(viewModel: OnboardingThemeViewModel, nav
 
       is OnboardingThemeUiState.Content -> {
         val content = uiState as OnboardingThemeUiState.Content
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(16.dp))
         OnboardingStepHeader(
           // TODO: Add "Choose theme" / "Välj tema" to Lokalise
           title = "Choose theme",
@@ -189,12 +189,14 @@ internal fun OnboardingThemeDestination(viewModel: OnboardingThemeViewModel, nav
         HedvigText(
           // TODO: Add "You can change these settings later" / "Du kan ändra dessa inställningar senare" to Lokalise
           text = "You can change these settings later",
+          style = HedvigTheme.typography.finePrint,
           color = HedvigTheme.colorScheme.textSecondary,
           textAlign = TextAlign.Center,
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         )
+        Spacer(Modifier.height(16.dp))
         OnboardingStepButtons(
           // TODO: Add "Continue" / "Fortsätt" to Lokalise
           primaryText = "Continue",

@@ -22,9 +22,6 @@ import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.Icon
-import com.hedvig.android.design.system.hedvig.icon.Checkmark
-import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
@@ -154,7 +151,7 @@ internal fun OnboardingPaymentDestination(viewModel: OnboardingPaymentViewModel,
       }
 
       is OnboardingPaymentUiState.Content -> {
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(16.dp))
         if (!content.isConnected) {
           OnboardingStepHeader(
             // TODO: Add "Connect payment" / "Koppla betalning" to Lokalise
@@ -168,11 +165,13 @@ internal fun OnboardingPaymentDestination(viewModel: OnboardingPaymentViewModel,
           //  "Du behöver lägga till en betalmetod för att hålla din försäkring aktiv" to Lokalise
           HedvigText(
             text = "Adding a payment method is required to keep your insurance active",
+            style = HedvigTheme.typography.finePrint,
             color = HedvigTheme.colorScheme.textSecondary,
             modifier = Modifier
               .align(Alignment.CenterHorizontally)
               .padding(horizontal = 32.dp),
           )
+          Spacer(Modifier.height(16.dp))
           OnboardingStepButtons(
             // TODO: Add "Connect payment" / "Koppla betalning" to Lokalise
             primaryText = "Connect payment",
@@ -186,19 +185,15 @@ internal fun OnboardingPaymentDestination(viewModel: OnboardingPaymentViewModel,
             description = "Your payment method is connected",
           )
           Spacer(Modifier.weight(1f))
-          Icon(
-            imageVector = HedvigIcons.Checkmark,
-            contentDescription = null,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-          )
-          Spacer(Modifier.height(16.dp))
           // TODO: Add "You can switch accounts later in settings" /
           //  "Du kan byta konto senare i inställningar" to Lokalise
           HedvigText(
             text = "You can switch accounts later in settings",
+            style = HedvigTheme.typography.finePrint,
             color = HedvigTheme.colorScheme.textSecondary,
             modifier = Modifier.align(Alignment.CenterHorizontally),
           )
+          Spacer(Modifier.height(16.dp))
           OnboardingStepButtons(
             // TODO: Add "Continue" / "Fortsätt" to Lokalise
             primaryText = "Continue",

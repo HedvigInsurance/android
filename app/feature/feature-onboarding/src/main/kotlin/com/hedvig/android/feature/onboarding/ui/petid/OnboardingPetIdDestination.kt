@@ -180,7 +180,7 @@ internal fun OnboardingPetIdDestination(
       }
 
       is OnboardingPetIdUiState.Content -> {
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(16.dp))
         OnboardingStepHeader(
           // TODO: Add "Add your pets ID numbers" / "Lägg till dina djurs ID-nummer" to Lokalise
           title = "Add your pets ID numbers",
@@ -216,12 +216,14 @@ internal fun OnboardingPetIdDestination(
         HedvigText(
           // TODO: Add "You can add this information later" / "Du kan lägga till den här informationen senare" to Lokalise
           text = "You can add this information later",
+          style = HedvigTheme.typography.finePrint,
           color = HedvigTheme.colorScheme.textSecondary,
           textAlign = TextAlign.Center,
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         )
+        Spacer(Modifier.height(16.dp))
         OnboardingStepButtons(
           // TODO: Add "Continue" / "Fortsätt" to Lokalise
           primaryText = "Continue",

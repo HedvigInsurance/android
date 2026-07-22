@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -16,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.common.di.ActivityRetainedScope
@@ -118,7 +120,12 @@ internal fun OnboardingWelcomeDestination(viewModel: OnboardingWelcomeViewModel)
 
       is OnboardingWelcomeUiState.Content -> {
         Spacer(Modifier.weight(1f))
-        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+        Column(
+          horizontalAlignment = Alignment.CenterHorizontally,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        ) {
           // Static stand-in for the Figma app-icon-with-badge graphic; animation is a follow-up.
           Box(
             Modifier
@@ -127,12 +134,16 @@ internal fun OnboardingWelcomeDestination(viewModel: OnboardingWelcomeViewModel)
           )
           Spacer(Modifier.height(24.dp))
           // TODO: Add "Welcome to Hedvig" / "Välkommen till Hedvig" to Lokalise
-          HedvigText("Welcome to Hedvig")
+          HedvigText(
+            text = "Welcome to Hedvig",
+            textAlign = TextAlign.Center,
+          )
           // TODO: Add "Follow the steps to get started with your new insurance" /
           //  "Följ stegen för att komma igång med din nya försäkring" to Lokalise
           HedvigText(
             text = "Follow the steps to get started with your new insurance",
             color = HedvigTheme.colorScheme.textSecondary,
+            textAlign = TextAlign.Center,
           )
         }
         Spacer(Modifier.weight(1f))
