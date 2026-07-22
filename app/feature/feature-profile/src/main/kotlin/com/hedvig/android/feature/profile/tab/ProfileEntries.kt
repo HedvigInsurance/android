@@ -49,6 +49,7 @@ fun EntryProviderScope<HedvigNavKey>.profileEntries(
   openUrl: (String) -> Unit,
   navigateToChipId: () -> Unit,
   languageService: LanguageService,
+  onResetOnboardingForDebug: () -> Unit,
 ) {
   entry<ProfileKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
     val viewModel: ProfileViewModel = metroViewModel()
@@ -112,6 +113,7 @@ fun EntryProviderScope<HedvigNavKey>.profileEntries(
       hedvigBuildConstants = hedvigBuildConstants,
       languageService = languageService,
       openUrl = openUrl,
+      onResetOnboardingForDebug = onResetOnboardingForDebug,
     )
   }
   entry<LicensesKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {

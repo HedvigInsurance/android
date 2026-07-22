@@ -20,6 +20,9 @@ internal interface OnboardingSeenStore {
   suspend fun hasSeenOnboarding(memberId: String): Boolean
 
   suspend fun markOnboardingSeen(memberId: String)
+
+  /** Debug affordance only: clears the flag so onboarding can be triggered again. */
+  suspend fun resetOnboardingSeen(memberId: String)
 }
 
 @ContributesBinding(AppScope::class)
@@ -34,6 +37,10 @@ internal class DataStoreOnboardingSeenStore(
 
   override suspend fun markOnboardingSeen(memberId: String) {
     dataStore.edit { it[seenKey(memberId)] = true }
+  }
+
+  override suspend fun resetOnboardingSeen(memberId: String) {
+    dataStore.edit { it.remove(seenKey(memberId)) }
   }
 
   private fun seenKey(memberId: String): Preferences.Key<Boolean> {

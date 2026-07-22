@@ -69,6 +69,7 @@ import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.design.system.hedvig.rememberGlobalSnackBarState
 import com.hedvig.android.feature.cross.sell.sheet.CrossSellSheet
 import com.hedvig.android.feature.home.home.navigation.HomeKey
+import com.hedvig.android.feature.onboarding.data.ResetOnboardingSeenUseCase
 import com.hedvig.android.feature.onboarding.gate.OnboardingGate
 import com.hedvig.android.feature.onboarding.navigation.OnboardingKey
 import com.hedvig.android.featureflags.FeatureManager
@@ -120,6 +121,7 @@ internal fun HedvigApp(
   eventTrackingClient: EventTrackingClient,
   screenParameterExtractor: ScreenParameterExtractor,
   onboardingGate: OnboardingGate,
+  resetOnboardingSeenUseCase: ResetOnboardingSeenUseCase,
 ) {
   ReportCurrentDestinationEffect(backstackController, currentDestinationHolder)
   TrackScreenViewEffect(backstackController, eventTrackingClient, screenParameterExtractor)
@@ -226,6 +228,7 @@ internal fun HedvigApp(
                         imageLoader = imageLoader,
                         languageService = languageService,
                         hedvigBuildConstants = hedvigBuildConstants,
+                        resetOnboardingSeenUseCase = resetOnboardingSeenUseCase,
                       )
                     },
                   )

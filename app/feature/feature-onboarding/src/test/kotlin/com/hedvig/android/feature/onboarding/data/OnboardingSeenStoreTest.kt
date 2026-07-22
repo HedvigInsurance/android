@@ -34,4 +34,14 @@ class OnboardingSeenStoreTest {
     assertThat(store.hasSeenOnboarding("123")).isTrue()
     assertThat(store.hasSeenOnboarding("456")).isFalse()
   }
+
+  @Test
+  fun `resetting clears the flag for that member only`() = runTest {
+    val store = store()
+    store.markOnboardingSeen("123")
+    store.markOnboardingSeen("456")
+    store.resetOnboardingSeen("123")
+    assertThat(store.hasSeenOnboarding("123")).isFalse()
+    assertThat(store.hasSeenOnboarding("456")).isTrue()
+  }
 }

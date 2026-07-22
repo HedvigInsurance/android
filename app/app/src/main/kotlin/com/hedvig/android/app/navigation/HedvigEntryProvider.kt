@@ -47,6 +47,7 @@ import com.hedvig.android.feature.insurances.navigation.insuranceEntries
 import com.hedvig.android.feature.login.navigation.loginEntries
 import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
 import com.hedvig.android.feature.movingflow.movingFlowEntries
+import com.hedvig.android.feature.onboarding.data.ResetOnboardingSeenUseCase
 import com.hedvig.android.feature.onboarding.navigation.onboardingEntries
 import com.hedvig.android.feature.payments.navigation.paymentsEntries
 import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountKey
@@ -95,6 +96,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   imageLoader: ImageLoader,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
+  resetOnboardingSeenUseCase: ResetOnboardingSeenUseCase,
 ) {
   val shouldShowRequestPermissionRationale: (String) -> Boolean = androidAppHost::shouldShowPermissionRationale
   val navigateToConnectPayment: () -> Unit = { backstack.add(TrustlyKey) }
@@ -150,6 +152,13 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     navigateToConnectPayment = navigateToConnectPayment,
     navigateToPayoutAccount = navigateToPayoutAccount,
     navigateToNewConversation = navigateToNewConversation,
+    onResetOnboardingForDebug = {
+      scope.launch {
+        resetOnboardingSeenUseCase.invoke()
+        // Debug-only feedback for non-production builds; deliberately not translated.
+        globalSnackBarState.show("Onboarding reset. Background and foreground the app to see it.")
+      }
+    },
   )
   addChatEntries(
     backstack = backstack,
@@ -440,6 +449,7 @@ private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
   navigateToConnectPayment: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
   navigateToNewConversation: () -> Unit,
+  onResetOnboardingForDebug: () -> Unit,
 ) {
   profileEntries(
     settingsDestinationNestedGraphs = {
@@ -468,6 +478,7 @@ private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
     openUrl = openUrl,
     navigateToChipId = { backstack.add(ChipIdKey()) },
     languageService = languageService,
+    onResetOnboardingForDebug = onResetOnboardingForDebug,
   )
 }
 
