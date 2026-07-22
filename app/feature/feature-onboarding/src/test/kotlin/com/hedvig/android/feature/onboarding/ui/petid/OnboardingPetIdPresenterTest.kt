@@ -63,6 +63,7 @@ internal class OnboardingPetIdPresenterTest {
       assertThat(state).isInstanceOf<OnboardingPetIdUiState.Content>()
       val content = state as OnboardingPetIdUiState.Content
       assertThat(content.rows.size).isEqualTo(1)
+      assertThat(content.rows[0].typeOfContract).isEqualTo("SE_APARTMENT_RENT")
       assertThat(content.rows[0].isComplete).isEqualTo(false)
     }
   }
@@ -112,6 +113,7 @@ internal class OnboardingPetIdPresenterTest {
       assertThat(state).isInstanceOf<OnboardingPetIdUiState.Content>()
       val content = state as OnboardingPetIdUiState.Content
       assertThat(content.rows.size).isEqualTo(1)
+      assertThat(content.rows[0].typeOfContract).isEqualTo("SE_APARTMENT_RENT")
       assertThat(content.rows[0].isComplete).isEqualTo(true)
     }
   }

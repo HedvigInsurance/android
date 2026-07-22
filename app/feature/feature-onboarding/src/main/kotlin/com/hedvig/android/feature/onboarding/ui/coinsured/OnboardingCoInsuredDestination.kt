@@ -1,7 +1,7 @@
 package com.hedvig.android.feature.onboarding.ui.coinsured
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,7 +14,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -22,19 +21,15 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
-import com.hedvig.android.design.system.hedvig.ButtonDefaults
-import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.Icon
-import com.hedvig.android.design.system.hedvig.icon.Checkmark
-import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.onboarding.data.OnboardingSession
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
+import com.hedvig.android.feature.onboarding.ui.OnboardingContractCard
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepButtons
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepHeader
@@ -82,6 +77,7 @@ internal class OnboardingCoInsuredPresenter(
             contractId = contract.id,
             displayName = contract.displayName,
             exposureName = contract.exposureName,
+            typeOfContract = contract.typeOfContract,
             isComplete = contract.missingCoInsuredCount == 0,
           )
         },
@@ -122,6 +118,7 @@ internal data class CoInsuredRow(
   val contractId: String,
   val displayName: String,
   val exposureName: String,
+  val typeOfContract: String,
   val isComplete: Boolean,
 )
 
@@ -187,29 +184,16 @@ internal fun OnboardingCoInsuredDestination(viewModel: OnboardingCoInsuredViewMo
           // TODO: Add "So we know who's covered by your insurance" / "Så att vi vet vem som är försäkrad" to Lokalise
           description = "So we know who's covered by your insurance",
         )
-        Spacer(Modifier.height(16.dp))
-        for (row in content.rows) {
-          Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp, vertical = 8.dp),
-          ) {
-            Column(Modifier.weight(1f)) {
-              HedvigText(row.displayName)
-              HedvigText(row.exposureName, color = HedvigTheme.colorScheme.textSecondary)
-            }
-            if (row.isComplete) {
-              Icon(imageVector = HedvigIcons.Checkmark, contentDescription = null)
-            } else {
-              HedvigButton(
-                // TODO: Add "Add" / "Lägg till" to Lokalise
-                text = "Add",
-                onClick = { viewModel.emit(OnboardingCoInsuredEvent.AddCoInsured(row.contractId)) },
-                enabled = true,
-                buttonSize = ButtonDefaults.ButtonSize.Small,
-              )
-            }
+        Spacer(Modifier.weight(1f))
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+          for (row in content.rows) {
+            OnboardingContractCard(
+              displayName = row.displayName,
+              exposureName = row.exposureName,
+              typeOfContract = row.typeOfContract,
+              isComplete = row.isComplete,
+              onAddClick = { viewModel.emit(OnboardingCoInsuredEvent.AddCoInsured(row.contractId)) },
+            )
           }
         }
         Spacer(Modifier.weight(1f))

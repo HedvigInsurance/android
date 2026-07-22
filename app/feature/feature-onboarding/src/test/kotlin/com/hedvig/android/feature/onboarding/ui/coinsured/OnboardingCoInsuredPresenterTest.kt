@@ -54,6 +54,7 @@ internal class OnboardingCoInsuredPresenterTest {
       assertThat(state).isInstanceOf<OnboardingCoInsuredUiState.Content>()
       val content = state as OnboardingCoInsuredUiState.Content
       assertThat(content.rows.size).isEqualTo(1)
+      assertThat(content.rows[0].typeOfContract).isEqualTo("SE_APARTMENT_RENT")
       assertThat(content.rows[0].isComplete).isEqualTo(false)
     }
   }
@@ -108,6 +109,7 @@ internal class OnboardingCoInsuredPresenterTest {
       assertThat(state).isInstanceOf<OnboardingCoInsuredUiState.Content>()
       val content = state as OnboardingCoInsuredUiState.Content
       assertThat(content.rows.size).isEqualTo(1)
+      assertThat(content.rows[0].typeOfContract).isEqualTo("SE_APARTMENT_RENT")
       assertThat(content.rows[0].isComplete).isEqualTo(true)
     }
   }
