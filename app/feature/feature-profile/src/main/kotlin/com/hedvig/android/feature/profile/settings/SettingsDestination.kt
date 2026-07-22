@@ -184,13 +184,23 @@ private fun SettingsScreen(
             }
             onChangeAnalyticsConsent(newConsent)
           },
-          inputText = if (uiState.analyticsConsent == AnalyticsConsent.GRANTED) {
-            // TODO: Add "On" / "På" to Lokalise
-            "On"
-          } else {
-            // NOT_DECIDED renders as "Off": nothing is forwarded to Firebase in that state.
-            // TODO: Add "Off" / "Av" to Lokalise
-            "Off"
+          inputText = when (uiState.analyticsConsent) {
+            AnalyticsConsent.GRANTED -> {
+              // TODO: Add "On" / "På" to Lokalise
+              "On"
+            }
+
+            AnalyticsConsent.DENIED -> {
+              // TODO: Add "Off" / "Av" to Lokalise
+              "Off"
+            }
+
+            // No explicit choice made yet: nothing is forwarded to Firebase, but this is shown
+            // as distinct from an explicit "Off".
+            AnalyticsConsent.NOT_DECIDED, null -> {
+              // TODO: Add "Not set" / "Inte valt" to Lokalise
+              "Not set"
+            }
           },
           // TODO: Add "Product analytics" / "Produktanalys" to Lokalise
           labelText = "Product analytics",

@@ -4,6 +4,9 @@ enum class Feature(
   // Used to easier get a context of what it's for.
   @Suppress("unused") val explanation: String,
 ) {
+  DISABLE_ONBOARDING(
+    "Kill switch for the post-login onboarding flow. When the toggle is on, onboarding is never shown.",
+  ),
   DISABLE_PUPPY_GUIDE(
     "Kill switch for the puppy guide in the help center. When the toggle is on, the puppy guide is hidden.",
   ),
