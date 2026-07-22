@@ -23,6 +23,15 @@ internal data class OnboardingStepKey(
 ) : HedvigNavKey
 
 /**
+ * Hosts the shared Forever screen inside the onboarding flow, so the member can invite friends
+ * without leaving onboarding. Reached from the invite step's "Invite a friend" button and left with
+ * system back, which pops back to the invite step still sitting in the back stack.
+ */
+@androidx.annotation.Keep
+@Serializable
+internal data object OnboardingForeverKey : HedvigNavKey
+
+/**
  * Identifies each onboarding step past welcome. The member's concrete path (which of these apply,
  * in order) is computed by buildOnboardingPath from the eagerly fetched OnboardingData.
  */

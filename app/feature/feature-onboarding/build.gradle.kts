@@ -36,6 +36,7 @@ dependencies {
   implementation(projects.dataCoinsured)
   implementation(projects.featureConnectPaymentTrustlyNavigation)
   implementation(projects.featureEditCoinsuredNavigation)
+  implementation(projects.foreverUi)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)

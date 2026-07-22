@@ -1,9 +1,15 @@
 package com.hedvig.android.feature.onboarding.ui.invite
 
-import android.content.Context
-import android.content.Intent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -13,7 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.common.di.ActivityRetainedScope
@@ -21,6 +27,9 @@ import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HorizontalDivider
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
@@ -68,7 +77,6 @@ internal class OnboardingInvitePresenter(
           } else {
             OnboardingInviteUiState.Content(
               progress = session.progressFor(OnboardingStepId.InviteFriend),
-              code = referral.code,
               incentiveDisplay = "${referral.monthlyDiscountPerReferralAmount.toInt()} ${referral.currencyCode}",
             )
           }
@@ -81,6 +89,7 @@ internal class OnboardingInvitePresenter(
         OnboardingInviteEvent.Retry -> loadIteration++
         OnboardingInviteEvent.Close -> launch { navigator.exitOnboarding() }
         OnboardingInviteEvent.Continue -> launch { navigator.continueFrom(OnboardingStepId.InviteFriend) }
+        OnboardingInviteEvent.InviteFriend -> navigator.openForeverScreen()
       }
     }
 
@@ -95,7 +104,6 @@ internal sealed interface OnboardingInviteUiState {
 
   data class Content(
     val progress: OnboardingProgress,
-    val code: String,
     val incentiveDisplay: String,
   ) : OnboardingInviteUiState
 }
@@ -106,12 +114,13 @@ internal sealed interface OnboardingInviteEvent {
   data object Close : OnboardingInviteEvent
 
   data object Continue : OnboardingInviteEvent
+
+  data object InviteFriend : OnboardingInviteEvent
 }
 
 @Composable
 internal fun OnboardingInviteDestination(viewModel: OnboardingInviteViewModel, navigateUp: () -> Unit) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  val context = LocalContext.current
   OnboardingStepScaffold(
     progress = (uiState as? OnboardingInviteUiState.Content)?.progress,
     showBackButton = true,
@@ -138,8 +147,8 @@ internal fun OnboardingInviteDestination(viewModel: OnboardingInviteViewModel, n
           description = "With Hedvig Forever, you get ${state.incentiveDisplay} off for every friend you invite",
         )
         Spacer(Modifier.weight(1f))
-        HedvigText(
-          text = state.code,
+        ExampleReferralsCard(
+          incentiveDisplay = state.incentiveDisplay,
           modifier = Modifier.align(Alignment.CenterHorizontally),
         )
         Spacer(Modifier.weight(1f))
@@ -150,29 +159,43 @@ internal fun OnboardingInviteDestination(viewModel: OnboardingInviteViewModel, n
           // TODO: Add "Invite a friend" / "Bjud in en vän" to Lokalise
           secondaryText = "Invite a friend",
           secondaryAbovePrimary = true,
-          onSecondaryClick = {
-            // TODO: Add the share message to Lokalise; align copy with the Forever screen's
-            //  REFERRAL_SMS_MESSAGE once product confirms.
-            context.showShareSheet(
-              title = "Invite a friend",
-              text = "With my code you get a discount at Hedvig. Use code ${state.code}.",
-            )
-          },
+          onSecondaryClick = { viewModel.emit(OnboardingInviteEvent.InviteFriend) },
         )
       }
     }
   }
 }
 
-private fun Context.showShareSheet(title: String, text: String) {
-  startActivity(
-    Intent.createChooser(
-      Intent().apply {
-        action = Intent.ACTION_SEND
-        putExtra(Intent.EXTRA_TEXT, text)
-        type = "text/plain"
-      },
-      title,
-    ),
-  )
+@Composable
+private fun ExampleReferralsCard(incentiveDisplay: String, modifier: Modifier = Modifier) {
+  // Illustrative, hardcoded example names showing what the referral list looks like once populated.
+  val exampleNames = listOf("Hampus", "Li", "Elin")
+  Surface(
+    modifier = modifier,
+    shape = HedvigTheme.shapes.cornerLarge,
+    color = HedvigTheme.colorScheme.surfacePrimary,
+  ) {
+    Column(Modifier.padding(horizontal = 24.dp, vertical = 16.dp)) {
+      exampleNames.forEachIndexed { index, name ->
+        if (index > 0) {
+          HorizontalDivider()
+        }
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier.padding(vertical = 12.dp),
+        ) {
+          Box(
+            Modifier
+              .size(8.dp)
+              .clip(CircleShape)
+              .background(HedvigTheme.colorScheme.signalGreenElement),
+          )
+          Spacer(Modifier.width(8.dp))
+          HedvigText(text = name, style = HedvigTheme.typography.bodySmall)
+          Spacer(Modifier.width(32.dp).weight(1f))
+          HedvigText(text = "-$incentiveDisplay", style = HedvigTheme.typography.bodySmall)
+        }
+      }
+    }
+  }
 }

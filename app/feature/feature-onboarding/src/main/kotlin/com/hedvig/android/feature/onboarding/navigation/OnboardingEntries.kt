@@ -21,6 +21,8 @@ import com.hedvig.android.feature.onboarding.ui.welcome.OnboardingWelcomeDestina
 import com.hedvig.android.feature.onboarding.ui.welcome.OnboardingWelcomeViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.shared.foreverui.ui.ui.ForeverDestination
+import com.hedvig.android.shared.foreverui.ui.ui.ForeverViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.onboardingEntries(
@@ -32,6 +34,11 @@ fun EntryProviderScope<HedvigNavKey>.onboardingEntries(
   entry<OnboardingKey> {
     val viewModel: OnboardingWelcomeViewModel = metroViewModel()
     OnboardingWelcomeDestination(viewModel)
+  }
+
+  entry<OnboardingForeverKey> {
+    val viewModel: ForeverViewModel = metroViewModel()
+    ForeverDestination(viewModel)
   }
 
   entry<OnboardingStepKey> { key ->

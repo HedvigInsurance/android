@@ -61,4 +61,9 @@ internal class OnboardingNavigator(
   fun openConnectPayment() {
     backstack.add(TrustlyKey)
   }
+
+  /** Pushes the shared Forever screen; the member leaves it with system back. */
+  fun openForeverScreen() {
+    backstack.add(OnboardingForeverKey)
+  }
 }

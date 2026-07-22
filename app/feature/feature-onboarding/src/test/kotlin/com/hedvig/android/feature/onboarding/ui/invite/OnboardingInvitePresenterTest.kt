@@ -10,6 +10,7 @@ import com.hedvig.android.feature.onboarding.FakeOnboardingRepository
 import com.hedvig.android.feature.onboarding.data.CompleteOnboardingUseCase
 import com.hedvig.android.feature.onboarding.data.OnboardingReferralInformation
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
+import com.hedvig.android.feature.onboarding.navigation.OnboardingForeverKey
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepKey
@@ -36,7 +37,7 @@ internal class OnboardingInvitePresenterTest {
   }
 
   @Test
-  fun `content carries the referral code and incentive`() = runTest {
+  fun `content carries the incentive`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.InviteFriend)) }
     val repository = FakeOnboardingRepository()
     val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
@@ -49,8 +50,25 @@ internal class OnboardingInvitePresenterTest {
       val state = awaitItem()
       assertThat(state).isInstanceOf<OnboardingInviteUiState.Content>()
       val content = state as OnboardingInviteUiState.Content
-      assertThat(content.code).isEqualTo("CODE")
       assertThat(content.incentiveDisplay).isEqualTo("10 SEK")
+    }
+  }
+
+  @Test
+  fun `invite friend pushes the standalone forever screen`() = runTest {
+    val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.InviteFriend)) }
+    val repository = FakeOnboardingRepository()
+    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
+    val presenter = OnboardingInvitePresenter(sessionStore, navigator)
+
+    presenter.test(OnboardingInviteUiState.Loading) {
+      skipItems(1)
+      repository.onboardingDataResponses.add(testOnboardingData().right())
+      assertThat(awaitItem()).isInstanceOf<OnboardingInviteUiState.Content>()
+      sendEvent(OnboardingInviteEvent.InviteFriend)
+      runCurrent()
+      assertThat(backstack.entries.last()).isEqualTo(OnboardingForeverKey)
     }
   }
 
