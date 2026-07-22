@@ -144,10 +144,10 @@ internal fun OnboardingWelcomeDestination(viewModel: OnboardingWelcomeViewModel)
             text = "Welcome to Hedvig",
             textAlign = TextAlign.Center,
           )
-          // TODO: Add "Follow the steps to get started with your new insurance" /
-          //  "Följ stegen för att komma igång med din nya försäkring" to Lokalise
+          // TODO: Add "Follow the steps to get started with your insurance" /
+          //  "Följ stegen för att komma igång med din försäkring" to Lokalise
           HedvigText(
-            text = "Follow the steps to get started with your new insurance",
+            text = "Follow the steps to get started with your insurance",
             color = HedvigTheme.colorScheme.textSecondary,
             textAlign = TextAlign.Center,
           )
