@@ -19,10 +19,15 @@ import kotlinx.coroutines.launch
  * - [AnalyticsConsent.NOT_DECIDED]: events/screens are buffered in-memory (bounded), not forwarded.
  * - [AnalyticsConsent.GRANTED]: the buffer is flushed (stamped with `buffered_at_epoch_ms`) and
  *   subsequent events forward live.
- * - [AnalyticsConsent.DENIED]: the buffer is dropped and nothing is forwarded.
- * Identity calls ([setUserId], [setUserProperty]) and [setCollectionEnabled] (demo-mode gating)
- * always pass through. Datadog is untouched by design: it carries performance and bug analytics,
- * not product analytics.
+ * - [AnalyticsConsent.DENIED]: the buffer is dropped and nothing is forwarded. Additionally, the
+ *   Firebase SDK's own collection is disabled (automatic events included) by calling
+ *   [EventTrackingClient.setCollectionEnabled] with `false`. Collection is re-enabled when consent
+ *   returns to GRANTED, subject to the demo-mode gate. This is a product decision: DENIED must
+ *   suppress automatic Firebase events, not only our custom-tracked ones.
+ * Identity calls ([setUserId], [setUserProperty]) always pass through. [setCollectionEnabled] is
+ * the demo-mode gate; the effective value forwarded to the delegate is an AND of the demo gate and
+ * whether consent is not DENIED. Datadog is untouched by design: it carries performance and bug
+ * analytics, not product analytics.
  *
  * Deliberately NOT annotated with Metro annotations: annotating it `@ContributesBinding` for
  * [EventTrackingClient] while also injecting an [EventTrackingClient] delegate would self-loop.
@@ -38,6 +43,7 @@ internal class ConsentAwareEventTrackingClient(
 ) : EventTrackingClient {
   private val lock = Any()
   private var consent: AnalyticsConsent = AnalyticsConsent.NOT_DECIDED
+  private var collectionRequestedEnabled: Boolean = true
   private val buffer = ArrayDeque<BufferedCall>()
 
   init {
@@ -60,6 +66,7 @@ internal class ConsentAwareEventTrackingClient(
             }
           }
         }
+        applyCollectionEnabled()
         if (toFlush.isNotEmpty()) {
           logcat { "Analytics consent granted, flushing ${toFlush.size} buffered events" }
           for (call in toFlush) {
@@ -71,7 +78,13 @@ internal class ConsentAwareEventTrackingClient(
   }
 
   override fun setCollectionEnabled(enabled: Boolean) {
-    delegate.setCollectionEnabled(enabled)
+    synchronized(lock) { collectionRequestedEnabled = enabled }
+    applyCollectionEnabled()
+  }
+
+  private fun applyCollectionEnabled() {
+    val effective = synchronized(lock) { collectionRequestedEnabled && consent != AnalyticsConsent.DENIED }
+    delegate.setCollectionEnabled(effective)
   }
 
   override fun trackEvent(name: String, parameters: Map<String, Any?>) {

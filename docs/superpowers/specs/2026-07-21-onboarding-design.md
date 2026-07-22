@@ -217,6 +217,9 @@ The segmented progress bar is expected to be a new small component; check
   `SettingsPresenter`) reading/writing the same value, fulfilling the design's "can be
   turned off any time in settings".
 - The onboarding step writes `Granted` on Allow and `Denied` on Deny.
+  On DENIED, the wrapper also forces `setAnalyticsCollectionEnabled(false)` on the Firebase SDK
+  (automatic events included), re-enabled on GRANTED subject to the demo-mode gate; decided
+  post-review.
 
 ## Error handling
 

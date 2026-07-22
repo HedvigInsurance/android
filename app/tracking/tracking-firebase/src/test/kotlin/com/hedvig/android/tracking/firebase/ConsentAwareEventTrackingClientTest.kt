@@ -27,8 +27,11 @@ class ConsentAwareEventTrackingClientTest {
     val events = mutableListOf<Pair<String, Map<String, Any?>>>()
     val screens = mutableListOf<String>()
     var recordedUserId: String? = null
+    val collectionEnabledCalls = mutableListOf<Boolean>()
 
-    override fun setCollectionEnabled(enabled: Boolean) {}
+    override fun setCollectionEnabled(enabled: Boolean) {
+      collectionEnabledCalls.add(enabled)
+    }
 
     override fun trackEvent(name: String, parameters: Map<String, Any?>) {
       events.add(name to parameters)
@@ -122,5 +125,43 @@ class ConsentAwareEventTrackingClientTest {
     runCurrent()
     client.setUserId("member-id")
     assertThat(recording.recordedUserId).isEqualTo("member-id")
+  }
+
+  @Test
+  fun `denying consent disables SDK collection and granting re-enables it`() = runTest {
+    val recording = RecordingClient()
+    val settings = FakeSettingsDataStore()
+    client(recording, settings)
+    runCurrent()
+    settings.consent.value = AnalyticsConsent.DENIED
+    runCurrent()
+    assertThat(recording.collectionEnabledCalls.last()).isEqualTo(false)
+    settings.consent.value = AnalyticsConsent.GRANTED
+    runCurrent()
+    assertThat(recording.collectionEnabledCalls.last()).isEqualTo(true)
+  }
+
+  @Test
+  fun `demo mode wins over granted consent`() = runTest {
+    val recording = RecordingClient()
+    val settings = FakeSettingsDataStore()
+    val client = client(recording, settings)
+    runCurrent()
+    client.setCollectionEnabled(false)
+    settings.consent.value = AnalyticsConsent.GRANTED
+    runCurrent()
+    assertThat(recording.collectionEnabledCalls.last()).isEqualTo(false)
+  }
+
+  @Test
+  fun `enabling collection while denied stays disabled`() = runTest {
+    val recording = RecordingClient()
+    val settings = FakeSettingsDataStore()
+    val client = client(recording, settings)
+    runCurrent()
+    settings.consent.value = AnalyticsConsent.DENIED
+    runCurrent()
+    client.setCollectionEnabled(true)
+    assertThat(recording.collectionEnabledCalls.last()).isEqualTo(false)
   }
 }
