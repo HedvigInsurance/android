@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -12,6 +13,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -35,6 +37,7 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Inject
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 
 @Inject
@@ -60,6 +63,7 @@ internal class OnboardingPhonePresenter(
     var currentState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
     var submitIteration by remember { mutableIntStateOf(0) }
+    var phoneNumberToSubmit by remember { mutableStateOf("") }
 
     LaunchedEffect(loadIteration) {
       if (currentState is OnboardingPhoneUiState.Content) return@LaunchedEffect
@@ -82,10 +86,9 @@ internal class OnboardingPhonePresenter(
       currentState = content.copy(isSubmitting = true, showSubmissionError = false)
       onboardingRepository.updateContactInfo(
         email = session.data.email,
-        phoneNumber = content.phoneNumber,
+        phoneNumber = phoneNumberToSubmit,
       ).fold(
         ifLeft = {
-          // Derive from the live state so digits typed while submitting are not lost.
           currentState = (currentState as? OnboardingPhoneUiState.Content ?: content)
             .copy(isSubmitting = false, showSubmissionError = true)
         },
@@ -107,17 +110,18 @@ internal class OnboardingPhonePresenter(
           launch { navigator.exitOnboarding() }
         }
 
-        is OnboardingPhoneEvent.UpdatePhoneNumber -> {
-          val content = currentState as? OnboardingPhoneUiState.Content ?: return@CollectEvents
-          currentState = content.copy(phoneNumber = event.phoneNumber, showSubmissionError = false)
-        }
-
-        OnboardingPhoneEvent.Save -> {
+        is OnboardingPhoneEvent.Save -> {
+          phoneNumberToSubmit = event.phoneNumber
           submitIteration++
         }
 
         OnboardingPhoneEvent.DoThisLater -> {
           launch { navigator.continueFrom(OnboardingStepId.PhoneNumber) }
+        }
+
+        OnboardingPhoneEvent.ClearSubmissionError -> {
+          val content = currentState as? OnboardingPhoneUiState.Content ?: return@CollectEvents
+          currentState = content.copy(showSubmissionError = false)
         }
       }
     }
@@ -144,11 +148,11 @@ internal sealed interface OnboardingPhoneEvent {
 
   data object Close : OnboardingPhoneEvent
 
-  data class UpdatePhoneNumber(val phoneNumber: String) : OnboardingPhoneEvent
-
-  data object Save : OnboardingPhoneEvent
+  data class Save(val phoneNumber: String) : OnboardingPhoneEvent
 
   data object DoThisLater : OnboardingPhoneEvent
+
+  data object ClearSubmissionError : OnboardingPhoneEvent
 }
 
 @Composable
@@ -172,6 +176,12 @@ internal fun OnboardingPhoneDestination(viewModel: OnboardingPhoneViewModel, nav
       }
 
       is OnboardingPhoneUiState.Content -> {
+        val phoneNumberState = rememberTextFieldState(content.phoneNumber)
+        LaunchedEffect(phoneNumberState) {
+          snapshotFlow { phoneNumberState.text.toString() }
+            .drop(1)
+            .collect { viewModel.emit(OnboardingPhoneEvent.ClearSubmissionError) }
+        }
         Spacer(Modifier.height(16.dp))
         OnboardingStepHeader(
           // TODO: Add "Phone number" / "Telefonnummer" to Lokalise
@@ -180,10 +190,9 @@ internal fun OnboardingPhoneDestination(viewModel: OnboardingPhoneViewModel, nav
           //  "Lägg till ditt telefonnummer så att vi kan nå dig om något händer" to Lokalise
           description = "Add your phone number so we can reach you if something happens",
         )
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.weight(1f))
         HedvigTextField(
-          text = content.phoneNumber,
-          onValueChange = { viewModel.emit(OnboardingPhoneEvent.UpdatePhoneNumber(it)) },
+          state = phoneNumberState,
           // TODO: Add "Phone number" / "Telefonnummer" to Lokalise
           labelText = "Phone number",
           textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
@@ -198,12 +207,12 @@ internal fun OnboardingPhoneDestination(viewModel: OnboardingPhoneViewModel, nav
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         )
-        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(16.dp))
         OnboardingStepButtons(
           // TODO: Add "Save" / "Spara" to Lokalise
           primaryText = "Save",
-          onPrimaryClick = { viewModel.emit(OnboardingPhoneEvent.Save) },
-          primaryEnabled = !content.isSubmitting && content.phoneNumber.isNotBlank(),
+          onPrimaryClick = { viewModel.emit(OnboardingPhoneEvent.Save(phoneNumberState.text.toString())) },
+          primaryEnabled = !content.isSubmitting && phoneNumberState.text.isNotBlank(),
           // TODO: Add "Do this later" / "Gör det senare" to Lokalise
           secondaryText = "Do this later",
           onSecondaryClick = { viewModel.emit(OnboardingPhoneEvent.DoThisLater) },

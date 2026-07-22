@@ -1,8 +1,5 @@
 package com.hedvig.android.feature.onboarding.ui.theme
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,9 +12,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -28,9 +23,9 @@ import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.Icon
-import com.hedvig.android.design.system.hedvig.icon.Checkmark
-import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.RadioGroup
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
@@ -160,30 +155,33 @@ internal fun OnboardingThemeDestination(viewModel: OnboardingThemeViewModel, nav
           // TODO: Add "Customize the look of the app" / "Anpassa utseendet på appen" to Lokalise
           description = "Customize the look of the app",
         )
-        Spacer(Modifier.height(16.dp))
-        ThemeOptionRow(
-          title = stringResource(Res.string.SETTINGS_THEME_SYSTEM_DEFAULT),
-          // TODO: Add "Uses your phone's setting" / "Använder din telefons inställning" to Lokalise
-          subtitle = "Uses your phone's setting",
-          isSelected = content.selectedTheme == Theme.SYSTEM_DEFAULT,
-          onClick = { viewModel.emit(OnboardingThemeEvent.SelectTheme(Theme.SYSTEM_DEFAULT)) },
-          modifier = Modifier.padding(horizontal = 16.dp),
-        )
-        ThemeOptionRow(
-          title = stringResource(Res.string.SETTINGS_THEME_LIGHT),
-          // TODO: Add "Set light mode" / "Ange ljust läge" to Lokalise
-          subtitle = "Set light mode",
-          isSelected = content.selectedTheme == Theme.LIGHT,
-          onClick = { viewModel.emit(OnboardingThemeEvent.SelectTheme(Theme.LIGHT)) },
-          modifier = Modifier.padding(horizontal = 16.dp),
-        )
-        ThemeOptionRow(
-          title = stringResource(Res.string.SETTINGS_THEME_DARK),
-          // TODO: Add "Set dark mode" / "Ange mörkt läge" to Lokalise
-          subtitle = "Set dark mode",
-          isSelected = content.selectedTheme == Theme.DARK,
-          onClick = { viewModel.emit(OnboardingThemeEvent.SelectTheme(Theme.DARK)) },
-          modifier = Modifier.padding(horizontal = 16.dp),
+        Spacer(Modifier.weight(1f))
+        RadioGroup(
+          options = listOf(
+            RadioOption(
+              id = RadioOptionId(Theme.SYSTEM_DEFAULT.name),
+              text = stringResource(Res.string.SETTINGS_THEME_SYSTEM_DEFAULT),
+              // TODO: Add "Uses your phone's setting" / "Använder din telefons inställning" to Lokalise
+              label = "Uses your phone's setting",
+            ),
+            RadioOption(
+              id = RadioOptionId(Theme.LIGHT.name),
+              text = stringResource(Res.string.SETTINGS_THEME_LIGHT),
+              // TODO: Add "Set light mode" / "Ange ljust läge" to Lokalise
+              label = "Set light mode",
+            ),
+            RadioOption(
+              id = RadioOptionId(Theme.DARK.name),
+              text = stringResource(Res.string.SETTINGS_THEME_DARK),
+              // TODO: Add "Set dark mode" / "Ange mörkt läge" to Lokalise
+              label = "Set dark mode",
+            ),
+          ),
+          selectedOption = RadioOptionId(content.selectedTheme.name),
+          onRadioOptionSelected = { viewModel.emit(OnboardingThemeEvent.SelectTheme(Theme.valueOf(it.id))) },
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         )
         Spacer(Modifier.weight(1f))
         HedvigText(
@@ -203,32 +201,6 @@ internal fun OnboardingThemeDestination(viewModel: OnboardingThemeViewModel, nav
           onPrimaryClick = { viewModel.emit(OnboardingThemeEvent.Continue) },
         )
       }
-    }
-  }
-}
-
-@Composable
-private fun ThemeOptionRow(
-  title: String,
-  subtitle: String,
-  isSelected: Boolean,
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  Row(
-    verticalAlignment = Alignment.CenterVertically,
-    modifier = modifier
-      .fillMaxWidth()
-      .clip(HedvigTheme.shapes.cornerMedium)
-      .clickable(onClick = onClick)
-      .padding(vertical = 16.dp),
-  ) {
-    Column(Modifier.weight(1f)) {
-      HedvigText(title)
-      HedvigText(subtitle, color = HedvigTheme.colorScheme.textSecondary)
-    }
-    if (isSelected) {
-      Icon(imageVector = HedvigIcons.Checkmark, contentDescription = null)
     }
   }
 }

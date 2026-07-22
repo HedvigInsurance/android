@@ -66,11 +66,9 @@ internal class OnboardingPhonePresenterTest {
       skipItems(1)
       repository.onboardingDataResponses.add(testOnboardingData().right())
       awaitItem()
-      sendEvent(OnboardingPhoneEvent.UpdatePhoneNumber("0701234567"))
-      sendEvent(OnboardingPhoneEvent.Save)
+      sendEvent(OnboardingPhoneEvent.Save("0701234567"))
       runCurrent()
       repository.updateContactInfoResponses.add(Unit.right())
-      awaitItem() // phone number updated, not yet submitting
       awaitItem() // isSubmitting = true; continueFrom already ran during runCurrent() above
       val settled = awaitItem() // isSubmitting reset to false before navigating away
       assertThat(settled).isInstanceOf<OnboardingPhoneUiState.Content>()
@@ -91,7 +89,7 @@ internal class OnboardingPhonePresenterTest {
       skipItems(1)
       repository.onboardingDataResponses.add(testOnboardingData().right())
       awaitItem()
-      sendEvent(OnboardingPhoneEvent.Save)
+      sendEvent(OnboardingPhoneEvent.Save("0701234567"))
       runCurrent()
       repository.updateContactInfoResponses.add(ErrorMessage("nope").left())
       awaitItem() // isSubmitting = true
