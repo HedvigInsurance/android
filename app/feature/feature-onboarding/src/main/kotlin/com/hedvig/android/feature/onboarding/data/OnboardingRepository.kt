@@ -53,6 +53,8 @@ internal class OnboardingRepositoryImpl(
           currencyCode = referralInformation.monthlyDiscountPerReferral.currencyCode.rawValue,
         )
       },
+      // Deliberately no status filter: a PENDING payin method counts as connected, since bank
+      // connections take several bank days to activate and re-prompting mid-wait would be wrong.
       hasConnectedPayinMethod = member.paymentMethods.payinMethods.isNotEmpty(),
       crossSells = member.crossSellV2.otherCrossSells.map { crossSell ->
         OnboardingCrossSell(

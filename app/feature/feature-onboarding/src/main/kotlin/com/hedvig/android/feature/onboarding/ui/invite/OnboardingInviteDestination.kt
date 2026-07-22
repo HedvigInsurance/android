@@ -77,6 +77,7 @@ internal class OnboardingInvitePresenter(
           } else {
             OnboardingInviteUiState.Content(
               progress = session.progressFor(OnboardingStepId.InviteFriend),
+              // toInt is safe: referral incentives are always whole amounts, per product.
               incentiveDisplay = "${referral.monthlyDiscountPerReferralAmount.toInt()} ${referral.currencyCode}",
             )
           }

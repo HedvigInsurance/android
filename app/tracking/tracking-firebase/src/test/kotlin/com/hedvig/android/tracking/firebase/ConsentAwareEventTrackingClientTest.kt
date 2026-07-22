@@ -164,4 +164,33 @@ class ConsentAwareEventTrackingClientTest {
     client.setCollectionEnabled(true)
     assertThat(recording.collectionEnabledCalls.last()).isEqualTo(false)
   }
+
+  @Test
+  fun `the buffer caps at 200 events, dropping the oldest`() = runTest {
+    val recording = RecordingClient()
+    val settings = FakeSettingsDataStore()
+    val client = client(recording, settings)
+    runCurrent()
+    repeat(201) { index ->
+      client.trackEvent("event-$index", emptyMap())
+    }
+    settings.consent.value = AnalyticsConsent.GRANTED
+    runCurrent()
+    assertThat(recording.events.size).isEqualTo(200)
+    assertThat(recording.events.first().first).isEqualTo("event-1")
+    assertThat(recording.events.last().first).isEqualTo("event-200")
+  }
+
+  @Test
+  fun `screens are buffered while NOT_DECIDED and flushed on grant`() = runTest {
+    val recording = RecordingClient()
+    val settings = FakeSettingsDataStore()
+    val client = client(recording, settings)
+    runCurrent()
+    client.trackScreen("early_screen", null, emptyMap())
+    assertThat(recording.screens).isEmpty()
+    settings.consent.value = AnalyticsConsent.GRANTED
+    runCurrent()
+    assertThat(recording.screens).containsExactly("early_screen")
+  }
 }

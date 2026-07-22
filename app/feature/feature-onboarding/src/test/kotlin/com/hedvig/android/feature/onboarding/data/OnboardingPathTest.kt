@@ -114,4 +114,21 @@ class OnboardingPathTest {
     )
     assertThat(path).contains(OnboardingStepId.BundleDiscount)
   }
+
+  @Test
+  fun `a member with nothing applicable gets exactly the mandatory steps`() {
+    val path = buildOnboardingPath(
+      data(
+        contracts = listOf(contract()),
+        referralInformation = null,
+        hasConnectedPayinMethod = true,
+        crossSells = emptyList(),
+      ),
+    )
+    assertThat(path).containsExactly(
+      OnboardingStepId.AnalyticsConsent,
+      OnboardingStepId.PhoneNumber,
+      OnboardingStepId.Theme,
+    )
+  }
 }
