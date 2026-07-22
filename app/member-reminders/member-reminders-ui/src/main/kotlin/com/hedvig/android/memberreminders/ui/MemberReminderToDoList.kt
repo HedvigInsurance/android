@@ -196,7 +196,7 @@ private fun ToDoRow(icon: ImageVector, title: String, onClick: () -> Unit, modif
       HedvigText(
         text = "Requires action",
         style = HedvigTheme.typography.label,
-        color = HedvigTheme.colorScheme.signalRedText,
+        color = HedvigTheme.colorScheme.signalRedElement,
       )
     }
     Icon(
