@@ -26,17 +26,23 @@ import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.ui.getMemberReminderMessage
 import hedvig.resources.CONTRACT_VIEW_CERTIFICATE_BUTTON
 import hedvig.resources.Res
+import hedvig.resources.home_tab_active_in_future_info
+import hedvig.resources.home_tab_pending_switchable_welcome_title_without_name
+import hedvig.resources.home_tab_pending_unknown_title_without_name
+import hedvig.resources.home_tab_terminated_welcome_title_without_name
 import hedvig.resources.important_message_hide
 import hedvig.resources.important_message_read_more
 import org.jetbrains.compose.resources.stringResource
 
 /**
  * A card shown in the home notice carousel at the top of the content: the backend's very important
- * messages and the informational member reminders (currently upcoming renewals) that don't belong
- * in the To do list.
+ * messages, the member's contract-status message, and the informational member reminders (currently
+ * upcoming renewals) that don't belong in the To do list.
  */
 internal sealed interface HomeNoticeCard {
   data class Important(val message: VeryImportantMessage) : HomeNoticeCard
+
+  data class Status(val homeText: HomeText) : HomeNoticeCard
 
   data class Renewal(val reminder: MemberReminder.UpcomingRenewal) : HomeNoticeCard
 }
@@ -107,12 +113,34 @@ private fun HomeNoticeCardItem(
       modifier = modifier,
     )
 
+    is HomeNoticeCard.Status -> ContractStatusCard(
+      homeText = card.homeText,
+      modifier = modifier,
+    )
+
     is HomeNoticeCard.Renewal -> UpcomingRenewalCard(
       reminder = card.reminder,
       openUrl = openUrl,
       modifier = modifier,
     )
   }
+}
+
+@Composable
+private fun ContractStatusCard(homeText: HomeText, modifier: Modifier = Modifier) {
+  val message = when (homeText) {
+    HomeText.Active -> return
+    is HomeText.ActiveInFuture -> stringResource(Res.string.home_tab_active_in_future_info, homeText.inception)
+    HomeText.Pending -> stringResource(Res.string.home_tab_pending_unknown_title_without_name)
+    HomeText.Switching -> stringResource(Res.string.home_tab_pending_switchable_welcome_title_without_name)
+    HomeText.Terminated -> stringResource(Res.string.home_tab_terminated_welcome_title_without_name)
+  }
+  HedvigNotificationCard(
+    message = message,
+    priority = NotificationPriority.Info,
+    withIcon = false,
+    modifier = modifier.fillMaxSize(),
+  )
 }
 
 @Composable
