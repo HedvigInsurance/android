@@ -232,7 +232,7 @@ class HedvigViewModelProcessorTest {
       this.sources = stubs + sources.toList()
       inheritClassPath = true
       messageOutputStream = System.out
-      configureKsp(useKsp2 = true) {
+      configureKsp {
         symbolProcessorProviders.add(HedvigViewModelProcessorProvider())
       }
     }
