@@ -442,6 +442,22 @@ type AgreementDisplayItem {
   displaySubtitle: String
   displayValue: String!
 }
+input AnswersInput {
+  relationship: String
+  isPregnant: Boolean
+  hasKids: Boolean
+  hasCat: Boolean
+  hasDog: Boolean
+  yourAge: String
+  partnerAge: String
+  isStudent: Boolean
+  housingType: String
+  houseAge: String
+  isRental: Boolean
+  hasCar: Boolean
+  carAge: String
+  wantsAllRisk: Boolean
+}
 enum AppPlatform {
   IOS
   ANDROID
@@ -679,6 +695,10 @@ type ChangeTierDeductibleFromAgreement {
   """
   tierLevel: Int
   """
+  Optional tier description, if set use that rather than productVariant->tierDescription
+  """
+  tierDescription: String
+  """
    List of display items for the quote 
   """
   displayItems: [ChangeTierDeductibleDisplayItem!]!
@@ -714,6 +734,10 @@ type ChangeTierDeductibleQuote {
    The tier level, a smaller number means lower coverage. Use this to sort the tier list. 
   """
   tierLevel: Int
+  """
+  Optional tier description, if set use that rather than productVariant->tierDescription
+  """
+  tierDescription: String
   """
    The deductible if any 
   """
@@ -872,6 +896,7 @@ type Claim {
   isUploadingFilesEnabled: Boolean!
   infoText: String
   displayItems: [ClaimDisplayItem!]!
+  contractId: String
   """
   Terms & conditions for the claim found using claims contractId and dateOfOccurrence, otherwise null.
   """
@@ -946,6 +971,11 @@ type ClaimIntent {
   """
   displayName: String
   """
+  Whether this draft is resumable by the member. A draft that has been deleted (see `claimIntentDeleteDraft`)
+  is no longer resumable.
+  """
+  resumable: Boolean!
+  """
   The created claim of this intent.
   Once this value is returned, the intent is effectively over, and no steps
   can be produced or interacted with.
@@ -1003,7 +1033,7 @@ type ClaimIntentStep {
 """
 A union of all the different kinds of "step content".
 """
-union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentSelect|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentFileUpload|ClaimIntentStepContentSummary|ClaimIntentStepContentDeflection|ClaimIntentStepContentDeflectionMessage
+union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentSelect|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentFileUpload|ClaimIntentStepContentSummary|ClaimIntentStepContentDeflection|ClaimIntentStepContentDeflectionMessage|ClaimIntentStepContentInformation
 """
 An audio recording step is one where the user is meant to record some audio.
 Submitted using `Mutation.claimIntentSubmitAudio`.
@@ -1181,6 +1211,22 @@ This typically will be backed by a String - but other formats could appear.
 """
 scalar ClaimIntentStepContentFormFieldValue
 """
+A read and acknowledge notice if the member needs to be shown some urgent information (if water is still leaking -> turn off the pipe). Not terminal
+Submitted using `Mutation.claimIntentSubmitInformation`.
+"""
+type ClaimIntentStepContentInformation {
+  notice: String!
+  """
+  So we can show a white/red border if info/critical respectively.
+  """
+  severity: ClaimIntentStepContentInformationSeverity!
+  buttonTitle: String!
+}
+enum ClaimIntentStepContentInformationSeverity {
+  INFO
+  CRITICAL
+}
+"""
 A select step is one that contains a choice to select one of several alternatives.
 It can be seen as a special-case form with nicer rendering.
 Submitted using `Mutation.claimIntentSubmitSelect`.
@@ -1234,7 +1280,37 @@ type ClaimIntentStepContentSummary {
   audioRecordings: [ClaimIntentStepContentSummaryAudioRecording!]!
   freeTexts: [String!]!
   fileUploads: [ClaimIntentStepContentSummaryFileUpload!]!
+  """
+  Key facts for the collapsed "Claim details" card.
+  """
+  keyDetails: [ClaimIntentStepContentSummaryItem!]!
+  """
+  All question/answer pairs in the order they were asked.
+  Rendered behind "Show all answers".
+  """
+  answers: [ClaimIntentStepContentSummaryAnswer!]!
 }
+type ClaimIntentStepContentSummaryAnswer {
+  """
+  The question as it was asked to the member.
+  """
+  title: String!
+  value: ClaimIntentStepContentSummaryAnswerValue!
+}
+type ClaimIntentStepContentSummaryAnswerAudio {
+  url: Url!
+  """
+  Transcript of the recording, when available.
+  """
+  transcript: String
+}
+type ClaimIntentStepContentSummaryAnswerFiles {
+  files: [ClaimIntentStepContentSummaryFileUpload!]!
+}
+type ClaimIntentStepContentSummaryAnswerText {
+  text: String!
+}
+union ClaimIntentStepContentSummaryAnswerValue = ClaimIntentStepContentSummaryAnswerText|ClaimIntentStepContentSummaryAnswerAudio|ClaimIntentStepContentSummaryAnswerFiles
 type ClaimIntentStepContentSummaryAudioRecording {
   url: Url!
 }
@@ -1267,6 +1343,9 @@ input ClaimIntentSubmitFileUploadInput {
 input ClaimIntentSubmitFormInput {
   stepId: ID!
   fields: [ClaimIntentFormSubmitInputField!]!
+}
+input ClaimIntentSubmitInformationInput {
+  stepId: ID!
 }
 input ClaimIntentSubmitSelectInput {
   stepId: ID!
@@ -1662,6 +1741,10 @@ input CrossSellInput {
   A/B test experiments for attribution tracking
   """
   experiments: [CrossSellExperimentInput!]!
+  """
+  The contract that was changed in the flow. When set, enables addon recommendations for that contract.
+  """
+  contractId: ID
 }
 enum CrossSellSource {
   HOME
@@ -1676,6 +1759,10 @@ type CrossSellV2 {
   Prioritized recommendation (null for INSURANCES)
   """
   recommendedCrossSell: RecommendedCrossSell
+  """
+  Addon recommendation for the contract in input.contractId (null when not applicable)
+  """
+  recommendedAddon: RecommendedAddonCrossSell
   """
   Other available cross-sells (behavior varies by userFlow)
   """
@@ -1728,6 +1815,18 @@ type EmailMessage {
   deliveryType: String
   createdAt: DateTime
   category: String
+}
+"""
+Employment type for Payment Protection, mirroring underwriter's `SwedishPaymentProtection.EmploymentType`.
+`UNEMPLOYED` and `HOURLY_EMPLOYED` are ineligible and rejected by underwriter.
+"""
+enum EmploymentType {
+  UNEMPLOYED
+  PROBATIONARY_EMPLOYED
+  HOURLY_EMPLOYED
+  CONTRACT_EMPLOYED
+  PERMANENT_EMPLOYED
+  SELF_EMPLOYED
 }
 type Entrypoint {
   id: ID!
@@ -2431,6 +2530,28 @@ input InsuranceEvidenceInput {
 }
 type InsuranceEvidenceOutput {
   insuranceEvidenceInformation: InsuranceEvidenceInformation
+  userError: UserError
+}
+input InsuranceGuideInput {
+  """
+  Email of the user.
+  """
+  email: String
+  """
+  Id of the insurance guide shopSession.
+  """
+  shopSessionId: UUID!
+  """
+  Insurance recommendation form answers.
+  """
+  answers: AnswersInput!
+  """
+  Insurance recommendations.
+  """
+  recommendations: [RecommendationInput!]!
+}
+type InsuranceGuideOutput {
+  success: Boolean!
   userError: UserError
 }
 input InsurelyInitiateIframeDataCollectionInput {
@@ -3449,6 +3570,10 @@ type MoveIntentMutationOutput {
    Fail case 
   """
   userError: UserError
+  """
+   Id of the new contract if it was created after finalizing the move 
+  """
+  newContractId: ID
 }
 type MoveIntentQuoteCost {
   quoteId: ID!
@@ -3635,6 +3760,10 @@ type Mutation {
   """
   claimIntentRegretStep(stepId: ID!): ClaimIntentMutationOutput!
   """
+  Delete a draft claim intent from the member's perspective (a soft delete) so it is no longer returned by `resumableClaimIntent`.
+  """
+  claimIntentDeleteDraft(id: ID!): Boolean!
+  """
   Submit a step containing a `ClaimIntentStepContentForm`.
   """
   claimIntentSubmitForm(input: ClaimIntentSubmitFormInput!): ClaimIntentMutationOutput!
@@ -3654,6 +3783,10 @@ type Mutation {
   Submit a step containing a `ClaimIntentStepContentTask`.
   """
   claimIntentSubmitTask(input: ClaimIntentSubmitTaskInput!): ClaimIntentMutationOutput!
+  """
+  Acknowledge a step containing a `ClaimIntentStepContentInformation`, continuing the flow.
+  """
+  claimIntentSubmitInformation(input: ClaimIntentSubmitInformationInput!): ClaimIntentMutationOutput!
   """
   Submit a step containing a `ClaimIntentStepContentSummary`.
   """
@@ -3729,6 +3862,10 @@ type Mutation {
   """
   productOffersCancellationRequestedUpdate(productOfferIds: [UUID!]!, requested: Boolean!): ProductOffersMutationOutput!
   """
+  Called to save insurance recommendation form and save recommendation email.
+  """
+  insuranceGuide(input: InsuranceGuideInput!): InsuranceGuideOutput!
+  """
   Create a `PriceIntent`.
   The `input.productName` has to be the name of a product among the ones listed at `Query.availableProducts`. The
   choice of product also affects which data will be needed for the intent to be confirmed and to produce offers.
@@ -3755,6 +3892,14 @@ type Mutation {
   This is used because it's common to want to change the start date AFTER getting the offer.
   """
   productOffersStartDateUpdate(productOfferIds: [UUID!]!, startDate: Date!): ProductOffersMutationOutput!
+  """
+  Patch the employment type onto the underwriter quote(s) backing the given Payment Protection
+  `ProductOffer`s, and persist it onto each offer's `priceIntentData` snapshot so it round-trips to clients.
+  Employment type is not a pricing input, so this patches the existing quote (no re-quote) and leaves cost
+  unchanged. Ineligible types (`UNEMPLOYED`, `HOURLY_EMPLOYED`) are rejected by underwriter and surface as a
+  `userError`.
+  """
+  productOffersEmploymentTypeUpdate(productOfferIds: [UUID!]!, employmentType: EmploymentType!): ProductOffersMutationOutput!
   """
   Overwrite the selected addon state for the given `productOfferId`.
   For instance:
@@ -4305,6 +4450,10 @@ type ProductOffer {
   """
   priceIntentId: UUID
   """
+  Link to the price calculator for this offer (resumes the shop session).
+  """
+  priceCalculatorLink: String
+  """
   UI-safe masked form data used to generate the offer. PII fields (street, zipCode, city) are masked when address came from registration address lookup.
   """
   priceIntentData: PricingFormData!
@@ -4316,6 +4465,10 @@ type ProductOffer {
   The deductible description of this offer, if there is one.
   """
   deductible: ProductOfferDeductible
+  """
+  The insurance amount description of this offer, if there is one.
+  """
+  insuranceAmount: ProductOfferInsuranceAmount
   """
   Unique Selling Points, a list of strings that can be shown as bullets to drill home the "buy me"-message.
   """
@@ -4447,6 +4600,13 @@ type ProductOfferExposure {
   Ex. 'Fakestreet 124 * You+1' for home
   """
   displayNameFull: String!
+}
+type ProductOfferInsuranceAmount {
+  displayName: String!
+  """
+  The insurance amount in the currency's unit (e.g., SEK)
+  """
+  amount: Int!
 }
 type ProductOfferPriceMatch {
   externalPrice: Money!
@@ -4705,6 +4865,36 @@ type RecommendationExternalInsurance {
   Insurely data collection ID
   """
   dataCollectionId: String!
+}
+input RecommendationInput {
+  productId: String!
+  name: String!
+  tier: String
+  productPageUrl: String!
+  priceCalculatorUrl: String!
+}
+"""
+A recommendation to add an addon to an existing contract. The button opens the addon flow via an app deep link.
+"""
+type RecommendedAddonCrossSell {
+  id: ID!
+  title: String!
+  description: String!
+  buttonText: String!
+  """
+  App deep link to the addon flow for this contract
+  """
+  deepLink: String!
+  pillowImageSmall: StoryblokImageAsset!
+  pillowImageLarge: StoryblokImageAsset!
+  """
+  Optional banner text shown above the card; clients fall back to a default when null
+  """
+  bannerText: String
+  """
+  Benefit rows shown as a checkmark list; empty when none
+  """
+  benefits: [String!]!
 }
 type RecommendedCrossSell {
   crossSell: CrossSell!
