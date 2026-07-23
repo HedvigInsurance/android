@@ -17,7 +17,7 @@ import kotlinx.serialization.KSerializer
  */
 class HedvigDeepLinkMatcher(private val matchers: List<DeepLinkMatcher<out HedvigNavKey>>) {
   fun match(uri: String): HedvigNavKey? {
-    val request = runCatching { DeepLinkRequest.fromUriString(uri) }.getOrNull() ?: return null
+    val request = runCatching { DeepLinkRequest(uri) }.getOrNull() ?: return null
     var best: DeepLinkMatcher.MatchResult<out HedvigNavKey>? = null
     matchers.forEach { matcher ->
       // A matcher for a destination with a required (no-default) argument throws when that argument is absent from the
