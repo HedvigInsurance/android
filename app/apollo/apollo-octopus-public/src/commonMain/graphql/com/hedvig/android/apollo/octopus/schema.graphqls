@@ -1745,6 +1745,10 @@ input CrossSellInput {
   The contract that was changed in the flow. When set, enables addon recommendations for that contract.
   """
   contractId: ID
+  """
+  The claim this flow relates to. Only allowed when flowSource is CLOSED_CLAIM.
+  """
+  claimId: UUID
 }
 enum CrossSellSource {
   HOME
@@ -5036,6 +5040,11 @@ input ShopSessionAttributionInput {
   """
   experiments: [ShopSessionExperimentInput!]
   trackingData: JSON
+  """
+  The Vertex recommendation instance that led the member here (cross-sell arm only).
+  Joins cross-sell funnel events to one scoring computation.
+  """
+  recommendationInstanceId: String
 }
 input ShopSessionCartCampaignRedeemInput {
   shopSessionId: UUID!
