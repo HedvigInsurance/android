@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.onboarding.ui.welcome
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -102,11 +101,8 @@ internal sealed interface OnboardingWelcomeEvent {
 @Composable
 internal fun OnboardingWelcomeDestination(viewModel: OnboardingWelcomeViewModel) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  // System back on the flow root counts as a dismissal, exactly like the close button: it marks
-  // onboarding as seen so the flow does not silently come back on the next resume.
-  BackHandler {
-    viewModel.emit(OnboardingWelcomeEvent.Close)
-  }
+  // System back here pops the flow root natively (predictive back preview included); marking the
+  // flow as seen on that dismissal is handled by OnboardingGate.markSeenWhenOnboardingDismissed.
   OnboardingStepScaffold(
     progress = (uiState as? OnboardingWelcomeUiState.Content)?.progress,
     showBackButton = false,

@@ -399,8 +399,10 @@ private fun TryShowOnboardingEffect(
   LaunchedEffect(lifecycle) {
     lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
       authTokenService.authStatus.first { it is AuthStatus.LoggedIn }
-      // Already showing (e.g. resumed mid-flow): nothing to do this pass.
+      // Already showing (e.g. resumed mid-flow, incl. after process death): just re-arm the
+      // dismissal observer so leaving the flow in any way marks it seen.
       if (backstackController.entries.any { it is OnboardingKey }) {
+        onboardingGate.markSeenWhenOnboardingDismissed()
         return@repeatOnLifecycle
       }
       if (!onboardingGate.shouldShowOnboarding()) return@repeatOnLifecycle
@@ -410,6 +412,7 @@ private fun TryShowOnboardingEffect(
           currentDestination is HomeKey && pendingDeepLink == null
         }
       backstackController.add(OnboardingKey)
+      onboardingGate.markSeenWhenOnboardingDismissed()
     }
   }
 }

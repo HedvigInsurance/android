@@ -1,13 +1,17 @@
 package com.hedvig.android.feature.onboarding.gate
 
+import androidx.compose.runtime.snapshotFlow
 import com.hedvig.android.auth.MemberIdService
 import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.feature.onboarding.data.CompleteOnboardingUseCase
 import com.hedvig.android.feature.onboarding.data.OnboardingSeenStore
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
+import com.hedvig.android.feature.onboarding.navigation.OnboardingKey
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.navigation.compose.Backstack
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
@@ -21,6 +25,15 @@ import kotlinx.coroutines.flow.first
  */
 interface OnboardingGate {
   suspend fun shouldShowOnboarding(): Boolean
+
+  /**
+   * Suspends while the onboarding flow is on the back stack and marks it seen once it leaves, no
+   * matter how it left: completion, the close button (both already mark seen, this is idempotent),
+   * or a plain system back on the welcome root, which would otherwise let the flow silently
+   * reappear on the next resume. Observing removal instead of intercepting back keeps predictive
+   * back fully native. Returns immediately if the flow is not currently showing.
+   */
+  suspend fun markSeenWhenOnboardingDismissed()
 }
 
 @ContributesBinding(ActivityRetainedScope::class)
@@ -31,6 +44,8 @@ internal class OnboardingGateImpl(
   private val onboardingSeenStore: OnboardingSeenStore,
   private val sessionStore: OnboardingSessionStore,
   private val featureManager: FeatureManager,
+  private val backstack: Backstack,
+  private val completeOnboardingUseCase: CompleteOnboardingUseCase,
 ) : OnboardingGate {
   override suspend fun shouldShowOnboarding(): Boolean {
     if (featureManager.isFeatureEnabled(Feature.DISABLE_ONBOARDING).first()) {
@@ -46,5 +61,13 @@ internal class OnboardingGateImpl(
       },
       ifRight = { session -> session.path.isNotEmpty() },
     )
+  }
+
+  override suspend fun markSeenWhenOnboardingDismissed() {
+    if (backstack.entries.none { it is OnboardingKey }) return
+    snapshotFlow { backstack.entries.none { it is OnboardingKey } }.first { it }
+    // Idempotent: completion and the close button have already marked seen through this same
+    // use case; this additionally covers a system back on the welcome root.
+    completeOnboardingUseCase.invoke()
   }
 }
