@@ -101,8 +101,6 @@ internal sealed interface OnboardingWelcomeEvent {
 @Composable
 internal fun OnboardingWelcomeDestination(viewModel: OnboardingWelcomeViewModel) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  // System back here pops the flow root natively (predictive back preview included); marking the
-  // flow as seen on that dismissal is handled by OnboardingGate.markSeenWhenOnboardingDismissed.
   OnboardingStepScaffold(
     progress = (uiState as? OnboardingWelcomeUiState.Content)?.progress,
     showBackButton = false,
