@@ -14,7 +14,7 @@ import dev.zacsweers.metro.Inject
 internal class EditCoInsuredDeepLinkMatcherProvider(
   private val container: HedvigDeepLinkContainer,
 ) : DeepLinkMatcherProvider {
-  override fun matchers(): List<DeepLinkMatcher<out HedvigNavKey>> = uriDeepLinkMatchers(
+  override fun matchers(): List<DeepLinkMatcher<HedvigNavKey>> = uriDeepLinkMatchers(
     container.editCoInsured + container.editCoInsuredWithoutContractId,
     EditCoInsuredTriageKey.serializer(),
   ) +

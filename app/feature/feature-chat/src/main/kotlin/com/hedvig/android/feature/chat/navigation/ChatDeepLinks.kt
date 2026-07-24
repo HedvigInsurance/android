@@ -14,7 +14,7 @@ import dev.zacsweers.metro.Inject
 internal class ChatDeepLinkMatcherProvider(
   private val container: HedvigDeepLinkContainer,
 ) : DeepLinkMatcherProvider {
-  override fun matchers(): List<DeepLinkMatcher<out HedvigNavKey>> =
+  override fun matchers(): List<DeepLinkMatcher<HedvigNavKey>> =
     uriDeepLinkMatchers(container.chat + container.inbox, InboxKey.serializer()) +
       uriDeepLinkMatchers(container.conversation, ChatKey.serializer())
 }

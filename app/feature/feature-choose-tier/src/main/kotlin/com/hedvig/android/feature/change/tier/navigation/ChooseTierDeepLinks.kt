@@ -14,7 +14,7 @@ import dev.zacsweers.metro.Inject
 internal class ChooseTierDeepLinkMatcherProvider(
   private val container: HedvigDeepLinkContainer,
 ) : DeepLinkMatcherProvider {
-  override fun matchers(): List<DeepLinkMatcher<out HedvigNavKey>> =
+  override fun matchers(): List<DeepLinkMatcher<HedvigNavKey>> =
     uriDeepLinkMatchers(container.changeTierWithContractId, StartTierFlowKey.serializer()) +
       uriDeepLinkMatchers(
         container.changeTierWithoutContractId,

@@ -10,5 +10,5 @@ import com.hedvig.android.navigation.common.HedvigNavKey
  * that has to be edited (and can be forgotten) for every new feature.
  */
 interface DeepLinkMatcherProvider {
-  fun matchers(): List<DeepLinkMatcher<out HedvigNavKey>>
+  fun matchers(): List<DeepLinkMatcher<HedvigNavKey>>
 }
