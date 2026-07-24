@@ -55,8 +55,9 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
         ),
         recommendedAddon = null,
       ),
-      travelBannerInfo = null,
+      addonBannerInfos = emptyList(),
       showChatIcon = false,
+      firstName = "Demo",
       draftClaim = null,
     ).right(),
   )

@@ -164,7 +164,7 @@ internal class HomePresenterTest {
           showHelpCenter = false,
           crossSells = CrossSellSheetData(testCrossSell, listOf(), null),
           firstVetSections = listOf(),
-          travelBannerInfo = null,
+          addonBannerInfos = emptyList(),
           draftClaim = null,
         ).right(),
       )
@@ -195,8 +195,9 @@ internal class HomePresenterTest {
           ),
           chatAction = HomeTopBarAction.ChatAction,
           hasUnseenChatMessages = false,
-          addonBannerInfo = null,
+          addonBannerInfos = emptyList(),
           isProduction = false,
+          crossSellsPartition = CrossSellsPartition(offersCrossSell = testCrossSell),
           draftClaim = null,
         ),
       )
@@ -230,7 +231,7 @@ internal class HomePresenterTest {
           crossSells = addonOnlyCrossSells,
           firstVetSections = listOf(),
           showHelpCenter = false,
-          travelBannerInfo = null,
+          addonBannerInfos = listOf(),
           draftClaim = null,
         ).right(),
       )
@@ -274,7 +275,7 @@ internal class HomePresenterTest {
           crossSells = CrossSellSheetData(null, listOf(), null),
           firstVetSections = listOf(),
           showHelpCenter = false,
-          travelBannerInfo = null,
+          addonBannerInfos = emptyList(),
           draftClaim = null,
         ).right(),
       )
@@ -292,7 +293,7 @@ internal class HomePresenterTest {
           chatAction = null,
           firstVetAction = null,
           crossSellsAction = null,
-          addonBannerInfo = null,
+          addonBannerInfos = emptyList(),
           isProduction = false,
           draftClaim = null,
         ),
@@ -353,7 +354,7 @@ internal class HomePresenterTest {
           showHelpCenter = false,
           firstVetSections = listOf(),
           crossSells = CrossSellSheetData(null, listOf(), null),
-          travelBannerInfo = null,
+          addonBannerInfos = emptyList(),
           draftClaim = null,
         ).right(),
       )
@@ -390,7 +391,7 @@ internal class HomePresenterTest {
           crossSells = CrossSellSheetData(null, listOf(), null),
           firstVetSections = listOf(),
           showHelpCenter = false,
-          travelBannerInfo = null,
+          addonBannerInfos = emptyList(),
           draftClaim = null,
         ).right(),
       )
@@ -406,7 +407,7 @@ internal class HomePresenterTest {
           chatAction = null,
           firstVetAction = null,
           crossSellsAction = null,
-          addonBannerInfo = null,
+          addonBannerInfos = emptyList(),
           isProduction = false,
           draftClaim = null,
         ),
@@ -447,7 +448,7 @@ internal class HomePresenterTest {
             firstVet,
           ),
           showHelpCenter = false,
-          travelBannerInfo = null,
+          addonBannerInfos = emptyList(),
           draftClaim = null,
         ).right(),
       )
@@ -463,7 +464,7 @@ internal class HomePresenterTest {
           chatAction = null,
           firstVetAction = HomeTopBarAction.FirstVetAction(listOf(firstVet)),
           crossSellsAction = null,
-          addonBannerInfo = null,
+          addonBannerInfos = emptyList(),
           isProduction = false,
           draftClaim = null,
         ),
@@ -503,7 +504,7 @@ internal class HomePresenterTest {
           crossSells = CrossSellSheetData(testCrossSell, listOf(crossSell), null),
           firstVetSections = listOf(),
           showHelpCenter = false,
-          travelBannerInfo = null,
+          addonBannerInfos = emptyList(),
           draftClaim = null,
         ).right(),
       )
@@ -523,8 +524,12 @@ internal class HomePresenterTest {
             crossSellRecommendationNotification = CrossSellRecommendationNotification
               (true, 1L),
           ),
-          addonBannerInfo = null,
+          addonBannerInfos = emptyList(),
           isProduction = false,
+          crossSellsPartition = CrossSellsPartition(
+            offersCrossSell = testCrossSell,
+            discoverCrossSells = listOf(crossSell),
+          ),
           draftClaim = null,
         ),
       )
@@ -556,7 +561,7 @@ internal class HomePresenterTest {
           crossSells = CrossSellSheetData(null, emptyList(), null),
           firstVetSections = listOf(),
           showHelpCenter = false,
-          travelBannerInfo = null,
+          addonBannerInfos = emptyList(),
           draftClaim = null,
         ).right(),
       )
@@ -572,7 +577,7 @@ internal class HomePresenterTest {
           chatAction = HomeTopBarAction.ChatAction,
           firstVetAction = null,
           crossSellsAction = null,
-          addonBannerInfo = null,
+          addonBannerInfos = emptyList(),
           isProduction = false,
           draftClaim = null,
         ),
@@ -605,7 +610,7 @@ internal class HomePresenterTest {
           crossSells = CrossSellSheetData(null, emptyList(), null),
           firstVetSections = listOf(),
           showHelpCenter = false,
-          travelBannerInfo = null,
+          addonBannerInfos = emptyList(),
           draftClaim = null,
         ).right(),
       )
@@ -621,11 +626,49 @@ internal class HomePresenterTest {
           chatAction = null,
           firstVetAction = null,
           crossSellsAction = null,
-          addonBannerInfo = null,
+          addonBannerInfos = emptyList(),
           isProduction = false,
           draftClaim = null,
         ),
       )
+    }
+  }
+
+  @Test
+  fun `crossSells are partitioned into offers, carousel and discover buckets`() = runTest {
+    val getHomeDataUseCase = TestGetHomeDataUseCase()
+    val homePresenter = HomePresenter(
+      getHomeDataUseCase,
+      SeenImportantMessagesStorageImpl(),
+      FakeCrossSellHomeNotificationService(),
+      ApplicationScope(backgroundScope),
+      false,
+      TestDeleteClaimIntentDraftUseCase(),
+    )
+    val otherCrossSell = CrossSell(
+      id = "other",
+      title = "title",
+      subtitle = "subt",
+      storeUrl = "url",
+      pillowImage = ImageAsset("", "", ""),
+    )
+    homePresenter.test(HomeUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
+
+      getHomeDataUseCase.responseTurbine.add(
+        someIrrelevantHomeDataInstance.copy(
+          crossSells = CrossSellSheetData(testCrossSell, listOf(otherCrossSell), recommendedAddon = null),
+        ).right(),
+      )
+      assertThat(awaitItem())
+        .isInstanceOf<HomeUiState.Success>()
+        .prop(HomeUiState.Success::crossSellsPartition)
+        .isEqualTo(
+          CrossSellsPartition(
+            offersCrossSell = testCrossSell,
+            discoverCrossSells = listOf(otherCrossSell),
+          ),
+        )
     }
   }
 
@@ -655,6 +698,30 @@ internal class HomePresenterTest {
       assertThat(deleteClaimIntentDraftUseCase.deletedIdsTurbine.awaitItem()).isEqualTo("draft-id")
       assertThat(getHomeDataUseCase.forceNetworkFetchTurbine.awaitItem()).isTrue()
       cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `firstName is propagated to the success state`() = runTest {
+    val getHomeDataUseCase = TestGetHomeDataUseCase()
+    val homePresenter = HomePresenter(
+      getHomeDataUseCase,
+      SeenImportantMessagesStorageImpl(),
+      FakeCrossSellHomeNotificationService(),
+      ApplicationScope(backgroundScope),
+      false,
+      TestDeleteClaimIntentDraftUseCase(),
+    )
+    homePresenter.test(HomeUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
+
+      getHomeDataUseCase.responseTurbine.add(
+        someIrrelevantHomeDataInstance.copy(firstName = "Richard").right(),
+      )
+      assertThat(awaitItem())
+        .isInstanceOf<HomeUiState.Success>()
+        .prop(HomeUiState.Success::firstName)
+        .isEqualTo("Richard")
     }
   }
 
@@ -704,7 +771,7 @@ internal class HomePresenterTest {
     showHelpCenter = false,
     firstVetSections = listOf(),
     crossSells = CrossSellSheetData(null, emptyList(), null),
-    travelBannerInfo = null,
+    addonBannerInfos = emptyList(),
     draftClaim = null,
   )
 }

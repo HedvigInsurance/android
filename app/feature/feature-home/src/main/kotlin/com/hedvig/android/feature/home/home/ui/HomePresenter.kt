@@ -13,8 +13,10 @@ import arrow.core.Either
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.crosssells.CrossSellSheetData
+import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.claimintent.DeleteClaimIntentDraftUseCase
+import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
@@ -149,8 +151,10 @@ internal class HomePresenter(
           chatAction = successData.chatAction,
           firstVetAction = successData.firstVetAction,
           crossSellsAction = successData.crossSellsAction,
-          addonBannerInfo = successData.addonBannerInfo,
+          addonBannerInfos = successData.addonBannerInfos,
           isProduction = isProduction,
+          crossSellsPartition = successData.crossSellsPartition,
+          firstName = successData.firstName,
           draftClaim = successData.draftClaim,
         )
       }
@@ -189,10 +193,12 @@ internal sealed interface HomeUiState {
     val chatAction: HomeTopBarAction.ChatAction?,
     val firstVetAction: HomeTopBarAction.FirstVetAction?,
     val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
-    val addonBannerInfo: AddonBannerInfo?,
+    val addonBannerInfos: List<AddonBannerInfo>,
     val isProduction: Boolean,
     override val isHelpCenterEnabled: Boolean,
     override val hasUnseenChatMessages: Boolean,
+    val crossSellsPartition: CrossSellsPartition = CrossSellsPartition(),
+    val firstName: String = "",
     val draftClaim: HomeData.DraftClaim?,
   ) : HomeUiState
 
@@ -211,7 +217,9 @@ private data class SuccessData(
   val firstVetAction: HomeTopBarAction.FirstVetAction?,
   val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
   val hasUnseenChatMessages: Boolean,
-  val addonBannerInfo: AddonBannerInfo?,
+  val addonBannerInfos: List<AddonBannerInfo>,
+  val crossSellsPartition: CrossSellsPartition,
+  val firstName: String,
   val draftClaim: HomeData.DraftClaim?,
 ) {
   companion object {
@@ -226,8 +234,10 @@ private data class SuccessData(
         crossSellsAction = lastState.crossSellsAction,
         firstVetAction = lastState.firstVetAction,
         hasUnseenChatMessages = lastState.hasUnseenChatMessages,
-        addonBannerInfo = lastState.addonBannerInfo,
+        addonBannerInfos = lastState.addonBannerInfos,
         chatAction = lastState.chatAction,
+        crossSellsPartition = lastState.crossSellsPartition,
+        firstName = lastState.firstName,
         draftClaim = lastState.draftClaim,
       )
     }
@@ -275,12 +285,32 @@ private data class SuccessData(
         firstVetAction = firstVetAction,
         crossSellsAction = crossSellsAction,
         hasUnseenChatMessages = homeData.hasUnseenChatMessages,
-        addonBannerInfo = homeData.travelBannerInfo,
+        addonBannerInfos = homeData.addonBannerInfos,
         chatAction = if (homeData.showChatIcon) HomeTopBarAction.ChatAction else null,
+        crossSellsPartition = partitionCrossSells(homeData.crossSells),
+        firstName = homeData.firstName,
         draftClaim = homeData.draftClaim,
       )
     }
   }
+}
+
+/**
+ * The home screen surfaces cross-sells in three places (Offers, the discover carousel and the
+ * "Discover our insurances" list). This is the single place that decides which cross-sells go where.
+ */
+internal data class CrossSellsPartition(
+  val offersCrossSell: RecommendedCrossSell? = null,
+  val discoverCrossSells: List<CrossSell> = emptyList(),
+)
+
+// WS0 placeholder rule until design finalizes per-section cross-sell assignment: Offers shows the
+// recommended cross-sell; both the carousel and the "Discover our insurances" list show the others.
+internal fun partitionCrossSells(crossSells: CrossSellSheetData): CrossSellsPartition {
+  return CrossSellsPartition(
+    offersCrossSell = crossSells.recommendedCrossSell,
+    discoverCrossSells = crossSells.otherCrossSells,
+  )
 }
 
 sealed interface HomeText {

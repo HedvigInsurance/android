@@ -1,5 +1,6 @@
 query Home($claimsHistoryFlag: Boolean!, $resumeClaimEnabled: Boolean!) {
   currentMember {
+    firstName
     resumableClaimIntent @include(if: $resumeClaimEnabled) {
       id
       displayName
