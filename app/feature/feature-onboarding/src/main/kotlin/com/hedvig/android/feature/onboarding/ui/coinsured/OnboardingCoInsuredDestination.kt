@@ -39,7 +39,14 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Inject
+import hedvig.resources.ONBOARDING_ADD_COINSURED_TITLE
+import hedvig.resources.ONBOARDING_ADD_INFO_LATER_LABEL
+import hedvig.resources.ONBOARDING_DO_THIS_LATER_BUTTON
+import hedvig.resources.ONBOARDING_MISSING_INFO_SUBTITLE
+import hedvig.resources.Res
+import hedvig.resources.general_continue_button
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 @Inject
 @HedvigViewModel(ActivityRetainedScope::class)
@@ -179,10 +186,8 @@ internal fun OnboardingCoInsuredDestination(viewModel: OnboardingCoInsuredViewMo
       is OnboardingCoInsuredUiState.Content -> {
         Spacer(Modifier.height(16.dp))
         OnboardingStepHeader(
-          // TODO: Add "Add co-insured" / "Lägg till medförsäkrade" to Lokalise
-          title = "Add co-insured",
-          // TODO: Add "So we know who's covered by your insurance" / "Så att vi vet vem som är försäkrad" to Lokalise
-          description = "So we know who's covered by your insurance",
+          title = stringResource(Res.string.ONBOARDING_ADD_COINSURED_TITLE),
+          description = stringResource(Res.string.ONBOARDING_MISSING_INFO_SUBTITLE),
         )
         Spacer(Modifier.weight(1f))
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -198,8 +203,7 @@ internal fun OnboardingCoInsuredDestination(viewModel: OnboardingCoInsuredViewMo
         }
         Spacer(Modifier.weight(1f))
         HedvigText(
-          // TODO: Add "You can add this information later" / "Du kan lägga till den här informationen senare" to Lokalise
-          text = "You can add this information later",
+          text = stringResource(Res.string.ONBOARDING_ADD_INFO_LATER_LABEL),
           style = HedvigTheme.typography.finePrint,
           color = HedvigTheme.colorScheme.textSecondary,
           textAlign = TextAlign.Center,
@@ -209,11 +213,9 @@ internal fun OnboardingCoInsuredDestination(viewModel: OnboardingCoInsuredViewMo
         )
         Spacer(Modifier.height(16.dp))
         OnboardingStepButtons(
-          // TODO: Add "Continue" / "Fortsätt" to Lokalise
-          primaryText = "Continue",
+          primaryText = stringResource(Res.string.general_continue_button),
           onPrimaryClick = { viewModel.emit(OnboardingCoInsuredEvent.Continue) },
-          // TODO: Add "Do this later" / "Gör det senare" to Lokalise
-          secondaryText = "Do this later",
+          secondaryText = stringResource(Res.string.ONBOARDING_DO_THIS_LATER_BUTTON),
           onSecondaryClick = { viewModel.emit(OnboardingCoInsuredEvent.Continue) },
         )
       }

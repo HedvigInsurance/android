@@ -42,7 +42,12 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Inject
+import hedvig.resources.ONBOARDING_INVITE_FRIEND_SUBTITLE
+import hedvig.resources.ONBOARDING_INVITE_FRIEND_TITLE
+import hedvig.resources.Res
+import hedvig.resources.general_continue_button
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 @Inject
 @HedvigViewModel(ActivityRetainedScope::class)
@@ -142,10 +147,8 @@ internal fun OnboardingInviteDestination(viewModel: OnboardingInviteViewModel, n
       is OnboardingInviteUiState.Content -> {
         Spacer(Modifier.height(16.dp))
         OnboardingStepHeader(
-          // TODO: Add "Invite a friend" / "Bjud in en vän" to Lokalise
-          title = "Invite a friend",
-          // TODO: Add the body copy below (and its Swedish translation) to Lokalise
-          description = "With Hedvig Forever, you get ${state.incentiveDisplay} off for every friend you invite",
+          title = stringResource(Res.string.ONBOARDING_INVITE_FRIEND_TITLE),
+          description = stringResource(Res.string.ONBOARDING_INVITE_FRIEND_SUBTITLE, state.incentiveDisplay),
         )
         Spacer(Modifier.weight(1f))
         ExampleReferralsCard(
@@ -154,11 +157,9 @@ internal fun OnboardingInviteDestination(viewModel: OnboardingInviteViewModel, n
         )
         Spacer(Modifier.weight(1f))
         OnboardingStepButtons(
-          // TODO: Add "Continue" / "Fortsätt" to Lokalise
-          primaryText = "Continue",
+          primaryText = stringResource(Res.string.general_continue_button),
           onPrimaryClick = { viewModel.emit(OnboardingInviteEvent.Continue) },
-          // TODO: Add "Invite a friend" / "Bjud in en vän" to Lokalise
-          secondaryText = "Invite a friend",
+          secondaryText = stringResource(Res.string.ONBOARDING_INVITE_FRIEND_TITLE),
           secondaryAbovePrimary = true,
           onSecondaryClick = { viewModel.emit(OnboardingInviteEvent.InviteFriend) },
         )

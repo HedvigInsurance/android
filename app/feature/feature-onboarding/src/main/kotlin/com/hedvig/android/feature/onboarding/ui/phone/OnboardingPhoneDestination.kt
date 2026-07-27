@@ -37,8 +37,14 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Inject
+import hedvig.resources.ONBOARDING_DO_THIS_LATER_BUTTON
+import hedvig.resources.ONBOARDING_PHONE_SUBTITLE
+import hedvig.resources.ONBOARDING_PHONE_TITLE
+import hedvig.resources.Res
+import hedvig.resources.general_save_button
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 @Inject
 @HedvigViewModel(ActivityRetainedScope::class)
@@ -184,17 +190,13 @@ internal fun OnboardingPhoneDestination(viewModel: OnboardingPhoneViewModel, nav
         }
         Spacer(Modifier.height(16.dp))
         OnboardingStepHeader(
-          // TODO: Add "Phone number" / "Telefonnummer" to Lokalise
-          title = "Phone number",
-          // TODO: Add "Add your phone number so we can reach you if something happens" /
-          //  "Lägg till ditt telefonnummer så att vi kan nå dig om något händer" to Lokalise
-          description = "Add your phone number so we can reach you if something happens",
+          title = stringResource(Res.string.ONBOARDING_PHONE_TITLE),
+          description = stringResource(Res.string.ONBOARDING_PHONE_SUBTITLE),
         )
         Spacer(Modifier.weight(1f))
         HedvigTextField(
           state = phoneNumberState,
-          // TODO: Add "Phone number" / "Telefonnummer" to Lokalise
-          labelText = "Phone number",
+          labelText = stringResource(Res.string.ONBOARDING_PHONE_TITLE),
           textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
           errorState = if (content.showSubmissionError) {
             // TODO: Add "Could not save, please try again" / "Kunde inte spara, försök igen" to Lokalise
@@ -209,12 +211,10 @@ internal fun OnboardingPhoneDestination(viewModel: OnboardingPhoneViewModel, nav
         )
         Spacer(Modifier.height(16.dp))
         OnboardingStepButtons(
-          // TODO: Add "Save" / "Spara" to Lokalise
-          primaryText = "Save",
+          primaryText = stringResource(Res.string.general_save_button),
           onPrimaryClick = { viewModel.emit(OnboardingPhoneEvent.Save(phoneNumberState.text.toString())) },
           primaryEnabled = !content.isSubmitting && phoneNumberState.text.isNotBlank(),
-          // TODO: Add "Do this later" / "Gör det senare" to Lokalise
-          secondaryText = "Do this later",
+          secondaryText = stringResource(Res.string.ONBOARDING_DO_THIS_LATER_BUTTON),
           onSecondaryClick = { viewModel.emit(OnboardingPhoneEvent.DoThisLater) },
         )
       }

@@ -39,7 +39,14 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Inject
+import hedvig.resources.ONBOARDING_ADD_INFO_LATER_LABEL
+import hedvig.resources.ONBOARDING_ADD_PET_CHIP_IDS_TITLE
+import hedvig.resources.ONBOARDING_DO_THIS_LATER_BUTTON
+import hedvig.resources.ONBOARDING_MISSING_INFO_PET_SUBTITLE
+import hedvig.resources.Res
+import hedvig.resources.general_continue_button
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 @Inject
 @HedvigViewModel(ActivityRetainedScope::class)
@@ -179,10 +186,8 @@ internal fun OnboardingPetIdDestination(
       is OnboardingPetIdUiState.Content -> {
         Spacer(Modifier.height(16.dp))
         OnboardingStepHeader(
-          // TODO: Add "Add your pets ID numbers" / "Lägg till dina djurs ID-nummer" to Lokalise
-          title = "Add your pets ID numbers",
-          // TODO: Add "This makes it easier to help you if something happens" / "Det gör det lättare att hjälpa dig om något händer" to Lokalise
-          description = "This makes it easier to help you if something happens",
+          title = stringResource(Res.string.ONBOARDING_ADD_PET_CHIP_IDS_TITLE),
+          description = stringResource(Res.string.ONBOARDING_MISSING_INFO_PET_SUBTITLE),
         )
         Spacer(Modifier.weight(1f))
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -198,8 +203,7 @@ internal fun OnboardingPetIdDestination(
         }
         Spacer(Modifier.weight(1f))
         HedvigText(
-          // TODO: Add "You can add this information later" / "Du kan lägga till den här informationen senare" to Lokalise
-          text = "You can add this information later",
+          text = stringResource(Res.string.ONBOARDING_ADD_INFO_LATER_LABEL),
           style = HedvigTheme.typography.finePrint,
           color = HedvigTheme.colorScheme.textSecondary,
           textAlign = TextAlign.Center,
@@ -209,11 +213,9 @@ internal fun OnboardingPetIdDestination(
         )
         Spacer(Modifier.height(16.dp))
         OnboardingStepButtons(
-          // TODO: Add "Continue" / "Fortsätt" to Lokalise
-          primaryText = "Continue",
+          primaryText = stringResource(Res.string.general_continue_button),
           onPrimaryClick = { viewModel.emit(OnboardingPetIdEvent.Continue) },
-          // TODO: Add "Do this later" / "Gör det senare" to Lokalise
-          secondaryText = "Do this later",
+          secondaryText = stringResource(Res.string.ONBOARDING_DO_THIS_LATER_BUTTON),
           onSecondaryClick = { viewModel.emit(OnboardingPetIdEvent.Continue) },
         )
       }

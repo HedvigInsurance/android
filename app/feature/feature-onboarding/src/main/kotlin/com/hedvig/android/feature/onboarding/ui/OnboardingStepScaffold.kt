@@ -38,6 +38,10 @@ import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.onboarding.data.OnboardingSession
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
+import hedvig.resources.Res
+import hedvig.resources.general_back_button
+import hedvig.resources.general_close_button
+import org.jetbrains.compose.resources.stringResource
 
 internal data class OnboardingProgress(
   val totalSteps: Int,
@@ -87,8 +91,7 @@ internal fun OnboardingStepScaffold(
           ) {
             Icon(
               imageVector = HedvigIcons.ArrowLeft,
-              // TODO: Add "Go back" / "Gå tillbaka" to Lokalise (or reuse an existing a11y string)
-              contentDescription = "Go back",
+              contentDescription = stringResource(Res.string.general_back_button),
               modifier = Modifier.size(24.dp),
             )
           }
@@ -110,8 +113,7 @@ internal fun OnboardingStepScaffold(
         ) {
           Icon(
             imageVector = HedvigIcons.Close,
-            // TODO: Add "Close" / "Stäng" to Lokalise (or reuse an existing a11y string)
-            contentDescription = "Close",
+            contentDescription = stringResource(Res.string.general_close_button),
             modifier = Modifier.size(24.dp),
           )
         }

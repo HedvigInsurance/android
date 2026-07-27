@@ -45,7 +45,12 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Inject
+import hedvig.resources.ONBOARDING_CONTINUE_TO_APP_BUTTON
+import hedvig.resources.ONBOARDING_CROSS_SELL_SUBTITLE
+import hedvig.resources.ONBOARDING_CROSS_SELL_TITLE
+import hedvig.resources.Res
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 @Inject
 @HedvigViewModel(ActivityRetainedScope::class)
@@ -141,10 +146,8 @@ internal fun OnboardingBundleDestination(
       is OnboardingBundleUiState.Content -> {
         Spacer(Modifier.height(16.dp))
         OnboardingStepHeader(
-          // TODO: Add "Get bundle discount" / "Få paketrabatt" to Lokalise
-          title = "Get bundle discount",
-          // TODO: Add "You get a bundle discount when you have two or more insurances with us" / "Du får paketrabatt när du har två eller fler försäkringar hos oss" to Lokalise
-          description = "You get a bundle discount when you have two or more insurances with us",
+          title = stringResource(Res.string.ONBOARDING_CROSS_SELL_TITLE),
+          description = stringResource(Res.string.ONBOARDING_CROSS_SELL_SUBTITLE),
         )
         Spacer(Modifier.weight(1f))
         for ((index, crossSell) in state.crossSells.withIndex()) {
@@ -159,8 +162,7 @@ internal fun OnboardingBundleDestination(
         }
         Spacer(Modifier.weight(1f))
         OnboardingStepButtons(
-          // TODO: Add "Continue to app" / "Fortsätt till appen" to Lokalise
-          primaryText = "Continue to app",
+          primaryText = stringResource(Res.string.ONBOARDING_CONTINUE_TO_APP_BUTTON),
           onPrimaryClick = { viewModel.emit(OnboardingBundleEvent.ContinueToApp) },
         )
       }

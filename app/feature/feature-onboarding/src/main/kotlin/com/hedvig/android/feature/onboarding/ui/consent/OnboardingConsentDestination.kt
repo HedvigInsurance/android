@@ -50,7 +50,14 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Inject
+import hedvig.resources.LEGAL_PRIVACY_POLICY
+import hedvig.resources.ONBOARDING_ANALYTICS_ALLOW_BUTTON
+import hedvig.resources.ONBOARDING_ANALYTICS_DENY_BUTTON
+import hedvig.resources.ONBOARDING_ANALYTICS_SUBTITLE
+import hedvig.resources.ONBOARDING_ANALYTICS_TITLE
+import hedvig.resources.Res
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 @Inject
 @HedvigViewModel(ActivityRetainedScope::class)
@@ -153,15 +160,10 @@ internal fun OnboardingConsentDestination(
       is OnboardingConsentUiState.Content -> {
         Spacer(Modifier.height(16.dp))
         OnboardingStepHeader(
-          // TODO: Add "Help us make the app better" / "Hjälp oss göra appen bättre" to Lokalise
-          title = "Help us make the app better",
-          // TODO: Add the body copy below (and its Swedish translation) to Lokalise
-          description = "We use technical tools to see how you use the app, so we can make it better.\n\n" +
-            "Product analytics is completely optional and can be turned off any time in settings. " +
-            "This data is never used for marketing.",
+          title = stringResource(Res.string.ONBOARDING_ANALYTICS_TITLE),
+          description = stringResource(Res.string.ONBOARDING_ANALYTICS_SUBTITLE),
         )
         Spacer(Modifier.weight(1f))
-        // TODO: Add "Privacy policy" / "Integritetspolicy" to Lokalise
         Row(
           verticalAlignment = Alignment.CenterVertically,
           modifier = Modifier
@@ -171,7 +173,7 @@ internal fun OnboardingConsentDestination(
             .padding(horizontal = 8.dp, vertical = 4.dp),
         ) {
           HedvigText(
-            text = "Privacy policy",
+            text = stringResource(Res.string.LEGAL_PRIVACY_POLICY),
             style = HedvigTheme.typography.bodySmall,
             textDecoration = TextDecoration.Underline,
           )
@@ -182,9 +184,8 @@ internal fun OnboardingConsentDestination(
           )
         }
         Spacer(Modifier.height(16.dp))
-        // TODO: Add "Allow" / "Tillåt" to Lokalise
         HedvigButton(
-          text = "Allow",
+          text = stringResource(Res.string.ONBOARDING_ANALYTICS_ALLOW_BUTTON),
           onClick = { viewModel.emit(OnboardingConsentEvent.Allow) },
           enabled = true,
           buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
@@ -194,9 +195,8 @@ internal fun OnboardingConsentDestination(
             .clip(CircleShape),
         )
         Spacer(Modifier.height(8.dp))
-        // TODO: Add "Deny" / "Neka" to Lokalise
         HedvigButton(
-          text = "Deny",
+          text = stringResource(Res.string.ONBOARDING_ANALYTICS_DENY_BUTTON),
           onClick = { viewModel.emit(OnboardingConsentEvent.Deny) },
           enabled = true,
           buttonStyle = ButtonDefaults.ButtonStyle.Secondary,

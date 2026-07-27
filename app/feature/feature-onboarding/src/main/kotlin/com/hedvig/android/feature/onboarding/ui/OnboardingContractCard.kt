@@ -24,7 +24,10 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import hedvig.resources.ONBOARDING_ADDED_LABEL
+import hedvig.resources.Res
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun OnboardingContractCard(
@@ -65,6 +68,12 @@ internal fun OnboardingContractCard(
       }
       Spacer(Modifier.width(12.dp))
       if (isComplete) {
+        HedvigText(
+          text = stringResource(Res.string.ONBOARDING_ADDED_LABEL),
+          style = HedvigTheme.typography.bodySmall,
+          color = HedvigTheme.colorScheme.textSecondary,
+        )
+        Spacer(Modifier.width(8.dp))
         Icon(imageVector = HedvigIcons.Checkmark, contentDescription = null)
       } else {
         HedvigButton(

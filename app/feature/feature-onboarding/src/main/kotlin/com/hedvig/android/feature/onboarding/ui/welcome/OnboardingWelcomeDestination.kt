@@ -36,7 +36,12 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Inject
+import hedvig.resources.ONBOARDING_WELCOME_BUTTON
+import hedvig.resources.ONBOARDING_WELCOME_SUBTITLE
+import hedvig.resources.ONBOARDING_WELCOME_TITLE
+import hedvig.resources.Res
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 @Inject
 @HedvigViewModel(ActivityRetainedScope::class)
@@ -133,23 +138,19 @@ internal fun OnboardingWelcomeDestination(viewModel: OnboardingWelcomeViewModel)
               .background(HedvigTheme.colorScheme.fillPrimary, HedvigTheme.shapes.cornerLarge),
           )
           Spacer(Modifier.height(24.dp))
-          // TODO: Add "Welcome to Hedvig" / "Välkommen till Hedvig" to Lokalise
           HedvigText(
-            text = "Welcome to Hedvig",
+            text = stringResource(Res.string.ONBOARDING_WELCOME_TITLE),
             textAlign = TextAlign.Center,
           )
-          // TODO: Add "Follow the steps to get started with your insurance" /
-          //  "Följ stegen för att komma igång med din försäkring" to Lokalise
           HedvigText(
-            text = "Follow the steps to get started with your insurance",
+            text = stringResource(Res.string.ONBOARDING_WELCOME_SUBTITLE),
             color = HedvigTheme.colorScheme.textSecondary,
             textAlign = TextAlign.Center,
           )
         }
         Spacer(Modifier.weight(1f))
-        // TODO: Add "Get started" / "Kom igång" to Lokalise
         OnboardingStepButtons(
-          primaryText = "Get started",
+          primaryText = stringResource(Res.string.ONBOARDING_WELCOME_BUTTON),
           onPrimaryClick = { viewModel.emit(OnboardingWelcomeEvent.GetStarted) },
         )
       }

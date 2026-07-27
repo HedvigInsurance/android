@@ -39,10 +39,17 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.theme.Theme
 import dev.zacsweers.metro.Inject
+import hedvig.resources.ONBOARDING_CHANGE_SETTINGS_LATER_LABEL
+import hedvig.resources.ONBOARDING_THEME_DARK_SUBTITLE
+import hedvig.resources.ONBOARDING_THEME_LIGHT_SUBTITLE
+import hedvig.resources.ONBOARDING_THEME_SUBTITLE
+import hedvig.resources.ONBOARDING_THEME_SYSTEM_SUBTITLE
 import hedvig.resources.Res
 import hedvig.resources.SETTINGS_THEME_DARK
+import hedvig.resources.SETTINGS_THEME_DIALOG_TITLE
 import hedvig.resources.SETTINGS_THEME_LIGHT
 import hedvig.resources.SETTINGS_THEME_SYSTEM_DEFAULT
+import hedvig.resources.general_continue_button
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -150,10 +157,8 @@ internal fun OnboardingThemeDestination(viewModel: OnboardingThemeViewModel, nav
         val content = uiState as OnboardingThemeUiState.Content
         Spacer(Modifier.height(16.dp))
         OnboardingStepHeader(
-          // TODO: Add "Choose theme" / "Välj tema" to Lokalise
-          title = "Choose theme",
-          // TODO: Add "Customize the look of the app" / "Anpassa utseendet på appen" to Lokalise
-          description = "Customize the look of the app",
+          title = stringResource(Res.string.SETTINGS_THEME_DIALOG_TITLE),
+          description = stringResource(Res.string.ONBOARDING_THEME_SUBTITLE),
         )
         Spacer(Modifier.weight(1f))
         RadioGroup(
@@ -161,20 +166,17 @@ internal fun OnboardingThemeDestination(viewModel: OnboardingThemeViewModel, nav
             RadioOption(
               id = RadioOptionId(Theme.SYSTEM_DEFAULT.name),
               text = stringResource(Res.string.SETTINGS_THEME_SYSTEM_DEFAULT),
-              // TODO: Add "Uses your phone's setting" / "Använder din telefons inställning" to Lokalise
-              label = "Uses your phone's setting",
+              label = stringResource(Res.string.ONBOARDING_THEME_SYSTEM_SUBTITLE),
             ),
             RadioOption(
               id = RadioOptionId(Theme.LIGHT.name),
               text = stringResource(Res.string.SETTINGS_THEME_LIGHT),
-              // TODO: Add "Set light mode" / "Ange ljust läge" to Lokalise
-              label = "Set light mode",
+              label = stringResource(Res.string.ONBOARDING_THEME_LIGHT_SUBTITLE),
             ),
             RadioOption(
               id = RadioOptionId(Theme.DARK.name),
               text = stringResource(Res.string.SETTINGS_THEME_DARK),
-              // TODO: Add "Set dark mode" / "Ange mörkt läge" to Lokalise
-              label = "Set dark mode",
+              label = stringResource(Res.string.ONBOARDING_THEME_DARK_SUBTITLE),
             ),
           ),
           selectedOption = RadioOptionId(content.selectedTheme.name),
@@ -185,8 +187,7 @@ internal fun OnboardingThemeDestination(viewModel: OnboardingThemeViewModel, nav
         )
         Spacer(Modifier.weight(1f))
         HedvigText(
-          // TODO: Add "You can change these settings later" / "Du kan ändra dessa inställningar senare" to Lokalise
-          text = "You can change these settings later",
+          text = stringResource(Res.string.ONBOARDING_CHANGE_SETTINGS_LATER_LABEL),
           style = HedvigTheme.typography.finePrint,
           color = HedvigTheme.colorScheme.textSecondary,
           textAlign = TextAlign.Center,
@@ -196,8 +197,7 @@ internal fun OnboardingThemeDestination(viewModel: OnboardingThemeViewModel, nav
         )
         Spacer(Modifier.height(16.dp))
         OnboardingStepButtons(
-          // TODO: Add "Continue" / "Fortsätt" to Lokalise
-          primaryText = "Continue",
+          primaryText = stringResource(Res.string.general_continue_button),
           onPrimaryClick = { viewModel.emit(OnboardingThemeEvent.Continue) },
         )
       }

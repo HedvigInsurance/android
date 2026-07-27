@@ -34,7 +34,13 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Inject
+import hedvig.resources.ONBOARDING_CONNECT_PAYMENT_FOOTNOTE
+import hedvig.resources.ONBOARDING_CONNECT_PAYMENT_SUBTITLE
+import hedvig.resources.ONBOARDING_CONNECT_PAYMENT_TITLE
+import hedvig.resources.Res
+import hedvig.resources.general_continue_button
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 @Inject
 @HedvigViewModel(ActivityRetainedScope::class)
@@ -154,17 +160,12 @@ internal fun OnboardingPaymentDestination(viewModel: OnboardingPaymentViewModel,
         Spacer(Modifier.height(16.dp))
         if (!content.isConnected) {
           OnboardingStepHeader(
-            // TODO: Add "Connect payment" / "Koppla betalning" to Lokalise
-            title = "Connect payment",
-            // TODO: Add "Add a payment method to activate your insurance" /
-            //  "Lägg till en betalmetod för att aktivera din försäkring" to Lokalise
-            description = "Add a payment method to activate your insurance",
+            title = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_TITLE),
+            description = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_SUBTITLE),
           )
           Spacer(Modifier.weight(1f))
-          // TODO: Add "Adding a payment method is required to keep your insurance active" /
-          //  "Du behöver lägga till en betalmetod för att hålla din försäkring aktiv" to Lokalise
           HedvigText(
-            text = "Adding a payment method is required to keep your insurance active",
+            text = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_FOOTNOTE),
             style = HedvigTheme.typography.finePrint,
             color = HedvigTheme.colorScheme.textSecondary,
             modifier = Modifier
@@ -173,14 +174,12 @@ internal fun OnboardingPaymentDestination(viewModel: OnboardingPaymentViewModel,
           )
           Spacer(Modifier.height(16.dp))
           OnboardingStepButtons(
-            // TODO: Add "Connect payment" / "Koppla betalning" to Lokalise
-            primaryText = "Connect payment",
+            primaryText = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_TITLE),
             onPrimaryClick = { viewModel.emit(OnboardingPaymentEvent.ConnectPayment) },
           )
         } else {
           OnboardingStepHeader(
-            // TODO: Add "Connect payment" / "Koppla betalning" to Lokalise
-            title = "Connect payment",
+            title = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_TITLE),
             // TODO: Add "Your payment method is connected" / "Din betalmetod är kopplad" to Lokalise
             description = "Your payment method is connected",
           )
@@ -195,8 +194,7 @@ internal fun OnboardingPaymentDestination(viewModel: OnboardingPaymentViewModel,
           )
           Spacer(Modifier.height(16.dp))
           OnboardingStepButtons(
-            // TODO: Add "Continue" / "Fortsätt" to Lokalise
-            primaryText = "Continue",
+            primaryText = stringResource(Res.string.general_continue_button),
             onPrimaryClick = { viewModel.emit(OnboardingPaymentEvent.Continue) },
           )
         }
