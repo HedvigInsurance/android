@@ -15,7 +15,9 @@ import com.hedvig.android.navigation.compose.Backstack
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * Decides whether onboarding should be shown for the current member: not killed by the
@@ -48,6 +50,12 @@ internal class OnboardingGateImpl(
   private val completeOnboardingUseCase: CompleteOnboardingUseCase,
 ) : OnboardingGate {
   override suspend fun shouldShowOnboarding(): Boolean {
+    // The kill switch must reflect the remote value, not the empty pre-fetch default a cold start would
+    // otherwise read, so wait for a real flag value (restored from disk or freshly fetched) before
+    // trusting it. A returning member's value is restored within milliseconds; on a fresh offline install
+    // with no backup it never arrives, so after the timeout we fall through to the pre-fetch default
+    // (switch off -> onboarding shown), which is the right outcome for a brand-new member.
+    withTimeoutOrNull(FLAG_READY_TIMEOUT) { featureManager.awaitReady() }
     if (featureManager.isFeatureEnabled(Feature.DISABLE_ONBOARDING).first()) {
       logcat(LogPriority.INFO) { "Onboarding is disabled by the kill switch, not showing onboarding" }
       return false
@@ -71,3 +79,7 @@ internal class OnboardingGateImpl(
     completeOnboardingUseCase.invoke()
   }
 }
+
+// Comfortably covers a local backup restore (milliseconds) and a first network fetch (poll interval is
+// 2s), while bounding the wait so a fully offline fresh install still resolves promptly.
+private val FLAG_READY_TIMEOUT = 5.seconds
