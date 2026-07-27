@@ -211,7 +211,6 @@ internal fun OnboardingCoInsuredDestination(viewModel: OnboardingCoInsuredViewMo
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         )
-        Spacer(Modifier.height(16.dp))
         OnboardingStepButtons(
           primaryText = stringResource(Res.string.general_continue_button),
           onPrimaryClick = { viewModel.emit(OnboardingCoInsuredEvent.Continue) },

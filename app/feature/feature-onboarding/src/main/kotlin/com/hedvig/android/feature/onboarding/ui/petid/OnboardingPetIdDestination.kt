@@ -211,7 +211,6 @@ internal fun OnboardingPetIdDestination(
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         )
-        Spacer(Modifier.height(16.dp))
         OnboardingStepButtons(
           primaryText = stringResource(Res.string.general_continue_button),
           onPrimaryClick = { viewModel.emit(OnboardingPetIdEvent.Continue) },

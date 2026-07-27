@@ -23,9 +23,14 @@ import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.IconResource
 import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
+import com.hedvig.android.design.system.hedvig.icon.CircleFilled
+import com.hedvig.android.design.system.hedvig.icon.CircleOutline
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.Settings
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
@@ -167,16 +172,19 @@ internal fun OnboardingThemeDestination(viewModel: OnboardingThemeViewModel, nav
               id = RadioOptionId(Theme.SYSTEM_DEFAULT.name),
               text = stringResource(Res.string.SETTINGS_THEME_SYSTEM_DEFAULT),
               label = stringResource(Res.string.ONBOARDING_THEME_SYSTEM_SUBTITLE),
+              iconResource = IconResource.Vector(HedvigIcons.Settings),
             ),
             RadioOption(
               id = RadioOptionId(Theme.LIGHT.name),
               text = stringResource(Res.string.SETTINGS_THEME_LIGHT),
               label = stringResource(Res.string.ONBOARDING_THEME_LIGHT_SUBTITLE),
+              iconResource = IconResource.Vector(HedvigIcons.CircleOutline),
             ),
             RadioOption(
               id = RadioOptionId(Theme.DARK.name),
               text = stringResource(Res.string.SETTINGS_THEME_DARK),
               label = stringResource(Res.string.ONBOARDING_THEME_DARK_SUBTITLE),
+              iconResource = IconResource.Vector(HedvigIcons.CircleFilled),
             ),
           ),
           selectedOption = RadioOptionId(content.selectedTheme.name),
@@ -195,7 +203,6 @@ internal fun OnboardingThemeDestination(viewModel: OnboardingThemeViewModel, nav
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         )
-        Spacer(Modifier.height(16.dp))
         OnboardingStepButtons(
           primaryText = stringResource(Res.string.general_continue_button),
           onPrimaryClick = { viewModel.emit(OnboardingThemeEvent.Continue) },

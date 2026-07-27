@@ -172,7 +172,6 @@ internal fun OnboardingPaymentDestination(viewModel: OnboardingPaymentViewModel,
               .align(Alignment.CenterHorizontally)
               .padding(horizontal = 32.dp),
           )
-          Spacer(Modifier.height(16.dp))
           OnboardingStepButtons(
             primaryText = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_TITLE),
             onPrimaryClick = { viewModel.emit(OnboardingPaymentEvent.ConnectPayment) },
@@ -192,7 +191,6 @@ internal fun OnboardingPaymentDestination(viewModel: OnboardingPaymentViewModel,
             color = HedvigTheme.colorScheme.textSecondary,
             modifier = Modifier.align(Alignment.CenterHorizontally),
           )
-          Spacer(Modifier.height(16.dp))
           OnboardingStepButtons(
             primaryText = stringResource(Res.string.general_continue_button),
             onPrimaryClick = { viewModel.emit(OnboardingPaymentEvent.Continue) },
