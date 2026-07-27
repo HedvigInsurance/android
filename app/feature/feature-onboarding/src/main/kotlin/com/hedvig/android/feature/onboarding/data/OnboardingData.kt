@@ -9,7 +9,7 @@ internal data class OnboardingData(
   val phoneNumber: String?,
   val contracts: List<OnboardingContract>,
   val referralInformation: OnboardingReferralInformation?,
-  val hasConnectedPayinMethod: Boolean,
+  val payinStatus: OnboardingPayinStatus,
   val crossSells: List<OnboardingCrossSell>,
 ) {
   val contractsWithMissingCoInsured: List<OnboardingContract> =
@@ -20,6 +20,20 @@ internal data class OnboardingData(
 
   val hasOnlyAccidentContracts: Boolean =
     contracts.isNotEmpty() && contracts.all { it.typeOfContract.contains("ACCIDENT") }
+
+  /**
+   * Whether the connect-payment step should be skipped. A [OnboardingPayinStatus.Pending] method
+   * counts as connected here so we do not re-prompt during the multi-day bank activation wait; the
+   * step UI still distinguishes pending from active so it never falsely claims "connected".
+   */
+  val hasConnectedPayinMethod: Boolean = payinStatus != OnboardingPayinStatus.NeedsSetup
+}
+
+/** Mirrors the backend `MemberPaymentConnectionStatus`. */
+internal enum class OnboardingPayinStatus {
+  Active,
+  Pending,
+  NeedsSetup,
 }
 
 internal data class OnboardingContract(

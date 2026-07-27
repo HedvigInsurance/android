@@ -53,9 +53,17 @@ internal class OnboardingRepositoryImpl(
           currencyCode = referralInformation.monthlyDiscountPerReferral.currencyCode.rawValue,
         )
       },
-      // Deliberately no status filter: a PENDING payin method counts as connected, since bank
-      // connections take several bank days to activate and re-prompting mid-wait would be wrong.
-      hasConnectedPayinMethod = member.paymentMethods.payinMethods.isNotEmpty(),
+      payinStatus = member.paymentMethods.payinMethods.map { it.status.rawValue }.let { statuses ->
+        when {
+          statuses.any { it == "ACTIVE" } -> OnboardingPayinStatus.Active
+
+          // A PENDING method counts as "connected enough" to skip the step (bank activation takes
+          // days), but the step UI still shows it as pending rather than claiming it is connected.
+          statuses.any { it == "PENDING" } -> OnboardingPayinStatus.Pending
+
+          else -> OnboardingPayinStatus.NeedsSetup
+        }
+      },
       crossSells = member.crossSellV2.otherCrossSells.map { crossSell ->
         OnboardingCrossSell(
           id = crossSell.id,

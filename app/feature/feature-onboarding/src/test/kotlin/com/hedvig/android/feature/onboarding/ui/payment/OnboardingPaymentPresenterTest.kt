@@ -9,6 +9,7 @@ import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyKey
 import com.hedvig.android.feature.onboarding.FakeOnboardingMemberIdProvider
 import com.hedvig.android.feature.onboarding.FakeOnboardingRepository
 import com.hedvig.android.feature.onboarding.data.CompleteOnboardingUseCase
+import com.hedvig.android.feature.onboarding.data.OnboardingPayinStatus
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
@@ -45,11 +46,11 @@ internal class OnboardingPaymentPresenterTest {
 
     presenter.test(OnboardingPaymentUiState.Loading) {
       skipItems(1)
-      repository.onboardingDataResponses.add(testOnboardingData(hasConnectedPayinMethod = false).right())
+      repository.onboardingDataResponses.add(testOnboardingData(payinStatus = OnboardingPayinStatus.NeedsSetup).right())
       val state = awaitItem()
       assertThat(state).isInstanceOf<OnboardingPaymentUiState.Content>()
       val content = state as OnboardingPaymentUiState.Content
-      assertThat(content.isConnected).isEqualTo(false)
+      assertThat(content.payinStatus).isEqualTo(OnboardingPayinStatus.NeedsSetup)
     }
   }
 
@@ -72,7 +73,7 @@ internal class OnboardingPaymentPresenterTest {
   }
 
   @Test
-  fun `refresh after returning flips to connected`() = runTest {
+  fun `refresh after returning with an active method flips to connected`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.ConnectPayment)) }
     val repository = FakeOnboardingRepository()
     val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
@@ -85,11 +86,29 @@ internal class OnboardingPaymentPresenterTest {
       awaitItem()
       sendEvent(OnboardingPaymentEvent.Refresh)
       runCurrent()
-      repository.onboardingDataResponses.add(testOnboardingData(hasConnectedPayinMethod = true).right())
+      repository.onboardingDataResponses.add(testOnboardingData(payinStatus = OnboardingPayinStatus.Active).right())
       val state = awaitItem()
       assertThat(state).isInstanceOf<OnboardingPaymentUiState.Content>()
       val content = state as OnboardingPaymentUiState.Content
-      assertThat(content.isConnected).isEqualTo(true)
+      assertThat(content.payinStatus).isEqualTo(OnboardingPayinStatus.Active)
+    }
+  }
+
+  @Test
+  fun `a pending method is shown as pending, not connected`() = runTest {
+    val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.ConnectPayment)) }
+    val repository = FakeOnboardingRepository()
+    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
+    val presenter = OnboardingPaymentPresenter(sessionStore, navigator)
+
+    presenter.test(OnboardingPaymentUiState.Loading) {
+      skipItems(1)
+      repository.onboardingDataResponses.add(testOnboardingData(payinStatus = OnboardingPayinStatus.Pending).right())
+      val state = awaitItem()
+      assertThat(state).isInstanceOf<OnboardingPaymentUiState.Content>()
+      val content = state as OnboardingPaymentUiState.Content
+      assertThat(content.payinStatus).isEqualTo(OnboardingPayinStatus.Pending)
     }
   }
 

@@ -22,6 +22,7 @@ import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.feature.onboarding.data.OnboardingPayinStatus
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
@@ -71,7 +72,7 @@ internal class OnboardingPaymentPresenter(
         ifRight = { session ->
           currentState = OnboardingPaymentUiState.Content(
             progress = session.progressFor(OnboardingStepId.ConnectPayment),
-            isConnected = session.data.hasConnectedPayinMethod,
+            payinStatus = session.data.payinStatus,
           )
         },
       )
@@ -87,7 +88,7 @@ internal class OnboardingPaymentPresenter(
           sessionStore.refreshData().onRight { refreshed ->
             currentState = OnboardingPaymentUiState.Content(
               progress = refreshed.progressFor(OnboardingStepId.ConnectPayment),
-              isConnected = refreshed.data.hasConnectedPayinMethod,
+              payinStatus = refreshed.data.payinStatus,
             )
           }
         }
@@ -109,7 +110,7 @@ internal sealed interface OnboardingPaymentUiState {
 
   data class Content(
     val progress: OnboardingProgress,
-    val isConnected: Boolean,
+    val payinStatus: OnboardingPayinStatus,
   ) : OnboardingPaymentUiState
 }
 
@@ -158,43 +159,63 @@ internal fun OnboardingPaymentDestination(viewModel: OnboardingPaymentViewModel,
 
       is OnboardingPaymentUiState.Content -> {
         Spacer(Modifier.height(16.dp))
-        if (!content.isConnected) {
-          OnboardingStepHeader(
-            title = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_TITLE),
-            description = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_SUBTITLE),
-          )
-          Spacer(Modifier.weight(1f))
-          HedvigText(
-            text = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_FOOTNOTE),
-            style = HedvigTheme.typography.finePrint,
-            color = HedvigTheme.colorScheme.textSecondary,
-            modifier = Modifier
-              .align(Alignment.CenterHorizontally)
-              .padding(horizontal = 32.dp),
-          )
-          OnboardingStepButtons(
-            primaryText = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_TITLE),
-            onPrimaryClick = { viewModel.emit(OnboardingPaymentEvent.ConnectPayment) },
-          )
-        } else {
-          OnboardingStepHeader(
-            title = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_TITLE),
-            // TODO: Add "Your payment method is connected" / "Din betalmetod är kopplad" to Lokalise
-            description = "Your payment method is connected",
-          )
-          Spacer(Modifier.weight(1f))
-          // TODO: Add "You can switch accounts later in settings" /
-          //  "Du kan byta konto senare i inställningar" to Lokalise
-          HedvigText(
-            text = "You can switch accounts later in settings",
-            style = HedvigTheme.typography.finePrint,
-            color = HedvigTheme.colorScheme.textSecondary,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-          )
-          OnboardingStepButtons(
-            primaryText = stringResource(Res.string.general_continue_button),
-            onPrimaryClick = { viewModel.emit(OnboardingPaymentEvent.Continue) },
-          )
+        when (content.payinStatus) {
+          OnboardingPayinStatus.NeedsSetup -> {
+            OnboardingStepHeader(
+              title = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_TITLE),
+              description = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_SUBTITLE),
+            )
+            Spacer(Modifier.weight(1f))
+            HedvigText(
+              text = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_FOOTNOTE),
+              style = HedvigTheme.typography.finePrint,
+              color = HedvigTheme.colorScheme.textSecondary,
+              modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(horizontal = 32.dp),
+            )
+            OnboardingStepButtons(
+              primaryText = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_TITLE),
+              onPrimaryClick = { viewModel.emit(OnboardingPaymentEvent.ConnectPayment) },
+            )
+          }
+
+          OnboardingPayinStatus.Pending -> {
+            OnboardingStepHeader(
+              title = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_TITLE),
+              // A method exists but is awaiting bank activation, so we must not claim it is
+              // connected. This can take a few days.
+              // TODO: Add "Your payment method is being set up. This can take a few days." /
+              //  "Din betalmetod hålller på att sättas upp. Det kan ta några dagar." to Lokalise
+              description = "Your payment method is being set up. This can take a few days.",
+            )
+            Spacer(Modifier.weight(1f))
+            OnboardingStepButtons(
+              primaryText = stringResource(Res.string.general_continue_button),
+              onPrimaryClick = { viewModel.emit(OnboardingPaymentEvent.Continue) },
+            )
+          }
+
+          OnboardingPayinStatus.Active -> {
+            OnboardingStepHeader(
+              title = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_TITLE),
+              // TODO: Add "Your payment method is connected" / "Din betalmetod är kopplad" to Lokalise
+              description = "Your payment method is connected",
+            )
+            Spacer(Modifier.weight(1f))
+            // TODO: Add "You can switch accounts later in settings" /
+            //  "Du kan byta konto senare i inställningar" to Lokalise
+            HedvigText(
+              text = "You can switch accounts later in settings",
+              style = HedvigTheme.typography.finePrint,
+              color = HedvigTheme.colorScheme.textSecondary,
+              modifier = Modifier.align(Alignment.CenterHorizontally),
+            )
+            OnboardingStepButtons(
+              primaryText = stringResource(Res.string.general_continue_button),
+              onPrimaryClick = { viewModel.emit(OnboardingPaymentEvent.Continue) },
+            )
+          }
         }
       }
     }

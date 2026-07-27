@@ -4,6 +4,7 @@ import assertk.assertThat
 import assertk.assertions.contains
 import assertk.assertions.containsExactly
 import assertk.assertions.doesNotContain
+import com.hedvig.android.feature.onboarding.data.OnboardingPayinStatus
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
 import org.junit.Test
 
@@ -40,7 +41,7 @@ class OnboardingPathTest {
     phoneNumber = "070 990 12 32",
     contracts = contracts,
     referralInformation = referralInformation,
-    hasConnectedPayinMethod = hasConnectedPayinMethod,
+    payinStatus = if (hasConnectedPayinMethod) OnboardingPayinStatus.Active else OnboardingPayinStatus.NeedsSetup,
     crossSells = crossSells,
   )
 

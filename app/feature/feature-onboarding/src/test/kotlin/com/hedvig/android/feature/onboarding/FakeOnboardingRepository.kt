@@ -7,6 +7,7 @@ import com.hedvig.android.feature.onboarding.data.OnboardingContract
 import com.hedvig.android.feature.onboarding.data.OnboardingCrossSell
 import com.hedvig.android.feature.onboarding.data.OnboardingData
 import com.hedvig.android.feature.onboarding.data.OnboardingMemberIdProvider
+import com.hedvig.android.feature.onboarding.data.OnboardingPayinStatus
 import com.hedvig.android.feature.onboarding.data.OnboardingReferralInformation
 import com.hedvig.android.feature.onboarding.data.OnboardingRepository
 import kotlinx.coroutines.flow.flowOf
@@ -43,7 +44,7 @@ internal fun testOnboardingData(
     ),
   ),
   referralInformation: OnboardingReferralInformation? = OnboardingReferralInformation("CODE", 10.0, "SEK"),
-  hasConnectedPayinMethod: Boolean = false,
+  payinStatus: OnboardingPayinStatus = OnboardingPayinStatus.NeedsSetup,
   crossSells: List<OnboardingCrossSell> = listOf(
     OnboardingCrossSell(
       id = "cs",
@@ -58,6 +59,6 @@ internal fun testOnboardingData(
   phoneNumber = phoneNumber,
   contracts = contracts,
   referralInformation = referralInformation,
-  hasConnectedPayinMethod = hasConnectedPayinMethod,
+  payinStatus = payinStatus,
   crossSells = crossSells,
 )
