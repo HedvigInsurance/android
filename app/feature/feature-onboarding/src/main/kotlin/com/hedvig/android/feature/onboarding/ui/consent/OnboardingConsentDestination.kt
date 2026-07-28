@@ -46,7 +46,6 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
-import com.hedvig.android.feature.onboarding.ui.OnboardingFlexibleSpacer
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepHeader
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepScaffold
@@ -170,7 +169,8 @@ internal fun OnboardingConsentDestination(
           title = stringResource(Res.string.ONBOARDING_ANALYTICS_TITLE),
           description = stringResource(Res.string.ONBOARDING_ANALYTICS_SUBTITLE),
         )
-        OnboardingFlexibleSpacer()
+        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(24.dp))
         Box(
           contentAlignment = Alignment.Center,
           modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -187,7 +187,8 @@ internal fun OnboardingConsentDestination(
             modifier = Modifier.size(120.dp),
           )
         }
-        OnboardingFlexibleSpacer()
+        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(24.dp))
         Row(
           verticalAlignment = Alignment.CenterVertically,
           modifier = Modifier

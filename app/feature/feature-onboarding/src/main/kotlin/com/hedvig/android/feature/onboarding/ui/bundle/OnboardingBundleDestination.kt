@@ -36,7 +36,6 @@ import com.hedvig.android.feature.onboarding.data.OnboardingCrossSell
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
-import com.hedvig.android.feature.onboarding.ui.OnboardingFlexibleSpacer
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepButtons
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepHeader
@@ -150,7 +149,8 @@ internal fun OnboardingBundleDestination(
           title = stringResource(Res.string.ONBOARDING_CROSS_SELL_TITLE),
           description = stringResource(Res.string.ONBOARDING_CROSS_SELL_SUBTITLE),
         )
-        OnboardingFlexibleSpacer()
+        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(24.dp))
         for ((index, crossSell) in state.crossSells.withIndex()) {
           if (index > 0) {
             Spacer(Modifier.height(8.dp))
@@ -161,7 +161,8 @@ internal fun OnboardingBundleDestination(
             openUrl = openUrl,
           )
         }
-        OnboardingFlexibleSpacer()
+        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(24.dp))
         OnboardingStepButtons(
           primaryText = stringResource(Res.string.ONBOARDING_CONTINUE_TO_APP_BUTTON),
           onPrimaryClick = { viewModel.emit(OnboardingBundleEvent.ContinueToApp) },

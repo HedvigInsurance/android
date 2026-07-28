@@ -31,7 +31,6 @@ import com.hedvig.android.feature.onboarding.data.OnboardingRepository
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
-import com.hedvig.android.feature.onboarding.ui.OnboardingFlexibleSpacer
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepButtons
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepHeader
@@ -199,7 +198,8 @@ internal fun OnboardingPhoneDestination(viewModel: OnboardingPhoneViewModel, nav
           title = stringResource(Res.string.ONBOARDING_PHONE_TITLE),
           description = stringResource(Res.string.ONBOARDING_PHONE_SUBTITLE),
         )
-        OnboardingFlexibleSpacer()
+        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(24.dp))
         Image(
           painter = painterResource(Res.drawable.onboarding_phone_keypad),
           contentDescription = null,
@@ -207,7 +207,8 @@ internal fun OnboardingPhoneDestination(viewModel: OnboardingPhoneViewModel, nav
             .align(Alignment.CenterHorizontally)
             .size(170.dp),
         )
-        OnboardingFlexibleSpacer()
+        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(24.dp))
         HedvigTextField(
           state = phoneNumberState,
           labelText = stringResource(Res.string.ONBOARDING_PHONE_TITLE),

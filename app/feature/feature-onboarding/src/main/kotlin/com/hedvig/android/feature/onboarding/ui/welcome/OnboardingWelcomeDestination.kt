@@ -27,7 +27,6 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
-import com.hedvig.android.feature.onboarding.ui.OnboardingFlexibleSpacer
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepButtons
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepScaffold
@@ -126,7 +125,8 @@ internal fun OnboardingWelcomeDestination(viewModel: OnboardingWelcomeViewModel)
       }
 
       is OnboardingWelcomeUiState.Content -> {
-        OnboardingFlexibleSpacer()
+        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(24.dp))
         Column(
           horizontalAlignment = Alignment.CenterHorizontally,
           modifier = Modifier
@@ -149,7 +149,8 @@ internal fun OnboardingWelcomeDestination(viewModel: OnboardingWelcomeViewModel)
             textAlign = TextAlign.Center,
           )
         }
-        OnboardingFlexibleSpacer()
+        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(24.dp))
         OnboardingStepButtons(
           primaryText = stringResource(Res.string.ONBOARDING_WELCOME_BUTTON),
           onPrimaryClick = { viewModel.emit(OnboardingWelcomeEvent.GetStarted) },

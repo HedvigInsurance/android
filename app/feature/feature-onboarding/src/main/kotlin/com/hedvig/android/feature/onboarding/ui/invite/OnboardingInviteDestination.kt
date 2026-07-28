@@ -34,7 +34,6 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
-import com.hedvig.android.feature.onboarding.ui.OnboardingFlexibleSpacer
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepButtons
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepHeader
@@ -152,14 +151,16 @@ internal fun OnboardingInviteDestination(viewModel: OnboardingInviteViewModel, n
           title = stringResource(Res.string.ONBOARDING_INVITE_FRIEND_TITLE),
           description = stringResource(Res.string.ONBOARDING_INVITE_FRIEND_SUBTITLE, state.incentiveDisplay),
         )
-        OnboardingFlexibleSpacer()
+        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(24.dp))
         ExampleReferralsCard(
           incentiveDisplay = state.incentiveDisplay,
           modifier = Modifier
             .align(Alignment.CenterHorizontally)
             .fillMaxWidth(0.72f),
         )
-        OnboardingFlexibleSpacer()
+        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(24.dp))
         OnboardingStepButtons(
           primaryText = stringResource(Res.string.general_continue_button),
           onPrimaryClick = { viewModel.emit(OnboardingInviteEvent.Continue) },
