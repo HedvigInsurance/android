@@ -62,10 +62,6 @@
   <string name="ADDON_FLOW_UPGRADE_ADDON">Utöka skydd</string>
   <string name="ADDON_FLOW_UPGRADE_ADDON_DESCRIPTION">Du kan utöka skyddet för det här tillägget. Det kan tas bort vid förnyelse eller uppsägning av försäkringen.</string>
   <string name="ADDON_LEARN_MORE_LABEL">Se vad som ingår</string>
-  <string name="ADDON_REMOVE_CANCEL_BUTTON">Behåll nuvarande skydd</string>
-  <string name="ADDON_REMOVE_CONFIRM_BUTTON">Avsluta %1$s</string>
-  <string name="ADDON_REMOVE_DESCRIPTION">Om du avslutar detta tillägg ingår inte det extra skyddet längre i din hemförsäkring.</string>
-  <string name="ADDON_REMOVE_TITLE">Avsluta %1$s</string>
   <string name="ADDON_TRAVEL_CROSS_SELL_BANNER">Extra trygghet när du reser</string>
   <string name="ADDON_TRAVEL_CROSS_SELL_BENEFIT_1">Res upp till 60 dagar i sträck</string>
   <string name="ADDON_TRAVEL_CROSS_SELL_BENEFIT_2">Försenat flyg och bagage</string>
