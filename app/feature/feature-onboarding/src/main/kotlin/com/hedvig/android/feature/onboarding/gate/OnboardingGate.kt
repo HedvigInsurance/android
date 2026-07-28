@@ -50,12 +50,18 @@ internal class OnboardingGateImpl(
   private val completeOnboardingUseCase: CompleteOnboardingUseCase,
 ) : OnboardingGate {
   override suspend fun shouldShowOnboarding(): Boolean {
-    // The kill switch must reflect the remote value, not the empty pre-fetch default a cold start would
-    // otherwise read, so wait for a real flag value (restored from disk or freshly fetched) before
-    // trusting it. A returning member's value is restored within milliseconds; on a fresh offline install
-    // with no backup it never arrives, so after the timeout we fall through to the pre-fetch default
-    // (switch off -> onboarding shown), which is the right outcome for a brand-new member.
-    withTimeoutOrNull(FLAG_READY_TIMEOUT) { featureManager.awaitReady() }
+    // Only decide from a flag value the backend has actually confirmed this session. When it is
+    // unreachable (offline, or an Unleash outage) the confirmation never arrives; we fail closed and
+    // show nothing, without marking onboarding seen, so a later launch that reaches the backend decides
+    // properly. This runs after Home is already on screen, so the wait is not user visible.
+    val flagsConfirmed = withTimeoutOrNull(FLAG_CONFIRMATION_TIMEOUT) {
+      featureManager.awaitFlagsFromServer()
+      true
+    } ?: false
+    if (!flagsConfirmed) {
+      logcat(LogPriority.INFO) { "Flag backend not reachable, not showing onboarding this launch" }
+      return false
+    }
     if (featureManager.isFeatureEnabled(Feature.DISABLE_ONBOARDING).first()) {
       logcat(LogPriority.INFO) { "Onboarding is disabled by the kill switch, not showing onboarding" }
       return false
@@ -80,6 +86,7 @@ internal class OnboardingGateImpl(
   }
 }
 
-// Comfortably covers a local backup restore (milliseconds) and a first network fetch (poll interval is
-// 2s), while bounding the wait so a fully offline fresh install still resolves promptly.
-private val FLAG_READY_TIMEOUT = 5.seconds
+// Comfortably covers a first successful Unleash poll (poll interval is 2s) plus network latency. When
+// the backend is unreachable this whole window is spent before failing closed, but it runs behind an
+// already-rendered Home, so it is not user visible.
+private val FLAG_CONFIRMATION_TIMEOUT = 5.seconds

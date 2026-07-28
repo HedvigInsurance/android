@@ -24,7 +24,7 @@ internal class UnleashFeatureFlagProvider(
       .distinctUntilChanged()
   }
 
-  override suspend fun awaitReady() {
-    hedvigUnleashClient.awaitReady()
+  override suspend fun awaitFlagsFromServer() {
+    hedvigUnleashClient.awaitServerResponse()
   }
 }
