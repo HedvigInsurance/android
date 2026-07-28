@@ -50,16 +50,17 @@ internal class OnboardingGateImpl(
   private val completeOnboardingUseCase: CompleteOnboardingUseCase,
 ) : OnboardingGate {
   override suspend fun shouldShowOnboarding(): Boolean {
-    // Only decide from a flag value the backend has actually confirmed this session. When it is
-    // unreachable (offline, or an Unleash outage) the confirmation never arrives; we fail closed and
-    // show nothing, without marking onboarding seen, so a later launch that reaches the backend decides
-    // properly. This runs after Home is already on screen, so the wait is not user visible.
-    val flagsConfirmed = withTimeoutOrNull(FLAG_CONFIRMATION_TIMEOUT) {
-      featureManager.awaitFlagsFromServer()
+    // Decide only once a flag value is available, whether freshly fetched or restored from the last
+    // fetch's on-disk backup. Until the app has ever reached Unleash there is no value (fresh install
+    // offline, or an outage before the first fetch); we then fail closed and show nothing without
+    // marking onboarding seen, so a later launch that gets a value decides properly. This runs after
+    // Home is already on screen, so the wait is not user visible.
+    val flagsAvailable = withTimeoutOrNull(FLAG_READY_TIMEOUT) {
+      featureManager.awaitReady()
       true
     } ?: false
-    if (!flagsConfirmed) {
-      logcat(LogPriority.INFO) { "Flag backend not reachable, not showing onboarding this launch" }
+    if (!flagsAvailable) {
+      logcat(LogPriority.INFO) { "No flag value available yet, not showing onboarding this launch" }
       return false
     }
     if (featureManager.isFeatureEnabled(Feature.DISABLE_ONBOARDING).first()) {
@@ -86,7 +87,7 @@ internal class OnboardingGateImpl(
   }
 }
 
-// Comfortably covers a first successful Unleash poll (poll interval is 2s) plus network latency. When
-// the backend is unreachable this whole window is spent before failing closed, but it runs behind an
-// already-rendered Home, so it is not user visible.
-private val FLAG_CONFIRMATION_TIMEOUT = 5.seconds
+// Comfortably covers a local backup restore (near-instant) and a first successful Unleash poll (poll
+// interval is 2s) plus network latency. When no value can be obtained this whole window is spent before
+// failing closed, but it runs behind an already-rendered Home, so it is not user visible.
+private val FLAG_READY_TIMEOUT = 5.seconds

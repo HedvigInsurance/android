@@ -11,14 +11,15 @@ import io.getunleash.android.data.Toggle
 import io.getunleash.android.data.UnleashContext
 import io.getunleash.android.events.HeartbeatEvent
 import io.getunleash.android.events.UnleashFetcherHeartbeatListener
+import io.getunleash.android.events.UnleashReadyListener
+import kotlin.coroutines.resume
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 private const val PRODUCTION_CLIENT_KEY = "*:production.21d6af57ae16320fde3a3caf024162db19cc33bf600ab7439c865c20"
 private const val DEVELOPMENT_CLIENT_KEY = "*:development.f2455340ac9d599b5816fa879d079f21dd0eb03e4315130deb5377b6"
@@ -60,20 +61,27 @@ class HedvigUnleashClient(
     }
   }
 
-  // Flipped once Unleash confirms the toggle state directly with the server this session, whether it
-  // fetched a new set (togglesUpdated) or confirmed the current one is unchanged (togglesChecked, an
-  // HTTP 304). It is NOT flipped by a restore from the on-disk backup or by a failed fetch, so it stays
-  // false while offline or during an Unleash outage.
-  private val serverConfirmed = MutableStateFlow(false)
-
   /**
-   * Suspends until Unleash has confirmed the toggle state with the server this session, meaning the
-   * flag values are authoritative right now. Returns immediately once that has happened. While offline
-   * or during an Unleash outage it never completes, so callers must wrap it in a timeout and treat the
-   * timeout as "no authoritative flag value available".
+   * Suspends until the SDK has flag values available for the current context, whether restored from the
+   * on-disk backup of the last successful fetch or freshly fetched from the network. Returns immediately
+   * if that has already happened. When the app has never fetched and cannot reach Unleash (a fresh
+   * install offline, or an outage before any fetch) there is nothing to restore either, so this never
+   * completes; callers must wrap it in a timeout and treat the timeout as "no flag value available yet".
    */
-  suspend fun awaitServerResponse() {
-    serverConfirmed.first { it }
+  suspend fun awaitReady() {
+    if (client.isReady()) return
+    suspendCancellableCoroutine { continuation ->
+      val listener = object : UnleashReadyListener {
+        override fun onReady() {
+          if (continuation.isActive) continuation.resume(Unit)
+        }
+      }
+      client.addUnleashEventListener(listener)
+      // Guard the window between the isReady() check above and registering the listener, where onReady
+      // could have fired with no one listening.
+      if (client.isReady() && continuation.isActive) continuation.resume(Unit)
+      continuation.invokeOnCancellation { client.removeUnleashEventListener(listener) }
+    }
   }
 
   init {
@@ -87,19 +95,6 @@ class HedvigUnleashClient(
         )
       }
     }
-    client.addUnleashEventListener(
-      object : UnleashFetcherHeartbeatListener {
-        override fun onError(event: HeartbeatEvent) {}
-
-        override fun togglesChecked() {
-          serverConfirmed.value = true
-        }
-
-        override fun togglesUpdated() {
-          serverConfirmed.value = true
-        }
-      },
-    )
     // Bootstrap the puppy guide kill switch to on, so the feature stays hidden until the first
     // successful fetch. Once toggles are fetched, the remote value takes over.
     client.start(bootstrap = listOf(Toggle(name = Feature.DISABLE_PUPPY_GUIDE.unleashKey, enabled = true)))

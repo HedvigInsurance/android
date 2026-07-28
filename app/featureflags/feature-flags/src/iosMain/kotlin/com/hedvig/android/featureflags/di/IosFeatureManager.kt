@@ -12,5 +12,5 @@ class IosFeatureManager(private val isFeatureEnabledBlock: (Feature) -> Boolean)
     emit(withContext(Dispatchers.Main.immediate) { isFeatureEnabledBlock(feature) })
   }
 
-  override suspend fun awaitFlagsFromServer() = Unit
+  override suspend fun awaitReady() = Unit
 }

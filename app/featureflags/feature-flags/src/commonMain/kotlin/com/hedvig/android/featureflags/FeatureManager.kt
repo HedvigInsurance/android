@@ -9,11 +9,11 @@ interface FeatureManager {
   fun isFeatureEnabled(feature: Feature): Flow<Boolean>
 
   /**
-   * Suspends until the flag values are confirmed authoritative for the current session: the backend has
-   * been reached and its current values are in effect, not a stale local fallback or a pre-fetch default.
-   * A decision that must honor the remote value, for example a kill switch gating a whole flow, should
-   * await this and treat a failure to complete as "value unknown". While the backend is unreachable
-   * (offline, or a backend outage) this never completes, so callers must impose their own timeout.
+   * Suspends until flag values are available for the current session, whether freshly fetched from the
+   * backend or restored from the last fetch's local cache. A decision that must honor the flag, for
+   * example a kill switch gating a whole flow, should await this and treat a failure to complete as "no
+   * value available yet". Until the app has ever reached the backend there is nothing to restore either,
+   * so this never completes; callers must impose their own timeout.
    */
-  suspend fun awaitFlagsFromServer()
+  suspend fun awaitReady()
 }

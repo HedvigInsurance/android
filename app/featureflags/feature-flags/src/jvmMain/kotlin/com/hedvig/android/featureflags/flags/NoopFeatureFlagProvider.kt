@@ -9,5 +9,5 @@ internal class NoopFeatureFlagProvider : FeatureManager {
     return flowOf(false)
   }
 
-  override suspend fun awaitFlagsFromServer() = Unit
+  override suspend fun awaitReady() = Unit
 }

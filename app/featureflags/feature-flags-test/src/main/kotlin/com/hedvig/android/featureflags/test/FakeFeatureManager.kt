@@ -32,5 +32,5 @@ class FakeFeatureManager(
     }
   }
 
-  override suspend fun awaitFlagsFromServer() = Unit
+  override suspend fun awaitReady() = Unit
 }
