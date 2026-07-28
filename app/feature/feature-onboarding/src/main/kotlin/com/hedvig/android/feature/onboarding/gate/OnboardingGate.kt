@@ -50,11 +50,9 @@ internal class OnboardingGateImpl(
   private val completeOnboardingUseCase: CompleteOnboardingUseCase,
 ) : OnboardingGate {
   override suspend fun shouldShowOnboarding(): Boolean {
-    // Decide only once a flag value is available, whether freshly fetched or restored from the last
-    // fetch's on-disk backup. Until the app has ever reached Unleash there is no value (fresh install
-    // offline, or an outage before the first fetch); we then fail closed and show nothing without
-    // marking onboarding seen, so a later launch that gets a value decides properly. This runs after
-    // Home is already on screen, so the wait is not user visible.
+    // Fail closed when no flag value can be obtained: show nothing without marking onboarding seen, so a
+    // later launch that does get a value decides properly. awaitReady() never completes while the app
+    // has never reached the flag backend, so the timeout is what bounds that case.
     val flagsAvailable = withTimeoutOrNull(FLAG_READY_TIMEOUT) {
       featureManager.awaitReady()
       true

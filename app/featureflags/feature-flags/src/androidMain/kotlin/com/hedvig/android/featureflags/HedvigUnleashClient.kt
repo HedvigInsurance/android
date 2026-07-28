@@ -62,11 +62,9 @@ class HedvigUnleashClient(
   }
 
   /**
-   * Suspends until the SDK has flag values available for the current context, whether restored from the
-   * on-disk backup of the last successful fetch or freshly fetched from the network. Returns immediately
-   * if that has already happened. When the app has never fetched and cannot reach Unleash (a fresh
-   * install offline, or an outage before any fetch) there is nothing to restore either, so this never
-   * completes; callers must wrap it in a timeout and treat the timeout as "no flag value available yet".
+   * Suspends until Unleash reports isReady(), which it sets on the first non-empty toggle set from
+   * either the on-disk backup or a network fetch, returning immediately if it already has. Never
+   * completes while the app has never fetched and cannot reach Unleash, so callers must impose a timeout.
    */
   suspend fun awaitReady() {
     if (client.isReady()) return
