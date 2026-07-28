@@ -1,9 +1,11 @@
 package com.hedvig.android.feature.onboarding.ui.phone
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
@@ -14,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -28,6 +31,7 @@ import com.hedvig.android.feature.onboarding.data.OnboardingRepository
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
+import com.hedvig.android.feature.onboarding.ui.OnboardingFlexibleSpacer
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepButtons
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepHeader
@@ -42,8 +46,10 @@ import hedvig.resources.ONBOARDING_PHONE_SUBTITLE
 import hedvig.resources.ONBOARDING_PHONE_TITLE
 import hedvig.resources.Res
 import hedvig.resources.general_save_button
+import hedvig.resources.onboarding_phone_keypad
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Inject
@@ -193,7 +199,15 @@ internal fun OnboardingPhoneDestination(viewModel: OnboardingPhoneViewModel, nav
           title = stringResource(Res.string.ONBOARDING_PHONE_TITLE),
           description = stringResource(Res.string.ONBOARDING_PHONE_SUBTITLE),
         )
-        Spacer(Modifier.weight(1f))
+        OnboardingFlexibleSpacer()
+        Image(
+          painter = painterResource(Res.drawable.onboarding_phone_keypad),
+          contentDescription = null,
+          modifier = Modifier
+            .align(Alignment.CenterHorizontally)
+            .size(170.dp),
+        )
+        OnboardingFlexibleSpacer()
         HedvigTextField(
           state = phoneNumberState,
           labelText = stringResource(Res.string.ONBOARDING_PHONE_TITLE),

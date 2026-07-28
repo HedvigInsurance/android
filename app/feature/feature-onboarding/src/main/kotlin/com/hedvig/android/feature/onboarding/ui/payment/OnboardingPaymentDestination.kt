@@ -26,6 +26,7 @@ import com.hedvig.android.feature.onboarding.data.OnboardingPayinStatus
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
+import com.hedvig.android.feature.onboarding.ui.OnboardingFlexibleSpacer
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepButtons
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepHeader
@@ -165,7 +166,7 @@ internal fun OnboardingPaymentDestination(viewModel: OnboardingPaymentViewModel,
               title = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_TITLE),
               description = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_SUBTITLE),
             )
-            Spacer(Modifier.weight(1f))
+            OnboardingFlexibleSpacer()
             HedvigText(
               text = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_FOOTNOTE),
               style = HedvigTheme.typography.finePrint,
@@ -189,7 +190,7 @@ internal fun OnboardingPaymentDestination(viewModel: OnboardingPaymentViewModel,
               //  "Din betalmetod hålller på att sättas upp. Det kan ta några dagar." to Lokalise
               description = "Your payment method is being set up. This can take a few days.",
             )
-            Spacer(Modifier.weight(1f))
+            OnboardingFlexibleSpacer()
             OnboardingStepButtons(
               primaryText = stringResource(Res.string.general_continue_button),
               onPrimaryClick = { viewModel.emit(OnboardingPaymentEvent.Continue) },
@@ -202,7 +203,7 @@ internal fun OnboardingPaymentDestination(viewModel: OnboardingPaymentViewModel,
               // TODO: Add "Your payment method is connected" / "Din betalmetod är kopplad" to Lokalise
               description = "Your payment method is connected",
             )
-            Spacer(Modifier.weight(1f))
+            OnboardingFlexibleSpacer()
             // TODO: Add "You can switch accounts later in settings" /
             //  "Du kan byta konto senare i inställningar" to Lokalise
             HedvigText(

@@ -30,6 +30,7 @@ import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
 import com.hedvig.android.feature.onboarding.ui.OnboardingContractCard
+import com.hedvig.android.feature.onboarding.ui.OnboardingFlexibleSpacer
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepButtons
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepHeader
@@ -189,7 +190,7 @@ internal fun OnboardingCoInsuredDestination(viewModel: OnboardingCoInsuredViewMo
           title = stringResource(Res.string.ONBOARDING_ADD_COINSURED_TITLE),
           description = stringResource(Res.string.ONBOARDING_MISSING_INFO_SUBTITLE),
         )
-        Spacer(Modifier.weight(1f))
+        OnboardingFlexibleSpacer()
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
           for (row in content.rows) {
             OnboardingContractCard(
@@ -201,7 +202,7 @@ internal fun OnboardingCoInsuredDestination(viewModel: OnboardingCoInsuredViewMo
             )
           }
         }
-        Spacer(Modifier.weight(1f))
+        OnboardingFlexibleSpacer()
         HedvigText(
           text = stringResource(Res.string.ONBOARDING_ADD_INFO_LATER_LABEL),
           style = HedvigTheme.typography.finePrint,

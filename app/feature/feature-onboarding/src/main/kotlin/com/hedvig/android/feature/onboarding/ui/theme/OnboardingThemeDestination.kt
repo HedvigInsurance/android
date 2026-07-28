@@ -34,6 +34,7 @@ import com.hedvig.android.design.system.hedvig.icon.Settings
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
+import com.hedvig.android.feature.onboarding.ui.OnboardingFlexibleSpacer
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepButtons
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepHeader
@@ -165,7 +166,7 @@ internal fun OnboardingThemeDestination(viewModel: OnboardingThemeViewModel, nav
           title = stringResource(Res.string.SETTINGS_THEME_DIALOG_TITLE),
           description = stringResource(Res.string.ONBOARDING_THEME_SUBTITLE),
         )
-        Spacer(Modifier.weight(1f))
+        OnboardingFlexibleSpacer()
         RadioGroup(
           options = listOf(
             RadioOption(
@@ -193,7 +194,7 @@ internal fun OnboardingThemeDestination(viewModel: OnboardingThemeViewModel, nav
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         )
-        Spacer(Modifier.weight(1f))
+        OnboardingFlexibleSpacer()
         HedvigText(
           text = stringResource(Res.string.ONBOARDING_CHANGE_SETTINGS_LATER_LABEL),
           style = HedvigTheme.typography.finePrint,

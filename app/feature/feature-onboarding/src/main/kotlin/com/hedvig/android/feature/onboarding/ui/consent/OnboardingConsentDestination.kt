@@ -1,6 +1,8 @@
 package com.hedvig.android.feature.onboarding.ui.consent
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -23,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -42,6 +46,7 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
+import com.hedvig.android.feature.onboarding.ui.OnboardingFlexibleSpacer
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepHeader
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepScaffold
@@ -56,7 +61,9 @@ import hedvig.resources.ONBOARDING_ANALYTICS_DENY_BUTTON
 import hedvig.resources.ONBOARDING_ANALYTICS_SUBTITLE
 import hedvig.resources.ONBOARDING_ANALYTICS_TITLE
 import hedvig.resources.Res
+import hedvig.resources.onboarding_verified_card
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Inject
@@ -163,7 +170,24 @@ internal fun OnboardingConsentDestination(
           title = stringResource(Res.string.ONBOARDING_ANALYTICS_TITLE),
           description = stringResource(Res.string.ONBOARDING_ANALYTICS_SUBTITLE),
         )
-        Spacer(Modifier.weight(1f))
+        OnboardingFlexibleSpacer()
+        Box(
+          contentAlignment = Alignment.Center,
+          modifier = Modifier.align(Alignment.CenterHorizontally),
+        ) {
+          Spacer(
+            Modifier
+              .matchParentSize()
+              .padding(start = 8.dp, top = 16.dp, end = 20.dp, bottom = 12.dp)
+              .shadow(elevation = 6.dp, shape = RoundedCornerShape(24.dp)),
+          )
+          Image(
+            painter = painterResource(Res.drawable.onboarding_verified_card),
+            contentDescription = null,
+            modifier = Modifier.size(120.dp),
+          )
+        }
+        OnboardingFlexibleSpacer()
         Row(
           verticalAlignment = Alignment.CenterVertically,
           modifier = Modifier

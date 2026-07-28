@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.onboarding.ui.welcome
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,6 +27,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
+import com.hedvig.android.feature.onboarding.ui.OnboardingFlexibleSpacer
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepButtons
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepScaffold
@@ -40,7 +40,9 @@ import hedvig.resources.ONBOARDING_WELCOME_BUTTON
 import hedvig.resources.ONBOARDING_WELCOME_SUBTITLE
 import hedvig.resources.ONBOARDING_WELCOME_TITLE
 import hedvig.resources.Res
+import hedvig.resources.onboarding_hedvig_symbol
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Inject
@@ -124,18 +126,17 @@ internal fun OnboardingWelcomeDestination(viewModel: OnboardingWelcomeViewModel)
       }
 
       is OnboardingWelcomeUiState.Content -> {
-        Spacer(Modifier.weight(1f))
+        OnboardingFlexibleSpacer()
         Column(
           horizontalAlignment = Alignment.CenterHorizontally,
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         ) {
-          // Static stand-in for the Figma app-icon-with-badge graphic; animation is a follow-up.
-          Box(
-            Modifier
-              .size(96.dp)
-              .background(HedvigTheme.colorScheme.fillPrimary, HedvigTheme.shapes.cornerLarge),
+          Image(
+            painter = painterResource(Res.drawable.onboarding_hedvig_symbol),
+            contentDescription = null,
+            modifier = Modifier.size(96.dp),
           )
           Spacer(Modifier.height(24.dp))
           HedvigText(
@@ -148,7 +149,7 @@ internal fun OnboardingWelcomeDestination(viewModel: OnboardingWelcomeViewModel)
             textAlign = TextAlign.Center,
           )
         }
-        Spacer(Modifier.weight(1f))
+        OnboardingFlexibleSpacer()
         OnboardingStepButtons(
           primaryText = stringResource(Res.string.ONBOARDING_WELCOME_BUTTON),
           onPrimaryClick = { viewModel.emit(OnboardingWelcomeEvent.GetStarted) },

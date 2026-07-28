@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -148,6 +149,17 @@ private fun OnboardingProgressBar(progress: OnboardingProgress, modifier: Modifi
       )
     }
   }
+}
+
+/**
+ * A vertical gap that is at least [minHeight] and grows to fill the available space. The fixed part
+ * survives when the viewport is short (landscape, small screens) so adjacent items never touch,
+ * while the weight part keeps the content nicely spread out when there is room.
+ */
+@Composable
+internal fun ColumnScope.OnboardingFlexibleSpacer(minHeight: Dp = 24.dp) {
+  Spacer(Modifier.height(minHeight))
+  Spacer(Modifier.weight(1f))
 }
 
 @Composable
