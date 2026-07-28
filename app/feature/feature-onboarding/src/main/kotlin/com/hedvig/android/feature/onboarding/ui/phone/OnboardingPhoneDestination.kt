@@ -1,11 +1,9 @@
 package com.hedvig.android.feature.onboarding.ui.phone
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
@@ -45,10 +43,8 @@ import hedvig.resources.ONBOARDING_PHONE_SUBTITLE
 import hedvig.resources.ONBOARDING_PHONE_TITLE
 import hedvig.resources.Res
 import hedvig.resources.general_save_button
-import hedvig.resources.onboarding_phone_keypad
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Inject
@@ -200,13 +196,7 @@ internal fun OnboardingPhoneDestination(viewModel: OnboardingPhoneViewModel, nav
         )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(24.dp))
-        Image(
-          painter = painterResource(Res.drawable.onboarding_phone_keypad),
-          contentDescription = null,
-          modifier = Modifier
-            .align(Alignment.CenterHorizontally)
-            .size(170.dp),
-        )
+        OnboardingPhoneKeypad(modifier = Modifier.align(Alignment.CenterHorizontally))
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(24.dp))
         HedvigTextField(
