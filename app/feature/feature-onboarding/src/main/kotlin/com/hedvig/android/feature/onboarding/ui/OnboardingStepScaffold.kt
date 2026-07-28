@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.onboarding.ui
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,6 +26,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import com.hedvig.android.compose.ui.LocalSharedTransitionScope
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -60,6 +63,14 @@ internal fun OnboardingSession.progressFor(stepId: OnboardingStepId?): Onboardin
   )
 }
 
+/**
+ * Ties every in-flow step's header to the same shared element so it stays pinned while the page
+ * content below runs the normal transition. Steps hosted by different destinations (Forever, the
+ * external connect-payment flow) don't render this scaffold, so they never match it.
+ */
+private const val OnboardingTopBarSharedKey = "onboarding-top-bar"
+
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun OnboardingStepScaffold(
   progress: OnboardingProgress?,
@@ -69,6 +80,20 @@ internal fun OnboardingStepScaffold(
   modifier: Modifier = Modifier,
   content: @Composable ColumnScope.() -> Unit,
 ) {
+  // Null only in isolated previews, where there is no NavEntry to read the animated-content scope
+  // from; the header then renders plainly.
+  val sharedTransitionScope = LocalSharedTransitionScope.current
+  val headerModifier = if (sharedTransitionScope != null) {
+    val animatedContentScope = LocalNavAnimatedContentScope.current
+    with(sharedTransitionScope) {
+      Modifier.sharedBounds(
+        sharedContentState = rememberSharedContentState(OnboardingTopBarSharedKey),
+        animatedVisibilityScope = animatedContentScope,
+      )
+    }
+  } else {
+    Modifier
+  }
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,
     modifier = modifier.fillMaxSize(),
@@ -80,7 +105,7 @@ internal fun OnboardingStepScaffold(
     ) {
       Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
+        modifier = headerModifier
           .fillMaxWidth()
           .height(56.dp)
           .padding(horizontal = 16.dp),
