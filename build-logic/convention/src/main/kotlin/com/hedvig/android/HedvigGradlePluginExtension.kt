@@ -22,6 +22,7 @@ import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.newInstance
+import org.gradle.kotlin.dsl.project
 import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.compose.ComposeExtension
@@ -194,7 +195,7 @@ private abstract class ApolloHandler {
         this.packageName.set(packageName)
 
         @Suppress("OPT_IN_USAGE")
-        dependsOn(project.project(":apollo-octopus-public"), true)
+        dependsOn(project.dependencies.project(":apollo-octopus-public"), true)
         extraConfiguration.execute(this)
       }
     }
@@ -320,7 +321,7 @@ private abstract class NavKeysHandler {
     val isMultiplatform = project.extensions.findByType<KotlinMultiplatformExtension>() != null
     val kspConfiguration = if (isMultiplatform) "kspAndroid" else "ksp"
     project.dependencies {
-      add(kspConfiguration, project.project(":navigation-keys-processor"))
+      add(kspConfiguration, project(":navigation-keys-processor"))
     }
   }
 }
@@ -328,7 +329,7 @@ private abstract class NavKeysHandler {
 private abstract class ViewModelsHandler {
   fun configure(project: Project, pluginManager: PluginManager, libs: LibrariesForLibs) {
     pluginManager.apply(libs.plugins.ksp.get().pluginId)
-    val processor = project.project(":viewmodel-processor")
+    val processor = project.dependencies.project(":viewmodel-processor")
     val isMultiplatform = project.extensions.findByType<KotlinMultiplatformExtension>() != null
     if (!isMultiplatform) {
       project.dependencies {
