@@ -30,6 +30,7 @@ import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
+import com.hedvig.android.feature.onboarding.ui.OnboardingProgressBarAnimation
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepButtons
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepHeader
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepScaffold
@@ -53,6 +54,7 @@ internal class OnboardingPhoneViewModel(
   sessionStore: OnboardingSessionStore,
   navigator: OnboardingNavigator,
   onboardingRepository: OnboardingRepository,
+  val progressBarAnimation: OnboardingProgressBarAnimation,
 ) : MoleculeViewModel<OnboardingPhoneEvent, OnboardingPhoneUiState>(
     initialState = OnboardingPhoneUiState.Loading,
     presenter = OnboardingPhonePresenter(sessionStore, navigator, onboardingRepository),
@@ -170,6 +172,7 @@ internal fun OnboardingPhoneDestination(viewModel: OnboardingPhoneViewModel, nav
     showBackButton = true,
     onBackClick = navigateUp,
     onCloseClick = { viewModel.emit(OnboardingPhoneEvent.Close) },
+    progressAnimation = viewModel.progressBarAnimation,
   ) {
     when (val content = uiState) {
       OnboardingPhoneUiState.Loading -> {

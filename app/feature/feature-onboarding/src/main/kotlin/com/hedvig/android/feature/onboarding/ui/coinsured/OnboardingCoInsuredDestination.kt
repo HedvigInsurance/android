@@ -31,6 +31,7 @@ import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
 import com.hedvig.android.feature.onboarding.ui.OnboardingContractCard
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
+import com.hedvig.android.feature.onboarding.ui.OnboardingProgressBarAnimation
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepButtons
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepHeader
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepScaffold
@@ -53,6 +54,7 @@ import org.jetbrains.compose.resources.stringResource
 internal class OnboardingCoInsuredViewModel(
   sessionStore: OnboardingSessionStore,
   navigator: OnboardingNavigator,
+  val progressBarAnimation: OnboardingProgressBarAnimation,
 ) : MoleculeViewModel<OnboardingCoInsuredEvent, OnboardingCoInsuredUiState>(
     initialState = OnboardingCoInsuredUiState.Loading,
     presenter = OnboardingCoInsuredPresenter(sessionStore, navigator),
@@ -171,6 +173,7 @@ internal fun OnboardingCoInsuredDestination(viewModel: OnboardingCoInsuredViewMo
     showBackButton = true,
     onBackClick = navigateUp,
     onCloseClick = { viewModel.emit(OnboardingCoInsuredEvent.Close) },
+    progressAnimation = viewModel.progressBarAnimation,
   ) {
     when (val content = uiState) {
       OnboardingCoInsuredUiState.Loading -> {

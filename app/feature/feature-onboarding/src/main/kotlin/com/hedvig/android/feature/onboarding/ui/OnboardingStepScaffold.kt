@@ -1,6 +1,11 @@
 package com.hedvig.android.feature.onboarding.ui
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +27,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -80,17 +89,18 @@ internal fun OnboardingStepScaffold(
   onBackClick: () -> Unit,
   onCloseClick: () -> Unit,
   modifier: Modifier = Modifier,
+  progressAnimation: OnboardingProgressBarAnimation? = null,
   content: @Composable ColumnScope.() -> Unit,
 ) {
   // Null only in isolated previews, where there is no NavEntry to read the animated-content scope
-  // from; the header then renders plainly.
+  // from; the header then renders plainly and the progress bar draws its fill statically.
   val sharedTransitionScope = LocalSharedTransitionScope.current
-  val headerModifier = if (sharedTransitionScope != null) {
-    val animatedContentScope = LocalNavAnimatedContentScope.current
+  val animatedVisibilityScope = if (sharedTransitionScope != null) LocalNavAnimatedContentScope.current else null
+  val headerModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
     with(sharedTransitionScope) {
       Modifier.sharedBounds(
         sharedContentState = rememberSharedContentState(OnboardingTopBarSharedKey),
-        animatedVisibilityScope = animatedContentScope,
+        animatedVisibilityScope = animatedVisibilityScope,
       )
     }
   } else {
@@ -131,6 +141,8 @@ internal fun OnboardingStepScaffold(
         if (progress != null) {
           OnboardingProgressBar(
             progress = progress,
+            animation = progressAnimation,
+            animatedVisibilityScope = animatedVisibilityScope,
             modifier = Modifier
               .weight(1f)
               .padding(horizontal = 24.dp),
@@ -159,23 +171,54 @@ internal fun OnboardingStepScaffold(
 }
 
 @Composable
-private fun OnboardingProgressBar(progress: OnboardingProgress, modifier: Modifier = Modifier) {
+private fun OnboardingProgressBar(
+  progress: OnboardingProgress,
+  animation: OnboardingProgressBarAnimation?,
+  animatedVisibilityScope: AnimatedVisibilityScope?,
+  modifier: Modifier = Modifier,
+) {
+  // currentIndex is 0-based with the welcome step at 0, so +1 keeps its first slice filled.
+  val target = ((progress.currentIndex + 1f) / progress.totalSteps).coerceIn(0f, 1f)
+  val fraction = if (animation != null && animatedVisibilityScope != null) {
+    // 1 while this step is fully on screen, 0 once it is gone; Nav3 seeks this with the
+    // predictive-back gesture, so the shared holder's blend follows the transition frame for frame.
+    val presence = animatedVisibilityScope.transition.animateFloat(
+      transitionSpec = { tween(durationMillis = 300, easing = FastOutSlowInEasing) },
+      label = "onboardingProgressPresence",
+    ) { state -> if (state == EnterExitState.Visible) 1f else 0f }
+    val contributionKey = remember { Any() }
+    DisposableEffect(animation, contributionKey) {
+      onDispose { animation.release(contributionKey) }
+    }
+    LaunchedEffect(animation, contributionKey, target) {
+      snapshotFlow { presence.value }.collect { animation.contribute(contributionKey, target, it) }
+    }
+    animation.displayedFraction
+  } else {
+    target
+  }
   Row(horizontalArrangement = Arrangement.spacedBy(4.dp), modifier = modifier) {
     repeat(progress.totalSteps) { index ->
-      val isActivated = index <= progress.currentIndex
+      // Each slice fills in turn as the shared fraction crosses it, keeping the dividers visible
+      // while the fill flows continuously across them.
+      val sliceFraction = ((fraction * progress.totalSteps) - index).coerceIn(0f, 1f)
       Box(
         Modifier
           .weight(1f)
           .height(2.dp)
           .clip(CircleShape)
-          .background(
-            if (isActivated) {
-              HedvigTheme.colorScheme.fillPrimary
-            } else {
-              HedvigTheme.colorScheme.surfaceSecondary
-            },
-          ),
-      )
+          .background(HedvigTheme.colorScheme.surfaceSecondary),
+      ) {
+        if (sliceFraction > 0f) {
+          Box(
+            Modifier
+              .fillMaxWidth(sliceFraction)
+              .height(2.dp)
+              .clip(CircleShape)
+              .background(HedvigTheme.colorScheme.fillPrimary),
+          )
+        }
+      }
     }
   }
 }

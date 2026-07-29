@@ -27,6 +27,7 @@ import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
+import com.hedvig.android.feature.onboarding.ui.OnboardingProgressBarAnimation
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepButtons
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepHeader
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepScaffold
@@ -48,6 +49,7 @@ import org.jetbrains.compose.resources.stringResource
 internal class OnboardingPaymentViewModel(
   sessionStore: OnboardingSessionStore,
   navigator: OnboardingNavigator,
+  val progressBarAnimation: OnboardingProgressBarAnimation,
 ) : MoleculeViewModel<OnboardingPaymentEvent, OnboardingPaymentUiState>(
     initialState = OnboardingPaymentUiState.Loading,
     presenter = OnboardingPaymentPresenter(sessionStore, navigator),
@@ -145,6 +147,7 @@ internal fun OnboardingPaymentDestination(viewModel: OnboardingPaymentViewModel,
     showBackButton = true,
     onBackClick = navigateUp,
     onCloseClick = { viewModel.emit(OnboardingPaymentEvent.Close) },
+    progressAnimation = viewModel.progressBarAnimation,
   ) {
     when (val content = uiState) {
       OnboardingPaymentUiState.Loading -> {

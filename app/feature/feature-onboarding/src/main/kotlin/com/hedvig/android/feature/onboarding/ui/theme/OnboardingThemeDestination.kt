@@ -46,6 +46,7 @@ import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
+import com.hedvig.android.feature.onboarding.ui.OnboardingProgressBarAnimation
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepButtons
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepHeader
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepScaffold
@@ -75,6 +76,7 @@ internal class OnboardingThemeViewModel(
   sessionStore: OnboardingSessionStore,
   navigator: OnboardingNavigator,
   settingsDataStore: SettingsDataStore,
+  val progressBarAnimation: OnboardingProgressBarAnimation,
 ) : MoleculeViewModel<OnboardingThemeEvent, OnboardingThemeUiState>(
     initialState = OnboardingThemeUiState.Loading,
     presenter = OnboardingThemePresenter(sessionStore, navigator, settingsDataStore),
@@ -159,6 +161,7 @@ internal fun OnboardingThemeDestination(viewModel: OnboardingThemeViewModel, nav
     onRetry = { viewModel.emit(OnboardingThemeEvent.Retry) },
     onSelectTheme = { viewModel.emit(OnboardingThemeEvent.SelectTheme(it)) },
     onContinueClick = { viewModel.emit(OnboardingThemeEvent.Continue) },
+    progressAnimation = viewModel.progressBarAnimation,
   )
 }
 
@@ -170,12 +173,14 @@ private fun OnboardingThemeDestination(
   onRetry: () -> Unit,
   onSelectTheme: (Theme) -> Unit,
   onContinueClick: () -> Unit,
+  progressAnimation: OnboardingProgressBarAnimation? = null,
 ) {
   OnboardingStepScaffold(
     progress = (uiState as? OnboardingThemeUiState.Content)?.progress,
     showBackButton = true,
     onBackClick = navigateUp,
     onCloseClick = onCloseClick,
+    progressAnimation = progressAnimation,
   ) {
     when (uiState) {
       OnboardingThemeUiState.Loading -> {

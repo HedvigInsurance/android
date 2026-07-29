@@ -43,6 +43,7 @@ import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
+import com.hedvig.android.feature.onboarding.ui.OnboardingProgressBarAnimation
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepHeader
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepScaffold
 import com.hedvig.android.feature.onboarding.ui.progressFor
@@ -65,6 +66,7 @@ internal class OnboardingConsentViewModel(
   sessionStore: OnboardingSessionStore,
   navigator: OnboardingNavigator,
   settingsDataStore: SettingsDataStore,
+  val progressBarAnimation: OnboardingProgressBarAnimation,
 ) : MoleculeViewModel<OnboardingConsentEvent, OnboardingConsentUiState>(
     initialState = OnboardingConsentUiState.Loading,
     presenter = OnboardingConsentPresenter(sessionStore, navigator, settingsDataStore),
@@ -145,6 +147,7 @@ internal fun OnboardingConsentDestination(
     showBackButton = true,
     onBackClick = navigateUp,
     onCloseClick = { viewModel.emit(OnboardingConsentEvent.Close) },
+    progressAnimation = viewModel.progressBarAnimation,
   ) {
     when (uiState) {
       OnboardingConsentUiState.Loading -> {

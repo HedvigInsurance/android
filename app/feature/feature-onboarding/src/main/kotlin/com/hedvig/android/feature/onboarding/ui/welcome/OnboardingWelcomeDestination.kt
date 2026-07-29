@@ -28,6 +28,7 @@ import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
+import com.hedvig.android.feature.onboarding.ui.OnboardingProgressBarAnimation
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepButtons
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepScaffold
 import com.hedvig.android.feature.onboarding.ui.progressFor
@@ -47,6 +48,7 @@ import org.jetbrains.compose.resources.stringResource
 internal class OnboardingWelcomeViewModel(
   sessionStore: OnboardingSessionStore,
   navigator: OnboardingNavigator,
+  val progressBarAnimation: OnboardingProgressBarAnimation,
 ) : MoleculeViewModel<OnboardingWelcomeEvent, OnboardingWelcomeUiState>(
     initialState = OnboardingWelcomeUiState.Loading,
     presenter = OnboardingWelcomePresenter(sessionStore, navigator),
@@ -110,6 +112,7 @@ internal fun OnboardingWelcomeDestination(viewModel: OnboardingWelcomeViewModel)
     showBackButton = false,
     onBackClick = {},
     onCloseClick = { viewModel.emit(OnboardingWelcomeEvent.Close) },
+    progressAnimation = viewModel.progressBarAnimation,
   ) {
     when (uiState) {
       OnboardingWelcomeUiState.Loading -> {

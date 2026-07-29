@@ -31,6 +31,7 @@ import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
 import com.hedvig.android.feature.onboarding.ui.OnboardingContractCard
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
+import com.hedvig.android.feature.onboarding.ui.OnboardingProgressBarAnimation
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepButtons
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepHeader
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepScaffold
@@ -53,6 +54,7 @@ import org.jetbrains.compose.resources.stringResource
 internal class OnboardingPetIdViewModel(
   sessionStore: OnboardingSessionStore,
   navigator: OnboardingNavigator,
+  val progressBarAnimation: OnboardingProgressBarAnimation,
 ) : MoleculeViewModel<OnboardingPetIdEvent, OnboardingPetIdUiState>(
     initialState = OnboardingPetIdUiState.Loading,
     presenter = OnboardingPetIdPresenter(sessionStore, navigator),
@@ -171,6 +173,7 @@ internal fun OnboardingPetIdDestination(
     showBackButton = true,
     onBackClick = navigateUp,
     onCloseClick = { viewModel.emit(OnboardingPetIdEvent.Close) },
+    progressAnimation = viewModel.progressBarAnimation,
   ) {
     when (val content = uiState) {
       OnboardingPetIdUiState.Loading -> {
