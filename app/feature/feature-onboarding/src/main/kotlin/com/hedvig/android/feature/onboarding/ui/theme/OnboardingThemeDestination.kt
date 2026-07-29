@@ -21,6 +21,7 @@ import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.IconResource
@@ -141,11 +142,30 @@ internal sealed interface OnboardingThemeEvent {
 @Composable
 internal fun OnboardingThemeDestination(viewModel: OnboardingThemeViewModel, navigateUp: () -> Unit) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  OnboardingThemeDestination(
+    uiState = uiState,
+    navigateUp = navigateUp,
+    onCloseClick = { viewModel.emit(OnboardingThemeEvent.Close) },
+    onRetry = { viewModel.emit(OnboardingThemeEvent.Retry) },
+    onSelectTheme = { viewModel.emit(OnboardingThemeEvent.SelectTheme(it)) },
+    onContinueClick = { viewModel.emit(OnboardingThemeEvent.Continue) },
+  )
+}
+
+@Composable
+private fun OnboardingThemeDestination(
+  uiState: OnboardingThemeUiState,
+  navigateUp: () -> Unit,
+  onCloseClick: () -> Unit,
+  onRetry: () -> Unit,
+  onSelectTheme: (Theme) -> Unit,
+  onContinueClick: () -> Unit,
+) {
   OnboardingStepScaffold(
     progress = (uiState as? OnboardingThemeUiState.Content)?.progress,
     showBackButton = true,
     onBackClick = navigateUp,
-    onCloseClick = { viewModel.emit(OnboardingThemeEvent.Close) },
+    onCloseClick = onCloseClick,
   ) {
     when (uiState) {
       OnboardingThemeUiState.Loading -> {
@@ -154,12 +174,11 @@ internal fun OnboardingThemeDestination(viewModel: OnboardingThemeViewModel, nav
 
       OnboardingThemeUiState.Error -> {
         HedvigErrorSection(
-          onButtonClick = { viewModel.emit(OnboardingThemeEvent.Retry) },
+          onButtonClick = onRetry,
         )
       }
 
       is OnboardingThemeUiState.Content -> {
-        val content = uiState as OnboardingThemeUiState.Content
         Spacer(Modifier.height(16.dp))
         OnboardingStepHeader(
           title = stringResource(Res.string.SETTINGS_THEME_DIALOG_TITLE),
@@ -188,8 +207,8 @@ internal fun OnboardingThemeDestination(viewModel: OnboardingThemeViewModel, nav
               iconResource = IconResource.Vector(HedvigIcons.CircleFilled),
             ),
           ),
-          selectedOption = RadioOptionId(content.selectedTheme.name),
-          onRadioOptionSelected = { viewModel.emit(OnboardingThemeEvent.SelectTheme(Theme.valueOf(it.id))) },
+          selectedOption = RadioOptionId(uiState.selectedTheme.name),
+          onRadioOptionSelected = { onSelectTheme(Theme.valueOf(it.id)) },
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
@@ -207,9 +226,27 @@ internal fun OnboardingThemeDestination(viewModel: OnboardingThemeViewModel, nav
         )
         OnboardingStepButtons(
           primaryText = stringResource(Res.string.general_continue_button),
-          onPrimaryClick = { viewModel.emit(OnboardingThemeEvent.Continue) },
+          onPrimaryClick = onContinueClick,
         )
       }
     }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewOnboardingThemeDestination() {
+  HedvigTheme {
+    OnboardingThemeDestination(
+      uiState = OnboardingThemeUiState.Content(
+        progress = OnboardingProgress(totalSteps = 5, currentIndex = 2),
+        selectedTheme = Theme.SYSTEM_DEFAULT,
+      ),
+      navigateUp = {},
+      onCloseClick = {},
+      onRetry = {},
+      onSelectTheme = {},
+      onContinueClick = {},
+    )
   }
 }
