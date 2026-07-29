@@ -34,6 +34,8 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.delay
 
 private val KeySize = 36.dp
 private val HorizontalGap = 11.dp
@@ -48,19 +50,18 @@ private val KeypadRows = listOf(
   listOf("*", "0", "#"),
 )
 
-/**
- * The keypad illustration on the phone-number step. One key is highlighted with a size + colour
- * animation once the screen is shown; [highlightedKey] selects which.
- */
 @Composable
-internal fun OnboardingPhoneKeypad(modifier: Modifier = Modifier, highlightedKey: String = "5") {
+internal fun OnboardingPhoneKeypad(modifier: Modifier = Modifier) {
   var entered by remember { mutableStateOf(false) }
-  LaunchedEffect(Unit) { entered = true }
-  KeypadGrid(highlightedKey = highlightedKey, highlightActive = entered, modifier = modifier)
+  LaunchedEffect(Unit) {
+    delay(2.seconds)
+    entered = true
+  }
+  KeypadGrid(highlightActive = entered, modifier = modifier)
 }
 
 @Composable
-private fun KeypadGrid(highlightedKey: String, highlightActive: Boolean, modifier: Modifier = Modifier) {
+private fun KeypadGrid(highlightActive: Boolean, modifier: Modifier = Modifier) {
   // Decorative artwork: freeze the font scale so the glyphs keep their designed size regardless of
   // the user's system font-size setting.
   val density = LocalDensity.current
@@ -74,7 +75,7 @@ private fun KeypadGrid(highlightedKey: String, highlightActive: Boolean, modifie
       for (row in KeypadRows) {
         Row(horizontalArrangement = Arrangement.spacedBy(HorizontalGap)) {
           for (label in row) {
-            KeypadKey(label = label, highlighted = highlightActive && label == highlightedKey)
+            KeypadKey(label = label, highlighted = highlightActive && label == KeypadRows[2][0])
           }
         }
       }
@@ -104,8 +105,6 @@ private fun KeypadKey(label: String, highlighted: Boolean) {
     label = "keypad scale",
   )
   Box(
-    // Grow via a layer transform rather than the layout size so the row never reflows and the glyph
-    // stays centred throughout the animation.
     modifier = Modifier
       .size(KeySize)
       .graphicsLayer {
@@ -137,7 +136,7 @@ private fun KeypadKey(label: String, highlighted: Boolean) {
 private fun PreviewOnboardingPhoneKeypadHighlighted() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      KeypadGrid(highlightedKey = "5", highlightActive = true, modifier = Modifier.padding(24.dp))
+      KeypadGrid(highlightActive = true, modifier = Modifier.padding(24.dp))
     }
   }
 }
@@ -147,7 +146,7 @@ private fun PreviewOnboardingPhoneKeypadHighlighted() {
 private fun PreviewOnboardingPhoneKeypadResting() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      KeypadGrid(highlightedKey = "5", highlightActive = false, modifier = Modifier.padding(24.dp))
+      KeypadGrid(highlightActive = false, modifier = Modifier.padding(24.dp))
     }
   }
 }
