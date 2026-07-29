@@ -33,7 +33,8 @@ import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 
 private val SymbolSize = 128.dp
-private val BadgeSize = 32.dp
+private val BadgeSize = 38.dp
+private val BadgeOffset = 6.dp
 
 /**
  * The Hedvig symbol on the welcome step, with a red notification badge that is absent on the first
@@ -78,6 +79,8 @@ private fun WelcomeSymbol(badgeVisible: Boolean, modifier: Modifier = Modifier) 
         .align(Alignment.TopEnd)
         .size(BadgeSize)
         .graphicsLayer {
+          translationX = BadgeOffset.toPx()
+          translationY = -BadgeOffset.toPx()
           scaleX = badgeScale
           scaleY = badgeScale
           alpha = badgeAlpha
