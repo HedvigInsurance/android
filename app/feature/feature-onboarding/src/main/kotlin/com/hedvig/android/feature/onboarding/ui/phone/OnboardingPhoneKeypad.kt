@@ -111,7 +111,7 @@ private fun KeypadKey(label: String, highlighted: Boolean) {
         scaleX = scale
         scaleY = scale
       }
-      .background(containerColor, HedvigTheme.shapes.cornerXLarge),
+      .background(containerColor, HedvigTheme.shapes.cornerLarge),
     contentAlignment = Alignment.Center,
   ) {
     HedvigText(
