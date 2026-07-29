@@ -214,7 +214,6 @@ internal fun OnboardingPhoneDestination(viewModel: OnboardingPhoneViewModel, nav
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         )
-        Spacer(Modifier.height(16.dp))
         OnboardingStepButtons(
           primaryText = stringResource(Res.string.general_save_button),
           onPrimaryClick = { viewModel.emit(OnboardingPhoneEvent.Save(phoneNumberState.text.toString())) },
