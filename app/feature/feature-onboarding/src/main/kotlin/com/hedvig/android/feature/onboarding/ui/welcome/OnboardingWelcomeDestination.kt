@@ -1,12 +1,10 @@
 package com.hedvig.android.feature.onboarding.ui.welcome
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -41,9 +39,7 @@ import hedvig.resources.ONBOARDING_WELCOME_BUTTON
 import hedvig.resources.ONBOARDING_WELCOME_SUBTITLE
 import hedvig.resources.ONBOARDING_WELCOME_TITLE
 import hedvig.resources.Res
-import hedvig.resources.onboarding_hedvig_symbol
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Inject
@@ -135,11 +131,7 @@ internal fun OnboardingWelcomeDestination(viewModel: OnboardingWelcomeViewModel)
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         ) {
-          Image(
-            painter = painterResource(Res.drawable.onboarding_hedvig_symbol),
-            contentDescription = null,
-            modifier = Modifier.size(128.dp),
-          )
+          OnboardingWelcomeSymbol()
           Spacer(Modifier.height(24.dp))
           HedvigText(
             text = stringResource(Res.string.ONBOARDING_WELCOME_TITLE),
@@ -151,7 +143,7 @@ internal fun OnboardingWelcomeDestination(viewModel: OnboardingWelcomeViewModel)
             textAlign = TextAlign.Center,
             style = LocalTextStyle.current.copy(
               lineBreak = LineBreak.Heading,
-            )
+            ),
           )
         }
         Spacer(Modifier.weight(1f))
