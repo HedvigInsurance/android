@@ -116,7 +116,6 @@ fragment SummaryFragment on ClaimIntentStepContentSummary {
     contentType
     fileName
   }
-  freeTexts
   keyDetails {
     title
     value

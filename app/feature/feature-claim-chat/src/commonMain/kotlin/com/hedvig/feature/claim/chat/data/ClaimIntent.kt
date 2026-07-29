@@ -155,7 +155,6 @@ internal sealed interface StepContent {
     val items: List<Item>,
     val audioRecordings: List<AudioRecording>,
     val fileUploads: List<FileUpload>,
-    val freeTexts: List<String>,
     val keyDetails: List<Item>,
     val answers: List<Answer>,
   ) : StepContent {

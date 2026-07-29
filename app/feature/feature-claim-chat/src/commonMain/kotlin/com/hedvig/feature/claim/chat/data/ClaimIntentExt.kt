@@ -6,6 +6,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.locale.CommonLocale
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
+import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.shared.partners.deflect.DeflectData
 import kotlinx.datetime.LocalDate
@@ -177,34 +178,33 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
             it.fileName,
           )
         },
-        freeTexts = freeTexts,
         keyDetails = keyDetails.map { StepContent.Summary.Item(it.title, it.value) },
-        answers = answers.map { answer ->
-          StepContent.Summary.Answer(
-            title = answer.title,
-            value = when (val value = answer.value) {
-              is SummaryFragment.Answer.ClaimIntentStepContentSummaryAnswerTextValue -> {
-                StepContent.Summary.Answer.Value.Text(value.text)
-              }
+        // An answer value type this version can't render is dropped rather than raised on, so the
+        // rest of the summary still shows.
+        answers = answers.mapNotNull { answer ->
+          val value = when (val value = answer.value) {
+            is SummaryFragment.Answer.ClaimIntentStepContentSummaryAnswerTextValue -> {
+              StepContent.Summary.Answer.Value.Text(value.text)
+            }
 
-              is SummaryFragment.Answer.ClaimIntentStepContentSummaryAnswerAudioValue -> {
-                StepContent.Summary.Answer.Value.Audio(value.url, value.transcript)
-              }
+            is SummaryFragment.Answer.ClaimIntentStepContentSummaryAnswerAudioValue -> {
+              StepContent.Summary.Answer.Value.Audio(value.url, value.transcript)
+            }
 
-              is SummaryFragment.Answer.ClaimIntentStepContentSummaryAnswerFilesValue -> {
-                StepContent.Summary.Answer.Value.Files(
-                  value.files.map {
-                    StepContent.Summary.FileUpload(it.url, it.contentType, it.fileName)
-                  },
-                )
-              }
+            is SummaryFragment.Answer.ClaimIntentStepContentSummaryAnswerFilesValue -> {
+              StepContent.Summary.Answer.Value.Files(
+                value.files.map {
+                  StepContent.Summary.FileUpload(it.url, it.contentType, it.fileName)
+                },
+              )
+            }
 
-              else -> {
-                logcat { "SummaryFragment.Answer: Unknown answer value type" }
-                raise(ClaimChatErrorMessage.NeedsUpdate)
-              }
-            },
-          )
+            else -> {
+              logcat(LogPriority.WARN) { "SummaryFragment.Answer: Unknown answer value type, skipping answer" }
+              null
+            }
+          } ?: return@mapNotNull null
+          StepContent.Summary.Answer(title = answer.title, value = value)
         },
       )
     }
