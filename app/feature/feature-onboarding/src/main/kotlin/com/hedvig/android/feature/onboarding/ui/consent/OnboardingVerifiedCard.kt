@@ -66,7 +66,6 @@ private fun VerifiedCard(badgeVisible: Boolean, modifier: Modifier = Modifier) {
     label = "verified badge alpha",
   )
   Box(
-    // Purely decorative: keep it out of the accessibility tree.
     modifier = modifier
       .size(CardSize)
       .clearAndSetSemantics {},
@@ -76,7 +75,7 @@ private fun VerifiedCard(badgeVisible: Boolean, modifier: Modifier = Modifier) {
       Modifier
         .matchParentSize()
         .padding(start = 8.dp, top = 16.dp, end = 20.dp, bottom = 12.dp)
-        .shadow(elevation = 6.dp, shape = RoundedCornerShape(24.dp)),
+        .shadow(elevation = 4.dp, shape = RoundedCornerShape(24.dp)),
     )
     Image(
       painter = painterResource(Res.drawable.onboarding_verified_card),

@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -25,6 +26,7 @@ import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
@@ -136,7 +138,7 @@ internal fun OnboardingWelcomeDestination(viewModel: OnboardingWelcomeViewModel)
           Image(
             painter = painterResource(Res.drawable.onboarding_hedvig_symbol),
             contentDescription = null,
-            modifier = Modifier.size(96.dp),
+            modifier = Modifier.size(128.dp),
           )
           Spacer(Modifier.height(24.dp))
           HedvigText(
@@ -147,6 +149,9 @@ internal fun OnboardingWelcomeDestination(viewModel: OnboardingWelcomeViewModel)
             text = stringResource(Res.string.ONBOARDING_WELCOME_SUBTITLE),
             color = HedvigTheme.colorScheme.textSecondary,
             textAlign = TextAlign.Center,
+            style = LocalTextStyle.current.copy(
+              lineBreak = LineBreak.Heading,
+            )
           )
         }
         Spacer(Modifier.weight(1f))

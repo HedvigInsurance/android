@@ -25,9 +25,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.hedvig.android.compose.ui.LocalSharedTransitionScope
+import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -110,18 +112,21 @@ internal fun OnboardingStepScaffold(
           .height(56.dp)
           .padding(horizontal = 16.dp),
       ) {
-        if (showBackButton) {
-          IconButton(
-            onClick = onBackClick,
-          ) {
-            Icon(
-              imageVector = HedvigIcons.ArrowLeft,
-              contentDescription = stringResource(Res.string.general_back_button),
-              modifier = Modifier.size(24.dp),
-            )
-          }
-        } else {
-          Spacer(Modifier.size(40.dp))
+        IconButton(
+          onClick = onBackClick,
+          modifier = if (!showBackButton) {
+            Modifier
+              .clearAndSetSemantics {}
+              .withoutPlacement()
+          } else {
+            Modifier
+          },
+        ) {
+          Icon(
+            imageVector = HedvigIcons.ArrowLeft,
+            contentDescription = stringResource(Res.string.general_back_button),
+            modifier = Modifier.size(24.dp),
+          )
         }
         if (progress != null) {
           OnboardingProgressBar(
