@@ -338,6 +338,7 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
       terminateInsuranceEntries(
         windowSizeClass = windowSizeClass,
         backstack = backstack,
+        imageLoader = imageLoader,
         onNavigateToNewConversation = navigateToNewConversation,
         openUrl = openUrl,
         openPlayStore = externalNavigator::tryOpenPlayStore,

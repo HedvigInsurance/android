@@ -1,9 +1,19 @@
 query TerminationSurvey($contractId: UUID!) {
-  terminationSurvey(contractId: $contractId) {
+  terminationSurvey(contractId: $contractId, redirectionEnabled: true) {
     options {
       id
       title
       feedbackRequired
+      redirection {
+        title
+        description
+        type
+        actionText
+        image {
+          url
+          overlayText
+        }
+      }
       subOptions {
         id
         title

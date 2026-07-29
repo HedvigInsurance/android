@@ -21,6 +21,7 @@ import octopus.TerminateContractMutation
 import octopus.TerminationSurveyQuery
 import octopus.fragment.TerminationSurveyOptionSuggestionFragment
 import octopus.type.TerminationFlowDeleteContractInput
+import octopus.type.TerminationFlowSurveyOptionRedirectionType
 import octopus.type.TerminationFlowSurveyOptionSuggestionType
 import octopus.type.TerminationFlowTerminateContractInput
 
@@ -137,6 +138,7 @@ private fun TerminationSurveyQuery.Data.TerminationSurvey.Option.toTerminationSu
     listIndex = index,
     feedbackRequired = feedbackRequired,
     suggestion = suggestion?.toSuggestion(),
+    redirection = redirection?.toRedirection(),
     subOptions = subOptions.mapIndexed { subIndex, subOption ->
       TerminationSurveyOption(
         id = subOption.id,
@@ -193,6 +195,19 @@ private fun TerminationSurveyQuery.Data.TerminationSurvey.Action.toTerminationAc
       ErrorMessage("Unknown termination action type: ${this::class.simpleName}").left()
     }
   }
+}
+
+private fun TerminationSurveyQuery.Data.TerminationSurvey.Option.Redirection.toRedirection(): SurveyOptionRedirection {
+  return SurveyOptionRedirection(
+    title = title,
+    description = description,
+    type = when (type) {
+      TerminationFlowSurveyOptionRedirectionType.UPDATE_ADDRESS -> RedirectionType.UPDATE_ADDRESS
+      else -> RedirectionType.UNKNOWN
+    },
+    actionText = actionText,
+    image = image?.let { RedirectionImage(url = it.url, overlayText = it.overlayText) },
+  )
 }
 
 private fun TerminationSurveyOptionSuggestionFragment.toSuggestion(): SurveyOptionSuggestion {

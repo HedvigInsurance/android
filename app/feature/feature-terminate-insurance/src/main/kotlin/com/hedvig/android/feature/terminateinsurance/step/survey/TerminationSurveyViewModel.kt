@@ -21,6 +21,7 @@ import com.hedvig.android.feature.terminateinsurance.navigation.DeflectSuggestio
 import com.hedvig.android.feature.terminateinsurance.navigation.InsuranceDeletionKey
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationDateKey
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationRedirectionKey
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationSurveySecondStepKey
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyEvent.ClearEmptyQuotesDialog
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyEvent.ClearNextStep
@@ -98,12 +99,19 @@ internal class TerminationSurveyPresenter(
         is Continue -> {
           val selectedOption = currentState.selectedOption ?: return@CollectEvents
           currentState = currentState.copy(errorWhileLoadingNextStep = false)
-          if (selectedOption.subOptions.isNotEmpty()) {
+          val redirection = selectedOption.redirection
+          if (redirection != null) {
             backstack.add(
-              TerminationSurveySecondStepKey(selectedOption.subOptions, action, commonParams),
+              TerminationRedirectionKey(
+                redirection = redirection,
+                selectedOption = selectedOption,
+                action = action,
+                commonParams = commonParams,
+                feedbackComment = feedbackText,
+              ),
             )
           } else {
-            backstack.navigateAfterSurvey(selectedOption, feedbackText, action, commonParams)
+            backstack.continueAfterSurveySelection(selectedOption, feedbackText, action, commonParams)
           }
         }
 
@@ -273,6 +281,19 @@ internal sealed interface DeflectType {
     val title: String,
     val message: String,
   ) : DeflectType
+}
+
+internal fun Backstack.continueAfterSurveySelection(
+  selectedOption: TerminationSurveyOption,
+  feedbackText: String?,
+  action: TerminationAction,
+  commonParams: TerminationGraphParameters,
+) {
+  if (selectedOption.subOptions.isNotEmpty()) {
+    add(TerminationSurveySecondStepKey(selectedOption.subOptions, action, commonParams))
+  } else {
+    navigateAfterSurvey(selectedOption, feedbackText, action, commonParams)
+  }
 }
 
 private fun Backstack.navigateAfterSurvey(

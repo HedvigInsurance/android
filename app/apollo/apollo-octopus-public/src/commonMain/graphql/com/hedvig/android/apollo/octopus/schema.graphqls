@@ -4835,7 +4835,7 @@ type Query {
   Cost for selected configuration of removed addon offer
   """
   addonRemoveOfferCost(contractId: ID!, addonIds: [ID!]!): ItemCost!
-  terminationSurvey(contractId: UUID!): TerminationFlowSurvey!
+  terminationSurvey(contractId: UUID!, redirectionEnabled: Boolean! = false): TerminationFlowSurvey!
   """
   Call this to get the cost of an addon offer for selected addon(s).
   """
@@ -5363,6 +5363,21 @@ type TerminationFlowSurveyOption {
   subOptions: [TerminationFlowSurveyOption!]!
   feedbackRequired: Boolean!
   suggestion: TerminationFlowSurveyOptionSuggestion
+  redirection: TerminationFlowSurveyOptionRedirection
+}
+type TerminationFlowSurveyOptionRedirection {
+  title: String!
+  description: String!
+  type: TerminationFlowSurveyOptionRedirectionType!
+  actionText: String!
+  image: TerminationFlowSurveyOptionRedirectionImage
+}
+type TerminationFlowSurveyOptionRedirectionImage {
+  url: String!
+  overlayText: String
+}
+enum TerminationFlowSurveyOptionRedirectionType {
+  UPDATE_ADDRESS
 }
 type TerminationFlowSurveyOptionSuggestion {
   type: TerminationFlowSurveyOptionSuggestionType!
