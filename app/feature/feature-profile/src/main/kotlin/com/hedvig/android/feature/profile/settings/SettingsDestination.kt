@@ -54,6 +54,8 @@ import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
 import com.hedvig.android.theme.Theme
+import hedvig.resources.GENERAL_DISABLED
+import hedvig.resources.GENERAL_ENABLED
 import hedvig.resources.GENERAL_SUBSCRIBED
 import hedvig.resources.GENERAL_UNSUBSCRIBED
 import hedvig.resources.PROFILE_NOTIFICATIONS_STATUS_OFF
@@ -69,6 +71,7 @@ import hedvig.resources.SETTINGS_THEME_LIGHT
 import hedvig.resources.SETTINGS_THEME_SYSTEM_DEFAULT
 import hedvig.resources.SETTINGS_THEME_TITLE
 import hedvig.resources.SETTINGS_TITLE
+import hedvig.resources.SETTINGS_USAGE_DATA_TITLE
 import hedvig.resources.general_close_button
 import hedvig.resources.language_picker_modal_title
 import hedvig.resources.not_selected
@@ -179,25 +182,15 @@ private fun SettingsScreen(
         HedvigBigCard(
           onClick = onNavigateToUsageData,
           inputText = when (uiState.analyticsConsent) {
-            AnalyticsConsent.GRANTED -> {
-              // TODO: Add "Enabled" / "Aktiverad" to Lokalise
-              "Enabled"
-            }
+            AnalyticsConsent.GRANTED -> stringResource(Res.string.GENERAL_ENABLED)
 
-            AnalyticsConsent.DENIED -> {
-              // TODO: Add "Disabled" / "Inaktiverad" to Lokalise
-              "Disabled"
-            }
+            AnalyticsConsent.DENIED -> stringResource(Res.string.GENERAL_DISABLED)
 
             // No explicit choice made yet: nothing is forwarded to Firebase, but this is shown
             // as distinct from an explicit "Disabled".
-            AnalyticsConsent.NOT_DECIDED, null -> {
-              // TODO: Add "Not set" / "Inte valt" to Lokalise
-              "Not set"
-            }
+            AnalyticsConsent.NOT_DECIDED, null -> stringResource(Res.string.not_selected)
           },
-          // TODO: Add "Usage data" / "Användningsdata" to Lokalise
-          labelText = "Usage data",
+          labelText = stringResource(Res.string.SETTINGS_USAGE_DATA_TITLE),
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),

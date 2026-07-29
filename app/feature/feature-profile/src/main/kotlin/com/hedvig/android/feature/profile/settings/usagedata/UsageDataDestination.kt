@@ -45,6 +45,7 @@ import hedvig.resources.ONBOARDING_ANALYTICS_DENY_BUTTON
 import hedvig.resources.ONBOARDING_ANALYTICS_SUBTITLE
 import hedvig.resources.ONBOARDING_ANALYTICS_TITLE
 import hedvig.resources.Res
+import hedvig.resources.SETTINGS_USAGE_DATA_TITLE
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -112,8 +113,7 @@ private fun UsageDataScreen(
   onPrivacyPolicy: () -> Unit,
 ) {
   HedvigScaffold(
-    // TODO: Add "Usage data" / "Användningsdata" to Lokalise
-    topAppBarText = "Usage data",
+    topAppBarText = stringResource(Res.string.SETTINGS_USAGE_DATA_TITLE),
     navigateUp = navigateUp,
   ) {
     Spacer(Modifier.height(8.dp))

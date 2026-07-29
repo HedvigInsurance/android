@@ -63,10 +63,6 @@
   <string name="ADDON_FLOW_UPGRADE_ADDON">Utöka skydd</string>
   <string name="ADDON_FLOW_UPGRADE_ADDON_DESCRIPTION">Du kan utöka skyddet för det här tillägget. Det kan tas bort vid förnyelse eller uppsägning av försäkringen.</string>
   <string name="ADDON_LEARN_MORE_LABEL">Se vad som ingår</string>
-  <string name="ADDON_REMOVE_CANCEL_BUTTON">Behåll nuvarande skydd</string>
-  <string name="ADDON_REMOVE_CONFIRM_BUTTON">Avsluta %1$s</string>
-  <string name="ADDON_REMOVE_DESCRIPTION">Om du avslutar detta tillägg ingår inte det extra skyddet längre i din hemförsäkring.</string>
-  <string name="ADDON_REMOVE_TITLE">Avsluta %1$s</string>
   <string name="ADDON_TRAVEL_CROSS_SELL_BANNER">Extra trygghet när du reser</string>
   <string name="ADDON_TRAVEL_CROSS_SELL_BENEFIT_1">Res upp till 60 dagar i sträck</string>
   <string name="ADDON_TRAVEL_CROSS_SELL_BENEFIT_2">Försenat flyg och bagage</string>
@@ -423,7 +419,9 @@
   <string name="GENERAL_CHANGE_CONFIRMATION_DESCRIPTION">Din försäkring kommer att uppdateras den %1$s.</string>
   <string name="GENERAL_CONFIRM">Bekräfta</string>
   <string name="GENERAL_CONTACT_US_TITLE">Kontakta vårt serviceteam</string>
+  <string name="GENERAL_DISABLED">Inaktiverad</string>
   <string name="GENERAL_DOWNLOAD">Ladda ner</string>
+  <string name="GENERAL_ENABLED">Aktiverad</string>
   <string name="GENERAL_INVALID_INPUT">Felaktig inmatning</string>
   <string name="GENERAL_NOT_SURE">Vet inte</string>
   <string name="GENERAL_RETRY">Försök igen</string>
@@ -792,6 +790,7 @@
   <string name="SETTINGS_THEME_SYSTEM_DEFAULT">Systemets standardinställning</string>
   <string name="SETTINGS_THEME_TITLE">Tema</string>
   <string name="SETTINGS_TITLE">Inställningar</string>
+  <string name="SETTINGS_USAGE_DATA_TITLE">Användningsdata</string>
   <string name="SINGLE_ITEM_INFO_BRAND">Märke</string>
   <string name="SUBMIT_CLAIM__PURCHASE_PRICE_TITLE">Fyll i ditt inköpspris</string>
   <string name="SUBMIT_CLAIM_CAR_BUTTON_TITLE">Fortsätt</string>

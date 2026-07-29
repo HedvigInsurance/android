@@ -62,10 +62,6 @@
   <string name="ADDON_FLOW_UPGRADE_ADDON">Extend coverage</string>
   <string name="ADDON_FLOW_UPGRADE_ADDON_DESCRIPTION">You can extend the coverage of this addon. It can only be removed when your insurance is renewed or cancelled.</string>
   <string name="ADDON_LEARN_MORE_LABEL">See what's included</string>
-  <string name="ADDON_REMOVE_CANCEL_BUTTON">Keep current coverage</string>
-  <string name="ADDON_REMOVE_CONFIRM_BUTTON">Cancel %1$s</string>
-  <string name="ADDON_REMOVE_DESCRIPTION">By canceling this extended coverage, your home insurance will no longer include this extra protection.</string>
-  <string name="ADDON_REMOVE_TITLE">Cancel %1$s</string>
   <string name="ADDON_TRAVEL_CROSS_SELL_BANNER">Add extra safety when traveling</string>
   <string name="ADDON_TRAVEL_CROSS_SELL_BENEFIT_1">Travel up to 60 days in a row</string>
   <string name="ADDON_TRAVEL_CROSS_SELL_BENEFIT_2">Delayed bags and flights</string>
@@ -422,7 +418,9 @@
   <string name="GENERAL_CHANGE_CONFIRMATION_DESCRIPTION">Your insurance will be updated starting from %1$s</string>
   <string name="GENERAL_CONFIRM">Confirm</string>
   <string name="GENERAL_CONTACT_US_TITLE">Contact our service team</string>
+  <string name="GENERAL_DISABLED">Disabled</string>
   <string name="GENERAL_DOWNLOAD">Download</string>
+  <string name="GENERAL_ENABLED">Enabled</string>
   <string name="GENERAL_INVALID_INPUT">Invalid input</string>
   <string name="GENERAL_NOT_SURE">Not sure</string>
   <string name="GENERAL_RETRY">Try again</string>
@@ -791,6 +789,7 @@
   <string name="SETTINGS_THEME_SYSTEM_DEFAULT">System default</string>
   <string name="SETTINGS_THEME_TITLE">Theme</string>
   <string name="SETTINGS_TITLE">Settings</string>
+  <string name="SETTINGS_USAGE_DATA_TITLE">Usage data</string>
   <string name="SINGLE_ITEM_INFO_BRAND">Brand</string>
   <string name="SUBMIT_CLAIM__PURCHASE_PRICE_TITLE">Fill in your purchase price</string>
   <string name="SUBMIT_CLAIM_CAR_BUTTON_TITLE">Continue</string>
