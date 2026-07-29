@@ -81,6 +81,7 @@ internal fun SettingsDestination(
   navigateUp: () -> Unit,
   openAppSettings: () -> Unit,
   onNavigateToDeleteAccountFeature: () -> Unit,
+  onNavigateToUsageData: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   SettingsScreen(
@@ -95,7 +96,7 @@ internal fun SettingsDestination(
     changeSubscriptionPreference = {
       viewModel.emit(SettingsEvent.ChangeSubscriptionPreference(it))
     },
-    onChangeAnalyticsConsent = { viewModel.emit(SettingsEvent.ChangeAnalyticsConsent(it)) },
+    onNavigateToUsageData = onNavigateToUsageData,
   )
 }
 
@@ -105,7 +106,7 @@ private fun SettingsScreen(
   notificationPermissionState: NotificationPermissionState,
   navigateUp: () -> Unit,
   changeSubscriptionPreference: (Boolean) -> Unit,
-  onChangeAnalyticsConsent: (AnalyticsConsent) -> Unit,
+  onNavigateToUsageData: () -> Unit,
   openAppSettings: () -> Unit,
   onNotificationInfoDismissed: () -> Unit,
   onLanguageSelected: (Language) -> Unit,
@@ -176,34 +177,27 @@ private fun SettingsScreen(
         )
         Spacer(Modifier.height(4.dp))
         HedvigBigCard(
-          onClick = {
-            val newConsent = if (uiState.analyticsConsent == AnalyticsConsent.GRANTED) {
-              AnalyticsConsent.DENIED
-            } else {
-              AnalyticsConsent.GRANTED
-            }
-            onChangeAnalyticsConsent(newConsent)
-          },
+          onClick = onNavigateToUsageData,
           inputText = when (uiState.analyticsConsent) {
             AnalyticsConsent.GRANTED -> {
-              // TODO: Add "On" / "På" to Lokalise
-              "On"
+              // TODO: Add "Enabled" / "Aktiverad" to Lokalise
+              "Enabled"
             }
 
             AnalyticsConsent.DENIED -> {
-              // TODO: Add "Off" / "Av" to Lokalise
-              "Off"
+              // TODO: Add "Disabled" / "Inaktiverad" to Lokalise
+              "Disabled"
             }
 
             // No explicit choice made yet: nothing is forwarded to Firebase, but this is shown
-            // as distinct from an explicit "Off".
+            // as distinct from an explicit "Disabled".
             AnalyticsConsent.NOT_DECIDED, null -> {
               // TODO: Add "Not set" / "Inte valt" to Lokalise
               "Not set"
             }
           },
-          // TODO: Add "Product analytics" / "Produktanalys" to Lokalise
-          labelText = "Product analytics",
+          // TODO: Add "Usage data" / "Användningsdata" to Lokalise
+          labelText = "Usage data",
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
@@ -438,7 +432,7 @@ fun PreviewSettingsScreen() {
         onThemeSelected = {},
         onTerminateAccountClicked = {},
         changeSubscriptionPreference = {},
-        onChangeAnalyticsConsent = {},
+        onNavigateToUsageData = {},
       )
     }
   }

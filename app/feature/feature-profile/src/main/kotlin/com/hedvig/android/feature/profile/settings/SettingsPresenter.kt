@@ -71,10 +71,6 @@ internal class SettingsPresenter(
               }
           }
         }
-
-        is SettingsEvent.ChangeAnalyticsConsent -> {
-          launch { settingsDataStore.setAnalyticsConsent(event.consent) }
-        }
       }
     }
 
@@ -133,6 +129,4 @@ sealed interface SettingsEvent {
   data class ChangeSubscriptionPreference(val subscribe: Boolean) : SettingsEvent
 
   data object SnoozeNotificationPermissionReminder : SettingsEvent
-
-  data class ChangeAnalyticsConsent(val consent: AnalyticsConsent) : SettingsEvent
 }

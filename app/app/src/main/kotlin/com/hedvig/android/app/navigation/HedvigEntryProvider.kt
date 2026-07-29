@@ -493,6 +493,7 @@ private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
     onNavigateToTravelCertificate = { backstack.add(TravelCertificateKey) },
     onNavigateToInsuranceEvidence = { backstack.add(InsuranceEvidenceKey) },
     openUrl = openUrl,
+    openPrivacyPolicy = { openUrl(privacyPolicyUrl(languageService.getLanguage())) },
     navigateToChipId = { backstack.add(ChipIdKey()) },
     languageService = languageService,
     onResetOnboardingForDebug = onResetOnboardingForDebug,

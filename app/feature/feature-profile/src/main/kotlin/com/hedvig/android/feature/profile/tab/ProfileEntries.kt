@@ -22,8 +22,11 @@ import com.hedvig.android.feature.profile.navigation.InformationKey
 import com.hedvig.android.feature.profile.navigation.LicensesKey
 import com.hedvig.android.feature.profile.navigation.ProfileKey
 import com.hedvig.android.feature.profile.navigation.SettingsKey
+import com.hedvig.android.feature.profile.navigation.UsageDataKey
 import com.hedvig.android.feature.profile.settings.SettingsDestination
 import com.hedvig.android.feature.profile.settings.SettingsViewModel
+import com.hedvig.android.feature.profile.settings.usagedata.UsageDataDestination
+import com.hedvig.android.feature.profile.settings.usagedata.UsageDataViewModel
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
@@ -47,6 +50,7 @@ fun EntryProviderScope<HedvigNavKey>.profileEntries(
   onNavigateToTravelCertificate: () -> Unit,
   onNavigateToInsuranceEvidence: () -> Unit,
   openUrl: (String) -> Unit,
+  openPrivacyPolicy: () -> Unit,
   navigateToChipId: () -> Unit,
   languageService: LanguageService,
   onResetOnboardingForDebug: () -> Unit,
@@ -137,6 +141,16 @@ fun EntryProviderScope<HedvigNavKey>.profileEntries(
       navigateUp = backstack::navigateUp,
       openAppSettings = openAppSettings,
       onNavigateToDeleteAccountFeature = dropUnlessResumed { navigateToDeleteAccountFeature() },
+      onNavigateToUsageData = dropUnlessResumed { backstack.add(UsageDataKey) },
+    )
+  }
+  entry<UsageDataKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
+    val viewModel: UsageDataViewModel = metroViewModel()
+    UsageDataDestination(
+      viewModel = viewModel,
+      navigateUp = backstack::navigateUp,
+      popBackstack = backstack::popBackstack,
+      onPrivacyPolicy = openPrivacyPolicy,
     )
   }
   settingsDestinationNestedGraphs()
