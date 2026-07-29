@@ -54,8 +54,8 @@ private val KeypadRows = listOf(
 internal fun OnboardingPhoneKeypad(modifier: Modifier = Modifier) {
   var highlightActive by remember { mutableStateOf(true) }
   LaunchedEffect(Unit) {
-    delay(2.seconds)
-    entered = true
+    delay(1.seconds)
+    highlightActive = false
   }
   KeypadGrid(highlightActive = highlightActive, modifier = modifier)
 }

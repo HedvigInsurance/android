@@ -47,7 +47,7 @@ private val BadgeTransformOrigin = TransformOrigin(92f / 120f, 24f / 120f)
 internal fun OnboardingVerifiedCard(modifier: Modifier = Modifier) {
   var badgeVisible by remember { mutableStateOf(false) }
   LaunchedEffect(Unit) {
-    delay(2.seconds)
+    delay(1.seconds)
     badgeVisible = true
   }
   VerifiedCard(badgeVisible = badgeVisible, modifier = modifier)
