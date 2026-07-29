@@ -27,7 +27,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
 import hedvig.resources.Res
-import hedvig.resources.onboarding_hedvig_symbol
+import hedvig.resources.pillow_hedvig
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
@@ -69,7 +69,7 @@ private fun WelcomeSymbol(badgeVisible: Boolean, modifier: Modifier = Modifier) 
       .clearAndSetSemantics {},
   ) {
     Image(
-      painter = painterResource(Res.drawable.onboarding_hedvig_symbol),
+      painter = painterResource(Res.drawable.pillow_hedvig),
       contentDescription = null,
       modifier = Modifier.matchParentSize(),
     )
