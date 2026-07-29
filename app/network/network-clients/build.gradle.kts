@@ -35,7 +35,7 @@ kotlin {
       implementation(projects.coreDatastorePublic)
       implementation(projects.languageCore)
     }
-    val mobileMain by getting {
+    getByName("mobileMain") {
       dependencies {
         implementation(libs.datadog.sdk.ktor)
       }
