@@ -52,12 +52,12 @@ private val KeypadRows = listOf(
 
 @Composable
 internal fun OnboardingPhoneKeypad(modifier: Modifier = Modifier) {
-  var entered by remember { mutableStateOf(false) }
+  var highlightActive by remember { mutableStateOf(true) }
   LaunchedEffect(Unit) {
     delay(2.seconds)
     entered = true
   }
-  KeypadGrid(highlightActive = entered, modifier = modifier)
+  KeypadGrid(highlightActive = highlightActive, modifier = modifier)
 }
 
 @Composable
