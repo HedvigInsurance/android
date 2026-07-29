@@ -177,31 +177,32 @@ private fun OnboardingProgressBar(
   animatedVisibilityScope: AnimatedVisibilityScope?,
   modifier: Modifier = Modifier,
 ) {
-  // currentIndex is 0-based with the welcome step at 0, so +1 keeps its first slice filled.
-  val target = ((progress.currentIndex + 1f) / progress.totalSteps).coerceIn(0f, 1f)
-  val fraction = if (animation != null && animatedVisibilityScope != null) {
-    // 1 while this step is fully on screen, 0 once it is gone; Nav3 seeks this with the
-    // predictive-back gesture, so the shared holder's blend follows the transition frame for frame.
-    val presence = animatedVisibilityScope.transition.animateFloat(
+  // currentIndex is 0-based with welcome at 0, so this step is human step number currentIndex + 1.
+  val stepNumber = progress.currentIndex + 1
+  val filledStepCount = if (animation != null && animatedVisibilityScope != null) {
+    // 1 while this step is fully on screen, 0 once it is gone; Nav3 moves this with the transition,
+    // including a predictive-back gesture, so the shared bar follows the gesture frame for frame.
+    val visibleAmount = animatedVisibilityScope.transition.animateFloat(
       transitionSpec = { tween(durationMillis = 300, easing = FastOutSlowInEasing) },
-      label = "onboardingProgressPresence",
+      label = "onboardingStepVisibleAmount",
     ) { state -> if (state == EnterExitState.Visible) 1f else 0f }
-    val contributionKey = remember { Any() }
-    DisposableEffect(animation, contributionKey) {
-      onDispose { animation.release(contributionKey) }
+    val key = remember { Any() }
+    DisposableEffect(animation, key) {
+      onDispose { animation.removeStep(key) }
     }
-    LaunchedEffect(animation, contributionKey, target) {
-      snapshotFlow { presence.value }.collect { animation.contribute(contributionKey, target, it) }
+    LaunchedEffect(animation, key, stepNumber) {
+      snapshotFlow { visibleAmount.value }.collect { animation.setVisibleStep(key, stepNumber, it) }
     }
-    animation.displayedFraction
+    animation.filledStepCount
   } else {
-    target
+    // Isolated preview: no transition, so simply fill up to this step.
+    stepNumber.toFloat()
   }
   Row(horizontalArrangement = Arrangement.spacedBy(4.dp), modifier = modifier) {
     repeat(progress.totalSteps) { index ->
-      // Each slice fills in turn as the shared fraction crosses it, keeping the dividers visible
-      // while the fill flows continuously across them.
-      val sliceFraction = ((fraction * progress.totalSteps) - index).coerceIn(0f, 1f)
+      // Slice `index` fills as filledStepCount passes it: full once the count reaches the next whole
+      // number, partially while it is crossing this slice. Dividers stay visible between slices.
+      val sliceFill = (filledStepCount - index).coerceIn(0f, 1f)
       Box(
         Modifier
           .weight(1f)
@@ -209,10 +210,10 @@ private fun OnboardingProgressBar(
           .clip(CircleShape)
           .background(HedvigTheme.colorScheme.surfaceSecondary),
       ) {
-        if (sliceFraction > 0f) {
+        if (sliceFill > 0f) {
           Box(
             Modifier
-              .fillMaxWidth(sliceFraction)
+              .fillMaxWidth(sliceFill)
               .height(2.dp)
               .clip(CircleShape)
               .background(HedvigTheme.colorScheme.fillPrimary),

@@ -6,110 +6,127 @@ Each onboarding step is a separate `NavEntry`, i.e. a separate composition
 (`OnboardingEntries.kt`). The header `Row` in `OnboardingStepScaffold` is a single
 shared element (`sharedBounds`, key `"onboarding-top-bar"`) pinned across steps. During a
 step transition both the outgoing and incoming headers are composed at the same bounds and
-`sharedBounds` crossfades their content. Because the two `OnboardingProgressBar`s differ
-only in how many segments are filled, the user sees the old fill dissolve into the new one
-instead of a fill growing left-to-right.
+`sharedBounds` crossfades their content. Because the two progress bars differ only in how
+many segments are filled, the user sees the old fill dissolve into the new one instead of a
+fill moving across.
 
 ## Goal
 
-Make the progress bar look like it is genuinely progressing left-to-right as the shared
-transition runs: a single continuous fill that grows (or shrinks, on back navigation) from
-the previous step's fraction to the current step's fraction, seamlessly, with no visible
-crossfade between two different states.
+The bar should look like one continuous fill that moves from the previous step to the current
+step as the transition runs, with the dividers between segments still visible. It must track a
+predictive-back gesture frame for frame and return smoothly if the gesture is cancelled, rather
+than jumping or getting stranded.
 
 ## Key insight
 
-The fill must be driven by a value that is **the same instance in both compositions and
-animates across the transition**. If the outgoing and incoming bars both read the identical
-value every frame, the `sharedBounds` crossfade becomes invisible (both sides look the same)
-while the value animates, producing a clean growing fill.
+The fill must be driven by a value that is **the same in both compositions and moves with the
+transition**. If the outgoing and incoming bars render the identical value every frame, the
+`sharedBounds` crossfade becomes invisible (both sides look the same) while the value moves.
+
+Compose already exposes a value that moves with the transition, including predictive-back seek:
+`animatedVisibilityScope.transition.animateFloat { Visible -> 1f else 0f }`. This is each step's
+"how visible am I" (1 on screen, 0 gone), and Nav3 seeks it with the gesture. Driving the fill
+from this, rather than a self-timed animation, is what makes it track and cancel correctly.
 
 ## Design
 
-### 1. Shared, flow-scoped animation holder (UI layer)
+### 1. Shared, flow-scoped holder (UI layer)
 
-A new `internal` class in the onboarding `ui` package, scoped to the onboarding flow's
-lifetime (matching `OnboardingSessionStore`, which is `@SingleIn(ActivityRetainedScope::class)`
-and survives across every step within one Activity):
+A new `internal` class in the onboarding `ui` package, scoped to the onboarding flow's lifetime
+(matching `OnboardingSessionStore`, `@SingleIn(ActivityRetainedScope::class)`):
 
 ```kotlin
 @Inject
 @SingleIn(ActivityRetainedScope::class)
 internal class OnboardingProgressBarAnimation {
-  private val animatable = Animatable(0f)
-  private var seeded = false
+  private val visibleSteps = mutableStateMapOf<Any, VisibleStep>()
 
-  val fraction: Float get() = animatable.value
-
-  suspend fun moveTo(target: Float) {
-    if (!seeded) {
-      seeded = true
-      animatable.snapTo(target)
-    } else {
-      animatable.animateTo(target)
+  val filledStepCount: Float
+    get() {
+      var stepNumberSum = 0f
+      var visibleSum = 0f
+      for (step in visibleSteps.values) {
+        stepNumberSum += step.stepNumber * step.visibleAmount
+        visibleSum += step.visibleAmount
+      }
+      if (visibleSum > MinimumVisible) return stepNumberSum / visibleSum
+      if (visibleSteps.isEmpty()) return 0f
+      return visibleSteps.values.sumOf { it.stepNumber.toDouble() }.toFloat() / visibleSteps.size
     }
-  }
+
+  fun setVisibleStep(key: Any, stepNumber: Int, visibleAmount: Float) { visibleSteps[key] = VisibleStep(stepNumber, visibleAmount) }
+  fun removeStep(key: Any) { visibleSteps.remove(key) }
+
+  private data class VisibleStep(val stepNumber: Int, val visibleAmount: Float)
+  private companion object { const val MinimumVisible = 0.0001f }
 }
 ```
 
-One `Animatable`, one instance for the whole flow. `fraction` is snapshot-backed, so both
-the outgoing and incoming step recompose in lockstep as it animates.
+Every step currently on screen registers itself with its **step number** (`currentIndex + 1`,
+1-based) and its **visible amount** (0–1). `filledStepCount` is the step numbers averaged by
+visibility, a possibly-fractional step count. Because it is a weighted average it always lands
+between the smallest and largest on-screen step number, so it never runs away as step numbers
+grow. The map only ever holds the on-screen steps (one at rest, two during a transition; each
+step removes itself on dispose).
 
-The `seeded` flag handles timing edge cases: the first value the holder ever sees snaps
-(fresh flow launch, or process-death restore landing directly on a mid-path step), while
-every later step-to-step transition animates from the current fill. Back navigation animates
-the fill shrinking left, the natural inverse.
+Why this shape rather than a single `Animatable.animateTo(target)`: a self-timed animation runs
+on its own clock, so it jumps instead of tracking the gesture, and a cancelled predictive-back
+gesture leaves it stranded with nothing to drive it back. A visibility-weighted average is a pure
+function of the seekable transition state, so it tracks and cancels for free. A single on-screen
+step averages to its own number, so fresh launches and process-death restores need no seeding.
 
-### 2. Delivery via CompositionLocal
+### 2. Delivery
 
-A `CompositionLocal` defaulting to `null` (mirroring how the scaffold already reads
-`LocalSharedTransitionScope` and tolerates `null` in isolated previews):
+`OnboardingStepScaffold` takes a nullable `progressAnimation: OnboardingProgressBarAnimation?`
+(null in isolated previews, mirroring how it already tolerates `LocalSharedTransitionScope == null`).
+Each step's `ViewModel` gains the holder as a constructor dependency and exposes it as a plain
+property; each destination passes `viewModel.progressBarAnimation` into the scaffold.
 
-```kotlin
-internal val LocalOnboardingProgressBarAnimation =
-  staticCompositionLocalOf<OnboardingProgressBarAnimation?> { null }
-```
-
-Each step's `ViewModel` gains the holder as a constructor dependency and exposes it as a
-plain property. Each destination's top-level composable wraps its screen content with
-`CompositionLocalProvider(LocalOnboardingProgressBarAnimation provides viewModel.progressBarAnimation)`.
-This keeps the inner screen composable signatures (and their previews) unchanged; only the
-top-level destination composable and the `ViewModel` constructor change.
-
-Delivery has to happen inside the onboarding module because the holder is `internal`; `:app`
-cannot reference it, so the established `metroViewModel()` injection path is the seam. This
-touches the ~9 step ViewModels and their destinations, each a couple of lines. This is the
-cost of the seamless result; it is the reason a self-contained per-step approach would be
-cheaper but less crisp.
+Delivery has to happen inside the onboarding module because the holder is `internal` and each step
+is a separate `NavEntry` with no shared parent composition, so the established `metroViewModel()`
+injection path is the only seam. A `CompositionLocal` would not avoid this (it would still need a
+per-entry instance to provide), so an explicit param is the simpler, more honest choice. This
+touches the ~9 step ViewModels and their destinations, a couple of lines each.
 
 ### 3. Scaffold change
 
-`OnboardingStepScaffold` computes the target fraction and drives the shared holder:
+Inside `OnboardingStepScaffold`, `animatedVisibilityScope` is read once
+(`LocalNavAnimatedContentScope.current` when a shared-transition scope is present, else null) and
+passed to `OnboardingProgressBar` alongside the holder. The bar:
 
 ```kotlin
-val target = progress?.let { (it.currentIndex + 1f) / it.totalSteps }
-val animation = LocalOnboardingProgressBarAnimation.current
-LaunchedEffect(target, animation) {
-  if (target != null) animation?.moveTo(target)
+val stepNumber = progress.currentIndex + 1
+val filledStepCount = if (animation != null && animatedVisibilityScope != null) {
+  val visibleAmount = animatedVisibilityScope.transition.animateFloat(
+    transitionSpec = { tween(durationMillis = 300, easing = FastOutSlowInEasing) },
+    label = "onboardingStepVisibleAmount",
+  ) { state -> if (state == EnterExitState.Visible) 1f else 0f }
+  val key = remember { Any() }
+  DisposableEffect(animation, key) { onDispose { animation.removeStep(key) } }
+  LaunchedEffect(animation, key, stepNumber) {
+    snapshotFlow { visibleAmount.value }.collect { animation.setVisibleStep(key, stepNumber, it) }
+  }
+  animation.filledStepCount
+} else {
+  stepNumber.toFloat()
 }
 ```
 
-`(currentIndex + 1) / totalSteps` reproduces today's behaviour where welcome
-(`currentIndex == 0`) already shows one filled segment out of `totalSteps`.
+The bar is a `Row` of `totalSteps` slices (`Arrangement.spacedBy(4.dp)` keeps the dividers). Slice
+`index` fills by `(filledStepCount - index).coerceIn(0f, 1f)`, so slices fill in turn and the fill
+flows continuously across the dividers. At rest `filledStepCount == stepNumber`, reproducing the
+original discrete behaviour (welcome shows one filled slice).
 
-`OnboardingProgressBar` renders a single rounded track instead of N discrete segments:
-a `surfaceSecondary` background with a `fillPrimary` foreground bar whose width is the
-current fraction of the track, clipped to `CircleShape`. The displayed fraction is
-`animation?.fraction` when the holder is present, otherwise `target` directly (static, for
-previews). No segment notches/dividers, for the cleanest progressing look.
+The presence tween is `300ms` to match the nav `sharedXAxis` transition (`DurationMedium2`); during
+a predictive-back seek it is driven by the gesture regardless of the tween.
 
 ## Files touched
 
-- New: `OnboardingProgressBarAnimation` holder + `LocalOnboardingProgressBarAnimation`
-  (onboarding `ui` package).
-- `OnboardingStepScaffold.kt`: read the local, drive the animation, render a continuous fill.
+- New: `OnboardingProgressBarAnimation` holder (onboarding `ui` package).
+- `OnboardingStepScaffold.kt`: read the animated-visibility scope, drive/read the holder, render
+  the segmented continuous fill.
 - Each step `ViewModel` that renders the scaffold: add the holder dependency + expose it.
-- Each corresponding destination top-level composable: provide the local.
+- Each corresponding destination: pass `viewModel.progressBarAnimation` into the scaffold.
 
 ## Non-goals
 
@@ -119,6 +136,8 @@ previews). No segment notches/dividers, for the cleanest progressing look.
 
 ## Edge cases
 
-- Fresh launch / process-death restore onto a mid-path step: `seeded` snaps, no sweep from 0.
-- Back navigation: animates the fill shrinking to the previous fraction.
-- Isolated previews (no NavEntry, `null` local): static fill at `target`, no animation.
+- Fresh launch / process-death restore onto a mid-path step: one on-screen step, so the average is
+  just its own number, no sweep from 0.
+- Back navigation and predictive-back seek: the average moves between the two on-screen steps as
+  their visibilities trade off; a cancelled gesture returns smoothly as the visibilities return.
+- Isolated previews (no NavEntry, null holder/scope): the bar fills statically up to `stepNumber`.
