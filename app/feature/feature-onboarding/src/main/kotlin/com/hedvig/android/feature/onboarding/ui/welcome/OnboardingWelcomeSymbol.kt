@@ -91,7 +91,7 @@ private fun WelcomeSymbol(badgeVisible: Boolean, modifier: Modifier = Modifier) 
       HedvigText(
         text = "1",
         color = HedvigTheme.colorScheme.textWhite,
-        style = HedvigTheme.typography.label,
+        style = HedvigTheme.typography.bodySmall,
       )
     }
   }
