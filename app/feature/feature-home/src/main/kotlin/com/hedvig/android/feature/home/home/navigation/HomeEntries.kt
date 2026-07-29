@@ -25,12 +25,15 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
   navigateToContactInfo: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToHelpCenter: () -> Unit,
+  navigateToMovingFlow: () -> Unit,
   navigateToClaimChat: (resumeClaim: Boolean) -> Unit,
   navigateToChipIdScreen: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   openCrossSellUrl: (String) -> Unit,
   imageLoader: ImageLoader,
+  navigateToTravelCertificate: () -> Unit,
+  navigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
   entry<HomeKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
     val viewModel: HomeViewModel = metroViewModel()
@@ -46,6 +49,7 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
       navigateToConnectPayout = dropUnlessResumed { navigateToConnectPayout() },
       navigateToMissingInfo = dropUnlessResumed { contractId, type -> navigateToMissingInfo(contractId, type) },
       navigateToHelpCenter = dropUnlessResumed { navigateToHelpCenter() },
+      navigateToMovingFlow = dropUnlessResumed { navigateToMovingFlow() },
       openUrl = openUrl,
       openCrossSellUrl = openCrossSellUrl,
       openAppSettings = openAppSettings,
@@ -57,6 +61,8 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
       },
       imageLoader = imageLoader,
       navigateToChipId = navigateToChipIdScreen,
+      navigateToTravelCertificate = dropUnlessResumed { navigateToTravelCertificate() },
+      navigateToAddonPurchaseFlow = dropUnlessResumed { ids -> navigateToAddonPurchaseFlow(ids) },
     )
   }
   entry<FirstVetKey> { key ->

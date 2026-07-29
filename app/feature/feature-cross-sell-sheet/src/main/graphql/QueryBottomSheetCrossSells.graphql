@@ -5,9 +5,9 @@ query BottomSheetCrossSells($input: CrossSellInput!) {
         id
         title
         description
-        buttonTitle
+        buttonText
         deepLink
-        banner
+        bannerText
         benefits
         pillowImageLarge {
           src

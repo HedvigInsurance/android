@@ -21,10 +21,10 @@ internal class CrossSellSheetPresenterTest {
   private val recommendedAddon = RecommendedAddon(
     id = "addonId",
     title = "Travel Insurance Plus",
-    buttonTitle = "See offer",
+    buttonText = "See offer",
     description = "For a safer trip abroad",
     deepLink = "https://hedvig.com/addon",
-    banner = "Add extra safety when traveling",
+    bannerText = "Add extra safety when traveling",
     benefits = listOf("Travel up to 60 days in a row"),
     pillowImageSmall = "smallSrc",
     pillowImageLarge = "largeSrc",

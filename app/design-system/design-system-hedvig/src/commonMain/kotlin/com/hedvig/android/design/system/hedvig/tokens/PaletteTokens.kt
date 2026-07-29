@@ -25,7 +25,9 @@ internal object PaletteTokens {
 
   val G50TLight = Color(0x05121212)
   val G100TLight = Color(0x0B121212)
+  val G150TLight = Color(0x0D121212)
   val G200TLight = Color(0x12121212)
+  val G250TLight = Color(0x1A121212)
   val G300TLight = Color(0x1C121212)
   val G400TLight = Color(0x2F121212)
   val G450TLight = Color(0x3B121212)

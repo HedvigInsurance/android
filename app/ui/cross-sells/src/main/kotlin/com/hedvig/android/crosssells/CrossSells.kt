@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -100,10 +101,10 @@ data class CrossSellSheetData(
 data class RecommendedAddon(
   val id: String,
   val title: String,
-  val buttonTitle: String,
+  val buttonText: String,
   val description: String,
   val deepLink: String,
-  val banner: String?,
+  val bannerText: String?,
   val benefits: List<String>,
   val pillowImageSmall: String,
   val pillowImageLarge: String,
@@ -139,7 +140,7 @@ fun CrossSellFloatingBottomSheet(
     dragHandle = {
       CrossSellDragHandle(
         text = state.data?.recommendedCrossSell?.bannerText
-          ?: state.data?.recommendedAddon?.let { it.banner ?: stringResource(Res.string.CROSS_SELL_BANNER_TEXT) },
+          ?: state.data?.recommendedAddon?.let { it.bannerText ?: stringResource(Res.string.CROSS_SELL_BANNER_TEXT) },
         modifier = Modifier
           .padding(horizontal = 16.dp)
           .clip(HedvigTheme.shapes.cornerXLargeTop),
@@ -177,7 +178,7 @@ fun CrossSellBottomSheet(
         CrossSellDragHandle(
           contentPadding = PaddingValues(horizontal = 16.dp),
           text = state.data?.recommendedCrossSell?.bannerText
-            ?: state.data?.recommendedAddon?.banner
+            ?: state.data?.recommendedAddon?.bannerText
             ?: stringResource(Res.string.CROSS_SELL_BANNER_TEXT),
         )
       }
@@ -432,7 +433,7 @@ private fun AddonRecommendationSection(
     }
     Spacer(Modifier.height(if (recommendedAddon.benefits.isEmpty()) 48.dp else 32.dp))
     HedvigButton(
-      text = recommendedAddon.buttonTitle,
+      text = recommendedAddon.buttonText,
       onClick = {
         onButtonClick(recommendedAddon.deepLink)
         dismissSheet()
@@ -609,6 +610,8 @@ fun CrossSellsSection(
   withSubHeader: Boolean = true,
   hasCrossSellDiscounts: Boolean = false,
   title: String? = null,
+  buttonSize: ButtonDefaults.ButtonSize = ButtonDefaults.ButtonSize.Medium,
+  buttonShape: Shape? = null,
 ) {
   Column(modifier) {
     if (withSubHeader) {
@@ -626,6 +629,8 @@ fun CrossSellsSection(
           crossSellImageAsset = crossSell.pillowImage,
           onSheetDismissed = onSheetDismissed,
           buttonText = crossSell.buttonText,
+          buttonSize = buttonSize,
+          buttonShape = buttonShape,
         )
       } else {
         CrossSellItem(
@@ -633,6 +638,8 @@ fun CrossSellsSection(
           onCrossSellClick,
           onSheetDismissed = onSheetDismissed,
           imageLoader = imageLoader,
+          buttonSize = buttonSize,
+          buttonShape = buttonShape,
         )
       }
       if (index != crossSells.lastIndex) {
@@ -678,6 +685,8 @@ private fun CrossSellItem(
   onSheetDismissed: () -> Unit,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
+  buttonSize: ButtonDefaults.ButtonSize = ButtonDefaults.ButtonSize.Medium,
+  buttonShape: Shape? = null,
 ) {
   CrossSellItem(
     crossSellTitle = crossSell.title,
@@ -689,6 +698,8 @@ private fun CrossSellItem(
     imageLoader = imageLoader,
     crossSellImageAsset = crossSell.pillowImage,
     onSheetDismissed = onSheetDismissed,
+    buttonSize = buttonSize,
+    buttonShape = buttonShape,
   )
 }
 
@@ -703,8 +714,48 @@ private fun CrossSellItem(
   imageLoader: ImageLoader,
   onSheetDismissed: () -> Unit,
   modifier: Modifier = Modifier,
+  buttonSize: ButtonDefaults.ButtonSize = ButtonDefaults.ButtonSize.Medium,
+  buttonShape: Shape? = null,
 ) {
-  val description = "$crossSellTitle $crossSellSubtitle"
+  PillowRow(
+    title = crossSellTitle,
+    subtitle = crossSellSubtitle,
+    pillowImage = crossSellImageAsset,
+    buttonText = stringResource(Res.string.cross_sell_get_price),
+    onButtonClick = {
+      onCrossSellClick(storeUrl)
+      onSheetDismissed()
+    },
+    imageLoader = imageLoader,
+    onButtonClickLabel = stringResource(Res.string.TALKBACK_OPEN_EXTERNAL_LINK),
+    isLoading = isLoading,
+    modifier = modifier,
+    buttonSize = buttonSize,
+    buttonShape = buttonShape,
+  )
+}
+
+/**
+ * A pillow icon, a title/subtitle, and a trailing button in one row. The shape shared by the cross-sell
+ * list and the home addons list. [pillowImage] falls back to a generic pillow placeholder when null.
+ */
+@Composable
+fun PillowRow(
+  title: String,
+  subtitle: String,
+  pillowImage: ImageAsset?,
+  buttonText: String,
+  onButtonClick: () -> Unit,
+  imageLoader: ImageLoader,
+  modifier: Modifier = Modifier,
+  onButtonClickLabel: String? = null,
+  buttonStyle: ButtonDefaults.ButtonStyle = ButtonDefaults.ButtonStyle.Secondary,
+  isLoading: Boolean = false,
+  buttonSize: ButtonDefaults.ButtonSize = ButtonDefaults.ButtonSize.Medium,
+  buttonShape: Shape? = null,
+  pillow: (@Composable () -> Unit)? = null,
+) {
+  val description = "$title $subtitle"
   Row(
     modifier = modifier
       .heightIn(64.dp)
@@ -713,17 +764,21 @@ private fun CrossSellItem(
       },
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    AsyncImage(
-      model = crossSellImageAsset?.src,
-      contentDescription = crossSellImageAsset?.description ?: EmptyContentDescription,
-      placeholder = crossSellPainterFallback(),
-      error = crossSellPainterFallback(),
-      fallback = crossSellPainterFallback(),
-      imageLoader = imageLoader,
-      contentScale = ContentScale.Crop,
-      modifier = Modifier
-        .size(48.dp),
-    )
+    if (pillow != null) {
+      pillow()
+    } else {
+      AsyncImage(
+        model = pillowImage?.src,
+        contentDescription = pillowImage?.description ?: EmptyContentDescription,
+        placeholder = crossSellPainterFallback(),
+        error = crossSellPainterFallback(),
+        fallback = crossSellPainterFallback(),
+        imageLoader = imageLoader,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+          .size(48.dp),
+      )
+    }
     Spacer(Modifier.width(16.dp))
     Column(
       modifier = Modifier
@@ -734,7 +789,7 @@ private fun CrossSellItem(
       verticalArrangement = Arrangement.Center,
     ) {
       HedvigText(
-        text = crossSellTitle,
+        text = title,
         style = HedvigTheme.typography.bodySmall,
         modifier = Modifier.hedvigPlaceholder(
           visible = isLoading,
@@ -744,7 +799,7 @@ private fun CrossSellItem(
       )
       Spacer(Modifier.height(4.dp))
       HedvigText(
-        text = crossSellSubtitle,
+        text = subtitle,
         style = HedvigTheme.typography.label,
         color = HedvigTheme.colorScheme.textSecondary,
         modifier = Modifier.hedvigPlaceholder(
@@ -756,14 +811,12 @@ private fun CrossSellItem(
     }
     Spacer(Modifier.width(16.dp))
     HedvigButton(
-      text = stringResource(Res.string.cross_sell_get_price),
-      onClick = {
-        onCrossSellClick(storeUrl)
-        onSheetDismissed()
-      },
-      onClickLabel = stringResource(Res.string.TALKBACK_OPEN_EXTERNAL_LINK),
-      buttonSize = ButtonDefaults.ButtonSize.Medium,
-      buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+      text = buttonText,
+      onClick = onButtonClick,
+      onClickLabel = onButtonClickLabel,
+      buttonSize = buttonSize,
+      buttonStyle = buttonStyle,
+      shape = buttonShape,
       modifier = Modifier.hedvigPlaceholder(
         visible = isLoading,
         shape = HedvigTheme.shapes.cornerSmall,
@@ -786,6 +839,8 @@ private fun CrossSellItemWithDiscounts(
   imageLoader: ImageLoader,
   onSheetDismissed: () -> Unit,
   modifier: Modifier = Modifier,
+  buttonSize: ButtonDefaults.ButtonSize = ButtonDefaults.ButtonSize.Medium,
+  buttonShape: Shape? = null,
 ) {
   val description = "$crossSellTitle $crossSellSubtitle"
   Row(
@@ -844,8 +899,9 @@ private fun CrossSellItemWithDiscounts(
         onSheetDismissed()
       },
       onClickLabel = stringResource(Res.string.TALKBACK_OPEN_EXTERNAL_LINK),
-      buttonSize = ButtonDefaults.ButtonSize.Medium,
+      buttonSize = buttonSize,
       buttonStyle = ButtonDefaults.ButtonStyle.PrimaryAlt,
+      shape = buttonShape,
       modifier = Modifier.hedvigPlaceholder(
         visible = isLoading,
         shape = HedvigTheme.shapes.cornerSmall,
@@ -1081,10 +1137,10 @@ private fun PreviewRecommendedAddon(
         recommendedAddon = RecommendedAddon(
           id = "ifsf",
           title = "Addon title",
-          buttonTitle = "Check the addon",
+          buttonText = "Check the addon",
           description = "Best addon in the world",
           deepLink = "deep",
-          banner = "Add extra safety when traveling",
+          bannerText = "Add extra safety when traveling",
           benefits = listOf(
             "Travel up to 60 days in a row",
             "Delayed bags and flights covered",

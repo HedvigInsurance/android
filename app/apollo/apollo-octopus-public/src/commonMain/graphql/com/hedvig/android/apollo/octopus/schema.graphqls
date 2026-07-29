@@ -1745,6 +1745,10 @@ input CrossSellInput {
   The contract that was changed in the flow. When set, enables addon recommendations for that contract.
   """
   contractId: ID
+  """
+  The claim this flow relates to. Only allowed when flowSource is CLOSED_CLAIM.
+  """
+  claimId: UUID
 }
 enum CrossSellSource {
   HOME
@@ -3796,7 +3800,7 @@ type Mutation {
   mutation, as the old one uses an unsupported resolver design (nested/namespaced mutations).
   """
   insurelyInitiateIframeDataCollection(input: InsurelyInitiateIframeDataCollectionInput!): InsurelyInitiateIframeDataCollectionOutput!
-  memberUpdatePhoneNumber(input: MemberUpdatePhoneNumberInput!): MemberMutationOutput! @deprecated(reason: "Use memberUpdateContactInfo instead")
+  memberUpdatePhoneNumber(input: MemberUpdatePhoneNumberInput!): MemberMutationOutput!
   memberUpdateEmail(input: MemberUpdateEmailInput!): MemberMutationOutput! @deprecated(reason: "Use memberUpdateContactInfo instead")
   memberUpdateLanguage(input: MemberUpdateLanguageInput!): MemberMutationOutput!
   memberDeletionRequest: UserError
@@ -4880,7 +4884,7 @@ type RecommendedAddonCrossSell {
   id: ID!
   title: String!
   description: String!
-  buttonTitle: String!
+  buttonText: String!
   """
   App deep link to the addon flow for this contract
   """
@@ -4890,7 +4894,7 @@ type RecommendedAddonCrossSell {
   """
   Optional banner text shown above the card; clients fall back to a default when null
   """
-  banner: String
+  bannerText: String
   """
   Benefit rows shown as a checkmark list; empty when none
   """
@@ -5036,6 +5040,11 @@ input ShopSessionAttributionInput {
   """
   experiments: [ShopSessionExperimentInput!]
   trackingData: JSON
+  """
+  The Vertex recommendation instance that led the member here (cross-sell arm only).
+  Joins cross-sell funnel events to one scoring computation.
+  """
+  recommendationInstanceId: String
 }
 input ShopSessionCartCampaignRedeemInput {
   shopSessionId: UUID!
@@ -5617,7 +5626,7 @@ messages.
 The errors are usually translated through the `Hedvig-Language` header.
 """
 type UserError {
-  message: String
+  message: String!
 }
 enum UserFlow {
   """

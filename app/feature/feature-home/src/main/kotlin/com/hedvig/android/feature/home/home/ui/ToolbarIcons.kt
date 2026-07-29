@@ -3,6 +3,7 @@ package com.hedvig.android.feature.home.home.ui
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -48,7 +50,8 @@ fun ToolbarChatIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
       .size(40.dp)
       .shadow(4.dp, CircleShape)
       .clip(CircleShape)
-      .clickable(onClick = onClick),
+      .background(HedvigTheme.colorScheme.surfacePrimaryTransparent)
+      .clickable(role = Role.Button, onClick = onClick),
   )
 }
 
@@ -61,7 +64,8 @@ fun ToolbarFirstVetIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
       .size(40.dp)
       .shadow(4.dp, CircleShape)
       .clip(CircleShape)
-      .clickable(onClick = onClick),
+      .background(HedvigTheme.colorScheme.surfacePrimary)
+      .clickable(role = Role.Button, onClick = onClick),
   )
 }
 
@@ -76,13 +80,14 @@ fun ToolbarCrossSellsIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
     imageVector = HedvigIcons.ColoredCampaign,
     contentDescription = stringResource(Res.string.insurance_tab_cross_sells_title),
     modifier = modifier
+      // Spin the whole circular icon as one unit (outermost transform), so the rotation stays within
+      // the circular clip and shadow.
+      .graphicsLayer { rotationZ = fullRotation }
       .size(40.dp)
       .shadow(4.dp, CircleShape)
       .clip(CircleShape)
-      .clickable(onClick = onClick)
-      .graphicsLayer {
-        rotationZ = fullRotation
-      },
+      .background(HedvigTheme.colorScheme.surfacePrimary)
+      .clickable(role = Role.Button, onClick = onClick),
   )
 }
 
@@ -97,7 +102,7 @@ fun ToolbarClaimChatIcon(onClick: () -> Unit, modifier: Modifier = Modifier, isD
         .size(40.dp)
         .shadow(4.dp, CircleShape)
         .clip(CircleShape)
-        .clickable(onClick = onClick),
+        .clickable(role = Role.Button, onClick = onClick),
     )
     if (isDev) {
       HedvigText(

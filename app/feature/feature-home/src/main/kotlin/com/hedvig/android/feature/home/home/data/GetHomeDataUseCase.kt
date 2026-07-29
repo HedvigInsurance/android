@@ -152,10 +152,10 @@ internal class GetHomeDataUseCaseImpl(
               RecommendedAddon(
                 id = it.id,
                 title = it.title,
-                buttonTitle = it.buttonTitle,
+                buttonText = it.buttonText,
                 description = it.description,
                 deepLink = it.deepLink,
-                banner = it.banner,
+                bannerText = it.bannerText,
                 benefits = it.benefits,
                 pillowImageSmall = it.pillowImageSmall.src,
                 pillowImageLarge = it.pillowImageLarge.src,
@@ -168,15 +168,21 @@ internal class GetHomeDataUseCaseImpl(
             )
             val showChatIcon = shouldShowChatButton(
               isInboxEnabledFromKillSwitch = inboxAlwaysAvailable,
-              hasActiveConversations = anyActiveConversations.bind(),
+              // Auxiliary signal: if the active-conversation lookup fails, default to false rather than failing the screen.
+              hasActiveConversations = anyActiveConversations.getOrNull() ?: false,
             )
-            val unreadMessageCountData = unreadMessageCountResult.bind()
-            val hasUnseenChatMessages = unreadMessageCountData
-              .currentMember
-              .conversations
-              .map { it.unreadMessageCount }
-              .plus(unreadMessageCountData.currentMember.legacyConversation?.unreadMessageCount)
-              .any { it != null && it > 0 }
+            // Auxiliary signal: a failed or transient unread-count poll must not blank the whole screen.
+            val unreadMessageCountData = unreadMessageCountResult.getOrNull()
+            val hasUnseenChatMessages = if (unreadMessageCountData == null) {
+              false
+            } else {
+              unreadMessageCountData
+                .currentMember
+                .conversations
+                .map { it.unreadMessageCount }
+                .plus(unreadMessageCountData.currentMember.legacyConversation?.unreadMessageCount)
+                .any { it != null && it > 0 }
+            }
             val firstVetActions = homeQueryData.currentMember.memberActions
               ?.firstVetAction?.sections?.map { section ->
                 FirstVetSection(
@@ -196,8 +202,9 @@ internal class GetHomeDataUseCaseImpl(
               showHelpCenter = true,
               firstVetSections = firstVetActions,
               crossSells = crossSells,
-              travelBannerInfo = travelBannerInfo?.firstOrNull(),
+              addonBannerInfos = travelBannerInfo.orEmpty(),
               showChatIcon = showChatIcon,
+              firstName = homeQueryData.currentMember.firstName,
               draftClaim = homeQueryData.currentMember.resumableClaimIntent?.let { resumableClaimIntent ->
                 HomeData.DraftClaim(
                   id = resumableClaimIntent.id,
@@ -313,7 +320,9 @@ data class HomeData(
   val showHelpCenter: Boolean,
   val firstVetSections: List<FirstVetSection>,
   val crossSells: CrossSellSheetData,
-  val travelBannerInfo: AddonBannerInfo?,
+  val addonBannerInfos: List<AddonBannerInfo>,
+  // Always populated from the backend; defaulted only so test/demo construction sites stay terse.
+  val firstName: String = "",
   val draftClaim: DraftClaim?,
 ) {
   @Immutable

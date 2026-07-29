@@ -1,19 +1,11 @@
 package com.hedvig.android.lokalise.task
 
 import com.hedvig.android.lokalise.config.DownloadConfig
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
 import java.io.File
-import kotlinx.coroutines.runBlocking
 import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
 import javax.inject.Inject
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.add
@@ -89,18 +81,15 @@ abstract class DownloadStringsTask @Inject constructor(
   }
 
   private fun fetchBucketUrl(): String {
-    return runBlocking {
-      val httpClient = HttpClient(CIO)
-      httpClient.use { client ->
-        val processId = initiateAsyncDownloadAndReturnProcessId(client)
-        val amazonDownloadUrl = pollForDownloadUrl(client, processId)
-        logger.debug("{} amazonBucketUrl:{}", tag, amazonDownloadUrl)
-        amazonDownloadUrl
-      }
+    return HttpClient.newHttpClient().use { client ->
+      val processId = initiateAsyncDownloadAndReturnProcessId(client)
+      val amazonDownloadUrl = pollForDownloadUrl(client, processId)
+      logger.debug("{} amazonBucketUrl:{}", tag, amazonDownloadUrl)
+      amazonDownloadUrl
     }
   }
 
-  private suspend fun initiateAsyncDownloadAndReturnProcessId(httpClient: HttpClient): String {
+  private fun initiateAsyncDownloadAndReturnProcessId(httpClient: HttpClient): String {
     val requestBody = buildJsonObject {
       put("format", "xml")
       put("export_sort", downloadConfig.get().stringsOrder.value)
@@ -116,18 +105,19 @@ abstract class DownloadStringsTask @Inject constructor(
       )
     }
     logger.debug("{} asyncDownloadRequest body:{}", tag, requestBody)
-    val response =
-      httpClient.post("https://api.lokalise.com/api2/projects/${lokaliseProjectId.get()}/files/async-download") {
-        commonLokaliseHeaders()
-        setBody(requestBody.toString())
-      }.bodyAsText()
+    val request = HttpRequest.newBuilder()
+      .uri(URI.create("https://api.lokalise.com/api2/projects/${lokaliseProjectId.get()}/files/async-download"))
+      .commonLokaliseHeaders()
+      .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
+      .build()
+    val response = httpClient.send(request, HttpResponse.BodyHandlers.ofString()).body()
     logger.debug("{} post response:{}", tag, response)
     val processId = Json.parseToJsonElement(response).jsonObject["process_id"]?.jsonPrimitive?.content
       ?: error("Lokalise responded with a null processId")
     return processId
   }
 
-  private suspend fun pollForDownloadUrl(httpClient: HttpClient, processId: String): String {
+  private fun pollForDownloadUrl(httpClient: HttpClient, processId: String): String {
     var iteration = 0
     while (true) {
       iteration++
@@ -138,9 +128,12 @@ abstract class DownloadStringsTask @Inject constructor(
       Thread.sleep(3000L)
       val url = "https://api.lokalise.com/api2/projects/${lokaliseProjectId.get()}/processes/$processId"
       logger.debug("{} getProcessStatusRequest url:{}", tag, url)
-      val response = httpClient.get(url) {
-        commonLokaliseHeaders()
-      }.bodyAsText()
+      val request = HttpRequest.newBuilder()
+        .uri(URI.create(url))
+        .commonLokaliseHeaders()
+        .GET()
+        .build()
+      val response = httpClient.send(request, HttpResponse.BodyHandlers.ofString()).body()
       logger.debug("{} get response:{}", tag, response)
       val process = Json
         .parseToJsonElement(response)
@@ -169,9 +162,9 @@ abstract class DownloadStringsTask @Inject constructor(
     }
   }
 
-  private fun HttpRequestBuilder.commonLokaliseHeaders() {
-    header("x-api-token", lokaliseToken.get())
-    contentType(ContentType.Application.Json)
+  private fun HttpRequest.Builder.commonLokaliseHeaders(): HttpRequest.Builder {
+    return header("x-api-token", lokaliseToken.get())
+      .header("Content-Type", "application/json")
   }
 
   private fun ConfigurableFileCollection.editTranslations(

@@ -49,10 +49,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.isTraversalGroup
-import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -85,28 +82,7 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.feature.claim.chat.ClaimChatEvent
-import com.hedvig.feature.claim.chat.ClaimChatEvent.AddToShownAnimations
-import com.hedvig.feature.claim.chat.ClaimChatEvent.AudioRecording.RedoRecording
-import com.hedvig.feature.claim.chat.ClaimChatEvent.AudioRecording.StartRecording
-import com.hedvig.feature.claim.chat.ClaimChatEvent.AudioRecording.StopRecording
-import com.hedvig.feature.claim.chat.ClaimChatEvent.AudioRecording.SubmitAudioFile
-import com.hedvig.feature.claim.chat.ClaimChatEvent.AudioRecording.SubmitTextInput
-import com.hedvig.feature.claim.chat.ClaimChatEvent.AudioRecording.SwitchToAudioRecording
-import com.hedvig.feature.claim.chat.ClaimChatEvent.AudioRecording.SwitchToFreeText
-import com.hedvig.feature.claim.chat.ClaimChatEvent.CloseFreeChatOverlay
-import com.hedvig.feature.claim.chat.ClaimChatEvent.DismissConfirmEditDialog
-import com.hedvig.feature.claim.chat.ClaimChatEvent.DismissErrorDialog
-import com.hedvig.feature.claim.chat.ClaimChatEvent.FinishTaskAnimation
-import com.hedvig.feature.claim.chat.ClaimChatEvent.HandledDeflectNavigation
-import com.hedvig.feature.claim.chat.ClaimChatEvent.HandledOutcomeNavigation
-import com.hedvig.feature.claim.chat.ClaimChatEvent.OpenFreeTextOverlay
-import com.hedvig.feature.claim.chat.ClaimChatEvent.Regret
-import com.hedvig.feature.claim.chat.ClaimChatEvent.RetryInitializing
-import com.hedvig.feature.claim.chat.ClaimChatEvent.RetrySubmittingTaskStep
-import com.hedvig.feature.claim.chat.ClaimChatEvent.Skip
-import com.hedvig.feature.claim.chat.ClaimChatEvent.SubmitClaim
 import com.hedvig.feature.claim.chat.ClaimChatEvent.SubmitInformation
-import com.hedvig.feature.claim.chat.ClaimChatEvent.UpdateFreeText
 import com.hedvig.feature.claim.chat.ClaimChatUiState
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
 import com.hedvig.feature.claim.chat.ClaimChatViewModelFactory
@@ -179,11 +155,11 @@ internal fun ClaimChatDestination(
       openAppSettings = openAppSettings,
       onNavigateToImageViewer = onNavigateToImageViewer,
       navigateToClaimOutcome = {
-        claimChatViewModel.emit(HandledOutcomeNavigation)
+        claimChatViewModel.emit(ClaimChatEvent.HandledOutcomeNavigation)
         navigateToClaimOutcome(it)
       },
       navigateToDeflect = { stepId, deflect ->
-        claimChatViewModel.emit(HandledDeflectNavigation(stepId))
+        claimChatViewModel.emit(ClaimChatEvent.HandledDeflectNavigation(stepId))
         navigateToDeflect(deflect)
       },
       appPackageId = appPackageId,
@@ -213,7 +189,7 @@ internal fun ClaimChatScreenContent(
     when (uiState) {
       ClaimChatUiState.FailedToStart -> {
         HedvigErrorSection(
-          { claimChatViewModel.emit(RetryInitializing) },
+          { claimChatViewModel.emit(ClaimChatEvent.RetryInitializing) },
         )
       }
 
@@ -266,11 +242,11 @@ private fun ClaimChatScreen(
     freeTextHint = stringResource(Res.string.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER),
     freeTextTitle = stringResource(Res.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
     freeTextOnCancelClick = {
-      onEvent(CloseFreeChatOverlay)
+      onEvent(ClaimChatEvent.CloseFreeChatOverlay)
     },
     freeTextOnSaveClick = { feedback ->
-      onEvent(UpdateFreeText(feedback))
-      onEvent(CloseFreeChatOverlay)
+      onEvent(ClaimChatEvent.UpdateFreeText(feedback))
+      onEvent(ClaimChatEvent.CloseFreeChatOverlay)
     },
     shouldShowOverlay = uiState.showFreeTextOverlay != null,
     overlaidContent = {
@@ -326,7 +302,7 @@ private fun ClaimChatScreenContent(
       title = stringResource(Res.string.general_error),
       message = stringResource(messageRes),
       onDismiss = {
-        onEvent(DismissErrorDialog)
+        onEvent(ClaimChatEvent.DismissErrorDialog)
       },
       buttonText = when (uiState.errorSubmittingStep) {
         ClaimChatErrorMessage.NeedsUpdate -> stringResource(Res.string.EMBARK_UPDATE_APP_BUTTON)
@@ -345,10 +321,10 @@ private fun ClaimChatScreenContent(
       confirmButtonLabel = stringResource(Res.string.CLAIM_CHAT_EDIT_ANSWER_BUTTON),
       dismissButtonLabel = stringResource(Res.string.general_cancel_button),
       onDismissRequest = {
-        onEvent(DismissConfirmEditDialog)
+        onEvent(ClaimChatEvent.DismissConfirmEditDialog)
       },
       onConfirmClick = {
-        onEvent(Regret(uiState.showConfirmEditDialogForStep))
+        onEvent(ClaimChatEvent.Regret(uiState.showConfirmEditDialogForStep))
       },
     )
   }
@@ -629,7 +605,7 @@ private fun StepContentSection(
     if (showBottomContent && isAnimationInProcess) {
       delay(bottomContentAnimationDuration.toLong())
       isAnimationInProcess = false
-      onEvent(AddToShownAnimations(stepItem.id))
+      onEvent(ClaimChatEvent.AddToShownAnimations(stepItem.id))
     }
   }
 
@@ -644,7 +620,7 @@ private fun StepContentSection(
         isAnimationComplete = !isAnimationInProcess,
         onAnimationFinished = {
           showBottomContent = true
-          onEvent(FinishTaskAnimation)
+          onEvent(ClaimChatEvent.FinishTaskAnimation)
         },
         onNavigateToImageViewer = onNavigateToImageViewer,
         imageLoader = imageLoader,
@@ -836,31 +812,31 @@ private fun StepBottomContent(
           item = stepItem,
           stepContent = stepItem.stepContent,
           onShowFreeText = {
-            onEvent(SwitchToFreeText(stepItem.id))
+            onEvent(ClaimChatEvent.AudioRecording.SwitchToFreeText(stepItem.id))
           },
           onSwitchToAudioRecording = {
-            onEvent(SwitchToAudioRecording(stepItem.id))
+            onEvent(ClaimChatEvent.AudioRecording.SwitchToAudioRecording(stepItem.id))
           },
           onLaunchFullScreenEditText = { restrictions ->
-            onEvent(OpenFreeTextOverlay(restrictions))
+            onEvent(ClaimChatEvent.OpenFreeTextOverlay(restrictions))
           },
           startRecording = {
-            onEvent(StartRecording(stepItem.id))
+            onEvent(ClaimChatEvent.AudioRecording.StartRecording(stepItem.id))
           },
           stopRecording = {
-            onEvent(StopRecording(stepItem.id))
+            onEvent(ClaimChatEvent.AudioRecording.StopRecording(stepItem.id))
           },
           redoRecording = {
-            onEvent(RedoRecording(stepItem.id))
+            onEvent(ClaimChatEvent.AudioRecording.RedoRecording(stepItem.id))
           },
           submitFreeText = {
-            onEvent(SubmitTextInput(stepItem.id))
+            onEvent(ClaimChatEvent.AudioRecording.SubmitTextInput(stepItem.id))
           },
           submitAudioFile = {
-            onEvent(SubmitAudioFile(stepItem.id))
+            onEvent(ClaimChatEvent.AudioRecording.SubmitAudioFile(stepItem.id))
           },
           onSkip = {
-            onEvent(Skip(stepItem.id))
+            onEvent(ClaimChatEvent.Skip(stepItem.id))
           },
           isCurrentStep = isCurrentStep,
           clock = Clock.System,
@@ -881,7 +857,7 @@ private fun StepBottomContent(
           currentContinueButtonLoading = currentContinueButtonLoading,
           canSkip = stepItem.stepContent.isSkippable,
           onSkip = {
-            onEvent(Skip(stepItem.id))
+            onEvent(ClaimChatEvent.Skip(stepItem.id))
           },
           skipButtonLoading = currentSkipButtonLoading,
           stepContent = stepItem.stepContent,
@@ -923,7 +899,7 @@ private fun StepBottomContent(
       is StepContent.Summary -> {
         ChatClaimSummaryBottomContent(
           onSubmit = {
-            onEvent(SubmitClaim(stepItem.id))
+            onEvent(ClaimChatEvent.SubmitClaim(stepItem.id))
           },
           isCurrentStep = isCurrentStep,
           continueButtonLoading = currentContinueButtonLoading,
@@ -944,7 +920,7 @@ private fun StepBottomContent(
         TaskStepBottomContent(
           stepItem.stepContent,
           onRetrySubmittingTask = {
-            onEvent(RetrySubmittingTaskStep(stepItem.id))
+            onEvent(ClaimChatEvent.RetrySubmittingTaskStep(stepItem.id))
           },
           modifier = Modifier.fillMaxWidth(),
         )

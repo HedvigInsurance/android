@@ -100,6 +100,16 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   val navigateToInbox: () -> Unit = { backstack.add(InboxKey) }
   val navigateToNewConversation: () -> Unit = { backstack.add(ChatKey(Uuid.randomUUID().toString())) }
   val navigateToConversation: (String) -> Unit = { conversationId -> backstack.add(ChatKey(conversationId)) }
+  val navigateToTravelCertificate: () -> Unit = { backstack.add(TravelCertificateKey) }
+  val navigateToAddonPurchaseFlow: (List<String>) -> Unit = { ids ->
+    backstack.add(
+      AddonPurchaseKey(
+        insuranceIds = ids,
+        preselectedAddonDisplayName = null,
+        source = AddonBannerSource.INSURANCES_TAB,
+      ),
+    )
+  }
   val navigateToMovingFlow: () -> Unit = { backstack.add(SelectContractForMovingKey) }
   val onNavigateToImageViewer: (String, String) -> Unit = { imageUrl, cacheKey ->
     backstack.add(ImageViewerKey(imageUrl, cacheKey))
@@ -119,6 +129,8 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     navigateToInbox = navigateToInbox,
     navigateToConnectPayment = navigateToConnectPayment,
     navigateToPayoutAccount = navigateToPayoutAccount,
+    navigateToTravelCertificate = navigateToTravelCertificate,
+    navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
   )
   addInsuranceEntries(
     backstack = backstack,
@@ -204,6 +216,8 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
   navigateToInbox: () -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
+  navigateToTravelCertificate: () -> Unit,
+  navigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
   homeEntries(
     nestedEntries = {
@@ -230,6 +244,7 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
       backstack.add(CoInsuredAddInfoKey(contractId, type))
     },
     navigateToHelpCenter = { backstack.add(HelpCenterKey) },
+    navigateToMovingFlow = { backstack.add(SelectContractForMovingKey) },
     navigateToClaimChat = { resumeClaim ->
       backstack.add(
         ClaimChatKey(
@@ -244,6 +259,8 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
     openUrl = openUrl,
     openCrossSellUrl = openCrossSellUrl,
     imageLoader = imageLoader,
+    navigateToTravelCertificate = navigateToTravelCertificate,
+    navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
   )
 }
 
