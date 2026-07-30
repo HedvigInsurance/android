@@ -85,6 +85,7 @@ internal fun TerminationRedirectionDestination(
     Spacer(Modifier.height(4.dp))
     HedvigMarkdownText(
       redirection.description,
+      style = HedvigTheme.typography.bodySmall.copy(color = HedvigTheme.colorScheme.textSecondary),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f).heightIn(min = 16.dp))

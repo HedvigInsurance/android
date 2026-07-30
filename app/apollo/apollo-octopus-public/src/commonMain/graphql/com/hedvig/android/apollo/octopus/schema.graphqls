@@ -4835,7 +4835,7 @@ type Query {
   Cost for selected configuration of removed addon offer
   """
   addonRemoveOfferCost(contractId: ID!, addonIds: [ID!]!): ItemCost!
-  terminationSurvey(contractId: UUID!, redirectionEnabled: Boolean! = false): TerminationFlowSurvey!
+  terminationSurvey(contractId: UUID!, " Set to true when the client supports rendering redirections. When false, redirections are kept as plain sub options " redirectionEnabled: Boolean! = false): TerminationFlowSurvey!
   """
   Call this to get the cost of an addon offer for selected addon(s).
   """
@@ -5363,17 +5363,41 @@ type TerminationFlowSurveyOption {
   subOptions: [TerminationFlowSurveyOption!]!
   feedbackRequired: Boolean!
   suggestion: TerminationFlowSurveyOptionSuggestion
+  """
+   Redirection to an alternative flow, replacing the sub option it was derived from. Only set when the query is sent with redirectionEnabled: true 
+  """
   redirection: TerminationFlowSurveyOptionRedirection
 }
+"""
+ Offers the member an alternative to termination by redirecting to another flow, e.g. updating the address 
+"""
 type TerminationFlowSurveyOptionRedirection {
+  """
+   Heading of the redirection 
+  """
   title: String!
+  """
+   Body text explaining what the redirection offers 
+  """
   description: String!
+  """
+   Determines which flow the member is redirected to 
+  """
   type: TerminationFlowSurveyOptionRedirectionType!
+  """
+   Text for the button that starts the redirection 
+  """
   actionText: String!
+  """
+   Optional illustration to show with the redirection 
+  """
   image: TerminationFlowSurveyOptionRedirectionImage
 }
 type TerminationFlowSurveyOptionRedirectionImage {
   url: String!
+  """
+   Text to render on top of the image 
+  """
   overlayText: String
 }
 enum TerminationFlowSurveyOptionRedirectionType {
