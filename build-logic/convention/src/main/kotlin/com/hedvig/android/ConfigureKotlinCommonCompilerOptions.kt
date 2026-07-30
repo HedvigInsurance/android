@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 internal fun KotlinCommonCompilerOptions.configureKotlinCompilerOptions() {
   when (this) {
     is KotlinJvmCompilerOptions -> {
-      configureCommonKotlinCompilerOptions(listOf("-Xjvm-default=all"))
+      configureCommonKotlinCompilerOptions(listOf("-jvm-default=no-compatibility"))
       jvmTarget.set(JvmTarget.JVM_21)
     }
 
