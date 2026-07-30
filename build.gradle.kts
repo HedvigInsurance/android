@@ -13,7 +13,6 @@ plugins {
    alias(libs.plugins.doctor)
   alias(libs.plugins.googleServices) apply false
   alias(libs.plugins.kmpNativeCoroutines) apply false
-  alias(libs.plugins.kotlin) apply false
   alias(libs.plugins.kotlinJvm) apply false
   alias(libs.plugins.kotlinMultiplatform) apply false
   alias(libs.plugins.kotlinter) apply false
