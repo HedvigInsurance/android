@@ -121,7 +121,7 @@ internal class ExhaustiveBackstackSerializationTest {
 
   private fun invokeDefaultProviderMethod(interfaceClass: Class<*>, provideMethod: Method): SerializersModule {
     // The providers are Kotlin interfaces whose `provide*` method is a real JVM default method
-    // (the project compiles with -Xjvm-default). Invoke it via an `invokespecial` MethodHandle so we
+    // (the project compiles with -jvm-default). Invoke it via an `invokespecial` MethodHandle so we
     // don't depend on java.lang.reflect.InvocationHandler.invokeDefault, which the `:app` unit-test
     // classpath resolves against Android's stubbed reflection types that lack it.
     val proxy = Proxy.newProxyInstance(

@@ -762,8 +762,9 @@ private fun StepTopContent(
         Spacer(Modifier.height(16.dp))
         if (stepItem.stepContent is StepContent.Summary) {
           ChatClaimSummaryTopContent(
+            keyDetails = stepItem.stepContent.keyDetails.ifEmpty { stepItem.stepContent.items },
+            answers = stepItem.stepContent.answers,
             recordingUrls = stepItem.stepContent.audioRecordings.map { it.url },
-            displayItems = stepItem.stepContent.items.map { (title, value) -> title to value },
             onNavigateToImageViewer = onNavigateToImageViewer,
             imageLoader = imageLoader,
             fileUploads = stepItem.stepContent.fileUploads.map {
@@ -775,7 +776,6 @@ private fun StepTopContent(
                 id = it.url,
               )
             },
-            freeTexts = stepItem.stepContent.freeTexts,
           )
         }
       }

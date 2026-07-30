@@ -15,7 +15,6 @@ class ApplicationConventionPlugin : Plugin<Project> {
       with(pluginManager) {
         apply(libs.plugins.androidApplication.get().pluginId)
         apply(libs.plugins.cacheFix.get().pluginId)
-        apply(libs.plugins.kotlin.get().pluginId)
       }
 
       extensions.configure<ApplicationExtension> {
