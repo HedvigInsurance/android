@@ -30,7 +30,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.ChangeTierDeductibleCommitIntentMutation
-import octopus.type.buildChangeTierDeductibleCommitIntentOutput
+import octopus.builder.Data
+import octopus.builder.buildChangeTierDeductibleCommitIntentOutput
 import oldTestQuote
 import org.junit.Rule
 import org.junit.Test

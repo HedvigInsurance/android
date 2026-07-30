@@ -13,8 +13,9 @@ import com.hedvig.android.feature.help.center.data.MemberAction
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.test.runTest
 import octopus.MemberActionsQuery
-import octopus.type.buildMember
-import octopus.type.buildMemberActions
+import octopus.builder.Data
+import octopus.builder.buildMember
+import octopus.builder.buildMemberActions
 import org.junit.Rule
 import org.junit.Test
 

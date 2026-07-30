@@ -19,11 +19,12 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import octopus.GetUpcomingRenewalReminderQuery
+import octopus.builder.Data
+import octopus.builder.buildAgreement
+import octopus.builder.buildContract
+import octopus.builder.buildMember
+import octopus.builder.buildProductVariant
 import octopus.type.AgreementCreationCause
-import octopus.type.buildAgreement
-import octopus.type.buildContract
-import octopus.type.buildMember
-import octopus.type.buildProductVariant
 import org.junit.Rule
 import org.junit.Test
 
