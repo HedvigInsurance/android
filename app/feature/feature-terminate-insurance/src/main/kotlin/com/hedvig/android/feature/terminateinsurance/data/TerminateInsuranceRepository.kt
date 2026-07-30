@@ -11,10 +11,13 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
+import kotlinx.coroutines.flow.first
 import kotlinx.datetime.LocalDate
 import octopus.DeleteContractMutation
 import octopus.TerminateContractMutation
@@ -47,11 +50,13 @@ internal interface TerminateInsuranceRepository {
 @Inject
 internal class TerminateInsuranceRepositoryImpl(
   private val apolloClient: ApolloClient,
+  private val featureManager: FeatureManager,
 ) : TerminateInsuranceRepository {
   override suspend fun getTerminationSurvey(contractId: String): Either<ErrorMessage, TerminationSurveyData> {
     return either {
+      val redirectionEnabled = !featureManager.isFeatureEnabled(Feature.DISABLE_TERMINATION_REDIRECTION).first()
       val result = apolloClient
-        .query(TerminationSurveyQuery(contractId))
+        .query(TerminationSurveyQuery(contractId = contractId, redirectionEnabled = redirectionEnabled))
         .fetchPolicy(FetchPolicy.NetworkOnly)
         .safeExecute(::ErrorMessage)
         .bind()
