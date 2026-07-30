@@ -7,12 +7,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
 import coil3.ImageLoader
@@ -29,6 +33,7 @@ import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
+import com.hedvig.android.design.system.hedvig.placeholder.crossSellPainterFallback
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.terminateinsurance.data.RedirectionImage
 import com.hedvig.android.feature.terminateinsurance.data.RedirectionType
@@ -55,13 +60,23 @@ internal fun TerminationRedirectionDestination(
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
-    if (redirection.image != null) {
-      RedirectionImageBlock(
-        image = redirection.image,
-        imageLoader = imageLoader,
-        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
-      )
-      Spacer(Modifier.height(16.dp))
+    val image = redirection.image
+    if (image != null) {
+      var imageFailedToLoad by remember(image.url) { mutableStateOf(false) }
+      // Reserve the image space while loading and once loaded, so the common success path never
+      // shifts. Only a genuine load failure collapses the block, leaving a clean text-only screen
+      // instead of an empty box. In @Preview the fake loader always errors, so keep the block
+      // visible there to render the reserved area.
+      val hideOnFailure = imageFailedToLoad && !LocalInspectionMode.current
+      if (!hideOnFailure) {
+        RedirectionImageBlock(
+          image = image,
+          imageLoader = imageLoader,
+          onError = { imageFailedToLoad = true },
+          modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+        )
+        Spacer(Modifier.height(16.dp))
+      }
     }
     HedvigText(
       redirection.title,
@@ -98,17 +113,26 @@ internal fun TerminationRedirectionDestination(
 }
 
 @Composable
-private fun RedirectionImageBlock(image: RedirectionImage, imageLoader: ImageLoader, modifier: Modifier = Modifier) {
+private fun RedirectionImageBlock(
+  image: RedirectionImage,
+  imageLoader: ImageLoader,
+  onError: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
   Box(modifier) {
+    val placeholder = crossSellPainterFallback(shape = HedvigTheme.shapes.cornerXLarge)
     AsyncImage(
       model = image.url,
       contentDescription = EmptyContentDescription,
       imageLoader = imageLoader,
+      placeholder = placeholder,
+      error = placeholder,
+      onError = { onError() },
       contentScale = ContentScale.Crop,
       modifier = Modifier
         .fillMaxWidth()
         .aspectRatio(16f / 9f)
-        .clip(RoundedCornerShape(16.dp)),
+        .clip(HedvigTheme.shapes.cornerXLarge),
     )
     if (image.overlayText != null) {
       HighlightLabel(
