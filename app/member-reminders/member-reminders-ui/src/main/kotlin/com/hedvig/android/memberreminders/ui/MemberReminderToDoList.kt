@@ -30,7 +30,17 @@ import com.hedvig.android.design.system.hedvig.icon.InfoOutline
 import com.hedvig.android.design.system.hedvig.icon.ProfileOutline
 import com.hedvig.android.design.system.hedvig.icon.WarningOutline
 import com.hedvig.android.memberreminders.MemberReminder
+import hedvig.resources.HOME_TODO_ADD_COINSURED_TITLE
+import hedvig.resources.HOME_TODO_MISSING_CHIP_ID_TITLE
+import hedvig.resources.HOME_TODO_MISSING_PAYMENT_METHOD_TITLE
+import hedvig.resources.HOME_TODO_MISSING_PAYOUT_METHOD_TITLE
+import hedvig.resources.HOME_TODO_PAYMENT_OVERDUE_TITLE
+import hedvig.resources.HOME_TODO_REQUIRES_ACTION_SUBTITLE
+import hedvig.resources.HOME_TODO_UPDATE_CONTACT_DETAILS_TITLE
+import hedvig.resources.Res
 import kotlinx.datetime.LocalDate
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Renders the "To do" list of action-required member reminders as a grouped card of tappable rows,
@@ -111,7 +121,7 @@ private fun MemberReminder.homeToDoOrder(): Int? = when (this) {
 
 private data class ToDoRowData(
   val icon: ImageVector,
-  val title: String,
+  val title: StringResource,
   val onClick: () -> Unit,
 )
 
@@ -125,43 +135,37 @@ private fun MemberReminder.toToDoRowOrNull(
 ): ToDoRowData? = when (this) {
   is MemberReminder.PaymentReminder.TerminationDueToMissedPayments -> ToDoRowData(
     icon = HedvigIcons.WarningOutline,
-    // TODO: Add "Your payment is overdue" / "Din betalning är försenad" to Lokalise
-    title = "Your payment is overdue",
+    title = Res.string.HOME_TODO_PAYMENT_OVERDUE_TITLE,
     onClick = onNavigateToNewConversation,
   )
 
   is MemberReminder.PaymentReminder.ConnectPayment -> ToDoRowData(
     icon = HedvigIcons.Card,
-    // TODO: Add "Missing payment method" / "Betalningsmetod saknas" to Lokalise
-    title = "Missing payment method",
+    title = Res.string.HOME_TODO_MISSING_PAYMENT_METHOD_TITLE,
     onClick = navigateToConnectPayment,
   )
 
   is MemberReminder.PaymentReminder.ConnectPayout -> ToDoRowData(
     icon = HedvigIcons.Card,
-    // TODO: Add "Missing payout method" / "Utbetalningsmetod saknas" to Lokalise
-    title = "Missing payout method",
+    title = Res.string.HOME_TODO_MISSING_PAYOUT_METHOD_TITLE,
     onClick = navigateToConnectPayout,
   )
 
   is MemberReminder.MissingChipId -> ToDoRowData(
     icon = HedvigIcons.ID,
-    // TODO: Add "Missing pet chip-ID" / "Chip-ID för husdjur saknas" to Lokalise
-    title = "Missing pet chip-ID",
+    title = Res.string.HOME_TODO_MISSING_CHIP_ID_TITLE,
     onClick = navigateToChipId,
   )
 
   is MemberReminder.CoInsuredInfo -> ToDoRowData(
     icon = HedvigIcons.ProfileOutline,
-    // TODO: Add "Add co-insured" / "Lägg till medförsäkrad" to Lokalise
-    title = "Add co-insured",
+    title = Res.string.HOME_TODO_ADD_COINSURED_TITLE,
     onClick = { navigateToAddMissingInfo(contractId, coInsuredType) },
   )
 
   is MemberReminder.ContactInfoUpdateNeeded -> ToDoRowData(
     icon = HedvigIcons.InfoOutline,
-    // TODO: Add "Update contact details" / "Uppdatera kontaktuppgifter" to Lokalise
-    title = "Update contact details",
+    title = Res.string.HOME_TODO_UPDATE_CONTACT_DETAILS_TITLE,
     onClick = navigateToContactInfo,
   )
 
@@ -171,7 +175,7 @@ private fun MemberReminder.toToDoRowOrNull(
 }
 
 @Composable
-private fun ToDoRow(icon: ImageVector, title: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun ToDoRow(icon: ImageVector, title: StringResource, onClick: () -> Unit, modifier: Modifier = Modifier) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -188,13 +192,12 @@ private fun ToDoRow(icon: ImageVector, title: String, onClick: () -> Unit, modif
     )
     Column(Modifier.weight(1f)) {
       HedvigText(
-        text = title,
+        text = stringResource(title),
         style = HedvigTheme.typography.label,
         color = HedvigTheme.colorScheme.textPrimary,
       )
-      // TODO: Add "Requires action" / "Kräver åtgärd" to Lokalise
       HedvigText(
-        text = "Requires action",
+        text = stringResource(Res.string.HOME_TODO_REQUIRES_ACTION_SUBTITLE),
         style = HedvigTheme.typography.label,
         color = HedvigTheme.colorScheme.signalRedText,
       )
