@@ -499,6 +499,17 @@
   <string name="HC_TOPIC_NOT_FOUND">Topic not found</string>
   <string name="HC_TOPIC_NO_QUESTIONS">This topic has no questions</string>
   <string name="HEDVIG_NAME_TEXT">Hedvig</string>
+  <string name="HOME_GREETING_SUBTITLE">Hur kan vi hjälpa dig?</string>
+  <string name="HOME_GREETING_TITLE">Hej %1$s</string>
+  <string name="HOME_QUOTES_SECTION_TITLE">Dina prisförslag</string>
+  <string name="HOME_TODO_ADD_COINSURED_TITLE">Lägg till medförsäkrad</string>
+  <string name="HOME_TODO_MISSING_CHIP_ID_TITLE">Chip-ID för husdjur saknas</string>
+  <string name="HOME_TODO_MISSING_PAYMENT_METHOD_TITLE">Betalningsmetod saknas</string>
+  <string name="HOME_TODO_MISSING_PAYOUT_METHOD_TITLE">Utbetalningsmetod saknas</string>
+  <string name="HOME_TODO_PAYMENT_OVERDUE_TITLE">Din betalning är försenad</string>
+  <string name="HOME_TODO_REQUIRES_ACTION_SUBTITLE">Kräver åtgärd</string>
+  <string name="HOME_TODO_SECTION_TITLE">Att göra</string>
+  <string name="HOME_TODO_UPDATE_CONTACT_DETAILS_TITLE">Uppdatera kontaktuppgifter</string>
   <string name="HONESTY_PLEDGE_DESCRIPTION">Hedvig bygger på tillit. Jag lovar att berätta vad som hände precis som det var och bara begära den ersättning jag har rätt till.</string>
   <string name="HONESTY_PLEDGE_HEADER">Anmäl skada</string>
   <string name="HONESTY_PLEDGE_NOTE_1">Osäker på vad som täcks? Skicka in din anmälan oavsett</string>
@@ -973,6 +984,7 @@
   <string name="TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION">Din försäkring kommer att avslutas den %s</string>
   <string name="TERMINATION_FLOW_CONFIRM_BUTTON">Ja, avsluta</string>
   <string name="TERMINATION_FLOW_CONFIRM_INFORMATION">Bekräfta din information</string>
+  <string name="TERMINATION_FLOW_CONTINUE_CANCELLING">Fortsätt avbryta</string>
   <string name="TERMINATION_FLOW_DATE_FIELD_PLACEHOLDER">Välj datum...</string>
   <string name="TERMINATION_FLOW_DATE_FIELD_TEXT">Slutdatum</string>
   <string name="TERMINATION_FLOW_DELETION_INFO_CARD">Eftersom försäkringen inte är aktiv än så kommer den avslutas direkt. Du kommer inte att debiteras någonting.</string>

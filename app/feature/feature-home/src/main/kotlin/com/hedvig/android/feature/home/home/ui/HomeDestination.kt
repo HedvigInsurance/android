@@ -170,6 +170,11 @@ import hedvig.resources.DASHBOARD_OPEN_CHAT
 import hedvig.resources.HC_QUICK_ACTIONS_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE
 import hedvig.resources.HC_QUICK_ACTIONS_UPDATE_ADDRESS
+import hedvig.resources.HOME_GREETING_SUBTITLE
+import hedvig.resources.HOME_GREETING_TITLE
+import hedvig.resources.HOME_QUOTES_SECTION_TITLE
+import hedvig.resources.HOME_TODO_SECTION_TITLE
+import hedvig.resources.INSURANCE_ADDONS_SUBHEADING
 import hedvig.resources.RESUME_CLAIM_DELETE_BODY
 import hedvig.resources.RESUME_CLAIM_DELETE_BUTTON
 import hedvig.resources.RESUME_CLAIM_DELETE_TITLE
@@ -1060,9 +1065,8 @@ private fun MemberRemindersSection(
           .padding(horizontal = 16.dp)
           .padding(horizontalInsets),
       ) {
-        // TODO: Add "To do" / "Att göra" to Lokalise
         HedvigText(
-          text = "To do",
+          text = stringResource(Res.string.HOME_TODO_SECTION_TITLE),
           style = HedvigTheme.typography.headlineSmall,
           modifier = Modifier.semantics { heading() },
         )
@@ -1095,9 +1099,8 @@ private fun OffersSection(
       .padding(horizontal = 16.dp)
       .padding(horizontalInsets),
   ) {
-    // TODO: Add "Your quotes" / "Dina prisförslag" to Lokalise.
     HedvigText(
-      text = "Your quotes",
+      text = stringResource(Res.string.HOME_QUOTES_SECTION_TITLE),
       style = HedvigTheme.typography.headlineSmall,
       modifier = Modifier.semantics { heading() },
     )
@@ -1288,9 +1291,8 @@ private fun AddonsSection(
       .padding(horizontal = 16.dp)
       .padding(horizontalInsets),
   ) {
-    // TODO: Add an "Addons" / "Tilläggsförsäkringar" section header to Lokalise.
     HedvigText(
-      text = "Addons",
+      text = stringResource(Res.string.INSURANCE_ADDONS_SUBHEADING),
       style = HedvigTheme.typography.headlineSmall,
       modifier = Modifier.semantics { heading() },
     )
@@ -1351,15 +1353,13 @@ private fun WelcomeMessage(firstName: String, modifier: Modifier = Modifier) {
     horizontalAlignment = Alignment.CenterHorizontally,
     modifier = modifier.fillMaxWidth(),
   ) {
-    // TODO: Add "Hi %1$s" / "Hej %1$s" to Lokalise
     HedvigText(
-      text = "Hi $firstName",
+      text = stringResource(Res.string.HOME_GREETING_TITLE, firstName),
       style = titleStyle,
       modifier = Modifier.fillMaxWidth(),
     )
-    // TODO: Add "How can we help?" / "Hur kan vi hjälpa dig?" to Lokalise
     HedvigText(
-      text = "How can we help?",
+      text = stringResource(Res.string.HOME_GREETING_SUBTITLE),
       color = HedvigTheme.colorScheme.textSecondary,
       style = titleStyle,
       modifier = Modifier.fillMaxWidth(),
