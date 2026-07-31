@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.ImageLoader
@@ -49,6 +50,7 @@ import dev.zacsweers.metro.Inject
 import hedvig.resources.ONBOARDING_CONTINUE_TO_APP_BUTTON
 import hedvig.resources.ONBOARDING_CROSS_SELL_SUBTITLE
 import hedvig.resources.ONBOARDING_CROSS_SELL_TITLE
+import hedvig.resources.ONBOARDING_OPENS_IN_BROWSER_HINT
 import hedvig.resources.Res
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -164,6 +166,16 @@ internal fun OnboardingBundleDestination(
             openUrl = openUrl,
           )
         }
+        Spacer(Modifier.height(8.dp))
+        HedvigText(
+          text = stringResource(Res.string.ONBOARDING_OPENS_IN_BROWSER_HINT),
+          style = HedvigTheme.typography.finePrint,
+          color = HedvigTheme.colorScheme.textSecondary,
+          textAlign = TextAlign.Center,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(24.dp))
         OnboardingStepButtons(
