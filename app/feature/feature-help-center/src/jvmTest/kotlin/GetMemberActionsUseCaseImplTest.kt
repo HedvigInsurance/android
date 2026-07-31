@@ -35,7 +35,7 @@ class GetMemberActionsUseCaseImplTest {
           currentMember = buildMember {
             memberActions = buildMemberActions {
               firstVetAction = null
-              sickAbroadAction = null
+              sickAbroadDeflect = null
               isCancelInsuranceEnabled = true
               isConnectPaymentEnabled = true
               isEditCoInsuredEnabled = true
@@ -58,7 +58,7 @@ class GetMemberActionsUseCaseImplTest {
           currentMember = buildMember {
             memberActions = buildMemberActions {
               firstVetAction = null
-              sickAbroadAction = null
+              sickAbroadDeflect = null
               isCancelInsuranceEnabled = true
               isConnectPaymentEnabled = true
               isEditCoInsuredEnabled = true
