@@ -40,6 +40,7 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Inject
 import hedvig.resources.ONBOARDING_DO_THIS_LATER_BUTTON
+import hedvig.resources.ONBOARDING_PHONE_SAVE_ERROR
 import hedvig.resources.ONBOARDING_PHONE_SUBTITLE
 import hedvig.resources.ONBOARDING_PHONE_TITLE
 import hedvig.resources.Res
@@ -207,8 +208,9 @@ internal fun OnboardingPhoneDestination(viewModel: OnboardingPhoneViewModel, nav
           labelText = stringResource(Res.string.ONBOARDING_PHONE_TITLE),
           textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
           errorState = if (content.showSubmissionError) {
-            // TODO: Add "Could not save, please try again" / "Kunde inte spara, försök igen" to Lokalise
-            HedvigTextFieldDefaults.ErrorState.Error.WithMessage("Could not save, please try again")
+            HedvigTextFieldDefaults.ErrorState.Error.WithMessage(
+              stringResource(Res.string.ONBOARDING_PHONE_SAVE_ERROR),
+            )
           } else {
             HedvigTextFieldDefaults.ErrorState.NoError
           },

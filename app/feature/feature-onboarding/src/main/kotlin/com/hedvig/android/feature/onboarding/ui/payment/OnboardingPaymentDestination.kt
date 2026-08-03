@@ -38,6 +38,7 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Inject
 import hedvig.resources.ONBOARDING_CONNECT_PAYMENT_FOOTNOTE
 import hedvig.resources.ONBOARDING_CONNECT_PAYMENT_SUBTITLE
+import hedvig.resources.ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER
 import hedvig.resources.ONBOARDING_CONNECT_PAYMENT_TITLE
 import hedvig.resources.Res
 import hedvig.resources.general_continue_button
@@ -191,10 +192,8 @@ internal fun OnboardingPaymentDestination(viewModel: OnboardingPaymentViewModel,
             OnboardingStepHeader(title = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_TITLE))
             Spacer(Modifier.weight(1f))
             Spacer(Modifier.height(24.dp))
-            // TODO: Add "You can switch accounts later in settings" /
-            //  "Du kan byta konto senare i inställningar" to Lokalise
             HedvigText(
-              text = "You can switch accounts later in settings",
+              text = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER),
               style = HedvigTheme.typography.finePrint,
               color = HedvigTheme.colorScheme.textSecondary,
               modifier = Modifier.align(Alignment.CenterHorizontally),

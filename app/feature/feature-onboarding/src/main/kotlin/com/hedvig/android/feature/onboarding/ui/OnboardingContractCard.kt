@@ -25,6 +25,7 @@ import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import hedvig.resources.ONBOARDING_ADDED_LABEL
+import hedvig.resources.ONBOARDING_ADD_BUTTON
 import hedvig.resources.Res
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -77,8 +78,7 @@ internal fun OnboardingContractCard(
         Icon(imageVector = HedvigIcons.Checkmark, contentDescription = null)
       } else {
         HedvigButton(
-          // TODO: Add "Add" / "Lägg till" to Lokalise
-          text = "Add",
+          text = stringResource(Res.string.ONBOARDING_ADD_BUTTON),
           onClick = onAddClick,
           enabled = true,
           buttonStyle = ButtonDefaults.ButtonStyle.Primary,

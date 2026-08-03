@@ -51,6 +51,7 @@ import hedvig.resources.ONBOARDING_CONTINUE_TO_APP_BUTTON
 import hedvig.resources.ONBOARDING_CROSS_SELL_SUBTITLE
 import hedvig.resources.ONBOARDING_CROSS_SELL_TITLE
 import hedvig.resources.ONBOARDING_OPENS_IN_BROWSER_HINT
+import hedvig.resources.ONBOARDING_SEE_PRICE_BUTTON
 import hedvig.resources.Res
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -223,8 +224,7 @@ private fun OnboardingCrossSellRow(
       )
     }
     HedvigButton(
-      // TODO: Add "See price" / "Se pris" to Lokalise
-      text = "See price",
+      text = stringResource(Res.string.ONBOARDING_SEE_PRICE_BUTTON),
       onClick = { openUrl(crossSell.storeUrl) },
       enabled = true,
       buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
