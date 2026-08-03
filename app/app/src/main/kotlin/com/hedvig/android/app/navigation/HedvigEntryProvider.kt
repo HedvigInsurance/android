@@ -45,6 +45,7 @@ import com.hedvig.android.feature.insurance.certificate.navigation.insuranceEvid
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.navigation.insuranceEntries
 import com.hedvig.android.feature.login.navigation.loginEntries
+import com.hedvig.android.feature.movingflow.MovingSource
 import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
 import com.hedvig.android.feature.movingflow.movingFlowEntries
 import com.hedvig.android.feature.payments.navigation.paymentsEntries
@@ -110,7 +111,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
       ),
     )
   }
-  val navigateToMovingFlow: () -> Unit = { backstack.add(SelectContractForMovingKey) }
+  val navigateToMovingFlow: (MovingSource) -> Unit = { source -> backstack.add(SelectContractForMovingKey(source)) }
   val onNavigateToImageViewer: (String, String) -> Unit = { imageUrl, cacheKey ->
     backstack.add(ImageViewerKey(imageUrl, cacheKey))
   }
@@ -131,6 +132,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     navigateToPayoutAccount = navigateToPayoutAccount,
     navigateToTravelCertificate = navigateToTravelCertificate,
     navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
+    navigateToMovingFlow = navigateToMovingFlow
   )
   addInsuranceEntries(
     backstack = backstack,
@@ -140,7 +142,9 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     openCrossSellUrl = openCrossSellUrl,
     externalNavigator = externalNavigator,
     navigateToNewConversation = navigateToNewConversation,
-    navigateToMovingFlow = navigateToMovingFlow,
+    navigateToMovingFlowFromInsurance = {
+      navigateToMovingFlow(MovingSource.INSURANCE)
+    },
   )
   foreverEntries()
   addPaymentsEntries(
@@ -218,6 +222,7 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
   navigateToPayoutAccount: () -> Unit,
   navigateToTravelCertificate: () -> Unit,
   navigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  navigateToMovingFlow: (MovingSource)-> Unit,
 ) {
   homeEntries(
     nestedEntries = {
@@ -244,7 +249,7 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
       backstack.add(CoInsuredAddInfoKey(contractId, type))
     },
     navigateToHelpCenter = { backstack.add(HelpCenterKey) },
-    navigateToMovingFlow = { backstack.add(SelectContractForMovingKey) },
+    navigateToMovingFlow = { navigateToMovingFlow(MovingSource.OTHER) },
     navigateToClaimChat = { resumeClaim ->
       backstack.add(
         ClaimChatKey(
@@ -331,7 +336,7 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
   openCrossSellUrl: (String) -> Unit,
   externalNavigator: ExternalNavigator,
   navigateToNewConversation: () -> Unit,
-  navigateToMovingFlow: () -> Unit,
+  navigateToMovingFlowFromInsurance: () -> Unit,
 ) {
   insuranceEntries(
     nestedEntries = {
@@ -347,7 +352,8 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
           backstack.selectTopLevel(TopLevelTab.Insurances)
         },
         navigateToMovingFlow = {
-          backstack.navigateAndPopUpTo<TerminateInsuranceKey>(SelectContractForMovingKey, inclusive = true)
+          backstack.navigateAndPopUpTo<TerminateInsuranceKey>(SelectContractForMovingKey(
+            MovingSource.TERMINATION), inclusive = true)
         },
         closeTerminationFlow = {
           backstack.popUpTo<TerminateInsuranceKey>(inclusive = true)
@@ -370,7 +376,7 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
     openUrl = openUrl,
     openCrossSellUrl = openCrossSellUrl,
     onNavigateToNewConversation = navigateToNewConversation,
-    startMovingFlow = navigateToMovingFlow,
+    startMovingFlow = navigateToMovingFlowFromInsurance,
     startTerminationFlow = { data: CancelInsuranceData ->
       backstack.add(TerminateInsuranceKey(insuranceId = data.contractId))
     },

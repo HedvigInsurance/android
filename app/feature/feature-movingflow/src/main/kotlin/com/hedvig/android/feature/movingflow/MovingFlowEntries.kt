@@ -62,7 +62,8 @@ internal data class SuccessfulMoveKey(
 ) : HedvigNavKey
 
 fun EntryProviderScope<HedvigNavKey>.movingFlowEntries(backstack: Backstack, goToChat: () -> Unit) {
-  entry<SelectContractForMovingKey> {
+  entry<SelectContractForMovingKey> { key ->
+    val source = key.source
     SelectContractDestination(
       viewModel = metroViewModel<SelectContractViewModel>(),
       navigateUp = backstack::navigateUp,

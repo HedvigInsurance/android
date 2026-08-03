@@ -68,6 +68,8 @@ import octopus.type.MoveApartmentSubType.OWN
 import octopus.type.MoveIntentRequestInput
 import octopus.type.MoveToAddressInput
 import octopus.type.MoveToApartmentInput
+import com.hedvig.android.logger.logcat
+import octopus.type.MoveIntentSourceInput
 
 @AssistedInject
 @HedvigViewModel(ActivityRetainedScope::class)
@@ -168,6 +170,7 @@ private class EnterNewAddressPresenter(
           .fold(
             ifLeft = {
               submittingInfoFailure = SubmittingInfoFailure.NetworkFailure
+              logcat {"Mariia: $it"}
             },
             ifRight = { request ->
               when (val moveIntentQuotesFragment = request.moveIntent) {
@@ -242,6 +245,7 @@ private fun ValidContent.toInputForSubmission(): InputForSubmission {
         },
       ),
       house = Optional.absent(),
+      source = Optional.present(MoveIntentSourceInput.TERMINATION) //TODO!!!!
     ),
   )
 }
