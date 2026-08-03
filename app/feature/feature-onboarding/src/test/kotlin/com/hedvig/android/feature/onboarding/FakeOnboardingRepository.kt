@@ -40,6 +40,7 @@ internal fun testOnboardingData(
       exposureName = "Bellmansgatan 19A",
       typeOfContract = "SE_APARTMENT_RENT",
       missingCoInsuredCount = 1,
+      missingCoOwnersCount = 0,
       isMissingPetId = false,
     ),
   ),

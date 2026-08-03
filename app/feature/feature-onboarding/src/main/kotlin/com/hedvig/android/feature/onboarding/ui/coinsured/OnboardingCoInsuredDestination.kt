@@ -194,8 +194,8 @@ internal fun OnboardingCoInsuredDestination(viewModel: OnboardingCoInsuredViewMo
       }
 
       is OnboardingCoInsuredUiState.Content -> {
-        // The step shows co-owners contracts when that is all it has (e.g. a car contract missing
-        // an owner); otherwise it is the co-insured case.
+        // The step has a single title but its rows can mix types, so use the co-owners title only
+        // when every row is co-owners and fall back to co-insured otherwise (including the mix).
         val allCoOwners = content.rows.isNotEmpty() && content.rows.all { it.flowType == CoInsuredFlowType.CoOwners }
         Spacer(Modifier.height(16.dp))
         OnboardingStepHeader(

@@ -45,8 +45,8 @@ internal data class OnboardingContract(
   val exposureName: String,
   val typeOfContract: String,
   val missingCoInsuredCount: Int,
+  val missingCoOwnersCount: Int,
   val isMissingPetId: Boolean,
-  val missingCoOwnersCount: Int = 0,
 ) {
   /**
    * Which edit flow this contract's missing info needs, or null when nothing is missing. Co-owners

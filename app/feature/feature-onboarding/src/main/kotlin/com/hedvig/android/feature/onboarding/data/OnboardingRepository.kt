@@ -42,8 +42,8 @@ internal class OnboardingRepositoryImpl(
           displayName = contract.currentAgreement.productVariant.displayName,
           exposureName = contract.exposureDisplayNameShort,
           typeOfContract = contract.currentAgreement.productVariant.typeOfContract,
-          // Mirror the home-screen reminder rule: only count still-active (not terminating) entries
-          // whose type the contract actually supports.
+          // Terminating entries are excluded (their missing info is moot), matching the home-screen
+          // "needs co-insured info" reminder so both surfaces agree on what still counts as missing.
           missingCoInsuredCount = if (contract.supportsCoInsured) {
             contract.coInsured.orEmpty().count { it.hasMissingInfo && it.terminatesOn == null }
           } else {
