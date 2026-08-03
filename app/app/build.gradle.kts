@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "14.3.8"
+    versionName = "14.4.1"
 
     resourceConfigurations.addAll(listOf("en", "sv-rSE"))
   }
@@ -43,14 +43,14 @@ android {
   }
 
   buildTypes {
-    val debug by getting {
+    getByName("debug") {
       applicationIdSuffix = ".dev.app"
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = false
       isDebuggable = true
     }
 
-    val release by getting {
-//      signingConfig = debug.signingConfig // uncomment to run release build locally
+    getByName("release") {
+//      signingConfig = getByName("debug").signingConfig // uncomment to run release build locally
       applicationIdSuffix = ".app"
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
 
@@ -64,7 +64,7 @@ android {
       )
     }
 
-    val staging by creating {
+    create("staging") {
       applicationIdSuffix = ".app"
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
       isMinifyEnabled = true

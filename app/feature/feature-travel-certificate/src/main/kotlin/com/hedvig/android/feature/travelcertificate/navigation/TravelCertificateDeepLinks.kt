@@ -14,6 +14,6 @@ import dev.zacsweers.metro.Inject
 internal class TravelCertificateDeepLinkMatcherProvider(
   private val container: HedvigDeepLinkContainer,
 ) : DeepLinkMatcherProvider {
-  override fun matchers(): List<DeepLinkMatcher<out HedvigNavKey>> =
+  override fun matchers(): List<DeepLinkMatcher<HedvigNavKey>> =
     uriDeepLinkMatchers(container.travelCertificate, TravelCertificateKey.serializer())
 }

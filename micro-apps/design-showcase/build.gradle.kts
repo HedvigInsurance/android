@@ -28,11 +28,10 @@ android {
   }
 
   buildTypes {
-    @Suppress("UNUSED_VARIABLE")
-    val debug by getting {
+    val debug = getByName("debug") {
       isDebuggable = true
     }
-    val release by getting {
+    getByName("release") {
       signingConfig = debug.signingConfig
       applicationIdSuffix = ".app"
       isMinifyEnabled = true

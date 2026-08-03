@@ -33,7 +33,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -112,7 +111,6 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
-import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -120,7 +118,6 @@ import com.hedvig.android.design.system.hedvig.HedvigTooltip
 import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.Icon
-import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.StartClaimBottomSheet
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TooltipDefaults
@@ -130,7 +127,6 @@ import com.hedvig.android.design.system.hedvig.TopAppBarLayoutForActions
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.icon.HedvigLogotype
 import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
 import com.hedvig.android.design.system.hedvig.icon.Reload
 import com.hedvig.android.design.system.hedvig.icon.Travel
@@ -178,6 +174,11 @@ import hedvig.resources.DASHBOARD_OPEN_CHAT
 import hedvig.resources.HC_QUICK_ACTIONS_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE
 import hedvig.resources.HC_QUICK_ACTIONS_UPDATE_ADDRESS
+import hedvig.resources.HOME_GREETING_SUBTITLE
+import hedvig.resources.HOME_GREETING_TITLE
+import hedvig.resources.HOME_QUOTES_SECTION_TITLE
+import hedvig.resources.HOME_TODO_SECTION_TITLE
+import hedvig.resources.INSURANCE_ADDONS_SUBHEADING
 import hedvig.resources.RESUME_CLAIM_DELETE_BODY
 import hedvig.resources.RESUME_CLAIM_DELETE_BUTTON
 import hedvig.resources.RESUME_CLAIM_DELETE_TITLE
@@ -187,12 +188,8 @@ import hedvig.resources.Res
 import hedvig.resources.TOAST_NEW_OFFER
 import hedvig.resources.blur_background
 import hedvig.resources.general_cancel_button
-import hedvig.resources.home_tab_active_in_future_info
 import hedvig.resources.home_tab_claim_button_text
 import hedvig.resources.home_tab_get_help
-import hedvig.resources.home_tab_pending_switchable_welcome_title_without_name
-import hedvig.resources.home_tab_pending_unknown_title_without_name
-import hedvig.resources.home_tab_terminated_welcome_title_without_name
 import hedvig.resources.home_tab_welcome_title_without_name
 import kotlin.math.roundToInt
 import kotlin.time.Clock
@@ -652,11 +649,13 @@ private fun HomeScreenSuccess(
         }
 
         HomeSection.VeryImportantMessages -> {
-          uiState.veryImportantMessages.isNotEmpty() || informationalReminders.isNotEmpty()
+          uiState.veryImportantMessages.isNotEmpty() ||
+            informationalReminders.isNotEmpty() ||
+            uiState.homeText != Active
         }
 
         HomeSection.MemberReminders -> {
-          uiState.homeText is HomeText.ActiveInFuture || applicableReminders.homeActionRequiredReminders().isNotEmpty()
+          applicableReminders.homeActionRequiredReminders().isNotEmpty()
         }
 
         HomeSection.Offers -> {
@@ -793,7 +792,7 @@ private fun HomeScreenSuccess(
               },
           ) {
             OnHeroGradient {
-              WelcomeSection(uiState.homeText)
+              WelcomeSection(uiState.firstName)
             }
           }
         }
@@ -873,6 +872,7 @@ private fun HomeScreenSuccess(
             )
 
             HomeSection.VeryImportantMessages -> VeryImportantMessagesSection(
+              homeText = uiState.homeText,
               list = uiState.veryImportantMessages,
               informationalReminders = informationalReminders,
               openUrl = openUrl,
@@ -881,7 +881,6 @@ private fun HomeScreenSuccess(
             )
 
             HomeSection.MemberReminders -> MemberRemindersSection(
-              homeText = uiState.homeText,
               applicableReminders = applicableReminders,
               navigateToConnectPayment = navigateToConnectPayment,
               navigateToConnectPayout = navigateToConnectPayout,
@@ -1006,13 +1005,13 @@ private fun OnHeroGradient(content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun WelcomeSection(homeText: HomeText) {
+private fun WelcomeSection(firstName: String) {
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
     modifier = Modifier.fillMaxWidth(),
   ) {
     WelcomeMessage(
-      homeText = homeText,
+      firstName = firstName,
       modifier = Modifier
         .padding(horizontal = 24.dp)
         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
@@ -1050,13 +1049,16 @@ private fun ClaimStatusCardsSection(
 
 @Composable
 private fun VeryImportantMessagesSection(
+  homeText: HomeText,
   list: List<VeryImportantMessage>,
   informationalReminders: List<MemberReminder.UpcomingRenewal>,
   openUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
   horizontalInsets: PaddingValues,
 ) {
+  val statusCard = if (homeText == Active) null else HomeNoticeCard.Status(homeText)
   val cards = list.map { HomeNoticeCard.Important(it) } +
+    listOfNotNull(statusCard) +
     informationalReminders.map { HomeNoticeCard.Renewal(it) }
   HomeNoticeCarousel(
     cards = cards,
@@ -1068,7 +1070,6 @@ private fun VeryImportantMessagesSection(
 
 @Composable
 private fun MemberRemindersSection(
-  homeText: HomeText,
   applicableReminders: List<MemberReminder>,
   navigateToConnectPayment: () -> Unit,
   navigateToConnectPayout: () -> Unit,
@@ -1080,16 +1081,6 @@ private fun MemberRemindersSection(
 ) {
   val toDoReminders = applicableReminders.homeActionRequiredReminders()
   Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-    if (homeText is HomeText.ActiveInFuture) {
-      HedvigNotificationCard(
-        message = stringResource(Res.string.home_tab_active_in_future_info, homeText.inception),
-        priority = NotificationPriority.Info,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp)
-          .padding(horizontalInsets),
-      )
-    }
     if (toDoReminders.isNotEmpty()) {
       Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -1098,9 +1089,8 @@ private fun MemberRemindersSection(
           .padding(horizontal = 16.dp)
           .padding(horizontalInsets),
       ) {
-        // TODO: Add "To do" / "Att göra" to Lokalise
         HedvigText(
-          text = "To do",
+          text = stringResource(Res.string.HOME_TODO_SECTION_TITLE),
           style = HedvigTheme.typography.headlineSmall,
           modifier = Modifier.semantics { heading() },
         )
@@ -1140,9 +1130,8 @@ private fun OffersSection(
       .padding(horizontal = 16.dp)
       .padding(horizontalInsets),
   ) {
-    // TODO: Add "Your quotes" / "Dina prisförslag" to Lokalise.
     HedvigText(
-      text = "Your quotes",
+      text = stringResource(Res.string.HOME_QUOTES_SECTION_TITLE),
       style = HedvigTheme.typography.headlineSmall,
       modifier = Modifier.semantics { heading() },
     )
@@ -1334,9 +1323,8 @@ private fun AddonsSection(
       .padding(horizontal = 16.dp)
       .padding(horizontalInsets),
   ) {
-    // TODO: Add an "Addons" / "Tilläggsförsäkringar" section header to Lokalise.
     HedvigText(
-      text = "Addons",
+      text = stringResource(Res.string.INSURANCE_ADDONS_SUBHEADING),
       style = HedvigTheme.typography.headlineSmall,
       modifier = Modifier.semantics { heading() },
     )
@@ -1385,38 +1373,37 @@ private fun DiscoverInsurancesSection(
 }
 
 @Composable
-private fun WelcomeMessage(homeText: HomeText, modifier: Modifier = Modifier) {
-  if (homeText is HomeText.ActiveInFuture) {
-    Image(
-      HedvigIcons.HedvigLogotype,
-      null,
-      modifier
-        .fillMaxWidth()
-        .wrapContentWidth(Alignment.CenterHorizontally)
-        .height(40.dp)
-        .padding(horizontal = 16.dp)
-        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-    )
-  } else {
-    val headlineText = when (homeText) {
-      is Active -> stringResource(Res.string.home_tab_welcome_title_without_name)
-      is HomeText.ActiveInFuture -> error("Image shows here instead")
-      is HomeText.Pending -> stringResource(Res.string.home_tab_pending_unknown_title_without_name)
-      is HomeText.Switching -> stringResource(Res.string.home_tab_pending_switchable_welcome_title_without_name)
-      is HomeText.Terminated -> stringResource(Res.string.home_tab_terminated_welcome_title_without_name)
-    }
+private fun WelcomeMessage(firstName: String, modifier: Modifier = Modifier) {
+  // todo custom style since new DS does not have this specification
+  //  https://hedviginsurance.slack.com/archives/C03U9C6Q7TP/p1727365167917719
+  val titleStyle = HedvigTheme.typography.headlineMedium.copy(
+    fontFamily = HedvigTheme.typography.serif,
+    fontSize = 28.0.sp,
+    lineBreak = LineBreak.Heading,
+    textAlign = TextAlign.Center,
+  )
+  if (firstName.isBlank()) {
     HedvigText(
-      text = headlineText,
-      // todo custom style since new DS does not have this specification
-      //  https://hedviginsurance.slack.com/archives/C03U9C6Q7TP/p1727365167917719
-      style = HedvigTheme.typography.headlineMedium.copy(
-        fontFamily = HedvigTheme.typography.serif,
-        fontSize = 28.0.sp,
-        lineBreak = LineBreak.Heading,
-        textAlign = TextAlign.Center,
-        color = HedvigTheme.colorScheme.textSecondary,
-      ),
+      text = stringResource(Res.string.home_tab_welcome_title_without_name),
+      style = titleStyle,
       modifier = modifier.fillMaxWidth(),
+    )
+    return
+  }
+  Column(
+    horizontalAlignment = Alignment.CenterHorizontally,
+    modifier = modifier.fillMaxWidth(),
+  ) {
+    HedvigText(
+      text = stringResource(Res.string.HOME_GREETING_TITLE, firstName),
+      style = titleStyle,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    HedvigText(
+      text = stringResource(Res.string.HOME_GREETING_SUBTITLE),
+      color = HedvigTheme.colorScheme.textSecondary,
+      style = titleStyle,
+      modifier = Modifier.fillMaxWidth(),
     )
   }
 }
@@ -1454,6 +1441,7 @@ private fun PreviewHomeScreen(
       HomeScreen(
         uiState = Success(
           isReloading = false,
+          firstName = "Richard",
           homeText = Active,
           claimStatusCardsData = ClaimStatusCardsData(
             nonEmptyListOf(

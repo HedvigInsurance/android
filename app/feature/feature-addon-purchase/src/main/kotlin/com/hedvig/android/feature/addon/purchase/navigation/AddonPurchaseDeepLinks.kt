@@ -17,7 +17,7 @@ import dev.zacsweers.metro.Inject
 internal class AddonPurchaseDeepLinkMatcherProvider(
   private val container: HedvigDeepLinkContainer,
 ) : DeepLinkMatcherProvider {
-  override fun matchers(): List<DeepLinkMatcher<out HedvigNavKey>> =
+  override fun matchers(): List<DeepLinkMatcher<HedvigNavKey>> =
     (container.travelAddon + container.travelAddonWithContractId).map { pattern ->
       AddonDeepLinkMatcher(DeepLinkUri(pattern), AddonBannerSource.TRAVEL_DEEPLINK)
     } +

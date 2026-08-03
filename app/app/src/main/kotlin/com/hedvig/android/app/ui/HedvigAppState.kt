@@ -80,6 +80,7 @@ internal class HedvigAppState(
     setOf(
       TopLevelTab.Home,
       TopLevelTab.Insurances,
+      TopLevelTab.Forever,
       TopLevelTab.Payments,
       TopLevelTab.Profile,
     ),
