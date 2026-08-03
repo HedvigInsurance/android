@@ -23,6 +23,7 @@ import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.movingflow.AddHouseInformationKey
 import com.hedvig.android.feature.movingflow.ChoseCoverageLevelAndDeductibleKey
+import com.hedvig.android.feature.movingflow.MovingSource
 import com.hedvig.android.feature.movingflow.compose.BooleanInput
 import com.hedvig.android.feature.movingflow.compose.ConstrainedNumberInput
 import com.hedvig.android.feature.movingflow.compose.ValidatedInput
@@ -34,6 +35,7 @@ import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.ApartmentState.IsAvailableForStudentState.Available
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.ApartmentState.IsAvailableForStudentState.NotAvailable
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState
+import com.hedvig.android.feature.movingflow.data.toMoveIntentSourceInput
 import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressEvent.DismissSubmissionError
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressEvent.Submit
@@ -68,8 +70,6 @@ import octopus.type.MoveApartmentSubType.OWN
 import octopus.type.MoveIntentRequestInput
 import octopus.type.MoveToAddressInput
 import octopus.type.MoveToApartmentInput
-import com.hedvig.android.logger.logcat
-import octopus.type.MoveIntentSourceInput
 
 @AssistedInject
 @HedvigViewModel(ActivityRetainedScope::class)
@@ -170,7 +170,6 @@ private class EnterNewAddressPresenter(
           .fold(
             ifLeft = {
               submittingInfoFailure = SubmittingInfoFailure.NetworkFailure
-              logcat {"Mariia: $it"}
             },
             ifRight = { request ->
               when (val moveIntentQuotesFragment = request.moveIntent) {
@@ -245,7 +244,7 @@ private fun ValidContent.toInputForSubmission(): InputForSubmission {
         },
       ),
       house = Optional.absent(),
-      source = Optional.present(MoveIntentSourceInput.TERMINATION) //TODO!!!!
+      source = movingSource.toMoveIntentSourceInput(),
     ),
   )
 }
@@ -268,6 +267,7 @@ internal sealed interface EnterNewAddressUiState {
 
   data class Content(
     val moveFromAddressId: String,
+    val movingSource: MovingSource,
     val movingDate: ValidatedInput<LocalDate?, LocalDate, EnterNewAddressValidationError>,
     val allowedMovingDateRange: ClosedRange<LocalDate>,
     val address: ValidatedInput<String?, String, EnterNewAddressValidationError>,
@@ -312,6 +312,7 @@ internal sealed interface EnterNewAddressUiState {
 
 private class ValidContent(
   val moveFromAddressId: String,
+  val movingSource: MovingSource,
   val movingDate: LocalDate,
   val address: String,
   val postalCode: String,
@@ -338,6 +339,7 @@ private fun Content.validate(): ValidContent? {
   return either {
     ValidContent(
       moveFromAddressId = moveFromAddressId,
+      movingSource = movingSource,
       movingDate = movingDate.bind(),
       address = address.bind(),
       postalCode = postalCode.bind(),
@@ -363,6 +365,7 @@ private fun Content.validate(): ValidContent? {
 private fun MovingFlowState.toContent(): Content {
   return Content(
     moveFromAddressId = moveFromAddressId,
+    movingSource = movingSource,
     movingDate = ValidatedInput(
       initialValue = movingDateState.selectedMovingDate,
       validator = { movingDate ->

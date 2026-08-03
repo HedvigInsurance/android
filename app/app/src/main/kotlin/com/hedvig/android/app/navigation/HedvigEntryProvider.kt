@@ -132,7 +132,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     navigateToPayoutAccount = navigateToPayoutAccount,
     navigateToTravelCertificate = navigateToTravelCertificate,
     navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
-    navigateToMovingFlow = navigateToMovingFlow
+    navigateToMovingFlow = navigateToMovingFlow,
   )
   addInsuranceEntries(
     backstack = backstack,
@@ -222,7 +222,7 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
   navigateToPayoutAccount: () -> Unit,
   navigateToTravelCertificate: () -> Unit,
   navigateToAddonPurchaseFlow: (List<String>) -> Unit,
-  navigateToMovingFlow: (MovingSource)-> Unit,
+  navigateToMovingFlow: (MovingSource) -> Unit,
 ) {
   homeEntries(
     nestedEntries = {
@@ -352,8 +352,10 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
           backstack.selectTopLevel(TopLevelTab.Insurances)
         },
         navigateToMovingFlow = {
-          backstack.navigateAndPopUpTo<TerminateInsuranceKey>(SelectContractForMovingKey(
-            MovingSource.TERMINATION), inclusive = true)
+          backstack.navigateAndPopUpTo<TerminateInsuranceKey>(
+            SelectContractForMovingKey(MovingSource.TERMINATION),
+            inclusive = true,
+          )
         },
         closeTerminationFlow = {
           backstack.popUpTo<TerminateInsuranceKey>(inclusive = true)

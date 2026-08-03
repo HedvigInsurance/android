@@ -27,6 +27,7 @@ import com.hedvig.android.feature.movingflow.compose.ValidatedInput
 import com.hedvig.android.feature.movingflow.data.MovingFlowState
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.ExtraBuildingTypesState.ExtraBuildingInfo
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType
+import com.hedvig.android.feature.movingflow.data.toMoveIntentSourceInput
 import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationEvent.DismissSubmissionError
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationEvent.Submit
@@ -217,6 +218,7 @@ private fun MovingFlowState.toInputForSubmission(validContent: ValidAddressInput
           },
         ),
       ),
+      source = movingSource.toMoveIntentSourceInput(),
     ),
   )
 }
