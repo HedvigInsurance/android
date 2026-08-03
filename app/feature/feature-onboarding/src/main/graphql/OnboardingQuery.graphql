@@ -7,8 +7,15 @@ query Onboarding {
       id
       exposureDisplayNameShort
       isMissingPetId
+      supportsCoInsured
+      supportsCoOwners
       coInsured {
         hasMissingInfo
+        terminatesOn
+      }
+      coOwners {
+        hasMissingInfo
+        terminatesOn
       }
       currentAgreement {
         productVariant {

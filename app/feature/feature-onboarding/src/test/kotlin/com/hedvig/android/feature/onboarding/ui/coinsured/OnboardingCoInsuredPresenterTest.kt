@@ -71,9 +71,42 @@ internal class OnboardingCoInsuredPresenterTest {
       skipItems(1)
       repository.onboardingDataResponses.add(testOnboardingData().right())
       awaitItem()
-      sendEvent(OnboardingCoInsuredEvent.AddCoInsured("contract-1"))
+      sendEvent(OnboardingCoInsuredEvent.AddCoInsured("contract-1", CoInsuredFlowType.CoInsured))
       runCurrent()
       assertThat(backstack.entries.last()).isEqualTo(CoInsuredAddInfoKey("contract-1", CoInsuredFlowType.CoInsured))
+    }
+  }
+
+  @Test
+  fun `a co-owners contract yields a co-owners row and navigates into the co-owners flow`() = runTest {
+    val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.CoInsured)) }
+    val repository = FakeOnboardingRepository()
+    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
+    val presenter = OnboardingCoInsuredPresenter(sessionStore, navigator)
+
+    presenter.test(OnboardingCoInsuredUiState.Loading) {
+      skipItems(1)
+      repository.onboardingDataResponses.add(
+        testOnboardingData(
+          contracts = listOf(
+            OnboardingContract(
+              id = "car-1",
+              displayName = "Car Insurance",
+              exposureName = "ABC 123",
+              typeOfContract = "SE_CAR",
+              missingCoInsuredCount = 0,
+              isMissingPetId = false,
+              missingCoOwnersCount = 1,
+            ),
+          ),
+        ).right(),
+      )
+      val content = awaitItem() as OnboardingCoInsuredUiState.Content
+      assertThat(content.rows[0].flowType).isEqualTo(CoInsuredFlowType.CoOwners)
+      sendEvent(OnboardingCoInsuredEvent.AddCoInsured("car-1", CoInsuredFlowType.CoOwners))
+      runCurrent()
+      assertThat(backstack.entries.last()).isEqualTo(CoInsuredAddInfoKey("car-1", CoInsuredFlowType.CoOwners))
     }
   }
 

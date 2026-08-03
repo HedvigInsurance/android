@@ -42,7 +42,18 @@ internal class OnboardingRepositoryImpl(
           displayName = contract.currentAgreement.productVariant.displayName,
           exposureName = contract.exposureDisplayNameShort,
           typeOfContract = contract.currentAgreement.productVariant.typeOfContract,
-          missingCoInsuredCount = contract.coInsured.orEmpty().count { it.hasMissingInfo },
+          // Mirror the home-screen reminder rule: only count still-active (not terminating) entries
+          // whose type the contract actually supports.
+          missingCoInsuredCount = if (contract.supportsCoInsured) {
+            contract.coInsured.orEmpty().count { it.hasMissingInfo && it.terminatesOn == null }
+          } else {
+            0
+          },
+          missingCoOwnersCount = if (contract.supportsCoOwners) {
+            contract.coOwners.orEmpty().count { it.hasMissingInfo && it.terminatesOn == null }
+          } else {
+            0
+          },
           isMissingPetId = contract.isMissingPetId,
         )
       },

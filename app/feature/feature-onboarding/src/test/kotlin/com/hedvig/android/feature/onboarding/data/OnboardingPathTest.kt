@@ -13,6 +13,7 @@ class OnboardingPathTest {
     id: String = "contract-1",
     typeOfContract: String = "SE_APARTMENT_RENT",
     missingCoInsuredCount: Int = 0,
+    missingCoOwnersCount: Int = 0,
     isMissingPetId: Boolean = false,
   ) = OnboardingContract(
     id = id,
@@ -20,6 +21,7 @@ class OnboardingPathTest {
     exposureName = "Bellmansgatan 19A",
     typeOfContract = typeOfContract,
     missingCoInsuredCount = missingCoInsuredCount,
+    missingCoOwnersCount = missingCoOwnersCount,
     isMissingPetId = isMissingPetId,
   )
 
@@ -70,6 +72,12 @@ class OnboardingPathTest {
       OnboardingStepId.ConnectPayment,
       OnboardingStepId.BundleDiscount,
     )
+  }
+
+  @Test
+  fun `co-insured step is included when a contract is missing co-owner info`() {
+    val path = buildOnboardingPath(data(contracts = listOf(contract(missingCoOwnersCount = 1))))
+    assertThat(path).contains(OnboardingStepId.CoInsured)
   }
 
   @Test

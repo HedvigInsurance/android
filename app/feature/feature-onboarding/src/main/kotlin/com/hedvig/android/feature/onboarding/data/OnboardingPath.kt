@@ -11,7 +11,7 @@ internal fun buildOnboardingPath(data: OnboardingData): List<OnboardingStepId> =
   add(OnboardingStepId.AnalyticsConsent)
   add(OnboardingStepId.PhoneNumber)
   add(OnboardingStepId.Theme)
-  if (data.contractsWithMissingCoInsured.isNotEmpty()) {
+  if (data.contractsMissingInsuredOrOwnerInfo.isNotEmpty()) {
     add(OnboardingStepId.CoInsured)
   }
   if (data.contractsWithMissingPetId.isNotEmpty()) {

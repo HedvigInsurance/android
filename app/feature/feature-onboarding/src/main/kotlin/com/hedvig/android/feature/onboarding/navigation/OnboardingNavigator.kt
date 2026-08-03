@@ -52,9 +52,9 @@ internal class OnboardingNavigator(
     backstack.removeAllOf<OnboardingKey>()
   }
 
-  /** Pushes the existing edit-co-insured flow; it pops itself back here when done. */
-  fun openAddCoInsured(contractId: String) {
-    backstack.add(CoInsuredAddInfoKey(contractId, CoInsuredFlowType.CoInsured))
+  /** Pushes the existing edit-co-insured (or co-owners) flow; it pops itself back here when done. */
+  fun openAddCoInsured(contractId: String, type: CoInsuredFlowType) {
+    backstack.add(CoInsuredAddInfoKey(contractId, type))
   }
 
   /** Pushes the Trustly connect-payment flow; it pops itself back here when done. */

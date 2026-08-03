@@ -184,29 +184,11 @@ internal fun OnboardingPaymentDestination(viewModel: OnboardingPaymentViewModel,
             )
           }
 
-          OnboardingPayinStatus.Pending -> {
-            OnboardingStepHeader(
-              title = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_TITLE),
-              // A method exists but is awaiting bank activation, so we must not claim it is
-              // connected. This can take a few days.
-              // TODO: Add "Your payment method is being set up. This can take a few days." /
-              //  "Din betalmetod hålller på att sättas upp. Det kan ta några dagar." to Lokalise
-              description = "Your payment method is being set up. This can take a few days.",
-            )
-            Spacer(Modifier.weight(1f))
-            Spacer(Modifier.height(24.dp))
-            OnboardingStepButtons(
-              primaryText = stringResource(Res.string.general_continue_button),
-              onPrimaryClick = { viewModel.emit(OnboardingPaymentEvent.Continue) },
-            )
-          }
-
-          OnboardingPayinStatus.Active -> {
-            OnboardingStepHeader(
-              title = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_TITLE),
-              // TODO: Add "Your payment method is connected" / "Din betalmetod är kopplad" to Lokalise
-              description = "Your payment method is connected",
-            )
+          // A payin method exists (active, or pending bank activation). The design's connected
+          // state is just the "switch accounts later" hint plus Continue; we deliberately make no
+          // claim about the connection being active, so pending and active render the same.
+          OnboardingPayinStatus.Pending, OnboardingPayinStatus.Active -> {
+            OnboardingStepHeader(title = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_TITLE))
             Spacer(Modifier.weight(1f))
             Spacer(Modifier.height(24.dp))
             // TODO: Add "You can switch accounts later in settings" /

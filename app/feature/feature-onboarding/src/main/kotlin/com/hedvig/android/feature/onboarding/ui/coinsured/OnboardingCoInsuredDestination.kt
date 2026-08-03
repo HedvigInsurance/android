@@ -21,6 +21,7 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -41,6 +42,7 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Inject
 import hedvig.resources.ONBOARDING_ADD_COINSURED_TITLE
+import hedvig.resources.ONBOARDING_ADD_COOWNERS_TITLE
 import hedvig.resources.ONBOARDING_ADD_INFO_LATER_LABEL
 import hedvig.resources.ONBOARDING_DO_THIS_LATER_BUTTON
 import hedvig.resources.ONBOARDING_MISSING_INFO_SUBTITLE
@@ -71,23 +73,27 @@ internal class OnboardingCoInsuredPresenter(
     var currentState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
 
-    // Pin which contracts belong to this step the first time data is available, so completed
-    // rows render as done instead of disappearing.
-    var pinnedContractIds by remember { mutableStateOf<List<String>?>(null) }
+    // Pin which contracts belong to this step (and each one's flow type) the first time data is
+    // available, so completed rows render as done instead of disappearing and the header title
+    // stays stable even after a contract's missing info is filled in.
+    var pinnedContracts by remember { mutableStateOf<List<Pair<String, CoInsuredFlowType>>?>(null) }
 
     fun contentFrom(session: OnboardingSession): OnboardingCoInsuredUiState.Content {
-      val ids = pinnedContractIds
-        ?: session.data.contractsWithMissingCoInsured.map { it.id }.also { pinnedContractIds = it }
+      val pinned = pinnedContracts
+        ?: session.data.contractsMissingInsuredOrOwnerInfo
+          .mapNotNull { contract -> contract.coInsuredFlowType?.let { contract.id to it } }
+          .also { pinnedContracts = it }
       return OnboardingCoInsuredUiState.Content(
         progress = session.progressFor(OnboardingStepId.CoInsured),
-        rows = ids.mapNotNull { id ->
+        rows = pinned.mapNotNull { (id, flowType) ->
           val contract = session.data.contracts.firstOrNull { it.id == id } ?: return@mapNotNull null
           CoInsuredRow(
             contractId = contract.id,
             displayName = contract.displayName,
             exposureName = contract.exposureName,
             typeOfContract = contract.typeOfContract,
-            isComplete = contract.missingCoInsuredCount == 0,
+            flowType = flowType,
+            isComplete = contract.coInsuredFlowType == null,
           )
         },
       )
@@ -113,7 +119,7 @@ internal class OnboardingCoInsuredPresenter(
           // onLeft: keep the previously shown state, per the spec's error handling.
         }
 
-        is OnboardingCoInsuredEvent.AddCoInsured -> navigator.openAddCoInsured(event.contractId)
+        is OnboardingCoInsuredEvent.AddCoInsured -> navigator.openAddCoInsured(event.contractId, event.flowType)
 
         OnboardingCoInsuredEvent.Continue -> launch { navigator.continueFrom(OnboardingStepId.CoInsured) }
       }
@@ -128,6 +134,7 @@ internal data class CoInsuredRow(
   val displayName: String,
   val exposureName: String,
   val typeOfContract: String,
+  val flowType: CoInsuredFlowType,
   val isComplete: Boolean,
 )
 
@@ -149,7 +156,7 @@ internal sealed interface OnboardingCoInsuredEvent {
 
   data object Refresh : OnboardingCoInsuredEvent
 
-  data class AddCoInsured(val contractId: String) : OnboardingCoInsuredEvent
+  data class AddCoInsured(val contractId: String, val flowType: CoInsuredFlowType) : OnboardingCoInsuredEvent
 
   data object Continue : OnboardingCoInsuredEvent
 }
@@ -187,9 +194,16 @@ internal fun OnboardingCoInsuredDestination(viewModel: OnboardingCoInsuredViewMo
       }
 
       is OnboardingCoInsuredUiState.Content -> {
+        // The step shows co-owners contracts when that is all it has (e.g. a car contract missing
+        // an owner); otherwise it is the co-insured case.
+        val allCoOwners = content.rows.isNotEmpty() && content.rows.all { it.flowType == CoInsuredFlowType.CoOwners }
         Spacer(Modifier.height(16.dp))
         OnboardingStepHeader(
-          title = stringResource(Res.string.ONBOARDING_ADD_COINSURED_TITLE),
+          title = if (allCoOwners) {
+            stringResource(Res.string.ONBOARDING_ADD_COOWNERS_TITLE)
+          } else {
+            stringResource(Res.string.ONBOARDING_ADD_COINSURED_TITLE)
+          },
           description = stringResource(Res.string.ONBOARDING_MISSING_INFO_SUBTITLE),
         )
         Spacer(Modifier.weight(1f))
@@ -201,7 +215,7 @@ internal fun OnboardingCoInsuredDestination(viewModel: OnboardingCoInsuredViewMo
               exposureName = row.exposureName,
               typeOfContract = row.typeOfContract,
               isComplete = row.isComplete,
-              onAddClick = { viewModel.emit(OnboardingCoInsuredEvent.AddCoInsured(row.contractId)) },
+              onAddClick = { viewModel.emit(OnboardingCoInsuredEvent.AddCoInsured(row.contractId, row.flowType)) },
             )
           }
         }

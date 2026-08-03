@@ -225,11 +225,13 @@ private fun OnboardingProgressBar(
 }
 
 @Composable
-internal fun OnboardingStepHeader(title: String, description: String, modifier: Modifier = Modifier) {
+internal fun OnboardingStepHeader(title: String, modifier: Modifier = Modifier, description: String? = null) {
   Column(modifier.padding(horizontal = 16.dp)) {
     HedvigText(text = title)
-    Spacer(Modifier.height(4.dp))
-    HedvigText(text = description, color = HedvigTheme.colorScheme.textSecondary)
+    if (description != null) {
+      Spacer(Modifier.height(4.dp))
+      HedvigText(text = description, color = HedvigTheme.colorScheme.textSecondary)
+    }
   }
 }
 
