@@ -59,7 +59,6 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
 import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -79,14 +78,14 @@ internal class EnterNewAddressViewModel(
   apolloClient: ApolloClient,
   backstack: Backstack,
 ) : MoleculeViewModel<EnterNewAddressEvent, EnterNewAddressUiState>(
-    Loading,
-    EnterNewAddressPresenter(
-      moveIntentId,
-      movingFlowRepository,
-      apolloClient,
-      backstack,
-    ),
-  )
+  Loading,
+  EnterNewAddressPresenter(
+    moveIntentId,
+    movingFlowRepository,
+    apolloClient,
+    backstack,
+  ),
+)
 
 private class EnterNewAddressPresenter(
   private val moveIntentId: String,

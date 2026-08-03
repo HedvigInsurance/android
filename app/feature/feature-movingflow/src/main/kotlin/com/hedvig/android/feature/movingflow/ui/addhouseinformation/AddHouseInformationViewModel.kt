@@ -42,12 +42,7 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
 import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
-import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import octopus.feature.movingflow.MoveIntentV2RequestMutation
 import octopus.type.MoveExtraBuildingInput
@@ -63,14 +58,14 @@ internal class AddHouseInformationViewModel(
   apolloClient: ApolloClient,
   backstack: Backstack,
 ) : MoleculeViewModel<AddHouseInformationEvent, AddHouseInformationUiState>(
-    Loading,
-    AddHouseInformationPresenter(
-      moveIntentId,
-      movingFlowRepository,
-      apolloClient,
-      backstack,
-    ),
-  )
+  Loading,
+  AddHouseInformationPresenter(
+    moveIntentId,
+    movingFlowRepository,
+    apolloClient,
+    backstack,
+  ),
+)
 
 internal class AddHouseInformationPresenter(
   private val moveIntentId: String,
