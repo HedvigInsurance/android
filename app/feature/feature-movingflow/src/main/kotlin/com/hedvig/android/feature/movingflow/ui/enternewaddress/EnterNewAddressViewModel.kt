@@ -78,14 +78,14 @@ internal class EnterNewAddressViewModel(
   apolloClient: ApolloClient,
   backstack: Backstack,
 ) : MoleculeViewModel<EnterNewAddressEvent, EnterNewAddressUiState>(
-  Loading,
-  EnterNewAddressPresenter(
-    moveIntentId,
-    movingFlowRepository,
-    apolloClient,
-    backstack,
-  ),
-)
+    Loading,
+    EnterNewAddressPresenter(
+      moveIntentId,
+      movingFlowRepository,
+      apolloClient,
+      backstack,
+    ),
+  )
 
 private class EnterNewAddressPresenter(
   private val moveIntentId: String,
@@ -130,7 +130,7 @@ private class EnterNewAddressPresenter(
           val validContent = content.validate()
           if (validContent == null) return@CollectEvents
           coroutineScope.launch {
-            movingFlowRepository.updateWithPropertyInput(
+            val movingFlowState = movingFlowRepository.updateWithPropertyInput(
               movingDate = validContent.movingDate,
               address = validContent.address,
               postalCode = validContent.postalCode,
@@ -144,7 +144,11 @@ private class EnterNewAddressPresenter(
               }
 
               is Apartment -> {
-                inputForSubmission = validContent.toInputForSubmission()
+                if (movingFlowState != null) {
+                  inputForSubmission = validContent.toInputForSubmission(movingFlowState.movingSource)
+                } else {
+                  submittingInfoFailure = SubmittingInfoFailure.NetworkFailure
+                }
               }
             }
           }
@@ -209,7 +213,7 @@ private class EnterNewAddressPresenter(
   }
 }
 
-private fun ValidContent.toInputForSubmission(): InputForSubmission {
+private fun ValidContent.toInputForSubmission(movingSource: MovingSource): InputForSubmission {
   return InputForSubmission(
     moveIntentRequestInput = MoveIntentRequestInput(
       moveToAddress = MoveToAddressInput(
@@ -266,7 +270,6 @@ internal sealed interface EnterNewAddressUiState {
 
   data class Content(
     val moveFromAddressId: String,
-    val movingSource: MovingSource,
     val movingDate: ValidatedInput<LocalDate?, LocalDate, EnterNewAddressValidationError>,
     val allowedMovingDateRange: ClosedRange<LocalDate>,
     val address: ValidatedInput<String?, String, EnterNewAddressValidationError>,
@@ -311,7 +314,6 @@ internal sealed interface EnterNewAddressUiState {
 
 private class ValidContent(
   val moveFromAddressId: String,
-  val movingSource: MovingSource,
   val movingDate: LocalDate,
   val address: String,
   val postalCode: String,
@@ -338,7 +340,6 @@ private fun Content.validate(): ValidContent? {
   return either {
     ValidContent(
       moveFromAddressId = moveFromAddressId,
-      movingSource = movingSource,
       movingDate = movingDate.bind(),
       address = address.bind(),
       postalCode = postalCode.bind(),
@@ -364,7 +365,6 @@ private fun Content.validate(): ValidContent? {
 private fun MovingFlowState.toContent(): Content {
   return Content(
     moveFromAddressId = moveFromAddressId,
-    movingSource = movingSource,
     movingDate = ValidatedInput(
       initialValue = movingDateState.selectedMovingDate,
       validator = { movingDate ->

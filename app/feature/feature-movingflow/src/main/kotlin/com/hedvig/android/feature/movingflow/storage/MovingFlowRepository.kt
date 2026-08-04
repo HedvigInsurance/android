@@ -63,8 +63,8 @@ internal class MovingFlowRepository(
     squareMeters: Int,
     numberCoInsured: Int,
     isStudent: Boolean,
-  ) {
-    movingFlowStorage.editMovingFlowState { existingState ->
+  ): MovingFlowState? {
+    return movingFlowStorage.editMovingFlowState { existingState ->
       val updatedState = existingState.copy(
         addressInfo = existingState.addressInfo.copy(
           street = address,

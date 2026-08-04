@@ -58,14 +58,14 @@ internal class AddHouseInformationViewModel(
   apolloClient: ApolloClient,
   backstack: Backstack,
 ) : MoleculeViewModel<AddHouseInformationEvent, AddHouseInformationUiState>(
-  Loading,
-  AddHouseInformationPresenter(
-    moveIntentId,
-    movingFlowRepository,
-    apolloClient,
-    backstack,
-  ),
-)
+    Loading,
+    AddHouseInformationPresenter(
+      moveIntentId,
+      movingFlowRepository,
+      apolloClient,
+      backstack,
+    ),
+  )
 
 internal class AddHouseInformationPresenter(
   private val moveIntentId: String,
