@@ -12,6 +12,7 @@ import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressV
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressViewModelFactory
 import com.hedvig.android.feature.movingflow.ui.selectcontract.SelectContractDestination
 import com.hedvig.android.feature.movingflow.ui.selectcontract.SelectContractViewModel
+import com.hedvig.android.feature.movingflow.ui.selectcontract.SelectContractViewModelFactory
 import com.hedvig.android.feature.movingflow.ui.start.HousingTypeDestination
 import com.hedvig.android.feature.movingflow.ui.start.HousingTypeViewModel
 import com.hedvig.android.feature.movingflow.ui.start.HousingTypeViewModelFactory
@@ -27,7 +28,6 @@ import com.hedvig.android.shared.tier.comparison.ui.ComparisonDestination
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonViewModel
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonViewModelFactory
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
-import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
@@ -62,9 +62,12 @@ internal data class SuccessfulMoveKey(
 ) : HedvigNavKey
 
 fun EntryProviderScope<HedvigNavKey>.movingFlowEntries(backstack: Backstack, goToChat: () -> Unit) {
-  entry<SelectContractForMovingKey> {
+  entry<SelectContractForMovingKey> { key ->
+    val movingSource = key.source
     SelectContractDestination(
-      viewModel = metroViewModel<SelectContractViewModel>(),
+      viewModel = assistedMetroViewModel<SelectContractViewModel, SelectContractViewModelFactory> {
+        create(movingSource)
+      },
       navigateUp = backstack::navigateUp,
       exitFlow = { backstack.popUpTo<SelectContractForMovingKey>(inclusive = true) },
       goToChat = goToChat,

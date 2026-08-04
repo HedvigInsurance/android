@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.movingflow.data
 
+import com.hedvig.android.feature.movingflow.MovingSource
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.AddressInfo
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.ApartmentState
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.ApartmentState.ApartmentType
@@ -21,6 +22,8 @@ internal data class MovingFlowState(
   //  back to that step again
   val lastSelectedHomeQuoteId: String?,
   val mapOfPropertyStates: Map<HousingType, PropertyState>,
+  // Defaulted so that a flow which was persisted before this was tracked still deserializes
+  val movingSource: MovingSource = MovingSource.OTHER,
 ) {
   @Serializable
   data class AddressInfo(
@@ -133,6 +136,7 @@ internal fun MovingFlowState.Companion.fromFragments(
   moveIntentFragment: MoveIntentFragment,
   moveIntentQuotesFragment: MoveIntentQuotesFragment?,
   moveFromAddressId: String,
+  movingSource: MovingSource,
 ): MovingFlowState {
   val currentHomeAddress = moveIntentFragment.currentHomeAddresses.firstOrNull { it.id == moveFromAddressId }
     ?: moveIntentFragment.currentHomeAddresses.first()
@@ -193,6 +197,7 @@ internal fun MovingFlowState.Companion.fromFragments(
     mapOfPropertyStates = mapOfPropertyStates,
     movingFlowQuotes = moveIntentQuotesFragment?.toMovingFlowQuotes(),
     lastSelectedHomeQuoteId = null,
+    movingSource = movingSource,
   )
 }
 

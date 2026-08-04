@@ -17,6 +17,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.movingflow.HousingTypeKey
+import com.hedvig.android.feature.movingflow.MovingSource
 import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
 import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
 import com.hedvig.android.feature.movingflow.ui.selectcontract.SelectContractState.NotEmpty
@@ -28,18 +29,20 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
-import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedInject
 import octopus.feature.movingflow.MoveIntentV2CreateMutation
 import octopus.feature.movingflow.fragment.MoveIntentFragment
 
-@Inject
+@AssistedInject
 @HedvigViewModel(ActivityRetainedScope::class)
 internal class SelectContractViewModel(
+  @Assisted movingSource: MovingSource,
   apolloClient: ApolloClient,
   movingFlowRepository: MovingFlowRepository,
   backstack: Backstack,
 ) : MoleculeViewModel<SelectContractEvent, SelectContractState>(
-    presenter = SelectContractPresenter(apolloClient, movingFlowRepository, backstack),
+    presenter = SelectContractPresenter(apolloClient, movingFlowRepository, backstack, movingSource),
     initialState = SelectContractState.Loading,
   )
 
@@ -47,6 +50,7 @@ internal class SelectContractPresenter(
   private val apolloClient: ApolloClient,
   private val movingFlowRepository: MovingFlowRepository,
   private val backstack: Backstack,
+  private val movingSource: MovingSource,
 ) : MoleculePresenter<SelectContractEvent, SelectContractState> {
   @Composable
   override fun MoleculePresenterScope<SelectContractEvent>.present(
@@ -85,7 +89,7 @@ internal class SelectContractPresenter(
           currentState = state.copy(buttonLoading = true)
         }
         val moveIntent = state.intent
-        movingFlowRepository.initiateNewMovingFlow(moveIntent, id)
+        movingFlowRepository.initiateNewMovingFlow(moveIntent, id, movingSource)
         submittingAddressId = null
         if (state is Content) {
           currentState = state.copy(buttonLoading = false)

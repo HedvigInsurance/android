@@ -3,6 +3,7 @@ package com.hedvig.android.feature.terminateinsurance.navigation
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
 import com.hedvig.android.feature.terminateinsurance.data.SuggestionType
+import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionRedirection
 import com.hedvig.android.feature.terminateinsurance.data.TerminationAction
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.navigation.common.HedvigNavKey
@@ -21,6 +22,15 @@ internal data class TerminationSurveySecondStepKey(
   val subOptions: List<TerminationSurveyOption>,
   val action: TerminationAction,
   val commonParams: TerminationGraphParameters,
+) : HedvigNavKey
+
+@Serializable
+internal data class TerminationRedirectionKey(
+  val redirection: SurveyOptionRedirection,
+  val selectedOption: TerminationSurveyOption,
+  val action: TerminationAction,
+  val commonParams: TerminationGraphParameters,
+  val feedbackComment: String?,
 ) : HedvigNavKey
 
 @Serializable

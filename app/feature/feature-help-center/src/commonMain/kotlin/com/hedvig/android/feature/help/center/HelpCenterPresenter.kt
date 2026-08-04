@@ -47,6 +47,7 @@ import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDes
 import com.hedvig.android.feature.help.center.model.QuickAction
 import com.hedvig.android.feature.help.center.navigation.EmergencyKey
 import com.hedvig.android.feature.help.center.navigation.FirstVetKey
+import com.hedvig.android.feature.movingflow.MovingSource
 import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceKey
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateKey
@@ -185,7 +186,7 @@ internal class HelpCenterPresenter(
             }
 
             QuickLinkChangeAddress -> {
-              SelectContractForMovingKey
+              SelectContractForMovingKey(MovingSource.OTHER)
             }
 
             is QuickLinkCoInsuredAddInfo -> {

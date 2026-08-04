@@ -55,6 +55,7 @@ import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerImmutableState
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
+import com.hedvig.android.feature.movingflow.MovingSource
 import com.hedvig.android.feature.movingflow.compose.ConstrainedNumberInput
 import com.hedvig.android.feature.movingflow.compose.NoopValidator
 import com.hedvig.android.feature.movingflow.compose.ValidatedInput
@@ -422,6 +423,7 @@ fun PreviewEnterNewAddressScreen() {
   EnterNewAddressScreen(
     uiState = Content(
       moveFromAddressId = "moveFromAddressId",
+      movingSource = MovingSource.INSURANCE,
       movingDate = ValidatedInput(
         Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
         NoopValidator(),

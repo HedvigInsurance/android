@@ -23,6 +23,7 @@ import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.movingflow.AddHouseInformationKey
 import com.hedvig.android.feature.movingflow.ChoseCoverageLevelAndDeductibleKey
+import com.hedvig.android.feature.movingflow.MovingSource
 import com.hedvig.android.feature.movingflow.compose.BooleanInput
 import com.hedvig.android.feature.movingflow.compose.ConstrainedNumberInput
 import com.hedvig.android.feature.movingflow.compose.ValidatedInput
@@ -34,6 +35,7 @@ import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.ApartmentState.IsAvailableForStudentState.Available
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.ApartmentState.IsAvailableForStudentState.NotAvailable
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState
+import com.hedvig.android.feature.movingflow.data.toMoveIntentSourceInput
 import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressEvent.DismissSubmissionError
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressEvent.Submit
@@ -57,7 +59,6 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
 import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -77,14 +78,14 @@ internal class EnterNewAddressViewModel(
   apolloClient: ApolloClient,
   backstack: Backstack,
 ) : MoleculeViewModel<EnterNewAddressEvent, EnterNewAddressUiState>(
-    Loading,
-    EnterNewAddressPresenter(
-      moveIntentId,
-      movingFlowRepository,
-      apolloClient,
-      backstack,
-    ),
-  )
+  Loading,
+  EnterNewAddressPresenter(
+    moveIntentId,
+    movingFlowRepository,
+    apolloClient,
+    backstack,
+  ),
+)
 
 private class EnterNewAddressPresenter(
   private val moveIntentId: String,
@@ -242,6 +243,7 @@ private fun ValidContent.toInputForSubmission(): InputForSubmission {
         },
       ),
       house = Optional.absent(),
+      source = movingSource.toMoveIntentSourceInput(),
     ),
   )
 }
@@ -264,6 +266,7 @@ internal sealed interface EnterNewAddressUiState {
 
   data class Content(
     val moveFromAddressId: String,
+    val movingSource: MovingSource,
     val movingDate: ValidatedInput<LocalDate?, LocalDate, EnterNewAddressValidationError>,
     val allowedMovingDateRange: ClosedRange<LocalDate>,
     val address: ValidatedInput<String?, String, EnterNewAddressValidationError>,
@@ -308,6 +311,7 @@ internal sealed interface EnterNewAddressUiState {
 
 private class ValidContent(
   val moveFromAddressId: String,
+  val movingSource: MovingSource,
   val movingDate: LocalDate,
   val address: String,
   val postalCode: String,
@@ -334,6 +338,7 @@ private fun Content.validate(): ValidContent? {
   return either {
     ValidContent(
       moveFromAddressId = moveFromAddressId,
+      movingSource = movingSource,
       movingDate = movingDate.bind(),
       address = address.bind(),
       postalCode = postalCode.bind(),
@@ -359,6 +364,7 @@ private fun Content.validate(): ValidContent? {
 private fun MovingFlowState.toContent(): Content {
   return Content(
     moveFromAddressId = moveFromAddressId,
+    movingSource = movingSource,
     movingDate = ValidatedInput(
       initialValue = movingDateState.selectedMovingDate,
       validator = { movingDate ->
