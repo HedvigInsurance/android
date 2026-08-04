@@ -27,6 +27,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.common.di.ActivityRetainedScope
@@ -34,6 +36,7 @@ import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
@@ -149,21 +152,44 @@ internal sealed interface OnboardingInviteEvent {
 @Composable
 internal fun OnboardingInviteDestination(viewModel: OnboardingInviteViewModel, navigateUp: () -> Unit) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  OnboardingInviteScreen(
+    uiState = uiState,
+    progressAnimation = viewModel.progressBarAnimation,
+    navigateUp = navigateUp,
+    onClose = { viewModel.emit(OnboardingInviteEvent.Close) },
+    onRetry = { viewModel.emit(OnboardingInviteEvent.Retry) },
+    onContinue = { viewModel.emit(OnboardingInviteEvent.Continue) },
+    onInviteFriend = { viewModel.emit(OnboardingInviteEvent.InviteFriend) },
+    onInviteCardAnimationCompleted = { viewModel.emit(OnboardingInviteEvent.InviteCardAnimationCompleted) },
+  )
+}
+
+@Composable
+private fun OnboardingInviteScreen(
+  uiState: OnboardingInviteUiState,
+  progressAnimation: OnboardingProgressBarAnimation,
+  navigateUp: () -> Unit,
+  onClose: () -> Unit,
+  onRetry: () -> Unit,
+  onContinue: () -> Unit,
+  onInviteFriend: () -> Unit,
+  onInviteCardAnimationCompleted: () -> Unit,
+) {
   OnboardingStepScaffold(
     progress = (uiState as? OnboardingInviteUiState.Content)?.progress,
     showBackButton = true,
     onBackClick = navigateUp,
-    onCloseClick = { viewModel.emit(OnboardingInviteEvent.Close) },
-    progressAnimation = viewModel.progressBarAnimation,
+    onCloseClick = onClose,
+    progressAnimation = progressAnimation,
   ) {
-    when (val state = uiState) {
+    when (uiState) {
       OnboardingInviteUiState.Loading -> {
         HedvigFullScreenCenterAlignedProgressDebounced()
       }
 
       OnboardingInviteUiState.Error -> {
         HedvigErrorSection(
-          onButtonClick = { viewModel.emit(OnboardingInviteEvent.Retry) },
+          onButtonClick = onRetry,
         )
       }
 
@@ -171,7 +197,7 @@ internal fun OnboardingInviteDestination(viewModel: OnboardingInviteViewModel, n
         Spacer(Modifier.height(16.dp))
         OnboardingStepHeader(
           title = stringResource(Res.string.ONBOARDING_INVITE_FRIEND_TITLE),
-          description = stringResource(Res.string.ONBOARDING_INVITE_FRIEND_SUBTITLE, state.incentiveDisplay),
+          description = stringResource(Res.string.ONBOARDING_INVITE_FRIEND_SUBTITLE, uiState.incentiveDisplay),
         )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(24.dp))
@@ -184,9 +210,9 @@ internal fun OnboardingInviteDestination(viewModel: OnboardingInviteViewModel, n
           contentAlignment = Alignment.Center,
         ) {
           ExampleReferralsCard(
-            incentiveDisplay = state.incentiveDisplay,
-            animationAlreadyPlayed = state.inviteCardAnimationPlayed,
-            onAnimationCompleted = { viewModel.emit(OnboardingInviteEvent.InviteCardAnimationCompleted) },
+            incentiveDisplay = uiState.incentiveDisplay,
+            animationAlreadyPlayed = uiState.inviteCardAnimationPlayed,
+            onAnimationCompleted = onInviteCardAnimationCompleted,
             modifier = Modifier
               .widthIn(max = 280.dp)
               .fillMaxWidth(),
@@ -196,10 +222,10 @@ internal fun OnboardingInviteDestination(viewModel: OnboardingInviteViewModel, n
         Spacer(Modifier.height(24.dp))
         OnboardingStepButtons(
           primaryText = stringResource(Res.string.general_continue_button),
-          onPrimaryClick = { viewModel.emit(OnboardingInviteEvent.Continue) },
+          onPrimaryClick = onContinue,
           secondaryText = stringResource(Res.string.ONBOARDING_INVITE_FRIEND_TITLE),
           secondaryAbovePrimary = true,
-          onSecondaryClick = { viewModel.emit(OnboardingInviteEvent.InviteFriend) },
+          onSecondaryClick = onInviteFriend,
         )
       }
     }
@@ -286,4 +312,37 @@ private const val RowRevealDurationMillis = MotionTokens.DurationLong4.toInt()
 private fun <T> rowRevealAnimationSpec(): TweenSpec<T> = tween(
   durationMillis = RowRevealDurationMillis,
   easing = MotionTokens.EasingEmphasizedDecelerateCubicBezier,
+)
+
+@HedvigPreview
+@Composable
+private fun PreviewOnboardingInviteScreen(
+  @PreviewParameter(OnboardingInviteUiStateProvider::class) uiState: OnboardingInviteUiState,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      OnboardingInviteScreen(
+        uiState = uiState,
+        progressAnimation = remember { OnboardingProgressBarAnimation() },
+        navigateUp = {},
+        onClose = {},
+        onRetry = {},
+        onContinue = {},
+        onInviteFriend = {},
+        onInviteCardAnimationCompleted = {},
+      )
+    }
+  }
+}
+
+private class OnboardingInviteUiStateProvider : CollectionPreviewParameterProvider<OnboardingInviteUiState>(
+  listOf(
+    OnboardingInviteUiState.Loading,
+    OnboardingInviteUiState.Error,
+    OnboardingInviteUiState.Content(
+      progress = OnboardingProgress(totalSteps = 5, currentIndex = 4),
+      incentiveDisplay = "10 kr",
+      inviteCardAnimationPlayed = true,
+    ),
+  ),
 )
