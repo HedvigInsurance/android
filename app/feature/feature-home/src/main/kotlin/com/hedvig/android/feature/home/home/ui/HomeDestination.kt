@@ -5,6 +5,7 @@ import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -54,7 +55,12 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.drawOutline
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
@@ -689,10 +695,14 @@ private fun HomeScreenSuccess(
         }
       }
     }
+    // The sheet's surface is painted by three things that have to agree: this backdrop, the pinned lid,
+    // and every scrolling section's own background. Only the parts the sections don't cover are actually
+    // this backdrop, so changing one of the three alone leaves the rest at the old color.
+    val sheetColor = HedvigTheme.colorScheme.backgroundPrimary
+    val sheetShape = HedvigTheme.shapes.cornerXLargeTop
     // Opaque sheet backdrop from the pinned lid down to the bottom, so the sheet fills the screen even
     // when the content is short (e.g. landscape) — no blur gap below the last section. Drawn behind the
     // LazyColumn (on top of the blur); the hero + pills above the lid stay transparent on the gradient.
-    val sheetColor = HedvigTheme.colorScheme.backgroundPrimary
     val contentMaxWidth = 600.dp
     Box(
       Modifier
@@ -799,10 +809,8 @@ private fun HomeScreenSuccess(
             HomeSheetDragHandle(
               Modifier
                 .fillMaxWidth()
-                .background(
-                  color = HedvigTheme.colorScheme.backgroundPrimary,
-                  shape = HedvigTheme.shapes.cornerXLargeTop,
-                ),
+                .background(color = sheetColor, shape = sheetShape)
+                .topEdgeBorder(sheetShape, HedvigTheme.colorScheme.borderPrimary),
             )
           }
         }
@@ -824,7 +832,7 @@ private fun HomeScreenSuccess(
               val clipTop = (stickyHeaderBottomPx - itemTopPx).coerceIn(0f, size.height)
               clipRect(top = clipTop) { this@drawWithContent.drawContent() }
             }
-            .background(HedvigTheme.colorScheme.backgroundPrimary),
+            .background(sheetColor),
         ) {
           // The first scrolling section keeps a leading gap below the pinned lid; every section then carries
           // its gap to the NEXT one as trailing room, giving drop-shadows space within the section.
@@ -900,6 +908,23 @@ private fun HomeScreenSuccess(
           }
         }
       }
+    }
+  }
+}
+
+/**
+ * Strokes only the top of [shape]: its rounded corners and the edge between them. The stroke runs down
+ * the sides for the height of the element it is applied to and stops there, and the bottom edge is
+ * clipped away entirely, so the surface below continues borderless.
+ */
+private fun Modifier.topEdgeBorder(shape: Shape, color: Color, width: Dp = 1.dp): Modifier = drawWithContent {
+  drawContent()
+  val stroke = width.toPx()
+  // Outline sized and offset so the whole stroke lands inside the element rather than straddling its edge.
+  val outline = shape.createOutline(Size(size.width - stroke, size.height), layoutDirection, this)
+  clipRect(bottom = size.height - stroke) {
+    translate(left = stroke / 2f, top = stroke / 2f) {
+      drawOutline(outline, color = color, style = Stroke(stroke))
     }
   }
 }
