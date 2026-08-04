@@ -605,6 +605,7 @@
   <string name="OFFER_START_DATE_PLURAL">Startdatum</string>
   <string name="ONBOARDING_ACTIVATE_NOTIFICATIONS_DISMISS">Hoppa över</string>
   <string name="ONBOARDING_ADDED_LABEL">Tillagd</string>
+  <string name="ONBOARDING_ADD_BUTTON">Lägg till</string>
   <string name="ONBOARDING_ADD_COINSURED_TITLE">Lägg till medförsäkrade</string>
   <string name="ONBOARDING_ADD_COOWNERS_TITLE">Lägg till medägare</string>
   <string name="ONBOARDING_ADD_INFO_LATER_LABEL">Du kan lägga till informationen senare</string>
@@ -616,6 +617,7 @@
   <string name="ONBOARDING_CHANGE_SETTINGS_LATER_LABEL">Du kan ändra inställningarna senare</string>
   <string name="ONBOARDING_CONNECT_PAYMENT_FOOTNOTE">Du behöver lägga till ett betalsätt för att din försäkring ska fortsätta gälla</string>
   <string name="ONBOARDING_CONNECT_PAYMENT_SUBTITLE">Lägg till ett betalsätt för att aktivera din försäkring</string>
+  <string name="ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER">Du kan byta konto senare i inställningar</string>
   <string name="ONBOARDING_CONNECT_PAYMENT_TITLE">Koppla betalning</string>
   <string name="ONBOARDING_CONTINUE_TO_APP_BUTTON">Fortsätt till appen</string>
   <string name="ONBOARDING_CROSS_SELL_SUBTITLE">Du får 15 % paketrabatt när du har två eller fler försäkringar hos oss</string>
@@ -627,8 +629,10 @@
   <string name="ONBOARDING_MISSING_INFO_PET_SUBTITLE">Det gör det lättare att hjälpa dig om något händer</string>
   <string name="ONBOARDING_MISSING_INFO_SUBTITLE">Så att vi vet vilka som omfattas av din försäkring</string>
   <string name="ONBOARDING_OPENS_IN_BROWSER_HINT">Öppnas i din webbläsare</string>
+  <string name="ONBOARDING_PHONE_SAVE_ERROR">Kunde inte spara, försök igen</string>
   <string name="ONBOARDING_PHONE_SUBTITLE">Lägg till ditt telefonnummer så att vi kan nå dig om något händer</string>
   <string name="ONBOARDING_PHONE_TITLE">Telefonnummer</string>
+  <string name="ONBOARDING_SEE_PRICE_BUTTON">Se pris</string>
   <string name="ONBOARDING_THEME_DARK_SUBTITLE">Använd mörkt läge</string>
   <string name="ONBOARDING_THEME_LIGHT_SUBTITLE">Använd ljust läge</string>
   <string name="ONBOARDING_THEME_SUBTITLE">Anpassa appens utseende</string>
@@ -798,6 +802,9 @@
   <string name="SETTINGS_THEME_SYSTEM_DEFAULT">Systemets standardinställning</string>
   <string name="SETTINGS_THEME_TITLE">Tema</string>
   <string name="SETTINGS_TITLE">Inställningar</string>
+  <string name="SETTINGS_USAGE_DATA_DISABLED">Inaktiverad</string>
+  <string name="SETTINGS_USAGE_DATA_ENABLED">Aktiverad</string>
+  <string name="SETTINGS_USAGE_DATA_TITLE">Användningsdata</string>
   <string name="SINGLE_ITEM_INFO_BRAND">Märke</string>
   <string name="SUBMIT_CLAIM__PURCHASE_PRICE_TITLE">Fyll i ditt inköpspris</string>
   <string name="SUBMIT_CLAIM_CAR_BUTTON_TITLE">Fortsätt</string>
