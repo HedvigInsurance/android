@@ -33,4 +33,28 @@ class CrossSellInfoTypeToCrossSellInputTest {
     assertThat(input.flowSource).isEqualTo(Optional.present(FlowSource.MOVING))
     assertThat(input.contractId).isEqualTo(Optional.absent())
   }
+
+  @Test
+  fun `a closed claim flow passes the claim id to the cross sell input`() {
+    val input = CrossSellInfoType.ClosedClaim(
+      info = CrossSellInfoType.ClosedClaim.ClaimInfo(
+        id = "claimId",
+        status = null,
+        type = null,
+        typeOfContract = null,
+      ),
+      contractId = "contractId",
+    ).toCrossSellSource()
+
+    assertThat(input.flowSource).isEqualTo(Optional.present(FlowSource.CLOSED_CLAIM))
+    assertThat(input.claimId).isEqualTo(Optional.present("claimId"))
+    assertThat(input.contractId).isEqualTo(Optional.present("contractId"))
+  }
+
+  @Test
+  fun `a flow that is not a closed claim leaves the claim id absent in the cross sell input`() {
+    val input = CrossSellInfoType.ChangeTier("contractId").toCrossSellSource()
+
+    assertThat(input.claimId).isEqualTo(Optional.absent())
+  }
 }
