@@ -1336,8 +1336,7 @@ private fun WelcomeMessage(firstName: String, modifier: Modifier = Modifier) {
   // todo custom style since new DS does not have this specification
   //  https://hedviginsurance.slack.com/archives/C03U9C6Q7TP/p1727365167917719
   val titleStyle = HedvigTheme.typography.headlineMedium.copy(
-    fontFamily = HedvigTheme.typography.serif,
-    fontSize = 28.0.sp,
+    fontSize = 24.0.sp,
     lineBreak = LineBreak.Heading,
     textAlign = TextAlign.Center,
   )
