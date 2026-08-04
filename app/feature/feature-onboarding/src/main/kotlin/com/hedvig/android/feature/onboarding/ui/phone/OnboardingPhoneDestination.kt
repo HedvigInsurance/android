@@ -17,14 +17,19 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.onboarding.data.OnboardingRepository
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
@@ -52,12 +57,35 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun OnboardingPhoneDestination(viewModel: OnboardingPhoneViewModel, navigateUp: () -> Unit) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  OnboardingPhoneScreen(
+    uiState = uiState,
+    progressAnimation = viewModel.progressBarAnimation,
+    navigateUp = navigateUp,
+    onClose = { viewModel.emit(OnboardingPhoneEvent.Close) },
+    onRetry = { viewModel.emit(OnboardingPhoneEvent.Retry) },
+    onSave = { viewModel.emit(OnboardingPhoneEvent.Save(it)) },
+    onClearSubmissionError = { viewModel.emit(OnboardingPhoneEvent.ClearSubmissionError) },
+    onDoThisLater = { viewModel.emit(OnboardingPhoneEvent.DoThisLater) },
+  )
+}
+
+@Composable
+private fun OnboardingPhoneScreen(
+  uiState: OnboardingPhoneUiState,
+  progressAnimation: OnboardingProgressBarAnimation,
+  navigateUp: () -> Unit,
+  onClose: () -> Unit,
+  onRetry: () -> Unit,
+  onSave: (phoneNumber: String) -> Unit,
+  onClearSubmissionError: () -> Unit,
+  onDoThisLater: () -> Unit,
+) {
   OnboardingStepScaffold(
     progress = (uiState as? OnboardingPhoneUiState.Content)?.progress,
     showBackButton = true,
     onBackClick = navigateUp,
-    onCloseClick = { viewModel.emit(OnboardingPhoneEvent.Close) },
-    progressAnimation = viewModel.progressBarAnimation,
+    onCloseClick = onClose,
+    progressAnimation = progressAnimation,
   ) {
     when (val content = uiState) {
       OnboardingPhoneUiState.Loading -> {
@@ -66,7 +94,7 @@ internal fun OnboardingPhoneDestination(viewModel: OnboardingPhoneViewModel, nav
 
       OnboardingPhoneUiState.Error -> {
         HedvigErrorSection(
-          onButtonClick = { viewModel.emit(OnboardingPhoneEvent.Retry) },
+          onButtonClick = onRetry,
         )
       }
 
@@ -75,7 +103,7 @@ internal fun OnboardingPhoneDestination(viewModel: OnboardingPhoneViewModel, nav
         LaunchedEffect(phoneNumberState) {
           snapshotFlow { phoneNumberState.text.toString() }
             .drop(1)
-            .collect { viewModel.emit(OnboardingPhoneEvent.ClearSubmissionError) }
+            .collect { onClearSubmissionError() }
         }
         Spacer(Modifier.height(16.dp))
         OnboardingStepHeader(
@@ -105,12 +133,49 @@ internal fun OnboardingPhoneDestination(viewModel: OnboardingPhoneViewModel, nav
         )
         OnboardingStepButtons(
           primaryText = stringResource(Res.string.general_save_button),
-          onPrimaryClick = { viewModel.emit(OnboardingPhoneEvent.Save(phoneNumberState.text.toString())) },
+          onPrimaryClick = { onSave(phoneNumberState.text.toString()) },
           primaryEnabled = !content.isSubmitting && phoneNumberState.text.isNotBlank(),
           secondaryText = stringResource(Res.string.ONBOARDING_DO_THIS_LATER_BUTTON),
-          onSecondaryClick = { viewModel.emit(OnboardingPhoneEvent.DoThisLater) },
+          onSecondaryClick = onDoThisLater,
         )
       }
     }
   }
 }
+
+@HedvigPreview
+@Composable
+private fun PreviewOnboardingPhoneScreen(
+  @PreviewParameter(OnboardingPhoneUiStateProvider::class) uiState: OnboardingPhoneUiState,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      OnboardingPhoneScreen(
+        uiState = uiState,
+        progressAnimation = remember { OnboardingProgressBarAnimation() },
+        navigateUp = {},
+        onClose = {},
+        onRetry = {},
+        onSave = {},
+        onClearSubmissionError = {},
+        onDoThisLater = {},
+      )
+    }
+  }
+}
+
+private class OnboardingPhoneUiStateProvider : CollectionPreviewParameterProvider<OnboardingPhoneUiState>(
+  listOf(
+    OnboardingPhoneUiState.Loading,
+    OnboardingPhoneUiState.Error,
+    OnboardingPhoneUiState.Content(
+      progress = OnboardingProgress(totalSteps = 5, currentIndex = 3),
+      phoneNumber = "070 123 45 67",
+    ),
+    OnboardingPhoneUiState.Content(
+      progress = OnboardingProgress(totalSteps = 5, currentIndex = 3),
+      phoneNumber = "070 123 45 67",
+      showSubmissionError = true,
+    ),
+  ),
+)

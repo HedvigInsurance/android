@@ -73,7 +73,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun OnboardingThemeDestination(viewModel: OnboardingThemeViewModel, navigateUp: () -> Unit) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  OnboardingThemeDestination(
+  OnboardingThemeScreen(
     uiState = uiState,
     navigateUp = navigateUp,
     onCloseClick = { viewModel.emit(OnboardingThemeEvent.Close) },
@@ -85,7 +85,7 @@ internal fun OnboardingThemeDestination(viewModel: OnboardingThemeViewModel, nav
 }
 
 @Composable
-private fun OnboardingThemeDestination(
+private fun OnboardingThemeScreen(
   uiState: OnboardingThemeUiState,
   navigateUp: () -> Unit,
   onCloseClick: () -> Unit,
@@ -259,9 +259,9 @@ private val DarkThemeSwatchColor = Color(0xFF121212)
 
 @HedvigPreview
 @Composable
-private fun PreviewOnboardingThemeDestination() {
+private fun PreviewOnboardingThemeScreen() {
   HedvigTheme {
-    OnboardingThemeDestination(
+    OnboardingThemeScreen(
       uiState = OnboardingThemeUiState.Content(
         progress = OnboardingProgress(totalSteps = 5, currentIndex = 2),
         selectedTheme = Theme.SYSTEM_DEFAULT,
