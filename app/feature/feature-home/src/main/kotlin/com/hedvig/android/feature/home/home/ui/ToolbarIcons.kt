@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -27,12 +28,12 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.icon.Chat
+import com.hedvig.android.design.system.hedvig.icon.Campaign
+import com.hedvig.android.design.system.hedvig.icon.ChatNoCircle
 import com.hedvig.android.design.system.hedvig.icon.Clock
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.icon.colored.ColoredCampaign
 import com.hedvig.android.design.system.hedvig.icon.colored.ColoredChat
-import com.hedvig.android.design.system.hedvig.icon.colored.ColoredFirstVet
+import com.hedvig.android.design.system.hedvig.icon.colored.ColoredFirstVetNoCircle
 import hedvig.resources.DASHBOARD_OPEN_CHAT
 import hedvig.resources.HC_QUICK_ACTIONS_FIRSTVET_SUBTITLE
 import hedvig.resources.Res
@@ -40,33 +41,49 @@ import hedvig.resources.home_tab_claim_button_text
 import hedvig.resources.insurance_tab_cross_sells_title
 import org.jetbrains.compose.resources.stringResource
 
-@Composable
-fun ToolbarChatIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
-  Icon(
-    imageVector = HedvigIcons.Chat,
-    contentDescription = stringResource(Res.string.DASHBOARD_OPEN_CHAT),
-    tint = HedvigTheme.colorScheme.signalGreyElement,
-    modifier = modifier
-      .size(40.dp)
-      .shadow(4.dp, CircleShape)
-      .clip(CircleShape)
-      .background(HedvigTheme.colorScheme.surfacePrimaryTransparent)
-      .clickable(role = Role.Button, onClick = onClick),
-  )
-}
+// Diameter shared by every circular button in the home top app bar, and the glyph centered in it.
+private val toolbarButtonSize = 48.dp
+private val toolbarGlyphSize = 24.dp
 
+/**
+ * The circular surface every home top app bar button sits on: a [toolbarButtonSize] circle holding a
+ * centered [toolbarGlyphSize] glyph.
+ */
 @Composable
-fun ToolbarFirstVetIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
-  Image(
-    imageVector = HedvigIcons.ColoredFirstVet,
-    contentDescription = stringResource(Res.string.HC_QUICK_ACTIONS_FIRSTVET_SUBTITLE),
+private fun ToolbarIconButton(onClick: () -> Unit, modifier: Modifier = Modifier, glyph: @Composable () -> Unit) {
+  Box(
+    contentAlignment = Alignment.Center,
     modifier = modifier
-      .size(40.dp)
+      .size(toolbarButtonSize)
       .shadow(4.dp, CircleShape)
       .clip(CircleShape)
       .background(HedvigTheme.colorScheme.surfacePrimary)
       .clickable(role = Role.Button, onClick = onClick),
+    content = { glyph() },
   )
+}
+
+@Composable
+fun ToolbarChatIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
+  ToolbarIconButton(onClick = onClick, modifier = modifier) {
+    Icon(
+      imageVector = HedvigIcons.ChatNoCircle,
+      contentDescription = stringResource(Res.string.DASHBOARD_OPEN_CHAT),
+      tint = HedvigTheme.colorScheme.fillPrimary,
+      modifier = Modifier.size(toolbarGlyphSize),
+    )
+  }
+}
+
+@Composable
+fun ToolbarFirstVetIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
+  ToolbarIconButton(onClick = onClick, modifier = modifier) {
+    Image(
+      imageVector = HedvigIcons.ColoredFirstVetNoCircle,
+      contentDescription = stringResource(Res.string.HC_QUICK_ACTIONS_FIRSTVET_SUBTITLE),
+      modifier = Modifier.size(toolbarGlyphSize),
+    )
+  }
 }
 
 @Composable
@@ -76,41 +93,18 @@ fun ToolbarCrossSellsIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
     targetValue = if (isRotated) 360f else 0f,
     animationSpec = tween(1500, 50),
   )
-  Image(
-    imageVector = HedvigIcons.ColoredCampaign,
-    contentDescription = stringResource(Res.string.insurance_tab_cross_sells_title),
-    modifier = modifier
-      // Spin the whole circular icon as one unit (outermost transform), so the rotation stays within
-      // the circular clip and shadow.
-      .graphicsLayer { rotationZ = fullRotation }
-      .size(40.dp)
-      .shadow(4.dp, CircleShape)
-      .clip(CircleShape)
-      .background(HedvigTheme.colorScheme.surfacePrimary)
-      .clickable(role = Role.Button, onClick = onClick),
-  )
-}
-
-@Composable
-fun ToolbarClaimChatIcon(onClick: () -> Unit, modifier: Modifier = Modifier, isDev: Boolean = false) {
-  Box {
+  ToolbarIconButton(
+    onClick = onClick,
+    // Spin the whole circular icon as one unit (outermost transform), so the rotation stays within
+    // the circular clip and shadow.
+    modifier = modifier.graphicsLayer { rotationZ = fullRotation },
+  ) {
     Icon(
-      imageVector = HedvigIcons.ColoredChat,
-      contentDescription = stringResource(Res.string.home_tab_claim_button_text),
-      tint = Color.Unspecified,
-      modifier = modifier
-        .size(40.dp)
-        .shadow(4.dp, CircleShape)
-        .clip(CircleShape)
-        .clickable(role = Role.Button, onClick = onClick),
+      imageVector = HedvigIcons.Campaign,
+      contentDescription = stringResource(Res.string.insurance_tab_cross_sells_title),
+      tint = HedvigTheme.colorScheme.signalGreenElement,
+      modifier = Modifier.size(toolbarGlyphSize),
     )
-    if (isDev) {
-      HedvigText(
-        "dev",
-        style = HedvigTheme.typography.label,
-        modifier = Modifier.align(Alignment.Center),
-      )
-    }
   }
 }
 
@@ -120,14 +114,11 @@ private fun PreviewToolbarChatIcon() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       Row {
-        ToolbarClaimChatIcon({}, isDev = true)
-        Spacer(modifier = Modifier.width(8.dp))
-        ToolbarClaimChatIcon({})
+        ToolbarFirstVetIcon(onClick = {})
         Spacer(modifier = Modifier.width(8.dp))
         ToolbarCrossSellsIcon({})
         Spacer(modifier = Modifier.width(8.dp))
-        ToolbarFirstVetIcon(onClick = {})
-        Spacer(modifier = Modifier.width(8.dp))
+
         ToolbarChatIcon({})
       }
     }
