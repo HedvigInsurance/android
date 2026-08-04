@@ -429,37 +429,33 @@ private fun HomeScreen(
             if (currentState.firstVetAction != null) add(currentState.firstVetAction)
             if (currentState.chatAction != null) add(currentState.chatAction)
           }
-          OnHeroGradient {
-            actionsList.forEach { action ->
-              when (action) {
-                ChatAction -> {
-                  // The FirstVet/cross-sell icons are colored images (theme-independent), but this one is a
-                  // tinted glyph on a tonal surface, so it must use the light scheme on the light gradient.
-                  ToolbarChatIcon(
-                    onClick = onNavigateToInbox,
-                    modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
-                  )
-                }
+          actionsList.forEach { action ->
+            when (action) {
+              ChatAction -> {
+                ToolbarChatIcon(
+                  onClick = onNavigateToInbox,
+                  modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
+                )
+              }
 
-                is CrossSellsAction -> {
-                  ToolbarCrossSellsIcon(
-                    onClick = {
-                      crossSellBottomSheetState.show(
-                        action.crossSells,
-                      )
-                    },
-                    modifier = Modifier.notificationCircle(
-                      action.crossSellRecommendationNotification.hasUnreadRecommendation,
-                    ),
-                  )
-                }
+              is CrossSellsAction -> {
+                ToolbarCrossSellsIcon(
+                  onClick = {
+                    crossSellBottomSheetState.show(
+                      action.crossSells,
+                    )
+                  },
+                  modifier = Modifier.notificationCircle(
+                    action.crossSellRecommendationNotification.hasUnreadRecommendation,
+                  ),
+                )
+              }
 
-                is FirstVetAction -> {
-                  val sections = action.sections
-                  ToolbarFirstVetIcon(
-                    onClick = { navigateToFirstVet(sections) },
-                  )
-                }
+              is FirstVetAction -> {
+                val sections = action.sections
+                ToolbarFirstVetIcon(
+                  onClick = { navigateToFirstVet(sections) },
+                )
               }
             }
           }
@@ -595,14 +591,17 @@ private fun HomeScreenSuccess(
       .onConsumedWindowInsetsChanged { consumedWindowInsets.insets = it }
       .pullRefresh(pullRefreshState),
   ) {
-    // Full-screen blur gradient behind the whole home screen. Sections that need a solid surface draw
-    // their own background on top to "hide" it (the content cards already do; so do the pinned pills).
-    Image(
-      painter = painterResource(Res.drawable.blur_background),
-      contentDescription = null,
-      contentScale = ContentScale.Crop,
-      modifier = Modifier.matchParentSize(),
-    )
+    // Full-screen blur gradient behind the whole home screen, in the light theme only; the dark theme
+    // keeps the regular background. Sections that need a solid surface draw their own background on top
+    // to "hide" it (the content cards already do; so do the pinned pills).
+    if (HedvigTheme.colorScheme.isLight) {
+      Image(
+        painter = painterResource(Res.drawable.blur_background),
+        contentDescription = null,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier.matchParentSize(),
+      )
+    }
     NotificationPermissionDialog(notificationPermissionState, openAppSettings)
     val horizontalInsets =
       WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).exclude(consumedWindowInsets).asPaddingValues()
@@ -770,9 +769,7 @@ private fun HomeScreenSuccess(
                 }
               },
           ) {
-            OnHeroGradient {
-              WelcomeSection(uiState.firstName)
-            }
+            WelcomeSection(uiState.firstName)
           }
         }
       }
@@ -791,16 +788,14 @@ private fun HomeScreenSuccess(
               .pointerInput(Unit) { detectTapGestures {} },
           ) {
             Spacer(Modifier.height(pinnedTopOffset))
-            OnHeroGradient {
-              QuickActionCarouselSection(
-                isHelpCenterEnabled = uiState.isHelpCenterEnabled,
-                onMakeClaim = openClaimFlowSheet,
-                onHelpAndSupport = navigateToHelpCenter,
-                onContactUs = onNavigateToInbox,
-                horizontalInsets = horizontalInsets,
-                modifier = Modifier.padding(bottom = 8.dp),
-              )
-            }
+            QuickActionCarouselSection(
+              isHelpCenterEnabled = uiState.isHelpCenterEnabled,
+              onMakeClaim = openClaimFlowSheet,
+              onHelpAndSupport = navigateToHelpCenter,
+              onContactUs = onNavigateToInbox,
+              horizontalInsets = horizontalInsets,
+              modifier = Modifier.padding(bottom = 8.dp),
+            )
             HomeSheetDragHandle(
               Modifier
                 .fillMaxWidth()
@@ -968,16 +963,6 @@ private val homeSectionGap = 40.dp
 private fun gapAfter(section: HomeSection): Dp = when (section) {
   HomeSection.QuickActionCarousel -> homeSectionLeadInGap
   else -> homeSectionGap
-}
-
-/**
- * The hero gradient ([Res.drawable.blur_background]) is the same light image in both light and dark
- * themes, so content drawn on it (greeting, pills, the tonal chat icon) must always render with the
- * light color scheme. Otherwise dark-theme text and tints turn near-invisible against the light gradient.
- */
-@Composable
-private fun OnHeroGradient(content: @Composable () -> Unit) {
-  HedvigTheme(darkTheme = false, content = content)
 }
 
 @Composable

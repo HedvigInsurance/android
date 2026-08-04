@@ -13,6 +13,11 @@ import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens
 
 @Immutable
 data class ColorScheme(
+  /**
+   * Whether this is the light color scheme. Read it for UI that cannot be expressed as a color token,
+   * such as a background image that only exists in one theme.
+   */
+  val isLight: Boolean,
   val textPrimary: Color,
   val textNegative: Color,
   val textSecondary: Color,
@@ -121,6 +126,7 @@ data class ColorScheme(
 )
 
 internal val lightColorScheme: ColorScheme = ColorScheme(
+  isLight = true,
   textPrimary = ColorLightTokens.TextPrimary,
   textNegative = ColorLightTokens.TextNegative,
   textSecondary = ColorLightTokens.TextSecondary,
@@ -229,6 +235,7 @@ internal val lightColorScheme: ColorScheme = ColorScheme(
 )
 
 internal val darkColorScheme: ColorScheme = ColorScheme(
+  isLight = false,
   textPrimary = ColorDarkTokens.TextPrimary,
   textNegative = ColorDarkTokens.TextNegative,
   textSecondary = ColorDarkTokens.TextSecondary,
