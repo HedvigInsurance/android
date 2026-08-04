@@ -418,7 +418,9 @@
   <string name="GENERAL_CHANGE_CONFIRMATION_DESCRIPTION">Your insurance will be updated starting from %1$s</string>
   <string name="GENERAL_CONFIRM">Confirm</string>
   <string name="GENERAL_CONTACT_US_TITLE">Contact our service team</string>
+  <string name="GENERAL_DISABLED">Disabled</string>
   <string name="GENERAL_DOWNLOAD">Download</string>
+  <string name="GENERAL_ENABLED">Enabled</string>
   <string name="GENERAL_INVALID_INPUT">Invalid input</string>
   <string name="GENERAL_NOT_SURE">Not sure</string>
   <string name="GENERAL_RETRY">Try again</string>
