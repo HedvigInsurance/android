@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -70,13 +71,7 @@ internal class OnboardingInviteViewModel(
 ) : MoleculeViewModel<OnboardingInviteEvent, OnboardingInviteUiState>(
     initialState = OnboardingInviteUiState.Loading,
     presenter = OnboardingInvitePresenter(sessionStore, navigator),
-  ) {
-  /**
-   * The example referrals card staggers its rows in the first time it is seen. Lives here so the
-   * one-shot survives leaving and returning to this step within one onboarding session.
-   */
-  var inviteCardAnimationPlayed: Boolean = false
-}
+  )
 
 internal class OnboardingInvitePresenter(
   private val sessionStore: OnboardingSessionStore,
@@ -88,6 +83,7 @@ internal class OnboardingInvitePresenter(
   ): OnboardingInviteUiState {
     var currentState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
+    var inviteCardAnimationPlayed by remember { mutableStateOf(false) }
 
     LaunchedEffect(loadIteration) {
       if (currentState is OnboardingInviteUiState.Content) return@LaunchedEffect
@@ -115,10 +111,14 @@ internal class OnboardingInvitePresenter(
         OnboardingInviteEvent.Close -> launch { navigator.exitOnboarding() }
         OnboardingInviteEvent.Continue -> launch { navigator.continueFrom(OnboardingStepId.InviteFriend) }
         OnboardingInviteEvent.InviteFriend -> navigator.openForeverScreen()
+        OnboardingInviteEvent.InviteCardAnimationCompleted -> inviteCardAnimationPlayed = true
       }
     }
 
-    return currentState
+    return when (val state = currentState) {
+      is OnboardingInviteUiState.Content -> state.copy(inviteCardAnimationPlayed = inviteCardAnimationPlayed)
+      else -> state
+    }
   }
 }
 
@@ -130,6 +130,7 @@ internal sealed interface OnboardingInviteUiState {
   data class Content(
     val progress: OnboardingProgress,
     val incentiveDisplay: String,
+    val inviteCardAnimationPlayed: Boolean = false,
   ) : OnboardingInviteUiState
 }
 
@@ -141,6 +142,8 @@ internal sealed interface OnboardingInviteEvent {
   data object Continue : OnboardingInviteEvent
 
   data object InviteFriend : OnboardingInviteEvent
+
+  data object InviteCardAnimationCompleted : OnboardingInviteEvent
 }
 
 @Composable
@@ -172,14 +175,23 @@ internal fun OnboardingInviteDestination(viewModel: OnboardingInviteViewModel, n
         )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(24.dp))
-        ExampleReferralsCard(
-          incentiveDisplay = state.incentiveDisplay,
-          animationAlreadyPlayed = viewModel.inviteCardAnimationPlayed,
-          onAnimationCompleted = { viewModel.inviteCardAnimationPlayed = true },
+        // Outer box takes a fraction of the width so the card keeps side margins in portrait; the
+        // inner cap keeps it from stretching (and its rows spreading) on wide, e.g. landscape, layouts.
+        Box(
           modifier = Modifier
             .align(Alignment.CenterHorizontally)
             .fillMaxWidth(0.72f),
-        )
+          contentAlignment = Alignment.Center,
+        ) {
+          ExampleReferralsCard(
+            incentiveDisplay = state.incentiveDisplay,
+            animationAlreadyPlayed = state.inviteCardAnimationPlayed,
+            onAnimationCompleted = { viewModel.emit(OnboardingInviteEvent.InviteCardAnimationCompleted) },
+            modifier = Modifier
+              .widthIn(max = 280.dp)
+              .fillMaxWidth(),
+          )
+        }
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(24.dp))
         OnboardingStepButtons(
