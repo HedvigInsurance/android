@@ -16,6 +16,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -23,8 +25,10 @@ import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.onboarding.data.OnboardingSession
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
@@ -168,12 +172,33 @@ internal fun OnboardingPetIdDestination(
     onPauseOrDispose {}
   }
 
+  OnboardingPetIdScreen(
+    uiState = uiState,
+    progressAnimation = viewModel.progressBarAnimation,
+    navigateUp = navigateUp,
+    onClose = { viewModel.emit(OnboardingPetIdEvent.Close) },
+    onRetry = { viewModel.emit(OnboardingPetIdEvent.Retry) },
+    onContinue = { viewModel.emit(OnboardingPetIdEvent.Continue) },
+    onAddPetId = onAddPetId,
+  )
+}
+
+@Composable
+private fun OnboardingPetIdScreen(
+  uiState: OnboardingPetIdUiState,
+  progressAnimation: OnboardingProgressBarAnimation,
+  navigateUp: () -> Unit,
+  onClose: () -> Unit,
+  onRetry: () -> Unit,
+  onContinue: () -> Unit,
+  onAddPetId: (contractId: String) -> Unit,
+) {
   OnboardingStepScaffold(
     progress = (uiState as? OnboardingPetIdUiState.Content)?.progress,
     showBackButton = true,
     onBackClick = navigateUp,
-    onCloseClick = { viewModel.emit(OnboardingPetIdEvent.Close) },
-    progressAnimation = viewModel.progressBarAnimation,
+    onCloseClick = onClose,
+    progressAnimation = progressAnimation,
   ) {
     when (val content = uiState) {
       OnboardingPetIdUiState.Loading -> {
@@ -182,7 +207,7 @@ internal fun OnboardingPetIdDestination(
 
       OnboardingPetIdUiState.Error -> {
         HedvigErrorSection(
-          onButtonClick = { viewModel.emit(OnboardingPetIdEvent.Retry) },
+          onButtonClick = onRetry,
         )
       }
 
@@ -218,11 +243,57 @@ internal fun OnboardingPetIdDestination(
         )
         OnboardingStepButtons(
           primaryText = stringResource(Res.string.general_continue_button),
-          onPrimaryClick = { viewModel.emit(OnboardingPetIdEvent.Continue) },
+          onPrimaryClick = onContinue,
           secondaryText = stringResource(Res.string.ONBOARDING_DO_THIS_LATER_BUTTON),
-          onSecondaryClick = { viewModel.emit(OnboardingPetIdEvent.Continue) },
+          onSecondaryClick = onContinue,
         )
       }
     }
   }
 }
+
+@HedvigPreview
+@Composable
+private fun PreviewOnboardingPetIdScreen(
+  @PreviewParameter(OnboardingPetIdUiStateProvider::class) uiState: OnboardingPetIdUiState,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      OnboardingPetIdScreen(
+        uiState = uiState,
+        progressAnimation = remember { OnboardingProgressBarAnimation() },
+        navigateUp = {},
+        onClose = {},
+        onRetry = {},
+        onContinue = {},
+        onAddPetId = {},
+      )
+    }
+  }
+}
+
+private class OnboardingPetIdUiStateProvider : CollectionPreviewParameterProvider<OnboardingPetIdUiState>(
+  listOf(
+    OnboardingPetIdUiState.Loading,
+    OnboardingPetIdUiState.Error,
+    OnboardingPetIdUiState.Content(
+      progress = OnboardingProgress(totalSteps = 5, currentIndex = 2),
+      rows = listOf(
+        PetIdRow(
+          contractId = "contract-1",
+          displayName = "Hedvig Pet",
+          exposureName = "Fido",
+          typeOfContract = "SE_CAT_BASIC",
+          isComplete = false,
+        ),
+        PetIdRow(
+          contractId = "contract-2",
+          displayName = "Hedvig Pet",
+          exposureName = "Whiskers",
+          typeOfContract = "SE_CAT_BASIC",
+          isComplete = true,
+        ),
+      ),
+    ),
+  ),
+)

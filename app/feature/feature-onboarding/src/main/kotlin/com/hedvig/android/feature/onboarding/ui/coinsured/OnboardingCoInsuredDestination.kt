@@ -16,6 +16,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -24,8 +26,10 @@ import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.onboarding.data.OnboardingSession
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
@@ -175,12 +179,38 @@ internal fun OnboardingCoInsuredDestination(viewModel: OnboardingCoInsuredViewMo
     onPauseOrDispose {}
   }
 
+  OnboardingCoInsuredScreen(
+    uiState = uiState,
+    progressAnimation = viewModel.progressBarAnimation,
+    navigateUp = navigateUp,
+    onClose = { viewModel.emit(OnboardingCoInsuredEvent.Close) },
+    onRetry = { viewModel.emit(OnboardingCoInsuredEvent.Retry) },
+    onAddCoInsured = {
+      contractId,
+      flowType,
+      ->
+      viewModel.emit(OnboardingCoInsuredEvent.AddCoInsured(contractId, flowType))
+    },
+    onContinue = { viewModel.emit(OnboardingCoInsuredEvent.Continue) },
+  )
+}
+
+@Composable
+private fun OnboardingCoInsuredScreen(
+  uiState: OnboardingCoInsuredUiState,
+  progressAnimation: OnboardingProgressBarAnimation,
+  navigateUp: () -> Unit,
+  onClose: () -> Unit,
+  onRetry: () -> Unit,
+  onAddCoInsured: (contractId: String, flowType: CoInsuredFlowType) -> Unit,
+  onContinue: () -> Unit,
+) {
   OnboardingStepScaffold(
     progress = (uiState as? OnboardingCoInsuredUiState.Content)?.progress,
     showBackButton = true,
     onBackClick = navigateUp,
-    onCloseClick = { viewModel.emit(OnboardingCoInsuredEvent.Close) },
-    progressAnimation = viewModel.progressBarAnimation,
+    onCloseClick = onClose,
+    progressAnimation = progressAnimation,
   ) {
     when (val content = uiState) {
       OnboardingCoInsuredUiState.Loading -> {
@@ -189,7 +219,7 @@ internal fun OnboardingCoInsuredDestination(viewModel: OnboardingCoInsuredViewMo
 
       OnboardingCoInsuredUiState.Error -> {
         HedvigErrorSection(
-          onButtonClick = { viewModel.emit(OnboardingCoInsuredEvent.Retry) },
+          onButtonClick = onRetry,
         )
       }
 
@@ -215,7 +245,7 @@ internal fun OnboardingCoInsuredDestination(viewModel: OnboardingCoInsuredViewMo
               exposureName = row.exposureName,
               typeOfContract = row.typeOfContract,
               isComplete = row.isComplete,
-              onAddClick = { viewModel.emit(OnboardingCoInsuredEvent.AddCoInsured(row.contractId, row.flowType)) },
+              onAddClick = { onAddCoInsured(row.contractId, row.flowType) },
             )
           }
         }
@@ -232,11 +262,80 @@ internal fun OnboardingCoInsuredDestination(viewModel: OnboardingCoInsuredViewMo
         )
         OnboardingStepButtons(
           primaryText = stringResource(Res.string.general_continue_button),
-          onPrimaryClick = { viewModel.emit(OnboardingCoInsuredEvent.Continue) },
+          onPrimaryClick = onContinue,
           secondaryText = stringResource(Res.string.ONBOARDING_DO_THIS_LATER_BUTTON),
-          onSecondaryClick = { viewModel.emit(OnboardingCoInsuredEvent.Continue) },
+          onSecondaryClick = onContinue,
         )
       }
     }
   }
 }
+
+@HedvigPreview
+@Composable
+private fun PreviewOnboardingCoInsuredScreen(
+  @PreviewParameter(OnboardingCoInsuredUiStateProvider::class) uiState: OnboardingCoInsuredUiState,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      OnboardingCoInsuredScreen(
+        uiState = uiState,
+        progressAnimation = remember { OnboardingProgressBarAnimation() },
+        navigateUp = {},
+        onClose = {},
+        onRetry = {},
+        onAddCoInsured = { _, _ -> },
+        onContinue = {},
+      )
+    }
+  }
+}
+
+private class OnboardingCoInsuredUiStateProvider : CollectionPreviewParameterProvider<OnboardingCoInsuredUiState>(
+  listOf(
+    OnboardingCoInsuredUiState.Loading,
+    OnboardingCoInsuredUiState.Error,
+    OnboardingCoInsuredUiState.Content(
+      progress = OnboardingProgress(totalSteps = 5, currentIndex = 2),
+      rows = listOf(
+        CoInsuredRow(
+          contractId = "contract-1",
+          displayName = "Home Insurance",
+          exposureName = "Storgatan 1",
+          typeOfContract = "SE_APARTMENT_RENT",
+          flowType = CoInsuredFlowType.CoInsured,
+          isComplete = false,
+        ),
+        CoInsuredRow(
+          contractId = "contract-2",
+          displayName = "Car Insurance",
+          exposureName = "ABC 123",
+          typeOfContract = "SE_CAR_FULL",
+          flowType = CoInsuredFlowType.CoInsured,
+          isComplete = true,
+        ),
+      ),
+    ),
+    OnboardingCoInsuredUiState.Content(
+      progress = OnboardingProgress(totalSteps = 5, currentIndex = 2),
+      rows = listOf(
+        CoInsuredRow(
+          contractId = "contract-3",
+          displayName = "Villa Insurance",
+          exposureName = "Villavägen 5",
+          typeOfContract = "SE_VILLA",
+          flowType = CoInsuredFlowType.CoOwners,
+          isComplete = false,
+        ),
+        CoInsuredRow(
+          contractId = "contract-4",
+          displayName = "Cottage Insurance",
+          exposureName = "Sommarvägen 12",
+          typeOfContract = "SE_VILLA",
+          flowType = CoInsuredFlowType.CoOwners,
+          isComplete = false,
+        ),
+      ),
+    ),
+  ),
+)
