@@ -30,12 +30,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.hedvigDropShadow
+import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
@@ -54,6 +56,7 @@ import hedvig.resources.ONBOARDING_INVITE_FRIEND_SUBTITLE
 import hedvig.resources.ONBOARDING_INVITE_FRIEND_TITLE
 import hedvig.resources.Res
 import hedvig.resources.general_continue_button
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -203,30 +206,38 @@ private fun ExampleReferralsCard(
   var visibleRows by remember { mutableIntStateOf(if (animationAlreadyPlayed) exampleNames.size else 1) }
   LaunchedEffect(Unit) {
     if (animationAlreadyPlayed) return@LaunchedEffect
-    delay(RowRevealInitialDelayMillis)
+    delay(RowRevealInitialDelayMillis.milliseconds)
     visibleRows = 2
-    delay(RowRevealStaggerDelayMillis)
+    delay(RowRevealStaggerDelayMillis.milliseconds)
     visibleRows = 3
     onAnimationCompleted()
   }
   Surface(
-    modifier = modifier,
+    modifier = modifier.hedvigDropShadow(HedvigTheme.shapes.cornerLarge),
     shape = HedvigTheme.shapes.cornerLarge,
-    color = HedvigTheme.colorScheme.surfacePrimary,
+    color = HedvigTheme.colorScheme.backgroundPrimary,
+    border = HedvigTheme.colorScheme.borderPrimary,
   ) {
-    Column(Modifier.padding(horizontal = 24.dp, vertical = 16.dp)) {
+    Column(Modifier.padding(horizontal = 16.dp)) {
       exampleNames.forEachIndexed { index, name ->
         if (index == 0) {
           ExampleReferralRow(name = name, incentiveDisplay = incentiveDisplay)
         } else {
           AnimatedVisibility(
             visible = visibleRows > index,
-            enter = expandVertically(rowRevealAnimationSpec()) + fadeIn(rowRevealAnimationSpec()),
+            // Expand from the top so the divider is unclipped from the first frames and fades in with
+            // the row, rather than popping in when the clip reaches it at the end of the expansion.
+            enter = expandVertically(rowRevealAnimationSpec(), expandFrom = Alignment.Top) +
+              fadeIn(rowRevealAnimationSpec()),
           ) {
-            Column {
-              HorizontalDivider()
-              ExampleReferralRow(name = name, incentiveDisplay = incentiveDisplay)
-            }
+            ExampleReferralRow(
+              name = name,
+              incentiveDisplay = incentiveDisplay,
+              modifier = Modifier.horizontalDivider(
+                position = DividerPosition.Top,
+                color = HedvigTheme.colorScheme.borderPrimary,
+              ),
+            )
           }
         }
       }
@@ -235,29 +246,32 @@ private fun ExampleReferralsCard(
 }
 
 @Composable
-private fun ExampleReferralRow(name: String, incentiveDisplay: String) {
+private fun ExampleReferralRow(name: String, incentiveDisplay: String, modifier: Modifier = Modifier) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
-    modifier = Modifier.padding(vertical = 12.dp),
+    modifier = modifier.padding(vertical = 16.dp),
   ) {
     Box(
       Modifier
-        .size(8.dp)
+        .size(16.dp)
         .clip(CircleShape)
         .background(HedvigTheme.colorScheme.signalGreenElement),
     )
     Spacer(Modifier.width(8.dp))
-    HedvigText(text = name, style = HedvigTheme.typography.bodySmall)
-    Spacer(Modifier.weight(1f))
+    // The name takes the remaining width so the incentive stays right-aligned and always fits, even
+    // at large font scales where the name wraps, keeping the gap between them tight rather than
+    // ballooning on wide (e.g. landscape) layouts.
+    HedvigText(text = name, style = HedvigTheme.typography.bodySmall, modifier = Modifier.weight(1f))
+    Spacer(Modifier.width(8.dp))
     HedvigText(text = "-$incentiveDisplay", style = HedvigTheme.typography.bodySmall)
   }
 }
 
-// Reveal timing for the example referral rows, grouped for easy tuning with design.
-private const val RowRevealInitialDelayMillis = 450L
-private const val RowRevealStaggerDelayMillis = 600L
+private const val RowRevealInitialDelayMillis = 550L
+private const val RowRevealStaggerDelayMillis = 1000L
+private const val RowRevealDurationMillis = MotionTokens.DurationLong4.toInt()
 
 private fun <T> rowRevealAnimationSpec(): TweenSpec<T> = tween(
-  durationMillis = MotionTokens.DurationMedium4.toInt(),
+  durationMillis = RowRevealDurationMillis,
   easing = MotionTokens.EasingEmphasizedDecelerateCubicBezier,
 )
