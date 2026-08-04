@@ -24,6 +24,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.common.di.ActivityRetainedScope
@@ -34,9 +36,11 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
@@ -142,12 +146,35 @@ internal fun OnboardingConsentDestination(
   openPrivacyPolicy: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  OnboardingConsentScreen(
+    uiState = uiState,
+    progressAnimation = viewModel.progressBarAnimation,
+    navigateUp = navigateUp,
+    openPrivacyPolicy = openPrivacyPolicy,
+    onClose = { viewModel.emit(OnboardingConsentEvent.Close) },
+    onRetry = { viewModel.emit(OnboardingConsentEvent.Retry) },
+    onAllow = { viewModel.emit(OnboardingConsentEvent.Allow) },
+    onDeny = { viewModel.emit(OnboardingConsentEvent.Deny) },
+  )
+}
+
+@Composable
+private fun OnboardingConsentScreen(
+  uiState: OnboardingConsentUiState,
+  progressAnimation: OnboardingProgressBarAnimation,
+  navigateUp: () -> Unit,
+  openPrivacyPolicy: () -> Unit,
+  onClose: () -> Unit,
+  onRetry: () -> Unit,
+  onAllow: () -> Unit,
+  onDeny: () -> Unit,
+) {
   OnboardingStepScaffold(
     progress = (uiState as? OnboardingConsentUiState.Content)?.progress,
     showBackButton = true,
     onBackClick = navigateUp,
-    onCloseClick = { viewModel.emit(OnboardingConsentEvent.Close) },
-    progressAnimation = viewModel.progressBarAnimation,
+    onCloseClick = onClose,
+    progressAnimation = progressAnimation,
   ) {
     when (uiState) {
       OnboardingConsentUiState.Loading -> {
@@ -156,7 +183,7 @@ internal fun OnboardingConsentDestination(
 
       OnboardingConsentUiState.Error -> {
         HedvigErrorSection(
-          onButtonClick = { viewModel.emit(OnboardingConsentEvent.Retry) },
+          onButtonClick = onRetry,
         )
       }
 
@@ -193,7 +220,7 @@ internal fun OnboardingConsentDestination(
         Spacer(Modifier.height(16.dp))
         HedvigButton(
           text = stringResource(Res.string.ONBOARDING_ANALYTICS_ALLOW_BUTTON),
-          onClick = { viewModel.emit(OnboardingConsentEvent.Allow) },
+          onClick = onAllow,
           enabled = true,
           buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
           modifier = Modifier
@@ -204,7 +231,7 @@ internal fun OnboardingConsentDestination(
         Spacer(Modifier.height(8.dp))
         HedvigButton(
           text = stringResource(Res.string.ONBOARDING_ANALYTICS_DENY_BUTTON),
-          onClick = { viewModel.emit(OnboardingConsentEvent.Deny) },
+          onClick = onDeny,
           enabled = true,
           buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
           modifier = Modifier
@@ -218,3 +245,34 @@ internal fun OnboardingConsentDestination(
     }
   }
 }
+
+@HedvigPreview
+@Composable
+private fun PreviewOnboardingConsentScreen(
+  @PreviewParameter(OnboardingConsentUiStateProvider::class) uiState: OnboardingConsentUiState,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      OnboardingConsentScreen(
+        uiState = uiState,
+        progressAnimation = remember { OnboardingProgressBarAnimation() },
+        navigateUp = {},
+        openPrivacyPolicy = {},
+        onClose = {},
+        onRetry = {},
+        onAllow = {},
+        onDeny = {},
+      )
+    }
+  }
+}
+
+private class OnboardingConsentUiStateProvider : CollectionPreviewParameterProvider<OnboardingConsentUiState>(
+  listOf(
+    OnboardingConsentUiState.Loading,
+    OnboardingConsentUiState.Error,
+    OnboardingConsentUiState.Content(
+      progress = OnboardingProgress(totalSteps = 5, currentIndex = 2),
+    ),
+  ),
+)

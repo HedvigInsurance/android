@@ -16,15 +16,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
@@ -107,12 +111,29 @@ internal sealed interface OnboardingWelcomeEvent {
 @Composable
 internal fun OnboardingWelcomeDestination(viewModel: OnboardingWelcomeViewModel) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  OnboardingWelcomeScreen(
+    uiState = uiState,
+    progressAnimation = viewModel.progressBarAnimation,
+    onClose = { viewModel.emit(OnboardingWelcomeEvent.Close) },
+    onRetry = { viewModel.emit(OnboardingWelcomeEvent.Retry) },
+    onGetStarted = { viewModel.emit(OnboardingWelcomeEvent.GetStarted) },
+  )
+}
+
+@Composable
+private fun OnboardingWelcomeScreen(
+  uiState: OnboardingWelcomeUiState,
+  progressAnimation: OnboardingProgressBarAnimation,
+  onClose: () -> Unit,
+  onRetry: () -> Unit,
+  onGetStarted: () -> Unit,
+) {
   OnboardingStepScaffold(
     progress = (uiState as? OnboardingWelcomeUiState.Content)?.progress,
     showBackButton = false,
     onBackClick = {},
-    onCloseClick = { viewModel.emit(OnboardingWelcomeEvent.Close) },
-    progressAnimation = viewModel.progressBarAnimation,
+    onCloseClick = onClose,
+    progressAnimation = progressAnimation,
   ) {
     when (uiState) {
       OnboardingWelcomeUiState.Loading -> {
@@ -121,7 +142,7 @@ internal fun OnboardingWelcomeDestination(viewModel: OnboardingWelcomeViewModel)
 
       OnboardingWelcomeUiState.Error -> {
         HedvigErrorSection(
-          onButtonClick = { viewModel.emit(OnboardingWelcomeEvent.Retry) },
+          onButtonClick = onRetry,
         )
       }
 
@@ -153,9 +174,37 @@ internal fun OnboardingWelcomeDestination(viewModel: OnboardingWelcomeViewModel)
         Spacer(Modifier.height(24.dp))
         OnboardingStepButtons(
           primaryText = stringResource(Res.string.ONBOARDING_WELCOME_BUTTON),
-          onPrimaryClick = { viewModel.emit(OnboardingWelcomeEvent.GetStarted) },
+          onPrimaryClick = onGetStarted,
         )
       }
     }
   }
 }
+
+@HedvigPreview
+@Composable
+private fun PreviewOnboardingWelcomeScreen(
+  @PreviewParameter(OnboardingWelcomeUiStateProvider::class) uiState: OnboardingWelcomeUiState,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      OnboardingWelcomeScreen(
+        uiState = uiState,
+        progressAnimation = remember { OnboardingProgressBarAnimation() },
+        onClose = {},
+        onRetry = {},
+        onGetStarted = {},
+      )
+    }
+  }
+}
+
+private class OnboardingWelcomeUiStateProvider : CollectionPreviewParameterProvider<OnboardingWelcomeUiState>(
+  listOf(
+    OnboardingWelcomeUiState.Loading,
+    OnboardingWelcomeUiState.Error,
+    OnboardingWelcomeUiState.Content(
+      progress = OnboardingProgress(totalSteps = 5, currentIndex = 1),
+    ),
+  ),
+)

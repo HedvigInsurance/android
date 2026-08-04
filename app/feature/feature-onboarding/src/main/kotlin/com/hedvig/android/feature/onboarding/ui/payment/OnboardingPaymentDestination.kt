@@ -13,6 +13,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -20,8 +22,10 @@ import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.onboarding.data.OnboardingPayinStatus
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
@@ -143,12 +147,33 @@ internal fun OnboardingPaymentDestination(viewModel: OnboardingPaymentViewModel,
     onPauseOrDispose {}
   }
 
+  OnboardingPaymentScreen(
+    uiState = uiState,
+    progressAnimation = viewModel.progressBarAnimation,
+    navigateUp = navigateUp,
+    onClose = { viewModel.emit(OnboardingPaymentEvent.Close) },
+    onRetry = { viewModel.emit(OnboardingPaymentEvent.Retry) },
+    onConnectPayment = { viewModel.emit(OnboardingPaymentEvent.ConnectPayment) },
+    onContinue = { viewModel.emit(OnboardingPaymentEvent.Continue) },
+  )
+}
+
+@Composable
+private fun OnboardingPaymentScreen(
+  uiState: OnboardingPaymentUiState,
+  progressAnimation: OnboardingProgressBarAnimation,
+  navigateUp: () -> Unit,
+  onClose: () -> Unit,
+  onRetry: () -> Unit,
+  onConnectPayment: () -> Unit,
+  onContinue: () -> Unit,
+) {
   OnboardingStepScaffold(
     progress = (uiState as? OnboardingPaymentUiState.Content)?.progress,
     showBackButton = true,
     onBackClick = navigateUp,
-    onCloseClick = { viewModel.emit(OnboardingPaymentEvent.Close) },
-    progressAnimation = viewModel.progressBarAnimation,
+    onCloseClick = onClose,
+    progressAnimation = progressAnimation,
   ) {
     when (val content = uiState) {
       OnboardingPaymentUiState.Loading -> {
@@ -157,7 +182,7 @@ internal fun OnboardingPaymentDestination(viewModel: OnboardingPaymentViewModel,
 
       OnboardingPaymentUiState.Error -> {
         HedvigErrorSection(
-          onButtonClick = { viewModel.emit(OnboardingPaymentEvent.Retry) },
+          onButtonClick = onRetry,
         )
       }
 
@@ -181,7 +206,7 @@ internal fun OnboardingPaymentDestination(viewModel: OnboardingPaymentViewModel,
             )
             OnboardingStepButtons(
               primaryText = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_TITLE),
-              onPrimaryClick = { viewModel.emit(OnboardingPaymentEvent.ConnectPayment) },
+              onPrimaryClick = onConnectPayment,
             )
           }
 
@@ -200,7 +225,7 @@ internal fun OnboardingPaymentDestination(viewModel: OnboardingPaymentViewModel,
             )
             OnboardingStepButtons(
               primaryText = stringResource(Res.string.general_continue_button),
-              onPrimaryClick = { viewModel.emit(OnboardingPaymentEvent.Continue) },
+              onPrimaryClick = onContinue,
             )
           }
         }
@@ -208,3 +233,42 @@ internal fun OnboardingPaymentDestination(viewModel: OnboardingPaymentViewModel,
     }
   }
 }
+
+@HedvigPreview
+@Composable
+private fun PreviewOnboardingPaymentScreen(
+  @PreviewParameter(OnboardingPaymentUiStateProvider::class) uiState: OnboardingPaymentUiState,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      OnboardingPaymentScreen(
+        uiState = uiState,
+        progressAnimation = remember { OnboardingProgressBarAnimation() },
+        navigateUp = {},
+        onClose = {},
+        onRetry = {},
+        onConnectPayment = {},
+        onContinue = {},
+      )
+    }
+  }
+}
+
+private class OnboardingPaymentUiStateProvider : CollectionPreviewParameterProvider<OnboardingPaymentUiState>(
+  listOf(
+    OnboardingPaymentUiState.Loading,
+    OnboardingPaymentUiState.Error,
+    OnboardingPaymentUiState.Content(
+      progress = OnboardingProgress(totalSteps = 5, currentIndex = 3),
+      payinStatus = OnboardingPayinStatus.NeedsSetup,
+    ),
+    OnboardingPaymentUiState.Content(
+      progress = OnboardingProgress(totalSteps = 5, currentIndex = 3),
+      payinStatus = OnboardingPayinStatus.Pending,
+    ),
+    OnboardingPaymentUiState.Content(
+      progress = OnboardingProgress(totalSteps = 5, currentIndex = 3),
+      payinStatus = OnboardingPayinStatus.Active,
+    ),
+  ),
+)
