@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -110,6 +111,7 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Second
 import com.hedvig.android.design.system.hedvig.DraftClaimDialog
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -129,7 +131,9 @@ import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Inbo
 import com.hedvig.android.design.system.hedvig.TopAppBarLayoutForActions
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
+import com.hedvig.android.design.system.hedvig.icon.Card
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
 import com.hedvig.android.design.system.hedvig.icon.Reload
 import com.hedvig.android.design.system.hedvig.icon.Settings
 import com.hedvig.android.design.system.hedvig.icon.Travel
@@ -146,6 +150,9 @@ import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.ChatAction
 import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.CrossSellsAction
 import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.FirstVetAction
 import com.hedvig.android.feature.home.home.ui.HomeUiState.Success
+import com.hedvig.android.memberquickactions.InnerHelpCenterDestination
+import com.hedvig.android.memberquickactions.QuickAction
+import com.hedvig.android.memberquickactions.QuickLinkDestination
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminder.PaymentReminder.ConnectPayment
 import com.hedvig.android.memberreminders.MemberReminders
@@ -172,15 +179,20 @@ import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
 import hedvig.resources.CHAT_NEW_MESSAGE
 import hedvig.resources.DASHBOARD_OPEN_CHAT
+import hedvig.resources.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE
+import hedvig.resources.HC_QUICK_ACTIONS_EDIT_INSURANCE_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE
+import hedvig.resources.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_PAYMENTS_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_TITLE
-import hedvig.resources.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE
+import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE
 import hedvig.resources.HOME_ADDONS_READ_MORE_BUTTON
 import hedvig.resources.HOME_DISCOVER_SECTION_TITLE
 import hedvig.resources.HOME_DISCOVER_SEE_PRICE_BUTTON
 import hedvig.resources.HOME_GREETING_SUBTITLE
 import hedvig.resources.HOME_GREETING_TITLE
-import hedvig.resources.HOME_QUICK_ACTIONS_CHANGE_ADDRESS
-import hedvig.resources.HOME_QUICK_ACTIONS_EDIT_INSURANCE
 import hedvig.resources.HOME_QUOTES_SECTION_TITLE
 import hedvig.resources.HOME_TODO_SECTION_TITLE
 import hedvig.resources.INSURANCE_ADDONS_SUBHEADING
@@ -220,8 +232,7 @@ internal fun HomeDestination(
   navigateToConnectPayment: () -> Unit,
   navigateToConnectPayout: () -> Unit,
   navigateToHelpCenter: () -> Unit,
-  navigateToMovingFlow: () -> Unit,
-  navigateToEditInsurance: () -> Unit,
+  navigateToQuickLink: (QuickLinkDestination) -> Unit,
   openUrl: (String) -> Unit,
   openCrossSellUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
@@ -230,7 +241,6 @@ internal fun HomeDestination(
   navigateToContactInfo: () -> Unit,
   navigateToChipId: () -> Unit,
   imageLoader: ImageLoader,
-  navigateToTravelCertificate: () -> Unit,
   navigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -246,8 +256,7 @@ internal fun HomeDestination(
     navigateToConnectPayment = navigateToConnectPayment,
     navigateToConnectPayout = navigateToConnectPayout,
     navigateToHelpCenter = navigateToHelpCenter,
-    navigateToMovingFlow = navigateToMovingFlow,
-    navigateToEditInsurance = navigateToEditInsurance,
+    navigateToQuickLink = navigateToQuickLink,
     openUrl = openUrl,
     openCrossSellUrl = openCrossSellUrl,
     openAppSettings = openAppSettings,
@@ -262,7 +271,6 @@ internal fun HomeDestination(
       viewModel.emit(HomeEvent.CrossSellToolTipShown(epochDay))
     },
     imageLoader = imageLoader,
-    navigateToTravelCertificate = navigateToTravelCertificate,
     navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
   )
 }
@@ -279,8 +287,7 @@ private fun HomeScreen(
   navigateToConnectPayment: () -> Unit,
   navigateToConnectPayout: () -> Unit,
   navigateToHelpCenter: () -> Unit,
-  navigateToMovingFlow: () -> Unit,
-  navigateToEditInsurance: () -> Unit,
+  navigateToQuickLink: (QuickLinkDestination) -> Unit,
   openUrl: (String) -> Unit,
   openCrossSellUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
@@ -293,7 +300,6 @@ private fun HomeScreen(
   markCrossSellsNotificationAsSeen: () -> Unit,
   setEpochDayWhenLastToolTipShown: (Long) -> Unit,
   imageLoader: ImageLoader,
-  navigateToTravelCertificate: () -> Unit,
   navigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
   val systemBarInsetTopDp = with(LocalDensity.current) {
@@ -310,6 +316,12 @@ private fun HomeScreen(
     markCrossSellsNotificationAsSeen = markCrossSellsNotificationAsSeen,
     onCrossSellClick = openCrossSellUrl,
     imageLoader = imageLoader,
+  )
+
+  val editInsuranceSheetState = rememberHedvigBottomSheetState<QuickAction.MultiSelectExpandedLink>()
+  EditInsuranceQuickActionSheet(
+    state = editInsuranceSheetState,
+    onQuickLink = navigateToQuickLink,
   )
 
   val startClaimBottomSheetState = rememberHedvigBottomSheetState<Unit>()
@@ -397,8 +409,8 @@ private fun HomeScreen(
             navigateToConnectPayment = navigateToConnectPayment,
             navigateToConnectPayout = navigateToConnectPayout,
             navigateToHelpCenter = navigateToHelpCenter,
-            navigateToMovingFlow = navigateToMovingFlow,
-            navigateToEditInsurance = navigateToEditInsurance,
+            navigateToQuickLink = navigateToQuickLink,
+            onEditInsurance = { editInsuranceSheetState.show(it) },
             onNavigateToInbox = onNavigateToInbox,
             openClaimFlowSheet = {
               if (draftClaim != null) {
@@ -426,7 +438,6 @@ private fun HomeScreen(
             navigateToChipIdScreen = navigateToChipIdScreen,
             openCrossSellUrl = openCrossSellUrl,
             imageLoader = imageLoader,
-            navigateToTravelCertificate = navigateToTravelCertificate,
             navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
           )
         }
@@ -568,8 +579,8 @@ private fun HomeScreenSuccess(
   navigateToConnectPayment: () -> Unit,
   navigateToConnectPayout: () -> Unit,
   navigateToHelpCenter: () -> Unit,
-  navigateToMovingFlow: () -> Unit,
-  navigateToEditInsurance: () -> Unit,
+  navigateToQuickLink: (QuickLinkDestination) -> Unit,
+  onEditInsurance: (QuickAction.MultiSelectExpandedLink) -> Unit,
   onNavigateToInbox: () -> Unit,
   openClaimFlowSheet: () -> Unit,
   onContinueDraftClaim: () -> Unit,
@@ -583,7 +594,6 @@ private fun HomeScreenSuccess(
   navigateToChipIdScreen: () -> Unit,
   openCrossSellUrl: (String) -> Unit,
   imageLoader: ImageLoader,
-  navigateToTravelCertificate: () -> Unit,
   navigateToAddonPurchaseFlow: (List<String>) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -663,7 +673,7 @@ private fun HomeScreenSuccess(
         }
 
         HomeSection.QuickActionTiles -> {
-          uiState.isEditInsuranceEnabled || uiState.isMovingEnabled || uiState.isTravelCertificateEnabled
+          uiState.quickActions.isNotEmpty()
         }
       }
     }
@@ -901,12 +911,9 @@ private fun HomeScreenSuccess(
             )
 
             HomeSection.QuickActionTiles -> QuickActionTilesSection(
-              isEditInsuranceEnabled = uiState.isEditInsuranceEnabled,
-              isMovingEnabled = uiState.isMovingEnabled,
-              isTravelCertificateEnabled = uiState.isTravelCertificateEnabled,
-              onEditInsurance = navigateToEditInsurance,
-              onChangeAddress = navigateToMovingFlow,
-              onTravelCertificate = navigateToTravelCertificate,
+              quickActions = uiState.quickActions,
+              onQuickLink = navigateToQuickLink,
+              onEditInsurance = onEditInsurance,
               horizontalInsets = horizontalInsets,
             )
           }
@@ -1164,12 +1171,9 @@ private fun OffersSection(
 
 @Composable
 private fun QuickActionTilesSection(
-  isEditInsuranceEnabled: Boolean,
-  isMovingEnabled: Boolean,
-  isTravelCertificateEnabled: Boolean,
-  onEditInsurance: () -> Unit,
-  onChangeAddress: () -> Unit,
-  onTravelCertificate: () -> Unit,
+  quickActions: List<QuickAction>,
+  onQuickLink: (QuickLinkDestination) -> Unit,
+  onEditInsurance: (QuickAction.MultiSelectExpandedLink) -> Unit,
   horizontalInsets: PaddingValues,
 ) {
   Column(
@@ -1190,37 +1194,64 @@ private fun QuickActionTilesSection(
         .fillMaxWidth()
         .height(IntrinsicSize.Max),
     ) {
-      if (isEditInsuranceEnabled) {
+      quickActions.forEach { action ->
         HomeActionTile(
-          icon = HedvigIcons.Settings,
-          text = stringResource(Res.string.HOME_QUICK_ACTIONS_EDIT_INSURANCE),
-          onClick = onEditInsurance,
-          modifier = Modifier
-            .weight(1f)
-            .fillMaxHeight(),
-        )
-      }
-      if (isMovingEnabled) {
-        HomeActionTile(
-          icon = HedvigIcons.Reload,
-          text = stringResource(Res.string.HOME_QUICK_ACTIONS_CHANGE_ADDRESS),
-          onClick = onChangeAddress,
-          modifier = Modifier
-            .weight(1f)
-            .fillMaxHeight(),
-        )
-      }
-      if (isTravelCertificateEnabled) {
-        HomeActionTile(
-          icon = HedvigIcons.Travel,
-          text = stringResource(Res.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE),
-          onClick = onTravelCertificate,
+          icon = action.homeIcon(),
+          text = stringResource(action.titleRes),
+          onClick = {
+            when (action) {
+              is QuickAction.StandaloneQuickLink -> onQuickLink(action.quickLinkDestination)
+              is QuickAction.MultiSelectExpandedLink -> onEditInsurance(action)
+            }
+          },
           modifier = Modifier
             .weight(1f)
             .fillMaxHeight(),
         )
       }
     }
+  }
+}
+
+private fun QuickAction.homeIcon(): ImageVector = when (this) {
+  is QuickAction.MultiSelectExpandedLink -> HedvigIcons.Settings
+
+  is QuickAction.StandaloneQuickLink -> when (quickLinkDestination) {
+    QuickLinkDestination.OuterDestination.QuickLinkChangeAddress -> HedvigIcons.Reload
+    QuickLinkDestination.OuterDestination.QuickLinkConnectPayment -> HedvigIcons.Card
+    QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate -> HedvigIcons.Travel
+    is InnerHelpCenterDestination.FirstVet -> HedvigIcons.HelipadOutline
+    else -> HedvigIcons.Settings
+  }
+}
+
+@Composable
+private fun EditInsuranceQuickActionSheet(
+  state: HedvigBottomSheetState<QuickAction.MultiSelectExpandedLink>,
+  onQuickLink: (QuickLinkDestination) -> Unit,
+) {
+  HedvigBottomSheet(state) { editInsurance ->
+    HedvigText(
+      text = stringResource(editInsurance.titleRes),
+      style = HedvigTheme.typography.headlineSmall,
+      modifier = Modifier.semantics { heading() },
+    )
+    Spacer(Modifier.height(16.dp))
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+      editInsurance.links.forEach { link ->
+        HomeActionTile(
+          icon = link.homeIcon(),
+          text = stringResource(link.titleRes),
+          onClick = {
+            state.dismiss()
+            onQuickLink(link.quickLinkDestination)
+          },
+          modifier = Modifier.fillMaxWidth(),
+        )
+      }
+    }
+    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
 
@@ -1443,9 +1474,7 @@ private fun PreviewHomeScreen(
             connectPayment = ConnectPayment(),
           ),
           isHelpCenterEnabled = true,
-          isEditInsuranceEnabled = true,
-          isMovingEnabled = true,
-          isTravelCertificateEnabled = true,
+          quickActions = previewQuickActions,
           hasUnseenChatMessages = hasUnseenChatMessages,
           crossSellsPartition = CrossSellsPartition(
             offersCrossSell = RecommendedCrossSell(
@@ -1530,8 +1559,7 @@ private fun PreviewHomeScreen(
         navigateToConnectPayment = {},
         navigateToConnectPayout = {},
         navigateToHelpCenter = {},
-        navigateToMovingFlow = {},
-        navigateToEditInsurance = {},
+        navigateToQuickLink = {},
         openUrl = {},
         openCrossSellUrl = {},
         openAppSettings = {},
@@ -1544,7 +1572,6 @@ private fun PreviewHomeScreen(
         navigateToChipIdScreen = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
-        navigateToTravelCertificate = {},
         navigateToAddonPurchaseFlow = {},
       )
     }
@@ -1567,8 +1594,7 @@ private fun PreviewHomeScreenWithError() {
         navigateToConnectPayment = {},
         navigateToConnectPayout = {},
         navigateToHelpCenter = {},
-        navigateToMovingFlow = {},
-        navigateToEditInsurance = {},
+        navigateToQuickLink = {},
         openUrl = {},
         openCrossSellUrl = {},
         openAppSettings = {},
@@ -1581,7 +1607,6 @@ private fun PreviewHomeScreenWithError() {
         navigateToChipIdScreen = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
-        navigateToTravelCertificate = {},
         navigateToAddonPurchaseFlow = {},
       )
     }
@@ -1609,9 +1634,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
             updateContactInfo = null,
           ),
           isHelpCenterEnabled = false,
-          isEditInsuranceEnabled = true,
-          isMovingEnabled = true,
-          isTravelCertificateEnabled = true,
+          quickActions = previewQuickActions,
           hasUnseenChatMessages = false,
           crossSellsAction = null,
           firstVetAction = null,
@@ -1629,8 +1652,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToConnectPayment = {},
         navigateToConnectPayout = {},
         navigateToHelpCenter = {},
-        navigateToMovingFlow = {},
-        navigateToEditInsurance = {},
+        navigateToQuickLink = {},
         openUrl = {},
         openCrossSellUrl = {},
         openAppSettings = {},
@@ -1643,12 +1665,35 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToChipIdScreen = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
-        navigateToTravelCertificate = {},
         navigateToAddonPurchaseFlow = {},
       )
     }
   }
 }
+
+private val previewQuickActions: List<QuickAction> = listOf(
+  QuickAction.MultiSelectExpandedLink(
+    titleRes = Res.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE,
+    hintTextRes = Res.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_SUBTITLE,
+    links = listOf(
+      QuickAction.StandaloneQuickLink(
+        titleRes = Res.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE,
+        hintTextRes = Res.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE,
+        quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeTier,
+      ),
+    ),
+  ),
+  QuickAction.StandaloneQuickLink(
+    titleRes = Res.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE,
+    hintTextRes = Res.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE,
+    quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeAddress,
+  ),
+  QuickAction.StandaloneQuickLink(
+    titleRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_TITLE,
+    hintTextRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE,
+    quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkConnectPayment,
+  ),
+)
 
 private class HomeTextPreviewParameterProvider : CollectionPreviewParameterProvider<HomeText>(
   listOf(

@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.Either
+import arrow.core.getOrElse
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.crosssells.CrossSellSheetData
@@ -22,6 +23,9 @@ import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.memberquickactions.GetMemberQuickActionsUseCase
+import com.hedvig.android.memberquickactions.InnerHelpCenterDestination
+import com.hedvig.android.memberquickactions.QuickAction
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -42,6 +46,7 @@ internal class HomePresenter(
   private val applicationScope: ApplicationScope,
   private val isProduction: Boolean,
   private val deleteClaimIntentDraftUseCase: DeleteClaimIntentDraftUseCase,
+  private val getMemberQuickActionsUseCase: GetMemberQuickActionsUseCase,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
   override fun MoleculePresenterScope<HomeEvent>.present(lastState: HomeUiState): HomeUiState {
@@ -121,10 +126,14 @@ internal class HomePresenter(
             }
           },
         ) { homeData: HomeData ->
+          val quickActions = getMemberQuickActionsUseCase.invoke()
+            .getOrElse { emptyList() }
+            .filterNot { it.isSickAbroad() }
+            .take(3)
           Snapshot.withMutableSnapshot {
             hasError = false
             isReloading = false
-            successData = SuccessData.fromHomeData(homeData, crossSellNotification)
+            successData = SuccessData.fromHomeData(homeData, crossSellNotification, quickActions)
           }
         }
       }
@@ -147,9 +156,7 @@ internal class HomePresenter(
             !alreadySeenImportantMessages.contains(it.id)
           },
           isHelpCenterEnabled = successData.showHelpCenter,
-          isEditInsuranceEnabled = successData.isEditInsuranceEnabled,
-          isMovingEnabled = successData.isMovingEnabled,
-          isTravelCertificateEnabled = successData.isTravelCertificateEnabled,
+          quickActions = successData.quickActions,
           hasUnseenChatMessages = successData.hasUnseenChatMessages,
           chatAction = successData.chatAction,
           firstVetAction = successData.firstVetAction,
@@ -164,6 +171,11 @@ internal class HomePresenter(
     }
   }
 }
+
+// Home cannot navigate to the sick-abroad emergency screen (it lives in feature-help-center), so that
+// quick action is dropped from the Home tiles.
+private fun QuickAction.isSickAbroad(): Boolean = this is QuickAction.StandaloneQuickLink &&
+  quickLinkDestination is InnerHelpCenterDestination.QuickLinkSickAbroad
 
 internal sealed interface HomeEvent {
   data object RefreshData : HomeEvent
@@ -196,9 +208,7 @@ internal sealed interface HomeUiState {
     val addonBannerInfos: List<AddonBannerInfo>,
     val isProduction: Boolean,
     val isHelpCenterEnabled: Boolean,
-    val isEditInsuranceEnabled: Boolean,
-    val isMovingEnabled: Boolean,
-    val isTravelCertificateEnabled: Boolean,
+    val quickActions: List<QuickAction>,
     override val hasUnseenChatMessages: Boolean,
     val crossSellsPartition: CrossSellsPartition = CrossSellsPartition(),
     val firstName: String = "",
@@ -216,9 +226,7 @@ private data class SuccessData(
   val veryImportantMessages: List<HomeData.VeryImportantMessage>,
   val memberReminders: MemberReminders,
   val showHelpCenter: Boolean,
-  val isEditInsuranceEnabled: Boolean,
-  val isMovingEnabled: Boolean,
-  val isTravelCertificateEnabled: Boolean,
+  val quickActions: List<QuickAction>,
   val chatAction: HomeTopBarAction.ChatAction?,
   val firstVetAction: HomeTopBarAction.FirstVetAction?,
   val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
@@ -237,9 +245,7 @@ private data class SuccessData(
         veryImportantMessages = lastState.veryImportantMessages,
         memberReminders = lastState.memberReminders,
         showHelpCenter = lastState.isHelpCenterEnabled,
-        isEditInsuranceEnabled = lastState.isEditInsuranceEnabled,
-        isMovingEnabled = lastState.isMovingEnabled,
-        isTravelCertificateEnabled = lastState.isTravelCertificateEnabled,
+        quickActions = lastState.quickActions,
         crossSellsAction = lastState.crossSellsAction,
         firstVetAction = lastState.firstVetAction,
         hasUnseenChatMessages = lastState.hasUnseenChatMessages,
@@ -254,6 +260,7 @@ private data class SuccessData(
     fun fromHomeData(
       homeData: HomeData,
       crossSellRecommendationNotification: CrossSellRecommendationNotification,
+      quickActions: List<QuickAction>,
     ): SuccessData {
       val crossSellsAction = if (homeData.crossSells.recommendedCrossSell != null ||
         homeData.crossSells.recommendedAddon != null ||
@@ -291,9 +298,7 @@ private data class SuccessData(
           enableNotifications = null,
         ),
         showHelpCenter = homeData.showHelpCenter,
-        isEditInsuranceEnabled = homeData.isEditInsuranceEnabled,
-        isMovingEnabled = homeData.isMovingEnabled,
-        isTravelCertificateEnabled = homeData.isTravelCertificateEnabled,
+        quickActions = quickActions,
         firstVetAction = firstVetAction,
         crossSellsAction = crossSellsAction,
         hasUnseenChatMessages = homeData.hasUnseenChatMessages,

@@ -26,12 +26,28 @@ import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorageImpl
 import com.hedvig.android.logger.TestLogcatLoggingRule
+import com.hedvig.android.memberquickactions.GetMemberQuickActionsUseCase
+import com.hedvig.android.memberquickactions.InnerHelpCenterDestination
+import com.hedvig.android.memberquickactions.QuickAction
+import com.hedvig.android.memberquickactions.QuickLinkDestination
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.notification.badge.data.crosssell.home.CrossSellHomeNotificationService
+import com.hedvig.android.shared.partners.deflect.DeflectData
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
+import hedvig.resources.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE
+import hedvig.resources.HC_QUICK_ACTIONS_EDIT_INSURANCE_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE
+import hedvig.resources.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_PAYMENTS_TITLE
+import hedvig.resources.HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_SICK_ABROAD_TITLE
+import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE
+import hedvig.resources.Res
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -83,6 +99,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -111,6 +128,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -137,6 +155,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -162,9 +181,6 @@ internal class HomePresenterTest {
           showChatIcon = true,
           hasUnseenChatMessages = false,
           showHelpCenter = false,
-          isEditInsuranceEnabled = false,
-          isMovingEnabled = false,
-          isTravelCertificateEnabled = false,
           crossSells = CrossSellSheetData(testCrossSell, listOf(), null),
           firstVetSections = listOf(),
           addonBannerInfos = emptyList(),
@@ -190,9 +206,7 @@ internal class HomePresenterTest {
           veryImportantMessages = listOf(),
           memberReminders = MemberReminders(),
           isHelpCenterEnabled = false,
-          isEditInsuranceEnabled = false,
-          isMovingEnabled = false,
-          isTravelCertificateEnabled = false,
+          quickActions = emptyList(),
           firstVetAction = null,
           crossSellsAction = HomeTopBarAction.CrossSellsAction(
             CrossSellSheetData(testCrossSell, listOf(), null),
@@ -220,6 +234,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
     )
     val addonOnlyCrossSells = CrossSellSheetData(null, listOf(), testAddon)
 
@@ -237,9 +252,6 @@ internal class HomePresenterTest {
           crossSells = addonOnlyCrossSells,
           firstVetSections = listOf(),
           showHelpCenter = false,
-          isEditInsuranceEnabled = false,
-          isMovingEnabled = false,
-          isTravelCertificateEnabled = false,
           addonBannerInfos = listOf(),
           draftClaim = null,
         ).right(),
@@ -266,6 +278,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -284,9 +297,6 @@ internal class HomePresenterTest {
           crossSells = CrossSellSheetData(null, listOf(), null),
           firstVetSections = listOf(),
           showHelpCenter = false,
-          isEditInsuranceEnabled = false,
-          isMovingEnabled = false,
-          isTravelCertificateEnabled = false,
           addonBannerInfos = emptyList(),
           draftClaim = null,
         ).right(),
@@ -301,9 +311,7 @@ internal class HomePresenterTest {
             connectPayment = null,
           ),
           isHelpCenterEnabled = false,
-          isEditInsuranceEnabled = false,
-          isMovingEnabled = false,
-          isTravelCertificateEnabled = false,
+          quickActions = emptyList(),
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = null,
@@ -326,6 +334,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -351,6 +360,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -367,9 +377,6 @@ internal class HomePresenterTest {
           showChatIcon = false,
           hasUnseenChatMessages = hasNotification,
           showHelpCenter = false,
-          isEditInsuranceEnabled = false,
-          isMovingEnabled = false,
-          isTravelCertificateEnabled = false,
           firstVetSections = listOf(),
           crossSells = CrossSellSheetData(null, listOf(), null),
           addonBannerInfos = emptyList(),
@@ -393,6 +400,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -409,9 +417,6 @@ internal class HomePresenterTest {
           crossSells = CrossSellSheetData(null, listOf(), null),
           firstVetSections = listOf(),
           showHelpCenter = false,
-          isEditInsuranceEnabled = false,
-          isMovingEnabled = false,
-          isTravelCertificateEnabled = false,
           addonBannerInfos = emptyList(),
           draftClaim = null,
         ).right(),
@@ -424,9 +429,7 @@ internal class HomePresenterTest {
           veryImportantMessages = listOf(),
           memberReminders = MemberReminders(),
           isHelpCenterEnabled = false,
-          isEditInsuranceEnabled = false,
-          isMovingEnabled = false,
-          isTravelCertificateEnabled = false,
+          quickActions = emptyList(),
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = null,
@@ -449,6 +452,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
     )
     val firstVet = FirstVetSection(
       buttonTitle = "ButtonTitle",
@@ -472,9 +476,6 @@ internal class HomePresenterTest {
             firstVet,
           ),
           showHelpCenter = false,
-          isEditInsuranceEnabled = false,
-          isMovingEnabled = false,
-          isTravelCertificateEnabled = false,
           addonBannerInfos = emptyList(),
           draftClaim = null,
         ).right(),
@@ -487,9 +488,7 @@ internal class HomePresenterTest {
           veryImportantMessages = listOf(),
           memberReminders = MemberReminders(),
           isHelpCenterEnabled = false,
-          isEditInsuranceEnabled = false,
-          isMovingEnabled = false,
-          isTravelCertificateEnabled = false,
+          quickActions = emptyList(),
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = HomeTopBarAction.FirstVetAction(listOf(firstVet)),
@@ -512,6 +511,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
     )
     val crossSell = CrossSell(
       id = "id",
@@ -534,9 +534,6 @@ internal class HomePresenterTest {
           crossSells = CrossSellSheetData(testCrossSell, listOf(crossSell), null),
           firstVetSections = listOf(),
           showHelpCenter = false,
-          isEditInsuranceEnabled = false,
-          isMovingEnabled = false,
-          isTravelCertificateEnabled = false,
           addonBannerInfos = emptyList(),
           draftClaim = null,
         ).right(),
@@ -549,9 +546,7 @@ internal class HomePresenterTest {
           veryImportantMessages = listOf(),
           memberReminders = MemberReminders(),
           isHelpCenterEnabled = false,
-          isEditInsuranceEnabled = false,
-          isMovingEnabled = false,
-          isTravelCertificateEnabled = false,
+          quickActions = emptyList(),
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = null,
@@ -582,6 +577,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -597,9 +593,6 @@ internal class HomePresenterTest {
           crossSells = CrossSellSheetData(null, emptyList(), null),
           firstVetSections = listOf(),
           showHelpCenter = false,
-          isEditInsuranceEnabled = false,
-          isMovingEnabled = false,
-          isTravelCertificateEnabled = false,
           addonBannerInfos = emptyList(),
           draftClaim = null,
         ).right(),
@@ -612,9 +605,7 @@ internal class HomePresenterTest {
           veryImportantMessages = listOf(),
           memberReminders = MemberReminders(),
           isHelpCenterEnabled = false,
-          isEditInsuranceEnabled = false,
-          isMovingEnabled = false,
-          isTravelCertificateEnabled = false,
+          quickActions = emptyList(),
           hasUnseenChatMessages = false,
           chatAction = HomeTopBarAction.ChatAction,
           firstVetAction = null,
@@ -637,6 +628,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -652,9 +644,6 @@ internal class HomePresenterTest {
           crossSells = CrossSellSheetData(null, emptyList(), null),
           firstVetSections = listOf(),
           showHelpCenter = false,
-          isEditInsuranceEnabled = false,
-          isMovingEnabled = false,
-          isTravelCertificateEnabled = false,
           addonBannerInfos = emptyList(),
           draftClaim = null,
         ).right(),
@@ -667,9 +656,7 @@ internal class HomePresenterTest {
           veryImportantMessages = listOf(),
           memberReminders = MemberReminders(),
           isHelpCenterEnabled = false,
-          isEditInsuranceEnabled = false,
-          isMovingEnabled = false,
-          isTravelCertificateEnabled = false,
+          quickActions = emptyList(),
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = null,
@@ -692,6 +679,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
     )
     val otherCrossSell = CrossSell(
       id = "other",
@@ -731,6 +719,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       deleteClaimIntentDraftUseCase,
+      FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -759,6 +748,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -786,6 +776,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       deleteClaimIntentDraftUseCase,
+      FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -810,8 +801,14 @@ internal class HomePresenterTest {
   }
 
   @Test
-  fun `member action eligibility flags each propagate independently to the ui state`() = runTest {
+  fun `home shows the first three member quick actions with sick-abroad filtered out`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
+    val quickActions = listOf(
+      editInsuranceMultiSelect,
+      changeAddressLink,
+      sickAbroadLink,
+      paymentsLink,
+    )
     val homePresenter = HomePresenter(
       getHomeDataUseCase,
       SeenImportantMessagesStorageImpl(),
@@ -819,22 +816,54 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      FakeGetMemberQuickActionsUseCase(quickActions.right()),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Loading>()
-      getHomeDataUseCase.responseTurbine.add(
-        someIrrelevantHomeDataInstance.copy(
-          isEditInsuranceEnabled = true,
-          isMovingEnabled = false,
-          isTravelCertificateEnabled = true,
-        ).right(),
-      )
+      getHomeDataUseCase.responseTurbine.add(someIrrelevantHomeDataInstance.right())
       val success = assertThat(awaitItem()).isInstanceOf<HomeUiState.Success>()
-      success.prop(HomeUiState.Success::isEditInsuranceEnabled).isTrue()
-      success.prop(HomeUiState.Success::isMovingEnabled).isFalse()
-      success.prop(HomeUiState.Success::isTravelCertificateEnabled).isTrue()
+      success.prop(HomeUiState.Success::quickActions)
+        .isEqualTo(listOf(editInsuranceMultiSelect, changeAddressLink, paymentsLink))
     }
   }
+
+  private val editInsuranceMultiSelect = QuickAction.MultiSelectExpandedLink(
+    titleRes = Res.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE,
+    hintTextRes = Res.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_SUBTITLE,
+    links = listOf(
+      QuickAction.StandaloneQuickLink(
+        titleRes = Res.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE,
+        hintTextRes = Res.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE,
+        quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeTier,
+      ),
+    ),
+  )
+  private val changeAddressLink = QuickAction.StandaloneQuickLink(
+    titleRes = Res.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE,
+    hintTextRes = Res.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE,
+    quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeAddress,
+  )
+  private val paymentsLink = QuickAction.StandaloneQuickLink(
+    titleRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_TITLE,
+    hintTextRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE,
+    quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkConnectPayment,
+  )
+  private val sickAbroadLink = QuickAction.StandaloneQuickLink(
+    titleRes = Res.string.HC_QUICK_ACTIONS_SICK_ABROAD_TITLE,
+    hintTextRes = Res.string.HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE,
+    quickLinkDestination = InnerHelpCenterDestination.QuickLinkSickAbroad(
+      DeflectData(
+        title = null,
+        infoText = null,
+        warningText = null,
+        partnersContainer = null,
+        partnersInfo = null,
+        content = DeflectData.InfoBlock("", ""),
+        faq = emptyList(),
+        buttonText = "",
+      ),
+    ),
+  )
 
   private val someIrrelevantHomeDataInstance: HomeData = HomeData(
     contractStatus = HomeData.ContractStatus.Active,
@@ -844,9 +873,6 @@ internal class HomePresenterTest {
     showChatIcon = false,
     hasUnseenChatMessages = false,
     showHelpCenter = false,
-    isEditInsuranceEnabled = false,
-    isMovingEnabled = false,
-    isTravelCertificateEnabled = false,
     firstVetSections = listOf(),
     crossSells = CrossSellSheetData(null, emptyList(), null),
     addonBannerInfos = emptyList(),
@@ -868,6 +894,12 @@ private class FakeCrossSellHomeNotificationService : CrossSellHomeNotificationSe
 
   override suspend fun setLastEpochDayNewRecommendationNotificationWasShown(epochDay: Long) {
   }
+}
+
+private class FakeGetMemberQuickActionsUseCase(
+  private val result: Either<ErrorMessage, List<QuickAction>>,
+) : GetMemberQuickActionsUseCase {
+  override suspend fun invoke(): Either<ErrorMessage, List<QuickAction>> = result
 }
 
 private class TestDeleteClaimIntentDraftUseCase : DeleteClaimIntentDraftUseCase {

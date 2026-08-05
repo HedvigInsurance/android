@@ -15,7 +15,6 @@ import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseKey
 import com.hedvig.android.feature.addon.purchase.navigation.addonPurchaseEntries
 import com.hedvig.android.feature.change.tier.navigation.ChooseTierKey
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
-import com.hedvig.android.feature.change.tier.navigation.StartTierFlowChooseInsuranceKey
 import com.hedvig.android.feature.change.tier.navigation.StartTierFlowKey
 import com.hedvig.android.feature.change.tier.navigation.changeTierEntries
 import com.hedvig.android.feature.chat.navigation.ChatKey
@@ -60,6 +59,7 @@ import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificate
 import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateEntries
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.memberquickactions.toNavKey
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.TopLevelTab
@@ -250,8 +250,7 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
       backstack.add(CoInsuredAddInfoKey(contractId, type))
     },
     navigateToHelpCenter = { backstack.add(HelpCenterKey) },
-    navigateToMovingFlow = { navigateToMovingFlow(MovingSource.OTHER) },
-    navigateToEditInsurance = { backstack.add(StartTierFlowChooseInsuranceKey) },
+    navigateToQuickLink = { destination -> backstack.add(destination.toNavKey()) },
     navigateToClaimChat = { resumeClaim ->
       backstack.add(
         ClaimChatKey(
@@ -266,7 +265,6 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
     openUrl = openUrl,
     openCrossSellUrl = openCrossSellUrl,
     imageLoader = imageLoader,
-    navigateToTravelCertificate = navigateToTravelCertificate,
     navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
   )
 }

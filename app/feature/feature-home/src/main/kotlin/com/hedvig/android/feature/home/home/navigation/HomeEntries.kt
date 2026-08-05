@@ -8,6 +8,8 @@ import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.feature.home.home.ui.FirstVetDestination
 import com.hedvig.android.feature.home.home.ui.HomeDestination
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
+import com.hedvig.android.memberquickactions.InnerHelpCenterDestination
+import com.hedvig.android.memberquickactions.QuickLinkDestination
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
@@ -25,15 +27,13 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
   navigateToContactInfo: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToHelpCenter: () -> Unit,
-  navigateToMovingFlow: () -> Unit,
-  navigateToEditInsurance: () -> Unit,
+  navigateToQuickLink: (QuickLinkDestination) -> Unit,
   navigateToClaimChat: (resumeClaim: Boolean) -> Unit,
   navigateToChipIdScreen: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   openCrossSellUrl: (String) -> Unit,
   imageLoader: ImageLoader,
-  navigateToTravelCertificate: () -> Unit,
   navigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
   entry<HomeKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
@@ -50,8 +50,14 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
       navigateToConnectPayout = dropUnlessResumed { navigateToConnectPayout() },
       navigateToMissingInfo = dropUnlessResumed { contractId, type -> navigateToMissingInfo(contractId, type) },
       navigateToHelpCenter = dropUnlessResumed { navigateToHelpCenter() },
-      navigateToMovingFlow = dropUnlessResumed { navigateToMovingFlow() },
-      navigateToEditInsurance = dropUnlessResumed { navigateToEditInsurance() },
+      navigateToQuickLink = dropUnlessResumed { destination ->
+        // FirstVet lives inside feature-home; every other destination is routed by the caller.
+        if (destination is InnerHelpCenterDestination.FirstVet) {
+          backstack.add(FirstVetKey(destination.sections))
+        } else {
+          navigateToQuickLink(destination)
+        }
+      },
       openUrl = openUrl,
       openCrossSellUrl = openCrossSellUrl,
       openAppSettings = openAppSettings,
@@ -63,7 +69,6 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
       },
       imageLoader = imageLoader,
       navigateToChipId = navigateToChipIdScreen,
-      navigateToTravelCertificate = dropUnlessResumed { navigateToTravelCertificate() },
       navigateToAddonPurchaseFlow = dropUnlessResumed { ids -> navigateToAddonPurchaseFlow(ids) },
     )
   }

@@ -200,10 +200,6 @@ internal class GetHomeDataUseCaseImpl(
               memberReminders = memberReminders,
               hasUnseenChatMessages = hasUnseenChatMessages,
               showHelpCenter = true,
-              isEditInsuranceEnabled = homeQueryData.currentMember.memberActions?.isChangeTierEnabled ?: false,
-              isMovingEnabled = homeQueryData.currentMember.memberActions?.isMovingEnabled ?: false,
-              isTravelCertificateEnabled = homeQueryData.currentMember.memberActions?.isTravelCertificateEnabled
-                ?: false,
               firstVetSections = firstVetActions,
               crossSells = crossSells,
               addonBannerInfos = travelBannerInfo.orEmpty(),
@@ -322,11 +318,6 @@ data class HomeData(
   val showChatIcon: Boolean,
   val hasUnseenChatMessages: Boolean,
   val showHelpCenter: Boolean,
-  // Per-member eligibility for each quick-action tile; a tile is hidden when its flag is false, and the
-  // whole quick-actions section is hidden when none are enabled.
-  val isEditInsuranceEnabled: Boolean,
-  val isMovingEnabled: Boolean,
-  val isTravelCertificateEnabled: Boolean,
   val firstVetSections: List<FirstVetSection>,
   val crossSells: CrossSellSheetData,
   val addonBannerInfos: List<AddonBannerInfo>,

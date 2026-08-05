@@ -46,6 +46,7 @@ dependencies {
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlags)
   implementation(projects.languageCore)
+  implementation(projects.memberQuickActions)
   implementation(projects.memberRemindersPublic)
   implementation(projects.memberRemindersUi)
   implementation(projects.moleculePublic)
@@ -72,5 +73,6 @@ dependencies {
   testImplementation(projects.loggingTest)
   testImplementation(projects.memberRemindersTest)
   testImplementation(projects.moleculeTest)
+  testImplementation(projects.partnersDeflect)
   testImplementation(projects.testClock)
 }
