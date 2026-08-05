@@ -46,7 +46,6 @@ import kotlinx.coroutines.flow.transformLatest
 import octopus.BottomSheetCrossSellsQuery
 import octopus.fragment.CrossSellFragment
 import octopus.type.CrossSellInput
-import octopus.type.CrossSellSource
 import octopus.type.FlowSource
 import octopus.type.UserFlow
 

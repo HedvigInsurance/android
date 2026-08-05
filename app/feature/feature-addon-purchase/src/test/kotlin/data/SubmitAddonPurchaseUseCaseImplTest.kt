@@ -21,8 +21,9 @@ import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import octopus.AddonActivateOfferMutation
-import octopus.type.buildAddonActivationOutput
-import octopus.type.buildUserError
+import octopus.builder.Data
+import octopus.builder.buildAddonActivationOutput
+import octopus.builder.buildUserError
 import org.junit.Rule
 import org.junit.Test
 
