@@ -663,7 +663,7 @@ private fun HomeScreenSuccess(
         }
 
         HomeSection.QuickActionTiles -> {
-          true
+          uiState.isEditInsuranceEnabled || uiState.isMovingEnabled || uiState.isTravelCertificateEnabled
         }
       }
     }
@@ -902,6 +902,8 @@ private fun HomeScreenSuccess(
 
             HomeSection.QuickActionTiles -> QuickActionTilesSection(
               isEditInsuranceEnabled = uiState.isEditInsuranceEnabled,
+              isMovingEnabled = uiState.isMovingEnabled,
+              isTravelCertificateEnabled = uiState.isTravelCertificateEnabled,
               onEditInsurance = navigateToEditInsurance,
               onChangeAddress = navigateToMovingFlow,
               onTravelCertificate = navigateToTravelCertificate,
@@ -1163,6 +1165,8 @@ private fun OffersSection(
 @Composable
 private fun QuickActionTilesSection(
   isEditInsuranceEnabled: Boolean,
+  isMovingEnabled: Boolean,
+  isTravelCertificateEnabled: Boolean,
   onEditInsurance: () -> Unit,
   onChangeAddress: () -> Unit,
   onTravelCertificate: () -> Unit,
@@ -1196,22 +1200,26 @@ private fun QuickActionTilesSection(
             .fillMaxHeight(),
         )
       }
-      HomeActionTile(
-        icon = HedvigIcons.Reload,
-        text = stringResource(Res.string.HOME_QUICK_ACTIONS_CHANGE_ADDRESS),
-        onClick = onChangeAddress,
-        modifier = Modifier
-          .weight(1f)
-          .fillMaxHeight(),
-      )
-      HomeActionTile(
-        icon = HedvigIcons.Travel,
-        text = stringResource(Res.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE),
-        onClick = onTravelCertificate,
-        modifier = Modifier
-          .weight(1f)
-          .fillMaxHeight(),
-      )
+      if (isMovingEnabled) {
+        HomeActionTile(
+          icon = HedvigIcons.Reload,
+          text = stringResource(Res.string.HOME_QUICK_ACTIONS_CHANGE_ADDRESS),
+          onClick = onChangeAddress,
+          modifier = Modifier
+            .weight(1f)
+            .fillMaxHeight(),
+        )
+      }
+      if (isTravelCertificateEnabled) {
+        HomeActionTile(
+          icon = HedvigIcons.Travel,
+          text = stringResource(Res.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE),
+          onClick = onTravelCertificate,
+          modifier = Modifier
+            .weight(1f)
+            .fillMaxHeight(),
+        )
+      }
     }
   }
 }
@@ -1436,6 +1444,8 @@ private fun PreviewHomeScreen(
           ),
           isHelpCenterEnabled = true,
           isEditInsuranceEnabled = true,
+          isMovingEnabled = true,
+          isTravelCertificateEnabled = true,
           hasUnseenChatMessages = hasUnseenChatMessages,
           crossSellsPartition = CrossSellsPartition(
             offersCrossSell = RecommendedCrossSell(
@@ -1600,6 +1610,8 @@ private fun PreviewHomeScreenAllHomeTextTypes(
           ),
           isHelpCenterEnabled = false,
           isEditInsuranceEnabled = true,
+          isMovingEnabled = true,
+          isTravelCertificateEnabled = true,
           hasUnseenChatMessages = false,
           crossSellsAction = null,
           firstVetAction = null,

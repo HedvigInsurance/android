@@ -82,6 +82,8 @@ query Home($claimsHistoryFlag: Boolean!, $resumeClaimEnabled: Boolean!) {
     }
     memberActions {
       isChangeTierEnabled
+      isMovingEnabled
+      isTravelCertificateEnabled
       firstVetAction {
         sections {
           title

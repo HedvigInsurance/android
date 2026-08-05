@@ -163,6 +163,8 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           showHelpCenter = false,
           isEditInsuranceEnabled = false,
+          isMovingEnabled = false,
+          isTravelCertificateEnabled = false,
           crossSells = CrossSellSheetData(testCrossSell, listOf(), null),
           firstVetSections = listOf(),
           addonBannerInfos = emptyList(),
@@ -189,6 +191,8 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           isHelpCenterEnabled = false,
           isEditInsuranceEnabled = false,
+          isMovingEnabled = false,
+          isTravelCertificateEnabled = false,
           firstVetAction = null,
           crossSellsAction = HomeTopBarAction.CrossSellsAction(
             CrossSellSheetData(testCrossSell, listOf(), null),
@@ -234,6 +238,8 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           showHelpCenter = false,
           isEditInsuranceEnabled = false,
+          isMovingEnabled = false,
+          isTravelCertificateEnabled = false,
           addonBannerInfos = listOf(),
           draftClaim = null,
         ).right(),
@@ -279,6 +285,8 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           showHelpCenter = false,
           isEditInsuranceEnabled = false,
+          isMovingEnabled = false,
+          isTravelCertificateEnabled = false,
           addonBannerInfos = emptyList(),
           draftClaim = null,
         ).right(),
@@ -294,6 +302,8 @@ internal class HomePresenterTest {
           ),
           isHelpCenterEnabled = false,
           isEditInsuranceEnabled = false,
+          isMovingEnabled = false,
+          isTravelCertificateEnabled = false,
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = null,
@@ -358,6 +368,8 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = hasNotification,
           showHelpCenter = false,
           isEditInsuranceEnabled = false,
+          isMovingEnabled = false,
+          isTravelCertificateEnabled = false,
           firstVetSections = listOf(),
           crossSells = CrossSellSheetData(null, listOf(), null),
           addonBannerInfos = emptyList(),
@@ -398,6 +410,8 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           showHelpCenter = false,
           isEditInsuranceEnabled = false,
+          isMovingEnabled = false,
+          isTravelCertificateEnabled = false,
           addonBannerInfos = emptyList(),
           draftClaim = null,
         ).right(),
@@ -411,6 +425,8 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           isHelpCenterEnabled = false,
           isEditInsuranceEnabled = false,
+          isMovingEnabled = false,
+          isTravelCertificateEnabled = false,
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = null,
@@ -457,6 +473,8 @@ internal class HomePresenterTest {
           ),
           showHelpCenter = false,
           isEditInsuranceEnabled = false,
+          isMovingEnabled = false,
+          isTravelCertificateEnabled = false,
           addonBannerInfos = emptyList(),
           draftClaim = null,
         ).right(),
@@ -470,6 +488,8 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           isHelpCenterEnabled = false,
           isEditInsuranceEnabled = false,
+          isMovingEnabled = false,
+          isTravelCertificateEnabled = false,
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = HomeTopBarAction.FirstVetAction(listOf(firstVet)),
@@ -515,6 +535,8 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           showHelpCenter = false,
           isEditInsuranceEnabled = false,
+          isMovingEnabled = false,
+          isTravelCertificateEnabled = false,
           addonBannerInfos = emptyList(),
           draftClaim = null,
         ).right(),
@@ -528,6 +550,8 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           isHelpCenterEnabled = false,
           isEditInsuranceEnabled = false,
+          isMovingEnabled = false,
+          isTravelCertificateEnabled = false,
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = null,
@@ -574,6 +598,8 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           showHelpCenter = false,
           isEditInsuranceEnabled = false,
+          isMovingEnabled = false,
+          isTravelCertificateEnabled = false,
           addonBannerInfos = emptyList(),
           draftClaim = null,
         ).right(),
@@ -587,6 +613,8 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           isHelpCenterEnabled = false,
           isEditInsuranceEnabled = false,
+          isMovingEnabled = false,
+          isTravelCertificateEnabled = false,
           hasUnseenChatMessages = false,
           chatAction = HomeTopBarAction.ChatAction,
           firstVetAction = null,
@@ -625,6 +653,8 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           showHelpCenter = false,
           isEditInsuranceEnabled = false,
+          isMovingEnabled = false,
+          isTravelCertificateEnabled = false,
           addonBannerInfos = emptyList(),
           draftClaim = null,
         ).right(),
@@ -638,6 +668,8 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           isHelpCenterEnabled = false,
           isEditInsuranceEnabled = false,
+          isMovingEnabled = false,
+          isTravelCertificateEnabled = false,
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = null,
@@ -777,6 +809,33 @@ internal class HomePresenterTest {
     }
   }
 
+  @Test
+  fun `member action eligibility flags each propagate independently to the ui state`() = runTest {
+    val getHomeDataUseCase = TestGetHomeDataUseCase()
+    val homePresenter = HomePresenter(
+      getHomeDataUseCase,
+      SeenImportantMessagesStorageImpl(),
+      FakeCrossSellHomeNotificationService(),
+      ApplicationScope(backgroundScope),
+      false,
+      TestDeleteClaimIntentDraftUseCase(),
+    )
+    homePresenter.test(HomeUiState.Loading) {
+      assertThat(awaitItem()).isInstanceOf<HomeUiState.Loading>()
+      getHomeDataUseCase.responseTurbine.add(
+        someIrrelevantHomeDataInstance.copy(
+          isEditInsuranceEnabled = true,
+          isMovingEnabled = false,
+          isTravelCertificateEnabled = true,
+        ).right(),
+      )
+      val success = assertThat(awaitItem()).isInstanceOf<HomeUiState.Success>()
+      success.prop(HomeUiState.Success::isEditInsuranceEnabled).isTrue()
+      success.prop(HomeUiState.Success::isMovingEnabled).isFalse()
+      success.prop(HomeUiState.Success::isTravelCertificateEnabled).isTrue()
+    }
+  }
+
   private val someIrrelevantHomeDataInstance: HomeData = HomeData(
     contractStatus = HomeData.ContractStatus.Active,
     claimStatusCardsData = null,
@@ -786,6 +845,8 @@ internal class HomePresenterTest {
     hasUnseenChatMessages = false,
     showHelpCenter = false,
     isEditInsuranceEnabled = false,
+    isMovingEnabled = false,
+    isTravelCertificateEnabled = false,
     firstVetSections = listOf(),
     crossSells = CrossSellSheetData(null, emptyList(), null),
     addonBannerInfos = emptyList(),

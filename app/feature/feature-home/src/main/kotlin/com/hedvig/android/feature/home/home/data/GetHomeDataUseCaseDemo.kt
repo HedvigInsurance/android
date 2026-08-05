@@ -27,6 +27,8 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
       hasUnseenChatMessages = false,
       showHelpCenter = true,
       isEditInsuranceEnabled = true,
+      isMovingEnabled = true,
+      isTravelCertificateEnabled = true,
       firstVetSections = listOf(),
       crossSells = CrossSellSheetData(
         recommendedCrossSell =
