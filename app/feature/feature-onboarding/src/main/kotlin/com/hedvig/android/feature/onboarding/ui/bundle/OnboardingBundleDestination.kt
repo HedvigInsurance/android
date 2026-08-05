@@ -196,15 +196,6 @@ private fun OnboardingBundleScreen(
           )
         }
         Spacer(Modifier.height(8.dp))
-        HedvigText(
-          text = stringResource(Res.string.ONBOARDING_OPENS_IN_BROWSER_HINT),
-          style = HedvigTheme.typography.finePrint,
-          color = HedvigTheme.colorScheme.textSecondary,
-          textAlign = TextAlign.Center,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(24.dp))
         OnboardingStepButtons(
