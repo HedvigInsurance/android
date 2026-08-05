@@ -206,7 +206,7 @@ private fun OnboardingProgressBar(
       Box(
         Modifier
           .weight(1f)
-          .height(2.dp)
+          .height(4.dp)
           .clip(CircleShape)
           .background(HedvigTheme.colorScheme.surfaceSecondary),
       ) {
@@ -214,7 +214,7 @@ private fun OnboardingProgressBar(
           Box(
             Modifier
               .fillMaxWidth(sliceFill)
-              .height(2.dp)
+              .height(4.dp)
               .clip(CircleShape)
               .background(HedvigTheme.colorScheme.fillPrimary),
           )
