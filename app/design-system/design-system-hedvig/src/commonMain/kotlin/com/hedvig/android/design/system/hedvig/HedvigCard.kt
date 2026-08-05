@@ -80,6 +80,7 @@ fun HedvigCard(
       shape = shape,
       color = color,
       modifier = modifier,
+      border = borderColor,
     ) {
       content()
     }

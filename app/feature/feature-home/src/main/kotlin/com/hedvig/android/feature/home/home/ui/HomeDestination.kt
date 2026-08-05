@@ -5,6 +5,7 @@ import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -54,7 +55,12 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.drawOutline
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
@@ -66,7 +72,6 @@ import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
@@ -99,6 +104,8 @@ import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.RoundedLiquidGlass
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.RoundedPrimary
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.DraftClaimDialog
 import com.hedvig.android.design.system.hedvig.ErrorDialog
@@ -435,37 +442,33 @@ private fun HomeScreen(
             if (currentState.firstVetAction != null) add(currentState.firstVetAction)
             if (currentState.chatAction != null) add(currentState.chatAction)
           }
-          OnHeroGradient {
-            actionsList.forEach { action ->
-              when (action) {
-                ChatAction -> {
-                  // The FirstVet/cross-sell icons are colored images (theme-independent), but this one is a
-                  // tinted glyph on a tonal surface, so it must use the light scheme on the light gradient.
-                  ToolbarChatIcon(
-                    onClick = onNavigateToInbox,
-                    modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
-                  )
-                }
+          actionsList.forEach { action ->
+            when (action) {
+              ChatAction -> {
+                ToolbarChatIcon(
+                  onClick = onNavigateToInbox,
+                  modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
+                )
+              }
 
-                is CrossSellsAction -> {
-                  ToolbarCrossSellsIcon(
-                    onClick = {
-                      crossSellBottomSheetState.show(
-                        action.crossSells,
-                      )
-                    },
-                    modifier = Modifier.notificationCircle(
-                      action.crossSellRecommendationNotification.hasUnreadRecommendation,
-                    ),
-                  )
-                }
+              is CrossSellsAction -> {
+                ToolbarCrossSellsIcon(
+                  onClick = {
+                    crossSellBottomSheetState.show(
+                      action.crossSells,
+                    )
+                  },
+                  modifier = Modifier.notificationCircle(
+                    action.crossSellRecommendationNotification.hasUnreadRecommendation,
+                  ),
+                )
+              }
 
-                is FirstVetAction -> {
-                  val sections = action.sections
-                  ToolbarFirstVetIcon(
-                    onClick = { navigateToFirstVet(sections) },
-                  )
-                }
+              is FirstVetAction -> {
+                val sections = action.sections
+                ToolbarFirstVetIcon(
+                  onClick = { navigateToFirstVet(sections) },
+                )
               }
             }
           }
@@ -602,14 +605,17 @@ private fun HomeScreenSuccess(
       .onConsumedWindowInsetsChanged { consumedWindowInsets.insets = it }
       .pullRefresh(pullRefreshState),
   ) {
-    // Full-screen blur gradient behind the whole home screen. Sections that need a solid surface draw
-    // their own background on top to "hide" it (the content cards already do; so do the pinned pills).
-    Image(
-      painter = painterResource(Res.drawable.blur_background),
-      contentDescription = null,
-      contentScale = ContentScale.Crop,
-      modifier = Modifier.matchParentSize(),
-    )
+    // Full-screen blur gradient behind the whole home screen, in the light theme only; the dark theme
+    // keeps the regular background. Sections that need a solid surface draw their own background on top
+    // to "hide" it (the content cards already do; so do the pinned pills).
+    if (HedvigTheme.colorScheme.isLight) {
+      Image(
+        painter = painterResource(Res.drawable.blur_background),
+        contentDescription = null,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier.matchParentSize(),
+      )
+    }
     NotificationPermissionDialog(notificationPermissionState, openAppSettings)
     val horizontalInsets =
       WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).exclude(consumedWindowInsets).asPaddingValues()
@@ -697,10 +703,14 @@ private fun HomeScreenSuccess(
         }
       }
     }
+    // The sheet's surface is painted by three things that have to agree: this backdrop, the pinned lid,
+    // and every scrolling section's own background. Only the parts the sections don't cover are actually
+    // this backdrop, so changing one of the three alone leaves the rest at the old color.
+    val sheetColor = HedvigTheme.colorScheme.backgroundPrimary
+    val sheetShape = HedvigTheme.shapes.cornerXLargeTop
     // Opaque sheet backdrop from the pinned lid down to the bottom, so the sheet fills the screen even
     // when the content is short (e.g. landscape) — no blur gap below the last section. Drawn behind the
     // LazyColumn (on top of the blur); the hero + pills above the lid stay transparent on the gradient.
-    val sheetColor = HedvigTheme.colorScheme.backgroundPrimary
     val contentMaxWidth = 600.dp
     Box(
       Modifier
@@ -777,9 +787,7 @@ private fun HomeScreenSuccess(
                 }
               },
           ) {
-            OnHeroGradient {
-              WelcomeSection(uiState.firstName)
-            }
+            WelcomeSection(uiState.firstName)
           }
         }
       }
@@ -798,23 +806,19 @@ private fun HomeScreenSuccess(
               .pointerInput(Unit) { detectTapGestures {} },
           ) {
             Spacer(Modifier.height(pinnedTopOffset))
-            OnHeroGradient {
-              QuickActionCarouselSection(
-                isHelpCenterEnabled = uiState.isHelpCenterEnabled,
-                onMakeClaim = openClaimFlowSheet,
-                onHelpAndSupport = navigateToHelpCenter,
-                onContactUs = onNavigateToInbox,
-                horizontalInsets = horizontalInsets,
-                modifier = Modifier.padding(bottom = 8.dp),
-              )
-            }
+            QuickActionCarouselSection(
+              isHelpCenterEnabled = uiState.isHelpCenterEnabled,
+              onMakeClaim = openClaimFlowSheet,
+              onHelpAndSupport = navigateToHelpCenter,
+              onContactUs = onNavigateToInbox,
+              horizontalInsets = horizontalInsets,
+              modifier = Modifier.padding(bottom = 16.dp),
+            )
             HomeSheetDragHandle(
               Modifier
                 .fillMaxWidth()
-                .background(
-                  color = HedvigTheme.colorScheme.backgroundPrimary,
-                  shape = HedvigTheme.shapes.cornerXLargeTop,
-                ),
+                .background(color = sheetColor, shape = sheetShape)
+                .topEdgeBorder(sheetShape, HedvigTheme.colorScheme.borderPrimary),
             )
           }
         }
@@ -836,13 +840,10 @@ private fun HomeScreenSuccess(
               val clipTop = (stickyHeaderBottomPx - itemTopPx).coerceIn(0f, size.height)
               clipRect(top = clipTop) { this@drawWithContent.drawContent() }
             }
-            .background(HedvigTheme.colorScheme.backgroundPrimary),
+            .background(sheetColor),
         ) {
-          // The first scrolling section keeps a leading gap below the pinned lid; every section then carries
-          // its gap to the NEXT one as trailing room, giving drop-shadows space within the section.
-          if (index == 0) {
-            Spacer(Modifier.height(gapAfter(HomeSection.QuickActionCarousel)))
-          }
+          // Each section carries its gap to the NEXT one as trailing room, giving drop-shadows space
+          // within the section. The first one starts flush under the pinned lid.
           when (section) {
             HomeSection.Welcome, HomeSection.QuickActionCarousel -> Unit
 
@@ -907,10 +908,27 @@ private fun HomeScreenSuccess(
             )
           }
           if (next != null) {
-            Spacer(Modifier.height(gapAfter(section)))
+            Spacer(Modifier.height(homeSectionGap))
           }
         }
       }
+    }
+  }
+}
+
+/**
+ * Strokes only the top of [shape]: its rounded corners and the edge between them. The stroke runs down
+ * the sides for the height of the element it is applied to and stops there, and the bottom edge is
+ * clipped away entirely, so the surface below continues borderless.
+ */
+private fun Modifier.topEdgeBorder(shape: Shape, color: Color, width: Dp = 1.dp): Modifier = drawWithContent {
+  drawContent()
+  val stroke = width.toPx()
+  // Outline sized and offset so the whole stroke lands inside the element rather than straddling its edge.
+  val outline = shape.createOutline(Size(size.width - stroke, size.height), layoutDirection, this)
+  clipRect(bottom = size.height - stroke) {
+    translate(left = stroke / 2f, top = stroke / 2f) {
+      drawOutline(outline, color = color, style = Stroke(stroke))
     }
   }
 }
@@ -962,29 +980,9 @@ private val homeSectionOrder: List<HomeSection> = listOf(
   HomeSection.Addons,
 )
 
-// Gap below the pinned lid before the first scrolling section.
-private val homeSectionLeadInGap = 24.dp
-
-// Uniform gap between two consecutive scrolling sections.
+// Gap between two consecutive scrolling sections, carried as trailing room below a section's content so
+// a card's drop-shadow renders inside the section's own bounds.
 private val homeSectionGap = 40.dp
-
-// The gap that follows [section], carried as trailing room below its content so a card's drop-shadow
-// renders inside the section's own bounds. The pinned lid (QuickActionCarousel) gets the smaller
-// lead-in gap; every scrolling section is followed by the uniform section gap.
-private fun gapAfter(section: HomeSection): Dp = when (section) {
-  HomeSection.QuickActionCarousel -> homeSectionLeadInGap
-  else -> homeSectionGap
-}
-
-/**
- * The hero gradient ([Res.drawable.blur_background]) is the same light image in both light and dark
- * themes, so content drawn on it (greeting, pills, the tonal chat icon) must always render with the
- * light color scheme. Otherwise dark-theme text and tints turn near-invisible against the light gradient.
- */
-@Composable
-private fun OnHeroGradient(content: @Composable () -> Unit) {
-  HedvigTheme(darkTheme = false, content = content)
-}
 
 @Composable
 private fun WelcomeSection(firstName: String) {
@@ -1240,22 +1238,6 @@ private fun HomeActionTile(icon: ImageVector, text: String, onClick: () -> Unit,
 }
 
 @Composable
-private fun HomeActionChip(text: String, onClick: () -> Unit) {
-  Surface(
-    onClick = onClick,
-    shape = HedvigTheme.shapes.cornerXLarge,
-    color = HedvigTheme.colorScheme.surfacePrimaryTransparent,
-    role = Role.Button,
-  ) {
-    HedvigText(
-      text = text,
-      style = HedvigTheme.typography.label,
-      modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-    )
-  }
-}
-
-@Composable
 private fun QuickActionCarouselSection(
   isHelpCenterEnabled: Boolean,
   onMakeClaim: () -> Unit,
@@ -1272,11 +1254,26 @@ private fun QuickActionCarouselSection(
       .padding(horizontal = 16.dp)
       .padding(horizontalInsets),
   ) {
-    HomeActionChip(stringResource(Res.string.home_tab_claim_button_text), onMakeClaim)
+    HedvigButton(
+      text = stringResource(Res.string.home_tab_claim_button_text),
+      onClick = onMakeClaim,
+      enabled = true,
+      buttonStyle = RoundedPrimary,
+    )
     if (isHelpCenterEnabled) {
-      HomeActionChip(stringResource(Res.string.home_tab_get_help), onHelpAndSupport)
+      HedvigButton(
+        text = stringResource(Res.string.home_tab_get_help),
+        onClick = onHelpAndSupport,
+        enabled = true,
+        buttonStyle = RoundedLiquidGlass,
+      )
     }
-    HomeActionChip(stringResource(Res.string.DASHBOARD_OPEN_CHAT), onContactUs)
+    HedvigButton(
+      text = stringResource(Res.string.DASHBOARD_OPEN_CHAT),
+      onClick = onContactUs,
+      enabled = true,
+      buttonStyle = RoundedLiquidGlass,
+    )
   }
 }
 
@@ -1340,8 +1337,7 @@ private fun WelcomeMessage(firstName: String, modifier: Modifier = Modifier) {
   // todo custom style since new DS does not have this specification
   //  https://hedviginsurance.slack.com/archives/C03U9C6Q7TP/p1727365167917719
   val titleStyle = HedvigTheme.typography.headlineMedium.copy(
-    fontFamily = HedvigTheme.typography.serif,
-    fontSize = 28.0.sp,
+    fontSize = 24.0.sp,
     lineBreak = LineBreak.Heading,
     textAlign = TextAlign.Center,
   )

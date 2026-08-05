@@ -74,6 +74,9 @@ fun MemberReminderToDoList(
   if (rows.isEmpty()) return
   HedvigCard(
     color = HedvigTheme.colorScheme.fillNegative,
+    // fillNegative matches the surface this sits on in both themes, and the drop shadow that would
+    // otherwise separate them is light-only, so the outline is what gives the card an edge in dark mode.
+    borderColor = HedvigTheme.colorScheme.borderPrimary,
     modifier = modifier
       .fillMaxWidth()
       .hedvigDropShadow(HedvigTheme.shapes.cornerXLarge),
