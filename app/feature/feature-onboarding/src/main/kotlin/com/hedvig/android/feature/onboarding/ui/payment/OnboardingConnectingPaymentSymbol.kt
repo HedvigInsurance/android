@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -60,7 +61,10 @@ private const val CheckPopDelayMillis = 400L
  */
 @Composable
 internal fun OnboardingConnectingPaymentSymbol(showCheck: Boolean, modifier: Modifier = Modifier) {
-  var checkVisible by remember { mutableStateOf(false) }
+  // In a static preview the pop's delay never elapses, so seed the check as already shown there to
+  // keep the connected states visible; at runtime it starts hidden and pops in.
+  val inPreview = LocalInspectionMode.current
+  var checkVisible by remember { mutableStateOf(inPreview && showCheck) }
   LaunchedEffect(showCheck) {
     if (!showCheck) {
       checkVisible = false
