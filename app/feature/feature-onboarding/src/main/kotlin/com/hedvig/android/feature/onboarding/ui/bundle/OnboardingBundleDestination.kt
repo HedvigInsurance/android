@@ -237,17 +237,17 @@ private fun OnboardingCrossSellRow(
         error = placeholder,
         fallback = placeholder,
         imageLoader = imageLoader,
-        modifier = Modifier.size(40.dp),
+        modifier = Modifier.size(48.dp),
       )
     } else {
-      Spacer(Modifier.size(40.dp))
+      Spacer(Modifier.size(48.dp))
     }
     Spacer(Modifier.width(12.dp))
     Column(Modifier.weight(1f)) {
       HedvigText(crossSell.title, style = HedvigTheme.typography.bodySmall)
       HedvigText(
         crossSell.description,
-        style = HedvigTheme.typography.bodySmall,
+        style = HedvigTheme.typography.label,
         color = HedvigTheme.colorScheme.textSecondary,
       )
     }
