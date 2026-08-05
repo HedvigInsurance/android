@@ -44,6 +44,7 @@ import hedvig.resources.ONBOARDING_CONNECT_PAYMENT_FOOTNOTE
 import hedvig.resources.ONBOARDING_CONNECT_PAYMENT_SUBTITLE
 import hedvig.resources.ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER
 import hedvig.resources.ONBOARDING_CONNECT_PAYMENT_TITLE
+import hedvig.resources.ONBOARDING_DO_THIS_LATER_BUTTON
 import hedvig.resources.Res
 import hedvig.resources.general_continue_button
 import kotlinx.coroutines.launch
@@ -70,7 +71,6 @@ internal class OnboardingPaymentPresenter(
   ): OnboardingPaymentUiState {
     var currentState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
-    var connectedAnimationPlayed by remember { mutableStateOf(false) }
 
     LaunchedEffect(loadIteration) {
       if (currentState is OnboardingPaymentUiState.Content) return@LaunchedEffect
@@ -104,15 +104,10 @@ internal class OnboardingPaymentPresenter(
         OnboardingPaymentEvent.ConnectPayment -> navigator.openConnectPayment()
 
         OnboardingPaymentEvent.Continue -> launch { navigator.continueFrom(OnboardingStepId.ConnectPayment) }
-
-        OnboardingPaymentEvent.ConnectedAnimationCompleted -> connectedAnimationPlayed = true
       }
     }
 
-    return when (val state = currentState) {
-      is OnboardingPaymentUiState.Content -> state.copy(connectedAnimationPlayed = connectedAnimationPlayed)
-      else -> state
-    }
+    return currentState
   }
 }
 
@@ -124,7 +119,6 @@ internal sealed interface OnboardingPaymentUiState {
   data class Content(
     val progress: OnboardingProgress,
     val payinStatus: OnboardingPayinStatus,
-    val connectedAnimationPlayed: Boolean = false,
   ) : OnboardingPaymentUiState
 }
 
@@ -138,8 +132,6 @@ internal sealed interface OnboardingPaymentEvent {
   data object ConnectPayment : OnboardingPaymentEvent
 
   data object Continue : OnboardingPaymentEvent
-
-  data object ConnectedAnimationCompleted : OnboardingPaymentEvent
 }
 
 @Composable
@@ -164,7 +156,6 @@ internal fun OnboardingPaymentDestination(viewModel: OnboardingPaymentViewModel,
     onRetry = { viewModel.emit(OnboardingPaymentEvent.Retry) },
     onConnectPayment = { viewModel.emit(OnboardingPaymentEvent.ConnectPayment) },
     onContinue = { viewModel.emit(OnboardingPaymentEvent.Continue) },
-    onConnectedAnimationCompleted = { viewModel.emit(OnboardingPaymentEvent.ConnectedAnimationCompleted) },
   )
 }
 
@@ -177,7 +168,6 @@ private fun OnboardingPaymentScreen(
   onRetry: () -> Unit,
   onConnectPayment: () -> Unit,
   onContinue: () -> Unit,
-  onConnectedAnimationCompleted: () -> Unit,
 ) {
   OnboardingStepScaffold(
     progress = (uiState as? OnboardingPaymentUiState.Content)?.progress,
@@ -199,7 +189,9 @@ private fun OnboardingPaymentScreen(
 
       is OnboardingPaymentUiState.Content -> {
         // A payin method exists once the status is pending or active (pending is a bank activation
-        // still settling); either way the user has connected a method, so both show the check.
+        // still settling); either way the user has connected a method, so both show the check. This
+        // is derived straight from the live status, so moving forward and back never claims a
+        // connection the backend does not report.
         val isConnected = content.payinStatus != OnboardingPayinStatus.NeedsSetup
         Spacer(Modifier.height(16.dp))
         // Keep the subtitle in every state so the header height (and the graphic below it) never
@@ -211,8 +203,6 @@ private fun OnboardingPaymentScreen(
         Spacer(Modifier.weight(1f))
         OnboardingConnectingPaymentSymbol(
           showCheck = isConnected,
-          animationAlreadyPlayed = content.connectedAnimationPlayed,
-          onAnimationCompleted = onConnectedAnimationCompleted,
           modifier = Modifier.align(Alignment.CenterHorizontally),
         )
         Spacer(Modifier.weight(1f))
@@ -236,6 +226,10 @@ private fun OnboardingPaymentScreen(
             stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_TITLE)
           },
           onPrimaryClick = if (isConnected) onContinue else onConnectPayment,
+          // Connecting a payment method is always optional, so the not-yet-connected state offers a
+          // skip. Once connected the primary button already continues, so no secondary is needed.
+          secondaryText = if (isConnected) null else stringResource(Res.string.ONBOARDING_DO_THIS_LATER_BUTTON),
+          onSecondaryClick = if (isConnected) null else onContinue,
         )
       }
     }
@@ -257,7 +251,6 @@ private fun PreviewOnboardingPaymentScreen(
         onRetry = {},
         onConnectPayment = {},
         onContinue = {},
-        onConnectedAnimationCompleted = {},
       )
     }
   }
@@ -274,12 +267,10 @@ private class OnboardingPaymentUiStateProvider : CollectionPreviewParameterProvi
     OnboardingPaymentUiState.Content(
       progress = OnboardingProgress(totalSteps = 5, currentIndex = 3),
       payinStatus = OnboardingPayinStatus.Pending,
-      connectedAnimationPlayed = true,
     ),
     OnboardingPaymentUiState.Content(
       progress = OnboardingProgress(totalSteps = 5, currentIndex = 3),
       payinStatus = OnboardingPayinStatus.Active,
-      connectedAnimationPlayed = true,
     ),
   ),
 )

@@ -54,30 +54,20 @@ private const val CheckPopDelayMillis = 400L
 
 /**
  * The graphic on the connect-payment step: a "Bank" card linked by pulsing dots to the Hedvig
- * symbol. It shows from the start; once a payment method is connected ([showCheck]) a green
- * checkmark pops onto the symbol, animating only the first time that state is seen (see
- * [OnboardingPaymentScreen]). The dots pulse continuously.
+ * symbol. It shows from the start; while [showCheck] is true (a payment method is connected) a green
+ * checkmark pops onto the symbol. [showCheck] tracks the live status directly, so the check appears
+ * only while the backend actually reports a connected method. The dots pulse continuously.
  */
 @Composable
-internal fun OnboardingConnectingPaymentSymbol(
-  showCheck: Boolean,
-  animationAlreadyPlayed: Boolean,
-  onAnimationCompleted: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  var checkVisible by remember { mutableStateOf(showCheck && animationAlreadyPlayed) }
+internal fun OnboardingConnectingPaymentSymbol(showCheck: Boolean, modifier: Modifier = Modifier) {
+  var checkVisible by remember { mutableStateOf(false) }
   LaunchedEffect(showCheck) {
     if (!showCheck) {
       checkVisible = false
       return@LaunchedEffect
     }
-    if (animationAlreadyPlayed) {
-      checkVisible = true
-      return@LaunchedEffect
-    }
     delay(CheckPopDelayMillis.milliseconds)
     checkVisible = true
-    onAnimationCompleted()
   }
   ConnectingGraphic(checkVisible = checkVisible, modifier = modifier)
 }
