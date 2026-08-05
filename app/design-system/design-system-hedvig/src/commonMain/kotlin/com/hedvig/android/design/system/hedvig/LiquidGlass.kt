@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.tokens.PaletteTokens
 
 /**
  * Fills [shape] with the iOS-style glass material: a translucent fill that lets the backdrop through, a
@@ -24,7 +25,12 @@ import androidx.compose.ui.unit.dp
  */
 @Composable
 fun Modifier.liquidGlass(shape: Shape): Modifier =
-  glassMaterial(regularGlassMaterial, HedvigTheme.colorScheme.surfaceLiquidGlass, shape)
+  glassMaterial(liquidGlassMaterial, HedvigTheme.colorScheme.surfaceLiquidGlass, shape)
+
+/** The material for a translucent glass fill, weighted for the active color scheme. */
+internal val liquidGlassMaterial: GlassMaterial
+  @Composable
+  get() = if (HedvigTheme.colorScheme.isLight) regularGlassMaterial else translucentDarkGlassMaterial
 
 /**
  * The rim and shadow treatment of the glass material: a [dropShadow] behind the container, two inner
@@ -57,7 +63,7 @@ private val glassDropShadow = Shadow(
 // TODO: the rim shadows below stand in for a Figma glass effect that cannot be exported, so their
 //  values are read off the Figma render rather than given by design. Revisit once design catches up.
 
-/** The rim as the glass material normally reads: a faint shade and a pronounced sheen. */
+/** The rim weighted for a light fill: a faint shade and a pronounced sheen. */
 internal val regularGlassMaterial = GlassMaterial(
   dropShadow = glassDropShadow,
   rimShade = Shadow(radius = 10.dp, color = Color.Black, offset = DpOffset(4.dp, 4.dp), alpha = 0.06f),
@@ -72,6 +78,25 @@ internal val regularGlassMaterial = GlassMaterial(
       0f to Color.White.copy(alpha = 0.85f),
       0.6f to Color.White.copy(alpha = 0.70f),
       1f to Color.White.copy(alpha = 0f),
+    ),
+  ),
+)
+
+/**
+ * The rim weighted for a translucent dark fill, which only sits a little above its backdrop: the sheen
+ * is drawn in grey and tucked close to the edge, so the rim stays within reach of the fill's own
+ * brightness.
+ */
+internal val translucentDarkGlassMaterial = GlassMaterial(
+  dropShadow = glassDropShadow,
+  rimShade = Shadow(radius = 10.dp, color = Color.Black, offset = DpOffset(4.dp, 4.dp), alpha = 0.20f),
+  rimSheen = Shadow(radius = 6.dp, color = PaletteTokens.G500, offset = DpOffset(0.dp, (-3).dp), alpha = 0.45f),
+  rimHighlight = BorderStroke(
+    width = 1.dp,
+    brush = Brush.verticalGradient(
+      0f to PaletteTokens.G500.copy(alpha = 0.55f),
+      0.6f to PaletteTokens.G500.copy(alpha = 0.35f),
+      1f to PaletteTokens.G500.copy(alpha = 0f),
     ),
   ),
 )
