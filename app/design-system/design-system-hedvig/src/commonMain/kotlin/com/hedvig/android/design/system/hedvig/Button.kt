@@ -7,6 +7,7 @@ import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -28,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.draw.innerShadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.compositeOver
@@ -156,6 +158,7 @@ fun HedvigButton(
         .background(color, shape)
         .innerShadow(shape, glass.rimShade)
         .innerShadow(shape, glass.rimSheen)
+        .then(glass.rimHighlight?.let { Modifier.border(it, shape) } ?: Modifier)
     },
     onClickLabel = onClickLabel,
     role = Role.Button,
@@ -354,12 +357,17 @@ private fun ButtonSize.sizeIn(style: Style): Size = when {
 }
 
 /**
- * The container treatment of the iOS glass material: a [dropShadow] behind the container, and two
- * inner shadows over its fill that shade the top-left rim and light up the bottom-right one, which is
- * how the material reads as lit from below and to the right.
+ * The container treatment of the iOS glass material: a [dropShadow] behind the container, two inner
+ * shadows over its fill that shade the top-left rim and light up the bottom-right one, and an optional
+ * hairline [rimHighlight] where the material catches the light along its top edge.
  */
 @Immutable
-private data class GlassContainer(val dropShadow: Shadow, val rimShade: Shadow, val rimSheen: Shadow)
+private data class GlassContainer(
+  val dropShadow: Shadow,
+  val rimShade: Shadow,
+  val rimSheen: Shadow,
+  val rimHighlight: BorderStroke?,
+)
 
 private val glassDropShadow = Shadow(
   radius = 40.dp,
@@ -376,6 +384,16 @@ private val regularGlassContainer = GlassContainer(
   dropShadow = glassDropShadow,
   rimShade = Shadow(radius = 10.dp, color = Color.Black, offset = DpOffset(4.dp, 4.dp), alpha = 0.06f),
   rimSheen = Shadow(radius = 10.dp, color = Color.White, offset = DpOffset((-4).dp, (-4).dp), alpha = 0.80f),
+  // Near-opaque along the top edge and down the upper half of the sides, gone by the bottom, where the
+  // broader rimSheen takes over.
+  rimHighlight = BorderStroke(
+    width = 1.dp,
+    brush = Brush.verticalGradient(
+      0f to Color.White.copy(alpha = 0.85f),
+      0.6f to Color.White.copy(alpha = 0.70f),
+      1f to Color.White.copy(alpha = 0f),
+    ),
+  ),
 )
 
 /** The rim weighted for an opaque near-black fill, which would read as a grey smudge under [regularGlassContainer]. */
@@ -383,6 +401,7 @@ private val opaqueDarkGlassContainer = GlassContainer(
   dropShadow = glassDropShadow,
   rimShade = Shadow(radius = 10.dp, color = Color.Black, offset = DpOffset(4.dp, 4.dp), alpha = 0.40f),
   rimSheen = Shadow(radius = 10.dp, color = Color.White, offset = DpOffset((-4).dp, (-4).dp), alpha = 0.04f),
+  rimHighlight = null,
 )
 
 @Immutable
