@@ -629,7 +629,7 @@ fun CrossSellsSection(
           imageLoader = imageLoader,
           crossSellImageAsset = crossSell.pillowImage,
           onSheetDismissed = onSheetDismissed,
-          buttonText = crossSell.buttonText,
+          buttonText = crossSell.buttonText ?: buttonText,
           buttonSize = buttonSize,
           buttonShape = buttonShape,
         )
