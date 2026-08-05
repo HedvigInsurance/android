@@ -80,6 +80,7 @@ internal object ColorLightTokens {
   val SurfacePrimaryTransparent: Color = PaletteTokens.G100TLight
   val SurfaceSecondaryTransparent: Color = PaletteTokens.G200TLight
   val SurfaceHighlightTransparent: Color = PaletteTokens.G50TLight
+  val SurfaceLiquidGlass: Color = PaletteTokens.LiquidGlassFrost
   val BackgroundPrimary: Color = PaletteTokens.White
   val BackgroundNegative: Color = PaletteTokens.Black
   val BackgroundBlack: Color = PaletteTokens.Black

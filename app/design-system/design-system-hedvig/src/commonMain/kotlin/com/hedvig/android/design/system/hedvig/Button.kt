@@ -147,18 +147,13 @@ fun HedvigButton(
 
   @Suppress("NAME_SHADOWING")
   val shape = shape ?: size.shape
-  val glass = style.glassContainer.takeIf { enabled }
+  val glass = style.glassMaterial.takeIf { enabled }
   Surface(
     onClick = onClick,
     modifier = if (glass == null) {
       modifier
     } else {
-      modifier
-        .dropShadow(shape, glass.dropShadow)
-        .background(color, shape)
-        .innerShadow(shape, glass.rimShade)
-        .innerShadow(shape, glass.rimSheen)
-        .then(glass.rimHighlight?.let { Modifier.border(it, shape) } ?: Modifier)
+      modifier.glassMaterial(glass, color, shape)
     },
     onClickLabel = onClickLabel,
     role = Role.Button,
@@ -352,57 +347,9 @@ private val ButtonSize.size: Size
  */
 @Composable
 private fun ButtonSize.sizeIn(style: Style): Size = when {
-  style.glassContainer != null && this == ButtonSize.Large -> Size.LargeRounded
+  style.glassMaterial != null && this == ButtonSize.Large -> Size.LargeRounded
   else -> size
 }
-
-/**
- * The container treatment of the iOS glass material: a [dropShadow] behind the container, two inner
- * shadows over its fill that shade the top-left rim and light up the bottom-right one, and an optional
- * hairline [rimHighlight] where the material catches the light along its top edge.
- */
-@Immutable
-private data class GlassContainer(
-  val dropShadow: Shadow,
-  val rimShade: Shadow,
-  val rimSheen: Shadow,
-  val rimHighlight: BorderStroke?,
-)
-
-private val glassDropShadow = Shadow(
-  radius = 40.dp,
-  color = Color.Black,
-  offset = DpOffset(0.dp, 8.dp),
-  alpha = 0.12f,
-)
-
-// TODO: the rim shadows below stand in for a Figma glass effect that cannot be exported, so their
-//  values are read off the Figma render rather than given by design. Revisit once design catches up.
-
-/** The rim as the glass material normally reads: a faint shade and a pronounced sheen. */
-private val regularGlassContainer = GlassContainer(
-  dropShadow = glassDropShadow,
-  rimShade = Shadow(radius = 10.dp, color = Color.Black, offset = DpOffset(4.dp, 4.dp), alpha = 0.06f),
-  rimSheen = Shadow(radius = 10.dp, color = Color.White, offset = DpOffset((-4).dp, (-4).dp), alpha = 0.80f),
-  // Near-opaque along the top edge and down the upper half of the sides, gone by the bottom, where the
-  // broader rimSheen takes over.
-  rimHighlight = BorderStroke(
-    width = 1.dp,
-    brush = Brush.verticalGradient(
-      0f to Color.White.copy(alpha = 0.85f),
-      0.6f to Color.White.copy(alpha = 0.70f),
-      1f to Color.White.copy(alpha = 0f),
-    ),
-  ),
-)
-
-/** The rim weighted for an opaque near-black fill, which would read as a grey smudge under [regularGlassContainer]. */
-private val opaqueDarkGlassContainer = GlassContainer(
-  dropShadow = glassDropShadow,
-  rimShade = Shadow(radius = 10.dp, color = Color.Black, offset = DpOffset(4.dp, 4.dp), alpha = 0.40f),
-  rimSheen = Shadow(radius = 10.dp, color = Color.White, offset = DpOffset((-4).dp, (-4).dp), alpha = 0.04f),
-  rimHighlight = null,
-)
 
 @Immutable
 private data class ButtonColors(
@@ -544,7 +491,7 @@ private sealed interface Style {
   val buttonColors: ButtonColors
 
   /** Non-null on the styles that render the iOS glass material. */
-  val glassContainer: GlassContainer?
+  val glassMaterial: GlassMaterial?
     @Composable
     get() = null
 
@@ -650,9 +597,9 @@ private sealed interface Style {
 
   data object RoundedPrimary : Style {
     // The fill inverts between themes: near-black on light, opaque white on dark.
-    override val glassContainer: GlassContainer
+    override val glassMaterial: GlassMaterial
       @Composable
-      get() = if (HedvigTheme.colorScheme.isLight) opaqueDarkGlassContainer else regularGlassContainer
+      get() = if (HedvigTheme.colorScheme.isLight) opaqueDarkGlassMaterial else regularGlassMaterial
 
     override val buttonColors: ButtonColors
       @Composable
@@ -674,9 +621,9 @@ private sealed interface Style {
   }
 
   data object RoundedLiquidGlass : Style {
-    override val glassContainer: GlassContainer
+    override val glassMaterial: GlassMaterial
       @Composable
-      get() = regularGlassContainer
+      get() = regularGlassMaterial
 
     override val buttonColors: ButtonColors
       @Composable

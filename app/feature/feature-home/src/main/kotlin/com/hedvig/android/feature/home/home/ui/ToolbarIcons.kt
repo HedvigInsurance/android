@@ -3,7 +3,6 @@ package com.hedvig.android.feature.home.home.ui
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -18,7 +17,6 @@ import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
@@ -34,6 +32,7 @@ import com.hedvig.android.design.system.hedvig.icon.Clock
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.colored.ColoredChat
 import com.hedvig.android.design.system.hedvig.icon.colored.ColoredFirstVetNoCircle
+import com.hedvig.android.design.system.hedvig.liquidGlass
 import hedvig.resources.DASHBOARD_OPEN_CHAT
 import hedvig.resources.HC_QUICK_ACTIONS_FIRSTVET_SUBTITLE
 import hedvig.resources.Res
@@ -55,9 +54,8 @@ private fun ToolbarIconButton(onClick: () -> Unit, modifier: Modifier = Modifier
     contentAlignment = Alignment.Center,
     modifier = modifier
       .size(toolbarButtonSize)
-      .shadow(4.dp, CircleShape)
+      .liquidGlass(CircleShape)
       .clip(CircleShape)
-      .background(HedvigTheme.colorScheme.surfacePrimary)
       .clickable(role = Role.Button, onClick = onClick),
     content = { glyph() },
   )
