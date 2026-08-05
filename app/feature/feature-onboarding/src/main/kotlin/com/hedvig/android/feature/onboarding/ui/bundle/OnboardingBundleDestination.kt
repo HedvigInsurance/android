@@ -19,7 +19,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -55,7 +54,6 @@ import dev.zacsweers.metro.Inject
 import hedvig.resources.ONBOARDING_CONTINUE_TO_APP_BUTTON
 import hedvig.resources.ONBOARDING_CROSS_SELL_SUBTITLE
 import hedvig.resources.ONBOARDING_CROSS_SELL_TITLE
-import hedvig.resources.ONBOARDING_OPENS_IN_BROWSER_HINT
 import hedvig.resources.ONBOARDING_SEE_PRICE_BUTTON
 import hedvig.resources.Res
 import kotlinx.coroutines.launch

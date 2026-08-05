@@ -14,11 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -29,11 +25,10 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.common.di.ActivityRetainedScope
-import com.hedvig.android.core.common.di.HedvigViewModel
-import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -42,20 +37,12 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Settings
-import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
-import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
-import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgressBarAnimation
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepButtons
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepHeader
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepScaffold
-import com.hedvig.android.feature.onboarding.ui.progressFor
-import com.hedvig.android.molecule.public.MoleculePresenter
-import com.hedvig.android.molecule.public.MoleculePresenterScope
-import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.theme.Theme
-import dev.zacsweers.metro.Inject
 import hedvig.resources.ONBOARDING_CHANGE_SETTINGS_LATER_LABEL
 import hedvig.resources.ONBOARDING_THEME_DARK_SUBTITLE
 import hedvig.resources.ONBOARDING_THEME_LIGHT_SUBTITLE
@@ -67,7 +54,6 @@ import hedvig.resources.SETTINGS_THEME_DIALOG_TITLE
 import hedvig.resources.SETTINGS_THEME_LIGHT
 import hedvig.resources.SETTINGS_THEME_SYSTEM_DEFAULT
 import hedvig.resources.general_continue_button
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -92,7 +78,7 @@ private fun OnboardingThemeScreen(
   onRetry: () -> Unit,
   onSelectTheme: (Theme) -> Unit,
   onContinueClick: () -> Unit,
-  progressAnimation: OnboardingProgressBarAnimation? = null,
+  progressAnimation: OnboardingProgressBarAnimation,
 ) {
   OnboardingStepScaffold(
     progress = (uiState as? OnboardingThemeUiState.Content)?.progress,
@@ -259,18 +245,31 @@ private val DarkThemeSwatchColor = Color(0xFF121212)
 
 @HedvigPreview
 @Composable
-private fun PreviewOnboardingThemeScreen() {
+private fun PreviewOnboardingThemeScreen(
+  @PreviewParameter(OnboardingThemeUiStateProvider::class) uiState: OnboardingThemeUiState,
+) {
   HedvigTheme {
-    OnboardingThemeScreen(
-      uiState = OnboardingThemeUiState.Content(
-        progress = OnboardingProgress(totalSteps = 5, currentIndex = 2),
-        selectedTheme = Theme.SYSTEM_DEFAULT,
-      ),
-      navigateUp = {},
-      onCloseClick = {},
-      onRetry = {},
-      onSelectTheme = {},
-      onContinueClick = {},
-    )
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      OnboardingThemeScreen(
+        uiState = uiState,
+        progressAnimation = remember { OnboardingProgressBarAnimation() },
+        navigateUp = {},
+        onCloseClick = {},
+        onRetry = {},
+        onSelectTheme = {},
+        onContinueClick = {},
+      )
+    }
   }
 }
+
+private class OnboardingThemeUiStateProvider : CollectionPreviewParameterProvider<OnboardingThemeUiState>(
+  listOf(
+    OnboardingThemeUiState.Loading,
+    OnboardingThemeUiState.Error,
+    OnboardingThemeUiState.Content(
+      progress = OnboardingProgress(totalSteps = 5, currentIndex = 2),
+      selectedTheme = Theme.SYSTEM_DEFAULT,
+    ),
+  ),
+)

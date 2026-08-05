@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -21,8 +19,6 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.common.di.ActivityRetainedScope
-import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
@@ -30,21 +26,12 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.feature.onboarding.data.OnboardingSession
-import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
-import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
-import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
 import com.hedvig.android.feature.onboarding.ui.OnboardingContractCard
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgressBarAnimation
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepButtons
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepHeader
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepScaffold
-import com.hedvig.android.feature.onboarding.ui.progressFor
-import com.hedvig.android.molecule.public.MoleculePresenter
-import com.hedvig.android.molecule.public.MoleculePresenterScope
-import com.hedvig.android.molecule.public.MoleculeViewModel
-import dev.zacsweers.metro.Inject
 import hedvig.resources.ONBOARDING_ADD_COINSURED_TITLE
 import hedvig.resources.ONBOARDING_ADD_COOWNERS_TITLE
 import hedvig.resources.ONBOARDING_ADD_INFO_LATER_LABEL
@@ -52,7 +39,6 @@ import hedvig.resources.ONBOARDING_DO_THIS_LATER_BUTTON
 import hedvig.resources.ONBOARDING_MISSING_INFO_SUBTITLE
 import hedvig.resources.Res
 import hedvig.resources.general_continue_button
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

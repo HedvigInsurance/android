@@ -21,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -31,8 +30,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.common.di.ActivityRetainedScope
-import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
@@ -43,26 +40,17 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
-import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
-import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
-import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgressBarAnimation
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepButtons
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepHeader
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepScaffold
-import com.hedvig.android.feature.onboarding.ui.progressFor
-import com.hedvig.android.molecule.public.MoleculePresenter
-import com.hedvig.android.molecule.public.MoleculePresenterScope
-import com.hedvig.android.molecule.public.MoleculeViewModel
-import dev.zacsweers.metro.Inject
 import hedvig.resources.ONBOARDING_INVITE_FRIEND_SUBTITLE
 import hedvig.resources.ONBOARDING_INVITE_FRIEND_TITLE
 import hedvig.resources.Res
 import hedvig.resources.general_continue_button
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

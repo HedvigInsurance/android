@@ -70,7 +70,7 @@ fun ThreeDotsLoading(
 // One dot's travel from stable to temporary; RepeatMode.Reverse doubles this into a full breath.
 private const val dotBreathDurationMilliseconds = 600
 
-// Shorter than the breath so consecutive dots overlap into a wave instead of blinking one at a time.
+// Shorter than the breath so consecutive dots overlap into a wave.
 private const val dotStaggerMilliseconds = 200
 private const val numberOfDots = 3
 
