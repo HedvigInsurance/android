@@ -1,6 +1,5 @@
-package com.hedvig.android.feature.help.center.model
+package com.hedvig.android.memberquickactions
 
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import org.jetbrains.compose.resources.StringResource
 
 sealed interface QuickAction {
