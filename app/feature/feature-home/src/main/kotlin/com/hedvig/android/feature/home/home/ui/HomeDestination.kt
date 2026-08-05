@@ -834,11 +834,8 @@ private fun HomeScreenSuccess(
             }
             .background(sheetColor),
         ) {
-          // The first scrolling section keeps a leading gap below the pinned lid; every section then carries
-          // its gap to the NEXT one as trailing room, giving drop-shadows space within the section.
-          if (index == 0) {
-            Spacer(Modifier.height(gapAfter(HomeSection.QuickActionCarousel)))
-          }
+          // Each section carries its gap to the NEXT one as trailing room, giving drop-shadows space
+          // within the section. The first one starts flush under the pinned lid.
           when (section) {
             HomeSection.Welcome, HomeSection.QuickActionCarousel -> Unit
 
@@ -904,7 +901,7 @@ private fun HomeScreenSuccess(
             )
           }
           if (next != null) {
-            Spacer(Modifier.height(gapAfter(section)))
+            Spacer(Modifier.height(homeSectionGap))
           }
         }
       }
@@ -976,19 +973,9 @@ private val homeSectionOrder: List<HomeSection> = listOf(
   HomeSection.Addons,
 )
 
-// Gap below the pinned lid before the first scrolling section.
-private val homeSectionLeadInGap = 24.dp
-
-// Uniform gap between two consecutive scrolling sections.
+// Gap between two consecutive scrolling sections, carried as trailing room below a section's content so
+// a card's drop-shadow renders inside the section's own bounds.
 private val homeSectionGap = 40.dp
-
-// The gap that follows [section], carried as trailing room below its content so a card's drop-shadow
-// renders inside the section's own bounds. The pinned lid (QuickActionCarousel) gets the smaller
-// lead-in gap; every scrolling section is followed by the uniform section gap.
-private fun gapAfter(section: HomeSection): Dp = when (section) {
-  HomeSection.QuickActionCarousel -> homeSectionLeadInGap
-  else -> homeSectionGap
-}
 
 @Composable
 private fun WelcomeSection(firstName: String) {
