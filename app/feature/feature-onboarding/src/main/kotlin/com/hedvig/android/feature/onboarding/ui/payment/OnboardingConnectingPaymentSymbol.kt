@@ -3,6 +3,8 @@ package com.hedvig.android.feature.onboarding.ui.payment
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.StartOffset
+import androidx.compose.animation.core.StartOffsetType
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
@@ -53,20 +55,28 @@ private const val DotPulseDurationMillis = 600
 private const val DotPulseStaggerMillis = 200
 
 /**
- * The connected-state graphic on the connect-payment step: a "Bank" card linked by pulsing dots to
- * the Hedvig symbol, with a green checkmark that pops onto the symbol once the payment method is
- * connected. The pop plays only the first time the connected state is seen (see
- * [OnboardingPaymentScreen]); the dots pulse continuously.
+ * The graphic on the connect-payment step: a "Bank" card linked by pulsing dots to the Hedvig
+ * symbol. It shows from the start; once a payment method is connected ([showCheck]) a green
+ * checkmark pops onto the symbol, animating only the first time that state is seen (see
+ * [OnboardingPaymentScreen]). The dots pulse continuously.
  */
 @Composable
 internal fun OnboardingConnectingPaymentSymbol(
+  showCheck: Boolean,
   animationAlreadyPlayed: Boolean,
   onAnimationCompleted: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  var checkVisible by remember { mutableStateOf(animationAlreadyPlayed) }
-  LaunchedEffect(Unit) {
-    if (animationAlreadyPlayed) return@LaunchedEffect
+  var checkVisible by remember { mutableStateOf(showCheck && animationAlreadyPlayed) }
+  LaunchedEffect(showCheck) {
+    if (!showCheck) {
+      checkVisible = false
+      return@LaunchedEffect
+    }
+    if (animationAlreadyPlayed) {
+      checkVisible = true
+      return@LaunchedEffect
+    }
     delay(CheckPopDelayMillis.milliseconds)
     checkVisible = true
     onAnimationCompleted()
@@ -113,8 +123,11 @@ private fun LoaderDots() {
         initialValue = 0.3f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
-          animation = tween(DotPulseDurationMillis, delayMillis = index * DotPulseStaggerMillis, easing = LinearEasing),
+          animation = tween(DotPulseDurationMillis, easing = LinearEasing),
           repeatMode = RepeatMode.Reverse,
+          // Phase-shift each dot so the wave travels left→right; a fast-forward start offset keeps
+          // every dot on the same period, so they stay in sync instead of drifting apart over time.
+          initialStartOffset = StartOffset(index * DotPulseStaggerMillis, StartOffsetType.FastForward),
         ),
         label = "connecting dot $index",
       )
@@ -173,10 +186,20 @@ private fun HedvigSymbolWithCheck(checkVisible: Boolean) {
 
 @HedvigPreview
 @Composable
-private fun PreviewOnboardingConnectingPaymentSymbol() {
+private fun PreviewOnboardingConnectingPaymentSymbolConnected() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ConnectingGraphic(checkVisible = true, modifier = Modifier.size(width = 210.dp, height = 74.dp))
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewOnboardingConnectingPaymentSymbolInitial() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ConnectingGraphic(checkVisible = false, modifier = Modifier.size(width = 210.dp, height = 74.dp))
     }
   }
 }

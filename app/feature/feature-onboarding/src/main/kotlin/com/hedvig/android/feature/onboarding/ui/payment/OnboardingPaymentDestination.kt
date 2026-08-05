@@ -198,53 +198,43 @@ private fun OnboardingPaymentScreen(
       }
 
       is OnboardingPaymentUiState.Content -> {
+        // A payin method exists once the status is pending or active (pending is a bank activation
+        // still settling); either way the user has connected a method, so both show the check.
+        val isConnected = content.payinStatus != OnboardingPayinStatus.NeedsSetup
         Spacer(Modifier.height(16.dp))
-        when (content.payinStatus) {
-          OnboardingPayinStatus.NeedsSetup -> {
-            OnboardingStepHeader(
-              title = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_TITLE),
-              description = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_SUBTITLE),
-            )
-            Spacer(Modifier.weight(1f))
-            Spacer(Modifier.height(24.dp))
-            HedvigText(
-              text = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_FOOTNOTE),
-              style = HedvigTheme.typography.label,
-              color = HedvigTheme.colorScheme.textSecondary,
-              modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(horizontal = 32.dp),
-            )
-            OnboardingStepButtons(
-              primaryText = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_TITLE),
-              onPrimaryClick = onConnectPayment,
-            )
-          }
-
-          // A payin method exists (active, or pending bank activation). The connected graphic makes
-          // the "connected" claim about the payment method itself, not the mandate, so pending and
-          // active render the same.
-          OnboardingPayinStatus.Pending, OnboardingPayinStatus.Active -> {
-            Spacer(Modifier.weight(1f))
-            OnboardingConnectingPaymentSymbol(
-              animationAlreadyPlayed = content.connectedAnimationPlayed,
-              onAnimationCompleted = onConnectedAnimationCompleted,
-              modifier = Modifier.align(Alignment.CenterHorizontally),
-            )
-            Spacer(Modifier.weight(1f))
-            Spacer(Modifier.height(24.dp))
-            HedvigText(
-              text = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER),
-              style = HedvigTheme.typography.label,
-              color = HedvigTheme.colorScheme.textSecondary,
-              modifier = Modifier.align(Alignment.CenterHorizontally),
-            )
-            OnboardingStepButtons(
-              primaryText = stringResource(Res.string.general_continue_button),
-              onPrimaryClick = onContinue,
-            )
-          }
-        }
+        OnboardingStepHeader(
+          title = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_TITLE),
+          description = if (isConnected) null else stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_SUBTITLE),
+        )
+        Spacer(Modifier.weight(1f))
+        OnboardingConnectingPaymentSymbol(
+          showCheck = isConnected,
+          animationAlreadyPlayed = content.connectedAnimationPlayed,
+          onAnimationCompleted = onConnectedAnimationCompleted,
+          modifier = Modifier.align(Alignment.CenterHorizontally),
+        )
+        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(24.dp))
+        HedvigText(
+          text = if (isConnected) {
+            stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER)
+          } else {
+            stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_FOOTNOTE)
+          },
+          style = HedvigTheme.typography.label,
+          color = HedvigTheme.colorScheme.textSecondary,
+          modifier = Modifier
+            .align(Alignment.CenterHorizontally)
+            .padding(horizontal = 32.dp),
+        )
+        OnboardingStepButtons(
+          primaryText = if (isConnected) {
+            stringResource(Res.string.general_continue_button)
+          } else {
+            stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_TITLE)
+          },
+          onPrimaryClick = if (isConnected) onContinue else onConnectPayment,
+        )
       }
     }
   }
