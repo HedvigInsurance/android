@@ -61,7 +61,9 @@ private val glassDropShadow = Shadow(
 internal val regularGlassMaterial = GlassMaterial(
   dropShadow = glassDropShadow,
   rimShade = Shadow(radius = 10.dp, color = Color.Black, offset = DpOffset(4.dp, 4.dp), alpha = 0.06f),
-  rimSheen = Shadow(radius = 10.dp, color = Color.White, offset = DpOffset((-4).dp, (-4).dp), alpha = 0.80f),
+  // Cast straight up from the bottom edge: the material lifts along the bottom roughly four times as
+  // much as along the sides, which a diagonal offset would spread too far around a narrow container.
+  rimSheen = Shadow(radius = 10.dp, color = Color.White, offset = DpOffset(0.dp, (-4).dp), alpha = 0.80f),
   // Near-opaque along the top edge and down the upper half of the sides, gone by the bottom, where the
   // broader rimSheen takes over.
   rimHighlight = BorderStroke(
