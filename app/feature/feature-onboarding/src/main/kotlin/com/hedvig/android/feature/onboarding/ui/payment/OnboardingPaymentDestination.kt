@@ -70,6 +70,7 @@ internal class OnboardingPaymentPresenter(
   ): OnboardingPaymentUiState {
     var currentState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
+    var connectedAnimationPlayed by remember { mutableStateOf(false) }
 
     LaunchedEffect(loadIteration) {
       if (currentState is OnboardingPaymentUiState.Content) return@LaunchedEffect
@@ -103,10 +104,15 @@ internal class OnboardingPaymentPresenter(
         OnboardingPaymentEvent.ConnectPayment -> navigator.openConnectPayment()
 
         OnboardingPaymentEvent.Continue -> launch { navigator.continueFrom(OnboardingStepId.ConnectPayment) }
+
+        OnboardingPaymentEvent.ConnectedAnimationCompleted -> connectedAnimationPlayed = true
       }
     }
 
-    return currentState
+    return when (val state = currentState) {
+      is OnboardingPaymentUiState.Content -> state.copy(connectedAnimationPlayed = connectedAnimationPlayed)
+      else -> state
+    }
   }
 }
 
@@ -118,6 +124,7 @@ internal sealed interface OnboardingPaymentUiState {
   data class Content(
     val progress: OnboardingProgress,
     val payinStatus: OnboardingPayinStatus,
+    val connectedAnimationPlayed: Boolean = false,
   ) : OnboardingPaymentUiState
 }
 
@@ -131,6 +138,8 @@ internal sealed interface OnboardingPaymentEvent {
   data object ConnectPayment : OnboardingPaymentEvent
 
   data object Continue : OnboardingPaymentEvent
+
+  data object ConnectedAnimationCompleted : OnboardingPaymentEvent
 }
 
 @Composable
@@ -155,6 +164,7 @@ internal fun OnboardingPaymentDestination(viewModel: OnboardingPaymentViewModel,
     onRetry = { viewModel.emit(OnboardingPaymentEvent.Retry) },
     onConnectPayment = { viewModel.emit(OnboardingPaymentEvent.ConnectPayment) },
     onContinue = { viewModel.emit(OnboardingPaymentEvent.Continue) },
+    onConnectedAnimationCompleted = { viewModel.emit(OnboardingPaymentEvent.ConnectedAnimationCompleted) },
   )
 }
 
@@ -167,6 +177,7 @@ private fun OnboardingPaymentScreen(
   onRetry: () -> Unit,
   onConnectPayment: () -> Unit,
   onContinue: () -> Unit,
+  onConnectedAnimationCompleted: () -> Unit,
 ) {
   OnboardingStepScaffold(
     progress = (uiState as? OnboardingPaymentUiState.Content)?.progress,
@@ -210,11 +221,16 @@ private fun OnboardingPaymentScreen(
             )
           }
 
-          // A payin method exists (active, or pending bank activation). The design's connected
-          // state is just the "switch accounts later" hint plus Continue; we deliberately make no
-          // claim about the connection being active, so pending and active render the same.
+          // A payin method exists (active, or pending bank activation). The connected graphic makes
+          // the "connected" claim about the payment method itself, not the mandate, so pending and
+          // active render the same.
           OnboardingPayinStatus.Pending, OnboardingPayinStatus.Active -> {
-            OnboardingStepHeader(title = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_TITLE))
+            Spacer(Modifier.weight(1f))
+            OnboardingConnectingPaymentSymbol(
+              animationAlreadyPlayed = content.connectedAnimationPlayed,
+              onAnimationCompleted = onConnectedAnimationCompleted,
+              modifier = Modifier.align(Alignment.CenterHorizontally),
+            )
             Spacer(Modifier.weight(1f))
             Spacer(Modifier.height(24.dp))
             HedvigText(
@@ -249,6 +265,7 @@ private fun PreviewOnboardingPaymentScreen(
         onRetry = {},
         onConnectPayment = {},
         onContinue = {},
+        onConnectedAnimationCompleted = {},
       )
     }
   }
@@ -265,10 +282,12 @@ private class OnboardingPaymentUiStateProvider : CollectionPreviewParameterProvi
     OnboardingPaymentUiState.Content(
       progress = OnboardingProgress(totalSteps = 5, currentIndex = 3),
       payinStatus = OnboardingPayinStatus.Pending,
+      connectedAnimationPlayed = true,
     ),
     OnboardingPaymentUiState.Content(
       progress = OnboardingProgress(totalSteps = 5, currentIndex = 3),
       payinStatus = OnboardingPayinStatus.Active,
+      connectedAnimationPlayed = true,
     ),
   ),
 )
