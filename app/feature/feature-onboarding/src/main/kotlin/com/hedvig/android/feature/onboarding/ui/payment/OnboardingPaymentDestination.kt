@@ -202,9 +202,11 @@ private fun OnboardingPaymentScreen(
         // still settling); either way the user has connected a method, so both show the check.
         val isConnected = content.payinStatus != OnboardingPayinStatus.NeedsSetup
         Spacer(Modifier.height(16.dp))
+        // Keep the subtitle in every state so the header height (and the graphic below it) never
+        // shifts vertically as the status changes.
         OnboardingStepHeader(
           title = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_TITLE),
-          description = if (isConnected) null else stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_SUBTITLE),
+          description = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_SUBTITLE),
         )
         Spacer(Modifier.weight(1f))
         OnboardingConnectingPaymentSymbol(

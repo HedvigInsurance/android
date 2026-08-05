@@ -35,6 +35,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.ThreeDotsLoading
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -47,12 +48,9 @@ import org.jetbrains.compose.resources.painterResource
 
 private val SymbolSize = 74.dp
 private val CheckBadgeSize = 24.dp
-private val DotSize = 6.dp
 
-// Timing for the connected-state graphic, grouped for easy tuning with design.
+// Delay before the connected check pops in, grouped for easy tuning with design.
 private const val CheckPopDelayMillis = 400L
-private const val DotPulseDurationMillis = 600
-private const val DotPulseStaggerMillis = 200
 
 /**
  * The graphic on the connect-payment step: a "Bank" card linked by pulsing dots to the Hedvig
@@ -92,7 +90,7 @@ private fun ConnectingGraphic(checkVisible: Boolean, modifier: Modifier = Modifi
     horizontalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     BankCard()
-    LoaderDots()
+    ThreeDotsLoading()
     HedvigSymbolWithCheck(checkVisible = checkVisible)
   }
 }
@@ -110,34 +108,6 @@ private fun BankCard() {
     Box(contentAlignment = Alignment.Center) {
       // TODO: Add "Bank" / "Bank" to Lokalise
       HedvigText(text = "Bank", style = HedvigTheme.typography.bodySmall)
-    }
-  }
-}
-
-@Composable
-private fun LoaderDots() {
-  val transition = rememberInfiniteTransition(label = "connecting loader dots")
-  Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-    repeat(3) { index ->
-      val alpha by transition.animateFloat(
-        initialValue = 0.3f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-          animation = tween(DotPulseDurationMillis, easing = LinearEasing),
-          repeatMode = RepeatMode.Reverse,
-          // Phase-shift each dot so the wave travels left→right; a fast-forward start offset keeps
-          // every dot on the same period, so they stay in sync instead of drifting apart over time.
-          initialStartOffset = StartOffset(index * DotPulseStaggerMillis, StartOffsetType.FastForward),
-        ),
-        label = "connecting dot $index",
-      )
-      Box(
-        Modifier
-          .size(DotSize)
-          .graphicsLayer { this.alpha = alpha }
-          .clip(CircleShape)
-          .background(HedvigTheme.colorScheme.fillPrimary),
-      )
     }
   }
 }
