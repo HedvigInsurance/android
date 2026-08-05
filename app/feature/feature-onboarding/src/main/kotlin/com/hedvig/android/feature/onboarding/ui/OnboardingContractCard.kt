@@ -1,6 +1,8 @@
 package com.hedvig.android.feature.onboarding.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,9 +24,9 @@ import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import hedvig.resources.ONBOARDING_ADDED_LABEL
 import hedvig.resources.ONBOARDING_ADD_BUTTON
 import hedvig.resources.Res
 import org.jetbrains.compose.resources.painterResource
@@ -44,7 +46,8 @@ internal fun OnboardingContractCard(
     color = HedvigTheme.colorScheme.surfacePrimary,
     modifier = modifier
       .fillMaxWidth()
-      .padding(horizontal = 16.dp),
+      .padding(horizontal = 16.dp)
+      .hedvigDropShadow(HedvigTheme.shapes.cornerLarge),
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
@@ -63,19 +66,26 @@ internal fun OnboardingContractCard(
         )
         HedvigText(
           text = exposureName,
-          style = HedvigTheme.typography.bodySmall,
+          style = HedvigTheme.typography.label,
           color = HedvigTheme.colorScheme.textSecondary,
         )
       }
       Spacer(Modifier.width(12.dp))
       if (isComplete) {
-        HedvigText(
-          text = stringResource(Res.string.ONBOARDING_ADDED_LABEL),
-          style = HedvigTheme.typography.bodySmall,
-          color = HedvigTheme.colorScheme.textSecondary,
-        )
-        Spacer(Modifier.width(8.dp))
-        Icon(imageVector = HedvigIcons.Checkmark, contentDescription = null)
+        Box(
+          contentAlignment = Alignment.Center,
+          modifier = Modifier
+            .size(24.dp)
+            .clip(HedvigTheme.shapes.cornerXSmall)
+            .background(HedvigTheme.colorScheme.signalGreenElement),
+        ) {
+          Icon(
+            imageVector = HedvigIcons.Checkmark,
+            contentDescription = null,
+            tint = HedvigTheme.colorScheme.fillWhite,
+            modifier = Modifier.size(16.dp),
+          )
+        }
       } else {
         HedvigButton(
           text = stringResource(Res.string.ONBOARDING_ADD_BUTTON),
