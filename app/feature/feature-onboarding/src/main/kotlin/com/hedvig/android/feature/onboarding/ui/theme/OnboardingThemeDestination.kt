@@ -121,7 +121,7 @@ private fun OnboardingThemeScreen(
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(24.dp))
         Column(
-          verticalArrangement = Arrangement.spacedBy(4.dp),
+          verticalArrangement = Arrangement.spacedBy(8.dp),
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
@@ -152,7 +152,7 @@ private fun OnboardingThemeScreen(
         Spacer(Modifier.height(24.dp))
         HedvigText(
           text = stringResource(Res.string.ONBOARDING_CHANGE_SETTINGS_LATER_LABEL),
-          style = HedvigTheme.typography.finePrint,
+          style = HedvigTheme.typography.label,
           color = HedvigTheme.colorScheme.textSecondary,
           textAlign = TextAlign.Center,
           modifier = Modifier
@@ -187,7 +187,7 @@ private fun ThemeOptionRow(
     Row(
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.spacedBy(12.dp),
-      modifier = Modifier.padding(start = 12.dp, top = 16.dp, end = 16.dp, bottom = 16.dp),
+      modifier = Modifier.padding(start = 12.dp, top = 12.dp, end = 16.dp, bottom = 12.dp),
     ) {
       Box(
         Modifier
