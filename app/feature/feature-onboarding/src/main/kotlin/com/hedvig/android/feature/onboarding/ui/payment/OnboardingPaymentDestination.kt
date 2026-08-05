@@ -198,7 +198,7 @@ private fun OnboardingPaymentScreen(
             Spacer(Modifier.height(24.dp))
             HedvigText(
               text = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_FOOTNOTE),
-              style = HedvigTheme.typography.finePrint,
+              style = HedvigTheme.typography.label,
               color = HedvigTheme.colorScheme.textSecondary,
               modifier = Modifier
                 .align(Alignment.CenterHorizontally)
@@ -219,7 +219,7 @@ private fun OnboardingPaymentScreen(
             Spacer(Modifier.height(24.dp))
             HedvigText(
               text = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER),
-              style = HedvigTheme.typography.finePrint,
+              style = HedvigTheme.typography.label,
               color = HedvigTheme.colorScheme.textSecondary,
               modifier = Modifier.align(Alignment.CenterHorizontally),
             )
