@@ -123,8 +123,8 @@ import com.hedvig.android.design.system.hedvig.TopAppBarLayoutForActions
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
 import com.hedvig.android.design.system.hedvig.icon.Reload
+import com.hedvig.android.design.system.hedvig.icon.Settings
 import com.hedvig.android.design.system.hedvig.icon.Travel
 import com.hedvig.android.design.system.hedvig.notificationCircle
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
@@ -163,15 +163,17 @@ import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentText.
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentType.INACTIVE
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
-import hedvig.resources.ADDON_FLOW_LEARN_MORE_BUTTON
 import hedvig.resources.CHAT_NEW_MESSAGE
-import hedvig.resources.CROSS_SELL_SUBTITLE
 import hedvig.resources.DASHBOARD_OPEN_CHAT
 import hedvig.resources.HC_QUICK_ACTIONS_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE
-import hedvig.resources.HC_QUICK_ACTIONS_UPDATE_ADDRESS
+import hedvig.resources.HOME_ADDONS_READ_MORE_BUTTON
+import hedvig.resources.HOME_DISCOVER_SECTION_TITLE
+import hedvig.resources.HOME_DISCOVER_SEE_PRICE_BUTTON
 import hedvig.resources.HOME_GREETING_SUBTITLE
 import hedvig.resources.HOME_GREETING_TITLE
+import hedvig.resources.HOME_QUICK_ACTIONS_CHANGE_ADDRESS
+import hedvig.resources.HOME_QUICK_ACTIONS_EDIT_INSURANCE
 import hedvig.resources.HOME_QUOTES_SECTION_TITLE
 import hedvig.resources.HOME_TODO_SECTION_TITLE
 import hedvig.resources.INSURANCE_ADDONS_SUBHEADING
@@ -212,6 +214,7 @@ internal fun HomeDestination(
   navigateToConnectPayout: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   navigateToMovingFlow: () -> Unit,
+  navigateToEditInsurance: () -> Unit,
   openUrl: (String) -> Unit,
   openCrossSellUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
@@ -237,6 +240,7 @@ internal fun HomeDestination(
     navigateToConnectPayout = navigateToConnectPayout,
     navigateToHelpCenter = navigateToHelpCenter,
     navigateToMovingFlow = navigateToMovingFlow,
+    navigateToEditInsurance = navigateToEditInsurance,
     openUrl = openUrl,
     openCrossSellUrl = openCrossSellUrl,
     openAppSettings = openAppSettings,
@@ -269,6 +273,7 @@ private fun HomeScreen(
   navigateToConnectPayout: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   navigateToMovingFlow: () -> Unit,
+  navigateToEditInsurance: () -> Unit,
   openUrl: (String) -> Unit,
   openCrossSellUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
@@ -386,6 +391,7 @@ private fun HomeScreen(
             navigateToConnectPayout = navigateToConnectPayout,
             navigateToHelpCenter = navigateToHelpCenter,
             navigateToMovingFlow = navigateToMovingFlow,
+            navigateToEditInsurance = navigateToEditInsurance,
             onNavigateToInbox = onNavigateToInbox,
             openClaimFlowSheet = {
               if (draftClaim != null) {
@@ -560,6 +566,7 @@ private fun HomeScreenSuccess(
   navigateToConnectPayout: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   navigateToMovingFlow: () -> Unit,
+  navigateToEditInsurance: () -> Unit,
   onNavigateToInbox: () -> Unit,
   openClaimFlowSheet: () -> Unit,
   onContinueDraftClaim: () -> Unit,
@@ -893,8 +900,7 @@ private fun HomeScreenSuccess(
             )
 
             HomeSection.QuickActionTiles -> QuickActionTilesSection(
-              isHelpCenterEnabled = uiState.isHelpCenterEnabled,
-              onHelpAndSupport = navigateToHelpCenter,
+              onEditInsurance = navigateToEditInsurance,
               onChangeAddress = navigateToMovingFlow,
               onTravelCertificate = navigateToTravelCertificate,
               horizontalInsets = horizontalInsets,
@@ -1157,8 +1163,7 @@ private fun OffersSection(
 
 @Composable
 private fun QuickActionTilesSection(
-  isHelpCenterEnabled: Boolean,
-  onHelpAndSupport: () -> Unit,
+  onEditInsurance: () -> Unit,
   onChangeAddress: () -> Unit,
   onTravelCertificate: () -> Unit,
   horizontalInsets: PaddingValues,
@@ -1181,19 +1186,17 @@ private fun QuickActionTilesSection(
         .fillMaxWidth()
         .height(IntrinsicSize.Max),
     ) {
-      if (isHelpCenterEnabled) {
-        HomeActionTile(
-          icon = HedvigIcons.HelipadOutline,
-          text = stringResource(Res.string.home_tab_get_help),
-          onClick = onHelpAndSupport,
-          modifier = Modifier
-            .weight(1f)
-            .fillMaxHeight(),
-        )
-      }
+      HomeActionTile(
+        icon = HedvigIcons.Settings,
+        text = stringResource(Res.string.HOME_QUICK_ACTIONS_EDIT_INSURANCE),
+        onClick = onEditInsurance,
+        modifier = Modifier
+          .weight(1f)
+          .fillMaxHeight(),
+      )
       HomeActionTile(
         icon = HedvigIcons.Reload,
-        text = stringResource(Res.string.HC_QUICK_ACTIONS_UPDATE_ADDRESS),
+        text = stringResource(Res.string.HOME_QUICK_ACTIONS_CHANGE_ADDRESS),
         onClick = onChangeAddress,
         modifier = Modifier
           .weight(1f)
@@ -1302,7 +1305,7 @@ private fun AddonsSection(
         subtitle = addon.description,
         pillowImage = null,
         pillow = { AddonPillow(addon.flowType) },
-        buttonText = stringResource(Res.string.ADDON_FLOW_LEARN_MORE_BUTTON),
+        buttonText = stringResource(Res.string.HOME_ADDONS_READ_MORE_BUTTON),
         onButtonClick = { navigateToAddonPurchaseFlow(addon.eligibleInsurancesIds) },
         imageLoader = imageLoader,
         modifier = Modifier.fillMaxWidth(),
@@ -1320,12 +1323,13 @@ private fun DiscoverInsurancesSection(
   imageLoader: ImageLoader,
 ) {
   CrossSellsSection(
-    title = stringResource(Res.string.CROSS_SELL_SUBTITLE),
+    title = stringResource(Res.string.HOME_DISCOVER_SECTION_TITLE),
     crossSells = crossSells,
     onCrossSellClick = onCrossSellClick,
     modifier = Modifier.padding(horizontal = 16.dp),
     onSheetDismissed = {},
     imageLoader = imageLoader,
+    buttonText = stringResource(Res.string.HOME_DISCOVER_SEE_PRICE_BUTTON),
     buttonSize = ButtonSize.Small,
     buttonShape = HedvigTheme.shapes.cornerFull,
   )
@@ -1432,6 +1436,24 @@ private fun PreviewHomeScreen(
           ),
           isHelpCenterEnabled = true,
           hasUnseenChatMessages = hasUnseenChatMessages,
+          crossSellsPartition = CrossSellsPartition(
+            offersCrossSell = RecommendedCrossSell(
+              crossSell = CrossSell(
+                id = "car",
+                title = "Car Insurance",
+                subtitle = "For you and your car",
+                storeUrl = "",
+                pillowImage = ImageAsset("", "", ""),
+              ),
+              bannerText = "15% bundle discount",
+              buttonText = "See your price",
+              discountText = "-15%",
+              buttonDescription = "",
+              backgroundPillowImages = "" to "",
+              bundleProgress = null,
+            ),
+            discoverCrossSells = emptyList(),
+          ),
           crossSellsAction = CrossSellsAction(
             CrossSellSheetData(
               recommendedCrossSell = RecommendedCrossSell(
@@ -1498,6 +1520,7 @@ private fun PreviewHomeScreen(
         navigateToConnectPayout = {},
         navigateToHelpCenter = {},
         navigateToMovingFlow = {},
+        navigateToEditInsurance = {},
         openUrl = {},
         openCrossSellUrl = {},
         openAppSettings = {},
@@ -1534,6 +1557,7 @@ private fun PreviewHomeScreenWithError() {
         navigateToConnectPayout = {},
         navigateToHelpCenter = {},
         navigateToMovingFlow = {},
+        navigateToEditInsurance = {},
         openUrl = {},
         openCrossSellUrl = {},
         openAppSettings = {},
@@ -1592,6 +1616,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToConnectPayout = {},
         navigateToHelpCenter = {},
         navigateToMovingFlow = {},
+        navigateToEditInsurance = {},
         openUrl = {},
         openCrossSellUrl = {},
         openAppSettings = {},

@@ -15,6 +15,7 @@ import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseKey
 import com.hedvig.android.feature.addon.purchase.navigation.addonPurchaseEntries
 import com.hedvig.android.feature.change.tier.navigation.ChooseTierKey
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
+import com.hedvig.android.feature.change.tier.navigation.StartTierFlowChooseInsuranceKey
 import com.hedvig.android.feature.change.tier.navigation.StartTierFlowKey
 import com.hedvig.android.feature.change.tier.navigation.changeTierEntries
 import com.hedvig.android.feature.chat.navigation.ChatKey
@@ -250,6 +251,7 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
     },
     navigateToHelpCenter = { backstack.add(HelpCenterKey) },
     navigateToMovingFlow = { navigateToMovingFlow(MovingSource.OTHER) },
+    navigateToEditInsurance = { backstack.add(StartTierFlowChooseInsuranceKey) },
     navigateToClaimChat = { resumeClaim ->
       backstack.add(
         ClaimChatKey(
