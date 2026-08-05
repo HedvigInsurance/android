@@ -208,13 +208,13 @@ private fun OnboardingConsentScreen(
         ) {
           HedvigText(
             text = stringResource(Res.string.LEGAL_PRIVACY_POLICY),
-            style = HedvigTheme.typography.bodySmall,
+            style = HedvigTheme.typography.label,
             textDecoration = TextDecoration.Underline,
           )
           Icon(
             imageVector = HedvigIcons.ArrowNorthEast,
             contentDescription = null,
-            modifier = Modifier.size(16.dp),
+            modifier = Modifier.size(18.dp),
           )
         }
         Spacer(Modifier.height(16.dp))

@@ -17,7 +17,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -25,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
 import hedvig.resources.Res
 import hedvig.resources.onboarding_verified_badge
@@ -75,7 +75,7 @@ private fun VerifiedCard(badgeVisible: Boolean, modifier: Modifier = Modifier) {
       Modifier
         .matchParentSize()
         .padding(start = 8.dp, top = 16.dp, end = 20.dp, bottom = 12.dp)
-        .shadow(elevation = 4.dp, shape = RoundedCornerShape(24.dp)),
+        .hedvigDropShadow(RoundedCornerShape(24.dp)),
     )
     Image(
       painter = painterResource(Res.drawable.onboarding_verified_card),
