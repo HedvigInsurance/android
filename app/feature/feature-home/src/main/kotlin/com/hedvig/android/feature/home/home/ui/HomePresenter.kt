@@ -179,9 +179,6 @@ internal sealed interface HomeUiState {
   val isReloading: Boolean
     get() = false
 
-  val isHelpCenterEnabled: Boolean
-    get() = false
-
   val hasUnseenChatMessages: Boolean
     get() = false
 
@@ -196,7 +193,7 @@ internal sealed interface HomeUiState {
     val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
     val addonBannerInfos: List<AddonBannerInfo>,
     val isProduction: Boolean,
-    override val isHelpCenterEnabled: Boolean,
+    val isHelpCenterEnabled: Boolean,
     val isEditInsuranceEnabled: Boolean,
     override val hasUnseenChatMessages: Boolean,
     val crossSellsPartition: CrossSellsPartition = CrossSellsPartition(),
