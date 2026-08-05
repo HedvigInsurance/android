@@ -901,6 +901,7 @@ private fun HomeScreenSuccess(
             )
 
             HomeSection.QuickActionTiles -> QuickActionTilesSection(
+              isEditInsuranceEnabled = uiState.isEditInsuranceEnabled,
               onEditInsurance = navigateToEditInsurance,
               onChangeAddress = navigateToMovingFlow,
               onTravelCertificate = navigateToTravelCertificate,
@@ -1161,6 +1162,7 @@ private fun OffersSection(
 
 @Composable
 private fun QuickActionTilesSection(
+  isEditInsuranceEnabled: Boolean,
   onEditInsurance: () -> Unit,
   onChangeAddress: () -> Unit,
   onTravelCertificate: () -> Unit,
@@ -1184,14 +1186,16 @@ private fun QuickActionTilesSection(
         .fillMaxWidth()
         .height(IntrinsicSize.Max),
     ) {
-      HomeActionTile(
-        icon = HedvigIcons.Settings,
-        text = stringResource(Res.string.HOME_QUICK_ACTIONS_EDIT_INSURANCE),
-        onClick = onEditInsurance,
-        modifier = Modifier
-          .weight(1f)
-          .fillMaxHeight(),
-      )
+      if (isEditInsuranceEnabled) {
+        HomeActionTile(
+          icon = HedvigIcons.Settings,
+          text = stringResource(Res.string.HOME_QUICK_ACTIONS_EDIT_INSURANCE),
+          onClick = onEditInsurance,
+          modifier = Modifier
+            .weight(1f)
+            .fillMaxHeight(),
+        )
+      }
       HomeActionTile(
         icon = HedvigIcons.Reload,
         text = stringResource(Res.string.HOME_QUICK_ACTIONS_CHANGE_ADDRESS),
@@ -1431,6 +1435,7 @@ private fun PreviewHomeScreen(
             connectPayment = ConnectPayment(),
           ),
           isHelpCenterEnabled = true,
+          isEditInsuranceEnabled = true,
           hasUnseenChatMessages = hasUnseenChatMessages,
           crossSellsPartition = CrossSellsPartition(
             offersCrossSell = RecommendedCrossSell(
@@ -1594,6 +1599,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
             updateContactInfo = null,
           ),
           isHelpCenterEnabled = false,
+          isEditInsuranceEnabled = true,
           hasUnseenChatMessages = false,
           crossSellsAction = null,
           firstVetAction = null,

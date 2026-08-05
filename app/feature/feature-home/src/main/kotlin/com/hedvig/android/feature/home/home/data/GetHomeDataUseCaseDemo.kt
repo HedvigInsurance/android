@@ -26,6 +26,7 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
       ),
       hasUnseenChatMessages = false,
       showHelpCenter = true,
+      isEditInsuranceEnabled = true,
       firstVetSections = listOf(),
       crossSells = CrossSellSheetData(
         recommendedCrossSell =

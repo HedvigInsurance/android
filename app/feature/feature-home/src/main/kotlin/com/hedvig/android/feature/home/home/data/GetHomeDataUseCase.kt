@@ -200,6 +200,7 @@ internal class GetHomeDataUseCaseImpl(
               memberReminders = memberReminders,
               hasUnseenChatMessages = hasUnseenChatMessages,
               showHelpCenter = true,
+              isEditInsuranceEnabled = homeQueryData.currentMember.memberActions?.isChangeTierEnabled ?: false,
               firstVetSections = firstVetActions,
               crossSells = crossSells,
               addonBannerInfos = travelBannerInfo.orEmpty(),
@@ -318,6 +319,8 @@ data class HomeData(
   val showChatIcon: Boolean,
   val hasUnseenChatMessages: Boolean,
   val showHelpCenter: Boolean,
+  // Backed by the member's change-tier eligibility; gates the "Edit insurance" quick-action tile.
+  val isEditInsuranceEnabled: Boolean,
   val firstVetSections: List<FirstVetSection>,
   val crossSells: CrossSellSheetData,
   val addonBannerInfos: List<AddonBannerInfo>,
