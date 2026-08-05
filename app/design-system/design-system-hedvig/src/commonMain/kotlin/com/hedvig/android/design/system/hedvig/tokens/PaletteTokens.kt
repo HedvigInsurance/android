@@ -23,6 +23,14 @@ internal object PaletteTokens {
   val G800 = Color(0xFF505050)
   val G900 = Color(0xFF303030)
 
+  /**
+   * The translucent fill of the iOS-style glass material. Composited over any backdrop it lands within
+   * ~1.5% of the frosted white Figma renders for the rounded liquid glass button.
+   *
+   * TODO: replace with a real palette entry once the design system defines the glass material.
+   */
+  val LiquidGlassFrost = Color(0xA1F0F0F0)
+
   val G50TLight = Color(0x05121212)
   val G100TLight = Color(0x0B121212)
   val G150TLight = Color(0x0D121212)

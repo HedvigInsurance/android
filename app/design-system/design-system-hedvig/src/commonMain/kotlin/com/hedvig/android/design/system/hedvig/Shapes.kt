@@ -23,6 +23,7 @@ import com.hedvig.android.design.system.hedvig.FigmaShapeDirection.All
 import com.hedvig.android.design.system.hedvig.FigmaShapeDirection.BottomOnly
 import com.hedvig.android.design.system.hedvig.FigmaShapeDirection.TopOnly
 import com.hedvig.android.design.system.hedvig.tokens.ShapeKeyTokens
+import com.hedvig.android.design.system.hedvig.tokens.ShapeKeyTokens.CornerFull
 import com.hedvig.android.design.system.hedvig.tokens.ShapeKeyTokens.CornerLarge
 import com.hedvig.android.design.system.hedvig.tokens.ShapeKeyTokens.CornerMedium
 import com.hedvig.android.design.system.hedvig.tokens.ShapeKeyTokens.CornerNone
@@ -60,6 +61,7 @@ internal val ShapeKeyTokens.value: Shape
 
 internal fun Shapes.fromToken(token: ShapeKeyTokens): Shape {
   return when (token) {
+    CornerFull -> cornerFull
     CornerXXLarge -> cornerXXLarge
     CornerXLarge -> cornerXLarge
     CornerLarge -> cornerLarge

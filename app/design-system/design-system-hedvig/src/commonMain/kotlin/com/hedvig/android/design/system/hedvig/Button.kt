@@ -7,10 +7,12 @@ import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -24,14 +26,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.draw.innerShadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.compose.ui.withoutPlacement
@@ -43,6 +49,9 @@ import com.hedvig.android.design.system.hedvig.tokens.MiniSizeButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.PrimaryAltStyleButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.PrimaryStyleButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.RedStyleButtonTokens
+import com.hedvig.android.design.system.hedvig.tokens.RoundedLargeSizeButtonTokens
+import com.hedvig.android.design.system.hedvig.tokens.RoundedLiquidGlassStyleButtonTokens
+import com.hedvig.android.design.system.hedvig.tokens.RoundedPrimaryStyleButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.SecondaryAltStyleButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.SecondaryStyleButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.SmallSizeButtonTokens
@@ -119,7 +128,9 @@ fun HedvigButton(
 ) {
   @Suppress("NAME_SHADOWING")
   val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
-  val buttonColors = buttonStyle.style.buttonColors
+  val style = buttonStyle.style
+  val size = buttonSize.sizeIn(style)
+  val buttonColors = style.buttonColors
   val containerColor = buttonColors.containerColor(enabled)
   val contentColor = buttonColors.contentColor(enabled)
   val isHovered by interactionSource.collectIsHoveredAsState()
@@ -131,21 +142,35 @@ fun HedvigButton(
       containerColor
     },
   )
+
+  @Suppress("NAME_SHADOWING")
+  val shape = shape ?: size.shape
+  val glass = style.glassContainer.takeIf { enabled }
   Surface(
     onClick = onClick,
-    modifier = modifier,
+    modifier = if (glass == null) {
+      modifier
+    } else {
+      modifier
+        .dropShadow(shape, glass.dropShadow)
+        .background(color, shape)
+        .innerShadow(shape, glass.rimShade)
+        .innerShadow(shape, glass.rimSheen)
+    },
     onClickLabel = onClickLabel,
     role = Role.Button,
     enabled = enabled,
-    shape = shape ?: buttonSize.size.shape,
+    shape = shape,
     border = border,
-    color = color,
+    // The rim shadows have to sit on top of the container fill, which is only reachable from outside
+    // this Surface, so the fill moves into the modifier above and the Surface itself stays see-through.
+    color = if (glass == null) color else Color.Transparent,
     contentColor = contentColor,
     interactionSource = interactionSource,
   ) {
-    ProvideTextStyle(buttonSize.size.textStyle) {
+    ProvideTextStyle(size.textStyle) {
       Row(
-        modifier = Modifier.padding(buttonSize.size.contentPadding),
+        modifier = Modifier.padding(size.contentPadding),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
         content = content,
@@ -246,6 +271,31 @@ fun HedvigButtonGhostWithBorder(
   )
 }
 
+@HedvigPreview
+@Composable
+private fun PreviewRoundedButtons() {
+  HedvigTheme {
+    // A tinted backdrop, so that the translucent liquid glass container is distinguishable from it.
+    Surface(color = HedvigTheme.colorScheme.surfaceSecondary) {
+      Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.padding(16.dp),
+      ) {
+        for (buttonStyle in listOf(
+          ButtonDefaults.ButtonStyle.RoundedPrimary,
+          ButtonDefaults.ButtonStyle.RoundedLiquidGlass,
+        )) {
+          Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            HedvigButton("Make a claim", {}, enabled = true, buttonStyle = buttonStyle)
+            HedvigButton("Disabled", {}, enabled = false, buttonStyle = buttonStyle)
+            HedvigButton("Loading", {}, enabled = true, buttonStyle = buttonStyle, isLoading = true)
+          }
+        }
+      }
+    }
+  }
+}
+
 object ButtonDefaults {
   internal val buttonStyle: ButtonStyle = ButtonStyle.Primary
   internal val buttonSize: ButtonSize = ButtonSize.Large
@@ -257,6 +307,12 @@ object ButtonDefaults {
     SecondaryAlt,
     Ghost,
     Red,
+
+    /** A filled pill with the sheen and drop shadow of the iOS glass material. */
+    RoundedPrimary,
+
+    /** A translucent pill of the iOS glass material, letting the backdrop show through. */
+    RoundedLiquidGlass,
   }
 
   enum class ButtonSize {
@@ -275,6 +331,8 @@ private val ButtonDefaults.ButtonStyle.style: Style
     ButtonDefaults.ButtonStyle.SecondaryAlt -> Style.SecondaryAlt
     ButtonDefaults.ButtonStyle.Ghost -> Style.Ghost
     ButtonDefaults.ButtonStyle.Red -> Style.Red
+    ButtonDefaults.ButtonStyle.RoundedPrimary -> Style.RoundedPrimary
+    ButtonDefaults.ButtonStyle.RoundedLiquidGlass -> Style.RoundedLiquidGlass
   }
 
 private val ButtonSize.size: Size
@@ -284,6 +342,48 @@ private val ButtonSize.size: Size
     ButtonSize.Small -> Size.Small
     ButtonSize.Mini -> Size.Mini
   }
+
+/**
+ * The metrics this size takes on within [style]. The rounded styles get their own pill metrics at
+ * [ButtonSize.Large]; at every smaller size they fall back to the standard button metrics.
+ */
+@Composable
+private fun ButtonSize.sizeIn(style: Style): Size = when {
+  style.glassContainer != null && this == ButtonSize.Large -> Size.LargeRounded
+  else -> size
+}
+
+/**
+ * The container treatment of the iOS glass material: a [dropShadow] behind the container, and two
+ * inner shadows over its fill that shade the top-left rim and light up the bottom-right one, which is
+ * how the material reads as lit from below and to the right.
+ */
+@Immutable
+private data class GlassContainer(val dropShadow: Shadow, val rimShade: Shadow, val rimSheen: Shadow)
+
+private val glassDropShadow = Shadow(
+  radius = 40.dp,
+  color = Color.Black,
+  offset = DpOffset(0.dp, 8.dp),
+  alpha = 0.12f,
+)
+
+// TODO: the rim shadows below stand in for a Figma glass effect that cannot be exported, so their
+//  values are read off the Figma render rather than given by design. Revisit once design catches up.
+
+/** The rim as the glass material normally reads: a faint shade and a pronounced sheen. */
+private val regularGlassContainer = GlassContainer(
+  dropShadow = glassDropShadow,
+  rimShade = Shadow(radius = 10.dp, color = Color.Black, offset = DpOffset(4.dp, 4.dp), alpha = 0.06f),
+  rimSheen = Shadow(radius = 10.dp, color = Color.White, offset = DpOffset((-4).dp, (-4).dp), alpha = 0.80f),
+)
+
+/** The rim weighted for an opaque near-black fill, which would read as a grey smudge under [regularGlassContainer]. */
+private val opaqueDarkGlassContainer = GlassContainer(
+  dropShadow = glassDropShadow,
+  rimShade = Shadow(radius = 10.dp, color = Color.Black, offset = DpOffset(4.dp, 4.dp), alpha = 0.40f),
+  rimSheen = Shadow(radius = 10.dp, color = Color.White, offset = DpOffset((-4).dp, (-4).dp), alpha = 0.04f),
+)
 
 @Immutable
 private data class ButtonColors(
@@ -341,6 +441,25 @@ private sealed interface Size {
       @Composable
       @ReadOnlyComposable
       get() = LargeSizeButtonTokens.ContainerShape.value
+  }
+
+  object LargeRounded : Size {
+    override val contentPadding: PaddingValues = PaddingValues(
+      top = RoundedLargeSizeButtonTokens.TopPadding,
+      bottom = RoundedLargeSizeButtonTokens.BottomPadding,
+      start = RoundedLargeSizeButtonTokens.HorizontalPadding,
+      end = RoundedLargeSizeButtonTokens.HorizontalPadding,
+    )
+
+    override val textStyle: TextStyle
+      @Composable
+      @ReadOnlyComposable
+      get() = RoundedLargeSizeButtonTokens.LabelTextFont.value
+
+    override val shape: Shape
+      @Composable
+      @ReadOnlyComposable
+      get() = RoundedLargeSizeButtonTokens.ContainerShape.value
   }
 
   object Medium : Size {
@@ -404,6 +523,11 @@ private sealed interface Size {
 private sealed interface Style {
   @get:Composable
   val buttonColors: ButtonColors
+
+  /** Non-null on the styles that render the iOS glass material. */
+  val glassContainer: GlassContainer?
+    @Composable
+    get() = null
 
   data object Primary : Style {
     override val buttonColors: ButtonColors
@@ -500,6 +624,56 @@ private sealed interface Style {
             activeLoadingIndicatorColor = fromToken(GhostStyleButtonTokens.ActiveLoadingIndicatorColor),
             inactiveLoadingIndicatorColor = fromToken(GhostStyleButtonTokens.InactiveLoadingIndicatorColor),
             redTextColor = fromToken(PrimaryStyleButtonTokens.RedContentColor),
+          )
+        }
+      }
+  }
+
+  data object RoundedPrimary : Style {
+    // The fill inverts between themes: near-black on light, opaque white on dark.
+    override val glassContainer: GlassContainer
+      @Composable
+      get() = if (HedvigTheme.colorScheme.isLight) opaqueDarkGlassContainer else regularGlassContainer
+
+    override val buttonColors: ButtonColors
+      @Composable
+      get() = with(HedvigTheme.colorScheme) {
+        remember(this) {
+          ButtonColors(
+            containerColor = fromToken(RoundedPrimaryStyleButtonTokens.ContainerColor),
+            contentColor = fromToken(RoundedPrimaryStyleButtonTokens.ContentColor),
+            disabledContainerColor = fromToken(RoundedPrimaryStyleButtonTokens.DisabledContainerColor),
+            disabledContentColor = fromToken(RoundedPrimaryStyleButtonTokens.DisabledContentColor),
+            hoverContainerColor = fromToken(RoundedPrimaryStyleButtonTokens.HoverContainerColor),
+            hoverContentColor = fromToken(RoundedPrimaryStyleButtonTokens.HoverContentColor),
+            activeLoadingIndicatorColor = fromToken(RoundedPrimaryStyleButtonTokens.ActiveLoadingIndicatorColor),
+            inactiveLoadingIndicatorColor = fromToken(RoundedPrimaryStyleButtonTokens.InactiveLoadingIndicatorColor),
+            redTextColor = fromToken(RoundedPrimaryStyleButtonTokens.RedContentColor),
+          )
+        }
+      }
+  }
+
+  data object RoundedLiquidGlass : Style {
+    override val glassContainer: GlassContainer
+      @Composable
+      get() = regularGlassContainer
+
+    override val buttonColors: ButtonColors
+      @Composable
+      get() = with(HedvigTheme.colorScheme) {
+        remember(this) {
+          ButtonColors(
+            containerColor = fromToken(RoundedLiquidGlassStyleButtonTokens.ContainerColor),
+            contentColor = fromToken(RoundedLiquidGlassStyleButtonTokens.ContentColor),
+            disabledContainerColor = fromToken(RoundedLiquidGlassStyleButtonTokens.DisabledContainerColor),
+            disabledContentColor = fromToken(RoundedLiquidGlassStyleButtonTokens.DisabledContentColor),
+            hoverContainerColor = fromToken(RoundedLiquidGlassStyleButtonTokens.HoverContainerColor),
+            hoverContentColor = fromToken(RoundedLiquidGlassStyleButtonTokens.HoverContentColor),
+            activeLoadingIndicatorColor = fromToken(RoundedLiquidGlassStyleButtonTokens.ActiveLoadingIndicatorColor),
+            inactiveLoadingIndicatorColor =
+              fromToken(RoundedLiquidGlassStyleButtonTokens.InactiveLoadingIndicatorColor),
+            redTextColor = fromToken(RoundedLiquidGlassStyleButtonTokens.RedContentColor),
           )
         }
       }

@@ -72,7 +72,6 @@ import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
@@ -105,6 +104,8 @@ import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.RoundedLiquidGlass
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.RoundedPrimary
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.DraftClaimDialog
 import com.hedvig.android.design.system.hedvig.ErrorDialog
@@ -1234,22 +1235,6 @@ private fun HomeActionTile(icon: ImageVector, text: String, onClick: () -> Unit,
 }
 
 @Composable
-private fun HomeActionChip(text: String, onClick: () -> Unit) {
-  Surface(
-    onClick = onClick,
-    shape = HedvigTheme.shapes.cornerXLarge,
-    color = HedvigTheme.colorScheme.surfacePrimaryTransparent,
-    role = Role.Button,
-  ) {
-    HedvigText(
-      text = text,
-      style = HedvigTheme.typography.label,
-      modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-    )
-  }
-}
-
-@Composable
 private fun QuickActionCarouselSection(
   isHelpCenterEnabled: Boolean,
   onMakeClaim: () -> Unit,
@@ -1266,11 +1251,26 @@ private fun QuickActionCarouselSection(
       .padding(horizontal = 16.dp)
       .padding(horizontalInsets),
   ) {
-    HomeActionChip(stringResource(Res.string.home_tab_claim_button_text), onMakeClaim)
+    HedvigButton(
+      text = stringResource(Res.string.home_tab_claim_button_text),
+      onClick = onMakeClaim,
+      enabled = true,
+      buttonStyle = RoundedPrimary,
+    )
     if (isHelpCenterEnabled) {
-      HomeActionChip(stringResource(Res.string.home_tab_get_help), onHelpAndSupport)
+      HedvigButton(
+        text = stringResource(Res.string.home_tab_get_help),
+        onClick = onHelpAndSupport,
+        enabled = true,
+        buttonStyle = RoundedLiquidGlass,
+      )
     }
-    HomeActionChip(stringResource(Res.string.DASHBOARD_OPEN_CHAT), onContactUs)
+    HedvigButton(
+      text = stringResource(Res.string.DASHBOARD_OPEN_CHAT),
+      onClick = onContactUs,
+      enabled = true,
+      buttonStyle = RoundedLiquidGlass,
+    )
   }
 }
 
