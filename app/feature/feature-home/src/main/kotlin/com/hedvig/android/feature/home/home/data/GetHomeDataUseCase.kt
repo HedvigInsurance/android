@@ -35,6 +35,7 @@ import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -43,6 +44,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.isActive
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -218,6 +220,11 @@ internal class GetHomeDataUseCaseImpl(
           }
         }
       }
+      // Keeps the whole chain — including flatMapLatest's cancellation of the previous inner flow — off the
+      // collector's dispatcher. Collected from a Molecule presenter, that dispatcher is the main thread, and
+      // cancelling an in-flight query makes Ktor close the response body inline, tripping StrictMode's
+      // NetworkOnMainThreadException.
+      .flowOn(Dispatchers.IO)
   }
 
   private fun shouldShowChatButton(isInboxEnabledFromKillSwitch: Boolean, hasActiveConversations: Boolean): Boolean {
