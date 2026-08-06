@@ -63,6 +63,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.layout.onVisibilityChanged
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -88,8 +89,11 @@ import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.crosssells.BundleProgress
+import com.hedvig.android.crosssells.CROSS_SELL_IMPRESSION_MIN_DURATION_MS
+import com.hedvig.android.crosssells.CROSS_SELL_IMPRESSION_MIN_FRACTION_VISIBLE
 import com.hedvig.android.crosssells.CrossSellBottomSheet
 import com.hedvig.android.crosssells.CrossSellSheetData
+import com.hedvig.android.crosssells.CrossSellType
 import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.crosssells.PillowRow
 import com.hedvig.android.crosssells.RecommendedCrossSell
@@ -245,6 +249,15 @@ internal fun HomeDestination(
     deleteDraftClaim = { draftId -> viewModel.emit(HomeEvent.DeleteDraftClaim(draftId)) },
     navigateToFirstVet = navigateToFirstVet,
     markCrossSellsNotificationAsSeen = { viewModel.emit(HomeEvent.MarkCardCrossSellsAsSeen) },
+    onCrossSellsShown = { viewModel.emit(HomeEvent.CrossSellsShown(it)) },
+    onHomeCrossSellImpression = { crossSell ->
+      viewModel.emit(HomeEvent.HomeCrossSellImpression(crossSell.id, CrossSellType.NewPromise))
+    },
+    onHomeAddonImpression = { bannerInfo ->
+      // Addon banners carry no per-offer id, so the flow type (lowercased to match enum-value casing)
+      // identifies the addon offer.
+      viewModel.emit(HomeEvent.HomeCrossSellImpression(bannerInfo.flowType.name.lowercase(), CrossSellType.Addon))
+    },
     navigateToContactInfo = navigateToContactInfo,
     navigateToChipIdScreen = navigateToChipId,
     setEpochDayWhenLastToolTipShown = { epochDay ->
@@ -279,6 +292,9 @@ private fun HomeScreen(
   navigateToContactInfo: () -> Unit,
   navigateToChipIdScreen: () -> Unit,
   markCrossSellsNotificationAsSeen: () -> Unit,
+  onCrossSellsShown: (CrossSellSheetData) -> Unit,
+  onHomeCrossSellImpression: (CrossSell) -> Unit = {},
+  onHomeAddonImpression: (AddonBannerInfo) -> Unit = {},
   setEpochDayWhenLastToolTipShown: (Long) -> Unit,
   imageLoader: ImageLoader,
   navigateToTravelCertificate: () -> Unit,
@@ -296,6 +312,7 @@ private fun HomeScreen(
   CrossSellBottomSheet(
     state = crossSellBottomSheetState,
     markCrossSellsNotificationAsSeen = markCrossSellsNotificationAsSeen,
+    onCrossSellsShown = onCrossSellsShown,
     onCrossSellClick = openCrossSellUrl,
     imageLoader = imageLoader,
   )
@@ -415,6 +432,8 @@ private fun HomeScreen(
             imageLoader = imageLoader,
             navigateToTravelCertificate = navigateToTravelCertificate,
             navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
+            onHomeCrossSellImpression = onHomeCrossSellImpression,
+            onHomeAddonImpression = onHomeAddonImpression,
           )
         }
       }
@@ -575,6 +594,8 @@ private fun HomeScreenSuccess(
   imageLoader: ImageLoader,
   navigateToTravelCertificate: () -> Unit,
   navigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  onHomeCrossSellImpression: (CrossSell) -> Unit = {},
+  onHomeAddonImpression: (AddonBannerInfo) -> Unit = {},
   modifier: Modifier = Modifier,
 ) {
   val consumedWindowInsets = remember { MutableWindowInsets() }
@@ -874,6 +895,7 @@ private fun HomeScreenSuccess(
               OffersSection(
                 recommendedCrossSell = recommended,
                 onCrossSellClick = openCrossSellUrl,
+                onImpression = { onHomeCrossSellImpression(recommended.crossSell) },
                 imageLoader = imageLoader,
                 horizontalInsets = horizontalInsets,
               )
@@ -882,12 +904,14 @@ private fun HomeScreenSuccess(
             HomeSection.DiscoverInsurances -> DiscoverInsurancesSection(
               crossSells = uiState.crossSellsPartition.discoverCrossSells,
               onCrossSellClick = openCrossSellUrl,
+              onCrossSellImpression = onHomeCrossSellImpression,
               imageLoader = imageLoader,
             )
 
             HomeSection.Addons -> AddonsSection(
               addonBannerInfos = uiState.addonBannerInfos,
               navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
+              onAddonImpression = onHomeAddonImpression,
               horizontalInsets = horizontalInsets,
               imageLoader = imageLoader,
             )
@@ -1090,12 +1114,19 @@ private fun OffersSection(
   onCrossSellClick: (String) -> Unit,
   imageLoader: ImageLoader,
   horizontalInsets: PaddingValues,
+  onImpression: () -> Unit = {},
 ) {
   val crossSell = recommendedCrossSell.crossSell
   Column(
     verticalArrangement = Arrangement.spacedBy(8.dp),
     modifier = Modifier
       .fillMaxWidth()
+      .onVisibilityChanged(
+        minDurationMs = CROSS_SELL_IMPRESSION_MIN_DURATION_MS,
+        minFractionVisible = CROSS_SELL_IMPRESSION_MIN_FRACTION_VISIBLE,
+      ) { visible ->
+        if (visible) onImpression()
+      }
       .padding(horizontal = 16.dp)
       .padding(horizontalInsets),
   ) {
@@ -1283,6 +1314,7 @@ private fun AddonsSection(
   navigateToAddonPurchaseFlow: (List<String>) -> Unit,
   horizontalInsets: PaddingValues,
   imageLoader: ImageLoader,
+  onAddonImpression: (AddonBannerInfo) -> Unit = {},
 ) {
   Column(
     verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -1305,7 +1337,14 @@ private fun AddonsSection(
         buttonText = stringResource(Res.string.ADDON_FLOW_LEARN_MORE_BUTTON),
         onButtonClick = { navigateToAddonPurchaseFlow(addon.eligibleInsurancesIds) },
         imageLoader = imageLoader,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+          .fillMaxWidth()
+          .onVisibilityChanged(
+            minDurationMs = CROSS_SELL_IMPRESSION_MIN_DURATION_MS,
+            minFractionVisible = CROSS_SELL_IMPRESSION_MIN_FRACTION_VISIBLE,
+          ) { visible ->
+            if (visible) onAddonImpression(addon)
+          },
         buttonSize = ButtonSize.Small,
         buttonShape = HedvigTheme.shapes.cornerFull,
       )
@@ -1318,6 +1357,7 @@ private fun DiscoverInsurancesSection(
   crossSells: List<CrossSell>,
   onCrossSellClick: (String) -> Unit,
   imageLoader: ImageLoader,
+  onCrossSellImpression: ((CrossSell) -> Unit)? = null,
 ) {
   CrossSellsSection(
     title = stringResource(Res.string.CROSS_SELL_SUBTITLE),
@@ -1328,6 +1368,7 @@ private fun DiscoverInsurancesSection(
     imageLoader = imageLoader,
     buttonSize = ButtonSize.Small,
     buttonShape = HedvigTheme.shapes.cornerFull,
+    onCrossSellImpression = onCrossSellImpression,
   )
 }
 
@@ -1371,6 +1412,7 @@ private fun WelcomeMessage(firstName: String, modifier: Modifier = Modifier) {
 private fun CrossSellBottomSheet(
   state: HedvigBottomSheetState<CrossSellSheetData>,
   markCrossSellsNotificationAsSeen: () -> Unit,
+  onCrossSellsShown: (CrossSellSheetData) -> Unit,
   onCrossSellClick: (String) -> Unit,
   imageLoader: ImageLoader,
 ) {
@@ -1378,6 +1420,7 @@ private fun CrossSellBottomSheet(
     snapshotFlow { state.isVisible }.distinctUntilChanged().collect { isVisible ->
       if (isVisible) {
         markCrossSellsNotificationAsSeen()
+        state.data?.let(onCrossSellsShown)
       }
     }
   }
@@ -1506,6 +1549,7 @@ private fun PreviewHomeScreen(
         deleteDraftClaim = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
+        onCrossSellsShown = {},
         navigateToContactInfo = {},
         navigateToChipIdScreen = {},
         setEpochDayWhenLastToolTipShown = {},
@@ -1542,6 +1586,7 @@ private fun PreviewHomeScreenWithError() {
         deleteDraftClaim = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
+        onCrossSellsShown = {},
         navigateToContactInfo = {},
         navigateToChipIdScreen = {},
         setEpochDayWhenLastToolTipShown = {},
@@ -1600,6 +1645,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         deleteDraftClaim = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
+        onCrossSellsShown = {},
         navigateToContactInfo = {},
         navigateToChipIdScreen = {},
         setEpochDayWhenLastToolTipShown = {},

@@ -16,6 +16,7 @@ dependencies {
   implementation(libs.jetbrains.compose.ui)
   implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(projects.composeUi)
+  implementation(projects.coreCommonPublic)
   implementation(projects.coreResources)
   implementation(projects.coreUiData)
   implementation(projects.dataAddons)

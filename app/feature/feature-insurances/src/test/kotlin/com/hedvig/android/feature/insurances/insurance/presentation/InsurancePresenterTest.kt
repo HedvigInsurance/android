@@ -18,6 +18,7 @@ import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.crosssells.CrossSellImpressionTracker
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.addons.data.FlowType
@@ -45,6 +46,8 @@ import kotlinx.datetime.LocalDate
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+
+private val noopCrossSellImpressionTracker = CrossSellImpressionTracker { _, _, _, _ -> }
 
 @RunWith(TestParameterInjector::class)
 internal class InsurancePresenterTest {
@@ -273,6 +276,7 @@ internal class InsurancePresenterTest {
       getInsuranceContractsUseCase,
       getCrossSellsUseCase,
       getTravelAddonBannerInfoUseCase,
+      noopCrossSellImpressionTracker,
     )
     presenter.test(InsuranceUiState.initialState) {
       awaitItem().also { uiState ->
@@ -307,6 +311,7 @@ internal class InsurancePresenterTest {
       getInsuranceContractsUseCase,
       getCrossSellsUseCase,
       getTravelAddonBannerInfoUseCase,
+      noopCrossSellImpressionTracker,
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -332,6 +337,7 @@ internal class InsurancePresenterTest {
       getInsuranceContractsUseCase,
       getCrossSellsUseCase,
       getTravelAddonBannerInfoUseCase,
+      noopCrossSellImpressionTracker,
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -357,6 +363,7 @@ internal class InsurancePresenterTest {
       getInsuranceContractsUseCase,
       getCrossSellsUseCase,
       getTravelAddonBannerInfoUseCase,
+      noopCrossSellImpressionTracker,
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -401,6 +408,7 @@ internal class InsurancePresenterTest {
       getInsuranceContractsUseCase,
       getCrossSellsUseCase,
       getTravelAddonBannerInfoUseCase,
+      noopCrossSellImpressionTracker,
     )
     val allContracts = validContracts + terminatedContracts
     presenter.test(InsuranceUiState.initialState) {
@@ -433,6 +441,7 @@ internal class InsurancePresenterTest {
       getInsuranceContractsUseCase,
       getCrossSellsUseCase,
       getTravelAddonBannerInfoUseCase,
+      noopCrossSellImpressionTracker,
     )
     val contracts = validContracts.map { it.copy(supportsAddressChange = supportsAddressChange) }
     presenter.test(InsuranceUiState.initialState) {
@@ -454,6 +463,7 @@ internal class InsurancePresenterTest {
       getInsuranceContractsUseCase,
       getCrossSellsUseCase,
       getTravelAddonBannerInfoUseCase,
+      noopCrossSellImpressionTracker,
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -473,6 +483,7 @@ internal class InsurancePresenterTest {
       getInsuranceContractsUseCase,
       getCrossSellsUseCase,
       getTravelAddonBannerInfoUseCase,
+      noopCrossSellImpressionTracker,
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -492,6 +503,7 @@ internal class InsurancePresenterTest {
       getInsuranceContractsUseCase,
       getCrossSellsUseCase,
       getTravelAddonBannerInfoUseCase,
+      noopCrossSellImpressionTracker,
     )
     val initialState = InsuranceUiState(
       contracts = listOf(),

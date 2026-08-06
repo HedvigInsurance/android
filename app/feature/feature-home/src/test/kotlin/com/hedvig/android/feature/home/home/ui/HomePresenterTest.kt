@@ -16,6 +16,7 @@ import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.crosssells.CrossSellImpressionTracker
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedAddon
 import com.hedvig.android.crosssells.RecommendedCrossSell
@@ -83,6 +84,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      noopCrossSellImpressionTracker,
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -111,6 +113,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      noopCrossSellImpressionTracker,
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -137,6 +140,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      noopCrossSellImpressionTracker,
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -214,6 +218,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      noopCrossSellImpressionTracker,
     )
     val addonOnlyCrossSells = CrossSellSheetData(null, listOf(), testAddon)
 
@@ -257,6 +262,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      noopCrossSellImpressionTracker,
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -311,6 +317,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      noopCrossSellImpressionTracker,
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -336,6 +343,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      noopCrossSellImpressionTracker,
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -375,6 +383,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      noopCrossSellImpressionTracker,
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -425,6 +434,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      noopCrossSellImpressionTracker,
     )
     val firstVet = FirstVetSection(
       buttonTitle = "ButtonTitle",
@@ -482,6 +492,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      noopCrossSellImpressionTracker,
     )
     val crossSell = CrossSell(
       id = "id",
@@ -546,6 +557,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      noopCrossSellImpressionTracker,
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -595,6 +607,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      noopCrossSellImpressionTracker,
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -644,6 +657,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      noopCrossSellImpressionTracker,
     )
     val otherCrossSell = CrossSell(
       id = "other",
@@ -683,6 +697,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       deleteClaimIntentDraftUseCase,
+      noopCrossSellImpressionTracker,
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -711,6 +726,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
+      noopCrossSellImpressionTracker,
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -738,6 +754,7 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       deleteClaimIntentDraftUseCase,
+      noopCrossSellImpressionTracker,
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -791,6 +808,8 @@ private class FakeCrossSellHomeNotificationService : CrossSellHomeNotificationSe
   override suspend fun setLastEpochDayNewRecommendationNotificationWasShown(epochDay: Long) {
   }
 }
+
+private val noopCrossSellImpressionTracker = CrossSellImpressionTracker { _, _, _, _ -> }
 
 private class TestDeleteClaimIntentDraftUseCase : DeleteClaimIntentDraftUseCase {
   val deletedIdsTurbine = Turbine<String>()
