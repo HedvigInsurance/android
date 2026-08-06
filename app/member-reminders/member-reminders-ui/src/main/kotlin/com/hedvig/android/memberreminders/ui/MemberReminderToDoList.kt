@@ -244,6 +244,7 @@ private fun MissedPaymentsDialog(
       HedvigText(
         text = getMemberReminderMessage(reminder),
         textAlign = TextAlign.Center,
+        modifier = Modifier.padding(top = 20.dp),
       )
       Spacer(Modifier.height(24.dp))
       HedvigButton(
@@ -254,9 +255,10 @@ private fun MissedPaymentsDialog(
         },
         enabled = true,
         buttonStyle = ButtonDefaults.ButtonStyle.Primary,
-        buttonSize = ButtonDefaults.ButtonSize.Large,
+        buttonSize = ButtonDefaults.ButtonSize.Medium,
         modifier = Modifier.fillMaxWidth(),
       )
+      Spacer(Modifier.height(16.dp))
     }
   }
 }
