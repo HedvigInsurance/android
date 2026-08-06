@@ -23,15 +23,10 @@ import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestinati
 import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate
 import com.hedvig.android.navigation.common.HedvigNavKey
 
-fun QuickLinkDestination.toNavKey(): HedvigNavKey = when (this) {
-  is InnerHelpCenterDestination.FirstVet -> {
-    error("InnerHelpCenterDestination is navigated by the consuming feature, not via toNavKey()")
-  }
-
-  is InnerHelpCenterDestination.QuickLinkSickAbroad -> {
-    error("InnerHelpCenterDestination is navigated by the consuming feature, not via toNavKey()")
-  }
-
+// Only OuterDestinations map to a shared nav key. InnerHelpCenterDestinations (FirstVet, SickAbroad)
+// are navigated by the consuming feature, and narrowing the receiver makes that a compile-time rule:
+// a caller cannot reach this mapping without first handling the inner cases itself.
+fun QuickLinkDestination.OuterDestination.toNavKey(): HedvigNavKey = when (this) {
   QuickLinkChangeAddress -> {
     SelectContractForMovingKey(MovingSource.OTHER)
   }

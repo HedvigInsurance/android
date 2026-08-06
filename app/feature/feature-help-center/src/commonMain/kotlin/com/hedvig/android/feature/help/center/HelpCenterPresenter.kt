@@ -103,7 +103,7 @@ internal data class HelpCenterUiState(
 }
 
 internal class HelpCenterPresenter(
-  private val getQuickLinksUseCase: GetMemberQuickActionsUseCase,
+  private val getMemberQuickActionsUseCase: GetMemberQuickActionsUseCase,
   private val hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
   private val getHelpCenterFAQUseCase: GetHelpCenterFAQUseCase,
   private val getPuppyGuideUseCase: GetPuppyGuideUseCase,
@@ -160,7 +160,7 @@ internal class HelpCenterPresenter(
           val key: HedvigNavKey = when (destination) {
             is InnerHelpCenterDestination.FirstVet -> FirstVetKey(destination.sections)
             is InnerHelpCenterDestination.QuickLinkSickAbroad -> EmergencyKey(destination.deflectData)
-            else -> destination.toNavKey()
+            is QuickLinkDestination.OuterDestination -> destination.toNavKey()
           }
           backstack.add(key)
         }
@@ -176,7 +176,7 @@ internal class HelpCenterPresenter(
         quickLinksUiState = HelpCenterUiState.QuickLinkUiState.Loading
       }
       combine(
-        flow = flow { emit(getQuickLinksUseCase.invoke()) },
+        flow = flow { emit(getMemberQuickActionsUseCase.invoke()) },
         flow2 = flow { emit(getHelpCenterFAQUseCase.invoke()) },
         flow3 = getPuppyGuideUseCase.invoke(),
         flow4 = featureManager.isFeatureEnabled(Feature.DISABLE_PUPPY_GUIDE),

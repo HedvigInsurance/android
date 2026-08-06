@@ -59,6 +59,8 @@ import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificate
 import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateEntries
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.memberquickactions.InnerHelpCenterDestination
+import com.hedvig.android.memberquickactions.QuickLinkDestination
 import com.hedvig.android.memberquickactions.toNavKey
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.common.HedvigNavKey
@@ -250,7 +252,14 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
       backstack.add(CoInsuredAddInfoKey(contractId, type))
     },
     navigateToHelpCenter = { backstack.add(HelpCenterKey) },
-    navigateToQuickLink = { destination -> backstack.add(destination.toNavKey()) },
+    navigateToQuickLink = { destination ->
+      when (destination) {
+        is QuickLinkDestination.OuterDestination -> backstack.add(destination.toNavKey())
+
+        // Inner destinations (FirstVet, SickAbroad) are handled by feature-home before reaching here.
+        is InnerHelpCenterDestination -> error("Inner quick-link destinations are routed by the feature")
+      }
+    },
     navigateToClaimChat = { resumeClaim ->
       backstack.add(
         ClaimChatKey(

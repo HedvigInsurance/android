@@ -14,6 +14,7 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
 import com.hedvig.android.navigation.compose.add
+import com.hedvig.android.ui.emergency.FirstVetSection
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.homeEntries(
@@ -38,6 +39,7 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
 ) {
   entry<HomeKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
     val viewModel: HomeViewModel = metroViewModel()
+    val navigateToFirstVet: (List<FirstVetSection>) -> Unit = { sections -> backstack.add(FirstVetKey(sections)) }
     HomeDestination(
       viewModel = viewModel,
       onNavigateToInbox = dropUnlessResumed { onNavigateToInbox() },
@@ -53,7 +55,7 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
       navigateToQuickLink = dropUnlessResumed { destination ->
         // FirstVet lives inside feature-home; every other destination is routed by the caller.
         if (destination is InnerHelpCenterDestination.FirstVet) {
-          backstack.add(FirstVetKey(destination.sections))
+          navigateToFirstVet(destination.sections)
         } else {
           navigateToQuickLink(destination)
         }
@@ -61,9 +63,7 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
       openUrl = openUrl,
       openCrossSellUrl = openCrossSellUrl,
       openAppSettings = openAppSettings,
-      navigateToFirstVet = dropUnlessResumed { sections ->
-        backstack.add(FirstVetKey(sections))
-      },
+      navigateToFirstVet = dropUnlessResumed { sections -> navigateToFirstVet(sections) },
       navigateToContactInfo = dropUnlessResumed {
         navigateToContactInfo()
       },

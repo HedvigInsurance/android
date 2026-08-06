@@ -14,7 +14,7 @@ import dev.zacsweers.metro.Inject
 @Inject
 @HedvigViewModel(ActivityRetainedScope::class)
 internal class HelpCenterViewModel(
-  getQuickLinksUseCase: GetMemberQuickActionsUseCase,
+  getMemberQuickActionsUseCase: GetMemberQuickActionsUseCase,
   hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
   getHelpCenterFAQUseCase: GetHelpCenterFAQUseCase,
   getPuppyGuideUseCase: GetPuppyGuideUseCase,
@@ -31,7 +31,7 @@ internal class HelpCenterViewModel(
       puppyGuide = null,
     ),
     presenter = HelpCenterPresenter(
-      getQuickLinksUseCase = getQuickLinksUseCase,
+      getMemberQuickActionsUseCase = getMemberQuickActionsUseCase,
       hasAnyActiveConversationUseCase = hasAnyActiveConversationUseCase,
       getHelpCenterFAQUseCase = getHelpCenterFAQUseCase,
       featureManager = featureManager,
