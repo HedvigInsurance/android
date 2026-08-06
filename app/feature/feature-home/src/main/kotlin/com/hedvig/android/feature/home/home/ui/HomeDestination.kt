@@ -145,6 +145,7 @@ import com.hedvig.android.feature.home.home.data.HomeData.ClaimStatusCardsData
 import com.hedvig.android.feature.home.home.data.HomeData.DraftClaim
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage.LinkInfo
+import com.hedvig.android.feature.home.home.data.OngoingShopSession
 import com.hedvig.android.feature.home.home.ui.HomeText.Active
 import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.ChatAction
 import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.CrossSellsAction
@@ -660,8 +661,8 @@ private fun HomeScreenSuccess(
           applicableReminders.homeActionRequiredReminders().isNotEmpty()
         }
 
-        HomeSection.Offers -> {
-          uiState.crossSellsPartition.offersCrossSell != null
+        HomeSection.Quotes -> {
+          uiState.ongoingShopSessions.isNotEmpty()
         }
 
         HomeSection.DiscoverInsurances -> {
@@ -888,10 +889,10 @@ private fun HomeScreenSuccess(
               horizontalInsets = horizontalInsets,
             )
 
-            HomeSection.Offers -> uiState.crossSellsPartition.offersCrossSell?.let { recommended ->
-              OffersSection(
-                recommendedCrossSell = recommended,
-                onCrossSellClick = openCrossSellUrl,
+            HomeSection.Quotes -> uiState.ongoingShopSessions.takeIf { it.isNotEmpty() }?.let { sessions ->
+              QuotesSection(
+                sessions = sessions,
+                onResumeClick = openUrl,
                 imageLoader = imageLoader,
                 horizontalInsets = horizontalInsets,
               )
@@ -971,7 +972,7 @@ private enum class HomeSection {
   ClaimStatusCards,
   VeryImportantMessages,
   MemberReminders,
-  Offers,
+  Quotes,
   DiscoverInsurances,
   Addons,
   QuickActionTiles,
@@ -984,7 +985,7 @@ private val homeSectionOrder: List<HomeSection> = listOf(
   HomeSection.ClaimStatusCards,
   HomeSection.VeryImportantMessages,
   HomeSection.MemberReminders,
-  HomeSection.Offers,
+  HomeSection.Quotes,
   HomeSection.QuickActionTiles,
   HomeSection.DiscoverInsurances,
   HomeSection.Addons,
@@ -1099,13 +1100,12 @@ private fun MemberRemindersSection(
 }
 
 @Composable
-private fun OffersSection(
-  recommendedCrossSell: RecommendedCrossSell,
-  onCrossSellClick: (String) -> Unit,
+private fun QuotesSection(
+  sessions: List<OngoingShopSession>,
+  onResumeClick: (String) -> Unit,
   imageLoader: ImageLoader,
   horizontalInsets: PaddingValues,
 ) {
-  val crossSell = recommendedCrossSell.crossSell
   Column(
     verticalArrangement = Arrangement.spacedBy(8.dp),
     modifier = Modifier
@@ -1118,52 +1118,51 @@ private fun OffersSection(
       style = HedvigTheme.typography.headlineSmall,
       modifier = Modifier.semantics { heading() },
     )
-    HedvigCard(
-      onClick = { onCrossSellClick(crossSell.storeUrl) },
-      color = HedvigTheme.colorScheme.fillNegative,
-      borderColor = HedvigTheme.colorScheme.borderPrimary,
-      modifier = Modifier
-        .fillMaxWidth()
-        .hedvigDropShadow(HedvigTheme.shapes.cornerXLarge),
-    ) {
-      Column(Modifier.padding(16.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-          AsyncImage(
-            model = crossSell.pillowImage.src,
-            contentDescription = null,
-            imageLoader = imageLoader,
-            contentScale = ContentScale.Fit,
-            modifier = Modifier.size(48.dp),
+    for (session in sessions) {
+      HedvigCard(
+        onClick = { onResumeClick(session.resumeUrl) },
+        color = HedvigTheme.colorScheme.fillNegative,
+        borderColor = HedvigTheme.colorScheme.borderPrimary,
+        modifier = Modifier
+          .fillMaxWidth()
+          .hedvigDropShadow(HedvigTheme.shapes.cornerXLarge),
+      ) {
+        Column(Modifier.padding(16.dp)) {
+          Row(verticalAlignment = Alignment.CenterVertically) {
+            if (session.pillowImageUrl != null) {
+              AsyncImage(
+                model = session.pillowImageUrl,
+                contentDescription = null,
+                imageLoader = imageLoader,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.size(48.dp),
+              )
+              Spacer(Modifier.width(12.dp))
+            }
+            Column(Modifier.weight(1f)) {
+              HedvigText(text = session.title, style = HedvigTheme.typography.bodySmall)
+              val secondary = session.subtitle ?: session.monthlyNet?.toString()
+              if (secondary != null) {
+                HedvigText(
+                  text = secondary,
+                  style = HedvigTheme.typography.label,
+                  color = HedvigTheme.colorScheme.textSecondary,
+                )
+              }
+            }
+          }
+          Spacer(Modifier.height(12.dp))
+          // TODO: Add "Resume" / "Fortsätt" to Lokalise
+          HedvigButton(
+            text = "Resume",
+            onClick = { onResumeClick(session.resumeUrl) },
+            buttonStyle = Secondary,
+            buttonSize = ButtonSize.Medium,
+            enabled = true,
+            shape = HedvigTheme.shapes.cornerFull,
+            modifier = Modifier.fillMaxWidth(),
           )
-          Spacer(Modifier.width(12.dp))
-          Column(Modifier.weight(1f)) {
-            HedvigText(text = crossSell.title, style = HedvigTheme.typography.bodySmall)
-            HedvigText(
-              text = recommendedCrossSell.bannerText,
-              style = HedvigTheme.typography.label,
-              color = HedvigTheme.colorScheme.textSecondary,
-            )
-          }
-          val discountText = recommendedCrossSell.discountText
-          if (discountText != null) {
-            Spacer(Modifier.width(8.dp))
-            HighlightLabel(
-              labelText = discountText,
-              size = HighlightLabelDefaults.HighLightSize.Small,
-              color = HighlightLabelDefaults.HighlightColor.Green(HighlightLabelDefaults.HighlightShade.LIGHT),
-            )
-          }
         }
-        Spacer(Modifier.height(12.dp))
-        HedvigButton(
-          text = recommendedCrossSell.buttonText,
-          onClick = { onCrossSellClick(crossSell.storeUrl) },
-          buttonStyle = Secondary,
-          buttonSize = ButtonSize.Medium,
-          enabled = true,
-          shape = HedvigTheme.shapes.cornerFull,
-          modifier = Modifier.fillMaxWidth(),
-        )
       }
     }
   }
@@ -1477,22 +1476,17 @@ private fun PreviewHomeScreen(
           quickActions = previewQuickActions,
           hasUnseenChatMessages = hasUnseenChatMessages,
           crossSellsPartition = CrossSellsPartition(
-            offersCrossSell = RecommendedCrossSell(
-              crossSell = CrossSell(
-                id = "car",
-                title = "Car Insurance",
-                subtitle = "For you and your car",
-                storeUrl = "",
-                pillowImage = ImageAsset("", "", ""),
-              ),
-              bannerText = "15% bundle discount",
-              buttonText = "See your price",
-              discountText = "-15%",
-              buttonDescription = "",
-              backgroundPillowImages = "" to "",
-              bundleProgress = null,
-            ),
             discoverCrossSells = emptyList(),
+          ),
+          ongoingShopSessions = listOf(
+            OngoingShopSession(
+              id = "preview-1",
+              title = "Home + Accident",
+              subtitle = "Studio apartment, Stockholm",
+              monthlyNet = null,
+              resumeUrl = "",
+              pillowImageUrl = null,
+            ),
           ),
           crossSellsAction = CrossSellsAction(
             CrossSellSheetData(

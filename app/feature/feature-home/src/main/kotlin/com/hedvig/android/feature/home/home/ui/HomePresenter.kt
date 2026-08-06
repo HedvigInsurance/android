@@ -14,12 +14,12 @@ import arrow.core.getOrElse
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.crosssells.CrossSellSheetData
-import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.claimintent.DeleteClaimIntentDraftUseCase
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
+import com.hedvig.android.feature.home.home.data.OngoingShopSession
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -164,6 +164,7 @@ internal class HomePresenter(
           addonBannerInfos = successData.addonBannerInfos,
           isProduction = isProduction,
           crossSellsPartition = successData.crossSellsPartition,
+          ongoingShopSessions = successData.ongoingShopSessions,
           firstName = successData.firstName,
           draftClaim = successData.draftClaim,
         )
@@ -211,6 +212,7 @@ internal sealed interface HomeUiState {
     val quickActions: List<QuickAction>,
     override val hasUnseenChatMessages: Boolean,
     val crossSellsPartition: CrossSellsPartition = CrossSellsPartition(),
+    val ongoingShopSessions: List<OngoingShopSession> = emptyList(),
     val firstName: String = "",
     val draftClaim: HomeData.DraftClaim?,
   ) : HomeUiState
@@ -233,6 +235,7 @@ private data class SuccessData(
   val hasUnseenChatMessages: Boolean,
   val addonBannerInfos: List<AddonBannerInfo>,
   val crossSellsPartition: CrossSellsPartition,
+  val ongoingShopSessions: List<OngoingShopSession>,
   val firstName: String,
   val draftClaim: HomeData.DraftClaim?,
 ) {
@@ -252,6 +255,7 @@ private data class SuccessData(
         addonBannerInfos = lastState.addonBannerInfos,
         chatAction = lastState.chatAction,
         crossSellsPartition = lastState.crossSellsPartition,
+        ongoingShopSessions = lastState.ongoingShopSessions,
         firstName = lastState.firstName,
         draftClaim = lastState.draftClaim,
       )
@@ -305,6 +309,7 @@ private data class SuccessData(
         addonBannerInfos = homeData.addonBannerInfos,
         chatAction = if (homeData.showChatIcon) HomeTopBarAction.ChatAction else null,
         crossSellsPartition = partitionCrossSells(homeData.crossSells),
+        ongoingShopSessions = homeData.ongoingShopSessions,
         firstName = homeData.firstName,
         draftClaim = homeData.draftClaim,
       )
@@ -313,19 +318,15 @@ private data class SuccessData(
 }
 
 /**
- * The home screen surfaces cross-sells in three places (Offers, the discover carousel and the
- * "Discover our insurances" list). This is the single place that decides which cross-sells go where.
+ * The home screen surfaces cross-sells in the discover carousel and the "Discover our insurances"
+ * list. This is the single place that decides which cross-sells go where.
  */
 internal data class CrossSellsPartition(
-  val offersCrossSell: RecommendedCrossSell? = null,
   val discoverCrossSells: List<CrossSell> = emptyList(),
 )
 
-// WS0 placeholder rule until design finalizes per-section cross-sell assignment: Offers shows the
-// recommended cross-sell; both the carousel and the "Discover our insurances" list show the others.
 internal fun partitionCrossSells(crossSells: CrossSellSheetData): CrossSellsPartition {
   return CrossSellsPartition(
-    offersCrossSell = crossSells.recommendedCrossSell,
     discoverCrossSells = crossSells.otherCrossSells,
   )
 }
