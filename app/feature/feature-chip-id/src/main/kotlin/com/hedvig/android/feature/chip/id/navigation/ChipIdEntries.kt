@@ -42,13 +42,22 @@ fun EntryProviderScope<HedvigNavKey>.chipIdEntries(
       viewModel = viewModel,
       globalSnackBarState = globalSnackBarState,
       navigateUp = backstack::navigateUp,
-      popFlowOnSuccess = {
-        if (backstack.findLastOrNull<ChipIdKey>() != null) {
-          backstack.popUpTo<ChipIdKey>(inclusive = true)
-        } else {
-          goHome()
-        }
-      },
+      popFlowOnSuccess = { backstack.popChipIdFlowOnSuccess(goHome) },
     )
+  }
+}
+
+/**
+ * Pops the chip-id flow's own entries so the caller that launched it (an onboarding step, a contract
+ * detail, a tab root) shows through. For a single missing contract the select screen auto-advances
+ * and pops [ChipIdKey], leaving only [AddChipIdKey] on top of the caller, so that case pops one entry.
+ * [goHome] is used only when the flow is the base of the stack, i.e. a lone deep link with no in-app
+ * caller to return to.
+ */
+internal fun Backstack.popChipIdFlowOnSuccess(goHome: () -> Unit) {
+  when {
+    findLastOrNull<ChipIdKey>() != null -> popUpTo<ChipIdKey>(inclusive = true)
+    entries.size > 1 -> popBackstack()
+    else -> goHome()
   }
 }
