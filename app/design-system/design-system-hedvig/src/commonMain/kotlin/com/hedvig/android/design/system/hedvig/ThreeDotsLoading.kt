@@ -74,8 +74,7 @@ private const val dotBreathDurationMilliseconds = 600
 private const val dotStaggerMilliseconds = 200
 private const val numberOfDots = 3
 
-// @HedvigPreview
-@Preview
+@HedvigPreview
 @Composable
 private fun PreviewThreeDotsLoading() {
   HedvigTheme {
