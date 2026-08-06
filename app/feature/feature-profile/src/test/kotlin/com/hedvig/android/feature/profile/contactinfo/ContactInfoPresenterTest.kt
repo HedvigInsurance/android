@@ -13,6 +13,7 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.annotations.ApolloExperimental
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
+import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver
 import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.apollo.test.registerSuspendingTestNetworkError
@@ -26,8 +27,9 @@ import com.hedvig.android.molecule.test.test
 import kotlinx.coroutines.test.runTest
 import octopus.ContactInformationQuery
 import octopus.MemberUpdateContactInfoMutation
-import octopus.type.buildMember
-import octopus.type.buildMemberMutationOutput
+import octopus.builder.Data
+import octopus.builder.buildMember
+import octopus.builder.buildMemberMutationOutput
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -53,7 +55,7 @@ class ContactInfoPresenterTest {
     val alteredPhoneNumber = "+123456"
     apolloClient.registerSuspendingTestResponse(
       ContactInformationQuery(),
-      ContactInformationQuery.Data {
+      ContactInformationQuery.Data(OctopusFakeResolver) {
         this.currentMember = this.buildMember {
           this.phoneNumber = originalPhoneNumber
           this.email = originalEmail
@@ -84,7 +86,7 @@ class ContactInfoPresenterTest {
       }
       apolloClient.registerSuspendingTestResponse(
         MemberUpdateContactInfoMutation(alteredEmail, originalPhoneNumber),
-        MemberUpdateContactInfoMutation.Data {
+        MemberUpdateContactInfoMutation.Data(OctopusFakeResolver) {
           this.memberUpdateContactInfo = this.buildMemberMutationOutput {
             this.userError = null
             this.member = this.buildMember {
@@ -96,7 +98,7 @@ class ContactInfoPresenterTest {
       )
       apolloClient.registerSuspendingTestResponse(
         MemberUpdateContactInfoMutation(alteredEmail, alteredPhoneNumber),
-        MemberUpdateContactInfoMutation.Data {
+        MemberUpdateContactInfoMutation.Data(OctopusFakeResolver) {
           this.memberUpdateContactInfo = this.buildMemberMutationOutput {
             this.userError = null
             this.member = this.buildMember {
@@ -199,7 +201,7 @@ class ContactInfoPresenterTest {
       assertThat(awaitItem()).isEqualTo(ContactInfoUiState.Loading)
       apolloClient.registerSuspendingTestResponse(
         ContactInformationQuery(),
-        ContactInformationQuery.Data {
+        ContactInformationQuery.Data(OctopusFakeResolver) {
           this.currentMember = this.buildMember {
             this.phoneNumber = "+123"
             this.email = "test@hedvig.com"
@@ -220,7 +222,7 @@ class ContactInfoPresenterTest {
     val backendPhoneNumber = "".takeIf { !testingNullPhoneNumber }
     apolloClient.registerSuspendingTestResponse(
       ContactInformationQuery(),
-      ContactInformationQuery.Data {
+      ContactInformationQuery.Data(OctopusFakeResolver) {
         this.currentMember = this.buildMember {
           this.phoneNumber = backendPhoneNumber
           this.email = backendEmail
@@ -248,7 +250,7 @@ class ContactInfoPresenterTest {
     val backendPhoneNumber = "+123"
     apolloClient.registerSuspendingTestResponse(
       ContactInformationQuery(),
-      ContactInformationQuery.Data {
+      ContactInformationQuery.Data(OctopusFakeResolver) {
         this.currentMember = this.buildMember {
           this.phoneNumber = backendPhoneNumber
           this.email = backendEmail

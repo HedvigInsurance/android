@@ -19,10 +19,11 @@ import com.hedvig.android.memberreminders.PaymentReminder.ShowMissingPaymentsRem
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.GetPayinMethodStatusQuery
+import octopus.builder.Data
+import octopus.builder.buildContract
+import octopus.builder.buildMember
+import octopus.builder.buildMemberPaymentMethods
 import octopus.type.MissingPaymentConnection
-import octopus.type.buildContract
-import octopus.type.buildMember
-import octopus.type.buildMemberPaymentMethods
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
