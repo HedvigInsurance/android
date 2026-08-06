@@ -10,9 +10,9 @@ lintGradlePlugin = "9.3.1"
 
 # gradlePlugin versions
 androidGradlePlugin = "9.3.1"
-apollo = "4.4.3"
+apollo = "5.0.1"
 apolloAdapters = "0.7.0"
-apolloEngineKtor = "0.1.1"
+apolloEngineKtor = "1.0.0-alpha.0"
 cacheFix = "3.0.3"
 crashlytics = "3.0.7"
 datadogPlugin = "1.29.0"

@@ -20,10 +20,11 @@ import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.TravelCertificateSpecificationsQuery
-import octopus.type.buildContract
-import octopus.type.buildMember
-import octopus.type.buildTravelCertificateContractSpecification
-import octopus.type.buildTravelCertificateSpecification
+import octopus.builder.Data
+import octopus.builder.buildContract
+import octopus.builder.buildMember
+import octopus.builder.buildTravelCertificateContractSpecification
+import octopus.builder.buildTravelCertificateSpecification
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -64,7 +65,7 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
 
       apolloClient.enqueueTestResponse(
         TravelCertificateSpecificationsQuery(),
-        TravelCertificateSpecificationsQuery.Data(OctopusFakeResolver, {}),
+        TravelCertificateSpecificationsQuery.Data(OctopusFakeResolver) {},
       )
       val result = travelCertificateUseCase.invoke(null)
 
@@ -82,7 +83,7 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
 
     apolloClient.enqueueTestResponse(
       TravelCertificateSpecificationsQuery(),
-      TravelCertificateSpecificationsQuery.Data(OctopusFakeResolver, {}),
+      TravelCertificateSpecificationsQuery.Data(OctopusFakeResolver) {},
     )
     val result = travelCertificateUseCase.invoke("wrong contractId")
 

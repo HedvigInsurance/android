@@ -8,7 +8,6 @@ import com.android.build.api.dsl.Lint
 import com.android.build.api.variant.KotlinMultiplatformAndroidComponentsExtension
 import com.apollographql.apollo.gradle.api.ApolloExtension
 import com.apollographql.apollo.gradle.api.Service
-import com.apollographql.apollo.gradle.internal.ApolloDownloadSchemaTask
 import java.io.File
 import javax.inject.Inject
 import org.gradle.accessors.dm.LibrariesForLibs
@@ -24,7 +23,6 @@ import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.project
 import org.gradle.kotlin.dsl.the
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.resources.ResourcesExtension
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
@@ -123,15 +121,23 @@ private abstract class ApolloSchemaHandler {
         apolloServiceAction.execute(this)
       }
     }
-    project.tasks.withType<ApolloDownloadSchemaTask>()
-      .configureEach {
+    // The introspection download task writes the schema to the file configured in the octopus
+    // `introspection` block. That output is annotated `@Internal` on the Apollo Gradle plugin task
+    // (which is itself internal), so it can't be reached by task type or declared outputs. Resolve
+    // the file by its known project-relative path (matching the octopus `introspection.schemaFile`)
+    // and apply the client-side changes once the download completes.
+    val schemaFile = project.layout.projectDirectory
+      .file("src/commonMain/graphql/com/hedvig/android/apollo/octopus/schema.graphqls")
+      .asFile
+    project.tasks.configureEach {
+      if (name == "downloadOctopusApolloSchemaFromIntrospection") {
         doLast {
-          val schemaFile = outputFile.get().asFile
           val schemaText = schemaFile.readText()
           val convertedSchema = schemaText.performClientSideChanges()
           schemaFile.writeText(convertedSchema)
         }
       }
+    }
   }
 
   private fun String.performClientSideChanges(): String {
