@@ -15,10 +15,11 @@ import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.test.runTest
 import octopus.InsuranceEvidenceCreateMutation
+import octopus.builder.Data
+import octopus.builder.buildInsuranceEvidenceInformation
+import octopus.builder.buildInsuranceEvidenceOutput
+import octopus.builder.buildUserError
 import octopus.type.InsuranceEvidenceInput
-import octopus.type.buildInsuranceEvidenceInformation
-import octopus.type.buildInsuranceEvidenceOutput
-import octopus.type.buildUserError
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

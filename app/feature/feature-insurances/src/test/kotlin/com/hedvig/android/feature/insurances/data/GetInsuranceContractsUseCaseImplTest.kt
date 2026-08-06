@@ -16,13 +16,14 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.InsuranceContractsQuery
+import octopus.builder.Data
+import octopus.builder.MemberBuilder
+import octopus.builder.buildAgreement
+import octopus.builder.buildContract
+import octopus.builder.buildMember
+import octopus.builder.buildProductVariant
 import octopus.type.AgreementCreationCause.RENEWAL
 import octopus.type.DisplayItemOptions
-import octopus.type.MemberBuilder
-import octopus.type.buildAgreement
-import octopus.type.buildContract
-import octopus.type.buildMember
-import octopus.type.buildProductVariant
 import org.junit.Rule
 import org.junit.Test
 
