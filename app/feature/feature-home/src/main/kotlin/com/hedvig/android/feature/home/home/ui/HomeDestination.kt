@@ -206,6 +206,7 @@ import hedvig.resources.Res
 import hedvig.resources.TOAST_NEW_OFFER
 import hedvig.resources.blur_background
 import hedvig.resources.general_cancel_button
+import hedvig.resources.general_continue_button
 import hedvig.resources.home_tab_claim_button_text
 import hedvig.resources.home_tab_get_help
 import hedvig.resources.home_tab_welcome_title_without_name
@@ -1152,9 +1153,8 @@ private fun QuotesSection(
             }
           }
           Spacer(Modifier.height(12.dp))
-          // TODO: Add "Resume" / "Fortsätt" to Lokalise
           HedvigButton(
-            text = "Resume",
+            text = stringResource(Res.string.general_continue_button),
             onClick = { onResumeClick(session.resumeUrl) },
             buttonStyle = Secondary,
             buttonSize = ButtonSize.Medium,
