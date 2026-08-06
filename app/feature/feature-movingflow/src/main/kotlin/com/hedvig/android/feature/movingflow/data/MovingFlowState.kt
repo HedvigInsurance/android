@@ -22,7 +22,7 @@ internal data class MovingFlowState(
   //  back to that step again
   val lastSelectedHomeQuoteId: String?,
   val mapOfPropertyStates: Map<HousingType, PropertyState>,
-  // Defaulted so that a flow which was persisted before this was tracked still deserializes
+  // Absent for a persisted flow whose entry point was not recorded
   val movingSource: MovingSource = MovingSource.OTHER,
 ) {
   @Serializable
