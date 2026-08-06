@@ -64,6 +64,9 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceEntries(
     TerminationSuccessDestination(
       terminationDate = key.terminationDate,
       onDone = {
+        // The flow is collapsed to this single TerminationSuccessKey on success, so one pop returns
+        // to whatever launched it. Keep that collapse intact if steps are ever added after success,
+        // otherwise this plain pop would land on an intermediate screen instead of the caller.
         // Reached alone via deep link → land on the Insurances tab rather than exiting the app
         // (popBackstack would finish the Activity at the root).
         if (backstack.entries.size > 1) {

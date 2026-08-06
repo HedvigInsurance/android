@@ -71,6 +71,7 @@ internal class OnboardingPaymentPresenter(
   ): OnboardingPaymentUiState {
     var currentState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
+    var hasAttemptedToConnect by remember { mutableStateOf(false) }
 
     LaunchedEffect(loadIteration) {
       if (currentState is OnboardingPaymentUiState.Content) return@LaunchedEffect
@@ -88,26 +89,40 @@ internal class OnboardingPaymentPresenter(
 
     CollectEvents { event ->
       when (event) {
-        OnboardingPaymentEvent.Retry -> loadIteration++
+        OnboardingPaymentEvent.Retry -> {
+          loadIteration++
+        }
 
-        OnboardingPaymentEvent.Close -> launch { navigator.exitOnboarding() }
+        OnboardingPaymentEvent.Close -> {
+          launch { navigator.exitOnboarding() }
+        }
 
-        OnboardingPaymentEvent.Refresh -> launch {
-          sessionStore.refreshData().onRight { refreshed ->
-            currentState = OnboardingPaymentUiState.Content(
-              progress = refreshed.progressFor(OnboardingStepId.ConnectPayment),
-              payinStatus = refreshed.data.payinStatus,
-            )
+        OnboardingPaymentEvent.Refresh -> {
+          launch {
+            sessionStore.refreshData().onRight { refreshed ->
+              currentState = OnboardingPaymentUiState.Content(
+                progress = refreshed.progressFor(OnboardingStepId.ConnectPayment),
+                payinStatus = refreshed.data.payinStatus,
+              )
+            }
           }
         }
 
-        OnboardingPaymentEvent.ConnectPayment -> navigator.openConnectPayment()
+        OnboardingPaymentEvent.ConnectPayment -> {
+          hasAttemptedToConnect = true
+          navigator.openConnectPayment()
+        }
 
-        OnboardingPaymentEvent.Continue -> launch { navigator.continueFrom(OnboardingStepId.ConnectPayment) }
+        OnboardingPaymentEvent.Continue -> {
+          launch { navigator.continueFrom(OnboardingStepId.ConnectPayment) }
+        }
       }
     }
 
-    return currentState
+    return when (val state = currentState) {
+      is OnboardingPaymentUiState.Content -> state.copy(hasAttemptedToConnect = hasAttemptedToConnect)
+      else -> state
+    }
   }
 }
 
@@ -119,6 +134,9 @@ internal sealed interface OnboardingPaymentUiState {
   data class Content(
     val progress: OnboardingProgress,
     val payinStatus: OnboardingPayinStatus,
+    // The skip is offered only once the member has entered the connect flow at least once, so a
+    // member who tries and does not finish is never stuck on this step.
+    val hasAttemptedToConnect: Boolean = false,
   ) : OnboardingPaymentUiState
 }
 
@@ -193,6 +211,7 @@ private fun OnboardingPaymentScreen(
         // is derived straight from the live status, so moving forward and back never claims a
         // connection the backend does not report.
         val isConnected = content.payinStatus != OnboardingPayinStatus.NeedsSetup
+        val canSkip = !isConnected && content.hasAttemptedToConnect
         Spacer(Modifier.height(16.dp))
         // Keep the subtitle in every state so the header height (and the graphic below it) never
         // shifts vertically as the status changes.
@@ -226,10 +245,8 @@ private fun OnboardingPaymentScreen(
             stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_TITLE)
           },
           onPrimaryClick = if (isConnected) onContinue else onConnectPayment,
-          // Connecting a payment method is always optional, so the not-yet-connected state offers a
-          // skip. Once connected the primary button already continues, so no secondary is needed.
-          secondaryText = if (isConnected) null else stringResource(Res.string.ONBOARDING_DO_THIS_LATER_BUTTON),
-          onSecondaryClick = if (isConnected) null else onContinue,
+          secondaryText = if (canSkip) stringResource(Res.string.ONBOARDING_DO_THIS_LATER_BUTTON) else null,
+          onSecondaryClick = if (canSkip) onContinue else null,
         )
       }
     }
@@ -263,6 +280,11 @@ private class OnboardingPaymentUiStateProvider : CollectionPreviewParameterProvi
     OnboardingPaymentUiState.Content(
       progress = OnboardingProgress(totalSteps = 5, currentIndex = 3),
       payinStatus = OnboardingPayinStatus.NeedsSetup,
+    ),
+    OnboardingPaymentUiState.Content(
+      progress = OnboardingProgress(totalSteps = 5, currentIndex = 3),
+      payinStatus = OnboardingPayinStatus.NeedsSetup,
+      hasAttemptedToConnect = true,
     ),
     OnboardingPaymentUiState.Content(
       progress = OnboardingProgress(totalSteps = 5, currentIndex = 3),

@@ -4,7 +4,9 @@ import androidx.compose.runtime.mutableStateListOf
 import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isTrue
 import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyKey
 import com.hedvig.android.feature.onboarding.FakeOnboardingMemberIdProvider
 import com.hedvig.android.feature.onboarding.FakeOnboardingRepository
@@ -67,8 +69,30 @@ internal class OnboardingPaymentPresenterTest {
       repository.onboardingDataResponses.add(testOnboardingData().right())
       awaitItem()
       sendEvent(OnboardingPaymentEvent.ConnectPayment)
+      awaitItem()
       runCurrent()
       assertThat(backstack.entries.last()).isEqualTo(TrustlyKey)
+    }
+  }
+
+  @Test
+  fun `skip is offered only after entering the connect flow while still not connected`() = runTest {
+    val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.ConnectPayment)) }
+    val repository = FakeOnboardingRepository()
+    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
+    val presenter = OnboardingPaymentPresenter(sessionStore, navigator)
+
+    presenter.test(OnboardingPaymentUiState.Loading) {
+      skipItems(1)
+      repository.onboardingDataResponses.add(testOnboardingData(payinStatus = OnboardingPayinStatus.NeedsSetup).right())
+      val initial = awaitItem() as OnboardingPaymentUiState.Content
+      assertThat(initial.hasAttemptedToConnect).isFalse()
+
+      sendEvent(OnboardingPaymentEvent.ConnectPayment)
+      val afterAttempt = awaitItem() as OnboardingPaymentUiState.Content
+      assertThat(afterAttempt.hasAttemptedToConnect).isTrue()
+      assertThat(afterAttempt.payinStatus).isEqualTo(OnboardingPayinStatus.NeedsSetup)
     }
   }
 
