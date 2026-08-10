@@ -36,6 +36,9 @@ class PdfDecoder(
           // initial fully transparent pixels unless the background is filled in first.
           bitmap.eraseColor(Color.WHITE)
           page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+          // Rendering blends onto the opaque white fill, leaving every pixel opaque. Declaring that lets consumers
+          // skip compositing the result onto a background of their own.
+          bitmap.setHasAlpha(false)
           DecodeResult(
             image = bitmap.toDrawable(options.context.resources).asImage(),
             isSampled = scale < RENDER_SCALE,
