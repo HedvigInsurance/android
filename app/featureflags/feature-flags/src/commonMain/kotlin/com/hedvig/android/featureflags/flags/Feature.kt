@@ -12,6 +12,10 @@ enum class Feature(
       "survey without redirections (sends redirectionEnabled = false), so the moving option keeps its plain " +
       "sub options instead of the redirection interstitial.",
   ),
+  DISABLE_RESUMING_ONGOING_SHOP_SESSIONS(
+    "Kill switch for the home screen 'Your quotes' section, which lets a member resume an ongoing " +
+      "shopping session they started on the web. When the toggle is on, the section is hidden.",
+  ),
   ENABLE_CLAIM_INTENT_RESUME(
     "Enables resuming a draft claim: the draft card on the home screen, the draft-claim dialogs, " +
       "and the resumable-aware leave dialog in the claim chat.",

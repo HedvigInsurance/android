@@ -37,6 +37,7 @@ dependencies {
   implementation(projects.coreDemoMode)
   implementation(projects.coreMarkdown)
   implementation(projects.coreResources)
+  implementation(projects.coreUiData)
   implementation(projects.crossSells)
   implementation(projects.dataAddons)
   implementation(projects.dataClaimIntent)

@@ -75,6 +75,7 @@ class HedvigUnleashClient(
       bootstrap = listOf(
         Toggle(name = Feature.DISABLE_PUPPY_GUIDE.unleashKey, enabled = true),
         Toggle(name = Feature.DISABLE_TERMINATION_REDIRECTION.unleashKey, enabled = true),
+        Toggle(name = Feature.DISABLE_RESUMING_ONGOING_SHOP_SESSIONS.unleashKey, enabled = true),
       ),
     )
   }

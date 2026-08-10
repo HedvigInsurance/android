@@ -6,6 +6,7 @@ import arrow.core.left
 import arrow.core.nonEmptyListOf
 import arrow.core.right
 import assertk.assertThat
+import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
@@ -16,6 +17,8 @@ import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.uidata.UiCurrencyCode
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedAddon
 import com.hedvig.android.crosssells.RecommendedCrossSell
@@ -24,6 +27,7 @@ import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
+import com.hedvig.android.feature.home.home.data.OngoingShopSession
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorageImpl
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.memberquickactions.GetMemberQuickActionsUseCase
@@ -217,7 +221,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           addonBannerInfos = emptyList(),
           isProduction = false,
-          crossSellsPartition = CrossSellsPartition(offersCrossSell = testCrossSell),
+          crossSellsPartition = CrossSellsPartition(),
           draftClaim = null,
         ),
       )
@@ -558,7 +562,6 @@ internal class HomePresenterTest {
           addonBannerInfos = emptyList(),
           isProduction = false,
           crossSellsPartition = CrossSellsPartition(
-            offersCrossSell = testCrossSell,
             discoverCrossSells = listOf(crossSell),
           ),
           draftClaim = null,
@@ -701,7 +704,6 @@ internal class HomePresenterTest {
         .prop(HomeUiState.Success::crossSellsPartition)
         .isEqualTo(
           CrossSellsPartition(
-            offersCrossSell = testCrossSell,
             discoverCrossSells = listOf(otherCrossSell),
           ),
         )
@@ -864,6 +866,41 @@ internal class HomePresenterTest {
       ),
     ),
   )
+
+  @Test
+  fun `ongoing shop sessions propagate to the success ui state`() = runTest {
+    val getHomeDataUseCase = TestGetHomeDataUseCase()
+    val homePresenter = HomePresenter(
+      getHomeDataUseCase,
+      SeenImportantMessagesStorageImpl(),
+      FakeCrossSellHomeNotificationService(),
+      ApplicationScope(backgroundScope),
+      false,
+      TestDeleteClaimIntentDraftUseCase(),
+      FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
+    )
+
+    val session = OngoingShopSession(
+      id = "session-1",
+      title = "Home + Accident",
+      subtitle = null,
+      monthlyNet = UiMoney(199.0, UiCurrencyCode.SEK),
+      resumeUrl = "https://hedvig.com/resume/session-1",
+      pillowImageUrl = null,
+    )
+
+    homePresenter.test(HomeUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
+      getHomeDataUseCase.responseTurbine.add(
+        someIrrelevantHomeDataInstance.copy(ongoingShopSessions = listOf(session)).right(),
+      )
+      val success = awaitItem()
+      assertThat(success)
+        .isInstanceOf<HomeUiState.Success>()
+        .prop(HomeUiState.Success::ongoingShopSessions)
+        .containsExactly(session)
+    }
+  }
 
   private val someIrrelevantHomeDataInstance: HomeData = HomeData(
     contractStatus = HomeData.ContractStatus.Active,
