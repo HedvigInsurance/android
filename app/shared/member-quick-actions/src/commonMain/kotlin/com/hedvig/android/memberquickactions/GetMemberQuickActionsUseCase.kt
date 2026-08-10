@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.help.center.data
+package com.hedvig.android.memberquickactions
 
 import arrow.core.Either
 import arrow.core.raise.either
@@ -7,14 +7,12 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoInsured
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoOwners
-import com.hedvig.android.feature.help.center.model.QuickAction
-import com.hedvig.android.feature.help.center.model.QuickAction.StandaloneQuickLink
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoInsured
+import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoOwners
 import com.hedvig.android.shared.partners.deflect.DeflectData
 import com.hedvig.android.ui.emergency.FirstVetSection
 import dev.zacsweers.metro.ContributesBinding
@@ -46,18 +44,18 @@ import hedvig.resources.Res
 import kotlinx.coroutines.flow.first
 import octopus.AvailableSelfServiceOnContractsQuery
 
-internal interface GetQuickLinksUseCase {
+interface GetMemberQuickActionsUseCase {
   suspend fun invoke(): Either<ErrorMessage, List<QuickAction>>
 }
 
 @ContributesBinding(AppScope::class)
 @SingleIn(AppScope::class)
 @Inject
-internal class GetQuickLinksUseCaseImpl(
+internal class GetMemberQuickActionsUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
   private val getMemberActionsUseCase: GetMemberActionsUseCase,
-) : GetQuickLinksUseCase {
+) : GetMemberQuickActionsUseCase {
   override suspend fun invoke(): Either<ErrorMessage, List<QuickAction>> = either {
     val memberActionOptions = getMemberActionsUseCase.invoke().bind()
 
@@ -89,7 +87,7 @@ internal class GetQuickLinksUseCaseImpl(
         }
         if (memberActionOptions.isTierChangeEnabled) {
           add(
-            StandaloneQuickLink(
+            QuickAction.StandaloneQuickLink(
               quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeTier,
               titleRes = Res.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE,
               hintTextRes = Res.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE,
@@ -98,7 +96,7 @@ internal class GetQuickLinksUseCaseImpl(
         }
         if (memberActionOptions.isCancelInsuranceEnabled) {
           add(
-            StandaloneQuickLink(
+            QuickAction.StandaloneQuickLink(
               quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkTermination,
               titleRes = Res.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE,
               hintTextRes = Res.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE,
@@ -117,7 +115,7 @@ internal class GetQuickLinksUseCaseImpl(
       }
       if (memberActionOptions.isMovingEnabled) {
         add(
-          StandaloneQuickLink(
+          QuickAction.StandaloneQuickLink(
             quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeAddress,
             titleRes = Res.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE,
             hintTextRes = Res.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE,
@@ -126,7 +124,7 @@ internal class GetQuickLinksUseCaseImpl(
       }
       if (memberActionOptions.isConnectPaymentEnabled) {
         add(
-          StandaloneQuickLink(
+          QuickAction.StandaloneQuickLink(
             quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkConnectPayment,
             titleRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_TITLE,
             hintTextRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE,
@@ -135,7 +133,7 @@ internal class GetQuickLinksUseCaseImpl(
       }
       if (memberActionOptions.isTravelCertificateEnabled) {
         add(
-          StandaloneQuickLink(
+          QuickAction.StandaloneQuickLink(
             quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate,
             titleRes = Res.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE,
             hintTextRes = Res.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE,
@@ -144,7 +142,7 @@ internal class GetQuickLinksUseCaseImpl(
       }
       if (memberActionOptions.firstVetAction?.sections?.isNotEmpty() == true) {
         add(
-          StandaloneQuickLink(
+          QuickAction.StandaloneQuickLink(
             quickLinkDestination = InnerHelpCenterDestination.FirstVet(
               sections = memberActionOptions.firstVetAction.sections,
             ),
@@ -156,7 +154,7 @@ internal class GetQuickLinksUseCaseImpl(
       if (memberActionOptions.sickAbroadAction != null) {
         val deflectData = memberActionOptions.sickAbroadAction.deflectData
         add(
-          StandaloneQuickLink(
+          QuickAction.StandaloneQuickLink(
             quickLinkDestination = InnerHelpCenterDestination.QuickLinkSickAbroad(
               deflectData,
             ),
@@ -171,7 +169,7 @@ internal class GetQuickLinksUseCaseImpl(
 
 private fun createEditCoInsuredQuickLink(
   coInsuredContracts: List<AvailableSelfServiceOnContractsQuery.Data.CurrentMember.ActiveContract>,
-): StandaloneQuickLink? {
+): QuickAction.StandaloneQuickLink? {
   return when {
     coInsuredContracts.isEmpty() -> {
       null
@@ -180,13 +178,13 @@ private fun createEditCoInsuredQuickLink(
     coInsuredContracts.size == 1 -> {
       val contract = coInsuredContracts.first()
       if (contract.coInsured?.any { it.hasMissingInfo } == true) {
-        StandaloneQuickLink(
+        QuickAction.StandaloneQuickLink(
           quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddInfo(contract.id),
           titleRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
           hintTextRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
         )
       } else {
-        StandaloneQuickLink(
+        QuickAction.StandaloneQuickLink(
           quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddOrRemove(contract.id),
           titleRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
           hintTextRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
@@ -195,7 +193,7 @@ private fun createEditCoInsuredQuickLink(
     }
 
     else -> {
-      StandaloneQuickLink(
+      QuickAction.StandaloneQuickLink(
         titleRes = Res.string.HC_QUICK_ACTIONS_EDIT_COINSURED,
         hintTextRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
         quickLinkDestination = ChooseInsuranceForEditCoInsured,
@@ -206,7 +204,7 @@ private fun createEditCoInsuredQuickLink(
 
 private fun createEditCoOwnersQuickLink(
   coOwnerContracts: List<AvailableSelfServiceOnContractsQuery.Data.CurrentMember.ActiveContract>,
-): StandaloneQuickLink? {
+): QuickAction.StandaloneQuickLink? {
   return when {
     coOwnerContracts.isEmpty() -> {
       null
@@ -215,13 +213,13 @@ private fun createEditCoOwnersQuickLink(
     coOwnerContracts.size == 1 -> {
       val contract = coOwnerContracts.first()
       if (contract.coOwners?.any { it.hasMissingInfo } == true) {
-        StandaloneQuickLink(
+        QuickAction.StandaloneQuickLink(
           quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkCoOwnerAddInfo(contract.id),
           titleRes = Res.string.CONTRACT_COOWNER,
           hintTextRes = Res.string.EDIT_COOWNER_SUBTITLE,
         )
       } else {
-        StandaloneQuickLink(
+        QuickAction.StandaloneQuickLink(
           quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkCoOwnerAddOrRemove(contract.id),
           titleRes = Res.string.CONTRACT_COOWNER,
           hintTextRes = Res.string.EDIT_COOWNER_SUBTITLE,
@@ -230,7 +228,7 @@ private fun createEditCoOwnersQuickLink(
     }
 
     else -> {
-      StandaloneQuickLink(
+      QuickAction.StandaloneQuickLink(
         titleRes = Res.string.EDIT_COOWNER_TITLE,
         hintTextRes = Res.string.EDIT_COOWNER_SUBTITLE,
         quickLinkDestination = ChooseInsuranceForEditCoOwners,
@@ -265,7 +263,7 @@ sealed interface QuickLinkDestination {
   }
 }
 
-internal sealed interface InnerHelpCenterDestination : QuickLinkDestination {
+sealed interface InnerHelpCenterDestination : QuickLinkDestination {
   data class QuickLinkSickAbroad(
     val deflectData: DeflectData,
   ) : InnerHelpCenterDestination

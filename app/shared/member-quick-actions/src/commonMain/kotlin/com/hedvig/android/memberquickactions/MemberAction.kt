@@ -1,15 +1,15 @@
-package com.hedvig.android.feature.help.center.data
+package com.hedvig.android.memberquickactions
 
 import arrow.core.Either
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.shared.partners.deflect.DeflectData
 import com.hedvig.android.ui.emergency.FirstVetSection
 
-internal interface GetMemberActionsUseCase {
+interface GetMemberActionsUseCase {
   suspend fun invoke(): Either<ErrorMessage, MemberAction>
 }
 
-internal data class MemberAction(
+data class MemberAction(
   val isCancelInsuranceEnabled: Boolean,
   val isConnectPaymentEnabled: Boolean,
   val isEditCoInsuredEnabled: Boolean,
@@ -21,7 +21,7 @@ internal data class MemberAction(
   val firstVetAction: MemberActionWithDetails.FirstVetAction?,
 )
 
-internal sealed interface MemberActionWithDetails {
+sealed interface MemberActionWithDetails {
   data class SickAbroadAction(
     val deflectData: DeflectData,
   ) : MemberActionWithDetails

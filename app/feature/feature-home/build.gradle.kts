@@ -37,6 +37,7 @@ dependencies {
   implementation(projects.coreDemoMode)
   implementation(projects.coreMarkdown)
   implementation(projects.coreResources)
+  implementation(projects.coreUiData)
   implementation(projects.crossSells)
   implementation(projects.dataAddons)
   implementation(projects.dataClaimIntent)
@@ -46,6 +47,7 @@ dependencies {
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlags)
   implementation(projects.languageCore)
+  implementation(projects.memberQuickActions)
   implementation(projects.memberRemindersPublic)
   implementation(projects.memberRemindersUi)
   implementation(projects.moleculePublic)
@@ -72,5 +74,6 @@ dependencies {
   testImplementation(projects.loggingTest)
   testImplementation(projects.memberRemindersTest)
   testImplementation(projects.moleculeTest)
+  testImplementation(projects.partnersDeflect)
   testImplementation(projects.testClock)
 }

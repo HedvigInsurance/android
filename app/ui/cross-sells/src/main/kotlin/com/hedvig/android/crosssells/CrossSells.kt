@@ -610,6 +610,7 @@ fun CrossSellsSection(
   withSubHeader: Boolean = true,
   hasCrossSellDiscounts: Boolean = false,
   title: String? = null,
+  buttonText: String? = null,
   buttonSize: ButtonDefaults.ButtonSize = ButtonDefaults.ButtonSize.Medium,
   buttonShape: Shape? = null,
 ) {
@@ -628,7 +629,7 @@ fun CrossSellsSection(
           imageLoader = imageLoader,
           crossSellImageAsset = crossSell.pillowImage,
           onSheetDismissed = onSheetDismissed,
-          buttonText = crossSell.buttonText,
+          buttonText = crossSell.buttonText ?: buttonText,
           buttonSize = buttonSize,
           buttonShape = buttonShape,
         )
@@ -638,6 +639,7 @@ fun CrossSellsSection(
           onCrossSellClick,
           onSheetDismissed = onSheetDismissed,
           imageLoader = imageLoader,
+          buttonText = buttonText,
           buttonSize = buttonSize,
           buttonShape = buttonShape,
         )
@@ -685,6 +687,7 @@ private fun CrossSellItem(
   onSheetDismissed: () -> Unit,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
+  buttonText: String? = null,
   buttonSize: ButtonDefaults.ButtonSize = ButtonDefaults.ButtonSize.Medium,
   buttonShape: Shape? = null,
 ) {
@@ -698,6 +701,7 @@ private fun CrossSellItem(
     imageLoader = imageLoader,
     crossSellImageAsset = crossSell.pillowImage,
     onSheetDismissed = onSheetDismissed,
+    buttonText = buttonText,
     buttonSize = buttonSize,
     buttonShape = buttonShape,
   )
@@ -714,6 +718,7 @@ private fun CrossSellItem(
   imageLoader: ImageLoader,
   onSheetDismissed: () -> Unit,
   modifier: Modifier = Modifier,
+  buttonText: String? = null,
   buttonSize: ButtonDefaults.ButtonSize = ButtonDefaults.ButtonSize.Medium,
   buttonShape: Shape? = null,
 ) {
@@ -721,7 +726,7 @@ private fun CrossSellItem(
     title = crossSellTitle,
     subtitle = crossSellSubtitle,
     pillowImage = crossSellImageAsset,
-    buttonText = stringResource(Res.string.cross_sell_get_price),
+    buttonText = buttonText ?: stringResource(Res.string.cross_sell_get_price),
     onButtonClick = {
       onCrossSellClick(storeUrl)
       onSheetDismissed()

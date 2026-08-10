@@ -26,6 +26,8 @@ import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.isRight
+import com.hedvig.android.core.uidata.UiCurrencyCode
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedAddon
 import com.hedvig.android.data.addons.data.AddonBannerInfo
@@ -63,10 +65,14 @@ import octopus.builder.buildCrossSellV2
 import octopus.builder.buildLinkInfo
 import octopus.builder.buildMember
 import octopus.builder.buildMemberImportantMessage
+import octopus.builder.buildMoney
 import octopus.builder.buildPendingContract
 import octopus.builder.buildRecommendedAddonCrossSell
+import octopus.builder.buildShopSession
+import octopus.builder.buildShopSessionDisplay
 import octopus.builder.buildStoryblokImageAsset
 import octopus.type.ChatMessageSender
+import octopus.type.CurrencyCode
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -460,6 +466,7 @@ internal class GetHomeUseCaseTest {
         // With the inbox-always-available kill switch off, the icon depends purely on existing conversations
         Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX to false,
         Feature.ENABLE_CLAIM_INTENT_RESUME to false,
+        Feature.DISABLE_RESUMING_ONGOING_SHOP_SESSIONS to false,
       ),
     )
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
@@ -532,6 +539,7 @@ internal class GetHomeUseCaseTest {
       mapOf(
         Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX to inboxAlwaysAvailable,
         Feature.ENABLE_CLAIM_INTENT_RESUME to false,
+        Feature.DISABLE_RESUMING_ONGOING_SHOP_SESSIONS to false,
       ),
     )
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
@@ -593,6 +601,7 @@ internal class GetHomeUseCaseTest {
         // Inbox-always-available off, so the icon reflects the conversation state being tested here
         Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX to false,
         Feature.ENABLE_CLAIM_INTENT_RESUME to false,
+        Feature.DISABLE_RESUMING_ONGOING_SHOP_SESSIONS to false,
       ),
     )
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
@@ -751,6 +760,7 @@ internal class GetHomeUseCaseTest {
         mapOf(
           Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX to false,
           Feature.ENABLE_CLAIM_INTENT_RESUME to false,
+          Feature.DISABLE_RESUMING_ONGOING_SHOP_SESSIONS to false,
         ),
       )
       val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
@@ -770,6 +780,105 @@ internal class GetHomeUseCaseTest {
       homeData.prop(HomeData::hasUnseenChatMessages).isFalse()
       homeData.prop(HomeData::showChatIcon).isFalse()
     }
+
+  @Test
+  fun `ongoing shop sessions are mapped into HomeData when the kill switch is off`() = runTest {
+    val featureManager = FakeFeatureManager(
+      mapOf(
+        Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX to false,
+        Feature.ENABLE_CLAIM_INTENT_RESUME to false,
+        Feature.DISABLE_RESUMING_ONGOING_SHOP_SESSIONS to false,
+      ),
+    )
+    val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
+
+    apolloClient.registerTestResponse(
+      HomeQuery(true, false),
+      HomeQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          ongoingShopSessions = listOf(
+            buildShopSession {
+              id = "session-1"
+              display = buildShopSessionDisplay {
+                title = "Home + Accident"
+                subtitle = "Studio apartment, Stockholm"
+                monthlyNet = buildMoney {
+                  amount = 199.0
+                  currencyCode = CurrencyCode.SEK
+                }
+                resumeUrl = "https://hedvig.com/resume/session-1"
+                pillowImage = null
+              }
+            },
+          )
+        }
+      },
+    )
+    apolloClient.registerTestResponse(UnreadMessageCountQuery(), UnreadMessageCountQuery.Data(OctopusFakeResolver))
+    apolloClient.registerTestResponse(
+      CbmNumberOfChatMessagesQuery(),
+      CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+    )
+
+    val result = getHomeDataUseCase.invoke(true).first()
+
+    assertThat(result)
+      .isNotNull()
+      .isRight()
+      .prop(HomeData::ongoingShopSessions)
+      .containsExactly(
+        OngoingShopSession(
+          id = "session-1",
+          title = "Home + Accident",
+          subtitle = "Studio apartment, Stockholm",
+          monthlyNet = UiMoney(199.0, UiCurrencyCode.SEK),
+          resumeUrl = "https://hedvig.com/resume/session-1",
+          pillowImageUrl = null,
+        ),
+      )
+  }
+
+  @Test
+  fun `ongoing shop sessions are dropped when the kill switch is on`() = runTest {
+    val featureManager = FakeFeatureManager(
+      mapOf(
+        Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX to false,
+        Feature.ENABLE_CLAIM_INTENT_RESUME to false,
+        Feature.DISABLE_RESUMING_ONGOING_SHOP_SESSIONS to true,
+      ),
+    )
+    val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
+
+    apolloClient.registerTestResponse(
+      HomeQuery(true, false),
+      HomeQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          ongoingShopSessions = listOf(
+            buildShopSession {
+              id = "session-1"
+              display = buildShopSessionDisplay {
+                title = "Home + Accident"
+                resumeUrl = "https://hedvig.com/resume/session-1"
+              }
+            },
+          )
+        }
+      },
+    )
+    apolloClient.registerTestResponse(UnreadMessageCountQuery(), UnreadMessageCountQuery.Data(OctopusFakeResolver))
+    apolloClient.registerTestResponse(
+      CbmNumberOfChatMessagesQuery(),
+      CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+    )
+
+    val result = getHomeDataUseCase.invoke(true).first()
+
+    assertThat(result)
+      .isNotNull()
+      .isRight()
+      .prop(HomeData::ongoingShopSessions)
+      .isEmpty()
+  }
 
   // Used as a convenience to get a use case without any enqueued apollo responses, but some sane defaults for the
   // other dependencies
