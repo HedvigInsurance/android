@@ -197,6 +197,7 @@ import hedvig.resources.HOME_GREETING_TITLE
 import hedvig.resources.HOME_QUOTES_SECTION_TITLE
 import hedvig.resources.HOME_TODO_SECTION_TITLE
 import hedvig.resources.INSURANCE_ADDONS_SUBHEADING
+import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
 import hedvig.resources.RESUME_CLAIM_DELETE_BODY
 import hedvig.resources.RESUME_CLAIM_DELETE_BUTTON
 import hedvig.resources.RESUME_CLAIM_DELETE_TITLE
@@ -1142,7 +1143,13 @@ private fun QuotesSection(
             }
             Column(Modifier.weight(1f)) {
               HedvigText(text = session.title, style = HedvigTheme.typography.bodySmall)
-              val secondary = session.subtitle ?: session.monthlyNet?.toString()
+              val secondary = session.subtitle ?: session.monthlyNet?.let {
+                stringResource(
+                  Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                  it,
+                )
+              } ?: ""
+
               if (secondary != null) {
                 HedvigText(
                   text = secondary,
