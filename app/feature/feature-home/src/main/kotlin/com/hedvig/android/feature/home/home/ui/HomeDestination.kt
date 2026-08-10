@@ -5,7 +5,6 @@ import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -120,8 +119,6 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigTooltip
-import com.hedvig.android.design.system.hedvig.HighlightLabel
-import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.StartClaimBottomSheet
 import com.hedvig.android.design.system.hedvig.Surface
@@ -140,7 +137,6 @@ import com.hedvig.android.design.system.hedvig.icon.Travel
 import com.hedvig.android.design.system.hedvig.notificationCircle
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
-import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.home.home.data.HomeData.ClaimStatusCardsData
 import com.hedvig.android.feature.home.home.data.HomeData.DraftClaim
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage
@@ -645,7 +641,7 @@ private fun HomeScreenSuccess(
           true
         }
 
-        HomeSection.QuickActionCarousel -> {
+        HomeSection.MainActionCarousel -> {
           true
         }
 
@@ -804,8 +800,8 @@ private fun HomeScreenSuccess(
           }
         }
       }
-      if (HomeSection.QuickActionCarousel in visibleSections) {
-        stickyHeader(key = HomeSection.QuickActionCarousel, contentType = "pills") {
+      if (HomeSection.MainActionCarousel in visibleSections) {
+        stickyHeader(key = HomeSection.MainActionCarousel, contentType = "pills") {
           // Pills float transparently on the blur; the sheet "lid" (drag handle) is part of the same
           // pinned header. We record the header's bottom edge so scrolling sections can clip to it.
           Column(
@@ -819,7 +815,7 @@ private fun HomeScreenSuccess(
               .pointerInput(Unit) { detectTapGestures {} },
           ) {
             Spacer(Modifier.height(pinnedTopOffset))
-            QuickActionCarouselSection(
+            MainActionCarouselSection(
               isHelpCenterEnabled = uiState.isHelpCenterEnabled,
               onMakeClaim = openClaimFlowSheet,
               onHelpAndSupport = navigateToHelpCenter,
@@ -837,7 +833,7 @@ private fun HomeScreenSuccess(
         }
       }
       val scrollingSections = visibleSections.filterNot {
-        it == HomeSection.Welcome || it == HomeSection.QuickActionCarousel
+        it == HomeSection.Welcome || it == HomeSection.MainActionCarousel
       }
       itemsIndexed(scrollingSections, key = { _, section -> section }) { index, section ->
         val next = scrollingSections.getOrNull(index + 1)
@@ -858,7 +854,7 @@ private fun HomeScreenSuccess(
           // Each section carries its gap to the NEXT one as trailing room, giving drop-shadows space
           // within the section. The first one starts flush under the pinned lid.
           when (section) {
-            HomeSection.Welcome, HomeSection.QuickActionCarousel -> Unit
+            HomeSection.Welcome, HomeSection.MainActionCarousel -> Unit
 
             // pinned above the scrolling content
 
@@ -970,7 +966,7 @@ private fun HomeSheetDragHandle(modifier: Modifier = Modifier) {
 
 private enum class HomeSection {
   Welcome,
-  QuickActionCarousel,
+  MainActionCarousel,
   ClaimStatusCards,
   VeryImportantMessages,
   MemberReminders,
@@ -983,7 +979,7 @@ private enum class HomeSection {
 // The single source of truth for the home section order; reorder here.
 private val homeSectionOrder: List<HomeSection> = listOf(
   HomeSection.Welcome,
-  HomeSection.QuickActionCarousel,
+  HomeSection.MainActionCarousel,
   HomeSection.ClaimStatusCards,
   HomeSection.VeryImportantMessages,
   HomeSection.MemberReminders,
@@ -1245,18 +1241,31 @@ private fun EditInsuranceQuickActionSheet(
     Spacer(Modifier.height(16.dp))
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
       editInsurance.links.forEach { link ->
-        HomeActionTile(
-          icon = link.homeIcon(),
-          text = stringResource(link.titleRes),
+        HedvigCard(
           onClick = {
             state.dismiss()
             onQuickLink(link.quickLinkDestination)
           },
-          modifier = Modifier.fillMaxWidth(),
-        )
+          color = HedvigTheme.colorScheme.fillNegative,
+          borderColor = HedvigTheme.colorScheme.borderPrimary,
+          modifier = Modifier.fillMaxWidth()
+            .hedvigDropShadow(HedvigTheme.shapes.cornerXLarge),
+        ) {
+          Column(
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(vertical = 14.dp, horizontal = 12.dp),
+          ) {
+            HedvigText(text = stringResource(link.titleRes))
+            Spacer(Modifier.height(6.dp))
+            HedvigText(text = stringResource(link.hintTextRes),
+              style = HedvigTheme.typography.label,
+              color = HedvigTheme.colorScheme.textSecondary)
+          }
+        }
       }
     }
-    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.height(16.dp))
     Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
@@ -1287,7 +1296,7 @@ private fun HomeActionTile(icon: ImageVector, text: String, onClick: () -> Unit,
 }
 
 @Composable
-private fun QuickActionCarouselSection(
+private fun MainActionCarouselSection(
   isHelpCenterEnabled: Boolean,
   onMakeClaim: () -> Unit,
   onHelpAndSupport: () -> Unit,
