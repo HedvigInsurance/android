@@ -327,7 +327,9 @@ internal data class CrossSellsPartition(
 
 internal fun partitionCrossSells(crossSells: CrossSellSheetData): CrossSellsPartition {
   return CrossSellsPartition(
-    discoverCrossSells = crossSells.otherCrossSells,
+    discoverCrossSells = crossSells.recommendedCrossSell?.let {
+      listOf(it.crossSell) + crossSells.otherCrossSells
+    } ?: crossSells.otherCrossSells,
   )
 }
 
