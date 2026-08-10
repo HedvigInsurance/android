@@ -317,14 +317,14 @@ private data class SuccessData(
   }
 }
 
-/**
- * The home screen surfaces cross-sells in the discover carousel and the "Discover our insurances"
- * list. This is the single place that decides which cross-sells go where.
- */
 internal data class CrossSellsPartition(
   val discoverCrossSells: List<CrossSell> = emptyList(),
 )
 
+/**
+ * Builds the "Discover our insurances" list. The recommended cross-sell leads it, stripped of the
+ * offer framing (banner, discount, bundle progress) it keeps in the cross-sell bottom sheet.
+ */
 internal fun partitionCrossSells(crossSells: CrossSellSheetData): CrossSellsPartition {
   return CrossSellsPartition(
     discoverCrossSells = crossSells.recommendedCrossSell?.let {

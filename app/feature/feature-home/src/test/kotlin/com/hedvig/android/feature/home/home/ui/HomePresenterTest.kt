@@ -221,7 +221,9 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           addonBannerInfos = emptyList(),
           isProduction = false,
-          crossSellsPartition = CrossSellsPartition(),
+          crossSellsPartition = CrossSellsPartition(
+            discoverCrossSells = listOf(testCrossSell.crossSell),
+          ),
           draftClaim = null,
         ),
       )
@@ -562,7 +564,7 @@ internal class HomePresenterTest {
           addonBannerInfos = emptyList(),
           isProduction = false,
           crossSellsPartition = CrossSellsPartition(
-            discoverCrossSells = listOf(crossSell),
+            discoverCrossSells = listOf(testCrossSell.crossSell, crossSell),
           ),
           draftClaim = null,
         ),
@@ -673,7 +675,7 @@ internal class HomePresenterTest {
   }
 
   @Test
-  fun `crossSells are partitioned into offers, carousel and discover buckets`() = runTest {
+  fun `the recommended crossSell leads the discover list, ahead of the other crossSells`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
       getHomeDataUseCase,
@@ -704,7 +706,7 @@ internal class HomePresenterTest {
         .prop(HomeUiState.Success::crossSellsPartition)
         .isEqualTo(
           CrossSellsPartition(
-            discoverCrossSells = listOf(otherCrossSell),
+            discoverCrossSells = listOf(testCrossSell.crossSell, otherCrossSell),
           ),
         )
     }
