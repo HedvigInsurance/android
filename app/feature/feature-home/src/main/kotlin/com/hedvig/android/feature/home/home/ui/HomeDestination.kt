@@ -1148,7 +1148,7 @@ private fun QuotesSection(
                   Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
                   it,
                 )
-              } ?: ""
+              }
 
               if (secondary != null) {
                 HedvigText(
