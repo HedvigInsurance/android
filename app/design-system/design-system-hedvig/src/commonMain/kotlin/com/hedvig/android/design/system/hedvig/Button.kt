@@ -623,7 +623,7 @@ private sealed interface Style {
   data object RoundedLiquidGlass : Style {
     override val glassMaterial: GlassMaterial
       @Composable
-      get() = regularGlassMaterial
+      get() = liquidGlassMaterial
 
     override val buttonColors: ButtonColors
       @Composable
