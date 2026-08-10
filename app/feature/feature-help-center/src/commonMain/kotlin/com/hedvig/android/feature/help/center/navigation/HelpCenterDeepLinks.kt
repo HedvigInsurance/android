@@ -14,7 +14,7 @@ import dev.zacsweers.metro.Inject
 internal class HelpCenterDeepLinkMatcherProvider(
   private val container: HedvigDeepLinkContainer,
 ) : DeepLinkMatcherProvider {
-  override fun matchers(): List<DeepLinkMatcher<out HedvigNavKey>> =
+  override fun matchers(): List<DeepLinkMatcher<HedvigNavKey>> =
     uriDeepLinkMatchers(container.helpCenter, HelpCenterKey.serializer()) +
       uriDeepLinkMatchers(container.helpCenterCommonTopic, HelpCenterTopicKey.serializer()) +
       uriDeepLinkMatchers(container.helpCenterQuestion, HelpCenterQuestionKey.serializer()) +

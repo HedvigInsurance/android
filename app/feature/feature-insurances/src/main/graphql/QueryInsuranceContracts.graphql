@@ -52,6 +52,7 @@ fragment ContractFragment on Contract {
   masterInceptionDate
   terminationDate
   exposureDisplayName
+  exposureDisplayNameShort
   supportsMoving
   supportsCoInsured
   supportsChangeTier

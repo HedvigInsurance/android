@@ -45,6 +45,7 @@ import com.hedvig.android.feature.insurance.certificate.navigation.insuranceEvid
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.navigation.insuranceEntries
 import com.hedvig.android.feature.login.navigation.loginEntries
+import com.hedvig.android.feature.movingflow.MovingSource
 import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
 import com.hedvig.android.feature.movingflow.movingFlowEntries
 import com.hedvig.android.feature.payments.navigation.paymentsEntries
@@ -58,6 +59,9 @@ import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificate
 import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateEntries
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.memberquickactions.InnerHelpCenterDestination
+import com.hedvig.android.memberquickactions.QuickLinkDestination
+import com.hedvig.android.memberquickactions.toNavKey
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.TopLevelTab
@@ -100,7 +104,17 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   val navigateToInbox: () -> Unit = { backstack.add(InboxKey) }
   val navigateToNewConversation: () -> Unit = { backstack.add(ChatKey(Uuid.randomUUID().toString())) }
   val navigateToConversation: (String) -> Unit = { conversationId -> backstack.add(ChatKey(conversationId)) }
-  val navigateToMovingFlow: () -> Unit = { backstack.add(SelectContractForMovingKey) }
+  val navigateToTravelCertificate: () -> Unit = { backstack.add(TravelCertificateKey) }
+  val navigateToAddonPurchaseFlow: (List<String>) -> Unit = { ids ->
+    backstack.add(
+      AddonPurchaseKey(
+        insuranceIds = ids,
+        preselectedAddonDisplayName = null,
+        source = AddonBannerSource.INSURANCES_TAB,
+      ),
+    )
+  }
+  val navigateToMovingFlow: (MovingSource) -> Unit = { source -> backstack.add(SelectContractForMovingKey(source)) }
   val onNavigateToImageViewer: (String, String) -> Unit = { imageUrl, cacheKey ->
     backstack.add(ImageViewerKey(imageUrl, cacheKey))
   }
@@ -119,6 +133,9 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     navigateToInbox = navigateToInbox,
     navigateToConnectPayment = navigateToConnectPayment,
     navigateToPayoutAccount = navigateToPayoutAccount,
+    navigateToTravelCertificate = navigateToTravelCertificate,
+    navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
+    navigateToMovingFlow = navigateToMovingFlow,
   )
   addInsuranceEntries(
     backstack = backstack,
@@ -128,7 +145,9 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     openCrossSellUrl = openCrossSellUrl,
     externalNavigator = externalNavigator,
     navigateToNewConversation = navigateToNewConversation,
-    navigateToMovingFlow = navigateToMovingFlow,
+    navigateToMovingFlowFromInsurance = {
+      navigateToMovingFlow(MovingSource.INSURANCE)
+    },
   )
   foreverEntries()
   addPaymentsEntries(
@@ -204,6 +223,9 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
   navigateToInbox: () -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
+  navigateToTravelCertificate: () -> Unit,
+  navigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  navigateToMovingFlow: (MovingSource) -> Unit,
 ) {
   homeEntries(
     nestedEntries = {
@@ -230,14 +252,29 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
       backstack.add(CoInsuredAddInfoKey(contractId, type))
     },
     navigateToHelpCenter = { backstack.add(HelpCenterKey) },
-    navigateToClaimChat = {
-      backstack.add(ClaimChatKey(messageId = null, isDevelopmentFlow = false))
+    navigateToQuickLink = { destination ->
+      when (destination) {
+        is QuickLinkDestination.OuterDestination -> backstack.add(destination.toNavKey())
+
+        // Inner destinations (FirstVet, SickAbroad) are handled by feature-home before reaching here.
+        is InnerHelpCenterDestination -> error("Inner quick-link destinations are routed by the feature")
+      }
+    },
+    navigateToClaimChat = { resumeClaim ->
+      backstack.add(
+        ClaimChatKey(
+          messageId = null,
+          isDevelopmentFlow = false,
+          resumeClaim = resumeClaim,
+        ),
+      )
     },
     navigateToChipIdScreen = { backstack.add(ChipIdKey()) },
     openAppSettings = externalNavigator::openAppSettings,
     openUrl = openUrl,
     openCrossSellUrl = openCrossSellUrl,
     imageLoader = imageLoader,
+    navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
   )
 }
 
@@ -308,13 +345,14 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
   openCrossSellUrl: (String) -> Unit,
   externalNavigator: ExternalNavigator,
   navigateToNewConversation: () -> Unit,
-  navigateToMovingFlow: () -> Unit,
+  navigateToMovingFlowFromInsurance: () -> Unit,
 ) {
   insuranceEntries(
     nestedEntries = {
       terminateInsuranceEntries(
         windowSizeClass = windowSizeClass,
         backstack = backstack,
+        imageLoader = imageLoader,
         onNavigateToNewConversation = navigateToNewConversation,
         openUrl = openUrl,
         openPlayStore = externalNavigator::tryOpenPlayStore,
@@ -323,7 +361,10 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
           backstack.selectTopLevel(TopLevelTab.Insurances)
         },
         navigateToMovingFlow = {
-          backstack.navigateAndPopUpTo<TerminateInsuranceKey>(SelectContractForMovingKey, inclusive = true)
+          backstack.navigateAndPopUpTo<TerminateInsuranceKey>(
+            SelectContractForMovingKey(MovingSource.TERMINATION),
+            inclusive = true,
+          )
         },
         closeTerminationFlow = {
           backstack.popUpTo<TerminateInsuranceKey>(inclusive = true)
@@ -346,7 +387,7 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
     openUrl = openUrl,
     openCrossSellUrl = openCrossSellUrl,
     onNavigateToNewConversation = navigateToNewConversation,
-    startMovingFlow = navigateToMovingFlow,
+    startMovingFlow = navigateToMovingFlowFromInsurance,
     startTerminationFlow = { data: CancelInsuranceData ->
       backstack.add(TerminateInsuranceKey(insuranceId = data.contractId))
     },
@@ -471,8 +512,8 @@ private fun EntryProviderScope<HedvigNavKey>.addChatEntries(
     },
     onNavigateToImageViewer = onNavigateToImageViewer,
     onNavigateToNewConversation = navigateToNewConversation,
-    navigateToClaimChat = {
-      backstack.add(ClaimChatKey(messageId = null, isDevelopmentFlow = false))
+    navigateToClaimChat = { resumeClaim ->
+      backstack.add(ClaimChatKey(messageId = null, isDevelopmentFlow = false, resumeClaim = resumeClaim))
     },
     backstack = backstack,
   )

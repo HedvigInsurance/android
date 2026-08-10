@@ -190,7 +190,8 @@ private fun FormContent(
             FieldType.TEXT -> {
               TextInputBubble(
                 questionLabel = field.title,
-                text = field.selectedOptions.getOrNull(0)?.text,
+                text = field.selectedOptions.getOrNull(0)?.text
+                  ?: field.defaultValues.getOrNull(0)?.text,
                 suffix = field.suffix,
                 onInput = { answer ->
                   onSelectFieldAnswer(

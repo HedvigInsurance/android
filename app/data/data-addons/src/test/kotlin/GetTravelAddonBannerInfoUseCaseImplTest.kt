@@ -20,9 +20,10 @@ import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import octopus.AddonBannersQuery
+import octopus.builder.Data
+import octopus.builder.buildAddonBanner
+import octopus.builder.buildMember
 import octopus.type.AddonFlow
-import octopus.type.buildAddonBanner
-import octopus.type.buildMember
 import org.junit.Rule
 import org.junit.Test
 

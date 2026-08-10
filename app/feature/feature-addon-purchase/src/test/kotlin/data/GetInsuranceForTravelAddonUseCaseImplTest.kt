@@ -20,10 +20,11 @@ import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import octopus.InsurancesForTravelAddonQuery
-import octopus.type.buildAgreement
-import octopus.type.buildContract
-import octopus.type.buildMember
-import octopus.type.buildProductVariant
+import octopus.builder.Data
+import octopus.builder.buildAgreement
+import octopus.builder.buildContract
+import octopus.builder.buildMember
+import octopus.builder.buildProductVariant
 import org.junit.Rule
 import org.junit.Test
 

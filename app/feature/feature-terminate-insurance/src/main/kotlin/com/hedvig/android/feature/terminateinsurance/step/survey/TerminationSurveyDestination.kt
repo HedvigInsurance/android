@@ -279,7 +279,10 @@ private fun SelectedSurveyInfoBox(
             ProvideTextStyle(
               HedvigTheme.typography.label,
             ) {
-              HedvigMarkdownText(content = suggestion.description)
+              HedvigMarkdownText(
+                content = suggestion.description,
+                style = HedvigTheme.typography.label,
+              )
             }
           },
           priority = when (suggestion.type) {

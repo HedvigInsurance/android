@@ -16,6 +16,7 @@ import com.hedvig.android.feature.imageviewer.navigation.ImageViewerKey
 import com.hedvig.android.feature.insurance.certificate.navigation.InsuranceEvidenceKey
 import com.hedvig.android.feature.insurances.navigation.InsurancesKey
 import com.hedvig.android.feature.login.navigation.LoginKey
+import com.hedvig.android.feature.movingflow.MovingSource
 import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
 import com.hedvig.android.feature.payments.navigation.PaymentsKey
 import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountKey
@@ -121,7 +122,7 @@ internal class ExhaustiveBackstackSerializationTest {
 
   private fun invokeDefaultProviderMethod(interfaceClass: Class<*>, provideMethod: Method): SerializersModule {
     // The providers are Kotlin interfaces whose `provide*` method is a real JVM default method
-    // (the project compiles with -Xjvm-default). Invoke it via an `invokespecial` MethodHandle so we
+    // (the project compiles with -jvm-default). Invoke it via an `invokespecial` MethodHandle so we
     // don't depend on java.lang.reflect.InvocationHandler.invokeDefault, which the `:app` unit-test
     // classpath resolves against Android's stubbed reflection types that lack it.
     val proxy = Proxy.newProxyInstance(
@@ -277,7 +278,7 @@ internal class ExhaustiveBackstackSerializationTest {
       InsuranceEvidenceKey,
       PayoutAccountKey,
       TravelCertificateKey,
-      SelectContractForMovingKey,
+      SelectContractForMovingKey(MovingSource.TERMINATION),
       ImageViewerKey(imageUrl = "https://example.com/i.png", cacheKey = "cache-1"),
       ChipIdKey(contractId = "contract-1"),
       TerminateInsuranceKey(insuranceId = "insurance-1"),

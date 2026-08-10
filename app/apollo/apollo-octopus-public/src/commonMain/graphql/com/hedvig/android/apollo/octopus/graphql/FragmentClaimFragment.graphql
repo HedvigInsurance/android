@@ -33,4 +33,5 @@ fragment ClaimFragment on Claim {
     displayTitle
     displayValue
   }
+  contractId
 }

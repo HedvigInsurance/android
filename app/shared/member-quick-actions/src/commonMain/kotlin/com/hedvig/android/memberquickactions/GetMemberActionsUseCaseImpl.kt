@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.help.center.data
+package com.hedvig.android.memberquickactions
 
 import arrow.core.Either
 import arrow.core.raise.either

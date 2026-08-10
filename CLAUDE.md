@@ -368,10 +368,10 @@ The message is a lambda, so build strings inline without guarding on build type 
 logcat { "Plain info-level message" }                              // defaults to INFO
 logcat(LogPriority.DEBUG) { "GraphQL ${operation.name()} START" }  // explicit priority
 logcat(LogPriority.ERROR, throwable) { "Failed to load X: ${throwable.message}" }
-logcat(LogPriority.INFO, tag = DEEP_LINK_STACK_DEBUG_TAG) { "…" }  // greppable custom tag
+logcat(LogPriority.INFO, tag = SOMETHING_DEBUG_TAG) { "…" }  // greppable custom tag
 ```
 
-Tag is optional — for a one-off log, just omit it (the caller's class name is used). When you want a greppable trace that spans several call sites or files, a shared `const val SOMETHING_DEBUG_TAG = "…"` passed as `tag` everywhere is a handy tool (see `DEEP_LINK_STACK_DEBUG_TAG` usage across `MainActivity`/`BackstackController`). It's a convenience, not a requirement; don't introduce a const for a single isolated log.
+Tag is optional — for a one-off log, just omit it (the caller's class name is used). When you want a greppable trace that spans several call sites or files, a shared `const val SOMETHING_DEBUG_TAG = "…"` passed as `tag` everywhere is a handy tool. It's a convenience, not a requirement; don't introduce a const for a single isolated log.
 
 There is also an Apollo overload, `logcat(priority, operationError: ApolloOperationError, tag, message)`, which auto-downgrades to at most `WARN` for unauthenticated errors. Use it when logging a failed `safeExecute`/`safeFlow` result.
 
@@ -479,6 +479,16 @@ Configuration in `.editorconfig`:
 - **Destinations / nav keys:** `{Feature}Key` (e.g. `InsurancesKey`, `ChatKey`)
 - **Entry functions:** `{feature}Entries`
 - **Use cases:** `{Action}{Domain}UseCase` (e.g., `GetHomeDataUseCase`)
+
+### Comments
+
+Code comments and KDoc must describe the **current** code and stand on their own. Before writing one, apply the test: *would this make sense to someone reading the file cold, with no knowledge of the PR, the conversation, or what was decided against?* If not, it does not belong in the source. Do not reference:
+
+- **History / migration:** "Replaces Nav2…", "used to live in…".
+- **Rejected alternatives:** "…not the iOS glass", "instead of the old Y".
+- **Conversation / design-process state:** "pending design", "for now", "TBD".
+
+When tempted to write "X instead of Y", drop the Y half and justify X on its own terms. If that leaves nothing, the code was self-explanatory, so delete the comment. Migration/history/process context belongs in the commit message.
 
 ## Working with GraphQL
 
@@ -627,6 +637,13 @@ Example:
 // TODO: Add "This is some text for feature X" / "Detta är lite text för feature X" to Lokalise
 Text("This is some text for feature X")
 ```
+
+**Verifying whether a string key is "real" (already in Lokalise):** if you find a key in a
+`strings.xml` and are unsure whether it actually exists in Lokalise or was hand-added, run
+`./gradlew downloadStrings` and re-check the file. Because `downloadStrings` regenerates every
+`strings.xml` from Lokalise, a key that **survives** the run exists in Lokalise; a key that
+**disappears** was only added locally and would break the build once someone else syncs. Use this
+before relying on (or committing code that references) a key you didn't personally add to Lokalise.
 
 ## Debugging
 

@@ -23,16 +23,17 @@ import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.ChangeTierDeductibleCreateIntentMutation
+import octopus.builder.Data
+import octopus.builder.buildChangeTierDeductibleCreateIntentOutput
+import octopus.builder.buildChangeTierDeductibleFromAgreement
+import octopus.builder.buildChangeTierDeductibleIntent
+import octopus.builder.buildChangeTierDeductibleQuote
+import octopus.builder.buildChangeTierDeflectOutput
+import octopus.builder.buildDeductible
+import octopus.builder.buildMoney
+import octopus.builder.buildProductVariant
 import octopus.type.ChangeTierDeductibleSource.SELF_SERVICE
 import octopus.type.CurrencyCode.SEK
-import octopus.type.buildChangeTierDeductibleCreateIntentOutput
-import octopus.type.buildChangeTierDeductibleFromAgreement
-import octopus.type.buildChangeTierDeductibleIntent
-import octopus.type.buildChangeTierDeductibleQuote
-import octopus.type.buildChangeTierDeflectOutput
-import octopus.type.buildDeductible
-import octopus.type.buildMoney
-import octopus.type.buildProductVariant
 import org.junit.Rule
 import org.junit.Test
 
@@ -92,7 +93,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
             intent = buildChangeTierDeductibleIntent {
               activationDate = activationDateNovember
               agreementToChange = buildChangeTierDeductibleFromAgreement {
-                premium = buildMoney {
+                basePremium = buildMoney {
                   amount = 169.0
                   currencyCode = SEK
                 }
@@ -169,7 +170,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
             intent = buildChangeTierDeductibleIntent {
               activationDate = activationDateNovember
               agreementToChange = buildChangeTierDeductibleFromAgreement {
-                premium = buildMoney {
+                basePremium = buildMoney {
                   amount = 169.0
                   currencyCode = SEK
                 }
@@ -246,7 +247,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
             intent = buildChangeTierDeductibleIntent {
               activationDate = activationDateNovember
               agreementToChange = buildChangeTierDeductibleFromAgreement {
-                premium = buildMoney {
+                basePremium = buildMoney {
                   amount = 169.0
                   currencyCode = SEK
                 }
@@ -294,7 +295,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
             intent = buildChangeTierDeductibleIntent {
               activationDate = activationDateNovember
               agreementToChange = buildChangeTierDeductibleFromAgreement {
-                premium = buildMoney {
+                basePremium = buildMoney {
                   amount = 169.0
                   currencyCode = SEK
                 }
@@ -530,7 +531,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
             intent = buildChangeTierDeductibleIntent {
               activationDate = activationDateNovember
               agreementToChange = buildChangeTierDeductibleFromAgreement {
-                premium = buildMoney {
+                basePremium = buildMoney {
                   amount = 169.0
                   currencyCode = SEK
                 }

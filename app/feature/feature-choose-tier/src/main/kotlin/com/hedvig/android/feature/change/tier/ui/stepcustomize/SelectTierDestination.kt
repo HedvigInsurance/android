@@ -95,7 +95,9 @@ import hedvig.resources.TIER_FLOW_SELECT_COVERAGE_SUBTITLE
 import hedvig.resources.TIER_FLOW_SELECT_COVERAGE_TITLE
 import hedvig.resources.TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE
 import hedvig.resources.TIER_FLOW_SELECT_DEDUCTIBLE_TITLE
+import hedvig.resources.TIER_FLOW_SHOW_COVERAGE_BUTTON
 import hedvig.resources.TIER_FLOW_SUBTITLE
+import hedvig.resources.TIER_FLOW_SUBTITLE_WITHOUT_DEDUCTIBLE
 import hedvig.resources.TIER_FLOW_TITLE
 import hedvig.resources.TIER_FLOW_TOTAL
 import hedvig.resources.general_cancel_button
@@ -234,7 +236,12 @@ private fun SelectTierScreen(
         lineBreak = LineBreak.Heading,
         color = HedvigTheme.colorScheme.textSecondary,
       ),
-      text = stringResource(Res.string.TIER_FLOW_SUBTITLE),
+      // Payment protection has no deductible, so the standard "…level and deductible" subtitle over-promises.
+      text = if (uiState.isPaymentProtection) {
+        stringResource(Res.string.TIER_FLOW_SUBTITLE_WITHOUT_DEDUCTIBLE)
+      } else {
+        stringResource(Res.string.TIER_FLOW_SUBTITLE)
+      },
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))
@@ -270,14 +277,20 @@ private fun SelectTierScreen(
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
     )
-    if (uiState.tiers.size > 1) {
+    if (!uiState.isPaymentProtection) {
       Spacer(Modifier.height(8.dp))
       HedvigTextButton(
         buttonSize = Large,
         modifier = Modifier
           .fillMaxWidth()
           .padding(horizontal = 16.dp),
-        text = stringResource(Res.string.TIER_FLOW_COMPARE_BUTTON),
+        text = stringResource(
+          if (uiState.tiers.size == 1) {
+            Res.string.TIER_FLOW_SHOW_COVERAGE_BUTTON
+          } else {
+            Res.string.TIER_FLOW_COMPARE_BUTTON
+          },
+        ),
         onClick = {
           onCompareClick()
         },
@@ -327,7 +340,7 @@ private fun CustomizationCard(
       Spacer(Modifier.height(16.dp))
       val tierSimpleItems = buildList {
         for (tier in tiers) {
-          add(SimpleDropdownItem(tier.first.tierDisplayName ?: "-"))
+          add(SimpleDropdownItem(tier.first.tierDisplayName ?: tier.first.tierName))
         }
       }
       val hintText = stringResource(Res.string.TIER_FLOW_COVERAGE_PLACEHOLDER)
@@ -543,7 +556,7 @@ private fun TierCoverageRadioGroup(
     options = tiers.map { pair ->
       RadioOption(
         id = RadioOptionId(pair.first.tierName),
-        text = pair.first.tierDisplayName ?: "-",
+        text = pair.first.tierDisplayName ?: pair.first.tierName,
         label = pair.first.tierDescription,
       )
     },
@@ -753,6 +766,7 @@ private fun SelectTierScreenPreview() {
         ),
         quotesForChosenTier = listOf(quotesForPreview[0]),
         isTierChoiceEnabled = true,
+        isPaymentProtection = false,
         chosenTier = Tier(
           "BAS",
           tierLevel = 0,

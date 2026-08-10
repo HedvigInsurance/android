@@ -4,8 +4,10 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.data.claimintent.DeleteClaimIntentDraftUseCase
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
+import com.hedvig.android.memberquickactions.GetMemberQuickActionsUseCase
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.notification.badge.data.crosssell.home.CrossSellHomeNotificationService
 import dev.zacsweers.metro.Inject
@@ -18,6 +20,8 @@ internal class HomeViewModel(
   crossSellHomeNotificationService: CrossSellHomeNotificationService,
   applicationScope: ApplicationScope,
   hedvigBuildConstants: HedvigBuildConstants,
+  deleteClaimIntentDraftUseCase: DeleteClaimIntentDraftUseCase,
+  getMemberQuickActionsUseCase: GetMemberQuickActionsUseCase,
 ) : MoleculeViewModel<HomeEvent, HomeUiState>(
     HomeUiState.Loading,
     HomePresenter(
@@ -26,5 +30,7 @@ internal class HomeViewModel(
       crossSellHomeNotificationService,
       applicationScope,
       hedvigBuildConstants.isProduction,
+      deleteClaimIntentDraftUseCase,
+      getMemberQuickActionsUseCase,
     ),
   )

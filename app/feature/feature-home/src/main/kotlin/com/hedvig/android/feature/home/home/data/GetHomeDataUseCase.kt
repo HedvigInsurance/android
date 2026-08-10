@@ -12,8 +12,11 @@ import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.apollo.safeFlow
+import com.hedvig.android.core.uidata.UiCurrencyCode
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellSheetData
+import com.hedvig.android.crosssells.RecommendedAddon
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.AddonBannerSource
@@ -31,13 +34,19 @@ import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
 import dev.zacsweers.metro.Inject
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.isActive
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -60,123 +69,185 @@ internal class GetHomeDataUseCaseImpl(
   private val getAddonBannerInfoUseCase: GetAddonBannerInfoUseCase,
   private val hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
 ) : GetHomeDataUseCase {
+  @OptIn(ExperimentalCoroutinesApi::class)
   override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>> {
     return combine(
-      apolloClient.query(HomeQuery(true))
-        .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheAndNetwork)
-        .safeFlow(),
-      flow {
-        while (currentCoroutineContext().isActive) {
-          emitAll(
-            apolloClient.query(UnreadMessageCountQuery())
-              .fetchPolicy(FetchPolicy.CacheAndNetwork)
-              .safeFlow(),
-          )
-          delay(5.seconds)
-        }
-      },
-      getMemberRemindersUseCase.invoke(),
-      flow {
-        emitAll(getAddonBannerInfoUseCase.invoke(AddonBannerSource.INSURANCES_TAB))
-      },
-      featureManager.isFeatureEnabled(Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX),
-      hasAnyActiveConversationUseCase.invoke(alwaysHitTheNetwork = true),
-    ) {
-      homeQueryDataResult,
-      unreadMessageCountResult,
-      memberReminders,
-      travelBannerInfo,
-      inboxAlwaysAvailable,
-      anyActiveConversations,
-      ->
-      either {
-        val homeQueryData: HomeQuery.Data = homeQueryDataResult.bind()
-        val contractStatus = homeQueryData.currentMember.toContractStatus()
-        val veryImportantMessages = homeQueryData.currentMember.importantMessages.map {
-          HomeData.VeryImportantMessage(
-            id = it.id,
-            message = it.message,
-            linkInfo = it.linkInfo?.let { linkInfo ->
-              if (linkInfo.url.isEmpty()) {
-                logcat(LogPriority.ERROR) { "Backend should never return a present linkInfo with an empty url string" }
-                null
+      featureManager.isFeatureEnabled(Feature.ENABLE_CLAIM_INTENT_RESUME),
+      featureManager.isFeatureEnabled(Feature.DISABLE_RESUMING_ONGOING_SHOP_SESSIONS),
+      ::Pair,
+    )
+      .flatMapLatest { (resumeClaimEnabled, disableShopSessions) ->
+        combine(
+          apolloClient.query(HomeQuery(true, resumeClaimEnabled))
+            .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheAndNetwork)
+            .safeFlow(),
+          flow {
+            while (currentCoroutineContext().isActive) {
+              emitAll(
+                apolloClient.query(UnreadMessageCountQuery())
+                  .fetchPolicy(FetchPolicy.CacheAndNetwork)
+                  .safeFlow(),
+              )
+              delay(5.seconds)
+            }
+          },
+          getMemberRemindersUseCase.invoke(),
+          flow {
+            emitAll(getAddonBannerInfoUseCase.invoke(AddonBannerSource.INSURANCES_TAB))
+          },
+          featureManager.isFeatureEnabled(Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX),
+          hasAnyActiveConversationUseCase.invoke(alwaysHitTheNetwork = true),
+        ) {
+          homeQueryDataResult,
+          unreadMessageCountResult,
+          memberReminders,
+          travelBannerInfo,
+          inboxAlwaysAvailable,
+          anyActiveConversations,
+          ->
+          either {
+            val homeQueryData: HomeQuery.Data = homeQueryDataResult.bind()
+            val contractStatus = homeQueryData.currentMember.toContractStatus()
+            val veryImportantMessages = homeQueryData.currentMember.importantMessages.map {
+              HomeData.VeryImportantMessage(
+                id = it.id,
+                message = it.message,
+                linkInfo = it.linkInfo?.let { linkInfo ->
+                  if (linkInfo.url.isEmpty()) {
+                    logcat(LogPriority.ERROR) {
+                      "Backend should never return a present linkInfo with an empty url string"
+                    }
+                    null
+                  } else {
+                    val buttonText = linkInfo.buttonText.takeIf { it.isNotEmpty() }
+                    if (buttonText == null) {
+                      logcat(LogPriority.ERROR) {
+                        "Backend should never return a present buttonText with an empty string"
+                      }
+                    }
+                    HomeData.VeryImportantMessage.LinkInfo(
+                      buttonText = buttonText,
+                      link = linkInfo.url,
+                    )
+                  }
+                },
+              )
+            }
+            val crossSellsData = homeQueryData.currentMember.crossSellV2
+
+            val recommendedCrossSell = crossSellsData.recommendedCrossSell?.let {
+              val bundleProgress = if (it.numberOfEligibleContracts > 0 && it.discountPercent != null) {
+                BundleProgress(it.numberOfEligibleContracts, it.discountPercent)
               } else {
-                val buttonText = linkInfo.buttonText.takeIf { it.isNotEmpty() }
-                if (buttonText == null) {
-                  logcat(LogPriority.ERROR) { "Backend should never return a present buttonText with an empty string" }
-                }
-                HomeData.VeryImportantMessage.LinkInfo(
-                  buttonText = buttonText,
-                  link = linkInfo.url,
+                null
+              }
+              RecommendedCrossSell(
+                crossSell = it.crossSell.toCrossSell(),
+                bannerText = it.bannerText,
+                buttonText = it.buttonText,
+                discountText = it.discountText,
+                buttonDescription = it.buttonDescription,
+                bundleProgress = bundleProgress,
+                backgroundPillowImages = it.backgroundPillowImages?.let { images ->
+                  images.leftImage.src to images.rightImage.src
+                },
+              )
+            }
+            val otherCrossSellsData = crossSellsData.otherCrossSells.map {
+              it.toCrossSell()
+            }
+            val ongoingShopSessions = if (disableShopSessions) {
+              emptyList()
+            } else {
+              homeQueryData.currentMember.ongoingShopSessions.map { session ->
+                OngoingShopSession(
+                  id = session.id,
+                  title = session.display.title,
+                  subtitle = session.display.subtitle,
+                  monthlyNet = session.display.monthlyNet?.let {
+                    UiMoney(it.amount, UiCurrencyCode.fromCurrencyCode(it.currencyCode))
+                  },
+                  resumeUrl = session.display.resumeUrl,
+                  pillowImageUrl = session.display.pillowImage?.src,
                 )
               }
-            },
-          )
-        }
-        val crossSellsData = homeQueryData.currentMember.crossSellV2
-
-        val recommendedCrossSell = crossSellsData.recommendedCrossSell?.let {
-          val bundleProgress = if (it.numberOfEligibleContracts > 0 && it.discountPercent != null) {
-            BundleProgress(it.numberOfEligibleContracts, it.discountPercent)
-          } else {
-            null
-          }
-          RecommendedCrossSell(
-            crossSell = it.crossSell.toCrossSell(),
-            bannerText = it.bannerText,
-            buttonText = it.buttonText,
-            discountText = it.discountText,
-            buttonDescription = it.buttonDescription,
-            bundleProgress = bundleProgress,
-            backgroundPillowImages = it.backgroundPillowImages?.let { images ->
-              images.leftImage.src to images.rightImage.src
-            },
-          )
-        }
-        val otherCrossSellsData = crossSellsData.otherCrossSells.map {
-          it.toCrossSell()
-        }
-        val crossSells = CrossSellSheetData(
-          recommendedCrossSell = recommendedCrossSell,
-          otherCrossSells = otherCrossSellsData,
-        )
-        val showChatIcon = shouldShowChatButton(
-          isInboxEnabledFromKillSwitch = inboxAlwaysAvailable,
-          hasActiveConversations = anyActiveConversations.bind(),
-        )
-        val unreadMessageCountData = unreadMessageCountResult.bind()
-        val hasUnseenChatMessages = unreadMessageCountData
-          .currentMember
-          .conversations
-          .map { it.unreadMessageCount }
-          .plus(unreadMessageCountData.currentMember.legacyConversation?.unreadMessageCount)
-          .any { it != null && it > 0 }
-        val firstVetActions = homeQueryData.currentMember.memberActions
-          ?.firstVetAction?.sections?.map { section ->
-            FirstVetSection(
-              section.buttonTitle,
-              section.description,
-              section.title,
-              section.url,
+            }
+            val recommendedAddon = crossSellsData.recommendedAddon?.let {
+              RecommendedAddon(
+                id = it.id,
+                title = it.title,
+                buttonText = it.buttonText,
+                description = it.description,
+                deepLink = it.deepLink,
+                bannerText = it.bannerText,
+                benefits = it.benefits,
+                pillowImageSmall = it.pillowImageSmall.src,
+                pillowImageLarge = it.pillowImageLarge.src,
+              )
+            }
+            val crossSells = CrossSellSheetData(
+              recommendedCrossSell = recommendedCrossSell,
+              otherCrossSells = otherCrossSellsData,
+              recommendedAddon = recommendedAddon,
             )
-          } ?: emptyList()
-        val travelBannerInfo = travelBannerInfo.getOrNull()
-        HomeData(
-          contractStatus = contractStatus,
-          claimStatusCardsData = homeQueryData.claimStatusCards(),
-          veryImportantMessages = veryImportantMessages,
-          memberReminders = memberReminders,
-          hasUnseenChatMessages = hasUnseenChatMessages,
-          showHelpCenter = true,
-          firstVetSections = firstVetActions,
-          crossSells = crossSells,
-          travelBannerInfo = travelBannerInfo?.firstOrNull(),
-          showChatIcon = showChatIcon,
-        )
-      }.onLeft { error: ApolloOperationError ->
-        logcat(operationError = error) { "GetHomeDataUseCase failed with $error" }
+            val showChatIcon = shouldShowChatButton(
+              isInboxEnabledFromKillSwitch = inboxAlwaysAvailable,
+              // Auxiliary signal: if the active-conversation lookup fails, default to false rather than failing the screen.
+              hasActiveConversations = anyActiveConversations.getOrNull() ?: false,
+            )
+            // Auxiliary signal: a failed or transient unread-count poll must not blank the whole screen.
+            val unreadMessageCountData = unreadMessageCountResult.getOrNull()
+            val hasUnseenChatMessages = if (unreadMessageCountData == null) {
+              false
+            } else {
+              unreadMessageCountData
+                .currentMember
+                .conversations
+                .map { it.unreadMessageCount }
+                .plus(unreadMessageCountData.currentMember.legacyConversation?.unreadMessageCount)
+                .any { it != null && it > 0 }
+            }
+            val firstVetActions = homeQueryData.currentMember.memberActions
+              ?.firstVetAction?.sections?.map { section ->
+                FirstVetSection(
+                  section.buttonTitle,
+                  section.description,
+                  section.title,
+                  section.url,
+                )
+              } ?: emptyList()
+            val travelBannerInfo = travelBannerInfo.getOrNull()
+            HomeData(
+              contractStatus = contractStatus,
+              claimStatusCardsData = homeQueryData.claimStatusCards(),
+              veryImportantMessages = veryImportantMessages,
+              memberReminders = memberReminders,
+              hasUnseenChatMessages = hasUnseenChatMessages,
+              showHelpCenter = true,
+              firstVetSections = firstVetActions,
+              crossSells = crossSells,
+              ongoingShopSessions = ongoingShopSessions,
+              addonBannerInfos = travelBannerInfo.orEmpty(),
+              showChatIcon = showChatIcon,
+              firstName = homeQueryData.currentMember.firstName,
+              draftClaim = homeQueryData.currentMember.resumableClaimIntent?.let { resumableClaimIntent ->
+                HomeData.DraftClaim(
+                  id = resumableClaimIntent.id,
+                  displayName = resumableClaimIntent.displayName,
+                  startedAt = resumableClaimIntent.createdAt,
+                )
+              },
+            )
+          }.onLeft { error: ApolloOperationError ->
+            logcat(operationError = error) { "GetHomeDataUseCase failed with $error" }
+          }
+        }
       }
-    }
+      // Keeps the whole chain — including flatMapLatest's cancellation of the previous inner flow — off the
+      // collector's dispatcher. Collected from a Molecule presenter, that dispatcher is the main thread, and
+      // cancelling an in-flight query makes Ktor close the response body inline, tripping StrictMode's
+      // NetworkOnMainThreadException.
+      .flowOn(Dispatchers.IO)
   }
 
   private fun shouldShowChatButton(isInboxEnabledFromKillSwitch: Boolean, hasActiveConversations: Boolean): Boolean {
@@ -269,6 +340,15 @@ private fun HomeQuery.Data.claimStatusCards(): HomeData.ClaimStatusCardsData? {
   )
 }
 
+data class OngoingShopSession(
+  val id: String,
+  val title: String,
+  val subtitle: String?,
+  val monthlyNet: UiMoney?,
+  val resumeUrl: String,
+  val pillowImageUrl: String?,
+)
+
 data class HomeData(
   val contractStatus: ContractStatus,
   val claimStatusCardsData: ClaimStatusCardsData?,
@@ -279,7 +359,12 @@ data class HomeData(
   val showHelpCenter: Boolean,
   val firstVetSections: List<FirstVetSection>,
   val crossSells: CrossSellSheetData,
-  val travelBannerInfo: AddonBannerInfo?,
+  val addonBannerInfos: List<AddonBannerInfo>,
+  // Defaulted only so test/demo construction sites stay terse.
+  val ongoingShopSessions: List<OngoingShopSession> = emptyList(),
+  // Always populated from the backend; defaulted only so test/demo construction sites stay terse.
+  val firstName: String = "",
+  val draftClaim: DraftClaim?,
 ) {
   @Immutable
   data class ClaimStatusCardsData(
@@ -295,6 +380,18 @@ data class HomeData(
       val buttonText: String?,
       val link: String,
     )
+  }
+
+  data class DraftClaim(
+    val id: String,
+    val displayName: String?,
+    val startedAt: Instant,
+  ) {
+    /**
+     * Drafts are kept for 7 days on the backend ("Your claim is automatically saved for 7 days").
+     * Client-side heuristic, same as iOS.
+     */
+    fun isExpired(now: Instant): Boolean = now > startedAt + 7.days
   }
 
   sealed interface ContractStatus {

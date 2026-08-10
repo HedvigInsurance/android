@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.Color
 internal object ColorLightTokens {
   val TextPrimary: Color = PaletteTokens.Black
   val TextNegative: Color = PaletteTokens.White
-  val TextSecondary: Color = PaletteTokens.G750
+  val TextSecondary: Color = PaletteTokens.G700
   val TextAccordion: Color = PaletteTokens.G750
   val TextTertiary: Color = PaletteTokens.G500
   val TextDisabled: Color = PaletteTokens.G400
@@ -36,6 +36,31 @@ internal object ColorLightTokens {
   val ButtonGhostResting: Color = PaletteTokens.Transparent
   val ButtonGhostHover: Color = PaletteTokens.G100TLight
   val ButtonGhostDisabled: Color = PaletteTokens.Transparent
+
+  // TODO: only the resting colors of the rounded buttons come from design. Every other state below
+  //  mirrors the primary button and needs reviewing once the design catches up.
+  val ButtonRoundedPrimaryResting: Color = PaletteTokens.Black
+  val ButtonRoundedPrimaryHover: Color = PaletteTokens.G900TDark
+  val ButtonRoundedPrimaryDisabled: Color = PaletteTokens.G100
+  val ButtonRoundedPrimaryContent: Color = PaletteTokens.White
+  val ButtonRoundedPrimaryHoverContent: Color = PaletteTokens.White
+  val ButtonRoundedPrimaryDisabledContent: Color = PaletteTokens.G500
+  val ButtonRoundedPrimaryLoadingActive: Color = PaletteTokens.White
+  val ButtonRoundedPrimaryLoadingInactive: Color = PaletteTokens.G200TLight
+  val ButtonRoundedPrimaryRedContent: Color = PaletteTokens.Red600
+
+  // TODO: only the resting color comes from design. Every other state below mirrors the ghost button
+  //  and needs reviewing once the design catches up.
+  val ButtonRoundedLiquidGlassResting: Color = PaletteTokens.LiquidGlassFrost
+  val ButtonRoundedLiquidGlassHover: Color = PaletteTokens.G100TLight
+  val ButtonRoundedLiquidGlassDisabled: Color = PaletteTokens.Transparent
+  val ButtonRoundedLiquidGlassContent: Color = PaletteTokens.Black
+  val ButtonRoundedLiquidGlassHoverContent: Color = PaletteTokens.Black
+  val ButtonRoundedLiquidGlassDisabledContent: Color = PaletteTokens.G500
+  val ButtonRoundedLiquidGlassLoadingActive: Color = PaletteTokens.Black
+  val ButtonRoundedLiquidGlassLoadingInactive: Color = PaletteTokens.G200TLight
+  val ButtonRoundedLiquidGlassRedContent: Color = PaletteTokens.Red600
+
   val FillPrimary: Color = PaletteTokens.Black
   val FillSecondary: Color = PaletteTokens.G700
   val FillTertiary: Color = PaletteTokens.G500
@@ -55,6 +80,7 @@ internal object ColorLightTokens {
   val SurfacePrimaryTransparent: Color = PaletteTokens.G100TLight
   val SurfaceSecondaryTransparent: Color = PaletteTokens.G200TLight
   val SurfaceHighlightTransparent: Color = PaletteTokens.G50TLight
+  val SurfaceLiquidGlass: Color = PaletteTokens.LiquidGlassFrost
   val BackgroundPrimary: Color = PaletteTokens.White
   val BackgroundNegative: Color = PaletteTokens.Black
   val BackgroundBlack: Color = PaletteTokens.Black
@@ -62,7 +88,8 @@ internal object ColorLightTokens {
   val BorderPrimary: Color = PaletteTokens.G200TLight
   val BorderSecondary: Color = PaletteTokens.G300TLight
   val BorderHighlight: Color = PaletteTokens.G200TLight
-  val ShadowLightOnly: Color = PaletteTokens.G300TLight
+  val ShadowLightOnly: Color = PaletteTokens.G250TLight
+  val ShadowSoftLightOnly: Color = PaletteTokens.G150TLight
   val SignalRedFill: Color = PaletteTokens.Red100
   val SignalRedHighlight: Color = PaletteTokens.Red300
   val SignalRedElement: Color = PaletteTokens.Red600

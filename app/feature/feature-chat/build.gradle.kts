@@ -46,6 +46,7 @@ dependencies {
   implementation(projects.coreMarkdown)
   implementation(projects.coreResources)
   implementation(projects.dataChat)
+  implementation(projects.dataClaimIntent)
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlags)
   implementation(projects.languageCore)

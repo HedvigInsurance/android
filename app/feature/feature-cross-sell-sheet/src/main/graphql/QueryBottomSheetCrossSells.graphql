@@ -1,6 +1,21 @@
 query BottomSheetCrossSells($input: CrossSellInput!) {
   currentMember {
     crossSellV2(input: $input) {
+      recommendedAddon {
+        id
+        title
+        description
+        buttonText
+        deepLink
+        bannerText
+        benefits
+        pillowImageLarge {
+          src
+        }
+        pillowImageSmall {
+          src
+        }
+      }
       recommendedCrossSell {
         crossSell {
           ...CrossSellFragment

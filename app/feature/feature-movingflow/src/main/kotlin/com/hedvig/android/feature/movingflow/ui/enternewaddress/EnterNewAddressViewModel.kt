@@ -23,6 +23,7 @@ import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.movingflow.AddHouseInformationKey
 import com.hedvig.android.feature.movingflow.ChoseCoverageLevelAndDeductibleKey
+import com.hedvig.android.feature.movingflow.MovingSource
 import com.hedvig.android.feature.movingflow.compose.BooleanInput
 import com.hedvig.android.feature.movingflow.compose.ConstrainedNumberInput
 import com.hedvig.android.feature.movingflow.compose.ValidatedInput
@@ -34,6 +35,7 @@ import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.ApartmentState.IsAvailableForStudentState.Available
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.ApartmentState.IsAvailableForStudentState.NotAvailable
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState
+import com.hedvig.android.feature.movingflow.data.toMoveIntentSourceInput
 import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressEvent.DismissSubmissionError
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressEvent.Submit
@@ -57,7 +59,6 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
 import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -129,7 +130,7 @@ private class EnterNewAddressPresenter(
           val validContent = content.validate()
           if (validContent == null) return@CollectEvents
           coroutineScope.launch {
-            movingFlowRepository.updateWithPropertyInput(
+            val movingFlowState = movingFlowRepository.updateWithPropertyInput(
               movingDate = validContent.movingDate,
               address = validContent.address,
               postalCode = validContent.postalCode,
@@ -143,7 +144,11 @@ private class EnterNewAddressPresenter(
               }
 
               is Apartment -> {
-                inputForSubmission = validContent.toInputForSubmission()
+                if (movingFlowState != null) {
+                  inputForSubmission = validContent.toInputForSubmission(movingFlowState.movingSource)
+                } else {
+                  submittingInfoFailure = SubmittingInfoFailure.NetworkFailure
+                }
               }
             }
           }
@@ -208,7 +213,7 @@ private class EnterNewAddressPresenter(
   }
 }
 
-private fun ValidContent.toInputForSubmission(): InputForSubmission {
+private fun ValidContent.toInputForSubmission(movingSource: MovingSource): InputForSubmission {
   return InputForSubmission(
     moveIntentRequestInput = MoveIntentRequestInput(
       moveToAddress = MoveToAddressInput(
@@ -242,6 +247,7 @@ private fun ValidContent.toInputForSubmission(): InputForSubmission {
         },
       ),
       house = Optional.absent(),
+      source = movingSource.toMoveIntentSourceInput(),
     ),
   )
 }

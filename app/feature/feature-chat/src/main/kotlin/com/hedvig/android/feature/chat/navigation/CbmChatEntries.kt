@@ -22,7 +22,7 @@ fun EntryProviderScope<HedvigNavKey>.cbmChatEntries(
   onNavigateToClaimDetails: (claimId: String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onNavigateToNewConversation: () -> Unit,
-  navigateToClaimChat: () -> Unit,
+  navigateToClaimChat: (resumeClaim: Boolean) -> Unit,
   backstack: Backstack,
 ) {
   entry<InboxKey> {

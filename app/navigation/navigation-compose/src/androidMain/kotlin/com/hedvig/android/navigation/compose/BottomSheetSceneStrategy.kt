@@ -71,13 +71,15 @@ private class BottomSheetScene<T : Any>(
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other !is BottomSheetScene<*>) return false
-    return key == other.key && previousEntries == other.previousEntries && entry == other.entry
+    return key == other.key &&
+      previousEntries.map { it.contentKey } == other.previousEntries.map { it.contentKey } &&
+      entry.contentKey == other.entry.contentKey
   }
 
   override fun hashCode(): Int {
     var result = key.hashCode()
-    result = 31 * result + previousEntries.hashCode()
-    result = 31 * result + entry.hashCode()
+    result = 31 * result + previousEntries.map { it.contentKey }.hashCode()
+    result = 31 * result + entry.contentKey.hashCode()
     return result
   }
 }

@@ -10,6 +10,7 @@ internal data class TerminationSurveyOption(
   val feedbackRequired: Boolean,
   val suggestion: SurveyOptionSuggestion?,
   val subOptions: List<TerminationSurveyOption>,
+  val redirection: SurveyOptionRedirection? = null,
   val isDisabled: Boolean = false,
 )
 
@@ -19,6 +20,27 @@ internal data class SurveyOptionSuggestion(
   val description: String,
   val url: String?,
 )
+
+@Serializable
+internal data class SurveyOptionRedirection(
+  val title: String,
+  val description: String,
+  val type: RedirectionType,
+  val actionText: String,
+  val image: RedirectionImage?,
+)
+
+@Serializable
+internal data class RedirectionImage(
+  val url: String,
+  val overlayText: String?,
+)
+
+@Serializable
+internal enum class RedirectionType {
+  UPDATE_ADDRESS,
+  UNKNOWN,
+}
 
 @Serializable
 internal enum class SuggestionType {

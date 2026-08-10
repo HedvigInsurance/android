@@ -30,7 +30,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.ChangeTierDeductibleCommitIntentMutation
-import octopus.type.buildChangeTierDeductibleCommitIntentOutput
+import octopus.builder.Data
+import octopus.builder.buildChangeTierDeductibleCommitIntentOutput
 import oldTestQuote
 import org.junit.Rule
 import org.junit.Test
@@ -45,6 +46,7 @@ class ChangeTierRepositoryImplTest {
   val testApolloClientRule = TestApolloClientRule(TestNetworkTransportType.MAP)
 
   private val testId = "testId"
+  private val testContractId = "testContractId"
 
   private val apolloClientWithBadResponseToSubmit: ApolloClient
     get() = testApolloClientRule.apolloClient.apply {
@@ -74,7 +76,7 @@ class ChangeTierRepositoryImplTest {
       crossSellAfterFlowRepository = CrossSellAfterFlowRepositoryImpl(),
       changeTierQuoteStorage = storage,
     )
-    val result = repository.submitChangeTierQuote(testId)
+    val result = repository.submitChangeTierQuote(testId, testContractId)
     assertThat(result)
       .isLeft()
   }
@@ -98,10 +100,10 @@ class ChangeTierRepositoryImplTest {
         }
       },
     )
-    val result = repository.submitChangeTierQuote(testId)
+    val result = repository.submitChangeTierQuote(testId, testContractId)
     assertThat(result).isRight().isEqualTo(Unit)
     assertThat(crossSellAfterFlowRepository.shouldShowCrossSellSheetWithInfo().first())
-      .isEqualTo(CrossSellInfoType.ChangeTier)
+      .isEqualTo(CrossSellInfoType.ChangeTier(testContractId))
   }
 
   @Test

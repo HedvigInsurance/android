@@ -3,6 +3,8 @@ package com.hedvig.android.feature.home.home.data
 import arrow.core.Either
 import arrow.core.right
 import com.hedvig.android.apollo.ApolloOperationError
+import com.hedvig.android.core.uidata.UiCurrencyCode
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.contract.CrossSell
@@ -53,9 +55,22 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
             ImageAsset("", "", ""),
           ),
         ),
+        recommendedAddon = null,
       ),
-      travelBannerInfo = null,
+      ongoingShopSessions = listOf(
+        OngoingShopSession(
+          id = "demo-session-1",
+          title = "Home + Accident",
+          subtitle = "Studio apartment, Stockholm",
+          monthlyNet = UiMoney(199.0, UiCurrencyCode.SEK),
+          resumeUrl = "https://www.hedvig.com",
+          pillowImageUrl = null,
+        ),
+      ),
+      addonBannerInfos = emptyList(),
       showChatIcon = false,
+      firstName = "Demo",
+      draftClaim = null,
     ).right(),
   )
 }

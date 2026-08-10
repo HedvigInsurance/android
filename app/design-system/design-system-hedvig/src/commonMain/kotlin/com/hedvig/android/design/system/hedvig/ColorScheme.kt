@@ -13,6 +13,11 @@ import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens
 
 @Immutable
 data class ColorScheme(
+  /**
+   * Whether this is the light color scheme. Read it for UI that cannot be expressed as a color token,
+   * such as a background image that only exists in one theme.
+   */
+  val isLight: Boolean,
   val textPrimary: Color,
   val textNegative: Color,
   val textSecondary: Color,
@@ -46,6 +51,24 @@ data class ColorScheme(
   val buttonGhostResting: Color,
   val buttonGhostHover: Color,
   val buttonGhostDisabled: Color,
+  val buttonRoundedPrimaryResting: Color,
+  val buttonRoundedPrimaryHover: Color,
+  val buttonRoundedPrimaryDisabled: Color,
+  val buttonRoundedPrimaryContent: Color,
+  val buttonRoundedPrimaryHoverContent: Color,
+  val buttonRoundedPrimaryDisabledContent: Color,
+  val buttonRoundedPrimaryLoadingActive: Color,
+  val buttonRoundedPrimaryLoadingInactive: Color,
+  val buttonRoundedPrimaryRedContent: Color,
+  val buttonRoundedLiquidGlassResting: Color,
+  val buttonRoundedLiquidGlassHover: Color,
+  val buttonRoundedLiquidGlassDisabled: Color,
+  val buttonRoundedLiquidGlassContent: Color,
+  val buttonRoundedLiquidGlassHoverContent: Color,
+  val buttonRoundedLiquidGlassDisabledContent: Color,
+  val buttonRoundedLiquidGlassLoadingActive: Color,
+  val buttonRoundedLiquidGlassLoadingInactive: Color,
+  val buttonRoundedLiquidGlassRedContent: Color,
   val fillPrimary: Color,
   val fillSecondary: Color,
   val fillTertiary: Color,
@@ -65,6 +88,7 @@ data class ColorScheme(
   val surfacePrimaryTransparent: Color,
   val surfaceSecondaryTransparent: Color,
   val surfaceHighlightTransparent: Color,
+  val surfaceLiquidGlass: Color,
   val backgroundPrimary: Color,
   val backgroundNegative: Color,
   val backgroundBlack: Color,
@@ -73,6 +97,7 @@ data class ColorScheme(
   val borderSecondary: Color,
   val borderHighlight: Color,
   val shadowLightOnly: Color,
+  val shadowSoftLightOnly: Color,
   val signalRedFill: Color,
   val signalRedHighlight: Color,
   val signalRedElement: Color,
@@ -120,6 +145,7 @@ data class ColorScheme(
 )
 
 internal val lightColorScheme: ColorScheme = ColorScheme(
+  isLight = true,
   textPrimary = ColorLightTokens.TextPrimary,
   textNegative = ColorLightTokens.TextNegative,
   textSecondary = ColorLightTokens.TextSecondary,
@@ -153,6 +179,24 @@ internal val lightColorScheme: ColorScheme = ColorScheme(
   buttonGhostResting = ColorLightTokens.ButtonGhostResting,
   buttonGhostHover = ColorLightTokens.ButtonGhostHover,
   buttonGhostDisabled = ColorLightTokens.ButtonGhostDisabled,
+  buttonRoundedPrimaryResting = ColorLightTokens.ButtonRoundedPrimaryResting,
+  buttonRoundedPrimaryHover = ColorLightTokens.ButtonRoundedPrimaryHover,
+  buttonRoundedPrimaryDisabled = ColorLightTokens.ButtonRoundedPrimaryDisabled,
+  buttonRoundedPrimaryContent = ColorLightTokens.ButtonRoundedPrimaryContent,
+  buttonRoundedPrimaryHoverContent = ColorLightTokens.ButtonRoundedPrimaryHoverContent,
+  buttonRoundedPrimaryDisabledContent = ColorLightTokens.ButtonRoundedPrimaryDisabledContent,
+  buttonRoundedPrimaryLoadingActive = ColorLightTokens.ButtonRoundedPrimaryLoadingActive,
+  buttonRoundedPrimaryLoadingInactive = ColorLightTokens.ButtonRoundedPrimaryLoadingInactive,
+  buttonRoundedPrimaryRedContent = ColorLightTokens.ButtonRoundedPrimaryRedContent,
+  buttonRoundedLiquidGlassResting = ColorLightTokens.ButtonRoundedLiquidGlassResting,
+  buttonRoundedLiquidGlassHover = ColorLightTokens.ButtonRoundedLiquidGlassHover,
+  buttonRoundedLiquidGlassDisabled = ColorLightTokens.ButtonRoundedLiquidGlassDisabled,
+  buttonRoundedLiquidGlassContent = ColorLightTokens.ButtonRoundedLiquidGlassContent,
+  buttonRoundedLiquidGlassHoverContent = ColorLightTokens.ButtonRoundedLiquidGlassHoverContent,
+  buttonRoundedLiquidGlassDisabledContent = ColorLightTokens.ButtonRoundedLiquidGlassDisabledContent,
+  buttonRoundedLiquidGlassLoadingActive = ColorLightTokens.ButtonRoundedLiquidGlassLoadingActive,
+  buttonRoundedLiquidGlassLoadingInactive = ColorLightTokens.ButtonRoundedLiquidGlassLoadingInactive,
+  buttonRoundedLiquidGlassRedContent = ColorLightTokens.ButtonRoundedLiquidGlassRedContent,
   fillPrimary = ColorLightTokens.FillPrimary,
   fillSecondary = ColorLightTokens.FillSecondary,
   fillTertiary = ColorLightTokens.FillTertiary,
@@ -172,6 +216,7 @@ internal val lightColorScheme: ColorScheme = ColorScheme(
   surfacePrimaryTransparent = ColorLightTokens.SurfacePrimaryTransparent,
   surfaceSecondaryTransparent = ColorLightTokens.SurfaceSecondaryTransparent,
   surfaceHighlightTransparent = ColorLightTokens.SurfaceHighlightTransparent,
+  surfaceLiquidGlass = ColorLightTokens.SurfaceLiquidGlass,
   backgroundPrimary = ColorLightTokens.BackgroundPrimary,
   backgroundNegative = ColorLightTokens.BackgroundNegative,
   backgroundBlack = ColorLightTokens.BackgroundBlack,
@@ -180,6 +225,7 @@ internal val lightColorScheme: ColorScheme = ColorScheme(
   borderSecondary = ColorLightTokens.BorderSecondary,
   borderHighlight = ColorLightTokens.BorderHighlight,
   shadowLightOnly = ColorLightTokens.ShadowLightOnly,
+  shadowSoftLightOnly = ColorLightTokens.ShadowSoftLightOnly,
   signalRedFill = ColorLightTokens.SignalRedFill,
   signalRedHighlight = ColorLightTokens.SignalRedHighlight,
   signalRedElement = ColorLightTokens.SignalRedElement,
@@ -227,6 +273,7 @@ internal val lightColorScheme: ColorScheme = ColorScheme(
 )
 
 internal val darkColorScheme: ColorScheme = ColorScheme(
+  isLight = false,
   textPrimary = ColorDarkTokens.TextPrimary,
   textNegative = ColorDarkTokens.TextNegative,
   textSecondary = ColorDarkTokens.TextSecondary,
@@ -260,6 +307,24 @@ internal val darkColorScheme: ColorScheme = ColorScheme(
   buttonGhostResting = ColorDarkTokens.ButtonGhostResting,
   buttonGhostHover = ColorDarkTokens.ButtonGhostHover,
   buttonGhostDisabled = ColorDarkTokens.ButtonGhostDisabled,
+  buttonRoundedPrimaryResting = ColorDarkTokens.ButtonRoundedPrimaryResting,
+  buttonRoundedPrimaryHover = ColorDarkTokens.ButtonRoundedPrimaryHover,
+  buttonRoundedPrimaryDisabled = ColorDarkTokens.ButtonRoundedPrimaryDisabled,
+  buttonRoundedPrimaryContent = ColorDarkTokens.ButtonRoundedPrimaryContent,
+  buttonRoundedPrimaryHoverContent = ColorDarkTokens.ButtonRoundedPrimaryHoverContent,
+  buttonRoundedPrimaryDisabledContent = ColorDarkTokens.ButtonRoundedPrimaryDisabledContent,
+  buttonRoundedPrimaryLoadingActive = ColorDarkTokens.ButtonRoundedPrimaryLoadingActive,
+  buttonRoundedPrimaryLoadingInactive = ColorDarkTokens.ButtonRoundedPrimaryLoadingInactive,
+  buttonRoundedPrimaryRedContent = ColorDarkTokens.ButtonRoundedPrimaryRedContent,
+  buttonRoundedLiquidGlassResting = ColorDarkTokens.ButtonRoundedLiquidGlassResting,
+  buttonRoundedLiquidGlassHover = ColorDarkTokens.ButtonRoundedLiquidGlassHover,
+  buttonRoundedLiquidGlassDisabled = ColorDarkTokens.ButtonRoundedLiquidGlassDisabled,
+  buttonRoundedLiquidGlassContent = ColorDarkTokens.ButtonRoundedLiquidGlassContent,
+  buttonRoundedLiquidGlassHoverContent = ColorDarkTokens.ButtonRoundedLiquidGlassHoverContent,
+  buttonRoundedLiquidGlassDisabledContent = ColorDarkTokens.ButtonRoundedLiquidGlassDisabledContent,
+  buttonRoundedLiquidGlassLoadingActive = ColorDarkTokens.ButtonRoundedLiquidGlassLoadingActive,
+  buttonRoundedLiquidGlassLoadingInactive = ColorDarkTokens.ButtonRoundedLiquidGlassLoadingInactive,
+  buttonRoundedLiquidGlassRedContent = ColorDarkTokens.ButtonRoundedLiquidGlassRedContent,
   fillPrimary = ColorDarkTokens.FillPrimary,
   fillSecondary = ColorDarkTokens.FillSecondary,
   fillTertiary = ColorDarkTokens.FillTertiary,
@@ -279,6 +344,7 @@ internal val darkColorScheme: ColorScheme = ColorScheme(
   surfacePrimaryTransparent = ColorDarkTokens.SurfacePrimaryTransparent,
   surfaceSecondaryTransparent = ColorDarkTokens.SurfaceSecondaryTransparent,
   surfaceHighlightTransparent = ColorDarkTokens.SurfaceHighlightTransparent,
+  surfaceLiquidGlass = ColorDarkTokens.SurfaceLiquidGlass,
   backgroundPrimary = ColorDarkTokens.BackgroundPrimary,
   backgroundNegative = ColorDarkTokens.BackgroundNegative,
   backgroundBlack = ColorDarkTokens.BackgroundBlack,
@@ -287,6 +353,7 @@ internal val darkColorScheme: ColorScheme = ColorScheme(
   borderSecondary = ColorDarkTokens.BorderSecondary,
   borderHighlight = ColorDarkTokens.BorderHighlight,
   shadowLightOnly = ColorDarkTokens.ShadowLightOnly,
+  shadowSoftLightOnly = ColorDarkTokens.ShadowSoftLightOnly,
   signalRedFill = ColorDarkTokens.SignalRedFill,
   signalRedHighlight = ColorDarkTokens.SignalRedHighlight,
   signalRedElement = ColorDarkTokens.SignalRedElement,
@@ -393,6 +460,24 @@ internal fun ColorScheme.fromToken(value: ColorSchemeKeyTokens): Color {
     ColorSchemeKeyTokens.ButtonGhostResting -> buttonGhostResting
     ColorSchemeKeyTokens.ButtonGhostHover -> buttonGhostHover
     ColorSchemeKeyTokens.ButtonGhostDisabled -> buttonGhostDisabled
+    ColorSchemeKeyTokens.ButtonRoundedPrimaryResting -> buttonRoundedPrimaryResting
+    ColorSchemeKeyTokens.ButtonRoundedPrimaryHover -> buttonRoundedPrimaryHover
+    ColorSchemeKeyTokens.ButtonRoundedPrimaryDisabled -> buttonRoundedPrimaryDisabled
+    ColorSchemeKeyTokens.ButtonRoundedPrimaryContent -> buttonRoundedPrimaryContent
+    ColorSchemeKeyTokens.ButtonRoundedPrimaryHoverContent -> buttonRoundedPrimaryHoverContent
+    ColorSchemeKeyTokens.ButtonRoundedPrimaryDisabledContent -> buttonRoundedPrimaryDisabledContent
+    ColorSchemeKeyTokens.ButtonRoundedPrimaryLoadingActive -> buttonRoundedPrimaryLoadingActive
+    ColorSchemeKeyTokens.ButtonRoundedPrimaryLoadingInactive -> buttonRoundedPrimaryLoadingInactive
+    ColorSchemeKeyTokens.ButtonRoundedPrimaryRedContent -> buttonRoundedPrimaryRedContent
+    ColorSchemeKeyTokens.ButtonRoundedLiquidGlassResting -> buttonRoundedLiquidGlassResting
+    ColorSchemeKeyTokens.ButtonRoundedLiquidGlassHover -> buttonRoundedLiquidGlassHover
+    ColorSchemeKeyTokens.ButtonRoundedLiquidGlassDisabled -> buttonRoundedLiquidGlassDisabled
+    ColorSchemeKeyTokens.ButtonRoundedLiquidGlassContent -> buttonRoundedLiquidGlassContent
+    ColorSchemeKeyTokens.ButtonRoundedLiquidGlassHoverContent -> buttonRoundedLiquidGlassHoverContent
+    ColorSchemeKeyTokens.ButtonRoundedLiquidGlassDisabledContent -> buttonRoundedLiquidGlassDisabledContent
+    ColorSchemeKeyTokens.ButtonRoundedLiquidGlassLoadingActive -> buttonRoundedLiquidGlassLoadingActive
+    ColorSchemeKeyTokens.ButtonRoundedLiquidGlassLoadingInactive -> buttonRoundedLiquidGlassLoadingInactive
+    ColorSchemeKeyTokens.ButtonRoundedLiquidGlassRedContent -> buttonRoundedLiquidGlassRedContent
     ColorSchemeKeyTokens.FillPrimary -> fillPrimary
     ColorSchemeKeyTokens.FillSecondary -> fillSecondary
     ColorSchemeKeyTokens.FillTertiary -> fillTertiary
@@ -412,6 +497,7 @@ internal fun ColorScheme.fromToken(value: ColorSchemeKeyTokens): Color {
     ColorSchemeKeyTokens.SurfacePrimaryTransparent -> surfacePrimaryTransparent
     ColorSchemeKeyTokens.SurfaceSecondaryTransparent -> surfaceSecondaryTransparent
     ColorSchemeKeyTokens.SurfaceHighlightTransparent -> surfaceHighlightTransparent
+    ColorSchemeKeyTokens.SurfaceLiquidGlass -> surfaceLiquidGlass
     ColorSchemeKeyTokens.BackgroundPrimary -> backgroundPrimary
     ColorSchemeKeyTokens.BackgroundNegative -> backgroundNegative
     ColorSchemeKeyTokens.BackgroundBlack -> backgroundBlack

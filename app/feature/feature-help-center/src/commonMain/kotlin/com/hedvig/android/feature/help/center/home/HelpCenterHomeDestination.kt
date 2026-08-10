@@ -95,13 +95,13 @@ import com.hedvig.android.feature.help.center.HelpCenterUiState.PuppyGuidePresen
 import com.hedvig.android.feature.help.center.HelpCenterViewModel
 import com.hedvig.android.feature.help.center.data.FAQItem
 import com.hedvig.android.feature.help.center.data.FAQTopic
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination
-import com.hedvig.android.feature.help.center.model.QuickAction
-import com.hedvig.android.feature.help.center.model.QuickAction.MultiSelectExpandedLink
-import com.hedvig.android.feature.help.center.model.QuickAction.StandaloneQuickLink
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
+import com.hedvig.android.memberquickactions.QuickAction
+import com.hedvig.android.memberquickactions.QuickAction.MultiSelectExpandedLink
+import com.hedvig.android.memberquickactions.QuickAction.StandaloneQuickLink
+import com.hedvig.android.memberquickactions.QuickLinkDestination
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import hedvig.resources.HC_CLAIMS_A_01
 import hedvig.resources.HC_CLAIMS_Q_01

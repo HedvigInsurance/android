@@ -1,5 +1,6 @@
 package com.hedvig.android.design.system.hedvig
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
@@ -22,6 +23,7 @@ import com.hedvig.android.design.system.hedvig.FigmaShapeDirection.All
 import com.hedvig.android.design.system.hedvig.FigmaShapeDirection.BottomOnly
 import com.hedvig.android.design.system.hedvig.FigmaShapeDirection.TopOnly
 import com.hedvig.android.design.system.hedvig.tokens.ShapeKeyTokens
+import com.hedvig.android.design.system.hedvig.tokens.ShapeKeyTokens.CornerFull
 import com.hedvig.android.design.system.hedvig.tokens.ShapeKeyTokens.CornerLarge
 import com.hedvig.android.design.system.hedvig.tokens.ShapeKeyTokens.CornerMedium
 import com.hedvig.android.design.system.hedvig.tokens.ShapeKeyTokens.CornerNone
@@ -37,6 +39,7 @@ import kotlin.math.atan2
 
 @Immutable
 data class Shapes internal constructor(
+  val cornerFull: Shape = RoundedCornerShape(percent = 50),
   val cornerXXLarge: Shape = FigmaShape(24.dp),
   val cornerXLarge: Shape = FigmaShape(16.dp),
   val cornerLarge: Shape = FigmaShape(12.dp),
@@ -58,6 +61,7 @@ internal val ShapeKeyTokens.value: Shape
 
 internal fun Shapes.fromToken(token: ShapeKeyTokens): Shape {
   return when (token) {
+    CornerFull -> cornerFull
     CornerXXLarge -> cornerXXLarge
     CornerXLarge -> cornerXLarge
     CornerLarge -> cornerLarge

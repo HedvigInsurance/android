@@ -46,6 +46,7 @@ kotlin {
       implementation(projects.coreResources)
       implementation(projects.coreUiData)
       implementation(projects.designSystemHedvig)
+      implementation(projects.featureFlags)
       implementation(projects.languageCore)
       implementation(projects.moleculePublic)
       implementation(projects.navigationCore)

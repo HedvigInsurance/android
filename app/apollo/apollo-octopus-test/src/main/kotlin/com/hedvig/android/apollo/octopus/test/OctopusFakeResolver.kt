@@ -1,18 +1,18 @@
 package com.hedvig.android.apollo.octopus.test
 
-import com.apollographql.apollo.api.DefaultFakeResolver
 import com.apollographql.apollo.api.FakeResolver
 import com.apollographql.apollo.api.FakeResolverContext
-import com.hedvig.android.core.markdown.MarkdownString
 import java.util.UUID
 import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import octopus.schema.__Schema
+import octopus.builder.resolver.DefaultFakeResolver
 
-private val delegate = DefaultFakeResolver(__Schema.all)
+private val delegate = DefaultFakeResolver()
 
 object OctopusFakeResolver : FakeResolver by delegate {
+  // Apollo 5 serializes data-builder leaf values through the response adapter, so a custom scalar
+  // must resolve to its wire form (a String), not the mapped Kotlin type.
   override fun resolveLeaf(context: FakeResolverContext): Any {
     return when (
       context.mergedField.type
@@ -24,6 +24,7 @@ object OctopusFakeResolver : FakeResolver by delegate {
           .now()
           .toLocalDateTime(TimeZone.currentSystemDefault())
           .date
+          .toString()
       }
 
       "UUID" -> {
@@ -35,15 +36,15 @@ object OctopusFakeResolver : FakeResolver by delegate {
       }
 
       "Instant" -> {
-        kotlin.time.Instant.DISTANT_FUTURE
+        kotlin.time.Instant.DISTANT_FUTURE.toString()
       }
 
       "DateTime" -> {
-        kotlin.time.Instant.DISTANT_FUTURE
+        kotlin.time.Instant.DISTANT_FUTURE.toString()
       }
 
       "Markdown" -> {
-        MarkdownString("test")
+        "test"
       }
 
       else -> {
