@@ -6,6 +6,7 @@ import com.hedvig.android.core.common.di.IoDispatcher
 import com.hedvig.android.core.tracking.EventTrackingClient
 import com.hedvig.android.data.settings.datastore.AnalyticsConsent
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
+import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
@@ -83,7 +84,12 @@ internal class ConsentAwareEventTrackingClient(
   }
 
   private fun applyCollectionEnabled() {
-    val effective = synchronized(lock) { collectionRequestedEnabled && consent != AnalyticsConsent.DENIED }
+    val (effective, currentConsent) = synchronized(lock) {
+      (collectionRequestedEnabled && consent != AnalyticsConsent.DENIED) to consent
+    }
+    logcat(LogPriority.DEBUG, tag = ANALYTICS_CONSENT_DEBUG_TAG) {
+      "consent=$currentConsent -> firebase analytics collection enabled=$effective"
+    }
     delegate.setCollectionEnabled(effective)
   }
 
@@ -161,6 +167,9 @@ internal class ConsentAwareEventTrackingClient(
 
   companion object {
     private const val MAX_BUFFERED_CALLS = 200
+
+    // Greppable tag for verifying analytics consent on-device: `adb logcat -s AnalyticsConsentDebug`.
+    private const val ANALYTICS_CONSENT_DEBUG_TAG = "AnalyticsConsentDebug"
   }
 }
 
