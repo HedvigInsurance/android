@@ -7,6 +7,7 @@ import com.hedvig.android.auth.MemberIdService
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
@@ -61,8 +62,16 @@ internal class OnboardingSessionStore(
     }
     cachedSession = null
     onboardingRepository.getOnboardingData().map { data ->
-      OnboardingSession(memberId = currentMemberId, data = data, path = buildOnboardingPath(data))
-        .also { cachedSession = it }
+      OnboardingSession(
+        memberId = currentMemberId,
+        data = data,
+        path = buildOnboardingPath(data),
+        // Capture which contracts each step owns from the first data, so completed rows stay pinned
+        // as "done" instead of vanishing once a later refresh no longer lists them as missing.
+        pinnedPetIdContractIds = data.contractsWithMissingPetId.map { it.id },
+        pinnedCoInsuredContracts = data.contractsMissingInsuredOrOwnerInfo
+          .mapNotNull { contract -> contract.coInsuredFlowType?.let { contract.id to it } },
+      ).also { cachedSession = it }
     }
   }
 
@@ -88,4 +97,8 @@ internal data class OnboardingSession(
   val memberId: String,
   val data: OnboardingData,
   val path: List<OnboardingStepId>,
+  /** Contract ids the pet-ID step owns, captured at first load and kept stable across refreshes. */
+  val pinnedPetIdContractIds: List<String>,
+  /** Contract ids (with their original flow type) the co-insured step owns, captured at first load. */
+  val pinnedCoInsuredContracts: List<Pair<String, CoInsuredFlowType>>,
 )

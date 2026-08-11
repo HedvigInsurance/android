@@ -44,16 +44,10 @@ internal class OnboardingPetIdPresenter(
     var currentState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
 
-    // Pin which contracts belong to this step the first time data is available, so completed
-    // rows render as done instead of disappearing.
-    var pinnedContractIds by remember { mutableStateOf<List<String>?>(null) }
-
     fun contentFrom(session: OnboardingSession): OnboardingPetIdUiState.Content {
-      val ids = pinnedContractIds
-        ?: session.data.contractsWithMissingPetId.map { it.id }.also { pinnedContractIds = it }
       return OnboardingPetIdUiState.Content(
         progress = session.progressFor(OnboardingStepId.PetIds),
-        rows = ids.mapNotNull { id ->
+        rows = session.pinnedPetIdContractIds.mapNotNull { id ->
           val contract = session.data.contracts.firstOrNull { it.id == id } ?: return@mapNotNull null
           PetIdRow(
             contractId = contract.id,

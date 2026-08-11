@@ -45,16 +45,8 @@ internal class OnboardingCoInsuredPresenter(
     var currentState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
 
-    // Pin which contracts belong to this step (and each one's flow type) the first time data is
-    // available, so completed rows render as done instead of disappearing and the header title
-    // stays stable even after a contract's missing info is filled in.
-    var pinnedContracts by remember { mutableStateOf<List<Pair<String, CoInsuredFlowType>>?>(null) }
-
     fun contentFrom(session: OnboardingSession): OnboardingCoInsuredUiState.Content {
-      val pinned = pinnedContracts
-        ?: session.data.contractsMissingInsuredOrOwnerInfo
-          .mapNotNull { contract -> contract.coInsuredFlowType?.let { contract.id to it } }
-          .also { pinnedContracts = it }
+      val pinned = session.pinnedCoInsuredContracts
       return OnboardingCoInsuredUiState.Content(
         progress = session.progressFor(OnboardingStepId.CoInsured),
         rows = pinned.mapNotNull { (id, flowType) ->
