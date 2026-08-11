@@ -80,6 +80,21 @@ query Home($claimsHistoryFlag: Boolean!, $resumeClaimEnabled: Boolean!) {
         }
       }
     }
+    ongoingShopSessions {
+      id
+      display {
+        title
+        subtitle
+        monthlyNet {
+          amount
+          currencyCode
+        }
+        resumeUrl
+        pillowImage {
+          src
+        }
+      }
+    }
     memberActions {
       firstVetAction {
         sections {

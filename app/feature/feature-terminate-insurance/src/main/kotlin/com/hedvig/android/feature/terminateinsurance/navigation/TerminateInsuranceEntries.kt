@@ -3,6 +3,7 @@ package com.hedvig.android.feature.terminateinsurance.navigation
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.EntryProviderScope
+import coil3.ImageLoader
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.feature.terminateinsurance.data.TerminationAction
@@ -11,9 +12,11 @@ import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsurance
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModelFactory
 import com.hedvig.android.feature.terminateinsurance.step.deflect.DeflectSuggestionDestination
 import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDeletionDestination
+import com.hedvig.android.feature.terminateinsurance.step.redirection.TerminationRedirectionDestination
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyDestination
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyViewModel
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyViewModelFactory
+import com.hedvig.android.feature.terminateinsurance.step.survey.continueAfterSurveySelection
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateDestination
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateViewModelFactory
@@ -34,6 +37,7 @@ import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 fun EntryProviderScope<HedvigNavKey>.terminateInsuranceEntries(
   windowSizeClass: WindowSizeClass,
   backstack: Backstack,
+  imageLoader: ImageLoader,
   onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
   navigateToMovingFlow: () -> Unit,
@@ -239,6 +243,24 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceEntries(
             )
           }
         }
+      },
+    )
+  }
+
+  entry<TerminationRedirectionKey> { key ->
+    TerminationRedirectionDestination(
+      redirection = key.redirection,
+      imageLoader = imageLoader,
+      navigateUp = backstack::navigateUp,
+      closeTerminationFlow = closeTerminationFlow,
+      onStartRedirection = dropUnlessResumed { navigateToMovingFlow() },
+      onContinueCancelling = {
+        backstack.continueAfterSurveySelection(
+          selectedOption = key.selectedOption,
+          feedbackText = key.feedbackComment,
+          action = key.action,
+          commonParams = key.commonParams,
+        )
       },
     )
   }

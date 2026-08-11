@@ -501,8 +501,13 @@
   <string name="HC_TOPIC_NOT_FOUND">Topic not found</string>
   <string name="HC_TOPIC_NO_QUESTIONS">This topic has no questions</string>
   <string name="HEDVIG_NAME_TEXT">Hedvig</string>
+  <string name="HOME_ADDONS_READ_MORE_BUTTON">Read more</string>
+  <string name="HOME_DISCOVER_SECTION_TITLE">Discover our insurances</string>
+  <string name="HOME_DISCOVER_SEE_PRICE_BUTTON">See price</string>
   <string name="HOME_GREETING_SUBTITLE">How can we help?</string>
   <string name="HOME_GREETING_TITLE">Hi %1$s</string>
+  <string name="HOME_QUICK_ACTIONS_CHANGE_ADDRESS">Change address</string>
+  <string name="HOME_QUICK_ACTIONS_EDIT_INSURANCE">Edit insurance</string>
   <string name="HOME_QUOTES_SECTION_TITLE">Your quotes</string>
   <string name="HOME_TODO_ADD_COINSURED_TITLE">Add co-insured</string>
   <string name="HOME_TODO_MISSING_CHIP_ID_TITLE">Missing pet chip-ID</string>

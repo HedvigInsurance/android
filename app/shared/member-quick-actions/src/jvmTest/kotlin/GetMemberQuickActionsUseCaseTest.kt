@@ -10,27 +10,28 @@ import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.isRight
-import com.hedvig.android.feature.help.center.data.GetMemberActionsUseCase
-import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCaseImpl
-import com.hedvig.android.feature.help.center.data.MemberAction
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination
-import com.hedvig.android.feature.help.center.model.QuickAction
-import com.hedvig.android.feature.help.center.model.QuickAction.MultiSelectExpandedLink
 import com.hedvig.android.featureflags.test.FakeFeatureManager
 import com.hedvig.android.logger.TestLogcatLoggingRule
+import com.hedvig.android.memberquickactions.GetMemberActionsUseCase
+import com.hedvig.android.memberquickactions.GetMemberQuickActionsUseCaseImpl
+import com.hedvig.android.memberquickactions.MemberAction
+import com.hedvig.android.memberquickactions.QuickAction
+import com.hedvig.android.memberquickactions.QuickAction.MultiSelectExpandedLink
+import com.hedvig.android.memberquickactions.QuickLinkDestination
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE
 import hedvig.resources.Res
 import kotlinx.coroutines.test.runTest
 import octopus.AvailableSelfServiceOnContractsQuery
-import octopus.type.buildAgreement
-import octopus.type.buildContract
-import octopus.type.buildMember
-import octopus.type.buildProductVariant
+import octopus.builder.Data
+import octopus.builder.buildAgreement
+import octopus.builder.buildContract
+import octopus.builder.buildMember
+import octopus.builder.buildProductVariant
 import org.junit.Rule
 import org.junit.Test
 
-class GetQuickLinksUseCaseTest {
+class GetMemberQuickActionsUseCaseTest {
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
 
@@ -67,7 +68,7 @@ class GetQuickLinksUseCaseTest {
     val featureManager = FakeFeatureManager(fixedReturnForAll = true)
     val getMemberActionsUseCase = FakeGetMemberActionsUseCase()
     getMemberActionsUseCase.turbine.add(fakeMemberActionWithTier.right())
-    val useCase = GetQuickLinksUseCaseImpl(
+    val useCase = GetMemberQuickActionsUseCaseImpl(
       apolloClient = apolloClientWithGoodResponse,
       featureManager = featureManager,
       getMemberActionsUseCase = getMemberActionsUseCase,
@@ -98,7 +99,7 @@ class GetQuickLinksUseCaseTest {
     val featureManager = FakeFeatureManager(fixedReturnForAll = true)
     val getMemberActionsUseCase = FakeGetMemberActionsUseCase()
     getMemberActionsUseCase.turbine.add(fakeMemberActionWithoutTier.right())
-    val useCase = GetQuickLinksUseCaseImpl(
+    val useCase = GetMemberQuickActionsUseCaseImpl(
       apolloClient = apolloClientWithGoodResponse,
       featureManager = featureManager,
       getMemberActionsUseCase = getMemberActionsUseCase,

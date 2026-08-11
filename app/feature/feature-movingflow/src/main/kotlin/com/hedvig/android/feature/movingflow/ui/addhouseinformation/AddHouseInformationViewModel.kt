@@ -27,6 +27,7 @@ import com.hedvig.android.feature.movingflow.compose.ValidatedInput
 import com.hedvig.android.feature.movingflow.data.MovingFlowState
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.ExtraBuildingTypesState.ExtraBuildingInfo
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType
+import com.hedvig.android.feature.movingflow.data.toMoveIntentSourceInput
 import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationEvent.DismissSubmissionError
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationEvent.Submit
@@ -41,12 +42,7 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
 import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
-import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import octopus.feature.movingflow.MoveIntentV2RequestMutation
 import octopus.type.MoveExtraBuildingInput
@@ -217,6 +213,7 @@ private fun MovingFlowState.toInputForSubmission(validContent: ValidAddressInput
           },
         ),
       ),
+      source = movingSource.toMoveIntentSourceInput(),
     ),
   )
 }

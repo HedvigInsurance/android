@@ -70,11 +70,45 @@ internal object RedStyleButtonTokens {
   val RedContentColor = ColorSchemeKeyTokens.SignalRedElement // should not be used ever
 }
 
+internal object RoundedPrimaryStyleButtonTokens {
+  val ContainerColor = ColorSchemeKeyTokens.ButtonRoundedPrimaryResting
+  val ContentColor = ColorSchemeKeyTokens.ButtonRoundedPrimaryContent
+  val HoverContainerColor = ColorSchemeKeyTokens.ButtonRoundedPrimaryHover
+  val HoverContentColor = ColorSchemeKeyTokens.ButtonRoundedPrimaryHoverContent
+  val DisabledContainerColor = ColorSchemeKeyTokens.ButtonRoundedPrimaryDisabled
+  val DisabledContentColor = ColorSchemeKeyTokens.ButtonRoundedPrimaryDisabledContent
+  val ActiveLoadingIndicatorColor = ColorSchemeKeyTokens.ButtonRoundedPrimaryLoadingActive
+  val InactiveLoadingIndicatorColor = ColorSchemeKeyTokens.ButtonRoundedPrimaryLoadingInactive
+  val RedContentColor = ColorSchemeKeyTokens.ButtonRoundedPrimaryRedContent
+}
+
+internal object RoundedLiquidGlassStyleButtonTokens {
+  val ContainerColor = ColorSchemeKeyTokens.ButtonRoundedLiquidGlassResting
+  val ContentColor = ColorSchemeKeyTokens.ButtonRoundedLiquidGlassContent
+  val HoverContainerColor = ColorSchemeKeyTokens.ButtonRoundedLiquidGlassHover
+  val HoverContentColor = ColorSchemeKeyTokens.ButtonRoundedLiquidGlassHoverContent
+  val DisabledContainerColor = ColorSchemeKeyTokens.ButtonRoundedLiquidGlassDisabled
+  val DisabledContentColor = ColorSchemeKeyTokens.ButtonRoundedLiquidGlassDisabledContent
+  val ActiveLoadingIndicatorColor = ColorSchemeKeyTokens.ButtonRoundedLiquidGlassLoadingActive
+  val InactiveLoadingIndicatorColor = ColorSchemeKeyTokens.ButtonRoundedLiquidGlassLoadingInactive
+  val RedContentColor = ColorSchemeKeyTokens.ButtonRoundedLiquidGlassRedContent
+}
+
 internal object LargeSizeButtonTokens {
   val HorizontalPadding = 32.dp
   val TopPadding = 15.dp
   val BottomPadding = 17.dp
   val ContainerShape = ShapeKeyTokens.CornerLarge
+  val LabelTextFont = TypographyKeyTokens.BodySmall
+}
+
+// TODO: the rounded button styles are only designed at the large size. Every smaller size falls back to
+//  the standard button metrics above until design provides them.
+internal object RoundedLargeSizeButtonTokens {
+  val HorizontalPadding = 20.dp
+  val TopPadding = 12.dp
+  val BottomPadding = 12.dp
+  val ContainerShape = ShapeKeyTokens.CornerFull
   val LabelTextFont = TypographyKeyTokens.BodySmall
 }
 

@@ -46,7 +46,6 @@ import kotlinx.coroutines.flow.transformLatest
 import octopus.BottomSheetCrossSellsQuery
 import octopus.fragment.CrossSellFragment
 import octopus.type.CrossSellInput
-import octopus.type.CrossSellSource
 import octopus.type.FlowSource
 import octopus.type.UserFlow
 
@@ -122,20 +121,21 @@ internal class CrossSellSheetPresenter(
 }
 
 internal fun CrossSellInfoType.toCrossSellSource(): CrossSellInput {
-  val smartCrossSellInput: (FlowSource) -> CrossSellInput = { flowSource ->
+  val smartCrossSellInput: (flowSource: FlowSource, claimId: String?) -> CrossSellInput = { flowSource, claimId ->
     CrossSellInput(
       userFlow = UserFlow.SMART_X_SELL,
       flowSource = Optional.present(flowSource),
       experiments = emptyList(),
       contractId = Optional.presentIfNotNull(this.contractId),
+      claimId = Optional.presentIfNotNull(claimId),
     )
   }
   return when (this) {
-    CrossSellInfoType.Addon -> smartCrossSellInput(FlowSource.ADDON)
-    is CrossSellInfoType.ChangeTier -> smartCrossSellInput(FlowSource.CHANGE_TIER)
-    is CrossSellInfoType.ClosedClaim -> smartCrossSellInput(FlowSource.CLOSED_CLAIM)
-    CrossSellInfoType.EditCoInsured -> smartCrossSellInput(FlowSource.EDIT_COINSURED)
-    is CrossSellInfoType.MovingFlow -> smartCrossSellInput(FlowSource.MOVING)
+    CrossSellInfoType.Addon -> smartCrossSellInput(FlowSource.ADDON, null)
+    is CrossSellInfoType.ChangeTier -> smartCrossSellInput(FlowSource.CHANGE_TIER, null)
+    is CrossSellInfoType.ClosedClaim -> smartCrossSellInput(FlowSource.CLOSED_CLAIM, info.id)
+    CrossSellInfoType.EditCoInsured -> smartCrossSellInput(FlowSource.EDIT_COINSURED, null)
+    is CrossSellInfoType.MovingFlow -> smartCrossSellInput(FlowSource.MOVING, null)
   }
 }
 

@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.movingflow.storage
 
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.feature.movingflow.MovingSource
 import com.hedvig.android.feature.movingflow.data.AddonId
 import com.hedvig.android.feature.movingflow.data.HousingType
 import com.hedvig.android.feature.movingflow.data.MovingFlowState
@@ -29,12 +30,17 @@ internal class MovingFlowRepository(
     return movingFlowStorage.getMovingFlowState()
   }
 
-  suspend fun initiateNewMovingFlow(moveIntent: MoveIntentFragment, moveFromAddressId: String) {
+  suspend fun initiateNewMovingFlow(
+    moveIntent: MoveIntentFragment,
+    moveFromAddressId: String,
+    movingSource: MovingSource,
+  ) {
     movingFlowStorage.setMovingFlowState(
       MovingFlowState.fromFragments(
         moveIntent,
         null,
         moveFromAddressId,
+        movingSource,
       ),
     )
   }
@@ -57,8 +63,8 @@ internal class MovingFlowRepository(
     squareMeters: Int,
     numberCoInsured: Int,
     isStudent: Boolean,
-  ) {
-    movingFlowStorage.editMovingFlowState { existingState ->
+  ): MovingFlowState? {
+    return movingFlowStorage.editMovingFlowState { existingState ->
       val updatedState = existingState.copy(
         addressInfo = existingState.addressInfo.copy(
           street = address,

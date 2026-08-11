@@ -12,6 +12,8 @@ import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.apollo.safeFlow
+import com.hedvig.android.core.uidata.UiCurrencyCode
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedAddon
@@ -35,6 +37,7 @@ import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -43,6 +46,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.isActive
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -67,8 +71,12 @@ internal class GetHomeDataUseCaseImpl(
 ) : GetHomeDataUseCase {
   @OptIn(ExperimentalCoroutinesApi::class)
   override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>> {
-    return featureManager.isFeatureEnabled(Feature.ENABLE_CLAIM_INTENT_RESUME)
-      .flatMapLatest { resumeClaimEnabled ->
+    return combine(
+      featureManager.isFeatureEnabled(Feature.ENABLE_CLAIM_INTENT_RESUME),
+      featureManager.isFeatureEnabled(Feature.DISABLE_RESUMING_ONGOING_SHOP_SESSIONS),
+      ::Pair,
+    )
+      .flatMapLatest { (resumeClaimEnabled, disableShopSessions) ->
         combine(
           apolloClient.query(HomeQuery(true, resumeClaimEnabled))
             .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheAndNetwork)
@@ -148,6 +156,22 @@ internal class GetHomeDataUseCaseImpl(
             val otherCrossSellsData = crossSellsData.otherCrossSells.map {
               it.toCrossSell()
             }
+            val ongoingShopSessions = if (disableShopSessions) {
+              emptyList()
+            } else {
+              homeQueryData.currentMember.ongoingShopSessions.map { session ->
+                OngoingShopSession(
+                  id = session.id,
+                  title = session.display.title,
+                  subtitle = session.display.subtitle,
+                  monthlyNet = session.display.monthlyNet?.let {
+                    UiMoney(it.amount, UiCurrencyCode.fromCurrencyCode(it.currencyCode))
+                  },
+                  resumeUrl = session.display.resumeUrl,
+                  pillowImageUrl = session.display.pillowImage?.src,
+                )
+              }
+            }
             val recommendedAddon = crossSellsData.recommendedAddon?.let {
               RecommendedAddon(
                 id = it.id,
@@ -202,6 +226,7 @@ internal class GetHomeDataUseCaseImpl(
               showHelpCenter = true,
               firstVetSections = firstVetActions,
               crossSells = crossSells,
+              ongoingShopSessions = ongoingShopSessions,
               addonBannerInfos = travelBannerInfo.orEmpty(),
               showChatIcon = showChatIcon,
               firstName = homeQueryData.currentMember.firstName,
@@ -218,6 +243,11 @@ internal class GetHomeDataUseCaseImpl(
           }
         }
       }
+      // Keeps the whole chain — including flatMapLatest's cancellation of the previous inner flow — off the
+      // collector's dispatcher. Collected from a Molecule presenter, that dispatcher is the main thread, and
+      // cancelling an in-flight query makes Ktor close the response body inline, tripping StrictMode's
+      // NetworkOnMainThreadException.
+      .flowOn(Dispatchers.IO)
   }
 
   private fun shouldShowChatButton(isInboxEnabledFromKillSwitch: Boolean, hasActiveConversations: Boolean): Boolean {
@@ -310,6 +340,15 @@ private fun HomeQuery.Data.claimStatusCards(): HomeData.ClaimStatusCardsData? {
   )
 }
 
+data class OngoingShopSession(
+  val id: String,
+  val title: String,
+  val subtitle: String?,
+  val monthlyNet: UiMoney?,
+  val resumeUrl: String,
+  val pillowImageUrl: String?,
+)
+
 data class HomeData(
   val contractStatus: ContractStatus,
   val claimStatusCardsData: ClaimStatusCardsData?,
@@ -321,6 +360,8 @@ data class HomeData(
   val firstVetSections: List<FirstVetSection>,
   val crossSells: CrossSellSheetData,
   val addonBannerInfos: List<AddonBannerInfo>,
+  // Defaulted only so test/demo construction sites stay terse.
+  val ongoingShopSessions: List<OngoingShopSession> = emptyList(),
   // Always populated from the backend; defaulted only so test/demo construction sites stay terse.
   val firstName: String = "",
   val draftClaim: DraftClaim?,

@@ -32,12 +32,15 @@ import com.hedvig.android.data.contract.ContractType.SE_APARTMENT_RENT
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.terminateinsurance.TestBackstack
 import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
+import com.hedvig.android.feature.terminateinsurance.data.RedirectionType
 import com.hedvig.android.feature.terminateinsurance.data.SuggestionType
+import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionRedirection
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
 import com.hedvig.android.feature.terminateinsurance.data.TerminationAction
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationDateKey
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationRedirectionKey
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationSurveySecondStepKey
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
@@ -236,6 +239,57 @@ class TerminationSurveyPresenterTest {
       sendEvent(TerminationSurveyEvent.Continue)
       scheduler.advanceUntilIdle()
       assertThat(backstack.entries.last()).isInstanceOf<TerminationSurveySecondStepKey>()
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `when chosen option has a redirection navigate to the redirection interstitial`() = runTest {
+    val redirection = SurveyOptionRedirection(
+      title = "Bring Hedvig to your new home",
+      description = "Move your insurance and get 15% off the first year",
+      type = RedirectionType.UPDATE_ADDRESS,
+      actionText = "See price for new home",
+      image = null,
+    )
+    val movingOption = TerminationSurveyOption(
+      id = "MOVING",
+      listIndex = 0,
+      title = "Moving to a new home",
+      feedbackRequired = false,
+      suggestion = null,
+      subOptions = listOf(
+        TerminationSurveyOption(
+          id = "MOVED_IN_WITH_SOMEONE",
+          listIndex = 0,
+          title = "I have moved in with someone else",
+          feedbackRequired = false,
+          suggestion = null,
+          subOptions = emptyList(),
+        ),
+      ),
+      redirection = redirection,
+    )
+    val options = listOf(movingOption)
+    val backstack = TestBackstack()
+    val scheduler = testScheduler
+    val presenter = TerminationSurveyPresenter(
+      options = options,
+      action = testAction,
+      commonParams = testCommonParams,
+      changeTierRepository = FakeChangeTierRepository(),
+      backstack = backstack,
+    )
+    presenter.test(initialState = TerminationSurveyState(options)) {
+      skipItems(1)
+      sendEvent(TerminationSurveyEvent.SelectOption(movingOption))
+      skipItems(1)
+      sendEvent(TerminationSurveyEvent.Continue)
+      scheduler.advanceUntilIdle()
+      assertThat(backstack.entries.last())
+        .isInstanceOf<TerminationRedirectionKey>()
+        .prop(TerminationRedirectionKey::redirection)
+        .isEqualTo(redirection)
       cancelAndIgnoreRemainingEvents()
     }
   }

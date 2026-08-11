@@ -8,13 +8,14 @@ import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver
 import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.core.common.test.isRight
-import com.hedvig.android.feature.help.center.data.GetMemberActionsUseCaseImpl
-import com.hedvig.android.feature.help.center.data.MemberAction
 import com.hedvig.android.logger.TestLogcatLoggingRule
+import com.hedvig.android.memberquickactions.GetMemberActionsUseCaseImpl
+import com.hedvig.android.memberquickactions.MemberAction
 import kotlinx.coroutines.test.runTest
 import octopus.MemberActionsQuery
-import octopus.type.buildMember
-import octopus.type.buildMemberActions
+import octopus.builder.Data
+import octopus.builder.buildMember
+import octopus.builder.buildMemberActions
 import org.junit.Rule
 import org.junit.Test
 
@@ -34,7 +35,7 @@ class GetMemberActionsUseCaseImplTest {
           currentMember = buildMember {
             memberActions = buildMemberActions {
               firstVetAction = null
-              sickAbroadAction = null
+              sickAbroadDeflect = null
               isCancelInsuranceEnabled = true
               isConnectPaymentEnabled = true
               isEditCoInsuredEnabled = true
@@ -57,7 +58,7 @@ class GetMemberActionsUseCaseImplTest {
           currentMember = buildMember {
             memberActions = buildMemberActions {
               firstVetAction = null
-              sickAbroadAction = null
+              sickAbroadDeflect = null
               isCancelInsuranceEnabled = true
               isConnectPaymentEnabled = true
               isEditCoInsuredEnabled = true

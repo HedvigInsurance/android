@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "14.4.1"
+    versionName = "14.4.2"
 
     resourceConfigurations.addAll(listOf("en", "sv-rSE"))
   }
@@ -225,6 +225,7 @@ dependencies {
   implementation(projects.loggingDeviceModel)
   implementation(projects.loggingPublic)
   implementation(projects.permissionCore)
+  implementation(projects.memberQuickActions)
   implementation(projects.memberRemindersPublic)
   implementation(projects.navigationActivity)
   implementation(projects.navigationCommon)

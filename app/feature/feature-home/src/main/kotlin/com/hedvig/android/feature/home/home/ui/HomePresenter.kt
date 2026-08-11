@@ -10,18 +10,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.Either
+import arrow.core.getOrElse
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.crosssells.CrossSellSheetData
-import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.claimintent.DeleteClaimIntentDraftUseCase
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
+import com.hedvig.android.feature.home.home.data.OngoingShopSession
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.memberquickactions.GetMemberQuickActionsUseCase
+import com.hedvig.android.memberquickactions.InnerHelpCenterDestination
+import com.hedvig.android.memberquickactions.QuickAction
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -42,6 +46,7 @@ internal class HomePresenter(
   private val applicationScope: ApplicationScope,
   private val isProduction: Boolean,
   private val deleteClaimIntentDraftUseCase: DeleteClaimIntentDraftUseCase,
+  private val getMemberQuickActionsUseCase: GetMemberQuickActionsUseCase,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
   override fun MoleculePresenterScope<HomeEvent>.present(lastState: HomeUiState): HomeUiState {
@@ -121,10 +126,14 @@ internal class HomePresenter(
             }
           },
         ) { homeData: HomeData ->
+          val quickActions = getMemberQuickActionsUseCase.invoke()
+            .getOrElse { emptyList() }
+            .filterNot { it.isSickAbroad() }
+            .take(3)
           Snapshot.withMutableSnapshot {
             hasError = false
             isReloading = false
-            successData = SuccessData.fromHomeData(homeData, crossSellNotification)
+            successData = SuccessData.fromHomeData(homeData, crossSellNotification, quickActions)
           }
         }
       }
@@ -147,6 +156,7 @@ internal class HomePresenter(
             !alreadySeenImportantMessages.contains(it.id)
           },
           isHelpCenterEnabled = successData.showHelpCenter,
+          quickActions = successData.quickActions,
           hasUnseenChatMessages = successData.hasUnseenChatMessages,
           chatAction = successData.chatAction,
           firstVetAction = successData.firstVetAction,
@@ -154,6 +164,7 @@ internal class HomePresenter(
           addonBannerInfos = successData.addonBannerInfos,
           isProduction = isProduction,
           crossSellsPartition = successData.crossSellsPartition,
+          ongoingShopSessions = successData.ongoingShopSessions,
           firstName = successData.firstName,
           draftClaim = successData.draftClaim,
         )
@@ -161,6 +172,11 @@ internal class HomePresenter(
     }
   }
 }
+
+// Home cannot navigate to the sick-abroad emergency screen (it lives in feature-help-center), so that
+// quick action is dropped from the Home tiles.
+private fun QuickAction.isSickAbroad(): Boolean = this is QuickAction.StandaloneQuickLink &&
+  quickLinkDestination is InnerHelpCenterDestination.QuickLinkSickAbroad
 
 internal sealed interface HomeEvent {
   data object RefreshData : HomeEvent
@@ -178,9 +194,6 @@ internal sealed interface HomeUiState {
   val isReloading: Boolean
     get() = false
 
-  val isHelpCenterEnabled: Boolean
-    get() = false
-
   val hasUnseenChatMessages: Boolean
     get() = false
 
@@ -195,9 +208,11 @@ internal sealed interface HomeUiState {
     val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
     val addonBannerInfos: List<AddonBannerInfo>,
     val isProduction: Boolean,
-    override val isHelpCenterEnabled: Boolean,
+    val isHelpCenterEnabled: Boolean,
+    val quickActions: List<QuickAction>,
     override val hasUnseenChatMessages: Boolean,
     val crossSellsPartition: CrossSellsPartition = CrossSellsPartition(),
+    val ongoingShopSessions: List<OngoingShopSession> = emptyList(),
     val firstName: String = "",
     val draftClaim: HomeData.DraftClaim?,
   ) : HomeUiState
@@ -213,12 +228,14 @@ private data class SuccessData(
   val veryImportantMessages: List<HomeData.VeryImportantMessage>,
   val memberReminders: MemberReminders,
   val showHelpCenter: Boolean,
+  val quickActions: List<QuickAction>,
   val chatAction: HomeTopBarAction.ChatAction?,
   val firstVetAction: HomeTopBarAction.FirstVetAction?,
   val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
   val hasUnseenChatMessages: Boolean,
   val addonBannerInfos: List<AddonBannerInfo>,
   val crossSellsPartition: CrossSellsPartition,
+  val ongoingShopSessions: List<OngoingShopSession>,
   val firstName: String,
   val draftClaim: HomeData.DraftClaim?,
 ) {
@@ -231,12 +248,14 @@ private data class SuccessData(
         veryImportantMessages = lastState.veryImportantMessages,
         memberReminders = lastState.memberReminders,
         showHelpCenter = lastState.isHelpCenterEnabled,
+        quickActions = lastState.quickActions,
         crossSellsAction = lastState.crossSellsAction,
         firstVetAction = lastState.firstVetAction,
         hasUnseenChatMessages = lastState.hasUnseenChatMessages,
         addonBannerInfos = lastState.addonBannerInfos,
         chatAction = lastState.chatAction,
         crossSellsPartition = lastState.crossSellsPartition,
+        ongoingShopSessions = lastState.ongoingShopSessions,
         firstName = lastState.firstName,
         draftClaim = lastState.draftClaim,
       )
@@ -245,6 +264,7 @@ private data class SuccessData(
     fun fromHomeData(
       homeData: HomeData,
       crossSellRecommendationNotification: CrossSellRecommendationNotification,
+      quickActions: List<QuickAction>,
     ): SuccessData {
       val crossSellsAction = if (homeData.crossSells.recommendedCrossSell != null ||
         homeData.crossSells.recommendedAddon != null ||
@@ -282,12 +302,14 @@ private data class SuccessData(
           enableNotifications = null,
         ),
         showHelpCenter = homeData.showHelpCenter,
+        quickActions = quickActions,
         firstVetAction = firstVetAction,
         crossSellsAction = crossSellsAction,
         hasUnseenChatMessages = homeData.hasUnseenChatMessages,
         addonBannerInfos = homeData.addonBannerInfos,
         chatAction = if (homeData.showChatIcon) HomeTopBarAction.ChatAction else null,
         crossSellsPartition = partitionCrossSells(homeData.crossSells),
+        ongoingShopSessions = homeData.ongoingShopSessions,
         firstName = homeData.firstName,
         draftClaim = homeData.draftClaim,
       )
@@ -295,21 +317,19 @@ private data class SuccessData(
   }
 }
 
-/**
- * The home screen surfaces cross-sells in three places (Offers, the discover carousel and the
- * "Discover our insurances" list). This is the single place that decides which cross-sells go where.
- */
 internal data class CrossSellsPartition(
-  val offersCrossSell: RecommendedCrossSell? = null,
   val discoverCrossSells: List<CrossSell> = emptyList(),
 )
 
-// WS0 placeholder rule until design finalizes per-section cross-sell assignment: Offers shows the
-// recommended cross-sell; both the carousel and the "Discover our insurances" list show the others.
+/**
+ * Builds the "Discover our insurances" list. The recommended cross-sell leads it, stripped of the
+ * offer framing (banner, discount, bundle progress) it keeps in the cross-sell bottom sheet.
+ */
 internal fun partitionCrossSells(crossSells: CrossSellSheetData): CrossSellsPartition {
   return CrossSellsPartition(
-    offersCrossSell = crossSells.recommendedCrossSell,
-    discoverCrossSells = crossSells.otherCrossSells,
+    discoverCrossSells = crossSells.recommendedCrossSell?.let {
+      listOf(it.crossSell) + crossSells.otherCrossSells
+    } ?: crossSells.otherCrossSells,
   )
 }
 
