@@ -62,11 +62,14 @@ Reset between runs: Profile > About app > **Reset onboarding** (non-production r
   - Instant apply + relaunch persistence confirmed via automation (screen luminance 231→42 on selecting Dark; still 36 after a force-stop restart). Settings-row agreement still not checked (the Profile screen's settings entry wasn't reachable via automation).
 
 ### Co-insured / Pet ID
-- [ ] Centered grey cards with contract pillow images, dark pill "Add"
-- [X] Add opens the existing flow; completing it returns to the step with a checkmark on that card (row does not vanish)
-  - Pet-ID verified; co-insured step not yet driven on-device.
-- [ ] Aborting the external flow returns with the row unchanged
-- [ ] Fine-print hint above the buttons
+- [X] Centered grey cards with contract pillow images, dark pill "Add"
+  - Pet-ID: "Dog Insurance Standard / Jackk" card with pillow + dark "Add" pill.
+- [ ] Add opens the existing flow; completing it returns to the step with a checkmark on that card (row does not vanish)
+  - Add opens the chip-id flow ✓, and completing it saves the ID (Add gone) ✓, BUT the completed row VANISHES instead of showing the checkmark. See found issue below — regression from the WhileSubscribed(5s) presenter timeout defeating the pin.
+- [X] Aborting the external flow returns with the row unchanged
+  - Back from the chip-id flow returns to the pet-ID step with the "Add" row intact (chip-id nav fix works).
+- [X] Fine-print hint above the buttons
+  - "You can add this information later" above Continue / Do this later.
 
 ### Invite a friend
 - [X] Card with Hampus / Li / Elin, green dots, real "-10 SEK"-style amounts; no referral code shown
@@ -84,7 +87,8 @@ Reset between runs: Profile > About app > **Reset onboarding** (non-production r
   - Images loaded online (Accident/Home/Pet/Vacation Home/Payment Protection). Offline fallback painter not tested.
 - [X] Grey "See price" pills open the storeUrl in the browser
   - Opened dev.hedvigit.com/api/... in Chrome.
-- [ ] "Continue to app" ends the flow
+- [X] "Continue to app" ends the flow
+  - Lands on Home, onboarding gone (does not return).
 
 ## D. Regression edges
 
@@ -98,3 +102,4 @@ Reset between runs: Profile > About app > **Reset onboarding** (non-production r
 - Connect payment: a Trustly abort at the very first Trustly screen still registers a PENDING method on staging, so the step returns showing "connected" (Continue). This is the deliberate behavior, but it means the "Do this later" reveal is hard to reproduce on-device from a normal abort.
 - Drive was done on a member whose path was Welcome → Consent → Phone → Theme → Invite → Connect payment → Bundle (7 segments): no co-insured or pet-ID step, so those steps were not reachable in this session. Co-insured Add→return still needs an on-device pass with a member missing co-insured info.
 - Copy: bundle step subtitle says "15% bundle discount" on-device vs "10%" in the Figma frame. Confirm which is intended (looks like a config/copy value, not a bug).
+- **BUG — completed pet-ID (and co-insured) row vanishes instead of staying with a checkmark.** Repro: single missing pet, tap Add, enter an ID, Save. On return the row disappears; the step shows an empty list. Root cause: the "pinned contract ids" that keep completed rows visible live in the presenter's `remember`, but `MoleculeViewModel` shares with `SharingStarted.WhileSubscribed(5.seconds)`, so a >5s trip into the chip-id/Trustly flow disposes the presenter and resets the pin to the now-empty missing-list. A quick abort (<5s) keeps the row; a normal completion loses it. Same mechanism also resets the connect-payment `hasAttemptedToConnect` (skip-after-attempt reveal) and the invite one-shot animation flag. Fix: hold the pin in a longer-lived scope (e.g. OnboardingSessionStore, ActivityRetainedScope) rather than presenter `remember`.
