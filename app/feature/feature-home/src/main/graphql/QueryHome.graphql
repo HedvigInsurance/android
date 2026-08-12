@@ -1,4 +1,4 @@
-query Home($claimsHistoryFlag: Boolean!, $resumeClaimEnabled: Boolean!) {
+query Home($claimsHistoryFlag: Boolean!, $resumeClaimEnabled: Boolean!, $disableShopSessions: Boolean!) {
   currentMember {
     firstName
     resumableClaimIntent @include(if: $resumeClaimEnabled) {
@@ -80,7 +80,7 @@ query Home($claimsHistoryFlag: Boolean!, $resumeClaimEnabled: Boolean!) {
         }
       }
     }
-    ongoingShopSessions {
+    ongoingShopSessions @skip(if: $disableShopSessions) {
       id
       display {
         title

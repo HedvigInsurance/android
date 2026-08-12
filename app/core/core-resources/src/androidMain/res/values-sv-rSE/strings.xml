@@ -510,6 +510,7 @@
   <string name="HOME_QUICK_ACTIONS_EDIT_INSURANCE">Ändra försäkring</string>
   <string name="HOME_QUOTES_SECTION_TITLE">Dina prisförslag</string>
   <string name="HOME_TODO_ADD_COINSURED_TITLE">Lägg till medförsäkrad</string>
+  <string name="HOME_TODO_ADD_COOWNER_TITLE">Lägg till medägare</string>
   <string name="HOME_TODO_MISSING_CHIP_ID_TITLE">Chip-ID för husdjur saknas</string>
   <string name="HOME_TODO_MISSING_PAYMENT_METHOD_TITLE">Betalningsmetod saknas</string>
   <string name="HOME_TODO_MISSING_PAYOUT_METHOD_TITLE">Utbetalningsmetod saknas</string>

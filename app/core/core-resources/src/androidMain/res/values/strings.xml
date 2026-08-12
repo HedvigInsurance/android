@@ -510,6 +510,7 @@
   <string name="HOME_QUICK_ACTIONS_EDIT_INSURANCE">Edit insurance</string>
   <string name="HOME_QUOTES_SECTION_TITLE">Your quotes</string>
   <string name="HOME_TODO_ADD_COINSURED_TITLE">Add co-insured</string>
+  <string name="HOME_TODO_ADD_COOWNER_TITLE">Add co-owner</string>
   <string name="HOME_TODO_MISSING_CHIP_ID_TITLE">Missing pet chip-ID</string>
   <string name="HOME_TODO_MISSING_PAYMENT_METHOD_TITLE">Missing payment method</string>
   <string name="HOME_TODO_MISSING_PAYOUT_METHOD_TITLE">Missing payout method</string>
