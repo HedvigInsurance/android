@@ -73,6 +73,8 @@ internal fun UploadFilesStep(
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  // Continuing and skipping both answer the same step, so either one being in flight has to lock the other out.
+  val isSubmitting = continueButtonLoading || skipButtonLoading
   Box(modifier) {
     if (isCurrentStep) {
       Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -101,7 +103,7 @@ internal fun UploadFilesStep(
         if (stepContent.localFiles.isNotEmpty()) {
           HedvigButton(
             text = stringResource(Res.string.claims_continue_button),
-            enabled = !continueButtonLoading,
+            enabled = !isSubmitting,
             onClick = {
               onEvent(
                 ClaimChatEvent.SubmitFile(
@@ -116,7 +118,7 @@ internal fun UploadFilesStep(
         if (stepContent.isSkippable && stepContent.localFiles.isEmpty()) {
           HedvigButton(
             text = stringResource(Res.string.claims_skip_button),
-            enabled = !skipButtonLoading,
+            enabled = !isSubmitting,
             onClick = {
               onEvent(ClaimChatEvent.Skip(itemId))
             },

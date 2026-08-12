@@ -61,6 +61,11 @@ import hedvig.resources.Res
 import hedvig.resources.TALKBACK_LOADING_STATE_BUTTON
 import org.jetbrains.compose.resources.stringResource
 
+/**
+ * @param isLoading Swaps the label for a loading indicator and stops the button accepting clicks, so an in-flight
+ *  action cannot be triggered a second time. Colors keep following [enabled], leaving a loading button's fill
+ *  unchanged.
+ */
 @Composable
 fun HedvigButton(
   text: String,
@@ -85,6 +90,7 @@ fun HedvigButton(
     border = border,
     onClickLabel = onClickLabel,
     shape = shape,
+    isLoading = isLoading,
   ) {
     val buttonColors = buttonStyle.style.buttonColors
     val loadingTransition = updateTransition(isLoading, label = "loading transition")
@@ -126,6 +132,7 @@ fun HedvigButton(
   border: Color? = null,
   onClickLabel: String? = null,
   shape: Shape? = null,
+  isLoading: Boolean = false,
   content: @Composable RowScope.() -> Unit,
 ) {
   @Suppress("NAME_SHADOWING")
@@ -157,7 +164,9 @@ fun HedvigButton(
     },
     onClickLabel = onClickLabel,
     role = Role.Button,
-    enabled = enabled,
+    // Colors above are already resolved from `enabled`, so withholding the click while loading leaves the
+    // button's appearance untouched.
+    enabled = enabled && !isLoading,
     shape = shape,
     border = border,
     // The rim shadows have to sit on top of the container fill, which is only reachable from outside

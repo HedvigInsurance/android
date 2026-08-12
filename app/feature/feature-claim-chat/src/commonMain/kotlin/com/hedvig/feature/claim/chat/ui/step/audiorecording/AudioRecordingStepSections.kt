@@ -220,6 +220,8 @@ internal fun AudioRecorderBubble(
   skipButtonLoading: Boolean,
   modifier: Modifier = Modifier,
 ) {
+  // Submitting and skipping both answer the same step, so either one being in flight has to lock the other out.
+  val isSubmitting = continueButtonLoading || skipButtonLoading
   AnimatedContent(
     recordingState,
     contentKey = { s ->
@@ -242,7 +244,9 @@ internal fun AudioRecorderBubble(
             errorType = recordingState.errorType,
             isCurrentStep = isCurrentStep,
             continueButtonLoading = continueButtonLoading,
-            canSubmit = recordingState.canSubmit,
+            // recordingState.canSubmit only reports whether the text itself is valid, so the in-flight state has
+            // to be folded in here to keep the button from firing a second submission for the same step.
+            canSubmit = recordingState.canSubmit && !isSubmitting,
           )
         }
 
@@ -311,7 +315,7 @@ internal fun AudioRecorderBubble(
           stringResource(Res.string.claims_skip_button),
           onClick = onSkip,
           isLoading = skipButtonLoading,
-          enabled = !skipButtonLoading,
+          enabled = !isSubmitting,
           modifier = Modifier.fillMaxWidth(),
           buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
         )

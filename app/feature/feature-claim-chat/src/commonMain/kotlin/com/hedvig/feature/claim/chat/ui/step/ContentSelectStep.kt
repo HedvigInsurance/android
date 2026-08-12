@@ -50,6 +50,8 @@ internal fun ContentSelectStep(
   skipButtonLoading: Boolean,
   modifier: Modifier = Modifier,
 ) {
+  // Confirming and skipping both answer the same step, so either one being in flight has to lock the other out.
+  val isSubmitting = currentContinueButtonLoading || skipButtonLoading
   Column(modifier) {
     AnimatedContent(
       isCurrentStep,
@@ -62,7 +64,7 @@ internal fun ContentSelectStep(
           ContentSelectChips(
             options = options,
             onOptionClick = { option ->
-              if (!currentContinueButtonLoading) {
+              if (!isSubmitting) {
                 onEvent(
                   ClaimChatEvent.Select(
                     itemId,
@@ -87,7 +89,7 @@ internal fun ContentSelectStep(
                 }
               },
               isLoading = currentContinueButtonLoading,
-              enabled = !currentContinueButtonLoading && selectedOptionId != null,
+              enabled = !isSubmitting && selectedOptionId != null,
               modifier = Modifier.fillMaxWidth(),
             )
             if (canSkip) {
@@ -95,7 +97,7 @@ internal fun ContentSelectStep(
                 stringResource(Res.string.claims_skip_button),
                 onClick = onSkip,
                 isLoading = skipButtonLoading,
-                enabled = !skipButtonLoading,
+                enabled = !isSubmitting,
                 modifier = Modifier.fillMaxWidth(),
                 buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
               )
