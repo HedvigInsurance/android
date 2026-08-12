@@ -78,7 +78,7 @@ internal class GetHomeDataUseCaseImpl(
     )
       .flatMapLatest { (resumeClaimEnabled, disableShopSessions) ->
         combine(
-          apolloClient.query(HomeQuery(true, resumeClaimEnabled))
+          apolloClient.query(HomeQuery(true, resumeClaimEnabled, disableShopSessions))
             .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheAndNetwork)
             .safeFlow(),
           flow {
@@ -156,21 +156,17 @@ internal class GetHomeDataUseCaseImpl(
             val otherCrossSellsData = crossSellsData.otherCrossSells.map {
               it.toCrossSell()
             }
-            val ongoingShopSessions = if (disableShopSessions) {
-              emptyList()
-            } else {
-              homeQueryData.currentMember.ongoingShopSessions.map { session ->
-                OngoingShopSession(
-                  id = session.id,
-                  title = session.display.title,
-                  subtitle = session.display.subtitle,
-                  monthlyNet = session.display.monthlyNet?.let {
-                    UiMoney(it.amount, UiCurrencyCode.fromCurrencyCode(it.currencyCode))
-                  },
-                  resumeUrl = session.display.resumeUrl,
-                  pillowImageUrl = session.display.pillowImage?.src,
-                )
-              }
+            val ongoingShopSessions = homeQueryData.currentMember.ongoingShopSessions.orEmpty().map { session ->
+              OngoingShopSession(
+                id = session.id,
+                title = session.display.title,
+                subtitle = session.display.subtitle,
+                monthlyNet = session.display.monthlyNet?.let {
+                  UiMoney(it.amount, UiCurrencyCode.fromCurrencyCode(it.currencyCode))
+                },
+                resumeUrl = session.display.resumeUrl,
+                pillowImageUrl = session.display.pillowImage?.src,
+              )
             }
             val recommendedAddon = crossSellsData.recommendedAddon?.let {
               RecommendedAddon(
