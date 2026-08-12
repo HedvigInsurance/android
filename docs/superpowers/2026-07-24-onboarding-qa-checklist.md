@@ -66,11 +66,11 @@ Reset between runs: Profile > About app > **Reset onboarding** (non-production r
 
 ### Co-insured / Pet ID
 - [X] Centered grey cards with contract pillow images, dark pill "Add"
-  - Pet-ID: "Dog Insurance Standard / Jackk" card with pillow + dark "Add" pill.
-- [ ] Add opens the existing flow; completing it returns to the step with a checkmark on that card (row does not vanish)
-  - Add opens the chip-id flow ✓, and completing it saves the ID (Add gone) ✓, BUT the completed row VANISHES instead of showing the checkmark. See found issue below — regression from the WhileSubscribed(5s) presenter timeout defeating the pin.
+  - Pet-ID and co-owners both: contract card with pillow + dark "Add" pill. Co-owners step header correctly reads "Add co-owners".
+- [X] Add opens the existing flow; completing it returns to the step with a checkmark on that card (row does not vanish)
+  - RE-VERIFIED after the pinning fix: completed a pet's chip-id while deliberately staying >5s in the flow (the original repro); the row stays and "Add" is replaced by the checkmark. Co-insured (co-owners) step also driven on-device.
 - [X] Aborting the external flow returns with the row unchanged
-  - Back from the chip-id flow returns to the pet-ID step with the "Add" row intact (chip-id nav fix works).
+  - Back from the chip-id flow (pet-ID) and from the edit-co-insured flow (co-owners) returns to the step with the "Add" row intact.
 - [X] Fine-print hint above the buttons
   - "You can add this information later" above Continue / Do this later.
 
@@ -105,5 +105,5 @@ Reset between runs: Profile > About app > **Reset onboarding** (non-production r
 
 - Connect payment: a Trustly abort at the very first Trustly screen still registers a PENDING method on staging, so the step returns showing "connected" (Continue). This is the deliberate behavior, but it means the "Do this later" reveal is hard to reproduce on-device from a normal abort.
 - Drive was done on a member whose path was Welcome → Consent → Phone → Theme → Invite → Connect payment → Bundle (7 segments): no co-insured or pet-ID step, so those steps were not reachable in this session. Co-insured Add→return still needs an on-device pass with a member missing co-insured info.
-- Copy: bundle step subtitle says "15% bundle discount" on-device vs "10%" in the Figma frame. Confirm which is intended (looks like a config/copy value, not a bug).
-- **BUG (FIXED, needs on-device re-check) — completed pet-ID / co-insured row vanished instead of staying with a checkmark.** Repro: single missing pet, tap Add, enter an ID, Save; on return the row disappeared. Root cause: the "pinned contract ids" that keep completed rows visible lived in the presenter's `remember`, but `MoleculeViewModel` shares with `SharingStarted.WhileSubscribed(5.seconds)`, so a >5s trip into the chip-id/edit flow disposed the presenter and re-pinned from the now-empty missing-list. Fix (commit `bf838153c2`): the pin now lives in `OnboardingSession` (held by the `ActivityRetainedScope` session store, captured at first load, preserved across `refreshData`). Re-verify on a fresh member with a still-missing pet (the QA member's pet is now completed). The same reset mechanism still affects the connect-payment `hasAttemptedToConnect` skip reveal and the invite one-shot animation flag — not yet moved.
+- Copy: bundle step subtitle says "15% bundle discount" on-device vs "10%" in the Figma frame. RESOLVED: 15% is correct, the Figma frame is wrong. No code change (the "15%" lives in the Lokalise string `ONBOARDING_CROSS_SELL_SUBTITLE`).
+- **BUG (FIXED and re-verified on-device) — completed pet-ID / co-insured row vanished instead of staying with a checkmark.** Repro: single missing pet, tap Add, enter an ID, Save; on return the row disappeared. Root cause: the "pinned contract ids" that keep completed rows visible lived in the presenter's `remember`, but `MoleculeViewModel` shares with `SharingStarted.WhileSubscribed(5.seconds)`, so a >5s trip into the chip-id/edit flow disposed the presenter and re-pinned from the now-empty missing-list. Fix (commit `bf838153c2`): the pin now lives in `OnboardingSession` (held by the `ActivityRetainedScope` session store, captured at first load, preserved across `refreshData`). Re-verify on a fresh member with a still-missing pet (the QA member's pet is now completed). The same reset mechanism still affects the connect-payment `hasAttemptedToConnect` skip reveal and the invite one-shot animation flag — not yet moved.
