@@ -43,6 +43,7 @@ import com.hedvig.android.design.system.hedvig.icon.ProfileOutline
 import com.hedvig.android.design.system.hedvig.icon.WarningOutline
 import com.hedvig.android.memberreminders.MemberReminder
 import hedvig.resources.HOME_TODO_ADD_COINSURED_TITLE
+import hedvig.resources.HOME_TODO_ADD_COOWNER_TITLE
 import hedvig.resources.HOME_TODO_MISSING_CHIP_ID_TITLE
 import hedvig.resources.HOME_TODO_MISSING_PAYMENT_METHOD_TITLE
 import hedvig.resources.HOME_TODO_MISSING_PAYOUT_METHOD_TITLE
@@ -210,7 +211,10 @@ private fun MemberReminder.toToDoRowOrNull(
   is MemberReminder.CoInsuredInfo -> ToDoRowData(
     icon = HedvigIcons.ProfileOutline,
     iconTint = ToDoRowIconTint.Primary,
-    title = Res.string.HOME_TODO_ADD_COINSURED_TITLE,
+    title = when (coInsuredType) {
+      CoInsuredFlowType.CoInsured -> Res.string.HOME_TODO_ADD_COINSURED_TITLE
+      CoInsuredFlowType.CoOwners -> Res.string.HOME_TODO_ADD_COOWNER_TITLE
+    },
     onClick = { navigateToAddMissingInfo(contractId, coInsuredType) },
   )
 
@@ -318,6 +322,7 @@ private fun PreviewMemberReminderToDoList() {
           MemberReminder.PaymentReminder.ConnectPayout(),
           MemberReminder.MissingChipId(),
           MemberReminder.CoInsuredInfo("contractId", CoInsuredFlowType.CoInsured),
+          MemberReminder.CoInsuredInfo("contractId", CoInsuredFlowType.CoOwners),
           MemberReminder.ContactInfoUpdateNeeded,
         ),
         navigateToConnectPayment = {},
