@@ -56,5 +56,4 @@ private fun Lint.configure(lintXmlFile: File, lintBaselineFile: File) {
   baseline = lintBaselineFile
   lintConfig = lintXmlFile
   xmlReport = true
-  disable.add("androidx.media3.common.util.UnstableApi")
 }

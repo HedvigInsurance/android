@@ -3,6 +3,11 @@
   <!--Uncomment "all" if you want to check *only* the ones that you enable inside here-->
   <!--<issue id="all" severity="ignore" />-->
 
+  <!-- This lint.xml is shared across all modules, so it references issue ids (e.g. UnsafeOptInUsageError)
+       that are only registered in modules whose dependencies bundle that check. Ignore UnknownIssueId so a
+       config entry for a check absent from a given module isn't flagged. -->
+  <issue id="UnknownIssueId" severity="ignore" />
+
   <issue id="ButtonCase" severity="ignore" />
   <issue id="TypographyDashes" severity="ignore" />
   <issue id="TypographyEllipsis" severity="ignore" />
