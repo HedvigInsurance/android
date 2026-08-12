@@ -1,0 +1,11 @@
+mutation OnboardingUpdateContactInfo($email: String!, $phoneNumber: String!) {
+  memberUpdateContactInfo(input: { email: $email, phoneNumber: $phoneNumber }) {
+    userError {
+      message
+    }
+    member {
+      id
+      phoneNumber
+    }
+  }
+}

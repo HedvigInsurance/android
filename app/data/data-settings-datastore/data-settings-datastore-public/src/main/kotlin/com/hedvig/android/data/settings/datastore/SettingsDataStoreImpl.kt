@@ -24,6 +24,14 @@ interface SettingsDataStore {
   suspend fun setEmailSubscriptionPreference(subscribe: Boolean)
 
   fun observeEmailSubscriptionPreference(): Flow<Boolean>
+
+  suspend fun setAnalyticsConsent(consent: AnalyticsConsent)
+
+  /**
+   * The member's product analytics consent decision. [AnalyticsConsent.NOT_DECIDED] when they
+   * have not made an explicit choice yet.
+   */
+  fun observeAnalyticsConsent(): Flow<AnalyticsConsent>
 }
 
 @ContributesBinding(AppScope::class)
@@ -57,10 +65,27 @@ internal class SettingsDataStoreImpl(
     }
   }
 
+  override suspend fun setAnalyticsConsent(consent: AnalyticsConsent) {
+    dataStore.edit {
+      it[analyticsConsentKey] = consent.name
+    }
+  }
+
+  override fun observeAnalyticsConsent(): Flow<AnalyticsConsent> {
+    return dataStore.data.map { preferences ->
+      preferences[analyticsConsentKey]
+        ?.let { stored -> AnalyticsConsent.entries.firstOrNull { it.name == stored } }
+        ?: AnalyticsConsent.NOT_DECIDED
+    }
+  }
+
   companion object {
     private val themeKey = stringPreferencesKey("settings-theme")
     private val subscriptionKey = booleanPreferencesKey(
       "com.hedvig.android.data.settings.datastore.settings-email-subscription",
+    )
+    private val analyticsConsentKey = stringPreferencesKey(
+      "com.hedvig.android.data.settings.datastore.settings-analytics-consent",
     )
   }
 }

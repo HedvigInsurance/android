@@ -48,6 +48,8 @@ import com.hedvig.android.feature.login.navigation.loginEntries
 import com.hedvig.android.feature.movingflow.MovingSource
 import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
 import com.hedvig.android.feature.movingflow.movingFlowEntries
+import com.hedvig.android.feature.onboarding.data.ResetOnboardingSeenUseCase
+import com.hedvig.android.feature.onboarding.navigation.onboardingEntries
 import com.hedvig.android.feature.payments.navigation.paymentsEntries
 import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountKey
 import com.hedvig.android.feature.payoutaccount.navigation.payoutAccountEntries
@@ -57,6 +59,7 @@ import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuran
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceEntries
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateKey
 import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateEntries
+import com.hedvig.android.language.Language
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.memberquickactions.InnerHelpCenterDestination
@@ -97,6 +100,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   imageLoader: ImageLoader,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
+  resetOnboardingSeenUseCase: ResetOnboardingSeenUseCase,
 ) {
   val shouldShowRequestPermissionRationale: (String) -> Boolean = androidAppHost::shouldShowPermissionRationale
   val navigateToConnectPayment: () -> Unit = { backstack.add(TrustlyKey) }
@@ -167,6 +171,13 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     navigateToConnectPayment = navigateToConnectPayment,
     navigateToPayoutAccount = navigateToPayoutAccount,
     navigateToNewConversation = navigateToNewConversation,
+    onResetOnboardingForDebug = {
+      scope.launch {
+        resetOnboardingSeenUseCase.invoke()
+        // Debug-only feedback for non-production builds; deliberately not translated.
+        globalSnackBarState.show("Onboarding reset. Background and foreground the app to see it.")
+      }
+    },
   )
   addChatEntries(
     backstack = backstack,
@@ -184,7 +195,17 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     externalNavigator = externalNavigator,
     navigateToNewConversation = navigateToNewConversation,
     navigateToInbox = navigateToInbox,
+    openPrivacyPolicy = { openUrl(privacyPolicyUrl(languageService.getLanguage())) },
   )
+}
+
+/**
+ * The public privacy-policy page, per language. Mirrors the links used by the profile "about app"
+ * screen; kept here so `:app` owns the URL rather than `feature-onboarding`.
+ */
+private fun privacyPolicyUrl(language: Language): String = when (language) {
+  Language.SV_SE -> "https://www.hedvig.com/se/hedvig/personuppgifter"
+  Language.EN_SE -> "https://www.hedvig.com/se-en/hedvig/privacy-policy"
 }
 
 private fun EntryProviderScope<HedvigNavKey>.addLoginEntries(
@@ -463,6 +484,7 @@ private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
   navigateToConnectPayment: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
   navigateToNewConversation: () -> Unit,
+  onResetOnboardingForDebug: () -> Unit,
 ) {
   profileEntries(
     settingsDestinationNestedGraphs = {
@@ -489,8 +511,10 @@ private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
     onNavigateToTravelCertificate = { backstack.add(TravelCertificateKey) },
     onNavigateToInsuranceEvidence = { backstack.add(InsuranceEvidenceKey) },
     openUrl = openUrl,
+    openPrivacyPolicy = { openUrl(privacyPolicyUrl(languageService.getLanguage())) },
     navigateToChipId = { backstack.add(ChipIdKey()) },
     languageService = languageService,
+    onResetOnboardingForDebug = onResetOnboardingForDebug,
   )
 }
 
@@ -531,6 +555,7 @@ private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
   externalNavigator: ExternalNavigator,
   navigateToNewConversation: () -> Unit,
   navigateToInbox: () -> Unit,
+  openPrivacyPolicy: () -> Unit,
 ) {
   addonPurchaseEntries(
     backstack = backstack,
@@ -566,4 +591,11 @@ private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
   )
   imageViewerEntries(backstack, imageLoader)
   removeAddonsEntries(backstack = backstack)
+  onboardingEntries(
+    backstack = backstack,
+    imageLoader = imageLoader,
+    openUrl = openUrl,
+    openPrivacyPolicy = openPrivacyPolicy,
+    navigateToChipId = { contractId -> backstack.add(ChipIdKey(contractId)) },
+  )
 }

@@ -482,13 +482,15 @@ Configuration in `.editorconfig`:
 
 ### Comments
 
-Code comments and KDoc must describe the **current** code and stand on their own. Before writing one, apply the test: *would this make sense to someone reading the file cold, with no knowledge of the PR, the conversation, or what was decided against?* If not, it does not belong in the source. Do not reference:
+Code comments and KDoc must describe the **current** code and stand on their own. A comment fails to earn its place in two ways: it tells the wrong kind of story, or it repeats what is already there. Before writing one, apply the test: *would this make sense to someone reading the file cold, with no knowledge of the PR, the conversation, or what was decided against?* If not, it does not belong in the source. Do not reference:
 
 - **History / migration:** "Replaces Nav2…", "used to live in…".
 - **Rejected alternatives:** "…not the iOS glass", "instead of the old Y".
 - **Conversation / design-process state:** "pending design", "for now", "TBD".
 
 When tempted to write "X instead of Y", drop the Y half and justify X on its own terms. If that leaves nothing, the code was self-explanatory, so delete the comment. Migration/history/process context belongs in the commit message.
+
+**Say only what the code and its neighbours don't.** A comment must add information not already visible at its location. Do not restate a signature, a type, or a contract that a nearby or interface KDoc already documents; a paraphrase of something visible at the same spot is noise. Keep it to the non-obvious point (usually the *why*); if it grows into several lines re-describing mechanics that the code already shows, cut it back. If the same point already lives elsewhere (an interface's KDoc, a constant's own comment), state it once, at the spot that owns it, rather than repeating it at each use. Prefer no comment over a redundant or verbose one.
 
 ## Working with GraphQL
 

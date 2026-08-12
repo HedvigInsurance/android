@@ -42,6 +42,7 @@ import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.rive.RiveInitializer
 import com.hedvig.android.core.tracking.EventTrackingClient
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
+import com.hedvig.android.feature.onboarding.data.ResetOnboardingSeenUseCase
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageLaunchCheckUseCase
 import com.hedvig.android.language.LanguageService
@@ -113,6 +114,9 @@ class MainActivity : AppCompatActivity() {
 
   @Inject
   private lateinit var serializersModules: Set<SerializersModule>
+
+  @Inject
+  private lateinit var resetOnboardingSeenUseCase: ResetOnboardingSeenUseCase
 
   /**
    * Per-Activity host for the navigation state. A retained `ViewModel`, so it (and the
@@ -274,6 +278,8 @@ class MainActivity : AppCompatActivity() {
           currentDestinationHolder = currentDestinationHolder,
           eventTrackingClient = eventTrackingClient,
           screenParameterExtractor = screenParameterExtractor,
+          onboardingGate = navRetainedViewModel.onboardingGate,
+          resetOnboardingSeenUseCase = resetOnboardingSeenUseCase,
         )
       }
     }
