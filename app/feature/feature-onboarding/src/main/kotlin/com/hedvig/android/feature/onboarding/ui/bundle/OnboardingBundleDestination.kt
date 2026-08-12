@@ -19,8 +19,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.ImageLoader
@@ -35,6 +38,7 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.autoScrollingMarquee
 import com.hedvig.android.design.system.hedvig.placeholder.crossSellPainterFallback
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.onboarding.data.OnboardingCrossSell
@@ -183,15 +187,14 @@ private fun OnboardingBundleScreen(
         )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(24.dp))
-        for ((index, crossSell) in state.crossSells.withIndex()) {
-          if (index > 0) {
-            Spacer(Modifier.height(8.dp))
+        EqualHeightColumn(rowSpacing = 8.dp) {
+          for (crossSell in state.crossSells) {
+            OnboardingCrossSellRow(
+              crossSell = crossSell,
+              imageLoader = imageLoader,
+              openUrl = openUrl,
+            )
           }
-          OnboardingCrossSellRow(
-            crossSell = crossSell,
-            imageLoader = imageLoader,
-            openUrl = openUrl,
-          )
         }
         Spacer(Modifier.height(8.dp))
         Spacer(Modifier.weight(1f))
@@ -231,15 +234,19 @@ private fun OnboardingCrossSellRow(
     } else {
       Spacer(Modifier.size(48.dp))
     }
-    Spacer(Modifier.width(12.dp))
+    Spacer(Modifier.width(16.dp))
     Column(Modifier.weight(1f)) {
       HedvigText(crossSell.title, style = HedvigTheme.typography.bodySmall)
       HedvigText(
         crossSell.description,
         style = HedvigTheme.typography.label,
         color = HedvigTheme.colorScheme.textSecondary,
+        maxLines = 1,
+        softWrap = false,
+        modifier = Modifier.autoScrollingMarquee(),
       )
     }
+    Spacer(Modifier.width(16.dp))
     HedvigButton(
       text = stringResource(Res.string.ONBOARDING_SEE_PRICE_BUTTON),
       onClick = { openUrl(crossSell.storeUrl) },
@@ -248,6 +255,28 @@ private fun OnboardingCrossSellRow(
       buttonSize = ButtonDefaults.ButtonSize.Small,
       modifier = Modifier.clip(CircleShape),
     )
+  }
+}
+
+/**
+ * Lays its children out in a vertical column where every child is given the height of the tallest
+ * child, with each child's own content centred within its cell. One measure pass, so the heights are
+ * uniform on the first frame. [rowSpacing] is inserted between children.
+ */
+@Composable
+private fun EqualHeightColumn(rowSpacing: Dp, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+  Layout(content = content, modifier = modifier) { measurables, constraints ->
+    val placeables = measurables.map { it.measure(constraints.copy(minHeight = 0)) }
+    val rowHeight = placeables.maxOfOrNull(Placeable::height) ?: 0
+    val spacingPx = rowSpacing.roundToPx()
+    val totalHeight = rowHeight * placeables.size + spacingPx * (placeables.size - 1).coerceAtLeast(0)
+    layout(constraints.maxWidth, totalHeight) {
+      var y = 0
+      placeables.forEach { placeable ->
+        placeable.place(0, y + (rowHeight - placeable.height) / 2)
+        y += rowHeight + spacingPx
+      }
+    }
   }
 }
 
@@ -280,17 +309,38 @@ private class OnboardingBundleUiStateProvider : CollectionPreviewParameterProvid
       progress = OnboardingProgress(totalSteps = 5, currentIndex = 1),
       crossSells = listOf(
         OnboardingCrossSell(
-          id = "accident",
-          title = "Accident Insurance",
-          description = "Coverage for accidental injuries",
-          storeUrl = "https://www.hedvig.com/se/forsakringar/olycksfallsforsakring",
+          id = "home",
+          title = "Home Insurance",
+          description = "For you, your family and your home",
+          storeUrl = "https://www.hedvig.com/se/forsakringar/hemforsakring",
           pillowImageUrl = null,
         ),
         OnboardingCrossSell(
           id = "pet",
           title = "Pet Insurance",
-          description = "Coverage for your pet",
+          description = "For your dog or cat",
           storeUrl = "https://www.hedvig.com/se/forsakringar/djurforsakring",
+          pillowImageUrl = null,
+        ),
+        OnboardingCrossSell(
+          id = "car",
+          title = "Car insurance",
+          description = "For you and your car",
+          storeUrl = "https://www.hedvig.com/se/forsakringar/bilforsakring",
+          pillowImageUrl = null,
+        ),
+        OnboardingCrossSell(
+          id = "vacation",
+          title = "Vacation Home Insurance",
+          description = "For your cottage or cabin",
+          storeUrl = "https://www.hedvig.com/se/forsakringar/fritidshusforsakring",
+          pillowImageUrl = null,
+        ),
+        OnboardingCrossSell(
+          id = "ppi",
+          title = "Payment Protection Insurance",
+          description = "For you if you get unemployed",
+          storeUrl = "https://www.hedvig.com/se/forsakringar/inkomstforsakring",
           pillowImageUrl = null,
         ),
       ),
