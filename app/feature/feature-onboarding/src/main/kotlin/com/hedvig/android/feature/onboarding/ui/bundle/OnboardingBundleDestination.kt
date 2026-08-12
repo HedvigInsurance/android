@@ -234,11 +234,13 @@ private fun OnboardingCrossSellRow(
     Spacer(Modifier.width(16.dp))
     Column(Modifier.weight(1f)) {
       HedvigText(crossSell.title, style = HedvigTheme.typography.bodySmall)
-      AutoScrollingText(
-        text = crossSell.description,
+      HedvigText(
+        crossSell.description,
         style = HedvigTheme.typography.label,
         color = HedvigTheme.colorScheme.textSecondary,
-        modifier = Modifier.fillMaxWidth(),
+        maxLines = 1,
+        softWrap = false,
+        modifier = Modifier.autoScrollingMarquee(),
       )
     }
     Spacer(Modifier.width(16.dp))
