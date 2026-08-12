@@ -2,8 +2,8 @@ package com.hedvig.android.app.urihandler
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.ui.platform.UriHandler
+import androidx.core.net.toUri
 import com.hedvig.android.core.tracking.ErrorSource
 import com.hedvig.android.core.tracking.logError
 import com.hedvig.android.logger.LogPriority
@@ -22,7 +22,7 @@ internal class SafeAndroidUriHandler(private val context: Context) : UriHandler 
       return
     }
     try {
-      context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(uri)))
+      context.startActivity(Intent(Intent.ACTION_VIEW, uri.toUri()))
     } catch (e: Exception) {
       if (e is CancellationException) {
         throw e

@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.chat.model
 
 import android.net.Uri
+import androidx.core.net.toUri
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.data.chat.database.ChatMessageEntity
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.MEDIA
@@ -267,11 +268,11 @@ internal fun ChatMessageEntity.toChatMessage(): CbmChatMessage? {
         }
 
         failedToSend == PHOTO && url != null -> {
-          CbmChatMessage.FailedToBeSent.ChatMessagePhoto(id.toString(), sentAt, Uri.parse(url))
+          CbmChatMessage.FailedToBeSent.ChatMessagePhoto(id.toString(), sentAt, url!!.toUri())
         }
 
         failedToSend == MEDIA && url != null -> {
-          CbmChatMessage.FailedToBeSent.ChatMessageMedia(id.toString(), sentAt, Uri.parse(url))
+          CbmChatMessage.FailedToBeSent.ChatMessageMedia(id.toString(), sentAt, url!!.toUri())
         }
 
         else -> {
