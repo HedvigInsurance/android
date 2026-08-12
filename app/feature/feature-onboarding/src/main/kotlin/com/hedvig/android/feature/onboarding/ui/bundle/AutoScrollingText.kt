@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigText
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 
 /**
@@ -47,9 +48,9 @@ internal fun AutoScrollingText(text: String, style: TextStyle, color: Color, mod
     val durationMillis = with(density) { (overflow / SCROLL_VELOCITY_PER_SECOND.toPx() * 1000f).roundToInt() }
     val scrollSpec = tween<Float>(durationMillis, easing = LinearEasing)
     while (true) {
-      delay(PAUSE_MILLIS)
+      delay(PAUSE_MILLIS.milliseconds)
       offset.animateTo(-overflow, scrollSpec)
-      delay(PAUSE_MILLIS)
+      delay(PAUSE_MILLIS.milliseconds)
       offset.animateTo(0f, scrollSpec)
     }
   }
