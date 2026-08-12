@@ -181,7 +181,6 @@ private fun FormContent(
   modifier: Modifier = Modifier,
 ) {
   val errorDescription = firstFieldWithError?.let { "${getErrorText(it)}: ${it.title}" }
-  // Continuing and skipping both answer the same step, so either one being in flight has to lock the other out.
   val isSubmitting = continueButtonLoading || skipButtonLoading
   Column(modifier) {
     if (isCurrentStep) {

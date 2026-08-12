@@ -73,7 +73,6 @@ internal fun UploadFilesStep(
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  // Continuing and skipping both answer the same step, so either one being in flight has to lock the other out.
   val isSubmitting = continueButtonLoading || skipButtonLoading
   Box(modifier) {
     if (isCurrentStep) {

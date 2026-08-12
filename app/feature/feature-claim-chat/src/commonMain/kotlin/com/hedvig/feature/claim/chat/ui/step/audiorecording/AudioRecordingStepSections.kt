@@ -220,7 +220,6 @@ internal fun AudioRecorderBubble(
   skipButtonLoading: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  // Submitting and skipping both answer the same step, so either one being in flight has to lock the other out.
   val isSubmitting = continueButtonLoading || skipButtonLoading
   AnimatedContent(
     recordingState,
