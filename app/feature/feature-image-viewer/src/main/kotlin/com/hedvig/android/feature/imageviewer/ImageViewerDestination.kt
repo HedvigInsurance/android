@@ -135,6 +135,9 @@ class WhiteBackgroundTransformation : Transformation() {
   override val cacheKey = "white_background"
 
   override suspend fun transform(input: Bitmap, size: Size): Bitmap {
+    // Without an alpha channel there is no transparency for the white background to show through, so compositing
+    // would allocate a second full-size copy of a visually identical image.
+    if (!input.hasAlpha()) return input
     val output = createBitmap(input.width, input.height)
     val canvas = AndroidCanvas(output)
     canvas.drawColor(AndroidColor.WHITE)
