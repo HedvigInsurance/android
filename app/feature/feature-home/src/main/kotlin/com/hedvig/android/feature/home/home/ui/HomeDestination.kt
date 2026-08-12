@@ -1139,12 +1139,12 @@ private fun QuotesSection(
             }
             Column(Modifier.weight(1f)) {
               HedvigText(text = session.title, style = HedvigTheme.typography.bodySmall)
-              val secondary = session.subtitle ?: session.monthlyNet?.let {
+              val secondary =  session.monthlyNet?.let {
                 stringResource(
                   Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
                   it,
                 )
-              }
+              } ?: session.subtitle
 
               if (secondary != null) {
                 HedvigText(
