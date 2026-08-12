@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.onboarding.ui.bundle
 
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -238,6 +239,8 @@ private fun OnboardingCrossSellRow(
         crossSell.description,
         style = HedvigTheme.typography.label,
         color = HedvigTheme.colorScheme.textSecondary,
+        maxLines = 1,
+        modifier = Modifier.basicMarquee(),
       )
     }
     HedvigButton(
@@ -280,17 +283,38 @@ private class OnboardingBundleUiStateProvider : CollectionPreviewParameterProvid
       progress = OnboardingProgress(totalSteps = 5, currentIndex = 1),
       crossSells = listOf(
         OnboardingCrossSell(
-          id = "accident",
-          title = "Accident Insurance",
-          description = "Coverage for accidental injuries",
-          storeUrl = "https://www.hedvig.com/se/forsakringar/olycksfallsforsakring",
+          id = "home",
+          title = "Home Insurance",
+          description = "For you, your family and your home",
+          storeUrl = "https://www.hedvig.com/se/forsakringar/hemforsakring",
           pillowImageUrl = null,
         ),
         OnboardingCrossSell(
           id = "pet",
           title = "Pet Insurance",
-          description = "Coverage for your pet",
+          description = "For your dog or cat",
           storeUrl = "https://www.hedvig.com/se/forsakringar/djurforsakring",
+          pillowImageUrl = null,
+        ),
+        OnboardingCrossSell(
+          id = "car",
+          title = "Car insurance",
+          description = "For you and your car",
+          storeUrl = "https://www.hedvig.com/se/forsakringar/bilforsakring",
+          pillowImageUrl = null,
+        ),
+        OnboardingCrossSell(
+          id = "vacation",
+          title = "Vacation Home Insurance",
+          description = "For your cottage or cabin",
+          storeUrl = "https://www.hedvig.com/se/forsakringar/fritidshusforsakring",
+          pillowImageUrl = null,
+        ),
+        OnboardingCrossSell(
+          id = "ppi",
+          title = "Payment Protection Insurance",
+          description = "For you if you get unemployed",
+          storeUrl = "https://www.hedvig.com/se/forsakringar/inkomstforsakring",
           pillowImageUrl = null,
         ),
       ),
