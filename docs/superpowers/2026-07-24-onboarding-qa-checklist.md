@@ -39,10 +39,13 @@ Reset between runs: Profile > About app > **Reset onboarding** (non-production r
 - [X] Underlined "Privacy policy" + northeast arrow opens the language-correct URL
   - Opened hedvig.com/se-en/... "Hedvig Privacy Policy" in the browser.
 - [X] Allow and Deny are two identical grey pills, Allow on top
-- [ ] Allow advances; Settings > Product analytics shows "On"
-- [ ] Deny advances; Settings shows "Off"
+- [X] Allow advances; Settings > Product analytics shows "On"
+  - Verified via the AnalyticsConsentDebug log (`consent=GRANTED -> collection enabled=true`) and Settings > Usage data showing "Turned on".
+- [X] Deny advances; Settings shows "Off"
+  - `consent=DENIED -> collection enabled=false`; Settings > Usage data showing "Disabled".
 - [ ] Decide nothing (dismiss flow first): Settings shows "Not set"
 - [ ] DebugView: pre-decision events buffered, arrive with `buffered_at_epoch_ms` on Allow
+  - Consent GATE (on/off) verified via logcat; the event-level buffering/`buffered_at_epoch_ms` check still needs DebugView.
 - [ ] DebugView: Deny stops everything including `session_start` (SDK collection off); Datadog still reports
 
 ### Phone
@@ -93,6 +96,7 @@ Reset between runs: Profile > About app > **Reset onboarding** (non-production r
 ## D. Regression edges
 
 - [ ] Settings consent row round-trips On / Off / Not set; DebugView agrees
+  - On/Off round-trip confirmed (Settings > Usage data toggle, agrees with the AnalyticsConsentDebug log). "Not set" and DebugView agreement still open.
 - [ ] Standalone flows unaffected: edit co-insured, chip-id, Trustly, Forever tab, profile settings
 - [ ] TalkBack: back/close announce "Go back" / "Close" with 40dp+ targets
 - [ ] Known: repo-wide `ktlintCheck` fails on `feature-payments` (pre-existing on develop, not this branch)
@@ -102,4 +106,4 @@ Reset between runs: Profile > About app > **Reset onboarding** (non-production r
 - Connect payment: a Trustly abort at the very first Trustly screen still registers a PENDING method on staging, so the step returns showing "connected" (Continue). This is the deliberate behavior, but it means the "Do this later" reveal is hard to reproduce on-device from a normal abort.
 - Drive was done on a member whose path was Welcome → Consent → Phone → Theme → Invite → Connect payment → Bundle (7 segments): no co-insured or pet-ID step, so those steps were not reachable in this session. Co-insured Add→return still needs an on-device pass with a member missing co-insured info.
 - Copy: bundle step subtitle says "15% bundle discount" on-device vs "10%" in the Figma frame. Confirm which is intended (looks like a config/copy value, not a bug).
-- **BUG — completed pet-ID (and co-insured) row vanishes instead of staying with a checkmark.** Repro: single missing pet, tap Add, enter an ID, Save. On return the row disappears; the step shows an empty list. Root cause: the "pinned contract ids" that keep completed rows visible live in the presenter's `remember`, but `MoleculeViewModel` shares with `SharingStarted.WhileSubscribed(5.seconds)`, so a >5s trip into the chip-id/Trustly flow disposes the presenter and resets the pin to the now-empty missing-list. A quick abort (<5s) keeps the row; a normal completion loses it. Same mechanism also resets the connect-payment `hasAttemptedToConnect` (skip-after-attempt reveal) and the invite one-shot animation flag. Fix: hold the pin in a longer-lived scope (e.g. OnboardingSessionStore, ActivityRetainedScope) rather than presenter `remember`.
+- **BUG (FIXED, needs on-device re-check) — completed pet-ID / co-insured row vanished instead of staying with a checkmark.** Repro: single missing pet, tap Add, enter an ID, Save; on return the row disappeared. Root cause: the "pinned contract ids" that keep completed rows visible lived in the presenter's `remember`, but `MoleculeViewModel` shares with `SharingStarted.WhileSubscribed(5.seconds)`, so a >5s trip into the chip-id/edit flow disposed the presenter and re-pinned from the now-empty missing-list. Fix (commit `bf838153c2`): the pin now lives in `OnboardingSession` (held by the `ActivityRetainedScope` session store, captured at first load, preserved across `refreshData`). Re-verify on a fresh member with a still-missing pet (the QA member's pet is now completed). The same reset mechanism still affects the connect-payment `hasAttemptedToConnect` skip reveal and the invite one-shot animation flag — not yet moved.
