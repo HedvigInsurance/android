@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.onboarding.ui.bundle
 
-import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -232,17 +231,17 @@ private fun OnboardingCrossSellRow(
     } else {
       Spacer(Modifier.size(48.dp))
     }
-    Spacer(Modifier.width(12.dp))
+    Spacer(Modifier.width(16.dp))
     Column(Modifier.weight(1f)) {
       HedvigText(crossSell.title, style = HedvigTheme.typography.bodySmall)
-      HedvigText(
-        crossSell.description,
+      AutoScrollingText(
+        text = crossSell.description,
         style = HedvigTheme.typography.label,
         color = HedvigTheme.colorScheme.textSecondary,
-        maxLines = 1,
-        modifier = Modifier.basicMarquee(),
+        modifier = Modifier.fillMaxWidth(),
       )
     }
+    Spacer(Modifier.width(16.dp))
     HedvigButton(
       text = stringResource(Res.string.ONBOARDING_SEE_PRICE_BUTTON),
       onClick = { openUrl(crossSell.storeUrl) },
