@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.onboarding.ui.bundle
+package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
@@ -32,7 +32,7 @@ import kotlinx.coroutines.launch
  * @param velocity how far the content travels per second while scrolling
  * @param pause how long to hold at each end before scrolling the other way
  */
-internal fun Modifier.autoScrollingMarquee(
+fun Modifier.autoScrollingMarquee(
   velocity: Dp = DEFAULT_VELOCITY_PER_SECOND,
   pause: Duration = DEFAULT_PAUSE,
 ): Modifier = clipToBounds() then AutoScrollingMarqueeElement(velocity, pause)

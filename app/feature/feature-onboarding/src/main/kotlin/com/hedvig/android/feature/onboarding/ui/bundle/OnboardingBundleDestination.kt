@@ -35,6 +35,7 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.autoScrollingMarquee
 import com.hedvig.android.design.system.hedvig.placeholder.crossSellPainterFallback
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.onboarding.data.OnboardingCrossSell
