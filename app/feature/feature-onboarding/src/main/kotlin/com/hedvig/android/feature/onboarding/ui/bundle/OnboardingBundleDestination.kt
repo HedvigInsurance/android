@@ -19,8 +19,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.ImageLoader
@@ -184,15 +187,14 @@ private fun OnboardingBundleScreen(
         )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(24.dp))
-        for ((index, crossSell) in state.crossSells.withIndex()) {
-          if (index > 0) {
-            Spacer(Modifier.height(8.dp))
+        EqualHeightColumn(rowSpacing = 8.dp) {
+          for (crossSell in state.crossSells) {
+            OnboardingCrossSellRow(
+              crossSell = crossSell,
+              imageLoader = imageLoader,
+              openUrl = openUrl,
+            )
           }
-          OnboardingCrossSellRow(
-            crossSell = crossSell,
-            imageLoader = imageLoader,
-            openUrl = openUrl,
-          )
         }
         Spacer(Modifier.height(8.dp))
         Spacer(Modifier.weight(1f))
@@ -253,6 +255,28 @@ private fun OnboardingCrossSellRow(
       buttonSize = ButtonDefaults.ButtonSize.Small,
       modifier = Modifier.clip(CircleShape),
     )
+  }
+}
+
+/**
+ * Lays its children out in a vertical column where every child is given the height of the tallest
+ * child, with each child's own content centred within its cell. One measure pass, so the heights are
+ * uniform on the first frame. [rowSpacing] is inserted between children.
+ */
+@Composable
+private fun EqualHeightColumn(rowSpacing: Dp, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+  Layout(content = content, modifier = modifier) { measurables, constraints ->
+    val placeables = measurables.map { it.measure(constraints.copy(minHeight = 0)) }
+    val rowHeight = placeables.maxOfOrNull(Placeable::height) ?: 0
+    val spacingPx = rowSpacing.roundToPx()
+    val totalHeight = rowHeight * placeables.size + spacingPx * (placeables.size - 1).coerceAtLeast(0)
+    layout(constraints.maxWidth, totalHeight) {
+      var y = 0
+      placeables.forEach { placeable ->
+        placeable.place(0, y + (rowHeight - placeable.height) / 2)
+        y += rowHeight + spacingPx
+      }
+    }
   }
 }
 
