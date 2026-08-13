@@ -239,7 +239,7 @@ private fun ContractFragment.toContract(
 }
 
 private fun AgreementDisplayItemFragment.toDisplayItem(): DisplayItem {
-  return DisplayItem.fromStrings(displayTitle, displayValue)
+  return DisplayItem.fromStrings(displayTitle, displayValue, displaySubtitle)
 }
 
 private fun MonthlyCostFragment.toMonthlyCost(): MonthlyCost {
