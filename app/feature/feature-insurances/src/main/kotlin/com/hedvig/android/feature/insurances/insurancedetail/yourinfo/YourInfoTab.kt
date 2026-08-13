@@ -310,12 +310,15 @@ internal fun YourInfoTab(
           )
         }
         if (allowEditCoInsured || allowEditCoOwners) {
-          HorizontalDivider()
+          HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
           Spacer(Modifier.height(16.dp))
           ContractOwnerSection(
             coInsuredList = coInsured,
             modifier = Modifier.padding(horizontal = 16.dp),
           )
+          if (coInsured.isEmpty() && coOwners.isEmpty()) {
+            Spacer(Modifier.height(16.dp))
+          }
         }
         if (allowEditCoInsured && coInsured.isNotEmpty()) {
           CoInsuredSection(
