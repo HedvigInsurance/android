@@ -8,6 +8,7 @@ import kotlinx.datetime.toLocalDateTime
 data class DisplayItem(
   val title: String,
   val value: DisplayItemValue,
+  val subtitle: String? = null,
 ) {
   sealed interface DisplayItemValue {
     data class DateTime(val localDateTime: LocalDateTime) : DisplayItemValue
@@ -18,7 +19,7 @@ data class DisplayItem(
   }
 
   companion object {
-    fun fromStrings(title: String, value: String): DisplayItem {
+    fun fromStrings(title: String, value: String, subtitle: String? = null): DisplayItem {
       val displayItemValue: DisplayItemValue = run {
         try {
           val localDate = LocalDate.parse(value)
@@ -42,6 +43,7 @@ data class DisplayItem(
       return DisplayItem(
         title,
         displayItemValue,
+        subtitle,
       )
     }
   }
