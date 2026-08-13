@@ -5694,6 +5694,10 @@ enum UserFlow {
   Smart cross-sell - focused recommendation OR all options
   """
   SMART_X_SELL
+  """
+  End of onboarding - all options led by the recommendation, automatic discounts only
+  """
+  ONBOARDING
 }
 scalar UUID
 type ValueArray {
