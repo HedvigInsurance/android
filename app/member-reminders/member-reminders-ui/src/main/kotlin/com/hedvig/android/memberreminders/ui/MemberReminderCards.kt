@@ -337,8 +337,8 @@ private val cardReminderExitTransition = fadeOut() + shrinkVertically(
 fun ReminderCardEnableNotifications(
   snoozeNotificationPermissionReminder: () -> Unit,
   requestNotificationPermission: () -> Unit,
-  minLines: Int = 1,
   modifier: Modifier = Modifier,
+  minLines: Int = 1,
 ) {
   val message = getMemberReminderMessage(MemberReminder.EnableNotifications())
   HedvigNotificationCard(

@@ -18,6 +18,9 @@ kotlin {
       implementation(libs.ktor.client.json)
       implementation(libs.ktor.client.logging)
     }
+    jvmMain.dependencies {
+      implementation(libs.ktor.client.okhttp)
+    }
     iosMain.dependencies {
       implementation(libs.ktor.client.darwin)
     }

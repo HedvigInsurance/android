@@ -2,7 +2,7 @@ package com.hedvig.authlib.internal
 
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
-import io.ktor.client.engine.HttpClientEngine
+import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.DEFAULT
@@ -17,10 +17,12 @@ internal fun buildKtorClient(additionalHttpHeadersProvider: () -> Map<String, St
   val httpClientConfig: HttpClientConfig<*>.() -> Unit = {
     commonKtorConfiguration(additionalHttpHeadersProvider).invoke(this)
   }
-  return HttpClient {
+  return HttpClient(httpClientEngineFactory()) {
     httpClientConfig()
   }
 }
+
+internal expect fun httpClientEngineFactory(): HttpClientEngineFactory<*>
 
 private fun commonKtorConfiguration(
   additionalHttpHeadersProvider: () -> Map<String, String>,

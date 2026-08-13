@@ -6,11 +6,9 @@ import android.os.Bundle
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.tracking.EventTrackingClient
-import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 
-@ContributesBinding(AppScope::class)
 @SingleIn(AppScope::class)
 @Inject
 internal class FirebaseEventTrackingClient(

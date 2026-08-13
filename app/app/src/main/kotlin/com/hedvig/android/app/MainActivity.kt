@@ -13,10 +13,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.ComposeFoundationFlags
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.retain.retain
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
@@ -42,6 +45,7 @@ import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.rive.RiveInitializer
 import com.hedvig.android.core.tracking.EventTrackingClient
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
+import com.hedvig.android.feature.onboarding.data.ResetOnboardingSeenUseCase
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageLaunchCheckUseCase
 import com.hedvig.android.language.LanguageService
@@ -113,6 +117,9 @@ class MainActivity : AppCompatActivity() {
 
   @Inject
   private lateinit var serializersModules: Set<SerializersModule>
+
+  @Inject
+  private lateinit var resetOnboardingSeenUseCase: ResetOnboardingSeenUseCase
 
   /**
    * Per-Activity host for the navigation state. A retained `ViewModel`, so it (and the
@@ -250,7 +257,14 @@ class MainActivity : AppCompatActivity() {
       CompositionLocalProvider(
         LocalMetroViewModelFactory provides navRetainedViewModel.viewModelFactory,
       ) {
-        val windowSizeClass = calculateWindowSizeClass(this@MainActivity)
+        // Compute the window size class from Configuration. Do not switch this to
+        // calculateWindowSizeClass(activity) or LocalWindowInfo.containerSize: both route through
+        // androidx.window's WindowMetricsCalculator, which invokes WindowMetrics.getDensity(). That
+        // method is absent on some Android 14 builds, crashing at launch with NoSuchMethodError.
+        val configuration = LocalConfiguration.current
+        val windowSizeClass = WindowSizeClass.calculateFromSize(
+          DpSize(configuration.screenWidthDp.dp, configuration.screenHeightDp.dp),
+        )
         HedvigApp(
           backstackController = backstackController,
           deepLinkReadySignal = sessionReconciler.isReady,
@@ -274,6 +288,8 @@ class MainActivity : AppCompatActivity() {
           currentDestinationHolder = currentDestinationHolder,
           eventTrackingClient = eventTrackingClient,
           screenParameterExtractor = screenParameterExtractor,
+          onboardingGate = navRetainedViewModel.onboardingGate,
+          resetOnboardingSeenUseCase = resetOnboardingSeenUseCase,
         )
       }
     }

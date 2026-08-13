@@ -11,12 +11,15 @@ import io.getunleash.android.data.Toggle
 import io.getunleash.android.data.UnleashContext
 import io.getunleash.android.events.HeartbeatEvent
 import io.getunleash.android.events.UnleashFetcherHeartbeatListener
+import io.getunleash.android.events.UnleashReadyListener
+import kotlin.coroutines.resume
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 private const val PRODUCTION_CLIENT_KEY = "*:production.21d6af57ae16320fde3a3caf024162db19cc33bf600ab7439c865c20"
 private const val DEVELOPMENT_CLIENT_KEY = "*:development.f2455340ac9d599b5816fa879d079f21dd0eb03e4315130deb5377b6"
@@ -55,6 +58,27 @@ class HedvigUnleashClient(
     client.addUnleashEventListener(listener = listener)
     awaitClose {
       client.removeUnleashEventListener(listener = listener)
+    }
+  }
+
+  /**
+   * Suspends until Unleash reports isReady(), which it sets on the first non-empty toggle set from
+   * either the on-disk backup or a network fetch, returning immediately if it already has. Never
+   * completes while the app has never fetched and cannot reach Unleash, so callers must impose a timeout.
+   */
+  suspend fun awaitReady() {
+    if (client.isReady()) return
+    suspendCancellableCoroutine { continuation ->
+      val listener = object : UnleashReadyListener {
+        override fun onReady() {
+          if (continuation.isActive) continuation.resume(Unit)
+        }
+      }
+      client.addUnleashEventListener(listener)
+      // Guard the window between the isReady() check above and registering the listener, where onReady
+      // could have fired with no one listening.
+      if (client.isReady() && continuation.isActive) continuation.resume(Unit)
+      continuation.invokeOnCancellation { client.removeUnleashEventListener(listener) }
     }
   }
 

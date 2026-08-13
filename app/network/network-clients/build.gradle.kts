@@ -40,5 +40,14 @@ kotlin {
         implementation(libs.datadog.sdk.ktor)
       }
     }
+    androidMain.dependencies {
+      implementation(libs.ktor.client.okhttp)
+    }
+    jvmMain.dependencies {
+      implementation(libs.ktor.client.okhttp)
+    }
+    nativeMain.dependencies {
+      implementation(libs.ktor.client.darwin)
+    }
   }
 }

@@ -6,6 +6,8 @@ import com.hedvig.android.network.clients.AccessTokenFetcher
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
+import io.ktor.client.engine.HttpClientEngineFactory
+import io.ktor.client.engine.okhttp.OkHttp
 
 @ContributesTo(AppScope::class)
 interface AndroidNetworkMetroProviders {
@@ -16,3 +18,5 @@ interface AndroidNetworkMetroProviders {
       override suspend fun fetch(): String? = accessTokenProvider.provide()
     }
 }
+
+internal actual fun httpClientEngineFactory(): HttpClientEngineFactory<*> = OkHttp

@@ -4,6 +4,7 @@ import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.app.navigation.SessionReconciler
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.feature.onboarding.gate.OnboardingGate
 import com.hedvig.android.navigation.compose.Backstack
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.GraphExtension
@@ -27,6 +28,8 @@ import dev.zacsweers.metrox.viewmodel.MetroViewModelMultibindings
 @GraphExtension(ActivityRetainedScope::class)
 internal interface ActivityRetainedGraph : MetroViewModelMultibindings {
   val sessionReconciler: SessionReconciler
+
+  val onboardingGate: OnboardingGate
 
   @Provides
   fun bindBackstack(controller: BackstackController): Backstack = controller
