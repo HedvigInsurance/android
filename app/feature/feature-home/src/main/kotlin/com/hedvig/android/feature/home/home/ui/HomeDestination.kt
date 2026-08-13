@@ -898,6 +898,7 @@ private fun HomeScreenSuccess(
 
             HomeSection.DiscoverInsurances -> DiscoverInsurancesSection(
               crossSells = uiState.crossSellsPartition.discoverCrossSells,
+              hasCrossSellDiscounts = uiState.crossSellsPartition.hasDiscounts,
               onCrossSellClick = openCrossSellUrl,
               imageLoader = imageLoader,
             )
@@ -1139,7 +1140,7 @@ private fun QuotesSection(
             }
             Column(Modifier.weight(1f)) {
               HedvigText(text = session.title, style = HedvigTheme.typography.bodySmall)
-              val secondary =  session.monthlyNet?.let {
+              val secondary = session.monthlyNet?.let {
                 stringResource(
                   Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
                   it,
@@ -1258,9 +1259,11 @@ private fun EditInsuranceQuickActionSheet(
           ) {
             HedvigText(text = stringResource(link.titleRes))
             Spacer(Modifier.height(6.dp))
-            HedvigText(text = stringResource(link.hintTextRes),
+            HedvigText(
+              text = stringResource(link.hintTextRes),
               style = HedvigTheme.typography.label,
-              color = HedvigTheme.colorScheme.textSecondary)
+              color = HedvigTheme.colorScheme.textSecondary,
+            )
           }
         }
       }
@@ -1374,6 +1377,7 @@ private fun AddonsSection(
 @Composable
 private fun DiscoverInsurancesSection(
   crossSells: List<CrossSell>,
+  hasCrossSellDiscounts: Boolean,
   onCrossSellClick: (String) -> Unit,
   imageLoader: ImageLoader,
 ) {
@@ -1384,6 +1388,7 @@ private fun DiscoverInsurancesSection(
     modifier = Modifier.padding(horizontal = 16.dp),
     onSheetDismissed = {},
     imageLoader = imageLoader,
+    hasCrossSellDiscounts = hasCrossSellDiscounts,
     buttonText = stringResource(Res.string.HOME_DISCOVER_SEE_PRICE_BUTTON),
     buttonSize = ButtonSize.Small,
     buttonShape = HedvigTheme.shapes.cornerFull,
