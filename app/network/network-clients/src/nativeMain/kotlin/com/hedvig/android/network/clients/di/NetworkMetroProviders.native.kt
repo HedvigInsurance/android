@@ -6,6 +6,8 @@ import com.hedvig.android.network.clients.NoopExtraApolloClientConfiguration
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
+import io.ktor.client.engine.HttpClientEngineFactory
+import io.ktor.client.engine.darwin.Darwin
 
 @ContributesTo(AppScope::class)
 interface NativeNetworkMetroProviders {
@@ -13,3 +15,5 @@ interface NativeNetworkMetroProviders {
   @SingleIn(AppScope::class)
   fun provideExtraApolloClientConfiguration(): ExtraApolloClientConfiguration = NoopExtraApolloClientConfiguration()
 }
+
+internal actual fun httpClientEngineFactory(): HttpClientEngineFactory<*> = Darwin
