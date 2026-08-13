@@ -13,10 +13,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.ComposeFoundationFlags
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.retain.retain
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
@@ -254,7 +257,14 @@ class MainActivity : AppCompatActivity() {
       CompositionLocalProvider(
         LocalMetroViewModelFactory provides navRetainedViewModel.viewModelFactory,
       ) {
-        val windowSizeClass = calculateWindowSizeClass(this@MainActivity)
+        // Compute the window size class from Configuration. Do not switch this to
+        // calculateWindowSizeClass(activity) or LocalWindowInfo.containerSize: both route through
+        // androidx.window's WindowMetricsCalculator, which invokes WindowMetrics.getDensity(). That
+        // method is absent on some Android 14 builds, crashing at launch with NoSuchMethodError.
+        val configuration = LocalConfiguration.current
+        val windowSizeClass = WindowSizeClass.calculateFromSize(
+          DpSize(configuration.screenWidthDp.dp, configuration.screenHeightDp.dp),
+        )
         HedvigApp(
           backstackController = backstackController,
           deepLinkReadySignal = sessionReconciler.isReady,
