@@ -63,6 +63,7 @@ class SettingsPresenterTest {
         Theme.SYSTEM_DEFAULT,
         false,
         isSubscribedToEmails = false,
+        analyticsConsent = null,
       ),
     ) {
       assertThat(awaitItem().showNotificationReminder).isEqualTo(false)
@@ -90,6 +91,7 @@ class SettingsPresenterTest {
         Theme.SYSTEM_DEFAULT,
         false,
         isSubscribedToEmails = false,
+        analyticsConsent = null,
       ),
     ) {
       assertThat(awaitItem().showNotificationReminder).isEqualTo(false)
@@ -117,6 +119,7 @@ class SettingsPresenterTest {
         Theme.entries.first(),
         false,
         isSubscribedToEmails = false,
+        analyticsConsent = null,
       ),
     ) {
       enableNotificationsReminderManager.snoozeNotificationReminderCalls.expectNoEvents()
@@ -146,6 +149,7 @@ class SettingsPresenterTest {
         selectedTheme = Theme.LIGHT,
         showNotificationReminder = false,
         isSubscribedToEmails = false,
+        analyticsConsent = null,
       ),
     ) {
       assertThat(awaitItem().selectedTheme).isEqualTo(Theme.LIGHT)

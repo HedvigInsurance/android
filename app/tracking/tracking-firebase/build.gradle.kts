@@ -10,6 +10,13 @@ dependencies {
   implementation(projects.authCorePublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
+  implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.initializable)
   implementation(projects.trackingCore)
+  testImplementation(libs.assertK)
+  testImplementation(libs.coroutines.test)
+  testImplementation(libs.junit)
+  testImplementation(libs.turbine)
+  testImplementation(projects.loggingTest)
+  testImplementation(projects.theme)
 }

@@ -68,6 +68,10 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.design.system.hedvig.rememberGlobalSnackBarState
 import com.hedvig.android.feature.cross.sell.sheet.CrossSellSheet
+import com.hedvig.android.feature.home.home.navigation.HomeKey
+import com.hedvig.android.feature.onboarding.data.ResetOnboardingSeenUseCase
+import com.hedvig.android.feature.onboarding.gate.OnboardingGate
+import com.hedvig.android.feature.onboarding.navigation.OnboardingKey
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
@@ -75,6 +79,7 @@ import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.BottomSheetSceneStrategy
 import com.hedvig.android.navigation.compose.HedvigDeepLinkMatcher
+import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.entryDecorators
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
 import com.hedvig.android.ui.force.upgrade.ForceUpgradeBlockingScreen
@@ -115,6 +120,8 @@ internal fun HedvigApp(
   currentDestinationHolder: CurrentDestinationHolder,
   eventTrackingClient: EventTrackingClient,
   screenParameterExtractor: ScreenParameterExtractor,
+  onboardingGate: OnboardingGate,
+  resetOnboardingSeenUseCase: ResetOnboardingSeenUseCase,
 ) {
   ReportCurrentDestinationEffect(backstackController, currentDestinationHolder)
   TrackScreenViewEffect(backstackController, eventTrackingClient, screenParameterExtractor)
@@ -138,6 +145,11 @@ internal fun HedvigApp(
         authTokenService,
         waitUntilAppReviewDialogShouldBeOpenedUseCase,
         androidAppHost::tryShowAppStoreReviewDialog,
+      )
+      TryShowOnboardingEffect(
+        authTokenService = authTokenService,
+        onboardingGate = onboardingGate,
+        backstackController = backstackController,
       )
       val scope = rememberCoroutineScope()
       val context = LocalContext.current
@@ -216,6 +228,7 @@ internal fun HedvigApp(
                         imageLoader = imageLoader,
                         languageService = languageService,
                         hedvigBuildConstants = hedvigBuildConstants,
+                        resetOnboardingSeenUseCase = resetOnboardingSeenUseCase,
                       )
                     },
                   )
@@ -365,6 +378,41 @@ private fun TryShowAppStoreReviewDialogEffect(
       waitUntilAppReviewDialogShouldBeOpenedUseCase.invoke()
       delay(reviewDialogDelay)
       tryShowAppStoreReviewDialog()
+    }
+  }
+}
+
+/**
+ * Once logged in, asks the [OnboardingGate] whether the onboarding flow should be shown and, if so,
+ * pushes [OnboardingKey] on top of an idle Home root. Guards: never while onboarding is already up
+ * (the root [OnboardingKey] is always present while any step is showing, since steps are pushed on
+ * top of it), and only over Home with no pending deep link, so a deep-linked or in-progress flow is
+ * never interrupted.
+ */
+@Composable
+private fun TryShowOnboardingEffect(
+  authTokenService: AuthTokenService,
+  onboardingGate: OnboardingGate,
+  backstackController: BackstackController,
+) {
+  val lifecycle = LocalLifecycleOwner.current.lifecycle
+  LaunchedEffect(lifecycle) {
+    lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+      authTokenService.authStatus.first { it is AuthStatus.LoggedIn }
+      // Already showing (e.g. resumed mid-flow, incl. after process death): just re-arm the
+      // dismissal observer so leaving the flow in any way marks it seen.
+      if (backstackController.entries.any { it is OnboardingKey }) {
+        onboardingGate.markSeenWhenOnboardingDismissed()
+        return@repeatOnLifecycle
+      }
+      if (!onboardingGate.shouldShowOnboarding()) return@repeatOnLifecycle
+      // Only interrupt an idle Home root, never a deep-linked or in-progress flow.
+      snapshotFlow { backstackController.currentDestination to backstackController.pendingDeepLink }
+        .first { (currentDestination, pendingDeepLink) ->
+          currentDestination is HomeKey && pendingDeepLink == null
+        }
+      backstackController.add(OnboardingKey)
+      onboardingGate.markSeenWhenOnboardingDismissed()
     }
   }
 }

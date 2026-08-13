@@ -23,4 +23,8 @@ internal class UnleashFeatureFlagProvider(
       .map { hedvigUnleashClient.client.isEnabled(feature.unleashKey) }
       .distinctUntilChanged()
   }
+
+  override suspend fun awaitReady() {
+    hedvigUnleashClient.awaitReady()
+  }
 }
