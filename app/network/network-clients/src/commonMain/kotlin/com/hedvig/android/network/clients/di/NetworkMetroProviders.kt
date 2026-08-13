@@ -20,6 +20,7 @@ import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
+import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpSend
 import io.ktor.client.plugins.HttpSendInterceptor
@@ -77,7 +78,7 @@ private fun buildKtorClient(
   languageService: LanguageService,
   deviceIdFetcher: DeviceIdFetcher,
 ): HttpClient {
-  return HttpClient {
+  return HttpClient(httpClientEngineFactory()) {
     installDatadogKtorPlugin(hedvigBuildConstants)
     defaultRequest {
       commonHeaders(hedvigBuildConstants, languageService)
@@ -130,3 +131,5 @@ private fun HttpClient.addAuthPlugin(accessTokenFetcher: AccessTokenFetcher) {
 }
 
 internal expect fun HttpClientConfig<*>.installDatadogKtorPlugin(hedvigBuildConstants: HedvigBuildConstants)
+
+internal expect fun httpClientEngineFactory(): HttpClientEngineFactory<*>
