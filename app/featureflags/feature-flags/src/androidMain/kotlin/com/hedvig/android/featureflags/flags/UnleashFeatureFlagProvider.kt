@@ -20,7 +20,7 @@ internal class UnleashFeatureFlagProvider(
     // Each Feature's name mirrors the polarity of its underlying Unleash key (enable_* / disable_*),
     // so the raw toggle value is the feature value. Callers of a disable_* flag invert at the read site.
     return hedvigUnleashClient.featureUpdatedFlow
-      .map { hedvigUnleashClient.client.isEnabled(feature.unleashKey) }
+      .map { hedvigUnleashClient.valueOf(feature) }
       .distinctUntilChanged()
   }
 

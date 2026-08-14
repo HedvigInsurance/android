@@ -7,11 +7,9 @@ import com.hedvig.android.featureflags.flags.unleashKey
 import com.hedvig.android.logger.logcat
 import io.getunleash.android.DefaultUnleash
 import io.getunleash.android.UnleashConfig
-import io.getunleash.android.data.Toggle
 import io.getunleash.android.data.UnleashContext
-import io.getunleash.android.events.HeartbeatEvent
-import io.getunleash.android.events.UnleashFetcherHeartbeatListener
 import io.getunleash.android.events.UnleashReadyListener
+import io.getunleash.android.events.UnleashStateListener
 import kotlin.coroutines.resume
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
@@ -26,6 +24,18 @@ private const val DEVELOPMENT_CLIENT_KEY = "*:development.f2455340ac9d599b5816fa
 private const val UNLEASH_URL = "https://eu.app.unleash-hosted.com/eubb1047/api/frontend"
 private const val APP_NAME = "android"
 
+/**
+ * Values used until the client holds real toggle state, for the flags whose natural absent-toggle
+ * default is wrong. These are kill switches that must read as on, keeping their feature hidden,
+ * until a fetch or the local backup says otherwise. An app-gating flag must never get an entry
+ * here: defaulting one into its blocking state locks out members who are offline on first launch.
+ */
+private val neverFetchedDefaults: Map<Feature, Boolean> = mapOf(
+  Feature.DISABLE_PUPPY_GUIDE to true,
+  Feature.DISABLE_TERMINATION_REDIRECTION to true,
+  Feature.DISABLE_RESUMING_ONGOING_SHOP_SESSIONS to true,
+)
+
 class HedvigUnleashClient(
   private val androidContext: Context,
   private val isProduction: Boolean,
@@ -33,7 +43,7 @@ class HedvigUnleashClient(
   coroutineScope: CoroutineScope,
   private val memberIdService: MemberIdService,
 ) {
-  val client = DefaultUnleash(
+  private val client = DefaultUnleash(
     androidContext = androidContext,
     unleashConfig = createConfig(),
     unleashContext = createContext(
@@ -41,16 +51,25 @@ class HedvigUnleashClient(
       memberId = null,
     ),
   )
+
+  /**
+   * Emits whenever the toggle state changes for any reason, which includes the local backup being
+   * restored and not just a network fetch, so a flag read while offline still updates once the
+   * last-known-good state loads.
+   *
+   * It also emits on readiness, because the SDK flips `isReady()` from a coroutine independent of
+   * the one delivering [UnleashStateListener.onStateChanged]. A collector that observed the state
+   * change first would otherwise keep the [neverFetchedDefaults] value until the next cache write,
+   * which an unchanged toggle set never produces.
+   */
   val featureUpdatedFlow: Flow<Unit> = callbackFlow {
     trySend(Unit)
-    val listener = object : UnleashFetcherHeartbeatListener {
-      override fun onError(event: HeartbeatEvent) {
+    val listener = object : UnleashStateListener, UnleashReadyListener {
+      override fun onStateChanged() {
+        trySend(Unit)
       }
 
-      override fun togglesChecked() {
-      }
-
-      override fun togglesUpdated() {
+      override fun onReady() {
         trySend(Unit)
       }
     }
@@ -62,9 +81,27 @@ class HedvigUnleashClient(
   }
 
   /**
+   * The current value of [feature], falling back to [neverFetchedDefaults] until the client holds
+   * real toggle state. An absent toggle reads as false, so the fallback is what gives a flag whose
+   * natural polarity default is wrong the value it needs in that window.
+   */
+  fun valueOf(feature: Feature): Boolean {
+    return if (client.isReady()) {
+      client.isEnabled(feature.unleashKey)
+    } else {
+      neverFetchedDefaults[feature] ?: false
+    }
+  }
+
+  /**
    * Suspends until Unleash reports isReady(), which it sets on the first non-empty toggle set from
    * either the on-disk backup or a network fetch, returning immediately if it already has. Never
    * completes while the app has never fetched and cannot reach Unleash, so callers must impose a timeout.
+   *
+   * Any toggle state seeded through the SDK's `bootstrap` parameter would also satisfy this, since
+   * readiness is just "the toggle cache became non-empty". Seeding it would additionally stop the
+   * on-disk backup from ever loading, which the SDK only attempts while not yet ready. Defaults for
+   * the never-fetched window therefore live in [neverFetchedDefaults], outside the SDK's cache.
    */
   suspend fun awaitReady() {
     if (client.isReady()) return
@@ -93,15 +130,7 @@ class HedvigUnleashClient(
         )
       }
     }
-    // Bootstrap these kill switches to on, so the features stay hidden until the first successful
-    // fetch. Once toggles are fetched, the remote value takes over.
-    client.start(
-      bootstrap = listOf(
-        Toggle(name = Feature.DISABLE_PUPPY_GUIDE.unleashKey, enabled = true),
-        Toggle(name = Feature.DISABLE_TERMINATION_REDIRECTION.unleashKey, enabled = true),
-        Toggle(name = Feature.DISABLE_RESUMING_ONGOING_SHOP_SESSIONS.unleashKey, enabled = true),
-      ),
-    )
+    client.start()
   }
 
   private fun createConfig(): UnleashConfig {
