@@ -37,7 +37,10 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -90,6 +93,7 @@ import arrow.core.toNonEmptyListOrNull
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import com.google.accompanist.permissions.isGranted
+import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.crosssells.BundleProgress
@@ -120,6 +124,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigTooltip
 import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.StartClaimBottomSheet
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TooltipDefaults
@@ -1104,69 +1109,107 @@ private fun QuotesSection(
   imageLoader: ImageLoader,
   horizontalInsets: PaddingValues,
 ) {
-  Column(
-    verticalArrangement = Arrangement.spacedBy(8.dp),
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(horizontal = 16.dp)
-      .padding(horizontalInsets),
-  ) {
+  val contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets
+  Column(Modifier.fillMaxWidth()) {
     HedvigText(
       text = stringResource(Res.string.HOME_QUOTES_SECTION_TITLE),
       style = HedvigTheme.typography.headlineSmall,
-      modifier = Modifier.semantics { heading() },
+      modifier = Modifier
+        .padding(contentPadding)
+        .semantics { heading() },
     )
-    for (session in sessions) {
-      HedvigCard(
-        onClick = { onResumeClick(session.resumeUrl) },
-        color = HedvigTheme.colorScheme.fillNegative,
-        borderColor = HedvigTheme.colorScheme.borderPrimary,
+    Spacer(Modifier.height(8.dp))
+    if (sessions.size == 1) {
+      QuoteCard(
+        session = sessions.first(),
+        onResumeClick = onResumeClick,
+        imageLoader = imageLoader,
+        modifier = Modifier.padding(contentPadding),
+      )
+    } else {
+      val pagerState = rememberPagerState(pageCount = { sessions.size })
+      HorizontalPager(
+        state = pagerState,
+        contentPadding = contentPadding,
+        beyondViewportPageCount = 1,
+        pageSpacing = 8.dp,
         modifier = Modifier
           .fillMaxWidth()
-          .hedvigDropShadow(HedvigTheme.shapes.cornerXLarge),
-      ) {
-        Column(Modifier.padding(16.dp)) {
-          Row(verticalAlignment = Alignment.CenterVertically) {
-            if (session.pillowImageUrl != null) {
-              AsyncImage(
-                model = session.pillowImageUrl,
-                contentDescription = null,
-                imageLoader = imageLoader,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.size(48.dp),
-              )
-              Spacer(Modifier.width(12.dp))
-            }
-            Column(Modifier.weight(1f)) {
-              HedvigText(text = session.title, style = HedvigTheme.typography.bodySmall)
-              val secondary =  session.monthlyNet?.let {
-                stringResource(
-                  Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                  it,
-                )
-              } ?: session.subtitle
+          .systemGestureExclusion(),
+      ) { page ->
+        QuoteCard(
+          session = sessions[page],
+          onResumeClick = onResumeClick,
+          imageLoader = imageLoader,
+          modifier = Modifier.fillMaxWidth(),
+        )
+      }
+      Spacer(Modifier.height(16.dp))
+      HorizontalPagerIndicator(
+        pagerState = pagerState,
+        pageCount = sessions.size,
+        activeColor = LocalContentColor.current,
+        modifier = Modifier
+          .align(Alignment.CenterHorizontally)
+          .padding(contentPadding),
+      )
+    }
+  }
+}
 
-              if (secondary != null) {
-                HedvigText(
-                  text = secondary,
-                  style = HedvigTheme.typography.label,
-                  color = HedvigTheme.colorScheme.textSecondary,
-                )
-              }
-            }
-          }
-          Spacer(Modifier.height(12.dp))
-          HedvigButton(
-            text = stringResource(Res.string.general_continue_button),
-            onClick = { onResumeClick(session.resumeUrl) },
-            buttonStyle = Secondary,
-            buttonSize = ButtonSize.Medium,
-            enabled = true,
-            shape = HedvigTheme.shapes.cornerFull,
-            modifier = Modifier.fillMaxWidth(),
+@Composable
+private fun QuoteCard(
+  session: OngoingShopSession,
+  onResumeClick: (String) -> Unit,
+  imageLoader: ImageLoader,
+  modifier: Modifier = Modifier,
+) {
+  HedvigCard(
+    onClick = { onResumeClick(session.resumeUrl) },
+    color = HedvigTheme.colorScheme.fillNegative,
+    borderColor = HedvigTheme.colorScheme.borderPrimary,
+    modifier = modifier.hedvigDropShadow(HedvigTheme.shapes.cornerXLarge),
+  ) {
+    Column(Modifier.padding(16.dp)) {
+      Row(verticalAlignment = Alignment.CenterVertically) {
+        if (session.pillowImageUrl != null) {
+          AsyncImage(
+            model = session.pillowImageUrl,
+            contentDescription = null,
+            imageLoader = imageLoader,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier.size(48.dp),
           )
+          Spacer(Modifier.width(12.dp))
+        }
+        Column(Modifier.weight(1f)) {
+          HedvigText(text = session.title, style = HedvigTheme.typography.bodySmall)
+          val secondary = session.monthlyNet?.let {
+            stringResource(
+              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+              it,
+            )
+          } ?: session.subtitle
+
+          if (secondary != null) {
+            HedvigText(
+              text = secondary,
+              style = HedvigTheme.typography.label,
+              color = HedvigTheme.colorScheme.textSecondary,
+            )
+          }
         }
       }
+      Spacer(Modifier.height(12.dp))
+      HedvigButton(
+        text = stringResource(Res.string.general_continue_button),
+        onClick = { onResumeClick(session.resumeUrl) },
+        buttonStyle = Secondary,
+        buttonSize = ButtonSize.Medium,
+        enabled = true,
+        shape = HedvigTheme.shapes.cornerFull,
+        modifier = Modifier.fillMaxWidth(),
+      )
     }
   }
 }
@@ -1258,9 +1301,11 @@ private fun EditInsuranceQuickActionSheet(
           ) {
             HedvigText(text = stringResource(link.titleRes))
             Spacer(Modifier.height(6.dp))
-            HedvigText(text = stringResource(link.hintTextRes),
+            HedvigText(
+              text = stringResource(link.hintTextRes),
               style = HedvigTheme.typography.label,
-              color = HedvigTheme.colorScheme.textSecondary)
+              color = HedvigTheme.colorScheme.textSecondary,
+            )
           }
         }
       }
@@ -1499,6 +1544,14 @@ private fun PreviewHomeScreen(
               id = "preview-1",
               title = "Home + Accident",
               subtitle = "Studio apartment, Stockholm",
+              monthlyNet = null,
+              resumeUrl = "",
+              pillowImageUrl = null,
+            ),
+            OngoingShopSession(
+              id = "preview-2",
+              title = "Car",
+              subtitle = "ABC 123",
               monthlyNet = null,
               resumeUrl = "",
               pillowImageUrl = null,
