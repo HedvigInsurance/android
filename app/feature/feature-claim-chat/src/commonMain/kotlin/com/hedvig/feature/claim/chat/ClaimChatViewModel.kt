@@ -726,8 +726,8 @@ internal class ClaimChatPresenter(
                   logcat { "ClaimChatEvent.Skip $it" }
                 },
                 ifRight = { claimIntent ->
-                  if (!steps.updateStepWithSuccess(event.id) { step -> step.clearContent() }) return@launch
                   currentSkipButtonLoading = false
+                  if (!steps.updateStepWithSuccess(event.id) { step -> step.clearContent() }) return@launch
                   handleNext(
                     steps,
                     setOutcome,
@@ -1239,13 +1239,6 @@ private fun onTaskSubmissionFailed(
     step.copy(stepContent = content.copy(failedToSubmit = true))
   }
   setErrorMessage(errorMessage)
-}
-
-private fun <T> MutableList<T>.removeLastIf(predicate: (T) -> Boolean) {
-  val last = lastOrNull() ?: return
-  if (predicate(last)) {
-    removeAt(this.lastIndex)
-  }
 }
 
 private fun validateField(field: Field): Field {

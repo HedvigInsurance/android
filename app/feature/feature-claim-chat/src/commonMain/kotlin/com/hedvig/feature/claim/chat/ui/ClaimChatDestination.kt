@@ -934,7 +934,7 @@ private fun StepBottomContent(
 
       is StepContent.DeflectMessage -> {
         HedvigButton(
-          modifier = modifier.fillMaxWidth(),
+          modifier = Modifier.fillMaxWidth(),
           text = stringResource(Res.string.general_close_button),
           onClick = dropUnlessResumed {
             closeFlow()

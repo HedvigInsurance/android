@@ -263,7 +263,7 @@ internal fun AudioRecorderBubble(
                 submitAudioFile = submitAudioFile,
                 redo = redoRecording,
                 openAppSettings = openAppSettings,
-                continueButtonLoading = continueButtonLoading,
+                isSubmitting = isSubmitting,
                 bottomSheetState = state,
               )
               HedvigButton(
@@ -334,7 +334,7 @@ private fun AudioRecordingBottomSheet(
   submitAudioFile: () -> Unit,
   redo: () -> Unit,
   openAppSettings: () -> Unit,
-  continueButtonLoading: Boolean,
+  isSubmitting: Boolean,
   modifier: Modifier = Modifier,
 ) {
   var showPermissionDialog by remember { mutableStateOf(false) }
@@ -387,7 +387,7 @@ private fun AudioRecordingBottomSheet(
       clock = clock,
       submitAudioFile = submitAudioFile,
       redo = redo,
-      continueButtonLoading = continueButtonLoading,
+      isSubmitting = isSubmitting,
       audioPlayer = audioPlayer,
       audioRecordingState = audioRecordingState,
       stopRecording = stopRecording,
@@ -402,7 +402,7 @@ private fun AudioRecordingSheetContent(
   clock: Clock,
   submitAudioFile: () -> Unit,
   redo: () -> Unit,
-  continueButtonLoading: Boolean,
+  isSubmitting: Boolean,
   audioPlayer: AudioPlayer?,
   audioRecordingState: AudioRecordingStepState.AudioRecording,
   stopRecording: () -> Unit,
@@ -492,7 +492,7 @@ private fun AudioRecordingSheetContent(
       StartOverButton(
         modifier = Modifier.weight(1f),
         onStartOver = redo,
-        isEnabled = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback && !continueButtonLoading,
+        isEnabled = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback && !isSubmitting,
       )
       Spacer(Modifier.width(4.dp))
       ControlButton(
@@ -506,13 +506,13 @@ private fun AudioRecordingSheetContent(
         },
         onStopRecording = stopRecording,
         audioRecordingState = audioRecordingState,
-        isEnabled = !continueButtonLoading,
+        isEnabled = !isSubmitting,
       )
       Spacer(Modifier.width(4.dp))
       SendButton(
         modifier = Modifier.weight(1f),
         onSend = submitAudioFile,
-        isEnabled = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback && !continueButtonLoading,
+        isEnabled = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback && !isSubmitting,
       )
     }
     Spacer(Modifier.height(16.dp))
@@ -1149,7 +1149,7 @@ private fun PreviewAudioRecordingSheetContent(
         clock = Clock.System,
         submitAudioFile = {},
         redo = {},
-        continueButtonLoading = false,
+        isSubmitting = false,
         audioPlayer = null,
         audioRecordingState = state,
         stopRecording = {},
