@@ -906,13 +906,9 @@ internal class ClaimChatPresenter(
 
         is ClaimChatEvent.SubmitFile -> {
           val stepContent = currentStep?.stepContent as? StepContent.FileUpload ?: return@CollectEvents
-          val fileUris = stepContent.localFiles
-            .filter {
-              it.localPath != null
-            }
-            .map {
-              Uri.parse(it.localPath!!)
-            }
+          val fileUris = stepContent.localFiles.mapNotNull { file ->
+            file.localPath?.let { Uri.parse(it) }
+          }
           currentContinueButtonLoading = true
           launch {
             submitFileUploadUseCase
