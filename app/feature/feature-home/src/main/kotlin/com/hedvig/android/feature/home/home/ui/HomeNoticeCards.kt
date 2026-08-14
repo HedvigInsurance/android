@@ -1,24 +1,13 @@
 package com.hedvig.android.feature.home.home.ui
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
+import com.hedvig.android.compose.pager.indicator.CardCarousel
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
-import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage
@@ -59,41 +48,16 @@ internal fun HomeNoticeCarousel(
     targetState = cards,
     modifier = modifier,
   ) { animatedList ->
-    if (animatedList.size == 1) {
+    CardCarousel(
+      items = animatedList,
+      contentPadding = contentPadding,
+    ) { card, cardModifier ->
       HomeNoticeCardItem(
-        card = animatedList.first(),
+        card = card,
         openUrl = openUrl,
         hideImportantMessage = hideImportantMessage,
-        modifier = Modifier.padding(contentPadding),
+        modifier = cardModifier,
       )
-    } else {
-      val pagerState = rememberPagerState(pageCount = { animatedList.size })
-      Column {
-        HorizontalPager(
-          state = pagerState,
-          contentPadding = contentPadding,
-          beyondViewportPageCount = 1,
-          pageSpacing = 8.dp,
-          modifier = Modifier
-            .fillMaxWidth()
-            .systemGestureExclusion(),
-        ) { page ->
-          HomeNoticeCardItem(
-            card = animatedList[page],
-            openUrl = openUrl,
-            hideImportantMessage = hideImportantMessage,
-          )
-        }
-        Spacer(Modifier.height(16.dp))
-        HorizontalPagerIndicator(
-          pagerState = pagerState,
-          pageCount = animatedList.size,
-          activeColor = LocalContentColor.current,
-          modifier = Modifier
-            .align(Alignment.CenterHorizontally)
-            .padding(contentPadding),
-        )
-      }
     }
   }
 }

@@ -7,17 +7,9 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,8 +19,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.dp
-import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
+import com.hedvig.android.compose.pager.indicator.CardCarousel
 import com.hedvig.android.core.common.daysUntil
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
@@ -147,86 +138,41 @@ fun MemberReminderCards(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    if (memberReminders.size == 1) {
-      MemberReminderCard(
-        memberReminder = memberReminders.first(),
-        navigateToAddMissingInfo = navigateToAddMissingInfo,
-        navigateToConnectPayment = navigateToConnectPayment,
-        navigateToConnectPayout = navigateToConnectPayout,
-        openUrl = openUrl,
-        onNavigateToNewConversation = onNavigateToNewConversation,
-        snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
-        notificationPermissionState = notificationPermissionState,
-        navigateToContactInfo = navigateToContactInfo,
-        navigateToChipId = navigateToChipId,
-        modifier = modifier.padding(contentPadding),
-        minLines = 1,
+    if (memberReminders.isEmpty()) return@Column
+    // Every card is given the line count of the longest message, so that swiping between them
+    // doesn't change the height of the carousel.
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+      val minLineCount = rememberMaxLineCountForReminders(
+        memberReminders = memberReminders,
+        maxWidthPx = constraints.maxWidth,
       )
-    } else if (memberReminders.isNotEmpty()) {
-      val stableReminderIds = remember(memberReminders.map { it.id }) {
-        memberReminders.map { it.id }
-      }
-
-      val pagerState = rememberPagerState(pageCount = { memberReminders.size })
-
-      LaunchedEffect(memberReminders.size) {
-        if (pagerState.currentPage >= memberReminders.size && memberReminders.isNotEmpty()) {
-          pagerState.scrollToPage(0)
-        }
-      }
-
-      BoxWithConstraints(Modifier.fillMaxWidth()) {
-        val minLineCount = rememberMaxLineCountForReminders(
-          memberReminders = memberReminders,
-          maxWidthPx = constraints.maxWidth,
+      CardCarousel(
+        items = memberReminders,
+        contentPadding = contentPadding,
+        key = { reminder -> reminder.id },
+        indicatorColor = HedvigTheme.colorScheme.fillPrimary,
+      ) { reminder, cardModifier ->
+        MemberReminderCard(
+          memberReminder = reminder,
+          navigateToAddMissingInfo = navigateToAddMissingInfo,
+          navigateToConnectPayment = navigateToConnectPayment,
+          navigateToConnectPayout = navigateToConnectPayout,
+          openUrl = openUrl,
+          onNavigateToNewConversation = onNavigateToNewConversation,
+          snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
+          notificationPermissionState = notificationPermissionState,
+          navigateToContactInfo = navigateToContactInfo,
+          navigateToChipId = navigateToChipId,
+          modifier = cardModifier,
+          minLines = minLineCount,
         )
-        Column {
-          HorizontalPager(
-            state = pagerState,
-            contentPadding = contentPadding,
-            beyondViewportPageCount = 1,
-            pageSpacing = 8.dp,
-            key = { index -> stableReminderIds.getOrNull(index) ?: index },
-            modifier = Modifier
-              .fillMaxWidth()
-              .systemGestureExclusion(),
-          ) { page ->
-            memberReminders.getOrNull(page)?.let { reminder ->
-              MemberReminderCard(
-                memberReminder = reminder,
-                navigateToAddMissingInfo = navigateToAddMissingInfo,
-                navigateToConnectPayment = navigateToConnectPayment,
-                navigateToConnectPayout = navigateToConnectPayout,
-                openUrl = openUrl,
-                onNavigateToNewConversation = onNavigateToNewConversation,
-                snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
-                notificationPermissionState = notificationPermissionState,
-                navigateToContactInfo = navigateToContactInfo,
-                navigateToChipId = navigateToChipId,
-                modifier = modifier.fillMaxWidth(),
-                minLines = minLineCount,
-              )
-            }
-          }
-        }
       }
-
-      Spacer(Modifier.height(16.dp))
-
-      HorizontalPagerIndicator(
-        pagerState = pagerState,
-        pageCount = pagerState.pageCount,
-        activeColor = HedvigTheme.colorScheme.fillPrimary,
-        modifier = Modifier
-          .padding(contentPadding)
-          .align(Alignment.CenterHorizontally),
-      )
     }
   }
 }
 
 @Composable
-private fun ColumnScope.MemberReminderCard(
+private fun MemberReminderCard(
   memberReminder: MemberReminder,
   navigateToAddMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToConnectPayment: () -> Unit,

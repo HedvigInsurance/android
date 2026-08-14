@@ -37,10 +37,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -93,7 +90,7 @@ import arrow.core.toNonEmptyListOrNull
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import com.google.accompanist.permissions.isGranted
-import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
+import com.hedvig.android.compose.pager.indicator.CardCarousel
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.crosssells.BundleProgress
@@ -124,7 +121,6 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigTooltip
 import com.hedvig.android.design.system.hedvig.Icon
-import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.StartClaimBottomSheet
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TooltipDefaults
@@ -1119,39 +1115,16 @@ private fun QuotesSection(
         .semantics { heading() },
     )
     Spacer(Modifier.height(8.dp))
-    if (sessions.size == 1) {
+    CardCarousel(
+      items = sessions,
+      contentPadding = contentPadding,
+      key = { it.id },
+    ) { session, cardModifier ->
       QuoteCard(
-        session = sessions.first(),
+        session = session,
         onResumeClick = onResumeClick,
         imageLoader = imageLoader,
-        modifier = Modifier.padding(contentPadding),
-      )
-    } else {
-      val pagerState = rememberPagerState(pageCount = { sessions.size })
-      HorizontalPager(
-        state = pagerState,
-        contentPadding = contentPadding,
-        beyondViewportPageCount = 1,
-        pageSpacing = 8.dp,
-        modifier = Modifier
-          .fillMaxWidth()
-          .systemGestureExclusion(),
-      ) { page ->
-        QuoteCard(
-          session = sessions[page],
-          onResumeClick = onResumeClick,
-          imageLoader = imageLoader,
-          modifier = Modifier.fillMaxWidth(),
-        )
-      }
-      Spacer(Modifier.height(16.dp))
-      HorizontalPagerIndicator(
-        pagerState = pagerState,
-        pageCount = sessions.size,
-        activeColor = LocalContentColor.current,
-        modifier = Modifier
-          .align(Alignment.CenterHorizontally)
-          .padding(contentPadding),
+        modifier = cardModifier,
       )
     }
   }
