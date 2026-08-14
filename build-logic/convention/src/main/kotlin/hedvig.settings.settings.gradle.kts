@@ -8,7 +8,9 @@
 // version-catalog accessors and accepts only literals, which would mean duplicating every version.
 //
 // Only plugins that operate on Settings belong in the block below; everything else is applied by the
-// projects that need it.
+// projects that need it. DeDebug is one of them: it removes the `debug` build type from every Android
+// library, and it needs AGP on this classloader to do so.
 plugins {
   id("com.gradle.develocity")
+  id("com.autonomousapps.dedebug")
 }

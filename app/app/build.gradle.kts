@@ -68,6 +68,8 @@ android {
       applicationIdSuffix = ".app"
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
       isMinifyEnabled = true
+      // Libraries only publish `release`. DeDebug maps the `debug` build type onto it automatically,
+      // but a custom build type has to declare the fallback itself.
       matchingFallbacks += "release"
       setProguardFiles(
         listOf(

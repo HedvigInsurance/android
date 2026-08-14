@@ -20,10 +20,6 @@ class ApplicationConventionPlugin : Plugin<Project> {
       extensions.configure<ApplicationExtension> {
         configureKotlinAndroid(this)
         defaultConfig.targetSdk = libs.versions.targetSdkVersion.get().toInt()
-        // Libraries don't build debug so fall back to release.
-        buildTypes.getByName("debug") {
-          matchingFallbacks += "release"
-        }
       }
       extensions.configure<ApplicationAndroidComponentsExtension> {
         @Suppress("UnstableApiUsage")

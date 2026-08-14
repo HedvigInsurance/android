@@ -36,6 +36,7 @@ dependencies {
   implementation(libs.apollo.gradlePlugin)
   implementation(libs.kotlinter.gradlePlugin)
   implementation(libs.room.gradlePlugin)
+  implementation(libs.dedebug.gradlePlugin)
   implementation(libs.gradleDevelocity.gradlePlugin)
   implementation(libs.ksp.gradlePlugin)
   implementation(libs.metro.gradlePlugin)

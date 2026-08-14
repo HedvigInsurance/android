@@ -16,6 +16,7 @@ apolloEngineKtor = "1.0.0-alpha.0"
 cacheFix = "3.0.3"
 crashlytics = "3.0.7"
 datadogPlugin = "1.29.0"
+dedebug = "0.1"
 doctor = "0.12.1"
 easylauncher = "6.4.1"
 googleServices = "4.5.0"
@@ -260,6 +261,7 @@ compose-compilerGradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler
 compose-gradlePlugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jetbrains-compose" }
 crashlytics-gradlePlugin = { module = "com.google.firebase.crashlytics:com.google.firebase.crashlytics.gradle.plugin", version.ref = "crashlytics" }
 datadog-gradlePlugin = { module = "com.datadoghq.dd-sdk-android-gradle-plugin:com.datadoghq.dd-sdk-android-gradle-plugin.gradle.plugin", version.ref = "datadogPlugin" }
+dedebug-gradlePlugin = { module = "com.autonomousapps.dedebug:com.autonomousapps.dedebug.gradle.plugin", version.ref = "dedebug" }
 googleServices-gradlePlugin = { module = "com.google.gms.google-services:com.google.gms.google-services.gradle.plugin", version.ref = "googleServices" }
 gradleDevelocity-gradlePlugin = { module = "com.gradle.develocity:com.gradle.develocity.gradle.plugin", version.ref = "gradleDevelocity" }
 kmpNativeCoroutines-gradlePlugin = { module = "com.rickclephas.kmp.nativecoroutines:com.rickclephas.kmp.nativecoroutines.gradle.plugin", version.ref = "kmpNativeCoroutines" }
