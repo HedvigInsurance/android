@@ -247,6 +247,21 @@ androidMultiplatform-gradlePlugin = { module = "com.android.kotlin.multiplatform
 apollo-gradlePlugin = { module = "com.apollographql.apollo:apollo-gradle-plugin", version.ref = "apollo" }
 compose-compilerGradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 compose-gradlePlugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jetbrains-compose" }
+# Plugin markers so the `hedvig.settings` precompiled settings plugin can put these on the settings classloader.
+# The AGP artifact carries the com.android.{application,library,lint,kotlin.multiplatform.library} plugin ids, and
+# kotlin-gradlePlugin carries org.jetbrains.kotlin.{android,jvm,multiplatform}; only these extra ids need their own.
+gradleDevelocity-gradlePlugin = { module = "com.gradle.develocity:com.gradle.develocity.gradle.plugin", version.ref = "gradleDevelocity" }
+ksp-gradlePlugin = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+kotlinSerialization-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
+appIconBannerGenerator-gradlePlugin = { module = "com.starter.easylauncher:com.starter.easylauncher.gradle.plugin", version.ref = "easylauncher" }
+cacheFix-gradlePlugin = { module = "org.gradle.android.cache-fix:org.gradle.android.cache-fix.gradle.plugin", version.ref = "cacheFix" }
+crashlytics-gradlePlugin = { module = "com.google.firebase.crashlytics:com.google.firebase.crashlytics.gradle.plugin", version.ref = "crashlytics" }
+datadog-gradlePlugin = { module = "com.datadoghq.dd-sdk-android-gradle-plugin:com.datadoghq.dd-sdk-android-gradle-plugin.gradle.plugin", version.ref = "datadogPlugin" }
+googleServices-gradlePlugin = { module = "com.google.gms.google-services:com.google.gms.google-services.gradle.plugin", version.ref = "googleServices" }
+kmpNativeCoroutines-gradlePlugin = { module = "com.rickclephas.kmp.nativecoroutines:com.rickclephas.kmp.nativecoroutines.gradle.plugin", version.ref = "kmpNativeCoroutines" }
+license-gradlePlugin = { module = "com.jaredsburrows.license:com.jaredsburrows.license.gradle.plugin", version.ref = "license" }
+metro-gradlePlugin = { module = "dev.zacsweers.metro:dev.zacsweers.metro.gradle.plugin", version.ref = "metro" }
+squareSortDependencies-gradlePlugin = { module = "com.squareup.sort-dependencies:com.squareup.sort-dependencies.gradle.plugin", version.ref = "squareSortDependencies" }
 firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlinter-gradlePlugin = { module = "org.jmailen.gradle:kotlinter-gradle", version.ref = "kotlinter" }
