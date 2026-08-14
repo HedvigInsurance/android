@@ -42,7 +42,6 @@ query Home($claimsHistoryFlag: Boolean!, $resumeClaimEnabled: Boolean!, $disable
       }
     }
     crossSellV2(input: { userFlow: HOME_X_SELL, flowSource: null, experiments: [] }) {
-      discountAvailable
       recommendedCrossSell {
         crossSell {
           ...HomeCrossSellFragment
@@ -122,7 +121,6 @@ fragment HomeCrossSellFragment on CrossSell {
   id
   title
   description
-  buttonTitle
   storeUrl
   pillowImageLarge {
     src

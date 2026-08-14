@@ -185,7 +185,6 @@ internal class GetHomeDataUseCaseImpl(
               recommendedCrossSell = recommendedCrossSell,
               otherCrossSells = otherCrossSellsData,
               recommendedAddon = recommendedAddon,
-              discountAvailable = crossSellsData.discountAvailable,
             )
             val showChatIcon = shouldShowChatButton(
               isInboxEnabledFromKillSwitch = inboxAlwaysAvailable,
@@ -284,7 +283,6 @@ internal class GetHomeDataUseCaseImpl(
         id = id,
         title = title,
         subtitle = description,
-        buttonText = buttonTitle,
         storeUrl = storeUrl,
         pillowImage = ImageAsset(
           id = pillowImageLarge.id,

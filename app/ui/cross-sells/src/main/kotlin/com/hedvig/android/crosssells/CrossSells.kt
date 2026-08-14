@@ -93,7 +93,6 @@ data class CrossSellSheetData(
   val recommendedCrossSell: RecommendedCrossSell?,
   val otherCrossSells: List<CrossSell>,
   val recommendedAddon: RecommendedAddon?,
-  val discountAvailable: Boolean = false,
 ) {
   val isEmpty: Boolean
     get() = recommendedCrossSell == null && recommendedAddon == null && otherCrossSells.isEmpty()
@@ -162,7 +161,6 @@ fun CrossSellFloatingBottomSheet(
         dismissSheet = { state.dismiss() },
         imageLoader = imageLoader,
         recommendedAddon = crossSellSheetData.recommendedAddon,
-        hasCrossSellDiscounts = crossSellSheetData.discountAvailable,
       )
     },
   )
@@ -197,8 +195,7 @@ fun CrossSellBottomSheet(
         recommendedAddon = crossSellSheetData.recommendedAddon,
         onCrossSellClick = onCrossSellClick,
         dismissSheet = { state.dismiss() },
-        imageLoader = imageLoader,
-        hasCrossSellDiscounts = crossSellSheetData.discountAvailable,
+        imageLoader,
       )
     },
   )
@@ -213,7 +210,6 @@ private fun CrossSellsSheetContent(
   onCrossSellClick: (String) -> Unit,
   dismissSheet: () -> Unit,
   imageLoader: ImageLoader,
-  hasCrossSellDiscounts: Boolean = false,
 ) {
   Column {
     Column(
@@ -252,7 +248,6 @@ private fun CrossSellsSheetContent(
             withSubHeader = false,
             onSheetDismissed = dismissSheet,
             imageLoader = imageLoader,
-            hasCrossSellDiscounts = hasCrossSellDiscounts,
           )
         }
       }
@@ -277,7 +272,6 @@ private fun CrossSellsFloatingSheetContent(
   onCrossSellClick: (String) -> Unit,
   dismissSheet: () -> Unit,
   imageLoader: ImageLoader,
-  hasCrossSellDiscounts: Boolean = false,
 ) {
   Column(
     Modifier.padding(horizontal = 16.dp),
@@ -325,7 +319,6 @@ private fun CrossSellsFloatingSheetContent(
               withSubHeader = false,
               onSheetDismissed = dismissSheet,
               imageLoader = imageLoader,
-              hasCrossSellDiscounts = hasCrossSellDiscounts,
             )
           }
         }

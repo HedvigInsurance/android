@@ -319,7 +319,6 @@ private data class SuccessData(
 
 internal data class CrossSellsPartition(
   val discoverCrossSells: List<CrossSell> = emptyList(),
-  val hasDiscounts: Boolean = false,
 )
 
 /**
@@ -331,7 +330,6 @@ internal fun partitionCrossSells(crossSells: CrossSellSheetData): CrossSellsPart
     discoverCrossSells = crossSells.recommendedCrossSell?.let {
       listOf(it.crossSell) + crossSells.otherCrossSells
     } ?: crossSells.otherCrossSells,
-    hasDiscounts = crossSells.discountAvailable,
   )
 }
 
