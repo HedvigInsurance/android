@@ -45,7 +45,7 @@ A full narrative of *why* these look the way they do — the engineering decisio
 ./gradlew :feature-home:test
 
 # Run unit tests
-./gradlew testDebugUnitTest
+./gradlew test
 
 # Formatting
 ./gradlew ktlintCheck          # Check formatting
@@ -523,7 +523,10 @@ Place `.graphql` files in module's `src/main/graphql/`. Apollo generates type-sa
 ./gradlew :data-contract:test
 
 # Run unit tests only
-./gradlew testDebugUnitTest
+./gradlew test
+
+# Filter to specific tests (works on Android library modules too)
+./gradlew :feature-home:test --tests "*HomePresenterTest*"
 ```
 
 **Test patterns:**
