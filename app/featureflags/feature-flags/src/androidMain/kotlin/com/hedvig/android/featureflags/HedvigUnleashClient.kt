@@ -56,11 +56,20 @@ class HedvigUnleashClient(
    * Emits whenever the toggle state changes for any reason, which includes the local backup being
    * restored and not just a network fetch, so a flag read while offline still updates once the
    * last-known-good state loads.
+   *
+   * It also emits on readiness, because the SDK flips `isReady()` from a coroutine independent of
+   * the one delivering [UnleashStateListener.onStateChanged]. A collector that observed the state
+   * change first would otherwise keep the [neverFetchedDefaults] value until the next cache write,
+   * which an unchanged toggle set never produces.
    */
   val featureUpdatedFlow: Flow<Unit> = callbackFlow {
     trySend(Unit)
-    val listener = object : UnleashStateListener {
+    val listener = object : UnleashStateListener, UnleashReadyListener {
       override fun onStateChanged() {
+        trySend(Unit)
+      }
+
+      override fun onReady() {
         trySend(Unit)
       }
     }

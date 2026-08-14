@@ -57,7 +57,12 @@ default:
 
 Reads are exposed as a `Flow`. `featureUpdatedFlow` emits on any toggle-state change, which
 includes the local backup being restored and not only a network fetch, so a collector that starts
-before the backup lands still sees the value update.
+before the backup lands still sees the value update. It also emits when the client becomes ready,
+which matters because the SDK sets `isReady()` from a coroutine independent of the one that
+notifies state listeners: the two race on the first cache write, and a collector that wins the race
+would read a `neverFetchedDefaults` value out of a cache that already holds real toggles. There is
+no second chance to correct that on its own, since an unchanged toggle set answers `304` and
+`doFetchToggles` writes the cache only on a successful fetch.
 
 ## When the "never fetched" default actually matters
 
@@ -93,9 +98,6 @@ The consequences are all silent:
   `false` until the first poll returns.
 - Offline launches lose last-known-good state entirely, since the backup can no longer load. The
   app has only the handful of values compiled into the bootstrap list.
-- A `304 NOT_MODIFIED` response never repopulates the cache (`doFetchToggles` emits toggles only on
-  success), while the OkHttp disk cache carries the ETag across process death. The near-empty
-  window can therefore outlast a single poll.
 
 The symptom to recognise: a one-shot flag read (`.first()`) that runs during startup silently gets
 the wrong value, while `Flow`-based reads self-correct a second later and look fine. `OnboardingGate`
