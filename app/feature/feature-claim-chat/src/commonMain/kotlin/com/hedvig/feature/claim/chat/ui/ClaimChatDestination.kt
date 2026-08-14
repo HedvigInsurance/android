@@ -934,7 +934,7 @@ private fun StepBottomContent(
 
       is StepContent.DeflectMessage -> {
         HedvigButton(
-          modifier = modifier.fillMaxWidth(),
+          modifier = Modifier.fillMaxWidth(),
           text = stringResource(Res.string.general_close_button),
           onClick = dropUnlessResumed {
             closeFlow()
@@ -945,14 +945,16 @@ private fun StepBottomContent(
       }
 
       is StepContent.Information -> {
-        Column {
+        // Only the current step may be answered; a past step's notice keeps its top content but loses its button.
+        if (isCurrentStep) {
           HedvigButton(
-            modifier = modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             text = stepItem.stepContent.buttonTitle,
             onClick = dropUnlessResumed {
               onEvent(SubmitInformation(stepItem.id))
             },
             enabled = !currentContinueButtonLoading,
+            isLoading = currentContinueButtonLoading,
           )
         }
       }

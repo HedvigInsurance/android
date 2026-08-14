@@ -726,8 +726,8 @@ internal class ClaimChatPresenter(
                   logcat { "ClaimChatEvent.Skip $it" }
                 },
                 ifRight = { claimIntent ->
-                  if (!steps.updateStepWithSuccess(event.id) { step -> step.clearContent() }) return@launch
                   currentSkipButtonLoading = false
+                  if (!steps.updateStepWithSuccess(event.id) { step -> step.clearContent() }) return@launch
                   handleNext(
                     steps,
                     setOutcome,
@@ -754,7 +754,9 @@ internal class ClaimChatPresenter(
               currentContent.freeTextMinLength > it
             } ?: true
             steps.updateStepWithSuccess<StepContent.AudioRecording>(currentStep!!.id) { step, content ->
-              val canSubmit = !currentContinueButtonLoading && !event.text.isNullOrEmpty() && !textTooShort
+              // Validity of the text only. This is captured when the text last changed, so it must not fold in
+              // transient submission state, which the UI applies at the moment the button is composed.
+              val canSubmit = !event.text.isNullOrEmpty() && !textTooShort
               step.copy(
                 stepContent = content.copy(
                   recordingState = recordingState.copy(
@@ -1237,13 +1239,6 @@ private fun onTaskSubmissionFailed(
     step.copy(stepContent = content.copy(failedToSubmit = true))
   }
   setErrorMessage(errorMessage)
-}
-
-private fun <T> MutableList<T>.removeLastIf(predicate: (T) -> Boolean) {
-  val last = lastOrNull() ?: return
-  if (predicate(last)) {
-    removeAt(this.lastIndex)
-  }
 }
 
 private fun validateField(field: Field): Field {

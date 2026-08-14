@@ -215,6 +215,7 @@ enum class InformationSeverity {
 sealed interface AudioRecordingStepState {
   data class FreeTextDescription(
     val errorType: FreeTextErrorType?,
+    /** Whether [freeText] passes the step's length requirements. Says nothing about a submission being in flight. */
     val canSubmit: Boolean,
     val hasError: Boolean = false,
     val freeText: String? = null,

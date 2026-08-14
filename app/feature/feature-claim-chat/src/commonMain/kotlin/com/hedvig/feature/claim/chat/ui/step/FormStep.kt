@@ -181,6 +181,7 @@ private fun FormContent(
   modifier: Modifier = Modifier,
 ) {
   val errorDescription = firstFieldWithError?.let { "${getErrorText(it)}: ${it.title}" }
+  val isSubmitting = continueButtonLoading || skipButtonLoading
   Column(modifier) {
     if (isCurrentStep) {
       Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -342,7 +343,7 @@ private fun FormContent(
       Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         HedvigButton(
           text = stringResource(Res.string.general_continue_button),
-          enabled = !continueButtonLoading,
+          enabled = !isSubmitting,
           isLoading = continueButtonLoading,
           onClick = onSubmit,
           modifier = Modifier.fillMaxWidth().semantics {
@@ -354,7 +355,7 @@ private fun FormContent(
         if (canSkip) {
           HedvigButton(
             text = stringResource(Res.string.claims_skip_button),
-            enabled = !skipButtonLoading,
+            enabled = !isSubmitting,
             onClick = onSkip,
             isLoading = skipButtonLoading,
             modifier = Modifier.fillMaxWidth(),
