@@ -118,7 +118,7 @@ private fun OnboardingCoInsuredScreen(
           for (row in content.rows) {
             OnboardingContractCard(
               displayName = row.displayName,
-              exposureName = row.exposureName,
+              secondaryText = row.secondaryText(),
               typeOfContract = row.typeOfContract,
               isComplete = row.isComplete,
               onAddClick = { onAddCoInsured(row.contractId, row.flowType) },
@@ -145,6 +145,22 @@ private fun OnboardingCoInsuredScreen(
       }
     }
   }
+}
+
+// A complete row lists the people's names; while info is still missing it shows how many there are.
+// TODO: Add "%1$d co-insured" / "%1$d medförsäkrade" and "%1$d co-owners" / "%1$d delägare" to Lokalise
+private fun CoInsuredRow.secondaryText(): String = if (isComplete && insuredNames.isNotEmpty()) {
+  insuredNames.toReadableList()
+} else {
+  val noun = if (flowType == CoInsuredFlowType.CoOwners) "co-owners" else "co-insured"
+  "$insuredCount $noun"
+}
+
+/** Joins names the way the design shows them: "A", "A & B", "A, B & C". */
+private fun List<String>.toReadableList(): String = when (size) {
+  0 -> ""
+  1 -> single()
+  else -> "${dropLast(1).joinToString(", ")} & ${last()}"
 }
 
 @HedvigPreview
@@ -177,18 +193,19 @@ private class OnboardingCoInsuredUiStateProvider : CollectionPreviewParameterPro
         CoInsuredRow(
           contractId = "contract-1",
           displayName = "Home Insurance",
-          exposureName = "Storgatan 1",
           typeOfContract = "SE_APARTMENT_RENT",
           flowType = CoInsuredFlowType.CoInsured,
           isComplete = false,
+          insuredCount = 5,
         ),
         CoInsuredRow(
           contractId = "contract-2",
           displayName = "Car Insurance",
-          exposureName = "ABC 123",
           typeOfContract = "SE_CAR_FULL",
           flowType = CoInsuredFlowType.CoInsured,
           isComplete = true,
+          insuredCount = 3,
+          insuredNames = listOf("Sladan", "Mariia", "Sonny"),
         ),
       ),
     ),
@@ -198,18 +215,18 @@ private class OnboardingCoInsuredUiStateProvider : CollectionPreviewParameterPro
         CoInsuredRow(
           contractId = "contract-3",
           displayName = "Villa Insurance",
-          exposureName = "Villavägen 5",
           typeOfContract = "SE_VILLA",
           flowType = CoInsuredFlowType.CoOwners,
           isComplete = false,
+          insuredCount = 2,
         ),
         CoInsuredRow(
           contractId = "contract-4",
           displayName = "Cottage Insurance",
-          exposureName = "Sommarvägen 12",
           typeOfContract = "SE_VILLA",
           flowType = CoInsuredFlowType.CoOwners,
           isComplete = false,
+          insuredCount = 3,
         ),
       ),
     ),

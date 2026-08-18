@@ -34,7 +34,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun OnboardingContractCard(
   displayName: String,
-  exposureName: String,
+  secondaryText: String,
   typeOfContract: String,
   isComplete: Boolean,
   onAddClick: () -> Unit,
@@ -63,7 +63,7 @@ internal fun OnboardingContractCard(
           style = HedvigTheme.typography.label,
         )
         HedvigText(
-          text = exposureName,
+          text = secondaryText,
           style = HedvigTheme.typography.label,
           color = HedvigTheme.colorScheme.textSecondaryTranslucent,
         )

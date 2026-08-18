@@ -55,6 +55,26 @@ internal class OnboardingRepositoryImpl(
             0
           },
           isMissingPetId = contract.isMissingPetId,
+          coInsuredCount = if (contract.supportsCoInsured) {
+            contract.coInsured.orEmpty().count { it.terminatesOn == null }
+          } else {
+            0
+          },
+          coInsuredNames = if (contract.supportsCoInsured) {
+            contract.coInsured.orEmpty().filter { it.terminatesOn == null }.mapNotNull { it.firstName }
+          } else {
+            emptyList()
+          },
+          coOwnerCount = if (contract.supportsCoOwners) {
+            contract.coOwners.orEmpty().count { it.terminatesOn == null }
+          } else {
+            0
+          },
+          coOwnerNames = if (contract.supportsCoOwners) {
+            contract.coOwners.orEmpty().filter { it.terminatesOn == null }.mapNotNull { it.firstName }
+          } else {
+            emptyList()
+          },
         )
       },
       referralInformation = member.referralInformation.let { referralInformation ->
