@@ -142,7 +142,7 @@ private fun PayoutAccountContent(
           text = "You haven’t added a billing method yet. Add one to pay for your insurance.", // todo
           description = null,
           iconStyle = EmptyStateDefaults.EmptyStateIconStyle.INFO,
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         )
       }
     } else {
@@ -272,23 +272,30 @@ private fun CurrentPayinMethodRow(
           verticalAlignment = Alignment.CenterVertically,
         ) {
           when (provider) {
-            MemberPaymentProvider.TRUSTLY -> Icon(
-              HedvigIcons.Autogiro,
-              null, //todo
-              modifier = Modifier.size(32.dp),
-            )
+            MemberPaymentProvider.TRUSTLY -> {
+              Icon(
+                HedvigIcons.Autogiro,
+                null, // todo
+                modifier = Modifier.size(32.dp),
+              )
+            }
 
-            MemberPaymentProvider.SWISH -> Image(
-              HedvigIcons.Swish,
-              null,  //todo
-              modifier = Modifier.size(32.dp),
-            )
+            MemberPaymentProvider.SWISH -> {
+              Image(
+                HedvigIcons.Swish,
+                null, // todo
+                modifier = Modifier.size(32.dp),
+              )
+            }
 
-            MemberPaymentProvider.INVOICE ->  Image(
-              HedvigIcons.Kivra,
-              null,  //todo
-              modifier = Modifier.size(32.dp),
-            )
+            MemberPaymentProvider.INVOICE -> {
+              Image(
+                HedvigIcons.Kivra,
+                null, // todo
+                modifier = Modifier.size(32.dp),
+              )
+            }
+
             else -> {}
           }
 
@@ -296,7 +303,7 @@ private fun CurrentPayinMethodRow(
           Column {
             HedvigText(text = label)
             HedvigText(
-              text = text ,
+              text = text,
               color = HedvigTheme.colorScheme.textSecondary,
             )
           }
@@ -339,14 +346,12 @@ internal fun formatSwishPhoneNumber(phoneNumber: String): String {
   val sb = StringBuilder()
   for (i in digits.indices) {
     sb.append(digits[i])
-    if (i in setOf(2, 5, 7)
-      ) {
+    if (i in setOf(2, 5, 7)) {
       sb.append("-")
     }
   }
   return sb.toString()
 }
-
 
 private fun formatBankAccountNumber(clearingNumber: String?, accountNumber: String?, bankName: String?): String {
   logcat { "Mariia: clearingNumber: $clearingNumber accountNumber: $accountNumber bankName: $bankName" }
@@ -443,11 +448,11 @@ private class PayinAccountOverviewUiStateProvider : CollectionPreviewParameterPr
           isPending = false,
           isDefault = false,
         ),
-        PayinAccount.Invoice (
-          delivery =  PaymentMethodInvoiceDelivery.KIVRA,
+        PayinAccount.Invoice(
+          delivery = PaymentMethodInvoiceDelivery.KIVRA,
           isPending = false,
           isDefault = false,
-          email = ""
+          email = "",
         ),
       ),
       availablePayinMethods = listOf(MemberPaymentProvider.TRUSTLY),

@@ -9,9 +9,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
-import com.hedvig.android.feature.payoutaccount.data.SetupInvoicePayoutUseCase
-import com.hedvig.android.feature.payoutaccount.navigation.SelectPayoutMethodKey
 import com.hedvig.android.feature.payin.account.data.SetupInvoicePayinUseCase
+import com.hedvig.android.feature.payin.account.navigation.SelectPayinMethodKey
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -24,15 +23,15 @@ import dev.zacsweers.metro.Inject
 internal class SetupInvoicePayinViewModel(
   setupInvoicePayinUseCase: SetupInvoicePayinUseCase,
   backstack: Backstack,
-) : MoleculeViewModel<SetupInvoicePayoutEvent, com.hedvig.android.feature.payin.account.ui.setupinvoice.SetupInvoicePayinUiState>(
-  SetupInvoicePayinUiState(false, null, false),
-  SetupInvoicePayinPresenter(setupInvoicePayinUseCase, backstack),
+) : MoleculeViewModel<SetupInvoicePayinEvent, SetupInvoicePayinUiState>(
+    SetupInvoicePayinUiState(false, null, false),
+    SetupInvoicePayinPresenter(setupInvoicePayinUseCase, backstack),
   )
 
-internal sealed interface SetupInvoicePayoutEvent {
-  data object Connect : SetupInvoicePayoutEvent
+internal sealed interface SetupInvoicePayinEvent {
+  data object Connect : SetupInvoicePayinEvent
 
-  data object ShowedSnackBar : SetupInvoicePayoutEvent
+  data object ShowedSnackBar : SetupInvoicePayinEvent
 }
 
 internal data class SetupInvoicePayinUiState(
@@ -41,15 +40,12 @@ internal data class SetupInvoicePayinUiState(
   val showSuccessSnackBar: Boolean,
 )
 
-internal class SetupInvoicePayoutPresenter(
-  private val setupInvoicePayinUseCase: SetupInvoicePayinUseCase,
-  private val backstack: Backstack,
-) : MoleculePresenter<SetupInvoicePayoutEvent, SetupInvoicePayoutUiState> {
 internal class SetupInvoicePayinPresenter(
   private val setupInvoicePayinUseCase: SetupInvoicePayinUseCase,
-) : MoleculePresenter<SetupInvoicePayoutEvent, SetupInvoicePayinUiState> {
+  private val backstack: Backstack,
+) : MoleculePresenter<SetupInvoicePayinEvent, SetupInvoicePayinUiState> {
   @Composable
-  override fun MoleculePresenterScope<SetupInvoicePayoutEvent>.present(
+  override fun MoleculePresenterScope<SetupInvoicePayinEvent>.present(
     lastState: SetupInvoicePayinUiState,
   ): SetupInvoicePayinUiState {
     var isLoading by remember { mutableStateOf(false) }
@@ -79,15 +75,15 @@ internal class SetupInvoicePayinPresenter(
 
     CollectEvents { event ->
       when (event) {
-        SetupInvoicePayoutEvent.Connect -> {
+        SetupInvoicePayinEvent.Connect -> {
           if (!isLoading) {
             shouldConnect = true
             connectIteration++
           }
         }
 
-        SetupInvoicePayoutEvent.ShowedSnackBar -> {
-          backstack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
+        SetupInvoicePayinEvent.ShowedSnackBar -> {
+          backstack.popUpTo<SelectPayinMethodKey>(inclusive = true)
         }
       }
     }

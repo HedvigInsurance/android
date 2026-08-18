@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.payoutaccount.data
 
-
 internal sealed interface PayoutAccount {
   val isPending: Boolean
 

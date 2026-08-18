@@ -121,45 +121,46 @@ private fun SetupSwishPayoutScreen(
       )
     }
     AnimatedVisibility(uiState.successUrl != null) {
-      if (uiState.successUrl != null)
-      Column(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-      ) {
-        EmptyState(
-          text = "Please give your approval in the Swish app",
-          description = null,
-          modifier = Modifier.fillMaxWidth(),
-          iconStyle = EmptyStateDefaults.EmptyStateIconStyle.SWISH,
-        )
-        Spacer(Modifier.height(16.dp))
+      if (uiState.successUrl != null) {
         Column(
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
           horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-          Surface(
-            color = Color.White,
-            shape = HedvigTheme.shapes.cornerMedium,
-            border = HedvigTheme.colorScheme.borderPrimary,
-            modifier = Modifier.padding(16.dp),
+          EmptyState(
+            text = "Please give your approval in the Swish app",
+            description = null,
+            modifier = Modifier.fillMaxWidth(),
+            iconStyle = EmptyStateDefaults.EmptyStateIconStyle.SWISH,
+          )
+          Spacer(Modifier.height(16.dp))
+          Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
           ) {
-            QRCode(
-              token = uiState.successUrl,
-              modifier = Modifier
-                .size(180.dp)
-                .padding(16.dp),
-            )
+            Surface(
+              color = Color.White,
+              shape = HedvigTheme.shapes.cornerMedium,
+              border = HedvigTheme.colorScheme.borderPrimary,
+              modifier = Modifier.padding(16.dp),
+            ) {
+              QRCode(
+                token = uiState.successUrl,
+                modifier = Modifier
+                  .size(180.dp)
+                  .padding(16.dp),
+              )
+            }
           }
+          Spacer(Modifier.height(16.dp))
+          HedvigButton(
+            "Open Swish",
+            enabled = true,
+            onClick = {
+              openUrl(uiState.successUrl)
+            },
+            buttonStyle = ButtonDefaults.ButtonStyle.PrimaryAlt,
+            buttonSize = ButtonDefaults.ButtonSize.Medium,
+          )
         }
-        Spacer(Modifier.height(16.dp))
-        HedvigButton(
-          "Open Swish",
-          enabled = true,
-          onClick = {
-            openUrl(uiState.successUrl)
-          },
-          buttonStyle = ButtonDefaults.ButtonStyle.PrimaryAlt,
-          buttonSize = ButtonDefaults.ButtonSize.Medium,
-        )
       }
     }
     Spacer(Modifier.weight(1f))

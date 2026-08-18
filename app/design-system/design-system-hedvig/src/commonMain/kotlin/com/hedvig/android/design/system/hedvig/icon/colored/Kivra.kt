@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 
-
 val HedvigIcons.Kivra: ImageVector
   get() {
     if (_KivraLogo1920X1080Green != null) {
@@ -28,7 +27,7 @@ val HedvigIcons.Kivra: ImageVector
       defaultWidth = 1912.dp,
       defaultHeight = 1015.dp,
       viewportWidth = 1912f,
-      viewportHeight = 1015f
+      viewportHeight = 1015f,
     ).apply {
       path(fill = SolidColor(Color(0xFF75C72E))) {
         moveTo(1274f, 292f)

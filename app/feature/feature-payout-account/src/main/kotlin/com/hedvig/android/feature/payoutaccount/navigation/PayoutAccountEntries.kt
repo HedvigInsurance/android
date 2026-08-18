@@ -9,8 +9,6 @@ import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOvervie
 import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewUiState
 import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewViewModel
 import com.hedvig.android.feature.payoutaccount.ui.selectmethod.SelectPayoutMethodDestination
-import com.hedvig.android.feature.payoutaccount.ui.setupinvoice.SetupInvoicePayoutDestination
-import com.hedvig.android.feature.payoutaccount.ui.setupinvoice.SetupInvoicePayoutViewModel
 import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutDestination
 import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
@@ -54,7 +52,6 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountEntries(
       },
       onNordeaSelected = dropUnlessResumed { backstack.add(EditBankAccountKey) },
       onSwishSelected = dropUnlessResumed { backstack.add(SetupSwishPayoutKey) },
-      onInvoiceSelected = dropUnlessResumed { backstack.add(SetupInvoicePayoutKey) },
       navigateUp = backstack::navigateUp,
     )
   }
@@ -71,15 +68,6 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountEntries(
   entry<SetupSwishPayoutKey> {
     val viewModel: SetupSwishPayoutViewModel = metroViewModel()
     SetupSwishPayoutDestination(
-      viewModel = viewModel,
-      globalSnackBarState = globalSnackBarState,
-      navigateUp = backstack::navigateUp,
-    )
-  }
-
-  entry<SetupInvoicePayoutKey> {
-    val viewModel: SetupInvoicePayoutViewModel = metroViewModel()
-    SetupInvoicePayoutDestination(
       viewModel = viewModel,
       globalSnackBarState = globalSnackBarState,
       navigateUp = backstack::navigateUp,

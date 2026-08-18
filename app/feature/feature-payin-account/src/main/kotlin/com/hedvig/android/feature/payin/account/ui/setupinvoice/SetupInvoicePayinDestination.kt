@@ -43,8 +43,8 @@ internal fun SetupInvoicePayinDestination(
   SetupInvoicePayinScreen(
     uiState = uiState,
     globalSnackBarState = globalSnackBarState,
-    onConnect = { viewModel.emit(SetupInvoicePayoutEvent.Connect) },
-    showedSnackBar = { viewModel.emit(SetupInvoicePayoutEvent.ShowedSnackBar) },
+    onConnect = { viewModel.emit(SetupInvoicePayinEvent.Connect) },
+    showedSnackBar = { viewModel.emit(SetupInvoicePayinEvent.ShowedSnackBar) },
     navigateUp = navigateUp,
   )
 }

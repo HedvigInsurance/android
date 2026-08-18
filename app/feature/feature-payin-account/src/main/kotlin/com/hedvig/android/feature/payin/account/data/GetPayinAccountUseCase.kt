@@ -8,7 +8,10 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import octopus.GetPayinMethodsQuery
 import octopus.GetPayinMethodsQuery.Data.CurrentMember.PaymentMethods.PayinMethod.Details.Companion.asPaymentMethodBankAccountDetails
 import octopus.GetPayinMethodsQuery.Data.CurrentMember.PaymentMethods.PayinMethod.Details.Companion.asPaymentMethodInvoiceDetails
@@ -22,6 +25,8 @@ internal data class PayinAccountData(
   val availablePayinMethods: List<MemberPaymentProvider>,
 )
 
+@SingleIn(AppScope::class)
+@Inject
 internal class GetPayinAccountUseCase(
   private val apolloClient: ApolloClient,
 ) {

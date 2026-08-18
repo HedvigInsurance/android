@@ -128,7 +128,7 @@ internal class GetMemberQuickActionsUseCaseImpl(
           QuickAction.StandaloneQuickLink(
             quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkConnectPayment,
             titleRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_TITLE,
-            hintTextRes = Res.string.MANAGE_BILLING_METHODS_BUTTON, //todo!!!
+            hintTextRes = Res.string.MANAGE_BILLING_METHODS_BUTTON, // todo!!!
           ),
         )
       }

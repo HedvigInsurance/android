@@ -95,23 +95,29 @@ private fun PayinMethodRow(
       verticalAlignment = Alignment.CenterVertically,
     ) {
       when (provider) {
-        MemberPaymentProvider.TRUSTLY -> Icon(
-          HedvigIcons.Autogiro,
-          null, //todo
-          modifier = Modifier.size(32.dp),
-        )
+        MemberPaymentProvider.TRUSTLY -> {
+          Icon(
+            HedvigIcons.Autogiro,
+            null, // todo
+            modifier = Modifier.size(32.dp),
+          )
+        }
 
-        MemberPaymentProvider.SWISH -> Image(
-          HedvigIcons.Swish,
-          null,  //todo
-          modifier = Modifier.size(32.dp),
-        )
+        MemberPaymentProvider.SWISH -> {
+          Image(
+            HedvigIcons.Swish,
+            null, // todo
+            modifier = Modifier.size(32.dp),
+          )
+        }
 
-        MemberPaymentProvider.INVOICE -> Image(
-          HedvigIcons.Kivra,
-          null,  //todo
-          modifier = Modifier.size(32.dp),
-        )
+        MemberPaymentProvider.INVOICE -> {
+          Image(
+            HedvigIcons.Kivra,
+            null, // todo
+            modifier = Modifier.size(32.dp),
+          )
+        }
 
         else -> {}
       }
@@ -120,24 +126,31 @@ private fun PayinMethodRow(
       Column(Modifier.padding(vertical = 12.dp)) {
         HedvigText(
           text = when (provider) {
-            MemberPaymentProvider.TRUSTLY -> "Direct debit" // todo
+            MemberPaymentProvider.TRUSTLY -> "Direct debit"
+
+            // todo
             MemberPaymentProvider.SWISH -> stringResource(Res.string.swish)
+
             MemberPaymentProvider.INVOICE -> stringResource(Res.string.PAYMENTS_INVOICE)
+
             else -> ""
           },
         )
         HedvigText(
           text = when (provider) {
-            MemberPaymentProvider.TRUSTLY -> "Connect your bank via Trustly" // todo
-            MemberPaymentProvider.SWISH -> "Monthly auto-payments via Swish" // todo
+            MemberPaymentProvider.TRUSTLY -> "Connect your bank via Trustly"
+
+            // todo
+            MemberPaymentProvider.SWISH -> "Monthly auto-payments via Swish"
+
+            // todo
             MemberPaymentProvider.INVOICE -> stringResource(Res.string.PAYOUT_METHOD_INVOICE_DESCRIPTION)
+
             else -> ""
           },
           color = HedvigTheme.colorScheme.textSecondary,
         )
       }
-
-
     }
   }
 }

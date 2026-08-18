@@ -179,13 +179,18 @@ private fun <D : Operation.Data> iorFromErrorsAndData(
     errors != null && data != null -> {
       Ior.Both(errors, data)
     }
+
     errors != null -> {
       Ior.Left(errors)
     }
+
     data != null -> {
       Ior.Right(data)
     }
-    else -> error("Non compliant server")
+
+    else -> {
+      error("Non compliant server")
+    }
   }
 }
 

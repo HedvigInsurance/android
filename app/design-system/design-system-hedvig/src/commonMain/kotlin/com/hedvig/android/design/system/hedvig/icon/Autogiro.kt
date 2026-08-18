@@ -28,7 +28,7 @@ val HedvigIcons.Autogiro: ImageVector
       defaultWidth = 110.dp,
       defaultHeight = 135.dp,
       viewportWidth = 110f,
-      viewportHeight = 135f
+      viewportHeight = 135f,
     ).apply {
       path(fill = SolidColor(Color.Black)) {
         moveToRelative(93.54f, 57.92f)

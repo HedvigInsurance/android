@@ -67,7 +67,7 @@ internal fun SelectPayoutMethodDestination(
           MemberPaymentProvider.NORDEA -> {
             PayoutMethodRow(
               title = stringResource(Res.string.BANK_PAYOUT_METHOD_CARD_TITLE),
-              subtitle = "Payout to a bank account",  //todo: removed BANK_PAYOUT_METHOD_CARD_DESCRIPTION for demo
+              subtitle = "Payout to a bank account", // todo: removed BANK_PAYOUT_METHOD_CARD_DESCRIPTION for demo
               onClick = onNordeaSelected,
               provider = provider,
             )
@@ -107,23 +107,29 @@ private fun PayoutMethodRow(
       verticalAlignment = Alignment.CenterVertically,
     ) {
       when (provider) {
-        MemberPaymentProvider.TRUSTLY -> Icon(
-          HedvigIcons.Link,
-          null, //todo
-          modifier = Modifier.size(32.dp),
-        )
+        MemberPaymentProvider.TRUSTLY -> {
+          Icon(
+            HedvigIcons.Link,
+            null, // todo
+            modifier = Modifier.size(32.dp),
+          )
+        }
 
-        MemberPaymentProvider.SWISH -> Image(
-          HedvigIcons.Swish,
-          null,  //todo
-          modifier = Modifier.size(32.dp),
-        )
+        MemberPaymentProvider.SWISH -> {
+          Image(
+            HedvigIcons.Swish,
+            null, // todo
+            modifier = Modifier.size(32.dp),
+          )
+        }
 
-        MemberPaymentProvider.NORDEA -> Icon(
-          HedvigIcons.Card,
-          null, //todo
-          modifier = Modifier.size(32.dp),
-        )
+        MemberPaymentProvider.NORDEA -> {
+          Icon(
+            HedvigIcons.Card,
+            null, // todo
+            modifier = Modifier.size(32.dp),
+          )
+        }
 
         else -> {}
       }

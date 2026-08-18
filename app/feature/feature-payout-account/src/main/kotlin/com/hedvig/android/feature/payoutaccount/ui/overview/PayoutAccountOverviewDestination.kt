@@ -35,7 +35,6 @@ import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOvervie
 import hedvig.resources.CHANGE_PAYOUT_METHOD_BUTTON_LABEL
 import hedvig.resources.MY_PAYMENT_UPDATING_MESSAGE
 import hedvig.resources.PAYMENTS_ACCOUNT
-import hedvig.resources.PAYMENTS_INVOICE
 import hedvig.resources.PAYOUT_MISSING_INFO
 import hedvig.resources.PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE
 import hedvig.resources.PAYOUT_NO_PAYOUT_OPTIONS_TITLE
@@ -47,7 +46,6 @@ import hedvig.resources.Res
 import hedvig.resources.swish
 import hedvig.resources.trustly
 import octopus.type.MemberPaymentProvider
-import octopus.type.PaymentMethodInvoiceDelivery
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

@@ -174,7 +174,7 @@ object EmptyStateDefaults {
     NO_ICON,
     SUCCESS_WITH_WARNING,
 
-    SWISH
+    SWISH,
   }
 
   sealed class EmptyStateButtonStyle {

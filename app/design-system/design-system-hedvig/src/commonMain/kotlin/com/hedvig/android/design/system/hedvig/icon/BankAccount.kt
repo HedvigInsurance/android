@@ -97,7 +97,6 @@ val HedvigIcons.BankAccount: ImageVector
 @Suppress("ObjectPropertyName")
 private var _Icons8BankAccount48: ImageVector? = null
 
-
 @Preview
 @Composable
 private fun IconPreview() {

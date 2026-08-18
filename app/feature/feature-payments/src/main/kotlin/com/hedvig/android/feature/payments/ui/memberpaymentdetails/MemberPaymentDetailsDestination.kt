@@ -223,7 +223,7 @@ private fun MemberPaymentDetailsSuccessScreen(
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = stringResource(Res.string.MANAGE_BILLING_METHODS_BUTTON),//todo
+      text = stringResource(Res.string.MANAGE_BILLING_METHODS_BUTTON), // todo
       onClick = onChangeBankAccount,
       enabled = true,
       buttonStyle = ButtonDefaults.ButtonStyle.Secondary,

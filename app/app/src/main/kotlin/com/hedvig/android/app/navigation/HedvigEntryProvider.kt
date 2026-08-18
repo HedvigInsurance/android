@@ -50,6 +50,7 @@ import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
 import com.hedvig.android.feature.movingflow.movingFlowEntries
 import com.hedvig.android.feature.onboarding.data.ResetOnboardingSeenUseCase
 import com.hedvig.android.feature.onboarding.navigation.onboardingEntries
+import com.hedvig.android.feature.payin.account.navigation.payinAccountEntries
 import com.hedvig.android.feature.payments.navigation.paymentsEntries
 import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountKey
 import com.hedvig.android.feature.payoutaccount.navigation.payoutAccountEntries
@@ -157,6 +158,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   addPaymentsEntries(
     backstack = backstack,
     globalSnackBarState = globalSnackBarState,
+    openUrl = openUrl,
     navigateToConnectPayment = navigateToConnectPayment,
     navigateToPayoutAccount = navigateToPayoutAccount,
     navigateToNewConversation = navigateToNewConversation,
@@ -456,6 +458,7 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
 private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
   backstack: BackstackController,
   globalSnackBarState: GlobalSnackBarState,
+  openUrl: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
   navigateToNewConversation: () -> Unit,
@@ -470,6 +473,12 @@ private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
     backstack = backstack,
     globalSnackBarState = globalSnackBarState,
     navigateToConnectPayment = navigateToConnectPayment,
+  )
+  payinAccountEntries(
+    backstack = backstack,
+    globalSnackBarState = globalSnackBarState,
+    navigateToConnectPayment = navigateToConnectPayment,
+    openUrl = openUrl,
   )
   connectPaymentEntries(backstack = backstack)
 }

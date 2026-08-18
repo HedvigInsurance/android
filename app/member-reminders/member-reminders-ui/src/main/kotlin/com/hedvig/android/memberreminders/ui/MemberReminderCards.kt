@@ -348,7 +348,7 @@ private fun ReminderCardConnectPayment(
     modifier = modifier,
     priority = NotificationPriority.Attention,
     style = InfoCardStyle.Button(
-      buttonText = "Setup payment method", //todo
+      buttonText = "Setup payment method", // todo
       onButtonClick = navigateToConnectPayment,
     ),
     minLines = minLines,

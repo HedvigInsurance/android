@@ -28,7 +28,7 @@ internal class MemberPaymentDetailsViewModel(
     presenter = MemberPaymentDetailsPresenter(
       getMemberPaymentsDetailsUseCase,
     ),
-  sharingStarted = SharingStarted.WhileSubscribed(2.seconds),
+    sharingStarted = SharingStarted.WhileSubscribed(2.seconds),
   )
 
 private class MemberPaymentDetailsPresenter(
