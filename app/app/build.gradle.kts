@@ -3,11 +3,11 @@ import com.project.starter.easylauncher.filter.ColorRibbonFilter
 plugins {
   id("hedvig.android.application")
   id("hedvig.gradle.plugin")
-  alias(libs.plugins.appIconBannerGenerator) // Automatically adds the "DEBUG" banner on the debug app icon
-  alias(libs.plugins.crashlytics)
-  alias(libs.plugins.datadog)
-  alias(libs.plugins.googleServices)
-  alias(libs.plugins.license)
+  id("com.starter.easylauncher") // Automatically adds the "DEBUG" banner on the debug app icon
+  id("com.google.firebase.crashlytics")
+  id("com.datadoghq.dd-sdk-android-gradle-plugin")
+  id("com.google.gms.google-services")
+  id("com.jaredsburrows.license")
 }
 
 hedvig {
@@ -68,6 +68,8 @@ android {
       applicationIdSuffix = ".app"
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
       isMinifyEnabled = true
+      // Libraries only publish `release`. DeDebug maps the `debug` build type onto it automatically,
+      // but a custom build type has to declare the fallback itself.
       matchingFallbacks += "release"
       setProguardFiles(
         listOf(
