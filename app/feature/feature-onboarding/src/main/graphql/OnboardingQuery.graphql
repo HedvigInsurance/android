@@ -42,7 +42,7 @@ query Onboarding {
         title
         description
         storeUrl
-        pillowImageLarge {
+        pillowImageSmall {
           src
         }
       }

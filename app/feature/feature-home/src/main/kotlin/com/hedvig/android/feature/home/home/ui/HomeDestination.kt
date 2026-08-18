@@ -92,6 +92,7 @@ import coil3.compose.AsyncImage
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.core.common.image.storyblokResized
 import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellBottomSheet
 import com.hedvig.android.crosssells.CrossSellSheetData
@@ -1097,6 +1098,8 @@ private fun MemberRemindersSection(
   }
 }
 
+private val PillowSize = 48.dp
+
 @Composable
 private fun QuotesSection(
   sessions: List<OngoingShopSession>,
@@ -1128,12 +1131,13 @@ private fun QuotesSection(
         Column(Modifier.padding(16.dp)) {
           Row(verticalAlignment = Alignment.CenterVertically) {
             if (session.pillowImageUrl != null) {
+              val pillowPx = with(LocalDensity.current) { PillowSize.roundToPx() }
               AsyncImage(
-                model = session.pillowImageUrl,
+                model = storyblokResized(session.pillowImageUrl, pillowPx),
                 contentDescription = null,
                 imageLoader = imageLoader,
                 contentScale = ContentScale.Fit,
-                modifier = Modifier.size(48.dp),
+                modifier = Modifier.size(PillowSize),
               )
               Spacer(Modifier.width(12.dp))
             }
@@ -1513,6 +1517,7 @@ private fun PreviewHomeScreen(
                   "For you and your car",
                   "",
                   ImageAsset("", "", ""),
+                  ImageAsset("", "", ""),
                 ),
                 bannerText = "50% discount the first year",
                 discountText = "-50%",
@@ -1527,6 +1532,7 @@ private fun PreviewHomeScreen(
                   "Pet insurance",
                   "For your dog or cat",
                   "",
+                  ImageAsset("", "", ""),
                   ImageAsset("", "", ""),
                 ),
               ),
