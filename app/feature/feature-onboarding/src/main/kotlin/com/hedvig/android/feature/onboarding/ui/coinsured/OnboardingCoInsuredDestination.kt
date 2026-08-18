@@ -152,7 +152,11 @@ private fun OnboardingCoInsuredScreen(
 private fun CoInsuredRow.secondaryText(): String = if (isComplete && insuredNames.isNotEmpty()) {
   insuredNames.toReadableList()
 } else {
-  val noun = if (flowType == CoInsuredFlowType.CoOwners) "co-owners" else "co-insured"
+  val noun = when {
+    flowType == CoInsuredFlowType.CoOwners && insuredCount == 1 -> "co-owner"
+    flowType == CoInsuredFlowType.CoOwners -> "co-owners"
+    else -> "co-insured"
+  }
   "$insuredCount $noun"
 }
 
