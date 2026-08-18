@@ -233,7 +233,7 @@ private fun OnboardingPaymentScreen(
             stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_FOOTNOTE)
           },
           style = HedvigTheme.typography.label,
-          color = HedvigTheme.colorScheme.textSecondary,
+          color = HedvigTheme.colorScheme.textSecondaryTranslucent,
           modifier = Modifier
             .align(Alignment.CenterHorizontally)
             .padding(horizontal = 32.dp),

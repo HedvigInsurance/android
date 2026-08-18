@@ -24,7 +24,6 @@ import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
-import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import hedvig.resources.ONBOARDING_ADD_BUTTON
@@ -46,8 +45,7 @@ internal fun OnboardingContractCard(
     color = HedvigTheme.colorScheme.surfacePrimary,
     modifier = modifier
       .fillMaxWidth()
-      .padding(horizontal = 16.dp)
-      .hedvigDropShadow(HedvigTheme.shapes.cornerLarge),
+      .padding(horizontal = 16.dp),
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
@@ -62,12 +60,12 @@ internal fun OnboardingContractCard(
       Column(Modifier.weight(1f)) {
         HedvigText(
           text = displayName,
-          style = HedvigTheme.typography.bodySmall,
+          style = HedvigTheme.typography.label,
         )
         HedvigText(
           text = exposureName,
           style = HedvigTheme.typography.label,
-          color = HedvigTheme.colorScheme.textSecondary,
+          color = HedvigTheme.colorScheme.textSecondaryTranslucent,
         )
       }
       Spacer(Modifier.width(12.dp))
