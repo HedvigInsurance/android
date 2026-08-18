@@ -15,10 +15,10 @@ import kotlinx.serialization.KSerializer
  * Matching a URI returns the highest-priority [HedvigNavKey] (per Nav3's [UriMatchResult] ordering), or null if no
  * matcher matches — in which case the caller should fall back to opening the URI in a browser.
  */
-class HedvigDeepLinkMatcher(private val matchers: List<DeepLinkMatcher<HedvigNavKey>>) {
+class HedvigDeepLinkMatcher(private val matchers: List<DeepLinkMatcher<HedvigNavKey, *>>) {
   fun match(uri: String): HedvigNavKey? {
     val request = runCatching { DeepLinkRequest(uri) }.getOrNull() ?: return null
-    var best: DeepLinkMatcher.MatchResult<HedvigNavKey>? = null
+    var best: DeepLinkMatcher.MatchResult<out HedvigNavKey>? = null
     matchers.forEach { matcher ->
       // A matcher for a destination with a required (no-default) argument throws when that argument is absent from the
       // URI, rather than returning null. Treat any throw as a non-match.
@@ -40,6 +40,6 @@ class HedvigDeepLinkMatcher(private val matchers: List<DeepLinkMatcher<HedvigNav
 fun <T : HedvigNavKey> uriDeepLinkMatchers(
   patterns: List<String>,
   serializer: KSerializer<T>,
-): List<DeepLinkMatcher<HedvigNavKey>> = patterns.map { pattern ->
+): List<DeepLinkMatcher<HedvigNavKey, *>> = patterns.map { pattern ->
   UriDeepLinkMatcher(DeepLinkUri(pattern), serializer)
 }
