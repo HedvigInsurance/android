@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.raise.either
 import assertk.Assert
+import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.hasSize
@@ -14,6 +15,7 @@ import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import assertk.assertions.prop
+import assertk.assertions.single
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.annotations.ApolloExperimental
 import com.apollographql.apollo.testing.registerTestNetworkError
@@ -33,6 +35,8 @@ import com.hedvig.android.crosssells.RecommendedAddon
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
+import com.hedvig.android.data.contract.CrossSell
+import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage.LinkInfo
 import com.hedvig.android.featureflags.FeatureManager
@@ -61,6 +65,7 @@ import octopus.builder.buildChatMessageText
 import octopus.builder.buildClaim
 import octopus.builder.buildContract
 import octopus.builder.buildConversation
+import octopus.builder.buildCrossSell
 import octopus.builder.buildCrossSellV2
 import octopus.builder.buildLinkInfo
 import octopus.builder.buildMember
@@ -750,6 +755,52 @@ internal class GetHomeUseCaseTest {
           pillowImageLarge = "largeSrc",
         ),
       )
+  }
+
+  @Test
+  fun `a cross sell keeps its small and large pillow variants distinct`() = runTest {
+    val getHomeDataUseCase = testUseCaseWithoutReminders()
+
+    apolloClient.registerTestResponse(
+      HomeQuery(true, true, true),
+      HomeQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          crossSellV2 = buildCrossSellV2 {
+            otherCrossSells = listOf(
+              buildCrossSell {
+                id = "crossSellId"
+                title = "Pet Insurance"
+                description = "For your dog or cat"
+                storeUrl = "https://hedvig.com/pet"
+                pillowImageSmall = buildStoryblokImageAsset { src = "smallSrc" }
+                pillowImageLarge = buildStoryblokImageAsset { src = "largeSrc" }
+              },
+            )
+          }
+        }
+      },
+    )
+    apolloClient.registerTestResponse(
+      UnreadMessageCountQuery(),
+      UnreadMessageCountQuery.Data(OctopusFakeResolver),
+    )
+    apolloClient.registerTestResponse(
+      CbmNumberOfChatMessagesQuery(),
+      CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+    )
+
+    val result = getHomeDataUseCase.invoke(true).first()
+
+    assertThat(result)
+      .isNotNull()
+      .isRight()
+      .prop(HomeData::crossSells)
+      .prop(CrossSellSheetData::otherCrossSells)
+      .single()
+      .all {
+        prop(CrossSell::pillowImageSmall).prop(ImageAsset::src).isEqualTo("smallSrc")
+        prop(CrossSell::pillowImageLarge).prop(ImageAsset::src).isEqualTo("largeSrc")
+      }
   }
 
   @Test

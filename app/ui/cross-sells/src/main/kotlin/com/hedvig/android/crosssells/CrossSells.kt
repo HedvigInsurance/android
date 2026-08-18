@@ -547,8 +547,9 @@ private fun StackedPillows(recommendedCrossSell: RecommendedCrossSell, imageLoad
     }
     Box(Modifier.zIndex(1f)) {
       AsyncImage(
-        model = recommendedCrossSell.crossSell.pillowImage.src,
-        contentDescription = recommendedCrossSell.crossSell.pillowImage.description ?: EmptyContentDescription,
+        model = recommendedCrossSell.crossSell.pillowImageLarge.src,
+        contentDescription = recommendedCrossSell.crossSell.pillowImageLarge.description
+          ?: EmptyContentDescription,
         placeholder = placeholder,
         error = placeholder,
         fallback = placeholder,
@@ -627,7 +628,7 @@ fun CrossSellsSection(
           onCrossSellClick = onCrossSellClick,
           isLoading = false,
           imageLoader = imageLoader,
-          crossSellImageAsset = crossSell.pillowImage,
+          crossSellImageAsset = crossSell.pillowImageSmall,
           onSheetDismissed = onSheetDismissed,
           buttonText = crossSell.buttonText ?: buttonText,
           buttonSize = buttonSize,
@@ -699,7 +700,7 @@ private fun CrossSellItem(
     modifier = modifier,
     isLoading = false,
     imageLoader = imageLoader,
-    crossSellImageAsset = crossSell.pillowImage,
+    crossSellImageAsset = crossSell.pillowImageSmall,
     onSheetDismissed = onSheetDismissed,
     buttonText = buttonText,
     buttonSize = buttonSize,
@@ -742,7 +743,8 @@ private fun CrossSellItem(
 
 /**
  * A pillow icon, a title/subtitle, and a trailing button in one row. The shape shared by the cross-sell
- * list and the home addons list. [pillowImage] falls back to a generic pillow placeholder when null.
+ * list and the home addons list. [pillowImage] is drawn at 48.dp, so pass the small pillow variant; it falls
+ * back to a generic pillow placeholder when null.
  */
 @Composable
 fun PillowRow(
@@ -991,6 +993,7 @@ private fun PreviewCrossSellsSheetContent(
               "For you and your car",
               "",
               ImageAsset("", "", ""),
+              ImageAsset("", "", ""),
             ),
             bannerText = "50% discount the first year",
             buttonText = "Explore offer",
@@ -1005,6 +1008,7 @@ private fun PreviewCrossSellsSheetContent(
               "Pet insurance",
               "For your dog or cat",
               "",
+              ImageAsset("", "", ""),
               ImageAsset("", "", ""),
             ),
           ).takeIf { case != TripleCase.FIRST }.orEmpty(),
@@ -1034,6 +1038,7 @@ private fun PreviewCrossSellsFloatingSheetContent(
             "For you and your car",
             "",
             ImageAsset("", "", ""),
+            ImageAsset("", "", ""),
           ),
           bannerText = "50% discount the first year",
           buttonText = "Explore offer",
@@ -1048,6 +1053,7 @@ private fun PreviewCrossSellsFloatingSheetContent(
             "title",
             "subtitle",
             "",
+            ImageAsset("", "", ""),
             ImageAsset("", "", ""),
           ),
         ).takeIf { case != TripleCase.FIRST }.orEmpty(),
@@ -1072,6 +1078,7 @@ private fun PreviewCrossSellsSection() {
             "subtitle",
             "storeUrl",
             ImageAsset("", "", ""),
+            ImageAsset("", "", ""),
           )
         },
         {},
@@ -1095,6 +1102,7 @@ private fun PreviewCrossSellsSectionWithDiscounts() {
             "Accident Insurance",
             "50% off your first year",
             "storeUrl",
+            ImageAsset("", "", ""),
             ImageAsset("", "", ""),
             buttonText = "Save 50%",
           )

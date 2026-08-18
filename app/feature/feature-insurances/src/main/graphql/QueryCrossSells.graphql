@@ -9,6 +9,11 @@ query CrossSells {
         description
         buttonTitle
         storeUrl
+        pillowImageSmall {
+          src
+          id
+          alt
+        }
         pillowImageLarge {
           src
           id

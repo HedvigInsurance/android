@@ -122,6 +122,11 @@ fragment HomeCrossSellFragment on CrossSell {
   title
   description
   storeUrl
+  pillowImageSmall {
+    src
+    id
+    alt
+  }
   pillowImageLarge {
     src
     id
