@@ -73,10 +73,21 @@ private fun ClaimIntentFragment.CurrentStep.toClaimIntentStep(locale: CommonLoca
   return ClaimIntentStep(
     id = StepId(id),
     text = text,
-    stepContent = this.content.toStepContent(locale),
+    stepContent = this.content.toStepContent(locale).withoutAlreadyUploadedFiles(),
     isRegrettable = this.isRegrettable,
     hint = hint,
   )
+}
+
+/**
+ * Submitting a file upload step replaces its files with exactly the ones sent, and an already
+ * uploaded file comes back carrying only a url, never an id that could be sent again. Showing those
+ * files on the step the user is standing on would promise they are kept while continuing drops
+ * them, so the step the user can act on starts empty and they pick the whole set anew.
+ */
+private fun StepContent.withoutAlreadyUploadedFiles(): StepContent = when (this) {
+  is StepContent.FileUpload -> copy(localFiles = emptyList())
+  else -> this
 }
 
 context(raise: Raise<ClaimChatErrorMessage>)
