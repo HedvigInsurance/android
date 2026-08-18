@@ -56,11 +56,7 @@ import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun EditCoInsuredAddMissingInfoDestination(
-  viewModel: EditCoInsuredViewModel,
-  navigateToSuccessScreen: (LocalDate) -> Unit,
-  navigateUp: () -> Unit,
-) {
+internal fun EditCoInsuredAddMissingInfoDestination(viewModel: EditCoInsuredViewModel, navigateUp: () -> Unit) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
   EditCoInsuredScreen(
@@ -77,9 +73,6 @@ internal fun EditCoInsuredAddMissingInfoDestination(
     },
     onCommitChanges = {
       viewModel.emit(EditCoInsuredEvent.OnCommitChanges)
-    },
-    onCompleted = {
-      navigateToSuccessScreen(it)
     },
     onDismissError = {
       viewModel.emit(EditCoInsuredEvent.OnDismissError)
@@ -116,7 +109,6 @@ private fun EditCoInsuredScreen(
   onSsnChanged: (String) -> Unit,
   onBottomSheetContinue: () -> Unit,
   onCommitChanges: () -> Unit,
-  onCompleted: (LocalDate) -> Unit,
   onDismissError: () -> Unit,
   onResetAddBottomSheetState: () -> Unit,
   onFirstNameChanged: (String) -> Unit,
@@ -143,11 +135,6 @@ private fun EditCoInsuredScreen(
       }
 
       is EditCoInsuredState.Loaded -> {
-        LaunchedEffect(uiState.contractUpdateDate) {
-          if (uiState.contractUpdateDate != null) {
-            onCompleted(uiState.contractUpdateDate)
-          }
-        }
         val hedvigBottomSheetState =
           rememberHedvigBottomSheetState<EditCoInsuredState.Loaded.AddBottomSheetContentState>()
         DismissSheetOnSuccessfulInfoChangeEffect(hedvigBottomSheetState, uiState.finishedAdding)
@@ -321,7 +308,6 @@ private fun EditCoInsuredScreenErrorPreview() {
         onSsnChanged = {},
         onBottomSheetContinue = {},
         onCommitChanges = {},
-        onCompleted = {},
         onDismissError = {},
         onResetAddBottomSheetState = {},
         onFirstNameChanged = {},
@@ -424,7 +410,6 @@ private fun EditCoInsuredScreenEditablePreview() {
         onSsnChanged = {},
         onBottomSheetContinue = {},
         onCommitChanges = {},
-        onCompleted = {},
         onDismissError = {},
         onResetAddBottomSheetState = {},
         onFirstNameChanged = {},
@@ -486,7 +471,6 @@ private fun EditCoInsuredScreenNonEditablePreview() {
         onSsnChanged = {},
         onBottomSheetContinue = {},
         onCommitChanges = {},
-        onCompleted = {},
         onDismissError = {},
         onResetAddBottomSheetState = {},
         onFirstNameChanged = {},

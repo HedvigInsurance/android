@@ -8,7 +8,6 @@ import androidx.room.RoomDatabase
 import androidx.room.withTransaction
 import arrow.core.getOrElse
 import com.benasher44.uuid.Uuid
-import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.chat.database.ChatDao
 import com.hedvig.android.data.chat.database.ChatMessageEntity
 import com.hedvig.android.data.chat.database.RemoteKeyDao
@@ -27,7 +26,7 @@ internal class ChatRemoteMediator(
   private val database: RoomDatabase,
   private val chatDao: ChatDao,
   private val remoteKeyDao: RemoteKeyDao,
-  private val chatRepository: Provider<CbmChatRepository>,
+  private val chatRepository: CbmChatRepository,
   private val clock: Clock,
 ) : RemoteMediator<Int, ChatMessageEntity>() {
   override suspend fun load(loadType: LoadType, state: PagingState<Int, ChatMessageEntity>): MediatorResult {
@@ -49,7 +48,7 @@ internal class ChatRemoteMediator(
         PagingToken.OlderToken(olderToken)
       }
     }
-    val response = chatRepository.provide().chatMessages(conversationId, pagingToken).getOrElse {
+    val response = chatRepository.chatMessages(conversationId, pagingToken).getOrElse {
       logcat { "ChatRemoteMediator: Failed to fetch chat messages: $it [MediatorResult.Error(it)]" }
       return MediatorResult.Error(it)
     }

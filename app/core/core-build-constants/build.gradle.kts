@@ -7,7 +7,7 @@ plugins {
 kotlin {
   sourceSets {
     commonMain.dependencies {
-      implementation(libs.koin.core)
+      implementation(projects.coreCommonPublic)
       implementation(projects.languageCore)
     }
     androidMain.dependencies {

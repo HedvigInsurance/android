@@ -7,16 +7,22 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.flow.first
 
+@AssistedInject
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class TravelAddonTriageViewModel(
   getAddonBannerInfoUseCase: GetAddonBannerInfoUseCase,
-  addonBannerSource: AddonBannerSource,
+  @Assisted addonBannerSource: AddonBannerSource,
 ) : MoleculeViewModel<TravelAddonTriageEvent, TravelAddonTriageState>(
     initialState = TravelAddonTriageState.Loading,
     presenter = TravelAddonTriagePresenter(getAddonBannerInfoUseCase, addonBannerSource),

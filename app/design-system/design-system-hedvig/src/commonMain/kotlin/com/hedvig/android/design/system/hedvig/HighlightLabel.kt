@@ -1,6 +1,7 @@
 package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
@@ -30,6 +31,23 @@ import com.hedvig.android.design.system.hedvig.tokens.HighlightLabelTokens
 
 @Composable
 fun HighlightLabel(labelText: String, size: HighLightSize, color: HighlightColor, modifier: Modifier = Modifier) {
+  HighlightLabel(size, color, modifier) {
+    HedvigText(
+      text = labelText,
+      textAlign = TextAlign.Center,
+      style = size.textStyle,
+      modifier = Modifier.padding(size.contentPadding),
+    )
+  }
+}
+
+@Composable
+fun HighlightLabel(
+  size: HighLightSize,
+  color: HighlightColor,
+  modifier: Modifier = Modifier,
+  content: @Composable () -> Unit,
+) {
   val surfaceColor: Color = when (color) {
     is Amber -> {
       when (color.shade) {
@@ -127,7 +145,7 @@ fun HighlightLabel(labelText: String, size: HighLightSize, color: HighlightColor
       highLightColors.outlineContainer
     }
   }
-  val textColor = when (color) {
+  val contentColor = when (color) {
     is Grey -> {
       when (color.shade) {
         LIGHT -> highLightColors.greyLightTextColor
@@ -156,15 +174,10 @@ fun HighlightLabel(labelText: String, size: HighLightSize, color: HighlightColor
     modifier = modifier,
     shape = size.shape,
     color = surfaceColor,
+    contentColor = contentColor,
     border = borderColor,
   ) {
-    HedvigText(
-      text = labelText,
-      textAlign = TextAlign.Center,
-      style = size.textStyle,
-      color = textColor,
-      modifier = Modifier.padding(size.contentPadding),
-    )
+    content()
   }
 }
 

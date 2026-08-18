@@ -99,6 +99,7 @@ internal class InsurancePresenterTest {
       existingAddons = emptyList(),
       availableAddons = emptyList(),
       chipId = ChipIdState.Missing,
+      supportsTermination = true,
     ),
     EstablishedInsuranceContract(
       id = "contractId#2",
@@ -146,7 +147,8 @@ internal class InsurancePresenterTest {
       tierName = "STANDARD",
       existingAddons = emptyList(),
       availableAddons = emptyList(),
-      chipId = ChipIdState.Missing
+      chipId = ChipIdState.Missing,
+      supportsTermination = true,
     ),
   )
   private val terminatedContracts: List<EstablishedInsuranceContract> = listOf(
@@ -196,7 +198,8 @@ internal class InsurancePresenterTest {
       tierName = "STANDARD",
       existingAddons = emptyList(),
       availableAddons = emptyList(),
-      chipId = ChipIdState.Missing
+      chipId = ChipIdState.Missing,
+      supportsTermination = true,
     ),
     EstablishedInsuranceContract(
       id = "contractId#4",
@@ -244,7 +247,8 @@ internal class InsurancePresenterTest {
       tierName = "STANDARD",
       existingAddons = emptyList(),
       availableAddons = emptyList(),
-      chipId = ChipIdState.Missing
+      chipId = ChipIdState.Missing,
+      supportsTermination = true,
     ),
   )
   private val validCrossSells: CrossSellResult = CrossSellResult(
@@ -255,7 +259,8 @@ internal class InsurancePresenterTest {
         title = "crossSellTitle",
         subtitle = "crossSellDescription",
         storeUrl = "",
-        pillowImage = ImageAsset("", "", ""),
+        pillowImageSmall = ImageAsset("", "", ""),
+        pillowImageLarge = ImageAsset("", "", ""),
       ),
     ),
   )
@@ -266,9 +271,9 @@ internal class InsurancePresenterTest {
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
     val getTravelAddonBannerInfoUseCase = FakeGetAddonBannerInfoUseCase()
     val presenter = InsurancePresenter(
-      { getInsuranceContractsUseCase },
-      { getCrossSellsUseCase },
-      { getTravelAddonBannerInfoUseCase },
+      getInsuranceContractsUseCase,
+      getCrossSellsUseCase,
+      getTravelAddonBannerInfoUseCase,
     )
     presenter.test(InsuranceUiState.initialState) {
       awaitItem().also { uiState ->
@@ -300,9 +305,9 @@ internal class InsurancePresenterTest {
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
     val getTravelAddonBannerInfoUseCase = FakeGetAddonBannerInfoUseCase()
     val presenter = InsurancePresenter(
-      { getInsuranceContractsUseCase },
-      { getCrossSellsUseCase },
-      { getTravelAddonBannerInfoUseCase },
+      getInsuranceContractsUseCase,
+      getCrossSellsUseCase,
+      getTravelAddonBannerInfoUseCase,
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -325,9 +330,9 @@ internal class InsurancePresenterTest {
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
     val getTravelAddonBannerInfoUseCase = FakeGetAddonBannerInfoUseCase()
     val presenter = InsurancePresenter(
-      { getInsuranceContractsUseCase },
-      { getCrossSellsUseCase },
-      { getTravelAddonBannerInfoUseCase },
+      getInsuranceContractsUseCase,
+      getCrossSellsUseCase,
+      getTravelAddonBannerInfoUseCase,
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -350,9 +355,9 @@ internal class InsurancePresenterTest {
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
     val getTravelAddonBannerInfoUseCase = FakeGetAddonBannerInfoUseCase()
     val presenter = InsurancePresenter(
-      { getInsuranceContractsUseCase },
-      { getCrossSellsUseCase },
-      { getTravelAddonBannerInfoUseCase },
+      getInsuranceContractsUseCase,
+      getCrossSellsUseCase,
+      getTravelAddonBannerInfoUseCase,
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -394,9 +399,9 @@ internal class InsurancePresenterTest {
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
     val getTravelAddonBannerInfoUseCase = FakeGetAddonBannerInfoUseCase()
     val presenter = InsurancePresenter(
-      { getInsuranceContractsUseCase },
-      { getCrossSellsUseCase },
-      { getTravelAddonBannerInfoUseCase },
+      getInsuranceContractsUseCase,
+      getCrossSellsUseCase,
+      getTravelAddonBannerInfoUseCase,
     )
     val allContracts = validContracts + terminatedContracts
     presenter.test(InsuranceUiState.initialState) {
@@ -426,9 +431,9 @@ internal class InsurancePresenterTest {
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
     val getTravelAddonBannerInfoUseCase = FakeGetAddonBannerInfoUseCase()
     val presenter = InsurancePresenter(
-      { getInsuranceContractsUseCase },
-      { getCrossSellsUseCase },
-      { getTravelAddonBannerInfoUseCase },
+      getInsuranceContractsUseCase,
+      getCrossSellsUseCase,
+      getTravelAddonBannerInfoUseCase,
     )
     val contracts = validContracts.map { it.copy(supportsAddressChange = supportsAddressChange) }
     presenter.test(InsuranceUiState.initialState) {
@@ -447,9 +452,9 @@ internal class InsurancePresenterTest {
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
     val getTravelAddonBannerInfoUseCase = FakeGetAddonBannerInfoUseCase()
     val presenter = InsurancePresenter(
-      { getInsuranceContractsUseCase },
-      { getCrossSellsUseCase },
-      { getTravelAddonBannerInfoUseCase },
+      getInsuranceContractsUseCase,
+      getCrossSellsUseCase,
+      getTravelAddonBannerInfoUseCase,
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -466,9 +471,9 @@ internal class InsurancePresenterTest {
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
     val getTravelAddonBannerInfoUseCase = FakeGetAddonBannerInfoUseCase()
     val presenter = InsurancePresenter(
-      { getInsuranceContractsUseCase },
-      { getCrossSellsUseCase },
-      { getTravelAddonBannerInfoUseCase },
+      getInsuranceContractsUseCase,
+      getCrossSellsUseCase,
+      getTravelAddonBannerInfoUseCase,
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -485,9 +490,9 @@ internal class InsurancePresenterTest {
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
     val getTravelAddonBannerInfoUseCase = FakeGetAddonBannerInfoUseCase()
     val presenter = InsurancePresenter(
-      { getInsuranceContractsUseCase },
-      { getCrossSellsUseCase },
-      { getTravelAddonBannerInfoUseCase },
+      getInsuranceContractsUseCase,
+      getCrossSellsUseCase,
+      getTravelAddonBannerInfoUseCase,
     )
     val initialState = InsuranceUiState(
       contracts = listOf(),

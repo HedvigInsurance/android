@@ -12,11 +12,16 @@ import arrow.core.merge
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import arrow.core.toNonEmptyListOrNull
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.collectLatest
 
+@Inject
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class ClaimHistoryViewModel(
   getClaimsHistoryUseCase: GetClaimsHistoryUseCase,
 ) : MoleculeViewModel<ClaimHistoryEvent, ClaimHistoryUiState>(

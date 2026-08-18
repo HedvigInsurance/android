@@ -7,16 +7,23 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import octopus.TravelCertificatesQuery
 
-interface GetTravelCertificatesHistoryUseCase {
+internal interface GetTravelCertificatesHistoryUseCase {
   suspend fun invoke(): Either<ErrorMessage, List<TravelCertificate>>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class GetTravelCertificatesHistoryUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val clock: Clock,

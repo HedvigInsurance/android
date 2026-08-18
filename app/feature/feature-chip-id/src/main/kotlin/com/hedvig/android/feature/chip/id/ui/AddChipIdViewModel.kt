@@ -8,25 +8,31 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.chip.id.data.GetContractsWithMissingChipIdUseCase
 import com.hedvig.android.feature.chip.id.data.PetContractForChipId
 import com.hedvig.android.feature.chip.id.data.UpdateChipIdUseCase
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedInject
 
+@AssistedInject
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class AddChipIdViewModel(
   updateChipIdUseCase: UpdateChipIdUseCase,
   getContractsWithMissingChipIdUseCase: GetContractsWithMissingChipIdUseCase,
-  contractId: String,
+  @Assisted contractId: String,
 ) : MoleculeViewModel<AddChipIdEvent, AddChipIdUiState>(
-  initialState = AddChipIdUiState.Loading,
-  presenter = AddChipIdPresenter(
-    updateChipIdUseCase = updateChipIdUseCase,
-    contractId = contractId,
-    getContractsWithMissingChipIdUseCase = getContractsWithMissingChipIdUseCase,
-  ),
-)
+    initialState = AddChipIdUiState.Loading,
+    presenter = AddChipIdPresenter(
+      updateChipIdUseCase = updateChipIdUseCase,
+      contractId = contractId,
+      getContractsWithMissingChipIdUseCase = getContractsWithMissingChipIdUseCase,
+    ),
+  )
 
 internal class AddChipIdPresenter(
   private val updateChipIdUseCase: UpdateChipIdUseCase,
@@ -81,8 +87,11 @@ internal class AddChipIdPresenter(
           Snapshot.withMutableSnapshot {
             val errorMessage = error.message
             submittingData = false
-            errorType =  if (errorMessage==null) ChipIdErrorType.GeneralError
-            else ChipIdErrorType.ErrorWithMessage(errorMessage)
+            errorType = if (errorMessage == null) {
+              ChipIdErrorType.GeneralError
+            } else {
+              ChipIdErrorType.ErrorWithMessage(errorMessage)
+            }
           }
         },
         ifRight = {
@@ -130,6 +139,7 @@ internal class AddChipIdPresenter(
         submittingData = submittingData,
         errorType = errorType,
       )
+
       AddChipIdUiState.Error, AddChipIdUiState.Loading -> state
     }
   }
@@ -167,5 +177,5 @@ internal sealed interface AddChipIdEvent {
 
   data object ShowedMessage : AddChipIdEvent
 
-  data class UpdateText(val newText: String): AddChipIdEvent
+  data class UpdateText(val newText: String) : AddChipIdEvent
 }

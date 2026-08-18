@@ -7,16 +7,17 @@ import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
 import com.hedvig.android.feature.addon.purchase.data.AddonOffer.Selectable
 import com.hedvig.android.feature.addon.purchase.data.AddonOffer.Toggleable
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import kotlinx.coroutines.flow.first
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import octopus.AddonGenerateOfferMutation
 import octopus.fragment.AddonOfferQuoteFragment
 import octopus.type.AddonDeflectType
@@ -25,17 +26,14 @@ internal interface GetAddonOfferUseCase {
   suspend fun invoke(contractId: String): Either<ErrorMessage, GenerateAddonOfferResult>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class GetAddonOfferUseCaseImpl(
   private val apolloClient: ApolloClient,
-  private val featureManager: FeatureManager,
 ) : GetAddonOfferUseCase {
   override suspend fun invoke(contractId: String): Either<ErrorMessage, GenerateAddonOfferResult> {
     return either {
-      val isAddonFlagOn = featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).first()
-      if (!isAddonFlagOn) {
-        logcat(LogPriority.ERROR) { "Tried to start AddonGenerateOffer but travel addon feature flag is off" }
-        raise(ErrorMessage())
-      }
       apolloClient
         .mutation(
           AddonGenerateOfferMutation(contractId),

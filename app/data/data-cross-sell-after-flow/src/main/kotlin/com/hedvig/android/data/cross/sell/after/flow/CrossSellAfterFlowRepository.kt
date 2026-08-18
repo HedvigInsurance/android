@@ -1,8 +1,12 @@
 package com.hedvig.android.data.cross.sell.after.flow
 
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.tracking.ActionType
 import com.hedvig.android.core.tracking.logAction
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -15,11 +19,13 @@ interface CrossSellAfterFlowRepository {
 }
 
 sealed class CrossSellInfoType() {
-  abstract val loggableName: String
+  abstract val source: String
+
+  abstract val contractId: String?
   protected abstract val extraInfo: Map<String, Any?>?
   val attributes: Map<String, Any?>
     get() = buildMap {
-      this.put("type", loggableName)
+      this.put("source", source)
       if (extraInfo != null) {
         this.put("info", extraInfo)
       }
@@ -27,8 +33,9 @@ sealed class CrossSellInfoType() {
 
   data class ClosedClaim(
     val info: ClaimInfo,
+    override val contractId: String?,
   ) : CrossSellInfoType() {
-    override val loggableName: String = "claim"
+    override val source: String = "closedClaim"
     override val extraInfo: Map<String, Any?> = with(info) {
       buildMap {
         this.put("id", id)
@@ -48,27 +55,36 @@ sealed class CrossSellInfoType() {
     )
   }
 
-  data object ChangeTier : CrossSellInfoType() {
-    override val loggableName: String = "changeTier"
+  data class ChangeTier(
+    override val contractId: String?,
+  ) : CrossSellInfoType() {
+    override val source: String = "changeTier"
     override val extraInfo: Map<String, Any?>? = null
   }
 
   data object Addon : CrossSellInfoType() {
-    override val loggableName: String = "addon"
+    override val source: String = "addon"
     override val extraInfo: Map<String, Any?>? = null
+    override val contractId: String? = null
   }
 
   data object EditCoInsured : CrossSellInfoType() {
-    override val loggableName: String = "editCoInsured"
+    override val source: String = "editCoInsured"
     override val extraInfo: Map<String, Any?>? = null
+    override val contractId: String? = null
   }
 
-  data object MovingFlow : CrossSellInfoType() {
-    override val loggableName: String = "moveFlow"
+  data class MovingFlow(
+    override val contractId: String?,
+  ) : CrossSellInfoType() {
+    override val source: String = "movingFlow"
     override val extraInfo: Map<String, Any?>? = null
   }
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 class CrossSellAfterFlowRepositoryImpl() : CrossSellAfterFlowRepository {
   /**
    * Purposefully not stored in persistent storage so that if the app is killed after this was set, we do not still
@@ -86,9 +102,10 @@ class CrossSellAfterFlowRepositoryImpl() : CrossSellAfterFlowRepository {
   override fun showedCrossSellSheet(type: CrossSellInfoType?) {
     logcat { "CrossSellAfterFlowRepository: showedCrossSellSheet type:$type" }
     if (type != null) {
+      val actionName = "crossSell"
       logAction(
         ActionType.CUSTOM,
-        type.loggableName,
+        actionName,
         type.attributes,
       )
     }

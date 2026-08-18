@@ -248,7 +248,7 @@ private fun <T> InternalHedvigBottomSheet(
 }
 
 @Composable
-private fun DragHandle(modifier: Modifier = Modifier) {
+internal fun DragHandle(modifier: Modifier = Modifier) {
   Box(
     modifier = modifier
       .width(40.dp)

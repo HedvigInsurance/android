@@ -7,12 +7,15 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeFlow
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.data.cross.sell.after.claim.closed.CrossSellAfterClaimClosedRepository
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.audio.player.data.SignedAudioUrl
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.currentCoroutineContext
@@ -33,6 +36,8 @@ import octopus.type.ClaimOutcome
 import octopus.type.ClaimStatus
 import octopus.type.InsuranceDocumentType
 
+@SingleIn(AppScope::class)
+@Inject
 internal class GetClaimDetailUiStateUseCase(
   private val apolloClient: ApolloClient,
   private val crossSellAfterClaimClosedRepository: CrossSellAfterClaimClosedRepository,

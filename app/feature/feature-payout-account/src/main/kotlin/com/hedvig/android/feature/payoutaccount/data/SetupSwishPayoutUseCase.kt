@@ -7,9 +7,14 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import octopus.SetupSwishPayoutMutation
 import octopus.type.PaymentMethodSetupStatus
 
+@SingleIn(AppScope::class)
+@Inject
 internal class SetupSwishPayoutUseCase(
   private val apolloClient: ApolloClient,
   private val networkCacheManager: NetworkCacheManager,

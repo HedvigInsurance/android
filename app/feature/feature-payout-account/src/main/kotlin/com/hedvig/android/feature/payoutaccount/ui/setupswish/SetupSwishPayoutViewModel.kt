@@ -8,16 +8,25 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.payoutaccount.data.SetupSwishPayoutUseCase
+import com.hedvig.android.feature.payoutaccount.navigation.SelectPayoutMethodKey
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.popUpTo
+import dev.zacsweers.metro.Inject
 
+@Inject
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class SetupSwishPayoutViewModel(
   setupSwishPayoutUseCase: SetupSwishPayoutUseCase,
+  backstack: Backstack,
 ) : MoleculeViewModel<SetupSwishPayoutEvent, SetupSwishPayoutUiState>(
     SetupSwishPayoutUiState(TextFieldState(), false, null, false),
-    SetupSwishPayoutPresenter(setupSwishPayoutUseCase),
+    SetupSwishPayoutPresenter(setupSwishPayoutUseCase, backstack),
   )
 
 internal sealed interface SetupSwishPayoutEvent {
@@ -35,6 +44,7 @@ internal data class SetupSwishPayoutUiState(
 
 internal class SetupSwishPayoutPresenter(
   private val setupSwishPayoutUseCase: SetupSwishPayoutUseCase,
+  private val backstack: Backstack,
 ) : MoleculePresenter<SetupSwishPayoutEvent, SetupSwishPayoutUiState> {
   @Composable
   override fun MoleculePresenterScope<SetupSwishPayoutEvent>.present(
@@ -75,7 +85,7 @@ internal class SetupSwishPayoutPresenter(
         }
 
         SetupSwishPayoutEvent.ShowedSnackBar -> {
-          showSuccessSnackBar = false
+          backstack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
         }
       }
     }

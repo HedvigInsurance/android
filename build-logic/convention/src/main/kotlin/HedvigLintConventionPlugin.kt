@@ -22,6 +22,10 @@ class HedvigLintConventionPlugin : Plugin<Project> {
         .resolve("lint-baseline-$moduleName.xml")
       val lintXmlPath: File = rootProject.projectDir.resolve("hedvig-lint").resolve("lint.xml")
       var didConfigureLint = false
+      // The KMP-android variant registers no runnable Android Lint task (only `lintKotlin*`, which is
+      // ktlint), so this lint configuration is inert: `./gradlew lint` does not lint these modules and
+      // nothing produces or consumes their baseline file. Any lint-baseline-<module>.xml for a KMP-android
+      // module is therefore not enforced and cannot be regenerated via `updateLintBaseline`.
       pluginManager.withPlugin(libs.plugins.androidLibraryMultiplatform.get().pluginId) {
         configure<KotlinMultiplatformAndroidComponentsExtension> {
           finalizeDsl {
@@ -56,5 +60,4 @@ private fun Lint.configure(lintXmlFile: File, lintBaselineFile: File) {
   baseline = lintBaselineFile
   lintConfig = lintXmlFile
   xmlReport = true
-  disable.add("androidx.media3.common.util.UnstableApi")
 }

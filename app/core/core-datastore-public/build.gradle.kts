@@ -2,6 +2,7 @@ plugins {
   id("hedvig.multiplatform.library")
   id("hedvig.multiplatform.library.android")
   id("hedvig.gradle.plugin")
+  id("com.rickclephas.kmp.nativecoroutines")
 }
 
 kotlin {
@@ -11,7 +12,6 @@ kotlin {
       api(libs.androidx.datastore.preferencesCore)
 
       implementation(libs.coroutines.core)
-      implementation(libs.koin.core)
       implementation(libs.uuid)
       implementation(projects.coreCommonPublic)
     }

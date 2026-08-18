@@ -44,7 +44,7 @@ fun <T> BottomSheet(
   content: @Composable (ColumnScope.() -> Unit),
 ) {
   val state = sheetState.materialState()
-  if (sheetState.isVisible) {
+  if (sheetState.isVisible && sheetState.data != null) {
     ModalBottomSheet(
       onDismissRequest = onDismissRequest,
       modifier = modifier
@@ -72,6 +72,12 @@ fun <T> rememberInternalHedvigBottomSheetState(): HedvigBottomSheetState<T> {
     HedvigBottomSheetStateImpl(materialState, scope)
   }
   LaunchedEffect(hedvigBottomSheetState, materialState) {
+    // The material SheetState is saveable and can be restored as visible (e.g. after navigating away and back),
+    // but `data` is not persisted and comes back null. Snap it closed first so it isn't shown empty and so a
+    // later show() animates open from hidden again; the collector below then mirrors that back to isVisible.
+    if (materialState.isVisible && hedvigBottomSheetState.data == null) {
+      materialState.hide()
+    }
     snapshotFlow { materialState.isVisible }
       .distinctUntilChanged()
       .collect { isVisible ->

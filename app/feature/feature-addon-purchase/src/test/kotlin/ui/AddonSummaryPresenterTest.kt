@@ -7,7 +7,6 @@ import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
-import assertk.assertions.isNotNull
 import assertk.assertions.prop
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.ItemCost
@@ -25,7 +24,10 @@ import com.hedvig.android.feature.addon.purchase.data.GetInsuranceForTravelAddon
 import com.hedvig.android.feature.addon.purchase.data.GetQuoteCostBreakdownUseCase
 import com.hedvig.android.feature.addon.purchase.data.InsuranceForAddon
 import com.hedvig.android.feature.addon.purchase.data.SubmitAddonPurchaseUseCase
+import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseKey
 import com.hedvig.android.feature.addon.purchase.navigation.AddonType
+import com.hedvig.android.feature.addon.purchase.navigation.SubmitFailureKey
+import com.hedvig.android.feature.addon.purchase.navigation.SubmitSuccessKey
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryEvent
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryPresenter
@@ -47,53 +49,59 @@ class AddonSummaryPresenterTest {
 
   @Test
   fun `if receive error navigate to failure screen`() = runTest {
+    val scheduler = testScheduler
     val submitUseCase = FakeSubmitAddonPurchaseUseCase()
     val insuranceUseCase = FakeAddonSummaryGetInsuranceUseCase()
     val costBreakdownUseCase = FakeGetQuoteCostBreakdownUseCase()
+    val backstack = TestBackstack(mutableListOf(AddonPurchaseKey()))
     val presenter = AddonSummaryPresenter(
       summaryParameters = testSummaryParametersWithCurrentAddon,
       submitAddonPurchaseUseCase = submitUseCase,
       addonPurchaseSource = AddonBannerSource.INSURANCES_TAB,
       getQuoteCostBreakdownUseCase = costBreakdownUseCase,
       getInsuranceForTravelAddonUseCase = insuranceUseCase,
+      backstack = backstack,
     )
-    presenter.test(AddonSummaryState.Loading()) {
+    presenter.test(AddonSummaryState.Loading) {
       skipItems(1)
       insuranceUseCase.turbine.add(listOf(fakeInsuranceForAddon).right())
       costBreakdownUseCase.turbine.add(fakeQuoteCostBreakdown.right())
       skipItems(1)
       sendEvent(AddonSummaryEvent.Submit)
       submitUseCase.turbine.add(ErrorMessage().left())
-      skipItems(1)
-      assertThat(awaitItem()).isInstanceOf(AddonSummaryState.Content::class)
-        .prop(AddonSummaryState.Content::navigateToFailure).isNotNull()
+      scheduler.advanceUntilIdle()
+      assertThat(backstack.entries.last()).isInstanceOf(SubmitFailureKey::class)
+      cancelAndIgnoreRemainingEvents()
     }
   }
 
   @Test
   fun `if receive no errors navigate to success screen with activationDate from previous parameters`() = runTest {
+    val scheduler = testScheduler
     val submitUseCase = FakeSubmitAddonPurchaseUseCase()
     val insuranceUseCase = FakeAddonSummaryGetInsuranceUseCase()
     val costBreakdownUseCase = FakeGetQuoteCostBreakdownUseCase()
+    val backstack = TestBackstack(mutableListOf(AddonPurchaseKey()))
     val presenter = AddonSummaryPresenter(
       summaryParameters = testSummaryParametersWithCurrentAddon,
       submitAddonPurchaseUseCase = submitUseCase,
       addonPurchaseSource = AddonBannerSource.INSURANCES_TAB,
       getQuoteCostBreakdownUseCase = costBreakdownUseCase,
       getInsuranceForTravelAddonUseCase = insuranceUseCase,
+      backstack = backstack,
     )
-    presenter.test(AddonSummaryState.Loading()) {
+    presenter.test(AddonSummaryState.Loading) {
       skipItems(1)
       insuranceUseCase.turbine.add(listOf(fakeInsuranceForAddon).right())
       costBreakdownUseCase.turbine.add(fakeQuoteCostBreakdown.right())
       skipItems(1)
       sendEvent(AddonSummaryEvent.Submit)
       submitUseCase.turbine.add(Unit.right())
-      skipItems(1)
-      assertThat(awaitItem()).isInstanceOf(AddonSummaryState.Loading::class)
-        .prop(AddonSummaryState.Loading::activationDateToNavigateToSuccess)
-        .isNotNull()
+      scheduler.advanceUntilIdle()
+      assertThat(backstack.entries.last()).isInstanceOf(SubmitSuccessKey::class)
+        .prop(SubmitSuccessKey::activationDate)
         .isEqualTo(testSummaryParametersWithCurrentAddon.activationDate)
+      cancelAndIgnoreRemainingEvents()
     }
   }
 
@@ -107,8 +115,9 @@ class AddonSummaryPresenterTest {
       addonPurchaseSource = AddonBannerSource.INSURANCES_TAB,
       getQuoteCostBreakdownUseCase = costBreakdownUseCase1,
       getInsuranceForTravelAddonUseCase = insuranceUseCase1,
+      backstack = TestBackstack(),
     )
-    presenter1.test(AddonSummaryState.Loading()) {
+    presenter1.test(AddonSummaryState.Loading) {
       skipItems(1)
       insuranceUseCase1.turbine.add(listOf(fakeInsuranceForAddon).right())
       costBreakdownUseCase1.turbine.add(fakeQuoteCostBreakdown.right())
@@ -126,8 +135,9 @@ class AddonSummaryPresenterTest {
       addonPurchaseSource = AddonBannerSource.INSURANCES_TAB,
       getQuoteCostBreakdownUseCase = costBreakdownUseCase2,
       getInsuranceForTravelAddonUseCase = insuranceUseCase2,
+      backstack = TestBackstack(),
     )
-    presenter2.test(AddonSummaryState.Loading()) {
+    presenter2.test(AddonSummaryState.Loading) {
       skipItems(1)
       insuranceUseCase2.turbine.add(listOf(fakeInsuranceForAddon).right())
       costBreakdownUseCase2.turbine.add(fakeQuoteCostBreakdown.right())
@@ -148,8 +158,9 @@ class AddonSummaryPresenterTest {
       addonPurchaseSource = AddonBannerSource.INSURANCES_TAB,
       getQuoteCostBreakdownUseCase = costBreakdownUseCase,
       getInsuranceForTravelAddonUseCase = insuranceUseCase,
+      backstack = TestBackstack(),
     )
-    presenter.test(AddonSummaryState.Loading()) {
+    presenter.test(AddonSummaryState.Loading) {
       skipItems(1)
       insuranceUseCase.turbine.add(listOf(fakeInsuranceForAddon).right())
       costBreakdownUseCase.turbine.add(fakeQuoteCostBreakdown.right())

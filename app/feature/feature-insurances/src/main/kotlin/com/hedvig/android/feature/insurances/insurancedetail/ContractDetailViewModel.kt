@@ -7,28 +7,28 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.insurances.data.InsuranceContract
-import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
 import com.hedvig.android.feature.insurances.insurancedetail.GetContractForContractIdUseCaseImpl.GetContractForContractIdError
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
-import kotlinx.coroutines.flow.combine
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedInject
 
+@AssistedInject
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class ContractDetailViewModel(
-  contractId: String,
-  featureManager: FeatureManager,
+  @Assisted contractId: String,
   getContractForContractIdUseCase: GetContractForContractIdUseCase,
 ) : MoleculeViewModel<ContractDetailsEvent, ContractDetailsUiState>(
     initialState = ContractDetailsUiState.Loading,
-    presenter = ContractDetailPresenter(contractId, featureManager, getContractForContractIdUseCase),
+    presenter = ContractDetailPresenter(contractId, getContractForContractIdUseCase),
   )
 
 internal class ContractDetailPresenter(
   private val contractId: String,
-  private val featureManager: FeatureManager,
   private val getContractForContractIdUseCase: GetContractForContractIdUseCase,
 ) :
   MoleculePresenter<ContractDetailsEvent, ContractDetailsUiState> {
@@ -49,12 +49,7 @@ internal class ContractDetailPresenter(
       if (currentState !is ContractDetailsUiState.Success) {
         currentState = ContractDetailsUiState.Loading
       }
-      combine(
-        getContractForContractIdUseCase.invoke(contractId),
-        featureManager.isFeatureEnabled(Feature.TERMINATION_FLOW),
-      ) { insuranceContractResult, isTerminationFlowEnabled ->
-        insuranceContractResult to isTerminationFlowEnabled
-      }.collect { (insuranceContractResult, isTerminationFlowEnabled) ->
+      getContractForContractIdUseCase.invoke(contractId).collect { insuranceContractResult ->
         insuranceContractResult.fold(
           ifLeft = { error ->
             currentState = when (error) {
@@ -63,13 +58,9 @@ internal class ContractDetailPresenter(
             }
           },
           ifRight = { contract ->
-            val noTerminationDateYet = when (contract) {
-              is InsuranceContract.PendingInsuranceContract -> true
-              is EstablishedInsuranceContract -> contract.terminationDate == null
-            }
             currentState = ContractDetailsUiState.Success(
               insuranceContract = contract,
-              allowTerminatingInsurance = isTerminationFlowEnabled && noTerminationDateYet,
+              allowTerminatingInsurance = contract.supportsTermination,
             )
           },
         )

@@ -31,4 +31,6 @@ class FakeFeatureManager(
       emit(pair.second)
     }
   }
+
+  override suspend fun awaitReady() = Unit
 }

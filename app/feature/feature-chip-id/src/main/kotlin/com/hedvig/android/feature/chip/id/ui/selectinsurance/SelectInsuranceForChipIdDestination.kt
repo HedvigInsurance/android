@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -70,18 +69,16 @@ import org.jetbrains.compose.resources.stringResource
 internal fun SelectInsuranceForChipIdDestination(
   viewModel: SelectInsuranceForChipIdViewModel,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
-  navigateToAddChipId: (contractId: String, popSelectInsurance: Boolean) -> Unit,
+  popBackstack: () -> Unit,
 ) {
   val uiState: SelectInsuranceForChipIdState by viewModel.uiState.collectAsStateWithLifecycle()
 
   SelectInsuranceForChipIdScreen(
     uiState = uiState,
     navigateUp = navigateUp,
-    popBackStack = popBackStack,
-    navigateToAddChipId = { contractId, popSelectInsurance ->
-      navigateToAddChipId(contractId, popSelectInsurance)
-      viewModel.emit(SelectInsuranceForChipIdEvent.ClearNavigation)
+    popBackstack = popBackstack,
+    submitSelected = {
+      viewModel.emit(SelectInsuranceForChipIdEvent.SubmitSelected)
     },
     selectContract = { contract ->
       viewModel.emit(SelectInsuranceForChipIdEvent.SelectContract(contract))
@@ -96,10 +93,10 @@ internal fun SelectInsuranceForChipIdDestination(
 private fun SelectInsuranceForChipIdScreen(
   uiState: SelectInsuranceForChipIdState,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   reload: () -> Unit,
   selectContract: (PetContractForChipId) -> Unit,
-  navigateToAddChipId: (contractId: String, popSelectInsurance: Boolean) -> Unit,
+  submitSelected: () -> Unit,
 ) {
   when (uiState) {
     SelectInsuranceForChipIdState.Failure -> {
@@ -115,23 +112,13 @@ private fun SelectInsuranceForChipIdScreen(
     }
 
     is SelectInsuranceForChipIdState.Success -> {
-      LaunchedEffect(uiState.contractIdToContinue) {
-        if (uiState.contractIdToContinue != null) {
-          navigateToAddChipId(
-            uiState.contractIdToContinue,
-            uiState.contracts.size == 1,
-          )
-        }
-      }
-      if (uiState.contractIdToContinue == null) {
-        SelectInsuranceForChipIdContentScreen(
-          uiState = uiState,
-          navigateUp = navigateUp,
-          popBackStack = popBackStack,
-          selectInsurance = selectContract,
-          navigateToAddChipId = navigateToAddChipId,
-        )
-      }
+      SelectInsuranceForChipIdContentScreen(
+        uiState = uiState,
+        navigateUp = navigateUp,
+        popBackstack = popBackstack,
+        selectInsurance = selectContract,
+        submitSelected = submitSelected,
+      )
     }
   }
 }
@@ -140,9 +127,9 @@ private fun SelectInsuranceForChipIdScreen(
 private fun SelectInsuranceForChipIdContentScreen(
   uiState: SelectInsuranceForChipIdState.Success,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   selectInsurance: (selected: PetContractForChipId) -> Unit,
-  navigateToAddChipId: (contractId: String, popSelectInsurance: Boolean) -> Unit,
+  submitSelected: () -> Unit,
 ) {
   HedvigScaffold(
     navigateUp = navigateUp,
@@ -150,7 +137,7 @@ private fun SelectInsuranceForChipIdContentScreen(
     topAppBarActions = {
       IconButton(
         modifier = Modifier.size(24.dp),
-        onClick = dropUnlessResumed { popBackStack() },
+        onClick = dropUnlessResumed { popBackstack() },
         content = {
           Icon(
             imageVector = HedvigIcons.Close,
@@ -210,15 +197,10 @@ private fun SelectInsuranceForChipIdContentScreen(
         modifier = Modifier
           .fillMaxWidth()
           .padding(horizontal = 16.dp),
-        onClick = {
-          uiState.selectedContract?.let {
-            navigateToAddChipId(it.id, uiState.contracts.size == 1)
-          }
-        },
+        onClick = submitSelected,
         isLoading = false,
       )
       Spacer(Modifier.height(16.dp))
     }
-
   }
 }

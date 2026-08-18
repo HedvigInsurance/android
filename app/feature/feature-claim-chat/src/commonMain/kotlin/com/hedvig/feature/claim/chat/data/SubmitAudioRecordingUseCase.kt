@@ -8,12 +8,17 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.fileupload.CommonFile
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import octopus.ClaimIntentSubmitAudioMutation
 import octopus.type.ClaimIntentSubmitAudioInput
 
+@SingleIn(AppScope::class)
+@Inject
 internal class SubmitAudioRecordingUseCase(
   private val apolloClient: ApolloClient,
   private val uploadFileUseCase: UploadFileUseCase,

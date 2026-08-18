@@ -2,9 +2,12 @@ import org.gradle.api.internal.catalog.DelegatingProjectDependency
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
+  id("org.jetbrains.kotlin.plugin.compose")
+  id("org.jetbrains.compose")
   id("hedvig.multiplatform.library")
+  id("hedvig.multiplatform.library.android")
   id("hedvig.gradle.plugin")
-  alias(libs.plugins.kmpNativeCoroutines)
+  id("com.rickclephas.kmp.nativecoroutines")
 }
 
 kotlin {
@@ -15,18 +18,26 @@ kotlin {
   val xcf = XCFramework(frameworkName)
   val projectsToExport: List<DelegatingProjectDependency> = listOf(
     projects.authlib,
-    projects.featureClaimChat,
+    projects.coreBuildConstants,
+    projects.coreDatastorePublic,
+    projects.designSystemApi,
+    projects.featureFlags,
+    projects.featureHelpCenter,
+    projects.languageCore,
+    projects.loggingPublic,
+    projects.networkClients,
     projects.shareddi,
   )
   listOf(
-    iosX64(),
     iosArm64(),
     iosSimulatorArm64(),
   ).forEach { iosTarget ->
     iosTarget.binaries.framework {
+      isStatic = true
       for (projectToExport in projectsToExport) {
         export(projectToExport)
       }
+      binaryOption("bundleId", frameworkName)
       baseName = frameworkName
       xcf.add(this)
     }
@@ -34,6 +45,7 @@ kotlin {
 
   sourceSets {
     commonMain.dependencies {
+      implementation(libs.jetbrains.compose.runtime)
       for (projectToExport in projectsToExport) {
         api(projectToExport)
       }

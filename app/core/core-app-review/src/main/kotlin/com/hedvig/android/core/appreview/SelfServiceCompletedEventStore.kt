@@ -4,8 +4,12 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -18,6 +22,9 @@ internal interface SelfServiceCompletedEventStore {
   fun observeNumberOfCompletedSelfServices(): Flow<Int>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class SelfServiceCompletedEventDataStore(
   private val dataStore: DataStore<Preferences>,
 ) : SelfServiceCompletedEventStore {

@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -31,6 +30,7 @@ import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.feature.remove.addons.data.InsuranceForAddon
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 import hedvig.resources.REMOVE_ADDONS_FLOW_NO_ELIGIBLE_INSURANCES
 import hedvig.resources.REMOVE_ADDON_OFFER_PAGE_TITLE
 import hedvig.resources.Res
@@ -38,22 +38,14 @@ import hedvig.resources.TIER_FLOW_SELECT_INSURANCE_SUBTITLE
 import hedvig.resources.general_close_button
 import hedvig.resources.general_continue_button
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-internal fun SelectInsuranceToRemoveAddonDestination(
-  navigateUp: () -> Unit,
-  navigateToChooseAddon: (ContractId) -> Unit,
-) {
-  val viewModel: SelectInsuranceToRemoveAddonViewModel = koinViewModel()
+internal fun SelectInsuranceToRemoveAddonDestination(navigateUp: () -> Unit) {
+  val viewModel: SelectInsuranceToRemoveAddonViewModel = metroViewModel()
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   SelectInsuranceToRemoveAddonScreen(
     uiState = uiState,
     navigateUp = navigateUp,
-    navigateToChooseAddon = { id ->
-      navigateToChooseAddon(id)
-      viewModel.emit(SelectInsuranceToRemoveAddonEvent.ClearNavigation)
-    },
     selectInsurance = { selected ->
       viewModel.emit(SelectInsuranceToRemoveAddonEvent.SelectInsurance(selected))
     },
@@ -70,7 +62,6 @@ internal fun SelectInsuranceToRemoveAddonDestination(
 private fun SelectInsuranceToRemoveAddonScreen(
   uiState: SelectInsuranceToRemoveAddonState,
   navigateUp: () -> Unit,
-  navigateToChooseAddon: (ContractId) -> Unit,
   selectInsurance: (ContractId) -> Unit,
   submitSelected: (ContractId) -> Unit,
   reload: () -> Unit,
@@ -89,11 +80,6 @@ private fun SelectInsuranceToRemoveAddonScreen(
     }
 
     is SelectInsuranceToRemoveAddonState.Success -> {
-      LaunchedEffect(uiState.insuranceIdToContinue) {
-        if (uiState.insuranceIdToContinue != null) {
-          navigateToChooseAddon(uiState.insuranceIdToContinue)
-        }
-      }
       SelectInsuranceToRemoveAddonContentScreen(
         uiState = uiState,
         navigateUp = navigateUp,
@@ -197,7 +183,6 @@ private fun PreviewChooseInsuranceToRemoveAddonScreen(
         {},
         {},
         {},
-        {},
       )
     }
   }
@@ -222,7 +207,6 @@ private class ChooseInsuranceToRemoveAddonUiStateProvider :
           ),
         ),
         currentlySelected = null,
-        insuranceIdToContinue = null,
       ),
       SelectInsuranceToRemoveAddonState.Success(
         listOfInsurances = listOf(
@@ -245,7 +229,6 @@ private class ChooseInsuranceToRemoveAddonUiStateProvider :
           contractExposure = "Opulullegatan 19",
           contractGroup = ContractGroup.HOUSE,
         ),
-        insuranceIdToContinue = null,
       ),
       SelectInsuranceToRemoveAddonState.Error,
       SelectInsuranceToRemoveAddonState.Loading,

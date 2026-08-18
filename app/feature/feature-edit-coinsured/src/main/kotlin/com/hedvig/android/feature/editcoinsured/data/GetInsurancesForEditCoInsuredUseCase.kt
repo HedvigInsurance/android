@@ -6,15 +6,22 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import octopus.EligibleContractsForEditCoInsuredQuery
 
 internal interface GetInsurancesForEditCoInsuredUseCase {
   suspend fun invoke(type: CoInsuredFlowType): Either<ErrorMessage, List<InsuranceForEditOrAddCoInsured>>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class GetInsurancesForEditCoInsuredUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) :

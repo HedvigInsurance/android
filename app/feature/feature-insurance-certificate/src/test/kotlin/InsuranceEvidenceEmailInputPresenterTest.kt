@@ -16,25 +16,33 @@ import assertk.assertions.prop
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.insurance.certificate.data.GenerateInsuranceEvidenceUseCase
 import com.hedvig.android.feature.insurance.certificate.data.GetInsuranceEvidenceInitialEmailUseCase
+import com.hedvig.android.feature.insurance.certificate.navigation.ShowCertificateKey
 import com.hedvig.android.molecule.test.test
+import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.Backstack
 import hedvig.resources.Res
 import hedvig.resources.something_went_wrong
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 internal class InsuranceEvidenceEmailInputPresenterTest {
-  private fun createPresenterWithFakes(): Triple<
-    InsuranceEvidenceEmailInputPresenter,
-    FakeGetInsuranceEvidenceInitialEmailUseCase,
-    FakeGenerateInsuranceEvidenceUseCase,
-  > {
+  private data class Fakes(
+    val presenter: InsuranceEvidenceEmailInputPresenter,
+    val getEmailUseCase: FakeGetInsuranceEvidenceInitialEmailUseCase,
+    val generateUseCase: FakeGenerateInsuranceEvidenceUseCase,
+    val backstack: Backstack,
+  )
+
+  private fun createPresenterWithFakes(): Fakes {
     val getEmailUseCase = FakeGetInsuranceEvidenceInitialEmailUseCase()
     val generateUseCase = FakeGenerateInsuranceEvidenceUseCase()
+    val backstack = TestBackstack()
     val presenter = InsuranceEvidenceEmailInputPresenter(
       generateInsuranceEvidenceUseCase = generateUseCase,
       getEmailUseCase = getEmailUseCase,
+      backstack = backstack,
     )
-    return Triple(presenter, getEmailUseCase, generateUseCase)
+    return Fakes(presenter, getEmailUseCase, generateUseCase, backstack)
   }
 
   @Test
@@ -146,8 +154,8 @@ internal class InsuranceEvidenceEmailInputPresenterTest {
   }
 
   @Test
-  fun `when generating certificate succeeds update state with certificate url`() = runTest {
-    val (presenter, _, generateUseCase) = createPresenterWithFakes()
+  fun `when generating certificate succeeds navigate to show certificate`() = runTest {
+    val (presenter, _, generateUseCase, backstack) = createPresenterWithFakes()
     presenter.test(InsuranceEvidenceEmailInputState.Success(email = "valid@example.com")) {
       sendEvent(InsuranceEvidenceEmailInputEvent.Submit)
       skipItems(1)
@@ -155,13 +163,10 @@ internal class InsuranceEvidenceEmailInputPresenterTest {
         .prop(InsuranceEvidenceEmailInputState.Success::buttonLoading)
         .isTrue()
       generateUseCase.resultTurbine.add("https://certificate.url".right())
-      assertThat(awaitItem()).isInstanceOf(InsuranceEvidenceEmailInputState.Success::class)
-        .all {
-          prop(InsuranceEvidenceEmailInputState.Success::fetchedCertificateUrl)
-            .isEqualTo("https://certificate.url")
-          prop(InsuranceEvidenceEmailInputState.Success::buttonLoading)
-            .isFalse()
-        }
+      assertThat(backstack.entries.last())
+        .isInstanceOf(ShowCertificateKey::class)
+        .prop(ShowCertificateKey::certificateUrl)
+        .isEqualTo("https://certificate.url")
     }
   }
 
@@ -180,25 +185,6 @@ internal class InsuranceEvidenceEmailInputPresenterTest {
           prop(InsuranceEvidenceEmailInputState.Success::buttonLoading)
             .isFalse()
         }
-    }
-  }
-
-  @Test
-  fun `when clear navigation is clicked remove certificate url from state`() = runTest {
-    val (presenter, _, _) = createPresenterWithFakes()
-    presenter.test(
-      InsuranceEvidenceEmailInputState.Success(
-        "test@example.com",
-        fetchedCertificateUrl = "https://certificate.url",
-      ),
-    ) {
-      assertThat(awaitItem()).isInstanceOf(InsuranceEvidenceEmailInputState.Success::class)
-        .prop(InsuranceEvidenceEmailInputState.Success::fetchedCertificateUrl)
-        .isNotNull()
-      sendEvent(InsuranceEvidenceEmailInputEvent.ClearNavigation)
-      assertThat(awaitItem()).isInstanceOf(InsuranceEvidenceEmailInputState.Success::class)
-        .prop(InsuranceEvidenceEmailInputState.Success::fetchedCertificateUrl)
-        .isNull()
     }
   }
 
@@ -256,6 +242,10 @@ internal class InsuranceEvidenceEmailInputPresenterTest {
     }
   }
 }
+
+private class TestBackstack(
+  override val entries: MutableList<HedvigNavKey> = mutableListOf(),
+) : Backstack
 
 private class FakeGetInsuranceEvidenceInitialEmailUseCase :
   GetInsuranceEvidenceInitialEmailUseCase {

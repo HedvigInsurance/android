@@ -7,15 +7,20 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.payments.data.GetMemberPaymentsDetailsUseCase
 import com.hedvig.android.feature.payments.data.MemberPaymentsDetails
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.Inject
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
 
+@Inject
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class MemberPaymentDetailsViewModel(
   getMemberPaymentsDetailsUseCase: GetMemberPaymentsDetailsUseCase,
 ) : MoleculeViewModel<MemberPaymentDetailsEvent, MemberPaymentDetailsUiState>(

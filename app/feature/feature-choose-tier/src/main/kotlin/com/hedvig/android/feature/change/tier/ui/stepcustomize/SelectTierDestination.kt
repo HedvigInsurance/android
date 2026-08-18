@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -78,8 +77,6 @@ import com.hedvig.android.design.system.hedvig.a11y.getDescription
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigateFurtherStep
-import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigateToComparison
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Success
@@ -98,7 +95,9 @@ import hedvig.resources.TIER_FLOW_SELECT_COVERAGE_SUBTITLE
 import hedvig.resources.TIER_FLOW_SELECT_COVERAGE_TITLE
 import hedvig.resources.TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE
 import hedvig.resources.TIER_FLOW_SELECT_DEDUCTIBLE_TITLE
+import hedvig.resources.TIER_FLOW_SHOW_COVERAGE_BUTTON
 import hedvig.resources.TIER_FLOW_SUBTITLE
+import hedvig.resources.TIER_FLOW_SUBTITLE_WITHOUT_DEDUCTIBLE
 import hedvig.resources.TIER_FLOW_TITLE
 import hedvig.resources.TIER_FLOW_TOTAL
 import hedvig.resources.general_cancel_button
@@ -111,9 +110,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun SelectTierDestination(
   viewModel: SelectCoverageViewModel,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
-  navigateToSummary: (quote: TierDeductibleQuote) -> Unit,
-  navigateToComparison: (listOfQuotes: List<TierDeductibleQuote>, selectedTermsVersion: String?) -> Unit,
+  popBackstack: () -> Unit,
 ) {
   val uiState: SelectCoverageState by viewModel.uiState.collectAsStateWithLifecycle()
   Box(
@@ -125,7 +122,7 @@ internal fun SelectTierDestination(
           reload = {
             viewModel.emit(SelectCoverageEvent.Reload)
           },
-          popBackStack = popBackStack,
+          popBackstack = popBackstack,
         )
       }
 
@@ -134,23 +131,6 @@ internal fun SelectTierDestination(
       }
 
       is Success -> {
-        LaunchedEffect(state.uiState.quoteToNavigateFurther) {
-          if (state.uiState.quoteToNavigateFurther != null) {
-            viewModel.emit(ClearNavigateFurtherStep)
-            navigateToSummary(state.uiState.quoteToNavigateFurther)
-          }
-        }
-        LaunchedEffect(state.uiState.quotesToCompare) {
-          if (state.uiState.quotesToCompare != null) {
-            viewModel.emit(ClearNavigateToComparison)
-            navigateToComparison(
-              state.uiState.quotesToCompare,
-              state.uiState.quotesToCompare.firstOrNull {
-                it.tier.tierName == state.uiState.chosenTier?.tierName
-              }?.productVariant?.termsVersion,
-            )
-          }
-        }
         SelectTierScreen(
           uiState = state.uiState,
           navigateUp = navigateUp,
@@ -185,7 +165,7 @@ internal fun SelectTierDestination(
 }
 
 @Composable
-private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit) {
+private fun FailureScreen(reload: () -> Unit, popBackstack: () -> Unit) {
   Box(Modifier.fillMaxSize()) {
     Column(
       modifier = Modifier
@@ -206,7 +186,7 @@ private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit) {
       Spacer(Modifier.weight(1f))
       HedvigTextButton(
         stringResource(Res.string.general_close_button),
-        onClick = popBackStack,
+        onClick = popBackstack,
         buttonSize = Large,
         modifier = Modifier.fillMaxWidth(),
       )
@@ -256,7 +236,12 @@ private fun SelectTierScreen(
         lineBreak = LineBreak.Heading,
         color = HedvigTheme.colorScheme.textSecondary,
       ),
-      text = stringResource(Res.string.TIER_FLOW_SUBTITLE),
+      // Payment protection has no deductible, so the standard "…level and deductible" subtitle over-promises.
+      text = if (uiState.isPaymentProtection) {
+        stringResource(Res.string.TIER_FLOW_SUBTITLE_WITHOUT_DEDUCTIBLE)
+      } else {
+        stringResource(Res.string.TIER_FLOW_SUBTITLE)
+      },
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))
@@ -292,14 +277,20 @@ private fun SelectTierScreen(
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
     )
-    if (uiState.tiers.size > 1) {
+    if (!uiState.isPaymentProtection) {
       Spacer(Modifier.height(8.dp))
       HedvigTextButton(
         buttonSize = Large,
         modifier = Modifier
           .fillMaxWidth()
           .padding(horizontal = 16.dp),
-        text = stringResource(Res.string.TIER_FLOW_COMPARE_BUTTON),
+        text = stringResource(
+          if (uiState.tiers.size == 1) {
+            Res.string.TIER_FLOW_SHOW_COVERAGE_BUTTON
+          } else {
+            Res.string.TIER_FLOW_COMPARE_BUTTON
+          },
+        ),
         onClick = {
           onCompareClick()
         },
@@ -349,7 +340,7 @@ private fun CustomizationCard(
       Spacer(Modifier.height(16.dp))
       val tierSimpleItems = buildList {
         for (tier in tiers) {
-          add(SimpleDropdownItem(tier.first.tierDisplayName ?: "-"))
+          add(SimpleDropdownItem(tier.first.tierDisplayName ?: tier.first.tierName))
         }
       }
       val hintText = stringResource(Res.string.TIER_FLOW_COVERAGE_PLACEHOLDER)
@@ -565,7 +556,7 @@ private fun TierCoverageRadioGroup(
     options = tiers.map { pair ->
       RadioOption(
         id = RadioOptionId(pair.first.tierName),
-        text = pair.first.tierDisplayName ?: "-",
+        text = pair.first.tierDisplayName ?: pair.first.tierName,
         label = pair.first.tierDescription,
       )
     },
@@ -775,6 +766,7 @@ private fun SelectTierScreenPreview() {
         ),
         quotesForChosenTier = listOf(quotesForPreview[0]),
         isTierChoiceEnabled = true,
+        isPaymentProtection = false,
         chosenTier = Tier(
           "BAS",
           tierLevel = 0,

@@ -8,7 +8,6 @@ import com.android.build.api.dsl.Lint
 import com.android.build.api.variant.KotlinMultiplatformAndroidComponentsExtension
 import com.apollographql.apollo.gradle.api.ApolloExtension
 import com.apollographql.apollo.gradle.api.Service
-import com.apollographql.apollo.gradle.internal.ApolloDownloadSchemaTask
 import java.io.File
 import javax.inject.Inject
 import org.gradle.accessors.dm.LibrariesForLibs
@@ -22,8 +21,8 @@ import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.newInstance
+import org.gradle.kotlin.dsl.project
 import org.gradle.kotlin.dsl.the
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.resources.ResourcesExtension
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
@@ -44,6 +43,10 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
     project.objects.newInstance<AndroidResHandler>()
   private val roomHandler: RoomHandler =
     project.objects.newInstance<RoomHandler>()
+  private val navKeysHandler: NavKeysHandler =
+    project.objects.newInstance<NavKeysHandler>()
+  private val viewModelsHandler: ViewModelsHandler =
+    project.objects.newInstance<ViewModelsHandler>()
 
   fun apolloSchema(apolloServiceAction: Action<Service>) {
     apolloSchemaHandler.configure(project, apolloServiceAction)
@@ -72,6 +75,30 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
     roomHandler.configure(project, pluginManager, libs, isTestOnly, resolveSchemaRelativeToRootDir)
   }
 
+  /**
+   * Wires the [:navigation-keys-processor] KSP processor into this module. The processor scans for
+   * concrete `@Serializable HedvigNavKey` subclasses and generates a Metro `@ContributesTo(AppScope)`
+   * provider that registers them all into the polymorphic [HedvigNavKey] serializers module, so the
+   * Nav3 back stack survives process death without any hand-written per-module provider.
+   */
+  fun navKeys() {
+    navKeysHandler.configure(project, pluginManager, libs)
+  }
+
+  /**
+   * Wires the [:viewmodel-processor] KSP processor into this module. The processor scans for
+   * `@HedvigViewModel`-annotated ViewModels and generates their Metro map contribution (no-arg) or
+   * assisted factory, so no VM hand-writes `@ViewModelKey` / `@ContributesIntoMap` / a nested factory.
+   *
+   * For KMP modules both `kspCommonMainMetadata` (commonMain VMs — generated DI must be visible to
+   * every target, including iOS via IosGraph) and `kspAndroid` (androidMain-only VMs, e.g. a screen
+   * iOS never renders) are wired, so a single module may freely mix the two. See [ViewModelsHandler]
+   * for how the resulting double-emission of commonMain VMs is suppressed.
+   */
+  fun viewModels() {
+    viewModelsHandler.configure(project, pluginManager, libs)
+  }
+
   companion object {
     internal fun Project.configureHedvigPlugin(): HedvigGradlePluginExtension {
       return extensions.create<HedvigGradlePluginExtension>(
@@ -94,15 +121,23 @@ private abstract class ApolloSchemaHandler {
         apolloServiceAction.execute(this)
       }
     }
-    project.tasks.withType<ApolloDownloadSchemaTask>()
-      .configureEach {
+    // The introspection download task writes the schema to the file configured in the octopus
+    // `introspection` block. That output is annotated `@Internal` on the Apollo Gradle plugin task
+    // (which is itself internal), so it can't be reached by task type or declared outputs. Resolve
+    // the file by its known project-relative path (matching the octopus `introspection.schemaFile`)
+    // and apply the client-side changes once the download completes.
+    val schemaFile = project.layout.projectDirectory
+      .file("src/commonMain/graphql/com/hedvig/android/apollo/octopus/schema.graphqls")
+      .asFile
+    project.tasks.configureEach {
+      if (name == "downloadOctopusApolloSchemaFromIntrospection") {
         doLast {
-          val schemaFile = outputFile.get().asFile
           val schemaText = schemaFile.readText()
           val convertedSchema = schemaText.performClientSideChanges()
           schemaFile.writeText(convertedSchema)
         }
       }
+    }
   }
 
   private fun String.performClientSideChanges(): String {
@@ -166,7 +201,7 @@ private abstract class ApolloHandler {
         this.packageName.set(packageName)
 
         @Suppress("OPT_IN_USAGE")
-        dependsOn(project.project(":apollo-octopus-public"), true)
+        dependsOn(project.dependencies.project(":apollo-octopus-public"), true)
         extraConfiguration.execute(this)
       }
     }
@@ -278,6 +313,55 @@ private abstract class RoomHandler {
     project.afterEvaluate {
       project.extensions.findByType<Lint>()?.apply {
         disable.add("RestrictedApi")
+      }
+    }
+  }
+}
+
+private abstract class NavKeysHandler {
+  fun configure(project: Project, pluginManager: PluginManager, libs: LibrariesForLibs) {
+    pluginManager.apply(libs.plugins.ksp.get().pluginId)
+    // A KMP module's android-target KSP (kspAndroid) sees commonMain symbols too, so attaching the
+    // processor to the android compilation alone covers main/androidMain/commonMain keys in one pass
+    // and avoids the double-emission that per-target wiring would cause.
+    val isMultiplatform = project.extensions.findByType<KotlinMultiplatformExtension>() != null
+    val kspConfiguration = if (isMultiplatform) "kspAndroid" else "ksp"
+    project.dependencies {
+      add(kspConfiguration, project(":navigation-keys-processor"))
+    }
+  }
+}
+
+private abstract class ViewModelsHandler {
+  fun configure(project: Project, pluginManager: PluginManager, libs: LibrariesForLibs) {
+    pluginManager.apply(libs.plugins.ksp.get().pluginId)
+    val processor = project.dependencies.project(":viewmodel-processor")
+    val isMultiplatform = project.extensions.findByType<KotlinMultiplatformExtension>() != null
+    if (!isMultiplatform) {
+      project.dependencies {
+        add("ksp", processor)
+      }
+      return
+    }
+    // commonMain VMs must be visible to every target (notably iOS via IosGraph), so they are
+    // generated into commonMain through kspCommonMainMetadata. androidMain-only VMs are invisible to
+    // the metadata pass, so kspAndroid is ALSO wired to cover them. kspAndroid also re-sees commonMain
+    // VMs and would double-emit them, but the processor detects the single-target leaf pass and skips
+    // commonMain symbols there, so only the metadata pass emits them.
+    project.dependencies {
+      add("kspCommonMainMetadata", processor)
+      add("kspAndroid", processor)
+    }
+    project.extensions.configure<KotlinMultiplatformExtension> {
+      sourceSets.getByName("commonMain").kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
+    }
+    // The generated dir is a commonMain source root, so every per-target compile *and* every other
+    // per-target KSP task (e.g. the nav-keys kspAndroidMain) reads it. Gradle won't infer that
+    // ordering, so make all of them run after the metadata generation. The metadata task itself is
+    // excluded to avoid a self-cycle.
+    project.tasks.configureEach {
+      if (name != "kspCommonMainKotlinMetadata" && (name.startsWith("compile") || name.startsWith("ksp"))) {
+        dependsOn("kspCommonMainKotlinMetadata")
       }
     }
   }

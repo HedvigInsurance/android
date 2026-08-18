@@ -5,11 +5,16 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.hedvig.android.auth.MemberIdService
+import com.hedvig.android.core.common.di.AppScope
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 
+@SingleIn(AppScope::class)
+@Inject
 internal class DeleteAccountRequestStorage(
   private val dataStore: DataStore<Preferences>,
   private val memberIdService: MemberIdService,

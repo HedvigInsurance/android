@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -50,17 +49,8 @@ internal fun SelectContractDestination(
   navigateUp: () -> Unit,
   exitFlow: () -> Unit,
   goToChat: () -> Unit,
-  onNavigateToNextStep: (moveIntentId: String, popUpDestination: Boolean) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  LaunchedEffect(uiState) {
-    val uiStateValue = uiState as? SelectContractState.NotEmpty ?: return@LaunchedEffect
-    if (uiStateValue.navigateToHousingType) {
-      val shouldPopUp = uiStateValue.intent.currentHomeAddresses.size < 2
-      viewModel.emit(SelectContractEvent.ClearNavigation)
-      onNavigateToNextStep(uiStateValue.intent.id, shouldPopUp)
-    }
-  }
   SelectContractScreen(
     uiState = uiState,
     navigateUp = navigateUp,
@@ -237,18 +227,15 @@ private class ChooseInsuranceUiStateProvider :
       SelectContractState.NotEmpty.Redirecting(
         intent = previewMovingIntent,
         selectedAddress = previewMovingIntent.currentHomeAddresses[0],
-        navigateToHousingType = false,
       ),
       SelectContractState.NotEmpty.Content(
         intent = previewMovingIntent,
         selectedAddress = null,
-        navigateToHousingType = false,
         buttonLoading = false,
       ),
       SelectContractState.NotEmpty.Content(
         intent = previewMovingIntent,
         selectedAddress = previewMovingIntent.currentHomeAddresses[1],
-        navigateToHousingType = false,
         buttonLoading = false,
       ),
     ),

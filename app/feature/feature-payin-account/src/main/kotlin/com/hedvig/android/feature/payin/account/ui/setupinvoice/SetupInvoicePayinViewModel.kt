@@ -7,16 +7,26 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.feature.payoutaccount.data.SetupInvoicePayoutUseCase
+import com.hedvig.android.feature.payoutaccount.navigation.SelectPayoutMethodKey
 import com.hedvig.android.feature.payin.account.data.SetupInvoicePayinUseCase
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.popUpTo
+import dev.zacsweers.metro.Inject
 
+@Inject
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class SetupInvoicePayinViewModel(
   setupInvoicePayinUseCase: SetupInvoicePayinUseCase,
-) : MoleculeViewModel<SetupInvoicePayoutEvent, SetupInvoicePayinUiState>(
-    SetupInvoicePayinUiState(false, null, false),
-    SetupInvoicePayinPresenter(setupInvoicePayinUseCase),
+  backstack: Backstack,
+) : MoleculeViewModel<SetupInvoicePayoutEvent, com.hedvig.android.feature.payin.account.ui.setupinvoice.SetupInvoicePayinUiState>(
+  SetupInvoicePayinUiState(false, null, false),
+  SetupInvoicePayinPresenter(setupInvoicePayinUseCase, backstack),
   )
 
 internal sealed interface SetupInvoicePayoutEvent {
@@ -31,6 +41,10 @@ internal data class SetupInvoicePayinUiState(
   val showSuccessSnackBar: Boolean,
 )
 
+internal class SetupInvoicePayoutPresenter(
+  private val setupInvoicePayinUseCase: SetupInvoicePayinUseCase,
+  private val backstack: Backstack,
+) : MoleculePresenter<SetupInvoicePayoutEvent, SetupInvoicePayoutUiState> {
 internal class SetupInvoicePayinPresenter(
   private val setupInvoicePayinUseCase: SetupInvoicePayinUseCase,
 ) : MoleculePresenter<SetupInvoicePayoutEvent, SetupInvoicePayinUiState> {
@@ -73,7 +87,7 @@ internal class SetupInvoicePayinPresenter(
         }
 
         SetupInvoicePayoutEvent.ShowedSnackBar -> {
-          showSuccessSnackBar = false
+          backstack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
         }
       }
     }

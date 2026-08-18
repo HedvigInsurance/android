@@ -9,6 +9,7 @@ import com.hedvig.android.auth.AuthTokenServiceImpl
 import com.hedvig.android.auth.event.AuthEventStorage
 import com.hedvig.android.auth.storage.AuthTokenStorage
 import com.hedvig.android.auth.test.FakeAuthRepository
+import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.test.clock.TestClock
@@ -188,7 +189,7 @@ class AndroidAccessTokenProviderTest {
       authTokenStorage,
       fakeAuthRepository,
       AuthEventStorage(),
-      backgroundScope,
+      ApplicationScope(backgroundScope),
     )
   }
 

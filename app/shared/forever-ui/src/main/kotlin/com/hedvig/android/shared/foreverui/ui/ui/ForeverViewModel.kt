@@ -1,5 +1,6 @@
 package com.hedvig.android.shared.foreverui.ui.ui
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -8,7 +9,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import arrow.core.raise.either
-import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -19,18 +23,31 @@ import com.hedvig.android.shared.foreverui.ui.data.ForeverRepository
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverEvent.RetryLoadReferralData
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverEvent.ShowedReferralCodeSubmissionError
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverEvent.SubmitNewReferralCode
+import dev.zacsweers.metro.Inject
 
+@Inject
+@HedvigViewModel(ActivityRetainedScope::class)
 class ForeverViewModel(
-  foreverRepositoryProvider: Provider<ForeverRepository>,
+  foreverRepository: ForeverRepository,
+  private val languageService: LanguageService,
+  private val hedvigBuildConstants: HedvigBuildConstants,
 ) : MoleculeViewModel<ForeverEvent, ForeverUiState>(
     ForeverUiState.Loading,
     ForeverPresenter(
-      foreverRepositoryProvider = foreverRepositoryProvider,
+      foreverRepository = foreverRepository,
     ),
-  )
+  ) {
+  fun referralShareUrl(code: String): String = buildString {
+    append(hedvigBuildConstants.urlBaseWeb)
+    append("/")
+    append(languageService.getLanguage().webPath())
+    append("/forever/")
+    append(Uri.encode(code))
+  }
+}
 
 internal class ForeverPresenter(
-  private val foreverRepositoryProvider: Provider<ForeverRepository>,
+  private val foreverRepository: ForeverRepository,
 ) : MoleculePresenter<ForeverEvent, ForeverUiState> {
   @Composable
   override fun MoleculePresenterScope<ForeverEvent>.present(lastState: ForeverUiState): ForeverUiState {
@@ -68,7 +85,7 @@ internal class ForeverPresenter(
         state.copy(reloading = true)
       }
       either {
-        val referralsData = foreverRepositoryProvider.provide().getReferralsData().bind()
+        val referralsData = foreverRepository.getReferralsData().bind()
         ForeverData(referralsData = referralsData)
       }.fold(
         ifLeft = {
@@ -91,7 +108,7 @@ internal class ForeverPresenter(
       val codeToSubmit = referralCodeToSubmit ?: return@LaunchedEffect
       val state = currentState as? ForeverUiState.Success ?: return@LaunchedEffect
       currentState = state.copy(referralCodeLoading = true)
-      foreverRepositoryProvider.provide().updateCode(codeToSubmit).fold(
+      foreverRepository.updateCode(codeToSubmit).fold(
         ifLeft = {
           referralCodeToSubmit = null
           currentState = state.copy(

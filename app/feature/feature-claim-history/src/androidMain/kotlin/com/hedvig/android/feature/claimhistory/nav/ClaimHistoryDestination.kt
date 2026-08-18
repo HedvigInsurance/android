@@ -1,26 +1,25 @@
 package com.hedvig.android.feature.claimhistory.nav
 
-import androidx.navigation.NavGraphBuilder
+import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.feature.claimhistory.ClaimHistoryDestination
-import com.hedvig.android.navigation.common.Destination
-import com.hedvig.android.navigation.compose.navdestination
-import kotlin.reflect.KClass
+import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.serialization.Serializable
-import org.koin.compose.viewmodel.koinViewModel
 
 @Serializable
-data object ClaimHistoryDestination : Destination
+data object ClaimHistoryKey : HedvigNavKey
 
-fun NavGraphBuilder.claimHistoryGraph(navigateUp: () -> Unit, navigateToClaimDetails: (claimId: String) -> Unit) {
-  navdestination<ClaimHistoryDestination> {
+fun EntryProviderScope<HedvigNavKey>.claimHistoryEntries(
+  backstack: Backstack,
+  navigateToClaimDetails: (claimId: String) -> Unit,
+) {
+  entry<ClaimHistoryKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
     ClaimHistoryDestination(
-      claimHistoryViewModel = koinViewModel(),
-      navigateUp = navigateUp,
+      claimHistoryViewModel = metroViewModel(),
+      navigateUp = backstack::navigateUp,
       navigateToClaimDetails = navigateToClaimDetails,
     )
   }
 }
-
-val profileBottomNavPermittedDestinations: List<KClass<out Destination>> = listOf(
-  ClaimHistoryDestination::class,
-)

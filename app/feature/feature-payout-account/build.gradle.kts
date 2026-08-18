@@ -7,6 +7,8 @@ hedvig {
   apollo("octopus")
   serialization()
   compose()
+  navKeys()
+  viewModels()
 }
 
 dependencies {
@@ -19,9 +21,6 @@ dependencies {
   implementation(projects.coreBuildConstants)
   implementation(libs.jetbrains.compose.runtime)
   implementation(libs.jetbrains.lifecycle.runtime.compose)
-  implementation(libs.jetbrains.navigation.compose)
-  implementation(libs.koin.composeViewModel)
-  implementation(libs.koin.core)
   implementation(projects.composeUi)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreResources)
@@ -29,6 +28,5 @@ dependencies {
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
-  implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
 }

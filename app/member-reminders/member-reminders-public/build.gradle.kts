@@ -18,7 +18,6 @@ dependencies {
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
   implementation(libs.coroutines.core)
-  implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
   implementation(projects.apolloCore)
@@ -28,7 +27,7 @@ dependencies {
   implementation(projects.coreDemoMode)
   implementation(projects.dataContract)
   implementation(projects.dataPayingMember)
-  implementation(projects.featureFlagsPublic)
+  implementation(projects.featureFlags)
 
   testImplementation(libs.apollo.annotations)
   testImplementation(libs.apollo.testingSupport)

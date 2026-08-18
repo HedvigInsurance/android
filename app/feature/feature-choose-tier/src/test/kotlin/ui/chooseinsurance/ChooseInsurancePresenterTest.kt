@@ -1,6 +1,7 @@
 package ui.chooseinsurance
 
 import FakeChangeTierRepository
+import TestBackstack
 import app.cash.turbine.Turbine
 import arrow.core.Either
 import arrow.core.NonEmptyList
@@ -10,7 +11,6 @@ import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
-import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.prop
 import com.hedvig.android.core.common.ErrorMessage
@@ -21,6 +21,7 @@ import com.hedvig.android.data.contract.ContractGroup.HOMEOWNER
 import com.hedvig.android.data.contract.ContractGroup.RENTAL
 import com.hedvig.android.feature.change.tier.data.CustomisableInsurance
 import com.hedvig.android.feature.change.tier.data.GetCustomizableInsurancesUseCase
+import com.hedvig.android.feature.change.tier.navigation.ChooseTierKey
 import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsurancePresenter
 import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsuranceToCustomizeEvent
 import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsuranceUiState
@@ -45,8 +46,9 @@ class ChooseInsurancePresenterTest {
     val presenter = ChooseInsurancePresenter(
       tierRepository = tierRepo,
       getCustomizableInsurancesUseCase = useCase,
+      backstack = TestBackstack(),
     )
-    presenter.test(ChooseInsuranceUiState.Loading()) {
+    presenter.test(ChooseInsuranceUiState.Loading) {
       skipItems(1)
       useCase.turbine.add(flowOf(ErrorMessage().left()))
       val state = awaitItem()
@@ -61,8 +63,9 @@ class ChooseInsurancePresenterTest {
     val presenter = ChooseInsurancePresenter(
       tierRepository = tierRepo,
       getCustomizableInsurancesUseCase = useCase,
+      backstack = TestBackstack(),
     )
-    presenter.test(ChooseInsuranceUiState.Loading()) {
+    presenter.test(ChooseInsuranceUiState.Loading) {
       skipItems(1)
       useCase.turbine.add(flowOf(null.right()))
       val state = awaitItem()
@@ -75,14 +78,15 @@ class ChooseInsurancePresenterTest {
     runTest {
       val tierRepo = FakeChangeTierRepository()
       val useCase = FakeGetCustomizableInsurancesUseCase()
+      val backstack = TestBackstack()
+      val scheduler = testScheduler
       val presenter = ChooseInsurancePresenter(
         tierRepository = tierRepo,
         getCustomizableInsurancesUseCase = useCase,
+        backstack = backstack,
       )
-      presenter.test(ChooseInsuranceUiState.Loading()) {
+      presenter.test(ChooseInsuranceUiState.Loading) {
         assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)
-          .prop(ChooseInsuranceUiState.Loading::paramsToNavigateToNextStep)
-          .isNull()
         useCase.turbine.add(
           flowOf(
             nonEmptyListOf(
@@ -104,9 +108,9 @@ class ChooseInsurancePresenterTest {
             null,
           ).right(),
         )
-        assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)
-          .prop(ChooseInsuranceUiState.Loading::paramsToNavigateToNextStep)
-          .isNotNull()
+        scheduler.advanceUntilIdle()
+        assertThat(backstack.entries.last()).isInstanceOf(ChooseTierKey::class)
+        cancelAndIgnoreRemainingEvents()
       }
     }
 
@@ -118,11 +122,10 @@ class ChooseInsurancePresenterTest {
       val presenter = ChooseInsurancePresenter(
         tierRepository = tierRepo,
         getCustomizableInsurancesUseCase = useCase,
+        backstack = TestBackstack(),
       )
-      presenter.test(ChooseInsuranceUiState.Loading()) {
+      presenter.test(ChooseInsuranceUiState.Loading) {
         assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)
-          .prop(ChooseInsuranceUiState.Loading::paramsToNavigateToNextStep)
-          .isNull()
         useCase.turbine.add(
           flowOf(
             nonEmptyListOf(
@@ -156,11 +159,10 @@ class ChooseInsurancePresenterTest {
       val presenter = ChooseInsurancePresenter(
         tierRepository = tierRepo,
         getCustomizableInsurancesUseCase = useCase,
+        backstack = TestBackstack(),
       )
-      presenter.test(ChooseInsuranceUiState.Loading()) {
+      presenter.test(ChooseInsuranceUiState.Loading) {
         assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)
-          .prop(ChooseInsuranceUiState.Loading::paramsToNavigateToNextStep)
-          .isNull()
         useCase.turbine.add(
           flowOf(
             nonEmptyListOf(
@@ -185,11 +187,10 @@ class ChooseInsurancePresenterTest {
     val presenter = ChooseInsurancePresenter(
       tierRepository = tierRepo,
       getCustomizableInsurancesUseCase = useCase,
+      backstack = TestBackstack(),
     )
-    presenter.test(ChooseInsuranceUiState.Loading()) {
+    presenter.test(ChooseInsuranceUiState.Loading) {
       assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)
-        .prop(ChooseInsuranceUiState.Loading::paramsToNavigateToNextStep)
-        .isNull()
       useCase.turbine.add(flowOf(listOfInsurances.right()))
       assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Success::class)
         .prop(ChooseInsuranceUiState.Success::insuranceList)
@@ -204,11 +205,10 @@ class ChooseInsurancePresenterTest {
     val presenter = ChooseInsurancePresenter(
       tierRepository = tierRepo,
       getCustomizableInsurancesUseCase = useCase,
+      backstack = TestBackstack(),
     )
-    presenter.test(ChooseInsuranceUiState.Loading()) {
+    presenter.test(ChooseInsuranceUiState.Loading) {
       assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)
-        .prop(ChooseInsuranceUiState.Loading::paramsToNavigateToNextStep)
-        .isNull()
       useCase.turbine.add(flowOf(listOfInsurances.right()))
       assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Success::class)
         .prop(ChooseInsuranceUiState.Success::selectedInsurance)
@@ -223,11 +223,10 @@ class ChooseInsurancePresenterTest {
     val presenter = ChooseInsurancePresenter(
       tierRepository = tierRepo,
       getCustomizableInsurancesUseCase = useCase,
+      backstack = TestBackstack(),
     )
-    presenter.test(ChooseInsuranceUiState.Loading()) {
+    presenter.test(ChooseInsuranceUiState.Loading) {
       assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)
-        .prop(ChooseInsuranceUiState.Loading::paramsToNavigateToNextStep)
-        .isNull()
       useCase.turbine.add(flowOf(listOfInsurances.right()))
       skipItems(1)
       sendEvent(ChooseInsuranceToCustomizeEvent.SelectInsurance(listOfInsurances[0].id))
@@ -242,14 +241,15 @@ class ChooseInsurancePresenterTest {
   fun `when insurance is chosen on continue try to fetch intent and then navigate further if success`() = runTest {
     val tierRepo = FakeChangeTierRepository()
     val useCase = FakeGetCustomizableInsurancesUseCase()
+    val backstack = TestBackstack()
+    val scheduler = testScheduler
     val presenter = ChooseInsurancePresenter(
       tierRepository = tierRepo,
       getCustomizableInsurancesUseCase = useCase,
+      backstack = backstack,
     )
-    presenter.test(ChooseInsuranceUiState.Loading()) {
+    presenter.test(ChooseInsuranceUiState.Loading) {
       assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)
-        .prop(ChooseInsuranceUiState.Loading::paramsToNavigateToNextStep)
-        .isNull()
       useCase.turbine.add(flowOf(listOfInsurances.right()))
       sendEvent(ChooseInsuranceToCustomizeEvent.SelectInsurance(listOfInsurances[0].id))
       sendEvent(ChooseInsuranceToCustomizeEvent.SubmitSelectedInsuranceToCustomize(listOfInsurances[0]))
@@ -263,9 +263,9 @@ class ChooseInsurancePresenterTest {
           null,
         ).right(),
       )
-      assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)
-        .prop(ChooseInsuranceUiState.Loading::paramsToNavigateToNextStep)
-        .isNotNull()
+      scheduler.advanceUntilIdle()
+      assertThat(backstack.entries.last()).isInstanceOf(ChooseTierKey::class)
+      cancelAndIgnoreRemainingEvents()
     }
   }
 
@@ -276,11 +276,10 @@ class ChooseInsurancePresenterTest {
     val presenter = ChooseInsurancePresenter(
       tierRepository = tierRepo,
       getCustomizableInsurancesUseCase = useCase,
+      backstack = TestBackstack(),
     )
-    presenter.test(ChooseInsuranceUiState.Loading()) {
+    presenter.test(ChooseInsuranceUiState.Loading) {
       assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)
-        .prop(ChooseInsuranceUiState.Loading::paramsToNavigateToNextStep)
-        .isNull()
       useCase.turbine.add(
         flowOf(
           nonEmptyListOf(
@@ -316,11 +315,10 @@ class ChooseInsurancePresenterTest {
     val presenter = ChooseInsurancePresenter(
       tierRepository = tierRepo,
       getCustomizableInsurancesUseCase = useCase,
+      backstack = TestBackstack(),
     )
-    presenter.test(ChooseInsuranceUiState.Loading()) {
+    presenter.test(ChooseInsuranceUiState.Loading) {
       assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)
-        .prop(ChooseInsuranceUiState.Loading::paramsToNavigateToNextStep)
-        .isNull()
       useCase.turbine.add(flowOf(listOfInsurances.right()))
       sendEvent(ChooseInsuranceToCustomizeEvent.SelectInsurance(listOfInsurances[0].id))
       sendEvent(ChooseInsuranceToCustomizeEvent.SubmitSelectedInsuranceToCustomize(listOfInsurances[0]))

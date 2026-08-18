@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -50,21 +49,8 @@ import hedvig.resources.something_went_wrong
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun HousingTypeDestination(
-  viewModel: HousingTypeViewModel,
-  navigateUp: () -> Unit,
-  exitFlow: () -> Unit,
-  onNavigateToNextStep: () -> Unit,
-) {
+internal fun HousingTypeDestination(viewModel: HousingTypeViewModel, navigateUp: () -> Unit, exitFlow: () -> Unit) {
   val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
-  if (uiState is Content) {
-    LaunchedEffect(uiState.navigateToNextStep) {
-      if (uiState.navigateToNextStep != false) {
-        viewModel.emit(HousingTypeEvent.NavigatedToNextStep)
-        onNavigateToNextStep()
-      }
-    }
-  }
   HousingTypeScreen(
     uiState = uiState,
     navigateUp = navigateUp,
@@ -195,18 +181,15 @@ private class StartUiStateProvider : CollectionPreviewParameterProvider<HousingT
     Content(
       possibleHousingTypes = HousingType.entries,
       selectedHousingType = HousingType.entries.first(),
-      navigateToNextStep = false,
     ),
     Content(
       possibleHousingTypes = HousingType.entries,
       selectedHousingType = HousingType.entries[1],
-      navigateToNextStep = false,
       buttonLoading = false,
     ),
     Content(
       possibleHousingTypes = HousingType.entries,
       selectedHousingType = HousingType.entries.first(),
-      navigateToNextStep = false,
       buttonLoading = true,
     ),
   ),

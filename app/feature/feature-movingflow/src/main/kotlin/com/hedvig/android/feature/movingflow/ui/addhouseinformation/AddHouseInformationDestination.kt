@@ -22,7 +22,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -83,7 +82,6 @@ import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState.MoveExtraBuildingType
 import com.hedvig.android.feature.movingflow.ui.MovingFlowTopAppBar
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationEvent.DismissSubmissionError
-import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationEvent.NavigatedToChoseCoverage
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationEvent.Submit
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationUiState.Content
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationUiState.Content.SubmittingInfoFailure.NetworkFailure
@@ -124,21 +122,14 @@ import org.jetbrains.compose.resources.stringResource
 internal fun AddHouseInformationDestination(
   viewModel: AddHouseInformationViewModel,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   exitFlow: () -> Unit,
-  onNavigateToChoseCoverageLevelAndDeductible: () -> Unit,
 ) {
   val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
-  if (uiState is Content && uiState.navigateToChoseCoverage) {
-    LaunchedEffect(Unit) {
-      viewModel.emit(NavigatedToChoseCoverage)
-      onNavigateToChoseCoverageLevelAndDeductible()
-    }
-  }
   AddHouseInformationScreen(
     uiState = uiState,
     navigateUp = navigateUp,
-    popBackStack = popBackStack,
+    popBackstack = popBackstack,
     exitFlow = exitFlow,
     dismissSubmissionError = { viewModel.emit(DismissSubmissionError) },
     onSubmit = { viewModel.emit(Submit) },
@@ -149,7 +140,7 @@ internal fun AddHouseInformationDestination(
 private fun AddHouseInformationScreen(
   uiState: AddHouseInformationUiState,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   exitFlow: () -> Unit,
   dismissSubmissionError: () -> Unit,
   onSubmit: () -> Unit,
@@ -171,7 +162,7 @@ private fun AddHouseInformationScreen(
           Loading -> HedvigFullScreenCenterAlignedProgress()
 
           MissingOngoingMovingFlow -> HedvigErrorSection(
-            onButtonClick = popBackStack,
+            onButtonClick = popBackstack,
             subTitle = null,
             buttonText = stringResource(Res.string.app_info_submit_bug_go_back),
           )
@@ -509,10 +500,9 @@ private fun PreviewAddHouseInformationScreen() {
           ),
           isLoadingNextStep = false,
           submittingInfoFailure = null,
-          navigateToChoseCoverage = false,
         ),
         navigateUp = {},
-        popBackStack = {},
+        popBackstack = {},
         exitFlow = {},
         dismissSubmissionError = {},
         onSubmit = {},
@@ -529,7 +519,7 @@ private fun PreviewAddHouseInformationScreenFailure() {
       AddHouseInformationScreen(
         uiState = MissingOngoingMovingFlow,
         navigateUp = {},
-        popBackStack = {},
+        popBackstack = {},
         exitFlow = {},
         dismissSubmissionError = {},
         onSubmit = {},

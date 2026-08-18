@@ -29,7 +29,7 @@ import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun SubmitTierSuccessScreen(activationDate: LocalDate, popBackStack: () -> Unit) {
+internal fun SubmitTierSuccessScreen(activationDate: LocalDate, popBackstack: () -> Unit) {
   Column(
     modifier = Modifier
       .fillMaxSize()
@@ -55,7 +55,7 @@ internal fun SubmitTierSuccessScreen(activationDate: LocalDate, popBackStack: ()
     Spacer(Modifier.weight(1f))
     HedvigTextButton(
       stringResource(Res.string.general_close_button),
-      onClick = dropUnlessResumed { popBackStack() },
+      onClick = dropUnlessResumed { popBackstack() },
       buttonSize = Large,
       modifier = Modifier.fillMaxWidth(),
     )

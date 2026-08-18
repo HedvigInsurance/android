@@ -12,6 +12,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.feature.addon.purchase.data.GetInsuranceForTravelAddonUseCase
 import com.hedvig.android.feature.addon.purchase.data.InsuranceForAddon
+import com.hedvig.android.feature.addon.purchase.navigation.CustomizeAddonKey
 import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsuranceForAddonEvent
 import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsuranceForAddonPresenter
 import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsuranceForAddonState
@@ -38,6 +39,8 @@ class SelectInsuranceForAddonPresenterTest {
     val presenter = SelectInsuranceForAddonPresenter(
       getInsuranceForTravelAddonUseCase = useCase,
       ids = testIds,
+      preselectedAddonDisplayNames = emptyList(),
+      backstack = TestBackstack(),
     )
     presenter.test(SelectInsuranceForAddonState.Loading) {
       skipItems(1)
@@ -53,6 +56,8 @@ class SelectInsuranceForAddonPresenterTest {
     val presenter = SelectInsuranceForAddonPresenter(
       getInsuranceForTravelAddonUseCase = useCase,
       ids = emptyIds,
+      preselectedAddonDisplayNames = emptyList(),
+      backstack = TestBackstack(),
     )
     presenter.test(SelectInsuranceForAddonState.Loading) {
       skipItems(1)
@@ -63,21 +68,22 @@ class SelectInsuranceForAddonPresenterTest {
 
   @Test
   fun `if id list have only 1 item navigate further without loading anything`() = runTest {
+    val scheduler = testScheduler
     val useCase = FakeGetInsuranceForTravelAddonUseCase()
+    val backstack = TestBackstack()
     val presenter = SelectInsuranceForAddonPresenter(
       getInsuranceForTravelAddonUseCase = useCase,
       ids = listWithLonelyId,
+      preselectedAddonDisplayNames = emptyList(),
+      backstack = backstack,
     )
     presenter.test(SelectInsuranceForAddonState.Loading) {
       skipItems(1)
-      val state = awaitItem()
-      assertThat(state).isEqualTo(
-        SelectInsuranceForAddonState.Success(
-          listOfInsurances = emptyList(),
-          insuranceIdToContinue = listWithLonelyId[0],
-          currentlySelected = null,
-        ),
-      )
+      scheduler.advanceUntilIdle()
+      assertThat(backstack.entries.last())
+        .isInstanceOf(CustomizeAddonKey::class)
+        .prop(CustomizeAddonKey::insuranceId).isEqualTo(listWithLonelyId[0])
+      cancelAndIgnoreRemainingEvents()
     }
   }
 
@@ -87,6 +93,8 @@ class SelectInsuranceForAddonPresenterTest {
     val presenter = SelectInsuranceForAddonPresenter(
       getInsuranceForTravelAddonUseCase = useCase,
       ids = testIds,
+      preselectedAddonDisplayNames = emptyList(),
+      backstack = TestBackstack(),
     )
     presenter.test(SelectInsuranceForAddonState.Loading) {
       skipItems(1)
@@ -103,6 +111,8 @@ class SelectInsuranceForAddonPresenterTest {
     val presenter = SelectInsuranceForAddonPresenter(
       getInsuranceForTravelAddonUseCase = useCase,
       ids = testIds,
+      preselectedAddonDisplayNames = emptyList(),
+      backstack = TestBackstack(),
     )
     presenter.test(SelectInsuranceForAddonState.Loading) {
       skipItems(1)
@@ -119,6 +129,8 @@ class SelectInsuranceForAddonPresenterTest {
     val presenter = SelectInsuranceForAddonPresenter(
       getInsuranceForTravelAddonUseCase = useCase,
       ids = testIds,
+      preselectedAddonDisplayNames = emptyList(),
+      backstack = TestBackstack(),
     )
     presenter.test(SelectInsuranceForAddonState.Loading) {
       useCase.turbine.add(flowOf(listOfInsurances.right()))
@@ -131,18 +143,25 @@ class SelectInsuranceForAddonPresenterTest {
 
   @Test
   fun `on continue navigate further with chosen insurance id`() = runTest {
+    val scheduler = testScheduler
     val useCase = FakeGetInsuranceForTravelAddonUseCase()
+    val backstack = TestBackstack()
     val presenter = SelectInsuranceForAddonPresenter(
       getInsuranceForTravelAddonUseCase = useCase,
       ids = testIds,
+      preselectedAddonDisplayNames = emptyList(),
+      backstack = backstack,
     )
     presenter.test(SelectInsuranceForAddonState.Loading) {
       useCase.turbine.add(flowOf(listOfInsurances.right()))
       sendEvent(SelectInsuranceForAddonEvent.SelectInsurance(listOfInsurances[0]))
       skipItems(3)
       sendEvent(SelectInsuranceForAddonEvent.SubmitSelected(listOfInsurances[0]))
-      assertThat(awaitItem()).isInstanceOf(SelectInsuranceForAddonState.Success::class)
-        .prop(SelectInsuranceForAddonState.Success::insuranceIdToContinue).isEqualTo(listOfInsurances[0].id)
+      scheduler.advanceUntilIdle()
+      assertThat(backstack.entries.last())
+        .isInstanceOf(CustomizeAddonKey::class)
+        .prop(CustomizeAddonKey::insuranceId).isEqualTo(listOfInsurances[0].id)
+      cancelAndIgnoreRemainingEvents()
     }
   }
 }

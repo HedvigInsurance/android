@@ -4,7 +4,6 @@ import arrow.core.nonEmptyListOf
 import arrow.core.raise.either
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import assertk.assertions.isNull
 import assertk.assertions.prop
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.annotations.ApolloExperimental
@@ -29,26 +28,25 @@ import com.hedvig.android.feature.addon.purchase.data.GenerateAddonOfferResult
 import com.hedvig.android.feature.addon.purchase.data.GetAddonOfferUseCaseImpl
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuoteInsuranceDocument
 import com.hedvig.android.feature.addon.purchase.data.UmbrellaAddonQuote
-import com.hedvig.android.featureflags.flags.Feature
-import com.hedvig.android.featureflags.test.FakeFeatureManager
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.AddonGenerateOfferMutation
+import octopus.builder.Data
+import octopus.builder.buildActiveAddon
+import octopus.builder.buildAddonContractQuote
+import octopus.builder.buildAddonDisplayItem
+import octopus.builder.buildAddonOffer
+import octopus.builder.buildAddonOfferQuote
+import octopus.builder.buildAddonOfferSelectable
+import octopus.builder.buildAddonVariant
+import octopus.builder.buildItemCost
+import octopus.builder.buildItemDiscount
+import octopus.builder.buildMoney
+import octopus.builder.buildOtherAddonOfferOutput
+import octopus.builder.buildProductVariant
+import octopus.builder.buildUserError
 import octopus.type.CurrencyCode
-import octopus.type.buildActiveAddon
-import octopus.type.buildAddonContractQuote
-import octopus.type.buildAddonDisplayItem
-import octopus.type.buildAddonOffer
-import octopus.type.buildAddonOfferQuote
-import octopus.type.buildAddonOfferSelectable
-import octopus.type.buildAddonVariant
-import octopus.type.buildItemCost
-import octopus.type.buildItemDiscount
-import octopus.type.buildMoney
-import octopus.type.buildOtherAddonOfferOutput
-import octopus.type.buildProductVariant
-import octopus.type.buildUserError
 import org.junit.Rule
 import org.junit.Test
 
@@ -406,18 +404,8 @@ class GetTravelAddonOfferUseCaseImplTest {
     }
 
   @Test
-  fun `if FF for addons is off return ErrorMessage with null message`() = runTest {
-    val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to false))
-    val sut = GetAddonOfferUseCaseImpl(apolloClientWithFullResponseWithCurrentAddon, featureManager)
-    val result = sut.invoke(testId)
-    assertThat(result)
-      .isLeft().prop(ErrorMessage::message).isNull()
-  }
-
-  @Test
   fun `if quotes list is empty return ErrorMessage with null message`() = runTest {
-    val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
-    val sut = GetAddonOfferUseCaseImpl(apolloClientWithFullResponseEmptyQuotes, featureManager)
+    val sut = GetAddonOfferUseCaseImpl(apolloClientWithFullResponseEmptyQuotes)
     val result = sut.invoke(testId)
     assertThat(result)
       .isLeft()
@@ -426,8 +414,7 @@ class GetTravelAddonOfferUseCaseImplTest {
 
   @Test
   fun `if BE gives error return ErrorMessage with null message`() = runTest {
-    val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
-    val sut = GetAddonOfferUseCaseImpl(apolloClientWithError, featureManager)
+    val sut = GetAddonOfferUseCaseImpl(apolloClientWithError)
     val result = sut.invoke(testId)
     assertThat(result)
       .isLeft().prop(ErrorMessage::message).isEqualTo(null)
@@ -435,8 +422,7 @@ class GetTravelAddonOfferUseCaseImplTest {
 
   @Test
   fun `if BE gives UserError return ErrorMessage with proper message`() = runTest {
-    val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
-    val sut = GetAddonOfferUseCaseImpl(apolloClientWithUserError, featureManager)
+    val sut = GetAddonOfferUseCaseImpl(apolloClientWithUserError)
     val result = sut.invoke(testId)
     assertThat(result)
       .isLeft().prop(ErrorMessage::message).isEqualTo("You have 2 insurances")
@@ -444,8 +430,7 @@ class GetTravelAddonOfferUseCaseImplTest {
 
   @Test
   fun `if BE gives data but it's null return ErrorMessage with null message`() = runTest {
-    val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
-    val sut = GetAddonOfferUseCaseImpl(apolloClientWithNullData, featureManager)
+    val sut = GetAddonOfferUseCaseImpl(apolloClientWithNullData)
     val result = sut.invoke(testId).leftOrNull().toString()
     assertThat(result)
       .isEqualTo("ErrorMessage(message=null, throwable=null)")
@@ -453,12 +438,11 @@ class GetTravelAddonOfferUseCaseImplTest {
 
   @Test
   fun `if BE gives full data map it correctly`() = runTest {
-    val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
-    val sut1 = GetAddonOfferUseCaseImpl(apolloClientWithFullResponseNoCurrentAddon, featureManager)
+    val sut1 = GetAddonOfferUseCaseImpl(apolloClientWithFullResponseNoCurrentAddon)
     val result1 = sut1.invoke(testId)
     assertThat(result1)
       .isEqualTo(either { mockWithoutUpgrade })
-    val sut2 = GetAddonOfferUseCaseImpl(apolloClientWithFullResponseWithCurrentAddon, featureManager)
+    val sut2 = GetAddonOfferUseCaseImpl(apolloClientWithFullResponseWithCurrentAddon)
     val result2 = sut2.invoke(testId)
     assertThat(result2)
       .isEqualTo(either { mockWithUpgrade })

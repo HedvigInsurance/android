@@ -2,6 +2,7 @@ package ui.stepcustomize
 
 import CURRENT_ID
 import FakeChangeTierRepository
+import TestBackstack
 import arrow.core.Either
 import arrow.core.raise.either
 import assertk.assertThat
@@ -11,8 +12,10 @@ import assertk.assertions.isNull
 import assertk.assertions.prop
 import basTier
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.feature.change.tier.data.CurrentContractData
 import com.hedvig.android.feature.change.tier.data.GetCurrentContractDataUseCase
+import com.hedvig.android.feature.change.tier.navigation.ComparisonKey
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoveragePresenter
@@ -20,6 +23,7 @@ import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageSta
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageSuccessUiState
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
+import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import currentQuote
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
@@ -42,6 +46,7 @@ class SelectCoveragePresenterTest {
       params = params,
       tierRepository = tierRepo,
       getCurrentContractDataUseCase = getCurrentContractDataUseCase,
+      backstack = TestBackstack(),
     )
     presenter.test(SelectCoverageState.Loading) {
       tierRepo.quoteListTurbine.add(listOf())
@@ -58,6 +63,7 @@ class SelectCoveragePresenterTest {
       params = params,
       tierRepository = tierRepo,
       getCurrentContractDataUseCase = getCurrentContractDataUseCase,
+      backstack = TestBackstack(),
     )
     presenter.test(SelectCoverageState.Loading) {
       tierRepo.quoteListTurbine.add(listOf(testQuote, testQuote2, currentQuote))
@@ -74,6 +80,7 @@ class SelectCoveragePresenterTest {
       params = params,
       tierRepository = tierRepo,
       getCurrentContractDataUseCase = getCurrentContractDataUseCase,
+      backstack = TestBackstack(),
     )
     presenter.test(SelectCoverageState.Loading) {
       tierRepo.quoteListTurbine.add(listOf(testQuote, testQuote2, currentQuote))
@@ -100,6 +107,7 @@ class SelectCoveragePresenterTest {
       params = params,
       tierRepository = tierRepo,
       getCurrentContractDataUseCase = getCurrentContractDataUseCase,
+      backstack = TestBackstack(),
     )
     presenter.test(SelectCoverageState.Loading) {
       tierRepo.quoteListTurbine.add(listOf(testQuote, testQuote2, testQuote3, currentQuote))
@@ -136,6 +144,7 @@ class SelectCoveragePresenterTest {
       params = params,
       tierRepository = tierRepo,
       getCurrentContractDataUseCase = getCurrentContractDataUseCase,
+      backstack = TestBackstack(),
     )
     presenter.test(SelectCoverageState.Loading) {
       tierRepo.quoteListTurbine.add(listOf(testQuote, testQuote2, testQuote3, currentQuote))
@@ -164,10 +173,13 @@ class SelectCoveragePresenterTest {
   fun `when going to comparison one quote of each Tier is sent as parameter`() = runTest {
     val getCurrentContractDataUseCase = FakeGetCurrentContractDataUseCase()
     val tierRepo = FakeChangeTierRepository()
+    val backstack = TestBackstack()
+    val scheduler = testScheduler
     val presenter = SelectCoveragePresenter(
       params = params,
       tierRepository = tierRepo,
       getCurrentContractDataUseCase = getCurrentContractDataUseCase,
+      backstack = backstack,
     )
     presenter.test(SelectCoverageState.Loading) {
       tierRepo.quoteListTurbine.add(listOf(testQuote, testQuote2, testQuote3, currentQuote))
@@ -175,16 +187,14 @@ class SelectCoveragePresenterTest {
       sendEvent(
         SelectCoverageEvent.LaunchComparison,
       )
-      val state = awaitItem()
-      assertThat(state).isInstanceOf(SelectCoverageState.Success::class)
-        .prop(SelectCoverageState.Success::uiState)
-        .prop(SelectCoverageSuccessUiState::quotesToCompare)
-        .transform {
-          it?.map { quote ->
-            quote.tier.tierName
-          }
-        }
-        .isEqualTo(listOf("STANDARD", "BAS"))
+      scheduler.advanceUntilIdle()
+      assertThat(backstack.entries.last())
+        .isInstanceOf(ComparisonKey::class)
+        .prop(ComparisonKey::comparisonParameters)
+        .prop(ComparisonParameters::termsIds)
+        .transform { it.size }
+        .isEqualTo(2)
+      cancelAndIgnoreRemainingEvents()
     }
   }
 
@@ -196,6 +206,7 @@ class SelectCoveragePresenterTest {
       params = params,
       tierRepository = tierRepo,
       getCurrentContractDataUseCase = getCurrentContractDataUseCase,
+      backstack = TestBackstack(),
     )
     presenter.test(SelectCoverageState.Loading) {
       tierRepo.quoteListTurbine.add(listOf(testQuote, testQuote2, currentQuote))
@@ -235,6 +246,7 @@ class SelectCoveragePresenterTest {
       params = params,
       tierRepository = tierRepo,
       getCurrentContractDataUseCase = getCurrentContractDataUseCase,
+      backstack = TestBackstack(),
     )
     presenter.test(SelectCoverageState.Loading) {
       tierRepo.quoteListTurbine.add(listOf(testQuote, testQuote2, currentQuote))
@@ -253,7 +265,55 @@ class SelectCoveragePresenterTest {
         .isNull()
     }
   }
+
+  @Test
+  fun `when the contract is payment protection isPaymentProtection is true`() = runTest {
+    val tierRepo = FakeChangeTierRepository()
+    val presenter = SelectCoveragePresenter(
+      params = params,
+      tierRepository = tierRepo,
+      getCurrentContractDataUseCase = FakeGetCurrentContractDataUseCase(),
+      backstack = TestBackstack(),
+    )
+    presenter.test(SelectCoverageState.Loading) {
+      tierRepo.quoteListTurbine.add(listOf(paymentProtectionQuote))
+      skipItems(1)
+      assertThat(awaitItem())
+        .isInstanceOf(SelectCoverageState.Success::class)
+        .prop(SelectCoverageState.Success::uiState)
+        .isInstanceOf(SelectCoverageSuccessUiState::class.java)
+        .prop(SelectCoverageSuccessUiState::isPaymentProtection)
+        .isEqualTo(true)
+    }
+  }
+
+  @Test
+  fun `when the contract is not payment protection isPaymentProtection is false`() = runTest {
+    val tierRepo = FakeChangeTierRepository()
+    val presenter = SelectCoveragePresenter(
+      params = params,
+      tierRepository = tierRepo,
+      getCurrentContractDataUseCase = FakeGetCurrentContractDataUseCase(),
+      backstack = TestBackstack(),
+    )
+    presenter.test(SelectCoverageState.Loading) {
+      tierRepo.quoteListTurbine.add(listOf(testQuote, testQuote2, currentQuote))
+      skipItems(1)
+      assertThat(awaitItem())
+        .isInstanceOf(SelectCoverageState.Success::class)
+        .prop(SelectCoverageState.Success::uiState)
+        .isInstanceOf(SelectCoverageSuccessUiState::class.java)
+        .prop(SelectCoverageSuccessUiState::isPaymentProtection)
+        .isEqualTo(false)
+    }
+  }
 }
+
+// A current quote whose contract group is payment protection, which reuses the tier flow only to pick an
+// insured amount. Its id must match FakeChangeTierRepository.getCurrentQuoteId() so it is treated as current.
+private val paymentProtectionQuote = currentQuote.copy(
+  productVariant = currentQuote.productVariant.copy(contractGroup = ContractGroup.PAYMENT_PROTECTION),
+)
 
 private class FakeGetCurrentContractDataUseCase() : GetCurrentContractDataUseCase {
   override suspend fun invoke(insuranceId: String): Either<ErrorMessage, CurrentContractData> {

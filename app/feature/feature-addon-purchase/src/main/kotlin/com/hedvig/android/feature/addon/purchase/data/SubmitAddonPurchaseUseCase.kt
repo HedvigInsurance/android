@@ -5,16 +5,23 @@ import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import octopus.AddonActivateOfferMutation
 
 internal interface SubmitAddonPurchaseUseCase {
   suspend fun invoke(quoteId: String, addonIds: List<String>): Either<ErrorMessage, Unit>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class SubmitAddonPurchaseUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val crossSellAfterFlowRepository: CrossSellAfterFlowRepository,

@@ -6,7 +6,9 @@ plugins {
 hedvig {
   androidResources()
   compose()
+  viewModels()
   serialization()
+  navKeys()
 }
 
 android {
@@ -15,12 +17,9 @@ android {
 
 dependencies {
   implementation(libs.androidx.compose.foundation)
-  implementation(libs.androidx.navigation.compose)
   implementation(libs.jetbrains.lifecycle.runtime)
   implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.jetbrains.lifecycle.viewmodel)
-  implementation(libs.koin.composeViewModel)
-  implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.media3.exoplayer)
   implementation(libs.media3.ui)

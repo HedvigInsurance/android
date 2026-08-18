@@ -9,6 +9,7 @@ query GetPayinMethodStatus {
       id
     }
     paymentMethods {
+      missingConnection
       payoutMethods {
         status
         isDefault

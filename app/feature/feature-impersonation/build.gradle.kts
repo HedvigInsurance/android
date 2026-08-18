@@ -5,6 +5,7 @@ plugins {
 
 hedvig {
   compose()
+  viewModels()
 }
 
 dependencies {
@@ -14,10 +15,11 @@ dependencies {
   implementation(libs.jetbrains.compose.ui)
   implementation(libs.jetbrains.lifecycle.runtime)
   implementation(libs.jetbrains.lifecycle.viewmodel)
-  implementation(libs.koin.android)
-  implementation(libs.koin.core)
+  implementation(libs.metro.viewmodel)
+  implementation(libs.metro.viewmodel.compose)
   implementation(projects.authCorePublic)
   implementation(projects.authlib)
+  implementation(projects.coreCommonPublic)
   implementation(projects.designSystemHedvig)
   implementation(projects.navigationCore)
 }

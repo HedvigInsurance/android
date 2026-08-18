@@ -7,26 +7,36 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.termination.data.GetTerminatableContractsUseCase
 import com.hedvig.android.data.termination.data.TerminatableInsurance
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
-import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyData
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationSurveyFirstStepKey
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedInject
 
-internal class ChooseInsuranceToTerminateViewModel(
-  insuranceId: String?,
+@HedvigViewModel(ActivityRetainedScope::class)
+internal class ChooseInsuranceToTerminateViewModel @AssistedInject constructor(
+  @Assisted insuranceId: String?,
   getTerminatableContractsUseCase: GetTerminatableContractsUseCase,
   terminateInsuranceRepository: TerminateInsuranceRepository,
+  backstack: Backstack,
 ) : MoleculeViewModel<ChooseInsuranceToTerminateEvent, ChooseInsuranceToTerminateStepUiState>(
     initialState = ChooseInsuranceToTerminateStepUiState.Loading,
     presenter = ChooseInsuranceToTerminatePresenter(
       insuranceId = insuranceId,
       getTerminatableContractsUseCase = getTerminatableContractsUseCase,
       terminateInsuranceRepository = terminateInsuranceRepository,
+      backstack = backstack,
     ),
   )
 
@@ -34,6 +44,7 @@ private class ChooseInsuranceToTerminatePresenter(
   private val insuranceId: String?,
   private val getTerminatableContractsUseCase: GetTerminatableContractsUseCase,
   private val terminateInsuranceRepository: TerminateInsuranceRepository,
+  private val backstack: Backstack,
 ) : MoleculePresenter<ChooseInsuranceToTerminateEvent, ChooseInsuranceToTerminateStepUiState> {
   @Composable
   override fun MoleculePresenterScope<ChooseInsuranceToTerminateEvent>.present(
@@ -70,16 +81,6 @@ private class ChooseInsuranceToTerminatePresenter(
             )
           }
         }
-
-        ChooseInsuranceToTerminateEvent.ClearTerminationStep -> {
-          val currentStateValue = currentState
-          if (currentStateValue is ChooseInsuranceToTerminateStepUiState.Success) {
-            currentState = currentStateValue.copy(
-              nextStepWithInsurance = null,
-              isNavigationStepLoading = false,
-            )
-          }
-        }
       }
     }
 
@@ -105,10 +106,19 @@ private class ChooseInsuranceToTerminatePresenter(
             )
           },
           ifRight = { surveyData ->
-            loadingState.copy(
-              nextStepWithInsurance = Pair(surveyData, terminatableInsurance),
-              isNavigationStepLoading = false,
+            backstack.add(
+              TerminationSurveyFirstStepKey(
+                options = surveyData.options,
+                action = surveyData.action,
+                commonParams = TerminationGraphParameters(
+                  terminatableInsurance.id,
+                  terminatableInsurance.displayName,
+                  terminatableInsurance.contractExposure,
+                  terminatableInsurance.contractGroup,
+                ),
+              ),
             )
+            loadingState.copy(isNavigationStepLoading = false)
           },
         )
       terminatableInsuranceToFetchNextStepFor = null
@@ -137,7 +147,6 @@ private class ChooseInsuranceToTerminatePresenter(
               ChooseInsuranceToTerminateStepUiState.Success(
                 insuranceList = eligibleInsurances,
                 selectedInsurance = selectedInsurance,
-                nextStepWithInsurance = null,
                 isNavigationStepLoading = false,
                 navigationStepFailedToLoad = false,
               )
@@ -158,8 +167,6 @@ internal sealed interface ChooseInsuranceToTerminateEvent {
 
   data class SubmitSelectedInsuranceToTerminate(val insurance: TerminatableInsurance) :
     ChooseInsuranceToTerminateEvent
-
-  data object ClearTerminationStep : ChooseInsuranceToTerminateEvent
 }
 
 internal sealed interface ChooseInsuranceToTerminateStepUiState {
@@ -168,7 +175,6 @@ internal sealed interface ChooseInsuranceToTerminateStepUiState {
   data class Success(
     val insuranceList: List<TerminatableInsurance>,
     val selectedInsurance: TerminatableInsurance?,
-    val nextStepWithInsurance: Pair<TerminationSurveyData, TerminatableInsurance>?,
     val isNavigationStepLoading: Boolean,
     val navigationStepFailedToLoad: Boolean,
   ) : ChooseInsuranceToTerminateStepUiState

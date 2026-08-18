@@ -3,7 +3,7 @@ package com.hedvig.android.feature.chat.model
 import com.hedvig.android.data.chat.database.ChatMessageEntity
 import octopus.type.ChatMessageSender
 
-internal enum class Sender {
+enum class Sender {
   HEDVIG,
   AUTOMATION,
   MEMBER,

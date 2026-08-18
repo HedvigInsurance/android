@@ -16,8 +16,8 @@ import com.hedvig.android.feature.cross.sell.sheet.CrossSellSheetState.DontShow
 import com.hedvig.android.feature.cross.sell.sheet.CrossSellSheetState.Error
 import com.hedvig.android.feature.cross.sell.sheet.CrossSellSheetState.Loading
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
-import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun CrossSellSheet(
@@ -25,7 +25,7 @@ fun CrossSellSheet(
   onCrossSellClick: (String) -> Unit,
   imageLoader: ImageLoader,
 ) {
-  val viewModel: CrossSellSheetViewModel = koinViewModel()
+  val viewModel: CrossSellSheetViewModel = metroViewModel()
   if (isInScreenEligibleForCrossSells) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val sheetState = rememberHedvigBottomSheetState<CrossSellSheetData>()

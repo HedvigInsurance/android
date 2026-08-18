@@ -2,23 +2,28 @@ package com.hedvig.android.shareddi
 
 import com.hedvig.android.core.buildconstants.AppBuildConfig
 import com.hedvig.android.core.datastore.DeviceIdFetcher
+import com.hedvig.android.design.system.hedvig.IosDiHolder
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.language.LanguageStorage
 import com.hedvig.android.network.clients.AccessTokenFetcher
-import com.hedvig.android.permission.di.noopPermissionModule
-import com.hedvig.feature.claim.chat.di.claimChatModule
-import org.koin.core.context.startKoin
+import dev.zacsweers.metro.createGraphFactory
 
 @Suppress("unused") // Used from iOS
-fun initKoin(
+fun initDiGraph(
   accessTokenFetcher: AccessTokenFetcher,
   deviceIdFetcher: DeviceIdFetcher,
+  featureManager: FeatureManager,
+  languageStorage: LanguageStorage,
   appBuildConfig: AppBuildConfig,
 ) {
-  startKoin {
-    modules(
-      iosPlatformModule(accessTokenFetcher, deviceIdFetcher),
-      sharedModule(appBuildConfig),
-      claimChatModule,
-      noopPermissionModule,
-    )
-  }
+  val graph = createGraphFactory<IosGraph.Factory>().create(
+    accessTokenFetcher,
+    deviceIdFetcher,
+    featureManager,
+    languageStorage,
+    appBuildConfig,
+  )
+  IosDiHolder.metroViewModelFactory = graph.metroViewModelFactory
+  IosDiHolder.imageLoader = graph.imageLoader
+  IosDiHolder.graph = graph
 }

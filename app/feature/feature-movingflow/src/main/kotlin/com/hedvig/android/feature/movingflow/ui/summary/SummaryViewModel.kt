@@ -7,17 +7,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
-import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.toRoute
 import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
-import com.hedvig.android.feature.movingflow.MovingFlowDestinations.Summary
+import com.hedvig.android.feature.movingflow.HousingTypeKey
+import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
+import com.hedvig.android.feature.movingflow.SuccessfulMoveKey
+import com.hedvig.android.feature.movingflow.SummaryKey
 import com.hedvig.android.feature.movingflow.data.AddonId
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.AddonQuote.HomeAddonQuote
@@ -34,34 +37,45 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.navigateAndPopUpTo
+import com.hedvig.android.navigation.compose.popUpTo
 import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
 import com.hedvig.ui.tiersandaddons.DisplayDocument
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import kotlinx.datetime.LocalDate
 import octopus.feature.movingflow.MoveIntentV2CommitMutation
 
+@AssistedInject
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class SummaryViewModel(
-  savedStateHandle: SavedStateHandle,
+  @Assisted summaryRoute: SummaryKey,
   movingFlowRepository: MovingFlowRepository,
   apolloClient: ApolloClient,
   crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
   getMoveIntentCostUseCase: GetMoveIntentCostUseCase,
+  backstack: Backstack,
 ) : MoleculeViewModel<SummaryEvent, SummaryUiState>(
     Loading,
     SummaryPresenter(
-      summaryRoute = savedStateHandle.toRoute<Summary>(),
+      summaryRoute = summaryRoute,
       movingFlowRepository = movingFlowRepository,
       apolloClient = apolloClient,
       crossSellAfterFlowRepository = crossSellAfterFlowRepository,
       getMoveIntentCostUseCase = getMoveIntentCostUseCase,
+      backstack = backstack,
     ),
   )
 
 internal class SummaryPresenter(
-  private val summaryRoute: Summary,
+  private val summaryRoute: SummaryKey,
   private val movingFlowRepository: MovingFlowRepository,
   private val apolloClient: ApolloClient,
   private val crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
   private val getMoveIntentCostUseCase: GetMoveIntentCostUseCase,
+  private val backstack: Backstack,
 ) : MoleculePresenter<SummaryEvent, SummaryUiState> {
   @Composable
   override fun MoleculePresenterScope<SummaryEvent>.present(lastState: SummaryUiState): SummaryUiState {
@@ -69,7 +83,6 @@ internal class SummaryPresenter(
     var moveIntentCost: MoveIntentCost? by remember { mutableStateOf(null) }
     var submitChangesError: SubmitError? by remember { mutableStateOf(null) }
     var submitChangesWithData: SubmitChangesData? by remember { mutableStateOf(null) }
-    var navigateToFinishedScreenWithDate: LocalDate? by remember { mutableStateOf(null) }
 
     CollectEvents { event ->
       when (event) {
@@ -164,12 +177,16 @@ internal class SummaryPresenter(
                 }
               } else {
                 crossSellAfterFlowRepository.completedCrossSellTriggeringSelfServiceSuccessfully(
-                  CrossSellInfoType.MovingFlow,
+                  CrossSellInfoType.MovingFlow(
+                    moveIntentCommit.newContractId,
+                  ),
                 )
-                Snapshot.withMutableSnapshot {
-                  submitChangesWithData = null
-                  navigateToFinishedScreenWithDate = submitChangesDataValue.forDate
-                }
+                submitChangesWithData = null
+                backstack.popUpTo<SelectContractForMovingKey>(inclusive = true)
+                backstack.navigateAndPopUpTo<HousingTypeKey>(
+                  SuccessfulMoveKey(submitChangesDataValue.forDate),
+                  inclusive = true,
+                )
               }
             },
           )
@@ -189,7 +206,6 @@ internal class SummaryPresenter(
         summaryInfo = summaryInfoValue.summaryInfo,
         isSubmitting = submitChangesWithData != null,
         submitError = submitChangesError,
-        navigateToFinishedScreenWithDate = navigateToFinishedScreenWithDate,
         moveIntentCost = moveIntentCost,
       )
     }
@@ -217,7 +233,6 @@ internal sealed interface SummaryUiState {
     private val summaryInfo: SummaryInfo,
     val isSubmitting: Boolean,
     val submitError: SubmitError?,
-    val navigateToFinishedScreenWithDate: LocalDate?,
     private val moveIntentCost: MoveIntentCost?,
   ) : SummaryUiState {
     val cards: List<CardContent> = buildList {
@@ -236,8 +251,7 @@ internal sealed interface SummaryUiState {
     val totalPremium: UiMoney? = moveIntentCost?.monthlyNet
     val grossPremium: UiMoney? = moveIntentCost?.monthlyGross
     val shouldDisableInput: Boolean = isSubmitting ||
-      submitError != null ||
-      navigateToFinishedScreenWithDate != null
+      submitError != null
 
     sealed interface SubmitError {
       data object Generic : SubmitError

@@ -14,7 +14,6 @@ dependencies {
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
-  implementation(libs.koin.core)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
@@ -22,7 +21,7 @@ dependencies {
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
-  implementation(projects.featureFlagsPublic)
+  implementation(projects.featureFlags)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)

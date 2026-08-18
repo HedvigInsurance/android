@@ -36,7 +36,6 @@ import org.jetbrains.compose.resources.stringResource
 internal fun SetupSwishPayoutDestination(
   viewModel: SetupSwishPayoutViewModel,
   globalSnackBarState: GlobalSnackBarState,
-  onSuccessfullyConnected: () -> Unit,
   navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -44,10 +43,7 @@ internal fun SetupSwishPayoutDestination(
     uiState = uiState,
     globalSnackBarState = globalSnackBarState,
     onSave = { viewModel.emit(SetupSwishPayoutEvent.Save) },
-    showedSnackBar = {
-      viewModel.emit(SetupSwishPayoutEvent.ShowedSnackBar)
-      onSuccessfullyConnected()
-    },
+    showedSnackBar = { viewModel.emit(SetupSwishPayoutEvent.ShowedSnackBar) },
     navigateUp = navigateUp,
   )
 }

@@ -13,7 +13,6 @@ data class DeflectData(
   val faq: List<InfoBlock>,
   val buttonText: String,
 ) {
-
   @Serializable
   sealed interface DeflectPartnerContainer {
     @Serializable

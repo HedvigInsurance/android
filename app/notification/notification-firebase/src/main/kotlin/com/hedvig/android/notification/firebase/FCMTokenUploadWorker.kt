@@ -7,7 +7,14 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ChildWorkerFactory
+import com.hedvig.android.core.common.di.WorkerKey
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
+import dev.zacsweers.metro.ContributesIntoMap
 import kotlinx.coroutines.flow.first
 import octopus.MemberDeviceRegisterMutation
 
@@ -17,13 +24,20 @@ import octopus.MemberDeviceRegisterMutation
  * Important to also make sure to cancel this job when we've logged out again, so that we do not keep trying to upload
  * the token after we've already logged out and that token is no longer relevant.
  */
-internal class FCMTokenUploadWorker(
-  context: Context,
-  params: WorkerParameters,
+internal class FCMTokenUploadWorker @AssistedInject constructor(
+  @Assisted context: Context,
+  @Assisted params: WorkerParameters,
   private val apolloClient: ApolloClient,
   private val fcmTokenStorage: FCMTokenStorage,
   private val authTokenService: AuthTokenService,
 ) : CoroutineWorker(context, params) {
+  @ContributesIntoMap(AppScope::class)
+  @WorkerKey(FCMTokenUploadWorker::class)
+  @AssistedFactory
+  fun interface Factory : ChildWorkerFactory {
+    override fun create(context: Context, params: WorkerParameters): FCMTokenUploadWorker
+  }
+
   override suspend fun doWork(): Result {
     val storedToken = fcmTokenStorage.getToken().first()
     if (storedToken == null) {

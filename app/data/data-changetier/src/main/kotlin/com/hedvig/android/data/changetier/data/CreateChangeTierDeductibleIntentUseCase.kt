@@ -6,16 +6,17 @@ import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
 import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
-import kotlinx.coroutines.flow.first
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import octopus.ChangeTierDeductibleCreateIntentMutation
 import octopus.fragment.DeductibleFragment
 import octopus.fragment.DisplayItemFragment
@@ -28,22 +29,23 @@ internal interface CreateChangeTierDeductibleIntentUseCase {
   ): Either<ErrorMessage, ChangeTierDeductibleIntent>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class CreateChangeTierDeductibleIntentUseCaseImpl(
   private val apolloClient: ApolloClient,
-  private val featureManager: FeatureManager,
 ) : CreateChangeTierDeductibleIntentUseCase {
   override suspend fun invoke(
     insuranceId: String,
     source: ChangeTierCreateSource,
   ): Either<ErrorMessage, ChangeTierDeductibleIntent> {
     return either {
-      val isAddonFlagEnabled = featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).first()
       val changeTierDeductibleResponse = apolloClient
         .mutation(
           ChangeTierDeductibleCreateIntentMutation(
             contractId = insuranceId,
             source = source.toSource(),
-            addonsFlagOn = isAddonFlagEnabled,
+            addonsFlagOn = true,
           ),
         )
         .safeExecute()
@@ -98,7 +100,7 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
           tier = Tier(
             tierName = tierName,
             tierLevel = tierLevel,
-            tierDescription = productVariant.tierDescription,
+            tierDescription = tierDescription ?: productVariant.tierDescription,
             tierDisplayName = productVariant.displayNameTier,
           ),
           displayItems = displayItems.toDisplayItems(),
@@ -124,7 +126,7 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
           tier = Tier(
             tierName = it.tierName,
             tierLevel = it.tierLevel,
-            tierDescription = it.productVariant.tierDescription,
+            tierDescription = it.tierDescription ?: it.productVariant.tierDescription,
             tierDisplayName = it.productVariant.displayNameTier,
           ),
           addons = it.addons?.map { addon ->

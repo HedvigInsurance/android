@@ -10,8 +10,12 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import octopus.MemberPaymentDetailsQuery
 import octopus.fragment.MemberPaymentMethodFragment
 import octopus.fragment.MemberPaymentMethodFragment.PaymentMethodBankAccountDetailsDetails
@@ -25,6 +29,9 @@ internal interface GetMemberPaymentsDetailsUseCase {
   suspend fun invoke(): Either<ErrorMessage, MemberPaymentsDetails>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class GetMemberPaymentsDetailsUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetMemberPaymentsDetailsUseCase {

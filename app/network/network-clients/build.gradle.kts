@@ -26,7 +26,6 @@ kotlin {
       implementation(libs.apollo.normalizedCache)
       implementation(libs.apollo.runtime)
       implementation(libs.arrow.core)
-      implementation(libs.koin.core)
       implementation(libs.ktor.client.auth)
       implementation(libs.ktor.client.logging)
       implementation(projects.apolloOctopusPublic)
@@ -36,10 +35,19 @@ kotlin {
       implementation(projects.coreDatastorePublic)
       implementation(projects.languageCore)
     }
-    val mobileMain by getting {
+    getByName("mobileMain") {
       dependencies {
         implementation(libs.datadog.sdk.ktor)
       }
+    }
+    androidMain.dependencies {
+      implementation(libs.ktor.client.okhttp)
+    }
+    jvmMain.dependencies {
+      implementation(libs.ktor.client.okhttp)
+    }
+    nativeMain.dependencies {
+      implementation(libs.ktor.client.darwin)
     }
   }
 }

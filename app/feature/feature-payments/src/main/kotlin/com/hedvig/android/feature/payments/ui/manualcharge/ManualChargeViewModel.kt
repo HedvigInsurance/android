@@ -8,40 +8,50 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.payments.data.GetManualChargeInfoUseCase
 import com.hedvig.android.feature.payments.data.ManualChargeInfo
 import com.hedvig.android.feature.payments.data.TriggerManualChargeUseCase
+import com.hedvig.android.feature.payments.navigation.ManualChargeKey
+import com.hedvig.android.feature.payments.navigation.ManualChargeSuccessKey
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.navigateAndPopUpTo
+import dev.zacsweers.metro.Inject
 
+@Inject
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class ManualChargeViewModel(
   getManualChargeInfoUseCase: GetManualChargeInfoUseCase,
   triggerManualCharge: TriggerManualChargeUseCase,
+  backstack: Backstack,
 ) : MoleculeViewModel<ManualChargeEvent, ManualChargeUiState>(
-  initialState = ManualChargeUiState.Loading,
-  presenter = ManualChargePresenter(getManualChargeInfoUseCase, triggerManualCharge),
-)
+    initialState = ManualChargeUiState.Loading,
+    presenter = ManualChargePresenter(getManualChargeInfoUseCase, triggerManualCharge, backstack),
+  )
 
 private class ManualChargePresenter(
   private val getManualChargeInfoUseCase: GetManualChargeInfoUseCase,
   private val triggerManualCharge: TriggerManualChargeUseCase,
+  private val backstack: Backstack,
 ) : MoleculePresenter<ManualChargeEvent, ManualChargeUiState> {
   @Composable
-  override fun MoleculePresenterScope<ManualChargeEvent>.present(
-    lastState: ManualChargeUiState,
-  ): ManualChargeUiState {
+  override fun MoleculePresenterScope<ManualChargeEvent>.present(lastState: ManualChargeUiState): ManualChargeUiState {
     var dataLoadIteration by remember { mutableIntStateOf(0) }
     var screenState by remember { mutableStateOf(lastState) }
     var triggerChargeIteration by remember { mutableIntStateOf(0) }
 
     CollectEvents {
       when (it) {
-        ManualChargeEvent.Retry -> dataLoadIteration++
-        ManualChargeEvent.TriggerCharge -> triggerChargeIteration++
-        ManualChargeEvent.ClearNav -> {
-          val currentState = screenState as? ManualChargeUiState.Success ?: return@CollectEvents
-          screenState = currentState.copy(navigateToSuccess = null)
+        ManualChargeEvent.Retry -> {
+          dataLoadIteration++
+        }
+
+        ManualChargeEvent.TriggerCharge -> {
+          triggerChargeIteration++
         }
       }
     }
@@ -55,9 +65,11 @@ private class ManualChargePresenter(
             screenState = ManualChargeUiState.Failure(it)
           },
           ifRight = {
-            screenState = ManualChargeUiState.Success(
-              manualChargeInfo = currentState.manualChargeInfo,
-              navigateToSuccess = Unit,
+            backstack.navigateAndPopUpTo<ManualChargeKey>(
+              ManualChargeSuccessKey(
+                showCancellationWarning = currentState.manualChargeInfo.showCancellationWarning,
+              ),
+              inclusive = true,
             )
           },
         )
@@ -70,7 +82,6 @@ private class ManualChargePresenter(
         ifRight = { manualChargeInfo ->
           screenState = ManualChargeUiState.Success(
             manualChargeInfo = manualChargeInfo,
-            null,
           )
         },
         ifLeft = { failure ->
@@ -91,7 +102,6 @@ internal sealed interface ManualChargeUiState {
 
   data class Success(
     val manualChargeInfo: ManualChargeInfo,
-    val navigateToSuccess: Unit?,
     val payButtonLoading: Boolean = false,
   ) : ManualChargeUiState
 }
@@ -100,6 +110,4 @@ internal sealed interface ManualChargeEvent {
   data object Retry : ManualChargeEvent
 
   data object TriggerCharge : ManualChargeEvent
-  data object ClearNav : ManualChargeEvent
 }
-

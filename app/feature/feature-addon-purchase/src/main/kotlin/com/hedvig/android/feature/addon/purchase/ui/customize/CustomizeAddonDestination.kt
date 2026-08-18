@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -96,14 +95,12 @@ import com.hedvig.android.feature.addon.purchase.data.AddonOfferDeflectType
 import com.hedvig.android.feature.addon.purchase.data.AddonQuote
 import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuoteInsuranceDocument
-import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination
 import com.hedvig.android.feature.addon.purchase.navigation.PerilComparisonParams
-import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
+import com.hedvig.android.feature.addon.purchase.navigation.TravelInsurancePlusExplanationKey
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeAddonState.Failure
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeAddonState.Loading
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent.ChooseOptionInDialog
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent.ChooseSelectedOption
-import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent.ClearNavigation
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent.Reload
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent.SetSelectedOptionBackToPreviouslyChosen
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent.SubmitSelected
@@ -130,9 +127,8 @@ import org.jetbrains.compose.resources.stringResource
 internal fun CustomizeAddonDestination(
   viewModel: CustomizeAddonViewModel,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   popAddonFlow: () -> Unit,
-  navigateToSummary: (summaryParameters: SummaryParameters) -> Unit,
   onNavigateToTravelInsurancePlusExplanation: (PerilComparisonParams) -> Unit,
   navigateToChangeTier: (contractId: String) -> Unit,
 ) {
@@ -140,7 +136,7 @@ internal fun CustomizeAddonDestination(
   CustomizeTravelAddonScreen(
     uiState = uiState,
     navigateUp = navigateUp,
-    popBackStack = popBackStack,
+    popBackstack = popBackstack,
     popAddonFlow = popAddonFlow,
     submitSelected = {
       viewModel.emit(SubmitSelected)
@@ -160,10 +156,6 @@ internal fun CustomizeAddonDestination(
     onSetOptionBackToPreviouslyChosen = {
       viewModel.emit(SetSelectedOptionBackToPreviouslyChosen)
     },
-    navigateToSummary = { params ->
-      viewModel.emit(ClearNavigation)
-      navigateToSummary(params)
-    },
     onNavigateToTravelInsurancePlusExplanation = onNavigateToTravelInsurancePlusExplanation,
     onToggleOption = {
       viewModel.emit(CustomizeTravelAddonEvent.ToggleOption(it))
@@ -176,10 +168,9 @@ internal fun CustomizeAddonDestination(
 private fun CustomizeTravelAddonScreen(
   uiState: CustomizeAddonState,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   submitSelected: () -> Unit,
   submitToggled: () -> Unit,
-  navigateToSummary: (summaryParameters: SummaryParameters) -> Unit,
   onChooseOptionInDialog: (AddonQuote) -> Unit,
   onToggleOption: (AddonQuote) -> Unit,
   onChooseSelectedOption: () -> Unit,
@@ -197,7 +188,7 @@ private fun CustomizeTravelAddonScreen(
         FailureScreen(
           uiState = uiState,
           reload = reload,
-          popBackStack = popBackStack,
+          popBackstack = popBackstack,
           navigateToChangeTier = navigateToChangeTier,
         )
       }
@@ -207,12 +198,6 @@ private fun CustomizeTravelAddonScreen(
       }
 
       is CustomizeAddonState.Success -> {
-        LaunchedEffect(uiState.commonParams.summaryParamsToNavigateFurther) {
-          val summaryParams = uiState.commonParams.summaryParamsToNavigateFurther
-          if (summaryParams != null) {
-            navigateToSummary(summaryParams)
-          }
-        }
         CustomizeSelectableAddonScreenContent(
           uiState = uiState,
           navigateUp = navigateUp,
@@ -234,7 +219,7 @@ private fun CustomizeTravelAddonScreen(
 private fun FailureScreen(
   uiState: CustomizeAddonState.Failure,
   reload: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   navigateToChangeTier: (contractId: String) -> Unit,
 ) {
   Box(Modifier.fillMaxSize()) {
@@ -296,7 +281,7 @@ private fun FailureScreen(
             }
 
             AddonOfferDeflectType.GENERAL_CLOSE -> {
-              dropUnlessResumed { popBackStack() }
+              dropUnlessResumed { popBackstack() }
             }
           }
         }
@@ -313,7 +298,7 @@ private fun FailureScreen(
       if (!isDeflectClose) {
         HedvigTextButton(
           stringResource(Res.string.general_close_button),
-          onClick = dropUnlessResumed { popBackStack() },
+          onClick = dropUnlessResumed { popBackstack() },
           buttonSize = Large,
           modifier = Modifier.fillMaxWidth(),
         )
@@ -465,7 +450,7 @@ private fun CustomizeAddonCard(
             is CustomizeAddonState.Success.Selectable -> listOf(
               null to
                 uiState.currentlyChosenOption.addonVariant.perils.map {
-                  AddonPurchaseDestination.TravelInsurancePlusExplanation.TravelPerilData(
+                  TravelInsurancePlusExplanationKey.TravelPerilData(
                     title = it.title,
                     description = it.description,
                     covered = it.covered,
@@ -476,7 +461,7 @@ private fun CustomizeAddonCard(
 
             is CustomizeAddonState.Success.Toggleable -> uiState.addonOffer.addonOptions.map {
               it.displayTitle to it.addonVariant.perils.map { peril ->
-                AddonPurchaseDestination.TravelInsurancePlusExplanation.TravelPerilData(
+                TravelInsurancePlusExplanationKey.TravelPerilData(
                   title = peril.title,
                   description = peril.description,
                   covered = peril.covered,
@@ -882,7 +867,6 @@ private fun SelectTierScreenPreview(
         {},
         {},
         {},
-        {},
       )
     }
   }
@@ -897,7 +881,6 @@ internal class CustomizeTravelAddonPreviewProvider :
         currentlyChosenOption = fakeAddonQuote1,
         currentlyChosenOptionInDialog = fakeAddonQuote1,
         commonParams = CommonSuccessParameters(
-          summaryParamsToNavigateFurther = null,
           umbrellaDisplayTitle = "Display title",
           umbrellaDisplayDescription = "Display description",
           activationDate = LocalDate(2026, 2, 20),

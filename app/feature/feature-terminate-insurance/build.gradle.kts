@@ -7,6 +7,8 @@ hedvig {
   apollo("octopus")
   compose()
   serialization()
+  navKeys()
+  viewModels()
 }
 
 android {
@@ -14,18 +16,14 @@ android {
 }
 
 dependencies {
-  api(libs.androidx.navigation.common)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3.windowSizeClass)
-  implementation(libs.androidx.navigation.compose)
   implementation(libs.arrow.core)
-  implementation(libs.compose.richtext)
-  implementation(libs.compose.richtextCommonmark)
+  implementation(libs.coil.compose)
   implementation(libs.coroutines.core)
   implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.jetbrains.lifecycle.viewmodel.compose)
-  implementation(libs.koin.composeViewModel)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
@@ -38,11 +36,12 @@ dependencies {
   implementation(projects.dataContract)
   implementation(projects.dataTermination)
   implementation(projects.designSystemHedvig)
+  implementation(projects.featureFlags)
+  implementation(projects.featureTerminateInsuranceNavigation)
   implementation(projects.languageCore)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
-  implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.uiTiersAndAddons)
 

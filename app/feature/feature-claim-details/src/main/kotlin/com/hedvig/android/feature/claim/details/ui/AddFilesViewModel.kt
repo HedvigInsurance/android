@@ -5,21 +5,27 @@ import androidx.lifecycle.viewModelScope
 import arrow.core.raise.either
 import com.eygraber.uri.Uri
 import com.hedvig.android.apollo.NetworkCacheManager
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.fileupload.ClaimsServiceUploadFileUseCase
 import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.uidata.UiFile
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+@AssistedInject
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class AddFilesViewModel(
   private val claimsServiceUploadFileUseCase: ClaimsServiceUploadFileUseCase,
   private val fileService: FileService,
-  private val targetUploadUrl: String,
+  @Assisted private val targetUploadUrl: String,
   private val cacheManager: NetworkCacheManager,
-  initialFilesUri: List<String>,
+  @Assisted initialFilesUri: List<String>,
 ) : ViewModel() {
   private val _uiState = MutableStateFlow(FileUploadUiState())
   val uiState: StateFlow<FileUploadUiState> = _uiState.asStateFlow()

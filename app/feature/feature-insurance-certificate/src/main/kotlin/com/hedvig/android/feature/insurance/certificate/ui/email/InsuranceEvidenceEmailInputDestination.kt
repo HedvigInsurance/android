@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,13 +67,11 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun InsuranceEvidenceEmailInputDestination(
   viewModel: InsuranceEvidenceEmailInputViewModel,
-  navigateToShowCertificate: (url: String) -> Unit,
   navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   InsuranceEvidenceEmailInputScreen(
     uiState,
-    navigateToShowCertificate = navigateToShowCertificate,
     navigateUp = navigateUp,
     onRetry = {
       viewModel.emit(InsuranceEvidenceEmailInputEvent.RetryLoadData)
@@ -85,9 +82,6 @@ internal fun InsuranceEvidenceEmailInputDestination(
     onSubmit = {
       viewModel.emit(InsuranceEvidenceEmailInputEvent.Submit)
     },
-    onClearNavigation = {
-      viewModel.emit(InsuranceEvidenceEmailInputEvent.ClearNavigation)
-    },
     showedErrorMessage = {
       viewModel.emit(InsuranceEvidenceEmailInputEvent.ClearErrorMessage)
     },
@@ -97,11 +91,9 @@ internal fun InsuranceEvidenceEmailInputDestination(
 @Composable
 private fun InsuranceEvidenceEmailInputScreen(
   uiState: InsuranceEvidenceEmailInputState,
-  navigateToShowCertificate: (url: String) -> Unit,
   navigateUp: () -> Unit,
   onRetry: () -> Unit,
   onChangeEmail: (email: String) -> Unit,
-  onClearNavigation: () -> Unit,
   onSubmit: () -> Unit,
   showedErrorMessage: () -> Unit,
 ) {
@@ -120,13 +112,6 @@ private fun InsuranceEvidenceEmailInputScreen(
     }
 
     is InsuranceEvidenceEmailInputState.Success -> {
-      LaunchedEffect(uiState.fetchedCertificateUrl) {
-        val url = uiState.fetchedCertificateUrl
-        if (url != null) {
-          onClearNavigation()
-          navigateToShowCertificate(url)
-        }
-      }
       InsuranceEvidenceEmailSuccessScreen(
         uiState,
         onSubmit = onSubmit,
@@ -308,8 +293,6 @@ private fun PreviewInsuranceEvidenceEmailInputScreen(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       InsuranceEvidenceEmailInputScreen(
         state,
-        {},
-        {},
         {},
         {},
         {},

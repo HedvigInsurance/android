@@ -7,15 +7,20 @@ import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.CoInsured
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import octopus.TravelCertificateCreateMutation
 import octopus.type.TravelCertificateCreateCoInsured
 import octopus.type.TravelCertificateCreateInput
 
+@SingleIn(AppScope::class)
+@Inject
 internal class CreateTravelCertificateUseCase(
   private val apolloClient: ApolloClient,
 ) {

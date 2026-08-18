@@ -19,22 +19,21 @@ import com.hedvig.android.data.changetier.data.CreateChangeTierDeductibleIntentU
 import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.data.changetier.data.TierConstants
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
-import com.hedvig.android.featureflags.flags.Feature
-import com.hedvig.android.featureflags.test.FakeFeatureManager
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.ChangeTierDeductibleCreateIntentMutation
+import octopus.builder.Data
+import octopus.builder.buildChangeTierDeductibleCreateIntentOutput
+import octopus.builder.buildChangeTierDeductibleFromAgreement
+import octopus.builder.buildChangeTierDeductibleIntent
+import octopus.builder.buildChangeTierDeductibleQuote
+import octopus.builder.buildChangeTierDeflectOutput
+import octopus.builder.buildDeductible
+import octopus.builder.buildMoney
+import octopus.builder.buildProductVariant
 import octopus.type.ChangeTierDeductibleSource.SELF_SERVICE
 import octopus.type.CurrencyCode.SEK
-import octopus.type.buildChangeTierDeductibleCreateIntentOutput
-import octopus.type.buildChangeTierDeductibleFromAgreement
-import octopus.type.buildChangeTierDeductibleIntent
-import octopus.type.buildChangeTierDeductibleQuote
-import octopus.type.buildChangeTierDeflectOutput
-import octopus.type.buildDeductible
-import octopus.type.buildMoney
-import octopus.type.buildProductVariant
 import org.junit.Rule
 import org.junit.Test
 
@@ -94,7 +93,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
             intent = buildChangeTierDeductibleIntent {
               activationDate = activationDateNovember
               agreementToChange = buildChangeTierDeductibleFromAgreement {
-                premium = buildMoney {
+                basePremium = buildMoney {
                   amount = 169.0
                   currencyCode = SEK
                 }
@@ -171,7 +170,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
             intent = buildChangeTierDeductibleIntent {
               activationDate = activationDateNovember
               agreementToChange = buildChangeTierDeductibleFromAgreement {
-                premium = buildMoney {
+                basePremium = buildMoney {
                   amount = 169.0
                   currencyCode = SEK
                 }
@@ -248,7 +247,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
             intent = buildChangeTierDeductibleIntent {
               activationDate = activationDateNovember
               agreementToChange = buildChangeTierDeductibleFromAgreement {
-                premium = buildMoney {
+                basePremium = buildMoney {
                   amount = 169.0
                   currencyCode = SEK
                 }
@@ -296,7 +295,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
             intent = buildChangeTierDeductibleIntent {
               activationDate = activationDateNovember
               agreementToChange = buildChangeTierDeductibleFromAgreement {
-                premium = buildMoney {
+                basePremium = buildMoney {
                   amount = 169.0
                   currencyCode = SEK
                 }
@@ -382,10 +381,8 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
 
   @Test
   fun `when BE response has empty quotes return intent with empty quotes`() = runTest {
-    val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
       apolloClient = apolloClientWithGoodResponseButEmptyQuotes,
-      featureManager = featureManager,
     )
     val result = createChangeTierDeductibleIntentUseCase.invoke(testId, ChangeTierCreateSource.SELF_SERVICE)
     assertk.assertThat(result)
@@ -399,10 +396,8 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
 
   @Test
   fun `when response is fine get a good result`() = runTest {
-    val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
       apolloClient = apolloClientWithGoodResponse,
-      featureManager = featureManager,
     )
     val result = createChangeTierDeductibleIntentUseCase.invoke(testId, ChangeTierCreateSource.SELF_SERVICE)
 
@@ -431,10 +426,8 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
 
   @Test
   fun `when response is otherwise good but the intent and deflect are null the result is ErrorMessage`() = runTest {
-    val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
       apolloClient = apolloClientWithGoodButNullResponse,
-      featureManager = featureManager,
     )
     val result = createChangeTierDeductibleIntentUseCase.invoke(testId, ChangeTierCreateSource.SELF_SERVICE)
 
@@ -446,10 +439,8 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
   @Test
   fun `when response is otherwise good but the tierName in existing agreement is null the result is ErrorMessage`() =
     runTest {
-      val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
       val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
         apolloClient = apolloClientWithGoodResponseButNullTierNameInExisting,
-        featureManager = featureManager,
       )
       val result = createChangeTierDeductibleIntentUseCase.invoke(testId, ChangeTierCreateSource.SELF_SERVICE)
 
@@ -461,10 +452,8 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
   @Test
   fun `when response is otherwise good but the tierName in one of the quotes is null the result is ErrorMessage`() =
     runTest {
-      val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
       val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
         apolloClient = apolloClientWithGoodResponseButNullTierNameInOneQuote,
-        featureManager = featureManager,
       )
       val result = createChangeTierDeductibleIntentUseCase.invoke(testId, ChangeTierCreateSource.SELF_SERVICE)
 
@@ -475,10 +464,8 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
 
   @Test
   fun `in good response one of the quotes should have the current const id`() = runTest {
-    val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
       apolloClient = apolloClientWithGoodResponse,
-      featureManager = featureManager,
     )
     val result = createChangeTierDeductibleIntentUseCase.invoke(testId, ChangeTierCreateSource.SELF_SERVICE)
       .getOrNull()?.intentOutput?.quotes?.filter { it.id == TierConstants.CURRENT_ID }
@@ -497,10 +484,8 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
 
   @Test
   fun `when response is bad the result is ErrorMessage`() = runTest {
-    val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
       apolloClient = apolloClientWithBadResponse,
-      featureManager = featureManager,
     )
     val result = createChangeTierDeductibleIntentUseCase.invoke(testId, ChangeTierCreateSource.SELF_SERVICE)
 
@@ -512,10 +497,8 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
   @Test
   fun `when result's deflectOutput is not null intentOutput should be null and deflectOutput should be populated`() =
     runTest {
-      val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
       val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
         apolloClient = apolloClientWithDeflectOutput,
-        featureManager = featureManager,
       )
       val result = createChangeTierDeductibleIntentUseCase.invoke(testId, ChangeTierCreateSource.SELF_SERVICE)
 
@@ -536,7 +519,6 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
 
   @Test
   fun `when deflectOutput is present intent field is ignored`() = runTest {
-    val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val apolloClientWithBothSet = testApolloClientRule.apolloClient.apply {
       registerTestResponse(
         operation = ChangeTierDeductibleCreateIntentMutation(
@@ -549,7 +531,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
             intent = buildChangeTierDeductibleIntent {
               activationDate = activationDateNovember
               agreementToChange = buildChangeTierDeductibleFromAgreement {
-                premium = buildMoney {
+                basePremium = buildMoney {
                   amount = 169.0
                   currencyCode = SEK
                 }
@@ -588,7 +570,6 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
 
     val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
       apolloClient = apolloClientWithBothSet,
-      featureManager = featureManager,
     )
     val result = createChangeTierDeductibleIntentUseCase.invoke(testId, ChangeTierCreateSource.SELF_SERVICE)
 

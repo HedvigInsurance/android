@@ -9,9 +9,12 @@ import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -19,6 +22,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import octopus.ClaimIntentQuery
 
+@SingleIn(AppScope::class)
+@Inject
 internal class GetClaimIntentUseCase(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,

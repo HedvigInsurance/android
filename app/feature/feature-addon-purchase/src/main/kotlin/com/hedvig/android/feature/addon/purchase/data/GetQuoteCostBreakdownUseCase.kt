@@ -7,11 +7,15 @@ import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.addon.purchase.navigation.AddonType
 import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
 import com.hedvig.ui.tiersandaddons.QuoteCostBreakdown
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import octopus.AddonOfferCostQuery
 
 internal interface GetQuoteCostBreakdownUseCase {
@@ -25,6 +29,9 @@ internal interface GetQuoteCostBreakdownUseCase {
   ): Either<ErrorMessage, QuoteCostBreakdown>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class GetQuoteCostBreakdownUseCaseImpl(private val apolloClient: ApolloClient) : GetQuoteCostBreakdownUseCase {
   override suspend fun invoke(
     quoteId: String,

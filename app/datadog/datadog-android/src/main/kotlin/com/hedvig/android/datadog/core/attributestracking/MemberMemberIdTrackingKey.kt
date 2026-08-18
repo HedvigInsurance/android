@@ -1,12 +1,19 @@
 package com.hedvig.android.datadog.core.attributestracking
 
 import com.hedvig.android.auth.MemberIdService
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class DatadogMemberIdProviderImpl(
   private val memberIdService: MemberIdService,
 ) : DatadogMemberIdProvider {

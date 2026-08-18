@@ -1,16 +1,17 @@
 package ui.stepstart
 
 import FakeChangeTierRepository
+import TestBackstack
 import arrow.core.left
 import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
-import assertk.assertions.isNotNull
 import assertk.assertions.prop
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
 import com.hedvig.android.data.changetier.data.DeflectOutput
 import com.hedvig.android.data.changetier.data.IntentOutput
+import com.hedvig.android.feature.change.tier.navigation.ChooseTierKey
 import com.hedvig.android.feature.change.tier.ui.stepstart.FailureReason.GENERAL
 import com.hedvig.android.feature.change.tier.ui.stepstart.FailureReason.QUOTES_ARE_EMPTY
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangePresenter
@@ -36,6 +37,7 @@ class StartTierChangePresenterTest {
     val presenter = StartTierChangePresenter(
       tierRepository = tierRepo,
       insuranceID = insuranceId,
+      backstack = TestBackstack(),
     )
     presenter.test(StartTierChangeState.Loading) {
       tierRepo.changeTierIntentTurbine.add(
@@ -61,6 +63,7 @@ class StartTierChangePresenterTest {
     val presenter = StartTierChangePresenter(
       tierRepository = tierRepo,
       insuranceID = insuranceId,
+      backstack = TestBackstack(),
     )
     presenter.test(StartTierChangeState.Loading) {
       tierRepo.changeTierIntentTurbine.add(com.hedvig.android.core.common.ErrorMessage().left())
@@ -75,9 +78,12 @@ class StartTierChangePresenterTest {
   @Test
   fun `if the quote list comes not empty redirect to select tier destination`() = runTest {
     val tierRepo = FakeChangeTierRepository()
+    val backstack = TestBackstack()
+    val scheduler = testScheduler
     val presenter = StartTierChangePresenter(
       tierRepository = tierRepo,
       insuranceID = insuranceId,
+      backstack = backstack,
     )
     presenter.test(StartTierChangeState.Loading) {
       tierRepo.changeTierIntentTurbine.add(
@@ -89,11 +95,9 @@ class StartTierChangePresenterTest {
           null,
         ).right(),
       )
-      skipItems(1)
-      val state = awaitItem()
-      assertThat(state).isInstanceOf(StartTierChangeState.Success::class)
-        .prop(StartTierChangeState.Success::paramsToNavigate)
-        .isNotNull()
+      scheduler.advanceUntilIdle()
+      assertThat(backstack.entries.last()).isInstanceOf(ChooseTierKey::class)
+      cancelAndIgnoreRemainingEvents()
     }
   }
 
@@ -103,6 +107,7 @@ class StartTierChangePresenterTest {
     val presenter = StartTierChangePresenter(
       tierRepository = tierRepo,
       insuranceID = insuranceId,
+      backstack = TestBackstack(),
     )
     presenter.test(StartTierChangeState.Loading) {
       tierRepo.changeTierIntentTurbine.add(
@@ -128,6 +133,7 @@ class StartTierChangePresenterTest {
     val presenter = StartTierChangePresenter(
       tierRepository = tierRepo,
       insuranceID = insuranceId,
+      backstack = TestBackstack(),
     )
     presenter.test(StartTierChangeState.Loading) {
       tierRepo.changeTierIntentTurbine.add(

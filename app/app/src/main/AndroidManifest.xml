@@ -138,7 +138,7 @@
       android:exported="false"
       tools:node="merge">
       <meta-data
-        android:name="com.hedvig.android.app.di.KoinInitializer"
+        android:name="com.hedvig.android.app.di.AppGraphInitializer"
         android:value="androidx.startup" />
       <meta-data
         android:name="com.hedvig.android.app.startup.DatadogInitializerImpl"
@@ -147,7 +147,7 @@
         android:name="com.hedvig.android.app.startup.TimberInitializer"
         android:value="androidx.startup" />
 
-      <!-- Remove automatic WorkManager initialization as Koin does it for us  -->
+      <!-- Remove automatic WorkManager initialization; the Metro graph provides the WorkerFactory -->
       <meta-data
         android:name="androidx.work.WorkManagerInitializer"
         android:value="androidx.startup"

@@ -2,14 +2,16 @@ package com.hedvig.android.feature.payments.data
 
 import kotlinx.datetime.LocalDate
 
-internal sealed interface PaymentConnection {
+sealed interface PaymentConnection {
   data object Active : PaymentConnection
 
   data object Pending : PaymentConnection
 
-  data class NeedsSetup(
+  data class NeedsPayinSetup(
     val terminationDateIfNotConnected: LocalDate?,
   ) : PaymentConnection
+
+  data object NeedsPayoutSetup : PaymentConnection
 
   data object Unknown : PaymentConnection
 }

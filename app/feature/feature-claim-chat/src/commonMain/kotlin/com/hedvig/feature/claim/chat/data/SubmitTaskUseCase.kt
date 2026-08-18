@@ -6,14 +6,19 @@ import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlin.math.pow
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import octopus.ClaimIntentSubmitTaskMutation
 
+@SingleIn(AppScope::class)
+@Inject
 internal class SubmitTaskUseCase(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,

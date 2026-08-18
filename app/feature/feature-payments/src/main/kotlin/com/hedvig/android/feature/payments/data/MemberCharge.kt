@@ -14,7 +14,7 @@ import octopus.fragment.MemberChargeFragment
 import octopus.type.MemberChargeStatus
 
 @Serializable
-internal data class MemberCharge(
+data class MemberCharge(
   val grossAmount: UiMoney,
   val netAmount: UiMoney,
   val id: String?,
@@ -47,7 +47,7 @@ internal data class MemberCharge(
     val sum: UiMoney,
   )
 
-  internal enum class MemberChargeStatus {
+  enum class MemberChargeStatus {
     UPCOMING,
     SUCCESS,
     PENDING,
@@ -170,7 +170,9 @@ internal fun String?.toChargeMethod(): MemberPaymentChargeMethod {
   return when {
     this?.startsWith("kivra", ignoreCase = true) == true ||
       this?.startsWith("invoice", ignoreCase = true) == true -> MemberPaymentChargeMethod.INVOICE
+
     this?.startsWith("trustly", ignoreCase = true) == true -> MemberPaymentChargeMethod.TRUSTLY
+
     else -> MemberPaymentChargeMethod.UNKNOWN
   }
 }

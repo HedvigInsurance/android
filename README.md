@@ -46,3 +46,14 @@ plugin is used to achieve this. This will run on CI using [this task](./.github/
 `./gradlew :app:lint -Prur.lint.onlyUnusedResources`
 And then
 `./gradlew :app:removeUnusedResourcesDebug`
+
+## Sharing code with iOS via HedvigShared
+
+The `:umbrella` module produces the binary the iOS app consumes for shared KMP code — exported module list in `app/umbrella/build.gradle.kts`. Two distribution paths:
+
+- **Production**: `umbrella.yml` runs `:umbrella:assembleHedvigSharedReleaseXCFramework` and publishes the resulting multi-slice XCFramework as a Swift Package (~25 min round-trip).
+- **Local dev**: Ugglan's `scripts/use-local-umbrella.sh` flips its Tuist project so a pre-build phase calls `:umbrella:embedAndSignAppleFrameworkForXcode` from a sibling `android/` checkout on every Xcode build (~5–10s per Kotlin change). See the *Iterating on shared KMP code* section in Ugglan's README.
+
+(`:umbrella:embedAndSignAppleFrameworkForXcode` only works from an Xcode build phase — it reads `CONFIGURATION`, `SDK_NAME`, `ARCHS`, `BUILT_PRODUCTS_DIR` from the env.)
+
+`:umbrella` is `isStatic = true`. Compose Resources you add to shared modules land at `<App>.app/compose-resources/composeResources/...` on iOS via `ugglan/scripts/post-build-action.sh` — that script is the source of truth for the iOS bundle layout.

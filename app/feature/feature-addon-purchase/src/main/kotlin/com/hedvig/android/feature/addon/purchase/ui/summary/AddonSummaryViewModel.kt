@@ -7,7 +7,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.tracking.ActionType
 import com.hedvig.android.core.tracking.logAction
 import com.hedvig.android.core.uidata.UiMoney
@@ -19,7 +20,10 @@ import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
 import com.hedvig.android.feature.addon.purchase.data.GetInsuranceForTravelAddonUseCase
 import com.hedvig.android.feature.addon.purchase.data.GetQuoteCostBreakdownUseCase
 import com.hedvig.android.feature.addon.purchase.data.SubmitAddonPurchaseUseCase
+import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseKey
 import com.hedvig.android.feature.addon.purchase.navigation.AddonType
+import com.hedvig.android.feature.addon.purchase.navigation.SubmitFailureKey
+import com.hedvig.android.feature.addon.purchase.navigation.SubmitSuccessKey
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonLogInfo.AddonEventType
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Content
@@ -27,24 +31,33 @@ import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Lo
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
+import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.LocalDate
 
+@AssistedInject
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class AddonSummaryViewModel(
-  summaryParameters: SummaryParameters,
-  addonPurchaseSource: AddonBannerSource,
+  @Assisted summaryParameters: SummaryParameters,
+  @Assisted addonPurchaseSource: AddonBannerSource,
   submitAddonPurchaseUseCase: SubmitAddonPurchaseUseCase,
   getQuoteCostBreakdownUseCase: GetQuoteCostBreakdownUseCase,
   getInsuranceForTravelAddonUseCase: GetInsuranceForTravelAddonUseCase,
+  backstack: Backstack,
 ) : MoleculeViewModel<AddonSummaryEvent, AddonSummaryState>(
-    initialState = Loading(),
+    initialState = Loading,
     presenter = AddonSummaryPresenter(
       summaryParameters,
       submitAddonPurchaseUseCase,
       addonPurchaseSource,
       getQuoteCostBreakdownUseCase,
       getInsuranceForTravelAddonUseCase,
+      backstack,
     ),
   )
 
@@ -54,24 +67,18 @@ internal class AddonSummaryPresenter(
   private val addonPurchaseSource: AddonBannerSource,
   private val getQuoteCostBreakdownUseCase: GetQuoteCostBreakdownUseCase,
   private val getInsuranceForTravelAddonUseCase: GetInsuranceForTravelAddonUseCase,
+  private val backstack: Backstack,
 ) : MoleculePresenter<AddonSummaryEvent, AddonSummaryState> {
   @Composable
   override fun MoleculePresenterScope<AddonSummaryEvent>.present(lastState: AddonSummaryState): AddonSummaryState {
     var submitIteration by remember { mutableIntStateOf(0) }
     var loadIteration by remember { mutableIntStateOf(0) }
     var currentState by remember { mutableStateOf(lastState) }
-    var activationDateForNavigation by remember { mutableStateOf<LocalDate?>(null) }
-    var errorForNavigation by remember { mutableStateOf<ErrorMessage?>(null) }
 
     CollectEvents { event ->
       when (event) {
         AddonSummaryEvent.Submit -> {
           submitIteration++
-        }
-
-        AddonSummaryEvent.ReturnToInitialState -> {
-          activationDateForNavigation = null
-          errorForNavigation = null
         }
 
         AddonSummaryEvent.Reload -> {
@@ -132,7 +139,7 @@ internal class AddonSummaryPresenter(
     LaunchedEffect(submitIteration) {
       val state = currentState as? Content ?: return@LaunchedEffect
       if (submitIteration > 0) {
-        currentState = Loading()
+        currentState = Loading
         submitAddonPurchaseUseCase.invoke(
           quoteId = summaryParameters.quoteId,
           addonIds = summaryParameters.chosenQuotes.map {
@@ -140,28 +147,20 @@ internal class AddonSummaryPresenter(
           },
         ).fold(
           ifLeft = {
-            errorForNavigation = it
             currentState = state
+            backstack.add(SubmitFailureKey)
           },
           ifRight = {
             logSuccessfulAddonPurchaseAction(summaryParameters, addonPurchaseSource)
-            errorForNavigation = null
-            activationDateForNavigation = summaryParameters.activationDate
+            backstack.navigateAndPopUpTo<AddonPurchaseKey>(
+              SubmitSuccessKey(summaryParameters.activationDate),
+              inclusive = true,
+            )
           },
         )
       }
     }
-    return when (val state = currentState) {
-      is Content -> state.copy(
-        navigateToFailure = errorForNavigation,
-      )
-
-      is Loading -> state.copy(
-        activationDateToNavigateToSuccess = activationDateForNavigation,
-      )
-
-      AddonSummaryState.Error -> state
-    }
+    return currentState
   }
 }
 
@@ -183,7 +182,6 @@ internal fun getInitialState(
 //      it.displayDetails
 //    },
     displayItems = emptyList(), // todo: check on test session
-    navigateToFailure = null,
     contractGroup = summaryParameters.productVariant.contractGroup,
   )
 }
@@ -196,9 +194,7 @@ internal data class CostBreakdownWithExtras(
 )
 
 internal sealed interface AddonSummaryState {
-  data class Loading(
-    val activationDateToNavigateToSuccess: LocalDate? = null,
-  ) : AddonSummaryState
+  data object Loading : AddonSummaryState
 
   data object Error : AddonSummaryState
 
@@ -213,7 +209,6 @@ internal sealed interface AddonSummaryState {
     val documents: List<InsuranceVariantDocument>,
     val costBreakdownWithExtras: CostBreakdownWithExtras,
     val displayItems: List<Pair<String, String>>, // todo: check how those look
-    val navigateToFailure: ErrorMessage? = null,
   ) : AddonSummaryState
 }
 
@@ -221,8 +216,6 @@ internal sealed interface AddonSummaryEvent {
   data object Submit : AddonSummaryEvent
 
   data object Reload : AddonSummaryEvent
-
-  data object ReturnToInitialState : AddonSummaryEvent
 }
 
 private fun logSuccessfulAddonPurchaseAction(

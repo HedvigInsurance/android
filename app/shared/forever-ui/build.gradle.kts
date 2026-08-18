@@ -7,6 +7,7 @@ hedvig {
   apollo("octopus")
   serialization()
   compose()
+  viewModels()
 }
 
 dependencies {
@@ -15,8 +16,6 @@ dependencies {
   implementation(libs.arrow.core)
   implementation(libs.coroutines.core)
   implementation(libs.jetbrains.lifecycle.runtime.compose)
-  implementation(libs.koin.composeViewModel)
-  implementation(libs.koin.core)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.composeUi)

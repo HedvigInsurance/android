@@ -5,12 +5,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerImmutableState
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationDateParameters
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedInject
 import java.util.Locale
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -22,8 +26,9 @@ internal sealed interface TerminationDateEvent {
   data object ToggleCheckBox : TerminationDateEvent
 }
 
-internal class TerminationDateViewModel(
-  parameters: TerminationDateParameters,
+@HedvigViewModel(ActivityRetainedScope::class)
+internal class TerminationDateViewModel @AssistedInject constructor(
+  @Assisted parameters: TerminationDateParameters,
   languageService: LanguageService,
 ) : MoleculeViewModel<TerminationDateEvent, TerminateInsuranceUiState>(
     initialState = TerminateInsuranceUiState(

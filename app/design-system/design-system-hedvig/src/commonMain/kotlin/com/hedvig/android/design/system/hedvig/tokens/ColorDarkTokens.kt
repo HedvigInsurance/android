@@ -36,6 +36,31 @@ internal object ColorDarkTokens {
   val ButtonGhostResting: Color = PaletteTokens.Transparent
   val ButtonGhostHover: Color = PaletteTokens.G900TDark
   val ButtonGhostDisabled: Color = PaletteTokens.Transparent
+
+  // TODO: the rounded buttons are only designed for light mode. In dark mode the primary one inverts to
+  //  an opaque white fill and the remaining states mirror the primary button. Review once design catches up.
+  val ButtonRoundedPrimaryResting: Color = PaletteTokens.White
+  val ButtonRoundedPrimaryHover: Color = PaletteTokens.G200TLight
+  val ButtonRoundedPrimaryDisabled: Color = PaletteTokens.G900
+  val ButtonRoundedPrimaryContent: Color = PaletteTokens.Black
+  val ButtonRoundedPrimaryHoverContent: Color = PaletteTokens.Black
+  val ButtonRoundedPrimaryDisabledContent: Color = PaletteTokens.G700
+  val ButtonRoundedPrimaryLoadingActive: Color = PaletteTokens.Black
+  val ButtonRoundedPrimaryLoadingInactive: Color = PaletteTokens.G800TDark
+  val ButtonRoundedPrimaryRedContent: Color = PaletteTokens.Red650
+
+  // TODO: the rounded buttons are only designed for light mode. In dark mode the liquid glass one is a
+  //  copy of the secondary button. Review once design catches up.
+  val ButtonRoundedLiquidGlassResting: Color = PaletteTokens.G900TDark
+  val ButtonRoundedLiquidGlassHover: Color = PaletteTokens.G900TDark
+  val ButtonRoundedLiquidGlassDisabled: Color = PaletteTokens.G900
+  val ButtonRoundedLiquidGlassContent: Color = PaletteTokens.White
+  val ButtonRoundedLiquidGlassHoverContent: Color = PaletteTokens.White
+  val ButtonRoundedLiquidGlassDisabledContent: Color = PaletteTokens.G700
+  val ButtonRoundedLiquidGlassLoadingActive: Color = PaletteTokens.White
+  val ButtonRoundedLiquidGlassLoadingInactive: Color = PaletteTokens.G800TDark
+  val ButtonRoundedLiquidGlassRedContent: Color = PaletteTokens.Red650
+
   val FillPrimary: Color = PaletteTokens.White
   val FillSecondary: Color = PaletteTokens.G500
   val FillTertiary: Color = PaletteTokens.G700
@@ -55,6 +80,7 @@ internal object ColorDarkTokens {
   val SurfacePrimaryTransparent: Color = PaletteTokens.G900TDark
   val SurfaceSecondaryTransparent: Color = PaletteTokens.G800TDark
   val SurfaceHighlightTransparent: Color = PaletteTokens.G900TDark
+  val SurfaceLiquidGlass: Color = PaletteTokens.G900TDark
   val BackgroundPrimary: Color = PaletteTokens.Black
   val BackgroundNegative: Color = PaletteTokens.White
   val BackgroundBlack: Color = PaletteTokens.Black
@@ -63,10 +89,11 @@ internal object ColorDarkTokens {
   val BorderSecondary: Color = PaletteTokens.G800TDark
   val BorderHighlight: Color = PaletteTokens.G200TLight
   val ShadowLightOnly: Color = PaletteTokens.Transparent
+  val ShadowSoftLightOnly: Color = PaletteTokens.Transparent
   val SignalRedFill: Color = PaletteTokens.Red200
   val SignalRedHighlight: Color = PaletteTokens.Red650
   val SignalRedElement: Color = PaletteTokens.Red650
-  val SignalRedText: Color = PaletteTokens.Red900
+  val SignalRedText: Color = PaletteTokens.Red650
   val SignalAmberFill: Color = PaletteTokens.Amber200
   val SignalAmberHighlight: Color = PaletteTokens.Amber500
   val SignalAmberElement: Color = PaletteTokens.Amber650

@@ -1,6 +1,10 @@
 package com.hedvig.android.feature.connect.payment.trustly.data
 
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.common.di.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 
 /**
  * Trustly asks for two urls to redirect to when they are done processing the payment connection.
@@ -12,6 +16,9 @@ internal interface TrustlyCallback {
   val failureUrl: String
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class TrustlyCallbackImpl(
   hedvigBuildConstants: HedvigBuildConstants,
 ) : TrustlyCallback {

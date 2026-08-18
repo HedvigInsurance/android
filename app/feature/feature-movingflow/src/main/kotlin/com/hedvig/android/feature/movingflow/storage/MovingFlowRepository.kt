@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.movingflow.storage
 
+import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.feature.movingflow.MovingSource
 import com.hedvig.android.feature.movingflow.data.AddonId
 import com.hedvig.android.feature.movingflow.data.HousingType
 import com.hedvig.android.feature.movingflow.data.MovingFlowState
@@ -12,11 +14,15 @@ import com.hedvig.android.feature.movingflow.data.fromFragments
 import com.hedvig.android.feature.movingflow.data.toMovingFlowQuotes
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
 import octopus.feature.movingflow.fragment.MoveIntentFragment
 import octopus.feature.movingflow.fragment.MoveIntentQuotesFragment
 
+@SingleIn(AppScope::class)
+@Inject
 internal class MovingFlowRepository(
   private val movingFlowStorage: MovingFlowStorage,
 ) {
@@ -24,12 +30,17 @@ internal class MovingFlowRepository(
     return movingFlowStorage.getMovingFlowState()
   }
 
-  suspend fun initiateNewMovingFlow(moveIntent: MoveIntentFragment, moveFromAddressId: String) {
+  suspend fun initiateNewMovingFlow(
+    moveIntent: MoveIntentFragment,
+    moveFromAddressId: String,
+    movingSource: MovingSource,
+  ) {
     movingFlowStorage.setMovingFlowState(
       MovingFlowState.fromFragments(
         moveIntent,
         null,
         moveFromAddressId,
+        movingSource,
       ),
     )
   }
@@ -52,8 +63,8 @@ internal class MovingFlowRepository(
     squareMeters: Int,
     numberCoInsured: Int,
     isStudent: Boolean,
-  ) {
-    movingFlowStorage.editMovingFlowState { existingState ->
+  ): MovingFlowState? {
+    return movingFlowStorage.editMovingFlowState { existingState ->
       val updatedState = existingState.copy(
         addressInfo = existingState.addressInfo.copy(
           street = address,

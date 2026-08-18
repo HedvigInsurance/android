@@ -2,12 +2,17 @@ package com.hedvig.android.feature.profile.settings
 
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreferencesUseCase
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.memberreminders.EnableNotificationsReminderSnoozeManager
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.Inject
 
+@Inject
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class SettingsViewModel(
   languageService: LanguageService,
   settingsDataStore: SettingsDataStore,

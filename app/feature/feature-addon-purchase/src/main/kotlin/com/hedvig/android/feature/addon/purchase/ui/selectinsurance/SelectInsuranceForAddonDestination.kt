@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -47,18 +46,13 @@ import org.jetbrains.compose.resources.stringResource
 internal fun SelectInsuranceForAddonDestination(
   viewModel: SelectInsuranceForAddonViewModel,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
-  navigateToCustomizeAddon: (chosenInsuranceId: String) -> Unit,
+  popBackstack: () -> Unit,
 ) {
   val uiState: SelectInsuranceForAddonState by viewModel.uiState.collectAsStateWithLifecycle()
   SelectInsuranceForAddonScreen(
     uiState = uiState,
     navigateUp = navigateUp,
-    popBackStack = popBackStack,
-    navigateToCustomizeAddon = { id ->
-      navigateToCustomizeAddon(id)
-      viewModel.emit(SelectInsuranceForAddonEvent.ClearNavigation)
-    },
+    popBackstack = popBackstack,
     selectInsurance = { selected ->
       viewModel.emit(SelectInsuranceForAddonEvent.SelectInsurance(selected))
     },
@@ -75,11 +69,10 @@ internal fun SelectInsuranceForAddonDestination(
 private fun SelectInsuranceForAddonScreen(
   uiState: SelectInsuranceForAddonState,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   reload: () -> Unit,
   selectInsurance: (selected: InsuranceForAddon) -> Unit,
   submitSelected: (selected: InsuranceForAddon) -> Unit,
-  navigateToCustomizeAddon: (chosenInsuranceId: String) -> Unit,
 ) {
   when (uiState) {
     Failure -> {
@@ -95,14 +88,9 @@ private fun SelectInsuranceForAddonScreen(
     }
 
     is Success -> {
-      LaunchedEffect(uiState.insuranceIdToContinue) {
-        if (uiState.insuranceIdToContinue != null) {
-          navigateToCustomizeAddon(uiState.insuranceIdToContinue)
-        }
-      }
       SelectInsuranceForAddonContentScreen(
         uiState = uiState,
-        popBackStack = popBackStack,
+        popBackstack = popBackstack,
         navigateUp = navigateUp,
         selectInsurance = selectInsurance,
         submitSelected = submitSelected,
@@ -115,7 +103,7 @@ private fun SelectInsuranceForAddonScreen(
 private fun SelectInsuranceForAddonContentScreen(
   uiState: Success,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   selectInsurance: (selected: InsuranceForAddon) -> Unit,
   submitSelected: (selected: InsuranceForAddon) -> Unit,
 ) {
@@ -125,7 +113,7 @@ private fun SelectInsuranceForAddonContentScreen(
     topAppBarActions = {
       IconButton(
         modifier = Modifier.size(24.dp),
-        onClick = dropUnlessResumed { popBackStack() },
+        onClick = dropUnlessResumed { popBackstack() },
         content = {
           Icon(
             imageVector = HedvigIcons.Close,
@@ -189,7 +177,6 @@ private fun PreviewChooseInsuranceToTerminateScreen(
         {},
         {},
         {},
-        {},
       )
     }
   }
@@ -214,7 +201,6 @@ private class ChooseInsuranceForAddonUiStateProvider :
           ),
         ),
         currentlySelected = null,
-        insuranceIdToContinue = null,
       ),
       Success(
         listOfInsurances = listOf(
@@ -237,7 +223,6 @@ private class ChooseInsuranceForAddonUiStateProvider :
           contractExposure = "Opulullegatan 19",
           contractGroup = ContractGroup.HOUSE,
         ),
-        insuranceIdToContinue = null,
       ),
       Failure,
       Loading,

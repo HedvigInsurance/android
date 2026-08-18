@@ -21,6 +21,7 @@ class HedvigGradlePlugin : Plugin<Project> {
       configureFeatureModuleGuidelines()
       configureKtlint(libs)
       configureCommonDependencies(libs)
+      configureMetro(libs)
       apply<HedvigLintConventionPlugin>()
       with(pluginManager) {
         apply(libs.plugins.dependencyAnalysis.get().pluginId)
@@ -50,6 +51,18 @@ private fun Project.configureKtlint(libs: LibrariesForLibs) {
     report.set(rootDir.resolve("build/reports/ktlint/${project.path}.xml"))
   }
 
+  // Detach lint/format from codegen — see detachGeneratedSourceTaskDependencies. Run in
+  // projectsEvaluated so it lands after every kotlinter source-wiring, including late-created
+  // source sets (e.g. the jvm "dev" compilation) that aren't present yet during afterEvaluate.
+  gradle.projectsEvaluated {
+    tasks.withType<org.jmailen.gradle.kotlinter.tasks.LintTask>().configureEach {
+      detachGeneratedSourceTaskDependencies()
+    }
+    tasks.withType<org.jmailen.gradle.kotlinter.tasks.FormatTask>().configureEach {
+      detachGeneratedSourceTaskDependencies()
+    }
+  }
+
   tasks.register("ktlintCheck") {
     dependsOn(tasks.withType<org.jmailen.gradle.kotlinter.tasks.LintTask>())
   }
@@ -59,9 +72,27 @@ private fun Project.configureKtlint(libs: LibrariesForLibs) {
   }
 }
 
+// kotlinter derives a lint/format task's source from the Kotlin source sets, which include
+// codegen output dirs (e.g. KSP) carrying a `builtBy` back to the generating task. On KMP
+// modules that transitively pulls every target's KSP + compile task into the ktlint graph,
+// so `ktlintFormat` ends up compiling iOS/JVM. We already exclude generated files from being
+// linted, so the dependency is pure overhead — re-set the source through a plain provider that
+// resolves the same files but carries no task dependencies.
+private fun org.gradle.api.tasks.SourceTask.detachGeneratedSourceTaskDependencies() {
+  val original = source
+  setSource(project.provider { original.files })
+}
+
 private fun Project.configureFeatureModuleGuidelines() {
   fun String.isFeatureModule(): Boolean {
     return startsWith("feature-") && !startsWith("feature-flags")
+  }
+  // A `feature-x-navigation` module hosts only the nav keys of `feature-x` that are meant to be
+  // reached from other feature modules. It is intentionally depend-able cross-feature so that a
+  // presenter can navigate directly to another feature's entry point, while the owning feature
+  // keeps its entries/screens and internal-only keys private.
+  fun String.isFeatureNavigationModule(): Boolean {
+    return isFeatureModule() && endsWith("-navigation")
   }
 
   val thisModuleName = this.name
@@ -71,16 +102,52 @@ private fun Project.configureFeatureModuleGuidelines() {
       eachDependency {
         if (requested.group != "hedvigandroid") return@eachDependency // Only check for our own modules
         if (requested.name == thisModuleName) return@eachDependency // Only check deps to other modules
+        // A `-navigation` module exists precisely to be depended on across features.
+        if (requested.name.isFeatureNavigationModule()) return@eachDependency
         val requestedModuleIsAFeatureModule = requested.name.isFeatureModule()
         require(!requestedModuleIsAFeatureModule) {
           "Hedvig build error on a module marked as featureModule() in HGP." +
             "\nYou are trying to depend on another feature module from a feature module." +
             "\nThis is not allowed as it breaks our ability to properly share code between modules." +
             "\nIn particular, $thisModuleName is trying to depend on ${requested.name}." +
-            "\nIf you need to share code between feature modules, consider moving the shared code to a library module."
+            "\nIf you need to share code between feature modules, consider moving the shared code to a library module." +
+            "\nIf you only need that feature's navigation keys, depend on its `feature-x-navigation` module instead."
         }
       }
     }
+  }
+}
+
+private fun Project.configureMetro(libs: LibrariesForLibs) {
+  // Metro hooks into the Kotlin compiler, so it can only be applied once a Kotlin plugin is present.
+  // Applying it lazily also makes us independent of plugin ordering within each module's plugins {} block.
+  val metroPluginId = libs.plugins.metro.get().pluginId
+  pluginManager.withPlugin(libs.plugins.kotlinMultiplatform.get().pluginId) {
+    pluginManager.apply(metroPluginId)
+  }
+  pluginManager.withPlugin(libs.plugins.kotlinJvm.get().pluginId) {
+    pluginManager.apply(metroPluginId)
+  }
+  // Android modules get their Kotlin compilation from AGP's built-in Kotlin support, so key off the
+  // AGP plugins rather than a standalone Kotlin plugin.
+  pluginManager.withPlugin(libs.plugins.androidApplication.get().pluginId) {
+    pluginManager.apply(metroPluginId)
+  }
+  pluginManager.withPlugin(libs.plugins.androidLibrary.get().pluginId) {
+    pluginManager.apply(metroPluginId)
+  }
+
+  // metrox ViewModel artifacts are only needed by Android modules, which host the ViewModels resolved
+  // through the central factory. Gating on the Android Gradle plugin keeps the Compose-bearing runtime
+  // out of pure-JVM library modules. withPlugin fires after the plugin is applied, so ordering is irrelevant.
+  pluginManager.withPlugin("com.android.library") { addMetroViewModelDependencies(libs) }
+  pluginManager.withPlugin("com.android.application") { addMetroViewModelDependencies(libs) }
+}
+
+private fun Project.addMetroViewModelDependencies(libs: LibrariesForLibs) {
+  dependencies {
+    add("implementation", libs.metro.viewmodel)
+    add("implementation", libs.metro.viewmodel.compose)
   }
 }
 
@@ -99,7 +166,14 @@ private fun Project.configureCommonDependencies(libs: LibrariesForLibs) {
       configureCommonDependencies(project, libs)
     }
   }
-  pluginManager.withPlugin(libs.plugins.kotlin.get().pluginId) {
+  // Android modules use AGP's built-in Kotlin support, so key off the AGP plugins to attach the
+  // shared implementation dependencies (Compose BOM, logging, tracking).
+  pluginManager.withPlugin(libs.plugins.androidApplication.get().pluginId) {
+    dependencies {
+      configureCommonDependencies(project, libs)
+    }
+  }
+  pluginManager.withPlugin(libs.plugins.androidLibrary.get().pluginId) {
     dependencies {
       configureCommonDependencies(project, libs)
     }
@@ -117,10 +191,8 @@ private fun DependencyHandlerScope.configureCommonDependencies(project: Project,
 }
 
 private fun Project.configureCommonDependencies(libs: LibrariesForLibs, configurationName: String) {
-  val koinBom = libs.koin.bom
   val composeBom = libs.androidx.compose.bom
   dependencies {
-    add(configurationName, platform(koinBom))
     add(configurationName, platform(composeBom))
 
     with(project.name) {

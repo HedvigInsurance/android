@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,11 +37,13 @@ import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
+import com.hedvig.feature.remove.addons.SummaryParameters
 import com.hedvig.feature.remove.addons.data.CurrentlyActiveAddon
 import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
 import com.hedvig.ui.tiersandaddons.DisplayDocument
 import com.hedvig.ui.tiersandaddons.QuoteCard
 import com.hedvig.ui.tiersandaddons.QuoteCostBreakdown
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import hedvig.resources.CONFIRM_CHANGES_SUBTITLE
 import hedvig.resources.CONFIRM_CHANGES_TITLE
 import hedvig.resources.GENERAL_ARE_YOU_SURE
@@ -57,8 +58,6 @@ import hedvig.resources.general_cancel_button
 import hedvig.resources.general_close_button
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Composable
 internal fun RemoveAddonSummaryDestination(
@@ -69,35 +68,26 @@ internal fun RemoveAddonSummaryDestination(
   currentTotalCost: ItemCost,
   existingAddonsToRemove: List<CurrentlyActiveAddon>,
   productVariant: ProductVariant,
-  navigateToSuccess: (activationDate: LocalDate) -> Unit,
   navigateUp: () -> Unit,
-  onFailure: () -> Unit,
   onCloseFlow: () -> Unit,
 ) {
-  val viewModel: RemoveAddonSummaryViewModel = koinViewModel {
-    parametersOf(
-      CommonSummaryParameters(
-        contractId = contractId,
-        addonsToRemove = addonsToRemove,
-        activationDate = activationDate,
-        baseCost = baseCost,
-        currentTotalCost = currentTotalCost,
-        productVariant = productVariant,
-        existingAddons = existingAddonsToRemove,
-      ),
-    )
-  }
+  val viewModel: RemoveAddonSummaryViewModel =
+    assistedMetroViewModel<RemoveAddonSummaryViewModel, RemoveAddonSummaryViewModelFactory> {
+      create(
+        SummaryParameters(
+          contractId = contractId,
+          addonsToRemove = addonsToRemove,
+          activationDate = activationDate,
+          baseCost = baseCost,
+          currentTotalCost = currentTotalCost,
+          productVariant = productVariant,
+          existingAddons = existingAddonsToRemove,
+        ),
+      )
+    }
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   RemoveAddonSummaryScreen(
     uiState = uiState,
-    onSuccess = { date ->
-      viewModel.emit(RemoveAddonSummaryEvent.ReturnToInitialState)
-      navigateToSuccess(date)
-    },
-    onFailure = {
-      viewModel.emit(RemoveAddonSummaryEvent.ReturnToInitialState)
-      onFailure()
-    },
     navigateUp = navigateUp,
     onSubmitQuoteClick = {
       viewModel.emit(RemoveAddonSummaryEvent.Submit)
@@ -112,31 +102,17 @@ internal fun RemoveAddonSummaryDestination(
 @Composable
 private fun RemoveAddonSummaryScreen(
   uiState: RemoveAddonSummaryState,
-  onSuccess: (LocalDate) -> Unit,
-  onFailure: () -> Unit,
   navigateUp: () -> Unit,
   onSubmitQuoteClick: () -> Unit,
   onCloseFlow: () -> Unit,
   reload: () -> Unit,
 ) {
   when (uiState) {
-    is RemoveAddonSummaryState.Loading -> {
-      LaunchedEffect(uiState.activationDateToNavigateToSuccess) {
-        val date = uiState.activationDateToNavigateToSuccess
-        if (date != null) {
-          onSuccess(date)
-        }
-      }
+    RemoveAddonSummaryState.Loading -> {
       HedvigFullScreenCenterAlignedProgress()
     }
 
     is RemoveAddonSummaryState.Content -> {
-      LaunchedEffect(uiState.navigateToFailure) {
-        val fail = uiState.navigateToFailure
-        if (fail != null) {
-          onFailure()
-        }
-      }
       SummaryContentScreen(
         uiState = uiState,
         navigateUp = navigateUp,
@@ -282,8 +258,6 @@ private fun PreviewRemoveAddonSummaryScreen(
         {},
         {},
         {},
-        {},
-        {},
       )
     }
   }
@@ -292,10 +266,10 @@ private fun PreviewRemoveAddonSummaryScreen(
 private class RemoveAddonSummaryStateUiStateProvider :
   CollectionPreviewParameterProvider<RemoveAddonSummaryState>(
     listOf(
-      RemoveAddonSummaryState.Loading(),
+      RemoveAddonSummaryState.Loading,
       RemoveAddonSummaryState.Failure,
       RemoveAddonSummaryState.Content(
-        summaryParams = CommonSummaryParameters(
+        summaryParams = SummaryParameters(
           contractId = ContractId("contractId"),
           addonsToRemove = listOf(
             CurrentlyActiveAddon(
@@ -376,7 +350,6 @@ private class RemoveAddonSummaryStateUiStateProvider :
             ),
           ),
         ),
-        navigateToFailure = null,
         exposureName = "exposureName",
       ),
     ),

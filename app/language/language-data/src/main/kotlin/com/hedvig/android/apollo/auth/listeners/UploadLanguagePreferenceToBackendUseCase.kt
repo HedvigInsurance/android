@@ -2,15 +2,22 @@ package com.hedvig.android.apollo.auth.listeners
 
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import octopus.MemberUpdateLanguageMutation
 
 interface UploadLanguagePreferenceToBackendUseCase {
   suspend fun invoke()
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class UploadLanguagePreferenceToBackendUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,

@@ -37,7 +37,6 @@ import org.jetbrains.compose.resources.stringResource
 internal fun EditBankAccountDestination(
   viewModel: EditBankAccountViewModel,
   globalSnackBarState: GlobalSnackBarState,
-  onSuccessfullyConnected: () -> Unit,
   navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -45,10 +44,7 @@ internal fun EditBankAccountDestination(
     uiState = uiState,
     globalSnackBarState = globalSnackBarState,
     onSave = { viewModel.emit(EditBankAccountEvent.Save) },
-    showedSnackBar = {
-      viewModel.emit(EditBankAccountEvent.ShowedSnackBar)
-      onSuccessfullyConnected()
-    },
+    showedSnackBar = { viewModel.emit(EditBankAccountEvent.ShowedSnackBar) },
     navigateUp = navigateUp,
   )
 }

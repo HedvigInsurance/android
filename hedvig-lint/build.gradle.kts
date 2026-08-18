@@ -3,8 +3,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
   id("hedvig.gradle.plugin")
   `java-library`
-  alias(libs.plugins.kotlinJvm)
-  alias(libs.plugins.lintGradlePlugin)
+  id("org.jetbrains.kotlin.jvm")
+  id("com.android.lint")
 }
 
 dependencies {

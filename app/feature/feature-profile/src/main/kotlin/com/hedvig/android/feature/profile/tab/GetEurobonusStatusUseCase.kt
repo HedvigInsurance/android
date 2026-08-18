@@ -9,6 +9,10 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import octopus.EurobonusDataQuery
 import octopus.fragment.PartnerDataFragment
 
@@ -16,6 +20,9 @@ internal interface GetEurobonusStatusUseCase {
   suspend fun invoke(): Either<GetEurobonusError, EuroBonus>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class NetworkGetEurobonusStatusUseCase(
   private val apolloClient: ApolloClient,
 ) : GetEurobonusStatusUseCase {

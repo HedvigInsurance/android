@@ -1,8 +1,11 @@
 package com.hedvig.android.auth
 
 import com.hedvig.android.auth.storage.AuthTokenStorage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.Base64.PaddingOption
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -16,6 +19,8 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
+@SingleIn(AppScope::class)
+@Inject
 class MemberIdService(
   private val authTokenStorage: AuthTokenStorage,
 ) {

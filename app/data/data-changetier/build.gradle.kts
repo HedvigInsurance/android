@@ -13,7 +13,6 @@ dependencies {
   implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
-  implementation(libs.koin.core)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
@@ -25,7 +24,7 @@ dependencies {
   implementation(projects.dataContract)
   implementation(projects.dataCrossSellAfterFlow)
   implementation(projects.dataProductVariantPublic)
-  implementation(projects.featureFlagsPublic)
+  implementation(projects.featureFlags)
   implementation(projects.uiTiersAndAddons)
 
   testImplementation(libs.apollo.testingSupport)

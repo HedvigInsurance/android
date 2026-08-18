@@ -1,45 +1,43 @@
 package com.hedvig.android.feature.editcoinsured.navigation
 
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
-import com.hedvig.android.feature.editcoinsured.data.InsuranceForEditOrAddCoInsured
-import com.hedvig.android.navigation.common.Destination
-import com.hedvig.android.navigation.common.DestinationNavTypeAware
-import kotlin.reflect.KType
-import kotlin.reflect.typeOf
+import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.findLastOrNull
+import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-sealed interface EditCoInsuredDestination : Destination {
-  @Serializable
-  data class CoInsuredAddInfo(
-    val contractId: String,
-    val type: CoInsuredFlowType,
-  ) : Destination
+@Serializable
+internal data class EditCoOwnersTriageDeepLinkKey(
+  @SerialName("contractId")
+  val contractId: String? = null,
+) : HedvigNavKey
 
-  @Serializable
-  data class CoInsuredAddOrRemove(
-    val contractId: String,
-    val type: CoInsuredFlowType,
-  ) : Destination
+@Serializable
+internal data class EditCoInsuredSuccessKey(val date: LocalDate, val type: CoInsuredFlowType) : HedvigNavKey
 
-  @Serializable
-  data class EditCoInsuredTriage(
-    @SerialName("contractId")
-    val contractId: String? = null,
-    val type: CoInsuredFlowType = CoInsuredFlowType.CoInsured,
-  ) : Destination
+/**
+ * The triage presenter serves both the normal [EditCoInsuredTriageKey] and the deep-link
+ * [EditCoOwnersTriageDeepLinkKey], so the pop anchor is resolved at navigation time.
+ */
+internal fun Backstack.navigateFromTriage(destination: HedvigNavKey) {
+  if (findLastOrNull<EditCoInsuredTriageKey>() != null) {
+    navigateAndPopUpTo<EditCoInsuredTriageKey>(destination, inclusive = true)
+  } else {
+    navigateAndPopUpTo<EditCoOwnersTriageDeepLinkKey>(destination, inclusive = true)
+  }
+}
 
-  @Serializable
-  data class EditCoOwnersTriageDeepLink(
-    @SerialName("contractId")
-    val contractId: String? = null,
-  ) : Destination
-
-  @Serializable
-  data class Success(val date: LocalDate, val type: CoInsuredFlowType) : Destination {
-    companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<LocalDate>())
-    }
+/**
+ * The edit presenter serves both [CoInsuredAddInfoKey] and [CoInsuredAddOrRemoveKey], so the pop
+ * anchor is resolved at navigation time.
+ */
+internal fun Backstack.navigateToEditCoInsuredSuccess(successKey: EditCoInsuredSuccessKey) {
+  if (findLastOrNull<CoInsuredAddInfoKey>() != null) {
+    navigateAndPopUpTo<CoInsuredAddInfoKey>(successKey, inclusive = true)
+  } else {
+    navigateAndPopUpTo<CoInsuredAddOrRemoveKey>(successKey, inclusive = true)
   }
 }

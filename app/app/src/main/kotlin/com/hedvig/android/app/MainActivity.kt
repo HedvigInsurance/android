@@ -1,9 +1,8 @@
 package com.hedvig.android.app
 
-import android.app.Activity
 import android.app.UiModeManager
 import android.app.UiModeManager.MODE_NIGHT_CUSTOM
-import android.app.assist.AssistContent
+import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Color
 import android.os.Build
@@ -14,73 +13,156 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.ComposeFoundationFlags
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.retain.retain
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LifecycleStartEffect
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.media3.datasource.cache.SimpleCache
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import arrow.fx.coroutines.raceN
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import coil3.ImageLoader
-import com.google.android.play.core.review.ReviewException
-import com.google.android.play.core.review.ReviewManagerFactory
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.externalnavigator.ExternalNavigatorImpl
+import com.hedvig.android.app.navigation.CurrentDestinationHolder
+import com.hedvig.android.app.navigation.NavRetainedViewModel
+import com.hedvig.android.app.navigation.ScreenParameterExtractor
 import com.hedvig.android.app.ui.HedvigApp
+import com.hedvig.android.app.urihandler.ExternalDeepLinkHandler
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.LogoutUseCase
+import com.hedvig.android.auth.MemberIdService
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.rive.RiveInitializer
-import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCaseProvider
+import com.hedvig.android.core.tracking.EventTrackingClient
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
+import com.hedvig.android.feature.onboarding.data.ResetOnboardingSeenUseCase
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageLaunchCheckUseCase
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.allDeepLinkUriPatterns
-import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationServiceProvider
+import com.hedvig.android.navigation.compose.HedvigDeepLinkMatcher
+import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
 import com.hedvig.android.theme.Theme
-import com.stylianosgakis.navigation.recents.url.sharing.provideAssistContent
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import java.util.Locale
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
+import kotlinx.serialization.modules.SerializersModule
 
 class MainActivity : AppCompatActivity() {
-  private val authTokenService: AuthTokenService by inject()
-  private val demoManager: DemoManager by inject()
-  private val featureManager: FeatureManager by inject()
-  private val getOnlyHasNonPayingContractsUseCase: GetOnlyHasNonPayingContractsUseCaseProvider by inject()
-  private val hedvigBuildConstants: HedvigBuildConstants by inject()
-  private val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
-  private val imageLoader: ImageLoader by inject()
-  private val languageService: LanguageService by inject()
-  private val settingsDataStore: SettingsDataStore by inject()
-  private val waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase by inject()
-  private val languageLaunchCheckUseCase: LanguageLaunchCheckUseCase by inject()
-  private val simpleVideoCache: SimpleCache by inject()
+  @Inject
+  private lateinit var authTokenService: AuthTokenService
 
-  private val logoutUseCase: LogoutUseCase by inject()
-  private val getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase by inject()
-  private val missedPaymentNotificationServiceProvider: MissedPaymentNotificationServiceProvider by inject()
+  @Inject
+  private lateinit var demoManager: DemoManager
 
-  private var navController: NavController? = null
+  @Inject
+  private lateinit var featureManager: FeatureManager
 
-  // Shows the splash screen as long as the auth status or the demo mode status is still undetermined
-  private val showSplash = MutableStateFlow(true)
+  @Inject
+  private lateinit var hedvigBuildConstants: HedvigBuildConstants
+
+  @Inject
+  private lateinit var deepLinkMatcher: HedvigDeepLinkMatcher
+
+  @Inject
+  private lateinit var imageLoader: ImageLoader
+
+  @Inject
+  private lateinit var languageService: LanguageService
+
+  @Inject
+  private lateinit var settingsDataStore: SettingsDataStore
+
+  @Inject
+  private lateinit var waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase
+
+  @Inject
+  private lateinit var languageLaunchCheckUseCase: LanguageLaunchCheckUseCase
+
+  @Inject
+  private lateinit var logoutUseCase: LogoutUseCase
+
+  @Inject
+  private lateinit var getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase
+
+  @Inject
+  private lateinit var memberIdService: MemberIdService
+
+  @Inject
+  private lateinit var missedPaymentNotificationService: MissedPaymentNotificationService
+
+  @Inject
+  private lateinit var currentDestinationHolder: CurrentDestinationHolder
+
+  @Inject
+  private lateinit var eventTrackingClient: EventTrackingClient
+
+  @Inject
+  private lateinit var screenParameterExtractor: ScreenParameterExtractor
+
+  @Inject
+  private lateinit var serializersModules: Set<SerializersModule>
+
+  @Inject
+  private lateinit var resetOnboardingSeenUseCase: ResetOnboardingSeenUseCase
+
+  /**
+   * Per-Activity host for the navigation state. A retained `ViewModel`, so it (and the
+   * [BackstackController] it owns) survives a config change but dies with this Activity — giving each
+   * `MainActivity` instance its own back stack instead of sharing one app-singleton. Resolved at the
+   * top of [onCreate]; the controller, session reconciler and merged ViewModel factory are read off it.
+   */
+  private val navRetainedViewModel: NavRetainedViewModel by lazy {
+    // Seed isOwnTask with isTaskRoot at construction so the controller never starts from a guessed
+    // default; it is refreshed authoritatively on every onResume (see refreshIsOwnTask). Captured as a
+    // value here because the initializer lambda's receiver is not this Activity. Only used on the
+    // genuine first creation — a config change reuses the retained instance and skips the initializer.
+    val isOwnTaskAtCreation = isTaskRoot
+    ViewModelProvider(
+      this,
+      viewModelFactory {
+        initializer { NavRetainedViewModel((application as HedvigApplication).appGraph, isOwnTaskAtCreation) }
+      },
+    )[NavRetainedViewModel::class.java]
+  }
+
+  private val backstackController get() = navRetainedViewModel.backstackController
+  private val sessionReconciler get() = navRetainedViewModel.sessionReconciler
+
+  /**
+   * External/notification VIEW intents are forwarded here as raw URI strings. The per-Activity collector in
+   * [onCreate] routes each through [externalDeepLinkHandler] once the start scene is resolved.
+   */
+  private val deepLinkChannel = Channel<String>(Channel.UNLIMITED)
+
+  /**
+   * Per-Activity router for external/notification deep links. Lives outside composition because it is
+   * auth/navigation reconciliation — a sibling of [sessionReconciler] — not UI, and only mutates this Activity's
+   * back stack. Lazy because it reads @Inject fields, which are only populated after `appGraph.inject(this)`.
+   */
+  private val externalDeepLinkHandler: ExternalDeepLinkHandler by lazy {
+    ExternalDeepLinkHandler(
+      matcher = deepLinkMatcher,
+      backstackController = backstackController,
+      readySignal = sessionReconciler.isReady,
+      deepLinkHosts = hedvigBuildConstants.deepLinkHosts,
+    )
+  }
 
   /**
    * A channel to report whenever the splash screen has stopped showing. This is used to let `enableEdgeToEdge` be run
@@ -91,9 +173,18 @@ class MainActivity : AppCompatActivity() {
    */
   private val splashIsRemovedSignal = Channel<Unit>(Channel.UNLIMITED)
 
+  /**
+   * Per-Activity host for finish/relaunch mechanics, shared between the task hooks and HedvigApp.
+   * Lazy on purpose: a plain `val` initializer runs during construction, before `appGraph.inject(this)`
+   * in onCreate, so it must not touch any @Inject field. Deferring to first access (in/after onCreate)
+   * keeps this safe even if someone later gives AndroidAppHostImpl an injected dependency.
+   */
+  private val androidAppHost: AndroidAppHostImpl by lazy { AndroidAppHostImpl(this) }
+
   override fun onCreate(savedInstanceState: Bundle?) {
+    (application as HedvigApplication).appGraph.inject(this)
     installSplashScreen().apply {
-      setKeepOnScreenCondition { showSplash.value }
+      setKeepOnScreenCondition { !sessionReconciler.isReady.value }
       setOnExitAnimationListener {
         logcat(LogPriority.INFO) { "Splash screen will be removed" }
         it.remove()
@@ -106,6 +197,10 @@ class MainActivity : AppCompatActivity() {
     )
     ComposeFoundationFlags.isNewContextMenuEnabled = false
     super.onCreate(savedInstanceState)
+    logcat(LogPriority.INFO) {
+      "MainActivity@${System.identityHashCode(this)} using " +
+        "BackstackController@${System.identityHashCode(backstackController)}"
+    }
     val defaultLocale = getSystemLocale(resources.configuration)
     languageLaunchCheckUseCase.invoke(defaultLocale)
     val uiModeManager = getSystemService<UiModeManager>()
@@ -116,69 +211,154 @@ class MainActivity : AppCompatActivity() {
         }
       }
     }
+    val launchedFromHistory = intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY != 0
+    logcat(priority = LogPriority.VERBOSE, tag = DEEP_LINK_STACK_DEBUG_TAG) {
+      "MainActivity.onCreate launch context: " +
+        "isColdStart(savedInstanceState==null)=${savedInstanceState == null} | " +
+        "isTaskRoot=$isTaskRoot | " +
+        "intent.action=${intent.action} | " +
+        "intent.categories=${intent.categories} | " +
+        "intent.data=${intent.data} | " +
+        "launchedFromHistory=$launchedFromHistory | " +
+        "intent.flags=0x${Integer.toHexString(intent.flags)} | " +
+        "isHostedInForeignTask=${isHostedInForeignTask(isTaskRoot, intent.flags)}"
+    }
+    if (savedInstanceState == null) {
+      handleDeepLinkIntent(intent)
+    }
+    // onNewIntent fires (instead of a fresh onCreate) when the existing instance is reused: a caller
+    // sets FLAG_ACTIVITY_SINGLE_TOP while this Activity is top-of-task, or the launch config gains a
+    // singleTop/singleTask launchMode. None of our own callers (notification PendingIntents, App Link
+    // ACTION_VIEW) set that flag today, so those currently arrive via onCreate above — but an external
+    // caller can still trigger this path. Routed through the same handler either way so a deep link is
+    // never silently dropped.
+    addOnNewIntentListener { newIntent -> handleDeepLinkIntent(newIntent) }
+
+    attachBackstackTaskHooks()
+    val externalNavigator = ExternalNavigatorImpl(this, hedvigBuildConstants.appPackageId)
+    RiveInitializer.init(this)
+    NavigationStateBridge.restoreAndPersist(
+      backstackController = backstackController,
+      savedStateRegistry = savedStateRegistry,
+      intent = intent,
+      isColdStart = savedInstanceState == null,
+      serializersModules = serializersModules,
+    )
     lifecycleScope.launch {
-      lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
-        if (!showSplash.value) return@repeatOnLifecycle
-        raceN(
-          { authTokenService.authStatus.first { it != null } },
-          { demoManager.isDemoMode().first { it } },
-        )
-        showSplash.update { false }
+      sessionReconciler.reconcile()
+      sessionReconciler.observeForcedLogout(lifecycle)
+    }
+    lifecycleScope.launch {
+      deepLinkChannel.receiveAsFlow().collect { uri ->
+        externalDeepLinkHandler.handle(uri)
       }
     }
-
-    val externalNavigator = ExternalNavigatorImpl(this, hedvigBuildConstants.appPackageId)
     setContent {
-      val context = LocalContext.current
-      RiveInitializer.init(context)
-      val windowSizeClass = calculateWindowSizeClass(this)
-      val navHostController = rememberNavController().also { navController = it }
-      LifecycleStartEffect(navHostController) {
-        navController = navHostController
-        onStopOrDispose {
-          navController = null
-        }
+      CompositionLocalProvider(
+        LocalMetroViewModelFactory provides navRetainedViewModel.viewModelFactory,
+      ) {
+        // Compute the window size class from Configuration. Do not switch this to
+        // calculateWindowSizeClass(activity) or LocalWindowInfo.containerSize: both route through
+        // androidx.window's WindowMetricsCalculator, which invokes WindowMetrics.getDensity(). That
+        // method is absent on some Android 14 builds, crashing at launch with NoSuchMethodError.
+        val configuration = LocalConfiguration.current
+        val windowSizeClass = WindowSizeClass.calculateFromSize(
+          DpSize(configuration.screenWidthDp.dp, configuration.screenHeightDp.dp),
+        )
+        HedvigApp(
+          backstackController = backstackController,
+          deepLinkReadySignal = sessionReconciler.isReady,
+          windowSizeClass = windowSizeClass,
+          settingsDataStore = settingsDataStore,
+          featureManager = featureManager,
+          splashIsRemovedSignal = splashIsRemovedSignal,
+          authTokenService = authTokenService,
+          demoManager = demoManager,
+          memberIdService = memberIdService,
+          deepLinkMatcher = deepLinkMatcher,
+          imageLoader = imageLoader,
+          languageService = languageService,
+          hedvigBuildConstants = hedvigBuildConstants,
+          waitUntilAppReviewDialogShouldBeOpenedUseCase = waitUntilAppReviewDialogShouldBeOpenedUseCase,
+          androidAppHost = androidAppHost,
+          externalNavigator = externalNavigator,
+          logoutUseCase = logoutUseCase,
+          getMemberAuthorizationCodeUseCase = getMemberAuthorizationCodeUseCase,
+          missedPaymentNotificationService = missedPaymentNotificationService,
+          currentDestinationHolder = currentDestinationHolder,
+          eventTrackingClient = eventTrackingClient,
+          screenParameterExtractor = screenParameterExtractor,
+          onboardingGate = navRetainedViewModel.onboardingGate,
+          resetOnboardingSeenUseCase = resetOnboardingSeenUseCase,
+        )
       }
-      HedvigApp(
-        navHostController = navHostController,
-        windowSizeClass = windowSizeClass,
-        settingsDataStore = settingsDataStore,
-        getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
-        featureManager = featureManager,
-        splashIsRemovedSignal = splashIsRemovedSignal,
-        authTokenService = authTokenService,
-        demoManager = demoManager,
-        hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-        imageLoader = imageLoader,
-        simpleVideoCache = simpleVideoCache,
-        languageService = languageService,
-        hedvigBuildConstants = hedvigBuildConstants,
-        waitUntilAppReviewDialogShouldBeOpenedUseCase = waitUntilAppReviewDialogShouldBeOpenedUseCase,
-        enableEdgeToEdge = { systemBarStyle ->
-          enableEdgeToEdge(
-            statusBarStyle = systemBarStyle,
-            navigationBarStyle = systemBarStyle,
-          )
-        },
-        shouldShowRequestPermissionRationale = ::shouldShowRequestPermissionRationale,
-        finishApp = ::finish,
-        tryShowAppStoreReviewDialog = ::tryShowAppStoreReviewDialog,
-        externalNavigator = externalNavigator,
-        logoutUseCase = logoutUseCase,
-        getMemberAuthorizationCodeUseCase = getMemberAuthorizationCodeUseCase,
-        missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
-      )
     }
   }
 
-  override fun onProvideAssistContent(outContent: AssistContent) {
-    super.onProvideAssistContent(outContent)
-    navController?.provideAssistContent(outContent, hedvigDeepLinkContainer.allDeepLinkUriPatterns)
-    outContent.webUri?.let {
-      logcat { "Providing a deep link to current screen: $it" }
+  /**
+   * Points this Activity's [com.hedvig.android.app.navigation.BackstackController] task hooks at
+   * *this* instance. The controller is owned by [navRetainedViewModel] and is 1:1 with this Activity
+   * (created with it, retained across config changes, dies on finish), so the hooks are attached once
+   * in onCreate — there is no shared, process-wide controller that a backgrounded Activity could
+   * steal, which is why no resume/top-resume re-attachment is needed.
+   */
+  override fun onResume() {
+    super.onResume()
+    refreshIsOwnTask()
+  }
+
+  /**
+   * Pushes the current own-task value into the controller (see [isHostedInForeignTask] for why this is
+   * not just [isTaskRoot]). Unlike the one-time hooks in [attachBackstackTaskHooks], this is a *value*
+   * that can change over the Activity's life (e.g. an Activity below us finishes, or [isTaskRoot] reads
+   * more reliably once resumed than at onCreate), so it is refreshed on every onResume to keep the
+   * snapshot-backed value honest — otherwise the lone-deep-link chrome can latch a stale reading. See
+   * [BackstackController.isOwnTask].
+   */
+  private fun refreshIsOwnTask() {
+    backstackController.isOwnTask = !isHostedInForeignTask(isTaskRoot, intent.flags)
+  }
+
+  private fun attachBackstackTaskHooks() {
+    refreshIsOwnTask()
+    backstackController.escapeToOwnTask = { parentStack ->
+      NavigationStateBridge.escapeToOwnTask(this@MainActivity, parentStack, serializersModules)
     }
+    backstackController.finishApp = androidAppHost::finishApp
+  }
+
+  private fun handleDeepLinkIntent(intent: Intent) {
+    if (intent.action != Intent.ACTION_VIEW) return
+    val uri = intent.data?.toString() ?: return
+    deepLinkChannel.trySend(uri)
   }
 }
+
+/**
+ * Logcat tag for the per-launch navigation breadcrumb emitted in [MainActivity.onCreate]. Grep this to
+ * see how each launch was classified (action/flags/isTaskRoot -> isHostedInForeignTask) when diagnosing
+ * task/back-stack oddities like the deep-link-stack-on-Home report.
+ */
+internal const val DEEP_LINK_STACK_DEBUG_TAG = "DeepLinkStackDebug"
+
+/**
+ * Whether this Activity was launched into another app's task (genuinely foreign-hosted), given the
+ * task-root position and the [launchFlags] of the intent that started it. This is the one case that
+ * wants the lone-deep-link Up/escape affordance; everything else is our own task.
+ *
+ * Both conditions must hold to be foreign-hosted:
+ *  - **not the task root** (`!isTaskRoot`): some other activity sits below us in the task; and
+ *  - **launched without [Intent.FLAG_ACTIVITY_NEW_TASK]**: Android's default for that is to place us in
+ *    the *caller's* task rather than one of our own, so we joined whoever started us.
+ *
+ * `NEW_TASK` being set means the system gave us our own task (a fresh one, or an existing one brought
+ * forward), so we are NOT foreign-hosted even when not its root. That is why a launcher relaunch or a
+ * notification tap that fronted our task (both carry `NEW_TASK`, both can be non-root) is correctly
+ * treated as own-task and does not render the Up bar on a normal Home. Only a real foreign deep link
+ * (e.g. an https link tapped in another app, launched with no flags) is foreign-hosted.
+ */
+internal fun isHostedInForeignTask(isTaskRoot: Boolean, launchFlags: Int): Boolean =
+  !isTaskRoot && (launchFlags and Intent.FLAG_ACTIVITY_NEW_TASK) == 0
 
 /**
  * Applies the theme in two ways:
@@ -209,36 +389,6 @@ private fun applyTheme(theme: Theme?, uiModeManager: UiModeManager?) {
       }
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         uiModeManager?.setApplicationNightMode(MODE_NIGHT_CUSTOM)
-      }
-    }
-  }
-}
-
-private fun Activity.tryShowAppStoreReviewDialog() {
-  val tag = "PlayStoreReview"
-  val manager = ReviewManagerFactory.create(this)
-  logcat(LogPriority.INFO) { "$tag: requestReviewFlow" }
-  manager.requestReviewFlow().apply {
-    addOnFailureListener { logcat(LogPriority.INFO, it) { "$tag: requestReviewFlow failed:${it.message}" } }
-    addOnCanceledListener { logcat(LogPriority.INFO) { "$tag: requestReviewFlow cancelled" } }
-    addOnCompleteListener { task ->
-      if (task.isSuccessful) {
-        logcat(LogPriority.INFO) { "$tag: requestReviewFlow completed" }
-        val reviewInfo = task.result
-        logcat(LogPriority.INFO) { "$tag: launchReviewFlow with ReviewInfo:$reviewInfo" }
-        manager.launchReviewFlow(this@tryShowAppStoreReviewDialog, reviewInfo).apply {
-          addOnFailureListener { logcat(LogPriority.INFO, it) { "$tag: launchReviewFlow failed:${it.message}" } }
-          addOnCanceledListener { logcat(LogPriority.INFO) { "$tag: launchReviewFlow canceled" } }
-          addOnCompleteListener { logcat(LogPriority.INFO) { "$tag: launchReviewFlow completed" } }
-        }
-      } else {
-        val exception = task.exception
-        val errorMessage = if (exception != null && exception is ReviewException) {
-          "ReviewException:${exception.message}. ReviewException::errorCode:${exception.errorCode}"
-        } else {
-          "Unknown error with message: ${exception?.message}"
-        }
-        logcat(LogPriority.INFO, exception) { "$tag: requestReviewFlow failed. Error:$errorMessage" }
       }
     }
   }

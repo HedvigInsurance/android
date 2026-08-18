@@ -7,9 +7,9 @@ import android.content.Intent
 import android.content.pm.LabeledIntent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
-import android.net.Uri
 import android.provider.Settings
 import android.widget.Toast
+import androidx.core.net.toUri
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.activity.ExternalNavigator
@@ -27,7 +27,7 @@ internal class ExternalNavigatorImpl(
   override fun openAppSettings() {
     val permissionActivity = Intent(
       Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-      Uri.parse("package:$buildConfigApplicationId"),
+      "package:$buildConfigApplicationId".toUri(),
     )
     if (activity.packageManager.resolveActivity(permissionActivity, 0) != null) {
       activity.startActivity(permissionActivity)
@@ -45,7 +45,7 @@ internal class ExternalNavigatorImpl(
       activity.startActivity(
         Intent(
           Intent.ACTION_DIAL,
-          Uri.parse("tel:$number"),
+          "tel:$number".toUri(),
         ),
       )
     } catch (exception: Throwable) {
@@ -79,10 +79,10 @@ private fun Context.tryOpenPlayStore() {
 @SuppressLint("QueryPermissionsNeeded")
 private fun Context.canOpenPlayStore() = playStoreIntent().resolveActivity(packageManager) != null
 
-private fun Context.playStoreIntent() = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName"))
+private fun Context.playStoreIntent() = Intent(Intent.ACTION_VIEW, "market://details?id=$packageName".toUri())
 
 private fun Context.openPlayStore() {
-  val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName"))
+  val intent = Intent(Intent.ACTION_VIEW, "market://details?id=$packageName".toUri())
   intent.flags = (
     Intent.FLAG_ACTIVITY_NO_HISTORY
       or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
@@ -92,7 +92,7 @@ private fun Context.openPlayStore() {
 }
 
 private fun Activity.openEmail(title: String) {
-  val emailIntent = Intent(Intent.ACTION_VIEW, Uri.parse("mailto:"))
+  val emailIntent = Intent(Intent.ACTION_VIEW, "mailto:".toUri())
 
   val resInfo = packageManager.queryIntentActivities(emailIntent, 0)
   if (resInfo.isNotEmpty()) {

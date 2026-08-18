@@ -11,20 +11,19 @@ import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver
 import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.core.common.test.isRight
-import com.hedvig.android.featureflags.flags.Feature
-import com.hedvig.android.featureflags.test.FakeFeatureManager
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.InsuranceContractsQuery
+import octopus.builder.Data
+import octopus.builder.MemberBuilder
+import octopus.builder.buildAgreement
+import octopus.builder.buildContract
+import octopus.builder.buildMember
+import octopus.builder.buildProductVariant
 import octopus.type.AgreementCreationCause.RENEWAL
 import octopus.type.DisplayItemOptions
-import octopus.type.MemberBuilder
-import octopus.type.buildAgreement
-import octopus.type.buildContract
-import octopus.type.buildMember
-import octopus.type.buildProductVariant
 import org.junit.Rule
 import org.junit.Test
 
@@ -40,7 +39,7 @@ class GetInsuranceContractsUseCaseImplTest {
     get() = testApolloClientRule.apolloClient.apply {
       registerTestResponse(
         operation = InsuranceContractsQuery(
-          false,
+          true,
           Optional.Present(
             DisplayItemOptions(
               Optional.Present(true),
@@ -68,7 +67,7 @@ class GetInsuranceContractsUseCaseImplTest {
     get() = testApolloClientRule.apolloClient.apply {
       registerTestResponse(
         operation = InsuranceContractsQuery(
-          false,
+          true,
           Optional.Present(
             DisplayItemOptions(
               Optional.Present(true),
@@ -123,17 +122,8 @@ class GetInsuranceContractsUseCaseImplTest {
   @Test
   fun `when the contract response has isChangeTierEnabled as true, InsuranceContract should have supportsTierChange as true`() =
     runTest {
-      val featureManager = FakeFeatureManager(
-        fixedMap = mapOf(
-          Feature.MOVING_FLOW to true,
-          Feature.EDIT_COINSURED to true,
-          Feature.PAYMENT_SCREEN to true,
-          Feature.TRAVEL_ADDON to false,
-        ),
-      )
       val subjectUseCase = GetInsuranceContractsUseCaseImpl(
         apolloClient = apolloClientWithGoodResponseThatSupportsTier,
-        featureManager = featureManager,
       )
       val result = subjectUseCase.invoke().first()
       assertThat(result).isRight().transform {
@@ -148,17 +138,8 @@ class GetInsuranceContractsUseCaseImplTest {
   @Test
   fun `when the contract response has isChangeTierEnabled as false InsuranceContract should have supportsTierChange as false`() =
     runTest {
-      val featureManager = FakeFeatureManager(
-        fixedMap = mapOf(
-          Feature.MOVING_FLOW to true,
-          Feature.EDIT_COINSURED to true,
-          Feature.PAYMENT_SCREEN to true,
-          Feature.TRAVEL_ADDON to false,
-        ),
-      )
       val subjectUseCase = GetInsuranceContractsUseCaseImpl(
         apolloClient = apolloClientWithGoodResponseWithoutTier,
-        featureManager = featureManager,
       )
       val result = subjectUseCase.invoke().first()
       assertThat(result).isRight().transform {

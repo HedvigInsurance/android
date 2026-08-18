@@ -7,7 +7,10 @@ import arrow.core.right
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.feature.chat.model.CbmChatMessage
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlin.time.Clock
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -16,6 +19,8 @@ import kotlinx.coroutines.flow.flowOf
  * Normally we'd add a fake impl here, but the database being involved makes this too much of a task for it to be worth
  * it. Best we just show errors everywhere instead.
  */
+@Inject
+@SingleIn(AppScope::class)
 internal class CbmChatRepositoryDemo(
   private val clock: Clock,
 ) : CbmChatRepository {

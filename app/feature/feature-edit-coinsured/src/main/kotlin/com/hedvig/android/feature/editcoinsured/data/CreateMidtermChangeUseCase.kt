@@ -8,8 +8,12 @@ import com.apollographql.apollo.api.Optional.Companion.presentIfNotNull
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.datetime.LocalDate
 import octopus.CreateMidtermChangeMutation
 import octopus.type.CoInsuredInput
@@ -24,6 +28,9 @@ internal interface CreateMidtermChangeUseCase {
   ): Either<ErrorMessage, CreateMidtermChangeResult>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class CreateMidtermChangeUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : CreateMidtermChangeUseCase {

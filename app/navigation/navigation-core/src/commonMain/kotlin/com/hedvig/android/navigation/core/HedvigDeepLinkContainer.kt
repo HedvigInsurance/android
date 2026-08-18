@@ -1,12 +1,17 @@
 package com.hedvig.android.navigation.core
 
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.common.di.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 
 interface HedvigDeepLinkContainer {
   val home: List<String> // Home destination, the start destination of the app
   val helpCenter: List<String> // The help center root screen
   val helpCenterCommonTopic: List<String> // A common topic inside the help center
   val helpCenterQuestion: List<String> // A specific question inside the help center
+  val puppyGuide: List<String> // The puppy guide list screen, inside the help center
 
   val insurances: List<String> // The insurances destination, which also shows cross sells
   val claimFlow: List<String> // The claim flow starting pledge destination
@@ -84,12 +89,18 @@ interface HedvigDeepLinkContainer {
   val manualCharge: List<String>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class HedvigDeepLinkContainerImpl(
   hedvigBuildConstants: HedvigBuildConstants,
 ) : HedvigDeepLinkContainer {
   private val baseDeepLinkDomains = hedvigBuildConstants.deepLinkHosts.map { "https://$it" }
 
-  // Home does not have some special text, acts as the fallback to all unknown deep links
+  // Home matches ONLY the bare deep-link domain (no path). It is not a catch-all: an unrecognised path
+  // (e.g. ".../home" or ".../something-new") matches no pattern and the matcher returns null. The real
+  // "unknown link on one of our hosts -> land on Home" fallback lives in ExternalDeepLinkHandler (:app),
+  // because Nav3 patterns are exact and cannot express a wildcard here.
   override val home: List<String> = baseDeepLinkDomains
   override val helpCenter: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/help-center"
@@ -103,6 +114,10 @@ internal class HedvigDeepLinkContainerImpl(
   // Sample url: https://hedvigdevelop.page.link/help-center/question?id=2
   override val helpCenterQuestion: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/help-center/question?id={id}"
+  }
+
+  override val puppyGuide: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/puppy-guide"
   }
 
   override val insurances: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
@@ -205,44 +220,3 @@ internal class HedvigDeepLinkContainerImpl(
     "$baseDeepLinkDomain/manual-charge"
   }
 }
-
-val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
-  get() = listOf(
-    carAddon.first(),
-    carAddonWithContractId.first(),
-    changeTierWithContractId.first(),
-    changeTierWithoutContractId.first(),
-    chat.first(),
-    claimDetails.first(),
-    claimFlow.first(),
-    connectPayment.first(),
-    contactInfo.first(),
-    contract.first(),
-    contractWithoutContractId.first(),
-    conversation.first(),
-    deleteAccount.first(),
-    directDebit.first(),
-    editCoInsured.first(),
-    editCoInsuredWithoutContractId.first(),
-    editCoOwners.first(),
-    eurobonus.first(),
-    forever.first(),
-    helpCenter.first(),
-    helpCenterCommonTopic.first(),
-    helpCenterQuestion.first(),
-    home.first(),
-    inbox.first(),
-    insuranceEvidence.first(),
-    insurances.first(),
-    manualCharge.first(),
-    moveContract.first(),
-    payments.first(),
-    payout.first(),
-    petIdWithContractId.first(),
-    petIdWithoutContractId.first(),
-    profile.first(),
-    terminateInsurance.first(),
-    travelAddon.first(),
-    travelAddonWithContractId.first(),
-    travelCertificate.first(),
-  )

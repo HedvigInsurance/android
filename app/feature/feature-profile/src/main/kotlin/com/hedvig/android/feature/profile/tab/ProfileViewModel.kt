@@ -8,28 +8,30 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.auth.LogoutUseCase
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.profile.data.CheckCertificatesAvailabilityUseCase
 import com.hedvig.android.feature.profile.tab.ProfileUiEvent.Logout
 import com.hedvig.android.feature.profile.tab.ProfileUiEvent.Reload
 import com.hedvig.android.feature.profile.tab.ProfileUiEvent.SnoozeNotificationPermission
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.memberreminders.EnableNotificationsReminderSnoozeManager
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 
+@Inject
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class ProfileViewModel(
   getEuroBonusStatusUseCase: GetEurobonusStatusUseCase,
   checkCertificatesAvailabilityUseCase: CheckCertificatesAvailabilityUseCase,
   getMemberRemindersUseCase: GetMemberRemindersUseCase,
   enableNotificationsReminderSnoozeManager: EnableNotificationsReminderSnoozeManager,
-  featureManager: FeatureManager,
   logoutUseCase: LogoutUseCase,
 ) : MoleculeViewModel<ProfileUiEvent, ProfileUiState>(
     initialState = ProfileUiState.Loading,
@@ -38,7 +40,6 @@ internal class ProfileViewModel(
       checkCertificatesAvailabilityUseCase = checkCertificatesAvailabilityUseCase,
       getMemberRemindersUseCase = getMemberRemindersUseCase,
       enableNotificationsReminderSnoozeManager = enableNotificationsReminderSnoozeManager,
-      featureManager = featureManager,
       logoutUseCase = logoutUseCase,
     ),
   )
@@ -48,7 +49,6 @@ internal class ProfilePresenter(
   private val checkCertificatesAvailabilityUseCase: CheckCertificatesAvailabilityUseCase,
   private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
   private val enableNotificationsReminderSnoozeManager: EnableNotificationsReminderSnoozeManager,
-  private val featureManager: FeatureManager,
   private val logoutUseCase: LogoutUseCase,
 ) : MoleculePresenter<ProfileUiEvent, ProfileUiState> {
   @Composable
@@ -71,22 +71,18 @@ internal class ProfilePresenter(
       }
       combine(
         getMemberRemindersUseCase.invoke(),
-        featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN),
-        featureManager.isFeatureEnabled(Feature.ENABLE_CLAIM_HISTORY),
         flow { emit(getEuroBonusStatusUseCase.invoke()) },
         flow { emit(checkCertificatesAvailabilityUseCase.invoke()) },
       ) {
         memberReminders,
-        isPaymentScreenFeatureEnabled,
-        isClaimHistoryFeatureEnabled,
         eurobonusResponse,
         certificatesAvailability,
         ->
         ProfileUiState.Success(
           euroBonus = eurobonusResponse.getOrNull(),
-          showPaymentScreen = isPaymentScreenFeatureEnabled,
+          showPaymentScreen = true,
           memberReminders = memberReminders,
-          showClaimHistory = isClaimHistoryFeatureEnabled,
+          showClaimHistory = true,
           certificatesAvailable = certificatesAvailability.isRight(),
         )
       }.collectLatest { state ->

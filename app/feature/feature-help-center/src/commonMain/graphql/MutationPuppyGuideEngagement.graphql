@@ -1,0 +1,5 @@
+mutation PuppyGuideEngagement($name: String!, $rating: Int, $read: Boolean) {
+  puppyGuideEngagement(engagement: {name: $name, rating: $rating, read: $read}) {
+    success
+  }
+}

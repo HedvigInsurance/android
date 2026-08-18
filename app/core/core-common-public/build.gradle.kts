@@ -8,13 +8,13 @@ kotlin {
   sourceSets {
     commonMain.dependencies {
       implementation(libs.coroutines.core)
-      implementation(libs.koin.core)
       implementation(libs.kotlinx.datetime)
     }
 
     androidMain.apply {
       dependencies {
         implementation(libs.androidx.other.core)
+        implementation(libs.androidx.other.workManager)
         implementation(projects.apolloOctopusPublic)
         implementation(projects.coreResources)
       }

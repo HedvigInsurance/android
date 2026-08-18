@@ -7,6 +7,7 @@ hedvig {
   apollo("octopus")
   serialization()
   compose()
+  viewModels()
 }
 
 android {
@@ -18,8 +19,6 @@ dependencies {
   implementation(libs.arrow.core)
   implementation(libs.coroutines.core)
   implementation(libs.jetbrains.lifecycle.runtime.compose)
-  implementation(libs.koin.composeViewModel)
-  implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
@@ -27,7 +26,7 @@ dependencies {
   implementation(projects.coreCommonPublic)
   implementation(projects.coreResources)
   implementation(projects.designSystemHedvig)
-  implementation(projects.featureFlagsPublic)
+  implementation(projects.featureFlags)
   implementation(projects.languageCore)
   implementation(projects.moleculePublic)
 }

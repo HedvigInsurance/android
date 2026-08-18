@@ -12,11 +12,10 @@ dependencies {
   implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
-  implementation(libs.koin.core)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreDemoMode)
-  implementation(projects.featureFlagsPublic)
+  implementation(projects.featureFlags)
   implementation(projects.languageCore)
 
   testImplementation(libs.assertK)

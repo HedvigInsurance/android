@@ -11,14 +11,19 @@ import arrow.core.left
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
+import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.demomode.DemoManager
-import com.hedvig.android.core.demomode.ProdOrDemoProvider
-import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.core.demomode.DemoSwitcher
 import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellSheetData
+import com.hedvig.android.crosssells.RecommendedAddon
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
@@ -27,6 +32,10 @@ import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
+import dev.zacsweers.metro.binding
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.emitAll
@@ -37,23 +46,24 @@ import kotlinx.coroutines.flow.transformLatest
 import octopus.BottomSheetCrossSellsQuery
 import octopus.fragment.CrossSellFragment
 import octopus.type.CrossSellInput
-import octopus.type.CrossSellSource
 import octopus.type.FlowSource
 import octopus.type.UserFlow
 
+@Inject
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class CrossSellSheetViewModel(
-  getCrossSellSheetDataUseCaseProvider: Provider<GetCrossSellSheetDataUseCase>,
+  getCrossSellSheetDataUseCase: GetCrossSellSheetDataUseCase,
   crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
 ) : MoleculeViewModel<CrossSellSheetEvent, CrossSellSheetState>(
     CrossSellSheetState.Loading,
-    CrossSellSheetPresenter(getCrossSellSheetDataUseCaseProvider, crossSellAfterFlowRepository),
+    CrossSellSheetPresenter(getCrossSellSheetDataUseCase, crossSellAfterFlowRepository),
   )
 
-sealed interface CrossSellSheetEvent {
+internal sealed interface CrossSellSheetEvent {
   data object CrossSellSheetShown : CrossSellSheetEvent
 }
 
-sealed interface CrossSellSheetState {
+internal sealed interface CrossSellSheetState {
   data object Loading : CrossSellSheetState
 
   data object DontShow : CrossSellSheetState
@@ -63,8 +73,8 @@ sealed interface CrossSellSheetState {
   data class Content(val crossSellSheetData: CrossSellSheetData, val infoType: CrossSellInfoType) : CrossSellSheetState
 }
 
-private class CrossSellSheetPresenter(
-  private val getCrossSellSheetDataUseCaseProvider: Provider<GetCrossSellSheetDataUseCase>,
+internal class CrossSellSheetPresenter(
+  private val getCrossSellSheetDataUseCase: GetCrossSellSheetDataUseCase,
   private val crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
 ) : MoleculePresenter<CrossSellSheetEvent, CrossSellSheetState> {
   @Composable
@@ -88,11 +98,17 @@ private class CrossSellSheetPresenter(
           return@transformLatest
         }
         emitAll(
-          getCrossSellSheetDataUseCaseProvider.provide().invoke(infoType.toCrossSellSource())
+          getCrossSellSheetDataUseCase.invoke(infoType.toCrossSellSource())
             .mapLatest { result ->
               result.fold(
                 ifLeft = { error -> CrossSellSheetState.Error(error) },
-                ifRight = { data -> CrossSellSheetState.Content(data, infoType) },
+                ifRight = { data ->
+                  if (data.isEmpty) {
+                    CrossSellSheetState.DontShow
+                  } else {
+                    CrossSellSheetState.Content(data, infoType)
+                  }
+                },
               )
             },
         )
@@ -105,38 +121,47 @@ private class CrossSellSheetPresenter(
 }
 
 internal fun CrossSellInfoType.toCrossSellSource(): CrossSellInput {
-  val smartCrossSellInput: (FlowSource) -> CrossSellInput = { flowSource ->
+  val smartCrossSellInput: (flowSource: FlowSource, claimId: String?) -> CrossSellInput = { flowSource, claimId ->
     CrossSellInput(
       userFlow = UserFlow.SMART_X_SELL,
       flowSource = Optional.present(flowSource),
       experiments = emptyList(),
+      contractId = Optional.presentIfNotNull(this.contractId),
+      claimId = Optional.presentIfNotNull(claimId),
     )
   }
   return when (this) {
-    CrossSellInfoType.Addon -> smartCrossSellInput(FlowSource.ADDON)
-    CrossSellInfoType.ChangeTier -> smartCrossSellInput(FlowSource.CHANGE_TIER)
-    is CrossSellInfoType.ClosedClaim -> smartCrossSellInput(FlowSource.CLOSED_CLAIM)
-    CrossSellInfoType.EditCoInsured -> smartCrossSellInput(FlowSource.EDIT_COINSURED)
-    CrossSellInfoType.MovingFlow -> smartCrossSellInput(FlowSource.MOVING)
+    CrossSellInfoType.Addon -> smartCrossSellInput(FlowSource.ADDON, null)
+    is CrossSellInfoType.ChangeTier -> smartCrossSellInput(FlowSource.CHANGE_TIER, null)
+    is CrossSellInfoType.ClosedClaim -> smartCrossSellInput(FlowSource.CLOSED_CLAIM, info.id)
+    CrossSellInfoType.EditCoInsured -> smartCrossSellInput(FlowSource.EDIT_COINSURED, null)
+    is CrossSellInfoType.MovingFlow -> smartCrossSellInput(FlowSource.MOVING, null)
   }
 }
 
-internal class GetCrossSellSheetDataUseCaseProvider(
+@Inject
+@SingleIn(AppScope::class)
+@ContributesBinding(AppScope::class, binding = binding<GetCrossSellSheetDataUseCase>())
+internal class SwitchingGetCrossSellSheetDataUseCase(
   override val demoManager: DemoManager,
-  override val demoImpl: GetCrossSellSheetDataUseCase,
-  override val prodImpl: GetCrossSellSheetDataUseCase,
-) : ProdOrDemoProvider<GetCrossSellSheetDataUseCase>
+  override val prodImpl: GetCrossSellSheetDataUseCaseImpl,
+  override val demoImpl: DemoGetCrossSellSheetDataUseCase,
+) : GetCrossSellSheetDataUseCase, DemoSwitcher<GetCrossSellSheetDataUseCase>() {
+  override suspend fun invoke(source: CrossSellInput) = pickFlow { it.invoke(source) }
+}
 
 internal interface GetCrossSellSheetDataUseCase {
   suspend fun invoke(source: CrossSellInput): Flow<Either<ErrorMessage, CrossSellSheetData>>
 }
 
+@Inject
 internal class GetCrossSellSheetDataUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetCrossSellSheetDataUseCase {
   override suspend fun invoke(source: CrossSellInput): Flow<Either<ErrorMessage, CrossSellSheetData>> {
     return apolloClient
       .query(BottomSheetCrossSellsQuery(source))
+      .fetchPolicy(FetchPolicy.NetworkOnly)
       .safeFlow(::ErrorMessage)
       .map { response ->
         either {
@@ -164,9 +189,23 @@ internal class GetCrossSellSheetDataUseCaseImpl(
           val otherCrossSellsData = allData.otherCrossSells.map {
             it.toCrossSell()
           }
+          val recommendedAddon = allData.recommendedAddon?.let {
+            RecommendedAddon(
+              id = it.id,
+              title = it.title,
+              buttonText = it.buttonText,
+              description = it.description,
+              deepLink = it.deepLink,
+              bannerText = it.bannerText,
+              benefits = it.benefits,
+              pillowImageSmall = it.pillowImageSmall.src,
+              pillowImageLarge = it.pillowImageLarge.src,
+            )
+          }
           CrossSellSheetData(
             recommendedCrossSell = recommendedData,
             otherCrossSells = otherCrossSellsData,
+            recommendedAddon = recommendedAddon,
           )
         }
       }
@@ -180,7 +219,12 @@ internal fun CrossSellFragment.toCrossSell(): CrossSell {
       title = title,
       subtitle = description,
       storeUrl = storeUrl,
-      pillowImage = ImageAsset(
+      pillowImageSmall = ImageAsset(
+        id = pillowImageSmall.id,
+        src = pillowImageSmall.src,
+        description = pillowImageSmall.alt,
+      ),
+      pillowImageLarge = ImageAsset(
         id = pillowImageLarge.id,
         src = pillowImageLarge.src,
         description = pillowImageLarge.alt,
@@ -189,7 +233,8 @@ internal fun CrossSellFragment.toCrossSell(): CrossSell {
   }
 }
 
-internal class DemoGetCrossSellSheetDataUseCase() : GetCrossSellSheetDataUseCase {
+@Inject
+internal class DemoGetCrossSellSheetDataUseCase : GetCrossSellSheetDataUseCase {
   override suspend fun invoke(source: CrossSellInput): Flow<Either<ErrorMessage, CrossSellSheetData>> {
     return flowOf(ErrorMessage("Ineligible for demo mode").left())
   }

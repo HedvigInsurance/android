@@ -7,6 +7,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATION_BETTER_COVERAGE
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATION_BETTER_PRICE
@@ -15,7 +17,12 @@ import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.feature.terminateinsurance.data.SuggestionType
 import com.hedvig.android.feature.terminateinsurance.data.TerminationAction
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
-import com.hedvig.android.feature.terminateinsurance.step.survey.SurveyNavigationStep.NavigateToSubOptions
+import com.hedvig.android.feature.terminateinsurance.navigation.DeflectSuggestionKey
+import com.hedvig.android.feature.terminateinsurance.navigation.InsuranceDeletionKey
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationDateKey
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationRedirectionKey
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationSurveySecondStepKey
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyEvent.ClearEmptyQuotesDialog
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyEvent.ClearNextStep
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyEvent.CloseFullScreenEditText
@@ -30,34 +37,43 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedInject
 
-internal class TerminationSurveyViewModel(
-  options: List<TerminationSurveyOption>,
-  action: TerminationAction,
+@HedvigViewModel(ActivityRetainedScope::class)
+internal class TerminationSurveyViewModel @AssistedInject constructor(
+  @Assisted options: List<TerminationSurveyOption>,
+  @Assisted action: TerminationAction,
+  @Assisted commonParams: TerminationGraphParameters,
   changeTierRepository: ChangeTierRepository,
-  contractId: String,
+  backstack: Backstack,
 ) : MoleculeViewModel<TerminationSurveyEvent, TerminationSurveyState>(
     initialState = TerminationSurveyState(options),
     presenter = TerminationSurveyPresenter(
       options,
       action,
+      commonParams,
       changeTierRepository,
-      contractId,
+      backstack,
     ),
   )
 
 internal class TerminationSurveyPresenter(
   private val options: List<TerminationSurveyOption>,
   private val action: TerminationAction,
+  private val commonParams: TerminationGraphParameters,
   private val changeTierRepository: ChangeTierRepository,
-  private val contractId: String,
+  private val backstack: Backstack,
 ) : MoleculePresenter<TerminationSurveyEvent, TerminationSurveyState> {
+  private val contractId: String = commonParams.contractId
+
   @Composable
   override fun MoleculePresenterScope<TerminationSurveyEvent>.present(
     lastState: TerminationSurveyState,
   ): TerminationSurveyState {
     var loadBetterQuotesSource by remember { mutableStateOf<ChangeTierCreateSource?>(null) }
-    var loadNextStep by remember { mutableStateOf(false) }
     var feedbackText: String? by remember { mutableStateOf(lastState.feedbackText) }
 
     var showFullScreenTextField by remember {
@@ -83,15 +99,24 @@ internal class TerminationSurveyPresenter(
         is Continue -> {
           val selectedOption = currentState.selectedOption ?: return@CollectEvents
           currentState = currentState.copy(errorWhileLoadingNextStep = false)
-          if (selectedOption.subOptions.isNotEmpty()) {
-            currentState = currentState.copy(nextNavigationStep = NavigateToSubOptions)
+          val redirection = selectedOption.redirection
+          if (redirection != null) {
+            backstack.add(
+              TerminationRedirectionKey(
+                redirection = redirection,
+                selectedOption = selectedOption,
+                action = action,
+                commonParams = commonParams,
+                feedbackComment = feedbackText,
+              ),
+            )
           } else {
-            loadNextStep = true
+            backstack.continueAfterSurveySelection(selectedOption, feedbackText, action, commonParams)
           }
         }
 
         ClearNextStep -> {
-          currentState = currentState.copy(nextNavigationStep = null, intentAndIdToRedirectToChangeTierFlow = null)
+          currentState = currentState.copy(intentAndIdToRedirectToChangeTierFlow = null)
         }
 
         is ShowFullScreenEditText -> {
@@ -184,20 +209,6 @@ internal class TerminationSurveyPresenter(
       )
     }
 
-    if (loadNextStep) {
-      LaunchedEffect(Unit) {
-        val reasonToSubmit = currentState.selectedOption ?: return@LaunchedEffect
-        loadNextStep = false
-        currentState = currentState.copy(
-          nextNavigationStep = SurveyNavigationStep.NavigateToNextTerminationStep(
-            selectedOption = reasonToSubmit,
-            feedbackText = feedbackText,
-            action = action,
-          ),
-        )
-      }
-    }
-
     return currentState.copy(
       reasons = options.map { option ->
         if (option.id in disabledOptionsIdsDueToEmptyResultingQuotes) {
@@ -237,8 +248,6 @@ internal data class TerminationSurveyState(
   val feedbackText: String?,
   val showFullScreenEditText: Boolean,
   val selectedOptionId: String?,
-  val nextNavigationStep: SurveyNavigationStep?,
-  val navigationStepLoading: Boolean,
   val errorWhileLoadingNextStep: Boolean,
   val showEmptyQuotesDialog: DeflectType? = null,
   val intentAndIdToRedirectToChangeTierFlow: Pair<String, IntentOutput>?,
@@ -258,8 +267,6 @@ internal data class TerminationSurveyState(
     feedbackText = null,
     showFullScreenEditText = false,
     selectedOptionId = null,
-    nextNavigationStep = null,
-    navigationStepLoading = false,
     errorWhileLoadingNextStep = false,
     showEmptyQuotesDialog = null,
     intentAndIdToRedirectToChangeTierFlow = null,
@@ -276,12 +283,59 @@ internal sealed interface DeflectType {
   ) : DeflectType
 }
 
-internal sealed interface SurveyNavigationStep {
-  data class NavigateToNextTerminationStep(
-    val selectedOption: TerminationSurveyOption,
-    val feedbackText: String?,
-    val action: TerminationAction,
-  ) : SurveyNavigationStep
+internal fun Backstack.continueAfterSurveySelection(
+  selectedOption: TerminationSurveyOption,
+  feedbackText: String?,
+  action: TerminationAction,
+  commonParams: TerminationGraphParameters,
+) {
+  if (selectedOption.subOptions.isNotEmpty()) {
+    add(TerminationSurveySecondStepKey(selectedOption.subOptions, action, commonParams))
+  } else {
+    navigateAfterSurvey(selectedOption, feedbackText, action, commonParams)
+  }
+}
 
-  data object NavigateToSubOptions : SurveyNavigationStep
+private fun Backstack.navigateAfterSurvey(
+  selectedOption: TerminationSurveyOption,
+  feedbackText: String?,
+  action: TerminationAction,
+  commonParams: TerminationGraphParameters,
+) {
+  val suggestion = selectedOption.suggestion
+  if (suggestion != null && suggestion.type in SuggestionType.DEFLECT_TYPES) {
+    add(
+      DeflectSuggestionKey(
+        description = suggestion.description,
+        url = suggestion.url,
+        suggestionType = suggestion.type,
+        commonParams = commonParams,
+        action = action,
+        selectedReasonId = selectedOption.id,
+        feedbackComment = feedbackText,
+      ),
+    )
+    return
+  }
+  when (val terminationAction = action) {
+    is TerminationAction.TerminateWithDate -> add(
+      TerminationDateKey(
+        minDate = terminationAction.minDate,
+        maxDate = terminationAction.maxDate,
+        extraCoverageItems = terminationAction.extraCoverageItems,
+        commonParams = commonParams,
+        selectedReasonId = selectedOption.id,
+        feedbackComment = feedbackText,
+      ),
+    )
+
+    is TerminationAction.DeleteInsurance -> add(
+      InsuranceDeletionKey(
+        commonParams = commonParams,
+        extraCoverageItems = terminationAction.extraCoverageItems,
+        selectedReasonId = selectedOption.id,
+        feedbackComment = feedbackText,
+      ),
+    )
+  }
 }

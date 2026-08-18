@@ -181,8 +181,7 @@ private fun ColumnScope.AddChipIdContent(
     text = uiState.chipIdText,
     labelText = stringResource(Res.string.CHIP_ID_LABEL),
     updateText = updateText,
-
-    )
+  )
 
   AnimatedContent(
     targetState = uiState.errorType,
@@ -222,11 +221,7 @@ private fun ColumnScope.AddChipIdContent(
 }
 
 @Composable
-private fun ChipIdTextField(
-  text: String,
-  labelText: String,
-  updateText: (String) -> Unit,
-) {
+private fun ChipIdTextField(text: String, labelText: String, updateText: (String) -> Unit) {
   val interactionSource = remember { MutableInteractionSource() }
   var input by remember { mutableStateOf(text) }
   val mask = "000-000-000-000-000"
@@ -300,12 +295,8 @@ private class ChipIdVisualTransformation(
   }
 }
 
-
 @Composable
-private fun InsuranceInfoCard(
-  insuranceInfo: PetContractForChipId,
-  modifier: Modifier = Modifier,
-) {
+private fun InsuranceInfoCard(insuranceInfo: PetContractForChipId, modifier: Modifier = Modifier) {
   HedvigCard(
     modifier
       .border(
@@ -351,7 +342,6 @@ private fun PreviewTerminationConfirmationScreen(
     }
   }
 }
-
 
 private class AddChipIdScreenStateProvider : CollectionPreviewParameterProvider<AddChipIdUiState>(
   listOf(

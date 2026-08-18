@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -29,7 +28,6 @@ import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
-import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertificateTravellersInputUiState.Failure
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertificateTravellersInputUiState.Success
 import hedvig.resources.GENERAL_SUBMIT
@@ -43,7 +41,6 @@ import org.jetbrains.compose.resources.stringResource
 internal fun TravelCertificateTravellersInputDestination(
   viewModel: TravelCertificateTravellersInputViewModel,
   navigateUp: () -> Unit,
-  onNavigateToOverview: (TravelCertificateUrl) -> Unit,
   onNavigateToCoInsuredAddInfo: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -51,7 +48,6 @@ internal fun TravelCertificateTravellersInputDestination(
     uiState = uiState,
     navigateUp = navigateUp,
     reload = { viewModel.emit(TravelCertificateTravellersInputEvent.RetryLoadData) },
-    onNavigateToOverview = onNavigateToOverview,
     changeCoInsuredChecked = { viewModel.emit(TravelCertificateTravellersInputEvent.ChangeCoInsuredChecked(it)) },
     changeMemberChecked = { viewModel.emit(TravelCertificateTravellersInputEvent.ChangeMemberChecked) },
     onNavigateToCoInsuredAddInfo = onNavigateToCoInsuredAddInfo,
@@ -64,7 +60,6 @@ private fun TravelCertificateTravellersInput(
   uiState: TravelCertificateTravellersInputUiState,
   navigateUp: () -> Unit,
   reload: () -> Unit,
-  onNavigateToOverview: (TravelCertificateUrl) -> Unit,
   changeCoInsuredChecked: (CoInsured) -> Unit,
   changeMemberChecked: () -> Unit,
   onNavigateToCoInsuredAddInfo: () -> Unit,
@@ -81,12 +76,6 @@ private fun TravelCertificateTravellersInput(
           navigateUp = navigateUp,
         ) {
           HedvigErrorSection(onButtonClick = reload, modifier = Modifier.weight(1f))
-        }
-      }
-
-      is TravelCertificateTravellersInputUiState.UrlFetched -> {
-        LaunchedEffect(Unit) {
-          onNavigateToOverview(uiState.travelCertificateUrl)
         }
       }
 
@@ -189,7 +178,6 @@ private fun PreviewTravelCertificateTravellersInput() {
         {},
         {},
         {},
-        {},
       )
     }
   }
@@ -202,7 +190,6 @@ private fun PreviewTravelCertificateTravellersInputWithEmailFailure() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       TravelCertificateTravellersInput(
         Failure,
-        {},
         {},
         {},
         {},

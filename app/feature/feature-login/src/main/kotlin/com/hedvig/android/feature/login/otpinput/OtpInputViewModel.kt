@@ -4,11 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
 import com.hedvig.authlib.ResendOtpResult.Error
 import com.hedvig.authlib.ResendOtpResult.Success
 import com.hedvig.authlib.SubmitOtpResult
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedInject
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,10 +27,12 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class OtpInputViewModel(
-  private val verifyUrl: String,
-  private val resendUrl: String,
-  credential: String,
+@AssistedInject
+@HedvigViewModel(ActivityRetainedScope::class)
+internal class OtpInputViewModel(
+  @Assisted private val verifyUrl: String,
+  @Assisted private val resendUrl: String,
+  @Assisted credential: String,
   private val authTokenService: AuthTokenService,
   private val authRepository: AuthRepository,
   coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob()),

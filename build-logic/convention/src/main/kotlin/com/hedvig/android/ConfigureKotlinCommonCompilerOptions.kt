@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 internal fun KotlinCommonCompilerOptions.configureKotlinCompilerOptions() {
   when (this) {
     is KotlinJvmCompilerOptions -> {
-      configureCommonKotlinCompilerOptions(listOf("-Xjvm-default=all"))
+      configureCommonKotlinCompilerOptions(listOf("-jvm-default=no-compatibility"))
       jvmTarget.set(JvmTarget.JVM_21)
     }
 
@@ -21,8 +21,8 @@ internal fun KotlinCommonCompilerOptions.configureKotlinCompilerOptions() {
 private fun KotlinCommonCompilerOptions.configureCommonKotlinCompilerOptions(
   extraFreeCompilerArgs: List<String> = emptyList(),
 ) {
-  apiVersion.set(KotlinVersion.KOTLIN_2_2)
-  languageVersion.set(KotlinVersion.KOTLIN_2_2)
+  apiVersion.set(KotlinVersion.KOTLIN_2_3)
+  languageVersion.set(KotlinVersion.KOTLIN_2_3)
   freeCompilerArgs.addAll(commonFreeCompilerArgs().plus(extraFreeCompilerArgs))
 }
 
@@ -30,7 +30,6 @@ private fun commonFreeCompilerArgs(): List<String> {
   return listOf(
     "-Xcontext-parameters",
     "-Xexpect-actual-classes",
-    "-Xwhen-guards",
     "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
     "-opt-in=androidx.compose.animation.ExperimentalSharedTransitionApi",
     "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",

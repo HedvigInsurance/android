@@ -13,6 +13,7 @@ sentry.properties
 .project
 .kotlin
 mapping.txt
+.superpowers
 
 open_source_licenses.html
 

@@ -5,7 +5,6 @@ plugins {
 
 dependencies {
   implementation(libs.androidx.other.appCompat)
-  implementation(libs.koin.core)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreResources)
   implementation(projects.languageCore)

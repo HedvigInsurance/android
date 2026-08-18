@@ -10,15 +10,20 @@ import androidx.compose.runtime.setValue
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeFlow
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.datastore.DeviceIdDataStore
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import octopus.MemberIdQuery
 
+@Inject
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class AboutAppViewModel(
   apolloClient: ApolloClient,
   deviceIdDataStore: DeviceIdDataStore,

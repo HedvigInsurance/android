@@ -1,0 +1,71 @@
+package com.hedvig.android.feature.claim.details.navigation
+
+import android.net.Uri
+import androidx.compose.ui.platform.LocalContext
+import androidx.navigation3.runtime.EntryProviderScope
+import coil3.ImageLoader
+import com.hedvig.android.compose.ui.dropUnlessResumed
+import com.hedvig.android.feature.claim.details.ui.AddFilesDestination
+import com.hedvig.android.feature.claim.details.ui.AddFilesViewModel
+import com.hedvig.android.feature.claim.details.ui.AddFilesViewModelFactory
+import com.hedvig.android.feature.claim.details.ui.ClaimDetailsDestination
+import com.hedvig.android.feature.claim.details.ui.ClaimDetailsViewModel
+import com.hedvig.android.feature.claim.details.ui.ClaimDetailsViewModelFactory
+import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
+import com.hedvig.core.common.android.sharePDF
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+
+fun EntryProviderScope<HedvigNavKey>.claimDetailsEntries(
+  imageLoader: ImageLoader,
+  appPackageId: String,
+  openUrl: (String) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  navigateToConversation: (String) -> Unit,
+  backstack: Backstack,
+  applicationId: String,
+) {
+  entry<ClaimDetailsKey> { key ->
+    val viewModel: ClaimDetailsViewModel =
+      assistedMetroViewModel<ClaimDetailsViewModel, ClaimDetailsViewModelFactory> { create(key.claimId) }
+    val context = LocalContext.current
+    ClaimDetailsDestination(
+      viewModel = viewModel,
+      imageLoader = imageLoader,
+      appPackageId = appPackageId,
+      navigateUp = backstack::navigateUp,
+      navigateToConversation = dropUnlessResumed { conversationId: String ->
+        navigateToConversation(conversationId)
+      },
+      onFilesToUploadSelected = { filesUri: List<Uri>, uploadUri: String ->
+        if (filesUri.isNotEmpty()) {
+          backstack.add(
+            AddFilesKey(
+              targetUploadUrl = uploadUri,
+              initialFilesUri = filesUri.map { it.toString() },
+            ),
+          )
+        }
+      },
+      openUrl = openUrl,
+      onNavigateToImageViewer = onNavigateToImageViewer,
+      sharePdf = {
+        context.sharePDF(it, applicationId)
+      },
+    )
+  }
+  entry<AddFilesKey> { key ->
+    val viewModel: AddFilesViewModel =
+      assistedMetroViewModel<AddFilesViewModel, AddFilesViewModelFactory> {
+        create(key.targetUploadUrl, key.initialFilesUri)
+      }
+    AddFilesDestination(
+      viewModel = viewModel,
+      navigateUp = backstack::navigateUp,
+      onNavigateToImageViewer = onNavigateToImageViewer,
+      appPackageId = appPackageId,
+      imageLoader = imageLoader,
+    )
+  }
+}

@@ -3,11 +3,11 @@ import com.project.starter.easylauncher.filter.ColorRibbonFilter
 plugins {
   id("hedvig.android.application")
   id("hedvig.gradle.plugin")
-  alias(libs.plugins.appIconBannerGenerator) // Automatically adds the "DEBUG" banner on the debug app icon
-  alias(libs.plugins.crashlytics)
-  alias(libs.plugins.datadog)
-  alias(libs.plugins.googleServices)
-  alias(libs.plugins.license)
+  id("com.starter.easylauncher") // Automatically adds the "DEBUG" banner on the debug app icon
+  id("com.google.firebase.crashlytics")
+  id("com.datadoghq.dd-sdk-android-gradle-plugin")
+  id("com.google.gms.google-services")
+  id("com.jaredsburrows.license")
 }
 
 hedvig {
@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "14.2.4"
+    versionName = "14.4.5"
 
     resourceConfigurations.addAll(listOf("en", "sv-rSE"))
   }
@@ -43,14 +43,14 @@ android {
   }
 
   buildTypes {
-    val debug by getting {
+    getByName("debug") {
       applicationIdSuffix = ".dev.app"
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = false
       isDebuggable = true
     }
 
-    val release by getting {
-//      signingConfig = debug.signingConfig // uncomment to run release build locally
+    getByName("release") {
+//      signingConfig = getByName("debug").signingConfig // uncomment to run release build locally
       applicationIdSuffix = ".app"
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
 
@@ -64,10 +64,12 @@ android {
       )
     }
 
-    val staging by creating {
+    create("staging") {
       applicationIdSuffix = ".app"
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
       isMinifyEnabled = true
+      // Libraries only publish `release`. DeDebug maps the `debug` build type onto it automatically,
+      // but a custom build type has to declare the fallback itself.
       matchingFallbacks += "release"
       setProguardFiles(
         listOf(
@@ -110,14 +112,17 @@ dependencies {
   implementation(libs.androidx.compose.animationCore)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3.windowSizeClass)
+  implementation(libs.androidx.compose.runtime.retain)
   implementation(libs.androidx.compose.uiToolingPreview)
   implementation(libs.androidx.lifecycle.process)
-  implementation(libs.androidx.navigation.common)
-  implementation(libs.androidx.navigation.compose)
+  implementation(libs.androidx.navigation3.runtime)
+  implementation(libs.androidx.navigation3.ui)
+  implementation(libs.androidx.lifecycle.viewmodel.navigation3)
   implementation(libs.androidx.other.appCompat)
   implementation(libs.androidx.other.coreKtx)
   implementation(libs.androidx.other.splashscreen)
   implementation(libs.androidx.other.startup)
+  implementation(libs.androidx.other.workManager)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
@@ -137,14 +142,11 @@ dependencies {
   implementation(libs.jetbrains.lifecycle.runtime)
   implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.jetbrains.lifecycle.viewmodel)
-  implementation(libs.koin.android)
-  implementation(libs.koin.workManager)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.media3.exoplayer)
   implementation(libs.media3.exoplayer.dash)
-  implementation(libs.navigationRecentsUrlSharing)
   implementation(libs.playReview)
   implementation(libs.playServicesBase)
   implementation(libs.timber)
@@ -167,7 +169,7 @@ dependencies {
   implementation(projects.dataAddons)
   implementation(projects.dataChangetier)
   implementation(projects.dataChat)
-
+  implementation(projects.dataClaimIntent)
   implementation(projects.dataContract)
   implementation(projects.dataConversations)
   implementation(projects.dataCrossSellAfterClaimClosed)
@@ -187,15 +189,17 @@ dependencies {
   implementation(projects.featureChat)
   implementation(projects.featureChipId)
   implementation(projects.featureChooseTier)
+  implementation(projects.featureChooseTierNavigation)
   implementation(projects.featureClaimChat)
   implementation(projects.featureClaimDetails)
   implementation(projects.featureClaimHistory)
   implementation(projects.featureConnectPaymentTrustly)
+  implementation(projects.featureConnectPaymentTrustlyNavigation)
   implementation(projects.featureCrossSellSheet)
   implementation(projects.featureDeleteAccount)
   implementation(projects.featureEditCoinsured)
-  implementation(projects.featureFlagsAndroid)
-  implementation(projects.featureFlagsPublic)
+  implementation(projects.featureEditCoinsuredNavigation)
+  implementation(projects.featureFlags)
   implementation(projects.featureForever)
   implementation(projects.featureHelpCenter)
   implementation(projects.featureHome)
@@ -204,6 +208,8 @@ dependencies {
   implementation(projects.featureInsurances)
   implementation(projects.featureLogin)
   implementation(projects.featureMovingflow)
+  implementation(projects.featureMovingflowNavigation)
+  implementation(projects.featureOnboarding)
 
   implementation(projects.featureRemoveAddons)
   implementation(projects.featurePayinAccount)
@@ -211,7 +217,9 @@ dependencies {
   implementation(projects.featurePayments)
   implementation(projects.featureProfile)
   implementation(projects.featureTerminateInsurance)
+  implementation(projects.featureTerminateInsuranceNavigation)
   implementation(projects.featureTravelCertificate)
+  implementation(projects.featureTravelCertificateNavigation)
   implementation(projects.foreverUi)
   implementation(projects.initializable)
   implementation(projects.languageCore)
@@ -220,6 +228,7 @@ dependencies {
   implementation(projects.loggingDeviceModel)
   implementation(projects.loggingPublic)
   implementation(projects.permissionCore)
+  implementation(projects.memberQuickActions)
   implementation(projects.memberRemindersPublic)
   implementation(projects.navigationActivity)
   implementation(projects.navigationCommon)
@@ -234,11 +243,19 @@ dependencies {
   implementation(projects.tierComparison)
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
+  implementation(projects.trackingFirebase)
   implementation(projects.uiForceUpgrade)
 
   // OkHttp for ProGuard rules only - not available at compile time
   runtimeOnly(platform(libs.okhttp.bom))
   runtimeOnly(libs.okhttp.core)
+
+  testImplementation(libs.assertK)
+  testImplementation(libs.classgraph)
+  testImplementation(libs.coroutines.test)
+  testImplementation(libs.junit)
+  testImplementation(projects.coreDatastoreTest)
+  testImplementation(projects.loggingTest)
 
   debugImplementation(libs.androidx.compose.uiTooling)
   debugImplementation(projects.featureImpersonation)

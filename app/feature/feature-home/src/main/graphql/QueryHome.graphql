@@ -1,5 +1,11 @@
-query Home($claimsHistoryFlag: Boolean!) {
+query Home($claimsHistoryFlag: Boolean!, $resumeClaimEnabled: Boolean!, $disableShopSessions: Boolean!) {
   currentMember {
+    firstName
+    resumableClaimIntent @include(if: $resumeClaimEnabled) {
+      id
+      displayName
+      createdAt
+    }
     claims@skip(if: $claimsHistoryFlag) {
       ...ClaimFragment
     }
@@ -58,6 +64,36 @@ query Home($claimsHistoryFlag: Boolean!) {
       otherCrossSells {
         ...HomeCrossSellFragment
       }
+      recommendedAddon {
+        id
+        title
+        description
+        buttonText
+        deepLink
+        bannerText
+        benefits
+        pillowImageLarge {
+          src
+        }
+        pillowImageSmall {
+          src
+        }
+      }
+    }
+    ongoingShopSessions @skip(if: $disableShopSessions) {
+      id
+      display {
+        title
+        subtitle
+        monthlyNet {
+          amount
+          currencyCode
+        }
+        resumeUrl
+        pillowImage {
+          src
+        }
+      }
     }
     memberActions {
       firstVetAction {
@@ -86,6 +122,11 @@ fragment HomeCrossSellFragment on CrossSell {
   title
   description
   storeUrl
+  pillowImageSmall {
+    src
+    id
+    alt
+  }
   pillowImageLarge {
     src
     id

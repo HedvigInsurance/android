@@ -56,7 +56,7 @@ import kotlinx.coroutines.isActive
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun OtpInputDestination(
+internal fun OtpInputDestination(
   viewModel: OtpInputViewModel,
   navigateUp: () -> Unit,
   onNavigateToLoggedIn: () -> Unit,

@@ -8,7 +8,11 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import octopus.UpdateChipIdNumberMutation
 import octopus.UpdateChipIdNumberMutation.Data.MidtermChangePetId.Companion.asMidtermChangePetIdActivationDate
 import octopus.UpdateChipIdNumberMutation.Data.MidtermChangePetId.Companion.asUserError
@@ -17,6 +21,9 @@ internal interface UpdateChipIdUseCase {
   suspend fun invoke(petId: String, insuranceId: String): Either<ErrorMessage, Unit>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class UpdateChipIdUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : UpdateChipIdUseCase {

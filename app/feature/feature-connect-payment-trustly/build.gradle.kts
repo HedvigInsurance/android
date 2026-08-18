@@ -7,15 +7,14 @@ hedvig {
   apollo("octopus")
   serialization()
   compose()
+  navKeys()
+  viewModels()
 }
 
 dependencies {
-  api(libs.androidx.navigation.common)
-
   implementation(libs.androidx.compose.animation)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.foundationLayout)
-  implementation(libs.androidx.navigation.compose)
   implementation(libs.androidx.other.browser)
   implementation(libs.apollo.api)
   implementation(libs.apollo.runtime)
@@ -29,8 +28,6 @@ dependencies {
   implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.jetbrains.lifecycle.viewmodel)
   implementation(libs.jetbrains.lifecycle.viewmodel.compose)
-  implementation(libs.koin.composeViewModel)
-  implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
   implementation(projects.apolloNetworkCacheManager)
@@ -40,6 +37,7 @@ dependencies {
   implementation(projects.coreCommonPublic)
   implementation(projects.coreResources)
   implementation(projects.designSystemHedvig)
+  implementation(projects.featureConnectPaymentTrustlyNavigation)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)

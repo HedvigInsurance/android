@@ -6,14 +6,21 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import octopus.ClaimIntentSkipStepMutation
 
 internal interface SkipStepUseCase {
   suspend fun invoke(id: StepId): Either<ClaimChatErrorMessage, ClaimIntent>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class SkipStepUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,

@@ -153,7 +153,7 @@ internal fun YourInfoTab(
   isTerminated: Boolean,
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
-  priceToShow: UiMoney,
+  priceToShow: UiMoney?,
   showPriceInfoIcon: Boolean,
   onInfoIconClick: () -> Unit,
   existingAddons: List<ContractAddon>,
@@ -199,7 +199,8 @@ internal fun YourInfoTab(
   }
 
   val upcomingChangesBottomSheet = rememberHedvigBottomSheetState<Unit>()
-  if (upcomingChangesInsuranceAgreement != null) {
+  val upcomingChangesCost = upcomingChangesInsuranceAgreement?.cost
+  if (upcomingChangesInsuranceAgreement != null && upcomingChangesCost != null) {
     val upcomingPriceInfoForBottomSheet = PriceInfoForBottomSheet(
       displayItems = buildList {
         add(
@@ -299,15 +300,27 @@ internal fun YourInfoTab(
     ) {
       Column {
         CoverageRows(coverageItems, Modifier.padding(horizontal = 16.dp))
-        PriceRow(
-          priceToShow,
-          showPriceInfoIcon,
-          onInfoIconClick,
-          Modifier.padding(horizontal = 16.dp),
-        )
-        if (allowEditCoInsured && coInsured.isNotEmpty()) {
-          HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+        if (priceToShow != null) {
+          PriceRow(
+            priceToShow = priceToShow,
+            showInfoIcon = showPriceInfoIcon,
+            onInfoIconClick = onInfoIconClick,
+            isFirstRow = coverageItems.isEmpty(),
+            modifier = Modifier.padding(horizontal = 16.dp),
+          )
+        }
+        if (allowEditCoInsured || allowEditCoOwners) {
+          HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
           Spacer(Modifier.height(16.dp))
+          ContractOwnerSection(
+            coInsuredList = coInsured,
+            modifier = Modifier.padding(horizontal = 16.dp),
+          )
+          if (coInsured.isEmpty() && coOwners.isEmpty()) {
+            Spacer(Modifier.height(16.dp))
+          }
+        }
+        if (allowEditCoInsured && coInsured.isNotEmpty()) {
           CoInsuredSection(
             coInsuredList = coInsured,
             contractHolderDisplayName = contractHolderDisplayName,
@@ -317,8 +330,6 @@ internal fun YourInfoTab(
           )
         }
         if (allowEditCoOwners && coOwners.isNotEmpty()) {
-          HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-          Spacer(Modifier.height(16.dp))
           CoInsuredSection(
             coInsuredList = coOwners,
             contractHolderDisplayName = contractHolderDisplayName,
@@ -384,8 +395,7 @@ internal fun YourInfoTab(
         if (allowEditCoInsured ||
           allowEditCoOwners ||
           allowChangeTier ||
-          allowTerminatingInsurance ||
-          chipIdState is ChipIdState.Missing
+          allowTerminatingInsurance
         ) {
           HedvigButton(
             text = stringResource(Res.string.CONTRACT_EDIT_INFO_LABEL),
@@ -657,11 +667,16 @@ internal fun CoverageRows(coverageRowItems: List<DisplayItem>, modifier: Modifie
     coverageRowItems.forEachIndexed { index, displayItem ->
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
-          Row(
-            verticalAlignment = Alignment.CenterVertically,
+          Column(
+            verticalArrangement = Arrangement.Center,
             modifier = Modifier.padding(vertical = 16.dp),
           ) {
             HedvigText(displayItem.title)
+            displayItem.subtitle?.let {
+              HedvigText(it,
+                style = HedvigTheme.typography.label,
+                color = HedvigTheme.colorScheme.textSecondary)
+            }
           }
         },
         endSlot = {
@@ -694,10 +709,14 @@ internal fun PriceRow(
   priceToShow: UiMoney,
   showInfoIcon: Boolean,
   onInfoIconClick: () -> Unit,
+  isFirstRow: Boolean,
   modifier: Modifier = Modifier,
 ) {
   HorizontalItemsWithMaximumSpaceTaken(
-    modifier = modifier.horizontalDivider(DividerPosition.Top),
+    modifier = modifier
+      .then(
+        if (isFirstRow) Modifier else Modifier.horizontalDivider(DividerPosition.Top),
+      ),
     startSlot = {
       Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -740,6 +759,44 @@ internal fun PriceRow(
 }
 
 @Composable
+internal fun ContractOwnerSection(
+  coInsuredList: List<CoInsured>,
+  modifier: Modifier,
+) {
+  Column(modifier = modifier) {
+  HorizontalItemsWithMaximumSpaceTaken(
+    startSlot = {
+      Column(
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.padding(vertical = 4.dp),
+      ) {
+        HedvigText(stringResource(Res.string.CHANGE_ADDRESS_CO_INSURED_LABEL))
+      }
+    },
+    endSlot = {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.End,
+        modifier = Modifier.padding(vertical = 4.dp),
+      ) {
+        val text = if (coInsuredList.isEmpty()) {
+          stringResource(Res.string.CHANGE_ADDRESS_ONLY_YOU)
+        } else {
+          stringResource(Res.string.CHANGE_ADDRESS_YOU_PLUS, coInsuredList.size)
+        }
+        HedvigText(
+          text = text,
+          color = HedvigTheme.colorScheme.textSecondary,
+          textAlign = TextAlign.End,
+        )
+      }
+    },
+    spaceBetween = 8.dp,
+  )
+  }
+}
+
+@Composable
 internal fun CoInsuredSection(
   coInsuredList: List<CoInsured>,
   contractHolderDisplayName: String,
@@ -750,35 +807,7 @@ internal fun CoInsuredSection(
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
   val birthDateTimeFormatter = rememberHedvigBirthDateDateTimeFormatter()
   Column(modifier = modifier) {
-    HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = {
-        Row(
-          verticalAlignment = Alignment.CenterVertically,
-          modifier = Modifier.padding(vertical = 4.dp),
-        ) {
-          HedvigText(stringResource(Res.string.CHANGE_ADDRESS_CO_INSURED_LABEL))
-        }
-      },
-      endSlot = {
-        Row(
-          verticalAlignment = Alignment.CenterVertically,
-          horizontalArrangement = Arrangement.End,
-          modifier = Modifier.padding(vertical = 4.dp),
-        ) {
-          val text = if (coInsuredList.isEmpty()) {
-            stringResource(Res.string.CHANGE_ADDRESS_ONLY_YOU)
-          } else {
-            stringResource(Res.string.CHANGE_ADDRESS_YOU_PLUS, coInsuredList.size)
-          }
-          HedvigText(
-            text = text,
-            color = HedvigTheme.colorScheme.textSecondary,
-            textAlign = TextAlign.End,
-          )
-        }
-      },
-      spaceBetween = 8.dp,
-    )
+
     Spacer(Modifier.height(16.dp))
     HorizontalDivider()
     HorizontalItemsWithMaximumSpaceTaken(

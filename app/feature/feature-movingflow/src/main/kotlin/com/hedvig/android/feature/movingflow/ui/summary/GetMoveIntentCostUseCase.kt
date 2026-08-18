@@ -8,9 +8,12 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +21,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import octopus.feature.movingflow.MoveIntentCostQuery
 
+@SingleIn(AppScope::class)
+@Inject
 internal class GetMoveIntentCostUseCase(
   private val apolloClient: ApolloClient,
 ) {

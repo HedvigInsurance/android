@@ -7,6 +7,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.fileupload.DownloadPdfUseCase
 import com.hedvig.android.core.fileupload.DownloadedFile
 import com.hedvig.android.data.addons.data.AddonBannerInfo
@@ -21,10 +23,13 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 
+@Inject
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class CertificateHistoryViewModel(
   getTravelCertificatesHistoryUseCase: GetTravelCertificatesHistoryUseCase,
   downloadPdfUseCase: DownloadPdfUseCase,
@@ -195,7 +200,7 @@ private sealed interface ScreenContentState {
     ScreenContentState
 }
 
-sealed interface CertificateHistoryEvent {
+internal sealed interface CertificateHistoryEvent {
   data object RetryLoadData : CertificateHistoryEvent
 
   data class DownloadCertificate(val signedUrl: String) : CertificateHistoryEvent

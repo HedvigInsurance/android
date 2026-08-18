@@ -40,7 +40,7 @@ fun HedvigScaffold(
     Column {
       val topAppbarInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
       TopAppBar(
-        title = topAppBarText ?: "",
+        title = topAppBarText,
         actionType = topAppBarActionType,
         onActionClick = dropUnlessResumed(block = navigateUp),
         topAppBarActions = topAppBarActions,

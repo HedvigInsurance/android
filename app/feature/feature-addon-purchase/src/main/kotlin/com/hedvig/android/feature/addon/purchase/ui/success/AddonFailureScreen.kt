@@ -29,7 +29,7 @@ import hedvig.resources.something_went_wrong
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun SubmitAddonFailureScreen(popBackStack: () -> Unit) {
+internal fun SubmitAddonFailureScreen(popBackstack: () -> Unit) {
   Column(
     modifier = Modifier
       .fillMaxSize()
@@ -48,13 +48,13 @@ internal fun SubmitAddonFailureScreen(popBackStack: () -> Unit) {
       iconStyle = ERROR,
       buttonStyle = Button(
         buttonText = stringResource(Res.string.GENERAL_RETRY),
-        onButtonClick = dropUnlessResumed { popBackStack() },
+        onButtonClick = dropUnlessResumed { popBackstack() },
       ),
     )
     Spacer(Modifier.weight(1f))
     HedvigTextButton(
       stringResource(Res.string.general_close_button),
-      onClick = popBackStack,
+      onClick = popBackstack,
       buttonSize = Large,
       modifier = Modifier.fillMaxWidth(),
     )

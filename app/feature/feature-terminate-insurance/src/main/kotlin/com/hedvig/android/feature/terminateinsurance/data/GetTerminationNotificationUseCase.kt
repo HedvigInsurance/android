@@ -6,12 +6,17 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
 import octopus.TerminationFlowNotificationQuery
 import octopus.type.TerminationFlowNotificationInput
 
+@SingleIn(AppScope::class)
+@Inject
 internal open class GetTerminationNotificationUseCase(
   private val apolloClient: ApolloClient,
 ) {

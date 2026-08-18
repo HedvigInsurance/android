@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -34,37 +33,32 @@ import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
-import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
 import com.hedvig.android.feature.change.tier.ui.stepstart.FailureReason.GENERAL
 import com.hedvig.android.feature.change.tier.ui.stepstart.FailureReason.QUOTES_ARE_EMPTY
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeState.Loading
-import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeState.Success
 import hedvig.resources.DASHBOARD_OPEN_CHAT
 import hedvig.resources.Res
 import hedvig.resources.TERMINATION_FLOW_I_UNDERSTAND_TEXT
 import hedvig.resources.TERMINATION_NO_TIER_QUOTES_SUBTITLE
 import hedvig.resources.TIER_FLOW_PROCESSING
 import hedvig.resources.general_close_button
-import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun StartChangeTierFlowDestination(
   viewModel: StartTierFlowViewModel,
-  popBackStack: () -> Unit,
-  launchFlow: (InsuranceCustomizationParameters) -> Unit,
+  popBackstack: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateUp: () -> Unit,
 ) {
   val uiState: StartTierChangeState by viewModel.uiState.collectAsStateWithLifecycle()
   StartChangeTierFlowScreen(
     uiState = uiState,
-    popBackStack = popBackStack,
+    popBackstack = popBackstack,
     reload = {
       viewModel.emit(StartTierChangeEvent.Reload)
     },
-    launchFlow = launchFlow,
     onNavigateToNewConversation = onNavigateToNewConversation,
     navigateUp = navigateUp,
   )
@@ -73,9 +67,8 @@ internal fun StartChangeTierFlowDestination(
 @Composable
 private fun StartChangeTierFlowScreen(
   uiState: StartTierChangeState,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   reload: () -> Unit,
-  launchFlow: (InsuranceCustomizationParameters) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateUp: () -> Unit,
 ) {
@@ -83,7 +76,7 @@ private fun StartChangeTierFlowScreen(
     is Failure -> {
       FailureScreen(
         reload = reload,
-        popBackStack = popBackStack,
+        popBackstack = popBackstack,
         reason = uiState.reason,
       )
     }
@@ -94,18 +87,11 @@ private fun StartChangeTierFlowScreen(
       )
     }
 
-    is Success -> {
-      LaunchedEffect(uiState.paramsToNavigate) {
-        val params = uiState.paramsToNavigate
-        launchFlow(params)
-      }
-    }
-
     is StartTierChangeState.Deflect -> {
       DeflectScreen(
         title = uiState.title,
         message = uiState.message,
-        closeFlow = popBackStack,
+        closeFlow = popBackstack,
         onNavigateToNewConversation = onNavigateToNewConversation,
         navigateUp = navigateUp,
       )
@@ -162,7 +148,7 @@ internal fun DeflectScreen(
 }
 
 @Composable
-private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit, reason: FailureReason) {
+private fun FailureScreen(reload: () -> Unit, popBackstack: () -> Unit, reason: FailureReason) {
   Box(Modifier.fillMaxSize()) {
     when (reason) {
       GENERAL -> {
@@ -195,7 +181,7 @@ private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit, reason: 
           Spacer(Modifier.weight(1f))
           HedvigTextButton(
             stringResource(Res.string.general_close_button),
-            onClick = popBackStack,
+            onClick = popBackstack,
             buttonSize = Large,
             modifier = Modifier.fillMaxWidth(),
           )
@@ -219,7 +205,6 @@ private fun StartTierFlowScreenPreview(
         {},
         {},
         {},
-        {},
       )
     }
   }
@@ -229,13 +214,6 @@ internal class StartTierChangeStateProvider :
   CollectionPreviewParameterProvider<StartTierChangeState>(
     listOf(
       Loading,
-      Success(
-        InsuranceCustomizationParameters(
-          "",
-          LocalDate(2024, 11, 11),
-          listOf("id", "id2"),
-        ),
-      ),
       Failure(GENERAL),
       Failure(QUOTES_ARE_EMPTY),
       StartTierChangeState.Deflect(

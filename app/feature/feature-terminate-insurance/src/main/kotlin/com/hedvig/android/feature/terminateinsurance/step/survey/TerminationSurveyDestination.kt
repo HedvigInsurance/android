@@ -26,7 +26,6 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
-import com.halilibo.richtext.commonmark.Markdown
 import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.EmptyState
@@ -35,6 +34,7 @@ import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIcon
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.INFO
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigDialog
+import com.hedvig.android.design.system.hedvig.HedvigMarkdownText
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
@@ -45,7 +45,6 @@ import com.hedvig.android.design.system.hedvig.ProvideTextStyle
 import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
-import com.hedvig.android.design.system.hedvig.RichText
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplay
@@ -75,8 +74,6 @@ internal fun TerminationSurveyDestination(
   navigateToMovingFlow: () -> Unit,
   closeTerminationFlow: () -> Unit,
   openUrl: (String) -> Unit,
-  navigateToNextStep: (SurveyNavigationStep.NavigateToNextTerminationStep) -> Unit,
-  navigateToSubOptions: ((List<TerminationSurveyOption>) -> Unit)?,
   redirectToChangeTierFlow: (Pair<String, IntentOutput>) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -85,24 +82,6 @@ internal fun TerminationSurveyDestination(
     if (intent != null) {
       viewModel.emit(TerminationSurveyEvent.ClearNextStep)
       redirectToChangeTierFlow(intent)
-    }
-  }
-  LaunchedEffect(uiState.nextNavigationStep) {
-    val nextStep = uiState.nextNavigationStep
-    if (nextStep != null) {
-      when (nextStep) {
-        is SurveyNavigationStep.NavigateToNextTerminationStep -> {
-          viewModel.emit(TerminationSurveyEvent.ClearNextStep)
-          navigateToNextStep(nextStep)
-        }
-
-        SurveyNavigationStep.NavigateToSubOptions -> {
-          viewModel.emit(TerminationSurveyEvent.ClearNextStep)
-          uiState.selectedOption?.let {
-            navigateToSubOptions?.invoke(it.subOptions)
-          }
-        }
-      }
     }
   }
   TerminationSurveyScreen(
@@ -258,7 +237,7 @@ private fun TerminationSurveyScreen(
               .fillMaxWidth()
               .padding(horizontal = 16.dp),
             onClick = onContinueClick,
-            isLoading = uiState.navigationStepLoading,
+            isLoading = false,
           )
         }
         Spacer(Modifier.height(16.dp))
@@ -300,11 +279,10 @@ private fun SelectedSurveyInfoBox(
             ProvideTextStyle(
               HedvigTheme.typography.label,
             ) {
-              RichText {
-                Markdown(
-                  content = suggestion.description,
-                )
-              }
+              HedvigMarkdownText(
+                content = suggestion.description,
+                style = HedvigTheme.typography.label,
+              )
             }
           },
           priority = when (suggestion.type) {

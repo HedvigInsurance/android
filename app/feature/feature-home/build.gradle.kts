@@ -7,6 +7,8 @@ hedvig {
   apollo("octopus")
   serialization()
   compose()
+  navKeys()
+  viewModels()
 }
 
 android {
@@ -14,17 +16,13 @@ android {
 }
 
 dependencies {
-  api(libs.androidx.navigation.common)
-
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.compose.foundation)
-  implementation(libs.androidx.navigation.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
   implementation(libs.jetbrains.compose.ui.util)
   implementation(libs.jetbrains.lifecycle.runtime.compose)
-  implementation(libs.koin.composeViewModel)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
@@ -39,21 +37,23 @@ dependencies {
   implementation(projects.coreDemoMode)
   implementation(projects.coreMarkdown)
   implementation(projects.coreResources)
+  implementation(projects.coreUiData)
   implementation(projects.crossSells)
   implementation(projects.dataAddons)
+  implementation(projects.dataClaimIntent)
   implementation(projects.dataContract)
   implementation(projects.dataConversations)
   implementation(projects.dataCrossSellAfterClaimClosed)
   implementation(projects.designSystemHedvig)
-  implementation(projects.featureFlagsPublic)
+  implementation(projects.featureFlags)
   implementation(projects.languageCore)
+  implementation(projects.memberQuickActions)
   implementation(projects.memberRemindersPublic)
   implementation(projects.memberRemindersUi)
   implementation(projects.moleculePublic)
   implementation(projects.navigationActivity)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
-  implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.notificationBadgeDataPublic)
   implementation(projects.notificationPermission)
@@ -74,5 +74,6 @@ dependencies {
   testImplementation(projects.loggingTest)
   testImplementation(projects.memberRemindersTest)
   testImplementation(projects.moleculeTest)
+  testImplementation(projects.partnersDeflect)
   testImplementation(projects.testClock)
 }

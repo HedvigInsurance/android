@@ -29,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.PermissionStatus.Granted
 import com.google.accompanist.permissions.isGranted
+import com.hedvig.android.data.settings.datastore.AnalyticsConsent
 import com.hedvig.android.design.system.hedvig.DialogDefaults.ButtonSize.BIG
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigBigCard
@@ -53,6 +54,8 @@ import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
 import com.hedvig.android.theme.Theme
+import hedvig.resources.GENERAL_DISABLED
+import hedvig.resources.GENERAL_ENABLED
 import hedvig.resources.GENERAL_SUBSCRIBED
 import hedvig.resources.GENERAL_UNSUBSCRIBED
 import hedvig.resources.PROFILE_NOTIFICATIONS_STATUS_OFF
@@ -68,6 +71,7 @@ import hedvig.resources.SETTINGS_THEME_LIGHT
 import hedvig.resources.SETTINGS_THEME_SYSTEM_DEFAULT
 import hedvig.resources.SETTINGS_THEME_TITLE
 import hedvig.resources.SETTINGS_TITLE
+import hedvig.resources.SETTINGS_USAGE_DATA_TITLE
 import hedvig.resources.general_close_button
 import hedvig.resources.language_picker_modal_title
 import hedvig.resources.not_selected
@@ -80,6 +84,7 @@ internal fun SettingsDestination(
   navigateUp: () -> Unit,
   openAppSettings: () -> Unit,
   onNavigateToDeleteAccountFeature: () -> Unit,
+  onNavigateToUsageData: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   SettingsScreen(
@@ -94,6 +99,7 @@ internal fun SettingsDestination(
     changeSubscriptionPreference = {
       viewModel.emit(SettingsEvent.ChangeSubscriptionPreference(it))
     },
+    onNavigateToUsageData = onNavigateToUsageData,
   )
 }
 
@@ -103,6 +109,7 @@ private fun SettingsScreen(
   notificationPermissionState: NotificationPermissionState,
   navigateUp: () -> Unit,
   changeSubscriptionPreference: (Boolean) -> Unit,
+  onNavigateToUsageData: () -> Unit,
   openAppSettings: () -> Unit,
   onNotificationInfoDismissed: () -> Unit,
   onLanguageSelected: (Language) -> Unit,
@@ -170,6 +177,23 @@ private fun SettingsScreen(
           isSubscribedToEmails = uiState.isSubscribedToEmails ?: true,
           enabled = true,
           hasError = uiState.emailSubscriptionPreferenceError,
+        )
+        Spacer(Modifier.height(4.dp))
+        HedvigBigCard(
+          onClick = onNavigateToUsageData,
+          inputText = when (uiState.analyticsConsent) {
+            AnalyticsConsent.GRANTED -> stringResource(Res.string.GENERAL_ENABLED)
+
+            AnalyticsConsent.DENIED -> stringResource(Res.string.GENERAL_DISABLED)
+
+            // No explicit choice made yet: nothing is forwarded to Firebase, but this is shown
+            // as distinct from an explicit "Disabled".
+            AnalyticsConsent.NOT_DECIDED, null -> stringResource(Res.string.not_selected)
+          },
+          labelText = stringResource(Res.string.SETTINGS_USAGE_DATA_TITLE),
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(16.dp))
 
@@ -382,6 +406,7 @@ fun PreviewSettingsScreen() {
           showNotificationReminder = true,
           isSubscribedToEmails = true,
           emailSubscriptionPreferenceError = true,
+          analyticsConsent = null,
         ),
         notificationPermissionState = object : NotificationPermissionState {
           override val showDialog = false
@@ -400,6 +425,7 @@ fun PreviewSettingsScreen() {
         onThemeSelected = {},
         onTerminateAccountClicked = {},
         changeSubscriptionPreference = {},
+        onNavigateToUsageData = {},
       )
     }
   }

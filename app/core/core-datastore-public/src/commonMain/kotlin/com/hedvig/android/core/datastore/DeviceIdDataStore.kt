@@ -5,7 +5,11 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.benasher44.uuid.uuid4
-import kotlinx.coroutines.CoroutineScope
+import com.hedvig.android.core.common.ApplicationScope
+import com.hedvig.android.core.common.di.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -18,9 +22,12 @@ interface DeviceIdDataStore {
   fun observeDeviceId(): Flow<String?>
 }
 
+@Inject
+@SingleIn(AppScope::class)
+@ContributesBinding(AppScope::class)
 internal class DeviceIdDataStoreImpl(
   private val dataStore: DataStore<Preferences>,
-  coroutineScope: CoroutineScope,
+  coroutineScope: ApplicationScope,
 ) : DeviceIdDataStore {
   init {
     coroutineScope.launch(Dispatchers.IO) {

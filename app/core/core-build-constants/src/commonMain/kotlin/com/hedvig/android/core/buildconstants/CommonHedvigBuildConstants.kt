@@ -3,8 +3,15 @@ package com.hedvig.android.core.buildconstants
 import com.hedvig.android.core.buildconstants.Flavor.Develop
 import com.hedvig.android.core.buildconstants.Flavor.Production
 import com.hedvig.android.core.buildconstants.Flavor.Staging
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.language.LanguageService
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class CommonHedvigBuildConstants(
   appBuildConfig: AppBuildConfig,
   languageService: LanguageService,

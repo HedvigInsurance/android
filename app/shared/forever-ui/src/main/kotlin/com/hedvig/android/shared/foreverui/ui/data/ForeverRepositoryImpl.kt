@@ -9,9 +9,11 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.shared.foreverui.ui.data.ForeverRepository.ReferralError
+import dev.zacsweers.metro.Inject
 import octopus.FullReferralsQuery
 import octopus.MemberReferralInformationCodeUpdateMutation
 
+@Inject
 internal class ForeverRepositoryImpl(
   private val apolloClient: ApolloClient,
 ) : ForeverRepository {

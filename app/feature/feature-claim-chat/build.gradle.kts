@@ -8,6 +8,8 @@ hedvig {
   apollo("octopus")
   compose()
   serialization()
+  navKeys()
+  viewModels()
 }
 
 kotlin {
@@ -23,7 +25,8 @@ kotlin {
       implementation(libs.jetbrains.compose.ui)
       implementation(libs.jetbrains.compose.ui.tooling.preview)
       implementation(libs.jetbrains.navigationevent.compose)
-      implementation(libs.koin.composeViewModel)
+      implementation(libs.metro.viewmodel)
+      implementation(libs.metro.viewmodel.compose)
       implementation(libs.kotlinx.serialization.core)
       implementation(libs.kotlinx.serialization.json)
       implementation(libs.ktor.client.contentNegotiation)
@@ -43,6 +46,7 @@ kotlin {
       implementation(projects.coreResources)
       implementation(projects.coreUiData)
       implementation(projects.designSystemHedvig)
+      implementation(projects.featureFlags)
       implementation(projects.languageCore)
       implementation(projects.moleculePublic)
       implementation(projects.navigationCore)
@@ -53,7 +57,7 @@ kotlin {
     }
     androidMain.dependencies {
       implementation(libs.accompanist.permissions)
-      implementation(libs.androidx.navigation.compose)
+      implementation(libs.androidx.activity.compose)
       implementation(libs.bundles.kmpPreviewBugWorkaround)
       implementation(libs.rive.android)
       implementation(projects.composeUi)

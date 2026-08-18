@@ -35,7 +35,7 @@ import org.jetbrains.compose.resources.stringResource
 expect fun NotificationPermissionSection(key: Unit)
 
 @Composable
-internal fun ClaimOutcomeNewClaimDestination(closeSuccessScreen: () -> Unit) {
+internal fun ClaimOutcomeNewClaimDestination(popBackstack: () -> Unit) {
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,
     modifier = Modifier.fillMaxSize(),
@@ -60,7 +60,7 @@ internal fun ClaimOutcomeNewClaimDestination(closeSuccessScreen: () -> Unit) {
       Spacer(Modifier.weight(1f))
       Spacer(Modifier.height(16.dp))
       HedvigButton(
-        onClick = closeSuccessScreen,
+        onClick = popBackstack,
         enabled = true,
         buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
         text = stringResource(Res.string.general_done_button),

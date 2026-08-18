@@ -19,6 +19,7 @@ $addonsFlagOn: Boolean!) {
         }
         tierLevel
         tierName
+        tierDescription
       }
       quotes {
         currentTotalCost {
@@ -48,6 +49,7 @@ $addonsFlagOn: Boolean!) {
         }
         tierLevel
         tierName
+        tierDescription
         addons @include(if: $addonsFlagOn) {
           addonVariant {
             ...AddonVariantFragment

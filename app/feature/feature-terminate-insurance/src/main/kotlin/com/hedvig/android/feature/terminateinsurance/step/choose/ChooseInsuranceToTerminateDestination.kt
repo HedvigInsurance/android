@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -32,7 +31,6 @@ import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
-import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyData
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
 import hedvig.resources.Res
 import hedvig.resources.TERMINATION_FLOW_CANCEL_INFO_TEXT
@@ -50,16 +48,8 @@ internal fun ChooseInsuranceToTerminateDestination(
   navigateUp: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   closeTerminationFlow: () -> Unit,
-  navigateToNextStep: (surveyData: TerminationSurveyData, terminatableInsurance: TerminatableInsurance) -> Unit,
 ) {
   val uiState: ChooseInsuranceToTerminateStepUiState by viewModel.uiState.collectAsStateWithLifecycle()
-  LaunchedEffect(uiState) {
-    val uiStateValue = uiState as? ChooseInsuranceToTerminateStepUiState.Success ?: return@LaunchedEffect
-    if (uiStateValue.nextStepWithInsurance != null) {
-      viewModel.emit(ChooseInsuranceToTerminateEvent.ClearTerminationStep)
-      navigateToNextStep(uiStateValue.nextStepWithInsurance.first, uiStateValue.nextStepWithInsurance.second)
-    }
-  }
   ChooseInsuranceToTerminateScreen(
     uiState = uiState,
     navigateUp = navigateUp,
@@ -199,7 +189,6 @@ private class ChooseInsuranceToTerminateStepUiStateProvider :
   CollectionPreviewParameterProvider<ChooseInsuranceToTerminateStepUiState>(
     listOf(
       ChooseInsuranceToTerminateStepUiState.Success(
-        nextStepWithInsurance = null,
         insuranceList = listOf(
           TerminatableInsurance(
             id = "1",
@@ -219,7 +208,6 @@ private class ChooseInsuranceToTerminateStepUiStateProvider :
         navigationStepFailedToLoad = false,
       ),
       ChooseInsuranceToTerminateStepUiState.Success(
-        nextStepWithInsurance = null,
         insuranceList = listOf(
           TerminatableInsurance(
             id = "1",

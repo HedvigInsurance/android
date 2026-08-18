@@ -3,13 +3,20 @@ package com.hedvig.android.datadog.core.attributestracking
 import com.datadog.android.Datadog
 import com.datadog.android.rum.GlobalRumMonitor
 import com.hedvig.android.core.common.ApplicationScope
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.initializable.Initializable
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesIntoSet
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
+@ContributesIntoSet(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class DatadogAttributesManager(
   private val applicationScope: ApplicationScope,
   private val memberIdProvider: DatadogMemberIdProvider,

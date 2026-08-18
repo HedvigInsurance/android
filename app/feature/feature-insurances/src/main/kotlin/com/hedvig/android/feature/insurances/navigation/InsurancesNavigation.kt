@@ -1,36 +1,27 @@
 package com.hedvig.android.feature.insurances.navigation
 
-import com.hedvig.android.navigation.common.Destination
-import kotlin.reflect.KClass
+import com.hedvig.android.navigation.common.CrossSellEligibleDestination
+import com.hedvig.android.navigation.common.DeepLinkAncestry
+import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.common.TopLevelTab
+import com.hedvig.android.navigation.common.TopLevelTabRoot
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-sealed interface InsurancesDestination {
-  @Serializable
-  data object Graph : InsurancesDestination, Destination
-
-  @Serializable
-  data object Insurances : InsurancesDestination, Destination
+@Serializable
+data object InsurancesKey : HedvigNavKey, CrossSellEligibleDestination, TopLevelTabRoot {
+  override val topLevelTab: TopLevelTab = TopLevelTab.Insurances
 }
 
-internal sealed interface InsurancesDestinations {
-  @Serializable
-  data class InsuranceContractDetail(
-    /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer.contract] */
-    @SerialName("contractId")
-    val contractId: String,
-  ) : InsurancesDestinations, Destination
-
-  @Serializable
-  data object TerminatedInsurances : InsurancesDestinations, Destination
+@Serializable
+internal data class InsuranceContractDetailKey(
+  /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer.contract] */
+  @SerialName("contractId")
+  val contractId: String,
+) : HedvigNavKey, DeepLinkAncestry, CrossSellEligibleDestination {
+  override val owningTab = TopLevelTab.Insurances
+  override val syntheticParents = emptyList<HedvigNavKey>()
 }
 
-val insurancesBottomNavPermittedDestinations: List<KClass<out Destination>> = listOf(
-  InsurancesDestinations.InsuranceContractDetail::class,
-  InsurancesDestinations.TerminatedInsurances::class,
-)
-
-val insurancesCrossSellBottomSheetPermittingDestinations: List<KClass<out Destination>> = listOf(
-  InsurancesDestination.Insurances::class,
-  InsurancesDestinations.InsuranceContractDetail::class,
-)
+@Serializable
+internal data object TerminatedInsurancesKey : HedvigNavKey

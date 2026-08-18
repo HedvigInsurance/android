@@ -9,14 +9,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import arrow.core.Either
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.paying.member.MemberType
 import com.hedvig.android.feature.payments.data.ManualChargeToPrompt
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.PaymentConnection
-import com.hedvig.android.feature.payments.data.MemberPaymentChargeMethod
 import com.hedvig.android.feature.payments.data.PaymentConnection.Active
-import com.hedvig.android.feature.payments.data.PaymentConnection.NeedsSetup
+import com.hedvig.android.feature.payments.data.PaymentConnection.NeedsPayinSetup
 import com.hedvig.android.feature.payments.data.PaymentConnection.Pending
 import com.hedvig.android.feature.payments.data.PaymentConnection.Unknown
 import com.hedvig.android.feature.payments.data.PaymentOverview
@@ -26,15 +25,13 @@ import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCa
 import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.ConnectedPaymentInfo
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
-import kotlinx.coroutines.flow.collectLatest
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.LocalDate
 
 internal class PaymentsPresenter(
-  private val getUpcomingPaymentUseCase: Provider<GetUpcomingPaymentUseCase>,
-  getShouldShowPayoutUseCase: Provider<GetShouldShowPayoutUseCase>,
+  private val getUpcomingPaymentUseCase: GetUpcomingPaymentUseCase,
+  getShouldShowPayoutUseCase: GetShouldShowPayoutUseCase,
 ) : MoleculePresenter<PaymentsEvent, PaymentsUiState> {
   private val shouldShowPayoutPresenter = ShouldShowPayoutPresenter(getShouldShowPayoutUseCase)
 
@@ -51,7 +48,7 @@ internal class PaymentsPresenter(
 
     LaunchedEffect(loadIteration) {
       paymentOverviewResult = null
-      paymentOverviewResult = getUpcomingPaymentUseCase.provide().invoke()
+      paymentOverviewResult = getUpcomingPaymentUseCase.invoke()
     }
 
     val shouldShowPayout = shouldShowPayoutPresenter.present(loadIteration)
@@ -87,6 +84,7 @@ internal class PaymentsPresenter(
           ongoingCharges = paymentOverview.ongoingCharges,
           connectedPaymentInfo = paymentOverview.paymentConnection.toConnectedPaymentInfo(),
           showPayoutButton = shouldShowPayout,
+          memberType = paymentOverview.memberType,
         )
       },
     )
@@ -94,7 +92,7 @@ internal class PaymentsPresenter(
 }
 
 private class ShouldShowPayoutPresenter(
-  private val getShouldShowPayoutUseCase: Provider<GetShouldShowPayoutUseCase>,
+  private val getShouldShowPayoutUseCase: GetShouldShowPayoutUseCase,
 ) {
   @Composable
   fun present(loadIteration: Int): Boolean {
@@ -103,7 +101,7 @@ private class ShouldShowPayoutPresenter(
       shouldShowPayout = false
       for (attempt in 0..2) {
         delay(attempt.seconds)
-        getShouldShowPayoutUseCase.provide().invoke().fold(
+        getShouldShowPayoutUseCase.invoke().fold(
           ifLeft = {},
           ifRight = { result ->
             shouldShowPayout = result
@@ -122,11 +120,13 @@ private fun PaymentConnection.toConnectedPaymentInfo(): ConnectedPaymentInfo {
 
     Pending -> ConnectedPaymentInfo.Pending
 
-    is NeedsSetup -> ConnectedPaymentInfo.NeedsSetup(
+    is NeedsPayinSetup -> ConnectedPaymentInfo.NeedsPayinSetup(
       dueDateToConnect = terminationDateIfNotConnected,
     )
 
     Unknown -> ConnectedPaymentInfo.Unknown
+
+    PaymentConnection.NeedsPayoutSetup -> ConnectedPaymentInfo.NeedsPayoutSetup
   }
 }
 
@@ -146,6 +146,7 @@ internal sealed interface PaymentsUiState {
     val ongoingCharges: List<OngoingCharge>,
     val connectedPaymentInfo: ConnectedPaymentInfo,
     val showPayoutButton: Boolean,
+    val memberType: MemberType,
   ) : PaymentsUiState {
     sealed interface UpcomingPayment {
       data object NoUpcomingPayment : UpcomingPayment
@@ -172,13 +173,15 @@ internal sealed interface PaymentsUiState {
     sealed interface ConnectedPaymentInfo {
       object Unknown : ConnectedPaymentInfo
 
-      data class NeedsSetup(
+      data class NeedsPayinSetup(
         val dueDateToConnect: LocalDate?,
       ) : ConnectedPaymentInfo
 
       data object Pending : ConnectedPaymentInfo
 
       data object Active : ConnectedPaymentInfo
+
+      data object NeedsPayoutSetup : ConnectedPaymentInfo
     }
   }
 }

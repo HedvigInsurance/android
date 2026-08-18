@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -85,7 +84,6 @@ import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.DeductibleOptions.MutlipleOptions
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.DeductibleOptions.NoOptions
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.DeductibleOptions.OneOption
-import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
 import com.hedvig.ui.tiersandaddons.DiscountCostBreakdown
 import hedvig.resources.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL
@@ -117,31 +115,17 @@ import org.jetbrains.compose.resources.stringResource
 internal fun ChoseCoverageLevelAndDeductibleDestination(
   viewModel: ChoseCoverageLevelAndDeductibleViewModel,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   exitFlow: () -> Unit,
-  onNavigateToSummaryScreen: (homeQuoteId: String) -> Unit,
-  navigateToComparison: (comparisonParameters: ComparisonParameters) -> Unit,
 ) {
   val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
-  if (uiState is Content && uiState.navigateToSummaryScreenWithHomeQuoteId != null) {
-    LaunchedEffect(uiState.navigateToSummaryScreenWithHomeQuoteId) {
-      viewModel.emit(ChoseCoverageLevelAndDeductibleEvent.NavigatedToSummary)
-      onNavigateToSummaryScreen(uiState.navigateToSummaryScreenWithHomeQuoteId)
-    }
-  }
-  if (uiState is Content && uiState.comparisonParameters != null) {
-    LaunchedEffect(uiState.comparisonParameters) {
-      viewModel.emit(ChoseCoverageLevelAndDeductibleEvent.ClearNavigateToComparison)
-      navigateToComparison(uiState.comparisonParameters)
-    }
-  }
   ChoseCoverageLevelAndDeductibleScreen(
     onCompareCoverageClicked = {
       viewModel.emit(ChoseCoverageLevelAndDeductibleEvent.LaunchComparison)
     },
     uiState = uiState,
     navigateUp = navigateUp,
-    popBackStack = popBackStack,
+    popBackstack = popBackstack,
     exitFlow = exitFlow,
     onSubmit = { selectedHomeQuoteId ->
       viewModel.emit(ChoseCoverageLevelAndDeductibleEvent.SubmitSelectedHomeQuoteId(selectedHomeQuoteId))
@@ -158,7 +142,7 @@ internal fun ChoseCoverageLevelAndDeductibleDestination(
 private fun ChoseCoverageLevelAndDeductibleScreen(
   uiState: ChoseCoverageLevelAndDeductibleUiState,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   exitFlow: () -> Unit,
   onSubmit: (String) -> Unit,
   onSelectCoverageOption: (String) -> Unit,
@@ -186,7 +170,7 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
 
           MissingOngoingMovingFlow -> {
             HedvigErrorSection(
-              onButtonClick = popBackStack,
+              onButtonClick = popBackstack,
               buttonText = stringResource(Res.string.general_back_button),
             )
           }
@@ -704,12 +688,10 @@ fun PreviewChoseCoverageLevelAndDeductibleScreen() {
       },
       premium = UiMoney(100.0, SEK),
       grossPremium = UiMoney(110.0, SEK),
-      navigateToSummaryScreenWithHomeQuoteId = null,
       isSubmitting = false,
-      comparisonParameters = null,
     ),
     navigateUp = {},
-    popBackStack = {},
+    popBackstack = {},
     onSubmit = {},
     exitFlow = {},
     onSelectCoverageOption = {},
@@ -725,7 +707,7 @@ fun PreviewChoseCoverageLevelAndDeductibleScreenFailure() {
   ChoseCoverageLevelAndDeductibleScreen(
     uiState = MissingOngoingMovingFlow,
     navigateUp = {},
-    popBackStack = {},
+    popBackstack = {},
     onSubmit = {},
     exitFlow = {},
     onSelectCoverageOption = {},

@@ -9,32 +9,33 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.datetime.LocalDate
 import octopus.GetPayinMethodStatusQuery
-import octopus.type.MemberPaymentConnectionStatus
+import octopus.type.MissingPaymentConnection
 
 internal interface GetConnectPaymentReminderUseCase {
   suspend fun invoke(): Either<ConnectPaymentReminderError, PaymentReminder>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class GetConnectPaymentReminderUseCaseImpl(
   private val apolloClient: ApolloClient,
-  private val getOnlyHasNonPayingContractsUseCaseProvider: Provider<GetOnlyHasNonPayingContractsUseCase>,
 ) : GetConnectPaymentReminderUseCase {
   override suspend fun invoke(): Either<ConnectPaymentReminderError, PaymentReminder> {
     return either {
-      val onlyHasNonPayingContracts = getOnlyHasNonPayingContractsUseCaseProvider.provide().invoke().getOrNull() == true
-      ensure(onlyHasNonPayingContracts == false) {
-        ConnectPaymentReminderError.DomainError.NonPayingMember
-      }
       val result = apolloClient.query(GetPayinMethodStatusQuery())
         .fetchPolicy(FetchPolicy.NetworkOnly)
         .safeExecute(::ErrorMessage)
         .mapLeft(ConnectPaymentReminderError::NetworkError)
         .bind()
+
       val missingPaymentsContractTerminationDate = result.currentMember.activeContracts
         .filter { it.terminationDueToMissedPayments }
         .sortedBy { it.terminationDate }
@@ -43,16 +44,13 @@ internal class GetConnectPaymentReminderUseCaseImpl(
       if (missingPaymentsContractTerminationDate != null) {
         return@either PaymentReminder.ShowMissingPaymentsReminder(missingPaymentsContractTerminationDate)
       }
-      val payStatus = result.currentMember.paymentInformation.status
-      if (payStatus == MemberPaymentConnectionStatus.NEEDS_SETUP) {
-        return@either PaymentReminder.ShowConnectPaymentReminder
+
+      val missingConnection = result.currentMember.paymentMethods.missingConnection
+      when (missingConnection) {
+        MissingPaymentConnection.PAYIN -> return@either PaymentReminder.ShowConnectPaymentReminder
+        MissingPaymentConnection.PAYOUT -> return@either PaymentReminder.ShowConnectPayoutReminder
+        MissingPaymentConnection.UNKNOWN__, null -> raise(ConnectPaymentReminderError.DomainError.AlreadySetup)
       }
-      val hasDefaultPayoutMethod = result.currentMember.paymentMethods.payoutMethods.any { it.isDefault }
-      val hasAvailableMethods = result.currentMember.paymentMethods.availableMethods.isNotEmpty()
-      if (!hasDefaultPayoutMethod && hasAvailableMethods) {
-        return@either PaymentReminder.ShowConnectPayoutReminder
-      }
-      raise(ConnectPaymentReminderError.DomainError.AlreadySetup)
     }.onLeft {
       if (it !is ConnectPaymentReminderError.DomainError) {
         logcat { "GetConnectPaymentReminderUseCase failed with error:$it" }
