@@ -81,7 +81,7 @@ internal class OnboardingRepositoryImpl(
           title = crossSell.title,
           description = crossSell.description,
           storeUrl = crossSell.storeUrl,
-          pillowImageUrl = crossSell.pillowImageLarge.src,
+          pillowImageUrl = crossSell.pillowImageSmall.src,
         )
       },
     )

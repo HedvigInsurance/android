@@ -284,7 +284,12 @@ internal class GetHomeDataUseCaseImpl(
         title = title,
         subtitle = description,
         storeUrl = storeUrl,
-        pillowImage = ImageAsset(
+        pillowImageSmall = ImageAsset(
+          id = pillowImageSmall.id,
+          src = pillowImageSmall.src,
+          description = pillowImageSmall.alt,
+        ),
+        pillowImageLarge = ImageAsset(
           id = pillowImageLarge.id,
           src = pillowImageLarge.src,
           description = pillowImageLarge.alt,

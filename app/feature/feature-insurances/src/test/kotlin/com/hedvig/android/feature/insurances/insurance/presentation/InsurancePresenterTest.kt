@@ -259,7 +259,8 @@ internal class InsurancePresenterTest {
         title = "crossSellTitle",
         subtitle = "crossSellDescription",
         storeUrl = "",
-        pillowImage = ImageAsset("", "", ""),
+        pillowImageSmall = ImageAsset("", "", ""),
+        pillowImageLarge = ImageAsset("", "", ""),
       ),
     ),
   )

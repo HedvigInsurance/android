@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -229,6 +230,7 @@ private fun OnboardingCrossSellRow(
         error = placeholder,
         fallback = placeholder,
         imageLoader = imageLoader,
+        contentScale = ContentScale.Crop,
         modifier = Modifier.size(48.dp),
       )
     } else {
