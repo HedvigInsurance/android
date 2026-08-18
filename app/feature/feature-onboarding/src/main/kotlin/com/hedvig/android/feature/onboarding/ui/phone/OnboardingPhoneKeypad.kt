@@ -4,6 +4,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -51,17 +53,21 @@ private val KeypadRows = listOf(
 )
 
 @Composable
-internal fun OnboardingPhoneKeypad(modifier: Modifier = Modifier) {
+internal fun OnboardingPhoneKeypad(onKeypadClick: (String) -> Unit, modifier: Modifier = Modifier) {
   var highlightActive by remember { mutableStateOf(true) }
   LaunchedEffect(Unit) {
     delay(1.seconds)
     highlightActive = false
   }
-  KeypadGrid(highlightActive = highlightActive, modifier = modifier)
+  KeypadGrid(
+    highlightActive = highlightActive,
+    modifier = modifier,
+    onKeypadClick = onKeypadClick,
+  )
 }
 
 @Composable
-private fun KeypadGrid(highlightActive: Boolean, modifier: Modifier = Modifier) {
+private fun KeypadGrid(highlightActive: Boolean, onKeypadClick: (String) -> Unit, modifier: Modifier = Modifier) {
   // Decorative artwork: freeze the font scale so the glyphs keep their designed size regardless of
   // the user's system font-size setting.
   val density = LocalDensity.current
@@ -75,7 +81,12 @@ private fun KeypadGrid(highlightActive: Boolean, modifier: Modifier = Modifier) 
       for (row in KeypadRows) {
         Row(horizontalArrangement = Arrangement.spacedBy(HorizontalGap)) {
           for (label in row) {
-            KeypadKey(label = label, highlighted = highlightActive && label == KeypadRows[2][0])
+            KeypadKey(
+              label = label,
+              highlighted = highlightActive && label == KeypadRows[2][0],
+              onKeypadClick = onKeypadClick,
+              clickEnabled = !(label == KeypadRows[3][0] || label == KeypadRows[3][2]),
+            )
           }
         }
       }
@@ -84,7 +95,7 @@ private fun KeypadGrid(highlightActive: Boolean, modifier: Modifier = Modifier) 
 }
 
 @Composable
-private fun KeypadKey(label: String, highlighted: Boolean) {
+private fun KeypadKey(label: String, highlighted: Boolean, onKeypadClick: (String) -> Unit, clickEnabled: Boolean) {
   val containerColor by animateColorAsState(
     targetValue = if (highlighted) {
       HedvigTheme.colorScheme.signalGreenFill
@@ -111,6 +122,10 @@ private fun KeypadKey(label: String, highlighted: Boolean) {
         scaleX = scale
         scaleY = scale
       }
+      .clip(HedvigTheme.shapes.cornerLarge)
+      .clickable(clickEnabled) {
+        onKeypadClick(label)
+      }
       .background(containerColor, HedvigTheme.shapes.cornerLarge),
     contentAlignment = Alignment.Center,
   ) {
@@ -136,7 +151,7 @@ private fun KeypadKey(label: String, highlighted: Boolean) {
 private fun PreviewOnboardingPhoneKeypadHighlighted() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      KeypadGrid(highlightActive = true, modifier = Modifier.padding(24.dp))
+      KeypadGrid(highlightActive = true, {}, modifier = Modifier.padding(24.dp))
     }
   }
 }
@@ -146,7 +161,7 @@ private fun PreviewOnboardingPhoneKeypadHighlighted() {
 private fun PreviewOnboardingPhoneKeypadResting() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      KeypadGrid(highlightActive = false, modifier = Modifier.padding(24.dp))
+      KeypadGrid(highlightActive = false, {}, modifier = Modifier.padding(24.dp))
     }
   }
 }

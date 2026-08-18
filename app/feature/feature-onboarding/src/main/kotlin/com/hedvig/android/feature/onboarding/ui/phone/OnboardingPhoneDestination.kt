@@ -5,12 +5,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.placeCursorAtEnd
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -98,7 +98,15 @@ private fun OnboardingPhoneScreen(
         )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(24.dp))
-        OnboardingPhoneKeypad(modifier = Modifier.align(Alignment.CenterHorizontally))
+        OnboardingPhoneKeypad(
+          onKeypadClick = { label ->
+            phoneNumberState.edit {
+              append(label)
+              placeCursorAtEnd()
+            }
+          },
+          modifier = Modifier.align(Alignment.CenterHorizontally),
+        )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(24.dp))
         HedvigTextField(
