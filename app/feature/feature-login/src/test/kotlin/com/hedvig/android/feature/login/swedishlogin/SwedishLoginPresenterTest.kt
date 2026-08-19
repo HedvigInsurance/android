@@ -17,6 +17,7 @@ import com.hedvig.android.auth.test.TestAuthTokenService
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
+import com.hedvig.android.network.clients.TlsDiagnostics
 import com.hedvig.authlib.AccessToken
 import com.hedvig.authlib.AuthAttemptResult
 import com.hedvig.authlib.AuthRepository
@@ -302,6 +303,9 @@ class SwedishLoginPresenterTest {
         override fun isDemoMode(): Flow<Boolean> = flowOf(false)
 
         override suspend fun setDemoMode(demoMode: Boolean) {}
+      },
+      object : TlsDiagnostics {
+        override suspend fun describe(throwable: Throwable?): String? = null
       },
       savedStateHandle,
     )

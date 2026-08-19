@@ -51,7 +51,7 @@ public sealed interface AuthAttemptResult {
 
     public data class BackendErrorResponse(val message: String) : Error
 
-    public data class IOError(val message: String) : Error
+    public data class IOError(val message: String, val throwable: Throwable? = null) : Error
 
     public data class UnknownError(val message: String) : Error
   }

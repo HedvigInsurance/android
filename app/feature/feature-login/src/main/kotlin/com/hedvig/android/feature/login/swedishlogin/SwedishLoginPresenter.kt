@@ -26,6 +26,8 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.network.clients.TLS_DIAG_TAG
+import com.hedvig.android.network.clients.TlsDiagnostics
 import com.hedvig.authlib.AuthAttemptResult
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
@@ -40,6 +42,7 @@ internal class SwedishLoginPresenter(
   private val authTokenService: AuthTokenService,
   private val authRepository: AuthRepository,
   private val demoManager: DemoManager,
+  private val tlsDiagnostics: TlsDiagnostics,
   private val savedStateHandle: SavedStateHandle,
 ) : MoleculePresenter<SwedishLoginEvent, SwedishLoginUiState> {
   @Composable
@@ -123,7 +126,15 @@ internal class SwedishLoginPresenter(
         }
 
         is AuthAttemptResult.Error -> {
-          logcat(LogPriority.ERROR) { "Got Error when signing in with BankId: $result" }
+          val tlsFailure = (result as? AuthAttemptResult.Error.IOError)
+            ?.let { tlsDiagnostics.describe(it.throwable) }
+          if (tlsFailure != null) {
+            // Nothing reached us, so this is the member's network refusing the handshake rather than a
+            // fault of ours. WARN keeps it out of the app's error rate while the evidence stays greppable.
+            logcat(LogPriority.WARN, tag = TLS_DIAG_TAG) { "BankId login blocked by certificate trust. $tlsFailure" }
+          } else {
+            logcat(LogPriority.ERROR) { "Got Error when signing in with BankId: $result" }
+          }
           startLoginAttemptFailed = true
         }
 
