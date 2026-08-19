@@ -31,6 +31,7 @@ import com.hedvig.android.composewebview.rememberWebViewNavigator
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.Button
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.INFO
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.SUCCESS
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -47,7 +48,9 @@ import com.hedvig.android.feature.connect.payment.trustly.sdk.TrustlyWebViewClie
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import hedvig.resources.Res
+import hedvig.resources.general_close_button
 import hedvig.resources.general_done_button
+import hedvig.resources.info_card_missing_payment_body
 import hedvig.resources.pay_in_confirmation_direct_debit_headline
 import hedvig.resources.pay_in_error_body
 import hedvig.resources.pay_in_explainer_direct_debit_headline
@@ -66,6 +69,7 @@ internal fun TrustlyDestination(
     navigateUp = navigateUp,
     connectingCardSucceeded = { viewModel.emit(TrustlyEvent.ConnectingCardSucceeded) },
     connectingCardFailed = { viewModel.emit(TrustlyEvent.ConnectingCardFailed) },
+    connectingCardCancelled = { viewModel.emit(TrustlyEvent.ConnectingCardCancelled) },
     retryConnectingCard = { viewModel.emit(TrustlyEvent.RetryConnectingCard) },
     finishTrustlyFlow = finishTrustlyFlow,
   )
@@ -77,6 +81,7 @@ private fun TrustlyScreen(
   navigateUp: () -> Unit,
   connectingCardSucceeded: () -> Unit,
   connectingCardFailed: () -> Unit,
+  connectingCardCancelled: () -> Unit,
   retryConnectingCard: () -> Unit,
   finishTrustlyFlow: () -> Unit,
 ) {
@@ -95,6 +100,7 @@ private fun TrustlyScreen(
           navigateUp,
           connectingCardSucceeded,
           connectingCardFailed,
+          connectingCardCancelled,
         )
       }
 
@@ -104,6 +110,23 @@ private fun TrustlyScreen(
           title = stringResource(Res.string.something_went_wrong),
           subTitle = stringResource(Res.string.pay_in_error_body),
         )
+      }
+
+      TrustlyUiState.CancelledConnectingCard -> {
+        Column(
+          horizontalAlignment = Alignment.CenterHorizontally,
+          verticalArrangement = Arrangement.Center,
+          modifier = Modifier
+            .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.safeDrawing),
+        ) {
+          EmptyState(
+            iconStyle = INFO,
+            text = stringResource(Res.string.info_card_missing_payment_body),
+            description = null,
+            buttonStyle = Button(stringResource(Res.string.general_close_button), finishTrustlyFlow),
+          )
+        }
       }
 
       is TrustlyUiState.FailedToStartSession -> {
@@ -137,6 +160,7 @@ private fun TrustlyBrowser(
   navigateUp: () -> Unit,
   connectingCardSucceeded: () -> Unit,
   connectingCardFailed: () -> Unit,
+  connectingCardCancelled: () -> Unit,
 ) {
   val webViewState = rememberSaveableWebViewState()
   val webViewNavigator = rememberWebViewNavigator()
@@ -170,7 +194,7 @@ private fun TrustlyBrowser(
             },
             abortHandler = {
               logcat { "Trustly Webview: abortHandler" }
-              connectingCardFailed()
+              connectingCardCancelled()
             },
           )
         },
@@ -203,12 +227,13 @@ private fun TrustlyPreview(
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       TrustlyScreen(
-        uiState,
-        {},
-        {},
-        {},
-        {},
-        {},
+        uiState = uiState,
+        navigateUp = {},
+        connectingCardSucceeded = {},
+        connectingCardFailed = {},
+        connectingCardCancelled = {},
+        retryConnectingCard = {},
+        finishTrustlyFlow = {},
       )
     }
   }
@@ -219,6 +244,7 @@ private class TrustlyUiStateProvider : CollectionPreviewParameterProvider<Trustl
     TrustlyUiState.Browsing("", PreviewTrustlyCallback("", "")),
     TrustlyUiState.Loading,
     TrustlyUiState.FailedToConnectCard,
+    TrustlyUiState.CancelledConnectingCard,
     TrustlyUiState.FailedToStartSession(ErrorMessage("preview error message")),
     TrustlyUiState.SucceededInConnectingCard,
   ),
