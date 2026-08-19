@@ -623,6 +623,7 @@
   <string name="ONBOARDING_ANALYTICS_SUBTITLE">We use technical tools to see how you use the app, so we can make it better.\n\nProduct analytics is completely optional and can be turned off any time in settings. This data is never used for marketing.</string>
   <string name="ONBOARDING_ANALYTICS_TITLE">Help us make the app better</string>
   <string name="ONBOARDING_CHANGE_SETTINGS_LATER_LABEL">You can change these settings later</string>
+  <string name="ONBOARDING_CONNECT_PAYMENT_BANK_LABEL">Bank</string>
   <string name="ONBOARDING_CONNECT_PAYMENT_FOOTNOTE">Adding a payment method is required to keep your insurance active</string>
   <string name="ONBOARDING_CONNECT_PAYMENT_SUBTITLE">Add a payment method to activate your insurance</string>
   <string name="ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER">You can switch accounts later in settings</string>
@@ -636,6 +637,14 @@
   <string name="ONBOARDING_INVITE_FRIEND_TITLE">Invite a friend</string>
   <string name="ONBOARDING_MISSING_INFO_PET_SUBTITLE">This makes it easier to help you if something happens</string>
   <string name="ONBOARDING_MISSING_INFO_SUBTITLE">So we know who's covered by your insurance</string>
+  <plurals name="ONBOARDING_NUMBER_OF_COINSURED">
+    <item quantity="one">%1$s co-insured</item>
+    <item quantity="other">%1$s co-insured</item>
+  </plurals>
+  <plurals name="ONBOARDING_NUMBER_OF_COOWNERS">
+    <item quantity="one">%1$s co-owner</item>
+    <item quantity="other">%1$s co-owners</item>
+  </plurals>
   <string name="ONBOARDING_OPENS_IN_BROWSER_HINT">Opens in your browser</string>
   <string name="ONBOARDING_PHONE_SAVE_ERROR">Could not save, please try again</string>
   <string name="ONBOARDING_PHONE_SUBTITLE">Add your phone number so we can reach you if something happens</string>

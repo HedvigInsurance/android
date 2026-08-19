@@ -37,8 +37,11 @@ import hedvig.resources.ONBOARDING_ADD_COOWNERS_TITLE
 import hedvig.resources.ONBOARDING_ADD_INFO_LATER_LABEL
 import hedvig.resources.ONBOARDING_DO_THIS_LATER_BUTTON
 import hedvig.resources.ONBOARDING_MISSING_INFO_SUBTITLE
+import hedvig.resources.ONBOARDING_NUMBER_OF_COINSURED
+import hedvig.resources.ONBOARDING_NUMBER_OF_COOWNERS
 import hedvig.resources.Res
 import hedvig.resources.general_continue_button
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -147,17 +150,17 @@ private fun OnboardingCoInsuredScreen(
   }
 }
 
-// A complete row lists the people's names; while info is still missing it shows how many there are.
-// TODO: Add "%1$d co-insured" / "%1$d medförsäkrade" and "%1$d co-owners" / "%1$d delägare" to Lokalise
+// A complete row lists the people by name; while info is still missing it shows how many there are.
+@Composable
 private fun CoInsuredRow.secondaryText(): String = if (isComplete && insuredNames.isNotEmpty()) {
   insuredNames.toReadableList()
 } else {
-  val noun = when {
-    flowType == CoInsuredFlowType.CoOwners && insuredCount == 1 -> "co-owner"
-    flowType == CoInsuredFlowType.CoOwners -> "co-owners"
-    else -> "co-insured"
+  val plural = if (flowType == CoInsuredFlowType.CoOwners) {
+    Res.plurals.ONBOARDING_NUMBER_OF_COOWNERS
+  } else {
+    Res.plurals.ONBOARDING_NUMBER_OF_COINSURED
   }
-  "$insuredCount $noun"
+  pluralStringResource(plural, insuredCount, insuredCount)
 }
 
 /** Joins names the way the design shows them: "A", "A & B", "A, B & C". */

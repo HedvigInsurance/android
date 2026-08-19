@@ -42,11 +42,13 @@ import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
+import hedvig.resources.ONBOARDING_CONNECT_PAYMENT_BANK_LABEL
 import hedvig.resources.Res
 import hedvig.resources.pillow_hedvig
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 private val SymbolSize = 74.dp
 private val CheckBadgeSize = 24.dp
@@ -107,9 +109,8 @@ private fun BankCard() {
       ),
   ) {
     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-      // TODO: Add "Bank" / "Bank" to Lokalise
       HedvigText(
-        text = "Bank",
+        text = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_BANK_LABEL),
         style = HedvigTheme.typography.bodySmall.copy(fontFamily = HedvigTheme.typography.serif),
       )
     }
