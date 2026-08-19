@@ -26,6 +26,7 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.memberquickactions.GetMemberQuickActionsUseCase
 import com.hedvig.android.memberquickactions.InnerHelpCenterDestination
 import com.hedvig.android.memberquickactions.QuickAction
+import com.hedvig.android.memberquickactions.QuickLinkDestination
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -128,7 +129,7 @@ internal class HomePresenter(
         ) { homeData: HomeData ->
           val quickActions = getMemberQuickActionsUseCase.invoke()
             .getOrElse { emptyList() }
-            .filterNot { it.isSickAbroad() }
+            .filterNot { it.isSickAbroad() || it.isConnectPayment() }
             .take(3)
           Snapshot.withMutableSnapshot {
             hasError = false
@@ -177,6 +178,10 @@ internal class HomePresenter(
 // quick action is dropped from the Home tiles.
 private fun QuickAction.isSickAbroad(): Boolean = this is QuickAction.StandaloneQuickLink &&
   quickLinkDestination is InnerHelpCenterDestination.QuickLinkSickAbroad
+
+// Connecting a payment method belongs in the help center, so it is not offered as a Home tile.
+private fun QuickAction.isConnectPayment(): Boolean = this is QuickAction.StandaloneQuickLink &&
+  quickLinkDestination == QuickLinkDestination.OuterDestination.QuickLinkConnectPayment
 
 internal sealed interface HomeEvent {
   data object RefreshData : HomeEvent

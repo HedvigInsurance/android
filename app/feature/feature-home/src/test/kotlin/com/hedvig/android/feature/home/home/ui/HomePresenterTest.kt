@@ -49,6 +49,8 @@ import hedvig.resources.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_PAYMENTS_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_SICK_ABROAD_TITLE
+import hedvig.resources.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE
+import hedvig.resources.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE
 import hedvig.resources.Res
@@ -808,13 +810,14 @@ internal class HomePresenterTest {
   }
 
   @Test
-  fun `home shows the first three member quick actions with sick-abroad filtered out`() = runTest {
+  fun `home shows the first three member quick actions with sick-abroad and payments filtered out`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val quickActions = listOf(
+      paymentsLink,
       editInsuranceMultiSelect,
       changeAddressLink,
       sickAbroadLink,
-      paymentsLink,
+      travelCertificateLink,
     )
     val homePresenter = HomePresenter(
       getHomeDataUseCase,
@@ -830,7 +833,7 @@ internal class HomePresenterTest {
       getHomeDataUseCase.responseTurbine.add(someIrrelevantHomeDataInstance.right())
       val success = assertThat(awaitItem()).isInstanceOf<HomeUiState.Success>()
       success.prop(HomeUiState.Success::quickActions)
-        .isEqualTo(listOf(editInsuranceMultiSelect, changeAddressLink, paymentsLink))
+        .isEqualTo(listOf(editInsuranceMultiSelect, changeAddressLink, travelCertificateLink))
     }
   }
 
@@ -854,6 +857,11 @@ internal class HomePresenterTest {
     titleRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_TITLE,
     hintTextRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE,
     quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkConnectPayment,
+  )
+  private val travelCertificateLink = QuickAction.StandaloneQuickLink(
+    titleRes = Res.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE,
+    hintTextRes = Res.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE,
+    quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate,
   )
   private val sickAbroadLink = QuickAction.StandaloneQuickLink(
     titleRes = Res.string.HC_QUICK_ACTIONS_SICK_ABROAD_TITLE,
