@@ -1008,7 +1008,7 @@
   <string name="TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION">Din försäkring kommer att avslutas den %s</string>
   <string name="TERMINATION_FLOW_CONFIRM_BUTTON">Ja, avsluta</string>
   <string name="TERMINATION_FLOW_CONFIRM_INFORMATION">Bekräfta din information</string>
-  <string name="TERMINATION_FLOW_CONTINUE_CANCELLING">Fortsätt avbryta</string>
+  <string name="TERMINATION_FLOW_CONTINUE_CANCELLING">Nej tack, fortsätt</string>
   <string name="TERMINATION_FLOW_DATE_FIELD_PLACEHOLDER">Välj datum...</string>
   <string name="TERMINATION_FLOW_DATE_FIELD_TEXT">Slutdatum</string>
   <string name="TERMINATION_FLOW_DELETION_INFO_CARD">Eftersom försäkringen inte är aktiv än så kommer den avslutas direkt. Du kommer inte att debiteras någonting.</string>
@@ -1095,6 +1095,7 @@
   <string name="UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_DESCRIPTION">Välj antalet resdagar som täcks</string>
   <string name="UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_TITLE">Välj antal resdagar</string>
   <string name="USER_ERROR_PROTECTED_IDENTITY_KIVRA_BLOCK">Vi kan tyvärr inte ge dig ett pris. Var god se till att du har Kivras digitala brevlåda och försök igen.\n\nDu kan skaffa digital brevlåda hos Kivra här: https://kivra.se/sv/privat/sa-funkar-det/digitala-brev-brevlada</string>
+  <string name="USER_ERROR_UW_GL_INVALID_STARTDATE_FOR_SAS">Ogiltigt startdatum, måste vara den 4 september eller tidigare</string>
   <string name="VOICEOVER_BUNDLE_DISCOUNT_TAG">Rabattnamn: %s</string>
   <string name="VOICEOVER_CHANGE_VALUE">ändra värde</string>
   <string name="VOICEOVER_CHAT_IMAGE">Bild</string>
