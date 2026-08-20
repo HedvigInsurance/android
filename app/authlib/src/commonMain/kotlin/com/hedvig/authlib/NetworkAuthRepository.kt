@@ -93,7 +93,7 @@ public class NetworkAuthRepository(
       when (e) {
         is CancellationException -> throw e
 
-        is IOException -> AuthAttemptResult.Error.IOError("IO Error with message: ${e.message ?: "unknown message"}")
+        is IOException -> AuthAttemptResult.Error.IOError("IO Error with message: ${e.message ?: "unknown message"}", e)
 
         is NoTransformationFoundException -> AuthAttemptResult.Error.BackendErrorResponse(
           e.message ?: "unknown error",

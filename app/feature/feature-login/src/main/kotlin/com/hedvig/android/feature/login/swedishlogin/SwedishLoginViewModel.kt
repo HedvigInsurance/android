@@ -6,6 +6,7 @@ import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.network.clients.TlsDiagnostics
 import com.hedvig.authlib.AuthRepository
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
@@ -17,9 +18,10 @@ internal class SwedishLoginViewModel(
   authTokenService: AuthTokenService,
   authRepository: AuthRepository,
   demoManager: DemoManager,
+  tlsDiagnostics: TlsDiagnostics,
   @Assisted savedStateHandle: SavedStateHandle,
 ) : MoleculeViewModel<SwedishLoginEvent, SwedishLoginUiState>(
     SwedishLoginUiState(BankIdUiState.Loading, false),
-    SwedishLoginPresenter(authTokenService, authRepository, demoManager, savedStateHandle),
+    SwedishLoginPresenter(authTokenService, authRepository, demoManager, tlsDiagnostics, savedStateHandle),
     SharingStarted.WhileSubscribed(),
   )
