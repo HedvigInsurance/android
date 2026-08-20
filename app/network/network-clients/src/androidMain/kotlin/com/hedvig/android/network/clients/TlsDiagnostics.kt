@@ -14,9 +14,7 @@ import java.security.KeyStore
 import java.security.cert.CertPathBuilderException
 import java.security.cert.CertPathValidatorException
 import java.security.cert.CertificateException
-import java.security.cert.X509Certificate
 import javax.net.ssl.SSLHandshakeException
-import javax.security.auth.x500.X500Principal
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -47,19 +45,24 @@ internal class AndroidTlsDiagnostics(
     return withContext(Dispatchers.IO) {
       buildString {
         append("failure=").append(trustFailure::class.java.name)
-        append(" chain=").append(trustFailure.servedChain())
         append(" authHost=").append(resolvedAuthHost())
         append(" transport=").append(activeTransports())
         append(" userCaCount=").append(userInstalledCaCount())
         append(" api=").append(Build.VERSION.SDK_INT)
+        // Last, and quoted: it is the only field containing spaces, so the rest stay parseable.
+        append(" msg=\"").append(trustFailure.messageForLog()).append('"')
       }
     }
   }
 
   /**
-   * Which exception carries a trust failure varies by platform and provider — Android reports
-   * [CertPathValidatorException], the desktop JVM a [CertPathBuilderException] — so match on the
-   * message too rather than on one type.
+   * On Android the trust failure arrives as an [SSLHandshakeException] whose message merely names
+   * `CertPathValidatorException`, so the type checks below never match there and the message check is
+   * what identifies it. The type checks still hold on other providers, which report a
+   * [CertPathValidatorException] or [CertPathBuilderException] directly.
+   *
+   * Should the wording ever change, these stop being recognised and fall back to the pre-existing
+   * error log rather than disappearing, so the regression is visible in Datadog.
    */
   private fun Throwable.isTrustFailure(): Boolean {
     if (this is CertPathValidatorException || this is CertPathBuilderException) return true
@@ -72,18 +75,12 @@ internal class AndroidTlsDiagnostics(
   }
 
   /**
-   * Only [CertPathValidatorException] can carry the chain, and even then it may be absent, so the rest
-   * of the report has to stand on its own.
+   * The wording is what identifies a trust failure on Android, so record it verbatim: it is the only
+   * way to notice the provider changing it, or differing between OEMs and API levels.
    */
-  private fun Throwable.servedChain(): String {
-    val certificates = (this as? CertPathValidatorException)?.certPath?.certificates.orEmpty()
-      .filterIsInstance<X509Certificate>()
-    if (certificates.isEmpty()) return "unavailable"
-    return certificates.joinToString(
-      separator = " | ",
-      prefix = "[",
-      postfix = "]",
-    ) { "${it.subjectX500Principal.commonName()} issuedBy ${it.issuerX500Principal.commonName()}" }
+  private fun Throwable.messageForLog(): String {
+    val message = message ?: return "none"
+    return message.replace('\n', ' ').take(MAX_MESSAGE_CHARS)
   }
 
   /**
@@ -131,10 +128,8 @@ internal class AndroidTlsDiagnostics(
       .count { it.startsWith("user:") }
   }.getOrElse { -1 }
 
-  private fun X500Principal.commonName(): String = COMMON_NAME.find(name)?.groupValues?.get(1) ?: "?"
-
   private companion object {
     const val MAX_CAUSE_DEPTH = 10
-    val COMMON_NAME = Regex("CN=([^,]+)")
+    const val MAX_MESSAGE_CHARS = 200
   }
 }
