@@ -88,17 +88,21 @@ internal class OnboardingConsentPresenter(
   ): OnboardingConsentUiState {
     var currentState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
-    var checkmarkVisible by remember { mutableStateOf(false) }
-    // Every way off this screen goes through here, and only the first one is taken, so no amount of
-    // tapping can navigate twice.
+    var checkmarkVisible by remember {
+      mutableStateOf((lastState as? OnboardingConsentUiState.Content)?.checkmarkVisible == true)
+    }
+    // Held while a decision is being applied so repeated taps cannot start a second one, and
+    // released once it has navigated, because this entry stays on the back stack and becomes
+    // interactive again when the member comes back to it.
     var pendingNavigation by remember { mutableStateOf<PendingNavigation?>(null) }
     val checkmarkSettleSignals = remember { MutableSharedFlow<Boolean>(replay = 1) }
 
     LaunchedEffect(loadIteration) {
+      // Read before the early return: a presenter that restarts while this screen is showing keeps
+      // its state but loses the checkmark, which only the stored consent can tell us.
+      checkmarkVisible = settingsDataStore.observeAnalyticsConsent().first() == AnalyticsConsent.GRANTED
       if (currentState is OnboardingConsentUiState.Content) return@LaunchedEffect
       currentState = OnboardingConsentUiState.Loading
-      val storedConsent = settingsDataStore.observeAnalyticsConsent().first()
-      checkmarkVisible = storedConsent == AnalyticsConsent.GRANTED
       sessionStore.getOrFetchSession().fold(
         ifLeft = { currentState = OnboardingConsentUiState.Error },
         ifRight = { session ->
@@ -117,6 +121,7 @@ internal class OnboardingConsentPresenter(
 
         PendingNavigation.Exit -> {
           navigator.exitOnboarding()
+          pendingNavigation = null
         }
 
         is PendingNavigation.Decision -> {
@@ -127,6 +132,7 @@ internal class OnboardingConsentPresenter(
             checkmarkSettleSignals.first { settledVisibility -> settledVisibility == granted }
           }
           navigator.continueFrom(OnboardingStepId.AnalyticsConsent)
+          pendingNavigation = null
         }
       }
     }

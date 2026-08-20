@@ -18,6 +18,7 @@ import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepKey
 import com.hedvig.android.feature.onboarding.testOnboardingData
+import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.MoleculePresenterTestContext
 import com.hedvig.android.molecule.test.test
@@ -157,6 +158,43 @@ internal class OnboardingConsentPresenterTest {
   }
 
   @Test
+  fun `the buttons are usable again once the decision has navigated forward`() = runTest {
+    val setup = TestSetup(storedConsent = AnalyticsConsent.NOT_DECIDED)
+
+    setup.presenter.test(OnboardingConsentUiState.Loading) {
+      awaitContent(setup.repository)
+      sendEvent(OnboardingConsentEvent.Allow)
+      runCurrent()
+      sendEvent(OnboardingConsentEvent.CheckmarkSettled(checkmarkVisible = true))
+      runCurrent()
+
+      assertThat(setup.backstack.entries.last()).isEqualTo(OnboardingStepKey(OnboardingStepId.PhoneNumber))
+      val state = expectMostRecentItem() as OnboardingConsentUiState.Content
+      assertThat(state.buttonsEnabled).isTrue()
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `a presenter restarted on this screen re-derives the checkmark from stored consent`() = runTest {
+    val setup = TestSetup(storedConsent = AnalyticsConsent.GRANTED)
+    val restoredState = OnboardingConsentUiState.Content(
+      progress = OnboardingProgress(totalSteps = 5, currentIndex = 1),
+      checkmarkVisible = true,
+      buttonsEnabled = true,
+    )
+
+    setup.presenter.test(restoredState) {
+      runCurrent()
+
+      val state = expectMostRecentItem() as OnboardingConsentUiState.Content
+      assertThat(state.checkmarkVisible).isTrue()
+      assertThat(state.buttonsEnabled).isTrue()
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
   fun `repeated decisions navigate exactly once`() = runTest {
     val setup = TestSetup(storedConsent = AnalyticsConsent.NOT_DECIDED)
 
@@ -171,8 +209,6 @@ internal class OnboardingConsentPresenterTest {
       assertThat(setup.settingsDataStore.consent.value).isEqualTo(AnalyticsConsent.GRANTED)
 
       sendEvent(OnboardingConsentEvent.CheckmarkSettled(checkmarkVisible = true))
-      runCurrent()
-      sendEvent(OnboardingConsentEvent.Allow)
       runCurrent()
 
       assertThat(setup.backstack.entries).hasSize(2)
