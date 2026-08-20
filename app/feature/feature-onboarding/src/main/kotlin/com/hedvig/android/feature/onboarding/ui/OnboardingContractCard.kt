@@ -107,7 +107,7 @@ private fun PreviewOnboardingContractCard() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       OnboardingContractCard(
         displayName = "displayName",
-        exposureName = "exposureName",
+        secondaryText = "exposureName",
         typeOfContract = "SE_HOUSE",
         isComplete = false,
         onAddClick = {},
