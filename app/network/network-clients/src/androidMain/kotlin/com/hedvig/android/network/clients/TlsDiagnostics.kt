@@ -48,7 +48,7 @@ internal class AndroidTlsDiagnostics(
       buildString {
         append("failure=").append(trustFailure::class.java.name)
         append(" chain=").append(trustFailure.servedChain())
-        append(" resolvedIps=").append(resolvedAuthHostIps())
+        append(" authHost=").append(resolvedAuthHost())
         append(" transport=").append(activeTransports())
         append(" userCaCount=").append(userInstalledCaCount())
         append(" api=").append(Build.VERSION.SDK_INT)
@@ -86,10 +86,27 @@ internal class AndroidTlsDiagnostics(
     ) { "${it.subjectX500Principal.commonName()} issuedBy ${it.issuerX500Principal.commonName()}" }
   }
 
-  /** An address outside our hosting means the name was answered by something that isn't us. */
-  private fun resolvedAuthHostIps(): String = runCatching {
+  /**
+   * Reported as a category rather than raw addresses: our hosting answers from a rotating public pool,
+   * so a specific address proves nothing, whereas a loopback, unspecified or private answer means a
+   * filter on the device or the local network answered the name instead of us.
+   */
+  private fun resolvedAuthHost(): String = runCatching {
     val host = URI(buildConstants.urlAuthService).host ?: return@runCatching "unknown-host"
-    InetAddress.getAllByName(host).joinToString(",") { it.hostAddress ?: "?" }
+    val addresses = InetAddress.getAllByName(host)
+    if (addresses.isEmpty()) return@runCatching "no-addresses"
+    addresses
+      .map { address ->
+        when {
+          address.isAnyLocalAddress -> "unspecified"
+          address.isLoopbackAddress -> "loopback"
+          address.isSiteLocalAddress || address.isLinkLocalAddress -> "private"
+          else -> "public"
+        }
+      }
+      .distinct()
+      .sorted()
+      .joinToString("+")
   }.getOrElse { "unresolved(${it::class.simpleName})" }
 
   private fun activeTransports(): String = runCatching {

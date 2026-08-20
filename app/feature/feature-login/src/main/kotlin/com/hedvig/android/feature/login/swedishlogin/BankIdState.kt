@@ -71,7 +71,7 @@ private class BankIdStateImpl(
       true
     } catch (e: PackageManager.NameNotFoundException) {
       logcat(LogPriority.WARN) {
-        "Could not resolve BankID app with bankIdUri:$uri + exception: $e"
+        "Could not resolve BankID app for ${uri.host} + exception: $e"
       }
       false
     }
