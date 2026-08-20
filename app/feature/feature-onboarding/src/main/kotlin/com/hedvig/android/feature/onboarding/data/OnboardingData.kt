@@ -47,6 +47,12 @@ internal data class OnboardingContract(
   val missingCoInsuredCount: Int,
   val missingCoOwnersCount: Int,
   val isMissingPetId: Boolean,
+  // Total (non-terminating) people plus their first names, used to summarise a contract's row on the
+  // co-insured step: the count while info is still missing, the names once the row is complete.
+  val coInsuredCount: Int = 0,
+  val coInsuredNames: List<String> = emptyList(),
+  val coOwnerCount: Int = 0,
+  val coOwnerNames: List<String> = emptyList(),
 ) {
   /**
    * Which edit flow this contract's missing info needs, or null when nothing is missing. Co-owners

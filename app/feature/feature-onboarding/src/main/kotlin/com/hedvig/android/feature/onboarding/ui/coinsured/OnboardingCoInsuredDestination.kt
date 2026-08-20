@@ -37,8 +37,11 @@ import hedvig.resources.ONBOARDING_ADD_COOWNERS_TITLE
 import hedvig.resources.ONBOARDING_ADD_INFO_LATER_LABEL
 import hedvig.resources.ONBOARDING_DO_THIS_LATER_BUTTON
 import hedvig.resources.ONBOARDING_MISSING_INFO_SUBTITLE
+import hedvig.resources.ONBOARDING_NUMBER_OF_COINSURED
+import hedvig.resources.ONBOARDING_NUMBER_OF_COOWNERS
 import hedvig.resources.Res
 import hedvig.resources.general_continue_button
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -118,7 +121,7 @@ private fun OnboardingCoInsuredScreen(
           for (row in content.rows) {
             OnboardingContractCard(
               displayName = row.displayName,
-              exposureName = row.exposureName,
+              secondaryText = row.secondaryText(),
               typeOfContract = row.typeOfContract,
               isComplete = row.isComplete,
               onAddClick = { onAddCoInsured(row.contractId, row.flowType) },
@@ -129,8 +132,8 @@ private fun OnboardingCoInsuredScreen(
         Spacer(Modifier.height(24.dp))
         HedvigText(
           text = stringResource(Res.string.ONBOARDING_ADD_INFO_LATER_LABEL),
-          style = HedvigTheme.typography.finePrint,
-          color = HedvigTheme.colorScheme.textSecondary,
+          style = HedvigTheme.typography.label,
+          color = HedvigTheme.colorScheme.textSecondaryTranslucent,
           textAlign = TextAlign.Center,
           modifier = Modifier
             .fillMaxWidth()
@@ -145,6 +148,26 @@ private fun OnboardingCoInsuredScreen(
       }
     }
   }
+}
+
+// A complete row lists the people by name; while info is still missing it shows how many there are.
+@Composable
+private fun CoInsuredRow.secondaryText(): String = if (isComplete && insuredNames.isNotEmpty()) {
+  insuredNames.toReadableList()
+} else {
+  val plural = if (flowType == CoInsuredFlowType.CoOwners) {
+    Res.plurals.ONBOARDING_NUMBER_OF_COOWNERS
+  } else {
+    Res.plurals.ONBOARDING_NUMBER_OF_COINSURED
+  }
+  pluralStringResource(plural, insuredCount, insuredCount)
+}
+
+/** Joins names the way the design shows them: "A", "A & B", "A, B & C". */
+private fun List<String>.toReadableList(): String = when (size) {
+  0 -> ""
+  1 -> single()
+  else -> "${dropLast(1).joinToString(", ")} & ${last()}"
 }
 
 @HedvigPreview
@@ -177,18 +200,19 @@ private class OnboardingCoInsuredUiStateProvider : CollectionPreviewParameterPro
         CoInsuredRow(
           contractId = "contract-1",
           displayName = "Home Insurance",
-          exposureName = "Storgatan 1",
           typeOfContract = "SE_APARTMENT_RENT",
           flowType = CoInsuredFlowType.CoInsured,
           isComplete = false,
+          insuredCount = 5,
         ),
         CoInsuredRow(
           contractId = "contract-2",
           displayName = "Car Insurance",
-          exposureName = "ABC 123",
           typeOfContract = "SE_CAR_FULL",
           flowType = CoInsuredFlowType.CoInsured,
           isComplete = true,
+          insuredCount = 3,
+          insuredNames = listOf("Sladan", "Mariia", "Sonny"),
         ),
       ),
     ),
@@ -198,18 +222,18 @@ private class OnboardingCoInsuredUiStateProvider : CollectionPreviewParameterPro
         CoInsuredRow(
           contractId = "contract-3",
           displayName = "Villa Insurance",
-          exposureName = "Villavägen 5",
           typeOfContract = "SE_VILLA",
           flowType = CoInsuredFlowType.CoOwners,
           isComplete = false,
+          insuredCount = 2,
         ),
         CoInsuredRow(
           contractId = "contract-4",
           displayName = "Cottage Insurance",
-          exposureName = "Sommarvägen 12",
           typeOfContract = "SE_VILLA",
           flowType = CoInsuredFlowType.CoOwners,
           isComplete = false,
+          insuredCount = 3,
         ),
       ),
     ),

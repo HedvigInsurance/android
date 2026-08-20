@@ -110,7 +110,7 @@ private fun OnboardingInviteScreen(
         Box(
           modifier = Modifier
             .align(Alignment.CenterHorizontally)
-            .fillMaxWidth(0.72f),
+            .fillMaxWidth(0.62f),
           contentAlignment = Alignment.Center,
         ) {
           ExampleReferralsCard(
@@ -155,8 +155,8 @@ private fun ExampleReferralsCard(
     onAnimationCompleted()
   }
   Surface(
-    modifier = modifier.hedvigDropShadow(HedvigTheme.shapes.cornerLarge),
-    shape = HedvigTheme.shapes.cornerLarge,
+    modifier = modifier.hedvigDropShadow(HedvigTheme.shapes.cornerXXLarge),
+    shape = HedvigTheme.shapes.cornerXXLarge,
     color = HedvigTheme.colorScheme.backgroundPrimary,
     border = HedvigTheme.colorScheme.borderPrimary,
   ) {
@@ -205,7 +205,8 @@ private fun ExampleReferralRow(name: String, incentiveDisplay: String, modifier:
     // ballooning on wide (e.g. landscape) layouts.
     HedvigText(text = name, style = HedvigTheme.typography.bodySmall, modifier = Modifier.weight(1f))
     Spacer(Modifier.width(8.dp))
-    HedvigText(text = "-$incentiveDisplay", style = HedvigTheme.typography.bodySmall)
+    // en dash (–) rather than a hyphen, matching the design.
+    HedvigText(text = "–$incentiveDisplay", style = HedvigTheme.typography.bodySmall)
   }
 }
 
