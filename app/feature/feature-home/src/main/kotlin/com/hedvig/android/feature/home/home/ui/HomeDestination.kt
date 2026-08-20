@@ -1218,7 +1218,7 @@ private fun QuickActionTilesSection(
       quickActions.forEach { action ->
         HomeActionTile(
           icon = action.homeIcon(),
-          text = stringResource(action.titleRes),
+          text = stringResource(action.shortTitleRes),
           onClick = {
             when (action) {
               is QuickAction.StandaloneQuickLink -> onQuickLink(action.quickLinkDestination)
