@@ -219,7 +219,7 @@ private fun OnboardingCrossSellRow(
     verticalAlignment = Alignment.CenterVertically,
     modifier = Modifier
       .fillMaxWidth()
-      .padding(horizontal = 16.dp),
+      .padding(horizontal = 16.dp, vertical = 8.dp),
   ) {
     if (crossSell.pillowImageUrl != null) {
       val placeholder = crossSellPainterFallback()
@@ -242,7 +242,7 @@ private fun OnboardingCrossSellRow(
       HedvigText(
         crossSell.description,
         style = HedvigTheme.typography.label,
-        color = HedvigTheme.colorScheme.textSecondary,
+        color = HedvigTheme.colorScheme.textSecondaryTranslucent,
         maxLines = 1,
         softWrap = false,
         modifier = Modifier.autoScrollingMarquee(),

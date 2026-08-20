@@ -51,13 +51,15 @@ internal class OnboardingCoInsuredPresenter(
         progress = session.progressFor(OnboardingStepId.CoInsured),
         rows = pinned.mapNotNull { (id, flowType) ->
           val contract = session.data.contracts.firstOrNull { it.id == id } ?: return@mapNotNull null
+          val forCoOwners = flowType == CoInsuredFlowType.CoOwners
           CoInsuredRow(
             contractId = contract.id,
             displayName = contract.displayName,
-            exposureName = contract.exposureName,
             typeOfContract = contract.typeOfContract,
             flowType = flowType,
             isComplete = contract.coInsuredFlowType == null,
+            insuredCount = if (forCoOwners) contract.coOwnerCount else contract.coInsuredCount,
+            insuredNames = if (forCoOwners) contract.coOwnerNames else contract.coInsuredNames,
           )
         },
       )
@@ -96,10 +98,13 @@ internal class OnboardingCoInsuredPresenter(
 internal data class CoInsuredRow(
   val contractId: String,
   val displayName: String,
-  val exposureName: String,
   val typeOfContract: String,
   val flowType: CoInsuredFlowType,
   val isComplete: Boolean,
+  // Total people on the contract and their first names. The row summarises as a count while info is
+  // still missing, then switches to the names once complete.
+  val insuredCount: Int = 0,
+  val insuredNames: List<String> = emptyList(),
 )
 
 internal sealed interface OnboardingCoInsuredUiState {

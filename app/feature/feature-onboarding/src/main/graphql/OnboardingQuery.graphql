@@ -10,10 +10,12 @@ query Onboarding {
       supportsCoInsured
       supportsCoOwners
       coInsured {
+        firstName
         hasMissingInfo
         terminatesOn
       }
       coOwners {
+        firstName
         hasMissingInfo
         terminatesOn
       }

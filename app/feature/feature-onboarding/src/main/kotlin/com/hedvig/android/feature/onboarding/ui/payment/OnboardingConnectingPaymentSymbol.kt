@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -21,8 +22,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.drawOutline
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -34,11 +42,13 @@ import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
+import hedvig.resources.ONBOARDING_CONNECT_PAYMENT_BANK_LABEL
 import hedvig.resources.Res
 import hedvig.resources.pillow_hedvig
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 private val SymbolSize = 74.dp
 private val CheckBadgeSize = 24.dp
@@ -85,19 +95,41 @@ private fun ConnectingGraphic(checkVisible: Boolean, modifier: Modifier = Modifi
 @Composable
 private fun BankCard() {
   Surface(
-    shape = HedvigTheme.shapes.cornerXLarge,
+    shape = HedvigTheme.shapes.cornerXXLarge,
     color = HedvigTheme.colorScheme.backgroundPrimary,
-    border = HedvigTheme.colorScheme.borderSecondary,
     modifier = Modifier
       .size(SymbolSize)
-      .hedvigDropShadow(HedvigTheme.shapes.cornerXLarge),
+      .hedvigDropShadow(HedvigTheme.shapes.cornerXXLarge)
+      .dashedBorder(
+        color = HedvigTheme.colorScheme.borderSecondary,
+        shape = HedvigTheme.shapes.cornerXXLarge,
+        strokeWidth = 1.dp,
+        dashOn = 4.dp,
+        dashOff = 4.dp,
+      ),
   ) {
-    Box(contentAlignment = Alignment.Center) {
-      // TODO: Add "Bank" / "Bank" to Lokalise
-      HedvigText(text = "Bank", style = HedvigTheme.typography.bodySmall)
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+      HedvigText(
+        text = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_BANK_LABEL),
+        style = HedvigTheme.typography.bodySmall.copy(fontFamily = HedvigTheme.typography.serif),
+      )
     }
   }
 }
+
+/** Draws a dashed outline that follows [shape], on top of the content so it is not clipped. */
+private fun Modifier.dashedBorder(color: Color, shape: Shape, strokeWidth: Dp, dashOn: Dp, dashOff: Dp): Modifier =
+  drawWithContent {
+    drawContent()
+    drawOutline(
+      outline = shape.createOutline(size, layoutDirection, this),
+      color = color,
+      style = Stroke(
+        width = strokeWidth.toPx(),
+        pathEffect = PathEffect.dashPathEffect(floatArrayOf(dashOn.toPx(), dashOff.toPx())),
+      ),
+    )
+  }
 
 @Composable
 private fun HedvigSymbolWithCheck(checkVisible: Boolean) {

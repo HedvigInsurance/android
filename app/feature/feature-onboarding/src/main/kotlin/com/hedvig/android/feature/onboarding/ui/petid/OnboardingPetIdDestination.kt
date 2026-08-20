@@ -108,7 +108,7 @@ private fun OnboardingPetIdScreen(
           for (row in content.rows) {
             OnboardingContractCard(
               displayName = row.displayName,
-              exposureName = row.exposureName,
+              secondaryText = row.exposureName,
               typeOfContract = row.typeOfContract,
               isComplete = row.isComplete,
               onAddClick = { onAddPetId(row.contractId) },
@@ -119,8 +119,8 @@ private fun OnboardingPetIdScreen(
         Spacer(Modifier.height(24.dp))
         HedvigText(
           text = stringResource(Res.string.ONBOARDING_ADD_INFO_LATER_LABEL),
-          style = HedvigTheme.typography.finePrint,
-          color = HedvigTheme.colorScheme.textSecondary,
+          style = HedvigTheme.typography.label,
+          color = HedvigTheme.colorScheme.textSecondaryTranslucent,
           textAlign = TextAlign.Center,
           modifier = Modifier
             .fillMaxWidth()

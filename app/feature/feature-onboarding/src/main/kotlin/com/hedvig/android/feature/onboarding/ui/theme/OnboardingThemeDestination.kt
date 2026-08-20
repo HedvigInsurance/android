@@ -139,7 +139,7 @@ private fun OnboardingThemeScreen(
         HedvigText(
           text = stringResource(Res.string.ONBOARDING_CHANGE_SETTINGS_LATER_LABEL),
           style = HedvigTheme.typography.label,
-          color = HedvigTheme.colorScheme.textSecondary,
+          color = HedvigTheme.colorScheme.textSecondaryTranslucent,
           textAlign = TextAlign.Center,
           modifier = Modifier
             .fillMaxWidth()
@@ -188,7 +188,7 @@ private fun ThemeOptionRow(
         HedvigText(
           text = description,
           style = HedvigTheme.typography.label,
-          color = HedvigTheme.colorScheme.textSecondary,
+          color = HedvigTheme.colorScheme.textSecondaryTranslucent,
         )
       }
       ThemeSelectionIndicator(selected)
