@@ -168,6 +168,7 @@ private fun ThemeOptionRow(
     color = HedvigTheme.colorScheme.surfacePrimary,
     modifier = modifier
       .fillMaxWidth()
+      .clip(HedvigTheme.shapes.cornerLarge)
       .selectable(selected = selected, role = Role.RadioButton, onClick = onClick),
   ) {
     Row(
