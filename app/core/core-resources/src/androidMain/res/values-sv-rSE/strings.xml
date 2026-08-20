@@ -639,12 +639,12 @@
   <string name="ONBOARDING_MISSING_INFO_PET_SUBTITLE">Det gör det lättare att hjälpa dig om något händer</string>
   <string name="ONBOARDING_MISSING_INFO_SUBTITLE">Så att vi vet vilka som omfattas av din försäkring</string>
   <plurals name="ONBOARDING_NUMBER_OF_COINSURED">
-    <item quantity="one">%1$s medförsäkrad</item>
-    <item quantity="other">%1$s medförsäkrade</item>
+    <item quantity="one">%d medförsäkrad</item>
+    <item quantity="other">%d medförsäkrade</item>
   </plurals>
   <plurals name="ONBOARDING_NUMBER_OF_COOWNERS">
-    <item quantity="one">%1$s delägare</item>
-    <item quantity="other">%1$s delägare</item>
+    <item quantity="one">%d delägare</item>
+    <item quantity="other">%d delägare</item>
   </plurals>
   <string name="ONBOARDING_OPENS_IN_BROWSER_HINT">Öppnas i din webbläsare</string>
   <string name="ONBOARDING_PHONE_SAVE_ERROR">Kunde inte spara, försök igen</string>

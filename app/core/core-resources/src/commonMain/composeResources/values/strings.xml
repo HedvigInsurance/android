@@ -638,12 +638,12 @@
   <string name="ONBOARDING_MISSING_INFO_PET_SUBTITLE">This makes it easier to help you if something happens</string>
   <string name="ONBOARDING_MISSING_INFO_SUBTITLE">So we know who's covered by your insurance</string>
   <plurals name="ONBOARDING_NUMBER_OF_COINSURED">
-    <item quantity="one">%1$s co-insured</item>
-    <item quantity="other">%1$s co-insured</item>
+    <item quantity="one">%1$d co-insured</item>
+    <item quantity="other">%1$d co-insured</item>
   </plurals>
   <plurals name="ONBOARDING_NUMBER_OF_COOWNERS">
-    <item quantity="one">%1$s co-owner</item>
-    <item quantity="other">%1$s co-owners</item>
+    <item quantity="one">%1$d co-owner</item>
+    <item quantity="other">%1$d co-owners</item>
   </plurals>
   <string name="ONBOARDING_OPENS_IN_BROWSER_HINT">Opens in your browser</string>
   <string name="ONBOARDING_PHONE_SAVE_ERROR">Could not save, please try again</string>
