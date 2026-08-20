@@ -13,7 +13,6 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import octopus.GetPayoutMethodsQuery
 import octopus.GetPayoutMethodsQuery.Data.CurrentMember.PaymentMethods.PayoutMethod.Details.Companion.asPaymentMethodBankAccountDetails
-import octopus.GetPayoutMethodsQuery.Data.CurrentMember.PaymentMethods.PayoutMethod.Details.Companion.asPaymentMethodInvoiceDetails
 import octopus.GetPayoutMethodsQuery.Data.CurrentMember.PaymentMethods.PayoutMethod.Details.Companion.asPaymentMethodSwishDetails
 import octopus.type.MemberPaymentMethodStatus
 import octopus.type.MemberPaymentProvider
@@ -44,15 +43,6 @@ internal class GetPayoutAccountUseCase(
         MemberPaymentProvider.SWISH -> {
           val phoneNumber = method.details?.asPaymentMethodSwishDetails()?.phoneNumber
           PayoutAccount.SwishPayout(phoneNumber = phoneNumber, isPending = isPending)
-        }
-
-        MemberPaymentProvider.INVOICE -> {
-          val invoiceDetails = method.details?.asPaymentMethodInvoiceDetails()
-          PayoutAccount.Invoice(
-            delivery = invoiceDetails?.delivery,
-            email = invoiceDetails?.email,
-            isPending = isPending,
-          )
         }
 
         MemberPaymentProvider.TRUSTLY -> {

@@ -263,6 +263,7 @@ fun HedvigButtonGhostWithBorder(
   enabled: Boolean = true,
   interactionSource: MutableInteractionSource? = null,
   size: ButtonSize = ButtonSize.Medium,
+  isLoading: Boolean = false,
 ) {
   HedvigTextButton(
     text = text,
@@ -275,6 +276,7 @@ fun HedvigButtonGhostWithBorder(
     ),
     buttonSize = size,
     interactionSource = interactionSource,
+    isLoading = isLoading,
   )
 }
 

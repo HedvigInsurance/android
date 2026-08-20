@@ -1,0 +1,32 @@
+plugins {
+  id("hedvig.android.library")
+  id("hedvig.gradle.plugin")
+}
+
+hedvig {
+  apollo("octopus")
+  serialization()
+  compose()
+  navKeys()
+  viewModels()
+}
+
+dependencies {
+  implementation(libs.apollo.normalizedCache)
+  implementation(libs.apollo.runtime)
+  implementation(libs.arrow.core)
+  implementation(projects.apolloCore)
+  implementation(projects.apolloNetworkCacheManager)
+  implementation(projects.apolloOctopusPublic)
+  implementation(projects.coreBuildConstants)
+  implementation(libs.jetbrains.compose.runtime)
+  implementation(libs.jetbrains.lifecycle.runtime.compose)
+  implementation(projects.composeUi)
+  implementation(projects.coreCommonPublic)
+  implementation(projects.coreResources)
+  implementation(projects.designSystemHedvig)
+  implementation(projects.moleculePublic)
+  implementation(projects.navigationCommon)
+  implementation(projects.navigationCompose)
+  implementation(libs.zXing)
+}

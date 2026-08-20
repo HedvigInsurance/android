@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payoutaccount.ui.setupinvoice
+package com.hedvig.android.feature.payin.account.ui.setupinvoice
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -9,8 +9,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
-import com.hedvig.android.feature.payoutaccount.data.SetupInvoicePayoutUseCase
-import com.hedvig.android.feature.payoutaccount.navigation.SelectPayoutMethodKey
+import com.hedvig.android.feature.payin.account.data.SetupInvoicePayinUseCase
+import com.hedvig.android.feature.payin.account.navigation.SelectPayinMethodKey
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -20,34 +20,34 @@ import dev.zacsweers.metro.Inject
 
 @Inject
 @HedvigViewModel(ActivityRetainedScope::class)
-internal class SetupInvoicePayoutViewModel(
-  setupInvoicePayoutUseCase: SetupInvoicePayoutUseCase,
+internal class SetupInvoicePayinViewModel(
+  setupInvoicePayinUseCase: SetupInvoicePayinUseCase,
   backstack: Backstack,
-) : MoleculeViewModel<SetupInvoicePayoutEvent, SetupInvoicePayoutUiState>(
-    SetupInvoicePayoutUiState(false, null, false),
-    SetupInvoicePayoutPresenter(setupInvoicePayoutUseCase, backstack),
+) : MoleculeViewModel<SetupInvoicePayinEvent, SetupInvoicePayinUiState>(
+    SetupInvoicePayinUiState(false, null, false),
+    SetupInvoicePayinPresenter(setupInvoicePayinUseCase, backstack),
   )
 
-internal sealed interface SetupInvoicePayoutEvent {
-  data object Connect : SetupInvoicePayoutEvent
+internal sealed interface SetupInvoicePayinEvent {
+  data object Connect : SetupInvoicePayinEvent
 
-  data object ShowedSnackBar : SetupInvoicePayoutEvent
+  data object ShowedSnackBar : SetupInvoicePayinEvent
 }
 
-internal data class SetupInvoicePayoutUiState(
+internal data class SetupInvoicePayinUiState(
   val isLoading: Boolean,
   val errorMessage: String?,
   val showSuccessSnackBar: Boolean,
 )
 
-internal class SetupInvoicePayoutPresenter(
-  private val setupInvoicePayoutUseCase: SetupInvoicePayoutUseCase,
+internal class SetupInvoicePayinPresenter(
+  private val setupInvoicePayinUseCase: SetupInvoicePayinUseCase,
   private val backstack: Backstack,
-) : MoleculePresenter<SetupInvoicePayoutEvent, SetupInvoicePayoutUiState> {
+) : MoleculePresenter<SetupInvoicePayinEvent, SetupInvoicePayinUiState> {
   @Composable
-  override fun MoleculePresenterScope<SetupInvoicePayoutEvent>.present(
-    lastState: SetupInvoicePayoutUiState,
-  ): SetupInvoicePayoutUiState {
+  override fun MoleculePresenterScope<SetupInvoicePayinEvent>.present(
+    lastState: SetupInvoicePayinUiState,
+  ): SetupInvoicePayinUiState {
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var showSuccessSnackBar by remember { mutableStateOf(false) }
@@ -58,7 +58,7 @@ internal class SetupInvoicePayoutPresenter(
       LaunchedEffect(connectIteration) {
         isLoading = true
         errorMessage = null
-        setupInvoicePayoutUseCase.invoke().fold(
+        setupInvoicePayinUseCase.invoke().fold(
           ifLeft = {
             isLoading = false
             errorMessage = it.message ?: "Something went wrong, please try again"
@@ -75,20 +75,20 @@ internal class SetupInvoicePayoutPresenter(
 
     CollectEvents { event ->
       when (event) {
-        SetupInvoicePayoutEvent.Connect -> {
+        SetupInvoicePayinEvent.Connect -> {
           if (!isLoading) {
             shouldConnect = true
             connectIteration++
           }
         }
 
-        SetupInvoicePayoutEvent.ShowedSnackBar -> {
-          backstack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
+        SetupInvoicePayinEvent.ShowedSnackBar -> {
+          backstack.popUpTo<SelectPayinMethodKey>(inclusive = true)
         }
       }
     }
 
-    return SetupInvoicePayoutUiState(
+    return SetupInvoicePayinUiState(
       isLoading = isLoading,
       errorMessage = errorMessage,
       showSuccessSnackBar = showSuccessSnackBar,
