@@ -623,6 +623,7 @@
   <string name="ONBOARDING_ANALYTICS_SUBTITLE">We use technical tools to see how you use the app, so we can make it better.\n\nProduct analytics is completely optional and can be turned off any time in settings. This data is never used for marketing.</string>
   <string name="ONBOARDING_ANALYTICS_TITLE">Help us make the app better</string>
   <string name="ONBOARDING_CHANGE_SETTINGS_LATER_LABEL">You can change these settings later</string>
+  <string name="ONBOARDING_CONNECT_PAYMENT_BANK_LABEL">Bank</string>
   <string name="ONBOARDING_CONNECT_PAYMENT_FOOTNOTE">Adding a payment method is required to keep your insurance active</string>
   <string name="ONBOARDING_CONNECT_PAYMENT_SUBTITLE">Add a payment method to activate your insurance</string>
   <string name="ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER">You can switch accounts later in settings</string>
@@ -636,6 +637,14 @@
   <string name="ONBOARDING_INVITE_FRIEND_TITLE">Invite a friend</string>
   <string name="ONBOARDING_MISSING_INFO_PET_SUBTITLE">This makes it easier to help you if something happens</string>
   <string name="ONBOARDING_MISSING_INFO_SUBTITLE">So we know who's covered by your insurance</string>
+  <plurals name="ONBOARDING_NUMBER_OF_COINSURED">
+    <item quantity="one">%1$d co-insured</item>
+    <item quantity="other">%1$d co-insured</item>
+  </plurals>
+  <plurals name="ONBOARDING_NUMBER_OF_COOWNERS">
+    <item quantity="one">%1$d co-owner</item>
+    <item quantity="other">%1$d co-owners</item>
+  </plurals>
   <string name="ONBOARDING_OPENS_IN_BROWSER_HINT">Opens in your browser</string>
   <string name="ONBOARDING_PHONE_SAVE_ERROR">Could not save, please try again</string>
   <string name="ONBOARDING_PHONE_SUBTITLE">Add your phone number so we can reach you if something happens</string>
@@ -998,7 +1007,7 @@
   <string name="TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION">Your insurance will be cancelled on %1$s</string>
   <string name="TERMINATION_FLOW_CONFIRM_BUTTON">Yes, cancel</string>
   <string name="TERMINATION_FLOW_CONFIRM_INFORMATION">Confirm your information</string>
-  <string name="TERMINATION_FLOW_CONTINUE_CANCELLING">Continue cancelling</string>
+  <string name="TERMINATION_FLOW_CONTINUE_CANCELLING">No thanks, continue</string>
   <string name="TERMINATION_FLOW_DATE_FIELD_PLACEHOLDER">Select date...</string>
   <string name="TERMINATION_FLOW_DATE_FIELD_TEXT">Termination date</string>
   <string name="TERMINATION_FLOW_DELETION_INFO_CARD">Since this insurance is not active yet it will be cancelled and removed today. You won’t be charged anything.</string>
@@ -1085,6 +1094,7 @@
   <string name="UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_DESCRIPTION">Days covered when travelling</string>
   <string name="UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_TITLE">Choose your maximum travel limit</string>
   <string name="USER_ERROR_PROTECTED_IDENTITY_KIVRA_BLOCK">Sorry, we couldn’t generate a price. Please make sure you have Kivra's digital mailbox and then try again. \n\nYou can get Kivra's digital mailbox here: https://kivra.se/en/private/how-it-works/digital-letters-mailbox.</string>
+  <string name="USER_ERROR_UW_GL_INVALID_STARTDATE_FOR_SAS">Invalid start date, must be on or before September 4th</string>
   <string name="VOICEOVER_BUNDLE_DISCOUNT_TAG">Discount name: %1$s</string>
   <string name="VOICEOVER_CHANGE_VALUE">change value</string>
   <string name="VOICEOVER_CHAT_IMAGE">Image</string>

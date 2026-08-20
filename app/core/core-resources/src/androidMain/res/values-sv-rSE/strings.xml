@@ -624,6 +624,7 @@
   <string name="ONBOARDING_ANALYTICS_SUBTITLE">Vi använder tekniska verktyg för att se hur du använder appen, så att vi kan göra den bättre.\n\nProduktanalys är helt frivilligt och kan när som helst stängas av i inställningarna. Denna data används aldrig för marknadsföring.</string>
   <string name="ONBOARDING_ANALYTICS_TITLE">Hjälp oss göra appen bättre</string>
   <string name="ONBOARDING_CHANGE_SETTINGS_LATER_LABEL">Du kan ändra inställningarna senare</string>
+  <string name="ONBOARDING_CONNECT_PAYMENT_BANK_LABEL">Bank</string>
   <string name="ONBOARDING_CONNECT_PAYMENT_FOOTNOTE">Du behöver lägga till ett betalsätt för att din försäkring ska fortsätta gälla</string>
   <string name="ONBOARDING_CONNECT_PAYMENT_SUBTITLE">Lägg till ett betalsätt för att aktivera din försäkring</string>
   <string name="ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER">Du kan byta konto senare i inställningar</string>
@@ -637,6 +638,14 @@
   <string name="ONBOARDING_INVITE_FRIEND_TITLE">Bjud in en vän</string>
   <string name="ONBOARDING_MISSING_INFO_PET_SUBTITLE">Det gör det lättare att hjälpa dig om något händer</string>
   <string name="ONBOARDING_MISSING_INFO_SUBTITLE">Så att vi vet vilka som omfattas av din försäkring</string>
+  <plurals name="ONBOARDING_NUMBER_OF_COINSURED">
+    <item quantity="one">%d medförsäkrad</item>
+    <item quantity="other">%d medförsäkrade</item>
+  </plurals>
+  <plurals name="ONBOARDING_NUMBER_OF_COOWNERS">
+    <item quantity="one">%d delägare</item>
+    <item quantity="other">%d delägare</item>
+  </plurals>
   <string name="ONBOARDING_OPENS_IN_BROWSER_HINT">Öppnas i din webbläsare</string>
   <string name="ONBOARDING_PHONE_SAVE_ERROR">Kunde inte spara, försök igen</string>
   <string name="ONBOARDING_PHONE_SUBTITLE">Lägg till ditt telefonnummer så att vi kan nå dig om något händer</string>
@@ -999,7 +1008,7 @@
   <string name="TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION">Din försäkring kommer att avslutas den %s</string>
   <string name="TERMINATION_FLOW_CONFIRM_BUTTON">Ja, avsluta</string>
   <string name="TERMINATION_FLOW_CONFIRM_INFORMATION">Bekräfta din information</string>
-  <string name="TERMINATION_FLOW_CONTINUE_CANCELLING">Fortsätt avbryta</string>
+  <string name="TERMINATION_FLOW_CONTINUE_CANCELLING">Nej tack, fortsätt</string>
   <string name="TERMINATION_FLOW_DATE_FIELD_PLACEHOLDER">Välj datum...</string>
   <string name="TERMINATION_FLOW_DATE_FIELD_TEXT">Slutdatum</string>
   <string name="TERMINATION_FLOW_DELETION_INFO_CARD">Eftersom försäkringen inte är aktiv än så kommer den avslutas direkt. Du kommer inte att debiteras någonting.</string>
@@ -1086,6 +1095,7 @@
   <string name="UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_DESCRIPTION">Välj antalet resdagar som täcks</string>
   <string name="UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_TITLE">Välj antal resdagar</string>
   <string name="USER_ERROR_PROTECTED_IDENTITY_KIVRA_BLOCK">Vi kan tyvärr inte ge dig ett pris. Var god se till att du har Kivras digitala brevlåda och försök igen.\n\nDu kan skaffa digital brevlåda hos Kivra här: https://kivra.se/sv/privat/sa-funkar-det/digitala-brev-brevlada</string>
+  <string name="USER_ERROR_UW_GL_INVALID_STARTDATE_FOR_SAS">Ogiltigt startdatum, måste vara den 4 september eller tidigare</string>
   <string name="VOICEOVER_BUNDLE_DISCOUNT_TAG">Rabattnamn: %s</string>
   <string name="VOICEOVER_CHANGE_VALUE">ändra värde</string>
   <string name="VOICEOVER_CHAT_IMAGE">Bild</string>
