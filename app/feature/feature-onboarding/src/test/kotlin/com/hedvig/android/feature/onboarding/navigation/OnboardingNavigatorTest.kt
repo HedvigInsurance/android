@@ -13,6 +13,7 @@ import com.hedvig.android.feature.onboarding.FakeOnboardingRepository
 import com.hedvig.android.feature.onboarding.data.CompleteOnboardingUseCase
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.testOnboardingData
+import com.hedvig.android.feature.onboarding.testSessionStore
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
@@ -36,8 +37,11 @@ internal class OnboardingNavigatorTest {
     }
   }
 
-  private suspend fun sessionStoreWithData(repository: FakeOnboardingRepository): OnboardingSessionStore {
-    val store = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
+  private suspend fun sessionStoreWithData(
+    repository: FakeOnboardingRepository,
+    analyticsDisabled: Boolean = false,
+  ): OnboardingSessionStore {
+    val store = testSessionStore(repository, FakeOnboardingMemberIdProvider(), analyticsDisabled)
     repository.onboardingDataResponses.add(testOnboardingData().right())
     store.getOrFetchSession()
     return store
@@ -54,6 +58,24 @@ internal class OnboardingNavigatorTest {
     assertThat(backstack.entries).containsExactly(
       OnboardingKey,
       OnboardingStepKey(OnboardingStepId.AnalyticsConsent),
+    )
+  }
+
+  @Test
+  fun `continue from welcome skips straight past consent when analytics is disabled`() = runTest {
+    val backstack = TestBackstack().apply { entries.add(OnboardingKey) }
+    val repository = FakeOnboardingRepository()
+    val navigator = OnboardingNavigator(
+      backstack,
+      sessionStoreWithData(repository, analyticsDisabled = true),
+      FakeCompleteOnboardingUseCase(),
+    )
+
+    navigator.continueFrom(null)
+
+    assertThat(backstack.entries).containsExactly(
+      OnboardingKey,
+      OnboardingStepKey(OnboardingStepId.PhoneNumber),
     )
   }
 
@@ -110,7 +132,7 @@ internal class OnboardingNavigatorTest {
     val completeOnboarding = FakeCompleteOnboardingUseCase()
     val navigator = OnboardingNavigator(
       backstack,
-      OnboardingSessionStore(FakeOnboardingRepository(), FakeOnboardingMemberIdProvider()),
+      testSessionStore(FakeOnboardingRepository(), FakeOnboardingMemberIdProvider()),
       completeOnboarding,
     )
 

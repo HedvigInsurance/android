@@ -18,7 +18,7 @@ returns, etc.). Read this before adding a new flag.
      a `disable_x` flag reports "is the kill switch on"; the consumer inverts at the read site.
   2. **`neverFetchedDefaults`**, a map in `HedvigUnleashClient`, for the flags where polarity
      alone gives the wrong default.
-- `neverFetchedDefaults` holds three entries today. Adding others is usually noise and, for
+- `neverFetchedDefaults` holds four entries today. Adding others is usually noise and, for
   app-gating flags like `UPDATE_NECESSARY`, actively dangerous.
 
 ## The bug: Unleash Android SDK issue #141
@@ -101,7 +101,7 @@ The consequences are all silent:
 
 The symptom to recognise: a one-shot flag read (`.first()`) that runs during startup silently gets
 the wrong value, while `Flow`-based reads self-correct a second later and look fine. `OnboardingGate`
-is currently the app's only startup-time one-shot read.
+and `OnboardingSessionStore` are the app's startup-time one-shot reads.
 
 ## Never-fetched defaults: when and why
 
@@ -114,15 +114,21 @@ Today:
 
 ```kotlin
 private val neverFetchedDefaults: Map<Feature, Boolean> = mapOf(
+  Feature.DISABLE_ANALYTICS to true,
   Feature.DISABLE_PUPPY_GUIDE to true,
   Feature.DISABLE_TERMINATION_REDIRECTION to true,
   Feature.DISABLE_RESUMING_ONGOING_SHOP_SESSIONS to true,
 )
 ```
 
-All three are kill switches, so their natural absent default is "feature on". Each instead needs to
+All four are kill switches, so their natural absent default is "feature on". Each instead needs to
 stay **hidden** until a fetch confirms it should show, which is what a rollout wants. Polarity gives
 the wrong default, so each gets an entry of `true` (kill switch on → feature hidden).
+
+`DISABLE_ANALYTICS` is the clearest illustration of why the entry is needed rather than optional: the
+step it hides must not appear at all, so letting polarity show it to a member whose first launch is
+offline would defeat the flag. Failing closed also fails safe here, since a member who is never asked
+leaves their analytics consent undecided, and undecided forwards no product analytics.
 
 ### Do NOT default app-gating flags to the "blocking" state
 
