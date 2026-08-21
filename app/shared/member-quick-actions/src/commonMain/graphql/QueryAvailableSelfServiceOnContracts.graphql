@@ -6,8 +6,10 @@ query AvailableSelfServiceOnContracts {
       currentAgreement {
         productVariant {
           displayName
+          typeOfContract
         }
       }
+      supportsChangeTier
       supportsCoInsured
       supportsCoOwners
       coInsured {

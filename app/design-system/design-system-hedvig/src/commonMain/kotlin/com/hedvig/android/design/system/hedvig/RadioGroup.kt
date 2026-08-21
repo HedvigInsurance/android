@@ -487,7 +487,7 @@ private fun RadioOption(
         } else {
           textComposable()
         }
-        if (option.label != null) {
+        if (!option.label.isNullOrEmpty()) {
           Spacer(Modifier.height(style.textToLabelSpacing))
           HedvigText(
             option.label,
