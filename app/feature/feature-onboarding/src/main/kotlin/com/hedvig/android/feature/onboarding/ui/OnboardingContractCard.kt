@@ -62,7 +62,6 @@ internal fun OnboardingContractCard(
       Column(Modifier.weight(1f)) {
         HedvigText(
           text = displayName,
-          style = HedvigTheme.typography.label,
         )
         HedvigText(
           text = secondaryText,
