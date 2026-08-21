@@ -8,7 +8,6 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoInsured
@@ -40,8 +39,9 @@ import hedvig.resources.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE
 import hedvig.resources.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE
+import hedvig.resources.HOME_QUICK_ACTIONS_CHANGE_ADDRESS
+import hedvig.resources.HOME_QUICK_ACTIONS_EDIT_INSURANCE
 import hedvig.resources.Res
-import kotlinx.coroutines.flow.first
 import octopus.AvailableSelfServiceOnContractsQuery
 
 interface GetMemberQuickActionsUseCase {
@@ -110,6 +110,7 @@ internal class GetMemberQuickActionsUseCaseImpl(
             links = linksToExpand,
             titleRes = Res.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE,
             hintTextRes = Res.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_SUBTITLE,
+            shortTitleRes = Res.string.HOME_QUICK_ACTIONS_EDIT_INSURANCE,
           ),
         )
       }
@@ -119,6 +120,7 @@ internal class GetMemberQuickActionsUseCaseImpl(
             quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeAddress,
             titleRes = Res.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE,
             hintTextRes = Res.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE,
+            shortTitleRes = Res.string.HOME_QUICK_ACTIONS_CHANGE_ADDRESS,
           ),
         )
       }
