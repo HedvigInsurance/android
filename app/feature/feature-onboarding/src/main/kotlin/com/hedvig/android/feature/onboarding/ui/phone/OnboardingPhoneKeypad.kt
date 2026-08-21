@@ -39,7 +39,7 @@ import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 
-private val KeySize = 36.dp
+private val KeySize = 48.dp
 private val HorizontalGap = 11.dp
 private val VerticalGap = 9.dp
 private val GlyphFontSize = 20.sp
