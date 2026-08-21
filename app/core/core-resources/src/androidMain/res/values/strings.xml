@@ -630,10 +630,10 @@
   <string name="ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER">You can switch accounts later in settings</string>
   <string name="ONBOARDING_CONNECT_PAYMENT_TITLE">Connect payment</string>
   <string name="ONBOARDING_CONTINUE_TO_APP_BUTTON">Continue to app</string>
-  <string name="ONBOARDING_CROSS_SELL_SUBTITLE">You get a 15% bundle discount when you have two or more insurances with us</string>
+  <string name="ONBOARDING_CROSS_SELL_SUBTITLE">You get a 15\u0025 discount when you have two or more insurances with us. The discount applies to home, car, and pet insurance</string>
   <string name="ONBOARDING_CROSS_SELL_TITLE">Get bundle discount</string>
   <string name="ONBOARDING_DO_THIS_LATER_BUTTON">Do this later</string>
-  <string name="ONBOARDING_INVITE_FRIEND_SUBTITLE">With Hedvig Forever, you get %1$s off for every friend you invite.</string>
+  <string name="ONBOARDING_INVITE_FRIEND_SUBTITLE">With Hedvig Forever, you get %1$s off for every friend you invite</string>
   <string name="ONBOARDING_INVITE_FRIEND_SUBTITLE_FALLBACK">With Hedvig Forever, you get a discount off for every friend you invite.</string>
   <string name="ONBOARDING_INVITE_FRIEND_TITLE">Invite a friend</string>
   <string name="ONBOARDING_MISSING_INFO_PET_SUBTITLE">This makes it easier to help you if something happens</string>

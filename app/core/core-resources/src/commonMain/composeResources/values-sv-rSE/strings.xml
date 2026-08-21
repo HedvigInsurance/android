@@ -494,7 +494,7 @@
   <string name="HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE">Reseintyg</string>
   <string name="HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE">Skaffa ett reseintyg för din resa</string>
   <string name="HC_QUICK_ACTIONS_UPDATE_ADDRESS">Byt adress</string>
-  <string name="HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE">Ändra din skyddssnivå och självrisk</string>
+  <string name="HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE">Ändra din skyddsnivå och självrisk</string>
   <string name="HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE">Ändra skydd</string>
   <string name="HC_TITLE">Hjälp och support</string>
   <string name="HC_TOPIC_NOT_FOUND">Topic not found</string>
@@ -629,10 +629,10 @@
   <string name="ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER">Du kan byta konto senare i inställningar</string>
   <string name="ONBOARDING_CONNECT_PAYMENT_TITLE">Koppla betalning</string>
   <string name="ONBOARDING_CONTINUE_TO_APP_BUTTON">Fortsätt till appen</string>
-  <string name="ONBOARDING_CROSS_SELL_SUBTITLE">Du får 15 % paketrabatt när du har två eller fler försäkringar hos oss</string>
-  <string name="ONBOARDING_CROSS_SELL_TITLE">Få paketrabatt</string>
+  <string name="ONBOARDING_CROSS_SELL_SUBTITLE">Du får 15\u0025 samlingsrabatt när du har två eller fler försäkringar för hem, bil eller djur</string>
+  <string name="ONBOARDING_CROSS_SELL_TITLE">Få samlingsrabatt</string>
   <string name="ONBOARDING_DO_THIS_LATER_BUTTON">Gör det senare</string>
-  <string name="ONBOARDING_INVITE_FRIEND_SUBTITLE">Med Hedvig Forever får du %1$s rabatt för varje vän du bjuder in.</string>
+  <string name="ONBOARDING_INVITE_FRIEND_SUBTITLE">Med Hedvig Forever får du %1$s rabatt för varje vän du bjuder in</string>
   <string name="ONBOARDING_INVITE_FRIEND_SUBTITLE_FALLBACK">Med Hedvig Forever får du rabatt för varje vän du bjuder in.</string>
   <string name="ONBOARDING_INVITE_FRIEND_TITLE">Bjud in en vän</string>
   <string name="ONBOARDING_MISSING_INFO_PET_SUBTITLE">Det gör det lättare att hjälpa dig om något händer</string>
