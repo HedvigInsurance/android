@@ -31,6 +31,7 @@ private const val APP_NAME = "android"
  * here: defaulting one into its blocking state locks out members who are offline on first launch.
  */
 private val neverFetchedDefaults: Map<Feature, Boolean> = mapOf(
+  Feature.DISABLE_ANALYTICS to true,
   Feature.DISABLE_PUPPY_GUIDE to true,
   Feature.DISABLE_TERMINATION_REDIRECTION to true,
   Feature.DISABLE_RESUMING_ONGOING_SHOP_SESSIONS to true,

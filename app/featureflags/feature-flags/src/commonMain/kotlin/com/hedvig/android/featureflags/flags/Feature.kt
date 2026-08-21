@@ -4,6 +4,10 @@ enum class Feature(
   // Used to easier get a context of what it's for.
   @Suppress("unused") val explanation: String,
 ) {
+  DISABLE_ANALYTICS(
+    "Kill switch for the analytics-consent step in onboarding. When the toggle is on, the step is left out " +
+      "of the onboarding path entirely, so it never shows and does not take up a progress-bar segment.",
+  ),
   DISABLE_ONBOARDING(
     "Kill switch for the post-login onboarding flow. When the toggle is on, onboarding is never shown.",
   ),

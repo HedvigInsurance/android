@@ -13,11 +13,11 @@ import com.hedvig.android.feature.onboarding.FakeOnboardingMemberIdProvider
 import com.hedvig.android.feature.onboarding.FakeOnboardingRepository
 import com.hedvig.android.feature.onboarding.FakeSettingsDataStore
 import com.hedvig.android.feature.onboarding.data.CompleteOnboardingUseCase
-import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepKey
 import com.hedvig.android.feature.onboarding.testOnboardingData
+import com.hedvig.android.feature.onboarding.testSessionStore
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.MoleculePresenterTestContext
@@ -45,7 +45,7 @@ internal class OnboardingConsentPresenterTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.AnalyticsConsent)) }
     val repository = FakeOnboardingRepository()
     val settingsDataStore = FakeSettingsDataStore().apply { consent.value = storedConsent }
-    private val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
+    private val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
     val presenter = OnboardingConsentPresenter(
       sessionStore,
       OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase()),
