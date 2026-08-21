@@ -10,7 +10,7 @@ import dev.zacsweers.metro.Inject
 @Inject
 internal class ContactInfoRepositoryDemo : ContactInfoRepository {
   private var contactInformation = ContactInformation(
-    PhoneNumber("072102103"),
+    "072102103",
     Email("google@gmail.com"),
   )
 
@@ -21,7 +21,7 @@ internal class ContactInfoRepositoryDemo : ContactInfoRepository {
   override suspend fun updateInfo(phoneNumber: PhoneNumber, email: Email): Either<ErrorMessage, ContactInformation> {
     contactInformation = contactInformation.copy(
       email = email,
-      phoneNumber = phoneNumber,
+      phoneNumber = phoneNumber.value,
     )
     return contactInformation.right()
   }

@@ -213,7 +213,8 @@ private fun ColumnScope.SuccessState(
   Spacer(Modifier.height(16.dp))
   HedvigButton(
     text = stringResource(Res.string.general_save_button),
-    enabled = uiState.canSubmit || uiState.submittingUpdatedInfo,
+    // Invalid input is reported as an error on the offending field on submission, rather than by blocking the button.
+    enabled = true,
     onClick = {
       focusManager.clearFocus()
       updateEmailAndPhoneNumber()
