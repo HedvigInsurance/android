@@ -7,6 +7,7 @@ import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import com.hedvig.android.data.settings.datastore.AnalyticsConsent
 import com.hedvig.android.feature.onboarding.FakeOnboardingMemberIdProvider
@@ -65,21 +66,31 @@ internal class OnboardingConsentPresenterTest {
   }
 
   @Test
-  fun `the checkmark starts hidden when consent has not been granted before`() = runTest {
+  fun `no badge shows when consent has not been decided before`() = runTest {
     val setup = TestSetup(storedConsent = AnalyticsConsent.NOT_DECIDED)
 
     setup.presenter.test(OnboardingConsentUiState.Loading) {
-      assertThat(awaitContent(setup.repository).checkmarkVisible).isFalse()
+      assertThat(awaitContent(setup.repository).badge).isNull()
       cancelAndIgnoreRemainingEvents()
     }
   }
 
   @Test
-  fun `the checkmark starts shown when consent was granted before`() = runTest {
+  fun `the checkmark badge starts shown when consent was granted before`() = runTest {
     val setup = TestSetup(storedConsent = AnalyticsConsent.GRANTED)
 
     setup.presenter.test(OnboardingConsentUiState.Loading) {
-      assertThat(awaitContent(setup.repository).checkmarkVisible).isTrue()
+      assertThat(awaitContent(setup.repository).badge).isEqualTo(ConsentBadge.Accepted)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `the cross badge starts shown when consent was denied before`() = runTest {
+    val setup = TestSetup(storedConsent = AnalyticsConsent.DENIED)
+
+    setup.presenter.test(OnboardingConsentUiState.Loading) {
+      assertThat(awaitContent(setup.repository).badge).isEqualTo(ConsentBadge.Denied)
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -96,7 +107,7 @@ internal class OnboardingConsentPresenterTest {
       assertThat(setup.settingsDataStore.consent.value).isEqualTo(AnalyticsConsent.GRANTED)
       assertThat(setup.backstack.entries.last()).isEqualTo(OnboardingStepKey(OnboardingStepId.AnalyticsConsent))
 
-      sendEvent(OnboardingConsentEvent.CheckmarkSettled(checkmarkVisible = true))
+      sendEvent(OnboardingConsentEvent.BadgeSettled(ConsentBadge.Accepted))
       runCurrent()
 
       assertThat(setup.backstack.entries.last()).isEqualTo(OnboardingStepKey(OnboardingStepId.PhoneNumber))
@@ -105,25 +116,7 @@ internal class OnboardingConsentPresenterTest {
   }
 
   @Test
-  fun `a decision in flight shows the checkmark and disables the buttons`() = runTest {
-    val setup = TestSetup(storedConsent = AnalyticsConsent.NOT_DECIDED)
-
-    setup.presenter.test(OnboardingConsentUiState.Loading) {
-      awaitContent(setup.repository)
-      sendEvent(OnboardingConsentEvent.Allow)
-      runCurrent()
-
-      var state = awaitItem() as OnboardingConsentUiState.Content
-      while (!state.checkmarkVisible) {
-        state = awaitItem() as OnboardingConsentUiState.Content
-      }
-      assertThat(state.buttonsEnabled).isFalse()
-      cancelAndIgnoreRemainingEvents()
-    }
-  }
-
-  @Test
-  fun `deny stores DENIED and advances without waiting when the checkmark was already hidden`() = runTest {
+  fun `deny stores DENIED and advances once the cross has animated in`() = runTest {
     val setup = TestSetup(storedConsent = AnalyticsConsent.NOT_DECIDED)
 
     setup.presenter.test(OnboardingConsentUiState.Loading) {
@@ -132,13 +125,37 @@ internal class OnboardingConsentPresenterTest {
       runCurrent()
 
       assertThat(setup.settingsDataStore.consent.value).isEqualTo(AnalyticsConsent.DENIED)
+      assertThat(setup.backstack.entries.last()).isEqualTo(OnboardingStepKey(OnboardingStepId.AnalyticsConsent))
+
+      sendEvent(OnboardingConsentEvent.BadgeSettled(ConsentBadge.Denied))
+      runCurrent()
+
       assertThat(setup.backstack.entries.last()).isEqualTo(OnboardingStepKey(OnboardingStepId.PhoneNumber))
       cancelAndIgnoreRemainingEvents()
     }
   }
 
   @Test
-  fun `deny advances once the checkmark has animated out when consent was granted before`() = runTest {
+  fun `a decision in flight shows its badge and disables the buttons`() = runTest {
+    val setup = TestSetup(storedConsent = AnalyticsConsent.NOT_DECIDED)
+
+    setup.presenter.test(OnboardingConsentUiState.Loading) {
+      awaitContent(setup.repository)
+      sendEvent(OnboardingConsentEvent.Deny)
+      runCurrent()
+
+      var state = awaitItem() as OnboardingConsentUiState.Content
+      while (state.badge == null) {
+        state = awaitItem() as OnboardingConsentUiState.Content
+      }
+      assertThat(state.badge).isEqualTo(ConsentBadge.Denied)
+      assertThat(state.buttonsEnabled).isFalse()
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `deny advances once the badge has swapped when consent was granted before`() = runTest {
     val setup = TestSetup(storedConsent = AnalyticsConsent.GRANTED)
 
     setup.presenter.test(OnboardingConsentUiState.Loading) {
@@ -149,7 +166,7 @@ internal class OnboardingConsentPresenterTest {
       assertThat(setup.settingsDataStore.consent.value).isEqualTo(AnalyticsConsent.DENIED)
       assertThat(setup.backstack.entries.last()).isEqualTo(OnboardingStepKey(OnboardingStepId.AnalyticsConsent))
 
-      sendEvent(OnboardingConsentEvent.CheckmarkSettled(checkmarkVisible = false))
+      sendEvent(OnboardingConsentEvent.BadgeSettled(ConsentBadge.Denied))
       runCurrent()
 
       assertThat(setup.backstack.entries.last()).isEqualTo(OnboardingStepKey(OnboardingStepId.PhoneNumber))
@@ -165,7 +182,7 @@ internal class OnboardingConsentPresenterTest {
       awaitContent(setup.repository)
       sendEvent(OnboardingConsentEvent.Allow)
       runCurrent()
-      sendEvent(OnboardingConsentEvent.CheckmarkSettled(checkmarkVisible = true))
+      sendEvent(OnboardingConsentEvent.BadgeSettled(ConsentBadge.Accepted))
       runCurrent()
 
       assertThat(setup.backstack.entries.last()).isEqualTo(OnboardingStepKey(OnboardingStepId.PhoneNumber))
@@ -176,11 +193,11 @@ internal class OnboardingConsentPresenterTest {
   }
 
   @Test
-  fun `a presenter restarted on this screen re-derives the checkmark from stored consent`() = runTest {
-    val setup = TestSetup(storedConsent = AnalyticsConsent.GRANTED)
+  fun `a presenter restarted on this screen re-derives the badge from stored consent`() = runTest {
+    val setup = TestSetup(storedConsent = AnalyticsConsent.DENIED)
     val restoredState = OnboardingConsentUiState.Content(
       progress = OnboardingProgress(totalSteps = 5, currentIndex = 1),
-      checkmarkVisible = true,
+      badge = null,
       buttonsEnabled = true,
     )
 
@@ -188,7 +205,7 @@ internal class OnboardingConsentPresenterTest {
       runCurrent()
 
       val state = expectMostRecentItem() as OnboardingConsentUiState.Content
-      assertThat(state.checkmarkVisible).isTrue()
+      assertThat(state.badge).isEqualTo(ConsentBadge.Denied)
       assertThat(state.buttonsEnabled).isTrue()
       cancelAndIgnoreRemainingEvents()
     }
@@ -208,7 +225,7 @@ internal class OnboardingConsentPresenterTest {
 
       assertThat(setup.settingsDataStore.consent.value).isEqualTo(AnalyticsConsent.GRANTED)
 
-      sendEvent(OnboardingConsentEvent.CheckmarkSettled(checkmarkVisible = true))
+      sendEvent(OnboardingConsentEvent.BadgeSettled(ConsentBadge.Accepted))
       runCurrent()
 
       assertThat(setup.backstack.entries).hasSize(2)
