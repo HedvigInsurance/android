@@ -14,6 +14,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.hideFromAccessibility
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -105,7 +107,9 @@ private fun OnboardingPhoneScreen(
               placeCursorAtEnd()
             }
           },
-          modifier = Modifier.align(Alignment.CenterHorizontally),
+          modifier = Modifier.align(Alignment.CenterHorizontally).semantics {
+            hideFromAccessibility()
+          },
         )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(24.dp))
