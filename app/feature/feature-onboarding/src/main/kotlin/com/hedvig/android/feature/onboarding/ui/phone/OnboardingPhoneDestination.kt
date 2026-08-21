@@ -33,6 +33,9 @@ import com.hedvig.android.feature.onboarding.ui.OnboardingProgressBarAnimation
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepButtons
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepHeader
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepScaffold
+import com.hedvig.android.feature.onboarding.ui.phone.SubmissionError.GeneralError
+import com.hedvig.android.feature.onboarding.ui.phone.SubmissionError.NumberTooShort
+import hedvig.resources.CLAIM_CHAT_FORM_TEXT_MIN_CHAR
 import hedvig.resources.ONBOARDING_DO_THIS_LATER_BUTTON
 import hedvig.resources.ONBOARDING_PHONE_SAVE_ERROR
 import hedvig.resources.ONBOARDING_PHONE_SUBTITLE
@@ -117,10 +120,12 @@ private fun OnboardingPhoneScreen(
           state = phoneNumberState,
           labelText = stringResource(Res.string.ONBOARDING_PHONE_TITLE),
           textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
-          errorState = if (content.showSubmissionError) {
-            HedvigTextFieldDefaults.ErrorState.Error.WithMessage(
-              stringResource(Res.string.ONBOARDING_PHONE_SAVE_ERROR),
-            )
+          errorState = if (content.showSubmissionError != null) {
+            val text = when (content.showSubmissionError) {
+              GeneralError -> stringResource(Res.string.ONBOARDING_PHONE_SAVE_ERROR)
+              is NumberTooShort -> stringResource(Res.string.CLAIM_CHAT_FORM_TEXT_MIN_CHAR, content.showSubmissionError.minLength)
+            }
+            HedvigTextFieldDefaults.ErrorState.Error.WithMessage(text)
           } else {
             HedvigTextFieldDefaults.ErrorState.NoError
           },
@@ -173,7 +178,7 @@ private class OnboardingPhoneUiStateProvider : CollectionPreviewParameterProvide
     OnboardingPhoneUiState.Content(
       progress = OnboardingProgress(totalSteps = 5, currentIndex = 3),
       phoneNumber = "070 123 45 67",
-      showSubmissionError = true,
+      showSubmissionError = NumberTooShort(),
     ),
   ),
 )
