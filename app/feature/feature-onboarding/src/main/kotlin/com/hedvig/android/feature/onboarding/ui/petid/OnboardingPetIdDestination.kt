@@ -33,7 +33,6 @@ import com.hedvig.android.feature.onboarding.ui.OnboardingStepHeader
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepScaffold
 import hedvig.resources.ONBOARDING_ADD_INFO_LATER_LABEL
 import hedvig.resources.ONBOARDING_ADD_PET_CHIP_IDS_TITLE
-import hedvig.resources.ONBOARDING_DO_THIS_LATER_BUTTON
 import hedvig.resources.ONBOARDING_MISSING_INFO_PET_SUBTITLE
 import hedvig.resources.Res
 import hedvig.resources.general_continue_button

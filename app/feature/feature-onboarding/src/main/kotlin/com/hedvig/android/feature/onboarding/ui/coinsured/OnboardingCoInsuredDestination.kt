@@ -35,7 +35,6 @@ import com.hedvig.android.feature.onboarding.ui.OnboardingStepScaffold
 import hedvig.resources.ONBOARDING_ADD_COINSURED_TITLE
 import hedvig.resources.ONBOARDING_ADD_COOWNERS_TITLE
 import hedvig.resources.ONBOARDING_ADD_INFO_LATER_LABEL
-import hedvig.resources.ONBOARDING_DO_THIS_LATER_BUTTON
 import hedvig.resources.ONBOARDING_MISSING_INFO_SUBTITLE
 import hedvig.resources.ONBOARDING_NUMBER_OF_COINSURED
 import hedvig.resources.ONBOARDING_NUMBER_OF_COOWNERS
@@ -150,7 +149,7 @@ private fun OnboardingCoInsuredScreen(
   }
 }
 
-// A complete row lists the people by name; while info is still missing it shows how many there are.
+// Names are listed once they are all known; until then they are followed by a count of the people still missing.
 @Composable
 private fun CoInsuredRow.secondaryText(): String {
   val plural = if (flowType == CoInsuredFlowType.CoOwners) {
@@ -163,7 +162,7 @@ private fun CoInsuredRow.secondaryText(): String {
   } else if (insuredNames.isNotEmpty()) {
     val count = insuredCount - insuredNames.size
     "${insuredNames.toReadableList()} + ${pluralStringResource(plural, count, count)}"
-  }  else {
+  } else {
     pluralStringResource(plural, insuredCount, insuredCount)
   }
 }

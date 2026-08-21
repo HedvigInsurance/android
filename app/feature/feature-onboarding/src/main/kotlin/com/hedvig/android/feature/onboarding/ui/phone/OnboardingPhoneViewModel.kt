@@ -24,6 +24,8 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.launch
 
+internal const val MINIMUM_PHONE_NUMBER_LENGTH = 6
+
 @Inject
 @HedvigViewModel(ActivityRetainedScope::class)
 internal class OnboardingPhoneViewModel(
@@ -97,8 +99,8 @@ internal class OnboardingPhonePresenter(
 
         is OnboardingPhoneEvent.Save -> {
           val content = currentState as? OnboardingPhoneUiState.Content ?: return@CollectEvents
-          if (event.phoneNumber.length < 6) {
-            currentState = content.copy(showSubmissionError = NumberTooShort())
+          if (event.phoneNumber.length < MINIMUM_PHONE_NUMBER_LENGTH) {
+            currentState = content.copy(showSubmissionError = NumberTooShort)
           } else {
             phoneNumberToSubmit = event.phoneNumber
             submitIteration++
@@ -134,10 +136,10 @@ internal sealed interface OnboardingPhoneUiState {
 }
 
 internal sealed interface SubmissionError {
-  data class NumberTooShort(val minLength: Int = 6): SubmissionError
-  data object GeneralError: SubmissionError
-}
+  data object NumberTooShort : SubmissionError
 
+  data object GeneralError : SubmissionError
+}
 
 internal sealed interface OnboardingPhoneEvent {
   data object Retry : OnboardingPhoneEvent

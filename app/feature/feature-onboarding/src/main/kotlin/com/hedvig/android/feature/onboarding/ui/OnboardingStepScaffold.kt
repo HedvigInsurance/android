@@ -267,7 +267,10 @@ internal fun ColumnScope.OnboardingStepButtons(
     @Composable {
       HedvigButton(
         text = secondaryText,
-        onClick = onSecondaryClick,
+        onClick = {
+          hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+          onSecondaryClick()
+        },
         enabled = true,
         buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
         modifier = Modifier

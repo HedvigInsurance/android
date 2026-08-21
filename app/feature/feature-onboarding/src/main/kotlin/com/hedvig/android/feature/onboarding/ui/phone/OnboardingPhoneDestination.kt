@@ -123,8 +123,11 @@ private fun OnboardingPhoneScreen(
           errorState = if (content.showSubmissionError != null) {
             val text = when (content.showSubmissionError) {
               GeneralError -> stringResource(Res.string.ONBOARDING_PHONE_SAVE_ERROR)
-              is NumberTooShort -> stringResource(Res.string.CLAIM_CHAT_FORM_TEXT_MIN_CHAR,
-                content.showSubmissionError.minLength)
+
+              NumberTooShort -> stringResource(
+                Res.string.CLAIM_CHAT_FORM_TEXT_MIN_CHAR,
+                MINIMUM_PHONE_NUMBER_LENGTH,
+              )
             }
             HedvigTextFieldDefaults.ErrorState.Error.WithMessage(text)
           } else {
@@ -179,7 +182,7 @@ private class OnboardingPhoneUiStateProvider : CollectionPreviewParameterProvide
     OnboardingPhoneUiState.Content(
       progress = OnboardingProgress(totalSteps = 5, currentIndex = 3),
       phoneNumber = "070 123 45 67",
-      showSubmissionError = NumberTooShort(),
+      showSubmissionError = NumberTooShort,
     ),
   ),
 )
