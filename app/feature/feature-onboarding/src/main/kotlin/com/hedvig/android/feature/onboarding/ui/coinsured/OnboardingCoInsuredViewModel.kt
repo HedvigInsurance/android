@@ -101,8 +101,8 @@ internal data class CoInsuredRow(
   val typeOfContract: String,
   val flowType: CoInsuredFlowType,
   val isComplete: Boolean,
-  // Total people on the contract and their first names. The row summarises as a count while info is
-  // still missing, then switches to the names once complete.
+  // Total people on the contract, and the first names of those already known. The two are independent:
+  // [insuredNames] can be shorter than [insuredCount] while details are still missing.
   val insuredCount: Int = 0,
   val insuredNames: List<String> = emptyList(),
 )

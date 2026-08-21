@@ -29,9 +29,8 @@ internal class ContactInfoRepositoryImpl(
         .safeExecute(::ErrorMessage)
         .bind()
         .currentMember
-      val phoneNumber = PhoneNumber.fromStringAfterTrimmingWhitespaces(member.phoneNumber).bind()
       val email = Email.fromString(member.email).bind()
-      ContactInformation(phoneNumber, email)
+      ContactInformation(member.phoneNumber.takeIfStoredNumber(), email)
     }
   }
 
@@ -56,9 +55,15 @@ internal class ContactInfoRepositoryImpl(
       }
       networkCacheManager.clearCache()
       ContactInformation(
-        PhoneNumber.fromStringAfterTrimmingWhitespaces(member.phoneNumber).bind(),
+        member.phoneNumber.takeIfStoredNumber(),
         Email.fromString(member.email).bind(),
       )
     }
   }
 }
+
+/**
+ * A blank number is the backend's way of saying there is none stored, which needs to stay apart from a number the
+ * member has actually got.
+ */
+private fun String?.takeIfStoredNumber(): String? = this?.takeIf { it.isNotBlank() }

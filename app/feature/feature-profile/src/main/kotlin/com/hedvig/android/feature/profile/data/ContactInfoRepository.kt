@@ -15,7 +15,11 @@ internal interface ContactInfoRepository {
 }
 
 data class ContactInformation(
-  val phoneNumber: PhoneNumber?,
+  /**
+   * The stored number exactly as the backend holds it, which is not necessarily a valid [PhoneNumber]. It is shown to
+   * the member so that they can correct it, and validated again on submission.
+   */
+  val phoneNumber: String?,
   val email: Email?,
 ) {
   @JvmInline
@@ -67,6 +71,8 @@ data class ContactInformation(
     }
 
     companion object {
+      const val MINIMUM_NUMBER_OF_DIGITS = 6
+
       private val phoneNumberRegex = Regex("""([+]?\d+)""")
       private val invalidInputErrorMessage = { phoneNumber: String ->
         "Phone number [$phoneNumber] must contain only numbers with an optional '+' in the beginning"
@@ -76,12 +82,8 @@ data class ContactInformation(
         "Phone number [$phoneNumber] cannot contain whitespaces"
       }
 
-      /**
-       * for the phone number we get from the backend, can be null
-       */
-      fun fromStringAfterTrimmingWhitespaces(input: String?): Either<ErrorMessage, PhoneNumber?> {
-        val inputWithoutWhitespaces = input?.filterNot { it.isWhitespace() }
-        return fromString(inputWithoutWhitespaces)
+      private val tooShortInputErrorMessage = { phoneNumber: String ->
+        "Phone number [$phoneNumber] must contain at least $MINIMUM_NUMBER_OF_DIGITS digits"
       }
 
       /**
@@ -93,28 +95,17 @@ data class ContactInformation(
       }
 
       /**
-       * returns [Either.Left] with an [ErrorMessage] if the input is an invalid phone number
-       * returns [Either.Right] with a [PhoneNumber] if the input is a valid phone number
-       * returns [Either.Right] with a [null] [PhoneNumber] if the input is null or empty
-       */
-      fun fromString(input: String?): Either<ErrorMessage, PhoneNumber?> {
-        return when {
-          input.isNullOrBlank() -> null.right()
-          input.any { it.isWhitespace() } -> ErrorMessage(whitespacesInInputErrorMessage(input)).left()
-          input.matches(phoneNumberRegex) -> PhoneNumber(input).right()
-          else -> ErrorMessage(invalidInputErrorMessage(input)).left()
-        }
-      }
-
-      /**
-       * returns [Either.Left] with an [ErrorMessage] if the input is an invalid phone number or blank string
+       * returns [Either.Left] with an [ErrorMessage] if the input is an invalid phone number, a blank string, or
+       * holds fewer than [MINIMUM_NUMBER_OF_DIGITS] digits
        * returns [Either.Right] with a [PhoneNumber] if the input is a valid phone number
        */
       fun notNullFromString(input: String): Either<ErrorMessage, PhoneNumber> {
+        val numberOfDigits = input.count { it.isDigit() }
         return when {
           input.any { it.isWhitespace() } -> ErrorMessage(whitespacesInInputErrorMessage(input)).left()
-          !input.isBlank() && input.matches(phoneNumberRegex) -> PhoneNumber(input).right()
-          else -> ErrorMessage(invalidInputErrorMessage(input)).left()
+          input.isBlank() || !input.matches(phoneNumberRegex) -> ErrorMessage(invalidInputErrorMessage(input)).left()
+          numberOfDigits < MINIMUM_NUMBER_OF_DIGITS -> ErrorMessage(tooShortInputErrorMessage(input)).left()
+          else -> PhoneNumber(input).right()
         }
       }
     }
@@ -125,10 +116,4 @@ data class ContactInformation(
  * Defaults to an empty [String] since a textField needs to have at least an empty input if the [Email] is null
  */
 internal val Email?.valueForTextField: String
-  get() = this?.value ?: ""
-
-/**
- * Defaults to an empty [String] since a textField needs to have at least an empty input if the [PhoneNumber] is null
- */
-internal val PhoneNumber?.valueForTextField: String
   get() = this?.value ?: ""

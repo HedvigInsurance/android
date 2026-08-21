@@ -6,7 +6,6 @@ import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
-import assertk.assertions.isTrue
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.onboarding.FakeOnboardingMemberIdProvider
 import com.hedvig.android.feature.onboarding.FakeOnboardingRepository
@@ -95,7 +94,8 @@ internal class OnboardingPhonePresenterTest {
       awaitItem() // isSubmitting = true
       val state = awaitItem()
       assertThat(state).isInstanceOf<OnboardingPhoneUiState.Content>()
-      assertThat((state as OnboardingPhoneUiState.Content).showSubmissionError).isTrue()
+      assertThat((state as OnboardingPhoneUiState.Content).showSubmissionError)
+        .isEqualTo(SubmissionError.GeneralError)
       assertThat(backstack.entries.last()).isEqualTo(OnboardingStepKey(OnboardingStepId.PhoneNumber))
     }
   }

@@ -34,6 +34,8 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
@@ -246,10 +248,14 @@ internal fun ColumnScope.OnboardingStepButtons(
   secondaryAbovePrimary: Boolean = false,
 ) {
   Spacer(Modifier.height(16.dp))
+  val hapticFeedback = LocalHapticFeedback.current
   val primaryButton = @Composable {
     HedvigButton(
       text = primaryText,
-      onClick = onPrimaryClick,
+      onClick = {
+        hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+        onPrimaryClick()
+      },
       enabled = primaryEnabled,
       modifier = Modifier
         .fillMaxWidth()
@@ -261,7 +267,10 @@ internal fun ColumnScope.OnboardingStepButtons(
     @Composable {
       HedvigButton(
         text = secondaryText,
-        onClick = onSecondaryClick,
+        onClick = {
+          hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+          onSecondaryClick()
+        },
         enabled = true,
         buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
         modifier = Modifier
