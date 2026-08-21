@@ -19,6 +19,15 @@ interface CrossSellEligibleDestination
 interface SuppressesChatPushNotification
 
 /**
+ * A flow during which the Play Store review prompt must not be asked for. Unlike the other markers
+ * here, this one is matched against **every** entry on the back stack rather than just the top: it
+ * marks a flow that hosts other flows on top of itself, and it is those hosted flows that complete
+ * and earn a review prompt. The prompt is held until the marked key leaves the stack, so the member
+ * still gets asked, just not mid-flow.
+ */
+interface SuppressesAppStoreReviewRequest
+
+/**
  * A destination from which reaching the logged-out state is treated as a deliberate "log me out now"
  * action, so the session is discarded rather than stashed for a same-member restore. Restoring the
  * nav back to this screen after a fresh login would be wrong. Replaces the dead
