@@ -61,7 +61,8 @@ import hedvig.resources.ONBOARDING_ANALYTICS_DENY_BUTTON
 import hedvig.resources.ONBOARDING_ANALYTICS_SUBTITLE
 import hedvig.resources.ONBOARDING_ANALYTICS_TITLE
 import hedvig.resources.Res
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
 import org.jetbrains.compose.resources.stringResource
 
 @Inject
@@ -87,37 +88,99 @@ internal class OnboardingConsentPresenter(
   ): OnboardingConsentUiState {
     var currentState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
+    var checkmarkVisible by remember {
+      mutableStateOf((lastState as? OnboardingConsentUiState.Content)?.checkmarkVisible == true)
+    }
+    // Held while a decision is being applied so repeated taps cannot start a second one, and
+    // released once it has navigated, because this entry stays on the back stack and becomes
+    // interactive again when the member comes back to it.
+    var pendingNavigation by remember { mutableStateOf<PendingNavigation?>(null) }
+    val checkmarkSettleSignals = remember { MutableSharedFlow<Boolean>(replay = 1) }
 
     LaunchedEffect(loadIteration) {
+      // Read before the early return: a presenter that restarts while this screen is showing keeps
+      // its state but loses the checkmark, which only the stored consent can tell us.
+      checkmarkVisible = settingsDataStore.observeAnalyticsConsent().first() == AnalyticsConsent.GRANTED
       if (currentState is OnboardingConsentUiState.Content) return@LaunchedEffect
       currentState = OnboardingConsentUiState.Loading
       sessionStore.getOrFetchSession().fold(
         ifLeft = { currentState = OnboardingConsentUiState.Error },
         ifRight = { session ->
-          currentState = OnboardingConsentUiState.Content(session.progressFor(OnboardingStepId.AnalyticsConsent))
+          currentState = OnboardingConsentUiState.Content(
+            progress = session.progressFor(OnboardingStepId.AnalyticsConsent),
+            checkmarkVisible = checkmarkVisible,
+            buttonsEnabled = true,
+          )
         },
       )
     }
 
-    CollectEvents { event ->
-      when (event) {
-        OnboardingConsentEvent.Retry -> loadIteration++
+    LaunchedEffect(pendingNavigation) {
+      when (val pending = pendingNavigation) {
+        null -> {}
 
-        OnboardingConsentEvent.Close -> launch { navigator.exitOnboarding() }
-
-        OnboardingConsentEvent.Allow -> launch {
-          settingsDataStore.setAnalyticsConsent(AnalyticsConsent.GRANTED)
-          navigator.continueFrom(OnboardingStepId.AnalyticsConsent)
+        PendingNavigation.Exit -> {
+          navigator.exitOnboarding()
+          pendingNavigation = null
         }
 
-        OnboardingConsentEvent.Deny -> launch {
-          settingsDataStore.setAnalyticsConsent(AnalyticsConsent.DENIED)
+        is PendingNavigation.Decision -> {
+          settingsDataStore.setAnalyticsConsent(pending.consent)
+          val granted = pending.consent == AnalyticsConsent.GRANTED
+          if (granted != checkmarkVisible) {
+            checkmarkVisible = granted
+            checkmarkSettleSignals.first { settledVisibility -> settledVisibility == granted }
+          }
           navigator.continueFrom(OnboardingStepId.AnalyticsConsent)
+          pendingNavigation = null
         }
       }
     }
 
-    return currentState
+    CollectEvents { event ->
+      when (event) {
+        OnboardingConsentEvent.Retry -> {
+          loadIteration++
+        }
+
+        OnboardingConsentEvent.Close -> {
+          if (pendingNavigation == null) {
+            pendingNavigation = PendingNavigation.Exit
+          }
+        }
+
+        OnboardingConsentEvent.Allow -> {
+          if (pendingNavigation == null) {
+            pendingNavigation = PendingNavigation.Decision(AnalyticsConsent.GRANTED)
+          }
+        }
+
+        OnboardingConsentEvent.Deny -> {
+          if (pendingNavigation == null) {
+            pendingNavigation = PendingNavigation.Decision(AnalyticsConsent.DENIED)
+          }
+        }
+
+        is OnboardingConsentEvent.CheckmarkSettled -> {
+          checkmarkSettleSignals.tryEmit(event.checkmarkVisible)
+        }
+      }
+    }
+
+    return when (val state = currentState) {
+      is OnboardingConsentUiState.Content -> state.copy(
+        checkmarkVisible = checkmarkVisible,
+        buttonsEnabled = pendingNavigation == null,
+      )
+
+      else -> state
+    }
+  }
+
+  private sealed interface PendingNavigation {
+    data object Exit : PendingNavigation
+
+    data class Decision(val consent: AnalyticsConsent) : PendingNavigation
   }
 }
 
@@ -126,7 +189,11 @@ internal sealed interface OnboardingConsentUiState {
 
   data object Error : OnboardingConsentUiState
 
-  data class Content(val progress: OnboardingProgress) : OnboardingConsentUiState
+  data class Content(
+    val progress: OnboardingProgress,
+    val checkmarkVisible: Boolean,
+    val buttonsEnabled: Boolean,
+  ) : OnboardingConsentUiState
 }
 
 internal sealed interface OnboardingConsentEvent {
@@ -137,6 +204,9 @@ internal sealed interface OnboardingConsentEvent {
   data object Allow : OnboardingConsentEvent
 
   data object Deny : OnboardingConsentEvent
+
+  /** The checkmark has finished animating to [checkmarkVisible]. */
+  data class CheckmarkSettled(val checkmarkVisible: Boolean) : OnboardingConsentEvent
 }
 
 @Composable
@@ -155,6 +225,9 @@ internal fun OnboardingConsentDestination(
     onRetry = { viewModel.emit(OnboardingConsentEvent.Retry) },
     onAllow = { viewModel.emit(OnboardingConsentEvent.Allow) },
     onDeny = { viewModel.emit(OnboardingConsentEvent.Deny) },
+    onCheckmarkSettled = { checkmarkVisible ->
+      viewModel.emit(OnboardingConsentEvent.CheckmarkSettled(checkmarkVisible))
+    },
   )
 }
 
@@ -168,6 +241,7 @@ private fun OnboardingConsentScreen(
   onRetry: () -> Unit,
   onAllow: () -> Unit,
   onDeny: () -> Unit,
+  onCheckmarkSettled: (checkmarkVisible: Boolean) -> Unit,
 ) {
   OnboardingStepScaffold(
     progress = (uiState as? OnboardingConsentUiState.Content)?.progress,
@@ -195,7 +269,11 @@ private fun OnboardingConsentScreen(
         )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(24.dp))
-        OnboardingVerifiedCard(modifier = Modifier.align(Alignment.CenterHorizontally))
+        OnboardingVerifiedCard(
+          checkmarkVisible = uiState.checkmarkVisible,
+          onCheckmarkSettled = onCheckmarkSettled,
+          modifier = Modifier.align(Alignment.CenterHorizontally),
+        )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(24.dp))
         Row(
@@ -221,7 +299,7 @@ private fun OnboardingConsentScreen(
         HedvigButton(
           text = stringResource(Res.string.ONBOARDING_ANALYTICS_ALLOW_BUTTON),
           onClick = onAllow,
-          enabled = true,
+          enabled = uiState.buttonsEnabled,
           buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
           modifier = Modifier
             .fillMaxWidth()
@@ -232,7 +310,7 @@ private fun OnboardingConsentScreen(
         HedvigButton(
           text = stringResource(Res.string.ONBOARDING_ANALYTICS_DENY_BUTTON),
           onClick = onDeny,
-          enabled = true,
+          enabled = uiState.buttonsEnabled,
           buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
           modifier = Modifier
             .fillMaxWidth()
@@ -262,6 +340,7 @@ private fun PreviewOnboardingConsentScreen(
         onRetry = {},
         onAllow = {},
         onDeny = {},
+        onCheckmarkSettled = {},
       )
     }
   }
@@ -273,6 +352,13 @@ private class OnboardingConsentUiStateProvider : CollectionPreviewParameterProvi
     OnboardingConsentUiState.Error,
     OnboardingConsentUiState.Content(
       progress = OnboardingProgress(totalSteps = 5, currentIndex = 2),
+      checkmarkVisible = false,
+      buttonsEnabled = true,
+    ),
+    OnboardingConsentUiState.Content(
+      progress = OnboardingProgress(totalSteps = 5, currentIndex = 2),
+      checkmarkVisible = true,
+      buttonsEnabled = false,
     ),
   ),
 )

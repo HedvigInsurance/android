@@ -1,7 +1,7 @@
 package com.hedvig.android.feature.onboarding.ui.consent
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -13,9 +13,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
@@ -29,42 +28,62 @@ import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
 import hedvig.resources.Res
 import hedvig.resources.onboarding_verified_badge
 import hedvig.resources.onboarding_verified_card
-import kotlin.time.Duration.Companion.seconds
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 
 private val CardSize = 120.dp
 
-// The badge is drawn in the same 120-unit space as the card; its circle is centred here, so the
-// scale-in pivots from the badge itself rather than the artwork centre.
-private val BadgeTransformOrigin = TransformOrigin(92f / 120f, 24f / 120f)
+// The checkmark is drawn in the same 120-unit space as the card; its circle is centred here, so the
+// scaling pivots from the checkmark itself rather than the artwork centre.
+private val CheckmarkTransformOrigin = TransformOrigin(92f / 120f, 24f / 120f)
+
+private val CheckmarkScaleInSpec = spring<Float>(
+  dampingRatio = Spring.DampingRatioMediumBouncy,
+  stiffness = Spring.StiffnessMediumLow,
+)
+
+// Scaling away keeps the same stiffness without the bounce, which would send the scale negative and
+// briefly mirror the artwork.
+private val CheckmarkScaleOutSpec = spring<Float>(
+  dampingRatio = Spring.DampingRatioNoBouncy,
+  stiffness = Spring.StiffnessMediumLow,
+)
+
+private val CheckmarkAlphaSpec = tween<Float>(
+  durationMillis = MotionTokens.DurationShort4.toInt(),
+  easing = MotionTokens.EasingStandardCubicBezier,
+)
 
 /**
- * The card illustration on the analytics-consent step. The green "verified" badge is absent on the
- * first frame and pops in a couple of seconds after the screen is shown.
+ * The card illustration on the analytics-consent step, with the green "verified" checkmark popping in
+ * and out as [checkmarkVisible] changes. It starts out at whatever [checkmarkVisible] says, so an
+ * already granted consent shows the checkmark without animating.
+ *
+ * [onCheckmarkSettled] reports the visibility the checkmark has finished animating to, which lets the
+ * caller hold navigation until the pop has played out.
  */
 @Composable
-internal fun OnboardingVerifiedCard(modifier: Modifier = Modifier) {
-  var badgeVisible by remember { mutableStateOf(false) }
-  LaunchedEffect(Unit) {
-    delay(1.seconds)
-    badgeVisible = true
+internal fun OnboardingVerifiedCard(
+  checkmarkVisible: Boolean,
+  onCheckmarkSettled: (checkmarkVisible: Boolean) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val checkmarkScale = remember { Animatable(if (checkmarkVisible) 1f else 0f) }
+  val checkmarkAlpha = remember { Animatable(if (checkmarkVisible) 1f else 0f) }
+  val currentOnCheckmarkSettled by rememberUpdatedState(onCheckmarkSettled)
+  LaunchedEffect(checkmarkVisible) {
+    val target = if (checkmarkVisible) 1f else 0f
+    coroutineScope {
+      launch {
+        checkmarkScale.animateTo(target, if (checkmarkVisible) CheckmarkScaleInSpec else CheckmarkScaleOutSpec)
+      }
+      launch {
+        checkmarkAlpha.animateTo(target, CheckmarkAlphaSpec)
+      }
+    }
+    currentOnCheckmarkSettled(checkmarkVisible)
   }
-  VerifiedCard(badgeVisible = badgeVisible, modifier = modifier)
-}
-
-@Composable
-private fun VerifiedCard(badgeVisible: Boolean, modifier: Modifier = Modifier) {
-  val badgeScale by animateFloatAsState(
-    targetValue = if (badgeVisible) 1f else 0f,
-    animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMediumLow),
-    label = "verified badge scale",
-  )
-  val badgeAlpha by animateFloatAsState(
-    targetValue = if (badgeVisible) 1f else 0f,
-    animationSpec = tween(MotionTokens.DurationShort4.toInt(), easing = MotionTokens.EasingStandardCubicBezier),
-    label = "verified badge alpha",
-  )
   Box(
     modifier = modifier
       .size(CardSize)
@@ -88,10 +107,10 @@ private fun VerifiedCard(badgeVisible: Boolean, modifier: Modifier = Modifier) {
       modifier = Modifier
         .matchParentSize()
         .graphicsLayer {
-          transformOrigin = BadgeTransformOrigin
-          scaleX = badgeScale
-          scaleY = badgeScale
-          alpha = badgeAlpha
+          transformOrigin = CheckmarkTransformOrigin
+          scaleX = checkmarkScale.value
+          scaleY = checkmarkScale.value
+          alpha = checkmarkAlpha.value
         },
     )
   }
@@ -99,20 +118,28 @@ private fun VerifiedCard(badgeVisible: Boolean, modifier: Modifier = Modifier) {
 
 @HedvigPreview
 @Composable
-private fun PreviewOnboardingVerifiedCardBadgeVisible() {
+private fun PreviewOnboardingVerifiedCardCheckmarkVisible() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      VerifiedCard(badgeVisible = true, modifier = Modifier.padding(24.dp))
+      OnboardingVerifiedCard(
+        checkmarkVisible = true,
+        onCheckmarkSettled = {},
+        modifier = Modifier.padding(24.dp),
+      )
     }
   }
 }
 
 @HedvigPreview
 @Composable
-private fun PreviewOnboardingVerifiedCardBadgeHidden() {
+private fun PreviewOnboardingVerifiedCardCheckmarkHidden() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      VerifiedCard(badgeVisible = false, modifier = Modifier.padding(24.dp))
+      OnboardingVerifiedCard(
+        checkmarkVisible = false,
+        onCheckmarkSettled = {},
+        modifier = Modifier.padding(24.dp),
+      )
     }
   }
 }

@@ -26,6 +26,7 @@ internal class TrustlyPresenter(
     }
     var startSessionError: ErrorMessage? by remember { mutableStateOf(null) }
     var connectingCardFailed by remember { mutableStateOf(lastState is TrustlyUiState.FailedToConnectCard) }
+    var cancelledConnectingCard by remember { mutableStateOf(lastState is TrustlyUiState.CancelledConnectingCard) }
     var succeededInConnectingCard by remember { mutableStateOf(lastState is TrustlyUiState.SucceededInConnectingCard) }
 
     var loadIteration by remember { mutableIntStateOf(0) }
@@ -34,6 +35,7 @@ internal class TrustlyPresenter(
       if (browsing != null) return@LaunchedEffect
       if (startSessionError != null) return@LaunchedEffect
       if (connectingCardFailed) return@LaunchedEffect
+      if (cancelledConnectingCard) return@LaunchedEffect
       if (succeededInConnectingCard) return@LaunchedEffect
       startTrustlySessionUseCase.invoke().fold(
         ifLeft = {
@@ -53,6 +55,10 @@ internal class TrustlyPresenter(
           connectingCardFailed = true
         }
 
+        TrustlyEvent.ConnectingCardCancelled -> {
+          cancelledConnectingCard = true
+        }
+
         TrustlyEvent.ConnectingCardSucceeded -> {
           succeededInConnectingCard = true
         }
@@ -61,6 +67,7 @@ internal class TrustlyPresenter(
           browsing = null
           startSessionError = null
           connectingCardFailed = false
+          cancelledConnectingCard = false
           succeededInConnectingCard = false
           loadIteration++
         }
@@ -72,6 +79,9 @@ internal class TrustlyPresenter(
         cacheManager.clearCache()
       }
       return TrustlyUiState.SucceededInConnectingCard
+    }
+    if (cancelledConnectingCard) {
+      return TrustlyUiState.CancelledConnectingCard
     }
     if (connectingCardFailed) {
       return TrustlyUiState.FailedToConnectCard
@@ -93,6 +103,9 @@ internal sealed interface TrustlyEvent {
 
   data object ConnectingCardFailed : TrustlyEvent
 
+  /** The member ended the Trustly checkout themselves. */
+  data object ConnectingCardCancelled : TrustlyEvent
+
   data object RetryConnectingCard : TrustlyEvent
 }
 
@@ -105,6 +118,9 @@ internal sealed interface TrustlyUiState {
   ) : TrustlyUiState
 
   data object FailedToConnectCard : TrustlyUiState
+
+  /** Terminal state for a checkout the member ended themselves, which offers no retry. */
+  data object CancelledConnectingCard : TrustlyUiState
 
   data class FailedToStartSession(val errorMessage: ErrorMessage) : TrustlyUiState
 

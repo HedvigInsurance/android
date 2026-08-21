@@ -60,9 +60,22 @@ internal class AuthTokenServiceImpl(
   override suspend fun refreshAndGetAccessToken(): AccessToken? {
     val refreshToken = getRefreshToken() ?: return null
     return when (val result = authRepository.exchange(RefreshTokenGrant(refreshToken.token))) {
-      is AuthTokenResult.Error -> {
-        logcat { "Refreshing token failed. Invalidating present tokens" }
+      is AuthTokenResult.Error.BackendErrorResponse -> {
+        logcat { "Refreshing token was rejected by the backend. Invalidating present tokens" }
         logoutAndInvalidateTokens()
+        null
+      }
+
+      is AuthTokenResult.Error.IOError -> {
+        // The backend was never reached, so this says nothing about whether the tokens are still
+        // valid. Keeping them lets a later request retry the refresh; discarding them would force a
+        // full BankID re-login over the same network that just failed one small request.
+        logcat(LogPriority.WARN) { "Refreshing token could not reach the backend. Keeping present tokens" }
+        null
+      }
+
+      is AuthTokenResult.Error.UnknownError -> {
+        logcat(LogPriority.WARN) { "Refreshing token failed with an unknown error. Keeping present tokens" }
         null
       }
 

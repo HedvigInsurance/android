@@ -130,7 +130,6 @@ import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Inbo
 import com.hedvig.android.design.system.hedvig.TopAppBarLayoutForActions
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
-import com.hedvig.android.design.system.hedvig.icon.Card
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
 import com.hedvig.android.design.system.hedvig.icon.Reload
@@ -182,8 +181,6 @@ import hedvig.resources.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_EDIT_INSURANCE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE
-import hedvig.resources.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE
-import hedvig.resources.HC_QUICK_ACTIONS_PAYMENTS_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE
@@ -1221,7 +1218,7 @@ private fun QuickActionTilesSection(
       quickActions.forEach { action ->
         HomeActionTile(
           icon = action.homeIcon(),
-          text = stringResource(action.titleRes),
+          text = stringResource(action.shortTitleRes),
           onClick = {
             when (action) {
               is QuickAction.StandaloneQuickLink -> onQuickLink(action.quickLinkDestination)
@@ -1242,7 +1239,6 @@ private fun QuickAction.homeIcon(): ImageVector = when (this) {
 
   is QuickAction.StandaloneQuickLink -> when (quickLinkDestination) {
     QuickLinkDestination.OuterDestination.QuickLinkChangeAddress -> HedvigIcons.Reload
-    QuickLinkDestination.OuterDestination.QuickLinkConnectPayment -> HedvigIcons.Card
     QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate -> HedvigIcons.Travel
     is InnerHelpCenterDestination.FirstVet -> HedvigIcons.HelipadOutline
     else -> HedvigIcons.Settings
@@ -1731,11 +1727,6 @@ private val previewQuickActions: List<QuickAction> = listOf(
     titleRes = Res.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE,
     hintTextRes = Res.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE,
     quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeAddress,
-  ),
-  QuickAction.StandaloneQuickLink(
-    titleRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_TITLE,
-    hintTextRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE,
-    quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkConnectPayment,
   ),
 )
 

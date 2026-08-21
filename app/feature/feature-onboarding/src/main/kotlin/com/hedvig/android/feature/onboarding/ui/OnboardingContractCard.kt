@@ -21,9 +21,11 @@ import com.hedvig.android.data.contract.toContractGroup
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import hedvig.resources.ONBOARDING_ADD_BUTTON
@@ -94,6 +96,23 @@ internal fun OnboardingContractCard(
           modifier = Modifier.clip(CircleShape),
         )
       }
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewOnboardingContractCard() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      OnboardingContractCard(
+        displayName = "displayName",
+        secondaryText = "secondaryText",
+        typeOfContract = "SE_HOUSE",
+        isComplete = false,
+        onAddClick = {},
+        modifier = Modifier,
+      )
     }
   }
 }
