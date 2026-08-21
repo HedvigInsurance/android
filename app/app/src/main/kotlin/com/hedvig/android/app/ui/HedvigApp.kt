@@ -144,6 +144,7 @@ internal fun HedvigApp(
       TryShowAppStoreReviewDialogEffect(
         authTokenService,
         waitUntilAppReviewDialogShouldBeOpenedUseCase,
+        backstackController,
         androidAppHost::tryShowAppStoreReviewDialog,
       )
       TryShowOnboardingEffect(
@@ -368,6 +369,7 @@ private fun EnableEdgeToEdgeSideEffect(
 private fun TryShowAppStoreReviewDialogEffect(
   authTokenService: AuthTokenService,
   waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase,
+  backstackController: BackstackController,
   tryShowAppStoreReviewDialog: () -> Unit,
 ) {
   val reviewDialogDelay = 2.seconds
@@ -376,6 +378,10 @@ private fun TryShowAppStoreReviewDialogEffect(
     lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
       authTokenService.authStatus.first { it is AuthStatus.LoggedIn }
       waitUntilAppReviewDialogShouldBeOpenedUseCase.invoke()
+      // Hold rather than return: awaiting above has already consumed the member's earned prompt, so
+      // giving up here would spend it on nothing. A flow completed inside onboarding still deserves
+      // the prompt, just once the member is out of onboarding and not mid-flow.
+      snapshotFlow { backstackController.suppressesAppStoreReviewRequest }.first { !it }
       delay(reviewDialogDelay)
       tryShowAppStoreReviewDialog()
     }
