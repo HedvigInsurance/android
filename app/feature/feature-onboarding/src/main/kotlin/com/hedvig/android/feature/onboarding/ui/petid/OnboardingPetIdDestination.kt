@@ -129,8 +129,8 @@ private fun OnboardingPetIdScreen(
         OnboardingStepButtons(
           primaryText = stringResource(Res.string.general_continue_button),
           onPrimaryClick = onContinue,
-          secondaryText = stringResource(Res.string.ONBOARDING_DO_THIS_LATER_BUTTON),
-          onSecondaryClick = onContinue,
+          secondaryText = null,
+          onSecondaryClick = null,
         )
       }
     }
