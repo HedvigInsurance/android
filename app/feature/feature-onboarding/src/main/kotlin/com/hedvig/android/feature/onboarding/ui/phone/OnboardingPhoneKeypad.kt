@@ -22,7 +22,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.style.LineHeightStyle
@@ -115,6 +117,7 @@ private fun KeypadKey(label: String, highlighted: Boolean, onKeypadClick: (Strin
     animationSpec = tween(MotionTokens.DurationLong1.toInt(), easing = MotionTokens.EasingEmphasizedCubicBezier),
     label = "keypad scale",
   )
+  val hapticFeedback = LocalHapticFeedback.current
   Box(
     modifier = Modifier
       .size(KeySize)
@@ -124,6 +127,7 @@ private fun KeypadKey(label: String, highlighted: Boolean, onKeypadClick: (Strin
       }
       .clip(HedvigTheme.shapes.cornerLarge)
       .clickable(clickEnabled) {
+        hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
         onKeypadClick(label)
       }
       .background(containerColor, HedvigTheme.shapes.cornerLarge),
