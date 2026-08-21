@@ -136,6 +136,7 @@ internal fun YourInfoTab(
   allowEditCoInsured: Boolean,
   allowEditCoOwners: Boolean,
   allowChangeTier: Boolean,
+  isPaymentProtection: Boolean,
   allowRemovingAddon: Boolean,
   onChangeTierClick: () -> Unit,
   isDecommissioned: Boolean,
@@ -171,6 +172,7 @@ internal fun YourInfoTab(
       allowEditCoInsured = allowEditCoInsured,
       allowEditCoOwners = allowEditCoOwners,
       allowChangeTier = allowChangeTier,
+      isPaymentProtection = isPaymentProtection,
       allowRemovingAddon = allowRemovingAddon,
       onChangeTierClick = {
         editYourInfoBottomSheet.dismiss()
@@ -953,6 +955,7 @@ private fun PreviewYourInfoTab() {
         allowEditCoInsured = true,
         allowEditCoOwners = false,
         allowChangeTier = true,
+        isPaymentProtection = false,
         allowRemovingAddon = true,
         onChangeTierClick = {},
         isDecommissioned = true,

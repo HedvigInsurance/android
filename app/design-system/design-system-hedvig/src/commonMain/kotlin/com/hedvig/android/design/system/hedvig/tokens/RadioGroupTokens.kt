@@ -26,6 +26,7 @@ internal object RadioGroupStyleTokens {
 
 @Suppress("PropertyName")
 internal sealed interface RadioGroupSizeTokens {
+  val MinHeight: Dp
   val TopPadding: Dp
   val BottomPadding: Dp
   val HorizontalPadding: Dp
@@ -38,6 +39,7 @@ internal sealed interface RadioGroupSizeTokens {
   val TextStyleLabel: TypographyKeyTokens
 
   object Large : RadioGroupSizeTokens {
+    override val MinHeight: Dp = 64.dp
     override val TopPadding: Dp = 16.dp
     override val BottomPadding: Dp = 18.dp
     override val HorizontalPadding: Dp = 16.dp
@@ -51,6 +53,7 @@ internal sealed interface RadioGroupSizeTokens {
   }
 
   object Medium : RadioGroupSizeTokens {
+    override val MinHeight: Dp = 64.dp
     override val TopPadding: Dp = 16.dp
     override val BottomPadding: Dp = 18.dp
     override val HorizontalPadding: Dp = 16.dp
@@ -64,6 +67,7 @@ internal sealed interface RadioGroupSizeTokens {
   }
 
   object Small : RadioGroupSizeTokens {
+    override val MinHeight: Dp = 56.dp
     override val TopPadding: Dp = 15.dp
     override val BottomPadding: Dp = 17.dp
     override val HorizontalPadding: Dp = 14.dp
