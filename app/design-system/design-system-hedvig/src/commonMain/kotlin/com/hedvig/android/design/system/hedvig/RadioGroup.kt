@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -205,6 +206,7 @@ object RadioGroupDefaults {
     }
     return RadioGroupStyleInternal(
       style = style,
+      minHeight = tokens.MinHeight,
       topPadding = tokens.TopPadding,
       bottomPadding = tokens.BottomPadding,
       horizontalPadding = tokens.HorizontalPadding,
@@ -239,6 +241,7 @@ data class RadioGroupColors(
 
 internal data class RadioGroupStyleInternal(
   val style: RadioGroupStyle,
+  val minHeight: Dp,
   val topPadding: Dp,
   val bottomPadding: Dp,
   val horizontalPadding: Dp,
@@ -333,6 +336,7 @@ private fun RadioGroup(
                     modifier = Modifier
                       .fillMaxWidth()
                       .optionSelectable(onRadioOptionSelected, option.id, selected, enabled, role)
+                      .heightIn(min = style.minHeight)
                       .horizontalDivider(DividerPosition.Top, show = index != 0)
                       .optionPaddings(style, option.hasLabel),
                   )
@@ -362,6 +366,7 @@ private fun RadioGroup(
           modifier = Modifier
             .fillMaxWidth()
             .optionSelectable(onRadioOptionSelected, option.id, selected, enabled, role)
+            .heightIn(min = style.minHeight)
             .optionPaddings(style, option.hasLabel),
         )
       }
