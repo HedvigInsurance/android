@@ -695,7 +695,8 @@ type ChangeTierDeductibleFromAgreement {
   """
   tierLevel: Int
   """
-  Optional tier description, if set use that rather than productVariant->tierDescription
+  Optional tier description, if set use that rather than productVariant->tierDescription.
+  An empty string means the description should deliberately be left blank.
   """
   tierDescription: String
   """
@@ -735,7 +736,8 @@ type ChangeTierDeductibleQuote {
   """
   tierLevel: Int
   """
-  Optional tier description, if set use that rather than productVariant->tierDescription
+  Optional tier description, if set use that rather than productVariant->tierDescription.
+  An empty string means the description should deliberately be left blank.
   """
   tierDescription: String
   """
