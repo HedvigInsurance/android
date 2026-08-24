@@ -48,7 +48,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -123,7 +122,7 @@ import hedvig.resources.SEARCH_NOTHING_FOUND
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_continue_button
 import hedvig.resources.hundar_badar_pet
-import hedvig.resources.pillow_hedvig
+import hedvig.resources.pillow_new_680
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
@@ -400,7 +399,7 @@ private fun ContentWithoutSearch(
           } else {
             Spacer(Modifier.padding(16.dp))
             Image(
-              painter = painterResource(Res.drawable.pillow_hedvig),
+              painter = painterResource(Res.drawable.pillow_new_680),
               contentDescription = null,
               modifier = Modifier
                 .size(170.dp)
