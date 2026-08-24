@@ -44,7 +44,7 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
 import hedvig.resources.ONBOARDING_CONNECT_PAYMENT_BANK_LABEL
 import hedvig.resources.Res
-import hedvig.resources.pillow_hedvig
+import hedvig.resources.pillow_new_680
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
@@ -145,7 +145,7 @@ private fun HedvigSymbolWithCheck(checkVisible: Boolean) {
   )
   Box {
     Image(
-      painter = painterResource(Res.drawable.pillow_hedvig),
+      painter = painterResource(Res.drawable.pillow_new_680),
       contentDescription = null,
       modifier = Modifier.size(SymbolSize),
     )
