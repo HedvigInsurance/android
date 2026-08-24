@@ -1736,7 +1736,7 @@ input CrossSellExperimentInput {
 input CrossSellInput {
   userFlow: UserFlow!
   """
-  REQUIRED for SMART_X_SELL, must be NULL for HOME_X_SELL and INSURANCES
+  REQUIRED for SMART_X_SELL, must be NULL for HOME_X_SELL, INSURANCES and ONBOARDING
   """
   flowSource: FlowSource
   """
@@ -1773,6 +1773,11 @@ type CrossSellV2 {
   Other available cross-sells (behavior varies by userFlow)
   """
   otherCrossSells: [CrossSell!]!
+  """
+  Whether otherCrossSells should be presented as promoted offers (the highlighted "save" treatment).
+  A flow can apply a discount without promoting it, so this may be false while items still carry discount
+  copy in their description. Independent of recommendedCrossSell, which carries its own discount fields.
+  """
   discountAvailable: Boolean!
 }
 enum CurrencyCode {
@@ -2722,6 +2727,8 @@ type Member {
   - INSURANCES: All options in otherCrossSells, no recommendation
   - HOME_X_SELL: Recommendation + other options
   - SMART_X_SELL (requires flowSource): Focused recommendation OR all options
+  - ONBOARDING: All options in otherCrossSells led by the recommendation, no separate recommendation
+  otherCrossSells carry discount copy for every flow except SMART_X_SELL.
   """
   crossSellV2(input: CrossSellInput!): CrossSellV2!
   """
@@ -5704,6 +5711,10 @@ enum UserFlow {
   Smart cross-sell - focused recommendation OR all options
   """
   SMART_X_SELL
+  """
+  End of onboarding - all options led by the recommendation
+  """
+  ONBOARDING
 }
 scalar UUID
 type ValueArray {
