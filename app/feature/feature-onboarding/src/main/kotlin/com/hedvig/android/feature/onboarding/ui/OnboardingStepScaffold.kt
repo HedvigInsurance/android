@@ -37,6 +37,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.hedvig.android.compose.ui.LocalSharedTransitionScope
@@ -237,7 +238,13 @@ internal fun OnboardingStepHeader(title: String, modifier: Modifier = Modifier, 
   }
 }
 
-/** Bottom-anchored button area with full-pill shapes. Primary and optional secondary buttons. */
+/**
+ * Bottom-anchored button area with full-pill shapes. Primary and optional secondary buttons, over an
+ * optional [caption].
+ *
+ * [caption] is a plain string rather than a slot on purpose: every step's caption is the same small
+ * translucent line, and owning the style here is what keeps it from being restyled per screen.
+ */
 @Composable
 internal fun ColumnScope.OnboardingStepButtons(
   primaryText: String,
@@ -246,7 +253,20 @@ internal fun ColumnScope.OnboardingStepButtons(
   secondaryText: String? = null,
   onSecondaryClick: (() -> Unit)? = null,
   secondaryAbovePrimary: Boolean = false,
+  caption: String? = null,
 ) {
+  if (caption != null) {
+    Spacer(Modifier.height(24.dp))
+    HedvigText(
+      text = caption,
+      style = HedvigTheme.typography.label,
+      color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+      textAlign = TextAlign.Center,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+    )
+  }
   Spacer(Modifier.height(16.dp))
   val hapticFeedback = LocalHapticFeedback.current
   val primaryButton = @Composable {
@@ -317,6 +337,7 @@ private fun PreviewOnboardingStepScaffold() {
         onPrimaryClick = {},
         secondaryText = "Skip",
         onSecondaryClick = {},
+        caption = "You can add this information later",
       )
     }
   }
