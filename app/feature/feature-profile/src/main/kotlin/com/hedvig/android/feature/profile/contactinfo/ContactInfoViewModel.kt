@@ -15,6 +15,7 @@ import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.text.TextRange
 import arrow.core.Either
 import arrow.core.getOrElse
+import arrow.core.right
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
@@ -58,40 +59,33 @@ internal sealed interface ContactInfoUiState {
   data class Content(
     val phoneNumberState: TextFieldState,
     val emailState: TextFieldState,
-    val uploadedPhoneNumber: PhoneNumber?,
+    val uploadedPhoneNumber: String?,
     val uploadedEmail: Email?,
     val submittingUpdatedInfo: Boolean,
     val showSuccessSnackBar: Boolean = false,
     val errorSnackBarText: ErrorSnackBarText? = null,
+    val hasAttemptedSubmission: Boolean = false,
   ) : ContactInfoUiState {
+    /**
+     * Validated with the same rules the submission uses, so that an input can never look valid but be rejected on
+     * submit. An empty field only counts as an error once submission has been attempted, since the member has not
+     * had the chance to fill it in before that.
+     */
     private val phoneNumber: Either<ErrorMessage, PhoneNumber?>
-      get() = PhoneNumber.fromStringAfterTrimmingWhitespaces(phoneNumberState.text.toString())
+      get() = when {
+        phoneNumberState.text.isBlank() && !hasAttemptedSubmission -> null.right()
+        else -> PhoneNumber.notNullFromStringAfterTrimmingWhitespaces(phoneNumberState.text.toString())
+      }
     private val email: Either<ErrorMessage, Email?>
-      get() = Email.fromString(emailState.text.toString())
+      get() = when {
+        emailState.text.isBlank() && !hasAttemptedSubmission -> null.right()
+        else -> Email.fromStringNotNull(emailState.text.toString())
+      }
 
     val phoneNumberHasError: Boolean
       get() = phoneNumber.isLeft()
     val emailHasError: Boolean
       get() = email.isLeft()
-
-    private val emailIsDeletingKnownInfo: Boolean
-      get() = when (uploadedEmail) {
-        null -> false
-        else -> emailState.text.isBlank()
-      }
-    private val phoneNumberIsDeletingKnownInfo: Boolean
-      get() = when (uploadedPhoneNumber) {
-        null -> false
-        else -> phoneNumberState.text.isBlank()
-      }
-
-    val canSubmit: Boolean
-      get() = !(phoneNumberState.text.isBlank() || emailState.text.isBlank()) &&
-        !emailIsDeletingKnownInfo &&
-        !phoneNumberIsDeletingKnownInfo &&
-        !emailHasError &&
-        !phoneNumberHasError &&
-        !submittingUpdatedInfo
 
     val phoneNumberInputTransformation = InputTransformation.byValue { _, proposed ->
       proposed.filterNot { it.isWhitespace() }.trim()
@@ -125,11 +119,12 @@ internal class ContactInfoPresenter(
       TextFieldState(lastEmailState?.text?.toString() ?: "", lastEmailState?.selection ?: TextRange(0))
     }
     var uploadedEmail: Email? by remember { mutableStateOf(lastState.content?.uploadedEmail) }
-    var uploadedPhoneNumber: PhoneNumber? by remember { mutableStateOf(lastState.content?.uploadedPhoneNumber) }
+    var uploadedPhoneNumber: String? by remember { mutableStateOf(lastState.content?.uploadedPhoneNumber) }
 
     var refetchDataIteration by remember { mutableIntStateOf(0) }
 
     var submittingData: Pair<PhoneNumber, Email>? by remember { mutableStateOf(null) }
+    var hasAttemptedSubmission by remember { mutableStateOf(lastState.content?.hasAttemptedSubmission == true) }
     var errorSnackBarText by remember { mutableStateOf<ErrorSnackBarText?>(null) }
     var showSuccessToast by remember { mutableStateOf<Boolean>(false) }
 
@@ -148,7 +143,7 @@ internal class ContactInfoPresenter(
       uploadedEmail = contactInformation.email
       uploadedPhoneNumber = contactInformation.phoneNumber
       email.setTextAndPlaceCursorAtEnd(contactInformation.email.valueForTextField)
-      phoneNumber.setTextAndPlaceCursorAtEnd(contactInformation.phoneNumber.valueForTextField)
+      phoneNumber.setTextAndPlaceCursorAtEnd(contactInformation.phoneNumber ?: "")
     }
 
     LaunchedEffect(refetchDataIteration) {
@@ -219,7 +214,9 @@ internal class ContactInfoPresenter(
         }
 
         SubmitData -> {
-          if (phoneNumber.text.isBlank() || email.text.isBlank()) return@CollectEvents
+          // Marked before validating, so that invalid input the member has now submitted starts showing its error.
+          hasAttemptedSubmission = true
+          if (submittingData != null) return@CollectEvents
           val trimmedPhoneNumber = PhoneNumber
             .notNullFromStringAfterTrimmingWhitespaces(phoneNumber.text.toString())
             .getOrElse {
@@ -253,6 +250,7 @@ internal class ContactInfoPresenter(
         submittingUpdatedInfo = submittingData != null,
         errorSnackBarText = errorSnackBarText,
         showSuccessSnackBar = showSuccessToast,
+        hasAttemptedSubmission = hasAttemptedSubmission,
       )
     }
   }
