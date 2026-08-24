@@ -38,6 +38,9 @@ internal data object OnboardingForeverKey : HedvigNavKey
 /**
  * Identifies each onboarding step past welcome. The member's concrete path (which of these apply,
  * in order) is computed by buildOnboardingPath from the eagerly fetched OnboardingData.
+ *
+ * Declared in presentation order. buildOnboardingPath emits them in this order, and
+ * OnboardingNavigator relies on it to continue past a step a rebuilt path no longer contains.
  */
 enum class OnboardingStepId {
   AnalyticsConsent,
