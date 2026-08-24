@@ -12,11 +12,11 @@ import com.hedvig.android.feature.onboarding.FakeOnboardingMemberIdProvider
 import com.hedvig.android.feature.onboarding.FakeOnboardingRepository
 import com.hedvig.android.feature.onboarding.data.CompleteOnboardingUseCase
 import com.hedvig.android.feature.onboarding.data.OnboardingPayinStatus
-import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepKey
 import com.hedvig.android.feature.onboarding.testOnboardingData
+import com.hedvig.android.feature.onboarding.testSessionStore
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.navigation.common.HedvigNavKey
@@ -42,7 +42,7 @@ internal class OnboardingPaymentPresenterTest {
   fun `not connected content when payin methods are missing`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.ConnectPayment)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingPaymentPresenter(sessionStore, navigator)
 
@@ -60,7 +60,7 @@ internal class OnboardingPaymentPresenterTest {
   fun `connect payment pushes the trustly flow`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.ConnectPayment)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingPaymentPresenter(sessionStore, navigator)
 
@@ -79,7 +79,7 @@ internal class OnboardingPaymentPresenterTest {
   fun `skip is offered only after entering the connect flow while still not connected`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.ConnectPayment)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingPaymentPresenter(sessionStore, navigator)
 
@@ -100,7 +100,7 @@ internal class OnboardingPaymentPresenterTest {
   fun `refresh after returning with an active method flips to connected`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.ConnectPayment)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingPaymentPresenter(sessionStore, navigator)
 
@@ -122,7 +122,7 @@ internal class OnboardingPaymentPresenterTest {
   fun `a pending method is shown as pending, not connected`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.ConnectPayment)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingPaymentPresenter(sessionStore, navigator)
 
@@ -140,7 +140,7 @@ internal class OnboardingPaymentPresenterTest {
   fun `continue advances to BundleDiscount`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.ConnectPayment)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingPaymentPresenter(sessionStore, navigator)
 

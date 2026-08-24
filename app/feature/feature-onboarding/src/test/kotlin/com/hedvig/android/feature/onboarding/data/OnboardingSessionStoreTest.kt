@@ -6,6 +6,7 @@ import assertk.assertions.isEqualTo
 import com.hedvig.android.feature.onboarding.FakeOnboardingMemberIdProvider
 import com.hedvig.android.feature.onboarding.FakeOnboardingRepository
 import com.hedvig.android.feature.onboarding.testOnboardingData
+import com.hedvig.android.feature.onboarding.testSessionStore
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
@@ -13,7 +14,7 @@ internal class OnboardingSessionStoreTest {
   @Test
   fun `same member reuses the cached session without refetching`() = runTest {
     val repository = FakeOnboardingRepository()
-    val store = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider("member-a"))
+    val store = testSessionStore(repository, FakeOnboardingMemberIdProvider("member-a"))
 
     repository.onboardingDataResponses.add(testOnboardingData(phoneNumber = "111").right())
     val first = store.getOrFetchSession()
@@ -29,7 +30,7 @@ internal class OnboardingSessionStoreTest {
   fun `a member change discards the cache and fetches fresh`() = runTest {
     val repository = FakeOnboardingRepository()
     val memberIdProvider = FakeOnboardingMemberIdProvider("member-a")
-    val store = OnboardingSessionStore(repository, memberIdProvider)
+    val store = testSessionStore(repository, memberIdProvider)
 
     repository.onboardingDataResponses.add(testOnboardingData(phoneNumber = "111").right())
     val memberASession = store.getOrFetchSession()

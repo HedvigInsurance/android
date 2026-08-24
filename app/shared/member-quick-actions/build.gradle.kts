@@ -33,6 +33,7 @@ kotlin {
       implementation(projects.coreCommonPublic)
       implementation(projects.coreResources)
       implementation(projects.dataCoinsured)
+      implementation(projects.dataContract)
       implementation(projects.featureFlags)
       implementation(projects.loggingPublic)
       implementation(projects.navigationCommon)
