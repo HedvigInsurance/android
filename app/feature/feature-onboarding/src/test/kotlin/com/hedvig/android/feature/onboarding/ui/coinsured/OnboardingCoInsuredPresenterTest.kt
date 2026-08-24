@@ -13,11 +13,11 @@ import com.hedvig.android.feature.onboarding.FakeOnboardingMemberIdProvider
 import com.hedvig.android.feature.onboarding.FakeOnboardingRepository
 import com.hedvig.android.feature.onboarding.data.CompleteOnboardingUseCase
 import com.hedvig.android.feature.onboarding.data.OnboardingContract
-import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepKey
 import com.hedvig.android.feature.onboarding.testOnboardingData
+import com.hedvig.android.feature.onboarding.testSessionStore
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.navigation.common.HedvigNavKey
@@ -43,7 +43,7 @@ internal class OnboardingCoInsuredPresenterTest {
   fun `rows are pinned from the contracts missing co-insured at load`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.CoInsured)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingCoInsuredPresenter(sessionStore, navigator)
 
@@ -63,7 +63,7 @@ internal class OnboardingCoInsuredPresenterTest {
   fun `add navigates to the edit co-insured flow`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.CoInsured)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingCoInsuredPresenter(sessionStore, navigator)
 
@@ -81,7 +81,7 @@ internal class OnboardingCoInsuredPresenterTest {
   fun `a co-owners contract yields a co-owners row and navigates into the co-owners flow`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.CoInsured)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingCoInsuredPresenter(sessionStore, navigator)
 
@@ -114,7 +114,7 @@ internal class OnboardingCoInsuredPresenterTest {
   fun `refresh marks completed rows instead of removing them`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.CoInsured)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingCoInsuredPresenter(sessionStore, navigator)
 
@@ -152,7 +152,7 @@ internal class OnboardingCoInsuredPresenterTest {
   fun `continue advances to InviteFriend (PetIds skipped for default data)`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.CoInsured)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingCoInsuredPresenter(sessionStore, navigator)
 

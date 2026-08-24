@@ -42,6 +42,8 @@ import hedvig.resources.REMOVE_ADDON_BUTTON_TITLE
 import hedvig.resources.Res
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_continue_button
+import hedvig.resources.insurance_details_change_amount
+import hedvig.resources.insurance_details_change_amount_subtitle
 import hedvig.resources.insurance_details_change_coverage
 import org.jetbrains.compose.resources.stringResource
 
@@ -50,6 +52,7 @@ internal fun EditInsuranceBottomSheetContent(
   allowEditCoInsured: Boolean,
   allowEditCoOwners: Boolean,
   allowChangeTier: Boolean,
+  isPaymentProtection: Boolean,
   allowTerminatingInsurance: Boolean,
   allowRemovingAddon: Boolean,
   onEditCoInsuredClick: () -> Unit,
@@ -66,8 +69,16 @@ internal fun EditInsuranceBottomSheetContent(
       add(
         RadioOption(
           RadioOptionId("0"),
-          stringResource(Res.string.insurance_details_change_coverage),
-          stringResource(Res.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE),
+          if (isPaymentProtection) {
+            stringResource(Res.string.insurance_details_change_amount)
+          } else {
+            stringResource(Res.string.insurance_details_change_coverage)
+          },
+          if (isPaymentProtection) {
+            stringResource(Res.string.insurance_details_change_amount_subtitle)
+          } else {
+            stringResource(Res.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE)
+          },
         ),
       )
     }
@@ -178,6 +189,7 @@ private fun PreviewEditInsuranceBottomSheetContent() {
         allowEditCoInsured = true,
         allowEditCoOwners = true,
         allowChangeTier = true,
+        isPaymentProtection = false,
         allowRemovingAddon = true,
         onChangeTierClick = {},
         onEditCoInsuredClick = {},

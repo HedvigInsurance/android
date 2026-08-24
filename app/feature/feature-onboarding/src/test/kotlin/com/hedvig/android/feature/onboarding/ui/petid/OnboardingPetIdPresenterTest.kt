@@ -9,11 +9,11 @@ import com.hedvig.android.feature.onboarding.FakeOnboardingMemberIdProvider
 import com.hedvig.android.feature.onboarding.FakeOnboardingRepository
 import com.hedvig.android.feature.onboarding.data.CompleteOnboardingUseCase
 import com.hedvig.android.feature.onboarding.data.OnboardingContract
-import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepKey
 import com.hedvig.android.feature.onboarding.testOnboardingData
+import com.hedvig.android.feature.onboarding.testSessionStore
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.navigation.common.HedvigNavKey
@@ -39,7 +39,7 @@ internal class OnboardingPetIdPresenterTest {
   fun `rows are pinned from the contracts missing pet id at load`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.PetIds)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingPetIdPresenter(sessionStore, navigator)
 
@@ -73,7 +73,7 @@ internal class OnboardingPetIdPresenterTest {
   fun `refresh marks completed rows instead of removing them`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.PetIds)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingPetIdPresenter(sessionStore, navigator)
 
@@ -125,7 +125,7 @@ internal class OnboardingPetIdPresenterTest {
   fun `continue advances to InviteFriend`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.PetIds)) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingPetIdPresenter(sessionStore, navigator)
 
