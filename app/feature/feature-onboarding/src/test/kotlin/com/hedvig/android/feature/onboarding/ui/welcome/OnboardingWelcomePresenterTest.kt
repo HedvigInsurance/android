@@ -10,12 +10,12 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.onboarding.FakeOnboardingMemberIdProvider
 import com.hedvig.android.feature.onboarding.FakeOnboardingRepository
 import com.hedvig.android.feature.onboarding.data.CompleteOnboardingUseCase
-import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingKey
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepKey
 import com.hedvig.android.feature.onboarding.testOnboardingData
+import com.hedvig.android.feature.onboarding.testSessionStore
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.navigation.common.HedvigNavKey
@@ -40,7 +40,7 @@ internal class OnboardingWelcomePresenterTest {
   @Test
   fun `session fetch success shows content with the progress of the whole path`() = runTest {
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(TestBackstack(), sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingWelcomePresenter(sessionStore, navigator)
 
@@ -56,9 +56,25 @@ internal class OnboardingWelcomePresenterTest {
   }
 
   @Test
+  fun `disabling analytics costs the progress bar one segment`() = runTest {
+    val repository = FakeOnboardingRepository()
+    val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider(), analyticsDisabled = true)
+    val navigator = OnboardingNavigator(TestBackstack(), sessionStore, NoopCompleteOnboardingUseCase())
+    val presenter = OnboardingWelcomePresenter(sessionStore, navigator)
+
+    presenter.test(OnboardingWelcomeUiState.Loading) {
+      skipItems(1)
+      repository.onboardingDataResponses.add(testOnboardingData().right())
+      val content = awaitItem()
+      assertThat(content).isInstanceOf<OnboardingWelcomeUiState.Content>()
+      assertThat((content as OnboardingWelcomeUiState.Content).progress.totalSteps).isEqualTo(7)
+    }
+  }
+
+  @Test
   fun `session fetch failure shows error, retry refetches`() = runTest {
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(TestBackstack(), sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingWelcomePresenter(sessionStore, navigator)
 
@@ -77,7 +93,7 @@ internal class OnboardingWelcomePresenterTest {
   fun `get started pushes the first path step onto the backstack`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingKey) }
     val repository = FakeOnboardingRepository()
-    val sessionStore = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
     val presenter = OnboardingWelcomePresenter(sessionStore, navigator)
 

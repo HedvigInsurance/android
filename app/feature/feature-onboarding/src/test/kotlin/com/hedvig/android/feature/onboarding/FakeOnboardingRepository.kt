@@ -10,6 +10,9 @@ import com.hedvig.android.feature.onboarding.data.OnboardingMemberIdProvider
 import com.hedvig.android.feature.onboarding.data.OnboardingPayinStatus
 import com.hedvig.android.feature.onboarding.data.OnboardingReferralInformation
 import com.hedvig.android.feature.onboarding.data.OnboardingRepository
+import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
+import com.hedvig.android.featureflags.flags.Feature
+import com.hedvig.android.featureflags.test.FakeFeatureManager
 import kotlinx.coroutines.flow.flowOf
 
 internal class FakeOnboardingMemberIdProvider(var memberId: String? = "test-member-id") : OnboardingMemberIdProvider {
@@ -30,6 +33,20 @@ internal class FakeOnboardingRepository : OnboardingRepository {
     return updateContactInfoResponses.awaitItem()
   }
 }
+
+/**
+ * Builds a store with the feature flags a test rarely cares about already answered, so adding a
+ * dependency to [OnboardingSessionStore] does not mean touching every test that needs one.
+ */
+internal fun testSessionStore(
+  repository: OnboardingRepository,
+  memberIdProvider: OnboardingMemberIdProvider = FakeOnboardingMemberIdProvider(),
+  analyticsDisabled: Boolean = false,
+) = OnboardingSessionStore(
+  onboardingRepository = repository,
+  memberIdProvider = memberIdProvider,
+  featureManager = FakeFeatureManager(mapOf(Feature.DISABLE_ANALYTICS to analyticsDisabled)),
+)
 
 internal fun testOnboardingData(
   phoneNumber: String? = "070 990 12 32",
