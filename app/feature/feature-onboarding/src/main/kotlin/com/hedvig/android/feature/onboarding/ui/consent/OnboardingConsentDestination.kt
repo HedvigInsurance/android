@@ -88,19 +88,19 @@ internal class OnboardingConsentPresenter(
   ): OnboardingConsentUiState {
     var currentState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
-    var checkmarkVisible by remember {
-      mutableStateOf((lastState as? OnboardingConsentUiState.Content)?.checkmarkVisible == true)
+    var badge by remember {
+      mutableStateOf((lastState as? OnboardingConsentUiState.Content)?.badge)
     }
     // Held while a decision is being applied so repeated taps cannot start a second one, and
     // released once it has navigated, because this entry stays on the back stack and becomes
     // interactive again when the member comes back to it.
     var pendingNavigation by remember { mutableStateOf<PendingNavigation?>(null) }
-    val checkmarkSettleSignals = remember { MutableSharedFlow<Boolean>(replay = 1) }
+    val badgeSettleSignals = remember { MutableSharedFlow<ConsentBadge?>(replay = 1) }
 
     LaunchedEffect(loadIteration) {
       // Read before the early return: a presenter that restarts while this screen is showing keeps
-      // its state but loses the checkmark, which only the stored consent can tell us.
-      checkmarkVisible = settingsDataStore.observeAnalyticsConsent().first() == AnalyticsConsent.GRANTED
+      // its state but loses the badge, which only the stored consent can tell us.
+      badge = settingsDataStore.observeAnalyticsConsent().first().toBadge()
       if (currentState is OnboardingConsentUiState.Content) return@LaunchedEffect
       currentState = OnboardingConsentUiState.Loading
       sessionStore.getOrFetchSession().fold(
@@ -108,7 +108,7 @@ internal class OnboardingConsentPresenter(
         ifRight = { session ->
           currentState = OnboardingConsentUiState.Content(
             progress = session.progressFor(OnboardingStepId.AnalyticsConsent),
-            checkmarkVisible = checkmarkVisible,
+            badge = badge,
             buttonsEnabled = true,
           )
         },
@@ -126,10 +126,10 @@ internal class OnboardingConsentPresenter(
 
         is PendingNavigation.Decision -> {
           settingsDataStore.setAnalyticsConsent(pending.consent)
-          val granted = pending.consent == AnalyticsConsent.GRANTED
-          if (granted != checkmarkVisible) {
-            checkmarkVisible = granted
-            checkmarkSettleSignals.first { settledVisibility -> settledVisibility == granted }
+          val answeredBadge = pending.consent.toBadge()
+          if (answeredBadge != badge) {
+            badge = answeredBadge
+            badgeSettleSignals.first { settledBadge -> settledBadge == answeredBadge }
           }
           navigator.continueFrom(OnboardingStepId.AnalyticsConsent)
           pendingNavigation = null
@@ -161,15 +161,15 @@ internal class OnboardingConsentPresenter(
           }
         }
 
-        is OnboardingConsentEvent.CheckmarkSettled -> {
-          checkmarkSettleSignals.tryEmit(event.checkmarkVisible)
+        is OnboardingConsentEvent.BadgeSettled -> {
+          badgeSettleSignals.tryEmit(event.badge)
         }
       }
     }
 
     return when (val state = currentState) {
       is OnboardingConsentUiState.Content -> state.copy(
-        checkmarkVisible = checkmarkVisible,
+        badge = badge,
         buttonsEnabled = pendingNavigation == null,
       )
 
@@ -184,6 +184,12 @@ internal class OnboardingConsentPresenter(
   }
 }
 
+private fun AnalyticsConsent.toBadge(): ConsentBadge? = when (this) {
+  AnalyticsConsent.GRANTED -> ConsentBadge.Accepted
+  AnalyticsConsent.DENIED -> ConsentBadge.Denied
+  AnalyticsConsent.NOT_DECIDED -> null
+}
+
 internal sealed interface OnboardingConsentUiState {
   data object Loading : OnboardingConsentUiState
 
@@ -191,7 +197,7 @@ internal sealed interface OnboardingConsentUiState {
 
   data class Content(
     val progress: OnboardingProgress,
-    val checkmarkVisible: Boolean,
+    val badge: ConsentBadge?,
     val buttonsEnabled: Boolean,
   ) : OnboardingConsentUiState
 }
@@ -205,8 +211,8 @@ internal sealed interface OnboardingConsentEvent {
 
   data object Deny : OnboardingConsentEvent
 
-  /** The checkmark has finished animating to [checkmarkVisible]. */
-  data class CheckmarkSettled(val checkmarkVisible: Boolean) : OnboardingConsentEvent
+  /** The card's badge has finished animating to [badge]. */
+  data class BadgeSettled(val badge: ConsentBadge?) : OnboardingConsentEvent
 }
 
 @Composable
@@ -225,8 +231,8 @@ internal fun OnboardingConsentDestination(
     onRetry = { viewModel.emit(OnboardingConsentEvent.Retry) },
     onAllow = { viewModel.emit(OnboardingConsentEvent.Allow) },
     onDeny = { viewModel.emit(OnboardingConsentEvent.Deny) },
-    onCheckmarkSettled = { checkmarkVisible ->
-      viewModel.emit(OnboardingConsentEvent.CheckmarkSettled(checkmarkVisible))
+    onBadgeSettled = { badge ->
+      viewModel.emit(OnboardingConsentEvent.BadgeSettled(badge))
     },
   )
 }
@@ -241,7 +247,7 @@ private fun OnboardingConsentScreen(
   onRetry: () -> Unit,
   onAllow: () -> Unit,
   onDeny: () -> Unit,
-  onCheckmarkSettled: (checkmarkVisible: Boolean) -> Unit,
+  onBadgeSettled: (badge: ConsentBadge?) -> Unit,
 ) {
   OnboardingStepScaffold(
     progress = (uiState as? OnboardingConsentUiState.Content)?.progress,
@@ -269,9 +275,9 @@ private fun OnboardingConsentScreen(
         )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(24.dp))
-        OnboardingVerifiedCard(
-          checkmarkVisible = uiState.checkmarkVisible,
-          onCheckmarkSettled = onCheckmarkSettled,
+        OnboardingConsentCard(
+          badge = uiState.badge,
+          onBadgeSettled = onBadgeSettled,
           modifier = Modifier.align(Alignment.CenterHorizontally),
         )
         Spacer(Modifier.weight(1f))
@@ -340,7 +346,7 @@ private fun PreviewOnboardingConsentScreen(
         onRetry = {},
         onAllow = {},
         onDeny = {},
-        onCheckmarkSettled = {},
+        onBadgeSettled = {},
       )
     }
   }
@@ -352,12 +358,17 @@ private class OnboardingConsentUiStateProvider : CollectionPreviewParameterProvi
     OnboardingConsentUiState.Error,
     OnboardingConsentUiState.Content(
       progress = OnboardingProgress(totalSteps = 5, currentIndex = 2),
-      checkmarkVisible = false,
+      badge = null,
       buttonsEnabled = true,
     ),
     OnboardingConsentUiState.Content(
       progress = OnboardingProgress(totalSteps = 5, currentIndex = 2),
-      checkmarkVisible = true,
+      badge = ConsentBadge.Accepted,
+      buttonsEnabled = false,
+    ),
+    OnboardingConsentUiState.Content(
+      progress = OnboardingProgress(totalSteps = 5, currentIndex = 2),
+      badge = ConsentBadge.Denied,
       buttonsEnabled = false,
     ),
   ),
