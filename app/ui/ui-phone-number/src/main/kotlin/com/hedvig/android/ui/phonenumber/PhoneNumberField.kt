@@ -7,6 +7,7 @@ import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.byValue
+import androidx.compose.foundation.text.input.placeCursorAtEnd
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -32,7 +33,7 @@ data class PhoneNumberRules(
   val allowLeadingPlus: Boolean,
   val maxDigits: Int = E164_MAX_DIGITS,
 ) {
-  fun digitsIn(text: CharSequence): Int = text.count { it.isDigit() }
+  fun digitsIn(text: CharSequence): Int = text.count { it.isAsciiDigit() }
 
   fun hasEnoughDigits(text: CharSequence): Boolean = digitsIn(text) >= minDigits
 
@@ -40,7 +41,10 @@ data class PhoneNumberRules(
    * Whether [text] holds nothing but what these rules allow. The field keeps typed input this way on
    * its own, so the case worth checking before submitting is a stored value that was never valid.
    */
-  fun isWellFormed(text: CharSequence): Boolean = disallowedCount(text) == 0 && withinMaxDigits(text)
+  fun isWellFormed(text: CharSequence): Boolean {
+    val digits = withoutLeadingPlus(text)
+    return digits.all { it.isAsciiDigit() } && digits.length <= maxDigits
+  }
 
   companion object {
     /** The most digits any international number holds, country code included. */
@@ -66,9 +70,9 @@ data class PhoneNumberRules(
  * key, so a number cannot arrive split across lines or carrying separators from whichever keyboard
  * the member happened to use.
  *
- * [rules] bound what can be typed, not whether what is there is long enough: [minDigits] is for the
- * caller to check with [PhoneNumberRules.hasEnoughDigits] when it decides to submit, since each
- * screen reports that differently.
+ * [rules] bound what can be typed, not whether what is there is long enough: [PhoneNumberRules.minDigits]
+ * is for the caller to check with [PhoneNumberRules.hasEnoughDigits] when it decides to submit, since
+ * each screen reports that differently.
  */
 @Composable
 fun HedvigPhoneNumberField(
@@ -99,6 +103,21 @@ fun HedvigPhoneNumberField(
 }
 
 /**
+ * Appends [digit] to a field governed by [rules], for a screen that feeds it from a keypad of its own.
+ *
+ * Necessary because [TextFieldState.edit] counts as a developer edit and so skips the field's
+ * [InputTransformation], which runs only for input the member types. Appending directly would walk
+ * straight past [PhoneNumberRules.maxDigits].
+ */
+fun TextFieldState.appendPhoneNumberDigit(digit: String, rules: PhoneNumberRules) {
+  if (rules.digitsIn(text) + rules.digitsIn(digit) > rules.maxDigits) return
+  edit {
+    append(digit)
+    placeCursorAtEnd()
+  }
+}
+
+/**
  * Keeps typed input to what [rules] allow.
  *
  * The stored number is shown exactly as the backend holds it, which is not necessarily well formed,
@@ -116,29 +135,54 @@ internal fun phoneNumberInputTransformation(rules: PhoneNumberRules): InputTrans
 /** The value an edit from [current] to [proposed] settles on. Pure, so the rules can be tested directly. */
 internal fun PhoneNumberRules.acceptEdit(current: CharSequence, proposed: CharSequence): CharSequence = when {
   isWellFormed(proposed) -> proposed
-  isWellFormed(current) -> filterToAllowed(proposed).takeIf { withinMaxDigits(it) } ?: current
+
+  // Shortening an over-long value has to keep working, or a value already past the cap traps the
+  // member: every edit, backspace included, proposes something still over it and would be refused.
+  digitsIn(proposed) < digitsIn(current) && disallowedCount(proposed) <= disallowedCount(current) -> proposed
+
+  isWellFormed(current) -> filterToAllowed(proposed)?.takeIf { withinMaxDigits(it) } ?: current
+
   disallowedCount(proposed) <= disallowedCount(current) && withinMaxDigits(proposed) -> proposed
+
   else -> current
+}
+
+/**
+ * [text] reduced to digits, or null when it holds a `+` that cannot be kept.
+ *
+ * Dropping a `+` turns an international number into a domestic one that does not exist, so a `+` is
+ * never removed on the member's behalf: it stays when it leads the number, and otherwise the whole
+ * edit is refused. Separators carry no such meaning and are always stripped.
+ */
+private fun PhoneNumberRules.filterToAllowed(text: CharSequence): CharSequence? {
+  if (!plusCanBeKept(text)) return null
+  val digits = text.filter { it.isAsciiDigit() }
+  return if (text.contains('+')) "+$digits" else digits
+}
+
+/** Whether any `+` in [text] is a single one leading the number, which these rules allow to stay. */
+private fun PhoneNumberRules.plusCanBeKept(text: CharSequence): Boolean {
+  val plusCount = text.count { it == '+' }
+  if (plusCount == 0) return true
+  if (!allowLeadingPlus || plusCount > 1) return false
+  val firstDigit = text.indexOfFirst { it.isAsciiDigit() }
+  return firstDigit == -1 || text.indexOf('+') < firstDigit
 }
 
 private fun PhoneNumberRules.withinMaxDigits(text: CharSequence): Boolean = digitsIn(text) <= maxDigits
 
+private fun PhoneNumberRules.withoutLeadingPlus(text: CharSequence): CharSequence =
+  if (allowLeadingPlus && text.firstOrNull() == '+') text.subSequence(1, text.length) else text
+
+/** Characters these rules would have to strip. A leading `+` they allow is not one of them. */
 private fun PhoneNumberRules.disallowedCount(text: CharSequence): Int =
-  text.withIndex().count { (index, character) -> !isAllowed(character, index) }
+  withoutLeadingPlus(text).count { !it.isAsciiDigit() }
 
 /**
- * [text] reduced to what these rules allow. A `+` is judged by whether it leads the number rather
- * than by its index, so that whitespace pasted in front of one does not turn an international number
- * into a domestic number that nobody can call.
+ * Deliberately not [Char.isDigit], which is true for Arabic-Indic and other non-ASCII digits that a
+ * localised keyboard can produce and that the backend's own validation rejects.
  */
-private fun PhoneNumberRules.filterToAllowed(text: CharSequence): CharSequence {
-  val digits = text.filter { it.isDigit() }
-  val leadsWithPlus = allowLeadingPlus && text.firstOrNull { !it.isWhitespace() } == '+'
-  return if (leadsWithPlus) "+$digits" else digits
-}
-
-private fun PhoneNumberRules.isAllowed(character: Char, index: Int): Boolean =
-  character.isDigit() || (allowLeadingPlus && character == '+' && index == 0)
+private fun Char.isAsciiDigit(): Boolean = this in '0'..'9'
 
 @HedvigPreview
 @Composable

@@ -64,8 +64,36 @@ internal class PhoneNumberRulesTest {
   }
 
   @Test
-  fun `a plus that is not leading is still dropped when whitespace is stripped`() {
-    assertThat(member.edit("", "070 +46")).isEqualTo("07046")
+  fun `a plus survives other junk in front of it`() {
+    assertThat(member.edit("", "(+46) 70 123 45 67")).isEqualTo("+46701234567")
+    assertThat(member.edit("", "Tel: +46 70 123 45 67")).isEqualTo("+46701234567")
+  }
+
+  /**
+   * Stripping the plus would submit a domestic number that does not exist. Refusing the edit leaves
+   * the member to retype it, which is recoverable in a way that a silently wrong number is not.
+   */
+  @Test
+  fun `a plus that cannot be kept refuses the edit rather than being dropped`() {
+    assertThat(member.edit("", "070 +46")).isEqualTo("")
+    assertThat(swish.edit("", "+46701234567")).isEqualTo("")
+  }
+
+  @Test
+  fun `non-ascii digits are refused so the rules agree with the backend`() {
+    assertThat(member.edit("", "\u0660\u0661\u0662\u0663\u0664\u0665")).isEqualTo("")
+    assertThat(member.hasEnoughDigits("\u0660\u0661\u0662\u0663\u0664\u0665")).isFalse()
+  }
+
+  /**
+   * A value can hold more digits than the cap when the backend stored one, and every edit from there
+   * still proposes something over the cap. Refusing those would leave no way back under it.
+   */
+  @Test
+  fun `an over-long value can still be shortened`() {
+    val seventeen = "12345678901234567"
+    assertThat(member.edit(seventeen, seventeen.dropLast(1))).isEqualTo(seventeen.dropLast(1))
+    assertThat(member.edit(seventeen, "")).isEqualTo("")
   }
 
   @Test

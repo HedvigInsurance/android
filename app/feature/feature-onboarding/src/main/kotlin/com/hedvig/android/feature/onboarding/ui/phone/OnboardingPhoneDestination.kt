@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.input.placeCursorAtEnd
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,6 +34,7 @@ import com.hedvig.android.feature.onboarding.ui.phone.SubmissionError.NumberMalf
 import com.hedvig.android.feature.onboarding.ui.phone.SubmissionError.NumberTooShort
 import com.hedvig.android.ui.phonenumber.HedvigPhoneNumberField
 import com.hedvig.android.ui.phonenumber.PhoneNumberRules
+import com.hedvig.android.ui.phonenumber.appendPhoneNumberDigit
 import hedvig.resources.CLAIM_CHAT_FORM_TEXT_MIN_CHAR
 import hedvig.resources.ONBOARDING_DO_THIS_LATER_BUTTON
 import hedvig.resources.ONBOARDING_PHONE_SAVE_ERROR
@@ -106,10 +106,7 @@ private fun OnboardingPhoneScreen(
         Spacer(Modifier.height(24.dp))
         OnboardingPhoneKeypad(
           onKeypadClick = { label ->
-            phoneNumberState.edit {
-              append(label)
-              placeCursorAtEnd()
-            }
+            phoneNumberState.appendPhoneNumberDigit(label, PhoneNumberRules.MemberPhoneNumber)
           },
           modifier = Modifier.align(Alignment.CenterHorizontally).semantics {
             hideFromAccessibility()
