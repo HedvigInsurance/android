@@ -24,7 +24,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -135,19 +134,10 @@ private fun OnboardingThemeScreen(
           )
         }
         Spacer(Modifier.weight(1f))
-        Spacer(Modifier.height(24.dp))
-        HedvigText(
-          text = stringResource(Res.string.ONBOARDING_CHANGE_SETTINGS_LATER_LABEL),
-          style = HedvigTheme.typography.label,
-          color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-          textAlign = TextAlign.Center,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        )
         OnboardingStepButtons(
           primaryText = stringResource(Res.string.general_continue_button),
           onPrimaryClick = onContinueClick,
+          caption = stringResource(Res.string.ONBOARDING_CHANGE_SETTINGS_LATER_LABEL),
         )
       }
     }

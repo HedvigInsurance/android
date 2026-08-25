@@ -2,7 +2,6 @@ package com.hedvig.android.feature.onboarding.ui.payment
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -23,7 +22,6 @@ import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigPreview
-import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.onboarding.data.OnboardingPayinStatus
@@ -225,19 +223,6 @@ private fun OnboardingPaymentScreen(
           modifier = Modifier.align(Alignment.CenterHorizontally),
         )
         Spacer(Modifier.weight(1f))
-        Spacer(Modifier.height(24.dp))
-        HedvigText(
-          text = if (isConnected) {
-            stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER)
-          } else {
-            stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_FOOTNOTE)
-          },
-          style = HedvigTheme.typography.label,
-          color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-          modifier = Modifier
-            .align(Alignment.CenterHorizontally)
-            .padding(horizontal = 32.dp),
-        )
         OnboardingStepButtons(
           primaryText = if (isConnected) {
             stringResource(Res.string.general_continue_button)
@@ -247,6 +232,11 @@ private fun OnboardingPaymentScreen(
           onPrimaryClick = if (isConnected) onContinue else onConnectPayment,
           secondaryText = if (canSkip) stringResource(Res.string.ONBOARDING_DO_THIS_LATER_BUTTON) else null,
           onSecondaryClick = if (canSkip) onContinue else null,
+          caption = if (isConnected) {
+            stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER)
+          } else {
+            stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_FOOTNOTE)
+          },
         )
       }
     }
