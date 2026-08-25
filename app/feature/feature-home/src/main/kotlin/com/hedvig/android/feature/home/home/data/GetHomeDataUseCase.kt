@@ -68,9 +68,23 @@ internal class GetHomeDataUseCaseImpl(
   private val timeZone: TimeZone,
   private val getAddonBannerInfoUseCase: GetAddonBannerInfoUseCase,
   private val hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
+  private val dismissedShopSessionsStorage: DismissedShopSessionsStorage,
 ) : GetHomeDataUseCase {
-  @OptIn(ExperimentalCoroutinesApi::class)
   override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>> {
+    return combine(
+      backendHomeData(forceNetworkFetch),
+      dismissedShopSessionsStorage.observeDismissedSessionIds(),
+    ) { homeDataResult, dismissedSessionIds ->
+      homeDataResult.map { homeData ->
+        homeData.copy(
+          ongoingShopSessions = homeData.ongoingShopSessions.filterNot { it.id in dismissedSessionIds },
+        )
+      }
+    }
+  }
+
+  @OptIn(ExperimentalCoroutinesApi::class)
+  private fun backendHomeData(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>> {
     return combine(
       featureManager.isFeatureEnabled(Feature.ENABLE_CLAIM_INTENT_RESUME),
       featureManager.isFeatureEnabled(Feature.DISABLE_RESUMING_ONGOING_SHOP_SESSIONS),

@@ -122,6 +122,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigTooltip
 import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.StartClaimBottomSheet
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TooltipDefaults
@@ -130,6 +131,7 @@ import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Inbo
 import com.hedvig.android.design.system.hedvig.TopAppBarLayoutForActions
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
+import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
 import com.hedvig.android.design.system.hedvig.icon.Reload
@@ -206,6 +208,7 @@ import hedvig.resources.general_continue_button
 import hedvig.resources.home_tab_claim_button_text
 import hedvig.resources.home_tab_get_help
 import hedvig.resources.home_tab_welcome_title_without_name
+import hedvig.resources.ongoing_shop_session_dismiss_offer
 import kotlin.math.roundToInt
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -262,6 +265,9 @@ internal fun HomeDestination(
     navigateToMissingInfo = navigateToMissingInfo,
     markMessageAsSeen = { viewModel.emit(HomeEvent.MarkMessageAsSeen(it)) },
     deleteDraftClaim = { draftId -> viewModel.emit(HomeEvent.DeleteDraftClaim(draftId)) },
+    dismissOngoingShopSession = { sessionId ->
+      viewModel.emit(HomeEvent.DismissOngoingShopSession(sessionId))
+    },
     navigateToFirstVet = navigateToFirstVet,
     markCrossSellsNotificationAsSeen = { viewModel.emit(HomeEvent.MarkCardCrossSellsAsSeen) },
     navigateToContactInfo = navigateToContactInfo,
@@ -292,6 +298,7 @@ private fun HomeScreen(
   openCrossSellUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
   deleteDraftClaim: (String) -> Unit,
+  dismissOngoingShopSession: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
@@ -435,6 +442,7 @@ private fun HomeScreen(
             navigateToMissingInfo = navigateToMissingInfo,
             onNavigateToNewConversation = onNavigateToNewConversation,
             markMessageAsSeen = markMessageAsSeen,
+            dismissOngoingShopSession = dismissOngoingShopSession,
             navigateToContactInfo = navigateToContactInfo,
             navigateToChipIdScreen = navigateToChipIdScreen,
             navigateToUsageData = navigateToUsageData,
@@ -587,6 +595,7 @@ private fun HomeScreenSuccess(
   openClaimFlowSheet: () -> Unit,
   onContinueDraftClaim: () -> Unit,
   onDeleteDraftClaim: (String) -> Unit,
+  dismissOngoingShopSession: (String) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
@@ -896,6 +905,7 @@ private fun HomeScreenSuccess(
               QuotesSection(
                 sessions = sessions,
                 onResumeClick = openUrl,
+                onDismiss = dismissOngoingShopSession,
                 imageLoader = imageLoader,
                 horizontalInsets = horizontalInsets,
               )
@@ -1110,6 +1120,7 @@ private val PillowSize = 48.dp
 private fun QuotesSection(
   sessions: List<OngoingShopSession>,
   onResumeClick: (String) -> Unit,
+  onDismiss: (String) -> Unit,
   imageLoader: ImageLoader,
   horizontalInsets: PaddingValues,
 ) {
@@ -1131,6 +1142,7 @@ private fun QuotesSection(
       QuoteCard(
         session = session,
         onResumeClick = onResumeClick,
+        onDismiss = onDismiss,
         imageLoader = imageLoader,
         modifier = cardModifier,
       )
@@ -1142,6 +1154,7 @@ private fun QuotesSection(
 private fun QuoteCard(
   session: OngoingShopSession,
   onResumeClick: (String) -> Unit,
+  onDismiss: (String) -> Unit,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
@@ -1182,6 +1195,12 @@ private fun QuoteCard(
               color = HedvigTheme.colorScheme.textSecondary,
             )
           }
+        }
+        IconButton(onClick = { onDismiss(session.id) }) {
+          Icon(
+            imageVector = HedvigIcons.Close,
+            contentDescription = stringResource(Res.string.ongoing_shop_session_dismiss_offer),
+          )
         }
       }
       Spacer(Modifier.height(12.dp))
@@ -1614,6 +1633,7 @@ private fun PreviewHomeScreen(
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
         deleteDraftClaim = {},
+        dismissOngoingShopSession = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
@@ -1650,6 +1670,7 @@ private fun PreviewHomeScreenWithError() {
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
         deleteDraftClaim = {},
+        dismissOngoingShopSession = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
@@ -1709,6 +1730,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
         deleteDraftClaim = {},
+        dismissOngoingShopSession = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
