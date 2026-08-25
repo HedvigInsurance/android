@@ -602,6 +602,7 @@
   <string name="OFFER_INSURANCE_BUNDLE_TITLE"></string>
   <string name="OFFER_PLAN_EXIRES_TEXT">Om du väljer detta alternativ, kommer \ndin Hedvig-försäkring att starta \nautomatiskt efter att ditt nuvarande \nförsäkringsavtal med %1$s gått ut.</string>
   <string name="OFFER_PLAN_EXPIRE_TITLE">När min nuvarande försäkring går ut</string>
+  <string name="OFFER_PRESENTER_INSURANCE_AMOUNT_SUBTITLE">Högsta ersättning per månad</string>
   <string name="OFFER_PRESENTER_INSURANCE_AMOUNT_TITLE">Välj försäkringsbelopp</string>
   <string name="OFFER_PRICE_COMPARISION_HEADER">Prisjämförelse</string>
   <string name="OFFER_PRICE_PER_MONTH">per månad</string>
