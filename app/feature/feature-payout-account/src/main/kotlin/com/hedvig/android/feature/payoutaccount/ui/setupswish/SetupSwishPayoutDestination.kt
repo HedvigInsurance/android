@@ -15,13 +15,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.common.validation.PhoneNumberRules
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.ui.phonenumber.HedvigPhoneNumberField
-import com.hedvig.android.ui.phonenumber.PhoneNumberRules
 import hedvig.resources.CONTACT_INFO_CHANGES_SAVED
 import hedvig.resources.ODYSSEY_PHONE_NUMBER_LABEL
 import hedvig.resources.Res

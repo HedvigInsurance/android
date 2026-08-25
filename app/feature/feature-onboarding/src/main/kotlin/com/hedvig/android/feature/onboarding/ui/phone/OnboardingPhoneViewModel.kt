@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.core.common.validation.PhoneNumberRules
 import com.hedvig.android.feature.onboarding.data.OnboardingRepository
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
@@ -22,7 +23,6 @@ import com.hedvig.android.feature.onboarding.ui.progressFor
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
-import com.hedvig.android.ui.phonenumber.PhoneNumberRules
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.launch
 

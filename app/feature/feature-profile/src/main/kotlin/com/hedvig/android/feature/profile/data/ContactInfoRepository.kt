@@ -4,9 +4,9 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.validation.PhoneNumberRules
 import com.hedvig.android.feature.profile.data.ContactInformation.Email
 import com.hedvig.android.feature.profile.data.ContactInformation.PhoneNumber
-import com.hedvig.android.ui.phonenumber.PhoneNumberRules
 import com.hedvig.core.common.android.validation.isValidEmail
 
 internal interface ContactInfoRepository {
@@ -66,16 +66,18 @@ data class ContactInformation(
       require(value.any { it.isWhitespace() } == false) {
         "Phone number cannot contain whitespaces"
       }
-      require(value == "" || phoneNumberRegex.matches(value)) {
+      require(value == "" || (rules.isWellFormed(value) && rules.digitsIn(value) > 0)) {
         "Phone number [$value] must contain only numbers with an optional '+' in the beginning"
       }
     }
 
     companion object {
-      /** The same floor the phone number field enforces while typing, so the two cannot disagree. */
-      val MINIMUM_NUMBER_OF_DIGITS = PhoneNumberRules.MemberPhoneNumber.minDigits
+      /**
+       * The one definition of what a member's phone number may look like, shared with the field they
+       * type it into so that what the field accepts and what this rejects cannot drift apart.
+       */
+      private val rules = PhoneNumberRules.MemberPhoneNumber
 
-      private val phoneNumberRegex = Regex("""([+]?\d+)""")
       private val invalidInputErrorMessage = { phoneNumber: String ->
         "Phone number [$phoneNumber] must contain only numbers with an optional '+' in the beginning"
       }
@@ -85,7 +87,7 @@ data class ContactInformation(
       }
 
       private val tooShortInputErrorMessage = { phoneNumber: String ->
-        "Phone number [$phoneNumber] must contain at least $MINIMUM_NUMBER_OF_DIGITS digits"
+        "Phone number [$phoneNumber] must contain at least ${rules.minDigits} digits"
       }
 
       /**
@@ -98,15 +100,14 @@ data class ContactInformation(
 
       /**
        * returns [Either.Left] with an [ErrorMessage] if the input is an invalid phone number, a blank string, or
-       * holds fewer than [MINIMUM_NUMBER_OF_DIGITS] digits
+       * holds fewer digits than [PhoneNumberRules.minDigits]
        * returns [Either.Right] with a [PhoneNumber] if the input is a valid phone number
        */
       fun notNullFromString(input: String): Either<ErrorMessage, PhoneNumber> {
-        val numberOfDigits = input.count { it.isDigit() }
         return when {
           input.any { it.isWhitespace() } -> ErrorMessage(whitespacesInInputErrorMessage(input)).left()
-          input.isBlank() || !input.matches(phoneNumberRegex) -> ErrorMessage(invalidInputErrorMessage(input)).left()
-          numberOfDigits < MINIMUM_NUMBER_OF_DIGITS -> ErrorMessage(tooShortInputErrorMessage(input)).left()
+          input.isBlank() || !rules.isWellFormed(input) -> ErrorMessage(invalidInputErrorMessage(input)).left()
+          !rules.hasEnoughDigits(input) -> ErrorMessage(tooShortInputErrorMessage(input)).left()
           else -> PhoneNumber(input).right()
         }
       }

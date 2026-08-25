@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.common.validation.PhoneNumberRules
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -33,7 +34,6 @@ import com.hedvig.android.feature.onboarding.ui.phone.SubmissionError.GeneralErr
 import com.hedvig.android.feature.onboarding.ui.phone.SubmissionError.NumberMalformed
 import com.hedvig.android.feature.onboarding.ui.phone.SubmissionError.NumberTooShort
 import com.hedvig.android.ui.phonenumber.HedvigPhoneNumberField
-import com.hedvig.android.ui.phonenumber.PhoneNumberRules
 import com.hedvig.android.ui.phonenumber.appendPhoneNumberDigit
 import hedvig.resources.CLAIM_CHAT_FORM_TEXT_MIN_CHAR
 import hedvig.resources.ONBOARDING_DO_THIS_LATER_BUTTON

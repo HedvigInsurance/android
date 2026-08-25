@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.core.common.validation.PhoneNumberRules
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -52,7 +53,6 @@ import com.hedvig.android.feature.profile.contactinfo.ContactInfoEvent.RetryLoad
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoEvent.SubmitData
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoUiState.Content
 import com.hedvig.android.ui.phonenumber.HedvigPhoneNumberField
-import com.hedvig.android.ui.phonenumber.PhoneNumberRules
 import hedvig.resources.CONTACT_INFO_CHANGES_SAVED
 import hedvig.resources.PHONE_NUMBER_ROW_TITLE
 import hedvig.resources.PROFILE_MY_INFO_EMAIL_LABEL
