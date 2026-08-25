@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.byValue
 import androidx.compose.foundation.text.input.placeCursorAtEnd
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
@@ -134,6 +137,8 @@ private fun OnboardingPhoneScreen(
             HedvigTextFieldDefaults.ErrorState.NoError
           },
           keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+          inputTransformation = PhoneNumberInputTransformation,
+          lineLimits = TextFieldLineLimits.SingleLine,
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
@@ -148,6 +153,15 @@ private fun OnboardingPhoneScreen(
       }
     }
   }
+}
+
+/**
+ * The in-app keypad only ever emits digits, but tapping the field opens the system IME, whose phone
+ * layout also offers separators, a plus sign and a newline key. Filtering to digits keeps what is
+ * submitted independent of which of the two the member typed on.
+ */
+private val PhoneNumberInputTransformation = InputTransformation.byValue { _, proposed ->
+  proposed.filter { it.isDigit() }
 }
 
 @HedvigPreview
