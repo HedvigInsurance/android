@@ -602,6 +602,7 @@
   <string name="OFFER_INSURANCE_BUNDLE_TITLE">INSURANCE BUNDLE</string>
   <string name="OFFER_PLAN_EXIRES_TEXT">If you select this option, your Hedvig\ninsurance will automatically start when\nyour current plan with %1$s expires.</string>
   <string name="OFFER_PLAN_EXPIRE_TITLE">When my current plan expires</string>
+  <string name="OFFER_PRESENTER_INSURANCE_AMOUNT_SUBTITLE">Your monthly compensation</string>
   <string name="OFFER_PRESENTER_INSURANCE_AMOUNT_TITLE">Choose insurance amount</string>
   <string name="OFFER_PRICE_COMPARISION_HEADER">Price comparison</string>
   <string name="OFFER_PRICE_PER_MONTH">per month</string>
