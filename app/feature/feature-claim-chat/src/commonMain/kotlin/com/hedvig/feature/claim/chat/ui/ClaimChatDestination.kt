@@ -140,6 +140,7 @@ internal fun ClaimChatDestination(
   imageLoader: ImageLoader,
   isDevelopmentFlow: Boolean,
   navigateUp: () -> Unit,
+  navigateBack: () -> Unit,
   openPlayStore: () -> Unit,
   resumeClaim: Boolean,
 ) {
@@ -165,6 +166,7 @@ internal fun ClaimChatDestination(
       appPackageId = appPackageId,
       imageLoader = imageLoader,
       navigateUp = navigateUp,
+      navigateBack = navigateBack,
       openPlayStore = openPlayStore,
     )
   }
@@ -181,6 +183,7 @@ internal fun ClaimChatScreenContent(
   appPackageId: String,
   imageLoader: ImageLoader,
   navigateUp: () -> Unit,
+  navigateBack: () -> Unit,
   openPlayStore: () -> Unit,
 ) {
   val uiState = claimChatViewModel.uiState.collectAsState().value
@@ -213,6 +216,7 @@ internal fun ClaimChatScreenContent(
           appPackageId = appPackageId,
           imageLoader = imageLoader,
           navigateUp = navigateUp,
+          navigateBack = navigateBack,
           openPlayStore = openPlayStore,
         )
       }
@@ -230,6 +234,7 @@ private fun ClaimChatScreen(
   appPackageId: String,
   imageLoader: ImageLoader,
   navigateUp: () -> Unit,
+  navigateBack: () -> Unit,
   openAppSettings: () -> Unit,
   openPlayStore: () -> Unit,
 ) {
@@ -260,6 +265,7 @@ private fun ClaimChatScreen(
         appPackageId = appPackageId,
         imageLoader = imageLoader,
         navigateUp = navigateUp,
+        navigateBack = navigateBack,
         openPlayStore = openPlayStore,
       )
     },
@@ -277,6 +283,7 @@ private fun ClaimChatScreenContent(
   appPackageId: String,
   imageLoader: ImageLoader,
   navigateUp: () -> Unit,
+  navigateBack: () -> Unit,
   openPlayStore: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -335,14 +342,14 @@ private fun ClaimChatScreenContent(
         text = stringResource(Res.string.RESUME_CLAIM_LEAVE_BODY),
         confirmButtonLabel = stringResource(Res.string.RESUME_CLAIM_LEAVE_CONFIRM),
         onDismissRequest = { showCloseFlowDialog = false },
-        onConfirmClick = navigateUp,
+        onConfirmClick = navigateBack,
       )
     } else {
       HedvigAlertDialog(
         title = stringResource(Res.string.GENERAL_ARE_YOU_SURE),
         text = stringResource(Res.string.claims_alert_body),
         onDismissRequest = { showCloseFlowDialog = false },
-        onConfirmClick = navigateUp,
+        onConfirmClick = navigateBack,
       )
     }
   }
@@ -424,7 +431,7 @@ private fun ClaimChatScreenContent(
           if (uiState.steps.size > 1 && showLeaveConfirmation) {
             showCloseFlowDialog = true
           } else {
-            navigateUp()
+            navigateBack()
           }
         },
       )
