@@ -115,6 +115,7 @@ import hedvig.resources.EMBARK_UPDATE_APP_BUTTON
 import hedvig.resources.GENERAL_ARE_YOU_SURE
 import hedvig.resources.NETWORK_ERROR_ALERT_MESSAGE
 import hedvig.resources.RESUME_CLAIM_LEAVE_BODY
+import hedvig.resources.RESUME_CLAIM_LEAVE_CANCEL
 import hedvig.resources.RESUME_CLAIM_LEAVE_CONFIRM
 import hedvig.resources.RESUME_CLAIM_LEAVE_TITLE
 import hedvig.resources.Res
@@ -341,6 +342,7 @@ private fun ClaimChatScreenContent(
         title = stringResource(Res.string.RESUME_CLAIM_LEAVE_TITLE),
         text = stringResource(Res.string.RESUME_CLAIM_LEAVE_BODY),
         confirmButtonLabel = stringResource(Res.string.RESUME_CLAIM_LEAVE_CONFIRM),
+        dismissButtonLabel = stringResource(Res.string.RESUME_CLAIM_LEAVE_CANCEL),
         onDismissRequest = { showCloseFlowDialog = false },
         onConfirmClick = navigateBack,
       )
