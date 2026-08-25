@@ -156,18 +156,22 @@ internal class GetHomeDataUseCaseImpl(
             val otherCrossSellsData = crossSellsData.otherCrossSells.map {
               it.toCrossSell()
             }
-            val ongoingShopSessions = homeQueryData.currentMember.ongoingShopSessions.orEmpty().map { session ->
-              OngoingShopSession(
-                id = session.id,
-                title = session.display.title,
-                subtitle = session.display.subtitle,
-                monthlyNet = session.display.monthlyNet?.let {
-                  UiMoney(it.amount, UiCurrencyCode.fromCurrencyCode(it.currencyCode))
-                },
-                resumeUrl = session.display.resumeUrl,
-                pillowImageUrl = session.display.pillowImage?.src,
-              )
-            }
+            val now = clock.now()
+            val ongoingShopSessions = homeQueryData.currentMember.ongoingShopSessions.orEmpty()
+              .filter { it.display.validTo > now }
+              .sortedByDescending { it.display.lastActivityAt }
+              .map { session ->
+                OngoingShopSession(
+                  id = session.id,
+                  title = session.display.title,
+                  subtitle = session.display.subtitle,
+                  monthlyNet = session.display.monthlyNet?.let {
+                    UiMoney(it.amount, UiCurrencyCode.fromCurrencyCode(it.currencyCode))
+                  },
+                  resumeUrl = session.display.resumeUrl,
+                  pillowImageUrl = session.display.pillowImage?.src,
+                )
+              }
             val recommendedAddon = crossSellsData.recommendedAddon?.let {
               RecommendedAddon(
                 id = it.id,

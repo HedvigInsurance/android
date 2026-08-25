@@ -89,7 +89,9 @@ query Home($claimsHistoryFlag: Boolean!, $resumeClaimEnabled: Boolean!, $disable
           amount
           currencyCode
         }
+        lastActivityAt
         resumeUrl
+        validTo
         pillowImage {
           src
         }

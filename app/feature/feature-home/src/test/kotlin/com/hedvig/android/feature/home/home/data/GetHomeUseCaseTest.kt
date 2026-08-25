@@ -7,6 +7,7 @@ import assertk.Assert
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.extracting
 import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
@@ -923,6 +924,116 @@ internal class GetHomeUseCaseTest {
       .isRight()
       .prop(HomeData::ongoingShopSessions)
       .isEmpty()
+  }
+
+  @Test
+  fun `expired ongoing shop sessions are filtered out`() = runTest {
+    val featureManager = FakeFeatureManager(
+      mapOf(
+        Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX to false,
+        Feature.ENABLE_CLAIM_INTENT_RESUME to false,
+        Feature.DISABLE_RESUMING_ONGOING_SHOP_SESSIONS to false,
+      ),
+    )
+    val testClock = TestClock()
+    val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager, testClock)
+
+    apolloClient.registerTestResponse(
+      HomeQuery(true, false, false),
+      HomeQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          ongoingShopSessions = listOf(
+            buildShopSession {
+              id = "expired-session"
+              display = buildShopSessionDisplay {
+                title = "Expired quote"
+                validTo = testClock.now() - 1.days
+              }
+            },
+            buildShopSession {
+              id = "valid-session"
+              display = buildShopSessionDisplay {
+                title = "Valid quote"
+                validTo = testClock.now() + 1.days
+              }
+            },
+          )
+        }
+      },
+    )
+    apolloClient.registerTestResponse(UnreadMessageCountQuery(), UnreadMessageCountQuery.Data(OctopusFakeResolver))
+    apolloClient.registerTestResponse(
+      CbmNumberOfChatMessagesQuery(),
+      CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+    )
+
+    val result = getHomeDataUseCase.invoke(true).first()
+
+    assertThat(result)
+      .isNotNull()
+      .isRight()
+      .prop(HomeData::ongoingShopSessions)
+      .single()
+      .prop(OngoingShopSession::id)
+      .isEqualTo("valid-session")
+  }
+
+  @Test
+  fun `ongoing shop sessions are sorted by most recent activity first`() = runTest {
+    val featureManager = FakeFeatureManager(
+      mapOf(
+        Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX to false,
+        Feature.ENABLE_CLAIM_INTENT_RESUME to false,
+        Feature.DISABLE_RESUMING_ONGOING_SHOP_SESSIONS to false,
+      ),
+    )
+    val testClock = TestClock()
+    val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager, testClock)
+
+    apolloClient.registerTestResponse(
+      HomeQuery(true, false, false),
+      HomeQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          ongoingShopSessions = listOf(
+            buildShopSession {
+              id = "middle"
+              display = buildShopSessionDisplay {
+                lastActivityAt = testClock.now() - 2.days
+                validTo = testClock.now() + 1.days
+              }
+            },
+            buildShopSession {
+              id = "oldest"
+              display = buildShopSessionDisplay {
+                lastActivityAt = testClock.now() - 5.days
+                validTo = testClock.now() + 1.days
+              }
+            },
+            buildShopSession {
+              id = "newest"
+              display = buildShopSessionDisplay {
+                lastActivityAt = testClock.now() - 1.days
+                validTo = testClock.now() + 1.days
+              }
+            },
+          )
+        }
+      },
+    )
+    apolloClient.registerTestResponse(UnreadMessageCountQuery(), UnreadMessageCountQuery.Data(OctopusFakeResolver))
+    apolloClient.registerTestResponse(
+      CbmNumberOfChatMessagesQuery(),
+      CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+    )
+
+    val result = getHomeDataUseCase.invoke(true).first()
+
+    assertThat(result)
+      .isNotNull()
+      .isRight()
+      .prop(HomeData::ongoingShopSessions)
+      .extracting(OngoingShopSession::id)
+      .containsExactly("newest", "middle", "oldest")
   }
 
   // Used as a convenience to get a use case without any enqueued apollo responses, but some sane defaults for the
