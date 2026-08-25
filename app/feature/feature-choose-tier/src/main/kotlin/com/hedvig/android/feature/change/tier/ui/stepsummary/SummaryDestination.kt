@@ -48,6 +48,7 @@ import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedLinearProgress
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
@@ -56,6 +57,7 @@ import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTa
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.icon.Close
@@ -70,6 +72,7 @@ import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
 import com.hedvig.ui.tiersandaddons.DisplayDocument
 import com.hedvig.ui.tiersandaddons.QuoteCard
 import com.hedvig.ui.tiersandaddons.QuoteDisplayItem
+import hedvig.resources.CHANGE_INSURANCE_AMOUNT_PAYMENT_PROTECTION_INFO
 import hedvig.resources.CONFIRM_CHANGES_SUBTITLE
 import hedvig.resources.GENERAL_ARE_YOU_SURE
 import hedvig.resources.GENERAL_CONFIRM
@@ -229,6 +232,10 @@ private fun SummarySuccessScreen(
       Modifier
         .padding(horizontal = 16.dp),
     ) {
+      if (uiState.showQualificationPeriodInfo) {
+        HedvigNotificationCard(stringResource(Res.string.CHANGE_INSURANCE_AMOUNT_PAYMENT_PROTECTION_INFO), Info)
+        Spacer(Modifier.height(16.dp))
+      }
       HorizontalItemsWithMaximumSpaceTaken(
         modifier = Modifier.fillMaxWidth(),
         startSlot = {
@@ -382,75 +389,79 @@ private fun PreviewSummaryScreen(
 private class SummaryUiStateProvider :
   CollectionPreviewParameterProvider<SummaryState>(
     listOf(
-      Success(
-        currentContractData = ContractData(
-          contractGroup = ContractGroup.HOMEOWNER,
-          contractDisplayName = "Home Homeowner",
-          contractDisplaySubtitle = "Addressvägen 777",
-          activeDisplayPremium = UiMoney(449.0, SEK),
-        ),
-        activationDate = LocalDate(2024, 5, 1),
-        quote = TierDeductibleQuote(
-          id = "id4",
-          deductible = Deductible(
-            UiMoney(3500.0, SEK),
-            deductiblePercentage = 25,
-            description = "En fast del och en rörlig del om 25% av skadekostnaden",
-          ),
-          displayItems = listOf(),
-          tier = Tier(
-            "STANDARD",
-            tierLevel = 1,
-            tierDescription = "Vårt mellanpaket med hög ersättning.",
-            tierDisplayName = "Standard",
-          ),
-          productVariant = ProductVariant(
-            displayName = "Test",
-            contractGroup = ContractGroup.RENTAL,
-            contractType = ContractType.SE_APARTMENT_RENT,
-            partner = "test",
-            perils = listOf(),
-            insurableLimits = listOf(),
-            documents = listOf(),
-            displayTierName = "Standard",
-            tierDescription = "Our most standard coverage",
-            termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
-          ),
-          addons = List(2) {
-            ChangeTierDeductibleAddonQuote(
-              addonVariant = AddonVariant(
-                displayName = "Addon Name",
-                perils = listOf(),
-                documents = listOf(
-                  InsuranceVariantDocument(
-                    "Document name",
-                    "",
-                    InsuranceVariantDocument.InsuranceDocumentType.TERMS_AND_CONDITIONS,
-                  ),
-                ),
-                termsVersion = "RESESKYDD-20230330-HEDVIG-null",
-                product = "product",
-              ),
-            )
-          },
-          currentTotalCost = TotalCost(
-            monthlyGross = UiMoney(175.0, SEK),
-            monthlyNet = UiMoney(150.0, SEK),
-          ),
-          newTotalCost = TotalCost(
-            monthlyGross = UiMoney(380.0, SEK),
-            monthlyNet = UiMoney(304.0, SEK),
-          ),
-          costBreakdown = listOf(
-            CostBreakdownEntry("Home Insurance Max", "300 kr/mo", false),
-            CostBreakdownEntry("Travel Plus", "80 kr/mo", true),
-            CostBreakdownEntry("Bundle discount 20%", "76 kr/mo", false),
-          ),
-          info = "Some important info",
-        ),
-      ),
+      previewSuccessState,
+      previewSuccessState.copy(showQualificationPeriodInfo = true),
       Failure,
       Loading,
       MakingChanges,
     ),
   )
+
+private val previewSuccessState = Success(
+  currentContractData = ContractData(
+    contractGroup = ContractGroup.HOMEOWNER,
+    contractDisplayName = "Home Homeowner",
+    contractDisplaySubtitle = "Addressvägen 777",
+    activeDisplayPremium = UiMoney(449.0, SEK),
+  ),
+  activationDate = LocalDate(2024, 5, 1),
+  quote = TierDeductibleQuote(
+    id = "id4",
+    deductible = Deductible(
+      UiMoney(3500.0, SEK),
+      deductiblePercentage = 25,
+      description = "En fast del och en rörlig del om 25% av skadekostnaden",
+    ),
+    displayItems = listOf(),
+    tier = Tier(
+      "STANDARD",
+      tierLevel = 1,
+      tierDescription = "Vårt mellanpaket med hög ersättning.",
+      tierDisplayName = "Standard",
+    ),
+    productVariant = ProductVariant(
+      displayName = "Test",
+      contractGroup = ContractGroup.RENTAL,
+      contractType = ContractType.SE_APARTMENT_RENT,
+      partner = "test",
+      perils = listOf(),
+      insurableLimits = listOf(),
+      documents = listOf(),
+      displayTierName = "Standard",
+      tierDescription = "Our most standard coverage",
+      termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
+    ),
+    addons = List(2) {
+      ChangeTierDeductibleAddonQuote(
+        addonVariant = AddonVariant(
+          displayName = "Addon Name",
+          perils = listOf(),
+          documents = listOf(
+            InsuranceVariantDocument(
+              "Document name",
+              "",
+              InsuranceVariantDocument.InsuranceDocumentType.TERMS_AND_CONDITIONS,
+            ),
+          ),
+          termsVersion = "RESESKYDD-20230330-HEDVIG-null",
+          product = "product",
+        ),
+      )
+    },
+    currentTotalCost = TotalCost(
+      monthlyGross = UiMoney(175.0, SEK),
+      monthlyNet = UiMoney(150.0, SEK),
+    ),
+    newTotalCost = TotalCost(
+      monthlyGross = UiMoney(380.0, SEK),
+      monthlyNet = UiMoney(304.0, SEK),
+    ),
+    costBreakdown = listOf(
+      CostBreakdownEntry("Home Insurance Max", "300 kr/mo", false),
+      CostBreakdownEntry("Travel Plus", "80 kr/mo", true),
+      CostBreakdownEntry("Bundle discount 20%", "76 kr/mo", false),
+    ),
+    info = "Some important info",
+  ),
+  showQualificationPeriodInfo = false,
+)

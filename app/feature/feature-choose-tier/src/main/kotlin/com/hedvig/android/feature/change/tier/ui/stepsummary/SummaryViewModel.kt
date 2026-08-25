@@ -12,6 +12,7 @@ import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.feature.change.tier.data.GetCurrentContractDataUseCase
 import com.hedvig.android.feature.change.tier.navigation.ChooseTierKey
 import com.hedvig.android.feature.change.tier.navigation.SubmitFailureKey
@@ -53,7 +54,7 @@ internal class SummaryViewModel(
     ),
   )
 
-private class SummaryPresenter(
+internal class SummaryPresenter(
   private val params: SummaryParameters,
   private val tierRepository: ChangeTierRepository,
   private val getCurrentContractDataUseCase: GetCurrentContractDataUseCase,
@@ -129,6 +130,8 @@ private class SummaryPresenter(
                   quote = rightQuote,
                   currentContractData = currentContract,
                   activationDate = params.activationDate,
+                  showQualificationPeriodInfo = currentContract.contractGroup == ContractGroup.PAYMENT_PROTECTION &&
+                    rightQuote.tier.tierLevel > currentQuoteToChange.tier.tierLevel,
                 )
               }
             },
@@ -149,6 +152,11 @@ internal sealed interface SummaryState {
     val quote: TierDeductibleQuote,
     val currentContractData: ContractData,
     val activationDate: LocalDate,
+    /**
+     * Raising a payment protection amount only takes effect once a qualification period has passed. Its length varies
+     * per case, so the copy deliberately states no number of days.
+     */
+    val showQualificationPeriodInfo: Boolean,
   ) : SummaryState {
     val totalNet: UiMoney = quote.newTotalCost.monthlyNet
   }
