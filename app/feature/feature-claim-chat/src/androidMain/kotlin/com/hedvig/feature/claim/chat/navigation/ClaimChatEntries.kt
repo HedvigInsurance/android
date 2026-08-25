@@ -83,6 +83,7 @@ fun EntryProviderScope<HedvigNavKey>.claimChatEntries(
       appPackageId = appPackageId,
       imageLoader = imageLoader,
       navigateUp = backstack::navigateUp,
+      navigateBack = backstack::popBackstack,
       openPlayStore = openPlayStore,
     )
   }
