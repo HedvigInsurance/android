@@ -53,6 +53,21 @@ internal class PhoneNumberRulesTest {
     assertThat(member.edit("", "+46 70-123 45 67")).isEqualTo("+46701234567")
   }
 
+  /**
+   * Numbers get pasted with all sorts of stray whitespace around them. Dropping the + turns an
+   * international number into a domestic one that does not exist, which is worse than refusing it.
+   */
+  @Test
+  fun `a leading plus survives whitespace in front of it`() {
+    assertThat(member.edit("", " +46701234567")).isEqualTo("+46701234567")
+    assertThat(member.edit("", "\n+46 70 123 45 67")).isEqualTo("+46701234567")
+  }
+
+  @Test
+  fun `a plus that is not leading is still dropped when whitespace is stripped`() {
+    assertThat(member.edit("", "070 +46")).isEqualTo("07046")
+  }
+
   @Test
   fun `digits beyond the maximum are refused`() {
     val fifteen = "123456789012345"

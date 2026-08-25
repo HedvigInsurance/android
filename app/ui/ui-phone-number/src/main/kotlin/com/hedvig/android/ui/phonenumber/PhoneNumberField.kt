@@ -121,13 +121,21 @@ internal fun PhoneNumberRules.acceptEdit(current: CharSequence, proposed: CharSe
   else -> current
 }
 
-internal fun PhoneNumberRules.withinMaxDigits(text: CharSequence): Boolean = digitsIn(text) <= maxDigits
+private fun PhoneNumberRules.withinMaxDigits(text: CharSequence): Boolean = digitsIn(text) <= maxDigits
 
-internal fun PhoneNumberRules.disallowedCount(text: CharSequence): Int =
+private fun PhoneNumberRules.disallowedCount(text: CharSequence): Int =
   text.withIndex().count { (index, character) -> !isAllowed(character, index) }
 
-private fun PhoneNumberRules.filterToAllowed(text: CharSequence): CharSequence =
-  text.filterIndexed { index, character -> isAllowed(character, index) }
+/**
+ * [text] reduced to what these rules allow. A `+` is judged by whether it leads the number rather
+ * than by its index, so that whitespace pasted in front of one does not turn an international number
+ * into a domestic number that nobody can call.
+ */
+private fun PhoneNumberRules.filterToAllowed(text: CharSequence): CharSequence {
+  val digits = text.filter { it.isDigit() }
+  val leadsWithPlus = allowLeadingPlus && text.firstOrNull { !it.isWhitespace() } == '+'
+  return if (leadsWithPlus) "+$digits" else digits
+}
 
 private fun PhoneNumberRules.isAllowed(character: Char, index: Int): Boolean =
   character.isDigit() || (allowLeadingPlus && character == '+' && index == 0)

@@ -8,10 +8,10 @@ hedvig {
 }
 
 dependencies {
-  implementation(libs.androidx.compose.foundation)
-  implementation(libs.jetbrains.compose.runtime)
-  implementation(libs.jetbrains.compose.ui)
-  implementation(projects.designSystemHedvig)
+  // api: the field's signature exposes TextFieldState, KeyboardActionHandler and
+  // HedvigTextFieldDefaults, so a consumer cannot call it without seeing these.
+  api(libs.androidx.compose.foundation)
+  api(projects.designSystemHedvig)
 
   testImplementation(libs.assertK)
   testImplementation(libs.junit)
