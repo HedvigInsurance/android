@@ -87,9 +87,6 @@ internal sealed interface ContactInfoUiState {
     val emailHasError: Boolean
       get() = email.isLeft()
 
-    val phoneNumberInputTransformation = InputTransformation.byValue { _, proposed ->
-      proposed.filterNot { it.isWhitespace() }.trim()
-    }
     val emailInputTransformation = InputTransformation.byValue { _, proposed ->
       proposed.trim()
     }

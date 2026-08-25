@@ -9,21 +9,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
-import com.hedvig.android.design.system.hedvig.HedvigTextField
-import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.ui.phonenumber.HedvigPhoneNumberField
+import com.hedvig.android.ui.phonenumber.PhoneNumberRules
 import hedvig.resources.CONTACT_INFO_CHANGES_SAVED
 import hedvig.resources.ODYSSEY_PHONE_NUMBER_LABEL
 import hedvig.resources.Res
@@ -70,13 +68,10 @@ private fun SetupSwishPayoutScreen(
   ) {
     Spacer(Modifier.weight(1f))
     Column(Modifier.padding(horizontal = 16.dp)) {
-      HedvigTextField(
+      HedvigPhoneNumberField(
         state = uiState.phoneNumberState,
         labelText = stringResource(Res.string.ODYSSEY_PHONE_NUMBER_LABEL),
-        textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
-        keyboardOptions = KeyboardOptions(
-          keyboardType = KeyboardType.Phone,
-        ),
+        rules = PhoneNumberRules.SwishPhoneNumber,
         modifier = Modifier.fillMaxWidth(),
       )
     }
@@ -99,7 +94,8 @@ private fun SetupSwishPayoutScreen(
     HedvigButton(
       text = stringResource(Res.string.general_save_button),
       onClick = onSave,
-      enabled = !uiState.isLoading && uiState.phoneNumberState.text.length >= 10,
+      enabled = !uiState.isLoading &&
+        PhoneNumberRules.SwishPhoneNumber.hasEnoughDigits(uiState.phoneNumberState.text),
       isLoading = uiState.isLoading,
       modifier = Modifier
         .fillMaxWidth()

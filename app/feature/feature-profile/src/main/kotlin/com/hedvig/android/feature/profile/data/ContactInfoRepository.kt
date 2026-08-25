@@ -6,6 +6,7 @@ import arrow.core.right
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.profile.data.ContactInformation.Email
 import com.hedvig.android.feature.profile.data.ContactInformation.PhoneNumber
+import com.hedvig.android.ui.phonenumber.PhoneNumberRules
 import com.hedvig.core.common.android.validation.isValidEmail
 
 internal interface ContactInfoRepository {
@@ -71,7 +72,8 @@ data class ContactInformation(
     }
 
     companion object {
-      const val MINIMUM_NUMBER_OF_DIGITS = 6
+      /** The same floor the phone number field enforces while typing, so the two cannot disagree. */
+      val MINIMUM_NUMBER_OF_DIGITS = PhoneNumberRules.MemberPhoneNumber.minDigits
 
       private val phoneNumberRegex = Regex("""([+]?\d+)""")
       private val invalidInputErrorMessage = { phoneNumber: String ->

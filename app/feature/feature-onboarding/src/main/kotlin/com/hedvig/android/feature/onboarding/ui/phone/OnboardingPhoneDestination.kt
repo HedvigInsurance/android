@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.placeCursorAtEnd
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
@@ -16,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -24,7 +22,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigPreview
-import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
@@ -34,12 +31,16 @@ import com.hedvig.android.feature.onboarding.ui.OnboardingStepButtons
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepHeader
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepScaffold
 import com.hedvig.android.feature.onboarding.ui.phone.SubmissionError.GeneralError
+import com.hedvig.android.feature.onboarding.ui.phone.SubmissionError.NumberMalformed
 import com.hedvig.android.feature.onboarding.ui.phone.SubmissionError.NumberTooShort
+import com.hedvig.android.ui.phonenumber.HedvigPhoneNumberField
+import com.hedvig.android.ui.phonenumber.PhoneNumberRules
 import hedvig.resources.CLAIM_CHAT_FORM_TEXT_MIN_CHAR
 import hedvig.resources.ONBOARDING_DO_THIS_LATER_BUTTON
 import hedvig.resources.ONBOARDING_PHONE_SAVE_ERROR
 import hedvig.resources.ONBOARDING_PHONE_SUBTITLE
 import hedvig.resources.ONBOARDING_PHONE_TITLE
+import hedvig.resources.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER
 import hedvig.resources.Res
 import hedvig.resources.general_save_button
 import kotlinx.coroutines.flow.drop
@@ -116,24 +117,27 @@ private fun OnboardingPhoneScreen(
         )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(24.dp))
-        HedvigTextField(
+        HedvigPhoneNumberField(
           state = phoneNumberState,
           labelText = stringResource(Res.string.ONBOARDING_PHONE_TITLE),
-          textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
+          rules = PhoneNumberRules.MemberPhoneNumber,
           errorState = if (content.showSubmissionError != null) {
             val text = when (content.showSubmissionError) {
               GeneralError -> stringResource(Res.string.ONBOARDING_PHONE_SAVE_ERROR)
 
               NumberTooShort -> stringResource(
                 Res.string.CLAIM_CHAT_FORM_TEXT_MIN_CHAR,
-                MINIMUM_PHONE_NUMBER_LENGTH,
+                PhoneNumberRules.MemberPhoneNumber.minDigits,
+              )
+
+              NumberMalformed -> stringResource(
+                Res.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER,
               )
             }
             HedvigTextFieldDefaults.ErrorState.Error.WithMessage(text)
           } else {
             HedvigTextFieldDefaults.ErrorState.NoError
           },
-          keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
