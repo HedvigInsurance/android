@@ -13,7 +13,6 @@ import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.payin.account.data.GetPayinAccountUseCase
 import com.hedvig.android.feature.payin.account.data.PayinAccount
 import com.hedvig.android.feature.payin.account.data.SetAsDefaultUseCase
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -77,7 +76,6 @@ internal class PayinAccountOverviewPresenter(
     LaunchedEffect(providerToSetAsDefault) {
       val provider = providerToSetAsDefault
       if (provider != null) {
-        logcat { "Mariia: Starting LaunchedEffect(providerToSetAsDefault) with provider: $provider" }
         val currentState = uiState as? PayinAccountOverviewUiState.Content ?: return@LaunchedEffect
         uiState = currentState.copy(loadingDefaultProvider = provider)
         setAsDefaultUseCase.invoke(provider).fold(

@@ -30,7 +30,6 @@ import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
-import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -47,7 +46,6 @@ import com.hedvig.android.design.system.hedvig.icon.colored.Kivra
 import com.hedvig.android.design.system.hedvig.icon.colored.Swish
 import com.hedvig.android.feature.payin.account.data.PayinAccount
 import com.hedvig.android.feature.payin.account.data.toDeliveryString
-import com.hedvig.android.logger.logcat
 import hedvig.resources.PAYMENTS_INVOICE
 import hedvig.resources.REFERRAL_PENDING_STATUS_LABEL
 import hedvig.resources.Res
@@ -142,7 +140,9 @@ private fun PayoutAccountContent(
           text = "You haven’t added a billing method yet. Add one to pay for your insurance.", // todo
           description = null,
           iconStyle = EmptyStateDefaults.EmptyStateIconStyle.INFO,
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         )
       }
     } else {
@@ -354,7 +354,6 @@ internal fun formatSwishPhoneNumber(phoneNumber: String): String {
 }
 
 private fun formatBankAccountNumber(clearingNumber: String?, accountNumber: String?, bankName: String?): String {
-  logcat { "Mariia: clearingNumber: $clearingNumber accountNumber: $accountNumber bankName: $bankName" }
 //  return when {
 //    clearingNumber != null && accountNumber != null && bankName != null -> "$bankName $clearingNumber-$accountNumber"
 //    clearingNumber != null && bankName != null -> "$bankName $clearingNumber"
