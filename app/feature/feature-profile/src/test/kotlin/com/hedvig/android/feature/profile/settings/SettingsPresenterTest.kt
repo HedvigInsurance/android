@@ -7,7 +7,9 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
+import com.hedvig.android.core.datastore.FakeGetAnalyticsConsentUseCase
 import com.hedvig.android.core.datastore.FakeSettingsDataStore
+import com.hedvig.android.data.settings.datastore.AnalyticsConsent
 import com.hedvig.android.feature.NoopNetworkCacheManager
 import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreferencesUseCase
 import com.hedvig.android.feature.profile.data.SubPrefError
@@ -31,6 +33,7 @@ class SettingsPresenterTest {
       NoopNetworkCacheManager,
       uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
       changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
+      getAnalyticsConsentUseCase = FakeGetAnalyticsConsentUseCase(),
     )
 
     settingsPresenter.test(
@@ -54,6 +57,7 @@ class SettingsPresenterTest {
       NoopNetworkCacheManager,
       uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
       changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
+      getAnalyticsConsentUseCase = FakeGetAnalyticsConsentUseCase(),
     )
 
     settingsPresenter.test(
@@ -63,7 +67,7 @@ class SettingsPresenterTest {
         Theme.SYSTEM_DEFAULT,
         false,
         isSubscribedToEmails = false,
-        analyticsConsent = null,
+        analyticsConsent = AnalyticsConsent.NOT_DECIDED,
       ),
     ) {
       assertThat(awaitItem().showNotificationReminder).isEqualTo(false)
@@ -82,6 +86,7 @@ class SettingsPresenterTest {
       NoopNetworkCacheManager,
       uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
       changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
+      getAnalyticsConsentUseCase = FakeGetAnalyticsConsentUseCase(),
     )
 
     settingsPresenter.test(
@@ -91,7 +96,7 @@ class SettingsPresenterTest {
         Theme.SYSTEM_DEFAULT,
         false,
         isSubscribedToEmails = false,
-        analyticsConsent = null,
+        analyticsConsent = AnalyticsConsent.NOT_DECIDED,
       ),
     ) {
       assertThat(awaitItem().showNotificationReminder).isEqualTo(false)
@@ -110,6 +115,7 @@ class SettingsPresenterTest {
       NoopNetworkCacheManager,
       uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
       changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
+      getAnalyticsConsentUseCase = FakeGetAnalyticsConsentUseCase(),
     )
 
     settingsPresenter.test(
@@ -119,7 +125,7 @@ class SettingsPresenterTest {
         Theme.entries.first(),
         false,
         isSubscribedToEmails = false,
-        analyticsConsent = null,
+        analyticsConsent = AnalyticsConsent.NOT_DECIDED,
       ),
     ) {
       enableNotificationsReminderManager.snoozeNotificationReminderCalls.expectNoEvents()
@@ -140,6 +146,7 @@ class SettingsPresenterTest {
       NoopNetworkCacheManager,
       uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
       changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
+      getAnalyticsConsentUseCase = FakeGetAnalyticsConsentUseCase(),
     )
 
     settingsPresenter.test(
@@ -149,7 +156,7 @@ class SettingsPresenterTest {
         selectedTheme = Theme.LIGHT,
         showNotificationReminder = false,
         isSubscribedToEmails = false,
-        analyticsConsent = null,
+        analyticsConsent = AnalyticsConsent.NOT_DECIDED,
       ),
     ) {
       assertThat(awaitItem().selectedTheme).isEqualTo(Theme.LIGHT)

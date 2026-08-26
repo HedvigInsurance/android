@@ -103,7 +103,7 @@ private fun SelectInsuranceForChipIdScreen(
       HedvigScaffold(
         navigateUp = navigateUp,
       ) {
-        HedvigErrorSection(onButtonClick = reload, modifier = Modifier.padding(16.dp))
+        HedvigErrorSection(onButtonClick = reload, modifier = Modifier.weight(1f))
       }
     }
 

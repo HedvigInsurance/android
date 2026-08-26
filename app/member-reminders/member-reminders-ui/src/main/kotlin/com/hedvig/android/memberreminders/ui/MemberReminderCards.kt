@@ -38,6 +38,7 @@ import hedvig.resources.CONTRACT_COINSURED_MISSING_INFO_TEXT
 import hedvig.resources.CONTRACT_COOWNERS_MISSING_INFO_TEXT
 import hedvig.resources.CONTRACT_VIEW_CERTIFICATE_BUTTON
 import hedvig.resources.DASHBOARD_RENEWAL_PROMPTER_BODY
+import hedvig.resources.HOME_TODO_SELECT_USAGE_DATA_TITLE
 import hedvig.resources.MISSING_CONTACT_INFO_CARD_BUTTON
 import hedvig.resources.MISSING_CONTACT_INFO_CARD_TEXT
 import hedvig.resources.PAYOUT_ADD_PAYOUT_METHOD
@@ -96,6 +97,10 @@ fun getMemberReminderMessage(reminder: MemberReminder): String {
     is MemberReminder.MissingChipId -> {
       stringResource(Res.string.CHIP_ID_MISSING_MESSAGE)
     }
+
+    is MemberReminder.DecideAnalyticsConsent -> {
+      stringResource(Res.string.HOME_TODO_SELECT_USAGE_DATA_TITLE)
+    }
   }
 }
 
@@ -138,16 +143,17 @@ fun MemberReminderCards(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    if (memberReminders.isEmpty()) return@Column
+    val cardReminders = memberReminders.cardReminders()
+    if (cardReminders.isEmpty()) return@Column
     // Every card is given the line count of the longest message, so that swiping between them
     // doesn't change the height of the carousel.
     BoxWithConstraints(Modifier.fillMaxWidth()) {
       val minLineCount = rememberMaxLineCountForReminders(
-        memberReminders = memberReminders,
+        memberReminders = cardReminders,
         maxWidthPx = constraints.maxWidth,
       )
       CardCarousel(
-        items = memberReminders,
+        items = cardReminders,
         contentPadding = contentPadding,
         key = { reminder -> reminder.id },
         indicatorColor = HedvigTheme.colorScheme.fillPrimary,
@@ -169,6 +175,15 @@ fun MemberReminderCards(
       }
     }
   }
+}
+
+/**
+ * The reminders [MemberReminderCards] actually renders. A reminder offered only elsewhere would
+ * otherwise take up an empty page in the carousel, so callers deciding whether to surround the
+ * carousel with anything should ask this first.
+ */
+fun List<MemberReminder>.cardReminders(): List<MemberReminder> {
+  return filter { it !is MemberReminder.DecideAnalyticsConsent }
 }
 
 @Composable
@@ -267,6 +282,9 @@ private fun MemberReminderCard(
         modifier = modifier,
       )
     }
+
+    // Filtered out by [cardReminders] before reaching here; the home "To do" list is where it is offered.
+    is MemberReminder.DecideAnalyticsConsent -> {}
   }
 }
 

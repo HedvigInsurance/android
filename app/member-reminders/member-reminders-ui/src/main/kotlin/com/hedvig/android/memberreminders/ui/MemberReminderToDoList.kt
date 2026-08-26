@@ -36,6 +36,7 @@ import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.Card
 import com.hedvig.android.design.system.hedvig.icon.ChevronRight
+import com.hedvig.android.design.system.hedvig.icon.EQ
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.ID
 import com.hedvig.android.design.system.hedvig.icon.InfoOutline
@@ -49,6 +50,7 @@ import hedvig.resources.HOME_TODO_MISSING_PAYMENT_METHOD_TITLE
 import hedvig.resources.HOME_TODO_MISSING_PAYOUT_METHOD_TITLE
 import hedvig.resources.HOME_TODO_PAYMENT_OVERDUE_TITLE
 import hedvig.resources.HOME_TODO_REQUIRES_ACTION_SUBTITLE
+import hedvig.resources.HOME_TODO_SELECT_USAGE_DATA_TITLE
 import hedvig.resources.HOME_TODO_UPDATE_CONTACT_DETAILS_TITLE
 import hedvig.resources.Res
 import hedvig.resources.open_chat
@@ -73,6 +75,7 @@ fun MemberReminderToDoList(
   onNavigateToNewConversation: () -> Unit,
   navigateToContactInfo: () -> Unit,
   navigateToChipId: () -> Unit,
+  navigateToUsageData: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   var showMissedPaymentsDialog by rememberSaveable { mutableStateOf(false) }
@@ -94,6 +97,7 @@ fun MemberReminderToDoList(
       onShowMissedPaymentsDialog = { showMissedPaymentsDialog = true },
       navigateToContactInfo = navigateToContactInfo,
       navigateToChipId = navigateToChipId,
+      navigateToUsageData = navigateToUsageData,
     )
   }
   if (rows.isEmpty()) return
@@ -144,6 +148,7 @@ private fun MemberReminder.homeToDoOrder(): Int? = when (this) {
   is MemberReminder.MissingChipId -> 3
   is MemberReminder.CoInsuredInfo -> 4
   is MemberReminder.ContactInfoUpdateNeeded -> 5
+  is MemberReminder.DecideAnalyticsConsent -> 6
   is MemberReminder.UpcomingRenewal -> null
   is MemberReminder.EnableNotifications -> null
 }
@@ -179,6 +184,7 @@ private fun MemberReminder.toToDoRowOrNull(
   onShowMissedPaymentsDialog: () -> Unit,
   navigateToContactInfo: () -> Unit,
   navigateToChipId: () -> Unit,
+  navigateToUsageData: () -> Unit,
 ): ToDoRowData? = when (this) {
   is MemberReminder.PaymentReminder.TerminationDueToMissedPayments -> ToDoRowData(
     icon = HedvigIcons.WarningOutline,
@@ -223,6 +229,13 @@ private fun MemberReminder.toToDoRowOrNull(
     iconTint = ToDoRowIconTint.Primary,
     title = Res.string.HOME_TODO_UPDATE_CONTACT_DETAILS_TITLE,
     onClick = navigateToContactInfo,
+  )
+
+  is MemberReminder.DecideAnalyticsConsent -> ToDoRowData(
+    icon = HedvigIcons.EQ,
+    iconTint = ToDoRowIconTint.Primary,
+    title = Res.string.HOME_TODO_SELECT_USAGE_DATA_TITLE,
+    onClick = navigateToUsageData,
   )
 
   is MemberReminder.UpcomingRenewal -> null
@@ -324,6 +337,7 @@ private fun PreviewMemberReminderToDoList() {
           MemberReminder.CoInsuredInfo("contractId", CoInsuredFlowType.CoInsured),
           MemberReminder.CoInsuredInfo("contractId", CoInsuredFlowType.CoOwners),
           MemberReminder.ContactInfoUpdateNeeded,
+          MemberReminder.DecideAnalyticsConsent(),
         ),
         navigateToConnectPayment = {},
         navigateToConnectPayout = {},
@@ -331,6 +345,7 @@ private fun PreviewMemberReminderToDoList() {
         onNavigateToNewConversation = {},
         navigateToContactInfo = {},
         navigateToChipId = {},
+        navigateToUsageData = {},
         modifier = Modifier.padding(16.dp),
       )
     }

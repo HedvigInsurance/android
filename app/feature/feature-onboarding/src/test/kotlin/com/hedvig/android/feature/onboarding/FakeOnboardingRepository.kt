@@ -3,6 +3,8 @@ package com.hedvig.android.feature.onboarding
 import app.cash.turbine.Turbine
 import arrow.core.Either
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.datastore.FakeGetAnalyticsConsentUseCase
+import com.hedvig.android.data.settings.datastore.AnalyticsConsent
 import com.hedvig.android.feature.onboarding.data.OnboardingContract
 import com.hedvig.android.feature.onboarding.data.OnboardingCrossSell
 import com.hedvig.android.feature.onboarding.data.OnboardingData
@@ -11,8 +13,6 @@ import com.hedvig.android.feature.onboarding.data.OnboardingPayinStatus
 import com.hedvig.android.feature.onboarding.data.OnboardingReferralInformation
 import com.hedvig.android.feature.onboarding.data.OnboardingRepository
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
-import com.hedvig.android.featureflags.flags.Feature
-import com.hedvig.android.featureflags.test.FakeFeatureManager
 import kotlinx.coroutines.flow.flowOf
 
 internal class FakeOnboardingMemberIdProvider(var memberId: String? = "test-member-id") : OnboardingMemberIdProvider {
@@ -45,7 +45,9 @@ internal fun testSessionStore(
 ) = OnboardingSessionStore(
   onboardingRepository = repository,
   memberIdProvider = memberIdProvider,
-  featureManager = FakeFeatureManager(mapOf(Feature.DISABLE_ANALYTICS to analyticsDisabled)),
+  getAnalyticsConsentUseCase = FakeGetAnalyticsConsentUseCase(
+    initialConsent = AnalyticsConsent.NOT_DECIDED.takeIf { !analyticsDisabled },
+  ),
 )
 
 internal fun testOnboardingData(

@@ -27,6 +27,7 @@ dependencies {
   implementation(projects.coreDemoMode)
   implementation(projects.dataContract)
   implementation(projects.dataPayingMember)
+  implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.featureFlags)
 
   testImplementation(libs.apollo.annotations)
@@ -40,6 +41,7 @@ dependencies {
   testImplementation(projects.apolloTest)
   testImplementation(projects.coreCommonTest)
   testImplementation(projects.coreDatastoreTest)
+  testImplementation(projects.dataSettingsDatastoreTest)
   testImplementation(projects.featureFlagsTest)
   testImplementation(projects.loggingTest)
   testImplementation(projects.memberRemindersTest)

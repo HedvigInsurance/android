@@ -178,23 +178,26 @@ private fun SettingsScreen(
           enabled = true,
           hasError = uiState.emailSubscriptionPreferenceError,
         )
-        Spacer(Modifier.height(4.dp))
-        HedvigBigCard(
-          onClick = onNavigateToUsageData,
-          inputText = when (uiState.analyticsConsent) {
-            AnalyticsConsent.GRANTED -> stringResource(Res.string.GENERAL_ENABLED)
+        val analyticsConsent = uiState.analyticsConsent
+        if (analyticsConsent != null) {
+          Spacer(Modifier.height(4.dp))
+          HedvigBigCard(
+            onClick = onNavigateToUsageData,
+            inputText = when (analyticsConsent) {
+              AnalyticsConsent.GRANTED -> stringResource(Res.string.GENERAL_ENABLED)
 
-            AnalyticsConsent.DENIED -> stringResource(Res.string.GENERAL_DISABLED)
+              AnalyticsConsent.DENIED -> stringResource(Res.string.GENERAL_DISABLED)
 
-            // No explicit choice made yet: nothing is forwarded to Firebase, but this is shown
-            // as distinct from an explicit "Disabled".
-            AnalyticsConsent.NOT_DECIDED, null -> stringResource(Res.string.not_selected)
-          },
-          labelText = stringResource(Res.string.SETTINGS_USAGE_DATA_TITLE),
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        )
+              // No explicit choice made yet: nothing is forwarded to Firebase, but this is shown
+              // as distinct from an explicit "Disabled".
+              AnalyticsConsent.NOT_DECIDED -> stringResource(Res.string.not_selected)
+            },
+            labelText = stringResource(Res.string.SETTINGS_USAGE_DATA_TITLE),
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
+          )
+        }
         Spacer(Modifier.height(16.dp))
 
         AnimatedVisibility(

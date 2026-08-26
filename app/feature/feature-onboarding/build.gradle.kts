@@ -51,6 +51,7 @@ dependencies {
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
   testImplementation(libs.turbine)
+  testImplementation(projects.dataSettingsDatastoreTest)
   testImplementation(projects.featureFlagsTest)
   testImplementation(projects.loggingTest)
   testImplementation(projects.moleculeTest)
