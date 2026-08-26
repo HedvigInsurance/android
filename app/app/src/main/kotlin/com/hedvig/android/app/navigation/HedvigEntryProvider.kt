@@ -54,6 +54,7 @@ import com.hedvig.android.feature.payments.navigation.paymentsEntries
 import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountKey
 import com.hedvig.android.feature.payoutaccount.navigation.payoutAccountEntries
 import com.hedvig.android.feature.profile.navigation.ContactInfoKey
+import com.hedvig.android.feature.profile.navigation.UsageDataKey
 import com.hedvig.android.feature.profile.tab.profileEntries
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceKey
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceEntries
@@ -291,6 +292,7 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
       )
     },
     navigateToChipIdScreen = { backstack.add(ChipIdKey()) },
+    navigateToUsageData = { backstack.add(UsageDataKey) },
     openAppSettings = externalNavigator::openAppSettings,
     openUrl = openUrl,
     openCrossSellUrl = openCrossSellUrl,

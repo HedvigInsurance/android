@@ -8,9 +8,8 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
+import com.hedvig.android.data.settings.datastore.GetAnalyticsConsentUseCase
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
@@ -49,7 +48,7 @@ internal class OnboardingMemberIdProviderImpl(
 internal class OnboardingSessionStore(
   private val onboardingRepository: OnboardingRepository,
   private val memberIdProvider: OnboardingMemberIdProvider,
-  private val featureManager: FeatureManager,
+  private val getAnalyticsConsentUseCase: GetAnalyticsConsentUseCase,
 ) {
   private val mutex = Mutex()
   private var cachedSession: OnboardingSession? = null
@@ -64,14 +63,15 @@ internal class OnboardingSessionStore(
       if (cached.memberId == currentMemberId) return@withLock cached.right()
     }
     cachedSession = null
+    // A null consent means analytics consent is switched off, so the step has nothing to ask.
     // Read once, here, because this is the only place a path is built: it keeps the flag from
     // reshuffling the path mid-flow, the same guarantee refreshData() upholds for the data.
-    val analyticsDisabled = featureManager.isFeatureEnabled(Feature.DISABLE_ANALYTICS).first()
+    val analyticsConsentEnabled = getAnalyticsConsentUseCase.invoke().first() != null
     onboardingRepository.getOnboardingData().map { data ->
       OnboardingSession(
         memberId = currentMemberId,
         data = data,
-        path = buildOnboardingPath(data, showAnalyticsConsent = !analyticsDisabled),
+        path = buildOnboardingPath(data, showAnalyticsConsent = analyticsConsentEnabled),
         // Capture which contracts each step owns from the first data, so completed rows stay pinned
         // as "done" instead of vanishing once a later refresh no longer lists them as missing.
         pinnedPetIdContractIds = data.contractsWithMissingPetId.map { it.id },

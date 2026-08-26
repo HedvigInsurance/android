@@ -22,6 +22,7 @@ import com.hedvig.android.feature.payments.navigation.PaymentsKey
 import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountKey
 import com.hedvig.android.feature.profile.navigation.ContactInfoKey
 import com.hedvig.android.feature.profile.navigation.ProfileKey
+import com.hedvig.android.feature.profile.navigation.UsageDataKey
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceKey
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateKey
 import com.hedvig.android.navigation.common.HedvigNavKey
@@ -270,6 +271,7 @@ internal class ExhaustiveBackstackSerializationTest {
       PaymentsKey,
       ProfileKey,
       ContactInfoKey,
+      UsageDataKey,
       LoginKey,
       HelpCenterKey,
       DeleteAccountKey,

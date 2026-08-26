@@ -238,6 +238,7 @@ internal fun HomeDestination(
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
   navigateToContactInfo: () -> Unit,
   navigateToChipId: () -> Unit,
+  navigateToUsageData: () -> Unit,
   imageLoader: ImageLoader,
   navigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
@@ -265,6 +266,7 @@ internal fun HomeDestination(
     markCrossSellsNotificationAsSeen = { viewModel.emit(HomeEvent.MarkCardCrossSellsAsSeen) },
     navigateToContactInfo = navigateToContactInfo,
     navigateToChipIdScreen = navigateToChipId,
+    navigateToUsageData = navigateToUsageData,
     setEpochDayWhenLastToolTipShown = { epochDay ->
       viewModel.emit(HomeEvent.CrossSellToolTipShown(epochDay))
     },
@@ -295,6 +297,7 @@ private fun HomeScreen(
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
   navigateToContactInfo: () -> Unit,
   navigateToChipIdScreen: () -> Unit,
+  navigateToUsageData: () -> Unit,
   markCrossSellsNotificationAsSeen: () -> Unit,
   setEpochDayWhenLastToolTipShown: (Long) -> Unit,
   imageLoader: ImageLoader,
@@ -434,6 +437,7 @@ private fun HomeScreen(
             markMessageAsSeen = markMessageAsSeen,
             navigateToContactInfo = navigateToContactInfo,
             navigateToChipIdScreen = navigateToChipIdScreen,
+            navigateToUsageData = navigateToUsageData,
             openCrossSellUrl = openCrossSellUrl,
             imageLoader = imageLoader,
             navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
@@ -590,6 +594,7 @@ private fun HomeScreenSuccess(
   onNavigateToNewConversation: () -> Unit,
   navigateToContactInfo: () -> Unit,
   navigateToChipIdScreen: () -> Unit,
+  navigateToUsageData: () -> Unit,
   openCrossSellUrl: (String) -> Unit,
   imageLoader: ImageLoader,
   navigateToAddonPurchaseFlow: (List<String>) -> Unit,
@@ -883,6 +888,7 @@ private fun HomeScreenSuccess(
               onNavigateToNewConversation = onNavigateToNewConversation,
               navigateToContactInfo = navigateToContactInfo,
               navigateToChipIdScreen = navigateToChipIdScreen,
+              navigateToUsageData = navigateToUsageData,
               horizontalInsets = horizontalInsets,
             )
 
@@ -1065,6 +1071,7 @@ private fun MemberRemindersSection(
   onNavigateToNewConversation: () -> Unit,
   navigateToContactInfo: () -> Unit,
   navigateToChipIdScreen: () -> Unit,
+  navigateToUsageData: () -> Unit,
   horizontalInsets: PaddingValues,
 ) {
   val toDoReminders = applicableReminders.homeActionRequiredReminders()
@@ -1090,6 +1097,7 @@ private fun MemberRemindersSection(
           onNavigateToNewConversation = onNavigateToNewConversation,
           navigateToContactInfo = navigateToContactInfo,
           navigateToChipId = navigateToChipIdScreen,
+          navigateToUsageData = navigateToUsageData,
         )
       }
     }
@@ -1610,6 +1618,7 @@ private fun PreviewHomeScreen(
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
         navigateToChipIdScreen = {},
+        navigateToUsageData = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
         navigateToAddonPurchaseFlow = {},
@@ -1645,6 +1654,7 @@ private fun PreviewHomeScreenWithError() {
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
         navigateToChipIdScreen = {},
+        navigateToUsageData = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
         navigateToAddonPurchaseFlow = {},
@@ -1703,6 +1713,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
         navigateToChipIdScreen = {},
+        navigateToUsageData = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
         navigateToAddonPurchaseFlow = {},

@@ -30,4 +30,4 @@ internal data object LicensesKey : HedvigNavKey
 internal data object SettingsKey : HedvigNavKey
 
 @Serializable
-internal data object UsageDataKey : HedvigNavKey
+data object UsageDataKey : HedvigNavKey

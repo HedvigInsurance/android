@@ -8,6 +8,7 @@ dependencies {
   implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.coroutines.core)
   implementation(projects.coreCommonPublic)
+  implementation(projects.featureFlags)
   implementation(projects.theme)
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
