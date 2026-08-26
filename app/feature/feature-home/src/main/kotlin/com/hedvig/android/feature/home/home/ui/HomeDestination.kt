@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -1116,9 +1117,6 @@ private fun MemberRemindersSection(
 
 private val PillowSize = 48.dp
 
-/** Keeps card text clear of the dismiss button pinned to the top-right corner. */
-private val DismissButtonReservedWidth = 40.dp
-
 @Composable
 private fun QuotesSection(
   sessions: List<OngoingShopSession>,
@@ -1169,21 +1167,9 @@ private fun QuoteCard(
       .fillMaxWidth()
       .hedvigDropShadow(HedvigTheme.shapes.cornerXLarge),
   ) {
-    Box(Modifier.fillMaxWidth()) {
-      IconButton(
-        onClick = { onDismiss(session.id) },
-        modifier = Modifier.align(Alignment.TopEnd),
-      ) {
-        Icon(
-          imageVector = HedvigIcons.Close,
-          contentDescription = stringResource(Res.string.ongoing_shop_session_dismiss_offer),
-        )
-      }
-      Column(Modifier.padding(16.dp)) {
-        Row(
-          verticalAlignment = Alignment.CenterVertically,
-          modifier = Modifier.padding(end = DismissButtonReservedWidth),
-        ) {
+    Box(Modifier.fillMaxWidth().padding(16.dp)) {
+      Column {
+        Row(verticalAlignment = Alignment.CenterVertically) {
           if (session.pillowImageUrl != null) {
             val pillowPx = with(LocalDensity.current) { PillowSize.roundToPx() }
             AsyncImage(
@@ -1211,6 +1197,18 @@ private fun QuoteCard(
                 color = HedvigTheme.colorScheme.textSecondary,
               )
             }
+          }
+          IconButton(
+            onClick = { onDismiss(session.id) },
+            modifier = Modifier
+              .align(Alignment.Top)
+              .size(24.dp)
+              .wrapContentSize(unbounded = true),
+          ) {
+            Icon(
+              imageVector = HedvigIcons.Close,
+              contentDescription = stringResource(Res.string.ongoing_shop_session_dismiss_offer),
+            )
           }
         }
         Spacer(Modifier.height(12.dp))
@@ -1714,6 +1712,16 @@ private fun PreviewHomeScreenAllHomeTextTypes(
             enableNotifications = null,
             coInsuredInfo = null,
             updateContactInfo = null,
+          ),
+          ongoingShopSessions = listOf(
+            OngoingShopSession(
+              id = "session-id",
+              title = "Title",
+              subtitle = null,
+              monthlyNet = null,
+              resumeUrl = "",
+              pillowImageUrl = null,
+            ),
           ),
           isHelpCenterEnabled = false,
           quickActions = previewQuickActions,
