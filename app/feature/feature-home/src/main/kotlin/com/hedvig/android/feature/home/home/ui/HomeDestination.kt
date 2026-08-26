@@ -1116,6 +1116,9 @@ private fun MemberRemindersSection(
 
 private val PillowSize = 48.dp
 
+/** Keeps card text clear of the dismiss button pinned to the top-right corner. */
+private val DismissButtonReservedWidth = 40.dp
+
 @Composable
 private fun QuotesSection(
   sessions: List<OngoingShopSession>,
@@ -1166,53 +1169,61 @@ private fun QuoteCard(
       .fillMaxWidth()
       .hedvigDropShadow(HedvigTheme.shapes.cornerXLarge),
   ) {
-    Column(Modifier.padding(16.dp)) {
-      Row(verticalAlignment = Alignment.CenterVertically) {
-        if (session.pillowImageUrl != null) {
-          val pillowPx = with(LocalDensity.current) { PillowSize.roundToPx() }
-          AsyncImage(
-            model = storyblokResized(session.pillowImageUrl, pillowPx),
-            contentDescription = null,
-            imageLoader = imageLoader,
-            contentScale = ContentScale.Fit,
-            modifier = Modifier.size(PillowSize),
-          )
-          Spacer(Modifier.width(12.dp))
-        }
-        Column(Modifier.weight(1f)) {
-          HedvigText(text = session.title, style = HedvigTheme.typography.bodySmall)
-          val secondary = session.monthlyNet?.let {
-            stringResource(
-              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              it,
+    Box(Modifier.fillMaxWidth()) {
+      IconButton(
+        onClick = { onDismiss(session.id) },
+        modifier = Modifier.align(Alignment.TopEnd),
+      ) {
+        Icon(
+          imageVector = HedvigIcons.Close,
+          contentDescription = stringResource(Res.string.ongoing_shop_session_dismiss_offer),
+        )
+      }
+      Column(Modifier.padding(16.dp)) {
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier.padding(end = DismissButtonReservedWidth),
+        ) {
+          if (session.pillowImageUrl != null) {
+            val pillowPx = with(LocalDensity.current) { PillowSize.roundToPx() }
+            AsyncImage(
+              model = storyblokResized(session.pillowImageUrl, pillowPx),
+              contentDescription = null,
+              imageLoader = imageLoader,
+              contentScale = ContentScale.Fit,
+              modifier = Modifier.size(PillowSize),
             )
-          } ?: session.subtitle
+            Spacer(Modifier.width(12.dp))
+          }
+          Column(Modifier.weight(1f)) {
+            HedvigText(text = session.title, style = HedvigTheme.typography.bodySmall)
+            val secondary = session.monthlyNet?.let {
+              stringResource(
+                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                it,
+              )
+            } ?: session.subtitle
 
-          if (secondary != null) {
-            HedvigText(
-              text = secondary,
-              style = HedvigTheme.typography.label,
-              color = HedvigTheme.colorScheme.textSecondary,
-            )
+            if (secondary != null) {
+              HedvigText(
+                text = secondary,
+                style = HedvigTheme.typography.label,
+                color = HedvigTheme.colorScheme.textSecondary,
+              )
+            }
           }
         }
-        IconButton(onClick = { onDismiss(session.id) }) {
-          Icon(
-            imageVector = HedvigIcons.Close,
-            contentDescription = stringResource(Res.string.ongoing_shop_session_dismiss_offer),
-          )
-        }
+        Spacer(Modifier.height(12.dp))
+        HedvigButton(
+          text = stringResource(Res.string.general_continue_button),
+          onClick = { onResumeClick(session.resumeUrl) },
+          buttonStyle = Secondary,
+          buttonSize = ButtonSize.Medium,
+          enabled = true,
+          shape = HedvigTheme.shapes.cornerFull,
+          modifier = Modifier.fillMaxWidth(),
+        )
       }
-      Spacer(Modifier.height(12.dp))
-      HedvigButton(
-        text = stringResource(Res.string.general_continue_button),
-        onClick = { onResumeClick(session.resumeUrl) },
-        buttonStyle = Secondary,
-        buttonSize = ButtonSize.Medium,
-        enabled = true,
-        shape = HedvigTheme.shapes.cornerFull,
-        modifier = Modifier.fillMaxWidth(),
-      )
     }
   }
 }
