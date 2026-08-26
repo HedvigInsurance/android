@@ -50,6 +50,7 @@ import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
 import com.hedvig.android.feature.movingflow.movingFlowEntries
 import com.hedvig.android.feature.onboarding.data.ResetOnboardingSeenUseCase
 import com.hedvig.android.feature.onboarding.navigation.onboardingEntries
+import com.hedvig.android.feature.payin.account.navigation.PayinAccountKey
 import com.hedvig.android.feature.payin.account.navigation.payinAccountEntries
 import com.hedvig.android.feature.payments.navigation.paymentsEntries
 import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountKey
@@ -105,6 +106,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
 ) {
   val shouldShowRequestPermissionRationale: (String) -> Boolean = androidAppHost::shouldShowPermissionRationale
   val navigateToConnectPayment: () -> Unit = { backstack.add(TrustlyKey) }
+  val navigateToPayinAccount: () -> Unit = { backstack.add(PayinAccountKey) }
   val navigateToPayoutAccount: () -> Unit = { backstack.add(PayoutAccountKey) }
   val navigateToInbox: () -> Unit = { backstack.add(InboxKey) }
   val navigateToNewConversation: () -> Unit = { backstack.add(ChatKey(Uuid.randomUUID().toString())) }
@@ -160,6 +162,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     globalSnackBarState = globalSnackBarState,
     openUrl = openUrl,
     navigateToConnectPayment = navigateToConnectPayment,
+    navigateToPayinAccount = navigateToPayinAccount,
     navigateToPayoutAccount = navigateToPayoutAccount,
     navigateToNewConversation = navigateToNewConversation,
   )
@@ -460,12 +463,14 @@ private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
   globalSnackBarState: GlobalSnackBarState,
   openUrl: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
+  navigateToPayinAccount: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
   navigateToNewConversation: () -> Unit,
 ) {
   paymentsEntries(
     backstack = backstack,
     navigateToConnectPayment = navigateToConnectPayment,
+    navigateToPayinAccount = navigateToPayinAccount,
     navigateToPayoutAccount = navigateToPayoutAccount,
     openConversation = navigateToNewConversation,
   )

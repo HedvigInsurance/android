@@ -40,9 +40,9 @@ kotlin {
       implementation(projects.uiEmergency)
       // -navigation modules for QuickLinkDestination.toNavKey() (Task 3)
       implementation(projects.featureChooseTierNavigation)
-      implementation(projects.featureConnectPaymentTrustlyNavigation)
       implementation(projects.featureEditCoinsuredNavigation)
       implementation(projects.featureMovingflowNavigation)
+      implementation(projects.featurePayinAccountNavigation)
       implementation(projects.featureTerminateInsuranceNavigation)
       implementation(projects.featureTravelCertificateNavigation)
     }
