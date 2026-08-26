@@ -212,6 +212,7 @@ import hedvig.resources.home_tab_welcome_title_without_name
 import hedvig.resources.ongoing_shop_session_dismiss_offer
 import kotlin.math.roundToInt
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlinx.coroutines.delay
@@ -543,8 +544,8 @@ private fun ColumnScope.CrossSellsTooltip(uiState: Success, setEpochDayWhenLastT
       if (shouldSetEpochDayWhenLastToolTipShown) {
         val today = Clock.System.now().toLocalDateTime(
           TimeZone.currentSystemDefault(),
-        ).date.toEpochDays().toLong()
-        delay(5000)
+        ).date.toEpochDays()
+        delay(5000.milliseconds)
         setEpochDayWhenLastToolTipShown(today)
       }
     }
