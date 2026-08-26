@@ -29,6 +29,20 @@ data class PhoneNumberRules(
   }
 
   /**
+   * [text] as it should be submitted, or null when it cannot be read as a number at all.
+   *
+   * Separators are formatting and are dropped, so a number that arrived as "070-123 45 67", whether
+   * pasted or stored that way before anything validated it, submits instead of being called invalid.
+   *
+   * A letter is a mistake rather than formatting, so it makes the whole value unreadable instead of
+   * being quietly removed, and so does a `+` that does not lead the number.
+   */
+  fun cleanedForSubmission(text: CharSequence): CharSequence? {
+    if (text.any { it.isLetter() }) return null
+    return filterToAllowed(text)
+  }
+
+  /**
    * The value an edit from [current] to [proposed] settles on, for a field that accepts these rules.
    *
    * A stored number is shown exactly as it is held, which is not necessarily well formed, so that the

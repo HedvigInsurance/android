@@ -82,33 +82,24 @@ data class ContactInformation(
         "Phone number [$phoneNumber] must contain only numbers with an optional '+' in the beginning"
       }
 
-      private val whitespacesInInputErrorMessage = { phoneNumber: String ->
-        "Phone number [$phoneNumber] cannot contain whitespaces"
-      }
-
       private val tooShortInputErrorMessage = { phoneNumber: String ->
         "Phone number [$phoneNumber] must contain at least ${rules.minDigits} digits"
       }
 
       /**
-       * for the phone number we're trying to send to backend, cannot be null
-       */
-      fun notNullFromStringAfterTrimmingWhitespaces(input: String): Either<ErrorMessage, PhoneNumber> {
-        val inputWithoutWhitespaces = input.filterNot { it.isWhitespace() }
-        return notNullFromString(inputWithoutWhitespaces)
-      }
-
-      /**
-       * returns [Either.Left] with an [ErrorMessage] if the input is an invalid phone number, a blank string, or
-       * holds fewer digits than [PhoneNumberRules.minDigits]
-       * returns [Either.Right] with a [PhoneNumber] if the input is a valid phone number
+       * Separators in [input] are formatting and are dropped, so what comes back is what should be
+       * sent rather than what was typed.
+       *
+       * returns [Either.Left] with an [ErrorMessage] if the input cannot be read as a number, is a
+       * blank string, or holds fewer digits than [PhoneNumberRules.minDigits]
+       * returns [Either.Right] with a [PhoneNumber] holding the cleaned number
        */
       fun notNullFromString(input: String): Either<ErrorMessage, PhoneNumber> {
+        val cleaned = rules.cleanedForSubmission(input)?.toString()
         return when {
-          input.any { it.isWhitespace() } -> ErrorMessage(whitespacesInInputErrorMessage(input)).left()
-          input.isBlank() || !rules.isWellFormed(input) -> ErrorMessage(invalidInputErrorMessage(input)).left()
-          !rules.hasEnoughDigits(input) -> ErrorMessage(tooShortInputErrorMessage(input)).left()
-          else -> PhoneNumber(input).right()
+          cleaned.isNullOrBlank() -> ErrorMessage(invalidInputErrorMessage(input)).left()
+          !rules.hasEnoughDigits(cleaned) -> ErrorMessage(tooShortInputErrorMessage(input)).left()
+          else -> PhoneNumber(cleaned).right()
         }
       }
     }

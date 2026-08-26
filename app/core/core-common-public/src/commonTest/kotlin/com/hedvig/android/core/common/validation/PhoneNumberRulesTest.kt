@@ -3,6 +3,7 @@ package com.hedvig.android.core.common.validation
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class PhoneNumberRulesTest {
@@ -138,6 +139,36 @@ class PhoneNumberRulesTest {
     assertFalse(swish.hasEnoughDigits("070123456"))
     assertTrue(swish.hasEnoughDigits("0701234567"))
     assertTrue(member.hasEnoughDigits("070123456"))
+  }
+
+  /**
+   * Separators reach the rules two ways: pasted, where the field strips them, and stored, from before
+   * anything validated what was saved. Submission has to accept both or a number that reads perfectly
+   * well to the member is called invalid.
+   */
+  @Test
+  fun `separators are dropped from a number being submitted`() {
+    assertEquals("0701234567", member.cleanedForSubmission("070-123-45-67").toString())
+    assertEquals("0701234567", member.cleanedForSubmission("070 123 45 67").toString())
+    assertEquals("0701234567", member.cleanedForSubmission("(070) 123.45.67").toString())
+    assertEquals("+46701234567", member.cleanedForSubmission("+46-70-123 45 67").toString())
+  }
+
+  @Test
+  fun `a letter makes a number unreadable rather than being dropped`() {
+    assertNull(member.cleanedForSubmission("070123456seven"))
+    assertNull(member.cleanedForSubmission("+1234a"))
+  }
+
+  @Test
+  fun `a plus that cannot be kept makes a number unreadable on submission too`() {
+    assertNull(member.cleanedForSubmission("++46701234567"))
+    assertNull(swish.cleanedForSubmission("+46701234567"))
+  }
+
+  @Test
+  fun `a line break is a separator like any other on submission`() {
+    assertEquals("012349931", member.cleanedForSubmission("01234\n99\n31").toString())
   }
 
   /**

@@ -100,11 +100,9 @@ internal class OnboardingPhonePresenter(
         is OnboardingPhoneEvent.Save -> {
           val content = currentState as? OnboardingPhoneUiState.Content ?: return@CollectEvents
           val rules = PhoneNumberRules.MemberPhoneNumber
-          // Whitespace is dropped rather than held against the number, the way the profile screen
-          // does it, so a stored "070 123 45 67" submits instead of being called malformed.
-          val submitted = event.phoneNumber.filterNot { it.isWhitespace() }
+          val submitted = rules.cleanedForSubmission(event.phoneNumber)?.toString()
           when {
-            !rules.isWellFormed(submitted) -> {
+            submitted == null -> {
               currentState = content.copy(showSubmissionError = NumberMalformed)
             }
 
