@@ -39,9 +39,15 @@ com.hedvig.feature.claim.chat.navigation.ClaimOutcomeNewClaimKey
 
 The same change fixed a pre-existing Firebase defect found along the way: `screenName` was
 `simpleName.removeSuffix("Key")`, which silently merged four pairs of screens that share a simple name
-across features (`FirstVet`, `Forever`, `SubmitSuccess`, `SubmitFailure`). Screen names are now
-feature-qualified, and `ScreenNameTest` scans the classpath and fails the build if any two nav keys
-ever resolve to the same analytics name.
+across features (`FirstVet`, `Forever`, `SubmitSuccess`, `SubmitFailure`).
+
+A Firebase screen name is now the key's fully qualified class name with the shared feature package
+prefix removed, so `change.tier.navigation.SubmitSuccessKey`. Prepending
+`com.hedvig.android.feature.` (or `com.hedvig.feature.`) gets back to the declaration, which means a
+name read off a Firebase report greps straight to its key with no convention to decode. The prefix is
+dropped because GA4 truncates parameter values at 100 characters and the longest key name is already
+91. `ScreenNameTest` asserts uniqueness, reversibility and that length bound across every key on the
+classpath.
 
 ### Datadog: 10 filter rewrites (applied 2026-08-27)
 
