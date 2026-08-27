@@ -167,10 +167,12 @@ on top of `Chat` (8,089), inflating the chat metric and the Chat (Android) SLO d
 10%. Login has the same hazard, where the wildcard would add `LoginKey`, `OtpInputKey` and
 `GenericAuthCredentialsInputKey`. Both must keep an explicit single-name filter.
 
-## PENDING: 7 deletions, deliberately held
+## PENDING: 8 deletions, deliberately held
 
-These 7 metrics read zero and cannot be repaired, because they target screens that no longer exist.
-All 7 were confirmed to have **no** dashboards, monitors, SLOs or notebooks attached.
+These metrics read zero and cannot be repaired, because they target screens that no longer exist.
+All were confirmed to have **no** dashboards, monitors, SLOs or notebooks attached. `android.claim.failure`
+joined this list on 2026-08-27, when the dashboard tile that was its only consumer was replaced (see
+the claim-failure section below).
 
 | Metric | Zero since | Why unrepairable |
 |---|---|---|
@@ -181,6 +183,7 @@ All 7 were confirmed to have **no** dashboards, monitors, SLOs or notebooks atta
 | `android.resource.claimflow` | 2026-03 | Duplicate of `android.claimflow.network.count` |
 | `android.claimflow.errors` | 2026-03 | Duplicate of `android.claimflow.network.error` |
 | `android.auth.failure` | 2023-10 | Matches a hand-written `"BankId Error"` view removed in 2023 |
+| `android.claim.failure` | 2026-03 | Targets `ClaimFlowDestination.Failure`; the chat flow has no failure screen |
 
 **Why held:** neither the Datadog product docs nor the API reference state whether deleting a
 generated metric also purges the already-computed timeseries. Holding costs nothing, since these
@@ -190,19 +193,50 @@ risk pre-March history. Resolve by asking Datadog support, then delete.
 Their full definitions are recorded in this repo's git history via this document's companion tooling
 output; if any is deleted and needs restoring, recreate with `pup rum metrics create`.
 
-## PENDING: replace the claim-failure signal
+## Claim-failure signal: replaced 2026-08-27
 
-`android.claim.failure` targeted `ClaimFlowDestination.Failure`, deleted in March. It is still on the
-"Apps (Android + iOS)" dashboard as the "Failure claim screen viewed" tile, so it is the one metric
-here with a live consumer.
-
-There is no equivalent screen. `ClaimIntentOutcome` is a sealed interface with exactly one case,
+`android.claim.failure` targeted `ClaimFlowDestination.Failure`, deleted in March, and there is no
+equivalent screen to repoint it at. `ClaimIntentOutcome` is a sealed interface with exactly one case,
 `Claim`. Failure surfaces as `ClaimChatUiState.FailedToStart` rendering an error section *inside* the
 `ClaimChatKey` view, so it produces no distinct view name and no filter can reach it.
 
-Options are recorded in the accompanying discussion; the standing recommendation is a started/succeeded
-ratio plus an action-based failure event, because action-based metrics do not break when navigation
-changes.
+Rather than count failures, the flow is now measured as a completion ratio:
+
+- **`android.claim.started`** created, counting views of the claim chat entry screen, accepting both
+  the old and new names exactly like `android.claim.success`.
+- The dashboard tile "Failure claim screen viewed" was replaced with **"Claim submissions per chat
+  entry"**, computing `android.claim.success / android.claim.started * 100`.
+
+Both halves of the ratio are structurally identical metrics (view count, grouped by `env`, same
+`uniqueness`), so any counting semantics apply equally to numerator and denominator.
+
+**Read this number as a trend, not an absolute conversion rate.** The denominator counts chat-screen
+views, and a member who backs out and resumes, or returns to a claim later, produces more than one.
+On the 30 days before the change the old-name equivalents were 305 chat views against 59 outcome
+views, so expect a figure in that region rather than a true per-attempt success rate. What matters is
+that it moves when claim submission degrades.
+
+Because that tile was `android.claim.failure`'s only consumer, that metric now has none, and it joins
+the held-deletion list above.
+
+### Still worth doing: emit an action for submission failure
+
+The durable form of a failure signal is an action, not a screen or a UI state:
+
+```kotlin
+logAction(type = ActionType.CUSTOM, name = "CLAIM_SUBMISSION_FAILED")
+```
+
+Action-based metrics do not break when navigation changes, which is why no iOS metric broke in this
+incident. Note that the two obvious instrumentation points are both wrong: `failedToStart` and
+`errorSubmittingStep` are transient, retryable states that are set and cleared repeatedly, so
+instrumenting them counts error *displays*, not failed claims, and a member on a flaky connection
+produces several. Emit at a terminal boundary instead, for example when the member abandons the flow
+while an error is showing.
+
+The strongest single improvement would be to emit `CLAIM_SUBMITTED` on reaching
+`ClaimIntentOutcome.Claim` and rebase `android.claim.success` onto `@action.name`, which would make
+the most important claim metric permanently independent of navigation.
 
 ## Scope note on `android.claimflow.network.count`
 
