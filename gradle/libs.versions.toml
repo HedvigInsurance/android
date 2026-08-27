@@ -247,6 +247,7 @@ zXing = { module = "com.google.zxing:core", version.ref = "zXing" }
 zoomable = { module = "com.mxalbert.zoomable:zoomable", version.ref = "zoomable" }
 # lint dependencies
 lintApi = { module = "com.android.tools.lint:lint-api", version.ref = "lintApi" }
+lintTests = { module = "com.android.tools.lint:lint-tests", version.ref = "lintApi" }
 
 # temporary bug workaround
 androidx-kmp-preview-bug1-workaround = { module = "androidx.customview:customview-poolingcontainer", version = "1.1.0" }

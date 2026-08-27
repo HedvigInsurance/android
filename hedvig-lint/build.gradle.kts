@@ -9,6 +9,9 @@ plugins {
 
 dependencies {
   compileOnly(libs.lintApi)
+  testImplementation(libs.junit)
+  testImplementation(libs.lintApi)
+  testImplementation(libs.lintTests)
 }
 
 java {

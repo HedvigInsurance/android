@@ -8,6 +8,7 @@ import com.android.tools.lint.detector.api.Issue
 class HedvigLintRegistry : IssueRegistry() {
   override val issues: List<Issue> = listOf(
     Material2Detector.ISSUE,
+    NamespaceImportDetector.ISSUE,
   )
 
   override val api: Int = CURRENT_API
