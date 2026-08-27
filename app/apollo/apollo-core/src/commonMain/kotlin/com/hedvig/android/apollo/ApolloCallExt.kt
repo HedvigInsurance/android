@@ -13,8 +13,8 @@ import com.apollographql.apollo.api.ApolloResponse
 import com.apollographql.apollo.api.Error
 import com.apollographql.apollo.api.Operation
 import com.apollographql.apollo.api.Query
-import com.apollographql.apollo.cache.normalized.watch
 import com.apollographql.apollo.exception.CacheMissException
+import com.apollographql.cache.normalized.watch
 import com.hedvig.android.apollo.ApolloOperationError.CacheMiss
 import com.hedvig.android.apollo.ApolloOperationError.OperationError
 import com.hedvig.android.apollo.ApolloOperationError.OperationException

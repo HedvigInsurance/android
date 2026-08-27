@@ -51,6 +51,7 @@ kotlin {
       api(libs.apollo.adapters.core)
       api(libs.apollo.adapters.datetime)
       api(libs.apollo.api)
+      api(libs.apollo.normalizedCache)
       api(libs.kotlinx.datetime)
       implementation(projects.coreBuildConstants)
       implementation(projects.coreCommonPublic)
