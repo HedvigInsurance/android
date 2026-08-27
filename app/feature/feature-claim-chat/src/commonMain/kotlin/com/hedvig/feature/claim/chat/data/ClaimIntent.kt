@@ -67,7 +67,9 @@ internal sealed interface StepContent {
     override val isSkippable: Boolean,
     val localFiles: List<UiFile>,
     val remoteFiles: List<UiFile>,
-  ) : StepContent
+  ) : StepContent {
+    val allFiles get() = remoteFiles + localFiles
+  }
 
   data class Task(
     val descriptions: List<String>,

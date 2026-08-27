@@ -95,11 +95,11 @@ internal fun UploadFilesStep(
             )
           },
           appPackageId = appPackageId,
-          files = stepContent.remoteFiles + stepContent.localFiles,
+          files = stepContent.allFiles,
           imageLoader = imageLoader,
           onNavigateToImageViewer = onNavigateToImageViewer,
         )
-        if (stepContent.localFiles.isNotEmpty() || stepContent.remoteFiles.isNotEmpty()) {
+        if (stepContent.allFiles.isNotEmpty()) {
           HedvigButton(
             text = stringResource(Res.string.claims_continue_button),
             enabled = !isSubmitting,
@@ -114,7 +114,7 @@ internal fun UploadFilesStep(
             modifier = Modifier.fillMaxWidth(),
           )
         }
-        if (stepContent.isSkippable && stepContent.localFiles.isEmpty()) {
+        if (stepContent.isSkippable) {
           HedvigButton(
             text = stringResource(Res.string.claims_skip_button),
             enabled = !isSubmitting,
@@ -129,11 +129,9 @@ internal fun UploadFilesStep(
       }
     } else {
       Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        if (stepContent.localFiles.isNotEmpty() ||
-          stepContent.remoteFiles.isNotEmpty()
-        ) {
+        if (stepContent.allFiles.isNotEmpty()) {
           FilesRow(
-            uiFiles = stepContent.remoteFiles + stepContent.localFiles,
+            uiFiles = stepContent.allFiles,
             onRemoveFile = null,
             imageLoader = imageLoader,
             onNavigateToImageViewer = onNavigateToImageViewer,

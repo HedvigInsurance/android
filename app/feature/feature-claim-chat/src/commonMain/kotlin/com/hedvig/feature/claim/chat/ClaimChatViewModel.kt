@@ -912,7 +912,7 @@ internal class ClaimChatPresenter(
           val fileUris = stepContent.localFiles.mapNotNull { file ->
             file.localPath?.let { Uri.parse(it) }
           }
-          val remoteFileIds = stepContent.remoteFiles.mapNotNull { file ->
+          val remoteFileIds = stepContent.remoteFiles.map { file ->
             file.id
           }
           currentContinueButtonLoading = true
