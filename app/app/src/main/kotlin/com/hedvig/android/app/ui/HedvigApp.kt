@@ -42,6 +42,8 @@ import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SinglePaneSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import coil3.ImageLoader
+import com.datadog.android.compose.ExperimentalTrackingApi
+import com.datadog.android.compose.Navigation3TrackingEffect
 import com.hedvig.android.app.AndroidAppHost
 import com.hedvig.android.app.GlobalHedvigSnackBar
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
@@ -125,6 +127,7 @@ internal fun HedvigApp(
 ) {
   ReportCurrentDestinationEffect(backstackController, currentDestinationHolder)
   TrackScreenViewEffect(backstackController, eventTrackingClient, screenParameterExtractor)
+  DatadogViewTrackingEffect(backstackController)
   val hedvigAppState = rememberHedvigAppState(
     backstackController = backstackController,
     windowSizeClass = windowSizeClass,
@@ -332,6 +335,20 @@ private fun TrackScreenViewEffect(
         )
       }
   }
+}
+
+/**
+ * Reports the top of the back stack as a Datadog RUM view, so RUM attributes errors, resources and
+ * view durations to a screen rather than to the hosting Activity.
+ *
+ * The wrapper is what keeps the back stack read inside its own restart scope: [Navigation3TrackingEffect]
+ * is non-restartable, so calling it straight from [HedvigApp] would attribute the read there and
+ * recompose the whole app shell on every navigation.
+ */
+@OptIn(ExperimentalTrackingApi::class)
+@Composable
+private fun DatadogViewTrackingEffect(backstackController: BackstackController) {
+  Navigation3TrackingEffect(backStack = backstackController.entries)
 }
 
 /**
