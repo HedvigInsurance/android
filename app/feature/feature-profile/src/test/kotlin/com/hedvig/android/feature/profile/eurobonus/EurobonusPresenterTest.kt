@@ -20,7 +20,12 @@ class EurobonusPresenterTest {
     "name",
     id = "id",
     partnerData = EurobonusDataQuery.Data.CurrentMember.PartnerData(
-      EurobonusDataQuery.Data.CurrentMember.PartnerData.Sas("BA1234556", true),
+      __typename = "",
+      sas = EurobonusDataQuery.Data.CurrentMember.PartnerData.Sas(
+        __typename = "",
+        eurobonusNumber = "BA1234556",
+        eligible = true,
+      ),
     ),
   )
 

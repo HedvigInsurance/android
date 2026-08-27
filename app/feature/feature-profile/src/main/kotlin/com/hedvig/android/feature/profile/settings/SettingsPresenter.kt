@@ -49,8 +49,10 @@ internal class SettingsPresenter(
         is SettingsEvent.ChangeLanguage -> {
           selectedLanguage = event.language
           languageService.setLanguage(event.language)
-          cacheManager.clearCache()
-          launch { uploadLanguagePreferenceToBackendUseCase.invoke() }
+          launch {
+            cacheManager.clearCache()
+            uploadLanguagePreferenceToBackendUseCase.invoke()
+          }
         }
 
         is SettingsEvent.ChangeTheme -> {
