@@ -51,6 +51,7 @@ import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
 import com.hedvig.android.app.navigation.ScreenParameterExtractor
 import com.hedvig.android.app.navigation.hedvigEntryProvider
+import com.hedvig.android.app.navigation.screenName
 import com.hedvig.android.app.navigation.shouldFadeThrough
 import com.hedvig.android.app.urihandler.AuthorizationCodeUriHandler
 import com.hedvig.android.app.urihandler.DeepLinkFirstUriHandler
@@ -312,9 +313,9 @@ private fun ReportCurrentDestinationEffect(
 
 /**
  * Sends a Firebase `screen_view` whenever the destination on top of the rendered stack changes, deriving the screen
- * name from the key type (the `{Feature}Key` suffix is dropped) and the parameters from
- * [ScreenParameterExtractor]. Parameters ride along the single `screen_view` event keyed by screen name, acting as
- * breakdown dimensions rather than fragmenting a screen into separate entries.
+ * name via [screenName] and the parameters from [ScreenParameterExtractor]. Parameters ride along the single
+ * `screen_view` event keyed by screen name, acting as breakdown dimensions rather than fragmenting a screen into
+ * separate entries.
  */
 @Composable
 private fun TrackScreenViewEffect(
@@ -326,11 +327,9 @@ private fun TrackScreenViewEffect(
     snapshotFlow { backstackController.currentDestination }
       .filterNotNull()
       .collect { destination ->
-        val screenClass = destination::class.simpleName ?: destination.toString()
-        val screenName = screenClass.removeSuffix("Key")
         eventTrackingClient.trackScreen(
-          name = screenName,
-          screenClass = screenClass,
+          name = destination.screenName(),
+          screenClass = destination::class.qualifiedName ?: destination::class.simpleName,
           parameters = screenParameterExtractor.parametersFor(destination),
         )
       }
