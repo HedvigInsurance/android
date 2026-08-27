@@ -21,7 +21,6 @@ import hedvig.resources.claim_status_detail_closed
 import hedvig.resources.claim_status_detail_submitted
 import java.util.Locale
 import kotlin.time.Clock
-import kotlin.time.Clock.System
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
@@ -77,7 +76,7 @@ private fun SubmittedAndClosedColumn(topText: String, bottomText: String, modifi
 }
 
 @Composable
-private fun currentTimeAsState(updateInterval: Duration = 1.seconds, clock: Clock = System): State<Instant> {
+private fun currentTimeAsState(updateInterval: Duration = 1.seconds, clock: Clock = Clock.System): State<Instant> {
   return produceState(initialValue = clock.now()) {
     while (isActive) {
       delay(updateInterval)
@@ -123,8 +122,8 @@ private fun PreviewSubmittedAndClosedInformation() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       SubmittedAndClosedColumns(
-        submittedAt = System.now().minus(10.days),
-        closedAt = System.now().minus(30.seconds),
+        submittedAt = Clock.System.now().minus(10.days),
+        closedAt = Clock.System.now().minus(30.seconds),
         locale = Locale.ENGLISH,
       )
     }

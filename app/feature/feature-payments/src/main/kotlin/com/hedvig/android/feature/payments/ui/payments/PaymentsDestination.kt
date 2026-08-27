@@ -117,7 +117,7 @@ import hedvig.resources.Res
 import hedvig.resources.TAB_PAYMENTS_TITLE
 import hedvig.resources.info_card_missing_payment_body
 import hedvig.resources.info_card_missing_payment_missing_payments_body
-import kotlin.time.Clock.System
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -822,7 +822,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         isRetrying = false,
         upcomingPayment = UpcomingPayment.Content(
           UiMoney(100.0, SEK),
-          System.now().toLocalDateTime(TimeZone.UTC).date,
+          Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           "rdg",
         ),
         upcomingPaymentInfo = NoInfo,
@@ -837,7 +837,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         isRetrying = false,
         upcomingPayment = UpcomingPayment.Content(
           UiMoney(100.0, SEK),
-          System.now().toLocalDateTime(TimeZone.UTC).date,
+          Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           "rdg",
         ),
         upcomingPaymentInfo = NoInfo,
@@ -854,7 +854,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         isRetrying = false,
         upcomingPayment = UpcomingPayment.Content(
           UiMoney(100.0, SEK),
-          System.now().toLocalDateTime(TimeZone.UTC).date,
+          Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           "iky",
         ),
         upcomingPaymentInfo = InProgress,
@@ -869,12 +869,12 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         isRetrying = false,
         upcomingPayment = UpcomingPayment.Content(
           UiMoney(400.0, SEK),
-          System.now().toLocalDateTime(TimeZone.UTC).date,
+          Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           "pwe",
         ),
         upcomingPaymentInfo = PaymentFailed(
-          System.now().toLocalDateTime(TimeZone.UTC).date,
-          System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
+          Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
+          Clock.System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
           isManualChargeAllowed = ManualChargeToPrompt(
             UiMoney(200.0, UiCurrencyCode.SEK),
           ),
@@ -890,7 +890,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         isRetrying = false,
         upcomingPayment = UpcomingPayment.Content(
           UiMoney(100.0, SEK),
-          System.now().toLocalDateTime(TimeZone.UTC).date,
+          Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           "fkjse",
         ),
         upcomingPaymentInfo = NoInfo,
@@ -905,12 +905,12 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         isRetrying = false,
         upcomingPayment = UpcomingPayment.Content(
           UiMoney(100.0, SEK),
-          System.now().toLocalDateTime(TimeZone.UTC).date,
+          Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           "qrdfgeth",
         ),
         upcomingPaymentInfo = PaymentFailed(
-          System.now().toLocalDateTime(TimeZone.UTC).date,
-          System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
+          Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
+          Clock.System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
           isManualChargeAllowed = null,
         ),
         ongoingCharges = emptyList(),
@@ -926,7 +926,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         isRetrying = false,
         upcomingPayment = UpcomingPayment.Content(
           UiMoney(100.0, SEK),
-          System.now().toLocalDateTime(TimeZone.UTC).date,
+          Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           "qrdfgeth2",
         ),
         upcomingPaymentInfo = NoInfo,
@@ -943,17 +943,17 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         isRetrying = false,
         upcomingPayment = UpcomingPayment.Content(
           UiMoney(100.0, SEK),
-          System.now().toLocalDateTime(TimeZone.UTC).date,
+          Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           "w345423t6",
         ),
         upcomingPaymentInfo = PaymentFailed(
-          System.now().toLocalDateTime(TimeZone.UTC).date,
-          System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
+          Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
+          Clock.System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
           isManualChargeAllowed = null,
         ),
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup(
-          dueDateToConnect = System.now().plus(30.days).toLocalDateTime(TimeZone.UTC).date,
+          dueDateToConnect = Clock.System.now().plus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
         showPayoutButton = false,
         memberType = MemberType.STANDARD_MEMBER,
@@ -964,17 +964,17 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         isRetrying = false,
         upcomingPayment = UpcomingPayment.Content(
           UiMoney(100.0, SEK),
-          System.now().toLocalDateTime(TimeZone.UTC).date,
+          Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           "42345",
         ),
         upcomingPaymentInfo = PaymentFailed(
-          System.now().toLocalDateTime(TimeZone.UTC).date,
-          System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
+          Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
+          Clock.System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
           isManualChargeAllowed = null,
         ),
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup(
-          System.now().plus(30.days).toLocalDateTime(TimeZone.UTC).date,
+          Clock.System.now().plus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
         showPayoutButton = false,
         memberType = MemberType.STANDARD_MEMBER,
@@ -1029,7 +1029,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         isRetrying = false,
         upcomingPayment = UpcomingPayment.Content(
           UiMoney(100.0, SEK),
-          System.now().toLocalDateTime(TimeZone.UTC).date,
+          Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           "w345423t6",
         ),
         upcomingPaymentInfo = UpcomingPaymentInfo.NoInfo,

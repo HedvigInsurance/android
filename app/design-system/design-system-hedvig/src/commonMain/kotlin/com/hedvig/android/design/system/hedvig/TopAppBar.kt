@@ -30,7 +30,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
-import com.hedvig.android.design.system.hedvig.TopAppBarDefaults.windowInsets
 import com.hedvig.android.design.system.hedvig.icon.ArrowLeft
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -183,7 +182,7 @@ fun TopAppBarLayoutForActions(
     horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier
-      .windowInsetsPadding(windowInsets)
+      .windowInsetsPadding(TopAppBarDefaults.windowInsets)
       .height(TopAppBarTokens.ContainerHeight)
       .fillMaxWidth()
       .padding(contentPadding),
