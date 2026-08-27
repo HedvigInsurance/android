@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -124,6 +125,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigTooltip
 import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.StartClaimBottomSheet
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.TopEnd
@@ -133,6 +135,7 @@ import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Inbo
 import com.hedvig.android.design.system.hedvig.TopAppBarLayoutForActions
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
+import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
 import com.hedvig.android.design.system.hedvig.icon.Reload
@@ -231,8 +234,11 @@ import hedvig.resources.general_continue_button
 import hedvig.resources.home_tab_claim_button_text
 import hedvig.resources.home_tab_get_help
 import hedvig.resources.home_tab_welcome_title_without_name
+import hedvig.resources.ongoing_shop_session_dismiss_offer
 import kotlin.math.roundToInt
 import kotlin.time.Clock.System
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlinx.coroutines.delay
@@ -287,6 +293,9 @@ internal fun HomeDestination(
     navigateToMissingInfo = navigateToMissingInfo,
     markMessageAsSeen = { viewModel.emit(MarkMessageAsSeen(it)) },
     deleteDraftClaim = { draftId -> viewModel.emit(DeleteDraftClaim(draftId)) },
+    dismissOngoingShopSession = { sessionId ->
+      viewModel.emit(HomeEvent.DismissOngoingShopSession(sessionId))
+    },
     navigateToFirstVet = navigateToFirstVet,
     markCrossSellsNotificationAsSeen = { viewModel.emit(MarkCardCrossSellsAsSeen) },
     navigateToContactInfo = navigateToContactInfo,
@@ -317,6 +326,7 @@ private fun HomeScreen(
   openCrossSellUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
   deleteDraftClaim: (String) -> Unit,
+  dismissOngoingShopSession: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
@@ -460,6 +470,7 @@ private fun HomeScreen(
             navigateToMissingInfo = navigateToMissingInfo,
             onNavigateToNewConversation = onNavigateToNewConversation,
             markMessageAsSeen = markMessageAsSeen,
+            dismissOngoingShopSession = dismissOngoingShopSession,
             navigateToContactInfo = navigateToContactInfo,
             navigateToChipIdScreen = navigateToChipIdScreen,
             navigateToUsageData = navigateToUsageData,
@@ -578,8 +589,8 @@ private fun ColumnScope.CrossSellsTooltip(uiState: Success, setEpochDayWhenLastT
       if (shouldSetEpochDayWhenLastToolTipShown) {
         val today = System.now().toLocalDateTime(
           TimeZone.currentSystemDefault(),
-        ).date.toEpochDays().toLong()
-        delay(5000)
+        ).date.toEpochDays()
+        delay(5000.milliseconds)
         setEpochDayWhenLastToolTipShown(today)
       }
     }
@@ -631,6 +642,7 @@ private fun HomeScreenSuccess(
   openClaimFlowSheet: () -> Unit,
   onContinueDraftClaim: () -> Unit,
   onDeleteDraftClaim: (String) -> Unit,
+  dismissOngoingShopSession: (String) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
@@ -960,6 +972,7 @@ private fun HomeScreenSuccess(
               QuotesSection(
                 sessions = sessions,
                 onResumeClick = openUrl,
+                onDismiss = dismissOngoingShopSession,
                 imageLoader = imageLoader,
                 horizontalInsets = horizontalInsets,
               )
@@ -1218,6 +1231,7 @@ private val PillowSize = 48.dp
 private fun QuotesSection(
   sessions: List<OngoingShopSession>,
   onResumeClick: (String) -> Unit,
+  onDismiss: (String) -> Unit,
   imageLoader: ImageLoader,
   horizontalInsets: PaddingValues,
 ) {
@@ -1239,6 +1253,7 @@ private fun QuotesSection(
       QuoteCard(
         session = session,
         onResumeClick = onResumeClick,
+        onDismiss = onDismiss,
         imageLoader = imageLoader,
         modifier = cardModifier,
       )
@@ -1250,6 +1265,7 @@ private fun QuotesSection(
 private fun QuoteCard(
   session: OngoingShopSession,
   onResumeClick: (String) -> Unit,
+  onDismiss: (String) -> Unit,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
@@ -1261,47 +1277,61 @@ private fun QuoteCard(
       .fillMaxWidth()
       .hedvigDropShadow(HedvigTheme.shapes.cornerXLarge),
   ) {
-    Column(Modifier.padding(16.dp)) {
-      Row(verticalAlignment = Alignment.CenterVertically) {
-        if (session.pillowImageUrl != null) {
-          val pillowPx = with(LocalDensity.current) { PillowSize.roundToPx() }
-          AsyncImage(
-            model = storyblokResized(session.pillowImageUrl, pillowPx),
-            contentDescription = null,
-            imageLoader = imageLoader,
-            contentScale = ContentScale.Fit,
-            modifier = Modifier.size(PillowSize),
-          )
-          Spacer(Modifier.width(12.dp))
-        }
-        Column(Modifier.weight(1f)) {
-          HedvigText(text = session.title, style = HedvigTheme.typography.bodySmall)
-          val secondary = session.monthlyNet?.let {
-            stringResource(
-              string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              it,
+    Box(Modifier.fillMaxWidth().padding(16.dp)) {
+      Column {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          if (session.pillowImageUrl != null) {
+            val pillowPx = with(LocalDensity.current) { PillowSize.roundToPx() }
+            AsyncImage(
+              model = storyblokResized(session.pillowImageUrl, pillowPx),
+              contentDescription = null,
+              imageLoader = imageLoader,
+              contentScale = ContentScale.Fit,
+              modifier = Modifier.size(PillowSize),
             )
-          } ?: session.subtitle
+            Spacer(Modifier.width(12.dp))
+          }
+          Column(Modifier.weight(1f)) {
+            HedvigText(text = session.title, style = HedvigTheme.typography.bodySmall)
+            val secondary = session.monthlyNet?.let {
+              stringResource(
+                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                it,
+              )
+            } ?: session.subtitle
 
-          if (secondary != null) {
-            HedvigText(
-              text = secondary,
-              style = HedvigTheme.typography.label,
-              color = HedvigTheme.colorScheme.textSecondary,
+            if (secondary != null) {
+              HedvigText(
+                text = secondary,
+                style = HedvigTheme.typography.label,
+                color = HedvigTheme.colorScheme.textSecondary,
+              )
+            }
+          }
+          IconButton(
+            onClick = { onDismiss(session.id) },
+            modifier = Modifier
+              .align(Alignment.Top)
+              .size(24.dp)
+              .wrapContentSize(unbounded = true),
+          ) {
+            Icon(
+              imageVector = HedvigIcons.Close,
+              contentDescription = stringResource(Res.string.ongoing_shop_session_dismiss_offer),
             )
           }
         }
+        Spacer(Modifier.height(12.dp))
+        HedvigButton(
+          text = stringResource(Res.string.general_continue_button),
+          onClick = { onResumeClick(session.resumeUrl) },
+          buttonStyle = Secondary,
+          buttonSize = ButtonSize.Medium,
+          enabled = true,
+          shape = HedvigTheme.shapes.cornerFull,
+          modifier = Modifier.fillMaxWidth(),
+        )
       }
-      Spacer(Modifier.height(12.dp))
-      HedvigButton(
-        text = stringResource(string.general_continue_button),
-        onClick = { onResumeClick(session.resumeUrl) },
-        buttonStyle = Secondary,
-        buttonSize = ButtonSize.Medium,
-        enabled = true,
-        shape = HedvigTheme.shapes.cornerFull,
-        modifier = Modifier.fillMaxWidth(),
-      )
     }
   }
 }
@@ -1722,6 +1752,7 @@ private fun PreviewHomeScreen(
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
         deleteDraftClaim = {},
+        dismissOngoingShopSession = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
@@ -1758,6 +1789,7 @@ private fun PreviewHomeScreenWithError() {
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
         deleteDraftClaim = {},
+        dismissOngoingShopSession = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
@@ -1791,6 +1823,16 @@ private fun PreviewHomeScreenAllHomeTextTypes(
             coInsuredInfo = null,
             updateContactInfo = null,
           ),
+          ongoingShopSessions = listOf(
+            OngoingShopSession(
+              id = "session-id",
+              title = "Title",
+              subtitle = null,
+              monthlyNet = null,
+              resumeUrl = "",
+              pillowImageUrl = null,
+            ),
+          ),
           isHelpCenterEnabled = false,
           quickActions = previewQuickActions,
           hasUnseenChatMessages = false,
@@ -1817,6 +1859,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
         deleteDraftClaim = {},
+        dismissOngoingShopSession = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},

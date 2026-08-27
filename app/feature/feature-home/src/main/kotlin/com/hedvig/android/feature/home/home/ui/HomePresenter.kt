@@ -17,6 +17,7 @@ import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.claimintent.DeleteClaimIntentDraftUseCase
 import com.hedvig.android.data.contract.CrossSell
+import com.hedvig.android.feature.home.home.data.DismissedShopSessionsStorage
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.OngoingShopSession
@@ -48,6 +49,7 @@ internal class HomePresenter(
   private val isProduction: Boolean,
   private val deleteClaimIntentDraftUseCase: DeleteClaimIntentDraftUseCase,
   private val getMemberQuickActionsUseCase: GetMemberQuickActionsUseCase,
+  private val dismissedShopSessionsStorage: DismissedShopSessionsStorage,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
   override fun MoleculePresenterScope<HomeEvent>.present(lastState: HomeUiState): HomeUiState {
@@ -77,6 +79,12 @@ internal class HomePresenter(
 
         is HomeEvent.CrossSellToolTipShown -> {
           crossSellToolTipShownEpochDay = homeEvent.epochDay
+        }
+
+        is HomeEvent.DismissOngoingShopSession -> {
+          applicationScope.launch {
+            dismissedShopSessionsStorage.dismiss(homeEvent.sessionId)
+          }
         }
 
         is HomeEvent.DeleteDraftClaim -> {
@@ -193,6 +201,8 @@ internal sealed interface HomeEvent {
   data class CrossSellToolTipShown(val epochDay: Long) : HomeEvent
 
   data class DeleteDraftClaim(val draftId: String) : HomeEvent
+
+  data class DismissOngoingShopSession(val sessionId: String) : HomeEvent
 }
 
 internal sealed interface HomeUiState {
