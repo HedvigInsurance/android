@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.core.common.validation.PhoneNumberRules
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -51,6 +52,7 @@ import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoEvent.RetryLoadData
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoEvent.SubmitData
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoUiState.Content
+import com.hedvig.android.ui.phonenumber.HedvigPhoneNumberField
 import hedvig.resources.CONTACT_INFO_CHANGES_SAVED
 import hedvig.resources.PHONE_NUMBER_ROW_TITLE
 import hedvig.resources.PROFILE_MY_INFO_EMAIL_LABEL
@@ -183,18 +185,24 @@ private fun ColumnScope.SuccessState(
       },
     )
     Spacer(Modifier.height(4.dp))
-    ContactInfoTextField(
-      textFieldState = uiState.phoneNumberState,
+    val phoneNumberInteractionSource = remember { MutableInteractionSource() }
+    val phoneNumberIsFocused by phoneNumberInteractionSource.collectIsFocusedAsState()
+    val phoneNumberErrorText = stringResource(Res.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER)
+      .takeIf { uiState.phoneNumberHasError }
+    HedvigPhoneNumberField(
+      state = uiState.phoneNumberState,
       labelText = stringResource(Res.string.PHONE_NUMBER_ROW_TITLE),
-      errorText = stringResource(Res.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER).takeIf {
-        uiState.phoneNumberHasError
+      rules = PhoneNumberRules.MemberPhoneNumber,
+      errorState = if (phoneNumberErrorText == null || phoneNumberIsFocused) {
+        HedvigTextFieldDefaults.ErrorState.NoError
+      } else {
+        HedvigTextFieldDefaults.ErrorState.Error.WithMessage(phoneNumberErrorText)
       },
-      keyboardOptions = KeyboardOptions(
-        keyboardType = KeyboardType.Phone,
-        imeAction = ImeAction.Next,
-      ),
-      inputTransformation = uiState.phoneNumberInputTransformation,
-      keyboardActionHandler = null,
+      imeAction = ImeAction.Next,
+      interactionSource = phoneNumberInteractionSource,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
     )
   }
   AnimatedContent(

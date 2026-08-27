@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.validation.PhoneNumberRules
 import com.hedvig.android.feature.profile.data.ContactInformation.Email
 import com.hedvig.android.feature.profile.data.ContactInformation.PhoneNumber
 import com.hedvig.core.common.android.validation.isValidEmail
@@ -65,47 +66,40 @@ data class ContactInformation(
       require(value.any { it.isWhitespace() } == false) {
         "Phone number cannot contain whitespaces"
       }
-      require(value == "" || phoneNumberRegex.matches(value)) {
+      require(value == "" || (rules.isWellFormed(value) && rules.digitsIn(value) > 0)) {
         "Phone number [$value] must contain only numbers with an optional '+' in the beginning"
       }
     }
 
     companion object {
-      const val MINIMUM_NUMBER_OF_DIGITS = 6
+      /**
+       * The one definition of what a member's phone number may look like, shared with the field they
+       * type it into so that what the field accepts and what this rejects cannot drift apart.
+       */
+      private val rules = PhoneNumberRules.MemberPhoneNumber
 
-      private val phoneNumberRegex = Regex("""([+]?\d+)""")
       private val invalidInputErrorMessage = { phoneNumber: String ->
         "Phone number [$phoneNumber] must contain only numbers with an optional '+' in the beginning"
       }
 
-      private val whitespacesInInputErrorMessage = { phoneNumber: String ->
-        "Phone number [$phoneNumber] cannot contain whitespaces"
-      }
-
       private val tooShortInputErrorMessage = { phoneNumber: String ->
-        "Phone number [$phoneNumber] must contain at least $MINIMUM_NUMBER_OF_DIGITS digits"
+        "Phone number [$phoneNumber] must contain at least ${rules.minDigits} digits"
       }
 
       /**
-       * for the phone number we're trying to send to backend, cannot be null
-       */
-      fun notNullFromStringAfterTrimmingWhitespaces(input: String): Either<ErrorMessage, PhoneNumber> {
-        val inputWithoutWhitespaces = input.filterNot { it.isWhitespace() }
-        return notNullFromString(inputWithoutWhitespaces)
-      }
-
-      /**
-       * returns [Either.Left] with an [ErrorMessage] if the input is an invalid phone number, a blank string, or
-       * holds fewer than [MINIMUM_NUMBER_OF_DIGITS] digits
-       * returns [Either.Right] with a [PhoneNumber] if the input is a valid phone number
+       * Separators in [input] are formatting and are dropped, so what comes back is what should be
+       * sent rather than what was typed.
+       *
+       * returns [Either.Left] with an [ErrorMessage] if the input cannot be read as a number, is a
+       * blank string, or holds fewer digits than [PhoneNumberRules.minDigits]
+       * returns [Either.Right] with a [PhoneNumber] holding the cleaned number
        */
       fun notNullFromString(input: String): Either<ErrorMessage, PhoneNumber> {
-        val numberOfDigits = input.count { it.isDigit() }
+        val cleaned = rules.cleanedForSubmission(input)?.toString()
         return when {
-          input.any { it.isWhitespace() } -> ErrorMessage(whitespacesInInputErrorMessage(input)).left()
-          input.isBlank() || !input.matches(phoneNumberRegex) -> ErrorMessage(invalidInputErrorMessage(input)).left()
-          numberOfDigits < MINIMUM_NUMBER_OF_DIGITS -> ErrorMessage(tooShortInputErrorMessage(input)).left()
-          else -> PhoneNumber(input).right()
+          cleaned.isNullOrBlank() -> ErrorMessage(invalidInputErrorMessage(input)).left()
+          !rules.hasEnoughDigits(cleaned) -> ErrorMessage(tooShortInputErrorMessage(input)).left()
+          else -> PhoneNumber(cleaned).right()
         }
       }
     }

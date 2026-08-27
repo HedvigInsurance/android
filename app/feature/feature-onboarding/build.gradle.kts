@@ -45,6 +45,7 @@ dependencies {
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
+  implementation(projects.uiPhoneNumber)
   implementation(projects.theme)
 
   testImplementation(libs.assertK)

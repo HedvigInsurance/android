@@ -74,7 +74,7 @@ internal sealed interface ContactInfoUiState {
     private val phoneNumber: Either<ErrorMessage, PhoneNumber?>
       get() = when {
         phoneNumberState.text.isBlank() && !hasAttemptedSubmission -> null.right()
-        else -> PhoneNumber.notNullFromStringAfterTrimmingWhitespaces(phoneNumberState.text.toString())
+        else -> PhoneNumber.notNullFromString(phoneNumberState.text.toString())
       }
     private val email: Either<ErrorMessage, Email?>
       get() = when {
@@ -87,9 +87,6 @@ internal sealed interface ContactInfoUiState {
     val emailHasError: Boolean
       get() = email.isLeft()
 
-    val phoneNumberInputTransformation = InputTransformation.byValue { _, proposed ->
-      proposed.filterNot { it.isWhitespace() }.trim()
-    }
     val emailInputTransformation = InputTransformation.byValue { _, proposed ->
       proposed.trim()
     }
@@ -218,7 +215,7 @@ internal class ContactInfoPresenter(
           hasAttemptedSubmission = true
           if (submittingData != null) return@CollectEvents
           val trimmedPhoneNumber = PhoneNumber
-            .notNullFromStringAfterTrimmingWhitespaces(phoneNumber.text.toString())
+            .notNullFromString(phoneNumber.text.toString())
             .getOrElse {
               return@CollectEvents
             }

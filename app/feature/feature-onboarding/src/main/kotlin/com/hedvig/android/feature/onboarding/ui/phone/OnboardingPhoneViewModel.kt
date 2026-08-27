@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.core.common.validation.PhoneNumberRules
 import com.hedvig.android.feature.onboarding.data.OnboardingRepository
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
@@ -16,6 +17,7 @@ import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgressBarAnimation
 import com.hedvig.android.feature.onboarding.ui.phone.SubmissionError.GeneralError
+import com.hedvig.android.feature.onboarding.ui.phone.SubmissionError.NumberMalformed
 import com.hedvig.android.feature.onboarding.ui.phone.SubmissionError.NumberTooShort
 import com.hedvig.android.feature.onboarding.ui.progressFor
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -23,8 +25,6 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.launch
-
-internal const val MINIMUM_PHONE_NUMBER_LENGTH = 6
 
 @Inject
 @HedvigViewModel(ActivityRetainedScope::class)
@@ -99,11 +99,21 @@ internal class OnboardingPhonePresenter(
 
         is OnboardingPhoneEvent.Save -> {
           val content = currentState as? OnboardingPhoneUiState.Content ?: return@CollectEvents
-          if (event.phoneNumber.length < MINIMUM_PHONE_NUMBER_LENGTH) {
-            currentState = content.copy(showSubmissionError = NumberTooShort)
-          } else {
-            phoneNumberToSubmit = event.phoneNumber
-            submitIteration++
+          val rules = PhoneNumberRules.MemberPhoneNumber
+          val submitted = rules.cleanedForSubmission(event.phoneNumber)?.toString()
+          when {
+            submitted == null -> {
+              currentState = content.copy(showSubmissionError = NumberMalformed)
+            }
+
+            !rules.hasEnoughDigits(submitted) -> {
+              currentState = content.copy(showSubmissionError = NumberTooShort)
+            }
+
+            else -> {
+              phoneNumberToSubmit = submitted
+              submitIteration++
+            }
           }
         }
 
@@ -137,6 +147,8 @@ internal sealed interface OnboardingPhoneUiState {
 
 internal sealed interface SubmissionError {
   data object NumberTooShort : SubmissionError
+
+  data object NumberMalformed : SubmissionError
 
   data object GeneralError : SubmissionError
 }
