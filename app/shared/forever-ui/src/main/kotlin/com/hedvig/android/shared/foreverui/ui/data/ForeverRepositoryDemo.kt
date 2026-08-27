@@ -20,23 +20,25 @@ internal class ForeverRepositoryDemo : ForeverRepository {
         __typename = "",
         id = "id",
         insuranceCost = FullReferralsQuery.Data.CurrentMember.InsuranceCost(
+          __typename = "",
           monthlyGross = FullReferralsQuery.Data.CurrentMember.InsuranceCost.MonthlyGross(
             __typename = "",
             amount = 60.0,
             currencyCode = CurrencyCode.SEK,
           ),
-          FullReferralsQuery.Data.CurrentMember.InsuranceCost.MonthlyNet(
+          monthlyNet = FullReferralsQuery.Data.CurrentMember.InsuranceCost.MonthlyNet(
             __typename = "",
             amount = 40.0,
             currencyCode = CurrencyCode.SEK,
           ),
-          FullReferralsQuery.Data.CurrentMember.InsuranceCost.MonthlyDiscount(
+          monthlyDiscount = FullReferralsQuery.Data.CurrentMember.InsuranceCost.MonthlyDiscount(
             __typename = "",
             amount = 20.0,
             currencyCode = CurrencyCode.SEK,
           ),
         ),
         referralInformation = FullReferralsQuery.Data.CurrentMember.ReferralInformation(
+          __typename = "",
           code = "DEMOCODE",
           monthlyDiscountPerReferral = FullReferralsQuery.Data.CurrentMember.ReferralInformation.MonthlyDiscountPerReferral(
             __typename = "",
@@ -46,6 +48,7 @@ internal class ForeverRepositoryDemo : ForeverRepository {
           referredBy = null,
           referrals = listOf(
             FullReferralsQuery.Data.CurrentMember.ReferralInformation.Referral(
+              __typename = "",
               name = "Adam",
               status = MemberReferralStatus.ACTIVE,
               activeDiscount = FullReferralsQuery.Data.CurrentMember.ReferralInformation.Referral.ActiveDiscount(
@@ -55,6 +58,7 @@ internal class ForeverRepositoryDemo : ForeverRepository {
               ),
             ),
             FullReferralsQuery.Data.CurrentMember.ReferralInformation.Referral(
+              __typename = "",
               name = "Claire",
               status = MemberReferralStatus.PENDING,
               activeDiscount = FullReferralsQuery.Data.CurrentMember.ReferralInformation.Referral.ActiveDiscount(
