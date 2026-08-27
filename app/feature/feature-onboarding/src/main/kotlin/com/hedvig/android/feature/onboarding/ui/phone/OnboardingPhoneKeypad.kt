@@ -22,7 +22,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.style.LineHeightStyle
@@ -36,7 +38,6 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
-import com.hedvig.android.feature.onboarding.ui.withOnboardingHaptic
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 
@@ -116,7 +117,7 @@ private fun KeypadKey(label: String, highlighted: Boolean, onKeypadClick: (Strin
     animationSpec = tween(MotionTokens.DurationLong1.toInt(), easing = MotionTokens.EasingEmphasizedCubicBezier),
     label = "keypad scale",
   )
-  val onKeyClick = withOnboardingHaptic { onKeypadClick(label) }
+  val hapticFeedback = LocalHapticFeedback.current
   Box(
     modifier = Modifier
       .size(KeySize)
@@ -125,7 +126,10 @@ private fun KeypadKey(label: String, highlighted: Boolean, onKeypadClick: (Strin
         scaleY = scale
       }
       .clip(HedvigTheme.shapes.cornerLarge)
-      .clickable(clickEnabled, onClick = onKeyClick)
+      .clickable(clickEnabled) {
+        hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+        onKeypadClick(label)
+      }
       .background(containerColor, HedvigTheme.shapes.cornerLarge),
     contentAlignment = Alignment.Center,
   ) {

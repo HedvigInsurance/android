@@ -100,7 +100,7 @@ internal fun OnboardingContractCard(
         } else {
           HedvigButton(
             text = stringResource(Res.string.ONBOARDING_ADD_BUTTON),
-            onClick = withOnboardingHaptic(onAddClick),
+            onClick = onAddClick,
             enabled = true,
             buttonStyle = ButtonDefaults.ButtonStyle.Primary,
             buttonSize = ButtonDefaults.ButtonSize.Small,

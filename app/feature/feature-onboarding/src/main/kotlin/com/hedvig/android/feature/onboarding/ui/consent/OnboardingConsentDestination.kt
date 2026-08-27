@@ -51,7 +51,6 @@ import com.hedvig.android.feature.onboarding.ui.OnboardingProgressBarAnimation
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepHeader
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepScaffold
 import com.hedvig.android.feature.onboarding.ui.progressFor
-import com.hedvig.android.feature.onboarding.ui.withOnboardingHaptic
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -305,7 +304,7 @@ private fun OnboardingConsentScreen(
         Spacer(Modifier.height(16.dp))
         HedvigButton(
           text = stringResource(Res.string.ONBOARDING_ANALYTICS_ALLOW_BUTTON),
-          onClick = withOnboardingHaptic(onAllow),
+          onClick = onAllow,
           enabled = uiState.buttonsEnabled,
           buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
           modifier = Modifier
@@ -316,7 +315,7 @@ private fun OnboardingConsentScreen(
         Spacer(Modifier.height(8.dp))
         HedvigButton(
           text = stringResource(Res.string.ONBOARDING_ANALYTICS_DENY_BUTTON),
-          onClick = withOnboardingHaptic(onDeny),
+          onClick = onDeny,
           enabled = uiState.buttonsEnabled,
           buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
           modifier = Modifier

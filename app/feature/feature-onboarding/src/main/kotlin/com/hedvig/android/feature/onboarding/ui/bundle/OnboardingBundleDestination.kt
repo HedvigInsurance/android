@@ -52,7 +52,6 @@ import com.hedvig.android.feature.onboarding.ui.OnboardingStepButtons
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepHeader
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepScaffold
 import com.hedvig.android.feature.onboarding.ui.progressFor
-import com.hedvig.android.feature.onboarding.ui.withOnboardingHaptic
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -252,7 +251,7 @@ private fun OnboardingCrossSellRow(
     Spacer(Modifier.width(16.dp))
     HedvigButton(
       text = stringResource(Res.string.ONBOARDING_SEE_PRICE_BUTTON),
-      onClick = withOnboardingHaptic { openUrl(crossSell.storeUrl) },
+      onClick = { openUrl(crossSell.storeUrl) },
       enabled = true,
       buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
       buttonSize = ButtonDefaults.ButtonSize.Small,
