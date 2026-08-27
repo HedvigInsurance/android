@@ -480,6 +480,47 @@ Configuration in `.editorconfig`:
 - **Entry functions:** `{feature}Entries`
 - **Use cases:** `{Action}{Domain}UseCase` (e.g., `GetHomeDataUseCase`)
 
+### Imports
+
+**Import the type, never the namespace.** An import may shorten a qualified reference only when the
+short name still says what it is to someone reading that line cold, without scrolling to the import
+list. Sealed subclasses, enum entries and other types pass that test. A member reached through a
+receiver that carries the meaning does not.
+
+Always allowed (this is the house style, ~1200 such imports exist):
+
+```kotlin
+import com.hedvig.android.feature.home.home.ui.HomeUiState.Success   // `is Success ->` reads fine
+import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.TopEnd
+import kotlin.time.Duration.Companion.seconds                        // enables the `5.seconds` idiom
+```
+
+Never allowed, because the receiver is the meaning:
+
+```kotlin
+import hedvig.resources.Res.string      // ❌ `stringResource(string.FOO)`  → use `Res.string.FOO`
+import hedvig.resources.Res.drawable    // ❌ `painterResource(drawable.x)` → use `Res.drawable.x`
+import kotlin.time.Clock.System         // ❌ `System.now()`               → use `Clock.System.now()`
+import ...hedvig.TooltipDefaults.defaultStyle  // ❌ `defaultStyle` alone names nothing
+```
+
+`Res` and `Clock` are the two that come up most: 193 files import `hedvig.resources.Res` plainly and
+that is the standard. `System.now()` additionally reads as `java.lang.System` to anyone skimming.
+
+**Separately: never make an import-only change to a line you are not otherwise editing.** Converting
+existing `HomeEvent.RefreshData` call sites to a bare `RefreshData` (or the reverse) is a whole-file
+rewrite disguised as a diff. It buries the real change under churn and makes review and `git blame`
+worse for no behavioural gain.
+
+**Why:** both halves of this rule protect the reader. The first protects whoever reads the line
+later, the second protects whoever reviews the PR now. PR #3100 was one screen refactor carrying 29
+gratuitous new imports and ~60 rewritten call sites, and the formatting noise overshadowed the
+actual work.
+
+**How to apply:** if you are touching a line for a real reason, use the correct form. If you are not
+touching it, leave its qualification exactly as it is. Import cleanups that are genuinely wanted go
+in their own commit.
+
 ### Comments
 
 Code comments and KDoc must describe the **current** code and stand on their own. A comment fails to earn its place in two ways: it tells the wrong kind of story, or it repeats what is already there. Before writing one, apply the test: *would this make sense to someone reading the file cold, with no knowledge of the PR, the conversation, or what was decided against?* If not, it does not belong in the source. Do not reference:
