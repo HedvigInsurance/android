@@ -116,7 +116,6 @@ private fun KeypadKey(label: String, highlighted: Boolean, onKeypadClick: (Strin
     animationSpec = tween(MotionTokens.DurationLong1.toInt(), easing = MotionTokens.EasingEmphasizedCubicBezier),
     label = "keypad scale",
   )
-  val onKeyClick = withOnboardingHaptic { onKeypadClick(label) }
   Box(
     modifier = Modifier
       .size(KeySize)
@@ -125,7 +124,7 @@ private fun KeypadKey(label: String, highlighted: Boolean, onKeypadClick: (Strin
         scaleY = scale
       }
       .clip(HedvigTheme.shapes.cornerLarge)
-      .clickable(clickEnabled, onClick = onKeyClick)
+      .clickable(clickEnabled, onClick = withOnboardingHaptic { onKeypadClick(label) })
       .background(containerColor, HedvigTheme.shapes.cornerLarge),
     contentAlignment = Alignment.Center,
   ) {
