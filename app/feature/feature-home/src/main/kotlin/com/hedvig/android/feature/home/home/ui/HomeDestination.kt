@@ -236,8 +236,8 @@ import hedvig.resources.home_tab_get_help
 import hedvig.resources.home_tab_welcome_title_without_name
 import hedvig.resources.ongoing_shop_session_dismiss_offer
 import kotlin.math.roundToInt
-import kotlin.time.Clock.System
 import kotlin.time.Clock
+import kotlin.time.Clock.System
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -1023,11 +1023,17 @@ private fun HomeScreenSuccess(
           layout(placeable.width, placeable.height) {
             val heroAlpha = heroContentAlpha.floatValue
             when {
-              heroAlpha <= 0f -> Unit
+              heroAlpha <= 0f -> {
+                Unit
+              }
+
               // The icons' glass rim and drop shadow are blur effects, and a layer around them flattens
               // those into a rectangle the size of this row. So: no layer at all at rest, and a layer that
               // modulates each drawing command rather than compositing the row off-screen while it leaves.
-              heroAlpha >= 1f -> placeable.place(0, 0)
+              heroAlpha >= 1f -> {
+                placeable.place(0, 0)
+              }
+
               else -> {
                 val fade = 1f - heroAlpha
                 placeable.placeWithLayer(0, 0) {
@@ -1295,7 +1301,7 @@ private fun QuoteCard(
             HedvigText(text = session.title, style = HedvigTheme.typography.bodySmall)
             val secondary = session.monthlyNet?.let {
               stringResource(
-                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
                 it,
               )
             } ?: session.subtitle
@@ -1317,13 +1323,13 @@ private fun QuoteCard(
           ) {
             Icon(
               imageVector = HedvigIcons.Close,
-              contentDescription = stringResource(Res.string.ongoing_shop_session_dismiss_offer),
+              contentDescription = stringResource(string.ongoing_shop_session_dismiss_offer),
             )
           }
         }
         Spacer(Modifier.height(12.dp))
         HedvigButton(
-          text = stringResource(Res.string.general_continue_button),
+          text = stringResource(string.general_continue_button),
           onClick = { onResumeClick(session.resumeUrl) },
           buttonStyle = Secondary,
           buttonSize = ButtonSize.Medium,
