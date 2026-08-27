@@ -66,9 +66,8 @@ internal sealed interface StepContent {
     val uploadUri: String,
     override val isSkippable: Boolean,
     val localFiles: List<UiFile>,
-  ) : StepContent {
-    data class RemoteFile(val url: String, val contentType: String, val fileName: String)
-  }
+    val remoteFiles: List<UiFile>,
+  ) : StepContent
 
   data class Task(
     val descriptions: List<String>,

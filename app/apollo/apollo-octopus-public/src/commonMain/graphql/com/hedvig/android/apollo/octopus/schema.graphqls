@@ -1114,6 +1114,7 @@ type ClaimIntentStepContentFileUpload {
   isSkippable: Boolean!
 }
 type ClaimIntentStepContentFileUploadFile {
+  id: ID!
   url: Url!
   contentType: String!
   fileName: String!

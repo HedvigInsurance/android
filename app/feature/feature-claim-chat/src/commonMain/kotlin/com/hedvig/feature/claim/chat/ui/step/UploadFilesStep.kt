@@ -95,11 +95,11 @@ internal fun UploadFilesStep(
             )
           },
           appPackageId = appPackageId,
-          localFiles = stepContent.localFiles,
+          files = stepContent.remoteFiles + stepContent.localFiles,
           imageLoader = imageLoader,
           onNavigateToImageViewer = onNavigateToImageViewer,
         )
-        if (stepContent.localFiles.isNotEmpty()) {
+        if (stepContent.localFiles.isNotEmpty() || stepContent.remoteFiles.isNotEmpty()) {
           HedvigButton(
             text = stringResource(Res.string.claims_continue_button),
             enabled = !isSubmitting,
@@ -129,9 +129,11 @@ internal fun UploadFilesStep(
       }
     } else {
       Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        if (stepContent.localFiles.isNotEmpty()) {
+        if (stepContent.localFiles.isNotEmpty() ||
+          stepContent.remoteFiles.isNotEmpty()
+        ) {
           FilesRow(
-            uiFiles = stepContent.localFiles,
+            uiFiles = stepContent.remoteFiles + stepContent.localFiles,
             onRemoveFile = null,
             imageLoader = imageLoader,
             onNavigateToImageViewer = onNavigateToImageViewer,
@@ -169,7 +171,7 @@ private fun UploadFilesBubble(
   addLocalFile: (uri: Uri) -> Unit,
   onRemoveFile: (fileId: String) -> Unit,
   appPackageId: String,
-  localFiles: List<UiFile>,
+  files: List<UiFile>,
   imageLoader: ImageLoader,
   onNavigateToImageViewer: (
     imageUrl: String,
@@ -213,7 +215,7 @@ private fun UploadFilesBubble(
       fileTypeSelectBottomSheetState.show()
     },
     onRemoveFile = onRemoveFile,
-    localFiles = localFiles,
+    files = files,
     imageLoader = imageLoader,
     onNavigateToImageViewer = onNavigateToImageViewer,
     modifier = modifier,
@@ -224,15 +226,15 @@ private fun UploadFilesBubble(
 private fun UploadFilesBubbleContent(
   onRemoveFile: ((fileId: String) -> Unit)?,
   onAddFilesButtonClick: () -> Unit,
-  localFiles: List<UiFile>,
+  files: List<UiFile>,
   imageLoader: ImageLoader,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
-    if (localFiles.isNotEmpty()) {
+    if (files.isNotEmpty()) {
       FilesRow(
-        uiFiles = localFiles,
+        uiFiles = files,
         onRemoveFile = onRemoveFile,
         imageLoader = imageLoader,
         onNavigateToImageViewer = onNavigateToImageViewer,
@@ -250,12 +252,12 @@ private fun UploadFilesBubbleContent(
       )
     }
     HedvigButton(
-      buttonStyle = if (localFiles.isNotEmpty()) {
+      buttonStyle = if (files.isNotEmpty()) {
         ButtonDefaults.ButtonStyle.Secondary
       } else {
         ButtonDefaults.ButtonStyle.Primary
       },
-      text = if (localFiles.isNotEmpty()) {
+      text = if (files.isNotEmpty()) {
         stringResource(Res.string.claim_status_detail_add_more_files)
       } else {
         stringResource(Res.string.claim_status_detail_add_files)
@@ -362,6 +364,7 @@ private fun PreviewUploadFilesStep(
               id = "1",
             ),
           ).takeIf { hasFiles }.orEmpty(),
+          remoteFiles = emptyList(),
         ),
         appPackageId = "",
         isCurrentStep = true,
