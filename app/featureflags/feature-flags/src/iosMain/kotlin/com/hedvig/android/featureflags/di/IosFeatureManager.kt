@@ -11,4 +11,6 @@ class IosFeatureManager(private val isFeatureEnabledBlock: (Feature) -> Boolean)
   override fun isFeatureEnabled(feature: Feature): Flow<Boolean> = flow {
     emit(withContext(Dispatchers.Main.immediate) { isFeatureEnabledBlock(feature) })
   }
+
+  override suspend fun awaitReady() = Unit
 }

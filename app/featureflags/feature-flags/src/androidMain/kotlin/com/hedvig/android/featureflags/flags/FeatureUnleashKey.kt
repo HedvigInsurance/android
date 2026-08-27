@@ -2,7 +2,12 @@ package com.hedvig.android.featureflags.flags
 
 internal val Feature.unleashKey: String
   get() = when (this) {
+    Feature.DISABLE_ANALYTICS -> "disable_analytics"
+    Feature.DISABLE_ONBOARDING -> "disable_onboarding"
+    Feature.DISABLE_PUPPY_GUIDE -> "disable_puppy_guide"
+    Feature.DISABLE_TERMINATION_REDIRECTION -> "disable_termination_redirection"
+    Feature.DISABLE_RESUMING_ONGOING_SHOP_SESSIONS -> "disable_resuming_ongoing_shop_sessions"
+    Feature.ENABLE_CLAIM_INTENT_RESUME -> "enable_claim_intent_resume"
     Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX -> "enable_new_conversation_from_inbox"
     Feature.UPDATE_NECESSARY -> "update_necessary"
-    Feature.DISABLE_PUPPY_GUIDE -> "disable_puppy_guide"
   }

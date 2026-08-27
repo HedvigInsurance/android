@@ -51,7 +51,8 @@ private class BankIdStateImpl(
 
   fun initialize() {
     canOpenBankId = context.canBankIdAppHandleUri(bankIdUri).also {
-      logcat { "Trying to resolve BankID app with bankIdUri:$bankIdUri | result: canOpenBankId=$it" }
+      // The URI carries a single-use autostart token, so log only what identifies the target.
+      logcat { "Trying to resolve BankID app for ${bankIdUri.host} | result: canOpenBankId=$it" }
     }
   }
 
@@ -70,7 +71,7 @@ private class BankIdStateImpl(
       true
     } catch (e: PackageManager.NameNotFoundException) {
       logcat(LogPriority.WARN) {
-        "Could not resolve BankID app with bankIdUri:$uri + exception: $e"
+        "Could not resolve BankID app for ${uri.host} + exception: $e"
       }
       false
     }

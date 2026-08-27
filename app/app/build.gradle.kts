@@ -3,11 +3,11 @@ import com.project.starter.easylauncher.filter.ColorRibbonFilter
 plugins {
   id("hedvig.android.application")
   id("hedvig.gradle.plugin")
-  alias(libs.plugins.appIconBannerGenerator) // Automatically adds the "DEBUG" banner on the debug app icon
-  alias(libs.plugins.crashlytics)
-  alias(libs.plugins.datadog)
-  alias(libs.plugins.googleServices)
-  alias(libs.plugins.license)
+  id("com.starter.easylauncher") // Automatically adds the "DEBUG" banner on the debug app icon
+  id("com.google.firebase.crashlytics")
+  id("com.datadoghq.dd-sdk-android-gradle-plugin")
+  id("com.google.gms.google-services")
+  id("com.jaredsburrows.license")
 }
 
 hedvig {
@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "14.4.1"
+    versionName = "14.4.6"
 
     resourceConfigurations.addAll(listOf("en", "sv-rSE"))
   }
@@ -43,14 +43,14 @@ android {
   }
 
   buildTypes {
-    val debug by getting {
+    getByName("debug") {
       applicationIdSuffix = ".dev.app"
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = false
       isDebuggable = true
     }
 
-    val release by getting {
-//      signingConfig = debug.signingConfig // uncomment to run release build locally
+    getByName("release") {
+//      signingConfig = getByName("debug").signingConfig // uncomment to run release build locally
       applicationIdSuffix = ".app"
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
 
@@ -64,10 +64,12 @@ android {
       )
     }
 
-    val staging by creating {
+    create("staging") {
       applicationIdSuffix = ".app"
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
       isMinifyEnabled = true
+      // Libraries only publish `release`. DeDebug maps the `debug` build type onto it automatically,
+      // but a custom build type has to declare the fallback itself.
       matchingFallbacks += "release"
       setProguardFiles(
         listOf(
@@ -167,7 +169,7 @@ dependencies {
   implementation(projects.dataAddons)
   implementation(projects.dataChangetier)
   implementation(projects.dataChat)
-
+  implementation(projects.dataClaimIntent)
   implementation(projects.dataContract)
   implementation(projects.dataConversations)
   implementation(projects.dataCrossSellAfterClaimClosed)
@@ -207,6 +209,7 @@ dependencies {
   implementation(projects.featureLogin)
   implementation(projects.featureMovingflow)
   implementation(projects.featureMovingflowNavigation)
+  implementation(projects.featureOnboarding)
 
   implementation(projects.featureRemoveAddons)
   implementation(projects.featurePayoutAccount)
@@ -224,6 +227,7 @@ dependencies {
   implementation(projects.loggingDeviceModel)
   implementation(projects.loggingPublic)
   implementation(projects.permissionCore)
+  implementation(projects.memberQuickActions)
   implementation(projects.memberRemindersPublic)
   implementation(projects.navigationActivity)
   implementation(projects.navigationCommon)

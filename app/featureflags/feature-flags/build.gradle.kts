@@ -2,7 +2,7 @@ plugins {
   id("hedvig.multiplatform.library")
   id("hedvig.multiplatform.library.android")
   id("hedvig.gradle.plugin")
-  alias(libs.plugins.kmpNativeCoroutines)
+  id("com.rickclephas.kmp.nativecoroutines")
 }
 
 hedvig {

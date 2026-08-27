@@ -45,7 +45,7 @@ A full narrative of *why* these look the way they do — the engineering decisio
 ./gradlew :feature-home:test
 
 # Run unit tests
-./gradlew testDebugUnitTest
+./gradlew test
 
 # Formatting
 ./gradlew ktlintCheck          # Check formatting
@@ -368,10 +368,10 @@ The message is a lambda, so build strings inline without guarding on build type 
 logcat { "Plain info-level message" }                              // defaults to INFO
 logcat(LogPriority.DEBUG) { "GraphQL ${operation.name()} START" }  // explicit priority
 logcat(LogPriority.ERROR, throwable) { "Failed to load X: ${throwable.message}" }
-logcat(LogPriority.INFO, tag = DEEP_LINK_STACK_DEBUG_TAG) { "…" }  // greppable custom tag
+logcat(LogPriority.INFO, tag = SOMETHING_DEBUG_TAG) { "…" }  // greppable custom tag
 ```
 
-Tag is optional — for a one-off log, just omit it (the caller's class name is used). When you want a greppable trace that spans several call sites or files, a shared `const val SOMETHING_DEBUG_TAG = "…"` passed as `tag` everywhere is a handy tool (see `DEEP_LINK_STACK_DEBUG_TAG` usage across `MainActivity`/`BackstackController`). It's a convenience, not a requirement; don't introduce a const for a single isolated log.
+Tag is optional — for a one-off log, just omit it (the caller's class name is used). When you want a greppable trace that spans several call sites or files, a shared `const val SOMETHING_DEBUG_TAG = "…"` passed as `tag` everywhere is a handy tool. It's a convenience, not a requirement; don't introduce a const for a single isolated log.
 
 There is also an Apollo overload, `logcat(priority, operationError: ApolloOperationError, tag, message)`, which auto-downgrades to at most `WARN` for unauthenticated errors. Use it when logging a failed `safeExecute`/`safeFlow` result.
 
@@ -480,6 +480,18 @@ Configuration in `.editorconfig`:
 - **Entry functions:** `{feature}Entries`
 - **Use cases:** `{Action}{Domain}UseCase` (e.g., `GetHomeDataUseCase`)
 
+### Comments
+
+Code comments and KDoc must describe the **current** code and stand on their own. A comment fails to earn its place in two ways: it tells the wrong kind of story, or it repeats what is already there. Before writing one, apply the test: *would this make sense to someone reading the file cold, with no knowledge of the PR, the conversation, or what was decided against?* If not, it does not belong in the source. Do not reference:
+
+- **History / migration:** "Replaces Nav2…", "used to live in…".
+- **Rejected alternatives:** "…not the iOS glass", "instead of the old Y".
+- **Conversation / design-process state:** "pending design", "for now", "TBD".
+
+When tempted to write "X instead of Y", drop the Y half and justify X on its own terms. If that leaves nothing, the code was self-explanatory, so delete the comment. Migration/history/process context belongs in the commit message.
+
+**Say only what the code and its neighbours don't.** A comment must add information not already visible at its location. Do not restate a signature, a type, or a contract that a nearby or interface KDoc already documents; a paraphrase of something visible at the same spot is noise. Keep it to the non-obvious point (usually the *why*); if it grows into several lines re-describing mechanics that the code already shows, cut it back. If the same point already lives elsewhere (an interface's KDoc, a constant's own comment), state it once, at the spot that owns it, rather than repeating it at each use. Prefer no comment over a redundant or verbose one.
+
 ## Working with GraphQL
 
 ### Apollo Schema
@@ -511,7 +523,10 @@ Place `.graphql` files in module's `src/main/graphql/`. Apollo generates type-sa
 ./gradlew :data-contract:test
 
 # Run unit tests only
-./gradlew testDebugUnitTest
+./gradlew test
+
+# Filter to specific tests (works on Android library modules too)
+./gradlew :feature-home:test --tests "*HomePresenterTest*"
 ```
 
 **Test patterns:**
@@ -592,22 +607,28 @@ dependencies {
 Feature flags are backed by Unleash. Before adding or changing a flag, read
 `app/featureflags/feature-flags/FEATURE_FLAG_DEFAULTS.md` — it explains why we never use
 the SDK's `defaultValue` parameter (Unleash Android SDK issue #141), how a flag's value is
-resolved when Unleash has never been fetched, and when bootstrap is required.
+resolved when Unleash has never been fetched, and when a never-fetched default is required.
 
 To add a new flag:
 1. Add the enum value to `Feature` (commonMain), named to mirror its Unleash key polarity
    (`ENABLE_X` for `enable_x`, `DISABLE_X` for `disable_x`), with a short explanation.
 2. Map it to its raw Unleash key in `Feature.unleashKey` (androidMain).
-3. `UnleashFeatureFlagProvider` needs no change — it returns the raw `isEnabled(key)` for
-   every flag. At the read site, use the value directly for a positive flag, or invert it
-   (`if (!disableX)`) for a kill switch.
+3. `UnleashFeatureFlagProvider` needs no change — every flag resolves through
+   `HedvigUnleashClient.valueOf(feature)`. At the read site, use the value directly for a
+   positive flag, or invert it (`if (!disableX)`) for a kill switch.
 
-**IMPORTANT — always reconsider bootstrap when adding a feature:** Decide what the flag
-should resolve to when it has *never been fetched* (offline first launch / fresh install
-before the first poll returns). If the natural polarity default is acceptable, do nothing.
-If a rollout needs the opposite default, add a `Toggle(...)` to the bootstrap list in
-`HedvigUnleashClient.start(...)`. Never bootstrap an app-gating flag (e.g.
+**IMPORTANT — always reconsider the never-fetched default when adding a feature:** Decide
+what the flag should resolve to when it has *never been fetched* (offline first launch /
+fresh install before the first poll returns). If the natural polarity default is
+acceptable, do nothing. If a rollout needs the opposite default, add an entry to
+`neverFetchedDefaults` in `HedvigUnleashClient`. Never default an app-gating flag (e.g.
 `UPDATE_NECESSARY`) into its blocking state — that can brick the app for offline users.
+
+**Never pass `bootstrap` to `client.start(...)`.** It is the SDK's own seeding mechanism and
+it looks like the right tool, but a bootstrapped toggle set makes the client report ready
+before any real toggle data exists and permanently suppresses the on-disk backup, so every
+flag without a bootstrap entry silently reads `false` at startup. `FEATURE_FLAG_DEFAULTS.md`
+documents the mechanism.
 
 ### Working with Translations
 
@@ -627,6 +648,13 @@ Example:
 // TODO: Add "This is some text for feature X" / "Detta är lite text för feature X" to Lokalise
 Text("This is some text for feature X")
 ```
+
+**Verifying whether a string key is "real" (already in Lokalise):** if you find a key in a
+`strings.xml` and are unsure whether it actually exists in Lokalise or was hand-added, run
+`./gradlew downloadStrings` and re-check the file. Because `downloadStrings` regenerates every
+`strings.xml` from Lokalise, a key that **survives** the run exists in Lokalise; a key that
+**disappears** was only added locally and would break the build once someone else syncs. Use this
+before relying on (or committing code that references) a key you didn't personally add to Lokalise.
 
 ## Debugging
 

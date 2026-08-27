@@ -200,6 +200,7 @@ val previewMovingIntent = MoveIntentV2CreateMutation.Data.MoveIntentCreate.MoveI
   extraBuildingTypesV2 = listOf(),
   currentHomeAddresses = listOf(
     MoveIntentV2CreateMutation.Data.MoveIntentCreate.MoveIntent.CurrentHomeAddress(
+      __typename = "",
       id = "id1",
       suggestedNumberCoInsured = 2,
       displaySubtitle = "Subtitle",
@@ -208,6 +209,7 @@ val previewMovingIntent = MoveIntentV2CreateMutation.Data.MoveIntentCreate.MoveI
       maxMovingDate = LocalDate(2024, 12, 31),
     ),
     MoveIntentV2CreateMutation.Data.MoveIntentCreate.MoveIntent.CurrentHomeAddress(
+      __typename = "",
       id = "id2",
       suggestedNumberCoInsured = 2,
       displaySubtitle = "Subtitle",

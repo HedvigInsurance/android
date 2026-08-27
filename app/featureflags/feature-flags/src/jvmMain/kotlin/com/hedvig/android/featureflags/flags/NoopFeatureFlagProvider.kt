@@ -8,4 +8,6 @@ internal class NoopFeatureFlagProvider : FeatureManager {
   override fun isFeatureEnabled(feature: Feature): Flow<Boolean> {
     return flowOf(false)
   }
+
+  override suspend fun awaitReady() = Unit
 }

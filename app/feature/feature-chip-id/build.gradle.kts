@@ -31,4 +31,6 @@ dependencies {
   implementation(projects.navigationCore)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
+  testImplementation(libs.assertK)
+  testImplementation(libs.junit)
 }

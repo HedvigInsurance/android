@@ -9,20 +9,28 @@ import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
+import assertk.assertions.isNotNull
+import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import com.hedvig.android.feature.help.center.navigation.HelpCenterKey
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.insurances.navigation.InsurancesKey
 import com.hedvig.android.feature.login.navigation.LoginKey
+import com.hedvig.android.feature.onboarding.navigation.OnboardingKey
 import com.hedvig.android.feature.payments.navigation.PaymentsKey
 import com.hedvig.android.feature.profile.navigation.ProfileKey
+import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.LoneDeepLinkChrome
 import com.hedvig.android.navigation.compose.popUpTo
+import org.junit.Rule
 import org.junit.Test
 
 internal class BackstackControllerTest {
+  @get:Rule
+  val testLogcatLogger = TestLogcatLoggingRule()
+
   private fun controllerWith(vararg keys: HedvigNavKey) = BackstackController(
     mutableStateListOf(*keys),
     mutableStateMapOf(),
@@ -272,7 +280,7 @@ internal class BackstackControllerTest {
       mutableStateMapOf(),
       mutableStateOf(null), // pendingDeepLink
       mutableStateOf(null), // stashedSession
-      isOwnTask = { false },
+      initialIsOwnTask = false,
       escapeToOwnTask = { escaped = it },
     )
     assertThat(controller.navigateUp()).isTrue()
@@ -289,7 +297,7 @@ internal class BackstackControllerTest {
       mutableStateMapOf(),
       mutableStateOf(null), // pendingDeepLink
       mutableStateOf(null), // stashedSession
-      isOwnTask = { true },
+      initialIsOwnTask = true,
       escapeToOwnTask = { escaped = it },
     )
     assertThat(controller.navigateUp()).isTrue()
@@ -309,6 +317,20 @@ internal class BackstackControllerTest {
     val controller = controllerWith(HomeKey)
     assertThat(controller.navigateUp()).isFalse()
     assertThat(controller.entries.toList()).containsExactly(HomeKey)
+  }
+
+  @Test
+  fun `the review prompt is suppressed while onboarding sits below a hosted flow`() {
+    // HelpCenterKey stands in for any flow an onboarding step pushes on top of itself; what matters
+    // is that OnboardingKey is an ancestor rather than the top of the stack.
+    val controller = controllerWith(HomeKey, OnboardingKey, HelpCenterKey)
+    assertThat(controller.suppressesAppStoreReviewRequest).isTrue()
+  }
+
+  @Test
+  fun `the review prompt is allowed in the same flow reached outside onboarding`() {
+    val controller = controllerWith(HomeKey, HelpCenterKey)
+    assertThat(controller.suppressesAppStoreReviewRequest).isFalse()
   }
 
   @Test
@@ -405,6 +427,41 @@ internal class BackstackControllerTest {
   }
 
   @Test
+  fun `stashing a pending deep link records a timestamp, and consuming it at login clears both`() {
+    val controller = controllerWith(LoginKey)
+    controller.navigateToExternalDeepLink(HelpCenterKey)
+    assertThat(controller.pendingDeepLink).isEqualTo(HelpCenterKey)
+    assertThat(controller.pendingDeepLinkStashedAtEpochMs).isNotNull()
+    controller.setLoggedIn("mem-1")
+    assertThat(controller.pendingDeepLink).isNull()
+    assertThat(controller.pendingDeepLinkStashedAtEpochMs).isNull()
+  }
+
+  @Test
+  fun `reseed clears the pending deep link and its timestamp`() {
+    val controller = controllerWith(LoginKey)
+    controller.navigateToInAppLink(HelpCenterKey)
+    assertThat(controller.pendingDeepLinkStashedAtEpochMs).isNotNull()
+    controller.reseed(listOf(HomeKey))
+    assertThat(controller.pendingDeepLink).isNull()
+    assertThat(controller.pendingDeepLinkStashedAtEpochMs).isNull()
+  }
+
+  @Test
+  fun `restoreFromSavedState round-trips the pending deep link timestamp`() {
+    val controller = controllerWith() // empty so the restore applies (live state would otherwise win)
+    controller.restoreFromSavedState(
+      entries = listOf(LoginKey),
+      parkedRuns = emptyMap(),
+      pendingDeepLink = HelpCenterKey,
+      pendingDeepLinkStashedAtEpochMs = 123_456L,
+      stashedSession = null,
+    )
+    assertThat(controller.pendingDeepLink).isEqualTo(HelpCenterKey)
+    assertThat(controller.pendingDeepLinkStashedAtEpochMs).isEqualTo(123_456L)
+  }
+
+  @Test
   fun `loneDeepLinkChrome is ShowUpBar for a lone tab root`() {
     assertThat(controllerWith(InsurancesKey).loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowUpBar)
   }
@@ -445,7 +502,7 @@ internal class BackstackControllerTest {
       mutableStateMapOf(),
       mutableStateOf(null), // pendingDeepLink
       mutableStateOf(null), // stashedSession
-      isOwnTask = { false },
+      initialIsOwnTask = false,
     )
     assertThat(controller.loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowUpBar)
   }
@@ -457,8 +514,21 @@ internal class BackstackControllerTest {
       mutableStateMapOf(),
       mutableStateOf(null), // pendingDeepLink
       mutableStateOf(null), // stashedSession
-      isOwnTask = { true },
+      initialIsOwnTask = true,
     )
+    assertThat(controller.loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowSuite)
+  }
+
+  @Test
+  fun `toggling isOwnTask flips a lone Home between suite and up bar`() {
+    // Guards the no-deep-link path: a normal lone Home renders as a deep-link stack (up bar) whenever
+    // isTaskRoot is false, and must self-correct once isOwnTask is refreshed back to true (the onResume
+    // fix). Also proves isOwnTask is read live, not frozen at construction.
+    val controller = controllerWith(HomeKey)
+    assertThat(controller.loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowSuite)
+    controller.isOwnTask = false
+    assertThat(controller.loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowUpBar)
+    controller.isOwnTask = true
     assertThat(controller.loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowSuite)
   }
 
@@ -478,7 +548,7 @@ internal class BackstackControllerTest {
       mutableStateMapOf(),
       mutableStateOf(null), // pendingDeepLink
       mutableStateOf(null), // stashedSession
-      isOwnTask = { false },
+      initialIsOwnTask = false,
       escapeToOwnTask = { escaped = it },
     )
     assertThat(controller.navigateUp()).isTrue()

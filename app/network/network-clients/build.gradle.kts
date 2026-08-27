@@ -35,10 +35,19 @@ kotlin {
       implementation(projects.coreDatastorePublic)
       implementation(projects.languageCore)
     }
-    val mobileMain by getting {
+    getByName("mobileMain") {
       dependencies {
         implementation(libs.datadog.sdk.ktor)
       }
+    }
+    androidMain.dependencies {
+      implementation(libs.ktor.client.okhttp)
+    }
+    jvmMain.dependencies {
+      implementation(libs.ktor.client.okhttp)
+    }
+    nativeMain.dependencies {
+      implementation(libs.ktor.client.darwin)
     }
   }
 }

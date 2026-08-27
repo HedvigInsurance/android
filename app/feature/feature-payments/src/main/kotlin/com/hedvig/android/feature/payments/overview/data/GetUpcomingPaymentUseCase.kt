@@ -4,8 +4,8 @@ import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.right
 import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.cache.normalized.FetchPolicy
-import com.apollographql.apollo.cache.normalized.fetchPolicy
+import com.apollographql.cache.normalized.FetchPolicy
+import com.apollographql.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
@@ -17,7 +17,6 @@ import com.hedvig.android.feature.payments.data.ManualChargeToPrompt
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberChargeShortInfo
 import com.hedvig.android.feature.payments.data.PaymentConnection
-import com.hedvig.android.feature.payments.data.PaymentConnection.*
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.data.toFailedCharge
@@ -86,12 +85,11 @@ internal data class GetUpcomingPaymentUseCaseImpl(
             .activeContracts
             .filter { it.terminationDueToMissedPayments }
             .mapNotNull { it.terminationDate }
-            .sorted()
-            .firstOrNull()
+            .minOrNull()
 
           when (memberType) {
             MemberType.STANDARD_MEMBER -> {
-              return@run NeedsPayinSetup(
+              return@run PaymentConnection.NeedsPayinSetup(
                 firstKnownTerminationDateForContractTerminatedDueToMissedPayments,
               )
             }

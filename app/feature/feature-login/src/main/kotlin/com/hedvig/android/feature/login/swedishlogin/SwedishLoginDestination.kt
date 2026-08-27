@@ -40,6 +40,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.set
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.common.BitMatrix
@@ -267,11 +269,11 @@ internal fun QRCode(
         size.width,
         size.height,
       )
-      val bitmap = Bitmap.createBitmap(size.width, size.height, Bitmap.Config.RGB_565)
+      val bitmap = createBitmap(size.width, size.height, Bitmap.Config.RGB_565)
       for (x in 0 until size.width) {
         for (y in 0 until size.height) {
           val color = if (bitMatrix.get(x, y)) android.graphics.Color.BLACK else android.graphics.Color.WHITE
-          bitmap.setPixel(x, y, color)
+          bitmap[x, y] = color
         }
       }
       BitmapPainter(bitmap.asImageBitmap())

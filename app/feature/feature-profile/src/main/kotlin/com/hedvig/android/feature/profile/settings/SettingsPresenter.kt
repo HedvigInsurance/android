@@ -8,6 +8,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
+import com.hedvig.android.data.settings.datastore.AnalyticsConsent
+import com.hedvig.android.data.settings.datastore.GetAnalyticsConsentUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreferencesUseCase
 import com.hedvig.android.language.Language
@@ -25,6 +27,7 @@ internal class SettingsPresenter(
   private val cacheManager: NetworkCacheManager,
   private val changeEmailSubscriptionPreferencesUseCase: ChangeEmailSubscriptionPreferencesUseCase,
   private val uploadLanguagePreferenceToBackendUseCase: UploadLanguagePreferenceToBackendUseCase,
+  private val getAnalyticsConsentUseCase: GetAnalyticsConsentUseCase,
 ) : MoleculePresenter<SettingsEvent, SettingsUiState> {
   @Composable
   override fun MoleculePresenterScope<SettingsEvent>.present(lastState: SettingsUiState): SettingsUiState {
@@ -38,14 +41,18 @@ internal class SettingsPresenter(
       .timeToShowNotificationReminder()
       .collectAsState(lastState.showNotificationReminder)
       .value
+    val analyticsConsent = getAnalyticsConsentUseCase.invoke()
+      .collectAsState(lastState.analyticsConsent).value
 
     CollectEvents { event ->
       when (event) {
         is SettingsEvent.ChangeLanguage -> {
           selectedLanguage = event.language
           languageService.setLanguage(event.language)
-          cacheManager.clearCache()
-          launch { uploadLanguagePreferenceToBackendUseCase.invoke() }
+          launch {
+            cacheManager.clearCache()
+            uploadLanguagePreferenceToBackendUseCase.invoke()
+          }
         }
 
         is SettingsEvent.ChangeTheme -> {
@@ -83,6 +90,7 @@ internal class SettingsPresenter(
         showNotificationReminder = showNotificationReminder,
         isSubscribedToEmails = isSubscribedToEmails,
         emailSubscriptionPreferenceError = emailSubscriptionPreferenceError,
+        analyticsConsent = analyticsConsent,
       )
     }
   }
@@ -93,6 +101,9 @@ sealed interface SettingsUiState {
   val selectedTheme: Theme?
   val isSubscribedToEmails: Boolean?
   val showNotificationReminder: Boolean?
+
+  /** Null while analytics consent is switched off, in which case the usage data row is not offered. */
+  val analyticsConsent: AnalyticsConsent?
   val languageOptions: List<Language>
     get() = Language.entries
 
@@ -102,6 +113,7 @@ sealed interface SettingsUiState {
     override val isSubscribedToEmails: Boolean? = null
     override val selectedTheme: Theme? = null
     override val showNotificationReminder: Boolean? = null
+    override val analyticsConsent: AnalyticsConsent? = null
   }
 
   data class Loaded(
@@ -111,6 +123,7 @@ sealed interface SettingsUiState {
     override val showNotificationReminder: Boolean,
     override val isSubscribedToEmails: Boolean?,
     val emailSubscriptionPreferenceError: Boolean = false,
+    override val analyticsConsent: AnalyticsConsent?,
   ) : SettingsUiState
 }
 

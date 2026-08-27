@@ -3,8 +3,8 @@ package com.hedvig.android.feature.chat.data
 import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.cache.normalized.FetchPolicy.CacheAndNetwork
-import com.apollographql.apollo.cache.normalized.fetchPolicy
+import com.apollographql.cache.normalized.FetchPolicy.CacheAndNetwork
+import com.apollographql.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.di.AppScope

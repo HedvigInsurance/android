@@ -15,8 +15,9 @@ import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.test.runTest
 import octopus.InsuranceEvidenceInitialDataQuery
-import octopus.type.buildMember
-import octopus.type.buildMemberActions
+import octopus.builder.Data
+import octopus.builder.buildMember
+import octopus.builder.buildMemberActions
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

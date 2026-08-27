@@ -52,6 +52,7 @@ fragment ContractFragment on Contract {
   masterInceptionDate
   terminationDate
   exposureDisplayName
+  exposureDisplayNameShort
   supportsMoving
   supportsCoInsured
   supportsChangeTier
@@ -116,6 +117,7 @@ fragment AgreementFragment on Agreement {
 
 fragment AgreementDisplayItemFragment on AgreementDisplayItem {
   displayTitle
+  displaySubtitle
   displayValue
 }
 

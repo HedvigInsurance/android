@@ -1,0 +1,59 @@
+plugins {
+  id("hedvig.android.library")
+  id("hedvig.gradle.plugin")
+}
+
+hedvig {
+  apollo("octopus")
+  serialization()
+  compose()
+  navKeys()
+  viewModels()
+}
+
+android {
+  // Compose's Recomposer logs via android.util.Log in unit tests; return defaults instead of throwing.
+  testOptions.unitTests.isReturnDefaultValues = true
+}
+
+dependencies {
+  implementation(libs.apollo.normalizedCache)
+  implementation(libs.apollo.runtime)
+  implementation(libs.arrow.core)
+  implementation(libs.coroutines.core)
+  implementation(libs.androidx.datastore.core)
+  implementation(libs.androidx.datastore.preferencesCore)
+  implementation(libs.androidx.navigation3.ui)
+  implementation(libs.jetbrains.lifecycle.runtime.compose)
+  implementation(libs.kotlinx.serialization.core)
+  implementation(projects.apolloCore)
+  implementation(projects.apolloOctopusPublic)
+  implementation(projects.authCorePublic)
+  implementation(projects.composeUi)
+  implementation(projects.coreCommonPublic)
+  implementation(projects.coreResources)
+  implementation(libs.coil.coil)
+  implementation(libs.coil.compose)
+  implementation(projects.dataContract)
+  implementation(projects.dataSettingsDatastorePublic)
+  implementation(projects.designSystemHedvig)
+  implementation(projects.dataCoinsured)
+  implementation(projects.featureConnectPaymentTrustlyNavigation)
+  implementation(projects.featureEditCoinsuredNavigation)
+  implementation(projects.featureFlags)
+  implementation(projects.foreverUi)
+  implementation(projects.moleculePublic)
+  implementation(projects.navigationCommon)
+  implementation(projects.navigationCompose)
+  implementation(projects.uiPhoneNumber)
+  implementation(projects.theme)
+
+  testImplementation(libs.assertK)
+  testImplementation(libs.coroutines.test)
+  testImplementation(libs.junit)
+  testImplementation(libs.turbine)
+  testImplementation(projects.dataSettingsDatastoreTest)
+  testImplementation(projects.featureFlagsTest)
+  testImplementation(projects.loggingTest)
+  testImplementation(projects.moleculeTest)
+}

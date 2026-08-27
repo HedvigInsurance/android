@@ -8,7 +8,6 @@ import com.android.build.api.dsl.Lint
 import com.android.build.api.variant.KotlinMultiplatformAndroidComponentsExtension
 import com.apollographql.apollo.gradle.api.ApolloExtension
 import com.apollographql.apollo.gradle.api.Service
-import com.apollographql.apollo.gradle.internal.ApolloDownloadSchemaTask
 import java.io.File
 import javax.inject.Inject
 import org.gradle.accessors.dm.LibrariesForLibs
@@ -22,8 +21,8 @@ import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.newInstance
+import org.gradle.kotlin.dsl.project
 import org.gradle.kotlin.dsl.the
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.resources.ResourcesExtension
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
@@ -114,23 +113,33 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
 
 private abstract class ApolloSchemaHandler {
   fun configure(project: Project, apolloServiceAction: Action<Service>) {
+    val libs = project.the<LibrariesForLibs>()
     with(project) {
-      pluginManager.apply(the<LibrariesForLibs>().plugins.apollo.get().pluginId)
+      pluginManager.apply(libs.plugins.apollo.get().pluginId)
     }
     project.extensions.configure<ApolloExtension> {
       service("octopus") {
         apolloServiceAction.execute(this)
+        configureNormalizedCachePlugin(libs, packageName.get())
       }
     }
-    project.tasks.withType<ApolloDownloadSchemaTask>()
-      .configureEach {
+    // The introspection download task writes the schema to the file configured in the octopus
+    // `introspection` block. That output is annotated `@Internal` on the Apollo Gradle plugin task
+    // (which is itself internal), so it can't be reached by task type or declared outputs. Resolve
+    // the file by its known project-relative path (matching the octopus `introspection.schemaFile`)
+    // and apply the client-side changes once the download completes.
+    val schemaFile = project.layout.projectDirectory
+      .file("src/commonMain/graphql/com/hedvig/android/apollo/octopus/schema.graphqls")
+      .asFile
+    project.tasks.configureEach {
+      if (name == "downloadOctopusApolloSchemaFromIntrospection") {
         doLast {
-          val schemaFile = outputFile.get().asFile
           val schemaText = schemaFile.readText()
           val convertedSchema = schemaText.performClientSideChanges()
           schemaFile.writeText(convertedSchema)
         }
       }
+    }
   }
 
   private fun String.performClientSideChanges(): String {
@@ -194,11 +203,23 @@ private abstract class ApolloHandler {
         this.packageName.set(packageName)
 
         @Suppress("OPT_IN_USAGE")
-        dependsOn(project.project(":apollo-octopus-public"), true)
+        dependsOn(project.dependencies.project(":apollo-octopus-public"), true)
+        configureNormalizedCachePlugin(libs, packageName)
         extraConfiguration.execute(this)
       }
     }
   }
+}
+
+/**
+ * The normalized cache ships its own Apollo compiler plugin, which does two things: it reads
+ * `@typePolicy` off the schema to generate the `<packageName>.cache.Cache` object, and it rewrites a
+ * service's operations to select the key fields the cache needs to normalize the response. The
+ * second half is per-service, so every module declaring an Apollo service configures the plugin.
+ */
+private fun Service.configureNormalizedCachePlugin(libs: LibrariesForLibs, packageName: String) {
+  plugin(libs.apollo.normalizedCachePlugin)
+  pluginArgument("com.apollographql.cache.packageName", packageName)
 }
 
 private abstract class ComposeHandler {
@@ -320,7 +341,7 @@ private abstract class NavKeysHandler {
     val isMultiplatform = project.extensions.findByType<KotlinMultiplatformExtension>() != null
     val kspConfiguration = if (isMultiplatform) "kspAndroid" else "ksp"
     project.dependencies {
-      add(kspConfiguration, project.project(":navigation-keys-processor"))
+      add(kspConfiguration, project(":navigation-keys-processor"))
     }
   }
 }
@@ -328,7 +349,7 @@ private abstract class NavKeysHandler {
 private abstract class ViewModelsHandler {
   fun configure(project: Project, pluginManager: PluginManager, libs: LibrariesForLibs) {
     pluginManager.apply(libs.plugins.ksp.get().pluginId)
-    val processor = project.project(":viewmodel-processor")
+    val processor = project.dependencies.project(":viewmodel-processor")
     val isMultiplatform = project.extensions.findByType<KotlinMultiplatformExtension>() != null
     if (!isMultiplatform) {
       project.dependencies {

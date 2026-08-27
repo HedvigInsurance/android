@@ -4,6 +4,7 @@ import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.data.settings.datastore.GetAnalyticsConsentUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreferencesUseCase
 import com.hedvig.android.language.LanguageService
@@ -20,6 +21,7 @@ internal class SettingsViewModel(
   enableNotificationsReminderSnoozeManager: EnableNotificationsReminderSnoozeManager,
   cacheManager: NetworkCacheManager,
   uploadLanguagePreferenceToBackendUseCase: UploadLanguagePreferenceToBackendUseCase,
+  getAnalyticsConsentUseCase: GetAnalyticsConsentUseCase,
 ) : MoleculeViewModel<SettingsEvent, SettingsUiState>(
     SettingsUiState.Loading(selectedLanguage = languageService.getLanguage()),
     SettingsPresenter(
@@ -29,5 +31,6 @@ internal class SettingsViewModel(
       cacheManager = cacheManager,
       uploadLanguagePreferenceToBackendUseCase = uploadLanguagePreferenceToBackendUseCase,
       changeEmailSubscriptionPreferencesUseCase = changeEmailSubscriptionPreferencesUseCase,
+      getAnalyticsConsentUseCase = getAnalyticsConsentUseCase,
     ),
   )

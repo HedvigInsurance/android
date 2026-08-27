@@ -5,22 +5,26 @@ import arrow.core.left
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
-import com.apollographql.apollo.cache.normalized.FetchPolicy
-import com.apollographql.apollo.cache.normalized.fetchPolicy
+import com.apollographql.cache.normalized.FetchPolicy
+import com.apollographql.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
+import kotlinx.coroutines.flow.first
 import kotlinx.datetime.LocalDate
 import octopus.DeleteContractMutation
 import octopus.TerminateContractMutation
 import octopus.TerminationSurveyQuery
 import octopus.fragment.TerminationSurveyOptionSuggestionFragment
 import octopus.type.TerminationFlowDeleteContractInput
+import octopus.type.TerminationFlowSurveyOptionRedirectionType
 import octopus.type.TerminationFlowSurveyOptionSuggestionType
 import octopus.type.TerminationFlowTerminateContractInput
 
@@ -46,11 +50,13 @@ internal interface TerminateInsuranceRepository {
 @Inject
 internal class TerminateInsuranceRepositoryImpl(
   private val apolloClient: ApolloClient,
+  private val featureManager: FeatureManager,
 ) : TerminateInsuranceRepository {
   override suspend fun getTerminationSurvey(contractId: String): Either<ErrorMessage, TerminationSurveyData> {
     return either {
+      val redirectionEnabled = !featureManager.isFeatureEnabled(Feature.DISABLE_TERMINATION_REDIRECTION).first()
       val result = apolloClient
-        .query(TerminationSurveyQuery(contractId))
+        .query(TerminationSurveyQuery(contractId = contractId, redirectionEnabled = redirectionEnabled))
         .fetchPolicy(FetchPolicy.NetworkOnly)
         .safeExecute(::ErrorMessage)
         .bind()
@@ -137,6 +143,7 @@ private fun TerminationSurveyQuery.Data.TerminationSurvey.Option.toTerminationSu
     listIndex = index,
     feedbackRequired = feedbackRequired,
     suggestion = suggestion?.toSuggestion(),
+    redirection = redirection?.toRedirection(),
     subOptions = subOptions.mapIndexed { subIndex, subOption ->
       TerminationSurveyOption(
         id = subOption.id,
@@ -193,6 +200,19 @@ private fun TerminationSurveyQuery.Data.TerminationSurvey.Action.toTerminationAc
       ErrorMessage("Unknown termination action type: ${this::class.simpleName}").left()
     }
   }
+}
+
+private fun TerminationSurveyQuery.Data.TerminationSurvey.Option.Redirection.toRedirection(): SurveyOptionRedirection {
+  return SurveyOptionRedirection(
+    title = title,
+    description = description,
+    type = when (type) {
+      TerminationFlowSurveyOptionRedirectionType.UPDATE_ADDRESS -> RedirectionType.UPDATE_ADDRESS
+      else -> RedirectionType.UNKNOWN
+    },
+    actionText = actionText,
+    image = image?.let { RedirectionImage(url = it.url, overlayText = it.overlayText) },
+  )
 }
 
 private fun TerminationSurveyOptionSuggestionFragment.toSuggestion(): SurveyOptionSuggestion {

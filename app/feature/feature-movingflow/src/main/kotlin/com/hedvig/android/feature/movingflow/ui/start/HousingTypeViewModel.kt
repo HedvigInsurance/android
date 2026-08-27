@@ -71,13 +71,14 @@ private class HousingTypePresenter(
     LaunchedEffect(Unit) {
       movingFlowRepository
         .movingFlowState()
-        .collectLatest {
+        .collectLatest { movingFlowState ->
           Snapshot.withMutableSnapshot {
             currentState = HousingTypeUiState.Content(
               possibleHousingTypes = HousingType.entries,
-              selectedHousingType = HousingType.entries.first(),
+              selectedHousingType = (currentState as? HousingTypeUiState.Content)?.selectedHousingType
+                ?: movingFlowState?.housingType
+                ?: HousingType.entries.first(),
             )
-            submittingHousingType = null
           }
         }
     }
@@ -85,14 +86,15 @@ private class HousingTypePresenter(
     val submittingHousingTypeValue = submittingHousingType
     LaunchedEffect(submittingHousingTypeValue) {
       if (submittingHousingTypeValue != null) {
-        val state = currentState as? HousingTypeUiState.Content ?: return@LaunchedEffect
-        currentState = state.copy(buttonLoading = true)
         movingFlowRepository.updateWithHousingType(submittingHousingTypeValue)
-        submittingHousingType = null
         backstack.add(EnterNewAddressKey(moveIntentId))
+        submittingHousingType = null
       }
     }
-    return currentState
+    return when (val state = currentState) {
+      is HousingTypeUiState.Content -> state.copy(buttonLoading = submittingHousingTypeValue != null)
+      else -> state
+    }
   }
 }
 

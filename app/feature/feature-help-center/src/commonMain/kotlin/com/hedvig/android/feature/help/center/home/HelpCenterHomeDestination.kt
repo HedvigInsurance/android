@@ -48,7 +48,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -95,13 +94,13 @@ import com.hedvig.android.feature.help.center.HelpCenterUiState.PuppyGuidePresen
 import com.hedvig.android.feature.help.center.HelpCenterViewModel
 import com.hedvig.android.feature.help.center.data.FAQItem
 import com.hedvig.android.feature.help.center.data.FAQTopic
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination
-import com.hedvig.android.feature.help.center.model.QuickAction
-import com.hedvig.android.feature.help.center.model.QuickAction.MultiSelectExpandedLink
-import com.hedvig.android.feature.help.center.model.QuickAction.StandaloneQuickLink
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
+import com.hedvig.android.memberquickactions.QuickAction
+import com.hedvig.android.memberquickactions.QuickAction.MultiSelectExpandedLink
+import com.hedvig.android.memberquickactions.QuickAction.StandaloneQuickLink
+import com.hedvig.android.memberquickactions.QuickLinkDestination
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import hedvig.resources.HC_CLAIMS_A_01
 import hedvig.resources.HC_CLAIMS_Q_01
@@ -123,7 +122,7 @@ import hedvig.resources.SEARCH_NOTHING_FOUND
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_continue_button
 import hedvig.resources.hundar_badar_pet
-import hedvig.resources.pillow_hedvig
+import hedvig.resources.pillow_new_680
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
@@ -400,7 +399,7 @@ private fun ContentWithoutSearch(
           } else {
             Spacer(Modifier.padding(16.dp))
             Image(
-              painter = painterResource(Res.drawable.pillow_hedvig),
+              painter = painterResource(Res.drawable.pillow_new_680),
               contentDescription = null,
               modifier = Modifier
                 .size(170.dp)

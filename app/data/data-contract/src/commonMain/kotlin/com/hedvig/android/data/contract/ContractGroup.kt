@@ -8,6 +8,7 @@ import hedvigandroid.data_contract.generated.resources.dog
 import hedvigandroid.data_contract.generated.resources.home
 import hedvigandroid.data_contract.generated.resources.homeowner
 import hedvigandroid.data_contract.generated.resources.rental
+import hedvigandroid.data_contract.generated.resources.safety
 import hedvigandroid.data_contract.generated.resources.student
 import hedvigandroid.data_contract.generated.resources.vacation
 import hedvigandroid.data_contract.generated.resources.villa
@@ -25,6 +26,7 @@ enum class ContractGroup {
   STUDENT,
   COUNTRY_HOME,
   QASA_LANDLORD,
+  PAYMENT_PROTECTION,
   UNKNOWN,
 }
 
@@ -41,6 +43,7 @@ fun ContractGroup.gradientResource(): DrawableResource = when (this) {
   ContractGroup.COUNTRY_HOME -> Res.drawable.vacation
   ContractGroup.UNKNOWN -> Res.drawable.home
   ContractGroup.QASA_LANDLORD -> Res.drawable.home
+  ContractGroup.PAYMENT_PROTECTION -> Res.drawable.safety
 }
 
 fun ContractGroup.pillowResource(): DrawableResource = when (this) {
@@ -56,6 +59,22 @@ fun ContractGroup.pillowResource(): DrawableResource = when (this) {
   ContractGroup.COUNTRY_HOME -> Res.drawable.vacation
   ContractGroup.UNKNOWN -> Res.drawable.home
   ContractGroup.QASA_LANDLORD -> Res.drawable.home
+  ContractGroup.PAYMENT_PROTECTION -> Res.drawable.safety
+}
+
+/**
+ * A pillow illustration exposed for callers that need one without an owning contract, e.g. the home
+ * add-on banners, which carry no imagery from the backend. The drawable resources are internal to
+ * this module, so callers pick a pillow through this enum instead.
+ */
+enum class PillowType {
+  CAR,
+  VACATION,
+}
+
+fun PillowType.pillowResource(): DrawableResource = when (this) {
+  PillowType.CAR -> Res.drawable.car
+  PillowType.VACATION -> Res.drawable.vacation
 }
 
 fun String.toContractGroup(): ContractGroup = when (this) {
@@ -63,22 +82,22 @@ fun String.toContractGroup(): ContractGroup = when (this) {
   "DK_HOUSE",
   "SE_HOUSE",
   "SE_HOUSE_BAS",
-  "SE_HOUSE_MAX"
-    -> ContractGroup.HOUSE
+  "SE_HOUSE_MAX",
+  -> ContractGroup.HOUSE
 
   "DK_ACCIDENT",
   "NO_ACCIDENT",
   "SE_ACCIDENT",
   "SE_ACCIDENT_STUDENT",
   "DK_ACCIDENT_STUDENT",
-    -> ContractGroup.ACCIDENT
+  -> ContractGroup.ACCIDENT
 
   "DK_TRAVEL",
   "DK_TRAVEL_STUDENT",
   "NO_TRAVEL",
   "NO_TRAVEL_STUDENT",
   "NO_TRAVEL_YOUTH",
-    -> ContractGroup.TRAVEL
+  -> ContractGroup.TRAVEL
 
   "DK_HOME_CONTENT_RENT",
   "DK_HOME_CONTENT_STUDENT_RENT",
@@ -90,7 +109,7 @@ fun String.toContractGroup(): ContractGroup = when (this) {
   "SE_QASA_LONG_TERM_RENTAL",
   "SE_QASA_SHORT_TERM_RENTAL",
   "NO_HOME_CONTENT_YOUTH_RENT",
-    -> ContractGroup.RENTAL
+  -> ContractGroup.RENTAL
 
   "NO_HOME_CONTENT_YOUTH_OWN",
   "DK_HOME_CONTENT_STUDENT_OWN",
@@ -100,13 +119,13 @@ fun String.toContractGroup(): ContractGroup = when (this) {
   "SE_APARTMENT_BRF_BAS",
   "SE_APARTMENT_BRF_MAX",
   "SE_GROUP_APARTMENT_BRF",
-    -> ContractGroup.HOMEOWNER
+  -> ContractGroup.HOMEOWNER
 
   "NO_HOME_CONTENT_STUDENT_OWN",
   "NO_HOME_CONTENT_STUDENT_RENT",
   "SE_APARTMENT_STUDENT_BRF",
   "SE_APARTMENT_STUDENT_RENT",
-    -> ContractGroup.STUDENT
+  -> ContractGroup.STUDENT
 
   "SE_CAR_FULL",
   "SE_CAR_HALF",
@@ -114,21 +133,25 @@ fun String.toContractGroup(): ContractGroup = when (this) {
   "SE_CAR_TRIAL_HALF",
   "SE_CAR_TRIAL_FULL",
   "SE_CAR_DECOMMISSIONED",
-    -> ContractGroup.CAR
+  -> ContractGroup.CAR
 
   "SE_CAT_BASIC",
   "SE_CAT_PREMIUM",
   "SE_CAT_STANDARD",
-    -> ContractGroup.CAT
+  -> ContractGroup.CAT
 
   "SE_DOG_BASIC",
   "SE_DOG_PREMIUM",
   "SE_DOG_STANDARD",
-    -> ContractGroup.DOG
+  -> ContractGroup.DOG
 
   "SE_VACATION_HOME_BAS",
   "SE_VACATION_HOME_STANDARD",
-    -> ContractGroup.COUNTRY_HOME
+  -> ContractGroup.COUNTRY_HOME
+
+  "SE_QASA_LANDLORD" -> ContractGroup.QASA_LANDLORD
+
+  "SE_PAYMENT_PROTECTION" -> ContractGroup.PAYMENT_PROTECTION
 
   else -> ContractGroup.UNKNOWN
 }

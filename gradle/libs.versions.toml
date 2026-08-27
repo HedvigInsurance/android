@@ -5,95 +5,97 @@ targetSdkVersion = "36"
 minSdkVersion = "23"
 
 # lint versions
-lintApi = "32.1.1"
-lintGradlePlugin = "9.1.1"
+lintApi = "32.3.1"
+lintGradlePlugin = "9.3.1"
 
 # gradlePlugin versions
-androidGradlePlugin = "9.1.1"
-apollo = "4.4.1"
+androidGradlePlugin = "9.3.1"
+apollo = "5.0.1"
 apolloAdapters = "0.7.0"
-apolloEngineKtor = "0.1.1"
+apolloEngineKtor = "1.0.0-alpha.0"
+apolloNormalizedCache = "1.0.7"
 cacheFix = "3.0.3"
-crashlytics = "3.0.6"
-datadogPlugin = "1.22.0"
+crashlytics = "3.0.7"
+datadogPlugin = "1.29.0"
+dedebug = "0.1"
 doctor = "0.12.1"
 easylauncher = "6.4.1"
-googleServices = "4.4.4"
-gradleDevelocity = "4.3.2"
-kctfork = "0.7.1"
-kmpNativeCoroutines = "1.0.3"
-kotlin = "2.3.21"
-kotlinpoet = "2.2.0"
-kotlinter = "5.4.2"
-ksp = "2.3.9"
-ktor = "3.4.0"
-license = "0.9.8"
+googleServices = "4.5.0"
+gradleDevelocity = "4.5.0"
+kctfork = "0.13.0"
+kmpNativeCoroutines = "1.0.5"
+kotlin = "2.4.10"
+kotlinpoet = "2.3.0"
+kotlinter = "5.6.0"
+ksp = "2.3.10"
+ktor = "3.5.1"
+license = "0.9.9"
 molecule = "2.2.0"
-okhttpBom = "5.3.2"
-squareSortDependencies = "0.16"
+okhttpBom = "5.4.0"
+squareSortDependencies = "0.20.0"
 
 # Other versions sorted alphabetically
 accompanist = "0.37.3"
-rive = "11.2.1"
+rive = "11.7.2"
 androidx-activity-compose = "1.13.0"
 androidx-activity-core = "1.13.0"
-androidx-annotation = "1.9.1"
-androidx-composeBom = "2026.04.01"
-androidx-compose-runtime-retain = "1.11.1"
-androidx-datastore = "1.2.0"
+androidx-annotation = "1.10.0"
+androidx-composeBom = "2026.06.01"
+androidx-compose-runtime-retain = "1.11.4"
+androidx-datastore = "1.2.1"
 androidx-junit = "1.3.0"
-androidx-lifecycle = "2.10.0"
-androidx-navigation3 = "1.2.0-alpha03"
-androidx-lifecycle-viewmodel-navigation3 = "2.10.0"
+androidx-lifecycle = "2.11.0"
+androidx-navigation3 = "1.2.0-alpha07"
+androidx-lifecycle-viewmodel-navigation3 = "2.11.0"
 androidx-other-appCompat = "1.7.1"
-androidx-other-browser = "1.9.0"
+androidx-other-browser = "1.10.0"
 androidx-other-constraintLayout = "2.2.0"
-androidx-other-core = "1.18.0"
+androidx-other-core = "1.19.0"
 androidx-other-splashscreen = "1.2.0"
 androidx-other-startup = "1.2.0"
-androidx-other-workManager = "2.11.1"
+androidx-other-workManager = "2.11.2"
 androidx-test = "1.7.0"
 androidx-testRunners = "1.7.0"
-androidx-ui-alpha = "1.10.6"
+androidx-ui-alpha = "1.11.4"
 androidxGraphicsShapes = "1.1.0"
-jetbrains-animation = "1.11.0-rc01"
-jetbrains-compose = "1.11.0-rc01"
-jetbrains-navigationevent = "1.0.1"
+jetbrains-animation = "1.11.1"
+jetbrains-compose = "1.11.1"
+jetbrains-navigationevent = "1.1.0"
 jetbrains-graphics = "1.0.0-alpha09"
-jetbrains-lifecycle = "2.10.0"
-jetbrains-material = "1.11.0-rc01"
+jetbrains-lifecycle = "2.11.0"
+jetbrains-material = "1.11.1"
 jetbrains-material3 = "1.11.0-alpha07"
-jetbrainsMarkdown = "0.7.3"
-arrow = "2.2.1.1"
+jetbrainsMarkdown = "0.7.8"
+arrow = "2.2.3"
 assertK = "0.28.1"
-atomicfu = "0.31.0"
-classgraph = "4.8.180"
-coil = "3.3.0"
+atomicfu = "0.33.0"
+classgraph = "4.8.186"
+coil = "3.5.0"
 coreLibraryDesugaring = "2.1.5"
-coroutines = "1.10.2"
-datadog = "3.6.0"
-datadogKtor = "1.4.1"
-dependencyAnalysis = "3.5.1"
-firebaseCrashlyticsBuildtools = "3.0.6"
+coroutines = "1.11.0"
+datadog = "3.12.1"
+datadogKtor = "1.7.0"
+dependencyAnalysis = "3.18.0"
+firebaseCrashlyticsBuildtools = "3.0.7"
 junit = "4.13.2"
-kotlinx-serialization = "1.10.0"
-kotlinxDatetime = "0.7.1-0.6.x-compat"
-media3 = "1.9.2"
-metro = "1.1.1"
-mikepenzMarkdown = "0.40.2"
+kotlinx-serialization = "1.11.0"
+kotlinxDatetime = "0.8.0-0.6.x-compat"
+media3 = "1.10.1"
+metro = "1.3.2"
+mikepenzMarkdown = "0.43.0"
 modalSheet = "0.7.0"
-okio = "3.16.4"
-paging = "3.4.0"
+okio = "3.18.1"
+paging = "3.5.0"
 playReview = "2.0.2"
 playServicesBase = "18.10.0"
 robolectric = "4.16.1"
 room = "2.8.4"
 slimber = "2.0.0"
-sqlite = "2.6.2"
-testParameterInjector = "1.21"
+sqlite = "2.7.0"
+testParameterInjector = "1.22"
 timber = "5.0.1"
 turbine = "1.2.1"
-unleash = "3.2.3"
+unleash = "3.3.1"
 uriKmp = "0.0.21"
 uuid = "0.8.4"
 zXing = "3.5.4"
@@ -140,7 +142,8 @@ apollo-adapters-datetime = { module = "com.apollographql.adapters:apollo-adapter
 apollo-annotations = { module = "com.apollographql.apollo:apollo-annotations", version.ref = "apollo" }
 apollo-api = { module = "com.apollographql.apollo:apollo-api", version.ref = "apollo" }
 apollo-engine-ktor = { module = "com.apollographql.ktor:apollo-engine-ktor", version.ref = "apolloEngineKtor" }
-apollo-normalizedCache = { module = "com.apollographql.apollo:apollo-normalized-cache", version.ref = "apollo" }
+apollo-normalizedCache = { module = "com.apollographql.cache:normalized-cache", version.ref = "apolloNormalizedCache" }
+apollo-normalizedCachePlugin = { module = "com.apollographql.cache:normalized-cache-apollo-compiler-plugin", version.ref = "apolloNormalizedCache" }
 apollo-runtime = { module = "com.apollographql.apollo:apollo-runtime", version.ref = "apollo" }
 apollo-testingSupport = { module = "com.apollographql.apollo:apollo-testing-support", version.ref = "apollo" }
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
@@ -164,8 +167,9 @@ datadog-sdk-logs = { module = "com.datadoghq:dd-sdk-android-logs", version.ref =
 datadog-sdk-rum = { module = "com.datadoghq:dd-sdk-android-rum", version.ref = "datadog" }
 datadog-sdk-trace-otel = { module = "com.datadoghq:dd-sdk-android-trace-otel", version.ref = "datadog" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
-firebase-bom = { module = "com.google.firebase:firebase-bom", version = "34.9.0" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version = "34.16.0" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 jetbrains-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "jetbrains-compose" }
 jetbrains-compose-animation = { module = "org.jetbrains.compose.animation:animation", version.ref = "jetbrains-animation" }
@@ -203,14 +207,13 @@ kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
 kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinpoet" }
-ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
-ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-contentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3" }
 media3-exoplayer-dash = { module = "androidx.media3:media3-exoplayer-dash", version.ref = "media3" }
 media3-ui = { module = "androidx.media3:media3-ui", version.ref = "media3" }
@@ -242,23 +245,36 @@ uri-kmp = { module = "com.eygraber:uri-kmp", version.ref = "uriKmp" }
 uuid = { module = "com.benasher44:uuid", version.ref = "uuid" }
 zXing = { module = "com.google.zxing:core", version.ref = "zXing" }
 zoomable = { module = "com.mxalbert.zoomable:zoomable", version.ref = "zoomable" }
-# Plugin libraries for build-logic's convention plugins to use to resolve the types/tasks coming from these plugins
-android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
-androidMultiplatform-gradlePlugin = { module = "com.android.kotlin.multiplatform.library:com.android.kotlin.multiplatform.library.gradle.plugin", version.ref = "androidGradlePlugin" }
-apollo-gradlePlugin = { module = "com.apollographql.apollo:apollo-gradle-plugin", version.ref = "apollo" }
-compose-compilerGradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
-compose-gradlePlugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jetbrains-compose" }
-firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
-kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-kotlinter-gradlePlugin = { module = "org.jmailen.gradle:kotlinter-gradle", version.ref = "kotlinter" }
-room-gradlePlugin = { module = "androidx.room:room-gradle-plugin", version.ref = "room" }
-
 # lint dependencies
 lintApi = { module = "com.android.tools.lint:lint-api", version.ref = "lintApi" }
 
 # temporary bug workaround
 androidx-kmp-preview-bug1-workaround = { module = "androidx.customview:customview-poolingcontainer", version = "1.1.0" }
 androidx-kmp-preview-bug2-workaround = { module = "androidx.emoji2:emoji2", version = "1.6.0" }
+
+# Everything below is a Gradle plugin artifact rather than a dependency of the app. build-logic declares
+# these so the plugins land on its classpath and the build can apply them by id, without a version.
+android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
+androidMultiplatform-gradlePlugin = { module = "com.android.kotlin.multiplatform.library:com.android.kotlin.multiplatform.library.gradle.plugin", version.ref = "androidGradlePlugin" }
+apollo-gradlePlugin = { module = "com.apollographql.apollo:apollo-gradle-plugin", version.ref = "apollo" }
+appIconBannerGenerator-gradlePlugin = { module = "com.starter.easylauncher:com.starter.easylauncher.gradle.plugin", version.ref = "easylauncher" }
+cacheFix-gradlePlugin = { module = "org.gradle.android.cache-fix:org.gradle.android.cache-fix.gradle.plugin", version.ref = "cacheFix" }
+compose-compilerGradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
+compose-gradlePlugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jetbrains-compose" }
+crashlytics-gradlePlugin = { module = "com.google.firebase.crashlytics:com.google.firebase.crashlytics.gradle.plugin", version.ref = "crashlytics" }
+datadog-gradlePlugin = { module = "com.datadoghq.dd-sdk-android-gradle-plugin:com.datadoghq.dd-sdk-android-gradle-plugin.gradle.plugin", version.ref = "datadogPlugin" }
+dedebug-gradlePlugin = { module = "com.autonomousapps.dedebug:com.autonomousapps.dedebug.gradle.plugin", version.ref = "dedebug" }
+googleServices-gradlePlugin = { module = "com.google.gms.google-services:com.google.gms.google-services.gradle.plugin", version.ref = "googleServices" }
+gradleDevelocity-gradlePlugin = { module = "com.gradle.develocity:com.gradle.develocity.gradle.plugin", version.ref = "gradleDevelocity" }
+kmpNativeCoroutines-gradlePlugin = { module = "com.rickclephas.kmp.nativecoroutines:com.rickclephas.kmp.nativecoroutines.gradle.plugin", version.ref = "kmpNativeCoroutines" }
+kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlinSerialization-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
+kotlinter-gradlePlugin = { module = "org.jmailen.gradle:kotlinter-gradle", version.ref = "kotlinter" }
+ksp-gradlePlugin = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+license-gradlePlugin = { module = "com.jaredsburrows.license:com.jaredsburrows.license.gradle.plugin", version.ref = "license" }
+metro-gradlePlugin = { module = "dev.zacsweers.metro:dev.zacsweers.metro.gradle.plugin", version.ref = "metro" }
+room-gradlePlugin = { module = "androidx.room:room-gradle-plugin", version.ref = "room" }
+squareSortDependencies-gradlePlugin = { module = "com.squareup.sort-dependencies:com.squareup.sort-dependencies.gradle.plugin", version.ref = "squareSortDependencies" }
 
 [bundles]
 kmpPreviewBugWorkaround = ["androidx-kmp-preview-bug1-workaround", "androidx-kmp-preview-bug2-workaround"]

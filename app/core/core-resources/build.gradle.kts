@@ -2,8 +2,8 @@ import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
-  alias(libs.plugins.composeKotlinCompilerGradlePlugin)
-  alias(libs.plugins.composeJetbrainsCompilerGradlePlugin)
+  id("org.jetbrains.kotlin.plugin.compose")
+  id("org.jetbrains.compose")
   id("hedvig.multiplatform.library")
   id("hedvig.multiplatform.library.android")
   id("hedvig.android.lokalise")

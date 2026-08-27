@@ -128,7 +128,12 @@ private fun Project.configureMetro(libs: LibrariesForLibs) {
   pluginManager.withPlugin(libs.plugins.kotlinJvm.get().pluginId) {
     pluginManager.apply(metroPluginId)
   }
-  pluginManager.withPlugin(libs.plugins.kotlin.get().pluginId) {
+  // Android modules get their Kotlin compilation from AGP's built-in Kotlin support, so key off the
+  // AGP plugins rather than a standalone Kotlin plugin.
+  pluginManager.withPlugin(libs.plugins.androidApplication.get().pluginId) {
+    pluginManager.apply(metroPluginId)
+  }
+  pluginManager.withPlugin(libs.plugins.androidLibrary.get().pluginId) {
     pluginManager.apply(metroPluginId)
   }
 
@@ -161,7 +166,14 @@ private fun Project.configureCommonDependencies(libs: LibrariesForLibs) {
       configureCommonDependencies(project, libs)
     }
   }
-  pluginManager.withPlugin(libs.plugins.kotlin.get().pluginId) {
+  // Android modules use AGP's built-in Kotlin support, so key off the AGP plugins to attach the
+  // shared implementation dependencies (Compose BOM, logging, tracking).
+  pluginManager.withPlugin(libs.plugins.androidApplication.get().pluginId) {
+    dependencies {
+      configureCommonDependencies(project, libs)
+    }
+  }
+  pluginManager.withPlugin(libs.plugins.androidLibrary.get().pluginId) {
     dependencies {
       configureCommonDependencies(project, libs)
     }

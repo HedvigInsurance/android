@@ -1,0 +1,53 @@
+query Onboarding {
+  currentMember {
+    id
+    email
+    phoneNumber
+    activeContracts {
+      id
+      exposureDisplayNameShort
+      isMissingPetId
+      supportsCoInsured
+      supportsCoOwners
+      coInsured {
+        firstName
+        hasMissingInfo
+        terminatesOn
+      }
+      coOwners {
+        firstName
+        hasMissingInfo
+        terminatesOn
+      }
+      currentAgreement {
+        productVariant {
+          typeOfContract
+          displayName
+        }
+      }
+    }
+    referralInformation {
+      code
+      monthlyDiscountPerReferral {
+        amount
+        currencyCode
+      }
+    }
+    paymentMethods {
+      payinMethods {
+        status
+      }
+    }
+    crossSellV2(input: { userFlow: ONBOARDING, flowSource: null, experiments: [] }) {
+      otherCrossSells {
+        id
+        title
+        description
+        storeUrl
+        pillowImageSmall {
+          src
+        }
+      }
+    }
+  }
+}

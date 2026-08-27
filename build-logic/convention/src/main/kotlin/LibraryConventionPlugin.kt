@@ -17,7 +17,6 @@ class LibraryConventionPlugin : Plugin<Project> {
       with(pluginManager) {
         apply(libs.plugins.androidLibrary.get().pluginId)
         apply(libs.plugins.cacheFix.get().pluginId)
-        apply(libs.plugins.kotlin.get().pluginId)
       }
 
       extensions.configure<LibraryExtension> {

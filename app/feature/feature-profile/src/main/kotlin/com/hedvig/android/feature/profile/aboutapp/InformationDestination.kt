@@ -82,6 +82,7 @@ internal fun InformationDestination(
   hedvigBuildConstants: HedvigBuildConstants,
   languageService: LanguageService,
   openUrl: (String) -> Unit,
+  onResetOnboardingForDebug: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   InformationScreen(
@@ -94,6 +95,7 @@ internal fun InformationDestination(
     navigateToNewConversation = navigateToNewConversation,
     openUrl = openUrl,
     languageService = languageService,
+    onResetOnboardingForDebug = onResetOnboardingForDebug,
   )
 }
 
@@ -108,6 +110,7 @@ private fun InformationScreen(
   navigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
   languageService: LanguageService,
+  onResetOnboardingForDebug: () -> Unit,
 ) {
   HedvigScaffold(
     topAppBarText = stringResource(Res.string.PROFILE_INFO_LABEL),
@@ -134,6 +137,7 @@ private fun InformationScreen(
           navigateToNewConversation = navigateToNewConversation,
           openUrl = openUrl,
           languageService = languageService,
+          onResetOnboardingForDebug = onResetOnboardingForDebug,
         )
       }
     }
@@ -151,6 +155,7 @@ private fun ColumnScope.InformationContent(
   navigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
   languageService: LanguageService,
+  onResetOnboardingForDebug: () -> Unit,
 ) {
   Spacer(Modifier.height(16.dp))
   LegalInfoSection(
@@ -233,6 +238,19 @@ private fun ColumnScope.InformationContent(
       .padding(16.dp),
   ) {
     HedvigText(stringResource(Res.string.PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS))
+  }
+  if (!isProduction) {
+    Row(
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier
+        .fillMaxWidth()
+        .clickable(onClick = onResetOnboardingForDebug)
+        .padding(16.dp),
+    ) {
+      // Debug-only affordance for non-production builds; deliberately not translated.
+      HedvigText("Reset onboarding")
+    }
   }
   Spacer(Modifier.height(16.dp))
   Spacer(Modifier.weight(1f))
@@ -440,6 +458,7 @@ private fun PreviewInformationScreen() {
         navigateToNewConversation = {},
         openUrl = {},
         languageService = previewLanguageService,
+        onResetOnboardingForDebug = {},
       )
     }
   }

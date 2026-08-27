@@ -37,6 +37,7 @@ dependencies {
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
   implementation(projects.navigationCore)
+  implementation(projects.networkClients)
 
   testImplementation(libs.androidx.datastore.core)
   testImplementation(libs.androidx.junit)

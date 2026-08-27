@@ -16,9 +16,9 @@ import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import arrow.fx.coroutines.parMap
 import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.cache.normalized.FetchPolicy
-import com.apollographql.apollo.cache.normalized.doNotStore
-import com.apollographql.apollo.cache.normalized.fetchPolicy
+import com.apollographql.cache.normalized.FetchPolicy
+import com.apollographql.cache.normalized.doNotStore
+import com.apollographql.cache.normalized.fetchPolicy
 import com.benasher44.uuid.Uuid
 import com.eygraber.uri.toKmpUri
 import com.hedvig.android.apollo.ApolloOperationError

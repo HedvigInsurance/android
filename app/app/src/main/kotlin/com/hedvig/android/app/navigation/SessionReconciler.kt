@@ -120,18 +120,7 @@ internal class SessionReconciler(
    */
   private suspend fun logoutOnInvalidCredentials() {
     val authStatusLog: (AuthStatus?) -> Unit = { authStatus ->
-      logcat {
-        buildString {
-          append("Owner: MainActivity | Received authStatus: ")
-          append(
-            when (authStatus) {
-              is AuthStatus.LoggedIn -> "LoggedIn"
-              AuthStatus.LoggedOut -> "LoggedOut"
-              null -> "null"
-            },
-          )
-        }
-      }
+      logcat { "Owner: MainActivity | Received authStatus: ${authStatus.logName()}" }
     }
     combine(
       authTokenService.authStatus.onEach(authStatusLog).filterNotNull().distinctUntilChanged(),
@@ -140,7 +129,7 @@ internal class SessionReconciler(
     ) { authStatus: AuthStatus, isDemoMode: Boolean, isLoggedIn: Boolean ->
       logcat {
         "SessionReconciler.logoutOnInvalidCredentials: " +
-          "authStatus:$authStatus | " +
+          "authStatus:${authStatus.logName()} | " +
           "isDemoMode:$isDemoMode | " +
           "isLoggedIn:$isLoggedIn"
       }
@@ -152,4 +141,14 @@ internal class SessionReconciler(
       }
     }.collect()
   }
+}
+
+/**
+ * Renders only the variant name. [AuthStatus.LoggedIn] holds the access and refresh tokens, and this
+ * value is logged at INFO, which reaches Datadog and Crashlytics breadcrumbs.
+ */
+private fun AuthStatus?.logName(): String = when (this) {
+  is AuthStatus.LoggedIn -> "LoggedIn"
+  AuthStatus.LoggedOut -> "LoggedOut"
+  null -> "null"
 }

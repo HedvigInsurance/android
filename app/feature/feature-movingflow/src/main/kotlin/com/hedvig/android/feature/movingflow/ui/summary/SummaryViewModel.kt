@@ -177,7 +177,9 @@ internal class SummaryPresenter(
                 }
               } else {
                 crossSellAfterFlowRepository.completedCrossSellTriggeringSelfServiceSuccessfully(
-                  CrossSellInfoType.MovingFlow,
+                  CrossSellInfoType.MovingFlow(
+                    moveIntentCommit.newContractId,
+                  ),
                 )
                 submitChangesWithData = null
                 backstack.popUpTo<SelectContractForMovingKey>(inclusive = true)

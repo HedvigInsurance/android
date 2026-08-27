@@ -1,30 +1,9 @@
 plugins {
-  alias(libs.plugins.androidApplication) apply false
-  alias(libs.plugins.androidLibrary) apply false
-  alias(libs.plugins.androidLibraryMultiplatform) apply false
-  alias(libs.plugins.apollo) apply false
-  alias(libs.plugins.appIconBannerGenerator) apply false
-  alias(libs.plugins.cacheFix) apply false
-  alias(libs.plugins.composeJetbrainsCompilerGradlePlugin) apply false
-  alias(libs.plugins.composeKotlinCompilerGradlePlugin) apply false
-  alias(libs.plugins.crashlytics) apply false
-  alias(libs.plugins.datadog) apply false
+  // Every other plugin's classpath is supplied by the `hedvig.settings` convention plugin (see
+  // build-logic/convention/build.gradle.kts), so project scripts apply them by id without a version.
+  // Only plugins applied to the root project itself are declared here.
   alias(libs.plugins.dependencyAnalysis)
-   alias(libs.plugins.doctor)
-  alias(libs.plugins.googleServices) apply false
-  alias(libs.plugins.kmpNativeCoroutines) apply false
-  alias(libs.plugins.kotlin) apply false
-  alias(libs.plugins.kotlinJvm) apply false
-  alias(libs.plugins.kotlinMultiplatform) apply false
-  alias(libs.plugins.kotlinter) apply false
-  alias(libs.plugins.ksp) apply false
-  alias(libs.plugins.license) apply false
-  alias(libs.plugins.lintGradlePlugin) apply false
-  alias(libs.plugins.metro) apply false
-  alias(libs.plugins.room) apply false
-  alias(libs.plugins.serialization) apply false
-  alias(libs.plugins.squareSortDependencies) apply false
-  id("hedvig.gradle.plugin") apply false
+  alias(libs.plugins.doctor)
 }
 
 apply {

@@ -1,9 +1,8 @@
 package com.hedvig.android.network.clients.di
 
 import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.cache.normalized.api.MemoryCacheFactory
-import com.apollographql.apollo.cache.normalized.api.NormalizedCacheFactory
-import com.apollographql.apollo.cache.normalized.normalizedCache
+import com.apollographql.cache.normalized.api.NormalizedCacheFactory
+import com.apollographql.cache.normalized.memory.MemoryCacheFactory
 import com.apollographql.ktor.ktorClient
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.AppScope
@@ -20,6 +19,7 @@ import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
+import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpSend
 import io.ktor.client.plugins.HttpSendInterceptor
@@ -32,6 +32,7 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.plugin
 import io.ktor.client.request.header
 import io.ktor.client.request.headers
+import octopus.cache.Cache
 
 @ContributesTo(AppScope::class)
 interface NetworkMetroProviders {
@@ -64,12 +65,14 @@ interface NetworkMetroProviders {
     normalizedCacheFactory: NormalizedCacheFactory,
     httpClient: HttpClient,
     hedvigBuildConstants: HedvigBuildConstants,
-  ): ApolloClient = ApolloClient.Builder()
-    .normalizedCache(normalizedCacheFactory)
-    .ktorClient(httpClient)
-    .httpServerUrl(hedvigBuildConstants.urlGraphqlOctopus)
-    .run { extraApolloClientConfiguration.configure(this) }
-    .build()
+  ): ApolloClient = with(Cache) {
+    ApolloClient.Builder()
+      .cache(normalizedCacheFactory)
+      .ktorClient(httpClient)
+      .httpServerUrl(hedvigBuildConstants.urlGraphqlOctopus)
+      .run { extraApolloClientConfiguration.configure(this) }
+      .build()
+  }
 }
 
 private fun buildKtorClient(
@@ -77,7 +80,7 @@ private fun buildKtorClient(
   languageService: LanguageService,
   deviceIdFetcher: DeviceIdFetcher,
 ): HttpClient {
-  return HttpClient {
+  return HttpClient(httpClientEngineFactory()) {
     installDatadogKtorPlugin(hedvigBuildConstants)
     defaultRequest {
       commonHeaders(hedvigBuildConstants, languageService)
@@ -130,3 +133,5 @@ private fun HttpClient.addAuthPlugin(accessTokenFetcher: AccessTokenFetcher) {
 }
 
 internal expect fun HttpClientConfig<*>.installDatadogKtorPlugin(hedvigBuildConstants: HedvigBuildConstants)
+
+internal expect fun httpClientEngineFactory(): HttpClientEngineFactory<*>
