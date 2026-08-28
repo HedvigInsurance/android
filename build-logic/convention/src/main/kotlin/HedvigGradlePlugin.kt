@@ -38,6 +38,14 @@ private fun Project.configureKtlint(libs: LibrariesForLibs) {
     reporters = arrayOf(ReporterType.checkstyle.name)
   }
 
+  // Our own rules run on every source set, which is what gives KMP modules the coverage that
+  // Android Lint cannot reach.
+  if (name != "hedvig-ktlint") {
+    dependencies {
+      add("ktlint", project(":hedvig-ktlint"))
+    }
+  }
+
   tasks.withType<org.jmailen.gradle.kotlinter.tasks.LintTask>().configureEach {
     exclude { it.file.path.contains("generated/") }
     reports.set(
