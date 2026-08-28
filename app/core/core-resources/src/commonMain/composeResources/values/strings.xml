@@ -151,7 +151,7 @@
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR">Please enter year of construction</string>
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL">Year of construction</string>
   <string name="CHANGE_ADDRESS_YOU_PLUS">You + %1$d</string>
-  <string name="CHANGE_INSURANCE_AMOUNT_PAYMENT_PROTECTION_INFO">Your updated amount will take effect after your qualification period. Your current amount remains active during this period.</string>
+  <string name="CHANGE_INSURANCE_AMOUNT_PAYMENT_PROTECTION_INFO">Your new amount takes effect once your qualification period ends. Until then, your current amount applies.</string>
   <string name="CHANGE_PAYOUT_METHOD_BUTTON_LABEL">Change payout account</string>
   <string name="CHANGE_TIER_BUTTON_TITLE">Change coverage level</string>
   <string name="CHATBOT_TALK_TO_HUMAN_BUTTON_TITLE">Talk to a human</string>
@@ -260,11 +260,13 @@
   <string name="CLAIM_CHAT_SINGLE_ITEM_DETAILS_HINT">If you don't remember the purchase date, you don't need to fill in anything.</string>
   <string name="CLAIM_CHAT_SKIPPED_STEP">Skipped</string>
   <string name="CLAIM_CHAT_SKIP_STEP">Skip</string>
+  <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_ALONE_TIME">Select time</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_ALONE_TIME_MESSAGE">Roughly how long had the stroller been there before you noticed it was gone?</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_FULL_DAY_OR_MORE">A day or more</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_OVERNIGHT">Overnight</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_TWO_TO_EIGHT_HOURS">2-8 hours</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_UNDER_TWO_HOURS">Under 2 hours</string>
+  <string name="CLAIM_CHAT_STROLLER_THEFT_LOCK_DESCRIPTION">Tell us more</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LOCK_DESCRIPTION_MESSAGE">Was the stroller locked? Tell us in your own words, e.g. what kind of lock you used.</string>
   <string name="CLAIM_CHAT_SUBMIT_CLAIM">Submit your claim</string>
   <string name="CLAIM_CHAT_SUCCESS_GO_TO_CLAIM">Go to claim</string>
@@ -523,7 +525,7 @@
   <string name="HOME_TODO_PAYMENT_OVERDUE_TITLE">Your payment is overdue</string>
   <string name="HOME_TODO_REQUIRES_ACTION_SUBTITLE">Requires action</string>
   <string name="HOME_TODO_SECTION_TITLE">To do</string>
-  <string name="HOME_TODO_SELECT_USAGE_DATA_TITLE">Select usage data handling</string>
+  <string name="HOME_TODO_SELECT_USAGE_DATA_TITLE">Choose how we use your data</string>
   <string name="HOME_TODO_UPDATE_CONTACT_DETAILS_TITLE">Update contact details</string>
   <string name="HONESTY_PLEDGE_DESCRIPTION">Hedvig is based on trust. I solemnly swear to recite the event as it was and only claim the compensation I’m entitled to.</string>
   <string name="HONESTY_PLEDGE_HEADER">Make a claim</string>

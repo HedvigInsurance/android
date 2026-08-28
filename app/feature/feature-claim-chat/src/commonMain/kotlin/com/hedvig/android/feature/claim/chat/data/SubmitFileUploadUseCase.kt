@@ -33,13 +33,13 @@ internal class SubmitFileUploadUseCase(
     stepId: StepId,
     fileUris: List<Uri>,
     uploadUrl: String,
+    remoteFileIds: List<CommonFileId>,
   ): Either<ClaimChatErrorMessage, ClaimIntent> {
     return either {
       val commonFiles = fileUris.map { fileUri ->
         fileService.convertToCommonFile(fileUri)
       }
       val fileIds = buildList {
-        // todo!!!
         commonFiles.forEach {
           val uploadResult = either {
             uploadFileUseCase.invoke(it, uploadUrl)
@@ -47,8 +47,9 @@ internal class SubmitFileUploadUseCase(
             .bind()
           add(uploadResult.fileId)
         }
+        addAll(remoteFileIds)
       }
-      logcat { "SubmitFileUploadUseCase uploaded file with Uris:$fileUris got back fileIds:$fileIds" }
+      logcat { "SubmitFileUploadUseCase uploaded local files with Uris:$fileUris fileIds to submit:$fileIds" }
       invoke(stepId, fileIds)
     }
   }

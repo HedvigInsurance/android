@@ -24,6 +24,7 @@ import com.hedvig.android.feature.claim.chat.data.ClaimIntent
 import com.hedvig.android.feature.claim.chat.data.ClaimIntentId
 import com.hedvig.android.feature.claim.chat.data.ClaimIntentOutcome
 import com.hedvig.android.feature.claim.chat.data.ClaimIntentStep
+import com.hedvig.android.feature.claim.chat.data.CommonFileId
 import com.hedvig.android.feature.claim.chat.data.FieldId
 import com.hedvig.android.feature.claim.chat.data.FormFieldSearchUseCase
 import com.hedvig.android.feature.claim.chat.data.FormSubmissionData
@@ -911,6 +912,9 @@ internal class ClaimChatPresenter(
           val fileUris = stepContent.localFiles.mapNotNull { file ->
             file.localPath?.let { Uri.parse(it) }
           }
+          val remoteFileIds = stepContent.remoteFiles.map { file ->
+            file.id
+          }
           currentContinueButtonLoading = true
           launch {
             submitFileUploadUseCase
@@ -918,6 +922,9 @@ internal class ClaimChatPresenter(
                 stepId = event.id,
                 fileUris = fileUris,
                 uploadUrl = stepContent.uploadUri,
+                remoteFileIds = remoteFileIds.map {
+                  CommonFileId(it)
+                },
               )
               .fold(
                 ifLeft = {
@@ -944,6 +951,7 @@ internal class ClaimChatPresenter(
               currentStep.copy(
                 stepContent = content.copy(
                   localFiles = content.localFiles.filterNot { it.id == event.fileId },
+                  remoteFiles = content.remoteFiles.filterNot { it.id == event.fileId },
                 ),
               )
             }
@@ -1205,7 +1213,7 @@ private fun ClaimIntentStep.clearContent(): ClaimIntentStep = when (val content 
   )
 
   is StepContent.FileUpload -> copy(
-    stepContent = content.copy(localFiles = emptyList()),
+    stepContent = content.copy(localFiles = emptyList(), remoteFiles = emptyList()),
   )
 
   is StepContent.Form -> copy(
