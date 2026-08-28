@@ -38,6 +38,14 @@ private fun Project.configureKtlint(libs: LibrariesForLibs) {
     reporters = arrayOf(ReporterType.checkstyle.name)
   }
 
+  // `ktlint` is kotlinter's configuration for additional rule sets, so this puts our rules on every
+  // module's ktlint run. hedvig-ktlint itself is skipped so that it does not depend on itself.
+  if (name != "hedvig-ktlint") {
+    dependencies {
+      add("ktlint", project(":hedvig-ktlint"))
+    }
+  }
+
   tasks.withType<org.jmailen.gradle.kotlinter.tasks.LintTask>().configureEach {
     exclude { it.file.path.contains("generated/") }
     reports.set(

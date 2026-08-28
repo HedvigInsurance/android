@@ -69,3 +69,4 @@ include("design-showcase-desktop")
 project(":design-showcase-desktop").projectDir =
   rootProject.projectDir.resolve("micro-apps").resolve("design-showcase-desktop")
 include("hedvig-lint")
+include("hedvig-ktlint")
