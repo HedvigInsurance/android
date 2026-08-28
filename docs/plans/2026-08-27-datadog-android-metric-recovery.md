@@ -2,7 +2,7 @@
 
 **Status: partially complete. One scheduled follow-up is blocked on an app release.**
 
-Last updated 2026-08-27.
+Last updated 2026-08-28.
 
 ## What broke
 
@@ -34,7 +34,7 @@ back stack as a RUM view, wired in `HedvigApp` off `Backstack.entries`. New view
 canonical class names, with no `/{arg}` placeholder suffix:
 
 ```
-com.hedvig.feature.claim.chat.navigation.ClaimOutcomeNewClaimKey
+com.hedvig.android.feature.claim.chat.navigation.ClaimOutcomeNewClaimKey
 ```
 
 The same change fixed a pre-existing Firebase defect found along the way: `screenName` was
@@ -113,7 +113,7 @@ Apply with `pup rum metrics update <id> --file payload.json`, where the payload 
 #### `android.claim.success`
 
 ```
-@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:com.hedvig.feature.claim.chat.navigation.ClaimOutcomeNewClaimKey
+@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:com.hedvig.android.feature.claim.chat.navigation.ClaimOutcomeNewClaimKey
 ```
 
 #### `android.chat.network.count`
@@ -131,13 +131,13 @@ Apply with `pup rum metrics update <id> --file payload.json`, where the payload 
 #### `android.claimflow.network.count`
 
 ```
-@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:com.hedvig.feature.claim.chat.navigation.* @connectivity.status:connected
+@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:com.hedvig.android.feature.claim.chat.navigation.* @connectivity.status:connected
 ```
 
 #### `android.claimflow.network.error`
 
 ```
-@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:com.hedvig.feature.claim.chat.navigation.* @error.source:network @connectivity.status:connected -@error.stack:java.net.ConnectException* -@error.stack:java.net.SocketException* -@error.stack:java.net.SocketTimeoutException* -@error.stack:java.net.UnknownHostException* -@error.stack:java.util.concurrent.CancellationException*
+@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:com.hedvig.android.feature.claim.chat.navigation.* @error.source:network @connectivity.status:connected -@error.stack:java.net.ConnectException* -@error.stack:java.net.SocketException* -@error.stack:java.net.SocketTimeoutException* -@error.stack:java.net.UnknownHostException* -@error.stack:java.util.concurrent.CancellationException*
 ```
 
 #### `android.login.network.count`
@@ -264,3 +264,84 @@ Nothing in Datadog would have caught this. A monitor on the share of Android vie
 `MainActivity`, alerting above roughly 80%, would have surfaced it within a day of the release instead
 of ten weeks later. Equivalently, a monitor on distinct `@view.name` cardinality dropping below, say,
 40.
+
+## Rollback: the filters as they were before 2026-08-27
+
+Recorded here because these values live nowhere else. They were never in the repo, and Datadog
+keeps no history of a generated metric's definition. If a rewrite needs undoing, paste the value
+below back with `pup rum metrics update <id> --file payload.json`, same payload shape as above.
+
+10 metrics were rewritten. Note the rollback is **not** simply "delete the new half of
+the `OR`": three of these also dropped a dead branch or widened a wildcard, so the original text is
+the only reliable source.
+
+#### `android.changeaddress.view.count`
+
+```
+@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:"com.hedvig.android.feature.changeaddress.navigation.ChangeAddressDestination.AddressResult?movingDate={movingDate}"
+```
+
+#### `android.chat.network.count`
+
+```
+@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:"com.hedvig.android.feature.chat.navigation.ChatDestinations.Chat/{conversationId}" @connectivity.status:connected
+```
+
+#### `android.chat.network.errors`
+
+```
+@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:"com.hedvig.android.feature.chat.navigation.ChatDestinations.Chat/{conversationId}" @connectivity.status:connected -@error.stack:java.net.ConnectException* -@error.stack:java.net.SocketException* -@error.stack:java.net.SocketTimeoutException* -@error.stack:java.net.UnknownHostException* -@error.stack:java.util.concurrent.CancellationException*
+```
+
+#### `android.claim.success`
+
+```
+@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:(com.hedvig.android.data.claimflow.ClaimFlowDestination.ClaimSuccess OR com.hedvig.feature.claim.chat.ClaimOutcomeNewClaimDestination*)
+```
+
+#### `android.claimflow.network.count`
+
+```
+@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:(com.hedvig.feature.claim.chat.ClaimChatDestination* OR com.hedvig.android.data.claimflow.ClaimFlowDestination*) @connectivity.status:connected
+```
+
+#### `android.claimflow.network.error`
+
+```
+@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:(com.hedvig.feature.claim.chat.ClaimChatDestination* OR com.hedvig.android.data.claimflow.ClaimFlowDestination*) @error.source:network @connectivity.status:connected -@error.stack:java.net.ConnectException* -@error.stack:java.net.SocketException* -@error.stack:java.net.SocketTimeoutException* -@error.stack:java.net.UnknownHostException* -@error.stack:java.util.concurrent.CancellationException*
+```
+
+#### `android.login.network.count`
+
+```
+@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:com.hedvig.android.feature.login.navigation.LoginDestinations.SwedishLogin @connectivity.status:connected
+```
+
+#### `android.login.network.error`
+
+```
+@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:com.hedvig.android.feature.login.navigation.LoginDestinations.SwedishLogin @connectivity.status:connected -@error.stack:java.net.ConnectException* -@error.stack:java.net.SocketException* -@error.stack:java.net.SocketTimeoutException* -@error.stack:java.net.UnknownHostException* -@error.stack:java.util.concurrent.CancellationException* -@error.stack:*CertPathValidatorException* -@error.message:*CertPathValidatorException* -@error.message:*Connection\ reset*
+```
+
+#### `android.terminateinsurance.network.count`
+
+```
+@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination*
+```
+
+#### `android.terminateinsurance.network.error`
+
+```
+@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination* -@error.type:java.io.IOException @connectivity.status:connected @error.source:network -@error.stack:java.net.SocketTimeoutException* -@error.stack:java.net.ConnectException*
+```
+
+### Created, so rollback is deletion
+
+- `android.claim.started` (`pup rum metrics delete android.claim.started`)
+
+### Dashboard
+
+On "Apps (Android + iOS)" (`tf2-8n6-9nn`), widget `1151568178197062` was a `query_value` titled
+**"Failure claim screen viewed"** reading `sum:android.claim.failure{env:prod}.as_count()`. It now
+shows "Claim submissions per chat entry". Restoring it means putting that single query back; no
+other widget was touched.
