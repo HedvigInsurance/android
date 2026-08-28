@@ -66,10 +66,10 @@ import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Failur
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.MakingChanges
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Success
-import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
-import com.hedvig.ui.tiersandaddons.DisplayDocument
-import com.hedvig.ui.tiersandaddons.QuoteCard
-import com.hedvig.ui.tiersandaddons.QuoteDisplayItem
+import com.hedvig.android.ui.tiersandaddons.CostBreakdownEntry
+import com.hedvig.android.ui.tiersandaddons.DisplayDocument
+import com.hedvig.android.ui.tiersandaddons.QuoteCard
+import com.hedvig.android.ui.tiersandaddons.QuoteDisplayItem
 import hedvig.resources.CONFIRM_CHANGES_SUBTITLE
 import hedvig.resources.GENERAL_ARE_YOU_SURE
 import hedvig.resources.GENERAL_CONFIRM

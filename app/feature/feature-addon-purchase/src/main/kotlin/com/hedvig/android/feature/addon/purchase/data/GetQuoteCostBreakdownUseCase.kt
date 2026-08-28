@@ -11,8 +11,8 @@ import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.addon.purchase.navigation.AddonType
-import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
-import com.hedvig.ui.tiersandaddons.QuoteCostBreakdown
+import com.hedvig.android.ui.tiersandaddons.CostBreakdownEntry
+import com.hedvig.android.ui.tiersandaddons.QuoteCostBreakdown
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn

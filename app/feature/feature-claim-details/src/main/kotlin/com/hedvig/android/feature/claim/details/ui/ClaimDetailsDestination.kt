@@ -49,6 +49,8 @@ import coil3.ImageLoader
 import com.eygraber.uri.toAndroidUri
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
+import com.hedvig.android.audio.player.data.PlayableAudioSource
+import com.hedvig.android.audio.player.data.SignedAudioUrl
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
 import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.compose.ui.plus
@@ -104,8 +106,6 @@ import com.hedvig.android.ui.claimstatus.ClaimStatusCard
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
-import com.hedvig.audio.player.data.PlayableAudioSource
-import com.hedvig.audio.player.data.SignedAudioUrl
 import hedvig.resources.CLAIMS_YOUR_CLAIM
 import hedvig.resources.DASHBOARD_OPEN_CHAT
 import hedvig.resources.MY_DOCUMENTS_INSURANCE_TERMS

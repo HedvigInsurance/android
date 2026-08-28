@@ -40,8 +40,8 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.popUpTo
-import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
-import com.hedvig.ui.tiersandaddons.DisplayDocument
+import com.hedvig.android.ui.tiersandaddons.CostBreakdownEntry
+import com.hedvig.android.ui.tiersandaddons.DisplayDocument
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject

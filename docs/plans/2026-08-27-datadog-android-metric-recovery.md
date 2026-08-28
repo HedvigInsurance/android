@@ -42,12 +42,16 @@ The same change fixed a pre-existing Firebase defect found along the way: `scree
 across features (`FirstVet`, `Forever`, `SubmitSuccess`, `SubmitFailure`).
 
 A Firebase screen name is now the key's fully qualified class name with the shared feature package
-prefix removed, so `change.tier.navigation.SubmitSuccessKey`. Prepending
-`com.hedvig.android.feature.` (or `com.hedvig.feature.`) gets back to the declaration, which means a
-name read off a Firebase report greps straight to its key with no convention to decode. The prefix is
-dropped because GA4 truncates parameter values at 100 characters and the longest key name is already
-91. `ScreenNameTest` asserts uniqueness, reversibility and that length bound across every key on the
-classpath.
+prefix removed, so `change.tier.navigation.SubmitSuccessKey`. Prepending `com.hedvig.android.feature.`
+gets back to the declaration, which means a name read off a Firebase report greps straight to its key
+with no convention to decode. The prefix is dropped because GA4 truncates parameter values at 100
+characters and the longest key name is already 91. `ScreenNameTest` asserts uniqueness, reversibility
+and that length bound across every key on the classpath.
+
+That single prefix only works because the package namespace was consolidated at the same time: five
+KMP modules (`authlib`, `audio-player-data`, `ui-tiers-and-addons`, `feature-claim-chat`,
+`feature-remove-addons`) declared `com.hedvig.*` while every other module and, crucially, every
+generated Android namespace used `com.hedvig.android.*`. Those five now match the rest.
 
 ### Datadog: 10 filter rewrites (applied 2026-08-27)
 

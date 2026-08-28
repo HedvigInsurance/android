@@ -39,7 +39,7 @@ internal class ScreenNameTest {
   fun `a screen name is the class name with only the shared feature prefix removed`() {
     assertThat(screenNameFor(keyClass("com.hedvig.android.feature.change.tier.navigation.SubmitSuccessKey")))
       .isEqualTo("change.tier.navigation.SubmitSuccessKey")
-    assertThat(screenNameFor(keyClass("com.hedvig.feature.claim.chat.navigation.ClaimOutcomeNewClaimKey")))
+    assertThat(screenNameFor(keyClass("com.hedvig.android.feature.claim.chat.navigation.ClaimOutcomeNewClaimKey")))
       .isEqualTo("claim.chat.navigation.ClaimOutcomeNewClaimKey")
   }
 
@@ -50,7 +50,7 @@ internal class ScreenNameTest {
 
     val unrecoverable = keys.filter { keyClass ->
       val name = screenNameFor(keyClass)
-      val candidates = listOf("com.hedvig.android.feature.$name", "com.hedvig.feature.$name", name)
+      val candidates = listOf("com.hedvig.android.feature.$name", name)
       keyClass.qualifiedName !in candidates
     }.mapNotNull { it.qualifiedName }
 

@@ -7,11 +7,11 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.hedvig.android.auth.token.AuthTokens
 import com.hedvig.android.auth.token.LocalAccessToken
 import com.hedvig.android.auth.token.LocalRefreshToken
+import com.hedvig.android.authlib.AccessToken
+import com.hedvig.android.authlib.RefreshToken
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.authlib.AccessToken
-import com.hedvig.authlib.RefreshToken
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlin.time.Clock
