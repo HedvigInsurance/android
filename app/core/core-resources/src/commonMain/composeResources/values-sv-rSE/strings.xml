@@ -151,7 +151,7 @@
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR">Ange byggår</string>
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL">Byggår</string>
   <string name="CHANGE_ADDRESS_YOU_PLUS">Du + %1$d</string>
-  <string name="CHANGE_INSURANCE_AMOUNT_PAYMENT_PROTECTION_INFO">Det nya försäkringsbeloppet börjar gälla efter att kvalificeringstiden passerat. Ditt nuvarande belopp gäller som vanligt under tiden.</string>
+  <string name="CHANGE_INSURANCE_AMOUNT_PAYMENT_PROTECTION_INFO">Det nya beloppet börjar gälla när din kvalificeringstid är slut. Fram till dess gäller ditt nuvarande belopp.</string>
   <string name="CHANGE_PAYOUT_METHOD_BUTTON_LABEL">Ändra utbetalningskonto</string>
   <string name="CHANGE_TIER_BUTTON_TITLE">Ändra skyddsnivå</string>
   <string name="CHATBOT_TALK_TO_HUMAN_BUTTON_TITLE">Chatta med en specialist</string>
@@ -260,11 +260,13 @@
   <string name="CLAIM_CHAT_SINGLE_ITEM_DETAILS_HINT">Om du inte minns inköpsdatum behöver du inte fylla i något.</string>
   <string name="CLAIM_CHAT_SKIPPED_STEP">Saknas</string>
   <string name="CLAIM_CHAT_SKIP_STEP">Hoppa över</string>
+  <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_ALONE_TIME">Välj tid</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_ALONE_TIME_MESSAGE">Ungefär hur länge stod barnvagnen där innan du märkte att den var borta?</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_FULL_DAY_OR_MORE">Ett dygn eller mer</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_OVERNIGHT">Över natten</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_TWO_TO_EIGHT_HOURS">2-8 timmar</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_UNDER_TWO_HOURS">Under 2 timmar</string>
+  <string name="CLAIM_CHAT_STROLLER_THEFT_LOCK_DESCRIPTION">Berätta mer</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LOCK_DESCRIPTION_MESSAGE">Var barnvagnen låst? Berätta gärna med egna ord, t.ex. vilket lås du använde.</string>
   <string name="CLAIM_CHAT_SUBMIT_CLAIM">Skicka in ditt skadeärende</string>
   <string name="CLAIM_CHAT_SUCCESS_GO_TO_CLAIM">Gå till ärende</string>
@@ -523,7 +525,7 @@
   <string name="HOME_TODO_PAYMENT_OVERDUE_TITLE">Din betalning är försenad</string>
   <string name="HOME_TODO_REQUIRES_ACTION_SUBTITLE">Kräver åtgärd</string>
   <string name="HOME_TODO_SECTION_TITLE">Att göra</string>
-  <string name="HOME_TODO_SELECT_USAGE_DATA_TITLE">Välj hantering av användningsdata</string>
+  <string name="HOME_TODO_SELECT_USAGE_DATA_TITLE">Välj hur vi får använda din data</string>
   <string name="HOME_TODO_UPDATE_CONTACT_DETAILS_TITLE">Uppdatera kontaktuppgifter</string>
   <string name="HONESTY_PLEDGE_DESCRIPTION">Hedvig bygger på tillit. Jag lovar att berätta vad som hände precis som det var och bara begära den ersättning jag har rätt till.</string>
   <string name="HONESTY_PLEDGE_HEADER">Anmäl skada</string>
