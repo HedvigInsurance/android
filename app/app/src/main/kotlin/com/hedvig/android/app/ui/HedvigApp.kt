@@ -316,6 +316,11 @@ private fun ReportCurrentDestinationEffect(
  * name via [screenName] and the parameters from [ScreenParameterExtractor]. Parameters ride along the single
  * `screen_view` event keyed by screen name, acting as breakdown dimensions rather than fragmenting a screen into
  * separate entries.
+ *
+ * Only reports while the Activity is resumed, so a back stack change the member never saw is not counted as a
+ * screen they visited. A forced logout on an expired token, for instance, swaps the root while the app sits in the
+ * background. Returning to the app re-reports the current screen, matching how Firebase's own automatic screen
+ * tracking behaves.
  */
 @Composable
 private fun TrackScreenViewEffect(
@@ -323,16 +328,19 @@ private fun TrackScreenViewEffect(
   eventTrackingClient: EventTrackingClient,
   screenParameterExtractor: ScreenParameterExtractor,
 ) {
-  LaunchedEffect(backstackController, eventTrackingClient, screenParameterExtractor) {
-    snapshotFlow { backstackController.currentDestination }
-      .filterNotNull()
-      .collect { destination ->
-        eventTrackingClient.trackScreen(
-          name = destination.screenName(),
-          screenClass = destination::class.qualifiedName ?: destination::class.simpleName,
-          parameters = screenParameterExtractor.parametersFor(destination),
-        )
-      }
+  val lifecycleOwner = LocalLifecycleOwner.current
+  LaunchedEffect(backstackController, eventTrackingClient, screenParameterExtractor, lifecycleOwner) {
+    lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+      snapshotFlow { backstackController.currentDestination }
+        .filterNotNull()
+        .collect { destination ->
+          eventTrackingClient.trackScreen(
+            name = destination.screenName(),
+            screenClass = destination::class.qualifiedName ?: destination::class.simpleName,
+            parameters = screenParameterExtractor.parametersFor(destination),
+          )
+        }
+    }
   }
 }
 
