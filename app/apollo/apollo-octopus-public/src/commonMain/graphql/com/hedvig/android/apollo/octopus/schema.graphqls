@@ -2666,8 +2666,11 @@ type Member {
   """
   Returns the most recent claim intent for this member, that can be "resumed" by querying `ClaimIntent.previousSteps`.
   Will return `null` if the server considers it too old to be resumed.
+  Pass `resume: true` when the member actually continues the draft, rather than only being shown that one
+  exists. Doing so records the moment as the current step's start, so the time the draft sat untouched is
+  not counted as time the member spent answering it.
   """
-  resumableClaimIntent: ClaimIntent
+  resumableClaimIntent(resume: Boolean! = false): ClaimIntent
   claims: [Claim!]!
   claimsActive: [Claim!]!
   claimsHistory: [Claim!]!
