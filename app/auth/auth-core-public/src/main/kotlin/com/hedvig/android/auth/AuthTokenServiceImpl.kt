@@ -5,15 +5,15 @@ import com.hedvig.android.auth.storage.AuthTokenStorage
 import com.hedvig.android.auth.token.AuthTokens
 import com.hedvig.android.auth.token.LocalRefreshToken
 import com.hedvig.android.auth.token.isTokenExpired
+import com.hedvig.android.authlib.AccessToken
+import com.hedvig.android.authlib.AuthRepository
+import com.hedvig.android.authlib.AuthTokenResult
+import com.hedvig.android.authlib.RefreshToken
+import com.hedvig.android.authlib.RefreshTokenGrant
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.authlib.AccessToken
-import com.hedvig.authlib.AuthRepository
-import com.hedvig.authlib.AuthTokenResult
-import com.hedvig.authlib.RefreshToken
-import com.hedvig.authlib.RefreshTokenGrant
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
@@ -60,9 +60,22 @@ internal class AuthTokenServiceImpl(
   override suspend fun refreshAndGetAccessToken(): AccessToken? {
     val refreshToken = getRefreshToken() ?: return null
     return when (val result = authRepository.exchange(RefreshTokenGrant(refreshToken.token))) {
-      is AuthTokenResult.Error -> {
-        logcat { "Refreshing token failed. Invalidating present tokens" }
+      is AuthTokenResult.Error.BackendErrorResponse -> {
+        logcat { "Refreshing token was rejected by the backend. Invalidating present tokens" }
         logoutAndInvalidateTokens()
+        null
+      }
+
+      is AuthTokenResult.Error.IOError -> {
+        // The backend was never reached, so this says nothing about whether the tokens are still
+        // valid. Keeping them lets a later request retry the refresh; discarding them would force a
+        // full BankID re-login over the same network that just failed one small request.
+        logcat(LogPriority.WARN) { "Refreshing token could not reach the backend. Keeping present tokens" }
+        null
+      }
+
+      is AuthTokenResult.Error.UnknownError -> {
+        logcat(LogPriority.WARN) { "Refreshing token failed with an unknown error. Keeping present tokens" }
         null
       }
 

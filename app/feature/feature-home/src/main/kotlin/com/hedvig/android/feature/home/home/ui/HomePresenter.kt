@@ -17,6 +17,7 @@ import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.claimintent.DeleteClaimIntentDraftUseCase
 import com.hedvig.android.data.contract.CrossSell
+import com.hedvig.android.feature.home.home.data.DismissedShopSessionsStorage
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.OngoingShopSession
@@ -26,6 +27,7 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.memberquickactions.GetMemberQuickActionsUseCase
 import com.hedvig.android.memberquickactions.InnerHelpCenterDestination
 import com.hedvig.android.memberquickactions.QuickAction
+import com.hedvig.android.memberquickactions.QuickLinkDestination
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -47,6 +49,7 @@ internal class HomePresenter(
   private val isProduction: Boolean,
   private val deleteClaimIntentDraftUseCase: DeleteClaimIntentDraftUseCase,
   private val getMemberQuickActionsUseCase: GetMemberQuickActionsUseCase,
+  private val dismissedShopSessionsStorage: DismissedShopSessionsStorage,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
   override fun MoleculePresenterScope<HomeEvent>.present(lastState: HomeUiState): HomeUiState {
@@ -76,6 +79,12 @@ internal class HomePresenter(
 
         is HomeEvent.CrossSellToolTipShown -> {
           crossSellToolTipShownEpochDay = homeEvent.epochDay
+        }
+
+        is HomeEvent.DismissOngoingShopSession -> {
+          applicationScope.launch {
+            dismissedShopSessionsStorage.dismiss(homeEvent.sessionId)
+          }
         }
 
         is HomeEvent.DeleteDraftClaim -> {
@@ -128,7 +137,7 @@ internal class HomePresenter(
         ) { homeData: HomeData ->
           val quickActions = getMemberQuickActionsUseCase.invoke()
             .getOrElse { emptyList() }
-            .filterNot { it.isSickAbroad() }
+            .filterNot { it.isSickAbroad() || it.isConnectPayment() }
             .take(3)
           Snapshot.withMutableSnapshot {
             hasError = false
@@ -178,6 +187,10 @@ internal class HomePresenter(
 private fun QuickAction.isSickAbroad(): Boolean = this is QuickAction.StandaloneQuickLink &&
   quickLinkDestination is InnerHelpCenterDestination.QuickLinkSickAbroad
 
+// Connecting a payment method belongs in the help center, so it is not offered as a Home tile.
+private fun QuickAction.isConnectPayment(): Boolean = this is QuickAction.StandaloneQuickLink &&
+  quickLinkDestination == QuickLinkDestination.OuterDestination.QuickLinkConnectPayment
+
 internal sealed interface HomeEvent {
   data object RefreshData : HomeEvent
 
@@ -188,6 +201,8 @@ internal sealed interface HomeEvent {
   data class CrossSellToolTipShown(val epochDay: Long) : HomeEvent
 
   data class DeleteDraftClaim(val draftId: String) : HomeEvent
+
+  data class DismissOngoingShopSession(val sessionId: String) : HomeEvent
 }
 
 internal sealed interface HomeUiState {

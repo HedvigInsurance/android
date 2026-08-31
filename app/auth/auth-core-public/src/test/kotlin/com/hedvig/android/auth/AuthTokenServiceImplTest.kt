@@ -3,15 +3,19 @@ package com.hedvig.android.auth
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isNotNull
+import assertk.assertions.isNull
 import com.hedvig.android.auth.event.AuthEventStorage
 import com.hedvig.android.auth.storage.AuthTokenStorage
 import com.hedvig.android.auth.test.FakeAuthRepository
+import com.hedvig.android.authlib.AccessToken
+import com.hedvig.android.authlib.AuthRepository
+import com.hedvig.android.authlib.AuthTokenResult
+import com.hedvig.android.authlib.RefreshToken
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.test.clock.TestClock
-import com.hedvig.authlib.AccessToken
-import com.hedvig.authlib.RefreshToken
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.filterNotNull
@@ -78,14 +82,51 @@ internal class AuthTokenServiceImplTest {
     assertThat(status).isEqualTo(AuthStatus.LoggedOut)
   }
 
-  private fun TestScope.authTokenService(storage: AuthTokenStorage, clock: Clock): AuthTokenService =
-    AuthTokenServiceImpl(
-      storage,
-      FakeAuthRepository(),
-      AuthEventStorage(),
-      ApplicationScope(backgroundScope),
-      clock,
+  @Test
+  fun `a network error while refreshing keeps the stored tokens`() = runTest {
+    val clock = TestClock()
+    val storage = authTokenStorage(clock)
+    storage.updateTokens(
+      accessToken = AccessToken("access", expiryInSeconds = 60),
+      refreshToken = RefreshToken("refresh", expiryInSeconds = 6000),
     )
+    val authRepository = FakeAuthRepository()
+    val service = authTokenService(storage, clock, authRepository)
+    authRepository.exchangeResponse.add(AuthTokenResult.Error.IOError("no network"))
+
+    service.refreshAndGetAccessToken()
+
+    assertThat(storage.getTokens().first()).isNotNull()
+  }
+
+  @Test
+  fun `the backend rejecting the refresh token clears the stored tokens`() = runTest {
+    val clock = TestClock()
+    val storage = authTokenStorage(clock)
+    storage.updateTokens(
+      accessToken = AccessToken("access", expiryInSeconds = 60),
+      refreshToken = RefreshToken("refresh", expiryInSeconds = 6000),
+    )
+    val authRepository = FakeAuthRepository()
+    val service = authTokenService(storage, clock, authRepository)
+    authRepository.exchangeResponse.add(AuthTokenResult.Error.BackendErrorResponse("invalid_grant"))
+
+    service.refreshAndGetAccessToken()
+
+    assertThat(storage.getTokens().first()).isNull()
+  }
+
+  private fun TestScope.authTokenService(
+    storage: AuthTokenStorage,
+    clock: Clock,
+    authRepository: AuthRepository = FakeAuthRepository(),
+  ): AuthTokenService = AuthTokenServiceImpl(
+    storage,
+    authRepository,
+    AuthEventStorage(),
+    ApplicationScope(backgroundScope),
+    clock,
+  )
 
   private fun TestScope.authTokenStorage(clock: Clock) = AuthTokenStorage(
     TestPreferencesDataStore(

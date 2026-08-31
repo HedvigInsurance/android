@@ -113,12 +113,14 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
 
 private abstract class ApolloSchemaHandler {
   fun configure(project: Project, apolloServiceAction: Action<Service>) {
+    val libs = project.the<LibrariesForLibs>()
     with(project) {
-      pluginManager.apply(the<LibrariesForLibs>().plugins.apollo.get().pluginId)
+      pluginManager.apply(libs.plugins.apollo.get().pluginId)
     }
     project.extensions.configure<ApolloExtension> {
       service("octopus") {
         apolloServiceAction.execute(this)
+        configureNormalizedCachePlugin(libs, packageName.get())
       }
     }
     // The introspection download task writes the schema to the file configured in the octopus
@@ -202,10 +204,22 @@ private abstract class ApolloHandler {
 
         @Suppress("OPT_IN_USAGE")
         dependsOn(project.dependencies.project(":apollo-octopus-public"), true)
+        configureNormalizedCachePlugin(libs, packageName)
         extraConfiguration.execute(this)
       }
     }
   }
+}
+
+/**
+ * The normalized cache ships its own Apollo compiler plugin, which does two things: it reads
+ * `@typePolicy` off the schema to generate the `<packageName>.cache.Cache` object, and it rewrites a
+ * service's operations to select the key fields the cache needs to normalize the response. The
+ * second half is per-service, so every module declaring an Apollo service configures the plugin.
+ */
+private fun Service.configureNormalizedCachePlugin(libs: LibrariesForLibs, packageName: String) {
+  plugin(libs.apollo.normalizedCachePlugin)
+  pluginArgument("com.apollographql.cache.packageName", packageName)
 }
 
 private abstract class ComposeHandler {

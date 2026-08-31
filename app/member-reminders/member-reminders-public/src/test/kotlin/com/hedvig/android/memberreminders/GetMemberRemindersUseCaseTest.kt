@@ -15,7 +15,9 @@ import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isNullOrEmpty
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.datastore.FakeGetAnalyticsConsentUseCase
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
+import com.hedvig.android.data.settings.datastore.AnalyticsConsent
 import com.hedvig.android.memberreminders.MemberReminder.CoInsuredInfo
 import com.hedvig.android.memberreminders.MemberReminder.UpcomingRenewal
 import com.hedvig.android.memberreminders.test.TestEnableNotificationsReminderSnoozeManager
@@ -35,6 +37,7 @@ class GetMemberRemindersUseCaseTest {
     val getNeedsCoInsuredInfoRemindersUseCase = TestGetNeedsCoInsuredInfoRemindersUseCase()
     val getContactInfoUpdateIsNeededUseCase = TestGetContactInfoUpdateIsNeededUseCase()
     val getMissingChipIdReminderUseCase = TestGetMissingChipIdReminderUseCase()
+    val getAnalyticsConsentUseCase = FakeGetAnalyticsConsentUseCase(initialConsent = null)
     val getMemberRemindersUseCase = GetMemberRemindersUseCaseImpl(
       enableNotificationsReminderSnoozeManager = enableNotificationsReminderManager,
       getConnectPaymentReminderUseCase = getConnectPaymentReminderUseCase,
@@ -42,6 +45,7 @@ class GetMemberRemindersUseCaseTest {
       getNeedsCoInsuredInfoRemindersUseCase = getNeedsCoInsuredInfoRemindersUseCase,
       getContactInfoUpdateIsNeededUseCase = getContactInfoUpdateIsNeededUseCase,
       getMissingChipIdReminderUseCase = getMissingChipIdReminderUseCase,
+      getAnalyticsConsentUseCase = getAnalyticsConsentUseCase,
     )
 
     getMemberRemindersUseCase.invoke().test {
@@ -69,6 +73,7 @@ class GetMemberRemindersUseCaseTest {
     val getNeedsCoInsuredInfoRemindersUseCase = TestGetNeedsCoInsuredInfoRemindersUseCase()
     val getContactInfoUpdateIsNeededUseCase = TestGetContactInfoUpdateIsNeededUseCase()
     val getMissingChipIdReminderUseCase = TestGetMissingChipIdReminderUseCase()
+    val getAnalyticsConsentUseCase = FakeGetAnalyticsConsentUseCase(initialConsent = null)
     val getMemberRemindersUseCase = GetMemberRemindersUseCaseImpl(
       enableNotificationsReminderSnoozeManager = enableNotificationsReminderManager,
       getConnectPaymentReminderUseCase = getConnectPaymentReminderUseCase,
@@ -76,6 +81,7 @@ class GetMemberRemindersUseCaseTest {
       getNeedsCoInsuredInfoRemindersUseCase = getNeedsCoInsuredInfoRemindersUseCase,
       getContactInfoUpdateIsNeededUseCase = getContactInfoUpdateIsNeededUseCase,
       getMissingChipIdReminderUseCase = getMissingChipIdReminderUseCase,
+      getAnalyticsConsentUseCase = getAnalyticsConsentUseCase,
     )
     val testId = "test"
 
@@ -101,6 +107,41 @@ class GetMemberRemindersUseCaseTest {
             )
         }
       }
+    }
+  }
+
+  @Test
+  fun `the analytics consent reminder shows only while the consent is undecided`() = runTest {
+    val enableNotificationsReminderManager = TestEnableNotificationsReminderSnoozeManager()
+    val getConnectPaymentReminderUseCase = TestGetConnectPaymentReminderUseCase()
+    val getUpcomingRenewalRemindersUseCase = TestGetUpcomingRenewalRemindersUseCase()
+    val getNeedsCoInsuredInfoRemindersUseCase = TestGetNeedsCoInsuredInfoRemindersUseCase()
+    val getContactInfoUpdateIsNeededUseCase = TestGetContactInfoUpdateIsNeededUseCase()
+    val getMissingChipIdReminderUseCase = TestGetMissingChipIdReminderUseCase()
+    val getAnalyticsConsentUseCase = FakeGetAnalyticsConsentUseCase(initialConsent = AnalyticsConsent.NOT_DECIDED)
+    val getMemberRemindersUseCase = GetMemberRemindersUseCaseImpl(
+      enableNotificationsReminderSnoozeManager = enableNotificationsReminderManager,
+      getConnectPaymentReminderUseCase = getConnectPaymentReminderUseCase,
+      getUpcomingRenewalRemindersUseCase = getUpcomingRenewalRemindersUseCase,
+      getNeedsCoInsuredInfoRemindersUseCase = getNeedsCoInsuredInfoRemindersUseCase,
+      getContactInfoUpdateIsNeededUseCase = getContactInfoUpdateIsNeededUseCase,
+      getMissingChipIdReminderUseCase = getMissingChipIdReminderUseCase,
+      getAnalyticsConsentUseCase = getAnalyticsConsentUseCase,
+    )
+
+    getMemberRemindersUseCase.invoke().test {
+      enableNotificationsReminderManager.showNotification.add(false)
+      getConnectPaymentReminderUseCase.turbine.add(ConnectPaymentReminderError.DomainError.AlreadySetup.left())
+      getUpcomingRenewalRemindersUseCase.turbine.add(UpcomingRenewalReminderError.NoUpcomingRenewals.left())
+      getNeedsCoInsuredInfoRemindersUseCase.turbine.add(CoInsuredInfoReminderError.NoCoInsuredReminders.left())
+      assertThat(awaitItem().decideAnalyticsConsent).isNotNull()
+
+      getAnalyticsConsentUseCase.consent.value = AnalyticsConsent.GRANTED
+      assertThat(awaitItem().decideAnalyticsConsent).isNull()
+
+      // Null stands for the analytics consent kill switch being on, which must not bring it back.
+      getAnalyticsConsentUseCase.consent.value = null
+      assertThat(awaitItem().decideAnalyticsConsent).isNull()
     }
   }
 

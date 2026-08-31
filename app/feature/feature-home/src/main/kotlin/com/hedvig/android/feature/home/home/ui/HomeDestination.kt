@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -56,7 +57,9 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
@@ -122,15 +125,17 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigTooltip
 import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.StartClaimBottomSheet
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.TooltipDefaults
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.TopEnd
+import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Campaign
+import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Campaign.Brightness
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Inbox
 import com.hedvig.android.design.system.hedvig.TopAppBarLayoutForActions
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
-import com.hedvig.android.design.system.hedvig.icon.Card
+import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
 import com.hedvig.android.design.system.hedvig.icon.Reload
@@ -144,16 +149,36 @@ import com.hedvig.android.feature.home.home.data.HomeData.DraftClaim
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage.LinkInfo
 import com.hedvig.android.feature.home.home.data.OngoingShopSession
+import com.hedvig.android.feature.home.home.ui.HomeEvent.CrossSellToolTipShown
+import com.hedvig.android.feature.home.home.ui.HomeEvent.DeleteDraftClaim
+import com.hedvig.android.feature.home.home.ui.HomeEvent.MarkCardCrossSellsAsSeen
+import com.hedvig.android.feature.home.home.ui.HomeEvent.MarkMessageAsSeen
+import com.hedvig.android.feature.home.home.ui.HomeEvent.RefreshData
+import com.hedvig.android.feature.home.home.ui.HomeNoticeCard.Important
+import com.hedvig.android.feature.home.home.ui.HomeNoticeCard.Renewal
+import com.hedvig.android.feature.home.home.ui.HomeNoticeCard.Status
 import com.hedvig.android.feature.home.home.ui.HomeText.Active
+import com.hedvig.android.feature.home.home.ui.HomeText.ActiveInFuture
+import com.hedvig.android.feature.home.home.ui.HomeText.Pending
+import com.hedvig.android.feature.home.home.ui.HomeText.Switching
+import com.hedvig.android.feature.home.home.ui.HomeText.Terminated
 import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.ChatAction
 import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.CrossSellsAction
 import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.FirstVetAction
+import com.hedvig.android.feature.home.home.ui.HomeUiState.Error
+import com.hedvig.android.feature.home.home.ui.HomeUiState.Loading
 import com.hedvig.android.feature.home.home.ui.HomeUiState.Success
-import com.hedvig.android.memberquickactions.InnerHelpCenterDestination
+import com.hedvig.android.memberquickactions.InnerHelpCenterDestination.FirstVet
 import com.hedvig.android.memberquickactions.QuickAction
+import com.hedvig.android.memberquickactions.QuickAction.MultiSelectExpandedLink
+import com.hedvig.android.memberquickactions.QuickAction.StandaloneQuickLink
 import com.hedvig.android.memberquickactions.QuickLinkDestination
+import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkChangeAddress
+import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkChangeTier
+import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminder.PaymentReminder.ConnectPayment
+import com.hedvig.android.memberreminders.MemberReminder.UpcomingRenewal
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.memberreminders.ui.MemberReminderToDoList
 import com.hedvig.android.memberreminders.ui.homeActionRequiredReminders
@@ -169,6 +194,7 @@ import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import com.hedvig.android.ui.claimstatus.ClaimStatusCards
 import com.hedvig.android.ui.claimstatus.model.ClaimCardUiState
+import com.hedvig.android.ui.claimstatus.model.ClaimCardUiState.Draft
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType.Claim
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType.Closed.NotCompensated
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
@@ -182,8 +208,6 @@ import hedvig.resources.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_EDIT_INSURANCE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE
-import hedvig.resources.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE
-import hedvig.resources.HC_QUICK_ACTIONS_PAYMENTS_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE
@@ -201,7 +225,8 @@ import hedvig.resources.RESUME_CLAIM_DELETE_BUTTON
 import hedvig.resources.RESUME_CLAIM_DELETE_TITLE
 import hedvig.resources.RESUME_CLAIM_EXPIRED_BODY
 import hedvig.resources.RESUME_CLAIM_EXPIRED_TITLE
-import hedvig.resources.Res
+import hedvig.resources.Res.drawable
+import hedvig.resources.Res.string
 import hedvig.resources.TOAST_NEW_OFFER
 import hedvig.resources.blur_background
 import hedvig.resources.general_cancel_button
@@ -209,8 +234,11 @@ import hedvig.resources.general_continue_button
 import hedvig.resources.home_tab_claim_button_text
 import hedvig.resources.home_tab_get_help
 import hedvig.resources.home_tab_welcome_title_without_name
+import hedvig.resources.ongoing_shop_session_dismiss_offer
 import kotlin.math.roundToInt
 import kotlin.time.Clock
+import kotlin.time.Clock.System
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlinx.coroutines.delay
@@ -241,6 +269,7 @@ internal fun HomeDestination(
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
   navigateToContactInfo: () -> Unit,
   navigateToChipId: () -> Unit,
+  navigateToUsageData: () -> Unit,
   imageLoader: ImageLoader,
   navigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
@@ -249,7 +278,7 @@ internal fun HomeDestination(
   HomeScreen(
     uiState = uiState,
     notificationPermissionState = notificationPermissionState,
-    reload = { viewModel.emit(HomeEvent.RefreshData) },
+    reload = { viewModel.emit(RefreshData) },
     onNavigateToInbox = onNavigateToInbox,
     onNavigateToNewConversation = onNavigateToNewConversation,
     navigateToClaimChat = navigateToClaimChat,
@@ -262,14 +291,18 @@ internal fun HomeDestination(
     openCrossSellUrl = openCrossSellUrl,
     openAppSettings = openAppSettings,
     navigateToMissingInfo = navigateToMissingInfo,
-    markMessageAsSeen = { viewModel.emit(HomeEvent.MarkMessageAsSeen(it)) },
-    deleteDraftClaim = { draftId -> viewModel.emit(HomeEvent.DeleteDraftClaim(draftId)) },
+    markMessageAsSeen = { viewModel.emit(MarkMessageAsSeen(it)) },
+    deleteDraftClaim = { draftId -> viewModel.emit(DeleteDraftClaim(draftId)) },
+    dismissOngoingShopSession = { sessionId ->
+      viewModel.emit(HomeEvent.DismissOngoingShopSession(sessionId))
+    },
     navigateToFirstVet = navigateToFirstVet,
-    markCrossSellsNotificationAsSeen = { viewModel.emit(HomeEvent.MarkCardCrossSellsAsSeen) },
+    markCrossSellsNotificationAsSeen = { viewModel.emit(MarkCardCrossSellsAsSeen) },
     navigateToContactInfo = navigateToContactInfo,
     navigateToChipIdScreen = navigateToChipId,
+    navigateToUsageData = navigateToUsageData,
     setEpochDayWhenLastToolTipShown = { epochDay ->
-      viewModel.emit(HomeEvent.CrossSellToolTipShown(epochDay))
+      viewModel.emit(CrossSellToolTipShown(epochDay))
     },
     imageLoader = imageLoader,
     navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
@@ -293,11 +326,13 @@ private fun HomeScreen(
   openCrossSellUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
   deleteDraftClaim: (String) -> Unit,
+  dismissOngoingShopSession: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
   navigateToContactInfo: () -> Unit,
   navigateToChipIdScreen: () -> Unit,
+  navigateToUsageData: () -> Unit,
   markCrossSellsNotificationAsSeen: () -> Unit,
   setEpochDayWhenLastToolTipShown: (Long) -> Unit,
   imageLoader: ImageLoader,
@@ -319,7 +354,7 @@ private fun HomeScreen(
     imageLoader = imageLoader,
   )
 
-  val editInsuranceSheetState = rememberHedvigBottomSheetState<QuickAction.MultiSelectExpandedLink>()
+  val editInsuranceSheetState = rememberHedvigBottomSheetState<MultiSelectExpandedLink>()
   EditInsuranceQuickActionSheet(
     state = editInsuranceSheetState,
     onQuickLink = navigateToQuickLink,
@@ -353,8 +388,8 @@ private fun HomeScreen(
     // The draft is expired, so acknowledging the notice (Close button, scrim, or back) removes it.
     // Matches the Ready-for-dev design: single Close, closing removes the draft claim card.
     ErrorDialog(
-      title = stringResource(Res.string.RESUME_CLAIM_EXPIRED_TITLE),
-      message = stringResource(Res.string.RESUME_CLAIM_EXPIRED_BODY),
+      title = stringResource(string.RESUME_CLAIM_EXPIRED_TITLE),
+      message = stringResource(string.RESUME_CLAIM_EXPIRED_BODY),
       onDismiss = {
         showDraftExpiredDialog = false
         draftClaim?.let { deleteDraftClaim(it.id) }
@@ -364,10 +399,10 @@ private fun HomeScreen(
   val draftIdToDelete = draftIdPendingDeleteConfirmation
   if (draftIdToDelete != null) {
     HedvigAlertDialog(
-      title = stringResource(Res.string.RESUME_CLAIM_DELETE_TITLE),
-      text = stringResource(Res.string.RESUME_CLAIM_DELETE_BODY),
-      confirmButtonLabel = stringResource(Res.string.RESUME_CLAIM_DELETE_BUTTON),
-      dismissButtonLabel = stringResource(Res.string.general_cancel_button),
+      title = stringResource(string.RESUME_CLAIM_DELETE_TITLE),
+      text = stringResource(string.RESUME_CLAIM_DELETE_BODY),
+      confirmButtonLabel = stringResource(string.RESUME_CLAIM_DELETE_BUTTON),
+      dismissButtonLabel = stringResource(string.general_cancel_button),
       onDismissRequest = { draftIdPendingDeleteConfirmation = null },
       onConfirmClick = {
         draftIdPendingDeleteConfirmation = null
@@ -383,7 +418,7 @@ private fun HomeScreen(
       contentKey = { it::class },
     ) { uiState ->
       when (uiState) {
-        HomeUiState.Loading -> {
+        Loading -> {
           HedvigFullScreenCenterAlignedProgressDebounced(
             modifier = Modifier
               .fillMaxSize()
@@ -391,7 +426,7 @@ private fun HomeScreen(
           )
         }
 
-        is HomeUiState.Error -> {
+        is Error -> {
           HedvigErrorSection(
             onButtonClick = reload,
             modifier = Modifier
@@ -422,7 +457,7 @@ private fun HomeScreen(
             },
             onContinueDraftClaim = {
               if (draftClaim != null) {
-                if (draftClaim.isExpired(Clock.System.now())) {
+                if (draftClaim.isExpired(System.now())) {
                   showDraftExpiredDialog = true
                 } else {
                   navigateToClaimChat(true)
@@ -435,91 +470,112 @@ private fun HomeScreen(
             navigateToMissingInfo = navigateToMissingInfo,
             onNavigateToNewConversation = onNavigateToNewConversation,
             markMessageAsSeen = markMessageAsSeen,
+            dismissOngoingShopSession = dismissOngoingShopSession,
             navigateToContactInfo = navigateToContactInfo,
             navigateToChipIdScreen = navigateToChipIdScreen,
+            navigateToUsageData = navigateToUsageData,
             openCrossSellUrl = openCrossSellUrl,
             imageLoader = imageLoader,
             navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
-          )
-        }
-      }
-    }
-
-    Column {
-      TopAppBarLayoutForActions {
-        val currentState = uiState as? Success
-        if (currentState != null) {
-          val actionsList = buildList {
-            if (currentState.crossSellsAction != null) add(currentState.crossSellsAction)
-            if (currentState.firstVetAction != null) add(currentState.firstVetAction)
-            if (currentState.chatAction != null) add(currentState.chatAction)
-          }
-          actionsList.forEach { action ->
-            when (action) {
-              ChatAction -> {
-                ToolbarChatIcon(
-                  onClick = onNavigateToInbox,
-                  modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
-                )
-              }
-
-              is CrossSellsAction -> {
-                ToolbarCrossSellsIcon(
-                  onClick = {
-                    crossSellBottomSheetState.show(
-                      action.crossSells,
-                    )
-                  },
-                  modifier = Modifier.notificationCircle(
-                    action.crossSellRecommendationNotification.hasUnreadRecommendation,
-                  ),
-                )
-              }
-
-              is FirstVetAction -> {
-                val sections = action.sections
-                ToolbarFirstVetIcon(
-                  onClick = { navigateToFirstVet(sections) },
-                )
-              }
-            }
-          }
-        }
-      }
-      if ((uiState as? Success)?.chatAction != null) {
-        val updatedHasUnseenChatMessages by rememberUpdatedState(uiState.hasUnseenChatMessages)
-        val shouldShowNewMessageTooltip by produceState(false) {
-          snapshotFlow { updatedHasUnseenChatMessages }.drop(1).collectLatest {
-            value = it
-          }
-        }
-        if (shouldShowNewMessageTooltip) {
-          HedvigTooltip(
-            message = stringResource(Res.string.CHAT_NEW_MESSAGE),
-            showTooltip = shouldShowNewMessageTooltip,
-            tooltipStyle = Inbox,
-            beakDirection = TopEnd,
-            tooltipShown = {},
-            modifier = Modifier
-              .align(Alignment.End)
-              .windowInsetsPadding(
-                WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
+            onChatIconClick = onNavigateToInbox,
+            onCrossSellsIconClick = { crossSells ->
+              crossSellBottomSheetState.show(
+                crossSells,
               )
-              .padding(horizontal = 16.dp),
+            },
+            navigateToFirstVet = { sections -> navigateToFirstVet(sections) },
+            setEpochDayWhenLastToolTipShown = setEpochDayWhenLastToolTipShown,
           )
-        } else {
-          CrossSellsTooltip(uiState, setEpochDayWhenLastToolTipShown)
         }
-      } else if (uiState is Success) {
-        CrossSellsTooltip(uiState, setEpochDayWhenLastToolTipShown)
       }
     }
+
     PullRefreshIndicator(
       refreshing = uiState.isReloading,
       state = pullRefreshState,
       scale = true,
       modifier = Modifier.align(Alignment.TopCenter),
     )
+  }
+}
+
+@Composable
+private fun HomeScreenTopBar(
+  uiState: HomeUiState,
+  onChatIconClick: () -> Unit,
+  onCrossSellsIconClick: (crossSells: CrossSellSheetData) -> Unit,
+  navigateToFirstVet: (sections: List<FirstVetSection>) -> Unit,
+  setEpochDayWhenLastToolTipShown: (Long) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Column(modifier) {
+    TopAppBarLayoutForActions {
+      val currentState = uiState as? Success
+      if (currentState != null) {
+        val actionsList = buildList {
+          if (currentState.crossSellsAction != null) add(currentState.crossSellsAction)
+          if (currentState.firstVetAction != null) add(currentState.firstVetAction)
+          if (currentState.chatAction != null) add(currentState.chatAction)
+        }
+        actionsList.forEach { action ->
+          when (action) {
+            ChatAction -> {
+              ToolbarChatIcon(
+                onClick = onChatIconClick,
+                modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
+              )
+            }
+
+            is CrossSellsAction -> {
+              ToolbarCrossSellsIcon(
+                onClick = {
+                  onCrossSellsIconClick(
+                    action.crossSells,
+                  )
+                },
+                modifier = Modifier.notificationCircle(
+                  action.crossSellRecommendationNotification.hasUnreadRecommendation,
+                ),
+              )
+            }
+
+            is FirstVetAction -> {
+              val sections = action.sections
+              ToolbarFirstVetIcon(
+                onClick = { navigateToFirstVet(sections) },
+              )
+            }
+          }
+        }
+      }
+    }
+    if ((uiState as? Success)?.chatAction != null) {
+      val updatedHasUnseenChatMessages by rememberUpdatedState(uiState.hasUnseenChatMessages)
+      val shouldShowNewMessageTooltip by produceState(false) {
+        snapshotFlow { updatedHasUnseenChatMessages }.drop(1).collectLatest {
+          value = it
+        }
+      }
+      if (shouldShowNewMessageTooltip) {
+        HedvigTooltip(
+          message = stringResource(string.CHAT_NEW_MESSAGE),
+          showTooltip = shouldShowNewMessageTooltip,
+          tooltipStyle = Inbox,
+          beakDirection = TopEnd,
+          tooltipShown = {},
+          modifier = Modifier
+            .align(Alignment.End)
+            .windowInsetsPadding(
+              WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
+            )
+            .padding(horizontal = 16.dp),
+        )
+      } else {
+        CrossSellsTooltip(uiState, setEpochDayWhenLastToolTipShown)
+      }
+    } else if (uiState is Success) {
+      CrossSellsTooltip(uiState, setEpochDayWhenLastToolTipShown)
+    }
   }
 }
 
@@ -531,20 +587,20 @@ private fun ColumnScope.CrossSellsTooltip(uiState: Success, setEpochDayWhenLastT
     var shouldSetEpochDayWhenLastToolTipShown by remember { mutableStateOf(false) }
     LaunchedEffect(shouldSetEpochDayWhenLastToolTipShown) {
       if (shouldSetEpochDayWhenLastToolTipShown) {
-        val today = Clock.System.now().toLocalDateTime(
+        val today = System.now().toLocalDateTime(
           TimeZone.currentSystemDefault(),
-        ).date.toEpochDays().toLong()
-        delay(5000)
+        ).date.toEpochDays()
+        delay(5000.milliseconds)
         setEpochDayWhenLastToolTipShown(today)
       }
     }
     if (shouldShowCrossSellsTooltip) {
       HedvigTooltip(
-        message = stringResource(Res.string.TOAST_NEW_OFFER),
+        message = stringResource(string.TOAST_NEW_OFFER),
         showTooltip = true,
-        tooltipStyle = TooltipDefaults.TooltipStyle.Campaign(
+        tooltipStyle = Campaign(
           subMessage = null,
-          TooltipDefaults.TooltipStyle.Campaign.Brightness.BRIGHT,
+          Brightness.BRIGHT,
         ),
         beakDirection = TopEnd,
         tooltipShown = {
@@ -581,11 +637,12 @@ private fun HomeScreenSuccess(
   navigateToConnectPayout: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   navigateToQuickLink: (QuickLinkDestination) -> Unit,
-  onEditInsurance: (QuickAction.MultiSelectExpandedLink) -> Unit,
+  onEditInsurance: (MultiSelectExpandedLink) -> Unit,
   onNavigateToInbox: () -> Unit,
   openClaimFlowSheet: () -> Unit,
   onContinueDraftClaim: () -> Unit,
   onDeleteDraftClaim: (String) -> Unit,
+  dismissOngoingShopSession: (String) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
@@ -593,9 +650,14 @@ private fun HomeScreenSuccess(
   onNavigateToNewConversation: () -> Unit,
   navigateToContactInfo: () -> Unit,
   navigateToChipIdScreen: () -> Unit,
+  navigateToUsageData: () -> Unit,
   openCrossSellUrl: (String) -> Unit,
   imageLoader: ImageLoader,
   navigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  onChatIconClick: () -> Unit,
+  onCrossSellsIconClick: (crossSells: CrossSellSheetData) -> Unit,
+  navigateToFirstVet: (sections: List<FirstVetSection>) -> Unit,
+  setEpochDayWhenLastToolTipShown: (Long) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val consumedWindowInsets = remember { MutableWindowInsets() }
@@ -621,7 +683,7 @@ private fun HomeScreenSuccess(
     // to "hide" it (the content cards already do; so do the pinned pills).
     if (HedvigTheme.colorScheme.isLight) {
       Image(
-        painter = painterResource(Res.drawable.blur_background),
+        painter = painterResource(drawable.blur_background),
         contentDescription = null,
         contentScale = ContentScale.Crop,
         modifier = Modifier.matchParentSize(),
@@ -692,6 +754,9 @@ private fun HomeScreenSuccess(
     // layout below publishes `maxHeroCollapsePx` (its full collapsible range) for the connection to clamp.
     val heroCollapsePx = rememberSaveable { mutableFloatStateOf(0f) }
     val maxHeroCollapsePx = remember { mutableFloatStateOf(0f) }
+    // The greeting's current fade, published from the hero's layout so the floating icons — which sit
+    // above the list, not inside it — can leave on exactly the same curve.
+    val heroContentAlpha = remember { mutableFloatStateOf(1f) }
     val heroCollapseConnection = remember {
       object : NestedScrollConnection {
         override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
@@ -782,17 +847,18 @@ private fun HomeScreenSuccess(
                 // range for the nested-scroll connection to clamp.
                 maxHeroCollapsePx.floatValue = fullHero.toFloat()
                 val heroHeight = (fullHero - heroCollapsePx.floatValue.roundToInt()).coerceIn(0, fullHero)
-                val parallaxPx = 24.dp.toPx()
+                val parallaxPx = heroParallaxDistance.toPx()
                 layout(placeable.width, heroHeight) {
                   val y = (heroHeight - placeable.height).coerceAtLeast(0)
                   // Greeting fades over the final phase (as its space is squeezed into the clearance) and
                   // parallaxes: lifts slightly and scales down as it goes.
                   val greetingAlpha = ((heroHeight - clearancePx).toFloat() / placeable.height).coerceIn(0f, 1f)
+                  heroContentAlpha.floatValue = greetingAlpha
                   val fade = 1f - greetingAlpha
                   placeable.placeWithLayer(0, y) {
                     alpha = greetingAlpha
-                    scaleX = 1f - 0.12f * fade
-                    scaleY = 1f - 0.12f * fade
+                    scaleX = 1f - HERO_SCALE_DOWN * fade
+                    scaleY = 1f - HERO_SCALE_DOWN * fade
                     translationY = -fade * parallaxPx
                   }
                 }
@@ -816,7 +882,19 @@ private fun HomeScreenSuccess(
               // Children (the pills) are hit first and keep their clicks; drags still scroll the list.
               .pointerInput(Unit) { detectTapGestures {} },
           ) {
-            Spacer(Modifier.height(pinnedTopOffset))
+            // The toolbar half of the clearance is only owed while the icons are actually on screen, so it
+            // shrinks on their fade and the pills pin directly under the status bar once they're gone. Same
+            // state as the icons, measured in the layout phase, so the two can't disagree about the space.
+            Spacer(
+              Modifier
+                .fillMaxWidth()
+                .layout { measurable, constraints ->
+                  val clearance = topInsets.calculateTopPadding().toPx() +
+                    toolbarHeight.toPx() * heroContentAlpha.floatValue
+                  val placeable = measurable.measure(constraints)
+                  layout(placeable.width, clearance.roundToInt()) {}
+                },
+            )
             MainActionCarouselSection(
               isHelpCenterEnabled = uiState.isHelpCenterEnabled,
               onMakeClaim = openClaimFlowSheet,
@@ -886,6 +964,7 @@ private fun HomeScreenSuccess(
               onNavigateToNewConversation = onNavigateToNewConversation,
               navigateToContactInfo = navigateToContactInfo,
               navigateToChipIdScreen = navigateToChipIdScreen,
+              navigateToUsageData = navigateToUsageData,
               horizontalInsets = horizontalInsets,
             )
 
@@ -893,6 +972,7 @@ private fun HomeScreenSuccess(
               QuotesSection(
                 sessions = sessions,
                 onResumeClick = openUrl,
+                onDismiss = dismissOngoingShopSession,
                 imageLoader = imageLoader,
                 horizontalInsets = horizontalInsets,
               )
@@ -924,6 +1004,51 @@ private fun HomeScreenSuccess(
         }
       }
     }
+    // The icons float over the list, in the clearance the greeting and the pinned pills both leave at the
+    // top of the window, and leave on the greeting's curve: same fade, lift and shrink, driven by the alpha
+    // the hero publishes as it collapses. They shrink toward their top edge, so the row stays put instead of
+    // drifting down toward the tooltip that shares this column. Fully faded, they aren't placed at all, so
+    // an invisible icon can't take a tap. All layout-phase, so scrolling neither recomposes nor re-measures.
+    HomeScreenTopBar(
+      uiState = uiState,
+      onChatIconClick = onChatIconClick,
+      onCrossSellsIconClick = onCrossSellsIconClick,
+      navigateToFirstVet = navigateToFirstVet,
+      setEpochDayWhenLastToolTipShown = setEpochDayWhenLastToolTipShown,
+      modifier = Modifier
+        .align(Alignment.TopStart)
+        .layout { measurable, constraints ->
+          val placeable = measurable.measure(constraints)
+          val parallaxPx = heroParallaxDistance.toPx()
+          layout(placeable.width, placeable.height) {
+            val heroAlpha = heroContentAlpha.floatValue
+            when {
+              heroAlpha <= 0f -> {
+                Unit
+              }
+
+              // The icons' glass rim and drop shadow are blur effects, and a layer around them flattens
+              // those into a rectangle the size of this row. So: no layer at all at rest, and a layer that
+              // modulates each drawing command rather than compositing the row off-screen while it leaves.
+              heroAlpha >= 1f -> {
+                placeable.place(0, 0)
+              }
+
+              else -> {
+                val fade = 1f - heroAlpha
+                placeable.placeWithLayer(0, 0) {
+                  compositingStrategy = CompositingStrategy.ModulateAlpha
+                  alpha = heroAlpha
+                  transformOrigin = TransformOrigin(0.5f, 0f)
+                  scaleX = 1f - HERO_SCALE_DOWN * fade
+                  scaleY = 1f - HERO_SCALE_DOWN * fade
+                  translationY = -fade * parallaxPx
+                }
+              }
+            }
+          }
+        },
+    )
   }
 }
 
@@ -995,6 +1120,11 @@ private val homeSectionOrder: List<HomeSection> = listOf(
 // a card's drop-shadow renders inside the section's own bounds.
 private val homeSectionGap = 40.dp
 
+// How far the hero's content lifts, and how much it shrinks, over its fade. Shared by the greeting and
+// the floating icons: they leave on one curve, so the two have to read the same numbers.
+private val heroParallaxDistance = 24.dp
+private const val HERO_SCALE_DOWN = 0.12f
+
 @Composable
 private fun WelcomeSection(firstName: String) {
   Column(
@@ -1024,7 +1154,7 @@ private fun ClaimStatusCardsSection(
   horizontalInsets: PaddingValues,
 ) {
   val claimCards: NonEmptyList<ClaimCardUiState>? = buildList {
-    draftClaim?.let { add(ClaimCardUiState.Draft(it.id, it.displayName, it.startedAt)) }
+    draftClaim?.let { add(Draft(it.id, it.displayName, it.startedAt)) }
     claimStatusCardsData?.claimStatusCardsUiState?.forEach { add(ClaimCardUiState.Claim(it)) }
   }.toNonEmptyListOrNull()
   if (claimCards != null) {
@@ -1042,15 +1172,15 @@ private fun ClaimStatusCardsSection(
 private fun VeryImportantMessagesSection(
   homeText: HomeText,
   list: List<VeryImportantMessage>,
-  informationalReminders: List<MemberReminder.UpcomingRenewal>,
+  informationalReminders: List<UpcomingRenewal>,
   openUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
   horizontalInsets: PaddingValues,
 ) {
-  val statusCard = if (homeText == Active) null else HomeNoticeCard.Status(homeText)
-  val cards = list.map { HomeNoticeCard.Important(it) } +
+  val statusCard = if (homeText == Active) null else Status(homeText)
+  val cards = list.map { Important(it) } +
     listOfNotNull(statusCard) +
-    informationalReminders.map { HomeNoticeCard.Renewal(it) }
+    informationalReminders.map { Renewal(it) }
   HomeNoticeCarousel(
     cards = cards,
     openUrl = openUrl,
@@ -1068,6 +1198,7 @@ private fun MemberRemindersSection(
   onNavigateToNewConversation: () -> Unit,
   navigateToContactInfo: () -> Unit,
   navigateToChipIdScreen: () -> Unit,
+  navigateToUsageData: () -> Unit,
   horizontalInsets: PaddingValues,
 ) {
   val toDoReminders = applicableReminders.homeActionRequiredReminders()
@@ -1081,7 +1212,7 @@ private fun MemberRemindersSection(
           .padding(horizontalInsets),
       ) {
         HedvigText(
-          text = stringResource(Res.string.HOME_TODO_SECTION_TITLE),
+          text = stringResource(string.HOME_TODO_SECTION_TITLE),
           style = HedvigTheme.typography.headlineSmall,
           modifier = Modifier.semantics { heading() },
         )
@@ -1093,6 +1224,7 @@ private fun MemberRemindersSection(
           onNavigateToNewConversation = onNavigateToNewConversation,
           navigateToContactInfo = navigateToContactInfo,
           navigateToChipId = navigateToChipIdScreen,
+          navigateToUsageData = navigateToUsageData,
         )
       }
     }
@@ -1105,13 +1237,14 @@ private val PillowSize = 48.dp
 private fun QuotesSection(
   sessions: List<OngoingShopSession>,
   onResumeClick: (String) -> Unit,
+  onDismiss: (String) -> Unit,
   imageLoader: ImageLoader,
   horizontalInsets: PaddingValues,
 ) {
   val contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets
   Column(Modifier.fillMaxWidth()) {
     HedvigText(
-      text = stringResource(Res.string.HOME_QUOTES_SECTION_TITLE),
+      text = stringResource(string.HOME_QUOTES_SECTION_TITLE),
       style = HedvigTheme.typography.headlineSmall,
       modifier = Modifier
         .padding(contentPadding)
@@ -1126,6 +1259,7 @@ private fun QuotesSection(
       QuoteCard(
         session = session,
         onResumeClick = onResumeClick,
+        onDismiss = onDismiss,
         imageLoader = imageLoader,
         modifier = cardModifier,
       )
@@ -1137,6 +1271,7 @@ private fun QuotesSection(
 private fun QuoteCard(
   session: OngoingShopSession,
   onResumeClick: (String) -> Unit,
+  onDismiss: (String) -> Unit,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
@@ -1148,47 +1283,61 @@ private fun QuoteCard(
       .fillMaxWidth()
       .hedvigDropShadow(HedvigTheme.shapes.cornerXLarge),
   ) {
-    Column(Modifier.padding(16.dp)) {
-      Row(verticalAlignment = Alignment.CenterVertically) {
-        if (session.pillowImageUrl != null) {
-          val pillowPx = with(LocalDensity.current) { PillowSize.roundToPx() }
-          AsyncImage(
-            model = storyblokResized(session.pillowImageUrl, pillowPx),
-            contentDescription = null,
-            imageLoader = imageLoader,
-            contentScale = ContentScale.Fit,
-            modifier = Modifier.size(PillowSize),
-          )
-          Spacer(Modifier.width(12.dp))
-        }
-        Column(Modifier.weight(1f)) {
-          HedvigText(text = session.title, style = HedvigTheme.typography.bodySmall)
-          val secondary = session.monthlyNet?.let {
-            stringResource(
-              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              it,
+    Box(Modifier.fillMaxWidth().padding(16.dp)) {
+      Column {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          if (session.pillowImageUrl != null) {
+            val pillowPx = with(LocalDensity.current) { PillowSize.roundToPx() }
+            AsyncImage(
+              model = storyblokResized(session.pillowImageUrl, pillowPx),
+              contentDescription = null,
+              imageLoader = imageLoader,
+              contentScale = ContentScale.Fit,
+              modifier = Modifier.size(PillowSize),
             )
-          } ?: session.subtitle
+            Spacer(Modifier.width(12.dp))
+          }
+          Column(Modifier.weight(1f)) {
+            HedvigText(text = session.title, style = HedvigTheme.typography.bodySmall)
+            val secondary = session.monthlyNet?.let {
+              stringResource(
+                string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                it,
+              )
+            } ?: session.subtitle
 
-          if (secondary != null) {
-            HedvigText(
-              text = secondary,
-              style = HedvigTheme.typography.label,
-              color = HedvigTheme.colorScheme.textSecondary,
+            if (secondary != null) {
+              HedvigText(
+                text = secondary,
+                style = HedvigTheme.typography.label,
+                color = HedvigTheme.colorScheme.textSecondary,
+              )
+            }
+          }
+          IconButton(
+            onClick = { onDismiss(session.id) },
+            modifier = Modifier
+              .align(Alignment.Top)
+              .size(24.dp)
+              .wrapContentSize(unbounded = true),
+          ) {
+            Icon(
+              imageVector = HedvigIcons.Close,
+              contentDescription = stringResource(string.ongoing_shop_session_dismiss_offer),
             )
           }
         }
+        Spacer(Modifier.height(12.dp))
+        HedvigButton(
+          text = stringResource(string.general_continue_button),
+          onClick = { onResumeClick(session.resumeUrl) },
+          buttonStyle = Secondary,
+          buttonSize = ButtonSize.Medium,
+          enabled = true,
+          shape = HedvigTheme.shapes.cornerFull,
+          modifier = Modifier.fillMaxWidth(),
+        )
       }
-      Spacer(Modifier.height(12.dp))
-      HedvigButton(
-        text = stringResource(Res.string.general_continue_button),
-        onClick = { onResumeClick(session.resumeUrl) },
-        buttonStyle = Secondary,
-        buttonSize = ButtonSize.Medium,
-        enabled = true,
-        shape = HedvigTheme.shapes.cornerFull,
-        modifier = Modifier.fillMaxWidth(),
-      )
     }
   }
 }
@@ -1197,7 +1346,7 @@ private fun QuoteCard(
 private fun QuickActionTilesSection(
   quickActions: List<QuickAction>,
   onQuickLink: (QuickLinkDestination) -> Unit,
-  onEditInsurance: (QuickAction.MultiSelectExpandedLink) -> Unit,
+  onEditInsurance: (MultiSelectExpandedLink) -> Unit,
   horizontalInsets: PaddingValues,
 ) {
   Column(
@@ -1208,7 +1357,7 @@ private fun QuickActionTilesSection(
       .padding(horizontalInsets),
   ) {
     HedvigText(
-      text = stringResource(Res.string.HC_QUICK_ACTIONS_TITLE),
+      text = stringResource(string.HC_QUICK_ACTIONS_TITLE),
       style = HedvigTheme.typography.headlineSmall,
       modifier = Modifier.semantics { heading() },
     )
@@ -1221,11 +1370,11 @@ private fun QuickActionTilesSection(
       quickActions.forEach { action ->
         HomeActionTile(
           icon = action.homeIcon(),
-          text = stringResource(action.titleRes),
+          text = stringResource(action.shortTitleRes),
           onClick = {
             when (action) {
-              is QuickAction.StandaloneQuickLink -> onQuickLink(action.quickLinkDestination)
-              is QuickAction.MultiSelectExpandedLink -> onEditInsurance(action)
+              is StandaloneQuickLink -> onQuickLink(action.quickLinkDestination)
+              is MultiSelectExpandedLink -> onEditInsurance(action)
             }
           },
           modifier = Modifier
@@ -1238,20 +1387,19 @@ private fun QuickActionTilesSection(
 }
 
 private fun QuickAction.homeIcon(): ImageVector = when (this) {
-  is QuickAction.MultiSelectExpandedLink -> HedvigIcons.Settings
+  is MultiSelectExpandedLink -> HedvigIcons.Settings
 
-  is QuickAction.StandaloneQuickLink -> when (quickLinkDestination) {
-    QuickLinkDestination.OuterDestination.QuickLinkChangeAddress -> HedvigIcons.Reload
-    QuickLinkDestination.OuterDestination.QuickLinkConnectPayment -> HedvigIcons.Card
-    QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate -> HedvigIcons.Travel
-    is InnerHelpCenterDestination.FirstVet -> HedvigIcons.HelipadOutline
+  is StandaloneQuickLink -> when (quickLinkDestination) {
+    QuickLinkChangeAddress -> HedvigIcons.Reload
+    QuickLinkTravelCertificate -> HedvigIcons.Travel
+    is FirstVet -> HedvigIcons.HelipadOutline
     else -> HedvigIcons.Settings
   }
 }
 
 @Composable
 private fun EditInsuranceQuickActionSheet(
-  state: HedvigBottomSheetState<QuickAction.MultiSelectExpandedLink>,
+  state: HedvigBottomSheetState<MultiSelectExpandedLink>,
   onQuickLink: (QuickLinkDestination) -> Unit,
 ) {
   HedvigBottomSheet(state) { editInsurance ->
@@ -1337,21 +1485,21 @@ private fun MainActionCarouselSection(
       .padding(horizontalInsets),
   ) {
     HedvigButton(
-      text = stringResource(Res.string.home_tab_claim_button_text),
+      text = stringResource(string.home_tab_claim_button_text),
       onClick = onMakeClaim,
       enabled = true,
       buttonStyle = RoundedPrimary,
     )
     if (isHelpCenterEnabled) {
       HedvigButton(
-        text = stringResource(Res.string.home_tab_get_help),
+        text = stringResource(string.home_tab_get_help),
         onClick = onHelpAndSupport,
         enabled = true,
         buttonStyle = RoundedLiquidGlass,
       )
     }
     HedvigButton(
-      text = stringResource(Res.string.DASHBOARD_OPEN_CHAT),
+      text = stringResource(string.DASHBOARD_OPEN_CHAT),
       onClick = onContactUs,
       enabled = true,
       buttonStyle = RoundedLiquidGlass,
@@ -1374,7 +1522,7 @@ private fun AddonsSection(
       .padding(horizontalInsets),
   ) {
     HedvigText(
-      text = stringResource(Res.string.INSURANCE_ADDONS_SUBHEADING),
+      text = stringResource(string.INSURANCE_ADDONS_SUBHEADING),
       style = HedvigTheme.typography.headlineSmall,
       modifier = Modifier.semantics { heading() },
     )
@@ -1384,7 +1532,7 @@ private fun AddonsSection(
         subtitle = addon.description,
         pillowImage = null,
         pillow = { AddonPillow(addon.flowType) },
-        buttonText = stringResource(Res.string.HOME_ADDONS_READ_MORE_BUTTON),
+        buttonText = stringResource(string.HOME_ADDONS_READ_MORE_BUTTON),
         onButtonClick = { navigateToAddonPurchaseFlow(addon.eligibleInsurancesIds) },
         imageLoader = imageLoader,
         modifier = Modifier.fillMaxWidth(),
@@ -1402,13 +1550,13 @@ private fun DiscoverInsurancesSection(
   imageLoader: ImageLoader,
 ) {
   CrossSellsSection(
-    title = stringResource(Res.string.HOME_DISCOVER_SECTION_TITLE),
+    title = stringResource(string.HOME_DISCOVER_SECTION_TITLE),
     crossSells = crossSells,
     onCrossSellClick = onCrossSellClick,
     modifier = Modifier.padding(horizontal = 16.dp),
     onSheetDismissed = {},
     imageLoader = imageLoader,
-    buttonText = stringResource(Res.string.HOME_DISCOVER_SEE_PRICE_BUTTON),
+    buttonText = stringResource(string.HOME_DISCOVER_SEE_PRICE_BUTTON),
     buttonSize = ButtonSize.Small,
     buttonShape = HedvigTheme.shapes.cornerFull,
   )
@@ -1425,7 +1573,7 @@ private fun WelcomeMessage(firstName: String, modifier: Modifier = Modifier) {
   )
   if (firstName.isBlank()) {
     HedvigText(
-      text = stringResource(Res.string.home_tab_welcome_title_without_name),
+      text = stringResource(string.home_tab_welcome_title_without_name),
       style = titleStyle,
       modifier = modifier.fillMaxWidth(),
     )
@@ -1436,12 +1584,12 @@ private fun WelcomeMessage(firstName: String, modifier: Modifier = Modifier) {
     modifier = modifier.fillMaxWidth(),
   ) {
     HedvigText(
-      text = stringResource(Res.string.HOME_GREETING_TITLE, firstName),
+      text = stringResource(string.HOME_GREETING_TITLE, firstName),
       style = titleStyle,
       modifier = Modifier.fillMaxWidth(),
     )
     HedvigText(
-      text = stringResource(Res.string.HOME_GREETING_SUBTITLE),
+      text = stringResource(string.HOME_GREETING_SUBTITLE),
       color = HedvigTheme.colorScheme.textSecondary,
       style = titleStyle,
       modifier = Modifier.fillMaxWidth(),
@@ -1610,10 +1758,12 @@ private fun PreviewHomeScreen(
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
         deleteDraftClaim = {},
+        dismissOngoingShopSession = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
         navigateToChipIdScreen = {},
+        navigateToUsageData = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
         navigateToAddonPurchaseFlow = {},
@@ -1628,7 +1778,7 @@ private fun PreviewHomeScreenWithError() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       HomeScreen(
-        uiState = HomeUiState.Error(null),
+        uiState = Error(null),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
         onNavigateToInbox = {},
@@ -1645,10 +1795,12 @@ private fun PreviewHomeScreenWithError() {
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
         deleteDraftClaim = {},
+        dismissOngoingShopSession = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
         navigateToChipIdScreen = {},
+        navigateToUsageData = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
         navigateToAddonPurchaseFlow = {},
@@ -1677,6 +1829,16 @@ private fun PreviewHomeScreenAllHomeTextTypes(
             coInsuredInfo = null,
             updateContactInfo = null,
           ),
+          ongoingShopSessions = listOf(
+            OngoingShopSession(
+              id = "session-id",
+              title = "Title",
+              subtitle = null,
+              monthlyNet = null,
+              resumeUrl = "",
+              pillowImageUrl = null,
+            ),
+          ),
           isHelpCenterEnabled = false,
           quickActions = previewQuickActions,
           hasUnseenChatMessages = false,
@@ -1703,10 +1865,12 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
         deleteDraftClaim = {},
+        dismissOngoingShopSession = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
         navigateToChipIdScreen = {},
+        navigateToUsageData = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
         navigateToAddonPurchaseFlow = {},
@@ -1716,35 +1880,30 @@ private fun PreviewHomeScreenAllHomeTextTypes(
 }
 
 private val previewQuickActions: List<QuickAction> = listOf(
-  QuickAction.MultiSelectExpandedLink(
-    titleRes = Res.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE,
-    hintTextRes = Res.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_SUBTITLE,
+  MultiSelectExpandedLink(
+    titleRes = string.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE,
+    hintTextRes = string.HC_QUICK_ACTIONS_EDIT_INSURANCE_SUBTITLE,
     links = listOf(
-      QuickAction.StandaloneQuickLink(
-        titleRes = Res.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE,
-        hintTextRes = Res.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE,
-        quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeTier,
+      StandaloneQuickLink(
+        titleRes = string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE,
+        hintTextRes = string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE,
+        quickLinkDestination = QuickLinkChangeTier,
       ),
     ),
   ),
-  QuickAction.StandaloneQuickLink(
-    titleRes = Res.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE,
-    hintTextRes = Res.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE,
-    quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeAddress,
-  ),
-  QuickAction.StandaloneQuickLink(
-    titleRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_TITLE,
-    hintTextRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE,
-    quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkConnectPayment,
+  StandaloneQuickLink(
+    titleRes = string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE,
+    hintTextRes = string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE,
+    quickLinkDestination = QuickLinkChangeAddress,
   ),
 )
 
 private class HomeTextPreviewParameterProvider : CollectionPreviewParameterProvider<HomeText>(
   listOf(
     Active,
-    HomeText.ActiveInFuture(LocalDate.parse("2025-01-01")),
-    HomeText.Pending,
-    HomeText.Switching,
-    HomeText.Terminated,
+    ActiveInFuture(LocalDate.parse("2025-01-01")),
+    Pending,
+    Switching,
+    Terminated,
   ),
 )

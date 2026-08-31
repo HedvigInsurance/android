@@ -3,9 +3,7 @@ package com.hedvig.android.feature.onboarding.ui.coinsured
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,7 +11,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -23,7 +20,6 @@ import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigPreview
-import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.onboarding.ui.OnboardingContractCard
@@ -35,7 +31,6 @@ import com.hedvig.android.feature.onboarding.ui.OnboardingStepScaffold
 import hedvig.resources.ONBOARDING_ADD_COINSURED_TITLE
 import hedvig.resources.ONBOARDING_ADD_COOWNERS_TITLE
 import hedvig.resources.ONBOARDING_ADD_INFO_LATER_LABEL
-import hedvig.resources.ONBOARDING_DO_THIS_LATER_BUTTON
 import hedvig.resources.ONBOARDING_MISSING_INFO_SUBTITLE
 import hedvig.resources.ONBOARDING_NUMBER_OF_COINSURED
 import hedvig.resources.ONBOARDING_NUMBER_OF_COOWNERS
@@ -129,38 +124,34 @@ private fun OnboardingCoInsuredScreen(
           }
         }
         Spacer(Modifier.weight(1f))
-        Spacer(Modifier.height(24.dp))
-        HedvigText(
-          text = stringResource(Res.string.ONBOARDING_ADD_INFO_LATER_LABEL),
-          style = HedvigTheme.typography.label,
-          color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-          textAlign = TextAlign.Center,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        )
         OnboardingStepButtons(
           primaryText = stringResource(Res.string.general_continue_button),
           onPrimaryClick = onContinue,
-          secondaryText = stringResource(Res.string.ONBOARDING_DO_THIS_LATER_BUTTON),
-          onSecondaryClick = onContinue,
+          secondaryText = null,
+          onSecondaryClick = null,
+          caption = stringResource(Res.string.ONBOARDING_ADD_INFO_LATER_LABEL),
         )
       }
     }
   }
 }
 
-// A complete row lists the people by name; while info is still missing it shows how many there are.
+// Names are listed once they are all known; until then they are followed by a count of the people still missing.
 @Composable
-private fun CoInsuredRow.secondaryText(): String = if (isComplete && insuredNames.isNotEmpty()) {
-  insuredNames.toReadableList()
-} else {
+private fun CoInsuredRow.secondaryText(): String {
   val plural = if (flowType == CoInsuredFlowType.CoOwners) {
     Res.plurals.ONBOARDING_NUMBER_OF_COOWNERS
   } else {
     Res.plurals.ONBOARDING_NUMBER_OF_COINSURED
   }
-  pluralStringResource(plural, insuredCount, insuredCount)
+  return if (insuredNames.isNotEmpty() && isComplete) {
+    insuredNames.toReadableList()
+  } else if (insuredNames.isNotEmpty()) {
+    val count = insuredCount - insuredNames.size
+    "${insuredNames.toReadableList()} + ${pluralStringResource(plural, count, count)}"
+  } else {
+    pluralStringResource(plural, insuredCount, insuredCount)
+  }
 }
 
 /** Joins names the way the design shows them: "A", "A & B", "A, B & C". */

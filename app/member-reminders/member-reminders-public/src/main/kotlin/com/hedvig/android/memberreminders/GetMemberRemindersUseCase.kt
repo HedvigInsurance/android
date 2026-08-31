@@ -6,6 +6,8 @@ import arrow.core.merge
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
+import com.hedvig.android.data.settings.datastore.AnalyticsConsent
+import com.hedvig.android.data.settings.datastore.GetAnalyticsConsentUseCase
 import com.hedvig.android.memberreminders.MemberReminder.ContactInfoUpdateNeeded
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
@@ -31,6 +33,7 @@ internal class GetMemberRemindersUseCaseImpl(
   private val getNeedsCoInsuredInfoRemindersUseCase: GetNeedsCoInsuredInfoRemindersUseCase,
   private val getContactInfoUpdateIsNeededUseCase: GetContactInfoUpdateIsNeededUseCase,
   private val getMissingChipIdReminderUseCase: GetMissingChipIdReminderUseCase,
+  private val getAnalyticsConsentUseCase: GetAnalyticsConsentUseCase,
 ) : GetMemberRemindersUseCase {
   override fun invoke(): Flow<MemberReminders> {
     return combine(
@@ -66,6 +69,9 @@ internal class GetMemberRemindersUseCaseImpl(
       getNeedsCoInsuredInfoRemindersUseCase.invoke(),
       getContactInfoUpdateIsNeededUseCase.invoke(),
       getMissingChipIdReminderUseCase.invoke(),
+      getAnalyticsConsentUseCase.invoke().map { consent ->
+        if (consent == AnalyticsConsent.NOT_DECIDED) MemberReminder.DecideAnalyticsConsent() else null
+      },
     ) { values ->
       val enableNotifications = values[0] as MemberReminder.EnableNotifications?
       val connectPayment = values[1] as MemberReminder.PaymentReminder?
@@ -74,6 +80,7 @@ internal class GetMemberRemindersUseCaseImpl(
         values[3] as? Either<CoInsuredInfoReminderError, NonEmptyList<MemberReminder.CoInsuredInfo>>
       val contactInfoReminder = values[4] as? Either<ErrorMessage, ContactInfoUpdateNeeded?>
       val missingChipIdReminder = values[5] as? Either<ErrorMessage, MemberReminder.MissingChipId?>
+      val decideAnalyticsConsent = values[6] as MemberReminder.DecideAnalyticsConsent?
 
       MemberReminders(
         connectPayment = connectPayment,
@@ -82,6 +89,7 @@ internal class GetMemberRemindersUseCaseImpl(
         coInsuredInfo = coInsuredInfoResult?.getOrNull(),
         updateContactInfo = contactInfoReminder?.getOrNull(),
         missingChipId = missingChipIdReminder?.getOrNull(),
+        decideAnalyticsConsent = decideAnalyticsConsent,
       )
     }
   }
@@ -94,6 +102,7 @@ data class MemberReminders(
   val coInsuredInfo: List<MemberReminder.CoInsuredInfo>? = null,
   val updateContactInfo: ContactInfoUpdateNeeded? = null,
   val missingChipId: MemberReminder.MissingChipId? = null,
+  val decideAnalyticsConsent: MemberReminder.DecideAnalyticsConsent? = null,
 ) {
   /**
    * In some cases a reminder may be present but may not be applicable in our current app state.
@@ -120,6 +129,9 @@ data class MemberReminders(
         addAll(it)
       }
       updateContactInfo?.let {
+        add(it)
+      }
+      decideAnalyticsConsent?.let {
         add(it)
       }
     }
@@ -166,6 +178,14 @@ sealed interface MemberReminder {
   }
 
   data class MissingChipId(
+    override val id: String = UUID.randomUUID().toString(),
+  ) : MemberReminder
+
+  /**
+   * The member has not answered the analytics-consent question yet. Offered only as a row in the
+   * home "To do" list, so it has no reminder card.
+   */
+  data class DecideAnalyticsConsent(
     override val id: String = UUID.randomUUID().toString(),
   ) : MemberReminder
 }

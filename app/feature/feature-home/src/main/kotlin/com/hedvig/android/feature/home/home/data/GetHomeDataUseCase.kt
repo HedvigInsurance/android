@@ -8,8 +8,8 @@ import arrow.core.raise.either
 import arrow.core.raise.nullable
 import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.cache.normalized.FetchPolicy
-import com.apollographql.apollo.cache.normalized.fetchPolicy
+import com.apollographql.cache.normalized.FetchPolicy
+import com.apollographql.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.uidata.UiCurrencyCode
@@ -68,9 +68,23 @@ internal class GetHomeDataUseCaseImpl(
   private val timeZone: TimeZone,
   private val getAddonBannerInfoUseCase: GetAddonBannerInfoUseCase,
   private val hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
+  private val dismissedShopSessionsStorage: DismissedShopSessionsStorage,
 ) : GetHomeDataUseCase {
-  @OptIn(ExperimentalCoroutinesApi::class)
   override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>> {
+    return combine(
+      backendHomeData(forceNetworkFetch),
+      dismissedShopSessionsStorage.observeDismissedSessionIds(),
+    ) { homeDataResult, dismissedSessionIds ->
+      homeDataResult.map { homeData ->
+        homeData.copy(
+          ongoingShopSessions = homeData.ongoingShopSessions.filterNot { it.id in dismissedSessionIds },
+        )
+      }
+    }
+  }
+
+  @OptIn(ExperimentalCoroutinesApi::class)
+  private fun backendHomeData(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>> {
     return combine(
       featureManager.isFeatureEnabled(Feature.ENABLE_CLAIM_INTENT_RESUME),
       featureManager.isFeatureEnabled(Feature.DISABLE_RESUMING_ONGOING_SHOP_SESSIONS),

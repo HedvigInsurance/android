@@ -7,8 +7,9 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.data.contract.toContractGroup
 import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoInsured
@@ -40,9 +41,12 @@ import hedvig.resources.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE
 import hedvig.resources.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE
+import hedvig.resources.HOME_QUICK_ACTIONS_CHANGE_ADDRESS
+import hedvig.resources.HOME_QUICK_ACTIONS_EDIT_INSURANCE
 import hedvig.resources.MANAGE_BILLING_METHODS_BUTTON
 import hedvig.resources.Res
-import kotlinx.coroutines.flow.first
+import hedvig.resources.insurance_details_change_amount
+import hedvig.resources.insurance_details_change_amount_subtitle
 import octopus.AvailableSelfServiceOnContractsQuery
 
 interface GetMemberQuickActionsUseCase {
@@ -60,38 +64,54 @@ internal class GetMemberQuickActionsUseCaseImpl(
   override suspend fun invoke(): Either<ErrorMessage, List<QuickAction>> = either {
     val memberActionOptions = getMemberActionsUseCase.invoke().bind()
 
+    val activeContracts = if (
+      memberActionOptions.isEditCoInsuredEnabled ||
+      memberActionOptions.isEditCoOwnersEnabled ||
+      memberActionOptions.isTierChangeEnabled
+    ) {
+      apolloClient.query(AvailableSelfServiceOnContractsQuery())
+        .safeExecute(::ErrorMessage)
+        .onLeft { logcat(LogPriority.ERROR) { "Could not fetch contracts ${it.message}" } }
+        .map { it.currentMember.activeContracts }
+    } else {
+      null
+    }
+
     buildList {
       val linksToExpand = buildList {
         if (memberActionOptions.isEditCoInsuredEnabled) {
-          val contracts = apolloClient.query(AvailableSelfServiceOnContractsQuery())
-            .safeExecute(::ErrorMessage)
-            .onLeft { logcat(LogPriority.ERROR) { "Could not fetch contracts ${it.message}" } }
-            .bind()
-            .currentMember
-            .activeContracts
-          val coInsuredContracts = contracts.filter { it.supportsCoInsured }
+          val coInsuredContracts = activeContracts?.bind().orEmpty().filter { it.supportsCoInsured }
           createEditCoInsuredQuickLink(coInsuredContracts)?.let { quickAction ->
             add(quickAction)
           }
         }
         if (memberActionOptions.isEditCoOwnersEnabled) {
-          val contracts = apolloClient.query(AvailableSelfServiceOnContractsQuery())
-            .safeExecute(::ErrorMessage)
-            .onLeft { logcat(LogPriority.ERROR) { "Could not fetch contracts ${it.message}" } }
-            .bind()
-            .currentMember
-            .activeContracts
-          val coOwnerContracts = contracts.filter { it.supportsCoOwners }
+          val coOwnerContracts = activeContracts?.bind().orEmpty().filter { it.supportsCoOwners }
           createEditCoOwnersQuickLink(coOwnerContracts)?.let { quickAction ->
             add(quickAction)
           }
         }
         if (memberActionOptions.isTierChangeEnabled) {
+          // Falls back to the coverage wording if the contracts couldn't be fetched, since tier change itself
+          // does not depend on them.
+          val tierChangeableContracts = activeContracts?.getOrNull().orEmpty().filter { it.supportsChangeTier }
+          val isPaymentProtection = tierChangeableContracts.isNotEmpty() &&
+            tierChangeableContracts.all {
+              it.currentAgreement.productVariant.typeOfContract.toContractGroup() == ContractGroup.PAYMENT_PROTECTION
+            }
           add(
             QuickAction.StandaloneQuickLink(
               quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeTier,
-              titleRes = Res.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE,
-              hintTextRes = Res.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE,
+              titleRes = if (isPaymentProtection) {
+                Res.string.insurance_details_change_amount
+              } else {
+                Res.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE
+              },
+              hintTextRes = if (isPaymentProtection) {
+                Res.string.insurance_details_change_amount_subtitle
+              } else {
+                Res.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
+              },
             ),
           )
         }
@@ -111,6 +131,7 @@ internal class GetMemberQuickActionsUseCaseImpl(
             links = linksToExpand,
             titleRes = Res.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE,
             hintTextRes = Res.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_SUBTITLE,
+            shortTitleRes = Res.string.HOME_QUICK_ACTIONS_EDIT_INSURANCE,
           ),
         )
       }
@@ -120,6 +141,7 @@ internal class GetMemberQuickActionsUseCaseImpl(
             quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeAddress,
             titleRes = Res.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE,
             hintTextRes = Res.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE,
+            shortTitleRes = Res.string.HOME_QUICK_ACTIONS_CHANGE_ADDRESS,
           ),
         )
       }

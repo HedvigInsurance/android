@@ -1,8 +1,8 @@
 package com.hedvig.android.auth
 
 import com.hedvig.android.auth.token.AuthTokens
-import com.hedvig.authlib.AccessToken
-import com.hedvig.authlib.RefreshToken
+import com.hedvig.android.authlib.AccessToken
+import com.hedvig.android.authlib.RefreshToken
 import kotlinx.coroutines.flow.StateFlow
 
 interface AuthTokenService {

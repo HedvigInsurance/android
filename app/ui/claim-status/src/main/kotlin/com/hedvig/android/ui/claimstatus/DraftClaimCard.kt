@@ -107,7 +107,7 @@ private fun PreviewDraftClaimCard() {
       DraftClaimCard(
         uiState = ClaimCardUiState.Draft(
           id = "id",
-          title = "My things",
+          title = null,
           startedAt = Instant.parse("2026-07-02T00:00:00Z"),
         ),
         onContinueClick = {},

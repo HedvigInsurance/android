@@ -45,12 +45,15 @@ dependencies {
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
+  implementation(projects.uiPhoneNumber)
   implementation(projects.theme)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
   testImplementation(libs.turbine)
+  testImplementation(projects.dataSettingsDatastoreTest)
+  testImplementation(projects.featureFlagsTest)
   testImplementation(projects.loggingTest)
   testImplementation(projects.moleculeTest)
 }

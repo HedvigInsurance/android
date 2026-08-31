@@ -1,7 +1,7 @@
 package com.hedvig.android.apollo.auth.listeners.normalizedcache
 
 import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.cache.normalized.apolloStore
+import com.apollographql.cache.normalized.apolloStore
 import com.hedvig.android.auth.event.AuthEventListener
 import com.hedvig.android.core.common.di.AppScope
 import dev.zacsweers.metro.ContributesIntoSet

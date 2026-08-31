@@ -9,12 +9,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.core.common.validation.PhoneNumberRules
 import com.hedvig.android.feature.onboarding.data.OnboardingRepository
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
 import com.hedvig.android.feature.onboarding.ui.OnboardingProgressBarAnimation
+import com.hedvig.android.feature.onboarding.ui.phone.SubmissionError.GeneralError
+import com.hedvig.android.feature.onboarding.ui.phone.SubmissionError.NumberMalformed
+import com.hedvig.android.feature.onboarding.ui.phone.SubmissionError.NumberTooShort
 import com.hedvig.android.feature.onboarding.ui.progressFor
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -66,14 +70,14 @@ internal class OnboardingPhonePresenter(
       if (submitIteration == 0) return@LaunchedEffect
       val content = currentState as? OnboardingPhoneUiState.Content ?: return@LaunchedEffect
       val session = sessionStore.currentSession ?: return@LaunchedEffect
-      currentState = content.copy(isSubmitting = true, showSubmissionError = false)
+      currentState = content.copy(isSubmitting = true, showSubmissionError = null)
       onboardingRepository.updateContactInfo(
         email = session.data.email,
         phoneNumber = phoneNumberToSubmit,
       ).fold(
         ifLeft = {
           currentState = (currentState as? OnboardingPhoneUiState.Content ?: content)
-            .copy(isSubmitting = false, showSubmissionError = true)
+            .copy(isSubmitting = false, showSubmissionError = GeneralError)
         },
         ifRight = {
           // Reset before navigating so returning to this retained entry does not leave Save disabled.
@@ -94,8 +98,23 @@ internal class OnboardingPhonePresenter(
         }
 
         is OnboardingPhoneEvent.Save -> {
-          phoneNumberToSubmit = event.phoneNumber
-          submitIteration++
+          val content = currentState as? OnboardingPhoneUiState.Content ?: return@CollectEvents
+          val rules = PhoneNumberRules.MemberPhoneNumber
+          val submitted = rules.cleanedForSubmission(event.phoneNumber)?.toString()
+          when {
+            submitted == null -> {
+              currentState = content.copy(showSubmissionError = NumberMalformed)
+            }
+
+            !rules.hasEnoughDigits(submitted) -> {
+              currentState = content.copy(showSubmissionError = NumberTooShort)
+            }
+
+            else -> {
+              phoneNumberToSubmit = submitted
+              submitIteration++
+            }
+          }
         }
 
         OnboardingPhoneEvent.DoThisLater -> {
@@ -104,7 +123,7 @@ internal class OnboardingPhonePresenter(
 
         OnboardingPhoneEvent.ClearSubmissionError -> {
           val content = currentState as? OnboardingPhoneUiState.Content ?: return@CollectEvents
-          currentState = content.copy(showSubmissionError = false)
+          currentState = content.copy(showSubmissionError = null)
         }
       }
     }
@@ -122,8 +141,16 @@ internal sealed interface OnboardingPhoneUiState {
     val progress: OnboardingProgress,
     val phoneNumber: String,
     val isSubmitting: Boolean = false,
-    val showSubmissionError: Boolean = false,
+    val showSubmissionError: SubmissionError? = null,
   ) : OnboardingPhoneUiState
+}
+
+internal sealed interface SubmissionError {
+  data object NumberTooShort : SubmissionError
+
+  data object NumberMalformed : SubmissionError
+
+  data object GeneralError : SubmissionError
 }
 
 internal sealed interface OnboardingPhoneEvent {

@@ -46,21 +46,31 @@ class MemberIdService(
         .decodeToString()
       val payloadJsonObject: JsonObject = Json.parseToJsonElement(decodedPayload).jsonObject
       val subContent: JsonElement = payloadJsonObject.getOrElse("sub") {
-        logcat(LogPriority.ERROR) { "Failed to find `sub` in jsonElement for accessToken: $accessToken" }
+        logcat(LogPriority.ERROR) { "Failed to find `sub` in access token payload. ${accessToken.tokenShape()}" }
         return null
       }
       val subText = subContent.jsonPrimitive.content
       if (!subText.startsWith("mem_")) {
-        logcat(LogPriority.ERROR) { "Failed to find the `mem_` prefix for accessToken: $accessToken" }
+        logcat(LogPriority.ERROR) { "Access token `sub` lacks the `mem_` prefix. ${accessToken.tokenShape()}" }
         return null
       }
       subText.removePrefix("mem_")
     } catch (exception: SerializationException) {
-      logcat(LogPriority.ERROR, exception) { "Got serializationException for accessToken: $accessToken" }
+      logcat(LogPriority.ERROR, exception) {
+        "Got serializationException parsing access token. ${accessToken.tokenShape()}"
+      }
       null
     } catch (exception: IllegalArgumentException) {
-      logcat(LogPriority.ERROR, exception) { "Got illegalArgumentException for accessToken: $accessToken" }
+      logcat(LogPriority.ERROR, exception) {
+        "Got illegalArgumentException parsing access token. ${accessToken.tokenShape()}"
+      }
       null
     }
   }
 }
+
+/**
+ * Enough to tell a malformed token from a well-formed one, without putting a live bearer credential
+ * into logs that ship to Datadog and Crashlytics.
+ */
+private fun String.tokenShape(): String = "segments=${split(".").size}, length=$length"

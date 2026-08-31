@@ -38,7 +38,7 @@ query Onboarding {
         status
       }
     }
-    crossSellV2(input: { userFlow: HOME_X_SELL, flowSource: null, experiments: [] }) {
+    crossSellV2(input: { userFlow: ONBOARDING, flowSource: null, experiments: [] }) {
       otherCrossSells {
         id
         title

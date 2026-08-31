@@ -16,6 +16,7 @@ dependencies {
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
   implementation(projects.apolloCore)
+  implementation(projects.uiPhoneNumber)
   implementation(projects.apolloNetworkCacheManager)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreBuildConstants)

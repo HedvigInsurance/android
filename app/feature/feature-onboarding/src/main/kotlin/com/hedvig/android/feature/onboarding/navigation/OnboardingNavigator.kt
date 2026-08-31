@@ -37,7 +37,16 @@ internal class OnboardingNavigator(
       session.path.firstOrNull()
     } else {
       val currentIndex = session.path.indexOf(current)
-      if (currentIndex == -1) null else session.path.getOrNull(currentIndex + 1)
+      if (currentIndex == -1) {
+        // A path rebuilt after process death can legitimately lack the step being shown, once the
+        // condition that added it stopped holding (co-insured info since filled in, payment
+        // connected elsewhere, a gating flag flipped). [OnboardingStepId] is declared in
+        // presentation order, so the step to continue to is the first one past this in the path.
+        logcat { "Onboarding step $current missing from the rebuilt path, continuing past it" }
+        session.path.firstOrNull { it.ordinal > current.ordinal }
+      } else {
+        session.path.getOrNull(currentIndex + 1)
+      }
     }
     if (next == null) {
       exitOnboarding()

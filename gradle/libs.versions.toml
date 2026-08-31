@@ -13,6 +13,7 @@ androidGradlePlugin = "9.3.1"
 apollo = "5.0.1"
 apolloAdapters = "0.7.0"
 apolloEngineKtor = "1.0.0-alpha.0"
+apolloNormalizedCache = "1.0.7"
 cacheFix = "3.0.3"
 crashlytics = "3.0.7"
 datadogPlugin = "1.29.0"
@@ -141,7 +142,8 @@ apollo-adapters-datetime = { module = "com.apollographql.adapters:apollo-adapter
 apollo-annotations = { module = "com.apollographql.apollo:apollo-annotations", version.ref = "apollo" }
 apollo-api = { module = "com.apollographql.apollo:apollo-api", version.ref = "apollo" }
 apollo-engine-ktor = { module = "com.apollographql.ktor:apollo-engine-ktor", version.ref = "apolloEngineKtor" }
-apollo-normalizedCache = { module = "com.apollographql.apollo:apollo-normalized-cache", version.ref = "apollo" }
+apollo-normalizedCache = { module = "com.apollographql.cache:normalized-cache", version.ref = "apolloNormalizedCache" }
+apollo-normalizedCachePlugin = { module = "com.apollographql.cache:normalized-cache-apollo-compiler-plugin", version.ref = "apolloNormalizedCache" }
 apollo-runtime = { module = "com.apollographql.apollo:apollo-runtime", version.ref = "apollo" }
 apollo-testingSupport = { module = "com.apollographql.apollo:apollo-testing-support", version.ref = "apollo" }
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }

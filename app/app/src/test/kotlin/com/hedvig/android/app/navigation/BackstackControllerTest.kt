@@ -16,6 +16,7 @@ import com.hedvig.android.feature.help.center.navigation.HelpCenterKey
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.insurances.navigation.InsurancesKey
 import com.hedvig.android.feature.login.navigation.LoginKey
+import com.hedvig.android.feature.onboarding.navigation.OnboardingKey
 import com.hedvig.android.feature.payments.navigation.PaymentsKey
 import com.hedvig.android.feature.profile.navigation.ProfileKey
 import com.hedvig.android.logger.TestLogcatLoggingRule
@@ -316,6 +317,20 @@ internal class BackstackControllerTest {
     val controller = controllerWith(HomeKey)
     assertThat(controller.navigateUp()).isFalse()
     assertThat(controller.entries.toList()).containsExactly(HomeKey)
+  }
+
+  @Test
+  fun `the review prompt is suppressed while onboarding sits below a hosted flow`() {
+    // HelpCenterKey stands in for any flow an onboarding step pushes on top of itself; what matters
+    // is that OnboardingKey is an ancestor rather than the top of the stack.
+    val controller = controllerWith(HomeKey, OnboardingKey, HelpCenterKey)
+    assertThat(controller.suppressesAppStoreReviewRequest).isTrue()
+  }
+
+  @Test
+  fun `the review prompt is allowed in the same flow reached outside onboarding`() {
+    val controller = controllerWith(HomeKey, HelpCenterKey)
+    assertThat(controller.suppressesAppStoreReviewRequest).isFalse()
   }
 
   @Test

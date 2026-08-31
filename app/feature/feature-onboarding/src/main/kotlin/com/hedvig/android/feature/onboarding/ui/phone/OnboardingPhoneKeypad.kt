@@ -36,10 +36,11 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
+import com.hedvig.android.feature.onboarding.ui.withOnboardingHaptic
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 
-private val KeySize = 36.dp
+private val KeySize = 48.dp
 private val HorizontalGap = 11.dp
 private val VerticalGap = 9.dp
 private val GlyphFontSize = 20.sp
@@ -123,9 +124,7 @@ private fun KeypadKey(label: String, highlighted: Boolean, onKeypadClick: (Strin
         scaleY = scale
       }
       .clip(HedvigTheme.shapes.cornerLarge)
-      .clickable(clickEnabled) {
-        onKeypadClick(label)
-      }
+      .clickable(clickEnabled, onClick = withOnboardingHaptic { onKeypadClick(label) })
       .background(containerColor, HedvigTheme.shapes.cornerLarge),
     contentAlignment = Alignment.Center,
   ) {

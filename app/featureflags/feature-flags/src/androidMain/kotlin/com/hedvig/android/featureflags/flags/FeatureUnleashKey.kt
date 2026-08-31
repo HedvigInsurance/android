@@ -2,6 +2,7 @@ package com.hedvig.android.featureflags.flags
 
 internal val Feature.unleashKey: String
   get() = when (this) {
+    Feature.DISABLE_ANALYTICS -> "disable_analytics"
     Feature.DISABLE_ONBOARDING -> "disable_onboarding"
     Feature.DISABLE_PUPPY_GUIDE -> "disable_puppy_guide"
     Feature.DISABLE_TERMINATION_REDIRECTION -> "disable_termination_redirection"

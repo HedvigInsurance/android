@@ -7,8 +7,8 @@ import com.hedvig.android.auth.event.AuthEvent
 import com.hedvig.android.auth.token.AuthTokens
 import com.hedvig.android.auth.token.LocalAccessToken
 import com.hedvig.android.auth.token.LocalRefreshToken
-import com.hedvig.authlib.AccessToken
-import com.hedvig.authlib.RefreshToken
+import com.hedvig.android.authlib.AccessToken
+import com.hedvig.android.authlib.RefreshToken
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.MutableStateFlow

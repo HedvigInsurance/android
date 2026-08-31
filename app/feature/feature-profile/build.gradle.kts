@@ -27,6 +27,7 @@ dependencies {
   implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
+  implementation(projects.uiPhoneNumber)
   implementation(projects.apolloNetworkCacheManager)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.authCorePublic)

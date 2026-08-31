@@ -3,6 +3,8 @@ package com.hedvig.android.feature.onboarding
 import app.cash.turbine.Turbine
 import arrow.core.Either
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.datastore.FakeGetAnalyticsConsentUseCase
+import com.hedvig.android.data.settings.datastore.AnalyticsConsent
 import com.hedvig.android.feature.onboarding.data.OnboardingContract
 import com.hedvig.android.feature.onboarding.data.OnboardingCrossSell
 import com.hedvig.android.feature.onboarding.data.OnboardingData
@@ -10,6 +12,7 @@ import com.hedvig.android.feature.onboarding.data.OnboardingMemberIdProvider
 import com.hedvig.android.feature.onboarding.data.OnboardingPayinStatus
 import com.hedvig.android.feature.onboarding.data.OnboardingReferralInformation
 import com.hedvig.android.feature.onboarding.data.OnboardingRepository
+import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import kotlinx.coroutines.flow.flowOf
 
 internal class FakeOnboardingMemberIdProvider(var memberId: String? = "test-member-id") : OnboardingMemberIdProvider {
@@ -30,6 +33,22 @@ internal class FakeOnboardingRepository : OnboardingRepository {
     return updateContactInfoResponses.awaitItem()
   }
 }
+
+/**
+ * Builds a store with the feature flags a test rarely cares about already answered, so adding a
+ * dependency to [OnboardingSessionStore] does not mean touching every test that needs one.
+ */
+internal fun testSessionStore(
+  repository: OnboardingRepository,
+  memberIdProvider: OnboardingMemberIdProvider = FakeOnboardingMemberIdProvider(),
+  analyticsDisabled: Boolean = false,
+) = OnboardingSessionStore(
+  onboardingRepository = repository,
+  memberIdProvider = memberIdProvider,
+  getAnalyticsConsentUseCase = FakeGetAnalyticsConsentUseCase(
+    initialConsent = AnalyticsConsent.NOT_DECIDED.takeIf { !analyticsDisabled },
+  ),
+)
 
 internal fun testOnboardingData(
   phoneNumber: String? = "070 990 12 32",

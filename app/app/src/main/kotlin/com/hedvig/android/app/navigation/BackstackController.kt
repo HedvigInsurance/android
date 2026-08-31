@@ -14,6 +14,7 @@ import com.hedvig.android.feature.login.navigation.LoginKey
 import com.hedvig.android.navigation.common.DeliberateLogoutOrigin
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.StashedSession
+import com.hedvig.android.navigation.common.SuppressesAppStoreReviewRequest
 import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.LoneDeepLinkChrome
@@ -117,6 +118,14 @@ internal class BackstackController(
   /** The destination on top of the rendered stack. */
   val currentDestination: HedvigNavKey?
     get() = entries.lastOrNull()
+
+  /**
+   * Whether the member is anywhere inside a flow that must not be interrupted by the Play Store
+   * review prompt. Checks the whole stack, not just the top, because such a flow hosts the screens
+   * that earn the prompt on top of itself.
+   */
+  val suppressesAppStoreReviewRequest: Boolean
+    get() = entries.any { it is SuppressesAppStoreReviewRequest }
 
   /**
    * Every key whose decorator state must survive: the rendered stack plus all parked runs, mapped

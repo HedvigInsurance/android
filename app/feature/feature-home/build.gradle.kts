@@ -18,6 +18,8 @@ android {
 dependencies {
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.compose.foundation)
+  implementation(libs.androidx.datastore.core)
+  implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
@@ -69,6 +71,7 @@ dependencies {
   testImplementation(projects.apolloOctopusTest)
   testImplementation(projects.apolloTest)
   testImplementation(projects.coreCommonTest)
+  testImplementation(projects.coreDatastoreTest)
   testImplementation(projects.featureFlagsTest)
   testImplementation(projects.languageTest)
   testImplementation(projects.loggingTest)

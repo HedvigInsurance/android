@@ -44,6 +44,7 @@ import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ChipIdState
+import com.hedvig.android.data.contract.ContractGroup.PAYMENT_PROTECTION
 import com.hedvig.android.data.contract.ContractGroup.RENTAL
 import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.contract.ContractType
@@ -325,6 +326,7 @@ private fun ContractDetailScreen(
                       allowEditCoInsured = contract.supportsEditCoInsured,
                       allowEditCoOwners = contract.supportsEditCoOwners,
                       allowChangeTier = contract.supportsTierChange,
+                      isPaymentProtection = contract.productVariant.contractGroup == PAYMENT_PROTECTION,
                       allowRemovingAddon = contract.supportsRemovingAddon,
                       onChangeTierClick = {
                         onChangeTierClick(contract.id)

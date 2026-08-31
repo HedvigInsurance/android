@@ -127,8 +127,7 @@ private class EnterNewAddressPresenter(
         Submit -> {
           @Suppress("NAME_SHADOWING")
           val content = content.getOrNull() ?: return@CollectEvents
-          val validContent = content.validate()
-          if (validContent == null) return@CollectEvents
+          val validContent = content.validate() ?: return@CollectEvents
           coroutineScope.launch {
             val movingFlowState = movingFlowRepository.updateWithPropertyInput(
               movingDate = validContent.movingDate,

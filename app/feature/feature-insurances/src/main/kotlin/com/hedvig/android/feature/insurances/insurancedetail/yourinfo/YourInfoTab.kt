@@ -136,6 +136,7 @@ internal fun YourInfoTab(
   allowEditCoInsured: Boolean,
   allowEditCoOwners: Boolean,
   allowChangeTier: Boolean,
+  isPaymentProtection: Boolean,
   allowRemovingAddon: Boolean,
   onChangeTierClick: () -> Unit,
   isDecommissioned: Boolean,
@@ -171,6 +172,7 @@ internal fun YourInfoTab(
       allowEditCoInsured = allowEditCoInsured,
       allowEditCoOwners = allowEditCoOwners,
       allowChangeTier = allowChangeTier,
+      isPaymentProtection = isPaymentProtection,
       allowRemovingAddon = allowRemovingAddon,
       onChangeTierClick = {
         editYourInfoBottomSheet.dismiss()
@@ -673,9 +675,11 @@ internal fun CoverageRows(coverageRowItems: List<DisplayItem>, modifier: Modifie
           ) {
             HedvigText(displayItem.title)
             displayItem.subtitle?.let {
-              HedvigText(it,
+              HedvigText(
+                it,
                 style = HedvigTheme.typography.label,
-                color = HedvigTheme.colorScheme.textSecondary)
+                color = HedvigTheme.colorScheme.textSecondary,
+              )
             }
           }
         },
@@ -759,40 +763,37 @@ internal fun PriceRow(
 }
 
 @Composable
-internal fun ContractOwnerSection(
-  coInsuredList: List<CoInsured>,
-  modifier: Modifier,
-) {
+internal fun ContractOwnerSection(coInsuredList: List<CoInsured>, modifier: Modifier) {
   Column(modifier = modifier) {
-  HorizontalItemsWithMaximumSpaceTaken(
-    startSlot = {
-      Column(
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier.padding(vertical = 4.dp),
-      ) {
-        HedvigText(stringResource(Res.string.CHANGE_ADDRESS_CO_INSURED_LABEL))
-      }
-    },
-    endSlot = {
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.End,
-        modifier = Modifier.padding(vertical = 4.dp),
-      ) {
-        val text = if (coInsuredList.isEmpty()) {
-          stringResource(Res.string.CHANGE_ADDRESS_ONLY_YOU)
-        } else {
-          stringResource(Res.string.CHANGE_ADDRESS_YOU_PLUS, coInsuredList.size)
+    HorizontalItemsWithMaximumSpaceTaken(
+      startSlot = {
+        Column(
+          verticalArrangement = Arrangement.Center,
+          modifier = Modifier.padding(vertical = 4.dp),
+        ) {
+          HedvigText(stringResource(Res.string.CHANGE_ADDRESS_CO_INSURED_LABEL))
         }
-        HedvigText(
-          text = text,
-          color = HedvigTheme.colorScheme.textSecondary,
-          textAlign = TextAlign.End,
-        )
-      }
-    },
-    spaceBetween = 8.dp,
-  )
+      },
+      endSlot = {
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.End,
+          modifier = Modifier.padding(vertical = 4.dp),
+        ) {
+          val text = if (coInsuredList.isEmpty()) {
+            stringResource(Res.string.CHANGE_ADDRESS_ONLY_YOU)
+          } else {
+            stringResource(Res.string.CHANGE_ADDRESS_YOU_PLUS, coInsuredList.size)
+          }
+          HedvigText(
+            text = text,
+            color = HedvigTheme.colorScheme.textSecondary,
+            textAlign = TextAlign.End,
+          )
+        }
+      },
+      spaceBetween = 8.dp,
+    )
   }
 }
 
@@ -807,7 +808,6 @@ internal fun CoInsuredSection(
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
   val birthDateTimeFormatter = rememberHedvigBirthDateDateTimeFormatter()
   Column(modifier = modifier) {
-
     Spacer(Modifier.height(16.dp))
     HorizontalDivider()
     HorizontalItemsWithMaximumSpaceTaken(
@@ -953,6 +953,7 @@ private fun PreviewYourInfoTab() {
         allowEditCoInsured = true,
         allowEditCoOwners = false,
         allowChangeTier = true,
+        isPaymentProtection = false,
         allowRemovingAddon = true,
         onChangeTierClick = {},
         isDecommissioned = true,

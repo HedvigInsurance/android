@@ -11,8 +11,11 @@ import assertk.assertions.isTrue
 import com.hedvig.android.feature.onboarding.FakeOnboardingMemberIdProvider
 import com.hedvig.android.feature.onboarding.FakeOnboardingRepository
 import com.hedvig.android.feature.onboarding.data.CompleteOnboardingUseCase
+import com.hedvig.android.feature.onboarding.data.OnboardingContract
+import com.hedvig.android.feature.onboarding.data.OnboardingData
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.testOnboardingData
+import com.hedvig.android.feature.onboarding.testSessionStore
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
@@ -36,9 +39,13 @@ internal class OnboardingNavigatorTest {
     }
   }
 
-  private suspend fun sessionStoreWithData(repository: FakeOnboardingRepository): OnboardingSessionStore {
-    val store = OnboardingSessionStore(repository, FakeOnboardingMemberIdProvider())
-    repository.onboardingDataResponses.add(testOnboardingData().right())
+  private suspend fun sessionStoreWithData(
+    repository: FakeOnboardingRepository,
+    analyticsDisabled: Boolean = false,
+    data: OnboardingData = testOnboardingData(),
+  ): OnboardingSessionStore {
+    val store = testSessionStore(repository, FakeOnboardingMemberIdProvider(), analyticsDisabled)
+    repository.onboardingDataResponses.add(data.right())
     store.getOrFetchSession()
     return store
   }
@@ -58,6 +65,24 @@ internal class OnboardingNavigatorTest {
   }
 
   @Test
+  fun `continue from welcome skips straight past consent when analytics is disabled`() = runTest {
+    val backstack = TestBackstack().apply { entries.add(OnboardingKey) }
+    val repository = FakeOnboardingRepository()
+    val navigator = OnboardingNavigator(
+      backstack,
+      sessionStoreWithData(repository, analyticsDisabled = true),
+      FakeCompleteOnboardingUseCase(),
+    )
+
+    navigator.continueFrom(null)
+
+    assertThat(backstack.entries).containsExactly(
+      OnboardingKey,
+      OnboardingStepKey(OnboardingStepId.PhoneNumber),
+    )
+  }
+
+  @Test
   fun `continue from a mid step pushes the next step`() = runTest {
     val backstack = TestBackstack().apply {
       entries.add(OnboardingKey)
@@ -69,6 +94,48 @@ internal class OnboardingNavigatorTest {
     navigator.continueFrom(OnboardingStepId.AnalyticsConsent)
 
     assertThat(backstack.entries.last()).isEqualTo(OnboardingStepKey(OnboardingStepId.PhoneNumber))
+  }
+
+  @Test
+  fun `continue from a step the rebuilt path lacks pushes the next step that is still in it`() = runTest {
+    val backstack = TestBackstack().apply {
+      entries.add(OnboardingKey)
+      entries.add(OnboardingStepKey(OnboardingStepId.CoInsured))
+    }
+    val repository = FakeOnboardingRepository()
+    val completeOnboarding = FakeCompleteOnboardingUseCase()
+    // No contract needs co-insured info, so CoInsured is absent from the path the member stands on.
+    val navigator = OnboardingNavigator(
+      backstack,
+      sessionStoreWithData(repository, data = testOnboardingData(contracts = listOf(contractMissingNothing))),
+      completeOnboarding,
+    )
+
+    navigator.continueFrom(OnboardingStepId.CoInsured)
+
+    assertThat(backstack.entries.last()).isEqualTo(OnboardingStepKey(OnboardingStepId.InviteFriend))
+    assertThat(completeOnboarding.invoked).isFalse()
+  }
+
+  @Test
+  fun `continue from a missing step with nothing after it in the path exits the flow`() = runTest {
+    val backstack = TestBackstack().apply {
+      entries.add(OnboardingKey)
+      entries.add(OnboardingStepKey(OnboardingStepId.BundleDiscount))
+    }
+    val repository = FakeOnboardingRepository()
+    val completeOnboarding = FakeCompleteOnboardingUseCase()
+    // No cross-sells, so BundleDiscount is absent and it is the last step in declaration order.
+    val navigator = OnboardingNavigator(
+      backstack,
+      sessionStoreWithData(repository, data = testOnboardingData(crossSells = emptyList())),
+      completeOnboarding,
+    )
+
+    navigator.continueFrom(OnboardingStepId.BundleDiscount)
+
+    assertThat(completeOnboarding.invoked).isTrue()
+    assertThat(backstack.entries).isEmpty()
   }
 
   @Test
@@ -110,7 +177,7 @@ internal class OnboardingNavigatorTest {
     val completeOnboarding = FakeCompleteOnboardingUseCase()
     val navigator = OnboardingNavigator(
       backstack,
-      OnboardingSessionStore(FakeOnboardingRepository(), FakeOnboardingMemberIdProvider()),
+      testSessionStore(FakeOnboardingRepository(), FakeOnboardingMemberIdProvider()),
       completeOnboarding,
     )
 
@@ -120,5 +187,15 @@ internal class OnboardingNavigatorTest {
     assertThat(completeOnboarding.invoked).isTrue()
   }
 }
+
+private val contractMissingNothing = OnboardingContract(
+  id = "contract-1",
+  displayName = "Home Insurance",
+  exposureName = "Bellmansgatan 19A",
+  typeOfContract = "SE_APARTMENT_RENT",
+  missingCoInsuredCount = 0,
+  missingCoOwnersCount = 0,
+  isMissingPetId = false,
+)
 
 private data object NonOnboardingKey : HedvigNavKey

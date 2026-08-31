@@ -51,6 +51,7 @@ import com.hedvig.android.feature.onboarding.ui.OnboardingProgressBarAnimation
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepHeader
 import com.hedvig.android.feature.onboarding.ui.OnboardingStepScaffold
 import com.hedvig.android.feature.onboarding.ui.progressFor
+import com.hedvig.android.feature.onboarding.ui.withOnboardingHaptic
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -61,7 +62,8 @@ import hedvig.resources.ONBOARDING_ANALYTICS_DENY_BUTTON
 import hedvig.resources.ONBOARDING_ANALYTICS_SUBTITLE
 import hedvig.resources.ONBOARDING_ANALYTICS_TITLE
 import hedvig.resources.Res
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
 import org.jetbrains.compose.resources.stringResource
 
 @Inject
@@ -87,38 +89,106 @@ internal class OnboardingConsentPresenter(
   ): OnboardingConsentUiState {
     var currentState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
+    var badge by remember {
+      mutableStateOf((lastState as? OnboardingConsentUiState.Content)?.badge)
+    }
+    // Held while a decision is being applied so repeated taps cannot start a second one, and
+    // released once it has navigated, because this entry stays on the back stack and becomes
+    // interactive again when the member comes back to it.
+    var pendingNavigation by remember { mutableStateOf<PendingNavigation?>(null) }
+    val badgeSettleSignals = remember { MutableSharedFlow<ConsentBadge?>(replay = 1) }
 
     LaunchedEffect(loadIteration) {
+      // Read before the early return: a presenter that restarts while this screen is showing keeps
+      // its state but loses the badge, which only the stored consent can tell us.
+      badge = settingsDataStore.observeAnalyticsConsent().first().toBadge()
       if (currentState is OnboardingConsentUiState.Content) return@LaunchedEffect
       currentState = OnboardingConsentUiState.Loading
       sessionStore.getOrFetchSession().fold(
         ifLeft = { currentState = OnboardingConsentUiState.Error },
         ifRight = { session ->
-          currentState = OnboardingConsentUiState.Content(session.progressFor(OnboardingStepId.AnalyticsConsent))
+          currentState = OnboardingConsentUiState.Content(
+            progress = session.progressFor(OnboardingStepId.AnalyticsConsent),
+            badge = badge,
+            buttonsEnabled = true,
+          )
         },
       )
     }
 
-    CollectEvents { event ->
-      when (event) {
-        OnboardingConsentEvent.Retry -> loadIteration++
+    LaunchedEffect(pendingNavigation) {
+      when (val pending = pendingNavigation) {
+        null -> {}
 
-        OnboardingConsentEvent.Close -> launch { navigator.exitOnboarding() }
-
-        OnboardingConsentEvent.Allow -> launch {
-          settingsDataStore.setAnalyticsConsent(AnalyticsConsent.GRANTED)
-          navigator.continueFrom(OnboardingStepId.AnalyticsConsent)
+        PendingNavigation.Exit -> {
+          navigator.exitOnboarding()
+          pendingNavigation = null
         }
 
-        OnboardingConsentEvent.Deny -> launch {
-          settingsDataStore.setAnalyticsConsent(AnalyticsConsent.DENIED)
+        is PendingNavigation.Decision -> {
+          settingsDataStore.setAnalyticsConsent(pending.consent)
+          val answeredBadge = pending.consent.toBadge()
+          if (answeredBadge != badge) {
+            badge = answeredBadge
+            badgeSettleSignals.first { settledBadge -> settledBadge == answeredBadge }
+          }
           navigator.continueFrom(OnboardingStepId.AnalyticsConsent)
+          pendingNavigation = null
         }
       }
     }
 
-    return currentState
+    CollectEvents { event ->
+      when (event) {
+        OnboardingConsentEvent.Retry -> {
+          loadIteration++
+        }
+
+        OnboardingConsentEvent.Close -> {
+          if (pendingNavigation == null) {
+            pendingNavigation = PendingNavigation.Exit
+          }
+        }
+
+        OnboardingConsentEvent.Allow -> {
+          if (pendingNavigation == null) {
+            pendingNavigation = PendingNavigation.Decision(AnalyticsConsent.GRANTED)
+          }
+        }
+
+        OnboardingConsentEvent.Deny -> {
+          if (pendingNavigation == null) {
+            pendingNavigation = PendingNavigation.Decision(AnalyticsConsent.DENIED)
+          }
+        }
+
+        is OnboardingConsentEvent.BadgeSettled -> {
+          badgeSettleSignals.tryEmit(event.badge)
+        }
+      }
+    }
+
+    return when (val state = currentState) {
+      is OnboardingConsentUiState.Content -> state.copy(
+        badge = badge,
+        buttonsEnabled = pendingNavigation == null,
+      )
+
+      else -> state
+    }
   }
+
+  private sealed interface PendingNavigation {
+    data object Exit : PendingNavigation
+
+    data class Decision(val consent: AnalyticsConsent) : PendingNavigation
+  }
+}
+
+private fun AnalyticsConsent.toBadge(): ConsentBadge? = when (this) {
+  AnalyticsConsent.GRANTED -> ConsentBadge.Accepted
+  AnalyticsConsent.DENIED -> ConsentBadge.Denied
+  AnalyticsConsent.NOT_DECIDED -> null
 }
 
 internal sealed interface OnboardingConsentUiState {
@@ -126,7 +196,11 @@ internal sealed interface OnboardingConsentUiState {
 
   data object Error : OnboardingConsentUiState
 
-  data class Content(val progress: OnboardingProgress) : OnboardingConsentUiState
+  data class Content(
+    val progress: OnboardingProgress,
+    val badge: ConsentBadge?,
+    val buttonsEnabled: Boolean,
+  ) : OnboardingConsentUiState
 }
 
 internal sealed interface OnboardingConsentEvent {
@@ -137,6 +211,9 @@ internal sealed interface OnboardingConsentEvent {
   data object Allow : OnboardingConsentEvent
 
   data object Deny : OnboardingConsentEvent
+
+  /** The card's badge has finished animating to [badge]. */
+  data class BadgeSettled(val badge: ConsentBadge?) : OnboardingConsentEvent
 }
 
 @Composable
@@ -155,6 +232,9 @@ internal fun OnboardingConsentDestination(
     onRetry = { viewModel.emit(OnboardingConsentEvent.Retry) },
     onAllow = { viewModel.emit(OnboardingConsentEvent.Allow) },
     onDeny = { viewModel.emit(OnboardingConsentEvent.Deny) },
+    onBadgeSettled = { badge ->
+      viewModel.emit(OnboardingConsentEvent.BadgeSettled(badge))
+    },
   )
 }
 
@@ -168,6 +248,7 @@ private fun OnboardingConsentScreen(
   onRetry: () -> Unit,
   onAllow: () -> Unit,
   onDeny: () -> Unit,
+  onBadgeSettled: (badge: ConsentBadge?) -> Unit,
 ) {
   OnboardingStepScaffold(
     progress = (uiState as? OnboardingConsentUiState.Content)?.progress,
@@ -195,7 +276,11 @@ private fun OnboardingConsentScreen(
         )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(24.dp))
-        OnboardingVerifiedCard(modifier = Modifier.align(Alignment.CenterHorizontally))
+        OnboardingConsentCard(
+          badge = uiState.badge,
+          onBadgeSettled = onBadgeSettled,
+          modifier = Modifier.align(Alignment.CenterHorizontally),
+        )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(24.dp))
         Row(
@@ -220,8 +305,8 @@ private fun OnboardingConsentScreen(
         Spacer(Modifier.height(16.dp))
         HedvigButton(
           text = stringResource(Res.string.ONBOARDING_ANALYTICS_ALLOW_BUTTON),
-          onClick = onAllow,
-          enabled = true,
+          onClick = withOnboardingHaptic(onAllow),
+          enabled = uiState.buttonsEnabled,
           buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
           modifier = Modifier
             .fillMaxWidth()
@@ -231,8 +316,8 @@ private fun OnboardingConsentScreen(
         Spacer(Modifier.height(8.dp))
         HedvigButton(
           text = stringResource(Res.string.ONBOARDING_ANALYTICS_DENY_BUTTON),
-          onClick = onDeny,
-          enabled = true,
+          onClick = withOnboardingHaptic(onDeny),
+          enabled = uiState.buttonsEnabled,
           buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
           modifier = Modifier
             .fillMaxWidth()
@@ -262,6 +347,7 @@ private fun PreviewOnboardingConsentScreen(
         onRetry = {},
         onAllow = {},
         onDeny = {},
+        onBadgeSettled = {},
       )
     }
   }
@@ -273,6 +359,18 @@ private class OnboardingConsentUiStateProvider : CollectionPreviewParameterProvi
     OnboardingConsentUiState.Error,
     OnboardingConsentUiState.Content(
       progress = OnboardingProgress(totalSteps = 5, currentIndex = 2),
+      badge = null,
+      buttonsEnabled = true,
+    ),
+    OnboardingConsentUiState.Content(
+      progress = OnboardingProgress(totalSteps = 5, currentIndex = 2),
+      badge = ConsentBadge.Accepted,
+      buttonsEnabled = false,
+    ),
+    OnboardingConsentUiState.Content(
+      progress = OnboardingProgress(totalSteps = 5, currentIndex = 2),
+      badge = ConsentBadge.Denied,
+      buttonsEnabled = false,
     ),
   ),
 )

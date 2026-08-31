@@ -127,6 +127,7 @@ internal class GetHomeUseCaseTest {
       TimeZone.UTC,
       getAddonBannerInfoUseCase = travelBannerUseCase,
       HasAnyActiveConversationUseCase(apolloClient),
+      FakeDismissedShopSessionsStorage(),
     )
     val testId = "test"
 
@@ -176,6 +177,7 @@ internal class GetHomeUseCaseTest {
       TimeZone.UTC,
       travelBannerUseCase,
       HasAnyActiveConversationUseCase(apolloClient),
+      FakeDismissedShopSessionsStorage(),
     )
 
     testGetMemberRemindersUseCase.memberReminders.add(MemberReminders())
@@ -925,12 +927,55 @@ internal class GetHomeUseCaseTest {
       .isEmpty()
   }
 
+  @Test
+  fun `dismissed ongoing shop sessions are filtered out`() = runTest {
+    val featureManager = FakeFeatureManager(
+      mapOf(
+        Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX to false,
+        Feature.ENABLE_CLAIM_INTENT_RESUME to false,
+        Feature.DISABLE_RESUMING_ONGOING_SHOP_SESSIONS to false,
+      ),
+    )
+    val getHomeDataUseCase = testUseCaseWithoutReminders(
+      featureManager = featureManager,
+      dismissedShopSessionsStorage = FakeDismissedShopSessionsStorage(setOf("dismissed-session")),
+    )
+
+    apolloClient.registerTestResponse(
+      HomeQuery(true, false, false),
+      HomeQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          ongoingShopSessions = listOf(
+            buildShopSession { id = "dismissed-session" },
+            buildShopSession { id = "kept-session" },
+          )
+        }
+      },
+    )
+    apolloClient.registerTestResponse(UnreadMessageCountQuery(), UnreadMessageCountQuery.Data(OctopusFakeResolver))
+    apolloClient.registerTestResponse(
+      CbmNumberOfChatMessagesQuery(),
+      CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+    )
+
+    val result = getHomeDataUseCase.invoke(true).first()
+
+    assertThat(result)
+      .isNotNull()
+      .isRight()
+      .prop(HomeData::ongoingShopSessions)
+      .single()
+      .prop(OngoingShopSession::id)
+      .isEqualTo("kept-session")
+  }
+
   // Used as a convenience to get a use case without any enqueued apollo responses, but some sane defaults for the
   // other dependencies
   private fun testUseCaseWithoutReminders(
     featureManager: FeatureManager = FakeFeatureManager(true),
     testClock: TestClock = TestClock(),
     timeZone: TimeZone = TimeZone.UTC,
+    dismissedShopSessionsStorage: DismissedShopSessionsStorage = FakeDismissedShopSessionsStorage(),
   ): GetHomeDataUseCase {
     return GetHomeDataUseCaseImpl(
       apolloClient,
@@ -940,6 +985,7 @@ internal class GetHomeUseCaseTest {
       timeZone,
       travelBannerUseCase,
       HasAnyActiveConversationUseCase(apolloClient),
+      dismissedShopSessionsStorage,
     )
   }
 }

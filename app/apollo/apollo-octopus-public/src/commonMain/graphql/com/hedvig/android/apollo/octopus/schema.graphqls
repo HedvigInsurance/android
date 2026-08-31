@@ -695,7 +695,8 @@ type ChangeTierDeductibleFromAgreement {
   """
   tierLevel: Int
   """
-  Optional tier description, if set use that rather than productVariant->tierDescription
+  Optional tier description, if set use that rather than productVariant->tierDescription.
+  An empty string means the description should deliberately be left blank.
   """
   tierDescription: String
   """
@@ -735,7 +736,8 @@ type ChangeTierDeductibleQuote {
   """
   tierLevel: Int
   """
-  Optional tier description, if set use that rather than productVariant->tierDescription
+  Optional tier description, if set use that rather than productVariant->tierDescription.
+  An empty string means the description should deliberately be left blank.
   """
   tierDescription: String
   """
@@ -1112,6 +1114,7 @@ type ClaimIntentStepContentFileUpload {
   isSkippable: Boolean!
 }
 type ClaimIntentStepContentFileUploadFile {
+  id: ID!
   url: Url!
   contentType: String!
   fileName: String!
@@ -1734,7 +1737,7 @@ input CrossSellExperimentInput {
 input CrossSellInput {
   userFlow: UserFlow!
   """
-  REQUIRED for SMART_X_SELL, must be NULL for HOME_X_SELL and INSURANCES
+  REQUIRED for SMART_X_SELL, must be NULL for HOME_X_SELL, INSURANCES and ONBOARDING
   """
   flowSource: FlowSource
   """
@@ -1771,6 +1774,11 @@ type CrossSellV2 {
   Other available cross-sells (behavior varies by userFlow)
   """
   otherCrossSells: [CrossSell!]!
+  """
+  Whether otherCrossSells should be presented as promoted offers (the highlighted "save" treatment).
+  A flow can apply a discount without promoting it, so this may be false while items still carry discount
+  copy in their description. Independent of recommendedCrossSell, which carries its own discount fields.
+  """
   discountAvailable: Boolean!
 }
 enum CurrencyCode {
@@ -1825,12 +1833,11 @@ Employment type for Payment Protection, mirroring underwriter's `SwedishPaymentP
 `UNEMPLOYED` and `HOURLY_EMPLOYED` are ineligible and rejected by underwriter.
 """
 enum EmploymentType {
-  UNEMPLOYED
-  PROBATIONARY_EMPLOYED
-  HOURLY_EMPLOYED
+  PERMANENT_EMPLOYED_FULLTIME
+  PERMANENT_EMPLOYED_PARTTIME
   CONTRACT_EMPLOYED
-  PERMANENT_EMPLOYED
   SELF_EMPLOYED
+  UNEMPLOYED
 }
 type Entrypoint {
   id: ID!
@@ -2721,6 +2728,8 @@ type Member {
   - INSURANCES: All options in otherCrossSells, no recommendation
   - HOME_X_SELL: Recommendation + other options
   - SMART_X_SELL (requires flowSource): Focused recommendation OR all options
+  - ONBOARDING: All options in otherCrossSells led by the recommendation, no separate recommendation
+  otherCrossSells carry discount copy for every flow except SMART_X_SELL.
   """
   crossSellV2(input: CrossSellInput!): CrossSellV2!
   """
@@ -4264,7 +4273,7 @@ type PriceIntent {
   """
   The minimum start date of the price intent.
   """
-  minStartDate: Date
+  minStartDate: Date @deprecated(reason: "Use ProductOffer.minStartDate instead")
   """
   When 'true' it means user has gone trough Insurely flow with that price intent
   """
@@ -4459,6 +4468,14 @@ type ProductOffer {
   The start date of the insurance
   """
   startDate: Date
+  """
+  The earliest start date allowed for this offer, if the product constrains it.
+  """
+  minStartDate: Date
+  """
+  The latest start date allowed for this offer.
+  """
+  maxStartDate: Date!
   """
   Information about a price match with an external insurance
   """
@@ -5053,6 +5070,7 @@ input ShopSessionAttributionInput {
   A/B testing experiments
   """
   experiments: [ShopSessionExperimentInput!]
+  """"""
   trackingData: JSON
   """
   The Vertex recommendation instance that led the member here (cross-sell arm only).
@@ -5694,6 +5712,10 @@ enum UserFlow {
   Smart cross-sell - focused recommendation OR all options
   """
   SMART_X_SELL
+  """
+  End of onboarding - all options led by the recommendation
+  """
+  ONBOARDING
 }
 scalar UUID
 type ValueArray {
@@ -5917,23 +5939,23 @@ enum __DirectiveLocation {
   """
   INPUT_FIELD_DEFINITION
 }
-directive @defer (label: String, if: Boolean! = true) on FRAGMENT_SPREAD|INLINE_FRAGMENT
+directive @defer(label: String, if: Boolean! = true) on FRAGMENT_SPREAD | INLINE_FRAGMENT
 """
 Directs the executor to include this field or fragment only when the `if` argument is true.
 """
-directive @include ("Included when true." if: Boolean!) on FIELD|FRAGMENT_SPREAD|INLINE_FRAGMENT
+directive @include("Included when true." if: Boolean!) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
 """
 Directs the executor to skip this field or fragment when the `if` argument is true.
 """
-directive @skip ("Skipped when true." if: Boolean!) on FIELD|FRAGMENT_SPREAD|INLINE_FRAGMENT
+directive @skip("Skipped when true." if: Boolean!) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
 """
 Marks an element of a GraphQL schema as no longer supported.
 """
-directive @deprecated ("Explains why this element was deprecated, usually also including a suggestion for how to access supported similar data. Formatted using the Markdown syntax, as specified by [CommonMark](https://commonmark.org/)." reason: String = "No longer supported") on FIELD_DEFINITION|ARGUMENT_DEFINITION|INPUT_FIELD_DEFINITION|ENUM_VALUE
+directive @deprecated("Explains why this element was deprecated, usually also including a suggestion for how to access supported similar data. Formatted using the Markdown syntax, as specified by [CommonMark](https://commonmark.org/)." reason: String = "No longer supported") on FIELD_DEFINITION | ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION | ENUM_VALUE
 """
 Exposes a URL that specifies the behavior of this scalar.
 """
-directive @specifiedBy ("The URL that specifies the behavior of this scalar." url: String!) on SCALAR
+directive @specifiedBy("The URL that specifies the behavior of this scalar." url: String!) on SCALAR
 schema {
   query: Query
   mutation: Mutation

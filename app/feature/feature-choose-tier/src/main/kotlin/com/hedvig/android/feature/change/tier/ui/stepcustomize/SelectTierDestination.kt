@@ -80,8 +80,9 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Success
-import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
+import com.hedvig.android.ui.tiersandaddons.CostBreakdownEntry
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
+import hedvig.resources.OFFER_PRESENTER_INSURANCE_AMOUNT_TITLE
 import hedvig.resources.Res
 import hedvig.resources.TIER_FLOW_COMPARE_BUTTON
 import hedvig.resources.TIER_FLOW_COVERAGE_LABEL
@@ -95,14 +96,16 @@ import hedvig.resources.TIER_FLOW_SELECT_COVERAGE_SUBTITLE
 import hedvig.resources.TIER_FLOW_SELECT_COVERAGE_TITLE
 import hedvig.resources.TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE
 import hedvig.resources.TIER_FLOW_SELECT_DEDUCTIBLE_TITLE
+import hedvig.resources.TIER_FLOW_SELECT_PAYMENT_PROTECTION_DROPDOWN_TITLE
 import hedvig.resources.TIER_FLOW_SHOW_COVERAGE_BUTTON
 import hedvig.resources.TIER_FLOW_SUBTITLE
-import hedvig.resources.TIER_FLOW_SUBTITLE_WITHOUT_DEDUCTIBLE
 import hedvig.resources.TIER_FLOW_TITLE
 import hedvig.resources.TIER_FLOW_TOTAL
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_close_button
 import hedvig.resources.general_continue_button
+import hedvig.resources.insurance_details_change_amount
+import hedvig.resources.insurance_details_change_amount_subtitle
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -226,7 +229,11 @@ private fun SelectTierScreen(
   ) {
     Spacer(modifier = Modifier.height(8.dp))
     HedvigText(
-      text = stringResource(Res.string.TIER_FLOW_TITLE),
+      text = if (uiState.isPaymentProtection) {
+        stringResource(Res.string.insurance_details_change_amount)
+      } else {
+        stringResource(Res.string.TIER_FLOW_TITLE)
+      },
       style = HedvigTheme.typography.headlineMedium,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
@@ -236,9 +243,8 @@ private fun SelectTierScreen(
         lineBreak = LineBreak.Heading,
         color = HedvigTheme.colorScheme.textSecondary,
       ),
-      // Payment protection has no deductible, so the standard "…level and deductible" subtitle over-promises.
       text = if (uiState.isPaymentProtection) {
-        stringResource(Res.string.TIER_FLOW_SUBTITLE_WITHOUT_DEDUCTIBLE)
+        stringResource(Res.string.insurance_details_change_amount_subtitle)
       } else {
         stringResource(Res.string.TIER_FLOW_SUBTITLE)
       },
@@ -262,6 +268,7 @@ private fun SelectTierScreen(
       onChooseTierInDialogClick = onChooseTierInDialogClick,
       chosenTierIndex = uiState.chosenTierIndex,
       chosenQuoteIndex = uiState.chosenQuoteIndex,
+      isPaymentProtection = uiState.isPaymentProtection,
       onSetTierBackToPreviouslyChosen = onSetTierBackToPreviouslyChosen,
       onSetDeductibleBackToPreviouslyChosen = onSetDeductibleBackToPreviouslyChosen,
     )
@@ -313,6 +320,7 @@ private fun CustomizationCard(
   onChooseDeductibleInDialogClick: (quote: TierDeductibleQuote) -> Unit,
   onChooseTierInDialogClick: (tier: Tier) -> Unit,
   isTierChoiceEnabled: Boolean,
+  isPaymentProtection: Boolean,
   onChooseDeductibleClick: () -> Unit,
   onSetDeductibleBackToPreviouslyChosen: () -> Unit,
   onSetTierBackToPreviouslyChosen: () -> Unit,
@@ -343,7 +351,16 @@ private fun CustomizationCard(
           add(SimpleDropdownItem(tier.first.tierDisplayName ?: tier.first.tierName))
         }
       }
-      val hintText = stringResource(Res.string.TIER_FLOW_COVERAGE_PLACEHOLDER)
+      val tierLabel = if (isPaymentProtection) {
+        stringResource(Res.string.TIER_FLOW_SELECT_PAYMENT_PROTECTION_DROPDOWN_TITLE)
+      } else {
+        stringResource(Res.string.TIER_FLOW_COVERAGE_LABEL)
+      }
+      val hintText = if (isPaymentProtection) {
+        stringResource(Res.string.TIER_FLOW_SELECT_PAYMENT_PROTECTION_DROPDOWN_TITLE)
+      } else {
+        stringResource(Res.string.TIER_FLOW_COVERAGE_PLACEHOLDER)
+      }
       val chosenTierVoiceDescription = if (chosenTierIndex ==
         null
       ) {
@@ -355,7 +372,7 @@ private fun CustomizationCard(
         dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
         isEnabled = isTierChoiceEnabled,
         style = Label(
-          label = stringResource(Res.string.TIER_FLOW_COVERAGE_LABEL),
+          label = tierLabel,
           items = tierSimpleItems,
         ),
         size = Small,
@@ -364,14 +381,22 @@ private fun CustomizationCard(
         onDoAlongWithDismissRequest = onSetTierBackToPreviouslyChosen,
         containerColor = HedvigTheme.colorScheme.surfacePrimary,
         modifier = Modifier.accessibilityForDropdown(
-          labelText = stringResource(Res.string.TIER_FLOW_COVERAGE_LABEL),
+          labelText = tierLabel,
           selectedValue = chosenTierVoiceDescription,
           isEnabled = isTierChoiceEnabled,
         ),
       ) { onDismissRequest ->
         DropdownContent(
-          title = stringResource(Res.string.TIER_FLOW_SELECT_COVERAGE_TITLE),
-          subTitle = stringResource(Res.string.TIER_FLOW_SELECT_COVERAGE_SUBTITLE),
+          title = if (isPaymentProtection) {
+            stringResource(Res.string.OFFER_PRESENTER_INSURANCE_AMOUNT_TITLE)
+          } else {
+            stringResource(Res.string.TIER_FLOW_SELECT_COVERAGE_TITLE)
+          },
+          subTitle = if (isPaymentProtection) {
+            stringResource(Res.string.insurance_details_change_amount_subtitle)
+          } else {
+            stringResource(Res.string.TIER_FLOW_SELECT_COVERAGE_SUBTITLE)
+          },
           radioGroup = {
             TierCoverageRadioGroup(tiers, chosenTierInDialog, onChooseTierInDialogClick)
           },
@@ -674,6 +699,7 @@ private fun CustomizationCardPreview() {
       onChooseTierClick = {},
       onChooseDeductibleClick = {},
       isTierChoiceEnabled = true,
+      isPaymentProtection = false,
       chosenQuote = quotesForPreview[0],
       quotesForChosenTier = quotesForPreview,
       tiers = listOf(
