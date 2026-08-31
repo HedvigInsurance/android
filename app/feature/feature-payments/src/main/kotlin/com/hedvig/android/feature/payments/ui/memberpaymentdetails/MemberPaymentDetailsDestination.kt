@@ -127,23 +127,33 @@ private fun MemberPaymentDetailsSuccessScreen(
   Column(modifier.padding(horizontal = 16.dp).verticalScroll(rememberScrollState())) {
     val explanationBottomSheetState = rememberHedvigBottomSheetState<PaymentExplanationData>()
     ExplanationBottomSheet(explanationBottomSheetState)
-    HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = {
-        HedvigText(stringResource(id = R.string.PAYMENTS_PAYMENT_METHOD))
-      },
-      endSlot = {
-        HedvigText(
-          text = paymentDetails.paymentMethod.label(),
-          textAlign = TextAlign.End,
-          modifier = Modifier.fillMaxWidth(),
-          color = HedvigTheme.colorScheme.textSecondary,
-        )
-      },
-      modifier = Modifier.padding(vertical = 16.dp),
-      spaceBetween = 8.dp,
-    )
-    HorizontalDivider()
-
+    val paymentMethod = paymentDetails.paymentMethod
+    if (paymentMethod != null) {
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = {
+          HedvigText(stringResource(id = R.string.PAYMENTS_PAYMENT_METHOD))
+        },
+        endSlot = {
+          HedvigText(
+            text = paymentMethod.label(),
+            textAlign = TextAlign.End,
+            modifier = Modifier.fillMaxWidth(),
+            color = HedvigTheme.colorScheme.textSecondary,
+          )
+        },
+        modifier = Modifier.padding(vertical = 16.dp),
+        spaceBetween = 8.dp,
+      )
+      HorizontalDivider()
+    } else {
+      HedvigText(
+        "No active payment method", // todo!!!!
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(16.dp),
+      )
+    }
     val dayOfMonth = paymentDetails.chargingDayInTheMonth
     if (dayOfMonth != null) {
       HorizontalItemsWithMaximumSpaceTaken(
@@ -347,6 +357,13 @@ private class MemberPaymentDetailsUiStatePreviewParameterProvider() :
     listOf(
       MemberPaymentDetailsUiState.Failure,
       MemberPaymentDetailsUiState.Loading,
+      MemberPaymentDetailsUiState.Success(
+        paymentDetails = MemberPaymentsDetails(
+          paymentMethod = null,
+          chargingDayInTheMonth = null,
+          account = null,
+        ),
+      ),
       MemberPaymentDetailsUiState.Success(
         paymentDetails = MemberPaymentsDetails(
           paymentMethod = PaymentMethod.TRUSTLY,
