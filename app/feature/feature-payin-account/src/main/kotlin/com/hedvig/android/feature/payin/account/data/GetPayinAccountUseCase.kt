@@ -3,13 +3,12 @@ package com.hedvig.android.feature.payin.account.data
 import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.cache.normalized.FetchPolicy
-import com.apollographql.apollo.cache.normalized.fetchPolicy
+import com.apollographql.cache.normalized.FetchPolicy
+import com.apollographql.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
-import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import octopus.GetPayinMethodsQuery
@@ -31,7 +30,6 @@ internal class GetPayinAccountUseCase(
   private val apolloClient: ApolloClient,
 ) {
   suspend fun invoke(): Either<ErrorMessage, PayinAccountData> = either {
-    logcat { "Mariia: GetPayinAccountUseCase launching" }
     val result = apolloClient
       .query(GetPayinMethodsQuery())
       .fetchPolicy(FetchPolicy.NetworkOnly)
@@ -84,12 +82,10 @@ internal class GetPayinAccountUseCase(
       .filter { it.supportsPayin }
       .map { it.provider }
 
-    val finalResult = PayinAccountData(
+    PayinAccountData(
       currentMethods = currentMethods,
       availablePayinMethods = availablePayinMethods,
     )
-    logcat { "Mariia: GetPayinAccountUseCase finalResult: $finalResult" }
-    finalResult
   }
 }
 

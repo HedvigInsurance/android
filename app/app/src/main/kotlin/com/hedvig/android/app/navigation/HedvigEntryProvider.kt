@@ -139,7 +139,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     navigateToNewConversation = navigateToNewConversation,
     navigateToConversation = navigateToConversation,
     navigateToInbox = navigateToInbox,
-    navigateToConnectPayment = navigateToConnectPayment,
+    navigateToPayinAccount = navigateToPayinAccount,
     navigateToPayoutAccount = navigateToPayoutAccount,
     navigateToTravelCertificate = navigateToTravelCertificate,
     navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
@@ -174,7 +174,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     languageService = languageService,
     externalNavigator = externalNavigator,
     openUrl = openUrl,
-    navigateToConnectPayment = navigateToConnectPayment,
+    navigateToPayinAccount = navigateToPayinAccount,
     navigateToPayoutAccount = navigateToPayoutAccount,
     navigateToNewConversation = navigateToNewConversation,
     onResetOnboardingForDebug = {
@@ -248,7 +248,7 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
   navigateToNewConversation: () -> Unit,
   navigateToConversation: (String) -> Unit,
   navigateToInbox: () -> Unit,
-  navigateToConnectPayment: () -> Unit,
+  navigateToPayinAccount: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
   navigateToTravelCertificate: () -> Unit,
   navigateToAddonPurchaseFlow: (List<String>) -> Unit,
@@ -272,7 +272,7 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
     onNavigateToInbox = navigateToInbox,
     onNavigateToNewConversation = navigateToNewConversation,
     navigateToClaimDetails = { claimId -> backstack.add(ClaimDetailsKey(claimId)) },
-    navigateToConnectPayment = navigateToConnectPayment,
+    navigateToConnectPayment = navigateToPayinAccount,
     navigateToConnectPayout = navigateToPayoutAccount,
     navigateToContactInfo = { backstack.add(ContactInfoKey) },
     navigateToMissingInfo = { contractId: String, type: CoInsuredFlowType ->
@@ -497,7 +497,7 @@ private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
   languageService: LanguageService,
   externalNavigator: ExternalNavigator,
   openUrl: (String) -> Unit,
-  navigateToConnectPayment: () -> Unit,
+  navigateToPayinAccount: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
   navigateToNewConversation: () -> Unit,
   onResetOnboardingForDebug: () -> Unit,
@@ -515,7 +515,7 @@ private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
     globalSnackBarState = globalSnackBarState,
     backstack = backstack,
     hedvigBuildConstants = hedvigBuildConstants,
-    navigateToConnectPayment = navigateToConnectPayment,
+    navigateToConnectPayment = navigateToPayinAccount,
     navigateToConnectPayout = navigateToPayoutAccount,
     navigateToAddMissingInfo = { contractId: String, type: CoInsuredFlowType ->
       backstack.add(CoInsuredAddInfoKey(contractId, type))
