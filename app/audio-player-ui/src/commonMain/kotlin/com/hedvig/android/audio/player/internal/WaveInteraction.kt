@@ -1,6 +1,6 @@
 package com.hedvig.android.audio.player.internal
 
-import com.hedvig.audio.player.data.ProgressPercentage
+import com.hedvig.android.audio.player.data.ProgressPercentage
 
 internal fun interface WaveInteraction {
   /**

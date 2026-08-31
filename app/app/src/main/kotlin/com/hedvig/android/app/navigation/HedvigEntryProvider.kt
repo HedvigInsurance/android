@@ -22,6 +22,8 @@ import com.hedvig.android.feature.chat.navigation.InboxKey
 import com.hedvig.android.feature.chat.navigation.cbmChatEntries
 import com.hedvig.android.feature.chip.id.navigation.ChipIdKey
 import com.hedvig.android.feature.chip.id.navigation.chipIdEntries
+import com.hedvig.android.feature.claim.chat.navigation.ClaimChatKey
+import com.hedvig.android.feature.claim.chat.navigation.claimChatEntries
 import com.hedvig.android.feature.claim.details.navigation.ClaimDetailsKey
 import com.hedvig.android.feature.claim.details.navigation.claimDetailsEntries
 import com.hedvig.android.feature.claimhistory.nav.ClaimHistoryKey
@@ -56,6 +58,8 @@ import com.hedvig.android.feature.payoutaccount.navigation.payoutAccountEntries
 import com.hedvig.android.feature.profile.navigation.ContactInfoKey
 import com.hedvig.android.feature.profile.navigation.UsageDataKey
 import com.hedvig.android.feature.profile.tab.profileEntries
+import com.hedvig.android.feature.remove.addons.RemoveAddonsKey
+import com.hedvig.android.feature.remove.addons.removeAddonsEntries
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceKey
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceEntries
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateKey
@@ -73,10 +77,6 @@ import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.popUpTo
 import com.hedvig.android.navigation.compose.removeAllOf
-import com.hedvig.feature.claim.chat.navigation.ClaimChatKey
-import com.hedvig.feature.claim.chat.navigation.claimChatEntries
-import com.hedvig.feature.remove.addons.RemoveAddonsKey
-import com.hedvig.feature.remove.addons.removeAddonsEntries
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch

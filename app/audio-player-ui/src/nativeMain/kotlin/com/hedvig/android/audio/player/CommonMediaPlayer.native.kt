@@ -1,6 +1,6 @@
 package com.hedvig.android.audio.player
 
-import com.hedvig.audio.player.data.ProgressPercentage
+import com.hedvig.android.audio.player.data.ProgressPercentage
 
 // todo ios: MediaPlayer
 actual fun CommonMediaPlayer(dataSourceUrl: String): CommonMediaPlayer {

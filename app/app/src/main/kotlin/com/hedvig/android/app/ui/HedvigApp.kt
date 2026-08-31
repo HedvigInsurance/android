@@ -42,6 +42,8 @@ import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SinglePaneSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import coil3.ImageLoader
+import com.datadog.android.compose.ExperimentalTrackingApi
+import com.datadog.android.compose.Navigation3TrackingEffect
 import com.hedvig.android.app.AndroidAppHost
 import com.hedvig.android.app.GlobalHedvigSnackBar
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
@@ -49,6 +51,7 @@ import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
 import com.hedvig.android.app.navigation.ScreenParameterExtractor
 import com.hedvig.android.app.navigation.hedvigEntryProvider
+import com.hedvig.android.app.navigation.screenName
 import com.hedvig.android.app.navigation.shouldFadeThrough
 import com.hedvig.android.app.urihandler.AuthorizationCodeUriHandler
 import com.hedvig.android.app.urihandler.DeepLinkFirstUriHandler
@@ -125,6 +128,7 @@ internal fun HedvigApp(
 ) {
   ReportCurrentDestinationEffect(backstackController, currentDestinationHolder)
   TrackScreenViewEffect(backstackController, eventTrackingClient, screenParameterExtractor)
+  DatadogViewTrackingEffect(backstackController)
   val hedvigAppState = rememberHedvigAppState(
     backstackController = backstackController,
     windowSizeClass = windowSizeClass,
@@ -309,9 +313,9 @@ private fun ReportCurrentDestinationEffect(
 
 /**
  * Sends a Firebase `screen_view` whenever the destination on top of the rendered stack changes, deriving the screen
- * name from the key type (the `{Feature}Key` suffix is dropped) and the parameters from
- * [ScreenParameterExtractor]. Parameters ride along the single `screen_view` event keyed by screen name, acting as
- * breakdown dimensions rather than fragmenting a screen into separate entries.
+ * name via [screenName] and the parameters from [ScreenParameterExtractor]. Parameters ride along the single
+ * `screen_view` event keyed by screen name, acting as breakdown dimensions rather than fragmenting a screen into
+ * separate entries.
  */
 @Composable
 private fun TrackScreenViewEffect(
@@ -323,15 +327,27 @@ private fun TrackScreenViewEffect(
     snapshotFlow { backstackController.currentDestination }
       .filterNotNull()
       .collect { destination ->
-        val screenClass = destination::class.simpleName ?: destination.toString()
-        val screenName = screenClass.removeSuffix("Key")
         eventTrackingClient.trackScreen(
-          name = screenName,
-          screenClass = screenClass,
+          name = destination.screenName(),
+          screenClass = destination::class.qualifiedName ?: destination::class.simpleName,
           parameters = screenParameterExtractor.parametersFor(destination),
         )
       }
   }
+}
+
+/**
+ * Reports the top of the back stack as a Datadog RUM view, so RUM attributes errors, resources and
+ * view durations to a screen rather than to the hosting Activity.
+ *
+ * The wrapper is what keeps the back stack read inside its own restart scope: [Navigation3TrackingEffect]
+ * is non-restartable, so calling it straight from [HedvigApp] would attribute the read there and
+ * recompose the whole app shell on every navigation.
+ */
+@OptIn(ExperimentalTrackingApi::class)
+@Composable
+private fun DatadogViewTrackingEffect(backstackController: BackstackController) {
+  Navigation3TrackingEffect(backStack = backstackController.entries)
 }
 
 /**

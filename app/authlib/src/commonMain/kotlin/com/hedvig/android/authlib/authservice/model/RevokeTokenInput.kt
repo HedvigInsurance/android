@@ -1,0 +1,6 @@
+package com.hedvig.android.authlib.authservice.model
+
+import kotlinx.serialization.Serializable
+
+@Serializable
+internal data class RevokeTokenInput(val token: String)

@@ -1,0 +1,35 @@
+package com.hedvig.android.feature.claim.chat.data
+
+import arrow.core.Either
+import arrow.core.raise.either
+import com.apollographql.apollo.ApolloClient
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.language.LanguageService
+import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
+import octopus.ClaimIntentSubmitSummaryMutation
+
+@SingleIn(AppScope::class)
+@Inject
+internal class SubmitSummaryUseCase(
+  private val apolloClient: ApolloClient,
+  private val languageService: LanguageService,
+) {
+  suspend fun invoke(stepId: StepId): Either<ClaimChatErrorMessage, ClaimIntent> {
+    return either {
+      apolloClient
+        .mutation(ClaimIntentSubmitSummaryMutation(stepId = stepId.value))
+        .safeExecute()
+        .mapLeft {
+          logcat { "SubmitSummaryUseCase error: $it" }
+          ClaimChatErrorMessage.GeneralError
+        }
+        .bind()
+        .claimIntentSubmitSummary
+        .toClaimIntent(languageService.getLocale())
+    }
+  }
+}
