@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -131,7 +133,8 @@ private fun PayoutAccountContent(
   setDefaultProviderError: ErrorMessage?,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier) {
+  Column(modifier
+    .verticalScroll(rememberScrollState())) {
     Spacer(Modifier.height(8.dp))
     if (currentMethods.isEmpty()) {
       if (availablePayinMethods.isNotEmpty()) {
@@ -224,8 +227,9 @@ private fun PayoutAccountContent(
         )
       }
     }
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    Column {
       if (currentMethods.any { it.isPending }) {
+        Spacer(Modifier.height(16.dp))
         HedvigNotificationCard(
           message = "You have just added or changed a billing method, it will appear here soon.", // todo
           priority = NotificationPriority.Info,
@@ -235,6 +239,7 @@ private fun PayoutAccountContent(
         )
       }
       if (availablePayinMethods.isNotEmpty()) {
+        Spacer(Modifier.height(16.dp))
         HedvigButton(
           text = "Add a payment method", // todo!
           onClick = onConnectPayinMethodClicked,

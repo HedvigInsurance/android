@@ -48,7 +48,10 @@ internal fun SelectPayinMethodDestination(
     modifier = Modifier.fillMaxSize(),
   ) {
     Spacer(Modifier.height(8.dp))
-    Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(
+      Modifier.padding(horizontal = 16.dp),
+      verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
       for (provider in availableProviders) {
         PayinMethodRow(
           provider = provider,
