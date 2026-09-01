@@ -80,6 +80,11 @@ query Home($claimsHistoryFlag: Boolean!, $resumeClaimEnabled: Boolean!, $disable
         }
       }
     }
+    discoverCrossSells: crossSellV2(input: { userFlow: HOME, flowSource: null, experiments: [] }) {
+      otherCrossSells {
+        ...HomeCrossSellFragment
+      }
+    }
     ongoingShopSessions @skip(if: $disableShopSessions) {
       id
       display {

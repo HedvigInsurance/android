@@ -172,7 +172,7 @@ internal class HomePresenter(
           crossSellsAction = successData.crossSellsAction,
           addonBannerInfos = successData.addonBannerInfos,
           isProduction = isProduction,
-          crossSellsPartition = successData.crossSellsPartition,
+          discoverCrossSells = successData.discoverCrossSells,
           ongoingShopSessions = successData.ongoingShopSessions,
           firstName = successData.firstName,
           draftClaim = successData.draftClaim,
@@ -226,7 +226,7 @@ internal sealed interface HomeUiState {
     val isHelpCenterEnabled: Boolean,
     val quickActions: List<QuickAction>,
     override val hasUnseenChatMessages: Boolean,
-    val crossSellsPartition: CrossSellsPartition = CrossSellsPartition(),
+    val discoverCrossSells: List<CrossSell> = emptyList(),
     val ongoingShopSessions: List<OngoingShopSession> = emptyList(),
     val firstName: String = "",
     val draftClaim: HomeData.DraftClaim?,
@@ -249,7 +249,7 @@ private data class SuccessData(
   val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
   val hasUnseenChatMessages: Boolean,
   val addonBannerInfos: List<AddonBannerInfo>,
-  val crossSellsPartition: CrossSellsPartition,
+  val discoverCrossSells: List<CrossSell>,
   val ongoingShopSessions: List<OngoingShopSession>,
   val firstName: String,
   val draftClaim: HomeData.DraftClaim?,
@@ -269,7 +269,7 @@ private data class SuccessData(
         hasUnseenChatMessages = lastState.hasUnseenChatMessages,
         addonBannerInfos = lastState.addonBannerInfos,
         chatAction = lastState.chatAction,
-        crossSellsPartition = lastState.crossSellsPartition,
+        discoverCrossSells = lastState.discoverCrossSells,
         ongoingShopSessions = lastState.ongoingShopSessions,
         firstName = lastState.firstName,
         draftClaim = lastState.draftClaim,
@@ -323,29 +323,13 @@ private data class SuccessData(
         hasUnseenChatMessages = homeData.hasUnseenChatMessages,
         addonBannerInfos = homeData.addonBannerInfos,
         chatAction = if (homeData.showChatIcon) HomeTopBarAction.ChatAction else null,
-        crossSellsPartition = partitionCrossSells(homeData.crossSells),
+        discoverCrossSells = homeData.discoverCrossSells,
         ongoingShopSessions = homeData.ongoingShopSessions,
         firstName = homeData.firstName,
         draftClaim = homeData.draftClaim,
       )
     }
   }
-}
-
-internal data class CrossSellsPartition(
-  val discoverCrossSells: List<CrossSell> = emptyList(),
-)
-
-/**
- * Builds the "Discover our insurances" list. The recommended cross-sell leads it, stripped of the
- * offer framing (banner, discount, bundle progress) it keeps in the cross-sell bottom sheet.
- */
-internal fun partitionCrossSells(crossSells: CrossSellSheetData): CrossSellsPartition {
-  return CrossSellsPartition(
-    discoverCrossSells = crossSells.recommendedCrossSell?.let {
-      listOf(it.crossSell) + crossSells.otherCrossSells
-    } ?: crossSells.otherCrossSells,
-  )
 }
 
 sealed interface HomeText {

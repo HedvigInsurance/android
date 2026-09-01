@@ -200,6 +200,9 @@ internal class GetHomeDataUseCaseImpl(
               otherCrossSells = otherCrossSellsData,
               recommendedAddon = recommendedAddon,
             )
+            val discoverCrossSells = homeQueryData.currentMember.discoverCrossSells.otherCrossSells.map {
+              it.toCrossSell()
+            }
             val showChatIcon = shouldShowChatButton(
               isInboxEnabledFromKillSwitch = inboxAlwaysAvailable,
               // Auxiliary signal: if the active-conversation lookup fails, default to false rather than failing the screen.
@@ -236,6 +239,7 @@ internal class GetHomeDataUseCaseImpl(
               showHelpCenter = true,
               firstVetSections = firstVetActions,
               crossSells = crossSells,
+              discoverCrossSells = discoverCrossSells,
               ongoingShopSessions = ongoingShopSessions,
               addonBannerInfos = travelBannerInfo.orEmpty(),
               showChatIcon = showChatIcon,
@@ -377,6 +381,11 @@ data class HomeData(
   val addonBannerInfos: List<AddonBannerInfo>,
   // Defaulted only so test/demo construction sites stay terse.
   val ongoingShopSessions: List<OngoingShopSession> = emptyList(),
+  /**
+   * The "Discover our insurances" list, already led by the backend's recommendation.
+   * Defaulted only so test/demo construction sites stay terse.
+   */
+  val discoverCrossSells: List<CrossSell> = emptyList(),
   // Always populated from the backend; defaulted only so test/demo construction sites stay terse.
   val firstName: String = "",
   val draftClaim: DraftClaim?,
