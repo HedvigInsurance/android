@@ -1737,7 +1737,7 @@ input CrossSellExperimentInput {
 input CrossSellInput {
   userFlow: UserFlow!
   """
-  REQUIRED for SMART_X_SELL, must be NULL for HOME_X_SELL, INSURANCES and ONBOARDING
+  REQUIRED for SMART_X_SELL, must be NULL for HOME_X_SELL, INSURANCES, ONBOARDING and HOME
   """
   flowSource: FlowSource
   """
@@ -2666,8 +2666,11 @@ type Member {
   """
   Returns the most recent claim intent for this member, that can be "resumed" by querying `ClaimIntent.previousSteps`.
   Will return `null` if the server considers it too old to be resumed.
+  Pass `resume: true` when the member actually continues the draft, rather than only being shown that one
+  exists. Doing so records the moment as the current step's start, so the time the draft sat untouched is
+  not counted as time the member spent answering it.
   """
-  resumableClaimIntent: ClaimIntent
+  resumableClaimIntent(resume: Boolean! = false): ClaimIntent
   claims: [Claim!]!
   claimsActive: [Claim!]!
   claimsHistory: [Claim!]!
@@ -2729,6 +2732,7 @@ type Member {
   - HOME_X_SELL: Recommendation + other options
   - SMART_X_SELL (requires flowSource): Focused recommendation OR all options
   - ONBOARDING: All options in otherCrossSells led by the recommendation, no separate recommendation
+  - HOME: Like INSURANCES, but the discount is described without the promoted "save X%" button
   otherCrossSells carry discount copy for every flow except SMART_X_SELL.
   """
   crossSellV2(input: CrossSellInput!): CrossSellV2!
@@ -5716,6 +5720,10 @@ enum UserFlow {
   End of onboarding - all options led by the recommendation
   """
   ONBOARDING
+  """
+  Home screen - all options led by the recommendation, discount shown but not promoted
+  """
+  HOME
 }
 scalar UUID
 type ValueArray {
