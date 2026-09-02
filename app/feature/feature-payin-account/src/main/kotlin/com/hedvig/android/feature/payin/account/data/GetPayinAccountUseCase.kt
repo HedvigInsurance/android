@@ -78,7 +78,7 @@ internal class GetPayinAccountUseCase(
         }
       }
     }
-
+    logcat { "availablePayinMethods: before filter ${paymentMethods.availableMethods}" }
     val availablePayinMethods = paymentMethods.availableMethods
       .filter { it.supportsPayin }
       .map { it.provider }
