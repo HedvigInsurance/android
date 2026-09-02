@@ -513,7 +513,6 @@
   <string name="HEDVIG_NAME_TEXT">Hedvig</string>
   <string name="HOME_ADDONS_READ_MORE_BUTTON">Läs mer</string>
   <string name="HOME_DISCOVER_SECTION_TITLE">Upptäck våra försäkringar</string>
-  <string name="HOME_DISCOVER_SEE_PRICE_BUTTON">Se pris</string>
   <string name="HOME_GREETING_SUBTITLE">Hur kan vi hjälpa dig?</string>
   <string name="HOME_GREETING_TITLE">Hej %1$s</string>
   <string name="HOME_QUICK_ACTIONS_CHANGE_ADDRESS">Ändra adress</string>
@@ -663,7 +662,6 @@
   <string name="ONBOARDING_PHONE_SAVE_ERROR">Kunde inte spara, försök igen</string>
   <string name="ONBOARDING_PHONE_SUBTITLE">Så vi kan nå dig om det behövs</string>
   <string name="ONBOARDING_PHONE_TITLE">Telefonnummer</string>
-  <string name="ONBOARDING_SEE_PRICE_BUTTON">Se pris</string>
   <string name="ONBOARDING_THEME_DARK_SUBTITLE">Alltid mörkt läge</string>
   <string name="ONBOARDING_THEME_LIGHT_SUBTITLE">Alltid ljust läge</string>
   <string name="ONBOARDING_THEME_SUBTITLE">Välj hur appen ska se ut</string>

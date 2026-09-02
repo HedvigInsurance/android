@@ -213,7 +213,6 @@ import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE
 import hedvig.resources.HOME_ADDONS_READ_MORE_BUTTON
 import hedvig.resources.HOME_DISCOVER_SECTION_TITLE
-import hedvig.resources.HOME_DISCOVER_SEE_PRICE_BUTTON
 import hedvig.resources.HOME_GREETING_SUBTITLE
 import hedvig.resources.HOME_GREETING_TITLE
 import hedvig.resources.HOME_QUOTES_SECTION_TITLE
@@ -1556,7 +1555,6 @@ private fun DiscoverInsurancesSection(
     modifier = Modifier.padding(horizontal = 16.dp),
     onSheetDismissed = {},
     imageLoader = imageLoader,
-    buttonText = stringResource(string.HOME_DISCOVER_SEE_PRICE_BUTTON),
     buttonSize = ButtonSize.Small,
     buttonShape = HedvigTheme.shapes.cornerFull,
   )
@@ -1692,6 +1690,7 @@ private fun PreviewHomeScreen(
                   "",
                   ImageAsset("", "", ""),
                   ImageAsset("", "", ""),
+                  buttonText = "See price",
                 ),
                 bannerText = "50% discount the first year",
                 discountText = "-50%",
@@ -1708,6 +1707,7 @@ private fun PreviewHomeScreen(
                   "",
                   ImageAsset("", "", ""),
                   ImageAsset("", "", ""),
+                  buttonText = "See price",
                 ),
               ),
               recommendedAddon = null,

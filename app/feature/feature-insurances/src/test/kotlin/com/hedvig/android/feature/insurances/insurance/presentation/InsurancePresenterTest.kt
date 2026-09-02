@@ -261,6 +261,7 @@ internal class InsurancePresenterTest {
         storeUrl = "",
         pillowImageSmall = ImageAsset("", "", ""),
         pillowImageLarge = ImageAsset("", "", ""),
+        buttonText = "See price",
       ),
     ),
   )
