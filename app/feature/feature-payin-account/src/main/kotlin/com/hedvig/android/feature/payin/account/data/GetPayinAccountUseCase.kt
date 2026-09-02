@@ -9,6 +9,7 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import octopus.GetPayinMethodsQuery
@@ -81,7 +82,7 @@ internal class GetPayinAccountUseCase(
     val availablePayinMethods = paymentMethods.availableMethods
       .filter { it.supportsPayin }
       .map { it.provider }
-
+    logcat { "availablePayinMethods: $availablePayinMethods" }
     PayinAccountData(
       currentMethods = currentMethods,
       availablePayinMethods = availablePayinMethods,
