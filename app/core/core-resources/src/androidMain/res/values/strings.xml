@@ -513,7 +513,6 @@
   <string name="HEDVIG_NAME_TEXT">Hedvig</string>
   <string name="HOME_ADDONS_READ_MORE_BUTTON">Read more</string>
   <string name="HOME_DISCOVER_SECTION_TITLE">Discover our insurances</string>
-  <string name="HOME_DISCOVER_SEE_PRICE_BUTTON">See price</string>
   <string name="HOME_GREETING_SUBTITLE">How can we help?</string>
   <string name="HOME_GREETING_TITLE">Hi %1$s</string>
   <string name="HOME_QUICK_ACTIONS_CHANGE_ADDRESS">Change address</string>
@@ -663,7 +662,6 @@
   <string name="ONBOARDING_PHONE_SAVE_ERROR">Could not save, please try again</string>
   <string name="ONBOARDING_PHONE_SUBTITLE">So we can reach you if we need to</string>
   <string name="ONBOARDING_PHONE_TITLE">Phone number</string>
-  <string name="ONBOARDING_SEE_PRICE_BUTTON">See price</string>
   <string name="ONBOARDING_THEME_DARK_SUBTITLE">Always dark</string>
   <string name="ONBOARDING_THEME_LIGHT_SUBTITLE">Always light</string>
   <string name="ONBOARDING_THEME_SUBTITLE">Choose how the app looks</string>
