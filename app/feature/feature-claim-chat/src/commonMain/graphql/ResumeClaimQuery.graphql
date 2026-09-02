@@ -1,6 +1,6 @@
 query ResumeClaim {
   currentMember {
-    resumableClaimIntent {
+    resumableClaimIntent(resume: true) {
     ...ClaimIntentFragment
     }
   }
