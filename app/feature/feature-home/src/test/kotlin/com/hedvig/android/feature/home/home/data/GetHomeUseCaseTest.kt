@@ -806,6 +806,45 @@ internal class GetHomeUseCaseTest {
   }
 
   @Test
+  fun `the discover list comes from the HOME flow, not from the offer sheet's cross sells`() = runTest {
+    val getHomeDataUseCase = testUseCaseWithoutReminders()
+
+    apolloClient.registerTestResponse(
+      HomeQuery(true, true, true),
+      HomeQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          crossSellV2 = buildCrossSellV2 {
+            otherCrossSells = listOf(buildCrossSell { id = "offerSheetCrossSell" })
+          }
+          // The HOME flow's cross-sells are an aliased second `crossSellV2` field, which data builders
+          // can only reach by its response name.
+          this["discoverCrossSells"] = buildCrossSellV2 {
+            otherCrossSells = listOf(buildCrossSell { id = "discoverCrossSell" })
+          }
+        }
+      },
+    )
+    apolloClient.registerTestResponse(
+      UnreadMessageCountQuery(),
+      UnreadMessageCountQuery.Data(OctopusFakeResolver),
+    )
+    apolloClient.registerTestResponse(
+      CbmNumberOfChatMessagesQuery(),
+      CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+    )
+
+    val result = getHomeDataUseCase.invoke(true).first()
+
+    assertThat(result)
+      .isNotNull()
+      .isRight()
+      .prop(HomeData::discoverCrossSells)
+      .single()
+      .prop(CrossSell::id)
+      .isEqualTo("discoverCrossSell")
+  }
+
+  @Test
   fun `when the auxiliary chat signals fail, the screen still loads with safe defaults instead of erroring`() =
     runTest {
       // Inbox-always-available off, so showChatIcon depends purely on the (failing) active-conversation signal.

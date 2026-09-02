@@ -728,7 +728,7 @@ private fun HomeScreenSuccess(
         }
 
         HomeSection.DiscoverInsurances -> {
-          uiState.crossSellsPartition.discoverCrossSells.isNotEmpty()
+          uiState.discoverCrossSells.isNotEmpty()
         }
 
         HomeSection.Addons -> {
@@ -979,7 +979,7 @@ private fun HomeScreenSuccess(
             }
 
             HomeSection.DiscoverInsurances -> DiscoverInsurancesSection(
-              crossSells = uiState.crossSellsPartition.discoverCrossSells,
+              crossSells = uiState.discoverCrossSells,
               onCrossSellClick = openCrossSellUrl,
               imageLoader = imageLoader,
             )
@@ -1663,9 +1663,7 @@ private fun PreviewHomeScreen(
           isHelpCenterEnabled = true,
           quickActions = previewQuickActions,
           hasUnseenChatMessages = hasUnseenChatMessages,
-          crossSellsPartition = CrossSellsPartition(
-            discoverCrossSells = emptyList(),
-          ),
+          discoverCrossSells = emptyList(),
           ongoingShopSessions = listOf(
             OngoingShopSession(
               id = "preview-1",

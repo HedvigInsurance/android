@@ -193,6 +193,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           showHelpCenter = false,
           crossSells = CrossSellSheetData(testCrossSell, listOf(), null),
+          discoverCrossSells = listOf(testCrossSell.crossSell),
           firstVetSections = listOf(),
           addonBannerInfos = emptyList(),
           draftClaim = null,
@@ -228,9 +229,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           addonBannerInfos = emptyList(),
           isProduction = false,
-          crossSellsPartition = CrossSellsPartition(
-            discoverCrossSells = listOf(testCrossSell.crossSell),
-          ),
+          discoverCrossSells = listOf(testCrossSell.crossSell),
           draftClaim = null,
         ),
       )
@@ -553,6 +552,7 @@ internal class HomePresenterTest {
           showChatIcon = false,
           hasUnseenChatMessages = false,
           crossSells = CrossSellSheetData(testCrossSell, listOf(crossSell), null),
+          discoverCrossSells = listOf(testCrossSell.crossSell, crossSell),
           firstVetSections = listOf(),
           showHelpCenter = false,
           addonBannerInfos = emptyList(),
@@ -578,9 +578,7 @@ internal class HomePresenterTest {
           ),
           addonBannerInfos = emptyList(),
           isProduction = false,
-          crossSellsPartition = CrossSellsPartition(
-            discoverCrossSells = listOf(testCrossSell.crossSell, crossSell),
-          ),
+          discoverCrossSells = listOf(testCrossSell.crossSell, crossSell),
           draftClaim = null,
         ),
       )
@@ -692,7 +690,7 @@ internal class HomePresenterTest {
   }
 
   @Test
-  fun `the recommended crossSell leads the discover list, ahead of the other crossSells`() = runTest {
+  fun `the discover list reaches the ui state as the backend ordered it`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
       getHomeDataUseCase,
@@ -718,16 +716,13 @@ internal class HomePresenterTest {
       getHomeDataUseCase.responseTurbine.add(
         someIrrelevantHomeDataInstance.copy(
           crossSells = CrossSellSheetData(testCrossSell, listOf(otherCrossSell), recommendedAddon = null),
+          discoverCrossSells = listOf(testCrossSell.crossSell, otherCrossSell),
         ).right(),
       )
       assertThat(awaitItem())
         .isInstanceOf<HomeUiState.Success>()
-        .prop(HomeUiState.Success::crossSellsPartition)
-        .isEqualTo(
-          CrossSellsPartition(
-            discoverCrossSells = listOf(testCrossSell.crossSell, otherCrossSell),
-          ),
-        )
+        .prop(HomeUiState.Success::discoverCrossSells)
+        .isEqualTo(listOf(testCrossSell.crossSell, otherCrossSell))
     }
   }
 
