@@ -312,6 +312,7 @@ internal class GetHomeDataUseCaseImpl(
           src = pillowImageLarge.src,
           description = pillowImageLarge.alt,
         ),
+        buttonText = this.buttonTitle,
       )
     }
   }

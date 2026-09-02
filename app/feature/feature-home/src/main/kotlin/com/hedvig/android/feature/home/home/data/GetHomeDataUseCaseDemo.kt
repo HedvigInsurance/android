@@ -34,6 +34,7 @@ private val demoCarCrossSell = CrossSell(
   "",
   ImageAsset("", "", ""),
   ImageAsset("", "", ""),
+  buttonText = "See price",
 )
 
 private val demoPetCrossSell = CrossSell(
@@ -43,6 +44,7 @@ private val demoPetCrossSell = CrossSell(
   "",
   ImageAsset("", "", ""),
   ImageAsset("", "", ""),
+  buttonText = "See price",
 )
 
 private val demoHomeData = HomeData(

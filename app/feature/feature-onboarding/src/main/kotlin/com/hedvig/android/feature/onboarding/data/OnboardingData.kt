@@ -77,4 +77,5 @@ internal data class OnboardingCrossSell(
   val description: String,
   val storeUrl: String,
   val pillowImageUrl: String?,
+  val buttonTitle: String,
 )

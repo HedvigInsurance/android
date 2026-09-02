@@ -13,7 +13,7 @@ data class CrossSell(
   val storeUrl: String,
   val pillowImageSmall: ImageAsset,
   val pillowImageLarge: ImageAsset,
-  val buttonText: String? = null, // todo!!
+  val buttonText: String
 )
 
 data class ImageAsset(

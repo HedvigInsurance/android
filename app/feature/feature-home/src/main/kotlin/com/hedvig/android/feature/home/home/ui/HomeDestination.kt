@@ -1556,7 +1556,6 @@ private fun DiscoverInsurancesSection(
     modifier = Modifier.padding(horizontal = 16.dp),
     onSheetDismissed = {},
     imageLoader = imageLoader,
-    buttonText = stringResource(string.HOME_DISCOVER_SEE_PRICE_BUTTON),
     buttonSize = ButtonSize.Small,
     buttonShape = HedvigTheme.shapes.cornerFull,
   )
@@ -1692,6 +1691,7 @@ private fun PreviewHomeScreen(
                   "",
                   ImageAsset("", "", ""),
                   ImageAsset("", "", ""),
+                  buttonText = "See price"
                 ),
                 bannerText = "50% discount the first year",
                 discountText = "-50%",
@@ -1708,6 +1708,7 @@ private fun PreviewHomeScreen(
                   "",
                   ImageAsset("", "", ""),
                   ImageAsset("", "", ""),
+                  buttonText = "See price"
                 ),
               ),
               recommendedAddon = null,

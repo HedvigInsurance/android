@@ -127,6 +127,7 @@ fragment HomeCrossSellFragment on CrossSell {
   title
   description
   storeUrl
+  buttonTitle
   pillowImageSmall {
     src
     id
