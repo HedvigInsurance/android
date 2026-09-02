@@ -11,6 +11,7 @@ import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.SELF_SERVICE
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.feature.change.tier.data.CustomisableInsurance
 import com.hedvig.android.feature.change.tier.data.GetCustomizableInsurancesUseCase
 import com.hedvig.android.feature.change.tier.navigation.ChooseTierKey
@@ -35,7 +36,7 @@ internal class ChooseInsuranceViewModel(
   tierRepository: ChangeTierRepository,
   backstack: Backstack,
 ) : MoleculeViewModel<ChooseInsuranceToCustomizeEvent, ChooseInsuranceUiState>(
-    initialState = Loading,
+    initialState = Loading(isPaymentProtection = false),
     presenter = ChooseInsurancePresenter(
       getCustomizableInsurancesUseCase = getCustomizableInsurancesUseCase,
       tierRepository = tierRepository,
@@ -88,7 +89,7 @@ internal class ChooseInsurancePresenter(
 
     LaunchedEffect(insuranceToFetchIntentFor) {
       val customisableInsurance = insuranceToFetchIntentFor ?: return@LaunchedEffect
-      currentState = Loading
+      currentState = Loading(customisableInsurance.contractGroup == ContractGroup.PAYMENT_PROTECTION)
       tierRepository
         .startChangeTierIntentAndGetQuotesId(customisableInsurance.id, SELF_SERVICE)
         .fold(
@@ -128,7 +129,7 @@ internal class ChooseInsurancePresenter(
 
     LaunchedEffect(loadIteration) {
       if (lastState !is ChooseInsuranceUiState.Success) {
-        currentState = Loading
+        currentState = Loading(isPaymentProtection = false)
       }
       getCustomizableInsurancesUseCase.invoke().collect { contractsResult ->
         contractsResult.fold(
@@ -159,7 +160,9 @@ internal class ChooseInsurancePresenter(
 }
 
 internal sealed interface ChooseInsuranceUiState {
-  data object Loading : ChooseInsuranceUiState
+  // Payment protection reuses the tier flow only to pick an insured amount, so the loading state announces that it
+  // fetches an insurance amount rather than coverage levels. Only known once an insurance has been picked.
+  data class Loading(val isPaymentProtection: Boolean) : ChooseInsuranceUiState
 
   data class Success(
     val insuranceList: List<CustomisableInsurance>,
