@@ -153,6 +153,7 @@
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL">Year of construction</string>
   <string name="CHANGE_ADDRESS_YOU_PLUS">You + %1$d</string>
   <string name="CHANGE_INSURANCE_AMOUNT_PAYMENT_PROTECTION_INFO">Your new amount takes effect once your qualification period ends. Until then, your current amount applies.</string>
+  <string name="CHANGE_INSURANCE_AMOUNT_PROCESSING">Fetching insurance amount...</string>
   <string name="CHANGE_PAYOUT_METHOD_BUTTON_LABEL">Change payout account</string>
   <string name="CHANGE_TIER_BUTTON_TITLE">Change coverage level</string>
   <string name="CHATBOT_TALK_TO_HUMAN_BUTTON_TITLE">Talk to a human</string>

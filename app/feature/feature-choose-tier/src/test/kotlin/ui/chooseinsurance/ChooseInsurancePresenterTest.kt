@@ -18,6 +18,7 @@ import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
 import com.hedvig.android.data.changetier.data.DeflectOutput
 import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.data.contract.ContractGroup.HOMEOWNER
+import com.hedvig.android.data.contract.ContractGroup.PAYMENT_PROTECTION
 import com.hedvig.android.data.contract.ContractGroup.RENTAL
 import com.hedvig.android.feature.change.tier.data.CustomisableInsurance
 import com.hedvig.android.feature.change.tier.data.GetCustomizableInsurancesUseCase
@@ -48,7 +49,7 @@ class ChooseInsurancePresenterTest {
       getCustomizableInsurancesUseCase = useCase,
       backstack = TestBackstack(),
     )
-    presenter.test(ChooseInsuranceUiState.Loading) {
+    presenter.test(ChooseInsuranceUiState.Loading(isPaymentProtection = false)) {
       skipItems(1)
       useCase.turbine.add(flowOf(ErrorMessage().left()))
       val state = awaitItem()
@@ -65,7 +66,7 @@ class ChooseInsurancePresenterTest {
       getCustomizableInsurancesUseCase = useCase,
       backstack = TestBackstack(),
     )
-    presenter.test(ChooseInsuranceUiState.Loading) {
+    presenter.test(ChooseInsuranceUiState.Loading(isPaymentProtection = false)) {
       skipItems(1)
       useCase.turbine.add(flowOf(null.right()))
       val state = awaitItem()
@@ -85,7 +86,7 @@ class ChooseInsurancePresenterTest {
         getCustomizableInsurancesUseCase = useCase,
         backstack = backstack,
       )
-      presenter.test(ChooseInsuranceUiState.Loading) {
+      presenter.test(ChooseInsuranceUiState.Loading(isPaymentProtection = false)) {
         assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)
         useCase.turbine.add(
           flowOf(
@@ -124,7 +125,7 @@ class ChooseInsurancePresenterTest {
         getCustomizableInsurancesUseCase = useCase,
         backstack = TestBackstack(),
       )
-      presenter.test(ChooseInsuranceUiState.Loading) {
+      presenter.test(ChooseInsuranceUiState.Loading(isPaymentProtection = false)) {
         assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)
         useCase.turbine.add(
           flowOf(
@@ -161,7 +162,7 @@ class ChooseInsurancePresenterTest {
         getCustomizableInsurancesUseCase = useCase,
         backstack = TestBackstack(),
       )
-      presenter.test(ChooseInsuranceUiState.Loading) {
+      presenter.test(ChooseInsuranceUiState.Loading(isPaymentProtection = false)) {
         assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)
         useCase.turbine.add(
           flowOf(
@@ -189,7 +190,7 @@ class ChooseInsurancePresenterTest {
       getCustomizableInsurancesUseCase = useCase,
       backstack = TestBackstack(),
     )
-    presenter.test(ChooseInsuranceUiState.Loading) {
+    presenter.test(ChooseInsuranceUiState.Loading(isPaymentProtection = false)) {
       assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)
       useCase.turbine.add(flowOf(listOfInsurances.right()))
       assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Success::class)
@@ -207,7 +208,7 @@ class ChooseInsurancePresenterTest {
       getCustomizableInsurancesUseCase = useCase,
       backstack = TestBackstack(),
     )
-    presenter.test(ChooseInsuranceUiState.Loading) {
+    presenter.test(ChooseInsuranceUiState.Loading(isPaymentProtection = false)) {
       assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)
       useCase.turbine.add(flowOf(listOfInsurances.right()))
       assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Success::class)
@@ -225,7 +226,7 @@ class ChooseInsurancePresenterTest {
       getCustomizableInsurancesUseCase = useCase,
       backstack = TestBackstack(),
     )
-    presenter.test(ChooseInsuranceUiState.Loading) {
+    presenter.test(ChooseInsuranceUiState.Loading(isPaymentProtection = false)) {
       assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)
       useCase.turbine.add(flowOf(listOfInsurances.right()))
       skipItems(1)
@@ -248,7 +249,7 @@ class ChooseInsurancePresenterTest {
       getCustomizableInsurancesUseCase = useCase,
       backstack = backstack,
     )
-    presenter.test(ChooseInsuranceUiState.Loading) {
+    presenter.test(ChooseInsuranceUiState.Loading(isPaymentProtection = false)) {
       assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)
       useCase.turbine.add(flowOf(listOfInsurances.right()))
       sendEvent(ChooseInsuranceToCustomizeEvent.SelectInsurance(listOfInsurances[0].id))
@@ -270,6 +271,28 @@ class ChooseInsurancePresenterTest {
   }
 
   @Test
+  fun `when the chosen insurance is payment protection the loading state carries the insurance amount wording`() =
+    runTest {
+      val tierRepo = FakeChangeTierRepository()
+      val useCase = FakeGetCustomizableInsurancesUseCase()
+      val presenter = ChooseInsurancePresenter(
+        tierRepository = tierRepo,
+        getCustomizableInsurancesUseCase = useCase,
+        backstack = TestBackstack(),
+      )
+      presenter.test(ChooseInsuranceUiState.Loading(isPaymentProtection = false)) {
+        skipItems(1)
+        useCase.turbine.add(flowOf(listOfInsurances.right()))
+        skipItems(1)
+        sendEvent(ChooseInsuranceToCustomizeEvent.SubmitSelectedInsuranceToCustomize(paymentProtectionInsurance))
+        assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)
+          .prop(ChooseInsuranceUiState.Loading::isPaymentProtection)
+          .isEqualTo(true)
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  @Test
   fun `if receive only one customisable insurance and deflectOutput is returned show deflect screen`() = runTest {
     val tierRepo = FakeChangeTierRepository()
     val useCase = FakeGetCustomizableInsurancesUseCase()
@@ -278,7 +301,7 @@ class ChooseInsurancePresenterTest {
       getCustomizableInsurancesUseCase = useCase,
       backstack = TestBackstack(),
     )
-    presenter.test(ChooseInsuranceUiState.Loading) {
+    presenter.test(ChooseInsuranceUiState.Loading(isPaymentProtection = false)) {
       assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)
       useCase.turbine.add(
         flowOf(
@@ -317,7 +340,7 @@ class ChooseInsurancePresenterTest {
       getCustomizableInsurancesUseCase = useCase,
       backstack = TestBackstack(),
     )
-    presenter.test(ChooseInsuranceUiState.Loading) {
+    presenter.test(ChooseInsuranceUiState.Loading(isPaymentProtection = false)) {
       assertThat(awaitItem()).isInstanceOf(ChooseInsuranceUiState.Loading::class)
       useCase.turbine.add(flowOf(listOfInsurances.right()))
       sendEvent(ChooseInsuranceToCustomizeEvent.SelectInsurance(listOfInsurances[0].id))
@@ -347,6 +370,13 @@ private class FakeGetCustomizableInsurancesUseCase() : GetCustomizableInsurances
     return turbine.awaitItem()
   }
 }
+
+private val paymentProtectionInsurance = CustomisableInsurance(
+  "ppiId",
+  "Payment protection",
+  "Payment protection",
+  PAYMENT_PROTECTION,
+)
 
 private val listOfInsurances = nonEmptyListOf(
   CustomisableInsurance(

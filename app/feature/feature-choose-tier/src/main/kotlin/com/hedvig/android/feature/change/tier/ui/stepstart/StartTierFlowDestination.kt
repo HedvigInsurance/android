@@ -37,6 +37,7 @@ import com.hedvig.android.feature.change.tier.ui.stepstart.FailureReason.GENERAL
 import com.hedvig.android.feature.change.tier.ui.stepstart.FailureReason.QUOTES_ARE_EMPTY
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeState.Loading
+import hedvig.resources.CHANGE_INSURANCE_AMOUNT_PROCESSING
 import hedvig.resources.DASHBOARD_OPEN_CHAT
 import hedvig.resources.Res
 import hedvig.resources.TERMINATION_FLOW_I_UNDERSTAND_TEXT
@@ -81,9 +82,13 @@ private fun StartChangeTierFlowScreen(
       )
     }
 
-    Loading -> {
+    is Loading -> {
       HedvigFullScreenCenterAlignedLinearProgress(
-        title = stringResource(Res.string.TIER_FLOW_PROCESSING),
+        title = if (uiState.isPaymentProtection) {
+          stringResource(Res.string.CHANGE_INSURANCE_AMOUNT_PROCESSING)
+        } else {
+          stringResource(Res.string.TIER_FLOW_PROCESSING)
+        },
       )
     }
 
@@ -213,7 +218,8 @@ private fun StartTierFlowScreenPreview(
 internal class StartTierChangeStateProvider :
   CollectionPreviewParameterProvider<StartTierChangeState>(
     listOf(
-      Loading,
+      Loading(isPaymentProtection = false),
+      Loading(isPaymentProtection = true),
       Failure(GENERAL),
       Failure(QUOTES_ARE_EMPTY),
       StartTierChangeState.Deflect(

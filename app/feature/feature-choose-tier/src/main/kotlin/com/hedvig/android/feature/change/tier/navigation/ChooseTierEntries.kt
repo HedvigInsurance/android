@@ -27,9 +27,10 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 fun EntryProviderScope<HedvigNavKey>.changeTierEntries(backstack: Backstack, onNavigateToNewConversation: () -> Unit) {
   entry<StartTierFlowKey> { key ->
     val insuranceId = key.insuranceId
+    val isPaymentProtection = key.isPaymentProtection
     val viewModel: StartTierFlowViewModel =
       assistedMetroViewModel<StartTierFlowViewModel, StartTierFlowViewModelFactory> {
-        create(insuranceId)
+        create(insuranceId, isPaymentProtection)
       }
     StartChangeTierFlowDestination(
       viewModel = viewModel,

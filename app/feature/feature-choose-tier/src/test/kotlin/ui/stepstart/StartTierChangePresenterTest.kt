@@ -32,14 +32,33 @@ class StartTierChangePresenterTest {
   private val insuranceId = "testId"
 
   @Test
+  fun `when the contract is payment protection the loading state carries the insurance amount wording`() = runTest {
+    val tierRepo = FakeChangeTierRepository()
+    val presenter = StartTierChangePresenter(
+      tierRepository = tierRepo,
+      insuranceID = insuranceId,
+      isPaymentProtection = true,
+      backstack = TestBackstack(),
+    )
+    presenter.test(StartTierChangeState.Loading(isPaymentProtection = false)) {
+      skipItems(1)
+      assertThat(awaitItem()).isInstanceOf(StartTierChangeState.Loading::class)
+        .prop(StartTierChangeState.Loading::isPaymentProtection)
+        .isEqualTo(true)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
   fun `if the quote list comes empty show empty quotes screen`() = runTest {
     val tierRepo = FakeChangeTierRepository()
     val presenter = StartTierChangePresenter(
       tierRepository = tierRepo,
       insuranceID = insuranceId,
+      isPaymentProtection = false,
       backstack = TestBackstack(),
     )
-    presenter.test(StartTierChangeState.Loading) {
+    presenter.test(StartTierChangeState.Loading(isPaymentProtection = false)) {
       tierRepo.changeTierIntentTurbine.add(
         ChangeTierDeductibleIntent(
           IntentOutput(
@@ -63,9 +82,10 @@ class StartTierChangePresenterTest {
     val presenter = StartTierChangePresenter(
       tierRepository = tierRepo,
       insuranceID = insuranceId,
+      isPaymentProtection = false,
       backstack = TestBackstack(),
     )
-    presenter.test(StartTierChangeState.Loading) {
+    presenter.test(StartTierChangeState.Loading(isPaymentProtection = false)) {
       tierRepo.changeTierIntentTurbine.add(com.hedvig.android.core.common.ErrorMessage().left())
       skipItems(1)
       val state = awaitItem()
@@ -83,9 +103,10 @@ class StartTierChangePresenterTest {
     val presenter = StartTierChangePresenter(
       tierRepository = tierRepo,
       insuranceID = insuranceId,
+      isPaymentProtection = false,
       backstack = backstack,
     )
-    presenter.test(StartTierChangeState.Loading) {
+    presenter.test(StartTierChangeState.Loading(isPaymentProtection = false)) {
       tierRepo.changeTierIntentTurbine.add(
         ChangeTierDeductibleIntent(
           IntentOutput(
@@ -107,9 +128,10 @@ class StartTierChangePresenterTest {
     val presenter = StartTierChangePresenter(
       tierRepository = tierRepo,
       insuranceID = insuranceId,
+      isPaymentProtection = false,
       backstack = TestBackstack(),
     )
-    presenter.test(StartTierChangeState.Loading) {
+    presenter.test(StartTierChangeState.Loading(isPaymentProtection = false)) {
       tierRepo.changeTierIntentTurbine.add(
         ChangeTierDeductibleIntent(
           intentOutput = null,
@@ -133,9 +155,10 @@ class StartTierChangePresenterTest {
     val presenter = StartTierChangePresenter(
       tierRepository = tierRepo,
       insuranceID = insuranceId,
+      isPaymentProtection = false,
       backstack = TestBackstack(),
     )
-    presenter.test(StartTierChangeState.Loading) {
+    presenter.test(StartTierChangeState.Loading(isPaymentProtection = false)) {
       tierRepo.changeTierIntentTurbine.add(
         ChangeTierDeductibleIntent(
           intentOutput = IntentOutput(
