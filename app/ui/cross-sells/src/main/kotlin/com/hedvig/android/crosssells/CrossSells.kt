@@ -671,7 +671,7 @@ fun CrossSellItemPlaceholder(imageLoader: ImageLoader, modifier: Modifier = Modi
       isLoading = true,
       modifier = Modifier,
       onSheetDismissed = {},
-      buttonText = "button"
+      buttonText = "button",
     )
   }
 }
@@ -709,7 +709,7 @@ private fun CrossSellItem(
     onSheetDismissed = onSheetDismissed,
     buttonSize = buttonSize,
     buttonShape = buttonShape,
-    buttonText = crossSell.buttonText
+    buttonText = crossSell.buttonText,
   )
 }
 
@@ -999,7 +999,7 @@ private fun PreviewCrossSellsSheetContent(
               "",
               ImageAsset("", "", ""),
               ImageAsset("", "", ""),
-              buttonText = "button"
+              buttonText = "button",
             ),
             bannerText = "50% discount the first year",
             buttonText = "Explore offer",
@@ -1016,7 +1016,7 @@ private fun PreviewCrossSellsSheetContent(
               "",
               ImageAsset("", "", ""),
               ImageAsset("", "", ""),
-              buttonText = "button"
+              buttonText = "button",
             ),
           ).takeIf { case != TripleCase.FIRST }.orEmpty(),
           onCrossSellClick = {},
@@ -1046,7 +1046,7 @@ private fun PreviewCrossSellsFloatingSheetContent(
             "",
             ImageAsset("", "", ""),
             ImageAsset("", "", ""),
-            buttonText = "button"
+            buttonText = "button",
           ),
           bannerText = "50% discount the first year",
           buttonText = "Explore offer",
@@ -1063,7 +1063,7 @@ private fun PreviewCrossSellsFloatingSheetContent(
             "",
             ImageAsset("", "", ""),
             ImageAsset("", "", ""),
-            buttonText = "button"
+            buttonText = "button",
           ),
         ).takeIf { case != TripleCase.FIRST }.orEmpty(),
         dismissSheet = {},

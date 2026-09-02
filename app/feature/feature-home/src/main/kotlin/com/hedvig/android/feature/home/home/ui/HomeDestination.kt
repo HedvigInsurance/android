@@ -1691,7 +1691,7 @@ private fun PreviewHomeScreen(
                   "",
                   ImageAsset("", "", ""),
                   ImageAsset("", "", ""),
-                  buttonText = "See price"
+                  buttonText = "See price",
                 ),
                 bannerText = "50% discount the first year",
                 discountText = "-50%",
@@ -1708,7 +1708,7 @@ private fun PreviewHomeScreen(
                   "",
                   ImageAsset("", "", ""),
                   ImageAsset("", "", ""),
-                  buttonText = "See price"
+                  buttonText = "See price",
                 ),
               ),
               recommendedAddon = null,

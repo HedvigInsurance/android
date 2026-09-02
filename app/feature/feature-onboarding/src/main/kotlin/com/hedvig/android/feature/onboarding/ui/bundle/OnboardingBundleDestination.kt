@@ -317,7 +317,7 @@ private class OnboardingBundleUiStateProvider : CollectionPreviewParameterProvid
           description = "For you, your family and your home",
           storeUrl = "https://www.hedvig.com/se/forsakringar/hemforsakring",
           pillowImageUrl = null,
-          buttonTitle = "button"
+          buttonTitle = "button",
         ),
         OnboardingCrossSell(
           id = "pet",
@@ -325,7 +325,7 @@ private class OnboardingBundleUiStateProvider : CollectionPreviewParameterProvid
           description = "For your dog or cat",
           storeUrl = "https://www.hedvig.com/se/forsakringar/djurforsakring",
           pillowImageUrl = null,
-          buttonTitle = "button"
+          buttonTitle = "button",
         ),
         OnboardingCrossSell(
           id = "car",
@@ -333,7 +333,7 @@ private class OnboardingBundleUiStateProvider : CollectionPreviewParameterProvid
           description = "For you and your car",
           storeUrl = "https://www.hedvig.com/se/forsakringar/bilforsakring",
           pillowImageUrl = null,
-          buttonTitle = "button"
+          buttonTitle = "button",
         ),
         OnboardingCrossSell(
           id = "vacation",
@@ -341,7 +341,7 @@ private class OnboardingBundleUiStateProvider : CollectionPreviewParameterProvid
           description = "For your cottage or cabin",
           storeUrl = "https://www.hedvig.com/se/forsakringar/fritidshusforsakring",
           pillowImageUrl = null,
-          buttonTitle = "button"
+          buttonTitle = "button",
         ),
         OnboardingCrossSell(
           id = "ppi",
@@ -349,7 +349,7 @@ private class OnboardingBundleUiStateProvider : CollectionPreviewParameterProvid
           description = "For you if you get unemployed",
           storeUrl = "https://www.hedvig.com/se/forsakringar/inkomstforsakring",
           pillowImageUrl = null,
-          buttonTitle = "button"
+          buttonTitle = "button",
         ),
       ),
     ),

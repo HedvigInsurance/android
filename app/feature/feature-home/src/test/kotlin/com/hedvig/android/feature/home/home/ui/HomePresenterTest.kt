@@ -76,6 +76,7 @@ internal class HomePresenterTest {
       "url",
       ImageAsset("", "", ""),
       ImageAsset("", "", ""),
+      buttonText = "See price",
     ),
     bannerText = "50% discount the first year",
     buttonText = "Explore offer",
@@ -539,6 +540,7 @@ internal class HomePresenterTest {
       subtitle = "subt",
       pillowImageSmall = ImageAsset("", "", ""),
       pillowImageLarge = ImageAsset("", "", ""),
+      buttonText = "See price",
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -709,6 +711,7 @@ internal class HomePresenterTest {
       storeUrl = "url",
       pillowImageSmall = ImageAsset("", "", ""),
       pillowImageLarge = ImageAsset("", "", ""),
+      buttonText = "See price",
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
