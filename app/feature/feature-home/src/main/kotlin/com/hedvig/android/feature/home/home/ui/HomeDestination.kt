@@ -213,7 +213,6 @@ import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE
 import hedvig.resources.HOME_ADDONS_READ_MORE_BUTTON
 import hedvig.resources.HOME_DISCOVER_SECTION_TITLE
-import hedvig.resources.HOME_DISCOVER_SEE_PRICE_BUTTON
 import hedvig.resources.HOME_GREETING_SUBTITLE
 import hedvig.resources.HOME_GREETING_TITLE
 import hedvig.resources.HOME_QUOTES_SECTION_TITLE

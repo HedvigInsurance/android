@@ -60,7 +60,6 @@ import dev.zacsweers.metro.Inject
 import hedvig.resources.ONBOARDING_CONTINUE_TO_APP_BUTTON
 import hedvig.resources.ONBOARDING_CROSS_SELL_SUBTITLE
 import hedvig.resources.ONBOARDING_CROSS_SELL_TITLE
-import hedvig.resources.ONBOARDING_SEE_PRICE_BUTTON
 import hedvig.resources.Res
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
