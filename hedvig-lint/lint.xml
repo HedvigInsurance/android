@@ -8,6 +8,12 @@
        config entry for a check absent from a given module isn't flagged. -->
   <issue id="UnknownIssueId" severity="ignore" />
 
+  <!-- Renovate (renovate.json) owns dependency freshness, so lint's version-staleness notices are
+       duplicate signal. They also resolve against the shared root gradle/libs.versions.toml rather
+       than the module being linted, so they report identically no matter which module runs lint. -->
+  <issue id="GradleDependency" severity="ignore" />
+  <issue id="NewerVersionAvailable" severity="ignore" />
+
   <issue id="ButtonCase" severity="ignore" />
   <issue id="TypographyDashes" severity="ignore" />
   <issue id="TypographyEllipsis" severity="ignore" />
