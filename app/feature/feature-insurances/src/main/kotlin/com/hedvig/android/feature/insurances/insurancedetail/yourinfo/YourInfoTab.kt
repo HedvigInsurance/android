@@ -314,14 +314,14 @@ internal fun YourInfoTab(
           )
         }
 
-          HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-          Spacer(Modifier.height(16.dp))
-          ContractOwnerSection(
-            coInsuredList = coInsured,
-            modifier = Modifier.padding(horizontal = 16.dp),
-            contractHolderDisplayName = contractHolderDisplayName,
-            contractHolderSSN = contractHolderSSN,
-          )
+        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+        Spacer(Modifier.height(16.dp))
+        ContractOwnerSection(
+          coInsuredList = coInsured,
+          modifier = Modifier.padding(horizontal = 16.dp),
+          contractHolderDisplayName = contractHolderDisplayName,
+          contractHolderSSN = contractHolderSSN,
+        )
 
         if (allowEditCoInsured && coInsured.isNotEmpty()) {
           CoInsuredSection(
@@ -834,11 +834,7 @@ internal fun ContractOwnerSection(
 }
 
 @Composable
-internal fun CoInsuredSection(
-  coInsuredList: List<CoInsured>,
-  isCoOwner: Boolean,
-  modifier: Modifier,
-) {
+internal fun CoInsuredSection(coInsuredList: List<CoInsured>, isCoOwner: Boolean, modifier: Modifier) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
   val birthDateTimeFormatter = rememberHedvigBirthDateDateTimeFormatter()
   Column(modifier = modifier) {
@@ -929,27 +925,30 @@ private fun PreviewYourInfoTab(
           DisplayItem("Type", Text("Homeowner")),
           DisplayItem("Size", Text("56 m2")),
         ),
-        coInsured = if (onlyInsuranceHolder) emptyList() else
+        coInsured = if (onlyInsuranceHolder) {
+          emptyList()
+        } else {
           listOf(
-          CoInsured(
-            ssn = "199101131000",
-            birthDate = null,
-            firstName = "Hu",
-            lastName = "Li",
-            activatesOn = LocalDate.fromEpochDays(300),
-            terminatesOn = null,
-            hasMissingInfo = false,
-          ),
-          CoInsured(
-            ssn = "1234020312",
-            birthDate = null,
-            firstName = "Testersson",
-            lastName = "Tester",
-            activatesOn = null,
-            terminatesOn = null,
-            hasMissingInfo = false,
-          ),
-        ),
+            CoInsured(
+              ssn = "199101131000",
+              birthDate = null,
+              firstName = "Hu",
+              lastName = "Li",
+              activatesOn = LocalDate.fromEpochDays(300),
+              terminatesOn = null,
+              hasMissingInfo = false,
+            ),
+            CoInsured(
+              ssn = "1234020312",
+              birthDate = null,
+              firstName = "Testersson",
+              lastName = "Tester",
+              activatesOn = null,
+              terminatesOn = null,
+              hasMissingInfo = false,
+            ),
+          )
+        },
         coOwners = listOf(),
         allowChangeAddress = true,
         allowTerminatingInsurance = true,
