@@ -57,7 +57,10 @@ class HedvigLintConventionPlugin : Plugin<Project> {
 }
 
 private fun Lint.configure(lintXmlFile: File, lintBaselineFile: File) {
-  baseline = lintBaselineFile
+  // Lint aborts the build whenever it has to create a baseline, even when it found nothing to put in
+  // one, and the baseline it leaves behind then suppresses real errors on the next run. A module opts
+  // in by committing the file: create it empty, then fill it with `updateLintBaseline`.
+  baseline = lintBaselineFile.takeIf(File::exists)
   lintConfig = lintXmlFile
   xmlReport = true
 }
