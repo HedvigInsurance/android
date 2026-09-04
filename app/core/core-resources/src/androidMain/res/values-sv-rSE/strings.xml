@@ -152,7 +152,6 @@
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR">Ange byggår</string>
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL">Byggår</string>
   <string name="CHANGE_ADDRESS_YOU_PLUS">Du + %1$d</string>
-  <string name="CHANGE_INSURANCE_AMOUNT_PAYMENT_PROTECTION_INFO">Det nya beloppet börjar gälla när din kvalificeringstid är slut. Fram till dess gäller ditt nuvarande belopp.</string>
   <string name="CHANGE_INSURANCE_AMOUNT_PROCESSING">Hämtar försäkringsbelopp...</string>
   <string name="CHANGE_PAYOUT_METHOD_BUTTON_LABEL">Ändra utbetalningskonto</string>
   <string name="CHANGE_TIER_BUTTON_TITLE">Ändra skyddsnivå</string>
@@ -515,8 +514,12 @@
   <string name="HOME_DISCOVER_SECTION_TITLE">Upptäck våra försäkringar</string>
   <string name="HOME_GREETING_SUBTITLE">Hur kan vi hjälpa dig?</string>
   <string name="HOME_GREETING_TITLE">Hej %1$s</string>
-  <string name="HOME_QUICK_ACTIONS_CHANGE_ADDRESS">Ändra adress</string>
+  <string name="HOME_QUICK_ACTIONS_CHANGE_ADDRESS">Jag ska flytta</string>
   <string name="HOME_QUICK_ACTIONS_EDIT_INSURANCE">Ändra försäkring</string>
+  <string name="HOME_QUICK_ACTIONS_INVITE">Bjud in en vän</string>
+  <string name="HOME_QUICK_ACTIONS_TRAVEL_CERT">Reseintyg</string>
+  <string name="HOME_QUICK_ACTIONS_UPCOMING_PAYMENT">Kommande betalning</string>
+  <string name="HOME_QUICK_ACTIONS_UPGRADE_COVERAGE">Uppgradera mitt skydd</string>
   <string name="HOME_QUOTES_SECTION_TITLE">Dina prisförslag</string>
   <string name="HOME_TODO_ADD_COINSURED_TITLE">Lägg till medförsäkrad</string>
   <string name="HOME_TODO_ADD_COOWNER_TITLE">Lägg till medägare</string>

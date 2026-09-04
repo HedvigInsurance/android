@@ -135,10 +135,12 @@ import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Inbo
 import com.hedvig.android.design.system.hedvig.TopAppBarLayoutForActions
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
+import com.hedvig.android.design.system.hedvig.icon.CampaignOutline
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
-import com.hedvig.android.design.system.hedvig.icon.Reload
+import com.hedvig.android.design.system.hedvig.icon.HouseArrow
+import com.hedvig.android.design.system.hedvig.icon.PaymentOutline
 import com.hedvig.android.design.system.hedvig.icon.Settings
 import com.hedvig.android.design.system.hedvig.icon.Travel
 import com.hedvig.android.design.system.hedvig.notificationCircle
@@ -175,7 +177,9 @@ import com.hedvig.android.memberquickactions.QuickAction.StandaloneQuickLink
 import com.hedvig.android.memberquickactions.QuickLinkDestination
 import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkChangeAddress
 import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkChangeTier
+import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkForever
 import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate
+import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkUpcomingPayment
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminder.PaymentReminder.ConnectPayment
 import com.hedvig.android.memberreminders.MemberReminder.UpcomingRenewal
@@ -235,7 +239,6 @@ import hedvig.resources.home_tab_get_help
 import hedvig.resources.home_tab_welcome_title_without_name
 import hedvig.resources.ongoing_shop_session_dismiss_offer
 import kotlin.math.roundToInt
-import kotlin.time.Clock
 import kotlin.time.Clock.System
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.ExperimentalTime
@@ -1389,8 +1392,10 @@ private fun QuickAction.homeIcon(): ImageVector = when (this) {
   is MultiSelectExpandedLink -> HedvigIcons.Settings
 
   is StandaloneQuickLink -> when (quickLinkDestination) {
-    QuickLinkChangeAddress -> HedvigIcons.Reload
+    QuickLinkChangeAddress -> HedvigIcons.HouseArrow
     QuickLinkTravelCertificate -> HedvigIcons.Travel
+    QuickLinkForever -> HedvigIcons.CampaignOutline
+    QuickLinkUpcomingPayment -> HedvigIcons.PaymentOutline
     is FirstVet -> HedvigIcons.HelipadOutline
     else -> HedvigIcons.Settings
   }

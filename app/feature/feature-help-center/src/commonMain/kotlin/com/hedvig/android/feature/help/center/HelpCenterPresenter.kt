@@ -31,6 +31,7 @@ import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.memberquickactions.GetMemberQuickActionsUseCase
 import com.hedvig.android.memberquickactions.InnerHelpCenterDestination
 import com.hedvig.android.memberquickactions.QuickAction
+import com.hedvig.android.memberquickactions.QuickActionsSource
 import com.hedvig.android.memberquickactions.QuickLinkDestination
 import com.hedvig.android.memberquickactions.toNavKey
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -176,7 +177,7 @@ internal class HelpCenterPresenter(
         quickLinksUiState = HelpCenterUiState.QuickLinkUiState.Loading
       }
       combine(
-        flow = flow { emit(getMemberQuickActionsUseCase.invoke()) },
+        flow = flow { emit(getMemberQuickActionsUseCase.invoke(QuickActionsSource.HELP_CENTER)) },
         flow2 = flow { emit(getHelpCenterFAQUseCase.invoke()) },
         flow3 = getPuppyGuideUseCase.invoke(),
         flow4 = featureManager.isFeatureEnabled(Feature.DISABLE_PUPPY_GUIDE),

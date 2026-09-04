@@ -12,6 +12,7 @@ import com.hedvig.android.data.contract.toContractGroup
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination
 import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoInsured
 import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoOwners
 import com.hedvig.android.shared.partners.deflect.DeflectData
@@ -43,13 +44,15 @@ import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE
 import hedvig.resources.HOME_QUICK_ACTIONS_CHANGE_ADDRESS
 import hedvig.resources.HOME_QUICK_ACTIONS_EDIT_INSURANCE
+import hedvig.resources.HOME_QUICK_ACTIONS_INVITE
+import hedvig.resources.HOME_QUICK_ACTIONS_UPCOMING_PAYMENT
 import hedvig.resources.Res
 import hedvig.resources.insurance_details_change_amount
 import hedvig.resources.insurance_details_change_amount_subtitle
 import octopus.AvailableSelfServiceOnContractsQuery
 
 interface GetMemberQuickActionsUseCase {
-  suspend fun invoke(): Either<ErrorMessage, List<QuickAction>>
+  suspend fun invoke(source: QuickActionsSource): Either<ErrorMessage, List<QuickAction>>
 }
 
 @ContributesBinding(AppScope::class)
@@ -60,7 +63,7 @@ internal class GetMemberQuickActionsUseCaseImpl(
   private val featureManager: FeatureManager,
   private val getMemberActionsUseCase: GetMemberActionsUseCase,
 ) : GetMemberQuickActionsUseCase {
-  override suspend fun invoke(): Either<ErrorMessage, List<QuickAction>> = either {
+  override suspend fun invoke(source: QuickActionsSource): Either<ErrorMessage, List<QuickAction>> = either {
     val memberActionOptions = getMemberActionsUseCase.invoke().bind()
 
     val activeContracts = if (
@@ -144,15 +147,18 @@ internal class GetMemberQuickActionsUseCaseImpl(
           ),
         )
       }
-      if (memberActionOptions.isConnectPaymentEnabled) {
-        add(
-          QuickAction.StandaloneQuickLink(
-            quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkConnectPayment,
-            titleRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_TITLE,
-            hintTextRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE,
-          ),
-        )
+      if (source == QuickActionsSource.HELP_CENTER) {
+        if (memberActionOptions.isConnectPaymentEnabled) {
+          add(
+            QuickAction.StandaloneQuickLink(
+              quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkConnectPayment,
+              titleRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_TITLE,
+              hintTextRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE,
+            ),
+          )
+        }
       }
+
       if (memberActionOptions.isTravelCertificateEnabled) {
         add(
           QuickAction.StandaloneQuickLink(
@@ -162,17 +168,20 @@ internal class GetMemberQuickActionsUseCaseImpl(
           ),
         )
       }
-      if (memberActionOptions.firstVetAction?.sections?.isNotEmpty() == true) {
-        add(
-          QuickAction.StandaloneQuickLink(
-            quickLinkDestination = InnerHelpCenterDestination.FirstVet(
-              sections = memberActionOptions.firstVetAction.sections,
+      if (source == QuickActionsSource.HELP_CENTER) {
+        if (memberActionOptions.firstVetAction?.sections?.isNotEmpty() == true) {
+          add(
+            QuickAction.StandaloneQuickLink(
+              quickLinkDestination = InnerHelpCenterDestination.FirstVet(
+                sections = memberActionOptions.firstVetAction.sections,
+              ),
+              titleRes = Res.string.HC_QUICK_ACTIONS_FIRSTVET_TITLE,
+              hintTextRes = Res.string.HC_QUICK_ACTIONS_FIRSTVET_SUBTITLE,
             ),
-            titleRes = Res.string.HC_QUICK_ACTIONS_FIRSTVET_TITLE,
-            hintTextRes = Res.string.HC_QUICK_ACTIONS_FIRSTVET_SUBTITLE,
-          ),
-        )
+          )
+        }
       }
+
       if (memberActionOptions.sickAbroadAction != null) {
         val deflectData = memberActionOptions.sickAbroadAction.deflectData
         add(
@@ -182,6 +191,22 @@ internal class GetMemberQuickActionsUseCaseImpl(
             ),
             titleRes = Res.string.HC_QUICK_ACTIONS_SICK_ABROAD_TITLE,
             hintTextRes = Res.string.HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE,
+          ),
+        )
+      }
+      if (source == QuickActionsSource.HOME) {
+        add(
+          QuickAction.StandaloneQuickLink(
+            quickLinkDestination = OuterDestination.QuickLinkForever,
+            titleRes = Res.string.HOME_QUICK_ACTIONS_INVITE,
+            hintTextRes = Res.string.HOME_QUICK_ACTIONS_INVITE,
+          ),
+        )
+        add(
+          QuickAction.StandaloneQuickLink(
+            quickLinkDestination = OuterDestination.QuickLinkUpcomingPayment,
+            titleRes = Res.string.HOME_QUICK_ACTIONS_UPCOMING_PAYMENT,
+            hintTextRes = Res.string.HOME_QUICK_ACTIONS_UPCOMING_PAYMENT,
           ),
         )
       }
@@ -282,6 +307,10 @@ sealed interface QuickLinkDestination {
     data object ChooseInsuranceForEditCoInsured : OuterDestination
 
     data object ChooseInsuranceForEditCoOwners : OuterDestination
+
+    data object QuickLinkForever : OuterDestination
+
+    data object QuickLinkUpcomingPayment : OuterDestination
   }
 }
 
@@ -293,4 +322,9 @@ sealed interface InnerHelpCenterDestination : QuickLinkDestination {
   data class FirstVet(
     val sections: List<FirstVetSection>,
   ) : InnerHelpCenterDestination
+}
+
+enum class QuickActionsSource {
+  HELP_CENTER,
+  HOME,
 }

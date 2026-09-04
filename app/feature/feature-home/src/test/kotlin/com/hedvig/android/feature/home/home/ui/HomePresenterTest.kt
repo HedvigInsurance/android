@@ -34,6 +34,7 @@ import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.memberquickactions.GetMemberQuickActionsUseCase
 import com.hedvig.android.memberquickactions.InnerHelpCenterDestination
 import com.hedvig.android.memberquickactions.QuickAction
+import com.hedvig.android.memberquickactions.QuickActionsSource
 import com.hedvig.android.memberquickactions.QuickLinkDestination
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
@@ -990,7 +991,7 @@ private class FakeCrossSellHomeNotificationService : CrossSellHomeNotificationSe
 private class FakeGetMemberQuickActionsUseCase(
   private val result: Either<ErrorMessage, List<QuickAction>>,
 ) : GetMemberQuickActionsUseCase {
-  override suspend fun invoke(): Either<ErrorMessage, List<QuickAction>> = result
+  override suspend fun invoke(source: QuickActionsSource): Either<ErrorMessage, List<QuickAction>> = result
 }
 
 private class TestDeleteClaimIntentDraftUseCase : DeleteClaimIntentDraftUseCase {

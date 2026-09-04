@@ -27,6 +27,7 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.memberquickactions.GetMemberQuickActionsUseCase
 import com.hedvig.android.memberquickactions.InnerHelpCenterDestination
 import com.hedvig.android.memberquickactions.QuickAction
+import com.hedvig.android.memberquickactions.QuickActionsSource
 import com.hedvig.android.memberquickactions.QuickLinkDestination
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -135,10 +136,8 @@ internal class HomePresenter(
             }
           },
         ) { homeData: HomeData ->
-          val quickActions = getMemberQuickActionsUseCase.invoke()
+          val quickActions = getMemberQuickActionsUseCase.invoke(QuickActionsSource.HOME)
             .getOrElse { emptyList() }
-            .filterNot { it.isSickAbroad() || it.isConnectPayment() }
-            .take(3)
           Snapshot.withMutableSnapshot {
             hasError = false
             isReloading = false

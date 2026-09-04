@@ -43,7 +43,9 @@ kotlin {
       implementation(projects.featureChooseTierNavigation)
       implementation(projects.featureConnectPaymentTrustlyNavigation)
       implementation(projects.featureEditCoinsuredNavigation)
+      implementation(projects.featureForeverNavigation)
       implementation(projects.featureMovingflowNavigation)
+      implementation(projects.featurePaymentsNavigation)
       implementation(projects.featureTerminateInsuranceNavigation)
       implementation(projects.featureTravelCertificateNavigation)
     }

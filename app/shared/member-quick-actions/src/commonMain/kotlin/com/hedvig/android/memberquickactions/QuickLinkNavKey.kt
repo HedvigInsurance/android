@@ -6,8 +6,10 @@ import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyKey
 import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddInfoKey
 import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddOrRemoveKey
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredTriageKey
+import com.hedvig.android.feature.forever.navigation.InviteFriendsKey
 import com.hedvig.android.feature.movingflow.MovingSource
 import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
+import com.hedvig.android.feature.payments.navigation.PaymentDetailsKey
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceKey
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateKey
 import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoInsured
@@ -19,8 +21,10 @@ import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestinati
 import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkCoOwnerAddInfo
 import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkCoOwnerAddOrRemove
 import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkConnectPayment
+import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkForever
 import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkTermination
 import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate
+import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkUpcomingPayment
 import com.hedvig.android.navigation.common.HedvigNavKey
 
 // Only OuterDestinations map to a shared nav key. InnerHelpCenterDestinations (FirstVet, SickAbroad)
@@ -69,5 +73,13 @@ fun QuickLinkDestination.OuterDestination.toNavKey(): HedvigNavKey = when (this)
 
   ChooseInsuranceForEditCoOwners -> {
     EditCoInsuredTriageKey(type = CoInsuredFlowType.CoOwners)
+  }
+
+  QuickLinkForever -> {
+    InviteFriendsKey
+  }
+
+  QuickLinkUpcomingPayment -> {
+    PaymentDetailsKey(null)
   }
 }
