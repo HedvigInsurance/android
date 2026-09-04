@@ -26,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -619,7 +618,6 @@ fun CrossSellsSection(
   hasCrossSellDiscounts: Boolean = false,
   title: String? = null,
   buttonSize: ButtonSize = ButtonSize.Medium,
-  buttonShape: Shape? = null,
 ) {
   Column(modifier) {
     if (withSubHeader) {
@@ -638,7 +636,6 @@ fun CrossSellsSection(
           onSheetDismissed = onSheetDismissed,
           buttonText = crossSell.buttonText,
           buttonSize = buttonSize,
-          buttonShape = buttonShape,
         )
       } else {
         CrossSellItem(
@@ -647,7 +644,6 @@ fun CrossSellsSection(
           onSheetDismissed = onSheetDismissed,
           imageLoader = imageLoader,
           buttonSize = buttonSize,
-          buttonShape = buttonShape,
         )
       }
       if (index != crossSells.lastIndex) {
@@ -695,7 +691,6 @@ private fun CrossSellItem(
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
   buttonSize: ButtonSize = ButtonSize.Medium,
-  buttonShape: Shape? = null,
 ) {
   CrossSellItem(
     crossSellTitle = crossSell.title,
@@ -708,7 +703,6 @@ private fun CrossSellItem(
     crossSellImageAsset = crossSell.pillowImageSmall,
     onSheetDismissed = onSheetDismissed,
     buttonSize = buttonSize,
-    buttonShape = buttonShape,
     buttonText = crossSell.buttonText,
   )
 }
@@ -726,7 +720,6 @@ private fun CrossSellItem(
   buttonText: String,
   modifier: Modifier = Modifier,
   buttonSize: ButtonSize = ButtonSize.Medium,
-  buttonShape: Shape? = null,
 ) {
   PillowRow(
     title = crossSellTitle,
@@ -742,7 +735,6 @@ private fun CrossSellItem(
     isLoading = isLoading,
     modifier = modifier,
     buttonSize = buttonSize,
-    buttonShape = buttonShape,
   )
 }
 
@@ -764,7 +756,6 @@ fun PillowRow(
   buttonStyle: ButtonStyle = ButtonStyle.Secondary,
   isLoading: Boolean = false,
   buttonSize: ButtonSize = ButtonSize.Medium,
-  buttonShape: Shape? = null,
   pillow: (@Composable () -> Unit)? = null,
 ) {
   val description = "$title $subtitle"
@@ -828,7 +819,6 @@ fun PillowRow(
       onClickLabel = onButtonClickLabel,
       buttonSize = buttonSize,
       buttonStyle = buttonStyle,
-      shape = buttonShape,
       modifier = Modifier.hedvigPlaceholder(
         visible = isLoading,
         shape = HedvigTheme.shapes.cornerSmall,
@@ -852,7 +842,6 @@ private fun CrossSellItemWithDiscounts(
   onSheetDismissed: () -> Unit,
   modifier: Modifier = Modifier,
   buttonSize: ButtonSize = ButtonSize.Medium,
-  buttonShape: Shape? = null,
 ) {
   val description = "$crossSellTitle $crossSellSubtitle"
   Row(
@@ -913,7 +902,6 @@ private fun CrossSellItemWithDiscounts(
       onClickLabel = stringResource(string.TALKBACK_OPEN_EXTERNAL_LINK),
       buttonSize = buttonSize,
       buttonStyle = ButtonStyle.PrimaryAlt,
-      shape = buttonShape,
       modifier = Modifier.hedvigPlaceholder(
         visible = isLoading,
         shape = HedvigTheme.shapes.cornerSmall,

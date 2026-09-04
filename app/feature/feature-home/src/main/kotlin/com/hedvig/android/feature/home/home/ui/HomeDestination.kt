@@ -1333,7 +1333,6 @@ private fun QuoteCard(
           buttonStyle = Secondary,
           buttonSize = ButtonSize.Medium,
           enabled = true,
-          shape = HedvigTheme.shapes.cornerFull,
           modifier = Modifier.fillMaxWidth(),
         )
       }
@@ -1536,7 +1535,6 @@ private fun AddonsSection(
         imageLoader = imageLoader,
         modifier = Modifier.fillMaxWidth(),
         buttonSize = ButtonSize.Small,
-        buttonShape = HedvigTheme.shapes.cornerFull,
       )
     }
   }
@@ -1556,7 +1554,6 @@ private fun DiscoverInsurancesSection(
     onSheetDismissed = {},
     imageLoader = imageLoader,
     buttonSize = ButtonSize.Small,
-    buttonShape = HedvigTheme.shapes.cornerFull,
   )
 }
 

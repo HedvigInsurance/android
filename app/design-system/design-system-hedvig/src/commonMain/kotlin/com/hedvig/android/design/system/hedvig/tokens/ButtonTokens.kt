@@ -2,6 +2,15 @@ package com.hedvig.android.design.system.hedvig.tokens
 
 import androidx.compose.ui.unit.dp
 
+/**
+ * Every button is a pill at every size, so the corner radius is no longer a per-size or per-style
+ * choice and lives here instead of on the size tokens below. The radius tokens themselves stay in
+ * use by cards, sheets and the rest of the system.
+ */
+internal object ButtonTokens {
+  val ContainerShape = ShapeKeyTokens.CornerFull
+}
+
 internal object PrimaryStyleButtonTokens {
   val ContainerColor = ColorSchemeKeyTokens.ButtonPrimaryResting
   val ContentColor = ColorSchemeKeyTokens.TextNegative
@@ -98,17 +107,15 @@ internal object LargeSizeButtonTokens {
   val HorizontalPadding = 32.dp
   val TopPadding = 15.dp
   val BottomPadding = 17.dp
-  val ContainerShape = ShapeKeyTokens.CornerLarge
   val LabelTextFont = TypographyKeyTokens.BodySmall
 }
 
-// TODO: the rounded button styles are only designed at the large size. Every smaller size falls back to
+// TODO: the glass button styles are only designed at the large size. Every smaller size falls back to
 //  the standard button metrics above until design provides them.
 internal object RoundedLargeSizeButtonTokens {
   val HorizontalPadding = 20.dp
   val TopPadding = 12.dp
   val BottomPadding = 12.dp
-  val ContainerShape = ShapeKeyTokens.CornerFull
   val LabelTextFont = TypographyKeyTokens.BodySmall
 }
 
@@ -116,7 +123,6 @@ internal object MediumSizeButtonTokens {
   val HorizontalPadding = 14.dp
   val TopPadding = 7.dp // todo look into if we use the right line heights to justify the offset introduced here
   val BottomPadding = 9.dp
-  val ContainerShape = ShapeKeyTokens.CornerMedium
   val LabelTextFont = TypographyKeyTokens.BodySmall
 }
 
@@ -124,7 +130,6 @@ internal object SmallSizeButtonTokens {
   val HorizontalPadding = 12.dp
   val TopPadding = 6.5.dp
   val BottomPadding = 7.5.dp
-  val ContainerShape = ShapeKeyTokens.CornerSmall
   val LabelTextFont = TypographyKeyTokens.Label
 }
 
@@ -132,6 +137,5 @@ internal object MiniSizeButtonTokens {
   val HorizontalPadding = 8.dp
   val TopPadding = 3.dp
   val BottomPadding = 3.dp
-  val ContainerShape = ShapeKeyTokens.CornerXSmall
   val LabelTextFont = TypographyKeyTokens.Label
 }
