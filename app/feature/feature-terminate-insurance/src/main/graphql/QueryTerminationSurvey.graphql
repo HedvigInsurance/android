@@ -64,5 +64,6 @@ query TerminationSurvey($contractId: UUID!, $redirectionEnabled: Boolean!) {
 fragment TerminationSurveyOptionSuggestionFragment on TerminationFlowSurveyOptionSuggestion {
   type
   description
+  actionText
   url
 }

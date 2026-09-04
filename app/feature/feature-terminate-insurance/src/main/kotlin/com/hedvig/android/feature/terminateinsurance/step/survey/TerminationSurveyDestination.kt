@@ -65,6 +65,7 @@ import hedvig.resources.TERMINATION_SURVEY_FEEDBACK_POPOVER_HINT
 import hedvig.resources.general_close_button
 import hedvig.resources.general_continue_button
 import hedvig.resources.something_went_wrong
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -291,22 +292,22 @@ private fun SelectedSurveyInfoBox(
           },
           style = when (suggestion.type) {
             SuggestionType.UPDATE_ADDRESS -> InfoCardStyle.Button(
-              buttonText = stringResource(Res.string.TERMINATION_OFFER_BUTTON_UPDATE_ADDRESS),
+              buttonText = suggestion.actionText.orFallback(Res.string.TERMINATION_OFFER_BUTTON_UPDATE_ADDRESS),
               onButtonClick = dropUnlessResumed { navigateToMovingFlow() },
             )
 
             SuggestionType.DOWNGRADE_PRICE -> InfoCardStyle.Button(
-              buttonText = stringResource(Res.string.CHANGE_TIER_BUTTON_TITLE),
+              buttonText = suggestion.actionText.orFallback(Res.string.CHANGE_TIER_BUTTON_TITLE),
               onButtonClick = tryToDowngradePrice,
             )
 
             SuggestionType.UPGRADE_COVERAGE -> InfoCardStyle.Button(
-              buttonText = stringResource(Res.string.CHANGE_TIER_BUTTON_TITLE),
+              buttonText = suggestion.actionText.orFallback(Res.string.CHANGE_TIER_BUTTON_TITLE),
               onButtonClick = tryToUpgradeCoverage,
             )
 
             SuggestionType.REDIRECT -> InfoCardStyle.Button(
-              buttonText = stringResource(Res.string.SUMMARY_SCREEN_LEARN_MORE_BUTTON),
+              buttonText = suggestion.actionText.orFallback(Res.string.SUMMARY_SCREEN_LEARN_MORE_BUTTON),
               onButtonClick = { suggestion.url?.let { openUrl(it) } },
             )
 
@@ -319,6 +320,16 @@ private fun SelectedSurveyInfoBox(
       Spacer(Modifier)
     }
   }
+}
+
+/**
+ * A suggestion carries its own action button label when the backend has one that fits better than anything we could
+ * pick from the suggestion type alone, like offering to change the insured amount instead of the tier. [fallback]
+ * covers the suggestions which come without one.
+ */
+@Composable
+private fun String?.orFallback(fallback: StringResource): String {
+  return this?.takeIf { it.isNotBlank() } ?: stringResource(fallback)
 }
 
 @Composable
@@ -481,7 +492,12 @@ private val previewReason2 = TerminationSurveyOption(
   id = "2",
   title = "I got a better offer elsewhere",
   subOptions = listOf(),
-  suggestion = null,
+  suggestion = SurveyOptionSuggestion(
+    type = SuggestionType.DOWNGRADE_PRICE,
+    description = "We can offer you a better price",
+    actionText = "Change amount",
+    url = null,
+  ),
   feedbackRequired = true,
   listIndex = 1,
 )
