@@ -24,13 +24,13 @@ import com.hedvig.android.feature.help.center.data.FAQItem
 import com.hedvig.android.feature.help.center.data.FAQTopic
 import com.hedvig.android.feature.help.center.data.GetHelpCenterFAQUseCase
 import com.hedvig.android.feature.help.center.data.GetPuppyGuideUseCase
-import com.hedvig.android.feature.help.center.navigation.EmergencyKey
 import com.hedvig.android.feature.help.center.navigation.FirstVetKey
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.memberquickactions.GetMemberQuickActionsUseCase
 import com.hedvig.android.memberquickactions.InnerHelpCenterDestination
 import com.hedvig.android.memberquickactions.QuickAction
+import com.hedvig.android.memberquickactions.QuickActionsSource
 import com.hedvig.android.memberquickactions.QuickLinkDestination
 import com.hedvig.android.memberquickactions.toNavKey
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -159,7 +159,6 @@ internal class HelpCenterPresenter(
           val destination = event.destination
           val key: HedvigNavKey = when (destination) {
             is InnerHelpCenterDestination.FirstVet -> FirstVetKey(destination.sections)
-            is InnerHelpCenterDestination.QuickLinkSickAbroad -> EmergencyKey(destination.deflectData)
             is QuickLinkDestination.OuterDestination -> destination.toNavKey()
           }
           backstack.add(key)
@@ -176,7 +175,7 @@ internal class HelpCenterPresenter(
         quickLinksUiState = HelpCenterUiState.QuickLinkUiState.Loading
       }
       combine(
-        flow = flow { emit(getMemberQuickActionsUseCase.invoke()) },
+        flow = flow { emit(getMemberQuickActionsUseCase.invoke(QuickActionsSource.HELP_CENTER)) },
         flow2 = flow { emit(getHelpCenterFAQUseCase.invoke()) },
         flow3 = getPuppyGuideUseCase.invoke(),
         flow4 = featureManager.isFeatureEnabled(Feature.DISABLE_PUPPY_GUIDE),
