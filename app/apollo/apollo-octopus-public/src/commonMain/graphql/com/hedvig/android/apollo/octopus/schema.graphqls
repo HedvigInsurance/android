@@ -5442,6 +5442,7 @@ enum TerminationFlowSurveyOptionRedirectionType {
 type TerminationFlowSurveyOptionSuggestion {
   type: TerminationFlowSurveyOptionSuggestionType!
   description: String!
+  actionText: String
   url: String
 }
 enum TerminationFlowSurveyOptionSuggestionType {
