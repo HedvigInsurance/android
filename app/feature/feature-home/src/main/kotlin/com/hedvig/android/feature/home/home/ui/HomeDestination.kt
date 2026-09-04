@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.onConsumedWindowInsetsChanged
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -1237,6 +1238,12 @@ private fun MemberRemindersSection(
 
 private val PillowSize = 48.dp
 
+/**
+ * Tall enough to fit a two-line label, so a row of single-line tiles still shows the gap between
+ * icon and label instead of shrink-wrapping to its own content.
+ */
+private val QuickActionTileMinHeight = 88.dp
+
 @Composable
 private fun QuotesSection(
   sessions: List<OngoingShopSession>,
@@ -1460,8 +1467,9 @@ private fun HomeActionTile(icon: ImageVector, text: String, onClick: () -> Unit,
     Column(
       modifier = Modifier
         .width(160.dp)
+        .heightIn(min = QuickActionTileMinHeight)
         .fillMaxHeight()
-        .padding(vertical = 14.dp, horizontal = 14.dp),
+        .padding(14.dp),
     ) {
       Icon(
         imageVector = icon,
@@ -1470,8 +1478,6 @@ private fun HomeActionTile(icon: ImageVector, text: String, onClick: () -> Unit,
         modifier = Modifier.size(24.dp),
       )
       Spacer(Modifier.height(6.dp))
-      // The row sizes every tile to the tallest label, so the slack is absorbed above the text:
-      // a label sits on the bottom edge and grows upwards as it wraps.
       Spacer(Modifier.weight(1f))
       HedvigText(text = text, style = HedvigTheme.typography.finePrint)
     }
