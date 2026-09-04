@@ -203,6 +203,7 @@ dependencies {
   implementation(projects.featureForever)
   implementation(projects.featureForeverNavigation)
   implementation(projects.featureHelpCenter)
+  implementation(projects.featureHelpCenterNavigation)
   implementation(projects.featureHome)
   implementation(projects.featureImageViewer)
   implementation(projects.featureInsuranceCertificate)

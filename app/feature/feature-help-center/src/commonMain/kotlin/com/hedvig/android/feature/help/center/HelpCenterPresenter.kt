@@ -24,7 +24,6 @@ import com.hedvig.android.feature.help.center.data.FAQItem
 import com.hedvig.android.feature.help.center.data.FAQTopic
 import com.hedvig.android.feature.help.center.data.GetHelpCenterFAQUseCase
 import com.hedvig.android.feature.help.center.data.GetPuppyGuideUseCase
-import com.hedvig.android.feature.help.center.navigation.EmergencyKey
 import com.hedvig.android.feature.help.center.navigation.FirstVetKey
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
@@ -160,7 +159,6 @@ internal class HelpCenterPresenter(
           val destination = event.destination
           val key: HedvigNavKey = when (destination) {
             is InnerHelpCenterDestination.FirstVet -> FirstVetKey(destination.sections)
-            is InnerHelpCenterDestination.QuickLinkSickAbroad -> EmergencyKey(destination.deflectData)
             is QuickLinkDestination.OuterDestination -> destination.toNavKey()
           }
           backstack.add(key)

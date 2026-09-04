@@ -135,6 +135,7 @@ import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Inbo
 import com.hedvig.android.design.system.hedvig.TopAppBarLayoutForActions
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
+import com.hedvig.android.design.system.hedvig.icon.Bandage
 import com.hedvig.android.design.system.hedvig.icon.CampaignOutline
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -178,6 +179,7 @@ import com.hedvig.android.memberquickactions.QuickLinkDestination
 import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkChangeAddress
 import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkChangeTier
 import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkForever
+import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkSickAbroad
 import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate
 import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkUpcomingPayment
 import com.hedvig.android.memberreminders.MemberReminder
@@ -1396,6 +1398,7 @@ private fun QuickAction.homeIcon(): ImageVector = when (this) {
     QuickLinkTravelCertificate -> HedvigIcons.Travel
     QuickLinkForever -> HedvigIcons.CampaignOutline
     QuickLinkUpcomingPayment -> HedvigIcons.PaymentOutline
+    is QuickLinkSickAbroad -> HedvigIcons.Bandage
     is FirstVet -> HedvigIcons.HelipadOutline
     else -> HedvigIcons.Settings
   }

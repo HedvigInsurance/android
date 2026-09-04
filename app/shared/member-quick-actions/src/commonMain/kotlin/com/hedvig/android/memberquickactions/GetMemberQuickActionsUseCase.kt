@@ -186,9 +186,7 @@ internal class GetMemberQuickActionsUseCaseImpl(
         val deflectData = memberActionOptions.sickAbroadAction.deflectData
         add(
           QuickAction.StandaloneQuickLink(
-            quickLinkDestination = InnerHelpCenterDestination.QuickLinkSickAbroad(
-              deflectData,
-            ),
+            quickLinkDestination = OuterDestination.QuickLinkSickAbroad(deflectData),
             titleRes = Res.string.HC_QUICK_ACTIONS_SICK_ABROAD_TITLE,
             hintTextRes = Res.string.HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE,
           ),
@@ -197,16 +195,16 @@ internal class GetMemberQuickActionsUseCaseImpl(
       if (source == QuickActionsSource.HOME) {
         add(
           QuickAction.StandaloneQuickLink(
-            quickLinkDestination = OuterDestination.QuickLinkForever,
-            titleRes = Res.string.HOME_QUICK_ACTIONS_INVITE,
-            hintTextRes = Res.string.HOME_QUICK_ACTIONS_INVITE,
+            quickLinkDestination = OuterDestination.QuickLinkUpcomingPayment,
+            titleRes = Res.string.HOME_QUICK_ACTIONS_UPCOMING_PAYMENT,
+            hintTextRes = Res.string.HOME_QUICK_ACTIONS_UPCOMING_PAYMENT,
           ),
         )
         add(
           QuickAction.StandaloneQuickLink(
-            quickLinkDestination = OuterDestination.QuickLinkUpcomingPayment,
-            titleRes = Res.string.HOME_QUICK_ACTIONS_UPCOMING_PAYMENT,
-            hintTextRes = Res.string.HOME_QUICK_ACTIONS_UPCOMING_PAYMENT,
+            quickLinkDestination = OuterDestination.QuickLinkForever,
+            titleRes = Res.string.HOME_QUICK_ACTIONS_INVITE,
+            hintTextRes = Res.string.HOME_QUICK_ACTIONS_INVITE,
           ),
         )
       }
@@ -311,14 +309,12 @@ sealed interface QuickLinkDestination {
     data object QuickLinkForever : OuterDestination
 
     data object QuickLinkUpcomingPayment : OuterDestination
+
+    data class QuickLinkSickAbroad(val deflectData: DeflectData) : OuterDestination
   }
 }
 
 sealed interface InnerHelpCenterDestination : QuickLinkDestination {
-  data class QuickLinkSickAbroad(
-    val deflectData: DeflectData,
-  ) : InnerHelpCenterDestination
-
   data class FirstVet(
     val sections: List<FirstVetSection>,
   ) : InnerHelpCenterDestination

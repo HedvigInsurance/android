@@ -25,10 +25,8 @@ import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.memberquickactions.GetMemberQuickActionsUseCase
-import com.hedvig.android.memberquickactions.InnerHelpCenterDestination
 import com.hedvig.android.memberquickactions.QuickAction
 import com.hedvig.android.memberquickactions.QuickActionsSource
-import com.hedvig.android.memberquickactions.QuickLinkDestination
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -180,15 +178,6 @@ internal class HomePresenter(
     }
   }
 }
-
-// Home cannot navigate to the sick-abroad emergency screen (it lives in feature-help-center), so that
-// quick action is dropped from the Home tiles.
-private fun QuickAction.isSickAbroad(): Boolean = this is QuickAction.StandaloneQuickLink &&
-  quickLinkDestination is InnerHelpCenterDestination.QuickLinkSickAbroad
-
-// Connecting a payment method belongs in the help center, so it is not offered as a Home tile.
-private fun QuickAction.isConnectPayment(): Boolean = this is QuickAction.StandaloneQuickLink &&
-  quickLinkDestination == QuickLinkDestination.OuterDestination.QuickLinkConnectPayment
 
 internal sealed interface HomeEvent {
   data object RefreshData : HomeEvent
