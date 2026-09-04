@@ -18,6 +18,11 @@ internal data class TerminationSurveyOption(
 internal data class SurveyOptionSuggestion(
   val type: SuggestionType,
   val description: String,
+  /**
+   * The label for the suggestion's action button, when the backend has one to offer. Suggestions without their own
+   * label fall back to a label picked from the [type].
+   */
+  val actionText: String? = null,
   val url: String?,
 )
 
