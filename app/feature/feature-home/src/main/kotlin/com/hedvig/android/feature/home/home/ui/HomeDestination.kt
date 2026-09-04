@@ -1460,7 +1460,8 @@ private fun HomeActionTile(icon: ImageVector, text: String, onClick: () -> Unit,
     Column(
       modifier = Modifier
         .width(160.dp)
-        .padding(vertical = 14.dp, horizontal = 12.dp),
+        .fillMaxHeight()
+        .padding(vertical = 14.dp, horizontal = 14.dp),
     ) {
       Icon(
         imageVector = icon,
@@ -1469,7 +1470,10 @@ private fun HomeActionTile(icon: ImageVector, text: String, onClick: () -> Unit,
         modifier = Modifier.size(24.dp),
       )
       Spacer(Modifier.height(6.dp))
-      HedvigText(text = text, style = HedvigTheme.typography.label)
+      // The row sizes every tile to the tallest label, so the slack is absorbed above the text:
+      // a label sits on the bottom edge and grows upwards as it wraps.
+      Spacer(Modifier.weight(1f))
+      HedvigText(text = text, style = HedvigTheme.typography.finePrint)
     }
   }
 }
