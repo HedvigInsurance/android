@@ -1366,7 +1366,7 @@ private fun QuickActionTilesSection(
     Row(
       horizontalArrangement = Arrangement.spacedBy(8.dp),
       modifier = Modifier
-        .fillMaxWidth()
+        .horizontalScroll(rememberScrollState())
         .height(IntrinsicSize.Max),
     ) {
       quickActions.forEach { action ->
@@ -1380,10 +1380,10 @@ private fun QuickActionTilesSection(
             }
           },
           modifier = Modifier
-            .weight(1f)
             .fillMaxHeight(),
         )
       }
+      Spacer(Modifier.width(8.dp))
     }
   }
 }
@@ -1456,7 +1456,7 @@ private fun HomeActionTile(icon: ImageVector, text: String, onClick: () -> Unit,
   ) {
     Column(
       modifier = Modifier
-        .fillMaxWidth()
+        .width(160.dp)
         .padding(vertical = 14.dp, horizontal = 12.dp),
     ) {
       Icon(
