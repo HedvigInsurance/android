@@ -56,7 +56,6 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.freetext.FreeTextDefaults.counterPadding
 import com.hedvig.android.design.system.hedvig.fromToken
 import com.hedvig.android.design.system.hedvig.internal.Decoration
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.BackgroundBlack
@@ -241,7 +240,7 @@ private fun FreeTextOverlayContent(
             color = freeTextColors.labelColor,
             modifier = Modifier
               .fillMaxWidth()
-              .padding(counterPadding)
+              .padding(FreeTextDefaults.counterPadding)
               .wrapContentWidth(Alignment.End)
               .semantics {
                 contentDescription = characterLimitDescription

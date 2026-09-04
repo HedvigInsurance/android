@@ -224,8 +224,7 @@ import hedvig.resources.RESUME_CLAIM_DELETE_BUTTON
 import hedvig.resources.RESUME_CLAIM_DELETE_TITLE
 import hedvig.resources.RESUME_CLAIM_EXPIRED_BODY
 import hedvig.resources.RESUME_CLAIM_EXPIRED_TITLE
-import hedvig.resources.Res.drawable
-import hedvig.resources.Res.string
+import hedvig.resources.Res
 import hedvig.resources.TOAST_NEW_OFFER
 import hedvig.resources.blur_background
 import hedvig.resources.general_cancel_button
@@ -236,7 +235,6 @@ import hedvig.resources.home_tab_welcome_title_without_name
 import hedvig.resources.ongoing_shop_session_dismiss_offer
 import kotlin.math.roundToInt
 import kotlin.time.Clock
-import kotlin.time.Clock.System
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -387,8 +385,8 @@ private fun HomeScreen(
     // The draft is expired, so acknowledging the notice (Close button, scrim, or back) removes it.
     // Matches the Ready-for-dev design: single Close, closing removes the draft claim card.
     ErrorDialog(
-      title = stringResource(string.RESUME_CLAIM_EXPIRED_TITLE),
-      message = stringResource(string.RESUME_CLAIM_EXPIRED_BODY),
+      title = stringResource(Res.string.RESUME_CLAIM_EXPIRED_TITLE),
+      message = stringResource(Res.string.RESUME_CLAIM_EXPIRED_BODY),
       onDismiss = {
         showDraftExpiredDialog = false
         draftClaim?.let { deleteDraftClaim(it.id) }
@@ -398,10 +396,10 @@ private fun HomeScreen(
   val draftIdToDelete = draftIdPendingDeleteConfirmation
   if (draftIdToDelete != null) {
     HedvigAlertDialog(
-      title = stringResource(string.RESUME_CLAIM_DELETE_TITLE),
-      text = stringResource(string.RESUME_CLAIM_DELETE_BODY),
-      confirmButtonLabel = stringResource(string.RESUME_CLAIM_DELETE_BUTTON),
-      dismissButtonLabel = stringResource(string.general_cancel_button),
+      title = stringResource(Res.string.RESUME_CLAIM_DELETE_TITLE),
+      text = stringResource(Res.string.RESUME_CLAIM_DELETE_BODY),
+      confirmButtonLabel = stringResource(Res.string.RESUME_CLAIM_DELETE_BUTTON),
+      dismissButtonLabel = stringResource(Res.string.general_cancel_button),
       onDismissRequest = { draftIdPendingDeleteConfirmation = null },
       onConfirmClick = {
         draftIdPendingDeleteConfirmation = null
@@ -456,7 +454,7 @@ private fun HomeScreen(
             },
             onContinueDraftClaim = {
               if (draftClaim != null) {
-                if (draftClaim.isExpired(System.now())) {
+                if (draftClaim.isExpired(Clock.System.now())) {
                   showDraftExpiredDialog = true
                 } else {
                   navigateToClaimChat(true)
@@ -557,7 +555,7 @@ private fun HomeScreenTopBar(
       }
       if (shouldShowNewMessageTooltip) {
         HedvigTooltip(
-          message = stringResource(string.CHAT_NEW_MESSAGE),
+          message = stringResource(Res.string.CHAT_NEW_MESSAGE),
           showTooltip = shouldShowNewMessageTooltip,
           tooltipStyle = Inbox,
           beakDirection = TopEnd,
@@ -586,7 +584,7 @@ private fun ColumnScope.CrossSellsTooltip(uiState: Success, setEpochDayWhenLastT
     var shouldSetEpochDayWhenLastToolTipShown by remember { mutableStateOf(false) }
     LaunchedEffect(shouldSetEpochDayWhenLastToolTipShown) {
       if (shouldSetEpochDayWhenLastToolTipShown) {
-        val today = System.now().toLocalDateTime(
+        val today = Clock.System.now().toLocalDateTime(
           TimeZone.currentSystemDefault(),
         ).date.toEpochDays()
         delay(5000.milliseconds)
@@ -595,7 +593,7 @@ private fun ColumnScope.CrossSellsTooltip(uiState: Success, setEpochDayWhenLastT
     }
     if (shouldShowCrossSellsTooltip) {
       HedvigTooltip(
-        message = stringResource(string.TOAST_NEW_OFFER),
+        message = stringResource(Res.string.TOAST_NEW_OFFER),
         showTooltip = true,
         tooltipStyle = Campaign(
           subMessage = null,
@@ -682,7 +680,7 @@ private fun HomeScreenSuccess(
     // to "hide" it (the content cards already do; so do the pinned pills).
     if (HedvigTheme.colorScheme.isLight) {
       Image(
-        painter = painterResource(drawable.blur_background),
+        painter = painterResource(Res.drawable.blur_background),
         contentDescription = null,
         contentScale = ContentScale.Crop,
         modifier = Modifier.matchParentSize(),
@@ -1211,7 +1209,7 @@ private fun MemberRemindersSection(
           .padding(horizontalInsets),
       ) {
         HedvigText(
-          text = stringResource(string.HOME_TODO_SECTION_TITLE),
+          text = stringResource(Res.string.HOME_TODO_SECTION_TITLE),
           style = HedvigTheme.typography.headlineSmall,
           modifier = Modifier.semantics { heading() },
         )
@@ -1243,7 +1241,7 @@ private fun QuotesSection(
   val contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets
   Column(Modifier.fillMaxWidth()) {
     HedvigText(
-      text = stringResource(string.HOME_QUOTES_SECTION_TITLE),
+      text = stringResource(Res.string.HOME_QUOTES_SECTION_TITLE),
       style = HedvigTheme.typography.headlineSmall,
       modifier = Modifier
         .padding(contentPadding)
@@ -1300,7 +1298,7 @@ private fun QuoteCard(
             HedvigText(text = session.title, style = HedvigTheme.typography.bodySmall)
             val secondary = session.monthlyNet?.let {
               stringResource(
-                string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
                 it,
               )
             } ?: session.subtitle
@@ -1322,13 +1320,13 @@ private fun QuoteCard(
           ) {
             Icon(
               imageVector = HedvigIcons.Close,
-              contentDescription = stringResource(string.ongoing_shop_session_dismiss_offer),
+              contentDescription = stringResource(Res.string.ongoing_shop_session_dismiss_offer),
             )
           }
         }
         Spacer(Modifier.height(12.dp))
         HedvigButton(
-          text = stringResource(string.general_continue_button),
+          text = stringResource(Res.string.general_continue_button),
           onClick = { onResumeClick(session.resumeUrl) },
           buttonStyle = Secondary,
           buttonSize = ButtonSize.Medium,
@@ -1356,7 +1354,7 @@ private fun QuickActionTilesSection(
       .padding(horizontalInsets),
   ) {
     HedvigText(
-      text = stringResource(string.HC_QUICK_ACTIONS_TITLE),
+      text = stringResource(Res.string.HC_QUICK_ACTIONS_TITLE),
       style = HedvigTheme.typography.headlineSmall,
       modifier = Modifier.semantics { heading() },
     )
@@ -1484,21 +1482,21 @@ private fun MainActionCarouselSection(
       .padding(horizontalInsets),
   ) {
     HedvigButton(
-      text = stringResource(string.home_tab_claim_button_text),
+      text = stringResource(Res.string.home_tab_claim_button_text),
       onClick = onMakeClaim,
       enabled = true,
       buttonStyle = RoundedPrimary,
     )
     if (isHelpCenterEnabled) {
       HedvigButton(
-        text = stringResource(string.home_tab_get_help),
+        text = stringResource(Res.string.home_tab_get_help),
         onClick = onHelpAndSupport,
         enabled = true,
         buttonStyle = RoundedLiquidGlass,
       )
     }
     HedvigButton(
-      text = stringResource(string.DASHBOARD_OPEN_CHAT),
+      text = stringResource(Res.string.DASHBOARD_OPEN_CHAT),
       onClick = onContactUs,
       enabled = true,
       buttonStyle = RoundedLiquidGlass,
@@ -1521,7 +1519,7 @@ private fun AddonsSection(
       .padding(horizontalInsets),
   ) {
     HedvigText(
-      text = stringResource(string.INSURANCE_ADDONS_SUBHEADING),
+      text = stringResource(Res.string.INSURANCE_ADDONS_SUBHEADING),
       style = HedvigTheme.typography.headlineSmall,
       modifier = Modifier.semantics { heading() },
     )
@@ -1531,7 +1529,7 @@ private fun AddonsSection(
         subtitle = addon.description,
         pillowImage = null,
         pillow = { AddonPillow(addon.flowType) },
-        buttonText = stringResource(string.HOME_ADDONS_READ_MORE_BUTTON),
+        buttonText = stringResource(Res.string.HOME_ADDONS_READ_MORE_BUTTON),
         onButtonClick = { navigateToAddonPurchaseFlow(addon.eligibleInsurancesIds) },
         imageLoader = imageLoader,
         modifier = Modifier.fillMaxWidth(),
@@ -1549,7 +1547,7 @@ private fun DiscoverInsurancesSection(
   imageLoader: ImageLoader,
 ) {
   CrossSellsSection(
-    title = stringResource(string.HOME_DISCOVER_SECTION_TITLE),
+    title = stringResource(Res.string.HOME_DISCOVER_SECTION_TITLE),
     crossSells = crossSells,
     onCrossSellClick = onCrossSellClick,
     modifier = Modifier.padding(horizontal = 16.dp),
@@ -1571,7 +1569,7 @@ private fun WelcomeMessage(firstName: String, modifier: Modifier = Modifier) {
   )
   if (firstName.isBlank()) {
     HedvigText(
-      text = stringResource(string.home_tab_welcome_title_without_name),
+      text = stringResource(Res.string.home_tab_welcome_title_without_name),
       style = titleStyle,
       modifier = modifier.fillMaxWidth(),
     )
@@ -1582,12 +1580,12 @@ private fun WelcomeMessage(firstName: String, modifier: Modifier = Modifier) {
     modifier = modifier.fillMaxWidth(),
   ) {
     HedvigText(
-      text = stringResource(string.HOME_GREETING_TITLE, firstName),
+      text = stringResource(Res.string.HOME_GREETING_TITLE, firstName),
       style = titleStyle,
       modifier = Modifier.fillMaxWidth(),
     )
     HedvigText(
-      text = stringResource(string.HOME_GREETING_SUBTITLE),
+      text = stringResource(Res.string.HOME_GREETING_SUBTITLE),
       color = HedvigTheme.colorScheme.textSecondary,
       style = titleStyle,
       modifier = Modifier.fillMaxWidth(),
@@ -1879,19 +1877,19 @@ private fun PreviewHomeScreenAllHomeTextTypes(
 
 private val previewQuickActions: List<QuickAction> = listOf(
   MultiSelectExpandedLink(
-    titleRes = string.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE,
-    hintTextRes = string.HC_QUICK_ACTIONS_EDIT_INSURANCE_SUBTITLE,
+    titleRes = Res.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE,
+    hintTextRes = Res.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_SUBTITLE,
     links = listOf(
       StandaloneQuickLink(
-        titleRes = string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE,
-        hintTextRes = string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE,
+        titleRes = Res.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE,
+        hintTextRes = Res.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE,
         quickLinkDestination = QuickLinkChangeTier,
       ),
     ),
   ),
   StandaloneQuickLink(
-    titleRes = string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE,
-    hintTextRes = string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE,
+    titleRes = Res.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE,
+    hintTextRes = Res.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE,
     quickLinkDestination = QuickLinkChangeAddress,
   ),
 )

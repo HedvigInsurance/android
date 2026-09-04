@@ -43,10 +43,6 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.Notification
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.InfoInline
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.NeutralToast
-import com.hedvig.android.design.system.hedvig.NotificationDefaults.defaultStyle
-import com.hedvig.android.design.system.hedvig.NotificationDefaults.paddingNoIcon
-import com.hedvig.android.design.system.hedvig.NotificationDefaults.paddingWithIcon
-import com.hedvig.android.design.system.hedvig.NotificationDefaults.textStyle
 import com.hedvig.android.design.system.hedvig.icon.Campaign
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
@@ -82,7 +78,7 @@ fun HedvigNotificationCard(
   priority: NotificationPriority,
   modifier: Modifier = Modifier,
   withIcon: Boolean = NotificationDefaults.withIconDefault,
-  style: InfoCardStyle = defaultStyle,
+  style: InfoCardStyle = NotificationDefaults.defaultStyle,
   buttonLoading: Boolean = false,
   minLines: Int = 1,
 ) {
@@ -104,10 +100,10 @@ fun HedvigNotificationCard(
   priority: NotificationPriority,
   modifier: Modifier = Modifier,
   withIcon: Boolean = NotificationDefaults.withIconDefault,
-  style: InfoCardStyle = defaultStyle,
+  style: InfoCardStyle = NotificationDefaults.defaultStyle,
   buttonLoading: Boolean = false,
 ) {
-  val padding = if (withIcon) paddingWithIcon else paddingNoIcon
+  val padding = if (withIcon) NotificationDefaults.paddingWithIcon else NotificationDefaults.paddingNoIcon
   val description = when (priority) {
     Attention, NotificationPriority.AttentionRound, Error, Info -> stringResource(Res.string.TALKBACK_NOTIFICATION_CARD)
     Campaign, InfoInline, NeutralToast, FancyInfo -> ""
@@ -125,7 +121,7 @@ fun HedvigNotificationCard(
     border = if (priority !is FancyInfo) priority.colors.borderColor else null,
   ) {
     val buttonDarkTheme = if (priority is InfoInline) isSystemInDarkTheme() else false
-    ProvideTextStyle(textStyle) {
+    ProvideTextStyle(NotificationDefaults.textStyle) {
       Row(Modifier.padding(padding)) {
         if (withIcon) {
           LayoutWithoutPlacement(
@@ -156,7 +152,7 @@ fun HedvigNotificationCard(
                     buttonSize = Small,
                     modifier = Modifier.weight(1f),
                   ) {
-                    HedvigText(style.leftButtonText, style = textStyle)
+                    HedvigText(style.leftButtonText, style = NotificationDefaults.textStyle)
                   }
                   Spacer(Modifier.width(4.dp))
                   HedvigButton(
@@ -166,7 +162,7 @@ fun HedvigNotificationCard(
                     buttonSize = Small,
                     modifier = Modifier.weight(1f),
                   ) {
-                    HedvigText(style.rightButtonText, style = textStyle)
+                    HedvigText(style.rightButtonText, style = NotificationDefaults.textStyle)
                   }
                 }
               }
@@ -184,11 +180,11 @@ fun HedvigNotificationCard(
                 ) {
                   LayoutWithoutPlacement(
                     sizeAdjustingContent = {
-                      HedvigText(style.buttonText, style = textStyle)
+                      HedvigText(style.buttonText, style = NotificationDefaults.textStyle)
                     },
                   ) {
                     if (!buttonLoading) {
-                      HedvigText(style.buttonText, style = textStyle)
+                      HedvigText(style.buttonText, style = NotificationDefaults.textStyle)
                     } else {
                       Box(
                         modifier = Modifier.fillMaxSize(),

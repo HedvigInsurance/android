@@ -33,10 +33,6 @@ import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplayDefaults.
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplayDefaults.Height.Unlimited
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplayDefaults.Style
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplayDefaults.Style.Labeled
-import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplayDefaults.contentPadding
-import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplayDefaults.defaultHeight
-import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplayDefaults.defaultStyle
-import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplayDefaults.supportingTextPadding
 import com.hedvig.android.design.system.hedvig.fromToken
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.WarningFilled
@@ -64,8 +60,8 @@ fun FreeTextDisplay(
   freeTextPlaceholder: String,
   modifier: Modifier = Modifier,
   maxLength: Int = FreeTextDisplayDefaults.maxLength,
-  height: Height = defaultHeight,
-  style: Style = defaultStyle,
+  height: Height = FreeTextDisplayDefaults.defaultHeight,
+  style: Style = FreeTextDisplayDefaults.defaultStyle,
   hasError: Boolean = false,
   supportingText: String? = null,
   showCount: Boolean = true,
@@ -87,7 +83,7 @@ fun FreeTextDisplay(
       color = freeTextColors.displayContainerColor,
     ) {
       Column(
-        Modifier.padding(contentPadding),
+        Modifier.padding(FreeTextDisplayDefaults.contentPadding),
       ) {
         if (style is Labeled && freeTextValue != null) {
           Row(Modifier.fillMaxWidth()) {
@@ -147,7 +143,7 @@ fun FreeTextDisplay(
           text = supportingText,
           color = displayColors.supportingTextColor,
           style = FreeTextDisplayDefaults.countLabelStyle.value,
-          modifier = Modifier.padding(supportingTextPadding),
+          modifier = Modifier.padding(FreeTextDisplayDefaults.supportingTextPadding),
         )
       }
     }
