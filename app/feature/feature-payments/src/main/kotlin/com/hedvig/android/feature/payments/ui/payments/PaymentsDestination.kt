@@ -495,7 +495,7 @@ private fun PaymentsListItems(
 
         MemberType.STANDARD_MEMBER,
         MemberType.STANDARD_TO_QASA_MEMBER,
-        -> uiState.connectedPaymentInfo is ConnectedPaymentInfo.Active
+        -> true
       }
       if (showPaymentDetailsItem) {
         PaymentsListItem(

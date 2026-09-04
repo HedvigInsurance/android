@@ -2,10 +2,10 @@ package com.hedvig.android.feature.onboarding.navigation
 
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
-import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyKey
 import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddInfoKey
 import com.hedvig.android.feature.onboarding.data.CompleteOnboardingUseCase
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
+import com.hedvig.android.feature.payin.account.navigation.PayinAccountKey
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
@@ -66,9 +66,9 @@ internal class OnboardingNavigator(
     backstack.add(CoInsuredAddInfoKey(contractId, type))
   }
 
-  /** Pushes the Trustly connect-payment flow; it pops itself back here when done. */
+  /** Pushes the payin account overview, where the member picks a payin method. */
   fun openConnectPayment() {
-    backstack.add(TrustlyKey)
+    backstack.add(PayinAccountKey)
   }
 
   /** Pushes the shared Forever screen; the member leaves it with system back. */

@@ -7,7 +7,6 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
-import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyKey
 import com.hedvig.android.feature.onboarding.FakeOnboardingMemberIdProvider
 import com.hedvig.android.feature.onboarding.FakeOnboardingRepository
 import com.hedvig.android.feature.onboarding.data.CompleteOnboardingUseCase
@@ -17,6 +16,7 @@ import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepKey
 import com.hedvig.android.feature.onboarding.testOnboardingData
 import com.hedvig.android.feature.onboarding.testSessionStore
+import com.hedvig.android.feature.payin.account.navigation.PayinAccountKey
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.navigation.common.HedvigNavKey
@@ -57,7 +57,7 @@ internal class OnboardingPaymentPresenterTest {
   }
 
   @Test
-  fun `connect payment pushes the trustly flow`() = runTest {
+  fun `connect payment pushes the payin account overview`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.ConnectPayment)) }
     val repository = FakeOnboardingRepository()
     val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
@@ -71,7 +71,7 @@ internal class OnboardingPaymentPresenterTest {
       sendEvent(OnboardingPaymentEvent.ConnectPayment)
       awaitItem()
       runCurrent()
-      assertThat(backstack.entries.last()).isEqualTo(TrustlyKey)
+      assertThat(backstack.entries.last()).isEqualTo(PayinAccountKey)
     }
   }
 

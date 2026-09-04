@@ -212,6 +212,8 @@ dependencies {
   implementation(projects.featureOnboarding)
 
   implementation(projects.featureRemoveAddons)
+  implementation(projects.featurePayinAccount)
+  implementation(projects.featurePayinAccountNavigation)
   implementation(projects.featurePayoutAccount)
   implementation(projects.featurePayments)
   implementation(projects.featureProfile)

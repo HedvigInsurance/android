@@ -43,6 +43,7 @@ import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE
 import hedvig.resources.HOME_QUICK_ACTIONS_CHANGE_ADDRESS
 import hedvig.resources.HOME_QUICK_ACTIONS_EDIT_INSURANCE
+import hedvig.resources.MANAGE_BILLING_METHODS_BUTTON
 import hedvig.resources.Res
 import hedvig.resources.insurance_details_change_amount
 import hedvig.resources.insurance_details_change_amount_subtitle
@@ -149,7 +150,7 @@ internal class GetMemberQuickActionsUseCaseImpl(
           QuickAction.StandaloneQuickLink(
             quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkConnectPayment,
             titleRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_TITLE,
-            hintTextRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE,
+            hintTextRes = Res.string.MANAGE_BILLING_METHODS_BUTTON, // todo!!!
           ),
         )
       }

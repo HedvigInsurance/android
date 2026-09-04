@@ -36,6 +36,7 @@ query Onboarding {
     paymentMethods {
       payinMethods {
         status
+        isDefault
       }
     }
     crossSellV2(input: { userFlow: ONBOARDING, flowSource: null, experiments: [] }) {
