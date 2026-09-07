@@ -49,6 +49,8 @@ import com.hedvig.android.design.system.hedvig.icon.colored.Swish
 import com.hedvig.android.feature.payin.account.data.PayinAccount
 import com.hedvig.android.feature.payin.account.data.toDeliveryString
 import hedvig.resources.PAYMENTS_INVOICE
+import hedvig.resources.PAYMENT_ADD_METHOD_BUTTON
+import hedvig.resources.PAYMENT_METHODS_TITLE
 import hedvig.resources.REFERRAL_PENDING_STATUS_LABEL
 import hedvig.resources.Res
 import hedvig.resources.something_went_wrong
@@ -84,7 +86,7 @@ private fun PayinAccountOverviewScreen(
   setAsDefaultPayinMethod: (MemberPaymentProvider) -> Unit,
 ) {
   HedvigScaffold(
-    topAppBarText = "Payment account", // todo!
+    topAppBarText = stringResource(Res.string.PAYMENT_METHODS_TITLE),
     navigateUp = navigateUp,
     modifier = Modifier.fillMaxSize(),
   ) {
@@ -133,8 +135,10 @@ private fun PayoutAccountContent(
   setDefaultProviderError: ErrorMessage?,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier
-    .verticalScroll(rememberScrollState())) {
+  Column(
+    modifier
+      .verticalScroll(rememberScrollState()),
+  ) {
     Spacer(Modifier.height(8.dp))
     if (currentMethods.isEmpty()) {
       if (availablePayinMethods.isNotEmpty()) {
@@ -149,11 +153,6 @@ private fun PayoutAccountContent(
         )
       }
     } else {
-      HedvigText(
-        "Connected payment methods", // todo
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(16.dp))
       Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
       ) {
@@ -228,20 +227,20 @@ private fun PayoutAccountContent(
       }
     }
     Column {
-      if (currentMethods.any { it.isPending }) {
-        Spacer(Modifier.height(16.dp))
-        HedvigNotificationCard(
-          message = "You have just added or changed a billing method, it will appear here soon.", // todo
-          priority = NotificationPriority.Info,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        )
-      }
+//      if (currentMethods.any { it.isPending }) {
+//        Spacer(Modifier.height(16.dp))
+//        HedvigNotificationCard(
+//          message = "You have just added or changed a billing method, it will appear here soon.", // todo
+//          priority = NotificationPriority.Info,
+//          modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(horizontal = 16.dp),
+//        )
+//      }
       if (availablePayinMethods.isNotEmpty()) {
         Spacer(Modifier.height(16.dp))
         HedvigButton(
-          text = "Add a payment method", // todo!
+          text = stringResource(Res.string.PAYMENT_ADD_METHOD_BUTTON),
           onClick = onConnectPayinMethodClicked,
           enabled = true,
           modifier = Modifier

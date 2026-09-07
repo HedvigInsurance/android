@@ -28,8 +28,12 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Trustly
 import com.hedvig.android.design.system.hedvig.icon.colored.Kivra
 import com.hedvig.android.design.system.hedvig.icon.colored.Swish
+import hedvig.resources.ONBOARDING_CONNECT_PAYMENT_BANK_LABEL
 import hedvig.resources.PAYMENTS_INVOICE
-import hedvig.resources.PAYOUT_METHOD_INVOICE_DESCRIPTION
+import hedvig.resources.PAYMENT_CONNECT_TITLE
+import hedvig.resources.PAYMENT_OPTION_INVOICE_SUBTITLE
+import hedvig.resources.PAYMENT_OPTION_SWISH_SUBTITLE
+import hedvig.resources.PAYMENT_OPTION_TRUSTLY_SUBTITLE
 import hedvig.resources.Res
 import hedvig.resources.swish
 import octopus.type.MemberPaymentProvider
@@ -44,7 +48,7 @@ internal fun SelectPayinMethodDestination(
   navigateUp: () -> Unit,
 ) {
   HedvigScaffold(
-    topAppBarText = "Add or change payment method", // todo
+    topAppBarText = stringResource(Res.string.PAYMENT_CONNECT_TITLE),
     navigateUp = navigateUp,
     modifier = Modifier.fillMaxSize(),
   ) {
@@ -130,9 +134,9 @@ private fun PayinMethodRow(
       Column(Modifier.padding(vertical = 12.dp)) {
         HedvigText(
           text = when (provider) {
-            MemberPaymentProvider.TRUSTLY -> "Direct debit"
+            MemberPaymentProvider.TRUSTLY -> stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_BANK_LABEL)
 
-            // todo
+            // todo: check
             MemberPaymentProvider.SWISH -> stringResource(Res.string.swish)
 
             MemberPaymentProvider.INVOICE -> stringResource(Res.string.PAYMENTS_INVOICE)
@@ -142,14 +146,9 @@ private fun PayinMethodRow(
         )
         HedvigText(
           text = when (provider) {
-            MemberPaymentProvider.TRUSTLY -> "Connect your bank via Trustly"
-
-            // todo
-            MemberPaymentProvider.SWISH -> "Monthly auto-payments via Swish"
-
-            // todo
-            MemberPaymentProvider.INVOICE -> stringResource(Res.string.PAYOUT_METHOD_INVOICE_DESCRIPTION)
-
+            MemberPaymentProvider.TRUSTLY -> stringResource(Res.string.PAYMENT_OPTION_TRUSTLY_SUBTITLE)
+            MemberPaymentProvider.SWISH -> stringResource(Res.string.PAYMENT_OPTION_SWISH_SUBTITLE)
+            MemberPaymentProvider.INVOICE -> stringResource(Res.string.PAYMENT_OPTION_INVOICE_SUBTITLE)
             else -> ""
           },
           color = HedvigTheme.colorScheme.textSecondary,
