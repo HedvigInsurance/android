@@ -71,6 +71,19 @@ continuous across the release. Once the pre-14.3.6 install base is gone, the leg
 weight and should be removed. Leaving them is not harmful, but they obscure what the metric actually
 measures and they will confuse the next person.
 
+### Blocker: the two login metrics are exempt until their SLI is replaced
+
+`android.login.network.count` and `android.login.network.error` must **not** have their legacy
+branches removed on this trigger. Measured 2026-09-07: every login-view resource event in the last
+7 days came from 14.3.2 or older and carries the old name. No 14.4.x build emits one at all, because
+`:authlib` has no Datadog Ktor plugin and so auth calls produce no resource events. Dropping the
+legacy branch therefore takes the denominator to zero and makes monitor `93408872` fire permanently.
+
+The whole SLI is being rebuilt on auth resource events instead. See
+`2026-09-08-android-login-sli-rebuild.md`, and
+`2026-09-07-ktor-datadog-instrumentation-gap.md` for why the resource events are missing. Both login
+metrics are deleted as part of that work, so this cleanup should simply skip them.
+
 ### Trigger condition
 
 Remove them once traffic from app versions at or below 14.3.2 is negligible. Check with:
