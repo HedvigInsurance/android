@@ -27,6 +27,7 @@ import com.hedvig.android.design.system.hedvig.icon.BankAccount
 import com.hedvig.android.design.system.hedvig.icon.Card
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Link
+import com.hedvig.android.design.system.hedvig.icon.Trustly
 import com.hedvig.android.design.system.hedvig.icon.colored.Swish
 import hedvig.resources.BANK_PAYOUT_METHOD_CARD_DESCRIPTION
 import hedvig.resources.BANK_PAYOUT_METHOD_CARD_TITLE
@@ -110,7 +111,7 @@ private fun PayoutMethodRow(
       when (provider) {
         MemberPaymentProvider.TRUSTLY -> {
           Icon(
-            HedvigIcons.Link,
+            HedvigIcons.Trustly,
             null, // todo
             modifier = Modifier.size(32.dp),
           )

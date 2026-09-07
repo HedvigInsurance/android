@@ -25,6 +25,7 @@ import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.Autogiro
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.Trustly
 import com.hedvig.android.design.system.hedvig.icon.colored.Kivra
 import com.hedvig.android.design.system.hedvig.icon.colored.Swish
 import hedvig.resources.PAYMENTS_INVOICE
@@ -100,7 +101,7 @@ private fun PayinMethodRow(
       when (provider) {
         MemberPaymentProvider.TRUSTLY -> {
           Icon(
-            HedvigIcons.Autogiro,
+            HedvigIcons.Trustly,
             null, // todo
             modifier = Modifier.size(32.dp),
           )
