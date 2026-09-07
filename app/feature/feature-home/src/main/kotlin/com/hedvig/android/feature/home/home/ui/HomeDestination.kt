@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.onConsumedWindowInsetsChanged
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -135,10 +136,13 @@ import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Inbo
 import com.hedvig.android.design.system.hedvig.TopAppBarLayoutForActions
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
+import com.hedvig.android.design.system.hedvig.icon.Bandage
+import com.hedvig.android.design.system.hedvig.icon.CampaignOutline
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
-import com.hedvig.android.design.system.hedvig.icon.Reload
+import com.hedvig.android.design.system.hedvig.icon.HouseArrow
+import com.hedvig.android.design.system.hedvig.icon.PaymentOutline
 import com.hedvig.android.design.system.hedvig.icon.Settings
 import com.hedvig.android.design.system.hedvig.icon.Travel
 import com.hedvig.android.design.system.hedvig.notificationCircle
@@ -175,7 +179,10 @@ import com.hedvig.android.memberquickactions.QuickAction.StandaloneQuickLink
 import com.hedvig.android.memberquickactions.QuickLinkDestination
 import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkChangeAddress
 import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkChangeTier
+import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkForever
+import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkSickAbroad
 import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate
+import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.QuickLinkUpcomingPayment
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminder.PaymentReminder.ConnectPayment
 import com.hedvig.android.memberreminders.MemberReminder.UpcomingRenewal
@@ -213,7 +220,6 @@ import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE
 import hedvig.resources.HOME_ADDONS_READ_MORE_BUTTON
 import hedvig.resources.HOME_DISCOVER_SECTION_TITLE
-import hedvig.resources.HOME_DISCOVER_SEE_PRICE_BUTTON
 import hedvig.resources.HOME_GREETING_SUBTITLE
 import hedvig.resources.HOME_GREETING_TITLE
 import hedvig.resources.HOME_QUOTES_SECTION_TITLE
@@ -236,7 +242,6 @@ import hedvig.resources.home_tab_get_help
 import hedvig.resources.home_tab_welcome_title_without_name
 import hedvig.resources.ongoing_shop_session_dismiss_offer
 import kotlin.math.roundToInt
-import kotlin.time.Clock
 import kotlin.time.Clock.System
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.ExperimentalTime
@@ -728,7 +733,7 @@ private fun HomeScreenSuccess(
         }
 
         HomeSection.DiscoverInsurances -> {
-          uiState.crossSellsPartition.discoverCrossSells.isNotEmpty()
+          uiState.discoverCrossSells.isNotEmpty()
         }
 
         HomeSection.Addons -> {
@@ -979,7 +984,7 @@ private fun HomeScreenSuccess(
             }
 
             HomeSection.DiscoverInsurances -> DiscoverInsurancesSection(
-              crossSells = uiState.crossSellsPartition.discoverCrossSells,
+              crossSells = uiState.discoverCrossSells,
               onCrossSellClick = openCrossSellUrl,
               imageLoader = imageLoader,
             )
@@ -1233,6 +1238,12 @@ private fun MemberRemindersSection(
 
 private val PillowSize = 48.dp
 
+/**
+ * Tall enough to fit a two-line label, so a row of single-line tiles still shows the gap between
+ * icon and label instead of shrink-wrapping to its own content.
+ */
+private val QuickActionTileMinHeight = 88.dp
+
 @Composable
 private fun QuotesSection(
   sessions: List<OngoingShopSession>,
@@ -1364,7 +1375,7 @@ private fun QuickActionTilesSection(
     Row(
       horizontalArrangement = Arrangement.spacedBy(8.dp),
       modifier = Modifier
-        .fillMaxWidth()
+        .horizontalScroll(rememberScrollState())
         .height(IntrinsicSize.Max),
     ) {
       quickActions.forEach { action ->
@@ -1378,10 +1389,10 @@ private fun QuickActionTilesSection(
             }
           },
           modifier = Modifier
-            .weight(1f)
             .fillMaxHeight(),
         )
       }
+      Spacer(Modifier.width(8.dp))
     }
   }
 }
@@ -1390,8 +1401,11 @@ private fun QuickAction.homeIcon(): ImageVector = when (this) {
   is MultiSelectExpandedLink -> HedvigIcons.Settings
 
   is StandaloneQuickLink -> when (quickLinkDestination) {
-    QuickLinkChangeAddress -> HedvigIcons.Reload
+    QuickLinkChangeAddress -> HedvigIcons.HouseArrow
     QuickLinkTravelCertificate -> HedvigIcons.Travel
+    QuickLinkForever -> HedvigIcons.CampaignOutline
+    QuickLinkUpcomingPayment -> HedvigIcons.PaymentOutline
+    is QuickLinkSickAbroad -> HedvigIcons.Bandage
     is FirstVet -> HedvigIcons.HelipadOutline
     else -> HedvigIcons.Settings
   }
@@ -1452,8 +1466,10 @@ private fun HomeActionTile(icon: ImageVector, text: String, onClick: () -> Unit,
   ) {
     Column(
       modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 14.dp, horizontal = 12.dp),
+        .width(160.dp)
+        .heightIn(min = QuickActionTileMinHeight)
+        .fillMaxHeight()
+        .padding(14.dp),
     ) {
       Icon(
         imageVector = icon,
@@ -1462,7 +1478,8 @@ private fun HomeActionTile(icon: ImageVector, text: String, onClick: () -> Unit,
         modifier = Modifier.size(24.dp),
       )
       Spacer(Modifier.height(6.dp))
-      HedvigText(text = text, style = HedvigTheme.typography.label)
+      Spacer(Modifier.weight(1f))
+      HedvigText(text = text, style = HedvigTheme.typography.finePrint)
     }
   }
 }
@@ -1556,7 +1573,6 @@ private fun DiscoverInsurancesSection(
     modifier = Modifier.padding(horizontal = 16.dp),
     onSheetDismissed = {},
     imageLoader = imageLoader,
-    buttonText = stringResource(string.HOME_DISCOVER_SEE_PRICE_BUTTON),
     buttonSize = ButtonSize.Small,
     buttonShape = HedvigTheme.shapes.cornerFull,
   )
@@ -1663,9 +1679,7 @@ private fun PreviewHomeScreen(
           isHelpCenterEnabled = true,
           quickActions = previewQuickActions,
           hasUnseenChatMessages = hasUnseenChatMessages,
-          crossSellsPartition = CrossSellsPartition(
-            discoverCrossSells = emptyList(),
-          ),
+          discoverCrossSells = emptyList(),
           ongoingShopSessions = listOf(
             OngoingShopSession(
               id = "preview-1",
@@ -1694,6 +1708,7 @@ private fun PreviewHomeScreen(
                   "",
                   ImageAsset("", "", ""),
                   ImageAsset("", "", ""),
+                  buttonText = "See price",
                 ),
                 bannerText = "50% discount the first year",
                 discountText = "-50%",
@@ -1710,6 +1725,7 @@ private fun PreviewHomeScreen(
                   "",
                   ImageAsset("", "", ""),
                   ImageAsset("", "", ""),
+                  buttonText = "See price",
                 ),
               ),
               recommendedAddon = null,

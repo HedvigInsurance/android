@@ -80,7 +80,7 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Success
-import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
+import com.hedvig.android.ui.tiersandaddons.CostBreakdownEntry
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
 import hedvig.resources.OFFER_PRESENTER_INSURANCE_AMOUNT_TITLE
 import hedvig.resources.Res

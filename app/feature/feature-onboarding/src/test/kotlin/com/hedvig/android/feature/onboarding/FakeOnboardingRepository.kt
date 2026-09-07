@@ -72,6 +72,7 @@ internal fun testOnboardingData(
       description = "For your pet",
       storeUrl = "https://x",
       pillowImageUrl = "https://x",
+      buttonTitle = "See price",
     ),
   ),
 ): OnboardingData = OnboardingData(

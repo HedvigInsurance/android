@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.common.daysUntil
 import com.hedvig.android.core.uidata.UiCurrencyCode
@@ -46,10 +47,10 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabel
-import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighLightSize.Small
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Amber
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Red
@@ -98,7 +99,6 @@ import hedvig.resources.CONTRACT_ADD_COINSURED_ACTIVE_UNTIL
 import hedvig.resources.CONTRACT_COINSURED
 import hedvig.resources.CONTRACT_COINSURED_ADD_PERSONAL_INFO
 import hedvig.resources.CONTRACT_COINSURED_MISSING_ADD_INFO
-import hedvig.resources.CONTRACT_COOWNER
 import hedvig.resources.CONTRACT_COOWNERS_ADD_PERSONAL_INFO
 import hedvig.resources.CONTRACT_EDIT_INFO_LABEL
 import hedvig.resources.CONTRACT_NO_INFORMATION
@@ -162,6 +162,7 @@ internal fun YourInfoTab(
   navigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToAddAddon: (AvailableAddon) -> Unit,
+  showPolicyHolderRow: Boolean,
   modifier: Modifier = Modifier,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
@@ -311,34 +312,22 @@ internal fun YourInfoTab(
             modifier = Modifier.padding(horizontal = 16.dp),
           )
         }
-        if (allowEditCoInsured || allowEditCoOwners) {
+        if (showPolicyHolderRow) {
+          val insuredPeopleExceptHolder = coInsured.takeIf { it.isNotEmpty() } ?: coOwners
           HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
           Spacer(Modifier.height(16.dp))
           ContractOwnerSection(
-            coInsuredList = coInsured,
+            coInsuredList = insuredPeopleExceptHolder,
             modifier = Modifier.padding(horizontal = 16.dp),
+            contractHolderDisplayName = contractHolderDisplayName,
+            contractHolderSSN = contractHolderSSN,
           )
-          if (coInsured.isEmpty() && coOwners.isEmpty()) {
-            Spacer(Modifier.height(16.dp))
+          if (insuredPeopleExceptHolder.isNotEmpty()) {
+            CoInsuredSection(
+              coInsuredList = insuredPeopleExceptHolder,
+              modifier = Modifier.padding(horizontal = 16.dp),
+            )
           }
-        }
-        if (allowEditCoInsured && coInsured.isNotEmpty()) {
-          CoInsuredSection(
-            coInsuredList = coInsured,
-            contractHolderDisplayName = contractHolderDisplayName,
-            contractHolderSSN = contractHolderSSN,
-            isCoOwner = false,
-            modifier = Modifier.padding(horizontal = 16.dp),
-          )
-        }
-        if (allowEditCoOwners && coOwners.isNotEmpty()) {
-          CoInsuredSection(
-            coInsuredList = coOwners,
-            contractHolderDisplayName = contractHolderDisplayName,
-            contractHolderSSN = contractHolderSSN,
-            isCoOwner = true,
-            modifier = Modifier.padding(horizontal = 16.dp),
-          )
         }
       }
     }
@@ -675,9 +664,11 @@ internal fun CoverageRows(coverageRowItems: List<DisplayItem>, modifier: Modifie
           ) {
             HedvigText(displayItem.title)
             displayItem.subtitle?.let {
-              HedvigText(it,
+              HedvigText(
+                it,
                 style = HedvigTheme.typography.label,
-                color = HedvigTheme.colorScheme.textSecondary)
+                color = HedvigTheme.colorScheme.textSecondary,
+              )
             }
           }
         },
@@ -763,53 +754,40 @@ internal fun PriceRow(
 @Composable
 internal fun ContractOwnerSection(
   coInsuredList: List<CoInsured>,
-  modifier: Modifier,
-) {
-  Column(modifier = modifier) {
-  HorizontalItemsWithMaximumSpaceTaken(
-    startSlot = {
-      Column(
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier.padding(vertical = 4.dp),
-      ) {
-        HedvigText(stringResource(Res.string.CHANGE_ADDRESS_CO_INSURED_LABEL))
-      }
-    },
-    endSlot = {
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.End,
-        modifier = Modifier.padding(vertical = 4.dp),
-      ) {
-        val text = if (coInsuredList.isEmpty()) {
-          stringResource(Res.string.CHANGE_ADDRESS_ONLY_YOU)
-        } else {
-          stringResource(Res.string.CHANGE_ADDRESS_YOU_PLUS, coInsuredList.size)
-        }
-        HedvigText(
-          text = text,
-          color = HedvigTheme.colorScheme.textSecondary,
-          textAlign = TextAlign.End,
-        )
-      }
-    },
-    spaceBetween = 8.dp,
-  )
-  }
-}
-
-@Composable
-internal fun CoInsuredSection(
-  coInsuredList: List<CoInsured>,
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
-  isCoOwner: Boolean,
   modifier: Modifier,
 ) {
-  val dateTimeFormatter = rememberHedvigDateTimeFormatter()
-  val birthDateTimeFormatter = rememberHedvigBirthDateDateTimeFormatter()
   Column(modifier = modifier) {
-
+    HorizontalItemsWithMaximumSpaceTaken(
+      startSlot = {
+        Column(
+          verticalArrangement = Arrangement.Center,
+          modifier = Modifier.padding(vertical = 4.dp),
+        ) {
+          HedvigText(stringResource(Res.string.CHANGE_ADDRESS_CO_INSURED_LABEL))
+        }
+      },
+      endSlot = {
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.End,
+          modifier = Modifier.padding(vertical = 4.dp),
+        ) {
+          val text = if (coInsuredList.isEmpty()) {
+            stringResource(Res.string.CHANGE_ADDRESS_ONLY_YOU)
+          } else {
+            stringResource(Res.string.CHANGE_ADDRESS_YOU_PLUS, coInsuredList.size)
+          }
+          HedvigText(
+            text = text,
+            color = HedvigTheme.colorScheme.textSecondary,
+            textAlign = TextAlign.End,
+          )
+        }
+      },
+      spaceBetween = 8.dp,
+    )
     Spacer(Modifier.height(16.dp))
     HorizontalDivider()
     HorizontalItemsWithMaximumSpaceTaken(
@@ -844,6 +822,14 @@ internal fun CoInsuredSection(
       },
       spaceBetween = 8.dp,
     )
+  }
+}
+
+@Composable
+internal fun CoInsuredSection(coInsuredList: List<CoInsured>, modifier: Modifier) {
+  val dateTimeFormatter = rememberHedvigDateTimeFormatter()
+  val birthDateTimeFormatter = rememberHedvigBirthDateDateTimeFormatter()
+  Column(modifier = modifier) {
     for (coInsured in coInsuredList) {
       HorizontalDivider()
       HorizontalItemsWithMaximumSpaceTaken(
@@ -855,11 +841,7 @@ internal fun CoInsuredSection(
             Column {
               HedvigText(
                 text = coInsured.getDisplayName().ifBlank {
-                  if (isCoOwner) {
-                    stringResource(Res.string.CONTRACT_COOWNER)
-                  } else {
-                    stringResource(Res.string.CONTRACT_COINSURED)
-                  }
+                  stringResource(Res.string.CONTRACT_COINSURED)
                 },
               )
 
@@ -916,9 +898,11 @@ internal fun CoInsuredSection(
 }
 
 @Composable
-@HedvigPreview
+@HedvigShortMultiScreenPreview
 @Preview(name = "long", device = "spec:width=1080px,height=5000px,dpi=440")
-private fun PreviewYourInfoTab() {
+private fun PreviewYourInfoTab(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) onlyInsuranceHolder: Boolean,
+) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       YourInfoTab(
@@ -929,26 +913,30 @@ private fun PreviewYourInfoTab() {
           DisplayItem("Type", Text("Homeowner")),
           DisplayItem("Size", Text("56 m2")),
         ),
-        coInsured = listOf(
-          CoInsured(
-            ssn = "199101131093",
-            birthDate = null,
-            firstName = "Hugo",
-            lastName = "Linder",
-            activatesOn = LocalDate.fromEpochDays(300),
-            terminatesOn = LocalDate.fromEpochDays(400),
-            hasMissingInfo = false,
-          ),
-          CoInsured(
-            ssn = null,
-            birthDate = null,
-            firstName = null,
-            lastName = null,
-            activatesOn = null,
-            terminatesOn = null,
-            hasMissingInfo = true,
-          ),
-        ),
+        coInsured = if (onlyInsuranceHolder) {
+          emptyList()
+        } else {
+          listOf(
+            CoInsured(
+              ssn = "199101131000",
+              birthDate = null,
+              firstName = "Hu",
+              lastName = "Li",
+              activatesOn = LocalDate.fromEpochDays(300),
+              terminatesOn = null,
+              hasMissingInfo = false,
+            ),
+            CoInsured(
+              ssn = "1234020312",
+              birthDate = null,
+              firstName = "Testersson",
+              lastName = "Tester",
+              activatesOn = null,
+              terminatesOn = null,
+              hasMissingInfo = false,
+            ),
+          )
+        },
         coOwners = listOf(),
         allowChangeAddress = true,
         allowTerminatingInsurance = true,
@@ -988,7 +976,7 @@ private fun PreviewYourInfoTab() {
               firstName = "Hugo",
               lastName = "Linder",
               activatesOn = LocalDate.fromEpochDays(300),
-              terminatesOn = LocalDate.fromEpochDays(300),
+              terminatesOn = null,
               hasMissingInfo = false,
             ),
             CoInsured(
@@ -1065,6 +1053,7 @@ private fun PreviewYourInfoTab() {
         navigateToAddAddon = {},
         chipIdState = ChipIdState.Missing,
         onFillChipId = {},
+        showPolicyHolderRow = false,
       )
     }
   }

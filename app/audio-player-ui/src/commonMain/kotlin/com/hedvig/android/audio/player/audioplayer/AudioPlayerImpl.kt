@@ -8,11 +8,11 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.hedvig.android.audio.player.CommonMediaPlayer
+import com.hedvig.android.audio.player.data.AudioPlayer
+import com.hedvig.android.audio.player.data.AudioPlayerState
+import com.hedvig.android.audio.player.data.PlayableAudioSource
+import com.hedvig.android.audio.player.data.ProgressPercentage
 import com.hedvig.android.logger.logcat
-import com.hedvig.audio.player.data.AudioPlayer
-import com.hedvig.audio.player.data.AudioPlayerState
-import com.hedvig.audio.player.data.PlayableAudioSource
-import com.hedvig.audio.player.data.ProgressPercentage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation

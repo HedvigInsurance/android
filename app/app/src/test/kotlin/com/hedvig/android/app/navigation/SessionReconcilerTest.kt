@@ -12,14 +12,14 @@ import com.hedvig.android.auth.storage.AuthTokenStorage
 import com.hedvig.android.auth.token.AuthTokens
 import com.hedvig.android.auth.token.LocalAccessToken
 import com.hedvig.android.auth.token.LocalRefreshToken
+import com.hedvig.android.authlib.AccessToken
+import com.hedvig.android.authlib.RefreshToken
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.login.navigation.LoginKey
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.authlib.AccessToken
-import com.hedvig.authlib.RefreshToken
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
 import kotlinx.coroutines.flow.Flow

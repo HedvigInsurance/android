@@ -37,7 +37,7 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
-import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
+import com.hedvig.android.ui.tiersandaddons.CostBreakdownEntry
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject

@@ -100,6 +100,7 @@ fragment FileUploadFragment on ClaimIntentStepContentFileUpload {
     url
     contentType
     fileName
+    id
   }
 }
 

@@ -50,10 +50,10 @@ import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuoteInsuranceDocument
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Content
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Loading
-import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
-import com.hedvig.ui.tiersandaddons.DisplayDocument
-import com.hedvig.ui.tiersandaddons.QuoteCard
-import com.hedvig.ui.tiersandaddons.QuoteDisplayItem
+import com.hedvig.android.ui.tiersandaddons.CostBreakdownEntry
+import com.hedvig.android.ui.tiersandaddons.DisplayDocument
+import com.hedvig.android.ui.tiersandaddons.QuoteCard
+import com.hedvig.android.ui.tiersandaddons.QuoteDisplayItem
 import hedvig.resources.ADDON_FLOW_CONFIRMATION_BUTTON
 import hedvig.resources.ADDON_FLOW_CONFIRMATION_TITLE
 import hedvig.resources.ADDON_FLOW_PRICE_LABEL

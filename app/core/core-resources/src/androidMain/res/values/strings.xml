@@ -152,7 +152,7 @@
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR">Please enter year of construction</string>
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL">Year of construction</string>
   <string name="CHANGE_ADDRESS_YOU_PLUS">You + %1$d</string>
-  <string name="CHANGE_INSURANCE_AMOUNT_PAYMENT_PROTECTION_INFO">Your updated amount will take effect after your qualification period. Your current amount remains active during this period.</string>
+  <string name="CHANGE_INSURANCE_AMOUNT_PROCESSING">Fetching insurance amount...</string>
   <string name="CHANGE_PAYOUT_METHOD_BUTTON_LABEL">Change payout account</string>
   <string name="CHANGE_TIER_BUTTON_TITLE">Change coverage level</string>
   <string name="CHATBOT_TALK_TO_HUMAN_BUTTON_TITLE">Talk to a human</string>
@@ -261,11 +261,13 @@
   <string name="CLAIM_CHAT_SINGLE_ITEM_DETAILS_HINT">If you don\'t remember the purchase date, you don\'t need to fill in anything.</string>
   <string name="CLAIM_CHAT_SKIPPED_STEP">Skipped</string>
   <string name="CLAIM_CHAT_SKIP_STEP">Skip</string>
+  <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_ALONE_TIME">Select time</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_ALONE_TIME_MESSAGE">Roughly how long had the stroller been there before you noticed it was gone?</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_FULL_DAY_OR_MORE">A day or more</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_OVERNIGHT">Overnight</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_TWO_TO_EIGHT_HOURS">2-8 hours</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_UNDER_TWO_HOURS">Under 2 hours</string>
+  <string name="CLAIM_CHAT_STROLLER_THEFT_LOCK_DESCRIPTION">Tell us more</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LOCK_DESCRIPTION_MESSAGE">Was the stroller locked? Tell us in your own words, e.g. what kind of lock you used.</string>
   <string name="CLAIM_CHAT_SUBMIT_CLAIM">Submit your claim</string>
   <string name="CLAIM_CHAT_SUCCESS_GO_TO_CLAIM">Go to claim</string>
@@ -510,11 +512,14 @@
   <string name="HEDVIG_NAME_TEXT">Hedvig</string>
   <string name="HOME_ADDONS_READ_MORE_BUTTON">Read more</string>
   <string name="HOME_DISCOVER_SECTION_TITLE">Discover our insurances</string>
-  <string name="HOME_DISCOVER_SEE_PRICE_BUTTON">See price</string>
   <string name="HOME_GREETING_SUBTITLE">How can we help?</string>
   <string name="HOME_GREETING_TITLE">Hi %1$s</string>
-  <string name="HOME_QUICK_ACTIONS_CHANGE_ADDRESS">Change address</string>
+  <string name="HOME_QUICK_ACTIONS_CHANGE_ADDRESS">I\'m moving</string>
   <string name="HOME_QUICK_ACTIONS_EDIT_INSURANCE">Edit insurance</string>
+  <string name="HOME_QUICK_ACTIONS_INVITE">Invite a friend</string>
+  <string name="HOME_QUICK_ACTIONS_TRAVEL_CERT">Travel certificate</string>
+  <string name="HOME_QUICK_ACTIONS_UPCOMING_PAYMENT">Upcoming payment</string>
+  <string name="HOME_QUICK_ACTIONS_UPGRADE_COVERAGE">Upgrade my coverage</string>
   <string name="HOME_QUOTES_SECTION_TITLE">Your quotes</string>
   <string name="HOME_TODO_ADD_COINSURED_TITLE">Add co-insured</string>
   <string name="HOME_TODO_ADD_COOWNER_TITLE">Add co-owner</string>
@@ -524,7 +529,7 @@
   <string name="HOME_TODO_PAYMENT_OVERDUE_TITLE">Your payment is overdue</string>
   <string name="HOME_TODO_REQUIRES_ACTION_SUBTITLE">Requires action</string>
   <string name="HOME_TODO_SECTION_TITLE">To do</string>
-  <string name="HOME_TODO_SELECT_USAGE_DATA_TITLE">Select usage data handling</string>
+  <string name="HOME_TODO_SELECT_USAGE_DATA_TITLE">Choose how we use your data</string>
   <string name="HOME_TODO_UPDATE_CONTACT_DETAILS_TITLE">Update contact details</string>
   <string name="HONESTY_PLEDGE_DESCRIPTION">Hedvig is based on trust. I solemnly swear to recite the event as it was and only claim the compensation I’m entitled to.</string>
   <string name="HONESTY_PLEDGE_HEADER">Make a claim</string>
@@ -660,7 +665,6 @@
   <string name="ONBOARDING_PHONE_SAVE_ERROR">Could not save, please try again</string>
   <string name="ONBOARDING_PHONE_SUBTITLE">So we can reach you if we need to</string>
   <string name="ONBOARDING_PHONE_TITLE">Phone number</string>
-  <string name="ONBOARDING_SEE_PRICE_BUTTON">See price</string>
   <string name="ONBOARDING_THEME_DARK_SUBTITLE">Always dark</string>
   <string name="ONBOARDING_THEME_LIGHT_SUBTITLE">Always light</string>
   <string name="ONBOARDING_THEME_SUBTITLE">Choose how the app looks</string>

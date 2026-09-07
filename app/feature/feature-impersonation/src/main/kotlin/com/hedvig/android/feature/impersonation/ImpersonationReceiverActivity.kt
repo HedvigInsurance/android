@@ -18,6 +18,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.authlib.AuthRepository
+import com.hedvig.android.authlib.AuthTokenResult
+import com.hedvig.android.authlib.AuthorizationCodeGrant
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.common.di.MetroGraphProvider
@@ -27,9 +30,6 @@ import com.hedvig.android.feature.impersonation.ImpersonationReceiverViewModel.V
 import com.hedvig.android.feature.impersonation.ImpersonationReceiverViewModel.ViewState.Loading
 import com.hedvig.android.feature.impersonation.ImpersonationReceiverViewModel.ViewState.Success
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.authlib.AuthRepository
-import com.hedvig.authlib.AuthTokenResult
-import com.hedvig.authlib.AuthorizationCodeGrant
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesTo

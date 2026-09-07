@@ -10,6 +10,7 @@ import com.hedvig.android.feature.claimhistory.nav.ClaimHistoryKey
 import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyKey
 import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountKey
 import com.hedvig.android.feature.forever.navigation.ForeverKey
+import com.hedvig.android.feature.forever.navigation.InviteFriendsKey
 import com.hedvig.android.feature.help.center.navigation.HelpCenterKey
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.imageviewer.navigation.ImageViewerKey
@@ -18,6 +19,7 @@ import com.hedvig.android.feature.insurances.navigation.InsurancesKey
 import com.hedvig.android.feature.login.navigation.LoginKey
 import com.hedvig.android.feature.movingflow.MovingSource
 import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
+import com.hedvig.android.feature.payments.navigation.PaymentDetailsKey
 import com.hedvig.android.feature.payments.navigation.PaymentsKey
 import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountKey
 import com.hedvig.android.feature.profile.navigation.ContactInfoKey
@@ -284,6 +286,8 @@ internal class ExhaustiveBackstackSerializationTest {
       ImageViewerKey(imageUrl = "https://example.com/i.png", cacheKey = "cache-1"),
       ChipIdKey(contractId = "contract-1"),
       TerminateInsuranceKey(insuranceId = "insurance-1"),
+      InviteFriendsKey,
+      PaymentDetailsKey(memberChargeId = null),
     )
 
     val restored = json.decodeFromString(serializer, json.encodeToString(serializer, sample))

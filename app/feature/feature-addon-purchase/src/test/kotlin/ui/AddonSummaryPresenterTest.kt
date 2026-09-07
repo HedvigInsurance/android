@@ -35,7 +35,7 @@ import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState
 import com.hedvig.android.feature.addon.purchase.ui.summary.CostBreakdownWithExtras
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
-import com.hedvig.ui.tiersandaddons.QuoteCostBreakdown
+import com.hedvig.android.ui.tiersandaddons.QuoteCostBreakdown
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest

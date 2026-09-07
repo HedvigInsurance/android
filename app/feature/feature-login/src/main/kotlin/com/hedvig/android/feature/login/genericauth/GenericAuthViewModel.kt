@@ -2,12 +2,12 @@ package com.hedvig.android.feature.login.genericauth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.authlib.AuthAttemptResult
+import com.hedvig.android.authlib.AuthRepository
+import com.hedvig.android.authlib.LoginMethod
+import com.hedvig.android.authlib.OtpMarket
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
-import com.hedvig.authlib.AuthAttemptResult
-import com.hedvig.authlib.AuthRepository
-import com.hedvig.authlib.LoginMethod
-import com.hedvig.authlib.OtpMarket
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

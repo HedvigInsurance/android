@@ -34,12 +34,14 @@ import dev.zacsweers.metro.AssistedInject
 @HedvigViewModel(ActivityRetainedScope::class)
 internal class StartTierFlowViewModel(
   @Assisted insuranceID: String,
+  @Assisted isPaymentProtection: Boolean,
   tierRepository: ChangeTierRepository,
   backstack: Backstack,
 ) : MoleculeViewModel<StartTierChangeEvent, StartTierChangeState>(
-    initialState = Loading,
+    initialState = Loading(isPaymentProtection),
     presenter = StartTierChangePresenter(
       insuranceID = insuranceID,
+      isPaymentProtection = isPaymentProtection,
       tierRepository = tierRepository,
       backstack = backstack,
     ),
@@ -47,6 +49,7 @@ internal class StartTierFlowViewModel(
 
 internal class StartTierChangePresenter(
   private val insuranceID: String,
+  private val isPaymentProtection: Boolean,
   private val tierRepository: ChangeTierRepository,
   private val backstack: Backstack,
 ) : MoleculePresenter<StartTierChangeEvent, StartTierChangeState> {
@@ -57,7 +60,7 @@ internal class StartTierChangePresenter(
     var currentState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
     LaunchedEffect(loadIteration) {
-      currentState = Loading
+      currentState = Loading(isPaymentProtection)
       tierRepository.startChangeTierIntentAndGetQuotesId(insuranceID, ChangeTierCreateSource.SELF_SERVICE).fold(
         ifLeft = { left: ErrorMessage ->
           logcat(WARN) { "Start TierFlow failed with: $left" }
@@ -99,7 +102,9 @@ internal class StartTierChangePresenter(
 }
 
 internal sealed interface StartTierChangeState {
-  data object Loading : StartTierChangeState
+  // Payment protection reuses the tier flow only to pick an insured amount, so the loading state announces that it
+  // fetches an insurance amount rather than coverage levels.
+  data class Loading(val isPaymentProtection: Boolean) : StartTierChangeState
 
   data class Failure(val reason: FailureReason) : StartTierChangeState
 

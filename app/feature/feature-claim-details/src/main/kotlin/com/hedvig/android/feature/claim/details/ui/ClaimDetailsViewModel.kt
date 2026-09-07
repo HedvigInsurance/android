@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import arrow.fx.coroutines.parMap
 import com.eygraber.uri.Uri
+import com.hedvig.android.audio.player.data.SignedAudioUrl
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.fileupload.ClaimsServiceUploadFileUseCase
@@ -25,7 +26,6 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
-import com.hedvig.audio.player.data.SignedAudioUrl
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
 import java.io.File

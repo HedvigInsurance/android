@@ -6,7 +6,7 @@ import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATIO
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATION_BETTER_PRICE
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.ProductVariant
-import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
+import com.hedvig.android.ui.tiersandaddons.CostBreakdownEntry
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import octopus.ChangeTierDeductibleCreateIntentMutation

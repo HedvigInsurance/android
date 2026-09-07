@@ -27,11 +27,11 @@ import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import com.hedvig.android.audio.player.data.ProgressPercentage
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.audio.player.data.ProgressPercentage
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt

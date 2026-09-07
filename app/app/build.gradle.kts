@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "14.4.6"
+    versionName = "14.4.7"
 
     resourceConfigurations.addAll(listOf("en", "sv-rSE"))
   }
@@ -201,7 +201,9 @@ dependencies {
   implementation(projects.featureEditCoinsuredNavigation)
   implementation(projects.featureFlags)
   implementation(projects.featureForever)
+  implementation(projects.featureForeverNavigation)
   implementation(projects.featureHelpCenter)
+  implementation(projects.featureHelpCenterNavigation)
   implementation(projects.featureHome)
   implementation(projects.featureImageViewer)
   implementation(projects.featureInsuranceCertificate)
@@ -214,6 +216,7 @@ dependencies {
   implementation(projects.featureRemoveAddons)
   implementation(projects.featurePayoutAccount)
   implementation(projects.featurePayments)
+  implementation(projects.featurePaymentsNavigation)
   implementation(projects.featureProfile)
   implementation(projects.featureTerminateInsurance)
   implementation(projects.featureTerminateInsuranceNavigation)

@@ -13,7 +13,7 @@ import com.hedvig.android.data.productvariant.toProductVariant
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
-import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
+import com.hedvig.android.ui.tiersandaddons.CostBreakdownEntry
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn

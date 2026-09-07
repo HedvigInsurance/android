@@ -27,6 +27,26 @@ internal class GetHomeDataUseCaseDemo(
   }
 }
 
+private val demoCarCrossSell = CrossSell(
+  "rh",
+  "Car Insurance",
+  "For you and your car",
+  "",
+  ImageAsset("", "", ""),
+  ImageAsset("", "", ""),
+  buttonText = "See price",
+)
+
+private val demoPetCrossSell = CrossSell(
+  "rf",
+  "Pet insurance",
+  "For your dog or cat",
+  "",
+  ImageAsset("", "", ""),
+  ImageAsset("", "", ""),
+  buttonText = "See price",
+)
+
 private val demoHomeData = HomeData(
   contractStatus = HomeData.ContractStatus.Active,
   claimStatusCardsData = null,
@@ -42,14 +62,7 @@ private val demoHomeData = HomeData(
   crossSells = CrossSellSheetData(
     recommendedCrossSell =
       RecommendedCrossSell(
-        crossSell = CrossSell(
-          "rh",
-          "Car Insurance",
-          "For you and your car",
-          "",
-          ImageAsset("", "", ""),
-          ImageAsset("", "", ""),
-        ),
+        crossSell = demoCarCrossSell,
         bannerText = "50% discount the first year",
         discountText = "-50%",
         buttonText = "Explore offer",
@@ -57,18 +70,10 @@ private val demoHomeData = HomeData(
         backgroundPillowImages = null,
         bundleProgress = null,
       ),
-    otherCrossSells = listOf(
-      CrossSell(
-        "rf",
-        "Pet insurance",
-        "For your dog or cat",
-        "",
-        ImageAsset("", "", ""),
-        ImageAsset("", "", ""),
-      ),
-    ),
+    otherCrossSells = listOf(demoPetCrossSell),
     recommendedAddon = null,
   ),
+  discoverCrossSells = listOf(demoCarCrossSell, demoPetCrossSell),
   ongoingShopSessions = listOf(
     OngoingShopSession(
       id = "demo-session-1",

@@ -44,6 +44,7 @@ query Onboarding {
         title
         description
         storeUrl
+        buttonTitle
         pillowImageSmall {
           src
         }

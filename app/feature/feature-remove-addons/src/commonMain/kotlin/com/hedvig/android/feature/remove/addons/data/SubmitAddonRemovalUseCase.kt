@@ -1,0 +1,53 @@
+package com.hedvig.android.feature.remove.addons.data
+
+import arrow.core.Either
+import arrow.core.raise.either
+import com.apollographql.apollo.ApolloClient
+import com.hedvig.android.apollo.safeExecuteAllowingPartialResponses
+import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.data.contract.AddonId
+import com.hedvig.android.data.contract.ContractId
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
+import octopus.ConfirmAddonRemovalMutation
+
+internal interface SubmitAddonRemovalUseCase {
+  suspend fun invoke(contractId: ContractId, addonIds: List<AddonId>): Either<ErrorMessage, Unit>
+}
+
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
+internal class SubmitAddonRemovalUseCaseImpl(
+  private val apolloClient: ApolloClient,
+) : SubmitAddonRemovalUseCase {
+  override suspend fun invoke(contractId: ContractId, addonIds: List<AddonId>): Either<ErrorMessage, Unit> {
+    return either {
+      apolloClient.mutation(
+        ConfirmAddonRemovalMutation(
+          addonIds = addonIds.map(AddonId::id),
+          contractId = contractId.id,
+        ),
+      ).safeExecuteAllowingPartialResponses().fold(
+        fa = { error ->
+          logcat(LogPriority.ERROR) { "Tried to do ConfirmAddonRemovalMutation but got error: $error" }
+          raise(ErrorMessage())
+        },
+        fb = { result ->
+          if (result.addonRemoveConfirm != null) {
+            raise(ErrorMessage(result.addonRemoveConfirm.message))
+          }
+          // todo maybe:  crossSellAfterFlowRepository.completedCrossSellTriggeringSelfServiceSuccessfully
+        },
+        fab = { errors, _ ->
+          logcat(LogPriority.ERROR) { "Tried to do ConfirmAddonRemovalMutation but got error: $errors" }
+          raise(ErrorMessage())
+        },
+      )
+    }
+  }
+}

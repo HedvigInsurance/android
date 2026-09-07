@@ -28,6 +28,9 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.audio.player.data.AudioPlayerState
+import com.hedvig.android.audio.player.data.AudioPlayerState.Ready.ReadyState
+import com.hedvig.android.audio.player.data.ProgressPercentage
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -42,9 +45,6 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Pause
 import com.hedvig.android.design.system.hedvig.icon.Play
-import com.hedvig.audio.player.data.AudioPlayerState
-import com.hedvig.audio.player.data.AudioPlayerState.Ready.ReadyState
-import com.hedvig.audio.player.data.ProgressPercentage
 import hedvig.resources.A11Y_PAUSE
 import hedvig.resources.A11Y_PLAY
 import hedvig.resources.Res

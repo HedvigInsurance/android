@@ -21,6 +21,13 @@ import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.authlib.AuthAttemptResult
+import com.hedvig.android.authlib.AuthRepository
+import com.hedvig.android.authlib.AuthTokenResult
+import com.hedvig.android.authlib.LoginMethod
+import com.hedvig.android.authlib.LoginStatusResult
+import com.hedvig.android.authlib.OtpMarket
+import com.hedvig.android.authlib.StatusUrl
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -28,13 +35,6 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.network.clients.TLS_DIAG_TAG
 import com.hedvig.android.network.clients.TlsDiagnostics
-import com.hedvig.authlib.AuthAttemptResult
-import com.hedvig.authlib.AuthRepository
-import com.hedvig.authlib.AuthTokenResult
-import com.hedvig.authlib.LoginMethod
-import com.hedvig.authlib.LoginStatusResult
-import com.hedvig.authlib.OtpMarket
-import com.hedvig.authlib.StatusUrl
 import kotlinx.coroutines.launch
 
 @OptIn(SavedStateHandleSaveableApi::class)

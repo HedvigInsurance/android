@@ -9,7 +9,7 @@ import com.hedvig.android.data.changetier.data.TotalCost
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
-import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
+import com.hedvig.android.ui.tiersandaddons.CostBreakdownEntry
 
 internal val oldTestQuote = TierDeductibleQuote(
   id = "oldQuote",

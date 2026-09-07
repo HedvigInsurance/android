@@ -29,7 +29,7 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEntries(
   openUrl: (String) -> Unit,
   openCrossSellUrl: (String) -> Unit,
   startMovingFlow: () -> Unit,
-  onNavigateToStartChangeTier: (contractId: String) -> Unit,
+  onNavigateToStartChangeTier: (contractId: String, isPaymentProtection: Boolean) -> Unit,
   startTerminationFlow: (cancelInsuranceData: CancelInsuranceData) -> Unit,
   startEditCoInsured: (contractId: String) -> Unit,
   startEditCoOwners: (contractId: String) -> Unit,
@@ -85,8 +85,8 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEntries(
       navigateUp = backstack::navigateUp,
       navigateBack = backstack::popBackstack,
       imageLoader = imageLoader,
-      onChangeTierClick = dropUnlessResumed { contractId: String ->
-        onNavigateToStartChangeTier(contractId)
+      onChangeTierClick = dropUnlessResumed { contractId: String, isPaymentProtection: Boolean ->
+        onNavigateToStartChangeTier(contractId, isPaymentProtection)
       },
       navigateToRemoveAddon = onNavigateToRemoveAddon,
       navigateToUpgradeAddon = navigateToUpgradeAddon,

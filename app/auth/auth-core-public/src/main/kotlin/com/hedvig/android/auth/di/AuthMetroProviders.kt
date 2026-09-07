@@ -1,10 +1,10 @@
 package com.hedvig.android.auth.di
 
+import com.hedvig.android.authlib.AuthEnvironment
+import com.hedvig.android.authlib.AuthRepository
+import com.hedvig.android.authlib.NetworkAuthRepository
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.AppScope
-import com.hedvig.authlib.AuthEnvironment
-import com.hedvig.authlib.AuthRepository
-import com.hedvig.authlib.NetworkAuthRepository
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
