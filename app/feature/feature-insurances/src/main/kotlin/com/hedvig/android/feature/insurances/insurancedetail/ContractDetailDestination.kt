@@ -44,6 +44,7 @@ import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ChipIdState
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractGroup.PAYMENT_PROTECTION
 import com.hedvig.android.data.contract.ContractGroup.RENTAL
 import com.hedvig.android.data.contract.ContractId
@@ -102,7 +103,7 @@ internal fun ContractDetailDestination(
   onEditCoOwnersClick: (String) -> Unit,
   onMissingCoInsuredInfoClick: (String) -> Unit,
   onMissingCoOwnersInfoClick: (String) -> Unit,
-  onChangeTierClick: (String) -> Unit,
+  onChangeTierClick: (contractId: String, isPaymentProtection: Boolean) -> Unit,
   onChangeAddressClick: () -> Unit,
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
   onNavigateToNewConversation: () -> Unit,
@@ -148,7 +149,7 @@ private fun ContractDetailScreen(
   onEditCoOwnersClick: (String) -> Unit,
   onMissingCoInsuredInfoClick: (String) -> Unit,
   onMissingCoOwnersInfoClick: (String) -> Unit,
-  onChangeTierClick: (String) -> Unit,
+  onChangeTierClick: (contractId: String, isPaymentProtection: Boolean) -> Unit,
   onChangeAddressClick: () -> Unit,
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
   navigateUp: () -> Unit,
@@ -316,6 +317,7 @@ private fun ContractDetailScreen(
                     } else {
                       null
                     }
+                    val isPaymentProtection = contract.productVariant.contractGroup == PAYMENT_PROTECTION
                     YourInfoTab(
                       contractId = contract.id,
                       coverageItems = contract.displayItems,
@@ -326,10 +328,10 @@ private fun ContractDetailScreen(
                       allowEditCoInsured = contract.supportsEditCoInsured,
                       allowEditCoOwners = contract.supportsEditCoOwners,
                       allowChangeTier = contract.supportsTierChange,
-                      isPaymentProtection = contract.productVariant.contractGroup == PAYMENT_PROTECTION,
+                      isPaymentProtection = isPaymentProtection,
                       allowRemovingAddon = contract.supportsRemovingAddon,
                       onChangeTierClick = {
-                        onChangeTierClick(contract.id)
+                        onChangeTierClick(contract.id, isPaymentProtection)
                       },
                       isDecommissioned = contract.productVariant.contractType == ContractType.SE_CAR_DECOMMISSIONED,
                       upcomingChangesInsuranceAgreement = contract.upcomingInsuranceAgreement,
@@ -377,6 +379,7 @@ private fun ContractDetailScreen(
                       onFillChipId = {
                         navigateToChipIdScreen(contract.id)
                       },
+                      showPolicyHolderRow = contract.shouldShowInsuredPeople(),
                     )
                   }
 
@@ -442,6 +445,12 @@ private fun PagerSelector(pagerState: PagerState, modifier: Modifier = Modifier)
     tabSize = Small,
     tabStyle = Filled,
   )
+}
+
+private fun InsuranceContract.shouldShowInsuredPeople(): Boolean {
+  val allowsCoInsured = supportsEditCoInsured || supportsEditCoOwners
+  val isException = productVariant.contractGroup == PAYMENT_PROTECTION
+  return allowsCoInsured || isException
 }
 
 @HedvigPreview
@@ -532,7 +541,7 @@ private fun PreviewContractDetailScreen() {
         onMissingCoInsuredInfoClick = {},
         onMissingCoOwnersInfoClick = {},
         openUrl = {},
-        onChangeTierClick = {},
+        onChangeTierClick = { _, _ -> },
         navigateToAddAddon = {},
         navigateToRemoveAddon = { _, _ -> },
         navigateToUpgradeAddon = { _, _ -> },
@@ -562,7 +571,7 @@ private fun PreviewContractDetailScreenFailure() {
         onMissingCoInsuredInfoClick = {},
         onMissingCoOwnersInfoClick = {},
         openUrl = {},
-        onChangeTierClick = {},
+        onChangeTierClick = { _, _ -> },
         navigateToAddAddon = {},
         navigateToRemoveAddon = { _, _ -> },
         navigateToUpgradeAddon = { _, _ -> },

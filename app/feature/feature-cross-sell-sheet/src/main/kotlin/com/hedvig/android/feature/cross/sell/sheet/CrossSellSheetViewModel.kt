@@ -229,6 +229,7 @@ internal fun CrossSellFragment.toCrossSell(): CrossSell {
         src = pillowImageLarge.src,
         description = pillowImageLarge.alt,
       ),
+      buttonText = this.buttonTitle,
     )
   }
 }

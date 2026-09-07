@@ -32,8 +32,8 @@ import com.hedvig.android.feature.home.home.data.OngoingShopSession
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorageImpl
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.memberquickactions.GetMemberQuickActionsUseCase
-import com.hedvig.android.memberquickactions.InnerHelpCenterDestination
 import com.hedvig.android.memberquickactions.QuickAction
+import com.hedvig.android.memberquickactions.QuickActionsSource
 import com.hedvig.android.memberquickactions.QuickLinkDestination
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
@@ -46,8 +46,6 @@ import hedvig.resources.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_EDIT_INSURANCE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE
-import hedvig.resources.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE
-import hedvig.resources.HC_QUICK_ACTIONS_PAYMENTS_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_SICK_ABROAD_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE
@@ -76,6 +74,7 @@ internal class HomePresenterTest {
       "url",
       ImageAsset("", "", ""),
       ImageAsset("", "", ""),
+      buttonText = "See price",
     ),
     bannerText = "50% discount the first year",
     buttonText = "Explore offer",
@@ -193,6 +192,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           showHelpCenter = false,
           crossSells = CrossSellSheetData(testCrossSell, listOf(), null),
+          discoverCrossSells = listOf(testCrossSell.crossSell),
           firstVetSections = listOf(),
           addonBannerInfos = emptyList(),
           draftClaim = null,
@@ -228,9 +228,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           addonBannerInfos = emptyList(),
           isProduction = false,
-          crossSellsPartition = CrossSellsPartition(
-            discoverCrossSells = listOf(testCrossSell.crossSell),
-          ),
+          discoverCrossSells = listOf(testCrossSell.crossSell),
           draftClaim = null,
         ),
       )
@@ -540,6 +538,7 @@ internal class HomePresenterTest {
       subtitle = "subt",
       pillowImageSmall = ImageAsset("", "", ""),
       pillowImageLarge = ImageAsset("", "", ""),
+      buttonText = "See price",
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -553,6 +552,7 @@ internal class HomePresenterTest {
           showChatIcon = false,
           hasUnseenChatMessages = false,
           crossSells = CrossSellSheetData(testCrossSell, listOf(crossSell), null),
+          discoverCrossSells = listOf(testCrossSell.crossSell, crossSell),
           firstVetSections = listOf(),
           showHelpCenter = false,
           addonBannerInfos = emptyList(),
@@ -578,9 +578,7 @@ internal class HomePresenterTest {
           ),
           addonBannerInfos = emptyList(),
           isProduction = false,
-          crossSellsPartition = CrossSellsPartition(
-            discoverCrossSells = listOf(testCrossSell.crossSell, crossSell),
-          ),
+          discoverCrossSells = listOf(testCrossSell.crossSell, crossSell),
           draftClaim = null,
         ),
       )
@@ -692,7 +690,7 @@ internal class HomePresenterTest {
   }
 
   @Test
-  fun `the recommended crossSell leads the discover list, ahead of the other crossSells`() = runTest {
+  fun `the discover list reaches the ui state as the backend ordered it`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
       getHomeDataUseCase,
@@ -711,6 +709,7 @@ internal class HomePresenterTest {
       storeUrl = "url",
       pillowImageSmall = ImageAsset("", "", ""),
       pillowImageLarge = ImageAsset("", "", ""),
+      buttonText = "See price",
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -718,16 +717,13 @@ internal class HomePresenterTest {
       getHomeDataUseCase.responseTurbine.add(
         someIrrelevantHomeDataInstance.copy(
           crossSells = CrossSellSheetData(testCrossSell, listOf(otherCrossSell), recommendedAddon = null),
+          discoverCrossSells = listOf(testCrossSell.crossSell, otherCrossSell),
         ).right(),
       )
       assertThat(awaitItem())
         .isInstanceOf<HomeUiState.Success>()
-        .prop(HomeUiState.Success::crossSellsPartition)
-        .isEqualTo(
-          CrossSellsPartition(
-            discoverCrossSells = listOf(testCrossSell.crossSell, otherCrossSell),
-          ),
-        )
+        .prop(HomeUiState.Success::discoverCrossSells)
+        .isEqualTo(listOf(testCrossSell.crossSell, otherCrossSell))
     }
   }
 
@@ -827,15 +823,15 @@ internal class HomePresenterTest {
   }
 
   @Test
-  fun `home shows the first three member quick actions with sick-abroad and payments filtered out`() = runTest {
+  fun `home requests the home quick actions and surfaces them unchanged`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val quickActions = listOf(
-      paymentsLink,
       editInsuranceMultiSelect,
       changeAddressLink,
       sickAbroadLink,
       travelCertificateLink,
     )
+    val getMemberQuickActionsUseCase = FakeGetMemberQuickActionsUseCase(quickActions.right())
     val homePresenter = HomePresenter(
       getHomeDataUseCase,
       SeenImportantMessagesStorageImpl(),
@@ -843,15 +839,17 @@ internal class HomePresenterTest {
       ApplicationScope(backgroundScope),
       false,
       TestDeleteClaimIntentDraftUseCase(),
-      FakeGetMemberQuickActionsUseCase(quickActions.right()),
+      getMemberQuickActionsUseCase,
       FakeDismissedShopSessionsStorage(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Loading>()
       getHomeDataUseCase.responseTurbine.add(someIrrelevantHomeDataInstance.right())
       val success = assertThat(awaitItem()).isInstanceOf<HomeUiState.Success>()
-      success.prop(HomeUiState.Success::quickActions)
-        .isEqualTo(listOf(editInsuranceMultiSelect, changeAddressLink, travelCertificateLink))
+      // Which links belong on Home is decided by the source the presenter asks for, not by
+      // filtering afterwards, so sick-abroad reaching the tiles is expected here.
+      success.prop(HomeUiState.Success::quickActions).isEqualTo(quickActions)
+      assertThat(getMemberQuickActionsUseCase.requestedSources).isEqualTo(listOf(QuickActionsSource.HOME))
     }
   }
 
@@ -871,11 +869,6 @@ internal class HomePresenterTest {
     hintTextRes = Res.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE,
     quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeAddress,
   )
-  private val paymentsLink = QuickAction.StandaloneQuickLink(
-    titleRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_TITLE,
-    hintTextRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE,
-    quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkConnectPayment,
-  )
   private val travelCertificateLink = QuickAction.StandaloneQuickLink(
     titleRes = Res.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE,
     hintTextRes = Res.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE,
@@ -884,7 +877,7 @@ internal class HomePresenterTest {
   private val sickAbroadLink = QuickAction.StandaloneQuickLink(
     titleRes = Res.string.HC_QUICK_ACTIONS_SICK_ABROAD_TITLE,
     hintTextRes = Res.string.HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE,
-    quickLinkDestination = InnerHelpCenterDestination.QuickLinkSickAbroad(
+    quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkSickAbroad(
       DeflectData(
         title = null,
         infoText = null,
@@ -992,7 +985,12 @@ private class FakeCrossSellHomeNotificationService : CrossSellHomeNotificationSe
 private class FakeGetMemberQuickActionsUseCase(
   private val result: Either<ErrorMessage, List<QuickAction>>,
 ) : GetMemberQuickActionsUseCase {
-  override suspend fun invoke(): Either<ErrorMessage, List<QuickAction>> = result
+  val requestedSources = mutableListOf<QuickActionsSource>()
+
+  override suspend fun invoke(source: QuickActionsSource): Either<ErrorMessage, List<QuickAction>> {
+    requestedSources += source
+    return result
+  }
 }
 
 private class TestDeleteClaimIntentDraftUseCase : DeleteClaimIntentDraftUseCase {

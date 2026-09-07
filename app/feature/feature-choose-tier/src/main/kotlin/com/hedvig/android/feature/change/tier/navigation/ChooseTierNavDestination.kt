@@ -15,6 +15,11 @@ data class StartTierFlowKey(
   /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer.changeTierWithContractId] */
   @SerialName("contractId")
   val insuranceId: String,
+  /**
+   * Known upfront by the entry points which already hold the contract, so that the loading state can use the
+   * insurance amount wording before the intent has been fetched. False when the caller only knows the contract id.
+   */
+  val isPaymentProtection: Boolean = false,
 ) : HedvigNavKey
 
 @Serializable

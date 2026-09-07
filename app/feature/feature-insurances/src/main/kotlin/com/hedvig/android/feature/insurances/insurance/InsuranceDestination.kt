@@ -38,8 +38,6 @@ import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.onClick
-import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -530,6 +528,7 @@ private fun PreviewInsuranceScreen(
               storeUrl = "",
               ImageAsset("", "", ""),
               ImageAsset("", "", ""),
+              buttonText = "button",
             )
           },
           quantityOfCancelledInsurances = 1,
@@ -622,6 +621,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
           storeUrl = "",
           ImageAsset("", "", ""),
           ImageAsset("", "", ""),
+          buttonText = "button",
         ),
       ),
       quantityOfCancelledInsurances = 1,
@@ -661,6 +661,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
           storeUrl = "",
           ImageAsset("", "", ""),
           ImageAsset("", "", ""),
+          buttonText = "button",
         ),
         CrossSell(
           id = "2",
@@ -669,6 +670,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
           storeUrl = "",
           ImageAsset("", "", ""),
           ImageAsset("", "", ""),
+          buttonText = "button",
         ),
       ),
       hasError = false,

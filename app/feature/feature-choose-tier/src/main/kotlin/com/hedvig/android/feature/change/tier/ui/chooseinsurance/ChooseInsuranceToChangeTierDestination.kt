@@ -42,6 +42,7 @@ import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.change.tier.data.CustomisableInsurance
 import com.hedvig.android.feature.change.tier.ui.stepstart.DeflectScreen
+import hedvig.resources.CHANGE_INSURANCE_AMOUNT_PROCESSING
 import hedvig.resources.Res
 import hedvig.resources.TERMINATION_NO_TIER_QUOTES_SUBTITLE
 import hedvig.resources.TIER_FLOW_PROCESSING
@@ -114,9 +115,13 @@ private fun ChooseInsuranceScreen(
       }
     }
 
-    ChooseInsuranceUiState.Loading -> {
+    is ChooseInsuranceUiState.Loading -> {
       HedvigFullScreenCenterAlignedLinearProgress(
-        title = stringResource(Res.string.TIER_FLOW_PROCESSING),
+        title = if (uiState.isPaymentProtection) {
+          stringResource(Res.string.CHANGE_INSURANCE_AMOUNT_PROCESSING)
+        } else {
+          stringResource(Res.string.TIER_FLOW_PROCESSING)
+        },
       )
     }
 
@@ -283,7 +288,8 @@ private class ChooseInsuranceUiStateProvider :
         changeTierIntentFailedToLoad = true,
       ),
       ChooseInsuranceUiState.Failure,
-      ChooseInsuranceUiState.Loading,
+      ChooseInsuranceUiState.Loading(isPaymentProtection = false),
+      ChooseInsuranceUiState.Loading(isPaymentProtection = true),
       ChooseInsuranceUiState.NotAllowed,
       ChooseInsuranceUiState.Deflect(
         "How to change back to your previous coverage",

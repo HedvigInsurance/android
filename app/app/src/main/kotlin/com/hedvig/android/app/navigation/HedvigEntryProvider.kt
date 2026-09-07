@@ -283,7 +283,7 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
       when (destination) {
         is QuickLinkDestination.OuterDestination -> backstack.add(destination.toNavKey())
 
-        // Inner destinations (FirstVet, SickAbroad) are handled by feature-home before reaching here.
+        // FirstVet is handled by feature-home before reaching here.
         is InnerHelpCenterDestination -> error("Inner quick-link destinations are routed by the feature")
       }
     },
@@ -426,8 +426,8 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
     startEditCoOwners = { contractId: String ->
       backstack.add(EditCoInsuredTriageKey(contractId, CoInsuredFlowType.CoOwners))
     },
-    onNavigateToStartChangeTier = { contractId: String ->
-      backstack.add(StartTierFlowKey(insuranceId = contractId))
+    onNavigateToStartChangeTier = { contractId: String, isPaymentProtection: Boolean ->
+      backstack.add(StartTierFlowKey(insuranceId = contractId, isPaymentProtection = isPaymentProtection))
     },
     startEditCoInsuredAddMissingInfo = { contractId: String ->
       backstack.add(CoInsuredAddInfoKey(contractId, CoInsuredFlowType.CoInsured))

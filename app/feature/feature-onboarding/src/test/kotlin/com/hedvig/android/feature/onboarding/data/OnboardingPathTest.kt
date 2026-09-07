@@ -38,6 +38,7 @@ class OnboardingPathTest {
         description = "For your pet",
         storeUrl = "https://x",
         pillowImageUrl = "https://x",
+        buttonTitle = "See price",
       ),
     ),
   ) = OnboardingData(

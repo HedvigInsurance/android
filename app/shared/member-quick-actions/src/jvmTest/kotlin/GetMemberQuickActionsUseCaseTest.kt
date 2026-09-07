@@ -17,6 +17,7 @@ import com.hedvig.android.memberquickactions.GetMemberQuickActionsUseCaseImpl
 import com.hedvig.android.memberquickactions.MemberAction
 import com.hedvig.android.memberquickactions.QuickAction
 import com.hedvig.android.memberquickactions.QuickAction.MultiSelectExpandedLink
+import com.hedvig.android.memberquickactions.QuickActionsSource
 import com.hedvig.android.memberquickactions.QuickLinkDestination
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE
@@ -73,7 +74,7 @@ class GetMemberQuickActionsUseCaseTest {
       featureManager = featureManager,
       getMemberActionsUseCase = getMemberActionsUseCase,
     )
-    val result = useCase.invoke()
+    val result = useCase.invoke(QuickActionsSource.HELP_CENTER)
     val listNotEmpty = result.getOrNull()?.isNotEmpty() ?: false
     assertk.assertThat(listNotEmpty).isTrue()
     assertk
@@ -104,7 +105,7 @@ class GetMemberQuickActionsUseCaseTest {
       featureManager = featureManager,
       getMemberActionsUseCase = getMemberActionsUseCase,
     )
-    val result = useCase.invoke()
+    val result = useCase.invoke(QuickActionsSource.HELP_CENTER)
     val listNotEmpty = result.getOrNull()?.isNotEmpty() ?: false
     assertk.assertThat(listNotEmpty).isTrue()
     assertk

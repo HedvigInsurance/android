@@ -24,6 +24,7 @@ internal class GetCrossSellsUseCaseDemo : GetCrossSellsUseCase {
             "",
             ImageAsset("", "", ""),
             ImageAsset("", "", ""),
+            buttonText = "button",
           ),
           CrossSell(
             "2",
@@ -32,6 +33,7 @@ internal class GetCrossSellsUseCaseDemo : GetCrossSellsUseCase {
             "",
             ImageAsset("", "", ""),
             ImageAsset("", "", ""),
+            buttonText = "button",
           ),
           CrossSell(
             "3",
@@ -40,6 +42,7 @@ internal class GetCrossSellsUseCaseDemo : GetCrossSellsUseCase {
             "",
             ImageAsset("", "", ""),
             ImageAsset("", "", ""),
+            buttonText = "button",
           ),
           CrossSell(
             "4",
@@ -48,6 +51,7 @@ internal class GetCrossSellsUseCaseDemo : GetCrossSellsUseCase {
             "",
             ImageAsset("", "", ""),
             ImageAsset("", "", ""),
+            buttonText = "button",
           ),
         ),
       )
