@@ -1,22 +1,7 @@
 package com.hedvig.android.feature.payments.navigation
 
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.common.TopLevelTab
-import com.hedvig.android.navigation.common.TopLevelTabRoot
 import kotlinx.serialization.Serializable
-
-@Serializable
-data object ForeverKey : HedvigNavKey
-
-@Serializable
-data object PaymentsKey : HedvigNavKey, TopLevelTabRoot {
-  override val topLevelTab: TopLevelTab = TopLevelTab.Payments
-}
-
-@Serializable
-internal data class PaymentDetailsKey(
-  val memberChargeId: String?,
-) : HedvigNavKey
 
 @Serializable
 internal data object PaymentHistoryKey : HedvigNavKey

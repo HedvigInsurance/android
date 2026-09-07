@@ -24,9 +24,10 @@ const val TLS_DIAG_TAG = "TlsDiag"
  * Evidence for why a TLS handshake was refused, gathered at the point of failure.
  *
  * A trust failure means a certificate did arrive and we declined it, so the questions worth answering
- * are where the hostname pointed and whether this device trusts anything unusual. An address outside
- * our hosting means something other than us answered the name; a non-zero count of added CAs means
- * traffic is being intercepted on the device itself.
+ * are where the hostname pointed, what the platform makes of the network, and whether this device
+ * trusts anything unusual. An address outside our hosting means something other than us answered the
+ * name; a network the platform never validated means something on the path answered for us; a
+ * non-zero count of added CAs means traffic is being intercepted on the device itself.
  */
 interface TlsDiagnostics {
   /** Null when [throwable] is not a certificate-trust failure, so callers can fall through. */
@@ -43,10 +44,12 @@ internal class AndroidTlsDiagnostics(
     val causes = generateSequence(throwable) { it.cause }.take(MAX_CAUSE_DEPTH).toList()
     val trustFailure = causes.firstOrNull { it.isTrustFailure() } ?: return null
     return withContext(Dispatchers.IO) {
+      val activeNetwork = activeNetwork()
       buildString {
         append("failure=").append(trustFailure::class.java.name)
         append(" authHost=").append(resolvedAuthHost())
-        append(" transport=").append(activeTransports())
+        append(" transport=").append(activeNetwork.transports)
+        append(" netStatus=").append(activeNetwork.status)
         append(" userCaCount=").append(userInstalledCaCount())
         append(" api=").append(Build.VERSION.SDK_INT)
         // Last, and quoted: it is the only field containing spaces, so the rest stay parseable.
@@ -106,16 +109,37 @@ internal class AndroidTlsDiagnostics(
       .joinToString("+")
   }.getOrElse { "unresolved(${it::class.simpleName})" }
 
-  private fun activeTransports(): String = runCatching {
+  /**
+   * Both fields are derived from one [NetworkCapabilities] snapshot, so they always describe the same
+   * network even while connectivity is changing under us.
+   */
+  private fun activeNetwork(): ActiveNetwork = runCatching {
     val connectivityManager = context.getSystemService(ConnectivityManager::class.java)
     val capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
-      ?: return@runCatching "none"
-    listOfNotNull(
-      "vpn".takeIf { capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN) },
-      "wifi".takeIf { capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) },
-      "cellular".takeIf { capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) },
-    ).joinToString("+").ifEmpty { "other" }
-  }.getOrElse { "unknown" }
+      ?: return@runCatching ActiveNetwork(transports = "none", status = "none")
+    ActiveNetwork(transports = capabilities.transports(), status = capabilities.status())
+  }.getOrElse { ActiveNetwork(transports = "unknown", status = "unknown") }
+
+  private fun NetworkCapabilities.transports(): String = listOfNotNull(
+    "vpn".takeIf { hasTransport(NetworkCapabilities.TRANSPORT_VPN) },
+    "wifi".takeIf { hasTransport(NetworkCapabilities.TRANSPORT_WIFI) },
+    "cellular".takeIf { hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) },
+  ).joinToString("+").ifEmpty { "other" }
+
+  /**
+   * What the platform's own probe made of this network. A portal or filtering proxy has to terminate
+   * TLS itself to answer for us, so a handshake refused on a network the platform could not validate
+   * places the substituted certificate on the path rather than at our hosting — the one distinction
+   * the certificate and the trust store cannot make on their own.
+   *
+   * A captive portal is reported ahead of validation because it is the specific diagnosis, and the
+   * platform can flag both at once while the member is signing in to the portal.
+   */
+  private fun NetworkCapabilities.status(): String = when {
+    hasCapability(NetworkCapabilities.NET_CAPABILITY_CAPTIVE_PORTAL) -> "captive-portal"
+    !hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) -> "unvalidated"
+    else -> "validated"
+  }
 
   /**
    * How many CAs the member or an MDM profile added. Count only — an alias can name an employer.
@@ -127,6 +151,8 @@ internal class AndroidTlsDiagnostics(
       .asSequence()
       .count { it.startsWith("user:") }
   }.getOrElse { -1 }
+
+  private class ActiveNetwork(val transports: String, val status: String)
 
   private companion object {
     const val MAX_CAUSE_DEPTH = 10

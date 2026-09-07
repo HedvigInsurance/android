@@ -4,9 +4,7 @@ plugins {
 }
 
 hedvig {
-  serialization()
   compose()
-  navKeys()
 }
 
 dependencies {
@@ -14,6 +12,7 @@ dependencies {
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.designSystemHedvig)
+  implementation(projects.featureForeverNavigation)
   implementation(projects.foreverUi)
   implementation(projects.languageCore)
   implementation(projects.moleculePublic)

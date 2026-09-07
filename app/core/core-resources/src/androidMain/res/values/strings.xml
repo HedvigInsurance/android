@@ -152,7 +152,6 @@
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR">Please enter year of construction</string>
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL">Year of construction</string>
   <string name="CHANGE_ADDRESS_YOU_PLUS">You + %1$d</string>
-  <string name="CHANGE_INSURANCE_AMOUNT_PAYMENT_PROTECTION_INFO">Your new amount takes effect once your qualification period ends. Until then, your current amount applies.</string>
   <string name="CHANGE_INSURANCE_AMOUNT_PROCESSING">Fetching insurance amount...</string>
   <string name="CHANGE_PAYOUT_METHOD_BUTTON_LABEL">Change payout account</string>
   <string name="CHANGE_TIER_BUTTON_TITLE">Change coverage level</string>
@@ -515,8 +514,12 @@
   <string name="HOME_DISCOVER_SECTION_TITLE">Discover our insurances</string>
   <string name="HOME_GREETING_SUBTITLE">How can we help?</string>
   <string name="HOME_GREETING_TITLE">Hi %1$s</string>
-  <string name="HOME_QUICK_ACTIONS_CHANGE_ADDRESS">Change address</string>
+  <string name="HOME_QUICK_ACTIONS_CHANGE_ADDRESS">I\'m moving</string>
   <string name="HOME_QUICK_ACTIONS_EDIT_INSURANCE">Edit insurance</string>
+  <string name="HOME_QUICK_ACTIONS_INVITE">Invite a friend</string>
+  <string name="HOME_QUICK_ACTIONS_TRAVEL_CERT">Travel certificate</string>
+  <string name="HOME_QUICK_ACTIONS_UPCOMING_PAYMENT">Upcoming payment</string>
+  <string name="HOME_QUICK_ACTIONS_UPGRADE_COVERAGE">Upgrade my coverage</string>
   <string name="HOME_QUOTES_SECTION_TITLE">Your quotes</string>
   <string name="HOME_TODO_ADD_COINSURED_TITLE">Add co-insured</string>
   <string name="HOME_TODO_ADD_COOWNER_TITLE">Add co-owner</string>

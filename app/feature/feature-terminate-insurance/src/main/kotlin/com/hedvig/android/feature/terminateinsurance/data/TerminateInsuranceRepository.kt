@@ -263,6 +263,7 @@ private fun TerminationSurveyOptionSuggestionFragment.toSuggestion(): SurveyOpti
       }
     },
     description = description,
+    actionText = actionText,
     url = url,
   )
 }
