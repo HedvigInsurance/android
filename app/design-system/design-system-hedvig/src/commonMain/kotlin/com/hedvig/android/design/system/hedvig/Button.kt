@@ -31,7 +31,6 @@ import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.draw.innerShadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.semantics.Role
@@ -44,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
+import com.hedvig.android.design.system.hedvig.tokens.ButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.GhostStyleButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.LargeSizeButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.MediumSizeButtonTokens
@@ -78,7 +78,6 @@ fun HedvigButton(
   border: Color? = null,
   onClickLabel: String? = null,
   isLoading: Boolean = false,
-  shape: Shape? = null,
 ) {
   HedvigButton(
     onClick = onClick,
@@ -89,7 +88,6 @@ fun HedvigButton(
     interactionSource = interactionSource,
     border = border,
     onClickLabel = onClickLabel,
-    shape = shape,
     isLoading = isLoading,
   ) {
     val buttonColors = buttonStyle.style.buttonColors
@@ -131,7 +129,6 @@ fun HedvigButton(
   interactionSource: MutableInteractionSource? = null,
   border: Color? = null,
   onClickLabel: String? = null,
-  shape: Shape? = null,
   isLoading: Boolean = false,
   content: @Composable RowScope.() -> Unit,
 ) {
@@ -152,8 +149,7 @@ fun HedvigButton(
     },
   )
 
-  @Suppress("NAME_SHADOWING")
-  val shape = shape ?: size.shape
+  val shape = ButtonTokens.ContainerShape.value
   val glass = style.glassMaterial.takeIf { enabled }
   Surface(
     onClick = onClick,
@@ -271,7 +267,7 @@ fun HedvigButtonGhostWithBorder(
     modifier = modifier.border(
       width = 1.dp,
       color = HedvigTheme.colorScheme.borderPrimary,
-      shape = size.size.shape,
+      shape = ButtonTokens.ContainerShape.value,
     ),
     buttonSize = size,
     interactionSource = interactionSource,
@@ -351,8 +347,9 @@ private val ButtonSize.size: Size
   }
 
 /**
- * The metrics this size takes on within [style]. The rounded styles get their own pill metrics at
- * [ButtonSize.Large]; at every smaller size they fall back to the standard button metrics.
+ * The metrics this size takes on within [style]. The glass styles get their own tighter padding at
+ * [ButtonSize.Large]; at every smaller size they fall back to the standard button metrics. Corner
+ * radius is not part of this: every button is a pill, see [ButtonTokens.ContainerShape].
  */
 @Composable
 private fun ButtonSize.sizeIn(style: Style): Size = when {
@@ -396,9 +393,6 @@ private sealed interface Size {
   @get:Composable
   val textStyle: TextStyle
 
-  @get:Composable
-  val shape: Shape
-
   object Large : Size {
     override val contentPadding: PaddingValues = PaddingValues(
       top = LargeSizeButtonTokens.TopPadding,
@@ -411,11 +405,6 @@ private sealed interface Size {
       @Composable
       @ReadOnlyComposable
       get() = LargeSizeButtonTokens.LabelTextFont.value
-
-    override val shape: Shape
-      @Composable
-      @ReadOnlyComposable
-      get() = LargeSizeButtonTokens.ContainerShape.value
   }
 
   object LargeRounded : Size {
@@ -430,11 +419,6 @@ private sealed interface Size {
       @Composable
       @ReadOnlyComposable
       get() = RoundedLargeSizeButtonTokens.LabelTextFont.value
-
-    override val shape: Shape
-      @Composable
-      @ReadOnlyComposable
-      get() = RoundedLargeSizeButtonTokens.ContainerShape.value
   }
 
   object Medium : Size {
@@ -449,11 +433,6 @@ private sealed interface Size {
       @Composable
       @ReadOnlyComposable
       get() = MediumSizeButtonTokens.LabelTextFont.value
-
-    override val shape: Shape
-      @Composable
-      @ReadOnlyComposable
-      get() = MediumSizeButtonTokens.ContainerShape.value
   }
 
   object Small : Size {
@@ -468,11 +447,6 @@ private sealed interface Size {
       @Composable
       @ReadOnlyComposable
       get() = SmallSizeButtonTokens.LabelTextFont.value
-
-    override val shape: Shape
-      @Composable
-      @ReadOnlyComposable
-      get() = SmallSizeButtonTokens.ContainerShape.value
   }
 
   object Mini : Size {
@@ -487,11 +461,6 @@ private sealed interface Size {
       @Composable
       @ReadOnlyComposable
       get() = MiniSizeButtonTokens.LabelTextFont.value
-
-    override val shape: Shape
-      @Composable
-      @ReadOnlyComposable
-      get() = MiniSizeButtonTokens.ContainerShape.value
   }
 }
 
