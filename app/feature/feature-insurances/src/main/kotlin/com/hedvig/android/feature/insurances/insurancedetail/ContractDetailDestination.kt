@@ -44,6 +44,7 @@ import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ChipIdState
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractGroup.PAYMENT_PROTECTION
 import com.hedvig.android.data.contract.ContractGroup.RENTAL
 import com.hedvig.android.data.contract.ContractId
@@ -378,6 +379,7 @@ private fun ContractDetailScreen(
                       onFillChipId = {
                         navigateToChipIdScreen(contract.id)
                       },
+                      showPolicyHolderRow = contract.shouldShowInsuredPeople(),
                     )
                   }
 
@@ -443,6 +445,12 @@ private fun PagerSelector(pagerState: PagerState, modifier: Modifier = Modifier)
     tabSize = Small,
     tabStyle = Filled,
   )
+}
+
+private fun InsuranceContract.shouldShowInsuredPeople(): Boolean {
+  val allowsCoInsured = supportsEditCoInsured || supportsEditCoOwners
+  val isException = productVariant.contractGroup == PAYMENT_PROTECTION
+  return allowsCoInsured || isException
 }
 
 @HedvigPreview
