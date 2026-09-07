@@ -19,6 +19,7 @@ kotlin {
       implementation(libs.ktor.client.logging)
     }
     jvmMain.dependencies {
+      api(libs.ktor.client.core)
       implementation(libs.ktor.client.okhttp)
     }
     iosMain.dependencies {

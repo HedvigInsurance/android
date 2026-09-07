@@ -16,3 +16,8 @@ annotation class IoDispatcher
 @Qualifier
 @Retention(AnnotationRetention.RUNTIME)
 annotation class BaseHttpClient
+
+/** Ktor engine for the auth client, carrying the app's network observability hooks. */
+@Qualifier
+@Retention(AnnotationRetention.RUNTIME)
+annotation class AuthHttpClientEngine

@@ -2,6 +2,7 @@ package com.hedvig.android.authlib.internal
 
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
+import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
@@ -13,12 +14,21 @@ import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-internal fun buildKtorClient(additionalHttpHeadersProvider: () -> Map<String, String>): HttpClient {
+internal fun buildKtorClient(
+  additionalHttpHeadersProvider: () -> Map<String, String>,
+  engine: HttpClientEngine?,
+): HttpClient {
   val httpClientConfig: HttpClientConfig<*>.() -> Unit = {
     commonKtorConfiguration(additionalHttpHeadersProvider).invoke(this)
   }
-  return HttpClient(httpClientEngineFactory()) {
-    httpClientConfig()
+  return if (engine != null) {
+    HttpClient(engine) {
+      httpClientConfig()
+    }
+  } else {
+    HttpClient(httpClientEngineFactory()) {
+      httpClientConfig()
+    }
   }
 }
 
