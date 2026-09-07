@@ -46,12 +46,12 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
 import com.hedvig.android.design.system.hedvig.tokens.ButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.GhostStyleButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.LargeSizeButtonTokens
+import com.hedvig.android.design.system.hedvig.tokens.LiquidGlassButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.MediumSizeButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.MiniSizeButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.PrimaryAltStyleButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.PrimaryStyleButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.RedStyleButtonTokens
-import com.hedvig.android.design.system.hedvig.tokens.RoundedLargeSizeButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.RoundedLiquidGlassStyleButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.RoundedPrimaryStyleButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.SecondaryAltStyleButtonTokens
@@ -334,8 +334,8 @@ private val ButtonDefaults.ButtonStyle.style: Style
     ButtonDefaults.ButtonStyle.SecondaryAlt -> Style.SecondaryAlt
     ButtonDefaults.ButtonStyle.Ghost -> Style.Ghost
     ButtonDefaults.ButtonStyle.Red -> Style.Red
-    ButtonDefaults.ButtonStyle.RoundedPrimary -> Style.RoundedPrimary
-    ButtonDefaults.ButtonStyle.RoundedLiquidGlass -> Style.RoundedLiquidGlass
+    ButtonDefaults.ButtonStyle.RoundedPrimary -> Style.LiquidGlassTinted
+    ButtonDefaults.ButtonStyle.RoundedLiquidGlass -> Style.LiquidGlassRegular
   }
 
 private val ButtonSize.size: Size
@@ -351,9 +351,12 @@ private val ButtonSize.size: Size
  * [ButtonSize.Large]; at every smaller size they fall back to the standard button metrics. Corner
  * radius is not part of this: every button is a pill, see [ButtonTokens.ContainerShape].
  */
+// TODO: that fallback is a silent one, and Figma draws the liquid glass buttons at one fixed size
+//  rather than across the size scale. Lift them off the size axis so the combination stops being
+//  expressible.
 @Composable
 private fun ButtonSize.sizeIn(style: Style): Size = when {
-  style.glassMaterial != null && this == ButtonSize.Large -> Size.LargeRounded
+  style.glassMaterial != null && this == ButtonSize.Large -> Size.LiquidGlass
   else -> size
 }
 
@@ -407,18 +410,18 @@ private sealed interface Size {
       get() = LargeSizeButtonTokens.LabelTextFont.value
   }
 
-  object LargeRounded : Size {
+  object LiquidGlass : Size {
     override val contentPadding: PaddingValues = PaddingValues(
-      top = RoundedLargeSizeButtonTokens.TopPadding,
-      bottom = RoundedLargeSizeButtonTokens.BottomPadding,
-      start = RoundedLargeSizeButtonTokens.HorizontalPadding,
-      end = RoundedLargeSizeButtonTokens.HorizontalPadding,
+      top = LiquidGlassButtonTokens.TopPadding,
+      bottom = LiquidGlassButtonTokens.BottomPadding,
+      start = LiquidGlassButtonTokens.HorizontalPadding,
+      end = LiquidGlassButtonTokens.HorizontalPadding,
     )
 
     override val textStyle: TextStyle
       @Composable
       @ReadOnlyComposable
-      get() = RoundedLargeSizeButtonTokens.LabelTextFont.value
+      get() = LiquidGlassButtonTokens.LabelTextFont.value
   }
 
   object Medium : Size {
@@ -573,7 +576,7 @@ private sealed interface Style {
       }
   }
 
-  data object RoundedPrimary : Style {
+  data object LiquidGlassTinted : Style {
     // The fill inverts between themes: near-black on light, opaque white on dark.
     override val glassMaterial: GlassMaterial
       @Composable
@@ -598,7 +601,7 @@ private sealed interface Style {
       }
   }
 
-  data object RoundedLiquidGlass : Style {
+  data object LiquidGlassRegular : Style {
     override val glassMaterial: GlassMaterial
       @Composable
       get() = liquidGlassMaterial
