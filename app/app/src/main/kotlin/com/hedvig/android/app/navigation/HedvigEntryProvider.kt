@@ -278,7 +278,7 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
       when (destination) {
         is QuickLinkDestination.OuterDestination -> backstack.add(destination.toNavKey())
 
-        // Inner destinations (FirstVet, SickAbroad) are handled by feature-home before reaching here.
+        // FirstVet is handled by feature-home before reaching here.
         is InnerHelpCenterDestination -> error("Inner quick-link destinations are routed by the feature")
       }
     },

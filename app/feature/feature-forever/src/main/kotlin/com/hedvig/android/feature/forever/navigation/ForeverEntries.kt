@@ -12,4 +12,9 @@ fun EntryProviderScope<HedvigNavKey>.foreverEntries() {
     val viewModel: ForeverViewModel = metroViewModel()
     ForeverDestination(viewModel = viewModel)
   }
+
+  entry<InviteFriendsKey> {
+    val viewModel: ForeverViewModel = metroViewModel()
+    ForeverDestination(viewModel = viewModel)
+  }
 }

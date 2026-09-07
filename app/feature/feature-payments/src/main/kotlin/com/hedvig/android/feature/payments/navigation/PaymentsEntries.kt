@@ -3,6 +3,7 @@ package com.hedvig.android.feature.payments.navigation
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.compose.ui.dropUnlessResumed
+import com.hedvig.android.feature.forever.navigation.InviteFriendsKey
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailExplanationContent
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailsDestination
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailsViewModel
@@ -23,8 +24,6 @@ import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.BottomSheetSceneStrategy
 import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
 import com.hedvig.android.navigation.compose.add
-import com.hedvig.android.shared.foreverui.ui.ui.ForeverDestination
-import com.hedvig.android.shared.foreverui.ui.ui.ForeverViewModel
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
@@ -109,18 +108,13 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
     )
   }
 
-  entry<ForeverKey> {
-    val viewModel: ForeverViewModel = metroViewModel()
-    ForeverDestination(viewModel = viewModel)
-  }
-
   entry<DiscountsKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
     val viewModel: DiscountsViewModel = metroViewModel()
     DiscountsDestination(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
       navigateToForever = dropUnlessResumed {
-        backstack.add(ForeverKey)
+        backstack.add(InviteFriendsKey)
       },
     )
   }
