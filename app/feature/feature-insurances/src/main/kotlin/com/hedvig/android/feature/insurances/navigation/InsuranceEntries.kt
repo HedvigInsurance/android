@@ -53,7 +53,6 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEntries(
       navigateToCancelledInsurances = dropUnlessResumed {
         backstack.add(TerminatedInsurancesKey)
       },
-      onNavigateToMovingFlow = dropUnlessResumed { startMovingFlow() },
       imageLoader = imageLoader,
       onNavigateToAddonPurchaseFlow = dropUnlessResumed { ids: List<ContractId> ->
         onNavigateToAddonPurchaseFlow(ids, null)

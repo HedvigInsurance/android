@@ -421,29 +421,6 @@ internal class InsurancePresenterTest {
   }
 
   @Test
-  fun `The existence of movable contracts determines whether we show the moving flow section or not`(
-    @TestParameter supportsAddressChange: Boolean,
-  ) = runTest {
-    val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
-    val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
-    val getTravelAddonBannerInfoUseCase = FakeGetAddonBannerInfoUseCase()
-    val presenter = InsurancePresenter(
-      getInsuranceContractsUseCase,
-      getCrossSellsUseCase,
-      getTravelAddonBannerInfoUseCase,
-    )
-    val contracts = validContracts.map { it.copy(supportsAddressChange = supportsAddressChange) }
-    presenter.test(InsuranceUiState.initialState) {
-      skipItems(1)
-
-      getInsuranceContractsUseCase.contracts.add(contracts)
-      getCrossSellsUseCase.crossSells.add(validCrossSells)
-      getTravelAddonBannerInfoUseCase.turbine.add(either { listOf(fakeTravelAddon) })
-      assertThat(awaitItem().shouldSuggestMovingFlow).isEqualTo(supportsAddressChange)
-    }
-  }
-
-  @Test
   fun `if GetTravelAddonBannerInfoUseCase returns null, don't show addon banner`() = runTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
@@ -495,7 +472,6 @@ internal class InsurancePresenterTest {
       contracts = listOf(),
       crossSells = listOf(),
       quantityOfCancelledInsurances = 0,
-      shouldSuggestMovingFlow = false,
       hasError = false,
       isLoading = false,
       isRetrying = false,
