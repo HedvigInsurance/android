@@ -210,6 +210,7 @@ import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentText.
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentType.INACTIVE
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
+import hedvig.resources.ADDON_FLOW_SEE_PRICE_BUTTON
 import hedvig.resources.CHAT_NEW_MESSAGE
 import hedvig.resources.DASHBOARD_OPEN_CHAT
 import hedvig.resources.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE
@@ -219,8 +220,6 @@ import hedvig.resources.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE
-import hedvig.resources.HOME_ADDONS_READ_MORE_BUTTON
-import hedvig.resources.HOME_DISCOVER_SECTION_TITLE
 import hedvig.resources.HOME_GREETING_SUBTITLE
 import hedvig.resources.HOME_GREETING_TITLE
 import hedvig.resources.HOME_QUOTES_SECTION_TITLE
@@ -1549,7 +1548,7 @@ private fun AddonsSection(
         subtitle = addon.description,
         pillowImage = null,
         pillow = { AddonPillow(addon.flowType) },
-        buttonText = stringResource(string.HOME_ADDONS_READ_MORE_BUTTON),
+        buttonText = stringResource(string.ADDON_FLOW_SEE_PRICE_BUTTON),
         onButtonClick = { navigateToAddonPurchaseFlow(addon.eligibleInsurancesIds) },
         imageLoader = imageLoader,
         modifier = Modifier.fillMaxWidth(),
@@ -1566,12 +1565,12 @@ private fun DiscoverInsurancesSection(
   imageLoader: ImageLoader,
 ) {
   CrossSellsSection(
-    title = stringResource(string.HOME_DISCOVER_SECTION_TITLE),
     crossSells = crossSells,
     onCrossSellClick = onCrossSellClick,
     modifier = Modifier.padding(horizontal = 16.dp),
     onSheetDismissed = {},
     imageLoader = imageLoader,
+    withSubHeader = false,
     buttonSize = ButtonSize.Small,
   )
 }
