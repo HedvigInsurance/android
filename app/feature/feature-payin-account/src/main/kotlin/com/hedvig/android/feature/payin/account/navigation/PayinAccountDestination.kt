@@ -19,3 +19,8 @@ internal data object SetupInvoicePayinKey : HedvigNavKey
 internal data class SelectPrimaryPayinMethodKey(
   val currentMethods: List<PayinAccount>,
 ) : HedvigNavKey
+
+@Serializable
+internal data class PayinMethodDetailsKey(
+  val method: PayinAccount,
+) : HedvigNavKey

@@ -2,7 +2,10 @@ package com.hedvig.android.feature.payin.account.navigation
 
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.EntryProviderScope
+import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
+import com.hedvig.android.feature.payin.account.data.PayinAccount
+import com.hedvig.android.feature.payin.account.ui.methoddetails.PayinMethodDetailsDestination
 import com.hedvig.android.feature.payin.account.ui.overview.PayinAccountOverviewDestination
 import com.hedvig.android.feature.payin.account.ui.overview.PayinAccountOverviewUiState
 import com.hedvig.android.feature.payin.account.ui.overview.PayinAccountOverviewViewModel
@@ -41,11 +44,41 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
           ),
         )
       },
+      onPayinMethodClicked = dropUnlessResumed { method: PayinAccount ->
+        backstack.add(PayinMethodDetailsKey(method))
+      },
       onChoosePrimaryMethodClicked = dropUnlessResumed {
         val content = viewModel.uiState.value as? PayinAccountOverviewUiState.Content
         backstack.add(SelectPrimaryPayinMethodKey(currentMethods = content?.currentMethods ?: emptyList()))
       },
       navigateUp = backstack::navigateUp,
+    )
+  }
+
+  entry<PayinMethodDetailsKey> { key ->
+    val method = key.method
+    PayinMethodDetailsDestination(
+      method = method,
+      navigateUp = backstack::navigateUp,
+      onChangeMethod = dropUnlessResumed {
+        when (method) {
+          is PayinAccount.Trustly -> {
+            backstack.popUpTo<PayinMethodDetailsKey>(inclusive = true)
+            navigateToConnectPayment()
+          }
+
+          is PayinAccount.SwishPayin -> {
+            backstack.add(SetupSwishPayinKey)
+          }
+
+          is PayinAccount.Invoice -> {
+            backstack.add(SetupInvoicePayinKey)
+          }
+        }
+      },
+      onRemoveMethod = {
+        // TODO: call the remove-payin-method API once the backend exposes one.
+      },
     )
   }
 

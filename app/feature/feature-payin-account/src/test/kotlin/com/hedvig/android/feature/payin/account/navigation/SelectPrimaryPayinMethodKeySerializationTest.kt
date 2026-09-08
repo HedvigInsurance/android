@@ -17,6 +17,7 @@ internal class SelectPrimaryPayinMethodKeySerializationTest {
     serializersModule = SerializersModule {
       polymorphic(HedvigNavKey::class) {
         subclass(SelectPrimaryPayinMethodKey::class)
+        subclass(PayinMethodDetailsKey::class)
       }
     }
   }
@@ -35,5 +36,22 @@ internal class SelectPrimaryPayinMethodKeySerializationTest {
     val encoded = json.encodeToString(PolymorphicSerializer(HedvigNavKey::class), key)
 
     assertThat(json.decodeFromString(PolymorphicSerializer(HedvigNavKey::class), encoded)).isEqualTo(key)
+  }
+
+  @Test
+  fun `payin method details key survives a serialization round trip for every account type`() {
+    val methods = listOf(
+      PayinAccount.Trustly("8327", "91234124", "Swedbank", isPending = false, isDefault = true),
+      PayinAccount.SwishPayin("0709901232", isPending = true, isDefault = false),
+      PayinAccount.Invoice(InvoiceDelivery.Mail, "a@b.com", isPending = false, isDefault = false),
+    )
+
+    for (method in methods) {
+      val key = PayinMethodDetailsKey(method)
+
+      val encoded = json.encodeToString(PolymorphicSerializer(HedvigNavKey::class), key)
+
+      assertThat(json.decodeFromString(PolymorphicSerializer(HedvigNavKey::class), encoded)).isEqualTo(key)
+    }
   }
 }

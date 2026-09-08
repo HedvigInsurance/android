@@ -15,8 +15,6 @@ import com.hedvig.android.feature.payments.ui.history.PaymentHistoryViewModel
 import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeDestination
 import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeSuccessDestination
 import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeViewModel
-import com.hedvig.android.feature.payments.ui.memberpaymentdetails.MemberPaymentDetailsDestination
-import com.hedvig.android.feature.payments.ui.memberpaymentdetails.MemberPaymentDetailsViewModel
 import com.hedvig.android.feature.payments.ui.payments.PaymentsDestination
 import com.hedvig.android.feature.payments.ui.payments.PaymentsViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
@@ -49,9 +47,7 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
       onPaymentClicked = dropUnlessResumed { id: String? ->
         backstack.add(PaymentDetailsKey(id))
       },
-      onMemberPaymentDetailsClicked = dropUnlessResumed {
-        backstack.add(MemberPaymentDetailsKey)
-      },
+      onPaymentMethodsClicked = dropUnlessResumed { navigateToPayinAccount() },
       onOpenManualCharge = {
         backstack.add(ManualChargeKey)
       },
@@ -117,15 +113,6 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
       navigateToForever = dropUnlessResumed {
         backstack.add(InviteFriendsKey)
       },
-    )
-  }
-
-  entry<MemberPaymentDetailsKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
-    val viewModel: MemberPaymentDetailsViewModel = metroViewModel()
-    MemberPaymentDetailsDestination(
-      viewModel,
-      onChangeBankAccount = navigateToPayinAccount,
-      navigateUp = backstack::navigateUp,
     )
   }
 }

@@ -100,7 +100,6 @@ import hedvig.resources.PAYMENTS_DISCOUNTS_SECTION_TITLE
 import hedvig.resources.PAYMENTS_IN_PROGRESS
 import hedvig.resources.PAYMENTS_MISSED_PAYMENT
 import hedvig.resources.PAYMENTS_NO_PAYMENTS_IN_PROGRESS
-import hedvig.resources.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE
 import hedvig.resources.PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL
 import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE
 import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_BODY
@@ -108,6 +107,7 @@ import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_BUTTON
 import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_TITLE
 import hedvig.resources.PAYMENTS_PROCESSING_PAYMENT
 import hedvig.resources.PAYMENTS_UPCOMING_PAYMENT
+import hedvig.resources.PAYMENT_METHODS_TITLE
 import hedvig.resources.PAYOUT_ADD_PAYOUT_METHOD
 import hedvig.resources.PAYOUT_MISSING_INFO
 import hedvig.resources.PAYOUT_PAGE_HEADING
@@ -131,7 +131,7 @@ internal fun PaymentsDestination(
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
   onPayoutAccountClicked: () -> Unit,
-  onMemberPaymentDetailsClicked: () -> Unit,
+  onPaymentMethodsClicked: () -> Unit,
   onChangeBankAccount: () -> Unit,
   onOpenManualCharge: () -> Unit,
 ) {
@@ -144,7 +144,7 @@ internal fun PaymentsDestination(
     onPaymentHistoryClicked = onPaymentHistoryClicked,
     onPayoutAccountClicked = onPayoutAccountClicked,
     onRetry = { viewModel.emit(Retry) },
-    onPaymentDetailsClicked = onMemberPaymentDetailsClicked,
+    onPaymentMethodsClicked = onPaymentMethodsClicked,
     onOpenManualCharge = onOpenManualCharge,
   )
 }
@@ -157,7 +157,7 @@ private fun PaymentsScreen(
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
   onPayoutAccountClicked: () -> Unit,
-  onPaymentDetailsClicked: () -> Unit,
+  onPaymentMethodsClicked: () -> Unit,
   onOpenManualCharge: () -> Unit,
   onRetry: () -> Unit,
 ) {
@@ -220,7 +220,7 @@ private fun PaymentsScreen(
               onDiscountClicked = onDiscountClicked,
               onPaymentHistoryClicked = onPaymentHistoryClicked,
               onPayoutAccountClicked = onPayoutAccountClicked,
-              onPaymentDetailsClicked = onPaymentDetailsClicked,
+              onPaymentMethodsClicked = onPaymentMethodsClicked,
               onOpenManualCharge = onOpenManualCharge,
             )
             Spacer(Modifier.height(16.dp))
@@ -246,7 +246,7 @@ private fun PaymentsContent(
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
   onPayoutAccountClicked: () -> Unit,
-  onPaymentDetailsClicked: () -> Unit,
+  onPaymentMethodsClicked: () -> Unit,
   onOpenManualCharge: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -356,7 +356,7 @@ private fun PaymentsContent(
       onDiscountClicked = onDiscountClicked,
       onPaymentHistoryClicked = onPaymentHistoryClicked,
       onPayoutAccountClicked = onPayoutAccountClicked,
-      onPaymentDetailsClicked = onPaymentDetailsClicked,
+      onPaymentMethodsClicked = onPaymentMethodsClicked,
       showPayoutButton = (uiState as? Content)?.showPayoutButton == true,
     )
   }
@@ -429,7 +429,7 @@ private fun PaymentsListItems(
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
   onPayoutAccountClicked: () -> Unit,
-  onPaymentDetailsClicked: () -> Unit,
+  onPaymentMethodsClicked: () -> Unit,
   showPayoutButton: Boolean,
 ) {
   val listItemsSideSpacingModifier = Modifier
@@ -490,16 +490,16 @@ private fun PaymentsListItems(
         HorizontalDivider(listItemsSideSpacingModifier)
       }
 
-      val showPaymentDetailsItem = when (uiState.memberType) {
+      val showPaymentMethodsItem = when (uiState.memberType) {
         MemberType.QASA_ONLY_MEMBER -> false
 
         MemberType.STANDARD_MEMBER,
         MemberType.STANDARD_TO_QASA_MEMBER,
         -> true
       }
-      if (showPaymentDetailsItem) {
+      if (showPaymentMethodsItem) {
         PaymentsListItem(
-          text = stringResource(Res.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE),
+          text = stringResource(Res.string.PAYMENT_METHODS_TITLE),
           icon = {
             Icon(
               imageVector = HedvigIcons.Card,
@@ -508,7 +508,7 @@ private fun PaymentsListItems(
             )
           },
           modifier = Modifier
-            .clickable(onClick = onPaymentDetailsClicked)
+            .clickable(onClick = onPaymentMethodsClicked)
             .then(listItemsSideSpacingModifier)
             .padding(vertical = 16.dp)
             .fillMaxWidth(),

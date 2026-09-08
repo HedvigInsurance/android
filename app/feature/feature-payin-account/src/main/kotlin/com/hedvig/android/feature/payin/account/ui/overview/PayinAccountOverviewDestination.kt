@@ -51,6 +51,7 @@ internal fun PayinAccountOverviewDestination(
   viewModel: PayinAccountOverviewViewModel,
   onConnectPayoutMethodClicked: () -> Unit,
   onChoosePrimaryMethodClicked: () -> Unit,
+  onPayinMethodClicked: (PayinAccount) -> Unit,
   navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -58,6 +59,7 @@ internal fun PayinAccountOverviewDestination(
     uiState = uiState,
     onConnectPayoutMethodClicked = onConnectPayoutMethodClicked,
     onChoosePrimaryMethodClicked = onChoosePrimaryMethodClicked,
+    onPayinMethodClicked = onPayinMethodClicked,
     onRetry = { viewModel.emit(PayinAccountOverviewEvent.Retry) },
     navigateUp = navigateUp,
   )
@@ -68,6 +70,7 @@ private fun PayinAccountOverviewScreen(
   uiState: PayinAccountOverviewUiState,
   onConnectPayoutMethodClicked: () -> Unit,
   onChoosePrimaryMethodClicked: () -> Unit,
+  onPayinMethodClicked: (PayinAccount) -> Unit,
   onRetry: () -> Unit,
   navigateUp: () -> Unit,
 ) {
@@ -102,6 +105,7 @@ private fun PayinAccountOverviewScreen(
           availablePayinMethods = uiState.availablePayinMethods,
           onConnectPayinMethodClicked = onConnectPayoutMethodClicked,
           onChoosePrimaryMethodClicked = onChoosePrimaryMethodClicked,
+          onPayinMethodClicked = onPayinMethodClicked,
           modifier = Modifier.weight(1f),
         )
       }
@@ -115,6 +119,7 @@ private fun PayoutAccountContent(
   availablePayinMethods: List<MemberPaymentProvider>,
   onConnectPayinMethodClicked: () -> Unit,
   onChoosePrimaryMethodClicked: () -> Unit,
+  onPayinMethodClicked: (PayinAccount) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -143,7 +148,7 @@ private fun PayoutAccountContent(
         verticalArrangement = Arrangement.spacedBy(8.dp),
       ) {
         for (method in currentMethods) {
-          CurrentPayinMethodRow(method = method)
+          CurrentPayinMethodRow(method = method, onClick = { onPayinMethodClicked(method) })
         }
       }
     }
@@ -175,8 +180,9 @@ private fun PayoutAccountContent(
 }
 
 @Composable
-private fun CurrentPayinMethodRow(method: PayinAccount, modifier: Modifier = Modifier) {
+private fun CurrentPayinMethodRow(method: PayinAccount, onClick: () -> Unit, modifier: Modifier = Modifier) {
   HedvigCard(
+    onClick = onClick,
     shape = HedvigTheme.shapes.cornerLarge,
     modifier = modifier.fillMaxWidth(),
   ) {
@@ -208,6 +214,7 @@ private fun PreviewPayinAccountOverviewScreen(
         uiState = uiState,
         onConnectPayoutMethodClicked = {},
         onChoosePrimaryMethodClicked = {},
+        onPayinMethodClicked = {},
         onRetry = {},
         navigateUp = {},
       )

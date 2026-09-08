@@ -141,6 +141,11 @@ private fun PayinAccount.Trustly.maskedAccount(): String? {
   return "$bank ···· $lastFour"
 }
 
+internal fun PayinAccount.Trustly.maskedAccountNumber(): String? {
+  val lastFour = accountNumber?.takeLast(4)?.takeIf { it.isNotBlank() } ?: return null
+  return "**** $lastFour"
+}
+
 internal fun formatSwishPhoneNumber(phoneNumber: String): String {
   val digits = phoneNumber.take(15)
   val sb = StringBuilder()
