@@ -110,9 +110,9 @@ internal object LargeSizeButtonTokens {
   val LabelTextFont = TypographyKeyTokens.BodySmall
 }
 
-// TODO: the glass button styles are only designed at the large size. Every smaller size falls back to
-//  the standard button metrics above until design provides them.
-internal object RoundedLargeSizeButtonTokens {
+// The metrics of the liquid glass buttons, which Figma draws at one fixed size rather than across
+// the size scale. 20/12/12 around a 24dp line box gives the 48dp pill height the design specifies.
+internal object LiquidGlassButtonTokens {
   val HorizontalPadding = 20.dp
   val TopPadding = 12.dp
   val BottomPadding = 12.dp
@@ -134,7 +134,7 @@ internal object SmallSizeButtonTokens {
 }
 
 internal object MiniSizeButtonTokens {
-  val HorizontalPadding = 8.dp
+  val HorizontalPadding = 10.dp
   val TopPadding = 3.dp
   val BottomPadding = 3.dp
   val LabelTextFont = TypographyKeyTokens.Label
