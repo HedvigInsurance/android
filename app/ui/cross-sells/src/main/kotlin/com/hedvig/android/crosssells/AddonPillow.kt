@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.home.home.ui
+package com.hedvig.android.crosssells
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,7 +26,7 @@ import org.jetbrains.compose.resources.painterResource
  * relates to.
  */
 @Composable
-internal fun AddonPillow(flowType: FlowType, modifier: Modifier = Modifier) {
+fun AddonPillow(flowType: FlowType, modifier: Modifier = Modifier) {
   Box(modifier.size(48.dp)) {
     Image(
       painter = painterResource(flowType.pillowType().pillowResource()),
