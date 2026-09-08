@@ -7,6 +7,8 @@ import com.hedvig.android.feature.payin.account.ui.overview.PayinAccountOverview
 import com.hedvig.android.feature.payin.account.ui.overview.PayinAccountOverviewUiState
 import com.hedvig.android.feature.payin.account.ui.overview.PayinAccountOverviewViewModel
 import com.hedvig.android.feature.payin.account.ui.selectmethod.SelectPayinMethodDestination
+import com.hedvig.android.feature.payin.account.ui.selectmethod.SelectPayinMethodViewModel
+import com.hedvig.android.feature.payin.account.ui.selectmethod.SelectPayinMethodViewModelFactory
 import com.hedvig.android.feature.payin.account.ui.setupinvoice.SetupInvoicePayinDestination
 import com.hedvig.android.feature.payin.account.ui.setupinvoice.SetupInvoicePayinViewModel
 import com.hedvig.android.feature.payin.account.ui.setupswish.SetupSwishPayinDestination
@@ -15,8 +17,8 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.popUpTo
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
-import octopus.type.MemberPaymentProvider
 
 fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
   backstack: Backstack,
@@ -41,8 +43,12 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
   }
 
   entry<SelectPayinMethodKey> { key ->
+    val viewModel: SelectPayinMethodViewModel =
+      assistedMetroViewModel<SelectPayinMethodViewModel, SelectPayinMethodViewModelFactory> {
+        create(key.availableProviders)
+      }
     SelectPayinMethodDestination(
-      availableProviders = key.availableProviders.map { MemberPaymentProvider.safeValueOf(it) },
+      viewModel = viewModel,
       onTrustlySelected = dropUnlessResumed {
         backstack.popUpTo<SelectPayinMethodKey>(inclusive = true)
         navigateToConnectPayment()
