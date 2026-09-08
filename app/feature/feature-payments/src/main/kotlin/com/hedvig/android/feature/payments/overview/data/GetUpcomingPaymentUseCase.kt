@@ -20,6 +20,7 @@ import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.data.toFailedCharge
+import com.hedvig.android.feature.payments.data.toPrimaryPayinMethod
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.Inject
 import kotlin.time.Clock
@@ -28,6 +29,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import octopus.UpcomingPaymentQuery
 import octopus.fragment.MemberChargeFragment
+import octopus.fragment.MemberPaymentMethodFragment
 import octopus.type.MemberChargeStatus
 import octopus.type.MemberPaymentMethodStatus
 
@@ -72,6 +74,10 @@ internal data class GetUpcomingPaymentUseCaseImpl(
         val id = it.id ?: return@mapNotNull null
         OngoingCharge(id, it.date, UiMoney.fromMoneyFragment(it.net))
       },
+      primaryPayinMethod = result.currentMember.paymentMethods.let { paymentMethods ->
+        paymentMethods.defaultPayinMethod as MemberPaymentMethodFragment?
+          ?: paymentMethods.payinMethods.find { it.isDefault }
+      }?.toPrimaryPayinMethod(),
       paymentConnection = run {
         val paymentMethods = result.currentMember.paymentMethods
         val payinMethod = paymentMethods.defaultPayinMethod
@@ -162,6 +168,7 @@ internal class GetUpcomingPaymentUseCaseDemo(
       ),
       emptyList(),
       PaymentConnection.Unknown,
+      primaryPayinMethod = null,
       isManualChargeAllowed = null,
       memberType = MemberType.STANDARD_MEMBER,
     ).right()

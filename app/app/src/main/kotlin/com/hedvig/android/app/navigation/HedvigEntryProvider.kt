@@ -53,6 +53,7 @@ import com.hedvig.android.feature.movingflow.movingFlowEntries
 import com.hedvig.android.feature.onboarding.data.ResetOnboardingSeenUseCase
 import com.hedvig.android.feature.onboarding.navigation.onboardingEntries
 import com.hedvig.android.feature.payin.account.navigation.PayinAccountKey
+import com.hedvig.android.feature.payin.account.navigation.PayinMethodDetailsKey
 import com.hedvig.android.feature.payin.account.navigation.payinAccountEntries
 import com.hedvig.android.feature.payments.navigation.paymentsEntries
 import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountKey
@@ -473,6 +474,7 @@ private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
     backstack = backstack,
     navigateToConnectPayment = navigateToConnectPayment,
     navigateToPayinAccount = navigateToPayinAccount,
+    navigateToPayinMethodDetails = { method -> backstack.add(PayinMethodDetailsKey(method)) },
     navigateToPayoutAccount = navigateToPayoutAccount,
     openConversation = navigateToNewConversation,
   )

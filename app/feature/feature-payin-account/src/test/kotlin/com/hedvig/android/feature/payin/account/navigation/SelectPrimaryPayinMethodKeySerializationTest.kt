@@ -39,15 +39,9 @@ internal class SelectPrimaryPayinMethodKeySerializationTest {
   }
 
   @Test
-  fun `payin method details key survives a serialization round trip for every account type`() {
-    val methods = listOf(
-      PayinAccount.Trustly("8327", "91234124", "Swedbank", isPending = false, isDefault = true),
-      PayinAccount.SwishPayin("0709901232", isPending = true, isDefault = false),
-      PayinAccount.Invoice(InvoiceDelivery.Mail, "a@b.com", isPending = false, isDefault = false),
-    )
-
-    for (method in methods) {
-      val key = PayinMethodDetailsKey(method)
+  fun `payin method details key survives a serialization round trip for every method id`() {
+    for (methodId in PayinMethodId.entries) {
+      val key = PayinMethodDetailsKey(methodId)
 
       val encoded = json.encodeToString(PolymorphicSerializer(HedvigNavKey::class), key)
 

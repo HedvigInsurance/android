@@ -38,6 +38,7 @@ dependencies {
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlags)
   implementation(projects.featureForeverNavigation)
+  implementation(projects.featurePayinAccountNavigation)
   implementation(projects.featurePaymentsNavigation)
   implementation(projects.languageCore)
   implementation(projects.languageData)

@@ -20,6 +20,7 @@ import com.hedvig.android.feature.payments.data.PaymentConnection.Pending
 import com.hedvig.android.feature.payments.data.PaymentConnection.Unknown
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
+import com.hedvig.android.feature.payments.data.PrimaryPayinMethod
 import com.hedvig.android.feature.payments.overview.data.GetShouldShowPayoutUseCase
 import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCase
 import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.ConnectedPaymentInfo
@@ -83,6 +84,7 @@ internal class PaymentsPresenter(
           },
           ongoingCharges = paymentOverview.ongoingCharges,
           connectedPaymentInfo = paymentOverview.paymentConnection.toConnectedPaymentInfo(),
+          primaryPayinMethod = paymentOverview.primaryPayinMethod,
           showPayoutButton = shouldShowPayout,
           memberType = paymentOverview.memberType,
         )
@@ -145,6 +147,7 @@ internal sealed interface PaymentsUiState {
     val upcomingPaymentInfo: UpcomingPaymentInfo,
     val ongoingCharges: List<OngoingCharge>,
     val connectedPaymentInfo: ConnectedPaymentInfo,
+    val primaryPayinMethod: PrimaryPayinMethod?,
     val showPayoutButton: Boolean,
     val memberType: MemberType,
   ) : PaymentsUiState {

@@ -9,6 +9,7 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.feature.payin.account.navigation.PayinMethodId
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
@@ -79,11 +80,14 @@ internal class GetPayinAccountUseCase(
         }
       }
     }
-    logcat { "availablePayinMethods: before filter ${paymentMethods.availableMethods}" }
-    val availablePayinMethods = paymentMethods.availableMethods
-      .filter { it.supportsPayin }
-      .map { it.provider }
-    logcat { "availablePayinMethods: $availablePayinMethods" }
+    logcat { "availablePayinMethods: backend returned ${paymentMethods.availableMethods}" }
+    // TODO: the backend does not list Swish or Trustly as available payin methods yet, so the connect flow is
+    //  driven off a mock. Restore the commented-out filter below and delete `availablePayinMethods` once it does.
+    // val availablePayinMethods = paymentMethods.availableMethods
+    //   .filter { it.supportsPayin }
+    //   .map { it.provider }
+    val availablePayinMethods = listOf(MemberPaymentProvider.SWISH, MemberPaymentProvider.TRUSTLY)
+    logcat { "availablePayinMethods: using mocked $availablePayinMethods" }
     PayinAccountData(
       currentMethods = currentMethods,
       availablePayinMethods = availablePayinMethods,
@@ -142,6 +146,13 @@ internal sealed interface PayinAccount {
     override val isDefault: Boolean,
   ) : PayinAccount
 }
+
+internal val PayinAccount.id: PayinMethodId
+  get() = when (this) {
+    is PayinAccount.Trustly -> PayinMethodId.Trustly
+    is PayinAccount.SwishPayin -> PayinMethodId.Swish
+    is PayinAccount.Invoice -> PayinMethodId.Invoice
+  }
 
 internal val PayinAccount.provider: MemberPaymentProvider
   get() = when (this) {

@@ -6,14 +6,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigRedTextButton
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
@@ -41,6 +45,52 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun PayinMethodDetailsDestination(
+  viewModel: PayinMethodDetailsViewModel,
+  navigateUp: () -> Unit,
+  onChangeMethod: (PayinAccount) -> Unit,
+  onRemoveMethod: () -> Unit,
+) {
+  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  when (val state = uiState) {
+    PayinMethodDetailsUiState.Loading -> {
+      HedvigScaffold(
+        topAppBarText = stringResource(Res.string.PAYMENTS_PAYMENT_METHOD),
+        navigateUp = navigateUp,
+        modifier = Modifier.fillMaxSize(),
+      ) {
+        HedvigFullScreenCenterAlignedProgress(Modifier.weight(1f))
+      }
+    }
+
+    PayinMethodDetailsUiState.Error -> {
+      HedvigScaffold(
+        topAppBarText = stringResource(Res.string.PAYMENTS_PAYMENT_METHOD),
+        navigateUp = navigateUp,
+        modifier = Modifier.fillMaxSize(),
+      ) {
+        HedvigErrorSection(
+          onButtonClick = { viewModel.emit(PayinMethodDetailsEvent.Retry) },
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .weight(1f),
+        )
+      }
+    }
+
+    is PayinMethodDetailsUiState.Content -> {
+      PayinMethodDetailsScreen(
+        method = state.method,
+        navigateUp = navigateUp,
+        onChangeMethod = { onChangeMethod(state.method) },
+        onRemoveMethod = onRemoveMethod,
+      )
+    }
+  }
+}
+
+@Composable
+private fun PayinMethodDetailsScreen(
   method: PayinAccount,
   navigateUp: () -> Unit,
   onChangeMethod: () -> Unit,
@@ -169,7 +219,7 @@ private fun PreviewPayinMethodDetailsDestination(
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      PayinMethodDetailsDestination(
+      PayinMethodDetailsScreen(
         method = method,
         navigateUp = {},
         onChangeMethod = {},

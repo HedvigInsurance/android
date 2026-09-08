@@ -4,6 +4,7 @@ import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.feature.forever.navigation.InviteFriendsKey
+import com.hedvig.android.feature.payin.account.navigation.PayinMethodId
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailExplanationContent
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailsDestination
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailsViewModel
@@ -29,6 +30,7 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
   backstack: Backstack,
   navigateToConnectPayment: () -> Unit,
   navigateToPayinAccount: () -> Unit,
+  navigateToPayinMethodDetails: (PayinMethodId) -> Unit,
   navigateToPayoutAccount: () -> Unit,
   openConversation: () -> Unit,
 ) {
@@ -48,6 +50,9 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
         backstack.add(PaymentDetailsKey(id))
       },
       onPaymentMethodsClicked = dropUnlessResumed { navigateToPayinAccount() },
+      onPrimaryPayinMethodClicked = dropUnlessResumed { method: PayinMethodId ->
+        navigateToPayinMethodDetails(method)
+      },
       onOpenManualCharge = {
         backstack.add(ManualChargeKey)
       },

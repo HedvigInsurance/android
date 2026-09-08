@@ -5,7 +5,10 @@ import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.feature.payin.account.data.PayinAccount
+import com.hedvig.android.feature.payin.account.data.id
 import com.hedvig.android.feature.payin.account.ui.methoddetails.PayinMethodDetailsDestination
+import com.hedvig.android.feature.payin.account.ui.methoddetails.PayinMethodDetailsViewModel
+import com.hedvig.android.feature.payin.account.ui.methoddetails.PayinMethodDetailsViewModelFactory
 import com.hedvig.android.feature.payin.account.ui.overview.PayinAccountOverviewDestination
 import com.hedvig.android.feature.payin.account.ui.overview.PayinAccountOverviewUiState
 import com.hedvig.android.feature.payin.account.ui.overview.PayinAccountOverviewViewModel
@@ -45,7 +48,7 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
         )
       },
       onPayinMethodClicked = dropUnlessResumed { method: PayinAccount ->
-        backstack.add(PayinMethodDetailsKey(method))
+        backstack.add(PayinMethodDetailsKey(method.id))
       },
       onChoosePrimaryMethodClicked = dropUnlessResumed {
         val content = viewModel.uiState.value as? PayinAccountOverviewUiState.Content
@@ -56,11 +59,14 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
   }
 
   entry<PayinMethodDetailsKey> { key ->
-    val method = key.method
+    val viewModel: PayinMethodDetailsViewModel =
+      assistedMetroViewModel<PayinMethodDetailsViewModel, PayinMethodDetailsViewModelFactory> {
+        create(key.method)
+      }
     PayinMethodDetailsDestination(
-      method = method,
+      viewModel = viewModel,
       navigateUp = backstack::navigateUp,
-      onChangeMethod = dropUnlessResumed {
+      onChangeMethod = dropUnlessResumed { method: PayinAccount ->
         when (method) {
           is PayinAccount.Trustly -> {
             backstack.popUpTo<PayinMethodDetailsKey>(inclusive = true)

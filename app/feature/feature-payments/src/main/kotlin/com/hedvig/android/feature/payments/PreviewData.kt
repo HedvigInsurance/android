@@ -3,6 +3,7 @@ package com.hedvig.android.feature.payments
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.paying.member.MemberType
+import com.hedvig.android.feature.payin.account.navigation.PayinMethodId
 import com.hedvig.android.feature.payments.data.Discount
 import com.hedvig.android.feature.payments.data.ManualChargeToPrompt
 import com.hedvig.android.feature.payments.data.MemberCharge
@@ -11,6 +12,7 @@ import com.hedvig.android.feature.payments.data.MemberPaymentChargeMethod
 import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
+import com.hedvig.android.feature.payments.data.PrimaryPayinMethod
 import kotlinx.datetime.LocalDate
 
 internal val periodsPreviewData = listOf(
@@ -280,6 +282,7 @@ internal val paymentOverViewPreviewData: PaymentOverview
       memberChargeShortInfo = memberChargeShortInfo,
       ongoingCharges = listOf(OngoingCharge("id", LocalDate.fromEpochDays(401), UiMoney(200.0, UiCurrencyCode.SEK))),
       paymentConnection = PaymentConnection.Active,
+      primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
       isManualChargeAllowed = ManualChargeToPrompt(UiMoney(200.0, UiCurrencyCode.SEK)),
       memberType = MemberType.STANDARD_MEMBER,
     )
