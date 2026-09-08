@@ -262,7 +262,6 @@ private fun InsuranceScreenContent(
               modifier = Modifier.padding(horizontal = 16.dp),
               onSheetDismissed = {},
               imageLoader = imageLoader,
-              hasCrossSellDiscounts = uiState.hasCrossSellDiscounts,
             )
           }
           if (uiState.addonBannerInfoList.isNotEmpty()) {
@@ -546,7 +545,6 @@ private fun PreviewInsuranceScreen(
             ),
           ),
           pendingContracts = listOf(previewPendingContract),
-          hasCrossSellDiscounts = true,
         ),
         {},
         {},
@@ -597,7 +595,6 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       shouldSuggestMovingFlow = true,
       addonBannerInfoList = emptyList(),
       pendingContracts = listOf(previewPendingContract),
-      hasCrossSellDiscounts = true,
     ),
     InsuranceUiState(
       contracts = listOf(),

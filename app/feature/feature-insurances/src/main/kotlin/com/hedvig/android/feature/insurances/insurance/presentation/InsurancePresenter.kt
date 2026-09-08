@@ -42,7 +42,6 @@ internal data class InsuranceUiState(
   val hasError: Boolean,
   val isLoading: Boolean,
   val isRetrying: Boolean,
-  val hasCrossSellDiscounts: Boolean = false,
 ) {
   companion object {
     val initialState = InsuranceUiState(
@@ -124,7 +123,6 @@ internal class InsurancePresenter(
       isLoading = isLoading,
       isRetrying = isRetrying,
       addonBannerInfoList = insuranceData.addonBannerInfoList,
-      hasCrossSellDiscounts = insuranceData.hasDiscounts,
     )
   }
 }
@@ -143,20 +141,19 @@ private fun loadInsuranceData(
       val result = contractsResult.bind()
       val contracts = result.filterIsInstance<EstablishedInsuranceContract>()
       val pendingContracts = result.filterIsInstance<PendingInsuranceContract>()
-      val crossSellResult = crossSellsDataResult.bind()
+      val crossSells = crossSellsDataResult.bind()
       val travelAddonBannerInfo = travelAddonBannerInfoResult.bind()
       val insuranceCards = contracts.filterNot(EstablishedInsuranceContract::isTerminated)
 
       InsuranceData(
         contracts = insuranceCards,
         pendingContracts = pendingContracts,
-        crossSells = crossSellResult.crossSells,
+        crossSells = crossSells,
         quantityOfCancelledInsurances = contracts.count(EstablishedInsuranceContract::isTerminated),
         isEligibleToPerformMovingFlow = contracts.any {
           !it.isTerminated && it.upcomingInsuranceAgreement == null && it.supportsAddressChange
         },
         addonBannerInfoList = travelAddonBannerInfo,
-        hasDiscounts = crossSellResult.hasDiscounts,
       )
     }.onLeft {
       logcat(LogPriority.INFO, it.throwable) {
@@ -173,7 +170,6 @@ private data class InsuranceData(
   val quantityOfCancelledInsurances: Int,
   val isEligibleToPerformMovingFlow: Boolean,
   val addonBannerInfoList: List<AddonBannerInfo>,
-  val hasDiscounts: Boolean,
 ) {
   companion object {
     fun fromUiState(uiState: InsuranceUiState): InsuranceData {
@@ -184,7 +180,6 @@ private data class InsuranceData(
         isEligibleToPerformMovingFlow = uiState.shouldSuggestMovingFlow,
         addonBannerInfoList = uiState.addonBannerInfoList,
         pendingContracts = uiState.pendingContracts,
-        hasDiscounts = uiState.hasCrossSellDiscounts,
       )
     }
 
@@ -195,7 +190,6 @@ private data class InsuranceData(
       quantityOfCancelledInsurances = 0,
       isEligibleToPerformMovingFlow = false,
       addonBannerInfoList = emptyList(),
-      hasDiscounts = false,
     )
   }
 }

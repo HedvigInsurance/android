@@ -28,7 +28,6 @@ import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.data.productvariant.ProductVariant
-import com.hedvig.android.feature.insurances.data.CrossSellResult
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
@@ -251,18 +250,15 @@ internal class InsurancePresenterTest {
       supportsTermination = true,
     ),
   )
-  private val validCrossSells: CrossSellResult = CrossSellResult(
-    false,
-    listOf(
-      CrossSell(
-        id = "crossSellId",
-        title = "crossSellTitle",
-        subtitle = "crossSellDescription",
-        storeUrl = "",
-        pillowImageSmall = ImageAsset("", "", ""),
-        pillowImageLarge = ImageAsset("", "", ""),
-        buttonText = "See price",
-      ),
+  private val validCrossSells: List<CrossSell> = listOf(
+    CrossSell(
+      id = "crossSellId",
+      title = "crossSellTitle",
+      subtitle = "crossSellDescription",
+      storeUrl = "",
+      pillowImageSmall = ImageAsset("", "", ""),
+      pillowImageLarge = ImageAsset("", "", ""),
+      buttonText = "See price",
     ),
   )
 
@@ -294,7 +290,7 @@ internal class InsurancePresenterTest {
           assertThat(uiState.quantityOfCancelledInsurances)
             .isEqualTo(validContracts.count(EstablishedInsuranceContract::isTerminated))
           assertThat(uiState.contracts.map { it.id }).containsSubList(validContracts.map { it.id })
-          assertThat(uiState.crossSells.map { it.id }).containsSubList(validCrossSells.crossSells.map { it.id })
+          assertThat(uiState.crossSells.map { it.id }).containsSubList(validCrossSells.map { it.id })
         }
       }
     }
@@ -539,9 +535,9 @@ internal class InsurancePresenterTest {
 
   private class FakeGetCrossSellsUseCase : GetCrossSellsUseCase {
     val errorMessages = Turbine<ErrorMessage>()
-    val crossSells = Turbine<CrossSellResult>()
+    val crossSells = Turbine<List<CrossSell>>()
 
-    override suspend fun invoke(): Either<ErrorMessage, CrossSellResult> {
+    override suspend fun invoke(): Either<ErrorMessage, List<CrossSell>> {
       return raceN(
         { errorMessages.awaitItem() },
         { crossSells.awaitItem() },
