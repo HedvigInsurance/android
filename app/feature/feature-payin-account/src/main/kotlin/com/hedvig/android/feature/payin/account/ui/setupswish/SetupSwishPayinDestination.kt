@@ -51,7 +51,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.feature.payin.account.ui.overview.formatSwishPhoneNumber
+import com.hedvig.android.feature.payin.account.ui.components.formatSwishPhoneNumber
 import hedvig.resources.CONTACT_INFO_CHANGES_SAVED
 import hedvig.resources.ODYSSEY_PHONE_NUMBER_LABEL
 import hedvig.resources.Res

@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.payin.account.navigation
 
+import com.hedvig.android.feature.payin.account.data.PayinAccount
 import com.hedvig.android.navigation.common.HedvigNavKey
 import kotlinx.serialization.Serializable
 
@@ -13,3 +14,8 @@ internal data object SetupSwishPayinKey : HedvigNavKey
 
 @Serializable
 internal data object SetupInvoicePayinKey : HedvigNavKey
+
+@Serializable
+internal data class SelectPrimaryPayinMethodKey(
+  val currentMethods: List<PayinAccount>,
+) : HedvigNavKey

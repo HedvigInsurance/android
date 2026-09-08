@@ -12,6 +12,7 @@ import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
+import kotlinx.serialization.Serializable
 import octopus.GetPayinMethodsQuery
 import octopus.GetPayinMethodsQuery.Data.CurrentMember.PaymentMethods.PayinMethod.Details.Companion.asPaymentMethodBankAccountDetails
 import octopus.GetPayinMethodsQuery.Data.CurrentMember.PaymentMethods.PayinMethod.Details.Companion.asPaymentMethodInvoiceDetails
@@ -66,7 +67,7 @@ internal class GetPayinAccountUseCase(
         MemberPaymentProvider.INVOICE -> {
           val invoiceDetails = method.details?.asPaymentMethodInvoiceDetails()
           PayinAccount.Invoice(
-            delivery = invoiceDetails?.delivery,
+            delivery = invoiceDetails?.delivery.toInvoiceDelivery(),
             email = invoiceDetails?.email,
             isPending = isPending,
             isDefault = isDefault,
@@ -111,10 +112,13 @@ private fun parseBankAccountDetails(
   )
 }
 
+/** Serializable so that a chosen set of methods can be carried in a nav key across process death. */
+@Serializable
 internal sealed interface PayinAccount {
   val isPending: Boolean
   val isDefault: Boolean
 
+  @Serializable
   data class Trustly(
     val clearingNumber: String?,
     val accountNumber: String?,
@@ -123,30 +127,51 @@ internal sealed interface PayinAccount {
     override val isDefault: Boolean,
   ) : PayinAccount
 
+  @Serializable
   data class SwishPayin(
     val phoneNumber: String?,
     override val isPending: Boolean,
     override val isDefault: Boolean,
   ) : PayinAccount
 
+  @Serializable
   data class Invoice(
-    val delivery: PaymentMethodInvoiceDelivery?,
+    val delivery: InvoiceDelivery?,
     val email: String?,
     override val isPending: Boolean,
     override val isDefault: Boolean,
   ) : PayinAccount
 }
 
-fun PaymentMethodInvoiceDelivery?.toDeliveryString(): String? {
+internal val PayinAccount.provider: MemberPaymentProvider
+  get() = when (this) {
+    is PayinAccount.Trustly -> MemberPaymentProvider.TRUSTLY
+    is PayinAccount.SwishPayin -> MemberPaymentProvider.SWISH
+    is PayinAccount.Invoice -> MemberPaymentProvider.INVOICE
+  }
+
+@Serializable
+internal enum class InvoiceDelivery {
+  Kivra,
+  Mail,
+}
+
+private fun PaymentMethodInvoiceDelivery?.toInvoiceDelivery(): InvoiceDelivery? {
   return when (this) {
-    PaymentMethodInvoiceDelivery.KIVRA -> "Kivra"
-
-    // todo
-    PaymentMethodInvoiceDelivery.MAIL -> "Email"
-
-    // todo
-    PaymentMethodInvoiceDelivery.UNKNOWN__ -> ""
-
+    PaymentMethodInvoiceDelivery.KIVRA -> InvoiceDelivery.Kivra
+    PaymentMethodInvoiceDelivery.MAIL -> InvoiceDelivery.Mail
     else -> null
+  }
+}
+
+internal fun InvoiceDelivery?.toDeliveryString(): String? {
+  return when (this) {
+    // TODO: Add "Kivra" / "Kivra" to Lokalise
+    InvoiceDelivery.Kivra -> "Kivra"
+
+    // TODO: Add "Email" / "E-post" to Lokalise
+    InvoiceDelivery.Mail -> "Email"
+
+    null -> null
   }
 }

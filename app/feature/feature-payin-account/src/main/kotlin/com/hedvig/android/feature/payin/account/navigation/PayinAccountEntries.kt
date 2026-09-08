@@ -6,6 +6,9 @@ import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.feature.payin.account.ui.overview.PayinAccountOverviewDestination
 import com.hedvig.android.feature.payin.account.ui.overview.PayinAccountOverviewUiState
 import com.hedvig.android.feature.payin.account.ui.overview.PayinAccountOverviewViewModel
+import com.hedvig.android.feature.payin.account.ui.primary.SelectPrimaryPayinMethodDestination
+import com.hedvig.android.feature.payin.account.ui.primary.SelectPrimaryPayinMethodViewModel
+import com.hedvig.android.feature.payin.account.ui.primary.SelectPrimaryPayinMethodViewModelFactory
 import com.hedvig.android.feature.payin.account.ui.selectmethod.SelectPayinMethodDestination
 import com.hedvig.android.feature.payin.account.ui.selectmethod.SelectPayinMethodViewModel
 import com.hedvig.android.feature.payin.account.ui.selectmethod.SelectPayinMethodViewModelFactory
@@ -38,7 +41,23 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
           ),
         )
       },
+      onChoosePrimaryMethodClicked = dropUnlessResumed {
+        val content = viewModel.uiState.value as? PayinAccountOverviewUiState.Content
+        backstack.add(SelectPrimaryPayinMethodKey(currentMethods = content?.currentMethods ?: emptyList()))
+      },
       navigateUp = backstack::navigateUp,
+    )
+  }
+
+  entry<SelectPrimaryPayinMethodKey> { key ->
+    val viewModel: SelectPrimaryPayinMethodViewModel =
+      assistedMetroViewModel<SelectPrimaryPayinMethodViewModel, SelectPrimaryPayinMethodViewModelFactory> {
+        create(key.currentMethods)
+      }
+    SelectPrimaryPayinMethodDestination(
+      viewModel = viewModel,
+      navigateUp = backstack::navigateUp,
+      navigateBack = backstack::popBackstack,
     )
   }
 
