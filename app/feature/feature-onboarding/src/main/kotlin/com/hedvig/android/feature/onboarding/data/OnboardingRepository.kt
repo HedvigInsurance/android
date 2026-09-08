@@ -10,6 +10,7 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import octopus.OnboardingQuery
@@ -84,13 +85,14 @@ internal class OnboardingRepositoryImpl(
           currencyCode = referralInformation.monthlyDiscountPerReferral.currencyCode.rawValue,
         )
       },
-      payinStatus = member.paymentMethods.payinMethods.map { it.status.rawValue }.let { statuses ->
+      payinStatus = member.paymentMethods.payinMethods.let { methods ->
+        logcat { "Mariia: methods $methods " }
         when {
-          statuses.any { it == "ACTIVE" } -> OnboardingPayinStatus.Active
+          methods.any { it.status.rawValue == "ACTIVE" && it.isDefault } -> OnboardingPayinStatus.Active
 
           // A PENDING method counts as "connected enough" to skip the step (bank activation takes
           // days), but the step UI still shows it as pending rather than claiming it is connected.
-          statuses.any { it == "PENDING" } -> OnboardingPayinStatus.Pending
+          methods.any { it.status.rawValue == "PENDING" } -> OnboardingPayinStatus.Pending
 
           else -> OnboardingPayinStatus.NeedsSetup
         }

@@ -16,6 +16,3 @@ internal data object EditBankAccountKey : HedvigNavKey
 
 @Serializable
 internal data object SetupSwishPayoutKey : HedvigNavKey
-
-@Serializable
-internal data object SetupInvoicePayoutKey : HedvigNavKey

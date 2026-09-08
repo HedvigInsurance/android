@@ -30,6 +30,7 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
   backstack: Backstack,
   navigateToConnectPayment: () -> Unit,
+  navigateToPayinAccount: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
   openConversation: () -> Unit,
 ) {
@@ -123,7 +124,7 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
     val viewModel: MemberPaymentDetailsViewModel = metroViewModel()
     MemberPaymentDetailsDestination(
       viewModel,
-      onChangeBankAccount = navigateToConnectPayment,
+      onChangeBankAccount = navigateToPayinAccount,
       navigateUp = backstack::navigateUp,
     )
   }

@@ -2,7 +2,6 @@ package com.hedvig.android.memberquickactions
 
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.feature.change.tier.navigation.StartTierFlowChooseInsuranceKey
-import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyKey
 import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddInfoKey
 import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddOrRemoveKey
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredTriageKey
@@ -11,6 +10,7 @@ import com.hedvig.android.feature.help.center.navigation.EmergencyKey
 import com.hedvig.android.feature.movingflow.MovingSource
 import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
 import com.hedvig.android.feature.payments.navigation.PaymentDetailsKey
+import com.hedvig.android.feature.payin.account.navigation.PayinAccountKey
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceKey
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateKey
 import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoInsured
@@ -54,7 +54,7 @@ fun QuickLinkDestination.OuterDestination.toNavKey(): HedvigNavKey = when (this)
   }
 
   QuickLinkConnectPayment -> {
-    TrustlyKey
+    PayinAccountKey
   }
 
   QuickLinkTermination -> {

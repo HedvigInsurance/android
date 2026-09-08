@@ -47,26 +47,18 @@ internal class GetMemberPaymentsDetailsUseCaseImpl(
       val paymentMethods = result.currentMember.paymentMethods
       val payinMethod = paymentMethods.defaultPayinMethod
         ?: paymentMethods.payinMethods.find { it.isDefault && it.status == MemberPaymentMethodStatus.ACTIVE }
-      if (payinMethod == null) {
-        logcat(LogPriority.WARN) { "GetMemberPaymentsDetailsUseCase no active default payin method" }
-        raise(ErrorMessage())
-      }
-      val paymentMethod = payinMethod.provider.toPaymentMethod()
-      if (paymentMethod == null) {
-        logcat(LogPriority.WARN) { "GetMemberPaymentsDetailsUseCase unknown provider: ${payinMethod.provider}" }
-        raise(ErrorMessage())
-      }
+      val paymentMethod = payinMethod?.provider?.toPaymentMethod()
       MemberPaymentsDetails(
         paymentMethod = paymentMethod,
         chargingDayInTheMonth = paymentMethods.chargingDay,
-        account = payinMethod.details?.toPaymentAccount(),
+        account = payinMethod?.details?.toPaymentAccount(),
       )
     }
   }
 }
 
 internal data class MemberPaymentsDetails(
-  val paymentMethod: PaymentMethod,
+  val paymentMethod: PaymentMethod?,
   val chargingDayInTheMonth: Int?,
   val account: PaymentAccount?,
 )

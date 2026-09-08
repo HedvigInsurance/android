@@ -1,0 +1,7 @@
+mutation SetAsDefaultPayin($provider: MemberPaymentProvider!) {
+  paymentMethodSetDefaultPayin(
+    provider: $provider
+  ) {
+    message
+  }
+}

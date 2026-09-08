@@ -1,8 +1,10 @@
-package com.hedvig.android.feature.payoutaccount.ui.setupinvoice
+package com.hedvig.android.feature.payin.account.ui.setupinvoice
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,38 +13,45 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.Surface
 import hedvig.resources.CONTACT_INFO_CHANGES_SAVED
 import hedvig.resources.PAYMENTS_INVOICE
 import hedvig.resources.Res
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun SetupInvoicePayoutDestination(
-  viewModel: SetupInvoicePayoutViewModel,
+internal fun SetupInvoicePayinDestination(
+  viewModel: SetupInvoicePayinViewModel,
   globalSnackBarState: GlobalSnackBarState,
   navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  SetupInvoicePayoutScreen(
+  SetupInvoicePayinScreen(
     uiState = uiState,
     globalSnackBarState = globalSnackBarState,
-    onConnect = { viewModel.emit(SetupInvoicePayoutEvent.Connect) },
-    showedSnackBar = { viewModel.emit(SetupInvoicePayoutEvent.ShowedSnackBar) },
+    onConnect = { viewModel.emit(SetupInvoicePayinEvent.Connect) },
+    showedSnackBar = { viewModel.emit(SetupInvoicePayinEvent.ShowedSnackBar) },
     navigateUp = navigateUp,
   )
 }
 
 @Composable
-private fun SetupInvoicePayoutScreen(
-  uiState: SetupInvoicePayoutUiState,
+private fun SetupInvoicePayinScreen(
+  uiState: SetupInvoicePayinUiState,
   globalSnackBarState: GlobalSnackBarState,
   onConnect: () -> Unit,
   showedSnackBar: () -> Unit,
@@ -60,7 +69,21 @@ private fun SetupInvoicePayoutScreen(
     navigateUp = navigateUp,
     modifier = Modifier.fillMaxSize(),
   ) {
-    Spacer(Modifier.weight(1f))
+    // todo: some text here??
+    Column(
+      modifier = Modifier
+        .weight(1f)
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+      verticalArrangement = Arrangement.Center,
+      horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+      HedvigText(
+        "You can choose invoice as your billing method. " +
+          "You will then get a monthly invoice via Kivra or email if you don't have Kivra account.",
+        textAlign = TextAlign.Center,
+      )
+    }
     AnimatedVisibility(
       visible = uiState.errorMessage != null,
       enter = expandVertically(),
@@ -77,7 +100,7 @@ private fun SetupInvoicePayoutScreen(
     }
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = "Connect",
+      text = "Set invoice as billing method", // todo
       onClick = onConnect,
       enabled = !uiState.isLoading,
       isLoading = uiState.isLoading,
@@ -86,5 +109,25 @@ private fun SetupInvoicePayoutScreen(
         .padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
+  }
+}
+
+@Composable
+@HedvigShortMultiScreenPreview
+private fun PreviewPayoutAccountOverviewScreen() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      SetupInvoicePayinScreen(
+        uiState = SetupInvoicePayinUiState(
+          false,
+          null,
+          showSuccessSnackBar = false,
+        ),
+        globalSnackBarState = GlobalSnackBarState(),
+        {},
+        {},
+        {},
+      )
+    }
   }
 }
