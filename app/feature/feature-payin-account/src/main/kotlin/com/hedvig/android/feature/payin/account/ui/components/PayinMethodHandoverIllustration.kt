@@ -22,6 +22,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.ThreeDotsLoading
+import com.hedvig.android.design.system.hedvig.dashedBorder
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
@@ -44,8 +45,11 @@ internal fun PayinMethodHandoverIllustration(provider: MemberPaymentProvider?, m
         shape = HedvigTheme.shapes.cornerXXLarge,
         color = colorScheme.backgroundPrimary,
         contentColor = colorScheme.fillPrimary,
-        border = colorScheme.borderSecondary,
         modifier = Modifier.size(74.dp)
+          .dashedBorder(
+            color = colorScheme.borderSecondary,
+            shape = HedvigTheme.shapes.cornerXXLarge,
+          )
           .hedvigDropShadow(HedvigTheme.shapes.cornerXXLarge),
       ) {
         Box(Modifier.size(74.dp), contentAlignment = Alignment.Center) {

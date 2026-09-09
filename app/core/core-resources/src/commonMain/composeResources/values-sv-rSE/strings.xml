@@ -743,6 +743,7 @@
   <string name="PAYMENT_PRIMARY_TITLE">Välj betalningsmetod</string>
   <string name="PAYMENT_REMOVE_SUBTITLE">Du kan lägga till den igen när som helst</string>
   <string name="PAYMENT_REMOVE_TITLE">Ta bort betalningsmetod</string>
+  <string name="PAYMENT_SWISH_CHANGE_NUMBER">Change number</string>
   <string name="PAYOUT_ADD_PAYOUT_METHOD">Lägg till utbetalningsmetod</string>
   <string name="PAYOUT_METHOD_INVOICE_DESCRIPTION">Direktutbetalning via Faktura</string>
   <string name="PAYOUT_METHOD_SWISH_DESCRIPTION">Snabb utbetalning med Swish</string>
@@ -826,10 +827,10 @@
   <string name="RESUME_CLAIM_EXPIRED_BODY">Ett utkast sparas i 7 dagar. Du kan göra en ny anmälan när du vill.</string>
   <string name="RESUME_CLAIM_EXPIRED_TITLE">Utkastet finns inte kvar</string>
   <string name="RESUME_CLAIM_FALLBACK_TITLE">Fortsätt</string>
-  <string name="RESUME_CLAIM_LEAVE_BODY">Det du fyllt i sparas som ett utkast i 7 dagar.</string>
-  <string name="RESUME_CLAIM_LEAVE_CANCEL">Stanna kvar</string>
-  <string name="RESUME_CLAIM_LEAVE_CONFIRM">Lämna</string>
-  <string name="RESUME_CLAIM_LEAVE_TITLE">Vill du lämna anmälan?</string>
+  <string name="RESUME_CLAIM_LEAVE_BODY">Det du fyllt i sparas som utkast i 7 dagar.</string>
+  <string name="RESUME_CLAIM_LEAVE_CANCEL">Fortsätt</string>
+  <string name="RESUME_CLAIM_LEAVE_CONFIRM">Spara utkast</string>
+  <string name="RESUME_CLAIM_LEAVE_TITLE">Stäng anmälan?</string>
   <string name="RESUME_CLAIM_STATED">Påbörjad %1$s</string>
   <string name="SAVE_AND_CONTINUE_BUTTON_LABEL">Spara och fortsätt</string>
   <string name="SEARCH_NOTHING_FOUND">Inga träffar på din sökning</string>

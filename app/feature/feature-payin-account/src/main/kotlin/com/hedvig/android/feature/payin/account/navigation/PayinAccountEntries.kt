@@ -84,9 +84,6 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
           }
         }
       },
-      onRemoveMethod = {
-        // TODO: call the remove-payin-method API once the backend exposes one.
-      },
     )
   }
 

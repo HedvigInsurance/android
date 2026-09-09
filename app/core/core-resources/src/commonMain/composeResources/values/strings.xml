@@ -743,6 +743,7 @@
   <string name="PAYMENT_PRIMARY_TITLE">Choose payment method</string>
   <string name="PAYMENT_REMOVE_SUBTITLE">You can add it back any time</string>
   <string name="PAYMENT_REMOVE_TITLE">Remove payment method</string>
+  <string name="PAYMENT_SWISH_CHANGE_NUMBER">Change number</string>
   <string name="PAYOUT_ADD_PAYOUT_METHOD">Add payout method</string>
   <string name="PAYOUT_METHOD_INVOICE_DESCRIPTION">Direct payment via Invoice</string>
   <string name="PAYOUT_METHOD_SWISH_DESCRIPTION">Instant payout with Swish</string>
@@ -827,9 +828,9 @@
   <string name="RESUME_CLAIM_EXPIRED_TITLE">This draft has expired</string>
   <string name="RESUME_CLAIM_FALLBACK_TITLE">Continue</string>
   <string name="RESUME_CLAIM_LEAVE_BODY">What you've filled in is saved as a draft for 7 days.</string>
-  <string name="RESUME_CLAIM_LEAVE_CANCEL">Stay</string>
-  <string name="RESUME_CLAIM_LEAVE_CONFIRM">Leave</string>
-  <string name="RESUME_CLAIM_LEAVE_TITLE">Leave this claim?</string>
+  <string name="RESUME_CLAIM_LEAVE_CANCEL">Continue</string>
+  <string name="RESUME_CLAIM_LEAVE_CONFIRM">Save draft</string>
+  <string name="RESUME_CLAIM_LEAVE_TITLE">Close this claim?</string>
   <string name="RESUME_CLAIM_STATED">Started %1$s</string>
   <string name="SAVE_AND_CONTINUE_BUTTON_LABEL">Save and continue</string>
   <string name="SEARCH_NOTHING_FOUND">No results for your search</string>

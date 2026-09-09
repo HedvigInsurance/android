@@ -47,12 +47,21 @@ private fun PayinMethodPillow(method: PayinAccount, modifier: Modifier = Modifie
     modifier = modifier.size(40.dp),
   ) {
     Box(Modifier.size(40.dp), contentAlignment = Alignment.Center) {
-      when (method) {
-        is PayinAccount.Trustly -> Icon(HedvigIcons.Trustly, EmptyContentDescription, Modifier.size(28.dp))
-        is PayinAccount.SwishPayin -> Image(HedvigIcons.Swish, EmptyContentDescription, Modifier.size(28.dp))
-        is PayinAccount.Invoice -> Image(HedvigIcons.Kivra, EmptyContentDescription, Modifier.size(28.dp))
-      }
+      PayinMethodMark(method, Modifier.size(28.dp))
     }
+  }
+}
+
+/**
+ * The method's brand mark. Trustly's is monochrome and picks up the surrounding content colour; the
+ * others are full-colour and ignore it.
+ */
+@Composable
+internal fun PayinMethodMark(method: PayinAccount, modifier: Modifier = Modifier) {
+  when (method) {
+    is PayinAccount.Trustly -> Icon(HedvigIcons.Trustly, EmptyContentDescription, modifier)
+    is PayinAccount.SwishPayin -> Image(HedvigIcons.Swish, EmptyContentDescription, modifier)
+    is PayinAccount.Invoice -> Image(HedvigIcons.Kivra, EmptyContentDescription, modifier)
   }
 }
 

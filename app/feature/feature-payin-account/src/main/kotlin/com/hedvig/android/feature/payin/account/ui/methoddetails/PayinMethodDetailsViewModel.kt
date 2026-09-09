@@ -11,7 +11,9 @@ import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.payin.account.data.GetPayinAccountUseCase
 import com.hedvig.android.feature.payin.account.data.PayinAccount
+import com.hedvig.android.feature.payin.account.data.RemoveMethodUseCase
 import com.hedvig.android.feature.payin.account.data.id
+import com.hedvig.android.feature.payin.account.data.provider
 import com.hedvig.android.feature.payin.account.navigation.PayinMethodId
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -24,13 +26,16 @@ import dev.zacsweers.metro.AssistedInject
 internal class PayinMethodDetailsViewModel(
   @Assisted methodId: PayinMethodId,
   getPayinAccountUseCase: GetPayinAccountUseCase,
+  removeMethodUseCase: RemoveMethodUseCase,
 ) : MoleculeViewModel<PayinMethodDetailsEvent, PayinMethodDetailsUiState>(
     initialState = PayinMethodDetailsUiState.Loading,
-    presenter = PayinMethodDetailsPresenter(methodId, getPayinAccountUseCase),
+    presenter = PayinMethodDetailsPresenter(methodId, getPayinAccountUseCase, removeMethodUseCase),
   )
 
 internal sealed interface PayinMethodDetailsEvent {
   data object Retry : PayinMethodDetailsEvent
+
+  data object RemoveMethod : PayinMethodDetailsEvent
 }
 
 internal sealed interface PayinMethodDetailsUiState {
@@ -38,12 +43,17 @@ internal sealed interface PayinMethodDetailsUiState {
 
   data object Error : PayinMethodDetailsUiState
 
-  data class Content(val method: PayinAccount, val chargingDay: Int?) : PayinMethodDetailsUiState
+  data class Content(
+    val method: PayinAccount,
+    val chargingDay: Int?,
+    val isRemoving: Boolean = false,
+  ) : PayinMethodDetailsUiState
 }
 
 internal class PayinMethodDetailsPresenter(
   private val methodId: PayinMethodId,
   private val getPayinAccountUseCase: GetPayinAccountUseCase,
+  private val removeMethodUseCase: RemoveMethodUseCase,
 ) : MoleculePresenter<PayinMethodDetailsEvent, PayinMethodDetailsUiState> {
   @Composable
   override fun MoleculePresenterScope<PayinMethodDetailsEvent>.present(
@@ -51,6 +61,7 @@ internal class PayinMethodDetailsPresenter(
   ): PayinMethodDetailsUiState {
     var loadIteration by remember { mutableIntStateOf(0) }
     var uiState by remember { mutableStateOf(lastState) }
+    var methodToRemove by remember { mutableStateOf<PayinAccount?>(null) }
 
     LaunchedEffect(loadIteration) {
       uiState = PayinMethodDetailsUiState.Loading
@@ -68,9 +79,27 @@ internal class PayinMethodDetailsPresenter(
       )
     }
 
+    LaunchedEffect(methodToRemove) {
+      val method = methodToRemove ?: return@LaunchedEffect
+      val content = uiState as? PayinMethodDetailsUiState.Content ?: return@LaunchedEffect
+      uiState = content.copy(isRemoving = true)
+      removeMethodUseCase.invoke(method.provider)
+      // TODO: reload the methods on success and surface the failure once the API exists.
+      uiState = content.copy(isRemoving = false)
+      methodToRemove = null
+    }
+
     CollectEvents { event ->
       when (event) {
-        PayinMethodDetailsEvent.Retry -> loadIteration++
+        PayinMethodDetailsEvent.Retry -> {
+          loadIteration++
+        }
+
+        PayinMethodDetailsEvent.RemoveMethod -> {
+          if (methodToRemove == null) {
+            methodToRemove = (uiState as? PayinMethodDetailsUiState.Content)?.method
+          }
+        }
       }
     }
 

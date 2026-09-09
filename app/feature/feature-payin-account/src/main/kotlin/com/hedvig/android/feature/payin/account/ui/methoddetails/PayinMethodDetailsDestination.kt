@@ -57,6 +57,7 @@ import hedvig.resources.PAYMENTS_PAYMENT_DUE
 import hedvig.resources.PAYMENTS_PAYMENT_DUE_INFO
 import hedvig.resources.PAYMENTS_PAYMENT_METHOD
 import hedvig.resources.PAYMENTS_SWISH_NUMBER
+import hedvig.resources.PAYMENT_SWISH_CHANGE_NUMBER
 import hedvig.resources.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT
 import hedvig.resources.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION
 import hedvig.resources.Res
@@ -69,7 +70,6 @@ internal fun PayinMethodDetailsDestination(
   viewModel: PayinMethodDetailsViewModel,
   navigateUp: () -> Unit,
   onChangeMethod: (PayinAccount) -> Unit,
-  onRemoveMethod: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   when (val state = uiState) {
@@ -103,9 +103,10 @@ internal fun PayinMethodDetailsDestination(
       PayinMethodDetailsScreen(
         method = state.method,
         chargingDay = state.chargingDay,
+        isRemoving = state.isRemoving,
         navigateUp = navigateUp,
         onChangeMethod = { onChangeMethod(state.method) },
-        onRemoveMethod = onRemoveMethod,
+        onConfirmRemoveMethod = { viewModel.emit(PayinMethodDetailsEvent.RemoveMethod) },
       )
     }
   }
@@ -115,12 +116,19 @@ internal fun PayinMethodDetailsDestination(
 private fun PayinMethodDetailsScreen(
   method: PayinAccount,
   chargingDay: Int?,
+  isRemoving: Boolean,
   navigateUp: () -> Unit,
   onChangeMethod: () -> Unit,
-  onRemoveMethod: () -> Unit,
+  onConfirmRemoveMethod: () -> Unit,
 ) {
   val explanationSheetState = rememberHedvigBottomSheetState<PaymentDueExplanation>()
   ExplanationBottomSheet(explanationSheetState)
+  val removeSheetState = rememberHedvigBottomSheetState<PayinAccount>()
+  RemovePayinMethodBottomSheet(
+    sheetState = removeSheetState,
+    isRemoving = isRemoving,
+    onConfirmRemove = onConfirmRemoveMethod,
+  )
   HedvigScaffold(
     topAppBarText = stringResource(Res.string.PAYMENTS_PAYMENT_METHOD),
     navigateUp = navigateUp,
@@ -199,11 +207,8 @@ private fun PayinMethodDetailsScreen(
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
     val changeButtonText = when (method) {
-      // TODO: Add "Change number" / "Ändra nummer" to Lokalise
-      is PayinAccount.SwishPayin -> "Change number"
-
+      is PayinAccount.SwishPayin -> stringResource(Res.string.PAYMENT_SWISH_CHANGE_NUMBER)
       is PayinAccount.Trustly -> stringResource(Res.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT)
-
       is PayinAccount.Invoice -> null
     }
     if (changeButtonText != null) {
@@ -218,13 +223,15 @@ private fun PayinMethodDetailsScreen(
       )
       Spacer(Modifier.height(8.dp))
     }
-    HedvigRedTextButton(
-      text = stringResource(Res.string.GENERAL_REMOVE),
-      onClick = onRemoveMethod,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
-    )
+    if (!method.isDefault) {
+      HedvigRedTextButton(
+        text = stringResource(Res.string.GENERAL_REMOVE),
+        onClick = { removeSheetState.show(method) },
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      )
+    }
     Spacer(Modifier.height(16.dp))
   }
 }
@@ -335,9 +342,10 @@ private fun PreviewPayinMethodDetailsDestination(
       PayinMethodDetailsScreen(
         method = method,
         chargingDay = 27,
+        isRemoving = false,
         navigateUp = {},
         onChangeMethod = {},
-        onRemoveMethod = {},
+        onConfirmRemoveMethod = {},
       )
     }
   }

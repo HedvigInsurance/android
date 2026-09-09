@@ -22,15 +22,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.drawOutline
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -38,6 +31,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.ThreeDotsLoading
+import com.hedvig.android.design.system.hedvig.dashedBorder
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -103,9 +97,6 @@ private fun BankCard() {
       .dashedBorder(
         color = HedvigTheme.colorScheme.borderSecondary,
         shape = HedvigTheme.shapes.cornerXXLarge,
-        strokeWidth = 1.dp,
-        dashOn = 4.dp,
-        dashOff = 4.dp,
       ),
   ) {
     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
@@ -116,20 +107,6 @@ private fun BankCard() {
     }
   }
 }
-
-/** Draws a dashed outline that follows [shape], on top of the content so it is not clipped. */
-private fun Modifier.dashedBorder(color: Color, shape: Shape, strokeWidth: Dp, dashOn: Dp, dashOff: Dp): Modifier =
-  drawWithContent {
-    drawContent()
-    drawOutline(
-      outline = shape.createOutline(size, layoutDirection, this),
-      color = color,
-      style = Stroke(
-        width = strokeWidth.toPx(),
-        pathEffect = PathEffect.dashPathEffect(floatArrayOf(dashOn.toPx(), dashOff.toPx())),
-      ),
-    )
-  }
 
 @Composable
 private fun HedvigSymbolWithCheck(checkVisible: Boolean) {
