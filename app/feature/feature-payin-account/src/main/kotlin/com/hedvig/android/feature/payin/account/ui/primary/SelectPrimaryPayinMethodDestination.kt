@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.payin.account.ui.primary
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,12 +11,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.EmptyContentDescription
@@ -31,7 +35,10 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconResource
+import com.hedvig.android.design.system.hedvig.IconResource.Vector
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Error
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
@@ -44,15 +51,21 @@ import com.hedvig.android.design.system.hedvig.icon.colored.Kivra
 import com.hedvig.android.design.system.hedvig.icon.colored.Swish
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.payin.account.data.PayinAccount
+import com.hedvig.android.feature.payin.account.data.PayinAccount.Invoice
+import com.hedvig.android.feature.payin.account.data.PayinAccount.SwishPayin
+import com.hedvig.android.feature.payin.account.data.PayinAccount.Trustly
 import com.hedvig.android.feature.payin.account.data.provider
 import com.hedvig.android.feature.payin.account.ui.components.PayinMethodRow
 import com.hedvig.android.feature.payin.account.ui.components.PrimaryMethodLabel
 import com.hedvig.android.feature.payin.account.ui.components.payinMethodSubtitle
 import com.hedvig.android.feature.payin.account.ui.components.payinMethodTitle
+import com.hedvig.android.feature.payin.account.ui.primary.SelectPrimaryPayinMethodEvent.ConfirmSelectedMethod
+import com.hedvig.android.feature.payin.account.ui.primary.SelectPrimaryPayinMethodEvent.SelectMethod
 import hedvig.resources.PAYMENT_PRIMARY_CONFIRM_TITLE
 import hedvig.resources.PAYMENT_PRIMARY_SUBTITLE
 import hedvig.resources.PAYMENT_PRIMARY_TITLE
 import hedvig.resources.Res
+import hedvig.resources.Res.string
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_continue_button
 import org.jetbrains.compose.resources.stringResource
@@ -71,8 +84,8 @@ internal fun SelectPrimaryPayinMethodDestination(
   }
   SelectPrimaryPayinMethodScreen(
     uiState = uiState,
-    onMethodSelected = { viewModel.emit(SelectPrimaryPayinMethodEvent.SelectMethod(it)) },
-    onConfirm = { viewModel.emit(SelectPrimaryPayinMethodEvent.ConfirmSelectedMethod) },
+    onMethodSelected = { viewModel.emit(SelectMethod(it)) },
+    onConfirm = { viewModel.emit(ConfirmSelectedMethod) },
     navigateUp = navigateUp,
     navigateBack = navigateBack,
   )
@@ -100,16 +113,17 @@ private fun SelectPrimaryPayinMethodScreen(
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       HedvigText(
-        text = stringResource(Res.string.PAYMENT_PRIMARY_TITLE),
+        text = stringResource(string.PAYMENT_PRIMARY_TITLE),
         textAlign = TextAlign.Center,
       )
       HedvigText(
-        text = stringResource(Res.string.PAYMENT_PRIMARY_SUBTITLE),
+        text = stringResource(string.PAYMENT_PRIMARY_SUBTITLE),
         color = colorScheme.textSecondary,
         textAlign = TextAlign.Center,
       )
     }
     Spacer(Modifier.height(48.dp))
+    Spacer(Modifier.weight(1f))
     PayinMethodHandoverIllustration(
       method = uiState.selectedMethod,
       modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -129,7 +143,7 @@ private fun SelectPrimaryPayinMethodScreen(
       Spacer(Modifier.height(8.dp))
       HedvigNotificationCard(
         message = uiState.errorMessage,
-        priority = NotificationPriority.Error,
+        priority = Error,
         modifier = Modifier
           .fillMaxWidth()
           .padding(horizontal = 16.dp),
@@ -137,7 +151,7 @@ private fun SelectPrimaryPayinMethodScreen(
     }
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = stringResource(Res.string.general_continue_button),
+      text = stringResource(string.general_continue_button),
       onClick = {
         val method = uiState.selectedMethod
         if (method != null) confirmationSheetState.show(method)
@@ -149,7 +163,7 @@ private fun SelectPrimaryPayinMethodScreen(
     )
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
-      text = stringResource(Res.string.general_cancel_button),
+      text = stringResource(string.general_cancel_button),
       onClick = navigateBack,
       modifier = Modifier
         .fillMaxWidth()
@@ -172,7 +186,7 @@ private fun ConfirmPrimaryPayinMethodBottomSheet(
 ) {
   HedvigBottomSheet(sheetState) { method ->
     HedvigText(
-      text = stringResource(Res.string.PAYMENT_PRIMARY_CONFIRM_TITLE),
+      text = stringResource(string.PAYMENT_PRIMARY_CONFIRM_TITLE),
       textAlign = TextAlign.Center,
       modifier = Modifier.fillMaxWidth(),
     )
@@ -183,7 +197,7 @@ private fun ConfirmPrimaryPayinMethodBottomSheet(
       //  to Lokalise
       message = "Your next payment will be drawn from ${payinMethodTitle(method)}. " +
         "Claims payouts will also be sent to this account.",
-      priority = NotificationPriority.Info,
+      priority = Info,
       modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
@@ -200,7 +214,7 @@ private fun ConfirmPrimaryPayinMethodBottomSheet(
     }
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = stringResource(Res.string.general_continue_button),
+      text = stringResource(string.general_continue_button),
       onClick = onConfirm,
       enabled = !isConfirming,
       isLoading = isConfirming,
@@ -208,7 +222,7 @@ private fun ConfirmPrimaryPayinMethodBottomSheet(
     )
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
-      text = stringResource(Res.string.general_cancel_button),
+      text = stringResource(string.general_cancel_button),
       onClick = { sheetState.dismiss() },
       modifier = Modifier.fillMaxWidth(),
     )
@@ -233,15 +247,20 @@ private fun PayinMethodHandoverIllustration(method: PayinAccount?, modifier: Mod
     ) {
       Box(Modifier.size(74.dp), contentAlignment = Alignment.Center) {
         when (method) {
-          is PayinAccount.Trustly -> {
+          is Trustly -> {
             Icon(HedvigIcons.Trustly, EmptyContentDescription, Modifier.size(39.dp))
           }
 
-          is PayinAccount.SwishPayin -> {
-            Icon(HedvigIcons.Swish, EmptyContentDescription, Modifier.size(39.dp))
+          is SwishPayin -> {
+            Image(
+              imageVector = HedvigIcons.Swish,
+              contentDescription = EmptyContentDescription,
+              modifier = Modifier
+                .size((39.0).dp),
+            )
           }
 
-          is PayinAccount.Invoice -> {
+          is Invoice -> {
             Icon(HedvigIcons.Kivra, EmptyContentDescription, Modifier.size(39.dp))
           }
 
@@ -277,23 +296,25 @@ private fun PayinAccount.toRadioOption(): RadioOption = RadioOption(
   text = payinMethodTitle(this),
   label = payinMethodSubtitle(this),
   iconResource = when (this) {
-    is PayinAccount.Trustly -> IconResource.Vector(HedvigIcons.Trustly)
-    is PayinAccount.SwishPayin -> IconResource.Vector(HedvigIcons.Swish)
-    is PayinAccount.Invoice -> IconResource.Vector(HedvigIcons.Kivra)
+    is Trustly -> Vector(HedvigIcons.Trustly)
+    is SwishPayin -> Vector(HedvigIcons.Swish)
+    is Invoice -> Vector(HedvigIcons.Kivra)
   },
 )
 
 @Composable
 @HedvigPreview
-private fun PreviewSelectPrimaryPayinMethodScreen() {
+private fun PreviewSelectPrimaryPayinMethodScreen(
+  @PreviewParameter (TravelAddonTriageStateProvider::class) selectedMethod: PayinAccount?,
+) {
   HedvigTheme {
     Surface(color = colorScheme.backgroundPrimary) {
       val methods = listOf(
-        PayinAccount.Trustly("8327", "91234124", "Swedbank", isPending = false, isDefault = true),
-        PayinAccount.SwishPayin("0709901232", isPending = false, isDefault = false),
+        Trustly("8327", "91234124", "Swedbank", isPending = false, isDefault = true),
+        SwishPayin("0709901232", isPending = false, isDefault = false),
       )
       SelectPrimaryPayinMethodScreen(
-        uiState = SelectPrimaryPayinMethodUiState(methods = methods, selectedMethod = methods[1]),
+        uiState = SelectPrimaryPayinMethodUiState(methods = methods, selectedMethod = selectedMethod),
         onMethodSelected = {},
         onConfirm = {},
         navigateUp = {},
@@ -302,3 +323,20 @@ private fun PreviewSelectPrimaryPayinMethodScreen() {
     }
   }
 }
+
+internal class TravelAddonTriageStateProvider :
+  CollectionPreviewParameterProvider<PayinAccount?>(
+    listOf(
+      null,
+      SwishPayin(
+        "072649872", false, true
+      ),
+      Trustly(
+        "2342", "7793784",
+        bankName = "Swedbank",
+        isPending = false,
+        isDefault = false
+      )
+    ),
+  )
+
