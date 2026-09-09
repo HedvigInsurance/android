@@ -6,6 +6,7 @@ import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.feature.payin.account.data.PayinAccount
 import com.hedvig.android.feature.payin.account.data.id
+import com.hedvig.android.feature.payin.account.data.provider
 import com.hedvig.android.feature.payin.account.ui.methoddetails.PayinMethodDetailsDestination
 import com.hedvig.android.feature.payin.account.ui.methoddetails.PayinMethodDetailsViewModel
 import com.hedvig.android.feature.payin.account.ui.methoddetails.PayinMethodDetailsViewModelFactory
@@ -44,6 +45,7 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
         backstack.add(
           SelectPayinMethodKey(
             availableProviders = content?.availablePayinMethods?.map { it.rawValue } ?: emptyList(),
+            currentProviders = content?.currentMethods?.map { it.provider.rawValue } ?: emptyList(),
           ),
         )
       },
@@ -103,7 +105,7 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
   entry<SelectPayinMethodKey> { key ->
     val viewModel: ConnectPayinMethodViewModel =
       assistedMetroViewModel<ConnectPayinMethodViewModel, ConnectPayinMethodViewModelFactory> {
-        create(key.availableProviders)
+        create(key.availableProviders, key.currentProviders)
       }
     ConnectPayinMethodDestination(
       viewModel = viewModel,

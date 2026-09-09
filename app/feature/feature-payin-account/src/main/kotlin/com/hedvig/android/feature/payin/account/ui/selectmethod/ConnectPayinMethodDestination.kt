@@ -31,6 +31,7 @@ import hedvig.resources.ONBOARDING_CONNECT_PAYMENT_BANK_LABEL
 import hedvig.resources.PAYMENTS_INVOICE
 import hedvig.resources.PAYMENT_CONNECT_SUBTITLE
 import hedvig.resources.PAYMENT_CONNECT_TITLE
+import hedvig.resources.PAYMENT_OPTION_CONNECTED_LABEL
 import hedvig.resources.PAYMENT_OPTION_INVOICE_SUBTITLE
 import hedvig.resources.PAYMENT_OPTION_SWISH_SUBTITLE
 import hedvig.resources.PAYMENT_OPTION_TRUSTLY_SUBTITLE
@@ -99,7 +100,8 @@ private fun ConnectPayinMethodScreen(
     )
     Spacer(Modifier.weight(1f))
     RadioGroup(
-      options = uiState.availableProviders.mapNotNull { it.toRadioOption() },
+      options = uiState.availableProviders.mapNotNull { it.toRadioOption(
+        uiState.currentProviders) },
       selectedOption = uiState.selectedProvider?.let { RadioOptionId(it.rawValue) },
       onRadioOptionSelected = { onProviderSelected(MemberPaymentProvider.safeValueOf(it.id)) },
       modifier = Modifier.padding(horizontal = 16.dp),
@@ -131,28 +133,35 @@ private fun ConnectPayinMethodScreen(
  * of the group.
  */
 @Composable
-private fun MemberPaymentProvider.toRadioOption(): RadioOption? {
+private fun MemberPaymentProvider.toRadioOption(
+  currentProviders: List<MemberPaymentProvider>
+): RadioOption? {
   val id = RadioOptionId(rawValue)
   return when (this) {
     MemberPaymentProvider.TRUSTLY -> RadioOption(
       id = id,
       text = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_BANK_LABEL),
-      label = stringResource(Res.string.PAYMENT_OPTION_TRUSTLY_SUBTITLE),
+      label = if (currentProviders.contains(this))
+        stringResource(Res.string.PAYMENT_OPTION_CONNECTED_LABEL) else
+        stringResource(Res.string.PAYMENT_OPTION_TRUSTLY_SUBTITLE),
       iconResource = IconResource.Vector(HedvigIcons.Trustly),
     )
 
     MemberPaymentProvider.SWISH -> RadioOption(
       id = id,
-      // todo: check
       text = stringResource(Res.string.swish),
-      label = stringResource(Res.string.PAYMENT_OPTION_SWISH_SUBTITLE),
+      label =  if (currentProviders.contains(this))
+        stringResource(Res.string.PAYMENT_OPTION_CONNECTED_LABEL)
+      else stringResource(Res.string.PAYMENT_OPTION_SWISH_SUBTITLE),
       iconResource = IconResource.Vector(HedvigIcons.Swish),
     )
 
     MemberPaymentProvider.INVOICE -> RadioOption(
       id = id,
       text = stringResource(Res.string.PAYMENTS_INVOICE),
-      label = stringResource(Res.string.PAYMENT_OPTION_INVOICE_SUBTITLE),
+      label =  if (currentProviders.contains(this))
+        stringResource(Res.string.PAYMENT_OPTION_CONNECTED_LABEL) else
+          stringResource(Res.string.PAYMENT_OPTION_INVOICE_SUBTITLE),
       iconResource = IconResource.Vector(HedvigIcons.Kivra),
     )
 
@@ -173,6 +182,8 @@ private fun PreviewConnectPayinMethodScreen() {
             MemberPaymentProvider.TRUSTLY,
           ),
           selectedProvider = MemberPaymentProvider.TRUSTLY,
+          currentProviders = listOf(
+            MemberPaymentProvider.SWISH)
         ),
         onProviderSelected = {},
         onSubmitSelected = {},

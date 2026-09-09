@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 internal data class SelectPayinMethodKey(
   val availableProviders: List<String>,
+  val currentProviders: List<String>,
 ) : HedvigNavKey
 
 @Serializable
