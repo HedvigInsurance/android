@@ -25,6 +25,8 @@ import octopus.type.PaymentMethodInvoiceDelivery
 internal data class PayinAccountData(
   val currentMethods: List<PayinAccount>,
   val availablePayinMethods: List<MemberPaymentProvider>,
+  /** Day of the month the member is charged on. Set per member, so it is the same for every method. */
+  val chargingDay: Int?,
 )
 
 @SingleIn(AppScope::class)
@@ -91,6 +93,7 @@ internal class GetPayinAccountUseCase(
     PayinAccountData(
       currentMethods = currentMethods,
       availablePayinMethods = availablePayinMethods,
+      chargingDay = paymentMethods.chargingDay,
     )
   }
 }

@@ -247,8 +247,6 @@ private fun ConfirmPrimaryPayinMethodBottomSheetContent(
   Spacer(Modifier.height(16.dp))
 }
 
-
-
 @Composable
 private fun PayinAccount.toRadioOption(): RadioOption = RadioOption(
   id = RadioOptionId(provider.rawValue),

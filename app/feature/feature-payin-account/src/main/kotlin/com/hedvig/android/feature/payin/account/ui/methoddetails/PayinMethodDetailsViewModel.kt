@@ -38,7 +38,7 @@ internal sealed interface PayinMethodDetailsUiState {
 
   data object Error : PayinMethodDetailsUiState
 
-  data class Content(val method: PayinAccount) : PayinMethodDetailsUiState
+  data class Content(val method: PayinAccount, val chargingDay: Int?) : PayinMethodDetailsUiState
 }
 
 internal class PayinMethodDetailsPresenter(
@@ -62,7 +62,7 @@ internal class PayinMethodDetailsPresenter(
           uiState = if (method == null) {
             PayinMethodDetailsUiState.Error
           } else {
-            PayinMethodDetailsUiState.Content(method)
+            PayinMethodDetailsUiState.Content(method, data.chargingDay)
           }
         },
       )

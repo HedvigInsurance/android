@@ -25,6 +25,7 @@ import com.hedvig.android.design.system.hedvig.icon.colored.Kivra
 import com.hedvig.android.design.system.hedvig.icon.colored.Swish
 import com.hedvig.android.feature.payin.account.data.PayinAccount
 import com.hedvig.android.feature.payin.account.data.toDeliveryString
+import com.hedvig.android.logger.logcat
 import hedvig.resources.PAYMENTS_BANK_LABEL
 import hedvig.resources.PAYMENT_PRIMARY_LABEL
 import hedvig.resources.REFERRAL_PENDING_STATUS_LABEL
@@ -142,8 +143,12 @@ private fun PayinAccount.Trustly.maskedAccount(): String? {
 }
 
 internal fun PayinAccount.Trustly.maskedAccountNumber(): String? {
-  val lastFour = accountNumber?.takeLast(4)?.takeIf { it.isNotBlank() } ?: return null
-  return "**** $lastFour"
+  val whole = "${clearingNumber?.takeIf{ it.isNotBlank() } ?: ""}${accountNumber?.takeIf{ it.isNotBlank() } ?: ""}"
+  if (whole.length > 8) {
+    val lastFour = whole.takeLast(4).takeIf { it.isNotBlank() } ?: return null
+    return "**** $lastFour"
+  } else return null
+
 }
 
 internal fun formatSwishPhoneNumber(phoneNumber: String): String {
