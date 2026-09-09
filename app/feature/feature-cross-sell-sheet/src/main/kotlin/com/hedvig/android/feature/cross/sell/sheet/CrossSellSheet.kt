@@ -70,6 +70,7 @@ fun CrossSellSheet(
     com.hedvig.android.crosssells.CrossSellBottomSheet(
       state = sheetState,
       onCrossSellClick = onCrossSellClick,
+      onAddonClick = {},
       imageLoader = imageLoader,
     )
   }

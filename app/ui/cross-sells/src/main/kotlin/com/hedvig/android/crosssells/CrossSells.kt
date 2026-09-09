@@ -39,11 +39,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import arrow.core.nonEmptyListOf
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.compose.ui.preview.TripleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.TripleCase
+import com.hedvig.android.data.addons.data.AddonBannerInfo
+import com.hedvig.android.data.addons.data.FlowType
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.design.system.hedvig.BottomSheetStyle
@@ -77,6 +80,7 @@ import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import hedvig.resources.A11Y_NUMBER_OF_ELIGIBLE_INSURANCES
+import hedvig.resources.ADDON_FLOW_SEE_PRICE_BUTTON
 import hedvig.resources.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_CURRENT_APPLIED_DISCOUNT
 import hedvig.resources.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_NO_DISCOUNT
 import hedvig.resources.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_ONE_INSURANCE
@@ -85,11 +89,11 @@ import hedvig.resources.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_TWO_INSURANCES
 import hedvig.resources.CROSS_SELL_BANNER_TEXT
 import hedvig.resources.CROSS_SELL_SUBTITLE
 import hedvig.resources.CROSS_SELL_TITLE
+import hedvig.resources.INSURANCE_ADDONS_SUBHEADING
 import hedvig.resources.Res
 import hedvig.resources.Res.plurals
 import hedvig.resources.Res.string
 import hedvig.resources.TALKBACK_OPEN_EXTERNAL_LINK
-import hedvig.resources.cross_sell_get_price
 import hedvig.resources.general_close_button
 import hedvig.resources.insurance_tab_cross_sells_title
 import org.jetbrains.compose.resources.pluralStringResource
@@ -99,9 +103,13 @@ data class CrossSellSheetData(
   val recommendedCrossSell: RecommendedCrossSell?,
   val otherCrossSells: List<CrossSell>,
   val recommendedAddon: RecommendedAddon?,
+  val addons: List<AddonBannerInfo> = emptyList(),
 ) {
   val isEmpty: Boolean
-    get() = recommendedCrossSell == null && recommendedAddon == null && otherCrossSells.isEmpty()
+    get() = recommendedCrossSell == null &&
+      recommendedAddon == null &&
+      otherCrossSells.isEmpty() &&
+      addons.isEmpty()
 }
 
 data class RecommendedAddon(
@@ -139,6 +147,7 @@ data class BundleProgress(
 fun CrossSellFloatingBottomSheet(
   state: HedvigBottomSheetState<CrossSellSheetData>,
   onCrossSellClick: (String) -> Unit,
+  onAddonClick: (eligibleInsuranceIds: List<String>) -> Unit,
   imageLoader: ImageLoader,
 ) {
   HedvigBottomSheet(
@@ -163,7 +172,9 @@ fun CrossSellFloatingBottomSheet(
       CrossSellsFloatingSheetContent(
         recommendedCrossSell = crossSellSheetData.recommendedCrossSell,
         otherCrossSells = crossSellSheetData.otherCrossSells,
+        addons = crossSellSheetData.addons,
         onCrossSellClick = onCrossSellClick,
+        onAddonClick = onAddonClick,
         dismissSheet = { state.dismiss() },
         imageLoader = imageLoader,
         recommendedAddon = crossSellSheetData.recommendedAddon,
@@ -176,6 +187,7 @@ fun CrossSellFloatingBottomSheet(
 fun CrossSellBottomSheet(
   state: HedvigBottomSheetState<CrossSellSheetData>,
   onCrossSellClick: (String) -> Unit,
+  onAddonClick: (eligibleInsuranceIds: List<String>) -> Unit,
   imageLoader: ImageLoader,
 ) {
   val dragHandle: @Composable (() -> Unit)? =
@@ -199,7 +211,9 @@ fun CrossSellBottomSheet(
         recommendedCrossSell = crossSellSheetData.recommendedCrossSell,
         otherCrossSells = crossSellSheetData.otherCrossSells,
         recommendedAddon = crossSellSheetData.recommendedAddon,
+        addons = crossSellSheetData.addons,
         onCrossSellClick = onCrossSellClick,
+        onAddonClick = onAddonClick,
         dismissSheet = { state.dismiss() },
         imageLoader,
       )
@@ -213,7 +227,9 @@ private fun CrossSellsSheetContent(
   recommendedCrossSell: RecommendedCrossSell?,
   otherCrossSells: List<CrossSell>,
   recommendedAddon: RecommendedAddon?,
+  addons: List<AddonBannerInfo>,
   onCrossSellClick: (String) -> Unit,
+  onAddonClick: (eligibleInsuranceIds: List<String>) -> Unit,
   dismissSheet: () -> Unit,
   imageLoader: ImageLoader,
 ) {
@@ -246,7 +262,11 @@ private fun CrossSellsSheetContent(
       if (otherCrossSells.isNotEmpty()) {
         Column {
           Spacer(Modifier.height(24.dp))
-          HedvigText(stringResource(string.CROSS_SELL_SUBTITLE), Modifier.semantics { heading() })
+          HedvigText(stringResource(string.CROSS_SELL_TITLE), Modifier.semantics { heading() })
+          HedvigText(
+            text = stringResource(string.CROSS_SELL_SUBTITLE),
+            color = HedvigTheme.colorScheme.textSecondary,
+          )
           Spacer(Modifier.height(24.dp))
           CrossSellsSection(
             crossSells = otherCrossSells,
@@ -254,7 +274,32 @@ private fun CrossSellsSheetContent(
             withSubHeader = false,
             onSheetDismissed = dismissSheet,
             imageLoader = imageLoader,
+            buttonSize = ButtonSize.Small,
           )
+        }
+      }
+      if (addons.isNotEmpty()) {
+        Column {
+          HedvigText(stringResource(string.INSURANCE_ADDONS_SUBHEADING), Modifier.semantics { heading() })
+          Spacer(Modifier.height(16.dp))
+          for ((index, addon) in addons.withIndex()) {
+            PillowRow(
+              title = addon.title,
+              subtitle = addon.description,
+              pillowImage = null,
+              pillow = { AddonPillow(addon.flowType) },
+              buttonText = stringResource(string.ADDON_FLOW_SEE_PRICE_BUTTON),
+              onButtonClick = {
+                onAddonClick(addon.eligibleInsurancesIds)
+                dismissSheet()
+              },
+              imageLoader = imageLoader,
+              buttonSize = ButtonSize.Small,
+            )
+            if (index != addons.lastIndex) {
+              Spacer(Modifier.height(16.dp))
+            }
+          }
         }
       }
     }
@@ -275,7 +320,9 @@ private fun CrossSellsFloatingSheetContent(
   recommendedCrossSell: RecommendedCrossSell?,
   recommendedAddon: RecommendedAddon?,
   otherCrossSells: List<CrossSell>,
+  addons: List<AddonBannerInfo>,
   onCrossSellClick: (String) -> Unit,
+  onAddonClick: (eligibleInsuranceIds: List<String>) -> Unit,
   dismissSheet: () -> Unit,
   imageLoader: ImageLoader,
 ) {
@@ -317,7 +364,11 @@ private fun CrossSellsFloatingSheetContent(
         if (otherCrossSells.isNotEmpty()) {
           Column {
             Spacer(Modifier.height(24.dp))
-            HedvigText(stringResource(string.CROSS_SELL_SUBTITLE), Modifier.semantics { heading() })
+            HedvigText(stringResource(string.CROSS_SELL_TITLE), Modifier.semantics { heading() })
+            HedvigText(
+              text = stringResource(string.CROSS_SELL_SUBTITLE),
+              color = HedvigTheme.colorScheme.textSecondary,
+            )
             Spacer(Modifier.height(24.dp))
             CrossSellsSection(
               crossSells = otherCrossSells,
@@ -325,7 +376,32 @@ private fun CrossSellsFloatingSheetContent(
               withSubHeader = false,
               onSheetDismissed = dismissSheet,
               imageLoader = imageLoader,
+              buttonSize = ButtonSize.Small,
             )
+          }
+        }
+        if (addons.isNotEmpty()) {
+          Column {
+            HedvigText(stringResource(string.INSURANCE_ADDONS_SUBHEADING), Modifier.semantics { heading() })
+            Spacer(Modifier.height(16.dp))
+            for ((index, addon) in addons.withIndex()) {
+              PillowRow(
+                title = addon.title,
+                subtitle = addon.description,
+                pillowImage = null,
+                pillow = { AddonPillow(addon.flowType) },
+                buttonText = stringResource(string.ADDON_FLOW_SEE_PRICE_BUTTON),
+                onButtonClick = {
+                  onAddonClick(addon.eligibleInsurancesIds)
+                  dismissSheet()
+                },
+                imageLoader = imageLoader,
+                buttonSize = ButtonSize.Small,
+              )
+              if (index != addons.lastIndex) {
+                Spacer(Modifier.height(16.dp))
+              }
+            }
           }
         }
       }
@@ -908,7 +984,17 @@ private fun PreviewCrossSellsSheetContent(
               buttonText = "button",
             ),
           ).takeIf { case != TripleCase.FIRST }.orEmpty(),
+          addons = listOf(
+            AddonBannerInfo(
+              title = "Car Plus",
+              description = "Extended car coverage",
+              labels = listOf(),
+              eligibleInsurancesIds = nonEmptyListOf("id"),
+              flowType = FlowType.APP_CAR_PLUS,
+            ),
+          ).takeIf { case != TripleCase.FIRST }.orEmpty(),
           onCrossSellClick = {},
+          onAddonClick = {},
           dismissSheet = {},
           imageLoader = rememberPreviewImageLoader(),
           recommendedAddon = null,
@@ -955,8 +1041,18 @@ private fun PreviewCrossSellsFloatingSheetContent(
             buttonText = "button",
           ),
         ).takeIf { case != TripleCase.FIRST }.orEmpty(),
+        addons = listOf(
+          AddonBannerInfo(
+            title = "Car Plus",
+            description = "Extended car coverage",
+            labels = listOf(),
+            eligibleInsurancesIds = nonEmptyListOf("id"),
+            flowType = FlowType.APP_CAR_PLUS,
+          ),
+        ).takeIf { case != TripleCase.FIRST }.orEmpty(),
         dismissSheet = {},
         onCrossSellClick = {},
+        onAddonClick = {},
         imageLoader = rememberPreviewImageLoader(),
       )
     }
@@ -1034,7 +1130,9 @@ private fun PreviewRecommendedAddon(
           pillowImageSmall = "src",
           pillowImageLarge = "src",
         ),
+        addons = emptyList(),
         onCrossSellClick = {},
+        onAddonClick = {},
         dismissSheet = {},
       )
     }

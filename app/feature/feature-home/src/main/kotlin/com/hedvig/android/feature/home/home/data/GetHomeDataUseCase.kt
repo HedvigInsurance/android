@@ -199,6 +199,7 @@ internal class GetHomeDataUseCaseImpl(
               recommendedCrossSell = recommendedCrossSell,
               otherCrossSells = otherCrossSellsData,
               recommendedAddon = recommendedAddon,
+              addons = travelBannerInfo.getOrNull().orEmpty(),
             )
             val discoverCrossSells = homeQueryData.currentMember.discoverCrossSells.otherCrossSells.map {
               it.toCrossSell()

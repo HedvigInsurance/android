@@ -356,6 +356,7 @@ private fun HomeScreen(
     state = crossSellBottomSheetState,
     markCrossSellsNotificationAsSeen = markCrossSellsNotificationAsSeen,
     onCrossSellClick = openCrossSellUrl,
+    onAddonClick = navigateToAddonPurchaseFlow,
     imageLoader = imageLoader,
   )
 
@@ -1615,6 +1616,7 @@ private fun CrossSellBottomSheet(
   state: HedvigBottomSheetState<CrossSellSheetData>,
   markCrossSellsNotificationAsSeen: () -> Unit,
   onCrossSellClick: (String) -> Unit,
+  onAddonClick: (eligibleInsuranceIds: List<String>) -> Unit,
   imageLoader: ImageLoader,
 ) {
   LaunchedEffect(state) {
@@ -1627,6 +1629,7 @@ private fun CrossSellBottomSheet(
   CrossSellBottomSheet(
     state = state,
     onCrossSellClick = onCrossSellClick,
+    onAddonClick = onAddonClick,
     imageLoader = imageLoader,
   )
 }
