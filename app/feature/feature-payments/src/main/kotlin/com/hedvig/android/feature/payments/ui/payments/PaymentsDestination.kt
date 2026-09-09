@@ -137,7 +137,6 @@ internal fun PaymentsDestination(
   onPaymentHistoryClicked: () -> Unit,
   onPayoutAccountClicked: () -> Unit,
   onPaymentMethodsClicked: () -> Unit,
-  onPrimaryPayinMethodClicked: (PayinMethodId) -> Unit,
   onChangeBankAccount: () -> Unit,
   onOpenManualCharge: () -> Unit,
 ) {
@@ -151,7 +150,6 @@ internal fun PaymentsDestination(
     onPayoutAccountClicked = onPayoutAccountClicked,
     onRetry = { viewModel.emit(Retry) },
     onPaymentMethodsClicked = onPaymentMethodsClicked,
-    onPrimaryPayinMethodClicked = onPrimaryPayinMethodClicked,
     onOpenManualCharge = onOpenManualCharge,
   )
 }
@@ -165,7 +163,6 @@ private fun PaymentsScreen(
   onPaymentHistoryClicked: () -> Unit,
   onPayoutAccountClicked: () -> Unit,
   onPaymentMethodsClicked: () -> Unit,
-  onPrimaryPayinMethodClicked: (PayinMethodId) -> Unit,
   onOpenManualCharge: () -> Unit,
   onRetry: () -> Unit,
 ) {
@@ -229,7 +226,6 @@ private fun PaymentsScreen(
               onPaymentHistoryClicked = onPaymentHistoryClicked,
               onPayoutAccountClicked = onPayoutAccountClicked,
               onPaymentMethodsClicked = onPaymentMethodsClicked,
-              onPrimaryPayinMethodClicked = onPrimaryPayinMethodClicked,
               onOpenManualCharge = onOpenManualCharge,
             )
             Spacer(Modifier.height(16.dp))
@@ -256,7 +252,6 @@ private fun PaymentsContent(
   onPaymentHistoryClicked: () -> Unit,
   onPayoutAccountClicked: () -> Unit,
   onPaymentMethodsClicked: () -> Unit,
-  onPrimaryPayinMethodClicked: (PayinMethodId) -> Unit,
   onOpenManualCharge: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -366,7 +361,9 @@ private fun PaymentsContent(
     if (primaryPayinMethod != null) {
       PrimaryPayinMethodSection(
         method = primaryPayinMethod,
-        onClick = { onPrimaryPayinMethodClicked(primaryPayinMethod.id) },
+        onClick = {
+          onPaymentMethodsClicked()
+        },
       )
       Spacer(Modifier.height(8.dp))
     }
@@ -376,7 +373,8 @@ private fun PaymentsContent(
       onDiscountClicked = onDiscountClicked,
       onPaymentHistoryClicked = onPaymentHistoryClicked,
       onPayoutAccountClicked = onPayoutAccountClicked,
-      onPaymentMethodsClicked = onPaymentMethodsClicked)
+      onPaymentMethodsClicked = onPaymentMethodsClicked,
+    )
   }
 }
 
@@ -486,11 +484,11 @@ private fun PrimaryPayinMethodSection(method: PrimaryPayinMethod, onClick: () ->
             )
           }
         }
-        Icon(
-          imageVector = HedvigIcons.ChevronRight,
-          contentDescription = null,
-          modifier = Modifier.size(24.dp),
-        )
+//        Icon(
+//          imageVector = HedvigIcons.ChevronRight,
+//          contentDescription = null,
+//          modifier = Modifier.size(24.dp),
+//        )
       }
     }
   }
@@ -877,7 +875,6 @@ private fun PreviewPaymentScreen(
         onPaymentHistoryClicked = {},
         onPayoutAccountClicked = {},
         onPaymentMethodsClicked = {},
-        onPrimaryPayinMethodClicked = {},
         onOpenManualCharge = {},
         onRetry = {},
       )
