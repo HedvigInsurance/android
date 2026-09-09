@@ -16,10 +16,10 @@ import octopus.type.MemberPaymentProvider
 
 @AssistedInject
 @HedvigViewModel(ActivityRetainedScope::class)
-internal class SelectPayinMethodViewModel(
+internal class ConnectPayinMethodViewModel(
   @Assisted availableProviders: List<String>,
-) : MoleculeViewModel<SelectPayinMethodEvent, SelectPayinMethodUiState>(
-    initialState = SelectPayinMethodUiState(
+) : MoleculeViewModel<SelectPayinMethodEvent, ConnectPayinMethodUiState>(
+    initialState = ConnectPayinMethodUiState(
       availableProviders = availableProviders.map(MemberPaymentProvider::safeValueOf),
       selectedProvider = null,
     ),
@@ -30,17 +30,17 @@ internal sealed interface SelectPayinMethodEvent {
   data class SelectProvider(val provider: MemberPaymentProvider) : SelectPayinMethodEvent
 }
 
-internal data class SelectPayinMethodUiState(
+internal data class ConnectPayinMethodUiState(
   val availableProviders: List<MemberPaymentProvider>,
   val selectedProvider: MemberPaymentProvider?,
 )
 
 internal class SelectPayinMethodPresenter :
-  MoleculePresenter<SelectPayinMethodEvent, SelectPayinMethodUiState> {
+  MoleculePresenter<SelectPayinMethodEvent, ConnectPayinMethodUiState> {
   @Composable
   override fun MoleculePresenterScope<SelectPayinMethodEvent>.present(
-    lastState: SelectPayinMethodUiState,
-  ): SelectPayinMethodUiState {
+    lastState: ConnectPayinMethodUiState,
+  ): ConnectPayinMethodUiState {
     var selectedProvider by remember { mutableStateOf(lastState.selectedProvider) }
 
     CollectEvents { event ->

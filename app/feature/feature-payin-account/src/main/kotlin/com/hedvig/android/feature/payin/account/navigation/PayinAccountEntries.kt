@@ -15,9 +15,9 @@ import com.hedvig.android.feature.payin.account.ui.overview.PayinAccountOverview
 import com.hedvig.android.feature.payin.account.ui.primary.SelectPrimaryPayinMethodDestination
 import com.hedvig.android.feature.payin.account.ui.primary.SelectPrimaryPayinMethodViewModel
 import com.hedvig.android.feature.payin.account.ui.primary.SelectPrimaryPayinMethodViewModelFactory
-import com.hedvig.android.feature.payin.account.ui.selectmethod.SelectPayinMethodDestination
-import com.hedvig.android.feature.payin.account.ui.selectmethod.SelectPayinMethodViewModel
-import com.hedvig.android.feature.payin.account.ui.selectmethod.SelectPayinMethodViewModelFactory
+import com.hedvig.android.feature.payin.account.ui.selectmethod.ConnectPayinMethodDestination
+import com.hedvig.android.feature.payin.account.ui.selectmethod.ConnectPayinMethodViewModel
+import com.hedvig.android.feature.payin.account.ui.selectmethod.ConnectPayinMethodViewModelFactory
 import com.hedvig.android.feature.payin.account.ui.setupinvoice.SetupInvoicePayinDestination
 import com.hedvig.android.feature.payin.account.ui.setupinvoice.SetupInvoicePayinViewModel
 import com.hedvig.android.feature.payin.account.ui.setupswish.SetupSwishPayinDestination
@@ -101,11 +101,11 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
   }
 
   entry<SelectPayinMethodKey> { key ->
-    val viewModel: SelectPayinMethodViewModel =
-      assistedMetroViewModel<SelectPayinMethodViewModel, SelectPayinMethodViewModelFactory> {
+    val viewModel: ConnectPayinMethodViewModel =
+      assistedMetroViewModel<ConnectPayinMethodViewModel, ConnectPayinMethodViewModelFactory> {
         create(key.availableProviders)
       }
-    SelectPayinMethodDestination(
+    ConnectPayinMethodDestination(
       viewModel = viewModel,
       onTrustlySelected = dropUnlessResumed {
         backstack.popUpTo<SelectPayinMethodKey>(inclusive = true)

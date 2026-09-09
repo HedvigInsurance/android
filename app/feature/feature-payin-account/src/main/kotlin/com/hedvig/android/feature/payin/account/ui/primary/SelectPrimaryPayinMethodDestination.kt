@@ -41,6 +41,7 @@ import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.ThreeDotsLoading
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -64,6 +65,8 @@ import com.hedvig.android.feature.payin.account.ui.components.payinMethodSubtitl
 import com.hedvig.android.feature.payin.account.ui.components.payinMethodTitle
 import com.hedvig.android.feature.payin.account.ui.primary.SelectPrimaryPayinMethodEvent.ConfirmSelectedMethod
 import com.hedvig.android.feature.payin.account.ui.primary.SelectPrimaryPayinMethodEvent.SelectMethod
+import hedvig.resources.PAYMENT_CONNECT_SUBTITLE
+import hedvig.resources.PAYMENT_CONNECT_TITLE
 import hedvig.resources.PAYMENT_PRIMARY_CONFIRM_TITLE
 import hedvig.resources.PAYMENT_PRIMARY_SUBTITLE
 import hedvig.resources.PAYMENT_PRIMARY_TITLE
@@ -111,30 +114,19 @@ private fun SelectPrimaryPayinMethodScreen(
     modifier = Modifier.fillMaxSize(),
   ) {
     Spacer(Modifier.height(8.dp))
-    Column(
-      Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 32.dp),
-      horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-      HedvigText(
-        text = stringResource(string.PAYMENT_PRIMARY_TITLE),
-        textAlign = TextAlign.Center,
-      )
-      HedvigText(
-        text = stringResource(string.PAYMENT_PRIMARY_SUBTITLE),
-        color = colorScheme.textSecondary,
-        textAlign = TextAlign.Center,
-      )
-    }
-    Spacer(Modifier.height(48.dp))
-    Spacer(Modifier.weight(1f))
-    PayinMethodHandoverIllustration(
-      method = uiState.selectedMethod,
-      modifier = Modifier.align(Alignment.CenterHorizontally),
+    FlowHeading(
+      title = stringResource(Res.string.PAYMENT_PRIMARY_TITLE),
+      description = stringResource(Res.string.PAYMENT_PRIMARY_SUBTITLE),
+      baseStyle = HedvigTheme.typography.bodySmall,
+      modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))
-    Spacer(Modifier.height(48.dp))
+    PayinMethodHandoverIllustration(
+      provider = uiState.selectedMethod?.provider,
+      modifier = Modifier
+        .align(Alignment.CenterHorizontally),
+    )
+    Spacer(Modifier.weight(1f))
     RadioGroup(
       options = uiState.methods
         .sortedByDescending { it.isDefault }
@@ -293,7 +285,7 @@ private fun ConfirmPrimaryPayinMethodBottomSheetPreview() {
 }
 
 @Composable
-@HedvigPreview
+@HedvigShortMultiScreenPreview
 private fun PreviewSelectPrimaryPayinMethodScreen(
   @PreviewParameter(SelectedMethodIndexProvider::class) selectedMethod: Int?,
 ) {

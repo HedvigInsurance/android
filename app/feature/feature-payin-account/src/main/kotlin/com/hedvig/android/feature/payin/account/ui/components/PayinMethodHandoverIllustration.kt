@@ -3,7 +3,10 @@ package com.hedvig.android.feature.payin.account.ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -26,115 +29,105 @@ import com.hedvig.android.design.system.hedvig.icon.Plus
 import com.hedvig.android.design.system.hedvig.icon.Trustly
 import com.hedvig.android.design.system.hedvig.icon.colored.Kivra
 import com.hedvig.android.design.system.hedvig.icon.colored.Swish
-import com.hedvig.android.feature.payin.account.data.InvoiceDelivery
-import com.hedvig.android.feature.payin.account.data.PayinAccount
-import com.hedvig.android.feature.payin.account.data.PayinAccount.Invoice
-import com.hedvig.android.feature.payin.account.data.PayinAccount.SwishPayin
-import com.hedvig.android.feature.payin.account.data.PayinAccount.Trustly
+import octopus.type.MemberPaymentProvider
 
 @Composable
-internal fun PayinMethodHandoverIllustration(method: PayinAccount?, modifier: Modifier = Modifier) {
-  Row(
-    modifier = modifier,
-    verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(16.dp),
-  ) {
-    Surface(
-      shape = HedvigTheme.shapes.cornerXXLarge,
-      color = colorScheme.backgroundPrimary,
-      contentColor = colorScheme.fillPrimary,
-      border = colorScheme.borderSecondary,
-      modifier = Modifier.size(74.dp)
-        .hedvigDropShadow(HedvigTheme.shapes.cornerXXLarge),
+internal fun PayinMethodHandoverIllustration(provider: MemberPaymentProvider?, modifier: Modifier = Modifier) {
+  Column(modifier) {
+    Spacer(Modifier.height(48.dp))
+    Row(
+      modifier = modifier,
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-      Box(Modifier.size(74.dp), contentAlignment = Alignment.Center) {
-        when (method) {
-          is Trustly -> {
-            Icon(HedvigIcons.Trustly, EmptyContentDescription, Modifier.size(39.dp))
-          }
+      Surface(
+        shape = HedvigTheme.shapes.cornerXXLarge,
+        color = colorScheme.backgroundPrimary,
+        contentColor = colorScheme.fillPrimary,
+        border = colorScheme.borderSecondary,
+        modifier = Modifier.size(74.dp)
+          .hedvigDropShadow(HedvigTheme.shapes.cornerXXLarge),
+      ) {
+        Box(Modifier.size(74.dp), contentAlignment = Alignment.Center) {
+          when (provider) {
+            MemberPaymentProvider.TRUSTLY -> {
+              Icon(HedvigIcons.Trustly, EmptyContentDescription, Modifier.size(39.dp))
+            }
 
-          is SwishPayin -> {
-            Image(
-              imageVector = HedvigIcons.Swish,
-              contentDescription = EmptyContentDescription,
-              modifier = Modifier
-                .size((39.0).dp),
-            )
-          }
+            MemberPaymentProvider.SWISH -> {
+              Image(
+                imageVector = HedvigIcons.Swish,
+                contentDescription = EmptyContentDescription,
+                modifier = Modifier
+                  .size((39.0).dp),
+              )
+            }
 
-          is Invoice -> {
-            Image(
-              imageVector = HedvigIcons.Kivra,
-              contentDescription = EmptyContentDescription,
-              modifier = Modifier
-                .size((39.0).dp),
-            )
-          }
+            MemberPaymentProvider.INVOICE -> {
+              Image(
+                imageVector = HedvigIcons.Kivra,
+                contentDescription = EmptyContentDescription,
+                modifier = Modifier
+                  .size((39.0).dp),
+              )
+            }
 
-          null -> {
-            Icon(
-              HedvigIcons.Plus,
-              EmptyContentDescription,
-              Modifier.size(39.dp),
-              tint = HedvigTheme.colorScheme.fillSecondary,
-            )
+            null,
+            MemberPaymentProvider.NORDEA,
+            MemberPaymentProvider.UNKNOWN__,
+            -> {
+              Icon(
+                HedvigIcons.Plus,
+                EmptyContentDescription,
+                Modifier.size(39.dp),
+                tint = HedvigTheme.colorScheme.fillSecondary,
+              )
+            }
           }
         }
       }
-    }
-    ThreeDotsLoading()
-    Surface(
-      shape = HedvigTheme.shapes.cornerXXLarge,
-      color = colorScheme.fillBlack,
-      contentColor = colorScheme.fillWhite,
-      border = colorScheme.borderPrimary,
-      modifier = Modifier.size(74.dp),
-    ) {
-      Box(Modifier.size(74.dp), contentAlignment = Alignment.Center) {
-        Icon(
-          HedvigIcons.HelipadOutline,
-          EmptyContentDescription,
-          Modifier.size(65.dp),
-        )
+      ThreeDotsLoading()
+      Surface(
+        shape = HedvigTheme.shapes.cornerXXLarge,
+        color = colorScheme.fillBlack,
+        contentColor = colorScheme.fillWhite,
+        border = colorScheme.borderPrimary,
+        modifier = Modifier.size(74.dp),
+      ) {
+        Box(Modifier.size(74.dp), contentAlignment = Alignment.Center) {
+          Icon(
+            HedvigIcons.HelipadOutline,
+            EmptyContentDescription,
+            Modifier.size(65.dp),
+          )
+        }
       }
     }
+    Spacer(Modifier.height(48.dp))
   }
 }
 
 @Composable
 @HedvigPreview
 private fun PreviewSelectPrimaryPayinMethodScreen(
-  @PreviewParameter(SelectedMethodIndexProvider::class) method: PayinAccount?,
+  @PreviewParameter(SelectedMethodIndexProvider::class) provider: MemberPaymentProvider?,
 ) {
   HedvigTheme {
     Surface(color = colorScheme.backgroundPrimary) {
-      PayinMethodHandoverIllustration(method,
-        Modifier.padding(16.dp))
+      PayinMethodHandoverIllustration(
+        provider,
+        Modifier.padding(16.dp),
+      )
     }
   }
 }
 
 private class SelectedMethodIndexProvider :
-  CollectionPreviewParameterProvider<PayinAccount?>(
+  CollectionPreviewParameterProvider<MemberPaymentProvider?>(
     listOf(
       null,
-      Trustly(
-        "8327",
-        "91234124",
-        "Swedbank",
-        isPending = false,
-        isDefault = false,
-      ),
-      SwishPayin(
-        "0709901232",
-        isPending = false,
-        isDefault = true,
-      ),
-      Invoice(
-        delivery = InvoiceDelivery.Kivra,
-        email = null,
-        isPending = false,
-        isDefault = false,
-      ),
+      MemberPaymentProvider.TRUSTLY,
+      MemberPaymentProvider.SWISH,
+      MemberPaymentProvider.INVOICE,
     ),
   )

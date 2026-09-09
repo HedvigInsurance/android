@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -25,6 +26,7 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Trustly
 import com.hedvig.android.design.system.hedvig.icon.colored.Kivra
 import com.hedvig.android.design.system.hedvig.icon.colored.Swish
+import com.hedvig.android.feature.payin.account.ui.components.PayinMethodHandoverIllustration
 import hedvig.resources.ONBOARDING_CONNECT_PAYMENT_BANK_LABEL
 import hedvig.resources.PAYMENTS_INVOICE
 import hedvig.resources.PAYMENT_CONNECT_SUBTITLE
@@ -39,15 +41,15 @@ import octopus.type.MemberPaymentProvider
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun SelectPayinMethodDestination(
-  viewModel: SelectPayinMethodViewModel,
+internal fun ConnectPayinMethodDestination(
+  viewModel: ConnectPayinMethodViewModel,
   onTrustlySelected: () -> Unit,
   onSwishSelected: () -> Unit,
   onInvoiceSelected: () -> Unit,
   navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  SelectPayinMethodScreen(
+  ConnectPayinMethodScreen(
     uiState = uiState,
     onProviderSelected = { viewModel.emit(SelectPayinMethodEvent.SelectProvider(it)) },
     onSubmitSelected = {
@@ -72,8 +74,8 @@ internal fun SelectPayinMethodDestination(
 }
 
 @Composable
-private fun SelectPayinMethodScreen(
-  uiState: SelectPayinMethodUiState,
+private fun ConnectPayinMethodScreen(
+  uiState: ConnectPayinMethodUiState,
   onProviderSelected: (MemberPaymentProvider) -> Unit,
   onSubmitSelected: () -> Unit,
   navigateUp: () -> Unit,
@@ -91,7 +93,11 @@ private fun SelectPayinMethodScreen(
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))
-    Spacer(Modifier.height(8.dp))
+    PayinMethodHandoverIllustration(
+      uiState.selectedProvider,
+      modifier = Modifier.align(Alignment.CenterHorizontally),
+    )
+    Spacer(Modifier.weight(1f))
     RadioGroup(
       options = uiState.availableProviders.mapNotNull { it.toRadioOption() },
       selectedOption = uiState.selectedProvider?.let { RadioOptionId(it.rawValue) },
@@ -156,11 +162,11 @@ private fun MemberPaymentProvider.toRadioOption(): RadioOption? {
 
 @Composable
 @HedvigShortMultiScreenPreview
-private fun PreviewSelectPayinMethodScreen() {
+private fun PreviewConnectPayinMethodScreen() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      SelectPayinMethodScreen(
-        uiState = SelectPayinMethodUiState(
+      ConnectPayinMethodScreen(
+        uiState = ConnectPayinMethodUiState(
           availableProviders = listOf(
             MemberPaymentProvider.SWISH,
             MemberPaymentProvider.INVOICE,
