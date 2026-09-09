@@ -21,21 +21,15 @@ import com.hedvig.android.feature.payments.data.PaymentConnection.Unknown
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.data.PrimaryPayinMethod
-import com.hedvig.android.feature.payments.overview.data.GetShouldShowPayoutUseCase
 import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCase
 import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.ConnectedPaymentInfo
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
-import kotlin.time.Duration.Companion.seconds
-import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDate
 
 internal class PaymentsPresenter(
   private val getUpcomingPaymentUseCase: GetUpcomingPaymentUseCase,
-  getShouldShowPayoutUseCase: GetShouldShowPayoutUseCase,
 ) : MoleculePresenter<PaymentsEvent, PaymentsUiState> {
-  private val shouldShowPayoutPresenter = ShouldShowPayoutPresenter(getShouldShowPayoutUseCase)
-
   @Composable
   override fun MoleculePresenterScope<PaymentsEvent>.present(lastState: PaymentsUiState): PaymentsUiState {
     var loadIteration by remember { mutableIntStateOf(0) }
@@ -51,8 +45,6 @@ internal class PaymentsPresenter(
       paymentOverviewResult = null
       paymentOverviewResult = getUpcomingPaymentUseCase.invoke()
     }
-
-    val shouldShowPayout = shouldShowPayoutPresenter.present(loadIteration)
 
     val currentPaymentResult = paymentOverviewResult ?: return PaymentsUiState.Loading
 
@@ -85,34 +77,10 @@ internal class PaymentsPresenter(
           ongoingCharges = paymentOverview.ongoingCharges,
           connectedPaymentInfo = paymentOverview.paymentConnection.toConnectedPaymentInfo(),
           primaryPayinMethod = paymentOverview.primaryPayinMethod,
-          showPayoutButton = shouldShowPayout,
           memberType = paymentOverview.memberType,
         )
       },
     )
-  }
-}
-
-private class ShouldShowPayoutPresenter(
-  private val getShouldShowPayoutUseCase: GetShouldShowPayoutUseCase,
-) {
-  @Composable
-  fun present(loadIteration: Int): Boolean {
-    var shouldShowPayout by remember { mutableStateOf(false) }
-    LaunchedEffect(loadIteration) {
-      shouldShowPayout = false
-      for (attempt in 0..2) {
-        delay(attempt.seconds)
-        getShouldShowPayoutUseCase.invoke().fold(
-          ifLeft = {},
-          ifRight = { result ->
-            shouldShowPayout = result
-            return@LaunchedEffect
-          },
-        )
-      }
-    }
-    return shouldShowPayout
   }
 }
 
@@ -148,7 +116,6 @@ internal sealed interface PaymentsUiState {
     val ongoingCharges: List<OngoingCharge>,
     val connectedPaymentInfo: ConnectedPaymentInfo,
     val primaryPayinMethod: PrimaryPayinMethod?,
-    val showPayoutButton: Boolean,
     val memberType: MemberType,
   ) : PaymentsUiState {
     sealed interface UpcomingPayment {

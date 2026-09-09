@@ -1,8 +1,5 @@
 package com.hedvig.android.feature.payments.ui.payments
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.expandVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,10 +29,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -66,7 +61,6 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyl
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.debugBorder
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.Campaign
 import com.hedvig.android.design.system.hedvig.icon.Card
@@ -363,7 +357,8 @@ private fun PaymentsContent(
 
         ConnectedPaymentInfo.Unknown,
         is ConnectedPaymentInfo.Active,
-        -> {}
+        -> {
+        }
       }
     }
 
@@ -381,9 +376,7 @@ private fun PaymentsContent(
       onDiscountClicked = onDiscountClicked,
       onPaymentHistoryClicked = onPaymentHistoryClicked,
       onPayoutAccountClicked = onPayoutAccountClicked,
-      onPaymentMethodsClicked = onPaymentMethodsClicked,
-      showPayoutButton = (uiState as? Content)?.showPayoutButton == true,
-    )
+      onPaymentMethodsClicked = onPaymentMethodsClicked)
   }
 }
 
@@ -530,7 +523,6 @@ private fun PaymentsListItems(
   onPaymentHistoryClicked: () -> Unit,
   onPayoutAccountClicked: () -> Unit,
   onPaymentMethodsClicked: () -> Unit,
-  showPayoutButton: Boolean,
 ) {
   val listItemsSideSpacingModifier = Modifier
     .padding(horizontal = 16.dp)
@@ -615,32 +607,22 @@ private fun PaymentsListItems(
         )
         HorizontalDivider(modifier = listItemsSideSpacingModifier)
       }
-
-      val showPayoutItem = when (uiState.memberType) {
-        MemberType.QASA_ONLY_MEMBER,
-        MemberType.STANDARD_TO_QASA_MEMBER,
-        -> true
-
-        MemberType.STANDARD_MEMBER -> showPayoutButton
-      }
-      if (showPayoutItem) {
-        PaymentsListItem(
-          text = stringResource(Res.string.PAYOUT_PAGE_HEADING),
-          icon = {
-            Icon(
-              imageVector = HedvigIcons.PaymentOutline,
-              contentDescription = null,
-              modifier = Modifier.size(24.dp),
-            )
-          },
-          modifier = Modifier
-            .clickable(onClick = onPayoutAccountClicked)
-            .then(listItemsSideSpacingModifier)
-            .padding(vertical = 16.dp)
-            .fillMaxWidth(),
-        )
-        HorizontalDivider(modifier = listItemsSideSpacingModifier)
-      }
+      PaymentsListItem(
+        text = stringResource(Res.string.PAYOUT_PAGE_HEADING),
+        icon = {
+          Icon(
+            imageVector = HedvigIcons.PaymentOutline,
+            contentDescription = null,
+            modifier = Modifier.size(24.dp),
+          )
+        },
+        modifier = Modifier
+          .clickable(onClick = onPayoutAccountClicked)
+          .then(listItemsSideSpacingModifier)
+          .padding(vertical = 16.dp)
+          .fillMaxWidth(),
+      )
+      HorizontalDivider(modifier = listItemsSideSpacingModifier)
     }
   }
 }
@@ -915,7 +897,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ongoingCharges = listOf(OngoingCharge("id", LocalDate.fromEpochDays(401), UiMoney(200.0, SEK))),
         connectedPaymentInfo = ConnectedPaymentInfo.Active,
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
-        showPayoutButton = true,
         memberType = MemberType.STANDARD_MEMBER,
       ),
     )
@@ -931,7 +912,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.Active,
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
-        showPayoutButton = false,
         memberType = MemberType.STANDARD_MEMBER,
       ),
     )
@@ -949,7 +929,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           null,
         ),
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
-        showPayoutButton = false,
         memberType = MemberType.STANDARD_TO_QASA_MEMBER,
       ),
     )
@@ -965,7 +944,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.Active,
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
-        showPayoutButton = false,
         memberType = MemberType.STANDARD_MEMBER,
       ),
     )
@@ -987,7 +965,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.Active,
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
-        showPayoutButton = false,
         memberType = MemberType.STANDARD_MEMBER,
       ),
     )
@@ -1003,7 +980,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.Pending,
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
-        showPayoutButton = false,
         memberType = MemberType.STANDARD_MEMBER,
       ),
     )
@@ -1025,7 +1001,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           null,
         ),
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
-        showPayoutButton = false,
         memberType = MemberType.STANDARD_MEMBER,
       ),
     )
@@ -1043,7 +1018,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           null,
         ),
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
-        showPayoutButton = false,
         memberType = MemberType.STANDARD_MEMBER,
       ),
     )
@@ -1065,7 +1039,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           dueDateToConnect = System.now().plus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
-        showPayoutButton = false,
         memberType = MemberType.STANDARD_MEMBER,
       ),
     )
@@ -1087,7 +1060,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           System.now().plus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
-        showPayoutButton = false,
         memberType = MemberType.STANDARD_MEMBER,
       ),
     )
@@ -1099,7 +1071,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayoutSetup,
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
-        showPayoutButton = false,
         memberType = MemberType.STANDARD_TO_QASA_MEMBER,
       ),
     )
@@ -1111,7 +1082,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.Active,
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
-        showPayoutButton = false,
         memberType = MemberType.STANDARD_TO_QASA_MEMBER,
       ),
     )
@@ -1123,7 +1093,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayoutSetup,
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
-        showPayoutButton = false,
         memberType = MemberType.QASA_ONLY_MEMBER,
       ),
     )
@@ -1135,7 +1104,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.Active,
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
-        showPayoutButton = false,
         memberType = MemberType.QASA_ONLY_MEMBER,
       ),
     )
@@ -1151,7 +1119,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayoutSetup,
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
-        showPayoutButton = true,
         memberType = MemberType.STANDARD_MEMBER,
       ),
     )
