@@ -25,7 +25,7 @@ internal class SelectPrimaryPayinMethodViewModel(
 ) : MoleculeViewModel<SelectPrimaryPayinMethodEvent, SelectPrimaryPayinMethodUiState>(
     initialState = SelectPrimaryPayinMethodUiState(
       methods = currentMethods,
-      selectedMethod = currentMethods.firstOrNull { it.isDefault } ?: currentMethods.firstOrNull(),
+      selectedMethod = null,
     ),
     presenter = SelectPrimaryPayinMethodPresenter(setAsDefaultUseCase),
   )
