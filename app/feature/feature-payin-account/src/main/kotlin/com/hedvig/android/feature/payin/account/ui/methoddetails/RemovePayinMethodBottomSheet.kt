@@ -25,6 +25,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme
 import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.dashedBorder
@@ -33,7 +34,7 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Minus
 import com.hedvig.android.feature.payin.account.data.PayinAccount
 import com.hedvig.android.feature.payin.account.ui.components.PayinMethodMark
-import com.hedvig.android.feature.payin.account.ui.components.PayinMethodRow
+import com.hedvig.android.feature.payin.account.ui.components.toRadioOption
 import hedvig.resources.PAYMENT_REMOVE_SUBTITLE
 import hedvig.resources.PAYMENT_REMOVE_TITLE
 import hedvig.resources.REMOVE_CONFIRMATION_BUTTON
@@ -87,16 +88,13 @@ private fun RemovePayinMethodBottomSheetContent(
   ) {
     RemovedMethodIllustration(method)
   }
-  Surface(
-    shape = HedvigTheme.shapes.cornerLarge,
-    color = colorScheme.surfacePrimary,
+  val option = method.toRadioOption()
+  RadioGroup(
+    options = listOf(option),
+    selectedOption = option.id,
+    onRadioOptionSelected = {},
     modifier = Modifier.fillMaxWidth(),
-  ) {
-    PayinMethodRow(
-      method = method,
-      modifier = Modifier.fillMaxWidth(),
-    )
-  }
+  )
   Spacer(Modifier.height(16.dp))
   HedvigButton(
     text = stringResource(Res.string.REMOVE_CONFIRMATION_BUTTON),

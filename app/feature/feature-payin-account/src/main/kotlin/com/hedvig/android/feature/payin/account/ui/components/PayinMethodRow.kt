@@ -18,12 +18,16 @@ import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.IconResource.Vector
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Trustly
 import com.hedvig.android.design.system.hedvig.icon.colored.Kivra
 import com.hedvig.android.design.system.hedvig.icon.colored.Swish
 import com.hedvig.android.feature.payin.account.data.PayinAccount
+import com.hedvig.android.feature.payin.account.data.provider
 import com.hedvig.android.feature.payin.account.data.toDeliveryString
 import com.hedvig.android.logger.logcat
 import hedvig.resources.PAYMENTS_BANK_LABEL
@@ -128,6 +132,19 @@ internal fun PayinMethodRow(
     endSlot?.invoke()
   }
 }
+
+/** The same mark, title and subtitle as [PayinMethodRow], for the screens that list methods as radio options. */
+@Composable
+internal fun PayinAccount.toRadioOption(): RadioOption = RadioOption(
+  id = RadioOptionId(provider.rawValue),
+  text = payinMethodTitle(this),
+  label = payinMethodSubtitle(this),
+  iconResource = when (this) {
+    is PayinAccount.Trustly -> Vector(HedvigIcons.Trustly)
+    is PayinAccount.SwishPayin -> Vector(HedvigIcons.Swish)
+    is PayinAccount.Invoice -> Vector(HedvigIcons.Kivra)
+  },
+)
 
 /** Static counterpart to the button the design draws it with: the primary method is not a choice made here. */
 @Composable

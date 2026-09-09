@@ -33,24 +33,18 @@ import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme
 import com.hedvig.android.design.system.hedvig.Icon
-import com.hedvig.android.design.system.hedvig.IconResource.Vector
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Error
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.RadioGroup
-import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.ThreeDotsLoading
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
-import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadFilled
 import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
 import com.hedvig.android.design.system.hedvig.icon.Plus
-import com.hedvig.android.design.system.hedvig.icon.Trustly
-import com.hedvig.android.design.system.hedvig.icon.colored.Kivra
-import com.hedvig.android.design.system.hedvig.icon.colored.Swish
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.payin.account.data.InvoiceDelivery
 import com.hedvig.android.feature.payin.account.data.PayinAccount
@@ -61,8 +55,8 @@ import com.hedvig.android.feature.payin.account.data.provider
 import com.hedvig.android.feature.payin.account.ui.components.PayinMethodHandoverIllustration
 import com.hedvig.android.feature.payin.account.ui.components.PayinMethodRow
 import com.hedvig.android.feature.payin.account.ui.components.PrimaryMethodLabel
-import com.hedvig.android.feature.payin.account.ui.components.payinMethodSubtitle
 import com.hedvig.android.feature.payin.account.ui.components.payinMethodTitle
+import com.hedvig.android.feature.payin.account.ui.components.toRadioOption
 import com.hedvig.android.feature.payin.account.ui.primary.SelectPrimaryPayinMethodEvent.ConfirmSelectedMethod
 import com.hedvig.android.feature.payin.account.ui.primary.SelectPrimaryPayinMethodEvent.SelectMethod
 import hedvig.resources.PAYMENT_CONNECT_SUBTITLE
@@ -246,18 +240,6 @@ private fun ConfirmPrimaryPayinMethodBottomSheetContent(
   )
   Spacer(Modifier.height(16.dp))
 }
-
-@Composable
-private fun PayinAccount.toRadioOption(): RadioOption = RadioOption(
-  id = RadioOptionId(provider.rawValue),
-  text = payinMethodTitle(this),
-  label = payinMethodSubtitle(this),
-  iconResource = when (this) {
-    is Trustly -> Vector(HedvigIcons.Trustly)
-    is SwishPayin -> Vector(HedvigIcons.Swish)
-    is Invoice -> Vector(HedvigIcons.Kivra)
-  },
-)
 
 @Composable
 @HedvigShortMultiScreenPreview
