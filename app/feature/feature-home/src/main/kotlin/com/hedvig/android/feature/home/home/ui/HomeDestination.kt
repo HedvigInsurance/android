@@ -110,9 +110,8 @@ import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
-import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.RoundedLiquidGlass
-import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.RoundedPrimary
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.LiquidGlassButtonStyle
 import com.hedvig.android.design.system.hedvig.DraftClaimDialog
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
@@ -121,6 +120,7 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigLiquidGlassButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -1499,25 +1499,25 @@ private fun MainActionCarouselSection(
       .padding(horizontal = 16.dp)
       .padding(horizontalInsets),
   ) {
-    HedvigButton(
+    HedvigLiquidGlassButton(
       text = stringResource(Res.string.home_tab_claim_button_text),
       onClick = onMakeClaim,
       enabled = true,
-      buttonStyle = RoundedPrimary,
+      glassStyle = LiquidGlassButtonStyle.Tinted,
     )
     if (isHelpCenterEnabled) {
-      HedvigButton(
+      HedvigLiquidGlassButton(
         text = stringResource(Res.string.home_tab_get_help),
         onClick = onHelpAndSupport,
         enabled = true,
-        buttonStyle = RoundedLiquidGlass,
+        glassStyle = LiquidGlassButtonStyle.Regular,
       )
     }
-    HedvigButton(
+    HedvigLiquidGlassButton(
       text = stringResource(Res.string.DASHBOARD_OPEN_CHAT),
       onClick = onContactUs,
       enabled = true,
-      buttonStyle = RoundedLiquidGlass,
+      glassStyle = LiquidGlassButtonStyle.Regular,
     )
   }
 }
