@@ -97,7 +97,6 @@ import com.hedvig.android.pullrefresh.PullRefreshState
 import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.A11Y_VIEW_DETAILS
-import hedvig.resources.ADDON_FLOW_SEE_PRICE_BUTTON
 import hedvig.resources.DASHBOARD_SCREEN_TITLE
 import hedvig.resources.INSURANCES_NO_ACTIVE
 import hedvig.resources.INSURANCE_ADDONS_SUBHEADING
@@ -280,7 +279,8 @@ private fun InsuranceScreenContent(
                 subtitle = bannerInfo.description,
                 pillowImage = null,
                 pillow = { AddonPillow(bannerInfo.flowType) },
-                buttonText = stringResource(Res.string.ADDON_FLOW_SEE_PRICE_BUTTON),
+                // TODO: Add "See price" / "Se pris" to Lokalise
+                buttonText = "See price",
                 onButtonClick = dropUnlessResumed {
                   onNavigateToAddonPurchaseFlow(bannerInfo.eligibleInsurancesIds.map(::ContractId))
                 },

@@ -69,6 +69,7 @@ import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.StepProgressItem
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.autoScrollingMarquee
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.Campaign
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
@@ -80,7 +81,6 @@ import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import hedvig.resources.A11Y_NUMBER_OF_ELIGIBLE_INSURANCES
-import hedvig.resources.ADDON_FLOW_SEE_PRICE_BUTTON
 import hedvig.resources.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_CURRENT_APPLIED_DISCOUNT
 import hedvig.resources.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_NO_DISCOUNT
 import hedvig.resources.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_ONE_INSURANCE
@@ -288,7 +288,8 @@ private fun CrossSellsSheetContent(
               subtitle = addon.description,
               pillowImage = null,
               pillow = { AddonPillow(addon.flowType) },
-              buttonText = stringResource(string.ADDON_FLOW_SEE_PRICE_BUTTON),
+              // TODO: Add "See price" / "Se pris" to Lokalise
+              buttonText = "See price",
               onButtonClick = {
                 onAddonClick(addon.eligibleInsurancesIds)
                 dismissSheet()
@@ -390,7 +391,8 @@ private fun CrossSellsFloatingSheetContent(
                 subtitle = addon.description,
                 pillowImage = null,
                 pillow = { AddonPillow(addon.flowType) },
-                buttonText = stringResource(string.ADDON_FLOW_SEE_PRICE_BUTTON),
+                // TODO: Add "See price" / "Se pris" to Lokalise
+                buttonText = "See price",
                 onButtonClick = {
                   onAddonClick(addon.eligibleInsurancesIds)
                   dismissSheet()
@@ -865,11 +867,15 @@ fun PillowRow(
         text = subtitle,
         style = HedvigTheme.typography.label,
         color = HedvigTheme.colorScheme.textSecondary,
-        modifier = Modifier.hedvigPlaceholder(
-          visible = isLoading,
-          shape = HedvigTheme.shapes.cornerSmall,
-          highlight = PlaceholderHighlight.shimmer(),
-        ),
+        maxLines = 1,
+        softWrap = false,
+        modifier = Modifier
+          .hedvigPlaceholder(
+            visible = isLoading,
+            shape = HedvigTheme.shapes.cornerSmall,
+            highlight = PlaceholderHighlight.shimmer(),
+          )
+          .autoScrollingMarquee(),
       )
     }
     Spacer(Modifier.width(16.dp))

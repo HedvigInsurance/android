@@ -210,7 +210,6 @@ import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentText.
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentType.INACTIVE
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
-import hedvig.resources.ADDON_FLOW_SEE_PRICE_BUTTON
 import hedvig.resources.CHAT_NEW_MESSAGE
 import hedvig.resources.DASHBOARD_OPEN_CHAT
 import hedvig.resources.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE
@@ -1549,7 +1548,8 @@ private fun AddonsSection(
         subtitle = addon.description,
         pillowImage = null,
         pillow = { AddonPillow(addon.flowType) },
-        buttonText = stringResource(string.ADDON_FLOW_SEE_PRICE_BUTTON),
+        // TODO: Add "See price" / "Se pris" to Lokalise
+        buttonText = "See price",
         onButtonClick = { navigateToAddonPurchaseFlow(addon.eligibleInsurancesIds) },
         imageLoader = imageLoader,
         modifier = Modifier.fillMaxWidth(),
