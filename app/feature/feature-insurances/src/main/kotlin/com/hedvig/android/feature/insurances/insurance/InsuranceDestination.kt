@@ -101,6 +101,7 @@ import hedvig.resources.DASHBOARD_SCREEN_TITLE
 import hedvig.resources.INSURANCES_NO_ACTIVE
 import hedvig.resources.INSURANCE_ADDONS_SUBHEADING
 import hedvig.resources.Res
+import hedvig.resources.cross_sell_see_price
 import hedvig.resources.insurances_tab_moving_flow_info_button_title
 import hedvig.resources.insurances_tab_moving_flow_info_title
 import hedvig.resources.insurances_tab_terminated_insurance_subtitile
@@ -279,8 +280,7 @@ private fun InsuranceScreenContent(
                 subtitle = bannerInfo.description,
                 pillowImage = null,
                 pillow = { AddonPillow(bannerInfo.flowType) },
-                // TODO: Add "See price" / "Se pris" to Lokalise
-                buttonText = "See price",
+                buttonText = stringResource(Res.string.cross_sell_see_price),
                 onButtonClick = dropUnlessResumed {
                   onNavigateToAddonPurchaseFlow(bannerInfo.eligibleInsurancesIds.map(::ContractId))
                 },

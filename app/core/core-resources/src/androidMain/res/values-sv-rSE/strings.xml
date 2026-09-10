@@ -1227,6 +1227,7 @@
   <string name="cross_sell_info_highlights_title">Fördelar</string>
   <string name="cross_sell_info_learn_more_title">Läs mer</string>
   <string name="cross_sell_get_price">Få pris</string>
+  <string name="cross_sell_see_price">Se pris</string>
   <string name="cross_selling_card_accident_subtitle">För din kropp. Gäller dygnet runt. Ingen självrisk.</string>
   <string name="cross_selling_card_travel_subtitle"></string>
   <string name="cross_selling_card_se_accident_cta">Beräkna ditt pris</string>

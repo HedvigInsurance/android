@@ -1227,6 +1227,7 @@
   <string name="cross_sell_info_highlights_title">Highlights</string>
   <string name="cross_sell_info_learn_more_title">Learn more</string>
   <string name="cross_sell_get_price">Get price</string>
+  <string name="cross_sell_see_price">See price</string>
   <string name="cross_selling_card_accident_subtitle">For your body. 24/7 coverage. No deductible.</string>
   <string name="cross_selling_card_travel_subtitle">For your trip. Worldwide coverage for 45 days.</string>
   <string name="cross_selling_card_se_accident_cta">Calculate your price</string>

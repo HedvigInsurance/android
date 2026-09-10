@@ -94,6 +94,7 @@ import hedvig.resources.Res
 import hedvig.resources.Res.plurals
 import hedvig.resources.Res.string
 import hedvig.resources.TALKBACK_OPEN_EXTERNAL_LINK
+import hedvig.resources.cross_sell_see_price
 import hedvig.resources.general_close_button
 import hedvig.resources.insurance_tab_cross_sells_title
 import org.jetbrains.compose.resources.pluralStringResource
@@ -288,8 +289,7 @@ private fun CrossSellsSheetContent(
               subtitle = addon.description,
               pillowImage = null,
               pillow = { AddonPillow(addon.flowType) },
-              // TODO: Add "See price" / "Se pris" to Lokalise
-              buttonText = "See price",
+              buttonText = stringResource(string.cross_sell_see_price),
               onButtonClick = {
                 onAddonClick(addon.eligibleInsurancesIds)
                 dismissSheet()
@@ -391,8 +391,7 @@ private fun CrossSellsFloatingSheetContent(
                 subtitle = addon.description,
                 pillowImage = null,
                 pillow = { AddonPillow(addon.flowType) },
-                // TODO: Add "See price" / "Se pris" to Lokalise
-                buttonText = "See price",
+                buttonText = stringResource(string.cross_sell_see_price),
                 onButtonClick = {
                   onAddonClick(addon.eligibleInsurancesIds)
                   dismissSheet()

@@ -234,6 +234,7 @@ import hedvig.resources.Res.drawable
 import hedvig.resources.Res.string
 import hedvig.resources.TOAST_NEW_OFFER
 import hedvig.resources.blur_background
+import hedvig.resources.cross_sell_see_price
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_continue_button
 import hedvig.resources.home_tab_claim_button_text
@@ -1548,8 +1549,7 @@ private fun AddonsSection(
         subtitle = addon.description,
         pillowImage = null,
         pillow = { AddonPillow(addon.flowType) },
-        // TODO: Add "See price" / "Se pris" to Lokalise
-        buttonText = "See price",
+        buttonText = stringResource(string.cross_sell_see_price),
         onButtonClick = { navigateToAddonPurchaseFlow(addon.eligibleInsurancesIds) },
         imageLoader = imageLoader,
         modifier = Modifier.fillMaxWidth(),
