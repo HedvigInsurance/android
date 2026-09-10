@@ -195,11 +195,12 @@ internal class GetHomeDataUseCaseImpl(
                 pillowImageLarge = it.pillowImageLarge.src,
               )
             }
+            val addonBannerInfos = travelBannerInfo.getOrNull().orEmpty()
             val crossSells = CrossSellSheetData(
               recommendedCrossSell = recommendedCrossSell,
               otherCrossSells = otherCrossSellsData,
               recommendedAddon = recommendedAddon,
-              addons = travelBannerInfo.getOrNull().orEmpty(),
+              addons = addonBannerInfos,
             )
             val discoverCrossSells = homeQueryData.currentMember.discoverCrossSells.otherCrossSells.map {
               it.toCrossSell()
@@ -230,7 +231,6 @@ internal class GetHomeDataUseCaseImpl(
                   section.url,
                 )
               } ?: emptyList()
-            val travelBannerInfo = travelBannerInfo.getOrNull()
             HomeData(
               contractStatus = contractStatus,
               claimStatusCardsData = homeQueryData.claimStatusCards(),
@@ -242,7 +242,7 @@ internal class GetHomeDataUseCaseImpl(
               crossSells = crossSells,
               discoverCrossSells = discoverCrossSells,
               ongoingShopSessions = ongoingShopSessions,
-              addonBannerInfos = travelBannerInfo.orEmpty(),
+              addonBannerInfos = addonBannerInfos,
               showChatIcon = showChatIcon,
               firstName = homeQueryData.currentMember.firstName,
               draftClaim = homeQueryData.currentMember.resumableClaimIntent?.let { resumableClaimIntent ->

@@ -69,7 +69,6 @@ import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.StepProgressItem
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
-import com.hedvig.android.design.system.hedvig.autoScrollingMarquee
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.Campaign
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
@@ -96,7 +95,6 @@ import hedvig.resources.Res.string
 import hedvig.resources.TALKBACK_OPEN_EXTERNAL_LINK
 import hedvig.resources.cross_sell_see_price
 import hedvig.resources.general_close_button
-import hedvig.resources.insurance_tab_cross_sells_title
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -139,50 +137,6 @@ data class BundleProgress(
   val numberOfEligibleContracts: Int,
   val discountPercent: Int,
 )
-
-/**
- * Floating bottom sheet option
- * todo: Look into using this again when we can control the scrim composable and can add a gradient brush there instead
- */
-@Composable
-fun CrossSellFloatingBottomSheet(
-  state: HedvigBottomSheetState<CrossSellSheetData>,
-  onCrossSellClick: (String) -> Unit,
-  onAddonClick: (eligibleInsuranceIds: List<String>) -> Unit,
-  imageLoader: ImageLoader,
-) {
-  HedvigBottomSheet(
-    hedvigBottomSheetState = state,
-    dragHandle = {
-      CrossSellDragHandle(
-        text = state.data?.recommendedCrossSell?.bannerText
-          ?: state.data?.recommendedAddon?.let { it.bannerText ?: stringResource(string.CROSS_SELL_BANNER_TEXT) },
-        modifier = Modifier
-          .padding(horizontal = 16.dp)
-          .clip(HedvigTheme.shapes.cornerXLargeTop),
-      )
-    },
-    style = BottomSheetStyle(
-      transparentBackground = true,
-      automaticallyScrollableContent = false,
-      scrimColor = HedvigTheme.colorScheme.scrim.copy(alpha = 0.72f),
-    ),
-    contentPadding = PaddingValues(horizontal = 0.dp),
-    sheetPadding = PaddingValues(horizontal = 0.dp),
-    content = { crossSellSheetData ->
-      CrossSellsFloatingSheetContent(
-        recommendedCrossSell = crossSellSheetData.recommendedCrossSell,
-        otherCrossSells = crossSellSheetData.otherCrossSells,
-        addons = crossSellSheetData.addons,
-        onCrossSellClick = onCrossSellClick,
-        onAddonClick = onAddonClick,
-        dismissSheet = { state.dismiss() },
-        imageLoader = imageLoader,
-        recommendedAddon = crossSellSheetData.recommendedAddon,
-      )
-    },
-  )
-}
 
 @Composable
 fun CrossSellBottomSheet(
@@ -272,7 +226,6 @@ private fun CrossSellsSheetContent(
           CrossSellsSection(
             crossSells = otherCrossSells,
             onCrossSellClick = onCrossSellClick,
-            withSubHeader = false,
             onSheetDismissed = dismissSheet,
             imageLoader = imageLoader,
             buttonSize = ButtonSize.Small,
@@ -281,26 +234,15 @@ private fun CrossSellsSheetContent(
       }
       if (addons.isNotEmpty()) {
         Column {
-          HedvigText(stringResource(string.INSURANCE_ADDONS_SUBHEADING), Modifier.semantics { heading() })
-          Spacer(Modifier.height(16.dp))
-          for ((index, addon) in addons.withIndex()) {
-            PillowRow(
-              title = addon.title,
-              subtitle = addon.description,
-              pillowImage = null,
-              pillow = { AddonPillow(addon.flowType) },
-              buttonText = stringResource(string.cross_sell_see_price),
-              onButtonClick = {
-                onAddonClick(addon.eligibleInsurancesIds)
-                dismissSheet()
-              },
-              imageLoader = imageLoader,
-              buttonSize = ButtonSize.Small,
-            )
-            if (index != addons.lastIndex) {
-              Spacer(Modifier.height(16.dp))
-            }
-          }
+          Spacer(Modifier.height(24.dp))
+          AddonsSection(
+            addons = addons,
+            onAddonClick = { eligibleInsuranceIds ->
+              onAddonClick(eligibleInsuranceIds)
+              dismissSheet()
+            },
+            imageLoader = imageLoader,
+          )
         }
       }
     }
@@ -311,114 +253,6 @@ private fun CrossSellsSheetContent(
       buttonStyle = ButtonStyle.Ghost,
       modifier = Modifier.fillMaxWidth(),
     )
-    Spacer(Modifier.height(8.dp))
-    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
-  }
-}
-
-@Composable
-private fun CrossSellsFloatingSheetContent(
-  recommendedCrossSell: RecommendedCrossSell?,
-  recommendedAddon: RecommendedAddon?,
-  otherCrossSells: List<CrossSell>,
-  addons: List<AddonBannerInfo>,
-  onCrossSellClick: (String) -> Unit,
-  onAddonClick: (eligibleInsuranceIds: List<String>) -> Unit,
-  dismissSheet: () -> Unit,
-  imageLoader: ImageLoader,
-) {
-  Column(
-    Modifier.padding(horizontal = 16.dp),
-  ) {
-    Surface(
-      shape = HedvigTheme.shapes.cornerXLargeBottom,
-      modifier = Modifier.weight(1f, fill = false),
-    ) {
-      Column(
-        modifier = Modifier
-          .verticalScroll(rememberScrollState())
-          .padding(horizontal = 16.dp)
-          .padding(bottom = 24.dp),
-        verticalArrangement = Arrangement.spacedBy(40.dp),
-      ) {
-        if (recommendedAddon != null) {
-          Column {
-            Spacer(Modifier.height(48.dp))
-            AddonRecommendationSection(
-              recommendedAddon,
-              onButtonClick = onCrossSellClick,
-              dismissSheet = dismissSheet,
-              imageLoader = imageLoader,
-            )
-          }
-        } else if (recommendedCrossSell != null) {
-          Column {
-            Spacer(Modifier.height(48.dp))
-            RecommendationSection(
-              recommendedCrossSell,
-              onCrossSellClick,
-              dismissSheet = dismissSheet,
-              imageLoader = imageLoader,
-            )
-          }
-        }
-        if (otherCrossSells.isNotEmpty()) {
-          Column {
-            Spacer(Modifier.height(24.dp))
-            HedvigText(stringResource(string.CROSS_SELL_TITLE), Modifier.semantics { heading() })
-            HedvigText(
-              text = stringResource(string.CROSS_SELL_SUBTITLE),
-              color = HedvigTheme.colorScheme.textSecondary,
-            )
-            Spacer(Modifier.height(24.dp))
-            CrossSellsSection(
-              crossSells = otherCrossSells,
-              onCrossSellClick = onCrossSellClick,
-              withSubHeader = false,
-              onSheetDismissed = dismissSheet,
-              imageLoader = imageLoader,
-              buttonSize = ButtonSize.Small,
-            )
-          }
-        }
-        if (addons.isNotEmpty()) {
-          Column {
-            HedvigText(stringResource(string.INSURANCE_ADDONS_SUBHEADING), Modifier.semantics { heading() })
-            Spacer(Modifier.height(16.dp))
-            for ((index, addon) in addons.withIndex()) {
-              PillowRow(
-                title = addon.title,
-                subtitle = addon.description,
-                pillowImage = null,
-                pillow = { AddonPillow(addon.flowType) },
-                buttonText = stringResource(string.cross_sell_see_price),
-                onButtonClick = {
-                  onAddonClick(addon.eligibleInsurancesIds)
-                  dismissSheet()
-                },
-                imageLoader = imageLoader,
-                buttonSize = ButtonSize.Small,
-              )
-              if (index != addons.lastIndex) {
-                Spacer(Modifier.height(16.dp))
-              }
-            }
-          }
-        }
-      }
-    }
-    Spacer(Modifier.height(24.dp))
-    Surface(
-      shape = HedvigTheme.shapes.cornerLarge,
-    ) {
-      HedvigButton(
-        text = stringResource(string.general_close_button),
-        onClick = dismissSheet,
-        enabled = true,
-        buttonStyle = ButtonStyle.Secondary,
-        modifier = Modifier.fillMaxWidth(),
-      )
-    }
     Spacer(Modifier.height(8.dp))
     Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
@@ -691,14 +525,9 @@ fun CrossSellsSection(
   onSheetDismissed: () -> Unit,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
-  withSubHeader: Boolean = true,
-  title: String? = null,
   buttonSize: ButtonSize = ButtonSize.Medium,
 ) {
   Column(modifier) {
-    if (withSubHeader) {
-      CrossSellsSubHeaderWithDivider(title)
-    }
     for ((index, crossSell) in crossSells.withIndex()) {
       CrossSellItem(
         crossSell,
@@ -717,7 +546,6 @@ fun CrossSellsSection(
 @Composable
 fun CrossSellItemPlaceholder(imageLoader: ImageLoader, modifier: Modifier = Modifier) {
   Column(modifier) {
-    CrossSellsSubHeaderWithDivider()
     CrossSellItem(
       crossSellTitle = "HHHH",
       crossSellSubtitle = "HHHHHHHH\nHHHHHHHHHHH",
@@ -730,17 +558,6 @@ fun CrossSellItemPlaceholder(imageLoader: ImageLoader, modifier: Modifier = Modi
       onSheetDismissed = {},
       buttonText = "button",
     )
-  }
-}
-
-@Composable
-private fun CrossSellsSubHeaderWithDivider(title: String? = null) {
-  Column {
-    NotificationSubheading(
-      text = title ?: stringResource(string.insurance_tab_cross_sells_title),
-      modifier = Modifier.semantics { heading() },
-    )
-    Spacer(Modifier.height(16.dp))
   }
 }
 
@@ -866,15 +683,11 @@ fun PillowRow(
         text = subtitle,
         style = HedvigTheme.typography.label,
         color = HedvigTheme.colorScheme.textSecondary,
-        maxLines = 1,
-        softWrap = false,
-        modifier = Modifier
-          .hedvigPlaceholder(
-            visible = isLoading,
-            shape = HedvigTheme.shapes.cornerSmall,
-            highlight = PlaceholderHighlight.shimmer(),
-          )
-          .autoScrollingMarquee(),
+        modifier = Modifier.hedvigPlaceholder(
+          visible = isLoading,
+          shape = HedvigTheme.shapes.cornerSmall,
+          highlight = PlaceholderHighlight.shimmer(),
+        ),
       )
     }
     Spacer(Modifier.width(16.dp))
@@ -1005,61 +818,6 @@ private fun PreviewCrossSellsSheetContent(
           recommendedAddon = null,
         )
       }
-    }
-  }
-}
-
-@HedvigPreview
-@Composable
-private fun PreviewCrossSellsFloatingSheetContent(
-  @PreviewParameter(TripleBooleanCollectionPreviewParameterProvider::class) case: TripleCase,
-) {
-  HedvigTheme {
-    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      CrossSellsFloatingSheetContent(
-        recommendedAddon = null,
-        recommendedCrossSell = RecommendedCrossSell(
-          crossSell = CrossSell(
-            "rh",
-            "Car Insurance",
-            "For you and your car",
-            "",
-            ImageAsset("", "", ""),
-            ImageAsset("", "", ""),
-            buttonText = "button",
-          ),
-          bannerText = "50% discount the first year",
-          buttonText = "Explore offer",
-          discountText = "-50%",
-          buttonDescription = "Limited time offer",
-          backgroundPillowImages = ("ds" to "ds"),
-          bundleProgress = BundleProgress(1, 15),
-        ).takeIf { case != TripleCase.THIRD },
-        otherCrossSells = listOf(
-          CrossSell(
-            "id",
-            "title",
-            "subtitle",
-            "",
-            ImageAsset("", "", ""),
-            ImageAsset("", "", ""),
-            buttonText = "button",
-          ),
-        ).takeIf { case != TripleCase.FIRST }.orEmpty(),
-        addons = listOf(
-          AddonBannerInfo(
-            title = "Car Plus",
-            description = "Extended car coverage",
-            labels = listOf(),
-            eligibleInsurancesIds = nonEmptyListOf("id"),
-            flowType = FlowType.APP_CAR_PLUS,
-          ),
-        ).takeIf { case != TripleCase.FIRST }.orEmpty(),
-        dismissSheet = {},
-        onCrossSellClick = {},
-        onAddonClick = {},
-        imageLoader = rememberPreviewImageLoader(),
-      )
     }
   }
 }

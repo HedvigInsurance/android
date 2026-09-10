@@ -51,7 +51,7 @@ import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterPr
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.crosssells.AddonPillow
+import com.hedvig.android.crosssells.AddonsSection
 import com.hedvig.android.crosssells.CrossSellItemPlaceholder
 import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.crosssells.PillowRow
@@ -66,18 +66,14 @@ import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
 import com.hedvig.android.design.system.hedvig.EmptyState
-import com.hedvig.android.design.system.hedvig.FeatureAddonBanner
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
-import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.InsuranceCard
 import com.hedvig.android.design.system.hedvig.InsuranceCardPlaceholder
-import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
-import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
@@ -102,8 +98,6 @@ import hedvig.resources.INSURANCES_NO_ACTIVE
 import hedvig.resources.INSURANCE_ADDONS_SUBHEADING
 import hedvig.resources.Res
 import hedvig.resources.cross_sell_see_price
-import hedvig.resources.insurances_tab_moving_flow_info_button_title
-import hedvig.resources.insurances_tab_moving_flow_info_title
 import hedvig.resources.insurances_tab_terminated_insurance_subtitile
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.pluralStringResource
@@ -258,42 +252,19 @@ private fun InsuranceScreenContent(
               modifier = Modifier.padding(horizontal = 16.dp),
               onSheetDismissed = {},
               imageLoader = imageLoader,
-              withSubHeader = false,
               buttonSize = ButtonSize.Small,
             )
           }
           if (uiState.addonBannerInfoList.isNotEmpty()) {
             Spacer(Modifier.height(24.dp))
-            Row(
-              modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .semantics { heading() },
-              verticalAlignment = Alignment.CenterVertically,
-            ) {
-              HedvigText(text = stringResource(Res.string.INSURANCE_ADDONS_SUBHEADING))
-            }
-            Spacer(Modifier.height(16.dp))
-            uiState.addonBannerInfoList.forEachIndexed { index, bannerInfo ->
-              PillowRow(
-                title = bannerInfo.title,
-                subtitle = bannerInfo.description,
-                pillowImage = null,
-                pillow = { AddonPillow(bannerInfo.flowType) },
-                buttonText = stringResource(Res.string.cross_sell_see_price),
-                onButtonClick = dropUnlessResumed {
-                  onNavigateToAddonPurchaseFlow(bannerInfo.eligibleInsurancesIds.map(::ContractId))
-                },
-                imageLoader = imageLoader,
-                modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(horizontal = 16.dp),
-                buttonSize = ButtonSize.Small,
-              )
-              if (index != uiState.addonBannerInfoList.lastIndex) {
-                Spacer(Modifier.height(16.dp))
-              }
-            }
+            AddonsSection(
+              addons = uiState.addonBannerInfoList,
+              onAddonClick = { eligibleInsuranceIds ->
+                onNavigateToAddonPurchaseFlow(eligibleInsuranceIds.map(::ContractId))
+              },
+              imageLoader = imageLoader,
+              modifier = Modifier.padding(horizontal = 16.dp),
+            )
           }
         }
         if (quantityOfCancelledInsurances > 0) {

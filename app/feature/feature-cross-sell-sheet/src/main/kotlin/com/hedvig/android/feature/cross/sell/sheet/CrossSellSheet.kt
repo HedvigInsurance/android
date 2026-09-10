@@ -70,6 +70,7 @@ fun CrossSellSheet(
     com.hedvig.android.crosssells.CrossSellBottomSheet(
       state = sheetState,
       onCrossSellClick = onCrossSellClick,
+      // This sheet never populates CrossSellSheetData.addons, so no addon row can be tapped here.
       onAddonClick = {},
       imageLoader = imageLoader,
     )

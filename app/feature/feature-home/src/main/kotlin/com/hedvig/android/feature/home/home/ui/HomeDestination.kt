@@ -98,7 +98,7 @@ import com.hedvig.android.compose.pager.indicator.CardCarousel
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.common.image.storyblokResized
-import com.hedvig.android.crosssells.AddonPillow
+import com.hedvig.android.crosssells.AddonsSection
 import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellBottomSheet
 import com.hedvig.android.crosssells.CrossSellSheetData
@@ -1531,32 +1531,16 @@ private fun AddonsSection(
   horizontalInsets: PaddingValues,
   imageLoader: ImageLoader,
 ) {
-  Column(
-    verticalArrangement = Arrangement.spacedBy(16.dp),
+  AddonsSection(
+    addons = addonBannerInfos,
+    onAddonClick = navigateToAddonPurchaseFlow,
+    imageLoader = imageLoader,
+    headingStyle = HedvigTheme.typography.headlineSmall,
     modifier = Modifier
       .fillMaxWidth()
       .padding(horizontal = 16.dp)
       .padding(horizontalInsets),
-  ) {
-    HedvigText(
-      text = stringResource(string.INSURANCE_ADDONS_SUBHEADING),
-      style = HedvigTheme.typography.headlineSmall,
-      modifier = Modifier.semantics { heading() },
-    )
-    addonBannerInfos.forEach { addon ->
-      PillowRow(
-        title = addon.title,
-        subtitle = addon.description,
-        pillowImage = null,
-        pillow = { AddonPillow(addon.flowType) },
-        buttonText = stringResource(string.cross_sell_see_price),
-        onButtonClick = { navigateToAddonPurchaseFlow(addon.eligibleInsurancesIds) },
-        imageLoader = imageLoader,
-        modifier = Modifier.fillMaxWidth(),
-        buttonSize = ButtonSize.Small,
-      )
-    }
-  }
+  )
 }
 
 @Composable
@@ -1571,7 +1555,6 @@ private fun DiscoverInsurancesSection(
     modifier = Modifier.padding(horizontal = 16.dp),
     onSheetDismissed = {},
     imageLoader = imageLoader,
-    withSubHeader = false,
     buttonSize = ButtonSize.Small,
   )
 }
