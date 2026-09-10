@@ -96,7 +96,7 @@ pup rum aggregate \
   --compute count --group-by @view.name --limit 120 --from 30d
 ```
 
-### The 8 metrics to edit, with their target filters
+### The 6 metrics to edit, with their target filters
 
 Apply with `pup rum metrics update <id> --file payload.json`, where the payload is:
 
@@ -140,17 +140,31 @@ Apply with `pup rum metrics update <id> --file payload.json`, where the payload 
 @application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:com.hedvig.android.feature.claim.chat.navigation.* @error.source:network @connectivity.status:connected -@error.stack:java.net.ConnectException* -@error.stack:java.net.SocketException* -@error.stack:java.net.SocketTimeoutException* -@error.stack:java.net.UnknownHostException* -@error.stack:java.util.concurrent.CancellationException*
 ```
 
-#### `android.login.network.count`
+#### The two login metrics are not in this list
+
+**Superseded 2026-09-09. Do not put a `@view.name` filter on `android.login.network.count` or
+`android.login.network.error`.**
+
+Both were rebuilt on auth resource events and no longer mention `@view.name` at all. Their live
+filters are:
 
 ```
-@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:com.hedvig.android.feature.login.navigation.SwedishLoginKey @connectivity.status:connected
+count   @application.id:4d7b8355-396d-406e-b543-30a073050e8f @resource.url_host:(auth.prod.hedvigit.com OR auth.dev.hedvigit.com) @resource.url_path:"/member-login" @session.type:user
+error   the same, plus @resource.status_code:[500 TO 599]
 ```
 
-#### `android.login.network.error`
+Both are `event_type: resource` grouped by `env`, so the failure count is a subset of the attempt
+count by construction. SLO `29588e73473d54f09814173755548b80` moved to a 30-day window and monitor
+`93408872` follows it.
 
-```
-@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:com.hedvig.android.feature.login.navigation.SwedishLoginKey @connectivity.status:connected -@error.stack:java.net.ConnectException* -@error.stack:java.net.SocketException* -@error.stack:java.net.SocketTimeoutException* -@error.stack:java.net.UnknownHostException* -@error.stack:java.util.concurrent.CancellationException* -@error.stack:*CertPathValidatorException* -@error.message:*CertPathValidatorException* -@error.message:*Connection\ reset*
-```
+Applying a view-name filter here would put the denominator back to counting `apollo-router` calls
+that merely coincided with the login screen being open. That is the defect that made this SLO report
+534.351% of its error budget with no outage behind it: 96 of its 131 denominator events were GraphQL
+traffic, and the numerator counted a different event type entirely.
+
+Note for whoever does the remaining six: `event_type` cannot be changed with `pup rum metrics update`.
+The PATCH returns 200, applies the filter and silently discards the event type. A change of event
+type needs a delete and recreate under the same name, which does not purge the existing timeseries.
 
 #### `android.changeaddress.view.count`
 
@@ -312,6 +326,9 @@ the only reliable source.
 ```
 
 #### `android.login.network.count`
+
+Historical only. These two were rebuilt on 2026-09-09 and rolling them back to the filter below
+would undo that. See the superseded note above.
 
 ```
 @application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:com.hedvig.android.feature.login.navigation.LoginDestinations.SwedishLogin @connectivity.status:connected
