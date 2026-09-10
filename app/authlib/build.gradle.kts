@@ -19,7 +19,14 @@ kotlin {
       implementation(libs.ktor.client.logging)
     }
     jvmMain.dependencies {
+      api(libs.ktor.client.core)
       implementation(libs.ktor.client.okhttp)
+    }
+    jvmTest.dependencies {
+      implementation(kotlin("test"))
+      implementation(libs.assertK)
+      implementation(libs.coroutines.test)
+      implementation(libs.ktor.client.mock)
     }
     iosMain.dependencies {
       implementation(libs.ktor.client.darwin)
