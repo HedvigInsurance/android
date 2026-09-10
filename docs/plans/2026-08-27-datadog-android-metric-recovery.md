@@ -1,8 +1,10 @@
 # Datadog Android metric recovery
 
-**Status: partially complete. One scheduled follow-up is blocked on an app release.**
+**Status: three items open.** The `OR`-branch cleanup is blocked on the pre-14.3.6 install base
+draining, which was still about 13% of prod view traffic on 2026-09-10. The
+claim-submission-failure action is unstarted. The guard-rail monitor is also still just a suggestion.
 
-Last updated 2026-08-28.
+Last updated 2026-09-10.
 
 ## What broke
 
