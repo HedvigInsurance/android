@@ -27,6 +27,8 @@ kmpNativeCoroutines = "1.0.5"
 kotlin = "2.4.10"
 kotlinpoet = "2.3.0"
 kotlinter = "5.6.0"
+# Must match the ktlint that kotlinter bundles, so the custom ruleset links against the same API
+ktlintCore = "1.8.0"
 ksp = "2.3.10"
 ktor = "3.5.1"
 license = "0.9.9"
@@ -271,6 +273,8 @@ kmpNativeCoroutines-gradlePlugin = { module = "com.rickclephas.kmp.nativecorouti
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlinSerialization-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 kotlinter-gradlePlugin = { module = "org.jmailen.gradle:kotlinter-gradle", version.ref = "kotlinter" }
+ktlint-ruleEngineCore = { module = "com.pinterest.ktlint:ktlint-rule-engine-core", version.ref = "ktlintCore" }
+ktlint-cliRulesetCore = { module = "com.pinterest.ktlint:ktlint-cli-ruleset-core", version.ref = "ktlintCore" }
 ksp-gradlePlugin = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 license-gradlePlugin = { module = "com.jaredsburrows.license:com.jaredsburrows.license.gradle.plugin", version.ref = "license" }
 metro-gradlePlugin = { module = "dev.zacsweers.metro:dev.zacsweers.metro.gradle.plugin", version.ref = "metro" }

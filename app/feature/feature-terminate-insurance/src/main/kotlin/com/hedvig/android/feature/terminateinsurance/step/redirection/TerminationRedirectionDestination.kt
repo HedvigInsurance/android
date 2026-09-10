@@ -156,7 +156,8 @@ private fun PreviewTerminationRedirectionDestinationWithImage() {
       TerminationRedirectionDestination(
         redirection = SurveyOptionRedirection(
           title = "Bring Hedvig to your new home",
-          description = "Move your insurance to your new home with Hedvig and get 15% off your home insurance the first year.",
+          description = "Move your insurance to your new home with Hedvig and get 15% off your home insurance " +
+            "the first year.",
           type = RedirectionType.UPDATE_ADDRESS,
           actionText = "See price for new home",
           image = RedirectionImage(url = "", overlayText = "15% off"),
@@ -179,7 +180,8 @@ private fun PreviewTerminationRedirectionDestinationWithoutImage() {
       TerminationRedirectionDestination(
         redirection = SurveyOptionRedirection(
           title = "Bring Hedvig to your new home",
-          description = "Move your insurance to your new home with Hedvig and get 15% off your home insurance the first year.",
+          description = "Move your insurance to your new home with Hedvig and get 15% off your home insurance " +
+            "the first year.",
           type = RedirectionType.UPDATE_ADDRESS,
           actionText = "See price for new home",
           image = null,
