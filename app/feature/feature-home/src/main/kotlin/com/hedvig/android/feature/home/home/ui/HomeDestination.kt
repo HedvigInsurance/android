@@ -1358,22 +1358,23 @@ private fun QuickActionTilesSection(
   onEditInsurance: (MultiSelectExpandedLink) -> Unit,
   horizontalInsets: PaddingValues,
 ) {
+  val contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets
   Column(
     verticalArrangement = Arrangement.spacedBy(8.dp),
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(horizontal = 16.dp)
-      .padding(horizontalInsets),
+    modifier = Modifier.fillMaxWidth(),
   ) {
     HedvigText(
       text = stringResource(Res.string.HC_QUICK_ACTIONS_TITLE),
       style = HedvigTheme.typography.headlineSmall,
-      modifier = Modifier.semantics { heading() },
+      modifier = Modifier
+        .padding(contentPadding)
+        .semantics { heading() },
     )
     Row(
       horizontalArrangement = Arrangement.spacedBy(8.dp),
       modifier = Modifier
         .horizontalScroll(rememberScrollState())
+        .padding(contentPadding)
         .height(IntrinsicSize.Max),
     ) {
       quickActions.forEach { action ->
@@ -1390,7 +1391,6 @@ private fun QuickActionTilesSection(
             .fillMaxHeight(),
         )
       }
-      Spacer(Modifier.width(8.dp))
     }
   }
 }
