@@ -123,6 +123,7 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
       globalSnackBarState = globalSnackBarState,
       onSuccessfullyConnected = { backstack.popUpTo<SelectPayinMethodKey>(inclusive = true) },
       navigateUp = backstack::navigateUp,
+      navigateBack = backstack::popBackstack,
       openUrl = {
         backstack.popUpTo<SelectPayinMethodKey>(inclusive = true)
         openUrl(it)
