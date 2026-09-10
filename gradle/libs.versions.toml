@@ -24,7 +24,7 @@ googleServices = "4.5.0"
 gradleDevelocity = "4.5.0"
 kctfork = "0.13.0"
 kmpNativeCoroutines = "1.0.5"
-kotlin = "2.4.10"
+kotlin = "2.4.20"
 kotlinpoet = "2.3.0"
 kotlinter = "5.6.0"
 # Must match the ktlint that kotlinter bundles, so the custom ruleset links against the same API
