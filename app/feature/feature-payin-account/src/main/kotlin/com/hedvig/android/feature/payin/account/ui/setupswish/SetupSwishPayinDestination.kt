@@ -55,6 +55,8 @@ import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.colored.Swish
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.payin.account.ui.components.PayinMethodMarkSize
 import com.hedvig.android.feature.payin.account.ui.components.PayinMethodTile
 import com.hedvig.android.feature.payin.account.ui.components.PayinMethodTileBadge
@@ -93,9 +95,6 @@ internal fun SetupSwishPayinDestination(
     navigateUp = navigateUp,
     navigateBack = navigateBack,
     openUrl = openUrl,
-    onLearnMoreAboutRecurringSwish = {
-      // TODO: open the recurring-Swish explanation once we know where it lives.
-    },
     updateText = {
       viewModel.emit(SetupSwishPayoutEvent.UpdateText(it))
     },
@@ -113,7 +112,6 @@ private fun SetupSwishPayinScreen(
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
   openUrl: (String) -> Unit,
-  onLearnMoreAboutRecurringSwish: () -> Unit,
   updateText: (String) -> Unit,
 ) {
   val changesSaved = stringResource(Res.string.CONTACT_INFO_CHANGES_SAVED)
@@ -122,6 +120,14 @@ private fun SetupSwishPayinScreen(
     globalSnackBarState.show(changesSaved, NotificationPriority.Campaign)
     showedSnackBar()
   }
+
+  val explanationSheetState = rememberHedvigBottomSheetState<Unit>()
+  RecurringSwishExplanationBottomSheet(
+    sheetState = explanationSheetState,
+    onLearnMore = {
+      // TODO: point this at the recurring-Swish article once we know where it lives.
+    },
+  )
 
   val successUrl = uiState.successUrl
   HedvigScaffold(
@@ -177,7 +183,7 @@ private fun SetupSwishPayinScreen(
       EnterPhoneNumberSection(
         uiState = uiState,
         onSave = onSave,
-        onLearnMoreAboutRecurringSwish = onLearnMoreAboutRecurringSwish,
+        onLearnMoreAboutRecurringSwish = { explanationSheetState.show() },
         updateText = updateText,
       )
     } else {
@@ -316,7 +322,6 @@ private fun PreviewSetupSwishPayinScreen(
         navigateUp = {},
         navigateBack = {},
         openUrl = {},
-        onLearnMoreAboutRecurringSwish = {},
         updateText = {},
       )
     }
