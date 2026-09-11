@@ -14,13 +14,17 @@ import dev.zacsweers.metro.SingleIn
 import octopus.ClaimIntentSubmitSelectMutation
 import octopus.type.ClaimIntentSubmitSelectInput
 
+internal interface SubmitSelectUseCase {
+  suspend fun invoke(id: StepId, selectedId: String): Either<ClaimChatErrorMessage, ClaimIntent>
+}
+
 @SingleIn(AppScope::class)
 @Inject
-internal class SubmitSelectUseCase(
+internal class SubmitSelectUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
-) {
-  suspend fun invoke(id: StepId, selectedId: String): Either<ClaimChatErrorMessage, ClaimIntent> {
+) : SubmitSelectUseCase {
+  override suspend fun invoke(id: StepId, selectedId: String): Either<ClaimChatErrorMessage, ClaimIntent> {
     return either {
       apolloClient
         .mutation(

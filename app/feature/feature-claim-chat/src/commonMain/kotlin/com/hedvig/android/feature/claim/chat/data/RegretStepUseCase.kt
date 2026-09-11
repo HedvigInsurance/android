@@ -8,7 +8,6 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
-import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import octopus.ClaimIntentRegretStepMutation
@@ -17,7 +16,6 @@ internal interface RegretStepUseCase {
   suspend fun invoke(id: StepId): Either<ClaimChatErrorMessage, ClaimIntent>
 }
 
-@ContributesBinding(AppScope::class)
 @SingleIn(AppScope::class)
 @Inject
 internal class RegretStepUseCaseImpl(
