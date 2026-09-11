@@ -39,6 +39,16 @@ class AuthMetroProvidersTest {
 
     assertThat(engine.requestHistory.single().url.host).isEqualTo("auth.prod.hedvigit.com")
   }
+
+  @Test
+  fun `a non-production build reaches the staging auth host`() = runTest {
+    val engine = MockEngine { respond(content = "", status = HttpStatusCode.InternalServerError) }
+
+    val repository = providers.provideAuthRepository(buildConstants(isProduction = false), engine)
+    repository.startLoginAttempt(LoginMethod.SE_BANKID, OtpMarket.SE)
+
+    assertThat(engine.requestHistory.single().url.host).isEqualTo("auth.dev.hedvigit.com")
+  }
 }
 
 private fun buildConstants(isProduction: Boolean) = object : HedvigBuildConstants {
