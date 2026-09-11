@@ -1,10 +1,9 @@
 # Datadog Android metric recovery
 
-**Status: four items open.** Two are time-boxed to the release carrying the auth instrumentation:
-cover the auth-unreachable failure mode on monitor `93408872` a few days after, and take the SLO
-window back to 7 days about a week after. See "After the release" below, and note that the
-`notify_no_data` flag originally written down for the first of those does not work on an SLO alert
-monitor, so that item needs a different mechanism. The `OR`-branch cleanup is blocked on the
+**Status: three items open.** One is time-boxed to the release carrying the auth instrumentation:
+take the SLO window back to 7 days about a week after. See "After the release" below. The
+auth-unreachable gap that used to be a fourth item is closed as accepted, also below. The
+`OR`-branch cleanup is blocked on the
 pre-14.3.6 install base draining. Measured 2026-09-11, versions at or below 14.3.2 were 12.0% of
 prod view events over 30 days but only **1.1% over 7 days and 0.8% over one day**, so the 30-day
 figure lags badly and the trigger is closer than it looks. The claim-submission-failure action is
@@ -262,30 +261,36 @@ roughly the same 1.4%. This metric is the denominator of the Claims flow (Androi
 reads marginally better. Two keys in the new scope, `StartClaimPledgeKey` and `UpdateAppKey`, have no
 old equivalent to measure, but neither issues network requests in normal use.
 
-## After the release: two follow-ups on the login SLO
+## Accepted: this SLO cannot see an unreachable auth service
 
-Both wait for the release that carries the auth instrumentation, because before it there is
-legitimately no prod data on `android.login.network.count`. The second is a change to monitor
-`93408872`; the first, as it turns out, cannot be.
+**Decided 2026-09-11. No action. Do not reopen this without new information.**
 
-### A few days after: cover the auth-unreachable failure mode
+The SLI counts `POST /member-login` resource events with a 5xx status. A request that never reaches
+the server produces a RUM error and no resource at all, so it lands in neither side of the ratio. If
+auth becomes unreachable the denominator collapses toward zero and the SLI reads 100% or no-data.
+Nothing fires. The worst outage produces the best number and silence.
 
-**The obvious lever does not exist.** An earlier version of this document said to flip
-`notify_no_data` to `true` on monitor `93408872`. That monitor is `type: "slo alert"`, and
-`notify_no_data` is not honoured on SLO alert monitors: the field reads `false` and carries no
-`no_data_timeframe`. It is not a setting someone forgot to turn on. Across the org, all 32 SLO alert
-monitors have it `false`, and the only 2 monitors setting it `true` are ordinary metric monitors.
-So the gap below is real but needs a separate monitor to cover, not a flag. **That choice is open.**
+An earlier version of this document said to cover that by flipping `notify_no_data` to `true` on
+monitor `93408872`. **That does not work.** The monitor is `type: "slo alert"`, and `notify_no_data`
+is not honoured on SLO alert monitors: the field reads `false` and carries no `no_data_timeframe`.
+It is not a setting someone forgot to turn on. Across the org, all 32 SLO alert monitors have it
+`false`, and the only 2 monitors setting it `true` are ordinary metric monitors.
 
-**Why it matters.** The SLI counts `POST /member-login` resource events with a 5xx status. A request that never
-reaches the server produces a RUM error and no resource at all, so it lands in neither side of the
-ratio. If auth becomes unreachable the denominator collapses toward zero and the SLI reads 100% or
-no-data. Nothing fires, so the worst outage produces the best number and silence. Treating the
-collapse itself as the alert is the only cover for the one failure mode this SLI cannot otherwise
-see, and on an SLO alert monitor that means a second monitor watching
-`sum:android.login.network.count` for an absence.
+Covering it properly would mean a second monitor watching `sum:android.login.network.count` for an
+absence. That is not being built, for two reasons. The gap has existed for as long as the SLO has,
+so nothing is getting worse. And an auth service that is actually unreachable is already caught
+server-side by `Auth: post auth` and `Auth: get member credentials`, which run on APM traces with
+the full population and no client sampling, so someone gets paged either way. What this SLO uniquely
+sees is the network path between the member and the server, which is also the part Android cannot
+fix.
 
-### About a week after: take the SLO window back to 7 days
+The thing to remember is the reading rule: **a green `Auth: login (Android)` is not by itself
+evidence that login works.** Check that the denominator is non-zero before believing it.
+
+## After the release: take the SLO window back to 7 days
+
+This waits for the release that carries the auth instrumentation, because before it there is
+legitimately no prod data on `android.login.network.count`. About a week after it is the right time.
 
 Set the SLO `timeframe` and its `thresholds[].timeframe` back to `7d`, and the monitor query back to
 `error_budget("29588e73473d54f09814173755548b80").over("7d")`. All three have to move together or
