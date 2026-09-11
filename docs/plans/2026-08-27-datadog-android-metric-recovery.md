@@ -5,8 +5,10 @@ take the SLO window back to 7 days about a week after. See "After the release" b
 auth-unreachable gap that used to be a fourth item is closed as accepted, also below.
 
 The `OR`-branch cleanup is blocked on the pre-14.3.6 install base draining. Measured 2026-09-11,
-versions at or below 14.3.2 were 12.0% of prod view events over 30 days but only **1.1% over 7 days
-and 0.8% over one day**, so the 30-day figure lags badly and the trigger is closer than it looks.
+versions at or below 14.3.2 were about 11.5% of prod view events over 30 days but only **1.1% over 7
+days and 0.7% over one day**, so the 30-day figure lags badly and the trigger is closer than it
+looks. Every number in this document is re-runnable; the commands are inline next to each one, and
+they should be re-run rather than trusted, because most of these are still moving.
 
 The claim-submission-failure action is unstarted, and the guard-rail monitor is still just a
 suggestion.
@@ -67,7 +69,18 @@ measures and they will confuse the next person.
 
 ### Trigger condition
 
-Remove them once traffic from app versions at or below 14.3.2 is negligible. Check with:
+Remove them once traffic from app versions at or below 14.3.2 is negligible.
+
+To get the share directly, over any window (this is where the header's 30d/7d/1d figures come from):
+
+```bash
+pup rum aggregate \
+  --query '@type:view @application.id:4d7b8355-396d-406e-b543-30a073050e8f @session.type:user' \
+  --compute count --group-by version --limit 200 --from 7d
+```
+
+Sum the buckets whose version is at or below 14.3.2 and divide by the total. Or check a single
+known-old view name, which returns nothing once the old builds are gone:
 
 ```
 pup rum aggregate \
@@ -275,14 +288,26 @@ Nothing fires. The worst outage produces the best number and silence.
 An earlier version of this document said to cover that by flipping `notify_no_data` to `true` on
 monitor `93408872`. **That does not work.** The monitor is `type: "slo alert"`, and `notify_no_data`
 is not honoured on SLO alert monitors: the field reads `false` and carries no `no_data_timeframe`.
+
+```bash
+pup api "/api/v1/monitor/93408872" | jq '.data | {type, notify_no_data: .options.notify_no_data}'
+```
+
 It is not a setting someone forgot to turn on. Across the org, all 32 SLO alert monitors have it
-`false`, and the only 2 monitors setting it `true` are ordinary metric monitors.
+`false`, and the only 2 monitors setting it `true` are ordinary metric monitors, both of the
+"no signs on the website" absence-alarm kind:
+
+```bash
+pup api "/api/v1/monitor?page_size=1000" \
+  | jq -r '.data[] | [.type, (.options.notify_no_data|tostring), .name] | @tsv' \
+  | sort | uniq -c -f1
+```
 
 Covering it properly would mean a second monitor watching `sum:android.login.network.count` for an
 absence. That is not being built, for two reasons. The gap has existed for as long as the SLO has,
-so nothing is getting worse. And an auth service that is actually unreachable is already caught
-server-side by `Auth: post auth` and `Auth: get member credentials`, which run on APM traces with
-the full population and no client sampling, so someone gets paged either way. What this SLO uniquely
+so nothing is getting worse. And a genuinely unreachable auth service is already caught server-side
+by the `Auth: post auth` and `Auth: get member credentials` SLOs, which run on APM traces with the
+full population and no client sampling, so someone gets paged either way. What this SLO uniquely
 sees is the network path between the member and the server, which is also the part Android cannot
 fix.
 
@@ -306,17 +331,29 @@ usable budget, and shortening it takes that back. At the expected volume:
 
 | Window and target | Budget |
 |---|---|
-| 7d at 99% | about 7 failures |
-| 30d at 99% | about 30 failures |
-| 7d at 97% | about 21 failures |
+| 7d at 99% | about 8 failures |
+| 30d at 99% | about 34 failures |
+| 7d at 97% | about 23 failures |
 
-Based on 3,014 Swedish-login view impressions over the 30 days to 2026-09-11, so roughly 703 attempts
-a week, around 100 a day. A 7-day window at 99% means any week with seven 5xx responses breaches.
+Based on Swedish-login view impressions over the 30 days to 2026-09-11, which read 3,361 and are
+climbing, so roughly 780 attempts a week, a bit over 100 a day. A 7-day window at 99% means any week
+with eight 5xx responses breaches. Re-read the input with:
 
-**Re-measure before acting on this.** An earlier reading of the same query returned 1,547, half the
-current figure, because login-view impressions were themselves suppressed by the Nav3 breakage and
-are still recovering as the fixed build rolls out. The input is moving, and moving upward, so treat
-these numbers as a floor. Retries also mean one member can produce more than one attempt. If that turns out to be normal variance
+```bash
+pup rum aggregate \
+  --query '@type:view @application.id:4d7b8355-396d-406e-b543-30a073050e8f @session.type:user
+           @view.name:(com.hedvig.android.feature.login.navigation.SwedishLoginKey OR
+                       com.hedvig.android.feature.login.navigation.LoginDestinations.SwedishLogin)' \
+  --compute count --from 30d
+```
+
+Both names are needed: the second is the pre-14.3.6 spelling, and dropping it undercounts.
+
+**Re-measure before acting on this.** An earlier reading of the same query returned 1,547, less than
+half the current figure, because login-view impressions were themselves suppressed by the Nav3
+breakage and are still recovering as the fixed build rolls out. The input is moving, and moving
+upward, so treat these numbers as a floor. Retries also mean one member can produce more than one
+attempt. If that turns out to be normal variance
 rather than a real signal, the lever to reach for is the **target**, not the window: 7d at a lower
 target buys headroom and keeps fast recovery. Pick it from the first weeks of real data rather than
 assuming 99%, which was inherited and never chosen for this signal.
@@ -330,44 +367,6 @@ burn_rate("<slo id>").over("7d").long_window("1h").short_window("5m") > 16.8
 ```
 
 Revisit if the 7d window turns out to flap.
-
-## What already measures auth, so nobody builds it a third time
-
-Checked 2026-09-11. Two server-side SLOs already cover auth availability, on APM traces rather than
-RUM, with the full population and no client sampling:
-
-| SLO | Built on | SLI at the time of checking |
-|---|---|---|
-| Auth: post auth | `trace.http.request.*`, `service:auth` | 99.958% |
-| Auth: get member credentials | `trace.http.request.*`, `service:auth` | 100% |
-
-`Auth: login (Android)` is a client-side view of a question those two already answer better. What it
-adds is the network path between the member and the server, which is real, but is also the part
-Android cannot fix. Worth knowing before anyone treats it as the primary defence for auth, or
-rebuilds backend auth availability inside RUM.
-
-`Auth: login (iOS)` does exist (`9028984bed7351dc92b7e58e5c7db82f`, 7d at 99%, monitor `93102231`)
-and reads 99.95%, state OK. **That is not reassurance.** Checked 2026-09-11, it is
-
-```
-(sum:ios.login.network.count - sum:ios.login.network.error) / sum:ios.login.network.count
-```
-
-which is the Android defect exactly. `ios.login.network.count` is `event_type: resource`,
-`ios.login.network.error` is `event_type: error`, so the numerator subtracts one kind of event from
-a count of a different kind and can go negative. That is what made the Android SLO report 534% of
-its budget. The two halves do not even agree on what screen they watch: the count filters
-`@view.name:BankIDLoginQRView`, the error filters `@view.name:(BankIDLoginQR OR BankIDLoginQRView)`,
-and the error metric carries no `@application.id` filter at all.
-
-It looks healthy for the same reason the Android one looked healthy right up until it did not.
-Android got paged first because its view names broke, not because iOS is better instrumented. This
-is worth raising with the iOS side; it is their metric to fix, and nothing in this repo can.
-
-Also worth knowing as a precedent: `Purchase: completed signs` is an SLO over
-`hedvig.events.signing.completed / hedvig.events.signing.started` with a **70%** target. So the org already has a funnel SLO built on
-explicit events rather than HTTP outcomes, and already accepts a target chosen from reality instead
-of a round number.
 
 ## Guard rail worth adding
 
