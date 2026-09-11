@@ -13,13 +13,17 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import octopus.ResumeClaimQuery
 
+internal interface ResumeClaimUseCase {
+  suspend fun invoke(): Either<ClaimChatErrorMessage, ClaimIntent?>
+}
+
 @SingleIn(AppScope::class)
 @Inject
-internal class ResumeClaimUseCase(
+internal class ResumeClaimUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
-) {
-  suspend fun invoke(): Either<ClaimChatErrorMessage, ClaimIntent?> {
+) : ResumeClaimUseCase {
+  override suspend fun invoke(): Either<ClaimChatErrorMessage, ClaimIntent?> {
     return either {
       apolloClient
         .query(

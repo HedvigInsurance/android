@@ -14,13 +14,17 @@ import octopus.ClaimIntentSubmitFormMutation
 import octopus.type.ClaimIntentFormSubmitInputField
 import octopus.type.ClaimIntentSubmitFormInput
 
+internal interface SubmitFormUseCase {
+  suspend fun invoke(formData: FormSubmissionData): Either<ClaimChatErrorMessage, ClaimIntent>
+}
+
 @SingleIn(AppScope::class)
 @Inject
-internal class SubmitFormUseCase(
+internal class SubmitFormUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
-) {
-  suspend fun invoke(formData: FormSubmissionData): Either<ClaimChatErrorMessage, ClaimIntent> {
+) : SubmitFormUseCase {
+  override suspend fun invoke(formData: FormSubmissionData): Either<ClaimChatErrorMessage, ClaimIntent> {
     return either {
       apolloClient
         .mutation(

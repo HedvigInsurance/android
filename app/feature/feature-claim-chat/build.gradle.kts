@@ -55,12 +55,19 @@ kotlin {
       implementation(projects.uiForceUpgrade)
       implementation(projects.partnersDeflect)
     }
+    commonTest.dependencies {
+      implementation(libs.assertK)
+      implementation(libs.coroutines.test)
+      implementation(libs.kotlin.test)
+      implementation(libs.turbine)
+    }
     androidMain.dependencies {
       implementation(libs.accompanist.permissions)
       implementation(libs.androidx.activity.compose)
       implementation(libs.bundles.kmpPreviewBugWorkaround)
       implementation(libs.rive.android)
       implementation(projects.composeUi)
+      implementation(projects.coreDemoMode)
       implementation(projects.coreRive)
       implementation(projects.navigationCommon)
       implementation(projects.navigationCompose)
