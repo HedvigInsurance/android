@@ -1,11 +1,14 @@
 # Datadog Android metric recovery
 
 **Status: four items open.** Two are time-boxed to the release carrying the auth instrumentation:
-flip `notify_no_data` on monitor `93408872` a few days after, and take the SLO window back to 7 days
-about a week after. See "After the release" below. The `OR`-branch cleanup is
-blocked on the pre-14.3.6 install base draining, which was still about 13% of prod view traffic on
-2026-09-10. The claim-submission-failure action is unstarted. The guard-rail monitor is also still
-just a suggestion.
+cover the auth-unreachable failure mode on monitor `93408872` a few days after, and take the SLO
+window back to 7 days about a week after. See "After the release" below, and note that the
+`notify_no_data` flag originally written down for the first of those does not work on an SLO alert
+monitor, so that item needs a different mechanism. The `OR`-branch cleanup is blocked on the
+pre-14.3.6 install base draining. Measured 2026-09-11, versions at or below 14.3.2 were 12.0% of
+prod view events over 30 days but only **1.1% over 7 days and 0.8% over one day**, so the 30-day
+figure lags badly and the trigger is closer than it looks. The claim-submission-failure action is
+unstarted. The guard-rail monitor is also still just a suggestion.
 
 Last updated 2026-09-11.
 
@@ -21,7 +24,8 @@ Measured: app versions up to 14.3.2 emit 42 to 79 distinct `@view.name` values; 
 three or four, all activity-level. All 18 custom `android.*` RUM metrics filter on `@view.name` or
 `@view.url`, so all 18 broke. Control: `trace.android.request.hits` was flat across the same window
 (1.39M vs 1.41M), so usage never changed. The 13 `ios.*` metrics were unaffected, because iOS names
-views differently and its two newest metrics are action-based.
+views differently. Three of the 13 are action-based, which is a separate property worth knowing but
+not the reason they survived.
 
 Consumers all reference the metrics **by name**, so the "Apps (Android + iOS)" dashboard, monitor
 12054196, and the three Android SLOs need no edits of their own. The SLOs are metric-based
@@ -222,10 +226,16 @@ Action-based metrics do not break when navigation changes.
 
 To be precise about why no iOS metric broke here: the Nav2 to Nav3 migration was Android-only, so
 iOS view names never moved. Only 3 of the 13 `ios.*` metrics are actually action-based
-(`ios.addonPurchased`, `ios.addonUpgraded`, `ios.claims.end.count`). Those three are the only metrics
-in the whole org immune to a rename, and iOS emits them through `log.addUserAction(...)` in
-`DatadogLogger.swift` with the names held as a Swift enum in `ChangeAddonViewModel.swift`. So this is
-not a novel idea, it is catching up to a pattern already in production on the other platform.
+(`ios.addonPurchased`, `ios.addonUpgraded`, `ios.claims.end.count`), and only two of them are
+genuinely rename-proof. Those two take their names from a Swift enum in `ChangeAddonViewModel.swift`
+and go out through `log.addUserAction(...)`, whose sink is `DatadogLogger.swift`. The third is a
+cautionary tale: `ios.claims.end.count` filters
+`@action.name:ClaimIntentStepContentSummary`, which `ClaimIntentClientOctopus.swift` emits as
+`content.__typename`, a GraphQL type name owned by the backend schema. Rename that type and the
+metric dies silently, so an action name is only durable if the app owns the constant.
+
+So this is not a novel idea, it is catching up to a pattern already in production on the other
+platform, with one example of how to get it wrong.
 
 The counter-example is on iOS too. `ios.login.network.error` excludes user-facing translated strings,
 both the English and Swedish wording of the BankID cancellation and the "no existing Hedvig member"
@@ -252,23 +262,28 @@ roughly the same 1.4%. This metric is the denominator of the Claims flow (Androi
 reads marginally better. Two keys in the new scope, `StartClaimPledgeKey` and `UpdateAppKey`, have no
 old equivalent to measure, but neither issues network requests in normal use.
 
-## After the release: two changes to monitor 93408872
+## After the release: two follow-ups on the login SLO
 
 Both wait for the release that carries the auth instrumentation, because before it there is
-legitimately no prod data on `android.login.network.count`.
+legitimately no prod data on `android.login.network.count`. The second is a change to monitor
+`93408872`; the first, as it turns out, cannot be.
 
-### A few days after: flip `notify_no_data` to true
+### A few days after: cover the auth-unreachable failure mode
 
-Start with `no_data_timeframe` around 12 hours and tighten once the real overnight pattern is
-visible. Login runs at roughly 50 attempts a day, about two an hour, so a tighter window will page
-on an ordinary quiet night.
+**The obvious lever does not exist.** An earlier version of this document said to flip
+`notify_no_data` to `true` on monitor `93408872`. That monitor is `type: "slo alert"`, and
+`notify_no_data` is not honoured on SLO alert monitors: the field reads `false` and carries no
+`no_data_timeframe`. It is not a setting someone forgot to turn on. Across the org, all 32 SLO alert
+monitors have it `false`, and the only 2 monitors setting it `true` are ordinary metric monitors.
+So the gap below is real but needs a separate monitor to cover, not a flag. **That choice is open.**
 
-**Why.** The SLI counts `POST /member-login` resource events with a 5xx status. A request that never
+**Why it matters.** The SLI counts `POST /member-login` resource events with a 5xx status. A request that never
 reaches the server produces a RUM error and no resource at all, so it lands in neither side of the
 ratio. If auth becomes unreachable the denominator collapses toward zero and the SLI reads 100% or
-no-data. With `notify_no_data: false` nothing fires, so the worst outage produces the best number and
-silence. Treating the collapse itself as the alert is the cheapest cover for the one failure mode
-this SLI cannot otherwise see.
+no-data. Nothing fires, so the worst outage produces the best number and silence. Treating the
+collapse itself as the alert is the only cover for the one failure mode this SLI cannot otherwise
+see, and on an SLO alert monitor that means a second monitor watching
+`sum:android.login.network.count` for an absence.
 
 ### About a week after: take the SLO window back to 7 days
 
@@ -284,19 +299,30 @@ usable budget, and shortening it takes that back. At the expected volume:
 
 | Window and target | Budget |
 |---|---|
-| 7d at 99% | about 3.6 failures |
-| 30d at 99% | about 15.5 failures |
-| 7d at 97% | about 10.8 failures |
+| 7d at 99% | about 7 failures |
+| 30d at 99% | about 30 failures |
+| 7d at 97% | about 21 failures |
 
-Based on 1,547 login-screen impressions over 30 days, so roughly 361 attempts a week. A 7-day window
-at 99% means any week with four 5xx responses breaches. If that turns out to be normal variance
+Based on 3,014 Swedish-login view impressions over the 30 days to 2026-09-11, so roughly 703 attempts
+a week, around 100 a day. A 7-day window at 99% means any week with seven 5xx responses breaches.
+
+**Re-measure before acting on this.** An earlier reading of the same query returned 1,547, half the
+current figure, because login-view impressions were themselves suppressed by the Nav3 breakage and
+are still recovering as the fixed build rolls out. The input is moving, and moving upward, so treat
+these numbers as a floor. Retries also mean one member can produce more than one attempt. If that turns out to be normal variance
 rather than a real signal, the lever to reach for is the **target**, not the window: 7d at a lower
 target buys headroom and keeps fast recovery. Pick it from the first weeks of real data rather than
 assuming 99%, which was inherited and never chosen for this signal.
 
 Burn-rate alerting solves both the recovery time and the sensitivity properly, and is the textbook
-answer. It was deliberately not done, because it needs a new monitor and real traffic to size
-thresholds against. Revisit if the 7d window turns out to flap.
+answer. It was not done here only because it needs a new monitor, but the sizing does not have to be
+invented: the org already runs 9 burn-rate monitors, shaped like
+
+```
+burn_rate("<slo id>").over("7d").long_window("1h").short_window("5m") > 16.8
+```
+
+Revisit if the 7d window turns out to flap.
 
 ## What already measures auth, so nobody builds it a third time
 
@@ -313,11 +339,15 @@ adds is the network path between the member and the server, which is real, but i
 Android cannot fix. Worth knowing before anyone treats it as the primary defence for auth, or
 rebuilds backend auth availability inside RUM.
 
-There is no `Auth: login (iOS)` SLO. Android is the only platform alerting on login, which is why
-Android is the platform that got paged.
+`Auth: login (iOS)` does exist (`9028984bed7351dc92b7e58e5c7db82f`, 7d at 99%, monitor `93102231`)
+and reads 99.95%, state OK. That is not reassurance. It divides `ios.login.network.error`
+(`event_type: error`) by `ios.login.network.count` (`event_type: resource`), the same numerator and
+denominator mismatch that made the Android SLO report 534% of its budget. It looks healthy for the
+same reason the Android one looked healthy right up until it did not. Android got paged first
+because its view names broke, not because iOS is better instrumented.
 
 Also worth knowing as a precedent: `Purchase: completed signs` is an SLO over
-`hedvig.events.signing.completed` with a **70%** target. So the org already has a funnel SLO built on
+`hedvig.events.signing.completed / hedvig.events.signing.started` with a **70%** target. So the org already has a funnel SLO built on
 explicit events rather than HTTP outcomes, and already accepts a target chosen from reality instead
 of a round number.
 
