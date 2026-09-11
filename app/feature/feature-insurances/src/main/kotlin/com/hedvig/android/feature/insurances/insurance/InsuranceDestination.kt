@@ -44,7 +44,6 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.compose.dropUnlessResumed
 import arrow.core.nonEmptyListOf
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
@@ -54,7 +53,6 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.crosssells.AddonsSection
 import com.hedvig.android.crosssells.CrossSellItemPlaceholder
 import com.hedvig.android.crosssells.CrossSellsSection
-import com.hedvig.android.crosssells.PillowRow
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.FlowType
 import com.hedvig.android.data.contract.ChipIdState
@@ -95,9 +93,7 @@ import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.A11Y_VIEW_DETAILS
 import hedvig.resources.DASHBOARD_SCREEN_TITLE
 import hedvig.resources.INSURANCES_NO_ACTIVE
-import hedvig.resources.INSURANCE_ADDONS_SUBHEADING
 import hedvig.resources.Res
-import hedvig.resources.cross_sell_see_price
 import hedvig.resources.insurances_tab_terminated_insurance_subtitile
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.pluralStringResource

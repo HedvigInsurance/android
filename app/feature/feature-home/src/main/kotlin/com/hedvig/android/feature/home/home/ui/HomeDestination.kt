@@ -103,7 +103,6 @@ import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellBottomSheet
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.CrossSellsSection
-import com.hedvig.android.crosssells.PillowRow
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.FlowType
@@ -234,7 +233,6 @@ import hedvig.resources.Res.drawable
 import hedvig.resources.Res.string
 import hedvig.resources.TOAST_NEW_OFFER
 import hedvig.resources.blur_background
-import hedvig.resources.cross_sell_see_price
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_continue_button
 import hedvig.resources.home_tab_claim_button_text

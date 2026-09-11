@@ -19,9 +19,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -88,7 +86,6 @@ import hedvig.resources.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_TWO_INSURANCES
 import hedvig.resources.CROSS_SELL_BANNER_TEXT
 import hedvig.resources.CROSS_SELL_SUBTITLE
 import hedvig.resources.CROSS_SELL_TITLE
-import hedvig.resources.INSURANCE_ADDONS_SUBHEADING
 import hedvig.resources.Res
 import hedvig.resources.Res.plurals
 import hedvig.resources.Res.string
@@ -557,6 +554,7 @@ fun CrossSellItemPlaceholder(imageLoader: ImageLoader, modifier: Modifier = Modi
       modifier = Modifier,
       onSheetDismissed = {},
       buttonText = "button",
+      buttonSize = ButtonSize.Small,
     )
   }
 }
@@ -704,16 +702,6 @@ fun PillowRow(
       ),
       enabled = !isLoading,
     )
-  }
-}
-
-@Composable
-private fun NotificationSubheading(text: String, modifier: Modifier = Modifier) {
-  Row(
-    modifier = modifier.fillMaxWidth(),
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    HedvigText(text = text)
   }
 }
 
