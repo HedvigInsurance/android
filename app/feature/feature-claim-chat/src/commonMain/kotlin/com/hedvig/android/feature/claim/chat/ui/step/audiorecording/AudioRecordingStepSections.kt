@@ -106,6 +106,7 @@ import com.hedvig.android.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.android.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.android.feature.claim.chat.data.FreeTextErrorType
 import com.hedvig.android.feature.claim.chat.data.StepContent
+import com.hedvig.android.feature.claim.chat.ui.common.ClaimChatInputSheet
 import com.hedvig.android.feature.claim.chat.ui.common.EditButton
 import com.hedvig.android.feature.claim.chat.ui.common.RoundCornersPill
 import com.hedvig.android.feature.claim.chat.ui.common.SkippedLabel
@@ -266,22 +267,30 @@ internal fun AudioRecorderBubble(
                 isSubmitting = isSubmitting,
                 bottomSheetState = state,
               )
-              HedvigButton(
-                enabled = true,
-                text = stringResource(Res.string.CLAIM_CHAT_USE_AUDIO),
-                onClick = {
-                  focusManager.clearFocus()
-                  state.show()
-                },
+              // One row of equal-width buttons rather than a stack, so neither input mode reads as the
+              // primary one. Both open a sheet over the conversation, leaving the question readable.
+              Row(
                 modifier = Modifier.fillMaxWidth(),
-              )
-              if (freeTextAvailable) {
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+              ) {
+                if (freeTextAvailable) {
+                  HedvigButton(
+                    enabled = true,
+                    buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+                    text = stringResource(Res.string.CLAIM_CHAT_USE_TEXT_INPUT),
+                    onClick = onSwitchToFreeText,
+                    modifier = Modifier.weight(1f),
+                  )
+                }
                 HedvigButton(
                   enabled = true,
                   buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-                  text = stringResource(Res.string.CLAIM_CHAT_USE_TEXT_INPUT),
-                  onClick = onSwitchToFreeText,
-                  modifier = Modifier.fillMaxWidth(),
+                  text = stringResource(Res.string.CLAIM_CHAT_USE_AUDIO),
+                  onClick = {
+                    focusManager.clearFocus()
+                    state.show()
+                  },
+                  modifier = Modifier.weight(1f),
                 )
               }
             } else {
@@ -316,7 +325,7 @@ internal fun AudioRecorderBubble(
           isLoading = skipButtonLoading,
           enabled = !isSubmitting,
           modifier = Modifier.fillMaxWidth(),
-          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+          buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
         )
       }
     }
@@ -382,7 +391,12 @@ private fun AudioRecordingBottomSheet(
   LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
     stopRecording()
   }
-  HedvigBottomSheet(bottomSheetState, modifier) {
+  HedvigBottomSheet(
+    hedvigBottomSheetState = bottomSheetState,
+    modifier = modifier,
+    contentPadding = ClaimChatInputSheet.padding,
+    style = ClaimChatInputSheet.style,
+  ) {
     AudioRecordingSheetContent(
       clock = clock,
       submitAudioFile = submitAudioFile,

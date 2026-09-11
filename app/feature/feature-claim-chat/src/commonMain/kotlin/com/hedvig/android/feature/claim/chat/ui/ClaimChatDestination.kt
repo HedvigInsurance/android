@@ -76,9 +76,9 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.design.system.hedvig.TopAppBarColors
-import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.design.system.hedvig.icon.ArrowDown
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.claim.chat.ClaimChatEvent
 import com.hedvig.android.feature.claim.chat.ClaimChatEvent.SubmitInformation
 import com.hedvig.android.feature.claim.chat.ClaimChatUiState
@@ -91,6 +91,7 @@ import com.hedvig.android.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.android.feature.claim.chat.data.InformationSeverity
 import com.hedvig.android.feature.claim.chat.data.StepContent
 import com.hedvig.android.feature.claim.chat.data.StepId
+import com.hedvig.android.feature.claim.chat.ui.common.ClaimChatTextInputSheet
 import com.hedvig.android.feature.claim.chat.ui.common.HelipadRiveAnimation
 import com.hedvig.android.feature.claim.chat.ui.step.ChatClaimSummaryBottomContent
 import com.hedvig.android.feature.claim.chat.ui.step.ChatClaimSummaryTopContent
@@ -242,34 +243,38 @@ private fun ClaimChatScreen(
   val currentFreeText = (uiState.currentStep?.stepContent as? StepContent.AudioRecording)
     ?.recordingState.let { it as? AudioRecordingStepState.FreeTextDescription }
     ?.freeText
-  FreeTextOverlay(
-    freeTextMaxLength = uiState.showFreeTextOverlay?.maxLength ?: 2000,
-    freeTextValue = currentFreeText,
-    freeTextHint = stringResource(Res.string.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER),
-    freeTextTitle = stringResource(Res.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
-    freeTextOnCancelClick = {
+  val textInputSheetState = rememberHedvigBottomSheetState<String?>()
+  // The overlay's visibility is presenter state, so drive the sheet from it rather than from taps.
+  LaunchedEffect(uiState.showFreeTextOverlay) {
+    if (uiState.showFreeTextOverlay != null) {
+      textInputSheetState.show(currentFreeText)
+    } else {
+      textInputSheetState.dismiss()
+    }
+  }
+  ClaimChatTextInputSheet(
+    sheetState = textInputSheetState,
+    maxLength = uiState.showFreeTextOverlay?.maxLength ?: 2000,
+    onSave = { text ->
+      onEvent(ClaimChatEvent.UpdateFreeText(text))
       onEvent(ClaimChatEvent.CloseFreeChatOverlay)
     },
-    freeTextOnSaveClick = { feedback ->
-      onEvent(ClaimChatEvent.UpdateFreeText(feedback))
+    onCancel = {
       onEvent(ClaimChatEvent.CloseFreeChatOverlay)
     },
-    shouldShowOverlay = uiState.showFreeTextOverlay != null,
-    overlaidContent = {
-      ClaimChatScreenContent(
-        uiState = uiState,
-        onEvent = onEvent,
-        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-        openAppSettings = openAppSettings,
-        onNavigateToImageViewer = onNavigateToImageViewer,
-        navigateToDeflect = navigateToDeflect,
-        appPackageId = appPackageId,
-        imageLoader = imageLoader,
-        navigateUp = navigateUp,
-        navigateBack = navigateBack,
-        openPlayStore = openPlayStore,
-      )
-    },
+  )
+  ClaimChatScreenContent(
+    uiState = uiState,
+    onEvent = onEvent,
+    shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+    openAppSettings = openAppSettings,
+    onNavigateToImageViewer = onNavigateToImageViewer,
+    navigateToDeflect = navigateToDeflect,
+    appPackageId = appPackageId,
+    imageLoader = imageLoader,
+    navigateUp = navigateUp,
+    navigateBack = navigateBack,
+    openPlayStore = openPlayStore,
   )
 }
 
