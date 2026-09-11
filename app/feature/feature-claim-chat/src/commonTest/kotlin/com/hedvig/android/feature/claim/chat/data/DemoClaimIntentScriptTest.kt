@@ -29,17 +29,29 @@ class DemoClaimIntentScriptTest {
   }
 
   @Test
-  fun `regretting re-presents the same step instead of advancing`() {
+  fun `regretting rewinds to the step being edited`() {
+    val script = DemoClaimIntentScript()
+    val firstStepId = (script.start().next as ClaimIntent.Next.Step).claimIntentStep.id
+    script.advance()
+    script.advance()
+
+    val regretted = script.regretTo(firstStepId)
+
+    // Editing an answer must return to the step that gave it, not to wherever the flow had reached.
+    assertThat((regretted.next as ClaimIntent.Next.Step).claimIntentStep.id).isEqualTo(firstStepId)
+    assertThat(script.currentStep()!!.id).isEqualTo(firstStepId)
+  }
+
+  @Test
+  fun `regretting an unknown step leaves the position alone`() {
     val script = DemoClaimIntentScript()
     script.start()
     script.advance()
+    val before = script.currentStep()!!.id
 
-    val before = script.currentStep()
-    val regretted = script.current()
+    script.regretTo(StepId("not-in-this-script"))
 
-    assertThat(before).isNotNull()
-    assertThat((regretted.next as ClaimIntent.Next.Step).claimIntentStep.id).isEqualTo(before!!.id)
-    assertThat(script.currentStep()!!.id).isEqualTo(before.id)
+    assertThat(script.currentStep()!!.id).isEqualTo(before)
   }
 
   @Test
