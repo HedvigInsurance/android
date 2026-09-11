@@ -1,10 +1,12 @@
 # Datadog Android metric recovery
 
-**Status: three items open.** The `OR`-branch cleanup is blocked on the pre-14.3.6 install base
-draining, which was still about 13% of prod view traffic on 2026-09-10. The
-claim-submission-failure action is unstarted. The guard-rail monitor is also still just a suggestion.
+**Status: four items open.** One is time-boxed: flip `notify_no_data` on monitor `93408872` a few
+days after the release that carries the auth instrumentation, see below. The `OR`-branch cleanup is
+blocked on the pre-14.3.6 install base draining, which was still about 13% of prod view traffic on
+2026-09-10. The claim-submission-failure action is unstarted. The guard-rail monitor is also still
+just a suggestion.
 
-Last updated 2026-09-10.
+Last updated 2026-09-11.
 
 ## What broke
 
@@ -235,6 +237,29 @@ the denominator with a 0% error rate on the added traffic**, which dilutes the m
 roughly the same 1.4%. This metric is the denominator of the Claims flow (Android) SLO, so the SLO
 reads marginally better. Two keys in the new scope, `StartClaimPledgeKey` and `UpdateAppKey`, have no
 old equivalent to measure, but neither issues network requests in normal use.
+
+## PENDING: flip `notify_no_data` on monitor 93408872
+
+**Do this a few days after the release carrying the auth instrumentation, once
+`android.login.network.count` shows steady prod traffic.**
+
+```
+pup api -X PUT v1/monitor/93408872 --input <monitor json with options.notify_no_data = true>
+```
+
+Start with `no_data_timeframe` around 12 hours and tighten once the real overnight pattern is
+visible. Login runs at roughly 50 attempts a day, so about two an hour, and a tighter window will
+page on an ordinary quiet night.
+
+**Why it matters.** The SLI counts `POST /member-login` resource events with a 5xx status. A request
+that never reaches the server produces a RUM error and no resource at all, so it lands in neither
+side of the ratio. If auth becomes unreachable, the denominator collapses toward zero and the SLI
+reads 100% or no-data. With `notify_no_data: false` nothing fires, so the worst outage produces the
+best number and silence. Treating the collapse itself as the alert is the cheapest cover for the one
+failure mode this SLI cannot otherwise see.
+
+**Why not now.** Before the release there is legitimately no prod data, so flipping it early means a
+monitor that fires continuously and gets muted, which is worse than leaving it off.
 
 ## Guard rail worth adding
 
