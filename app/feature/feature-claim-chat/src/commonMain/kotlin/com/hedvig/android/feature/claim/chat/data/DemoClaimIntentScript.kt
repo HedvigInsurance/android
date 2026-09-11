@@ -36,8 +36,14 @@ internal class DemoClaimIntentScript {
     return intentAt(index)
   }
 
-  /** Re-presents the step the script is already on, for regretting an answer. */
-  fun current(): ClaimIntent = intentAt(index)
+  /** Rewinds to [stepId] so it can be answered again, which is what regretting an answer means. */
+  fun regretTo(stepId: StepId): ClaimIntent {
+    val position = steps.indexOfFirst { it.id == stepId }
+    if (position >= 0) {
+      index = position
+    }
+    return intentAt(index)
+  }
 
   fun currentStep(): ClaimIntentStep? = steps.getOrNull(index)
 
