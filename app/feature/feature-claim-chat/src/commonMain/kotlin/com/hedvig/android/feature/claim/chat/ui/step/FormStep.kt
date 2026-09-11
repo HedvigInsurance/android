@@ -42,6 +42,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -70,10 +71,10 @@ import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTa
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.MultiSelectDialog
+import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.SearchField
-import com.hedvig.android.design.system.hedvig.SingleSelectDialog
 import com.hedvig.android.design.system.hedvig.icon.ChevronRight
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -952,28 +953,57 @@ internal fun SingleSelectBubbleWithDialog(
   errorText: String? = null,
 ) {
   val focusManager = LocalFocusManager.current
-  var showDialog by rememberSaveable { mutableStateOf(false) }
-  if (showDialog) {
-    SingleSelectDialog(
-      title = questionLabel,
-      options = options,
-      selectedOption = selectedOptionId,
-      onRadioOptionSelected = onSelect,
-      onDismissRequest = {
-        showDialog = false
-      },
+  val sheetState = rememberHedvigBottomSheetState<String>()
+  // The payload is the selected id as a string because HedvigBottomSheet only renders its content while the
+  // payload is non-null, so a nullable one would make the unselected case silently render nothing.
+  HedvigBottomSheet(sheetState) { initialSelection: String ->
+    // Held locally so cancelling leaves the committed answer untouched. The dialog this replaced
+    // committed on tap, which left no way back out of a mis-tap.
+    var pendingSelection by remember {
+      mutableStateOf(initialSelection.takeIf { it.isNotEmpty() }?.let { RadioOptionId(it) })
+    }
+    HedvigText(
+      questionLabel,
+      modifier = Modifier.fillMaxWidth().semantics { heading() },
+      textAlign = TextAlign.Center,
     )
+    Spacer(Modifier.height(16.dp))
+    RadioGroup(
+      options = options,
+      selectedOption = pendingSelection,
+      onRadioOptionSelected = { pendingSelection = it },
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(16.dp))
+    HedvigButton(
+      text = stringResource(Res.string.general_continue_button),
+      onClick = {
+        pendingSelection?.let(onSelect)
+        sheetState.dismiss()
+      },
+      enabled = pendingSelection != null,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    HedvigButton(
+      text = stringResource(Res.string.general_cancel_button),
+      onClick = { sheetState.dismiss() },
+      enabled = true,
+      buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
   }
   Column(modifier) {
+    val selectedOption = options.firstOrNull { it.id == selectedOptionId }
     HedvigBigCard(
       onClick = {
         focusManager.clearFocus()
-        showDialog = true
+        sheetState.show(selectedOptionId?.id.orEmpty())
       },
       labelText = questionLabel,
-      inputText = options.firstOrNull {
-        it.id == selectedOptionId
-      }?.text,
+      inputText = selectedOption?.text,
+      subtitleText = selectedOption?.label,
       modifier = Modifier.fillMaxWidth(),
       enabled = true,
     )
