@@ -45,32 +45,27 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
-import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.PaymentMethodMarkSize
 import com.hedvig.android.design.system.hedvig.PaymentMethodTile
-import com.hedvig.android.design.system.hedvig.PaymentMethodTileBadge
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
-import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.colored.Swish
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.show
+import com.hedvig.android.feature.payin.account.data.SwishSetupOrder
 import com.hedvig.android.feature.payin.account.ui.components.formatSwishPhoneNumber
 import hedvig.resources.CONTACT_INFO_CHANGES_SAVED
 import hedvig.resources.GENERAL_CONFIRM
 import hedvig.resources.ODYSSEY_PHONE_NUMBER_LABEL
-import hedvig.resources.PAYMENT_OPEN_SWISH_BUTTON
-import hedvig.resources.PAYMENT_SWISH_APPROVE_TITLE
 import hedvig.resources.PAYMENT_SWISH_EXPLANATION_BUTTON
 import hedvig.resources.PAYMENT_SWISH_SUBTITLE
 import hedvig.resources.PAYMENT_SWISH_TITLE
 import hedvig.resources.Res
-import hedvig.resources.general_cancel_button
 import hedvig.resources.something_went_wrong
 import org.jetbrains.compose.resources.stringResource
 
@@ -79,11 +74,14 @@ internal fun SetupSwishPayinDestination(
   viewModel: SetupSwishPayinViewModel,
   globalSnackBarState: GlobalSnackBarState,
   onSuccessfullyConnected: () -> Unit,
+  navigateToApproval: (order: SwishSetupOrder, phoneNumber: String) -> Unit,
   navigateUp: () -> Unit,
-  navigateBack: () -> Unit,
-  openUrl: (String) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  val orderToApprove = uiState.orderToApprove
+  LaunchedEffect(orderToApprove) {
+    if (orderToApprove != null) navigateToApproval(orderToApprove, uiState.phoneNumber)
+  }
   SetupSwishPayinScreen(
     uiState = uiState,
     globalSnackBarState = globalSnackBarState,
@@ -93,15 +91,11 @@ internal fun SetupSwishPayinDestination(
       onSuccessfullyConnected()
     },
     navigateUp = navigateUp,
-    navigateBack = navigateBack,
-    openUrl = openUrl,
     updateText = {
       viewModel.emit(SetupSwishPayoutEvent.UpdateText(it))
     },
   )
 }
-
-// todo fetch payment methods continuously to see if it already not in pending state
 
 @Composable
 private fun SetupSwishPayinScreen(
@@ -110,8 +104,6 @@ private fun SetupSwishPayinScreen(
   onSave: () -> Unit,
   showedSnackBar: () -> Unit,
   navigateUp: () -> Unit,
-  navigateBack: () -> Unit,
-  openUrl: (String) -> Unit,
   updateText: (String) -> Unit,
 ) {
   val changesSaved = stringResource(Res.string.CONTACT_INFO_CHANGES_SAVED)
@@ -129,7 +121,6 @@ private fun SetupSwishPayinScreen(
     },
   )
 
-  val successUrl = uiState.successUrl
   HedvigScaffold(
     topAppBarText = null,
     navigateUp = navigateUp,
@@ -137,33 +128,14 @@ private fun SetupSwishPayinScreen(
   ) {
     Spacer(Modifier.height(8.dp))
     FlowHeading(
-      title = if (successUrl == null) {
-        stringResource(Res.string.PAYMENT_SWISH_TITLE)
-      } else {
-        stringResource(Res.string.PAYMENT_SWISH_APPROVE_TITLE)
-      },
-      description = if (successUrl == null) {
-        stringResource(Res.string.PAYMENT_SWISH_SUBTITLE)
-      } else {
-        null
-      },
+      title = stringResource(Res.string.PAYMENT_SWISH_TITLE),
+      description = stringResource(Res.string.PAYMENT_SWISH_SUBTITLE),
       baseStyle = HedvigTheme.typography.bodySmall,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))
     PaymentMethodTile(
       modifier = Modifier.align(Alignment.CenterHorizontally),
-      badge = if (successUrl == null) {
-        null
-      } else {
-        {
-          PaymentMethodTileBadge(
-            icon = HedvigIcons.ArrowNorthEast,
-            containerColor = HedvigTheme.colorScheme.signalBlueElement,
-            contentColor = HedvigTheme.colorScheme.fillWhite,
-          )
-        }
-      },
       mark = {
         Image(HedvigIcons.Swish, EmptyContentDescription, Modifier.size(PaymentMethodMarkSize))
       },
@@ -179,31 +151,12 @@ private fun SetupSwishPayinScreen(
       )
       Spacer(Modifier.height(8.dp))
     }
-    if (successUrl == null) {
-      EnterPhoneNumberSection(
-        uiState = uiState,
-        onSave = onSave,
-        onLearnMoreAboutRecurringSwish = { explanationSheetState.show() },
-        updateText = updateText,
-      )
-    } else {
-      HedvigButton(
-        text = stringResource(Res.string.PAYMENT_OPEN_SWISH_BUTTON),
-        onClick = { openUrl(successUrl) },
-        enabled = true,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(8.dp))
-      HedvigTextButton(
-        text = stringResource(Res.string.general_cancel_button),
-        onClick = navigateBack,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      )
-    }
+    EnterPhoneNumberSection(
+      uiState = uiState,
+      onSave = onSave,
+      onLearnMoreAboutRecurringSwish = { explanationSheetState.show() },
+      updateText = updateText,
+    )
     Spacer(Modifier.height(16.dp))
   }
 }
@@ -320,8 +273,6 @@ private fun PreviewSetupSwishPayinScreen(
         onSave = {},
         showedSnackBar = {},
         navigateUp = {},
-        navigateBack = {},
-        openUrl = {},
         updateText = {},
       )
     }
@@ -347,13 +298,6 @@ private class SetupSwishPayinUiStateProvider : CollectionPreviewParameterProvide
       isLoading = true,
       error = null,
       showSuccessSnackBar = false,
-    ),
-    SetupSwishPayoutUiState(
-      phoneNumber = "83728644428",
-      isLoading = false,
-      error = null,
-      showSuccessSnackBar = false,
-      successUrl = "hwdjhew",
     ),
   ),
 )

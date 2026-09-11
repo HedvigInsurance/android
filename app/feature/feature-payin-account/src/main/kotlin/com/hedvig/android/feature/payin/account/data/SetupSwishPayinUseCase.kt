@@ -42,23 +42,23 @@ internal class SetupSwishPayinUseCaseImpl(
           when (output.status) {
             PaymentMethodSetupStatus.ACTIVE -> {
               logcat {
-                "Mariia: SetupSwishPayinMutation ACTIVE url: $output.url"
+                "SetupSwishPayinMutation ACTIVE, url present: ${output.url != null}"
               }
               networkCacheManager.clearCache()
-              SetupSwishResponse.Success(output.url)
+              SetupSwishResponse.Success(output.url, output.orderId)
             }
 
             PaymentMethodSetupStatus.PENDING -> {
               logcat {
-                "Mariia: SetupSwishPayinMutation PENDING url: $output.url"
+                "SetupSwishPayinMutation PENDING, url present: ${output.url != null}"
               }
               networkCacheManager.clearCache()
-              SetupSwishResponse.Pending(output.url)
+              SetupSwishResponse.Pending(output.url, output.orderId)
             }
 
             PaymentMethodSetupStatus.FAILED, PaymentMethodSetupStatus.UNKNOWN__ -> {
               logcat {
-                "SetupSwishPayinMutation failed with: output.error?.message"
+                "SetupSwishPayinMutation FAILED: ${output.error?.message}"
               }
               val userMessage = output.error?.message
               SetupSwishResponse.Failure(ErrorMessage(userMessage))
@@ -66,7 +66,7 @@ internal class SetupSwishPayinUseCaseImpl(
           }
         },
         fab = { errors, _ ->
-          logcat { "SetupSwishPayinMutation dataa with errors: $errors" }
+          logcat { "SetupSwishPayinMutation data with errors: $errors" }
           raise(ErrorMessage())
         },
       )
@@ -76,7 +76,26 @@ internal class SetupSwishPayinUseCaseImpl(
 internal sealed interface SetupSwishResponse {
   data class Failure(val error: ErrorMessage) : SetupSwishResponse
 
-  data class Success(val url: String?) : SetupSwishResponse
+  data class Success(val url: String?, val orderId: String?) : SetupSwishResponse
 
-  data class Pending(val url: String?) : SetupSwishResponse
+  data class Pending(val url: String?, val orderId: String?) : SetupSwishResponse
+}
+
+/**
+ * A setup the member still has to approve in the Swish app: [successUrl] hands them over to it and
+ * [orderId] is what the approval is polled with. Null until the backend returns both, which it does
+ * for every setup that actually needs approving.
+ */
+internal data class SwishSetupOrder(val successUrl: String, val orderId: String)
+
+internal val SetupSwishResponse.order: SwishSetupOrder?
+  get() = when (this) {
+    is SetupSwishResponse.Success -> swishSetupOrder(url, orderId)
+    is SetupSwishResponse.Pending -> swishSetupOrder(url, orderId)
+    is SetupSwishResponse.Failure -> null
+  }
+
+private fun swishSetupOrder(url: String?, orderId: String?): SwishSetupOrder? {
+  if (url == null || orderId == null) return null
+  return SwishSetupOrder(url, orderId)
 }

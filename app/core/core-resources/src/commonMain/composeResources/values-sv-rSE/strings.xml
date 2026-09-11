@@ -727,6 +727,7 @@
   <string name="PAYMENTS_UPCOMING_PAYMENT">Kommande betalning</string>
   <string name="PAYMENTS_VALID_UNTIL">Giltig till %1$s</string>
   <string name="PAYMENT_ADD_METHOD_BUTTON">Lägg till betalningsmetod</string>
+  <string name="PAYMENT_CHANGE_METHOD_BUTTON">Change payment method</string>
   <string name="PAYMENT_CHOOSE_PRIMARY_BUTTON">Välj förvald metod</string>
   <string name="PAYMENT_CONFIRM_PRIMARY_WARNING">Din nästa betalning dras från %1$s. Utbetalningar skickas också till detta konto.</string>
   <string name="PAYMENT_CONNECT_SUBTITLE">Lägg till en ny betalningsmetod för din försäkring</string>

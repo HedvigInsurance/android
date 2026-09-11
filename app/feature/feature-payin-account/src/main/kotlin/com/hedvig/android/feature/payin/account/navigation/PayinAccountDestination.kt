@@ -10,6 +10,17 @@ internal data class SelectPayinMethodKey(
   val currentProviders: List<String>,
 ) : HedvigNavKey
 
+/**
+ * Waiting on a Swish setup the member approves in the Swish app. Carries the phone number so a
+ * failed attempt can be retried with it, without sending them back to re-enter it.
+ */
+@Serializable
+internal data class SwishPayinStatusKey(
+  val successUrl: String,
+  val orderId: String,
+  val phoneNumber: String,
+) : HedvigNavKey
+
 @Serializable
 internal data object SetupInvoicePayinKey : HedvigNavKey
 

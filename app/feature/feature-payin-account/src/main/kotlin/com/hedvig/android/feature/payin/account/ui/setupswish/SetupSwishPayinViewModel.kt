@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.payin.account.ui.setupswish
 
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -12,6 +11,8 @@ import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.payin.account.data.SetupSwishPayinUseCase
 import com.hedvig.android.feature.payin.account.data.SetupSwishResponse
+import com.hedvig.android.feature.payin.account.data.SwishSetupOrder
+import com.hedvig.android.feature.payin.account.data.order
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -27,7 +28,7 @@ internal class SetupSwishPayinViewModel(
       isLoading = false,
       error = null,
       showSuccessSnackBar = false,
-      successUrl = null,
+      orderToApprove = null,
     ),
     SetupSwishPayoutPresenter(setupSwishPayoutUseCase),
   )
@@ -42,11 +43,11 @@ internal sealed interface SetupSwishPayoutEvent {
 
 internal data class SetupSwishPayoutUiState(
   val showSuccessSnackBar: Boolean,
-  val successUrl: String? = null,
+  /** Set once the setup needs approving in the Swish app, which the caller moves on to. */
+  val orderToApprove: SwishSetupOrder? = null,
   val phoneNumber: String,
   val isLoading: Boolean,
   val error: ErrorMessage?,
-  val resultIsPending: Boolean = false,
 )
 
 internal class SetupSwishPayoutPresenter(
@@ -60,17 +61,14 @@ internal class SetupSwishPayoutPresenter(
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<ErrorMessage?>(null) }
     var showSuccessSnackBar by remember { mutableStateOf(false) }
-    var resultIsPending by remember { mutableStateOf(false) }
     var saveIteration by remember { mutableStateOf<String?>(null) }
-    var urlToRedirect by remember { mutableStateOf<String?>(null) }
-    var uiState by remember { mutableStateOf(lastState) }
+    var orderToApprove by remember { mutableStateOf<SwishSetupOrder?>(null) }
 
     val currentSave = saveIteration
     if (currentSave != null) {
       LaunchedEffect(currentSave) {
         isLoading = true
         errorMessage = null
-        resultIsPending = false
         setupSwishPayoutUseCase.invoke(phoneNumberState).fold(
           ifLeft = {
             isLoading = false
@@ -80,20 +78,14 @@ internal class SetupSwishPayoutPresenter(
           ifRight = { result ->
             isLoading = false
             saveIteration = null
-            when (result) {
-              is SetupSwishResponse.Failure -> {
-                errorMessage = result.error
-              }
+            val order = result.order
+            when {
+              order != null -> orderToApprove = order
 
-              is SetupSwishResponse.Pending -> {
-                urlToRedirect = result.url
-                resultIsPending = true
-              }
+              // A setup that needs no approving is already done, so there is nothing to wait on.
+              result is SetupSwishResponse.Success -> showSuccessSnackBar = true
 
-              is SetupSwishResponse.Success -> {
-                showSuccessSnackBar = true
-                urlToRedirect = result.url
-              }
+              else -> errorMessage = (result as? SetupSwishResponse.Failure)?.error ?: ErrorMessage()
             }
           },
         )
@@ -123,7 +115,7 @@ internal class SetupSwishPayoutPresenter(
       isLoading = isLoading,
       error = errorMessage,
       showSuccessSnackBar = showSuccessSnackBar,
-      successUrl = urlToRedirect,
+      orderToApprove = orderToApprove,
     )
   }
 }

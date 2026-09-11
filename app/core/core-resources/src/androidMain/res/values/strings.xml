@@ -728,6 +728,7 @@
   <string name="PAYMENTS_UPCOMING_PAYMENT">Upcoming payment</string>
   <string name="PAYMENTS_VALID_UNTIL">Valid until %1$s</string>
   <string name="PAYMENT_ADD_METHOD_BUTTON">Add payment method</string>
+  <string name="PAYMENT_CHANGE_METHOD_BUTTON">Change payment method</string>
   <string name="PAYMENT_CHOOSE_PRIMARY_BUTTON">Change primary method</string>
   <string name="PAYMENT_CONFIRM_PRIMARY_WARNING">Your next payment will be drawn from %1$s. Claims payouts will also be sent to this account.</string>
   <string name="PAYMENT_CONNECT_SUBTITLE">Add a new payment method for your insurance</string>
