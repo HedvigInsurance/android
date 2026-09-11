@@ -345,11 +345,22 @@ Android cannot fix. Worth knowing before anyone treats it as the primary defence
 rebuilds backend auth availability inside RUM.
 
 `Auth: login (iOS)` does exist (`9028984bed7351dc92b7e58e5c7db82f`, 7d at 99%, monitor `93102231`)
-and reads 99.95%, state OK. That is not reassurance. It divides `ios.login.network.error`
-(`event_type: error`) by `ios.login.network.count` (`event_type: resource`), the same numerator and
-denominator mismatch that made the Android SLO report 534% of its budget. It looks healthy for the
-same reason the Android one looked healthy right up until it did not. Android got paged first
-because its view names broke, not because iOS is better instrumented.
+and reads 99.95%, state OK. **That is not reassurance.** Checked 2026-09-11, it is
+
+```
+(sum:ios.login.network.count - sum:ios.login.network.error) / sum:ios.login.network.count
+```
+
+which is the Android defect exactly. `ios.login.network.count` is `event_type: resource`,
+`ios.login.network.error` is `event_type: error`, so the numerator subtracts one kind of event from
+a count of a different kind and can go negative. That is what made the Android SLO report 534% of
+its budget. The two halves do not even agree on what screen they watch: the count filters
+`@view.name:BankIDLoginQRView`, the error filters `@view.name:(BankIDLoginQR OR BankIDLoginQRView)`,
+and the error metric carries no `@application.id` filter at all.
+
+It looks healthy for the same reason the Android one looked healthy right up until it did not.
+Android got paged first because its view names broke, not because iOS is better instrumented. This
+is worth raising with the iOS side; it is their metric to fix, and nothing in this repo can.
 
 Also worth knowing as a precedent: `Purchase: completed signs` is an SLO over
 `hedvig.events.signing.completed / hedvig.events.signing.started` with a **70%** target. So the org already has a funnel SLO built on
