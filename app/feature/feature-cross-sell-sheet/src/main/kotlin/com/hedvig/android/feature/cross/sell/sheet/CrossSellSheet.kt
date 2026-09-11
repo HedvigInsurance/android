@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 fun CrossSellSheet(
   isInScreenEligibleForCrossSells: Boolean,
   onCrossSellClick: (String) -> Unit,
+  onAddonClick: (eligibleInsuranceIds: List<String>) -> Unit,
   imageLoader: ImageLoader,
 ) {
   val viewModel: CrossSellSheetViewModel = metroViewModel()
@@ -70,8 +71,7 @@ fun CrossSellSheet(
     com.hedvig.android.crosssells.CrossSellBottomSheet(
       state = sheetState,
       onCrossSellClick = onCrossSellClick,
-      // This sheet never populates CrossSellSheetData.addons, so no addon row can be tapped here.
-      onAddonClick = {},
+      onAddonClick = onAddonClick,
       imageLoader = imageLoader,
     )
   }

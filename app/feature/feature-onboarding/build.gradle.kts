@@ -34,6 +34,7 @@ dependencies {
   implementation(projects.coreResources)
   implementation(libs.coil.coil)
   implementation(libs.coil.compose)
+  implementation(projects.crossSells)
   implementation(projects.dataContract)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.designSystemHedvig)

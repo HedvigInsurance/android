@@ -58,11 +58,11 @@ import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateInfoBott
 import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryUiState.FailureDownloadingHistory
 import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryUiState.Loading
 import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryUiState.SuccessDownloadingHistory
-import hedvig.resources.ADDON_FLOW_SEE_PRICE_BUTTON
 import hedvig.resources.PROFILE_ROW_TRAVEL_CERTIFICATE
 import hedvig.resources.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION
 import hedvig.resources.Res
 import hedvig.resources.TOAST_READ_MORE
+import hedvig.resources.cross_sell_see_price
 import hedvig.resources.general_error
 import hedvig.resources.travel_certificate_active
 import hedvig.resources.travel_certificate_downloading_error
@@ -286,7 +286,7 @@ private fun TravelAddonBanner(
     modifier = modifier,
     title = addonBannerInfo.title,
     description = addonBannerInfo.description,
-    buttonText = stringResource(Res.string.ADDON_FLOW_SEE_PRICE_BUTTON),
+    buttonText = stringResource(Res.string.cross_sell_see_price),
     labels = addonBannerInfo.labels,
     onButtonClick = {
       launchAddonPurchaseFlow(addonBannerInfo.eligibleInsurancesIds)

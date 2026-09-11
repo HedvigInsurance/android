@@ -1,14 +1,10 @@
 package com.hedvig.android.feature.onboarding.ui.bundle
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -16,10 +12,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -28,19 +21,16 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.ImageLoader
-import coil3.compose.AsyncImage
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.crosssells.PillowRow
+import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
-import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigPreview
-import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.autoScrollingMarquee
-import com.hedvig.android.design.system.hedvig.placeholder.crossSellPainterFallback
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.onboarding.data.OnboardingCrossSell
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
@@ -215,49 +205,20 @@ private fun OnboardingCrossSellRow(
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
 ) {
-  Row(
-    verticalAlignment = Alignment.CenterVertically,
+  PillowRow(
+    title = crossSell.title,
+    subtitle = crossSell.description,
+    pillowImage = crossSell.pillowImageUrl?.let { url ->
+      ImageAsset(id = crossSell.id, src = url, description = null)
+    },
+    buttonText = crossSell.buttonTitle,
+    onButtonClick = withOnboardingHaptic { openUrl(crossSell.storeUrl) },
+    imageLoader = imageLoader,
     modifier = Modifier
       .fillMaxWidth()
       .padding(horizontal = 16.dp, vertical = 8.dp),
-  ) {
-    if (crossSell.pillowImageUrl != null) {
-      val placeholder = crossSellPainterFallback()
-      AsyncImage(
-        model = crossSell.pillowImageUrl,
-        contentDescription = null,
-        placeholder = placeholder,
-        error = placeholder,
-        fallback = placeholder,
-        imageLoader = imageLoader,
-        contentScale = ContentScale.Crop,
-        modifier = Modifier.size(48.dp),
-      )
-    } else {
-      Spacer(Modifier.size(48.dp))
-    }
-    Spacer(Modifier.width(16.dp))
-    Column(Modifier.weight(1f)) {
-      HedvigText(crossSell.title, style = HedvigTheme.typography.bodySmall)
-      HedvigText(
-        crossSell.description,
-        style = HedvigTheme.typography.label,
-        color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-        maxLines = 1,
-        softWrap = false,
-        modifier = Modifier.autoScrollingMarquee(),
-      )
-    }
-    Spacer(Modifier.width(16.dp))
-    HedvigButton(
-      text = crossSell.buttonTitle,
-      onClick = withOnboardingHaptic { openUrl(crossSell.storeUrl) },
-      enabled = true,
-      buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-      buttonSize = ButtonDefaults.ButtonSize.Small,
-      modifier = Modifier.clip(CircleShape),
-    )
-  }
+    buttonSize = ButtonDefaults.ButtonSize.Small,
+  )
 }
 
 /**
