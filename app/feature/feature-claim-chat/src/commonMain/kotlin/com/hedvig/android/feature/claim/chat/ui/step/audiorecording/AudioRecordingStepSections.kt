@@ -36,6 +36,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
@@ -78,27 +80,28 @@ import com.hedvig.android.core.uidata.DecimalFormatter
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults
-import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextField
+import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.PermissionDialog
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplay
 import com.hedvig.android.design.system.hedvig.icon.ArrowUp
+import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Mic
 import com.hedvig.android.design.system.hedvig.icon.Pause
+import com.hedvig.android.design.system.hedvig.icon.PenEdit
 import com.hedvig.android.design.system.hedvig.icon.Play
 import com.hedvig.android.design.system.hedvig.icon.Reload
 import com.hedvig.android.design.system.hedvig.icon.Stop
-import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
-import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.claim.chat.ClaimChatEvent
 import com.hedvig.android.feature.claim.chat.FreeTextRestrictions
 import com.hedvig.android.feature.claim.chat.data.AudioPath
@@ -106,8 +109,6 @@ import com.hedvig.android.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.android.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.android.feature.claim.chat.data.FreeTextErrorType
 import com.hedvig.android.feature.claim.chat.data.StepContent
-import com.hedvig.android.feature.claim.chat.ui.common.ClaimChatInputSheet
-import com.hedvig.android.feature.claim.chat.ui.common.ClaimChatTextInputSheet
 import com.hedvig.android.feature.claim.chat.ui.common.EditButton
 import com.hedvig.android.feature.claim.chat.ui.common.RoundCornersPill
 import com.hedvig.android.feature.claim.chat.ui.common.SkippedLabel
@@ -131,6 +132,9 @@ import hedvig.resources.TALKBACK_PLAYBACK_BUTTON_STATE
 import hedvig.resources.TALKBACK_RECORDING_DURATION
 import hedvig.resources.TALKBACK_RECORDING_NOW
 import hedvig.resources.claims_skip_button
+import hedvig.resources.general_cancel_button
+import hedvig.resources.general_close_button
+import hedvig.resources.general_save_button
 import hedvig.resources.something_went_wrong
 import kotlin.random.Random
 import kotlin.time.Clock
@@ -227,130 +231,159 @@ internal fun AudioRecorderBubble(
   modifier: Modifier = Modifier,
 ) {
   val isSubmitting = continueButtonLoading || skipButtonLoading
-  val textSheetState = rememberHedvigBottomSheetState<Unit>()
-  ClaimChatTextInputSheet(
-    sheetState = textSheetState,
-    initialText = (recordingState as? AudioRecordingStepState.FreeTextDescription)?.freeText.orEmpty(),
-    maxLength = freeTextMaxLength,
-    onSave = onSaveFreeText,
-  )
-  AnimatedContent(
-    recordingState,
-    contentKey = { s ->
-      when (s) {
-        is AudioRecordingStepState.AudioRecording -> "audio_recording"
-        is AudioRecordingStepState.FreeTextDescription -> "freetext"
-      }
-    },
-    modifier = modifier,
-  ) { recordingState ->
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      when (recordingState) {
-        is AudioRecordingStepState.FreeTextDescription -> {
-          FreeTextInputSection(
-            submitFreeText = submitFreeText,
-            showAudioRecording = onSwitchToAudioRecording,
-            onLaunchFullScreenEditText = { textSheetState.show() },
-            freeText = recordingState.freeText,
-            hasError = recordingState.hasError,
-            errorType = recordingState.errorType,
-            isCurrentStep = isCurrentStep,
-            continueButtonLoading = continueButtonLoading,
-            // recordingState.canSubmit only reports whether the text itself is valid, so the in-flight state has
-            // to be folded in here to keep the button from firing a second submission for the same step.
-            canSubmit = recordingState.canSubmit && !isSubmitting,
-          )
+  val focusManager = LocalFocusManager.current
+  // The voice card is open either because the user asked for it or because a recording is already in flight.
+  var voiceCardRequested by remember(isCurrentStep) { mutableStateOf(false) }
+  val hasRecording = recordingState is AudioRecordingStepState.AudioRecording &&
+    recordingState !is AudioRecordingStepState.AudioRecording.NotRecording
+
+  Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    if (!isCurrentStep) {
+      when {
+        recordingState is AudioRecordingStepState.FreeTextDescription && recordingState.freeText != null -> {
+          val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + recordingState.freeText
+          RoundCornersPill(
+            onClick = null,
+            modifier = Modifier.fillMaxWidth()
+              .padding(start = 48.dp)
+              .wrapContentWidth(Alignment.End)
+              .clearAndSetSemantics { contentDescription = description },
+          ) {
+            HedvigText(recordingState.freeText, textAlign = TextAlign.End)
+          }
         }
 
-        is AudioRecordingStepState.AudioRecording -> {
-          Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            val state = rememberHedvigBottomSheetState<Unit>()
-            val focusManager = LocalFocusManager.current
-            if (isCurrentStep) {
-              AudioRecordingBottomSheet(
-                audioRecordingState = recordingState,
-                clock = clock,
-                shouldShowRequestPermissionRationale = onShouldShowRequestPermissionRationale,
-                startRecording = startRecording,
-                stopRecording = stopRecording,
-                submitAudioFile = submitAudioFile,
-                redo = redoRecording,
-                openAppSettings = openAppSettings,
-                isSubmitting = isSubmitting,
-                bottomSheetState = state,
-              )
-              // One row of equal-width buttons rather than a stack, so neither input mode reads as the
-              // primary one.
+        recordingState is AudioRecordingStepState.AudioRecording.Playback -> {
+          val audioPlayer = when (recordingState.audioPath) {
+            is AudioPath.FilePath -> rememberAudioPlayer(
+              PlayableAudioSource.LocalFilePath(recordingState.audioPath.filePath),
+            )
+
+            is AudioPath.RemoteUrl -> rememberAudioPlayer(
+              PlayableAudioSource.RemoteUrl(
+                SignedAudioUrl.fromSignedAudioUrlString(recordingState.audioPath.remoteUrl),
+              ),
+            )
+          }
+          HedvigAudioPlayer(audioPlayer = audioPlayer, Modifier.padding(start = sentAnswersStartPadding))
+        }
+
+        else -> {
+          SkippedLabel()
+        }
+      }
+    } else {
+      AnimatedContent(
+        targetState = when {
+          recordingState is AudioRecordingStepState.FreeTextDescription -> InputMode.Text
+          voiceCardRequested || hasRecording -> InputMode.Voice
+          else -> InputMode.Resting
+        },
+        modifier = Modifier.fillMaxWidth(),
+      ) { mode ->
+        when (mode) {
+          InputMode.Text -> {
+            val freeText = recordingState as? AudioRecordingStepState.FreeTextDescription
+            InlineTextAnswerCard(
+              initialText = freeText?.freeText.orEmpty(),
+              maxLength = freeTextMaxLength,
+              errorType = freeText?.errorType,
+              hasError = freeText?.hasError == true,
+              isSubmitting = isSubmitting,
+              onCancel = {
+                focusManager.clearFocus()
+                onSwitchToAudioRecording()
+              },
+              onSave = { text ->
+                focusManager.clearFocus()
+                onSaveFreeText(text)
+                submitFreeText()
+              },
+            )
+          }
+
+          InputMode.Voice -> {
+            InlineVoiceAnswerCard(
+              audioRecordingState = recordingState as? AudioRecordingStepState.AudioRecording
+                ?: AudioRecordingStepState.AudioRecording.NotRecording,
+              clock = clock,
+              shouldShowRequestPermissionRationale = onShouldShowRequestPermissionRationale,
+              startRecording = startRecording,
+              stopRecording = stopRecording,
+              submitAudioFile = submitAudioFile,
+              redo = redoRecording,
+              openAppSettings = openAppSettings,
+              isSubmitting = isSubmitting,
+              onClose = {
+                stopRecording()
+                voiceCardRequested = false
+                onSwitchToAudioRecording()
+              },
+            )
+          }
+
+          InputMode.Resting -> {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
               Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
               ) {
                 if (freeTextAvailable) {
                   HedvigButton(
-                    enabled = true,
-                    buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-                    text = stringResource(Res.string.CLAIM_CHAT_USE_TEXT_INPUT),
                     onClick = {
                       focusManager.clearFocus()
                       onSwitchToFreeText()
-                      textSheetState.show()
                     },
+                    enabled = true,
+                    buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+                    buttonSize = ButtonDefaults.ButtonSize.Large,
                     modifier = Modifier.weight(1f),
-                  )
+                  ) {
+                    Icon(HedvigIcons.PenEdit, null, Modifier.size(24.dp))
+                    Spacer(Modifier.width(8.dp))
+                    // TODO: Add "Write" / "Skriv" to Lokalise
+                    HedvigText("Write")
+                  }
                 }
                 HedvigButton(
-                  enabled = true,
-                  buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-                  text = stringResource(Res.string.CLAIM_CHAT_USE_AUDIO),
                   onClick = {
                     focusManager.clearFocus()
-                    state.show()
+                    voiceCardRequested = true
                   },
+                  enabled = true,
+                  buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+                  buttonSize = ButtonDefaults.ButtonSize.Large,
                   modifier = Modifier.weight(1f),
-                )
-              }
-            } else {
-              if (recordingState is AudioRecordingStepState.AudioRecording.Playback) {
-                val audioPlayer = when (recordingState.audioPath) {
-                  is AudioPath.FilePath -> rememberAudioPlayer(
-                    PlayableAudioSource.LocalFilePath(recordingState.audioPath.filePath),
-                  )
-
-                  is AudioPath.RemoteUrl -> rememberAudioPlayer(
-                    PlayableAudioSource.RemoteUrl(
-                      SignedAudioUrl.fromSignedAudioUrlString(recordingState.audioPath.remoteUrl),
-                    ),
-                  )
+                ) {
+                  Icon(HedvigIcons.Mic, null, Modifier.size(24.dp))
+                  Spacer(Modifier.width(8.dp))
+                  // TODO: Add "Record" / "Spela in" to Lokalise
+                  HedvigText("Record")
                 }
-                HedvigAudioPlayer(
-                  audioPlayer = audioPlayer,
-                  Modifier.padding(start = sentAnswersStartPadding),
+              }
+              if (canSkip) {
+                HedvigButton(
+                  stringResource(Res.string.claims_skip_button),
+                  onClick = onSkip,
+                  isLoading = skipButtonLoading,
+                  enabled = !isSubmitting,
+                  modifier = Modifier.fillMaxWidth(),
+                  buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
                 )
-              } else {
-                SkippedLabel()
               }
             }
           }
         }
       }
-
-      if (canSkip && isCurrentStep) {
-        HedvigButton(
-          stringResource(Res.string.claims_skip_button),
-          onClick = onSkip,
-          isLoading = skipButtonLoading,
-          enabled = !isSubmitting,
-          modifier = Modifier.fillMaxWidth(),
-          buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
-        )
-      }
     }
   }
 }
 
+private enum class InputMode { Resting, Text, Voice }
+
 @Composable
-private fun AudioRecordingBottomSheet(
-  bottomSheetState: HedvigBottomSheetState<Unit>,
+private fun InlineVoiceAnswerCard(
+  onClose: () -> Unit,
   audioRecordingState: AudioRecordingStepState.AudioRecording,
   clock: Clock,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
@@ -399,31 +432,106 @@ private fun AudioRecordingBottomSheet(
     }
   }
 
-  LaunchedEffect(bottomSheetState.isVisible) {
-    if (!bottomSheetState.isVisible) {
-      stopRecording()
-    }
-  }
   LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
     stopRecording()
   }
-  HedvigBottomSheet(
-    hedvigBottomSheetState = bottomSheetState,
-    modifier = modifier,
-    contentPadding = ClaimChatInputSheet.padding,
-    style = ClaimChatInputSheet.style,
+  // An inline card rather than a sheet: the design keeps the question fully readable above it, with no scrim.
+  Surface(
+    modifier = modifier.fillMaxWidth(),
+    shape = HedvigTheme.shapes.cornerXLarge,
+    color = HedvigTheme.colorScheme.surfacePrimary,
   ) {
-    AudioRecordingSheetContent(
-      clock = clock,
-      submitAudioFile = submitAudioFile,
-      redo = redo,
-      isSubmitting = isSubmitting,
-      audioPlayer = audioPlayer,
-      audioRecordingState = audioRecordingState,
-      stopRecording = stopRecording,
-      recordAudioPermissionState = recordAudioPermissionState,
-      startRecording = startRecording,
-    )
+    Box(Modifier.padding(16.dp)) {
+      IconButton(
+        onClick = onClose,
+        modifier = Modifier.align(Alignment.TopEnd).size(24.dp),
+      ) {
+        Icon(HedvigIcons.Close, stringResource(Res.string.general_close_button), Modifier.size(24.dp))
+      }
+      AudioRecordingSheetContent(
+        clock = clock,
+        submitAudioFile = submitAudioFile,
+        redo = redo,
+        isSubmitting = isSubmitting,
+        audioPlayer = audioPlayer,
+        audioRecordingState = audioRecordingState,
+        stopRecording = stopRecording,
+        recordAudioPermissionState = recordAudioPermissionState,
+        startRecording = startRecording,
+      )
+    }
+  }
+}
+
+/**
+ * Text answer for a claim chat step, sitting directly above the keyboard.
+ *
+ * The field itself is the input, so focusing it raises the keyboard and the card rides above it. There is no
+ * overlay and no scrim, which keeps the question readable while answering.
+ */
+@Composable
+private fun InlineTextAnswerCard(
+  initialText: String,
+  maxLength: Int,
+  errorType: FreeTextErrorType?,
+  hasError: Boolean,
+  isSubmitting: Boolean,
+  onCancel: () -> Unit,
+  onSave: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  var text by remember { mutableStateOf(initialText) }
+  val focusRequester = remember { FocusRequester() }
+  LaunchedEffect(Unit) {
+    runCatching { focusRequester.requestFocus() }
+  }
+  Surface(
+    modifier = modifier.fillMaxWidth(),
+    shape = HedvigTheme.shapes.cornerXLarge,
+    color = HedvigTheme.colorScheme.surfacePrimary,
+  ) {
+    Column(Modifier.padding(16.dp)) {
+      HedvigText(
+        stringResource(Res.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
+        style = HedvigTheme.typography.label,
+        color = HedvigTheme.colorScheme.textSecondary,
+      )
+      HedvigTextField(
+        text = text,
+        onValueChange = { if (it.length <= maxLength) text = it },
+        labelText = "",
+        textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Small,
+        singleLine = false,
+        modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
+      )
+      if (hasError && errorType is FreeTextErrorType.TooShort) {
+        HedvigText(
+          stringResource(Res.string.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR, errorType.minLength),
+          style = HedvigTheme.typography.label,
+          color = HedvigTheme.colorScheme.textSecondary,
+        )
+      }
+      Spacer(Modifier.height(8.dp))
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+      ) {
+        HedvigButton(
+          text = stringResource(Res.string.general_cancel_button),
+          onClick = onCancel,
+          enabled = !isSubmitting,
+          buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
+          buttonSize = ButtonDefaults.ButtonSize.Medium,
+        )
+        HedvigButton(
+          text = stringResource(Res.string.general_save_button),
+          onClick = { onSave(text) },
+          enabled = text.isNotBlank() && !isSubmitting,
+          isLoading = isSubmitting,
+          buttonSize = ButtonDefaults.ButtonSize.Medium,
+        )
+      }
+    }
   }
 }
 
