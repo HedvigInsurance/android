@@ -237,12 +237,26 @@ running alongside them.
 
 ## Testing without the backend
 
-No fake data layer exists today. `isDevelopmentFlow` only forwards a flag to the backend in
-`StartClaimIntentUseCase`, so it does not help. The module has 13 Compose previews.
+**Built and landed on `feat/claim-chat-demo-flow`.** This section originally assumed the use cases
+already had interfaces to substitute behind. They did not: `GetClaimIntentUseCase`,
+`StartClaimIntentUseCase` and most of the `Submit*UseCase`s were concrete `internal` classes, so
+interfaces had to be extracted first. It also assumed the fake could be debug-only, which is not
+possible here: these KMP modules use AGP's `androidLibrary {}` target, which has no build types, so
+there is no debug source set to hide it in.
 
-Add a debug-only scripted fake behind the existing use-case interfaces (`GetClaimIntentUseCase`,
-`StartClaimIntentUseCase` and the various `Submit*UseCase`s) that replays a hardcoded sequence
-of steps on a timer. It must be able to drive:
+The fake therefore rides on demo mode, the one sanctioned way to have two implementations of a type.
+`DemoClaimIntentScript` owns the canned flow; ten `*Demo` use cases delegate to it; ten `Switching*`
+classes extending `DemoSwitcher` select between prod and demo and carry the only
+`@ContributesBinding` for each type. The switchers live in `androidMain` because `core-demo-mode` is
+a JVM library and `commonMain` must stay platform-agnostic.
+
+Consequence worth stating plainly: this ships. Real demo-mode users get the scripted claim flow,
+which is a product change rather than pure test scaffolding.
+
+`isDevelopmentFlow` was investigated and does not help; it only forwards a flag to the backend in
+`StartClaimIntentUseCase`.
+
+The script drives:
 
 - A task step emitting several descriptions in succession, for item 1.
 - A `Form` step with a `SINGLE_SELECT` field over several contracts, with and without a prefill,
@@ -252,6 +266,12 @@ of steps on a timer. It must be able to drive:
 
 Compose previews cover the static states. The scripted fake covers the transitions, which is
 where all four risky items actually live.
+
+`DemoClaimIntentScriptTest` covers the script itself: the walk to the outcome, regret not advancing,
+progress increasing, the select field's options and lack of prefill, and that the task flow emits
+every scheduled description. One test asserts that the schedule still delivers two descriptions in a
+single emission, so the burst case cannot be flattened away by accident, which would let a consumer
+that renders only the latest description look correct while still dropping messages in production.
 
 ## Out of scope
 
