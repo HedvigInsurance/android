@@ -360,7 +360,7 @@ private fun FormContent(
             onClick = onSkip,
             isLoading = skipButtonLoading,
             modifier = Modifier.fillMaxWidth(),
-            buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+            buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
           )
         }
       }
@@ -953,11 +953,15 @@ internal fun SingleSelectBubbleWithDialog(
   errorText: String? = null,
 ) {
   val focusManager = LocalFocusManager.current
-  val sheetState = rememberHedvigBottomSheetState<RadioOptionId?>()
-  HedvigBottomSheet(sheetState) { initialSelection: RadioOptionId? ->
+  val sheetState = rememberHedvigBottomSheetState<String>()
+  // The payload is the selected id as a string because HedvigBottomSheet only renders its content while the
+  // payload is non-null, so a nullable one would make the unselected case silently render nothing.
+  HedvigBottomSheet(sheetState) { initialSelection: String ->
     // Held locally so cancelling leaves the committed answer untouched. The dialog this replaced
     // committed on tap, which left no way back out of a mis-tap.
-    var pendingSelection by remember { mutableStateOf(initialSelection) }
+    var pendingSelection by remember {
+      mutableStateOf(initialSelection.takeIf { it.isNotEmpty() }?.let { RadioOptionId(it) })
+    }
     HedvigText(
       questionLabel,
       modifier = Modifier.fillMaxWidth().semantics { heading() },
@@ -995,7 +999,7 @@ internal fun SingleSelectBubbleWithDialog(
     HedvigBigCard(
       onClick = {
         focusManager.clearFocus()
-        sheetState.show(selectedOptionId)
+        sheetState.show(selectedOptionId?.id.orEmpty())
       },
       labelText = questionLabel,
       inputText = selectedOption?.text,
