@@ -534,8 +534,9 @@ private fun ClaimChatScrollableContent(
         Modifier
           .align(Alignment.BottomCenter)
           .wrapContentHeight(Alignment.Bottom)
-          // Follows the keyboard up and settles back to the bottom edge when it is dismissed.
-          .imePadding()
+          // safeDrawing already carries the keyboard, so this is the bottom inset in full: it resolves to the
+          // navigation bar with the keyboard down and to the keyboard with it up. Adding imePadding on top of
+          // it would count the keyboard twice and lift the card a whole keyboard clear of where it belongs.
           .padding(contentPadding)
           .onSizeChanged { size ->
             bottomAttachedHeight = with(density) { size.height.toDp() } + spaceBetweenItems
