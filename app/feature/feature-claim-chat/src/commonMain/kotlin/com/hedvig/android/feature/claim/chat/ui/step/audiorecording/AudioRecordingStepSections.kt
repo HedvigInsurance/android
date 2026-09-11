@@ -26,6 +26,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -441,7 +443,9 @@ private fun InlineVoiceAnswerCard(
     shape = HedvigTheme.shapes.cornerXLarge,
     color = HedvigTheme.colorScheme.surfacePrimary,
   ) {
-    Box(Modifier.padding(16.dp)) {
+    // Scrollable because the card is as tall as its content: in landscape, or on a short screen, the
+    // controls would otherwise be clipped below the fold with no way to reach them.
+    Box(Modifier.verticalScroll(rememberScrollState()).padding(16.dp)) {
       IconButton(
         onClick = onClose,
         modifier = Modifier.align(Alignment.TopEnd).size(24.dp),
