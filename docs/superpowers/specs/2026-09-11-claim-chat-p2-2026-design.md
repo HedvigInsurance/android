@@ -18,13 +18,31 @@ No iOS coordination is required.
 | 3 | Remove Confirm + Pill | Dropped in the meeting. |
 | 4 | Error escape hatch | Dropped in the meeting. |
 | 5 | Select insurance | In scope. Backend confirmed to deliver it as a `Form` step with `SINGLE_SELECT`. |
-| 6a | Input mode row and overlays | In scope. |
+| 6a | Input mode row and overlays | In scope. Draft preservation is **deferred**, see below. |
 | 6b | Sticky input | In scope, by hoisting the input out of the transcript list. |
-| 7 | Skip buttons to Ghost | In scope, folded into 6a. |
+| 7 | Skip buttons to Ghost | In scope, as its own pass sequenced last. |
 
 Each item gets its own branch off `develop` and its own draft PR. 6b is deliberately isolated
 from the other four so it can be reverted without taking them with it, see
 [Revertability of 6b](#revertability-of-6b).
+
+### Sequencing
+
+The items are not mutually independent, so they run in waves.
+
+**Wave 1, fully parallel.** Items 1, 2 and 5 touch disjoint files: `TaskStep.kt`,
+`ChatClaimSummaryStep.kt`, and `FormStep.kt` plus new components, respectively. They share no
+code and can be worked simultaneously on separate branches in separate worktrees.
+
+**Wave 2, sequential.** Item 6a, then 6b. 6a builds the overlay that 6b has to host, and both
+edit `StepBottomContent`/`StepContentSection` in `ClaimChatDestination.kt`, the very file whose
+restructure is the point of 6b.
+
+**Wave 3.** Item 7. It is a mechanical style swap across five files (`ContentSelectStep.kt`,
+`UploadFilesStep.kt`, `FormStep.kt:357`, `AudioRecordingStepSections.kt:314`,
+`ClaimChatDestination.kt`), overlapping items 5, 6a and 6b. Sequencing it last means it rebases
+onto settled code instead of spraying conflicts across concurrent branches. This is why it is
+no longer folded into 6a.
 
 ## 1. Animated loading text
 
@@ -36,9 +54,22 @@ each newly arrived description to the accumulated list and de-duplicating. `Task
 (`TaskStep.kt`) renders `descriptions.lastOrNull()` inside an `AnimatedContent`, and the Rive
 indicator sits in a sibling slot, so the indicator already survives a text change uninterrupted.
 
-The change is therefore confined to the transition itself: replace the default `AnimatedContent`
-spec with the designed one (the outgoing text fades and slides out, the incoming one fades and
-slides in from below), sized so the row does not jump when the two strings differ in length.
+Three things remain:
+
+1. **The transition.** The `AnimatedContent` has no `transitionSpec`, so it inherits Compose's
+   default of fade plus `scaleIn(0.92f)` plus an animated `SizeTransform`, which reads as a pop
+   and resize. Replace it with the designed motion: the outgoing text fades and slides up and
+   out, the incoming one fades and slides in from below.
+2. **Layout stability.** The default `SizeTransform` animates the content bounds, and the
+   strings vary in length considerably ("Analyzing…" against "Going through the details…"), so
+   the sibling Rive indicator is pushed around on every swap. Constrain the text slot so the
+   indicator holds still.
+3. **Pacing.** This is the only non-cosmetic part. `descriptions` accumulates and the UI renders
+   `lastOrNull()`, so when a single poll returns several new descriptions at once, every
+   intermediate one is dropped and the user sees only the last. The design is a sequence of
+   messages intended to be read. Drive the display from a small queue that holds each
+   description for a minimum dwell before advancing, rather than binding directly to the latest
+   value.
 
 Explicitly not doing: the "Done" terminal state. Today `isCompleted` flipping causes
 `SubmitCompleteTaskEffect` to submit and `replaceTaskWithNextStep` to swap the task out with no
@@ -88,8 +119,6 @@ sends a best guess the card shows it, if it sends none the card shows the placeh
 
 Branch: `feat/claim-chat-input-mode-row`
 
-Includes item 7.
-
 ### Button layout
 
 Today `AudioRecorderBubble` (`AudioRecordingStepSections.kt:202`) renders three stacked
@@ -100,9 +129,9 @@ The design replaces this with two equal-width Secondary Large buttons on one row
 in) at 16px insets with an 8px gap, and "Hoppa över" as a Ghost Large button beneath. Both
 primary buttons open the same overlay.
 
-Item 7 extends the Ghost treatment to every Skip button in the flow.
-`ButtonDefaults.ButtonStyle.Ghost` already exists, so each call site is a style-argument swap.
-Audit all of them rather than only the one in this composable.
+The "Hoppa över" button in this composable takes the Ghost style.
+`ButtonDefaults.ButtonStyle.Ghost` already exists. The rest of the flow's Skip buttons are item
+7, handled separately in wave 3.
 
 ### Glass overlay
 
@@ -119,17 +148,25 @@ Both modes use it:
 - Voice: title, elapsed timer, waveform, and the Börja om / record-stop / Skicka control row,
   with an X to dismiss. This replaces the current `HedvigBottomSheet` presentation.
 
-### Draft preservation
+### Draft preservation, deferred
 
-This is new behaviour, not preservation of existing behaviour. `SwitchToFreeText`
-(`ClaimChatViewModel.kt:562`) explicitly constructs `FreeTextDescription(freeText = null)` and
-`SwitchToAudioRecording` resets to `NotRecording`, so today each switch destroys the other
-mode's draft, and leaving text for voice and coming back loses the typed text.
+The meeting assumed drafts already survive a mode switch and that we only had to avoid
+regressing it. They do not. `SwitchToFreeText` (`ClaimChatViewModel.kt:562`) explicitly
+constructs `FreeTextDescription(freeText = null)` and `SwitchToAudioRecording` resets to
+`NotRecording`, so today each switch destroys the other mode's draft, and leaving text for voice
+and coming back loses what was typed.
 
-`AudioRecordingStepState` currently models the two modes as alternative branches of one sealed
-interface, which structurally cannot hold both drafts. Widen it so a step carries a text draft
-and a recording draft side by side, with a separate notion of which mode is currently presented.
-Then:
+Building it is not a UI tweak. `AudioRecordingStepState` models the two modes as alternative
+branches of one sealed interface, so it structurally cannot hold both drafts at once. Supporting
+it means widening that state to carry a text draft and a recording draft side by side, with a
+separate notion of which mode is currently presented, and reworking the two switch handlers and
+every consumer that pattern-matches on the sealed type.
+
+Deferred to a follow-up. 6a ships the button row and the overlays only, and cancelling continues
+to discard the draft exactly as it does today. This is a conscious hold rather than an
+oversight: no behaviour regresses, the design intent is simply not yet met.
+
+When it is picked up, the target behaviour is:
 
 - Dismissing the text overlay via Avbryt keeps the typed text and returns to the two-button row.
 - Dismissing the voice overlay via X keeps the recording and returns to the two-button row.
@@ -186,6 +223,18 @@ property, even where it would be convenient.
 The fallback if it is reverted: solve only the overlays, leaving the resting button row in the
 list. That delivers 6a's keyboard-sticky text input but not the always-visible requirement.
 
+## 7. Skip buttons to Ghost
+
+Branch: `feat/claim-chat-ghost-skip-buttons`
+
+Wave 3, after everything else has landed.
+
+Every Skip button in the flow takes `ButtonDefaults.ButtonStyle.Ghost`. `claims_skip_button` is
+referenced from `ContentSelectStep.kt`, `UploadFilesStep.kt`, `FormStep.kt:357`,
+`AudioRecordingStepSections.kt:314` and `ClaimChatDestination.kt`. Mechanical, but it is exactly
+those five files that items 5, 6a and 6b are rewriting, which is why it waits rather than
+running alongside them.
+
 ## Testing without the backend
 
 No fake data layer exists today. `isDevelopmentFlow` only forwards a flag to the backend in
@@ -198,7 +247,7 @@ of steps on a timer. It must be able to drive:
 - A task step emitting several descriptions in succession, for item 1.
 - A `Form` step with a `SINGLE_SELECT` field over several contracts, with and without a prefill,
   for item 5.
-- An audio recording step, for exercising mode switching, draft preservation and both overlays.
+- An audio recording step, for exercising mode switching and both overlays.
 - A summary step with text, audio and file answers, for item 2.
 
 Compose previews cover the static states. The scripted fake covers the transitions, which is
@@ -208,4 +257,5 @@ where all four risky items actually live.
 
 - Items 3 and 4, dropped in the meeting.
 - The "Done" terminal beat of item 1.
+- Draft preservation across input mode switches, deferred out of item 6a.
 - Any change to `FreeTextOverlay`, which keeps serving `feature-terminate-insurance` unchanged.
