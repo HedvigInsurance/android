@@ -107,6 +107,7 @@ import com.hedvig.android.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.android.feature.claim.chat.data.FreeTextErrorType
 import com.hedvig.android.feature.claim.chat.data.StepContent
 import com.hedvig.android.feature.claim.chat.ui.common.ClaimChatInputSheet
+import com.hedvig.android.feature.claim.chat.ui.common.ClaimChatTextInputSheet
 import com.hedvig.android.feature.claim.chat.ui.common.EditButton
 import com.hedvig.android.feature.claim.chat.ui.common.RoundCornersPill
 import com.hedvig.android.feature.claim.chat.ui.common.SkippedLabel
@@ -184,6 +185,8 @@ internal fun AudioRecordingStep(
           ),
         )
       },
+      onSaveFreeText = { text -> onEvent(ClaimChatEvent.UpdateFreeText(text)) },
+      freeTextMaxLength = stepContent.freeTextMaxLength,
       canSkip = stepContent.isSkippable,
       onSkip = onSkip,
       isCurrentStep = isCurrentStep,
@@ -214,6 +217,8 @@ internal fun AudioRecorderBubble(
   onSwitchToFreeText: () -> Unit,
   onSwitchToAudioRecording: () -> Unit,
   onLaunchFullScreenEditText: () -> Unit,
+  onSaveFreeText: (String) -> Unit,
+  freeTextMaxLength: Int,
   canSkip: Boolean,
   onSkip: () -> Unit,
   isCurrentStep: Boolean,
@@ -222,6 +227,13 @@ internal fun AudioRecorderBubble(
   modifier: Modifier = Modifier,
 ) {
   val isSubmitting = continueButtonLoading || skipButtonLoading
+  val textSheetState = rememberHedvigBottomSheetState<Unit>()
+  ClaimChatTextInputSheet(
+    sheetState = textSheetState,
+    initialText = (recordingState as? AudioRecordingStepState.FreeTextDescription)?.freeText.orEmpty(),
+    maxLength = freeTextMaxLength,
+    onSave = onSaveFreeText,
+  )
   AnimatedContent(
     recordingState,
     contentKey = { s ->
@@ -238,7 +250,7 @@ internal fun AudioRecorderBubble(
           FreeTextInputSection(
             submitFreeText = submitFreeText,
             showAudioRecording = onSwitchToAudioRecording,
-            onLaunchFullScreenEditText = onLaunchFullScreenEditText,
+            onLaunchFullScreenEditText = { textSheetState.show() },
             freeText = recordingState.freeText,
             hasError = recordingState.hasError,
             errorType = recordingState.errorType,
@@ -278,7 +290,11 @@ internal fun AudioRecorderBubble(
                     enabled = true,
                     buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
                     text = stringResource(Res.string.CLAIM_CHAT_USE_TEXT_INPUT),
-                    onClick = onSwitchToFreeText,
+                    onClick = {
+                      focusManager.clearFocus()
+                      onSwitchToFreeText()
+                      textSheetState.show()
+                    },
                     modifier = Modifier.weight(1f),
                   )
                 }
