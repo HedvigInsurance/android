@@ -122,5 +122,5 @@ internal class SkipStepUseCaseDemo(
 internal class RegretStepUseCaseDemo(
   private val script: DemoClaimIntentScript,
 ) : RegretStepUseCase {
-  override suspend fun invoke(id: StepId): Either<ClaimChatErrorMessage, ClaimIntent> = script.current().right()
+  override suspend fun invoke(id: StepId): Either<ClaimChatErrorMessage, ClaimIntent> = script.regretTo(id).right()
 }
