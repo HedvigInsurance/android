@@ -22,11 +22,13 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -37,6 +39,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -340,7 +343,10 @@ private fun ClaimChatScreenContent(
       val layoutInfo = lazyListState.layoutInfo
       val lazyListItemsCount = layoutInfo.totalItemsCount
       val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()
-      (lastVisibleItem?.index != lazyListItemsCount - 1 && lazyListItemsCount > 0)
+      val hasMoreToScroll = lastVisibleItem?.index != lazyListItemsCount - 1 && lazyListItemsCount > 0
+      // The arrow sits where a bottom attached input would be, so it stands down for that one step rather
+      // than overlapping it. Every other step still gets it.
+      hasMoreToScroll && uiState.currentStep?.stepContent !is StepContent.AudioRecording
     }
   }
   // Track the size of the last item to scroll when it grows
@@ -468,53 +474,99 @@ private fun ClaimChatScrollableContent(
     steps = uiState.steps,
   )
 
-  Box(modifier, propagateMinConstraints = true) {
-    Box(
-      Modifier
-        .padding(contentPadding)
-        .onSizeChanged { size ->
-          lastItemHeightAdjustingState.onContainerSizeChanged(size)
-        },
-    )
-    LazyColumn(
-      state = lazyListState,
-      contentPadding = contentPadding,
-      verticalArrangement = Arrangement.spacedBy(spaceBetweenItems, Alignment.Top),
-    ) {
-      items(
-        items = uiState.steps,
-        key = { step -> step.id.value },
-        contentType = { it.stepContent::class },
-      ) { item ->
-        val isCurrentStep = item.id == uiState.steps.lastOrNull()?.id
-        val showAnimationSequence = isCurrentStep &&
-          item.stepContent !is StepContent.Task &&
-          !uiState.stepsWithShownAnimations.contains(item.id)
-        val isLastItem = item == uiState.steps.lastOrNull()
+  // Only the step that answers with text or voice is bottom attached, so that input stays reachable while
+  // reading back through the conversation. Every other step keeps its actions inline in the transcript.
+  val bottomAttachedStep = uiState.steps.lastOrNull()?.takeIf { it.stepContent is StepContent.AudioRecording }
+  // The transcript and the attached input are stacked, so the remaining height bounds the input rather than
+  // the input overflowing the screen. That also means nothing needs to measure it to reserve room.
+  // When an input is attached it carries the bottom inset, so the list stops short of it.
+  val listContentPadding = if (bottomAttachedStep == null) {
+    contentPadding
+  } else {
+    WindowInsets.safeDrawing
+      .only(WindowInsetsSides.Horizontal)
+      .asPaddingValues()
+      .plus(PaddingValues(16.dp))
+  }
 
-        StepContentSection(
-          stepItem = item,
-          isCurrentStep = isCurrentStep,
-          showAnimationSequence = showAnimationSequence,
-          currentContinueButtonLoading = uiState.currentContinueButtonLoading,
-          currentSkipButtonLoading = uiState.currentSkipButtonLoading,
-          onEvent = onEvent,
-          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-          onNavigateToImageViewer = onNavigateToImageViewer,
-          navigateToDeflect = navigateToDeflect,
-          appPackageId = appPackageId,
-          imageLoader = imageLoader,
-          openAppSettings = openAppSettings,
-          onResponseHeightChanged = { size ->
-            lastItemHeightAdjustingState.onItemHeightChanged(item.id, size)
+  Column(modifier) {
+    Box(Modifier.weight(1f), propagateMinConstraints = true) {
+      Box(
+        Modifier
+          .padding(contentPadding)
+          .onSizeChanged { size ->
+            lastItemHeightAdjustingState.onContainerSizeChanged(size)
           },
-          modifier = if (isLastItem) {
-            Modifier.requiredHeightIn(lastItemHeightAdjustingState.preferredMinHeightForFullScreenItem)
-          } else {
-            Modifier
-          },
-          closeFlow = closeFlow,
-        )
+      )
+      LazyColumn(
+        state = lazyListState,
+        contentPadding = listContentPadding,
+        verticalArrangement = Arrangement.spacedBy(spaceBetweenItems, Alignment.Top),
+      ) {
+        items(
+          items = uiState.steps,
+          key = { step -> step.id.value },
+          contentType = { it.stepContent::class },
+        ) { item ->
+          val isCurrentStep = item.id == uiState.steps.lastOrNull()?.id
+          val showAnimationSequence = isCurrentStep &&
+            item.stepContent !is StepContent.Task &&
+            !uiState.stepsWithShownAnimations.contains(item.id)
+          val isLastItem = item == uiState.steps.lastOrNull()
+          val isBottomAttached = item.id == bottomAttachedStep?.id
+
+          StepContentSection(
+            stepItem = item,
+            isCurrentStep = isCurrentStep,
+            showAnimationSequence = showAnimationSequence,
+            renderBottomContent = !isBottomAttached,
+            currentContinueButtonLoading = uiState.currentContinueButtonLoading,
+            currentSkipButtonLoading = uiState.currentSkipButtonLoading,
+            onEvent = onEvent,
+            shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+            onNavigateToImageViewer = onNavigateToImageViewer,
+            navigateToDeflect = navigateToDeflect,
+            appPackageId = appPackageId,
+            imageLoader = imageLoader,
+            openAppSettings = openAppSettings,
+            onResponseHeightChanged = { size ->
+              lastItemHeightAdjustingState.onItemHeightChanged(item.id, size)
+            },
+            modifier = if (isLastItem && !isBottomAttached) {
+              Modifier.requiredHeightIn(lastItemHeightAdjustingState.preferredMinHeightForFullScreenItem)
+            } else {
+              Modifier
+            },
+            closeFlow = closeFlow,
+          )
+        }
+      }
+    }
+    if (bottomAttachedStep != null) {
+      Box(
+        // safeDrawing already carries the keyboard, so this is the bottom inset in full: it resolves to the
+        // navigation bar with the keyboard down and to the keyboard with it up. Adding imePadding on top of it
+        // would count the keyboard twice and lift the card a whole keyboard clear of where it belongs.
+        Modifier.padding(contentPadding),
+      ) {
+        // Keyed on the step: this sits outside the list, so without it the input's own state (which card is
+        // open, what has been typed) would carry over from one step to the next.
+        key(bottomAttachedStep.id) {
+          StepBottomContent(
+            stepItem = bottomAttachedStep,
+            isCurrentStep = true,
+            currentContinueButtonLoading = uiState.currentContinueButtonLoading,
+            currentSkipButtonLoading = uiState.currentSkipButtonLoading,
+            onEvent = onEvent,
+            shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+            onNavigateToImageViewer = onNavigateToImageViewer,
+            navigateToDeflect = navigateToDeflect,
+            appPackageId = appPackageId,
+            imageLoader = imageLoader,
+            openAppSettings = openAppSettings,
+            closeFlow = closeFlow,
+          )
+        }
       }
     }
   }
@@ -553,6 +605,7 @@ private fun StepContentSection(
   stepItem: ClaimIntentStep,
   isCurrentStep: Boolean,
   showAnimationSequence: Boolean,
+  renderBottomContent: Boolean,
   currentContinueButtonLoading: Boolean,
   currentSkipButtonLoading: Boolean,
   onEvent: (ClaimChatEvent) -> Unit,
@@ -620,7 +673,7 @@ private fun StepContentSection(
     }
 
     AnimatedVisibility(
-      visible = showBottomContent && !isAnimationInProcess,
+      visible = renderBottomContent && showBottomContent && !isAnimationInProcess,
       enter = fadeIn(animationSpec = tween(bottomContentAnimationDuration)),
       exit = ExitTransition.None,
     ) {
