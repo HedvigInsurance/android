@@ -268,7 +268,7 @@ internal fun AudioRecorderBubble(
                 bottomSheetState = state,
               )
               // One row of equal-width buttons rather than a stack, so neither input mode reads as the
-              // primary one. Both open a sheet over the conversation, leaving the question readable.
+              // primary one.
               Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
