@@ -9,6 +9,12 @@ structure is preserved: new code goes in `commonMain` and stays platform-agnosti
 expect/actual only where a platform API is genuinely needed, exactly as the module already does.
 No iOS coordination is required.
 
+## Status
+
+Built and verified by running the flow on a device. This document has been updated to describe what was
+actually implemented; where the original design differed, the divergence and its cause are recorded inline so
+the mistakes are not repeated.
+
 ## Decisions
 
 | # | Item | Decision |
@@ -54,22 +60,20 @@ each newly arrived description to the accumulated list and de-duplicating. `Task
 (`TaskStep.kt`) renders `descriptions.lastOrNull()` inside an `AnimatedContent`, and the Rive
 indicator sits in a sibling slot, so the indicator already survives a text change uninterrupted.
 
-Three things remain:
+As built, in `TaskDescriptionQueue.kt`:
 
-1. **The transition.** The `AnimatedContent` has no `transitionSpec`, so it inherits Compose's
-   default of fade plus `scaleIn(0.92f)` plus an animated `SizeTransform`, which reads as a pop
-   and resize. Replace it with the designed motion: the outgoing text fades and slides up and
-   out, the incoming one fades and slides in from below.
-2. **Layout stability.** The default `SizeTransform` animates the content bounds, and the
-   strings vary in length considerably ("Analyzing…" against "Going through the details…"), so
-   the sibling Rive indicator is pushed around on every swap. Constrain the text slot so the
-   indicator holds still.
-3. **Pacing.** This is the only non-cosmetic part. `descriptions` accumulates and the UI renders
-   `lastOrNull()`, so when a single poll returns several new descriptions at once, every
-   intermediate one is dropped and the user sees only the last. The design is a sequence of
-   messages intended to be read. Drive the display from a small queue that holds each
-   description for a minimum dwell before advancing, rather than binding directly to the latest
-   value.
+1. **Pacing.** `pacedDescriptions(descriptions: Flow<List<String>>, minimumDwell)` walks the backlog one at a
+   time, holding each for a minimum dwell. `rememberPacedDescription` is a thin Compose wrapper over it, so
+   there is one implementation and the tests cover the one that ships. This is the substantive part: the UI
+   rendered `descriptions.lastOrNull()`, so when a single poll carried several new descriptions the
+   intermediate ones were never shown at all.
+2. **The transition.** The `AnimatedContent` had no `transitionSpec` and inherited Compose's default of fade
+   plus `scaleIn` plus an animated `SizeTransform`. It now fades and slides vertically.
+3. **Layout stability.** The strings vary a lot in length, so the animated size transform shifted the
+   neighbouring Rive indicator on every swap. The size is snapped instead.
+
+Verified on a device: consecutive frames show "Going through the details..." and then "Working out the next
+step...", the two descriptions the demo script delivers in a single emission.
 
 Explicitly not doing: the "Done" terminal state. Today `isCompleted` flipping causes
 `SubmitCompleteTaskEffect` to submit and `replaceTaskWithNextStep` to swap the task out with no
@@ -98,130 +102,116 @@ The capability exists. `FieldType.SINGLE_SELECT` (`FormStep.kt:240`) already ren
 with a chevron, opening a picker. Backend is confirmed to send the contract list through this
 path, so no new `StepContent` type is needed.
 
-Three presentation deltas:
+As built, two of the three expected deltas turned out to be unnecessary:
 
-1. The picker becomes a bottom sheet titled "Select insurance" with a primary Continue and a
-   secondary Cancel, replacing `SingleSelectDialog`. `HedvigBottomSheet` and
-   `rememberHedvigBottomSheetState` are already used elsewhere in `FormStep` for the search
-   field, so follow that pattern.
-2. Option rows gain a subtitle line ("Birger Jarlsgatan 57 · Only you"). The data path already
-   exists: `RadioOption.label` is populated from `field.options[].subtitle`.
-3. The collapsed card gains the same subtitle beneath the selected value. `HedvigBigCard`'s
-   `inputText` is a single string today, so a subtitle slot does not exist. Default to a
-   claim-chat-local card variant rather than widening the shared component, since this is the
-   only known caller that needs it. Promote it into the design system later if a second caller
-   appears.
+1. The picker is a `HedvigBottomSheet` with Continue and Cancel, replacing `SingleSelectDialog`. Beyond
+   matching the design this fixes a real gap: the dialog committed the answer the instant an option was
+   tapped, so a mis-tap could not be backed out of. The sheet holds the selection locally until Continue.
+2. Option rows already rendered their subtitle. `RadioGroup` draws `option.label` and `FormStep` already
+   populated it from `option.subtitle`. No work was needed.
+3. The collapsed card gained the subtitle through a new optional `subtitleText` on the shared
+   `HedvigBigCard`. The content-slot overload was the alternative, but `BigCardDefaults`, which holds the
+   card's padding and text styles, is private, so that route meant copying design-system internals into a
+   feature module. No existing caller changes.
+
+No new Lokalise key was needed: the sheet title is the backend-supplied `field.title` the dialog already used.
+
+**A sheet's payload must be non-null.** `HedvigBottomSheet` renders its content only while `state.data != null`,
+so a payload typed to the selected id meant the picker never opened until something was already selected,
+which could never happen. Sheets that are simply open or closed use `HedvigBottomSheetState<Unit>`, which is
+the convention across the app; anything carrying a payload must ensure it is non-null when shown.
+
+**Not done:** the design shows a chevron on the card. `HedvigBigCard` draws none today and adding one would
+change its appearance for every caller, so that needs a design decision rather than a unilateral change.
 
 Prefill is entirely backend-driven through `selectedOptions`. Nothing to build: if the backend
 sends a best guess the card shows it, if it sends none the card shows the placeholder.
 
-## 6a. Input mode row and overlays
+## 6a. The answer input
 
 Branch: `feat/claim-chat-input-mode-row`
 
-### Button layout
+**Corrected during implementation.** This section originally described a translucent "glass overlay" hosting
+both inputs, which came from paraphrasing the Figma annotation rather than reading the frames. The frames
+(`S2 After`, `S3 Text — overlay above the keyboard`, `S4 Voice — recording inline`) show no sheet and no scrim
+anywhere. The bottom of the screen swaps between three inline states and the question stays fully readable in
+all of them.
 
-Today `AudioRecorderBubble` (`AudioRecordingStepSections.kt:202`) renders three stacked
-full-width buttons: "Record with voice" (primary, opens a `HedvigBottomSheet`), "Describe using
-text" (secondary, flips state to an inline text section) and "Skip" (secondary).
+### Resting
 
-The design replaces this with two equal-width Secondary Large buttons on one row (Skriv, Spela
-in) at 16px insets with an 8px gap, and "Hoppa över" as a Ghost Large button beneath. Both
-primary buttons open the same overlay.
+Two buttons side by side, each with its icon: `PenEdit` for the text option, `Mic` for the voice one. The
+Figma measures them at 167.5 x 56 each, inside 343 of content width with an 8px gap, which is equal width at
+`ButtonSize.Large` (whose 15 + 24 + 17 metrics give exactly 56dp) with `Modifier.weight(1f)`, an 8dp gap and
+16dp insets. A ghost skip sits below them.
 
-The "Hoppa över" button in this composable takes the Ghost style.
-`ButtonDefaults.ButtonStyle.Ghost` already exists. The rest of the flow's Skip buttons are item
-7, handled separately in wave 3.
+The labels are short: "Skriv" and "Spela in" in the design. No matching Lokalise key exists, and `strings.xml`
+is generated, so they are hardcoded English with `// TODO: Add … to Lokalise` comments. **This blocks shipping
+until real keys exist.**
 
-### Glass overlay
+### Text
 
-The design shows a translucent overlay with the question still legible above a card, for both
-text and voice. The existing `FreeTextOverlay` is a full-screen opaque `Surface` with
-`safeDrawingPadding`, and it has a second consumer in `feature-terminate-insurance`, so it is
-**not** modified. Instead, add a claim-chat-local overlay that takes arbitrary card content: a
-translucent scrim over the still-composed transcript, and a card pinned to the bottom with
-`imePadding()`.
+A card whose text field *is* the input. Focusing it raises the keyboard and the card rides above it, so there
+is no separate editor to open. The card carries the field label, the field, and Avbryt plus Spara aligned to
+its trailing edge. Spara submits, which is what puts the answer into the transcript in frame `S6`.
 
-Both modes use it:
+The shared `FreeTextOverlay` is no longer used by this flow and its host is removed. The component itself is
+untouched because `feature-terminate-insurance` still uses it.
 
-- Text: title, the text field, Avbryt (ghost) and Spara (primary) in the card footer.
-- Voice: title, elapsed timer, waveform, and the Börja om / record-stop / Skicka control row,
-  with an X to dismiss. This replaces the current `HedvigBottomSheet` presentation.
+### Voice
+
+The recorder as an inline card with its own close, not a bottom sheet. Same content as before (title, timer,
+waveform, and the restart / stop / send row); only the container changed.
 
 ### Draft preservation, deferred
 
-The meeting assumed drafts already survive a mode switch and that we only had to avoid
-regressing it. They do not. `SwitchToFreeText` (`ClaimChatViewModel.kt:562`) explicitly
-constructs `FreeTextDescription(freeText = null)` and `SwitchToAudioRecording` resets to
-`NotRecording`, so today each switch destroys the other mode's draft, and leaving text for voice
-and coming back loses what was typed.
+The meeting assumed drafts already survive a mode switch. They do not. `SwitchToFreeText` explicitly
+constructs `FreeTextDescription(freeText = null)` and `SwitchToAudioRecording` resets to `NotRecording`, so
+each switch destroys the other mode's draft.
 
-Building it is not a UI tweak. `AudioRecordingStepState` models the two modes as alternative
-branches of one sealed interface, so it structurally cannot hold both drafts at once. Supporting
-it means widening that state to carry a text draft and a recording draft side by side, with a
-separate notion of which mode is currently presented, and reworking the two switch handlers and
-every consumer that pattern-matches on the sealed type.
+`AudioRecordingStepState` models the two modes as alternative branches of one sealed interface, so it
+structurally cannot hold both drafts. Supporting it means widening that state and reworking every consumer
+that pattern-matches on it. Deferred: cancelling still discards, exactly as before, so nothing regresses.
 
-Deferred to a follow-up. 6a ships the button row and the overlays only, and cancelling continues
-to discard the draft exactly as it does today. This is a conscious hold rather than an
-oversight: no behaviour regresses, the design intent is simply not yet met.
-
-When it is picked up, the target behaviour is:
-
-- Dismissing the text overlay via Avbryt keeps the typed text and returns to the two-button row.
-- Dismissing the voice overlay via X keeps the recording and returns to the two-button row.
-- Re-entering either mode restores that mode's draft.
-- Submitting clears both.
-
-## 6b. Sticky input
+## 6b. Bottom attaching the answer input
 
 Branch: `feat/claim-chat-sticky-input`
 
-### Current state
+**Corrected during implementation.** This section originally said "the current step's bottom content", which
+led to every step's actions being pinned. The requirement names the text input and the audio recording
+specifically. Continue, Skip, the form fields and the summary's Submit all stay inline exactly as before.
 
-The input is not bottom-anchored. It is the last item of the transcript `LazyColumn`
-(`ClaimChatDestination.kt:501`), stretched to at least viewport height by
-`LastItemHeightAdjustingState` via `requiredHeightIn`, which makes it *appear* pinned while the
-list sits at the end. Scrolling up carries it away. Three mechanisms exist to prop up that
-illusion: the height-adjusting state itself, a `LaunchedEffect` firing
-`animateScrollBy(3000f)` whenever the last item resizes, and the scroll-to-bottom arrow.
+### What the input looked like before
 
-### Target
+Not bottom-anchored at all. It was the last item of the transcript `LazyColumn`, stretched to at least
+viewport height by `LastItemHeightAdjustingState` via `requiredHeightIn`, which only looked pinned while the
+list sat at its end. Scrolling up to reread earlier answers carried it away.
 
-The screen becomes a column:
+### What changed
 
-- A transcript `LazyColumn` holding each step's top content, and the bottom content of *past*
-  steps only (an answered audio bubble with its "Ändra" chip, a skipped label, and so on). The
-  `isCurrentStep` flag already threaded through `StepContentSection` and `StepBottomContent`
-  marks this split.
-- A pinned container below it holding the current step's bottom content, carrying
-  `imePadding()` so it follows the keyboard up and settles back to the bottom edge on dismissal.
+Only the step whose content is `StepContent.AudioRecording` has its answer input lifted out of its list item
+into a container aligned to the bottom of the screen. That container carries the keyboard inset so it rides
+up with the keyboard and settles back on dismissal, and the list takes bottom content padding equal to the
+measured container height so the transcript can still scroll clear of it.
 
-The list takes bottom content-padding equal to the measured height of the pinned container so
-transcript content can scroll clear of it. `LastItemHeightAdjustingState` and the 3000f nudge
-retire, replaced by a plain scroll-to-last-item when a new step arrives. The scroll arrow is
-re-evaluated once the list no longer contains a viewport-height final item, and is likely
-removed.
+Everything else is untouched: `LastItemHeightAdjustingState`, the `requiredHeightIn` on the last item and the
+autoscroll all remain, because every other step still positions its actions through them.
 
-The voice overlay gets the same pinned treatment without requesting focus, so it never raises
-the keyboard.
+### Keyboard insets, once
 
-### Known risk
+`WindowInsets.safeDrawing` already includes the IME. Applying `Modifier.imePadding()` *and* padding derived
+from `safeDrawing` to the same container applies the keyboard height twice, which shows up as a large gap
+below the card and a text field squeezed into what is left. The bottom attached container takes its bottom
+inset from one source only.
 
-The handoff. When a step is answered, its input has to leave the pinned container and reappear
-as a historical entry in the transcript. Expect to iterate on that transition. This is the part
-of the whole effort most likely to need rework.
+### Scroll to bottom arrow
 
-### Revertability of 6b
+The arrow occupies the same place as the bottom attached input, so it stands down for that one step. On every
+other step its behaviour is unchanged.
 
-Explicitly required. 6b ships on its own branch touching only `ClaimChatDestination.kt` and
-`LastItemHeightAdjustingState.kt`, with no changes shared with items 1, 2, 5 or 6a. If the
-hoisted layout proves worse in practice, reverting this branch restores the current scroll model
-without disturbing the other four. Do not fold any 6a work into this branch to keep that
-property, even where it would be convenient.
+### Revertability
 
-The fallback if it is reverted: solve only the overlays, leaving the resting button row in the
-list. That delivers 6a's keyboard-sticky text input but not the always-visible requirement.
+The item stays on its own branch so it can be reverted without taking the other work with it. Nothing from
+items 1, 2, 5 or 6a is folded into it.
 
 ## 7. Skip buttons to Ghost
 
