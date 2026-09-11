@@ -1,6 +1,5 @@
 package com.hedvig.android.design.system.hedvig
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,16 +15,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
 import com.hedvig.android.design.system.hedvig.icon.Plus
-import hedvig.resources.Res
-import hedvig.resources.pillow_new_680
-import org.jetbrains.compose.resources.painterResource
 
 /** The size a [PaymentMethodTile]'s mark is drawn at. */
 val PaymentMethodMarkSize = 39.dp
 
 private val TileSize = 74.dp
 private val BadgeSize = 24.dp
+private val BadgeOffset = 8.dp
 
 /**
  * The outlined tile a payment method is shown on while it is being connected or given up, with an
@@ -57,11 +55,7 @@ fun PaymentMethodTile(
       }
     }
     if (badge != null) {
-      Box(
-        Modifier
-          .align(Alignment.TopEnd)
-          .offset(x = 8.dp, y = (-8).dp),
-      ) {
+      Box(Modifier.align(Alignment.TopEnd).offset(BadgeOffset, -BadgeOffset)) {
         badge()
       }
     }
@@ -121,17 +115,23 @@ fun PaymentMethodHandoverIllustration(
     PaymentMethodTile(mark = mark)
     ThreeDotsLoading()
     Box {
-      Image(
-        painter = painterResource(Res.drawable.pillow_new_680),
-        contentDescription = null,
+      Surface(
+        shape = HedvigTheme.shapes.cornerXXLarge,
+        color = HedvigTheme.colorScheme.fillBlack,
+        contentColor = HedvigTheme.colorScheme.fillWhite,
+        border = HedvigTheme.colorScheme.borderPrimary,
         modifier = Modifier.size(TileSize),
-      )
+      ) {
+        Box(Modifier.size(TileSize), contentAlignment = Alignment.Center) {
+          Icon(
+            imageVector = HedvigIcons.HelipadOutline,
+            contentDescription = null,
+            modifier = Modifier.size(65.dp),
+          )
+        }
+      }
       if (destinationBadge != null) {
-        Box(
-          Modifier
-            .align(Alignment.TopEnd)
-            .offset(x = 6.dp, y = (-6).dp),
-        ) {
+        Box(Modifier.align(Alignment.TopEnd).offset(BadgeOffset, -BadgeOffset)) {
           destinationBadge()
         }
       }
