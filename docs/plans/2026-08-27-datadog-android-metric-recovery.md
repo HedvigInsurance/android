@@ -218,8 +218,21 @@ The durable form of a failure signal is an action, not a screen or a UI state:
 logAction(type = ActionType.CUSTOM, name = "CLAIM_SUBMISSION_FAILED")
 ```
 
-Action-based metrics do not break when navigation changes, which is why no iOS metric broke in this
-incident. Note that the two obvious instrumentation points are both wrong: `failedToStart` and
+Action-based metrics do not break when navigation changes.
+
+To be precise about why no iOS metric broke here: the Nav2 to Nav3 migration was Android-only, so
+iOS view names never moved. Only 3 of the 13 `ios.*` metrics are actually action-based
+(`ios.addonPurchased`, `ios.addonUpgraded`, `ios.claims.end.count`). Those three are the only metrics
+in the whole org immune to a rename, and iOS emits them through `log.addUserAction(...)` in
+`DatadogLogger.swift` with the names held as a Swift enum in `ChangeAddonViewModel.swift`. So this is
+not a novel idea, it is catching up to a pattern already in production on the other platform.
+
+The counter-example is on iOS too. `ios.login.network.error` excludes user-facing translated strings,
+both the English and Swedish wording of the BankID cancellation and the "no existing Hedvig member"
+message, plus the entire United States by geolocation. Lokalise is one project shared across Android,
+iOS and the backends, so a translator editing that copy silently changes what a reliability metric
+counts. That is a worse coupling than view names, and it is a good argument for moving the signal
+into code rather than tightening the filter. Note that the two obvious instrumentation points are both wrong: `failedToStart` and
 `errorSubmittingStep` are transient, retryable states that are set and cleared repeatedly, so
 instrumenting them counts error *displays*, not failed claims, and a member on a flaky connection
 produces several. Emit at a terminal boundary instead, for example when the member abandons the flow
@@ -284,6 +297,29 @@ assuming 99%, which was inherited and never chosen for this signal.
 Burn-rate alerting solves both the recovery time and the sensitivity properly, and is the textbook
 answer. It was deliberately not done, because it needs a new monitor and real traffic to size
 thresholds against. Revisit if the 7d window turns out to flap.
+
+## What already measures auth, so nobody builds it a third time
+
+Checked 2026-09-11. Two server-side SLOs already cover auth availability, on APM traces rather than
+RUM, with the full population and no client sampling:
+
+| SLO | Built on | SLI at the time of checking |
+|---|---|---|
+| Auth: post auth | `trace.http.request.*`, `service:auth` | 99.958% |
+| Auth: get member credentials | `trace.http.request.*`, `service:auth` | 100% |
+
+`Auth: login (Android)` is a client-side view of a question those two already answer better. What it
+adds is the network path between the member and the server, which is real, but is also the part
+Android cannot fix. Worth knowing before anyone treats it as the primary defence for auth, or
+rebuilds backend auth availability inside RUM.
+
+There is no `Auth: login (iOS)` SLO. Android is the only platform alerting on login, which is why
+Android is the platform that got paged.
+
+Also worth knowing as a precedent: `Purchase: completed signs` is an SLO over
+`hedvig.events.signing.completed` with a **70%** target. So the org already has a funnel SLO built on
+explicit events rather than HTTP outcomes, and already accepts a target chosen from reality instead
+of a round number.
 
 ## Guard rail worth adding
 
