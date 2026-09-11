@@ -39,6 +39,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -546,20 +547,24 @@ private fun ClaimChatScrollableContent(
             measuredBottomAttachedHeight = with(density) { size.height.toDp() } + spaceBetweenItems
           },
       ) {
-        StepBottomContent(
-          stepItem = bottomAttachedStep,
-          isCurrentStep = true,
-          currentContinueButtonLoading = uiState.currentContinueButtonLoading,
-          currentSkipButtonLoading = uiState.currentSkipButtonLoading,
-          onEvent = onEvent,
-          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-          onNavigateToImageViewer = onNavigateToImageViewer,
-          navigateToDeflect = navigateToDeflect,
-          appPackageId = appPackageId,
-          imageLoader = imageLoader,
-          openAppSettings = openAppSettings,
-          closeFlow = closeFlow,
-        )
+        // Keyed on the step: this sits outside the list, so without it the input's own state (which card is
+        // open, what has been typed) would carry over from one step to the next.
+        key(bottomAttachedStep.id) {
+          StepBottomContent(
+            stepItem = bottomAttachedStep,
+            isCurrentStep = true,
+            currentContinueButtonLoading = uiState.currentContinueButtonLoading,
+            currentSkipButtonLoading = uiState.currentSkipButtonLoading,
+            onEvent = onEvent,
+            shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+            onNavigateToImageViewer = onNavigateToImageViewer,
+            navigateToDeflect = navigateToDeflect,
+            appPackageId = appPackageId,
+            imageLoader = imageLoader,
+            openAppSettings = openAppSettings,
+            closeFlow = closeFlow,
+          )
+        }
       }
     }
   }
