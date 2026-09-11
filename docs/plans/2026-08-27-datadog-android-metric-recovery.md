@@ -1,7 +1,8 @@
 # Datadog Android metric recovery
 
-**Status: four items open.** One is time-boxed: flip `notify_no_data` on monitor `93408872` a few
-days after the release that carries the auth instrumentation, see below. The `OR`-branch cleanup is
+**Status: four items open.** Two are time-boxed to the release carrying the auth instrumentation:
+flip `notify_no_data` on monitor `93408872` a few days after, and take the SLO window back to 7 days
+about a week after. See "After the release" below. The `OR`-branch cleanup is
 blocked on the pre-14.3.6 install base draining, which was still about 13% of prod view traffic on
 2026-09-10. The claim-submission-failure action is unstarted. The guard-rail monitor is also still
 just a suggestion.
@@ -238,28 +239,51 @@ roughly the same 1.4%. This metric is the denominator of the Claims flow (Androi
 reads marginally better. Two keys in the new scope, `StartClaimPledgeKey` and `UpdateAppKey`, have no
 old equivalent to measure, but neither issues network requests in normal use.
 
-## PENDING: flip `notify_no_data` on monitor 93408872
+## After the release: two changes to monitor 93408872
 
-**Do this a few days after the release carrying the auth instrumentation, once
-`android.login.network.count` shows steady prod traffic.**
+Both wait for the release that carries the auth instrumentation, because before it there is
+legitimately no prod data on `android.login.network.count`.
 
-```
-pup api -X PUT v1/monitor/93408872 --input <monitor json with options.notify_no_data = true>
-```
+### A few days after: flip `notify_no_data` to true
 
 Start with `no_data_timeframe` around 12 hours and tighten once the real overnight pattern is
-visible. Login runs at roughly 50 attempts a day, so about two an hour, and a tighter window will
-page on an ordinary quiet night.
+visible. Login runs at roughly 50 attempts a day, about two an hour, so a tighter window will page
+on an ordinary quiet night.
 
-**Why it matters.** The SLI counts `POST /member-login` resource events with a 5xx status. A request
-that never reaches the server produces a RUM error and no resource at all, so it lands in neither
-side of the ratio. If auth becomes unreachable, the denominator collapses toward zero and the SLI
-reads 100% or no-data. With `notify_no_data: false` nothing fires, so the worst outage produces the
-best number and silence. Treating the collapse itself as the alert is the cheapest cover for the one
-failure mode this SLI cannot otherwise see.
+**Why.** The SLI counts `POST /member-login` resource events with a 5xx status. A request that never
+reaches the server produces a RUM error and no resource at all, so it lands in neither side of the
+ratio. If auth becomes unreachable the denominator collapses toward zero and the SLI reads 100% or
+no-data. With `notify_no_data: false` nothing fires, so the worst outage produces the best number and
+silence. Treating the collapse itself as the alert is the cheapest cover for the one failure mode
+this SLI cannot otherwise see.
 
-**Why not now.** Before the release there is legitimately no prod data, so flipping it early means a
-monitor that fires continuously and gets muted, which is worse than leaving it off.
+### About a week after: take the SLO window back to 7 days
+
+Set the SLO `timeframe` and its `thresholds[].timeframe` back to `7d`, and the monitor query back to
+`error_budget("29588e73473d54f09814173755548b80").over("7d")`. All three have to move together or
+the monitor asks the SLO for a window it no longer defines.
+
+**Why.** `error_budget(...).over(30d)` is a trailing window, so once the budget is burned the monitor
+stays red until the burning events age out, up to a month. Seven days recovers four times faster.
+
+**Check the arithmetic against real traffic before doing it.** The window was widened to 30d to get a
+usable budget, and shortening it takes that back. At the expected volume:
+
+| Window and target | Budget |
+|---|---|
+| 7d at 99% | about 3.6 failures |
+| 30d at 99% | about 15.5 failures |
+| 7d at 97% | about 10.8 failures |
+
+Based on 1,547 login-screen impressions over 30 days, so roughly 361 attempts a week. A 7-day window
+at 99% means any week with four 5xx responses breaches. If that turns out to be normal variance
+rather than a real signal, the lever to reach for is the **target**, not the window: 7d at a lower
+target buys headroom and keeps fast recovery. Pick it from the first weeks of real data rather than
+assuming 99%, which was inherited and never chosen for this signal.
+
+Burn-rate alerting solves both the recovery time and the sensitivity properly, and is the textbook
+answer. It was deliberately not done, because it needs a new monitor and real traffic to size
+thresholds against. Revisit if the 7d window turns out to flap.
 
 ## Guard rail worth adding
 
