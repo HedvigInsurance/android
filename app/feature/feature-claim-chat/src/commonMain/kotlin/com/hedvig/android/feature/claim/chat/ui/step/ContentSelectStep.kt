@@ -99,7 +99,7 @@ internal fun ContentSelectStep(
                 isLoading = skipButtonLoading,
                 enabled = !isSubmitting,
                 modifier = Modifier.fillMaxWidth(),
-                buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+                buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
               )
             }
           }
