@@ -28,7 +28,9 @@ import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Minus
 import com.hedvig.android.feature.payin.account.data.PayinAccount
+import com.hedvig.android.feature.payin.account.data.provider
 import com.hedvig.android.feature.payin.account.ui.components.PayinMethodMark
+import com.hedvig.android.feature.payin.account.ui.components.PayinProviderPillow
 import com.hedvig.android.feature.payin.account.ui.components.toRadioOption
 import hedvig.resources.PAYMENT_REMOVE_SUBTITLE
 import hedvig.resources.PAYMENT_REMOVE_TITLE
@@ -93,6 +95,7 @@ private fun RemovePayinMethodBottomSheetContent(
     options = listOf(option),
     selectedOption = option.id,
     onRadioOptionSelected = {},
+    optionIcon = { PayinProviderPillow(method.provider) },
     modifier = Modifier.fillMaxWidth(),
   )
   Spacer(Modifier.height(16.dp))

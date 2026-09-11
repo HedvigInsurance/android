@@ -16,17 +16,13 @@ import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.IconResource
 import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
-import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.icon.Trustly
-import com.hedvig.android.design.system.hedvig.icon.colored.Kivra
-import com.hedvig.android.design.system.hedvig.icon.colored.Swish
 import com.hedvig.android.feature.payin.account.ui.components.PayinMethodHandoverIllustration
+import com.hedvig.android.feature.payin.account.ui.components.PayinProviderPillow
 import hedvig.resources.ONBOARDING_CONNECT_PAYMENT_BANK_LABEL
 import hedvig.resources.PAYMENTS_INVOICE
 import hedvig.resources.PAYMENT_CONNECT_SUBTITLE
@@ -100,10 +96,14 @@ private fun ConnectPayinMethodScreen(
     )
     Spacer(Modifier.weight(1f))
     RadioGroup(
-      options = uiState.availableProviders.mapNotNull { it.toRadioOption(
-        uiState.currentProviders) },
+      options = uiState.availableProviders.mapNotNull {
+        it.toRadioOption(
+          uiState.currentProviders,
+        )
+      },
       selectedOption = uiState.selectedProvider?.let { RadioOptionId(it.rawValue) },
       onRadioOptionSelected = { onProviderSelected(MemberPaymentProvider.safeValueOf(it.id)) },
+      optionIcon = { PayinProviderPillow(MemberPaymentProvider.safeValueOf(it.id)) },
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
@@ -133,36 +133,37 @@ private fun ConnectPayinMethodScreen(
  * of the group.
  */
 @Composable
-private fun MemberPaymentProvider.toRadioOption(
-  currentProviders: List<MemberPaymentProvider>
-): RadioOption? {
+private fun MemberPaymentProvider.toRadioOption(currentProviders: List<MemberPaymentProvider>): RadioOption? {
   val id = RadioOptionId(rawValue)
   return when (this) {
     MemberPaymentProvider.TRUSTLY -> RadioOption(
       id = id,
       text = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_BANK_LABEL),
-      label = if (currentProviders.contains(this))
-        stringResource(Res.string.PAYMENT_OPTION_CONNECTED_LABEL) else
-        stringResource(Res.string.PAYMENT_OPTION_TRUSTLY_SUBTITLE),
-      iconResource = IconResource.Vector(HedvigIcons.Trustly),
+      label = if (currentProviders.contains(this)) {
+        stringResource(Res.string.PAYMENT_OPTION_CONNECTED_LABEL)
+      } else {
+        stringResource(Res.string.PAYMENT_OPTION_TRUSTLY_SUBTITLE)
+      },
     )
 
     MemberPaymentProvider.SWISH -> RadioOption(
       id = id,
       text = stringResource(Res.string.swish),
-      label =  if (currentProviders.contains(this))
+      label = if (currentProviders.contains(this)) {
         stringResource(Res.string.PAYMENT_OPTION_CONNECTED_LABEL)
-      else stringResource(Res.string.PAYMENT_OPTION_SWISH_SUBTITLE),
-      iconResource = IconResource.Vector(HedvigIcons.Swish),
+      } else {
+        stringResource(Res.string.PAYMENT_OPTION_SWISH_SUBTITLE)
+      },
     )
 
     MemberPaymentProvider.INVOICE -> RadioOption(
       id = id,
       text = stringResource(Res.string.PAYMENTS_INVOICE),
-      label =  if (currentProviders.contains(this))
-        stringResource(Res.string.PAYMENT_OPTION_CONNECTED_LABEL) else
-          stringResource(Res.string.PAYMENT_OPTION_INVOICE_SUBTITLE),
-      iconResource = IconResource.Vector(HedvigIcons.Kivra),
+      label = if (currentProviders.contains(this)) {
+        stringResource(Res.string.PAYMENT_OPTION_CONNECTED_LABEL)
+      } else {
+        stringResource(Res.string.PAYMENT_OPTION_INVOICE_SUBTITLE)
+      },
     )
 
     else -> null
@@ -183,7 +184,8 @@ private fun PreviewConnectPayinMethodScreen() {
           ),
           selectedProvider = MemberPaymentProvider.TRUSTLY,
           currentProviders = listOf(
-            MemberPaymentProvider.SWISH)
+            MemberPaymentProvider.SWISH,
+          ),
         ),
         onProviderSelected = {},
         onSubmitSelected = {},

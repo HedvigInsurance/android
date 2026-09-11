@@ -32,7 +32,7 @@ internal fun PayinMethodHandoverIllustration(provider: MemberPaymentProvider?, m
 @Composable
 @HedvigPreview
 private fun PreviewPayinMethodHandoverIllustration(
-  @PreviewParameter(PayinProviderProvider::class) provider: MemberPaymentProvider?,
+  @PreviewParameter(PayinPreviewProvider::class) provider: MemberPaymentProvider?,
 ) {
   HedvigTheme {
     Surface(color = colorScheme.backgroundPrimary) {
@@ -44,7 +44,7 @@ private fun PreviewPayinMethodHandoverIllustration(
   }
 }
 
-private class PayinProviderProvider :
+private class PayinPreviewProvider :
   CollectionPreviewParameterProvider<MemberPaymentProvider?>(
     listOf(
       null,

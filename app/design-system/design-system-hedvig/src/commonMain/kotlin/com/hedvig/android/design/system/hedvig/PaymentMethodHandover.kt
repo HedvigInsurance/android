@@ -21,7 +21,11 @@ import com.hedvig.android.design.system.hedvig.icon.Plus
 /** The size a [PaymentMethodTile]'s mark is drawn at. */
 val PaymentMethodMarkSize = 39.dp
 
+/** The size a [PaymentMethodPillow]'s mark is drawn at. */
+val PaymentMethodPillowMarkSize = 28.dp
+
 private val TileSize = 74.dp
+private val PillowSize = 40.dp
 private val BadgeSize = 24.dp
 private val BadgeOffset = 8.dp
 
@@ -71,6 +75,29 @@ fun PaymentMethodPlusMark(modifier: Modifier = Modifier) {
     tint = HedvigTheme.colorScheme.fillSecondary,
     modifier = modifier,
   )
+}
+
+/**
+ * The small tile a payment method's brand mark sits on in a list row. The defaults suit a
+ * full-colour mark; a monochrome one reads better inverted, on [ColorScheme.fillBlack].
+ */
+@Composable
+fun PaymentMethodPillow(
+  modifier: Modifier = Modifier,
+  containerColor: Color = HedvigTheme.colorScheme.fillWhite,
+  contentColor: Color = HedvigTheme.colorScheme.fillBlack,
+  mark: @Composable () -> Unit,
+) {
+  Surface(
+    shape = HedvigTheme.shapes.cornerSmall,
+    color = containerColor,
+    contentColor = contentColor,
+    modifier = modifier.size(PillowSize),
+  ) {
+    Box(Modifier.size(PillowSize), contentAlignment = Alignment.Center) {
+      mark()
+    }
+  }
 }
 
 /** A circular status badge for the corner of a [PaymentMethodTile] or the Hedvig symbol. */

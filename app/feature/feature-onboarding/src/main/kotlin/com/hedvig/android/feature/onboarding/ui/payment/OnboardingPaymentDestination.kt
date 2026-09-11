@@ -1,9 +1,11 @@
 package com.hedvig.android.feature.onboarding.ui.payment
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -20,6 +22,7 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -27,7 +30,10 @@ import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProg
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.IconResource
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.PaymentMethodPillow
+import com.hedvig.android.design.system.hedvig.PaymentMethodPillowMarkSize
+import com.hedvig.android.design.system.hedvig.PaymentMethodPlusMark
 import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
@@ -280,6 +286,9 @@ private fun OnboardingPaymentScreen(
               val provider = content.availableProviders.firstOrNull { it.name == id.id }
               if (provider != null) onProviderSelected(provider)
             },
+            optionIcon = { id ->
+              OnboardingPayinProviderPillow(content.availableProviders.firstOrNull { it.name == id.id })
+            },
             modifier = Modifier.padding(horizontal = 16.dp),
           )
         }
@@ -310,14 +319,35 @@ private fun OnboardingPayinProvider.toRadioOption(): RadioOption = when (this) {
     id = RadioOptionId(name),
     text = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_BANK_LABEL),
     label = stringResource(Res.string.PAYMENT_OPTION_TRUSTLY_SUBTITLE),
-    iconResource = IconResource.Vector(HedvigIcons.Trustly),
   )
 
   OnboardingPayinProvider.Swish -> RadioOption(
     id = RadioOptionId(name),
     text = stringResource(Res.string.swish),
     label = stringResource(Res.string.PAYMENT_OPTION_SWISH_SUBTITLE),
-    iconResource = IconResource.Vector(HedvigIcons.Swish),
+  )
+}
+
+/**
+ * The provider's brand mark. Trustly's is monochrome and picks up the surrounding content colour;
+ * Swish's is full-colour and ignores it.
+ */
+@Composable
+internal fun OnboardingPayinProviderMark(provider: OnboardingPayinProvider?, modifier: Modifier = Modifier) {
+  when (provider) {
+    OnboardingPayinProvider.Trustly -> Icon(HedvigIcons.Trustly, EmptyContentDescription, modifier)
+    OnboardingPayinProvider.Swish -> Image(HedvigIcons.Swish, EmptyContentDescription, modifier)
+    null -> PaymentMethodPlusMark(modifier)
+  }
+}
+
+@Composable
+private fun OnboardingPayinProviderPillow(provider: OnboardingPayinProvider?) {
+  val onDarkTile = provider == OnboardingPayinProvider.Trustly
+  PaymentMethodPillow(
+    containerColor = if (onDarkTile) HedvigTheme.colorScheme.fillBlack else HedvigTheme.colorScheme.fillWhite,
+    contentColor = if (onDarkTile) HedvigTheme.colorScheme.fillWhite else HedvigTheme.colorScheme.fillBlack,
+    mark = { OnboardingPayinProviderMark(provider, Modifier.size(PaymentMethodPillowMarkSize)) },
   )
 }
 

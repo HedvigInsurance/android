@@ -54,6 +54,7 @@ import com.hedvig.android.feature.payin.account.data.PayinAccount.Trustly
 import com.hedvig.android.feature.payin.account.data.provider
 import com.hedvig.android.feature.payin.account.ui.components.PayinMethodHandoverIllustration
 import com.hedvig.android.feature.payin.account.ui.components.PayinMethodRow
+import com.hedvig.android.feature.payin.account.ui.components.PayinProviderPillow
 import com.hedvig.android.feature.payin.account.ui.components.PrimaryMethodLabel
 import com.hedvig.android.feature.payin.account.ui.components.payinMethodTitle
 import com.hedvig.android.feature.payin.account.ui.components.toRadioOption
@@ -69,6 +70,7 @@ import hedvig.resources.Res.string
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_continue_button
 import hedvig.resources.pillow_new_680
+import octopus.type.MemberPaymentProvider
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -133,6 +135,7 @@ private fun SelectPrimaryPayinMethodScreen(
         val method = uiState.methods.firstOrNull { it.provider.rawValue == id.id }
         if (method != null) onMethodSelected(method)
       },
+      optionIcon = { PayinProviderPillow(MemberPaymentProvider.safeValueOf(it.id)) },
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     if (uiState.errorMessage != null) {

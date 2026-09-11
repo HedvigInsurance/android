@@ -4,7 +4,6 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -18,19 +17,14 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.PaymentMethodHandoverIllustration
 import com.hedvig.android.design.system.hedvig.PaymentMethodMarkSize
-import com.hedvig.android.design.system.hedvig.PaymentMethodPlusMark
 import com.hedvig.android.design.system.hedvig.PaymentMethodTileBadge
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.icon.Trustly
-import com.hedvig.android.design.system.hedvig.icon.colored.Swish
 import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
 import com.hedvig.android.feature.onboarding.data.OnboardingPayinProvider
 import kotlin.time.Duration.Companion.milliseconds
@@ -96,18 +90,8 @@ private fun ConnectingGraphic(
         },
       )
     },
-    mark = { OnboardingPayinProviderMark(provider) },
+    mark = { OnboardingPayinProviderMark(provider, Modifier.size(PaymentMethodMarkSize)) },
   )
-}
-
-@Composable
-private fun OnboardingPayinProviderMark(provider: OnboardingPayinProvider?) {
-  val markModifier = Modifier.size(PaymentMethodMarkSize)
-  when (provider) {
-    OnboardingPayinProvider.Trustly -> Icon(HedvigIcons.Trustly, EmptyContentDescription, markModifier)
-    OnboardingPayinProvider.Swish -> Image(HedvigIcons.Swish, EmptyContentDescription, markModifier)
-    null -> PaymentMethodPlusMark(markModifier)
-  }
 }
 
 @HedvigPreview
