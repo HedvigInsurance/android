@@ -50,6 +50,9 @@ import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.PaymentMethodMarkSize
+import com.hedvig.android.design.system.hedvig.PaymentMethodTile
+import com.hedvig.android.design.system.hedvig.PaymentMethodTileBadge
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
@@ -57,9 +60,6 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.colored.Swish
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.show
-import com.hedvig.android.feature.payin.account.ui.components.PayinMethodMarkSize
-import com.hedvig.android.feature.payin.account.ui.components.PayinMethodTile
-import com.hedvig.android.feature.payin.account.ui.components.PayinMethodTileBadge
 import com.hedvig.android.feature.payin.account.ui.components.formatSwishPhoneNumber
 import hedvig.resources.CONTACT_INFO_CHANGES_SAVED
 import hedvig.resources.GENERAL_CONFIRM
@@ -151,13 +151,13 @@ private fun SetupSwishPayinScreen(
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))
-    PayinMethodTile(
+    PaymentMethodTile(
       modifier = Modifier.align(Alignment.CenterHorizontally),
       badge = if (successUrl == null) {
         null
       } else {
         {
-          PayinMethodTileBadge(
+          PaymentMethodTileBadge(
             icon = HedvigIcons.ArrowNorthEast,
             containerColor = HedvigTheme.colorScheme.signalBlueElement,
             contentColor = HedvigTheme.colorScheme.fillWhite,
@@ -165,7 +165,7 @@ private fun SetupSwishPayinScreen(
         }
       },
       mark = {
-        Image(HedvigIcons.Swish, EmptyContentDescription, Modifier.size(PayinMethodMarkSize))
+        Image(HedvigIcons.Swish, EmptyContentDescription, Modifier.size(PaymentMethodMarkSize))
       },
     )
     Spacer(Modifier.weight(1f))

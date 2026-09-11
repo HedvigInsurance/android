@@ -2,10 +2,12 @@ package com.hedvig.android.feature.onboarding.navigation
 
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
+import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyKey
 import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddInfoKey
 import com.hedvig.android.feature.onboarding.data.CompleteOnboardingUseCase
+import com.hedvig.android.feature.onboarding.data.OnboardingPayinProvider
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
-import com.hedvig.android.feature.payin.account.navigation.PayinAccountKey
+import com.hedvig.android.feature.payin.account.navigation.SetupSwishPayinKey
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
@@ -66,9 +68,17 @@ internal class OnboardingNavigator(
     backstack.add(CoInsuredAddInfoKey(contractId, type))
   }
 
-  /** Pushes the payin account overview, where the member picks a payin method. */
-  fun openConnectPayment() {
-    backstack.add(PayinAccountKey)
+  /**
+   * Pushes the setup screen for the provider the member picked on the connect-payment step. Each
+   * screen pops itself when it is done, landing back on the step, which re-reads the live payin
+   * status on resume.
+   */
+  fun openPayinSetup(provider: OnboardingPayinProvider) {
+    val key = when (provider) {
+      OnboardingPayinProvider.Trustly -> TrustlyKey
+      OnboardingPayinProvider.Swish -> SetupSwishPayinKey
+    }
+    backstack.add(key)
   }
 
   /** Pushes the shared Forever screen; the member leaves it with system back. */

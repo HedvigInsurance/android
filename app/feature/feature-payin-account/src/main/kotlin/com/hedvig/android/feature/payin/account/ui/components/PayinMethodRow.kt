@@ -19,6 +19,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconResource.Vector
+import com.hedvig.android.design.system.hedvig.PaymentMethodPlusMark
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
@@ -35,6 +36,7 @@ import hedvig.resources.PAYMENT_PRIMARY_LABEL
 import hedvig.resources.REFERRAL_PENDING_STATUS_LABEL
 import hedvig.resources.Res
 import hedvig.resources.swish
+import octopus.type.MemberPaymentProvider
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -58,15 +60,22 @@ private fun PayinMethodPillow(method: PayinAccount, modifier: Modifier = Modifie
 
 /**
  * The method's brand mark. Trustly's is monochrome and picks up the surrounding content colour; the
- * others are full-colour and ignore it.
+ * others are full-colour and ignore it. A provider with no mark of its own falls back to the plus,
+ * so one the backend adds later still renders.
  */
 @Composable
-internal fun PayinMethodMark(method: PayinAccount, modifier: Modifier = Modifier) {
-  when (method) {
-    is PayinAccount.Trustly -> Icon(HedvigIcons.Trustly, EmptyContentDescription, modifier)
-    is PayinAccount.SwishPayin -> Image(HedvigIcons.Swish, EmptyContentDescription, modifier)
-    is PayinAccount.Invoice -> Image(HedvigIcons.Kivra, EmptyContentDescription, modifier)
+internal fun PayinProviderMark(provider: MemberPaymentProvider?, modifier: Modifier = Modifier) {
+  when (provider) {
+    MemberPaymentProvider.TRUSTLY -> Icon(HedvigIcons.Trustly, EmptyContentDescription, modifier)
+    MemberPaymentProvider.SWISH -> Image(HedvigIcons.Swish, EmptyContentDescription, modifier)
+    MemberPaymentProvider.INVOICE -> Image(HedvigIcons.Kivra, EmptyContentDescription, modifier)
+    else -> PaymentMethodPlusMark(modifier)
   }
+}
+
+@Composable
+internal fun PayinMethodMark(method: PayinAccount, modifier: Modifier = Modifier) {
+  PayinProviderMark(method.provider, modifier)
 }
 
 @Composable

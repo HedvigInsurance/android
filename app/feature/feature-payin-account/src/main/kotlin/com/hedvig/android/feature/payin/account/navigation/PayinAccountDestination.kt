@@ -11,9 +11,6 @@ internal data class SelectPayinMethodKey(
 ) : HedvigNavKey
 
 @Serializable
-internal data object SetupSwishPayinKey : HedvigNavKey
-
-@Serializable
 internal data object SetupInvoicePayinKey : HedvigNavKey
 
 @Serializable

@@ -38,6 +38,10 @@ query Onboarding {
         status
         isDefault
       }
+      availableMethods {
+        provider
+        supportsPayin
+      }
     }
     crossSellV2(input: { userFlow: ONBOARDING, flowSource: null, experiments: [] }) {
       otherCrossSells {

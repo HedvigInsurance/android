@@ -19,6 +19,9 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme
+import com.hedvig.android.design.system.hedvig.PaymentMethodMarkSize
+import com.hedvig.android.design.system.hedvig.PaymentMethodTile
+import com.hedvig.android.design.system.hedvig.PaymentMethodTileBadge
 import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
@@ -26,9 +29,6 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Minus
 import com.hedvig.android.feature.payin.account.data.PayinAccount
 import com.hedvig.android.feature.payin.account.ui.components.PayinMethodMark
-import com.hedvig.android.feature.payin.account.ui.components.PayinMethodMarkSize
-import com.hedvig.android.feature.payin.account.ui.components.PayinMethodTile
-import com.hedvig.android.feature.payin.account.ui.components.PayinMethodTileBadge
 import com.hedvig.android.feature.payin.account.ui.components.toRadioOption
 import hedvig.resources.PAYMENT_REMOVE_SUBTITLE
 import hedvig.resources.PAYMENT_REMOVE_TITLE
@@ -77,15 +77,15 @@ private fun RemovePayinMethodBottomSheetContent(
       .fillMaxWidth()
       .padding(vertical = 64.dp),
   ) {
-    PayinMethodTile(
+    PaymentMethodTile(
       badge = {
-        PayinMethodTileBadge(
+        PaymentMethodTileBadge(
           icon = HedvigIcons.Minus,
           containerColor = colorScheme.fillPrimary,
           contentColor = colorScheme.fillNegative,
         )
       },
-      mark = { PayinMethodMark(method, Modifier.size(PayinMethodMarkSize)) },
+      mark = { PayinMethodMark(method, Modifier.size(PaymentMethodMarkSize)) },
     )
   }
   val option = method.toRadioOption()

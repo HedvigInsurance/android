@@ -21,3 +21,7 @@ enum class PayinMethodId {
 data class PayinMethodDetailsKey(
   val method: PayinMethodId,
 ) : HedvigNavKey
+
+/** The Swish payin setup screen, reachable both from the payin flow and from onboarding. */
+@Serializable
+data object SetupSwishPayinKey : HedvigNavKey

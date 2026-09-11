@@ -3,20 +3,24 @@ package com.hedvig.android.feature.onboarding.ui.payment
 import androidx.compose.runtime.mutableStateListOf
 import arrow.core.right
 import assertk.assertThat
+import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isNull
 import assertk.assertions.isTrue
+import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyKey
 import com.hedvig.android.feature.onboarding.FakeOnboardingMemberIdProvider
 import com.hedvig.android.feature.onboarding.FakeOnboardingRepository
 import com.hedvig.android.feature.onboarding.data.CompleteOnboardingUseCase
+import com.hedvig.android.feature.onboarding.data.OnboardingPayinProvider
 import com.hedvig.android.feature.onboarding.data.OnboardingPayinStatus
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepKey
 import com.hedvig.android.feature.onboarding.testOnboardingData
 import com.hedvig.android.feature.onboarding.testSessionStore
-import com.hedvig.android.feature.payin.account.navigation.PayinAccountKey
+import com.hedvig.android.feature.payin.account.navigation.SetupSwishPayinKey
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.navigation.common.HedvigNavKey
@@ -57,7 +61,7 @@ internal class OnboardingPaymentPresenterTest {
   }
 
   @Test
-  fun `connect payment pushes the payin account overview`() = runTest {
+  fun `connect payment pushes the swish setup screen when swish is selected`() = runTest {
     val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.ConnectPayment)) }
     val repository = FakeOnboardingRepository()
     val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
@@ -68,10 +72,52 @@ internal class OnboardingPaymentPresenterTest {
       skipItems(1)
       repository.onboardingDataResponses.add(testOnboardingData().right())
       awaitItem()
+      sendEvent(OnboardingPaymentEvent.SelectProvider(OnboardingPayinProvider.Swish))
+      awaitItem()
       sendEvent(OnboardingPaymentEvent.ConnectPayment)
       awaitItem()
       runCurrent()
-      assertThat(backstack.entries.last()).isEqualTo(PayinAccountKey)
+      assertThat(backstack.entries.last()).isEqualTo(SetupSwishPayinKey)
+    }
+  }
+
+  @Test
+  fun `connect payment pushes trustly when the bank option is selected`() = runTest {
+    val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.ConnectPayment)) }
+    val repository = FakeOnboardingRepository()
+    val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
+    val presenter = OnboardingPaymentPresenter(sessionStore, navigator)
+
+    presenter.test(OnboardingPaymentUiState.Loading) {
+      skipItems(1)
+      repository.onboardingDataResponses.add(testOnboardingData().right())
+      awaitItem()
+      sendEvent(OnboardingPaymentEvent.SelectProvider(OnboardingPayinProvider.Trustly))
+      awaitItem()
+      sendEvent(OnboardingPaymentEvent.ConnectPayment)
+      awaitItem()
+      runCurrent()
+      assertThat(backstack.entries.last()).isEqualTo(TrustlyKey)
+    }
+  }
+
+  @Test
+  fun `connect payment does nothing while no provider is selected`() = runTest {
+    val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.ConnectPayment)) }
+    val repository = FakeOnboardingRepository()
+    val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
+    val presenter = OnboardingPaymentPresenter(sessionStore, navigator)
+
+    presenter.test(OnboardingPaymentUiState.Loading) {
+      skipItems(1)
+      repository.onboardingDataResponses.add(testOnboardingData().right())
+      val content = awaitItem() as OnboardingPaymentUiState.Content
+      assertThat(content.selectedProvider).isNull()
+      sendEvent(OnboardingPaymentEvent.ConnectPayment)
+      runCurrent()
+      assertThat(backstack.entries).containsExactly(OnboardingStepKey(OnboardingStepId.ConnectPayment))
     }
   }
 
@@ -89,6 +135,8 @@ internal class OnboardingPaymentPresenterTest {
       val initial = awaitItem() as OnboardingPaymentUiState.Content
       assertThat(initial.hasAttemptedToConnect).isFalse()
 
+      sendEvent(OnboardingPaymentEvent.SelectProvider(OnboardingPayinProvider.Swish))
+      awaitItem()
       sendEvent(OnboardingPaymentEvent.ConnectPayment)
       val afterAttempt = awaitItem() as OnboardingPaymentUiState.Content
       assertThat(afterAttempt.hasAttemptedToConnect).isTrue()

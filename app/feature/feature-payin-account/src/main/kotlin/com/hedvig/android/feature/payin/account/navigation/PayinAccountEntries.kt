@@ -26,6 +26,7 @@ import com.hedvig.android.feature.payin.account.ui.setupswish.SetupSwishPayinVie
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
+import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.popUpTo
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
@@ -110,7 +111,9 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
         backstack.popUpTo<SelectPayinMethodKey>(inclusive = true)
         navigateToConnectPayment()
       },
-      onSwishSelected = dropUnlessResumed { backstack.add(SetupSwishPayinKey) },
+      onSwishSelected = dropUnlessResumed {
+        backstack.navigateAndPopUpTo<SelectPayinMethodKey>(SetupSwishPayinKey, inclusive = true)
+      },
       onInvoiceSelected = dropUnlessResumed { backstack.add(SetupInvoicePayinKey) },
       navigateUp = backstack::navigateUp,
     )
@@ -121,13 +124,10 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
     SetupSwishPayinDestination(
       viewModel = viewModel,
       globalSnackBarState = globalSnackBarState,
-      onSuccessfullyConnected = { backstack.popUpTo<SelectPayinMethodKey>(inclusive = true) },
+      onSuccessfullyConnected = backstack::popBackstack,
       navigateUp = backstack::navigateUp,
       navigateBack = backstack::popBackstack,
-      openUrl = {
-        backstack.popUpTo<SelectPayinMethodKey>(inclusive = true)
-        openUrl(it)
-      },
+      openUrl = openUrl,
     )
   }
 

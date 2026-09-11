@@ -15,6 +15,7 @@ import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import octopus.OnboardingQuery
 import octopus.OnboardingUpdateContactInfoMutation
+import octopus.type.MemberPaymentProvider
 
 internal interface OnboardingRepository {
   suspend fun getOnboardingData(): Either<ErrorMessage, OnboardingData>
@@ -97,6 +98,12 @@ internal class OnboardingRepositoryImpl(
           else -> OnboardingPayinStatus.NeedsSetup
         }
       },
+      availablePayinProviders = member.paymentMethods.availableMethods
+        .filter { it.supportsPayin }
+        .mapNotNull { it.provider.toOnboardingPayinProvider() }
+        // TODO: the backend does not list Swish or Trustly as available payin methods yet, so both
+        //  are offered unconditionally. Delete this fallback once it does.
+        .ifEmpty { listOf(OnboardingPayinProvider.Trustly, OnboardingPayinProvider.Swish) },
       crossSells = member.crossSellV2.otherCrossSells.map { crossSell ->
         OnboardingCrossSell(
           id = crossSell.id,
@@ -118,4 +125,10 @@ internal class OnboardingRepositoryImpl(
     val userError = result.memberUpdateContactInfo.userError
     ensure(userError == null) { ErrorMessage(userError?.message) }
   }
+}
+
+private fun MemberPaymentProvider.toOnboardingPayinProvider(): OnboardingPayinProvider? = when (this) {
+  MemberPaymentProvider.TRUSTLY -> OnboardingPayinProvider.Trustly
+  MemberPaymentProvider.SWISH -> OnboardingPayinProvider.Swish
+  else -> null
 }

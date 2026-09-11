@@ -38,6 +38,7 @@ dependencies {
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.designSystemHedvig)
   implementation(projects.dataCoinsured)
+  implementation(projects.featureConnectPaymentTrustlyNavigation)
   implementation(projects.featureEditCoinsuredNavigation)
   implementation(projects.featureFlags)
   implementation(projects.featurePayinAccountNavigation)
