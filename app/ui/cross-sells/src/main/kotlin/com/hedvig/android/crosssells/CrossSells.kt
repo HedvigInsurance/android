@@ -233,7 +233,8 @@ private fun CrossSellsSheetContent(
           )
         }
       }
-      if (addons.isNotEmpty()) {
+      // Figma 2.1 carries the add-ons block; 2.2 and 3.1, which lead with a recommendation, do not.
+      if (addons.isNotEmpty() && recommendedCrossSell == null && recommendedAddon == null) {
         Column {
           Spacer(Modifier.height(24.dp))
           AddonsSection(
