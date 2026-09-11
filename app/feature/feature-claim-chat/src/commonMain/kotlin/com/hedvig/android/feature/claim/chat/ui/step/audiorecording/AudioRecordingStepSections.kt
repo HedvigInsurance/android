@@ -502,6 +502,8 @@ private fun InlineTextAnswerCard(
         labelText = "",
         textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Small,
         singleLine = false,
+        // The design gives the answer room to breathe rather than a single line that grows.
+        minLines = 3,
         modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
       )
       if (hasError && errorType is FreeTextErrorType.TooShort) {
