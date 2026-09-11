@@ -490,57 +490,57 @@ private fun ClaimChatScrollableContent(
   }
 
   Column(modifier) {
-   Box(Modifier.weight(1f), propagateMinConstraints = true) {
-    Box(
-      Modifier
-        .padding(contentPadding)
-        .onSizeChanged { size ->
-          lastItemHeightAdjustingState.onContainerSizeChanged(size)
-        },
-    )
-    LazyColumn(
-      state = lazyListState,
-      contentPadding = listContentPadding,
-      verticalArrangement = Arrangement.spacedBy(spaceBetweenItems, Alignment.Top),
-    ) {
-      items(
-        items = uiState.steps,
-        key = { step -> step.id.value },
-        contentType = { it.stepContent::class },
-      ) { item ->
-        val isCurrentStep = item.id == uiState.steps.lastOrNull()?.id
-        val showAnimationSequence = isCurrentStep &&
-          item.stepContent !is StepContent.Task &&
-          !uiState.stepsWithShownAnimations.contains(item.id)
-        val isLastItem = item == uiState.steps.lastOrNull()
-        val isBottomAttached = item.id == bottomAttachedStep?.id
+    Box(Modifier.weight(1f), propagateMinConstraints = true) {
+      Box(
+        Modifier
+          .padding(contentPadding)
+          .onSizeChanged { size ->
+            lastItemHeightAdjustingState.onContainerSizeChanged(size)
+          },
+      )
+      LazyColumn(
+        state = lazyListState,
+        contentPadding = listContentPadding,
+        verticalArrangement = Arrangement.spacedBy(spaceBetweenItems, Alignment.Top),
+      ) {
+        items(
+          items = uiState.steps,
+          key = { step -> step.id.value },
+          contentType = { it.stepContent::class },
+        ) { item ->
+          val isCurrentStep = item.id == uiState.steps.lastOrNull()?.id
+          val showAnimationSequence = isCurrentStep &&
+            item.stepContent !is StepContent.Task &&
+            !uiState.stepsWithShownAnimations.contains(item.id)
+          val isLastItem = item == uiState.steps.lastOrNull()
+          val isBottomAttached = item.id == bottomAttachedStep?.id
 
-        StepContentSection(
-          stepItem = item,
-          isCurrentStep = isCurrentStep,
-          showAnimationSequence = showAnimationSequence,
-          renderBottomContent = !isBottomAttached,
-          currentContinueButtonLoading = uiState.currentContinueButtonLoading,
-          currentSkipButtonLoading = uiState.currentSkipButtonLoading,
-          onEvent = onEvent,
-          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-          onNavigateToImageViewer = onNavigateToImageViewer,
-          navigateToDeflect = navigateToDeflect,
-          appPackageId = appPackageId,
-          imageLoader = imageLoader,
-          openAppSettings = openAppSettings,
-          onResponseHeightChanged = { size ->
-            lastItemHeightAdjustingState.onItemHeightChanged(item.id, size)
-          },
-          modifier = if (isLastItem && !isBottomAttached) {
-            Modifier.requiredHeightIn(lastItemHeightAdjustingState.preferredMinHeightForFullScreenItem)
-          } else {
-            Modifier
-          },
-          closeFlow = closeFlow,
-        )
+          StepContentSection(
+            stepItem = item,
+            isCurrentStep = isCurrentStep,
+            showAnimationSequence = showAnimationSequence,
+            renderBottomContent = !isBottomAttached,
+            currentContinueButtonLoading = uiState.currentContinueButtonLoading,
+            currentSkipButtonLoading = uiState.currentSkipButtonLoading,
+            onEvent = onEvent,
+            shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+            onNavigateToImageViewer = onNavigateToImageViewer,
+            navigateToDeflect = navigateToDeflect,
+            appPackageId = appPackageId,
+            imageLoader = imageLoader,
+            openAppSettings = openAppSettings,
+            onResponseHeightChanged = { size ->
+              lastItemHeightAdjustingState.onItemHeightChanged(item.id, size)
+            },
+            modifier = if (isLastItem && !isBottomAttached) {
+              Modifier.requiredHeightIn(lastItemHeightAdjustingState.preferredMinHeightForFullScreenItem)
+            } else {
+              Modifier
+            },
+            closeFlow = closeFlow,
+          )
+        }
       }
-    }
     }
     if (bottomAttachedStep != null) {
       Box(
