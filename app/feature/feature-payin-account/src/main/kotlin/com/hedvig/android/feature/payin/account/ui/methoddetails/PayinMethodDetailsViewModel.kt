@@ -49,7 +49,6 @@ internal sealed interface PayinMethodDetailsUiState {
     val chargingDay: Int?,
     val isRemoving: Boolean = false,
     val removeError: ErrorMessage? = null,
-    /** The method is gone, so this screen has nothing left to show and the caller pops it. */
     val hasRemovedMethod: Boolean = false,
   ) : PayinMethodDetailsUiState
 }
@@ -73,7 +72,6 @@ internal class PayinMethodDetailsPresenter(
         ifLeft = { uiState = PayinMethodDetailsUiState.Error },
         ifRight = { data ->
           val method = data.currentMethods.firstOrNull { it.id == methodId }
-          // The method can be gone if it was disconnected on another device between listing and opening it.
           uiState = if (method == null) {
             PayinMethodDetailsUiState.Error
           } else {
@@ -93,8 +91,6 @@ internal class PayinMethodDetailsPresenter(
           uiState = content.copy(isRemoving = false, removeError = error)
         },
         ifRight = {
-          // Stays in the removing state until the screen is popped, so the button does not flash
-          // back to idle over a method that no longer exists.
           uiState = content.copy(isRemoving = true, hasRemovedMethod = true)
         },
       )

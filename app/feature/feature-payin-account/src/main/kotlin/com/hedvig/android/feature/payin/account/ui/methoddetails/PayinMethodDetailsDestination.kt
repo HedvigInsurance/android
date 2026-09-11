@@ -235,15 +235,13 @@ private fun PayinMethodDetailsScreen(
       )
       Spacer(Modifier.height(8.dp))
     }
-    if (!method.isDefault) {
-      HedvigRedTextButton(
-        text = stringResource(Res.string.GENERAL_REMOVE),
-        onClick = { removeSheetState.show(method) },
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      )
-    }
+    HedvigRedTextButton(
+      text = stringResource(Res.string.GENERAL_REMOVE),
+      onClick = { removeSheetState.show(method) },
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+    )
     Spacer(Modifier.height(16.dp))
   }
 }

@@ -177,7 +177,9 @@ private fun PayoutAccountContent(
           .padding(horizontal = 16.dp),
       )
     }
-    if (currentMethods.size > 1) {
+    if (currentMethods
+        .filter { !it.isPending }
+      .size > 1) {
       Spacer(Modifier.height(8.dp))
       HedvigTextButton(
         text = stringResource(Res.string.PAYMENT_CHOOSE_PRIMARY_BUTTON),
@@ -194,7 +196,7 @@ private fun PayoutAccountContent(
 @Composable
 private fun CurrentPayinMethodRow(method: PayinAccount, onClick: () -> Unit, modifier: Modifier = Modifier) {
   HedvigCard(
-    onClick = onClick,
+    onClick = if (method.isPending) null else onClick,
     shape = HedvigTheme.shapes.cornerLarge,
     modifier = modifier.fillMaxWidth(),
   ) {
@@ -205,11 +207,13 @@ private fun CurrentPayinMethodRow(method: PayinAccount, onClick: () -> Unit, mod
         if (method.isDefault) {
           PrimaryMethodLabel()
         }
-        Icon(
-          imageVector = HedvigIcons.ChevronRight,
-          contentDescription = EmptyContentDescription,
-          modifier = Modifier.size(24.dp),
-        )
+        if (!method.isPending) {
+          Icon(
+            imageVector = HedvigIcons.ChevronRight,
+            contentDescription = EmptyContentDescription,
+            modifier = Modifier.size(24.dp),
+          )
+        }
       },
     )
   }
@@ -272,13 +276,13 @@ private class PayinAccountOverviewUiStateProvider : CollectionPreviewParameterPr
           clearingNumber = "****",
           accountNumber = "*45678",
           bankName = "Swedbank",
-          isPending = false,
-          isDefault = true,
+          isPending = true,
+          isDefault = false,
         ),
         PayinAccount.SwishPayin(
           phoneNumber = "0701234567",
           isPending = false,
-          isDefault = false,
+          isDefault = true,
         ),
       ),
       availablePayinMethods = listOf(MemberPaymentProvider.SWISH),

@@ -728,6 +728,7 @@
   <string name="PAYMENTS_VALID_UNTIL">Giltig till %1$s</string>
   <string name="PAYMENT_ADD_METHOD_BUTTON">Lägg till betalningsmetod</string>
   <string name="PAYMENT_CHOOSE_PRIMARY_BUTTON">Välj förvald metod</string>
+  <string name="PAYMENT_CONFIRM_PRIMARY_WARNING">Din nästa betalning dras från %1$s. Utbetalningar skickas också till detta konto.</string>
   <string name="PAYMENT_CONNECT_SUBTITLE">Lägg till en ny betalningsmetod för din försäkring</string>
   <string name="PAYMENT_CONNECT_TITLE">Koppla betalning</string>
   <string name="PAYMENT_HISTORY_TITLE">Betalningshistorik</string>
@@ -744,11 +745,14 @@
   <string name="PAYMENT_PRIMARY_TITLE">Välj betalningsmetod</string>
   <string name="PAYMENT_REMOVE_SUBTITLE">Du kan lägga till den igen när som helst</string>
   <string name="PAYMENT_REMOVE_TITLE">Ta bort betalningsmetod</string>
-  <string name="PAYMENT_SWISH_APPROVE_TITLE">Godkänn i Swish-appen</string>
+  <string name="PAYMENT_SWISH_APPROVE_TITLE">Godkänn kopplingen i Swish</string>
   <string name="PAYMENT_SWISH_CHANGE_NUMBER">Byt telefonnummer</string>
-  <string name="PAYMENT_SWISH_EXPLANATION_BUTTON">How does recurring Swish work?</string>
-  <string name="PAYMENT_SWISH_SUBTITLE">Lägg till ett betalsätt för att aktivera din försäkring</string>
-  <string name="PAYMENT_SWISH_TITLE">Koppla Swish till det här numret</string>
+  <string name="PAYMENT_SWISH_EXPLANATION_BUTTON">Så fungerar återkommande betalningar med Swish</string>
+  <string name="PAYMENT_SWISH_FAILURE_TITLE">Connection failed</string>
+  <string name="PAYMENT_SWISH_SUBTITLE">Vi skickar kopplingen till Swish på det här numret</string>
+  <string name="PAYMENT_SWISH_SUCCESS_SUBTITLE">Charged automatically each month</string>
+  <string name="PAYMENT_SWISH_SUCCESS_TITLE">Swish is connected</string>
+  <string name="PAYMENT_SWISH_TITLE">Bekräfta ditt Swish-nummer</string>
   <string name="PAYOUT_ADD_PAYOUT_METHOD">Lägg till utbetalningsmetod</string>
   <string name="PAYOUT_METHOD_INVOICE_DESCRIPTION">Direktutbetalning via Faktura</string>
   <string name="PAYOUT_METHOD_SWISH_DESCRIPTION">Snabb utbetalning med Swish</string>

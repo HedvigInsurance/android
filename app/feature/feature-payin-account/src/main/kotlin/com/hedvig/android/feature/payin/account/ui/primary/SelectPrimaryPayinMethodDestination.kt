@@ -24,6 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
@@ -60,6 +61,7 @@ import com.hedvig.android.feature.payin.account.ui.components.payinMethodTitle
 import com.hedvig.android.feature.payin.account.ui.components.toRadioOption
 import com.hedvig.android.feature.payin.account.ui.primary.SelectPrimaryPayinMethodEvent.ConfirmSelectedMethod
 import com.hedvig.android.feature.payin.account.ui.primary.SelectPrimaryPayinMethodEvent.SelectMethod
+import hedvig.resources.PAYMENT_CONFIRM_PRIMARY_WARNING
 import hedvig.resources.PAYMENT_CONNECT_SUBTITLE
 import hedvig.resources.PAYMENT_CONNECT_TITLE
 import hedvig.resources.PAYMENT_PRIMARY_CONFIRM_TITLE
@@ -123,13 +125,27 @@ private fun SelectPrimaryPayinMethodScreen(
         .align(Alignment.CenterHorizontally),
     )
     Spacer(Modifier.weight(1f))
+    val currentDefault = uiState.methods.firstOrNull { it.isDefault }
+    if (currentDefault != null) {
+      HedvigCard(
+        shape = HedvigTheme.shapes.cornerLarge,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      ) {
+        PayinMethodRow(
+          method = currentDefault,
+          modifier = Modifier.fillMaxWidth(),
+          endSlot = { PrimaryMethodLabel() },
+        )
+      }
+      Spacer(Modifier.height(4.dp))
+    }
     RadioGroup(
       options = uiState.methods
-        .sortedByDescending { it.isDefault }
+        .filter { !it.isPending }
+        .filter { !it.isDefault }
         .map { it.toRadioOption() },
-      disabledOptions = uiState.methods
-        .filter { it.isDefault }
-        .map { it.toRadioOption().id },
       selectedOption = uiState.selectedMethod?.let { RadioOptionId(it.provider.rawValue) },
       onRadioOptionSelected = { id ->
         val method = uiState.methods.firstOrNull { it.provider.rawValue == id.id }
@@ -155,7 +171,8 @@ private fun SelectPrimaryPayinMethodScreen(
         val method = uiState.selectedMethod
         if (method != null) confirmationSheetState.show(method)
       },
-      enabled = uiState.selectedMethod != null,
+      enabled = uiState.selectedMethod != null &&
+        !uiState.selectedMethod.isDefault,
       modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
@@ -206,16 +223,14 @@ private fun ConfirmPrimaryPayinMethodBottomSheetContent(
     modifier = Modifier.fillMaxWidth(),
   )
   Spacer(Modifier.height(24.dp))
-  HedvigNotificationCard(
-    // TODO: Add "Your next payment will be drawn from {method}. Claims payouts will also be sent to this
-    //  account." / "Din nästa betalning dras från {method}. Skadeutbetalningar skickas också till detta konto."
-    //  to Lokalise
-    message = "Your next payment will be drawn from ${payinMethodTitle(method)}. " +
-      "Claims payouts will also be sent to this account.",
-    priority = Info,
-    modifier = Modifier.fillMaxWidth(),
-  )
-  Spacer(Modifier.height(16.dp))
+  if (method.provider != MemberPaymentProvider.INVOICE) {
+    HedvigNotificationCard(
+      message = stringResource(Res.string.PAYMENT_CONFIRM_PRIMARY_WARNING, payinMethodTitle(method)),
+      priority = Info,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(16.dp))
+  }
   Surface(
     shape = HedvigTheme.shapes.cornerLarge,
     color = colorScheme.surfacePrimary,
