@@ -67,6 +67,7 @@ import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.StepProgressItem
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.autoScrollingMarquee
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.Campaign
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
@@ -681,11 +682,15 @@ fun PillowRow(
         text = subtitle,
         style = HedvigTheme.typography.label,
         color = HedvigTheme.colorScheme.textSecondary,
-        modifier = Modifier.hedvigPlaceholder(
-          visible = isLoading,
-          shape = HedvigTheme.shapes.cornerSmall,
-          highlight = PlaceholderHighlight.shimmer(),
-        ),
+        maxLines = 1,
+        softWrap = false,
+        modifier = Modifier
+          .hedvigPlaceholder(
+            visible = isLoading,
+            shape = HedvigTheme.shapes.cornerSmall,
+            highlight = PlaceholderHighlight.shimmer(),
+          )
+          .autoScrollingMarquee(),
       )
     }
     Spacer(Modifier.width(16.dp))
