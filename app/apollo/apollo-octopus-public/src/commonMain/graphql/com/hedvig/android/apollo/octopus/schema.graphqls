@@ -2656,7 +2656,11 @@ type Member {
   Id of the latest charge if it failed and self manual charge allowed.
   """
   missedChargeIdToChargeManually: UUID
-  paymentMethods: MemberPaymentMethods!
+  """
+  The member's payment methods: what they can be charged with, what they are paid out to,
+  and which connection is still missing.
+  """
+  paymentMethods("Rollout gate for payment providers, not a frozen contract per version.\n\n- `1`: Trustly, Nordea, Invoice — stays as it is.\n- `2`: `1` plus what is switched on, today Swish — can change between releases.\n\nAsk for `2` only once the client can render everything it may return." version: Int! = 1): MemberPaymentMethods!
   conversations: [Conversation!]!
   legacyConversation: Conversation
   """
@@ -3167,9 +3171,9 @@ type MemberPaymentMethods {
   """
   Indicates which payment connection the member is missing, if any. The rule is:
   - If member has only QASA-paid agreements, the payin connection is irrelevant and only payout is checked.
-    Returns PAYOUT if no default payout method exists, else null.
+  Returns PAYOUT if no default payout method exists, else null.
   - Otherwise (any non-QASA agreement, e.g. member-paid), payin takes priority:
-    Returns PAYIN if no default payin method exists, else PAYOUT if no default payout method exists, else null.
+  Returns PAYIN if no default payin method exists, else PAYOUT if no default payout method exists, else null.
   - If member has no ongoing (active or future) agreements, returns null.
   """
   missingConnection: MissingPaymentConnection
@@ -3757,6 +3761,10 @@ type Mutation {
   """
   paymentMethodSetupSwishPayin(input: PaymentMethodSetupSwishInput!): PaymentMethodSetupOutput!
   """
+   Revoke and disconnect an ACTIVE payment method 
+  """
+  paymentMethodRemoveMethod(provider: MemberPaymentProvider!): UserError
+  """
   A member can have multiple ACTIVE payment methods where one of those is default. This mutation changes the
   members default payment method for charging to any of his/hers other active payment methods.
   """
@@ -4135,6 +4143,16 @@ enum PaymentMethodSetupStatus {
    The payment method setup process has failed. 
   """
   FAILED
+}
+type PaymentMethodSetupStatusOutput {
+  """
+   The status of the setup process. If FAILED the reason for failure can be found in the `error` field. 
+  """
+  status: PaymentMethodSetupStatus!
+  """
+   An error message. Only sat if the setup process failed. 
+  """
+  error: UserError
 }
 input PaymentMethodSetupSwishInput {
   """
@@ -4809,6 +4827,10 @@ type PuppyGuideStoryMutationOutput {
   success: Boolean!
 }
 type Query {
+  """
+   Returns the status of a setup method order. Returns null if no status found 
+  """
+  paymentMethodSetupStatus(orderId: ID!): PaymentMethodSetupStatusOutput
   """
   Return a conversation for a given ID.
   Note that this can return null if `Mutation.conversationStart` has not been called with this ID.
