@@ -476,7 +476,11 @@ private fun ClaimChatScrollableContent(
   // Only the step that answers with text or voice is bottom attached, so that input stays reachable while
   // reading back through the conversation. Every other step keeps its actions inline in the transcript.
   val bottomAttachedStep = uiState.steps.lastOrNull()?.takeIf { it.stepContent is StepContent.AudioRecording }
-  var bottomAttachedHeight by remember { mutableStateOf(0.dp) }
+  // Keyed on the step so a height measured for one input is never reused for the next.
+  var measuredBottomAttachedHeight by remember(bottomAttachedStep?.id) { mutableStateOf(0.dp) }
+  // Only reserve room while something is actually attached. Without this the list keeps a gap the size of an
+  // input that is no longer on screen, because nothing measures it once the container stops being composed.
+  val bottomAttachedHeight = if (bottomAttachedStep == null) 0.dp else measuredBottomAttachedHeight
 
   Box(modifier, propagateMinConstraints = true) {
     Box(
@@ -539,7 +543,7 @@ private fun ClaimChatScrollableContent(
           // it would count the keyboard twice and lift the card a whole keyboard clear of where it belongs.
           .padding(contentPadding)
           .onSizeChanged { size ->
-            bottomAttachedHeight = with(density) { size.height.toDp() } + spaceBetweenItems
+            measuredBottomAttachedHeight = with(density) { size.height.toDp() } + spaceBetweenItems
           },
       ) {
         StepBottomContent(
