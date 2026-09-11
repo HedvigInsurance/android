@@ -123,7 +123,7 @@ internal fun UploadFilesStep(
             },
             isLoading = skipButtonLoading,
             modifier = Modifier.fillMaxWidth(),
-            buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+            buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
           )
         }
       }
