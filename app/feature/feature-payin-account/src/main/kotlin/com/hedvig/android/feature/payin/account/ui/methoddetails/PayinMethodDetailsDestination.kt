@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,6 +63,7 @@ import hedvig.resources.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT
 import hedvig.resources.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION
 import hedvig.resources.Res
 import hedvig.resources.general_close_button
+import hedvig.resources.something_went_wrong
 import hedvig.resources.swish
 import org.jetbrains.compose.resources.stringResource
 
@@ -69,9 +71,14 @@ import org.jetbrains.compose.resources.stringResource
 internal fun PayinMethodDetailsDestination(
   viewModel: PayinMethodDetailsViewModel,
   navigateUp: () -> Unit,
+  navigateBack: () -> Unit,
   onChangeMethod: (PayinAccount) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  val hasRemovedMethod = (uiState as? PayinMethodDetailsUiState.Content)?.hasRemovedMethod == true
+  LaunchedEffect(hasRemovedMethod) {
+    if (hasRemovedMethod) navigateBack()
+  }
   when (val state = uiState) {
     PayinMethodDetailsUiState.Loading -> {
       HedvigScaffold(
@@ -104,6 +111,9 @@ internal fun PayinMethodDetailsDestination(
         method = state.method,
         chargingDay = state.chargingDay,
         isRemoving = state.isRemoving,
+        removeErrorMessage = state.removeError?.let {
+          it.message ?: stringResource(Res.string.something_went_wrong)
+        },
         navigateUp = navigateUp,
         onChangeMethod = { onChangeMethod(state.method) },
         onConfirmRemoveMethod = { viewModel.emit(PayinMethodDetailsEvent.RemoveMethod) },
@@ -117,6 +127,7 @@ private fun PayinMethodDetailsScreen(
   method: PayinAccount,
   chargingDay: Int?,
   isRemoving: Boolean,
+  removeErrorMessage: String?,
   navigateUp: () -> Unit,
   onChangeMethod: () -> Unit,
   onConfirmRemoveMethod: () -> Unit,
@@ -127,6 +138,7 @@ private fun PayinMethodDetailsScreen(
   RemovePayinMethodBottomSheet(
     sheetState = removeSheetState,
     isRemoving = isRemoving,
+    errorMessage = removeErrorMessage,
     onConfirmRemove = onConfirmRemoveMethod,
   )
   HedvigScaffold(
@@ -343,6 +355,7 @@ private fun PreviewPayinMethodDetailsDestination(
         method = method,
         chargingDay = 27,
         isRemoving = false,
+        removeErrorMessage = null,
         navigateUp = {},
         onChangeMethod = {},
         onConfirmRemoveMethod = {},

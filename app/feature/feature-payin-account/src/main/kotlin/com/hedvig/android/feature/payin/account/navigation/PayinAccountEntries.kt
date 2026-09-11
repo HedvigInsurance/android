@@ -69,6 +69,7 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
     PayinMethodDetailsDestination(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
+      navigateBack = backstack::popBackstack,
       onChangeMethod = dropUnlessResumed { method: PayinAccount ->
         when (method) {
           is PayinAccount.Trustly -> {

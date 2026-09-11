@@ -14,11 +14,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.PaymentMethodMarkSize
 import com.hedvig.android.design.system.hedvig.PaymentMethodTile
 import com.hedvig.android.design.system.hedvig.PaymentMethodTileBadge
@@ -43,12 +45,14 @@ import org.jetbrains.compose.resources.stringResource
 internal fun RemovePayinMethodBottomSheet(
   sheetState: HedvigBottomSheetState<PayinAccount>,
   isRemoving: Boolean,
+  errorMessage: String?,
   onConfirmRemove: () -> Unit,
 ) {
   HedvigBottomSheet(sheetState) { method ->
     RemovePayinMethodBottomSheetContent(
       method = method,
       isRemoving = isRemoving,
+      errorMessage = errorMessage,
       onConfirmRemove = onConfirmRemove,
       onDismiss = { sheetState.dismiss() },
     )
@@ -59,6 +63,7 @@ internal fun RemovePayinMethodBottomSheet(
 private fun RemovePayinMethodBottomSheetContent(
   method: PayinAccount,
   isRemoving: Boolean,
+  errorMessage: String?,
   onConfirmRemove: () -> Unit,
   onDismiss: () -> Unit,
 ) {
@@ -89,6 +94,14 @@ private fun RemovePayinMethodBottomSheetContent(
       },
       mark = { PayinMethodMark(method, Modifier.size(PaymentMethodMarkSize)) },
     )
+  }
+  if (errorMessage != null) {
+    HedvigNotificationCard(
+      message = errorMessage,
+      priority = NotificationPriority.Error,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
   }
   val option = method.toRadioOption()
   RadioGroup(
@@ -128,6 +141,7 @@ private fun PreviewRemovePayinMethodBottomSheetContent() {
         RemovePayinMethodBottomSheetContent(
           method = PayinAccount.SwishPayin("0709901232", isPending = false, isDefault = false),
           isRemoving = false,
+          errorMessage = null,
           onConfirmRemove = {},
           onDismiss = {},
         )

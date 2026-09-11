@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.payin.account.data.GetPayinAccountUseCase
@@ -47,6 +48,9 @@ internal sealed interface PayinMethodDetailsUiState {
     val method: PayinAccount,
     val chargingDay: Int?,
     val isRemoving: Boolean = false,
+    val removeError: ErrorMessage? = null,
+    /** The method is gone, so this screen has nothing left to show and the caller pops it. */
+    val hasRemovedMethod: Boolean = false,
   ) : PayinMethodDetailsUiState
 }
 
@@ -82,11 +86,18 @@ internal class PayinMethodDetailsPresenter(
     LaunchedEffect(methodToRemove) {
       val method = methodToRemove ?: return@LaunchedEffect
       val content = uiState as? PayinMethodDetailsUiState.Content ?: return@LaunchedEffect
-      uiState = content.copy(isRemoving = true)
-      removeMethodUseCase.invoke(method.provider)
-      // TODO: reload the methods on success and surface the failure once the API exists.
-      uiState = content.copy(isRemoving = false)
-      methodToRemove = null
+      uiState = content.copy(isRemoving = true, removeError = null)
+      removeMethodUseCase.invoke(method.provider).fold(
+        ifLeft = { error ->
+          methodToRemove = null
+          uiState = content.copy(isRemoving = false, removeError = error)
+        },
+        ifRight = {
+          // Stays in the removing state until the screen is popped, so the button does not flash
+          // back to idle over a method that no longer exists.
+          uiState = content.copy(isRemoving = true, hasRemovedMethod = true)
+        },
+      )
     }
 
     CollectEvents { event ->

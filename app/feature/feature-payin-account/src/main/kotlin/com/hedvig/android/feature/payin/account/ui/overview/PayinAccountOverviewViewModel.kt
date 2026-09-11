@@ -28,6 +28,8 @@ internal class PayinAccountOverviewViewModel(
 
 internal sealed interface PayinAccountOverviewEvent {
   data object Retry : PayinAccountOverviewEvent
+
+  data object Refresh : PayinAccountOverviewEvent
 }
 
 internal sealed interface PayinAccountOverviewUiState {
@@ -49,6 +51,7 @@ internal class PayinAccountOverviewPresenter(
     lastState: PayinAccountOverviewUiState,
   ): PayinAccountOverviewUiState {
     var loadIteration by remember { mutableIntStateOf(0) }
+    var refreshIteration by remember { mutableIntStateOf(0) }
     var uiState by remember { mutableStateOf<PayinAccountOverviewUiState>(lastState) }
 
     LaunchedEffect(loadIteration) {
@@ -64,9 +67,23 @@ internal class PayinAccountOverviewPresenter(
       )
     }
 
+    // Picks up methods connected or removed further down the flow. It refreshes in place and keeps
+    // what is on screen if the refetch fails, so returning here never flashes to loading or to an
+    // error over a list that is still perfectly usable.
+    LaunchedEffect(refreshIteration) {
+      if (refreshIteration == 0) return@LaunchedEffect
+      getPayinAccountUseCase.invoke().onRight { data ->
+        uiState = PayinAccountOverviewUiState.Content(
+          currentMethods = data.currentMethods,
+          availablePayinMethods = data.availablePayinMethods,
+        )
+      }
+    }
+
     CollectEvents { event ->
       when (event) {
         PayinAccountOverviewEvent.Retry -> loadIteration++
+        PayinAccountOverviewEvent.Refresh -> refreshIteration++
       }
     }
 

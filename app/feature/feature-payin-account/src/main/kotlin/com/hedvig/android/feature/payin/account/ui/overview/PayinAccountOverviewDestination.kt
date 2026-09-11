@@ -13,10 +13,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
@@ -54,6 +58,15 @@ internal fun PayinAccountOverviewDestination(
   navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  var hasResumedOnce by rememberSaveable { mutableStateOf(false) }
+  LifecycleResumeEffect(Unit) {
+    if (hasResumedOnce) {
+      viewModel.emit(PayinAccountOverviewEvent.Refresh)
+    } else {
+      hasResumedOnce = true
+    }
+    onPauseOrDispose {}
+  }
   PayinAccountOverviewScreen(
     uiState = uiState,
     onConnectPayoutMethodClicked = onConnectPayoutMethodClicked,
