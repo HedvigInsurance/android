@@ -15,15 +15,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
@@ -659,8 +656,6 @@ private fun AudioRecordingSheetContent(
         isEnabled = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback && !isSubmitting,
       )
     }
-    Spacer(Modifier.height(16.dp))
-    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
 

@@ -477,75 +477,77 @@ private fun ClaimChatScrollableContent(
   // Only the step that answers with text or voice is bottom attached, so that input stays reachable while
   // reading back through the conversation. Every other step keeps its actions inline in the transcript.
   val bottomAttachedStep = uiState.steps.lastOrNull()?.takeIf { it.stepContent is StepContent.AudioRecording }
-  // Keyed on the step so a height measured for one input is never reused for the next.
-  var measuredBottomAttachedHeight by remember(bottomAttachedStep?.id) { mutableStateOf(0.dp) }
-  // Only reserve room while something is actually attached. Without this the list keeps a gap the size of an
-  // input that is no longer on screen, because nothing measures it once the container stops being composed.
-  val bottomAttachedHeight = if (bottomAttachedStep == null) 0.dp else measuredBottomAttachedHeight
+  // The transcript and the attached input are stacked, so the remaining height bounds the input rather than
+  // the input overflowing the screen. That also means nothing needs to measure it to reserve room.
+  // When an input is attached it carries the bottom inset, so the list stops short of it.
+  val listContentPadding = if (bottomAttachedStep == null) {
+    contentPadding
+  } else {
+    WindowInsets.safeDrawing
+      .only(WindowInsetsSides.Horizontal)
+      .asPaddingValues()
+      .plus(PaddingValues(16.dp))
+  }
 
-  Box(modifier, propagateMinConstraints = true) {
-    Box(
-      Modifier
-        .padding(contentPadding)
-        .onSizeChanged { size ->
-          lastItemHeightAdjustingState.onContainerSizeChanged(size)
-        },
-    )
-    LazyColumn(
-      state = lazyListState,
-      contentPadding = contentPadding.plus(PaddingValues(bottom = bottomAttachedHeight)),
-      verticalArrangement = Arrangement.spacedBy(spaceBetweenItems, Alignment.Top),
-    ) {
-      items(
-        items = uiState.steps,
-        key = { step -> step.id.value },
-        contentType = { it.stepContent::class },
-      ) { item ->
-        val isCurrentStep = item.id == uiState.steps.lastOrNull()?.id
-        val showAnimationSequence = isCurrentStep &&
-          item.stepContent !is StepContent.Task &&
-          !uiState.stepsWithShownAnimations.contains(item.id)
-        val isLastItem = item == uiState.steps.lastOrNull()
-        val isBottomAttached = item.id == bottomAttachedStep?.id
+  Column(modifier) {
+    Box(Modifier.weight(1f), propagateMinConstraints = true) {
+      Box(
+        Modifier
+          .padding(contentPadding)
+          .onSizeChanged { size ->
+            lastItemHeightAdjustingState.onContainerSizeChanged(size)
+          },
+      )
+      LazyColumn(
+        state = lazyListState,
+        contentPadding = listContentPadding,
+        verticalArrangement = Arrangement.spacedBy(spaceBetweenItems, Alignment.Top),
+      ) {
+        items(
+          items = uiState.steps,
+          key = { step -> step.id.value },
+          contentType = { it.stepContent::class },
+        ) { item ->
+          val isCurrentStep = item.id == uiState.steps.lastOrNull()?.id
+          val showAnimationSequence = isCurrentStep &&
+            item.stepContent !is StepContent.Task &&
+            !uiState.stepsWithShownAnimations.contains(item.id)
+          val isLastItem = item == uiState.steps.lastOrNull()
+          val isBottomAttached = item.id == bottomAttachedStep?.id
 
-        StepContentSection(
-          stepItem = item,
-          isCurrentStep = isCurrentStep,
-          showAnimationSequence = showAnimationSequence,
-          renderBottomContent = !isBottomAttached,
-          currentContinueButtonLoading = uiState.currentContinueButtonLoading,
-          currentSkipButtonLoading = uiState.currentSkipButtonLoading,
-          onEvent = onEvent,
-          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-          onNavigateToImageViewer = onNavigateToImageViewer,
-          navigateToDeflect = navigateToDeflect,
-          appPackageId = appPackageId,
-          imageLoader = imageLoader,
-          openAppSettings = openAppSettings,
-          onResponseHeightChanged = { size ->
-            lastItemHeightAdjustingState.onItemHeightChanged(item.id, size)
-          },
-          modifier = if (isLastItem && !isBottomAttached) {
-            Modifier.requiredHeightIn(lastItemHeightAdjustingState.preferredMinHeightForFullScreenItem)
-          } else {
-            Modifier
-          },
-          closeFlow = closeFlow,
-        )
+          StepContentSection(
+            stepItem = item,
+            isCurrentStep = isCurrentStep,
+            showAnimationSequence = showAnimationSequence,
+            renderBottomContent = !isBottomAttached,
+            currentContinueButtonLoading = uiState.currentContinueButtonLoading,
+            currentSkipButtonLoading = uiState.currentSkipButtonLoading,
+            onEvent = onEvent,
+            shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+            onNavigateToImageViewer = onNavigateToImageViewer,
+            navigateToDeflect = navigateToDeflect,
+            appPackageId = appPackageId,
+            imageLoader = imageLoader,
+            openAppSettings = openAppSettings,
+            onResponseHeightChanged = { size ->
+              lastItemHeightAdjustingState.onItemHeightChanged(item.id, size)
+            },
+            modifier = if (isLastItem && !isBottomAttached) {
+              Modifier.requiredHeightIn(lastItemHeightAdjustingState.preferredMinHeightForFullScreenItem)
+            } else {
+              Modifier
+            },
+            closeFlow = closeFlow,
+          )
+        }
       }
     }
     if (bottomAttachedStep != null) {
       Box(
-        Modifier
-          .align(Alignment.BottomCenter)
-          .wrapContentHeight(Alignment.Bottom)
-          // safeDrawing already carries the keyboard, so this is the bottom inset in full: it resolves to the
-          // navigation bar with the keyboard down and to the keyboard with it up. Adding imePadding on top of
-          // it would count the keyboard twice and lift the card a whole keyboard clear of where it belongs.
-          .padding(contentPadding)
-          .onSizeChanged { size ->
-            measuredBottomAttachedHeight = with(density) { size.height.toDp() } + spaceBetweenItems
-          },
+        // safeDrawing already carries the keyboard, so this is the bottom inset in full: it resolves to the
+        // navigation bar with the keyboard down and to the keyboard with it up. Adding imePadding on top of it
+        // would count the keyboard twice and lift the card a whole keyboard clear of where it belongs.
+        Modifier.padding(contentPadding),
       ) {
         // Keyed on the step: this sits outside the list, so without it the input's own state (which card is
         // open, what has been typed) would carry over from one step to the next.
