@@ -3,14 +3,12 @@ package com.hedvig.android.feature.claim.chat.ui
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,9 +20,9 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -50,7 +48,6 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.dropUnlessResumed
@@ -370,19 +367,6 @@ private fun ClaimChatScreenContent(
       (lastVisibleItem?.index != lazyListItemsCount - 1 && lazyListItemsCount > 0)
     }
   }
-  // Track the size of the last item to scroll when it grows
-  val lastItemSize by remember(lazyListState, uiState.steps.lastOrNull()?.id) {
-    derivedStateOf {
-      val layoutInfo = lazyListState.layoutInfo
-      val lastItem = layoutInfo.visibleItemsInfo.lastOrNull()
-      if (lastItem?.index == uiState.steps.lastIndex) {
-        lastItem.size
-      } else {
-        null
-      }
-    }
-  }
-
   Box(modifier = modifier.fillMaxSize()) {
     Column(Modifier.matchParentSize()) {
       val legacyTitle = stringResource(Res.string.CHAT_CONVERSATION_CLAIM_TITLE)
@@ -458,12 +442,11 @@ private fun ClaimChatScreenContent(
     }
   }
 
-  LaunchedEffect(lastItemSize) {
-    if (lastItemSize != null && uiState.steps.isNotEmpty()) {
-      lazyListState.animateScrollBy(
-        value = 3000f,
-        animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing),
-      )
+  // The input no longer lives in the list, so arriving at a new step just means scrolling the transcript
+  // to its end rather than nudging it by a fixed distance.
+  LaunchedEffect(uiState.steps.lastOrNull()?.id) {
+    if (uiState.steps.isNotEmpty()) {
+      lazyListState.animateScrollToItem(uiState.steps.lastIndex)
     }
   }
 }
@@ -482,47 +465,45 @@ private fun ClaimChatScrollableContent(
   closeFlow: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val density = LocalDensity.current
   val spaceBetweenItems = 8.dp
-  val contentPadding = WindowInsets.safeDrawing
-    .only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal)
+  val horizontalPadding = WindowInsets.safeDrawing
+    .only(WindowInsetsSides.Horizontal)
     .asPaddingValues()
     .plus(PaddingValues(16.dp))
+  val bottomInset = WindowInsets.safeDrawing
+    .only(WindowInsetsSides.Bottom)
+    .asPaddingValues()
 
-  val lastItemHeightAdjustingState = rememberLastItemHeightAdjustingState(
-    density = density,
-    spaceBetweenItems = spaceBetweenItems,
-    steps = uiState.steps,
-  )
+  val currentStep = uiState.steps.lastOrNull()
+  // The transcript scrolls behind the pinned input, so it needs to be able to clear it.
+  var pinnedInputHeight by remember { mutableStateOf(0.dp) }
+  val density = LocalDensity.current
 
-  Box(modifier, propagateMinConstraints = true) {
-    Box(
-      Modifier
-        .padding(contentPadding)
-        .onSizeChanged { size ->
-          lastItemHeightAdjustingState.onContainerSizeChanged(size)
-        },
-    )
+  Column(modifier) {
     LazyColumn(
       state = lazyListState,
-      contentPadding = contentPadding,
+      contentPadding = horizontalPadding
+        .plus(PaddingValues(top = 16.dp, bottom = pinnedInputHeight)),
       verticalArrangement = Arrangement.spacedBy(spaceBetweenItems, Alignment.Top),
+      modifier = Modifier.weight(1f),
     ) {
       items(
         items = uiState.steps,
         key = { step -> step.id.value },
         contentType = { it.stepContent::class },
       ) { item ->
-        val isCurrentStep = item.id == uiState.steps.lastOrNull()?.id
+        val isCurrentStep = item.id == currentStep?.id
         val showAnimationSequence = isCurrentStep &&
           item.stepContent !is StepContent.Task &&
           !uiState.stepsWithShownAnimations.contains(item.id)
-        val isLastItem = item == uiState.steps.lastOrNull()
 
         StepContentSection(
           stepItem = item,
           isCurrentStep = isCurrentStep,
           showAnimationSequence = showAnimationSequence,
+          // The current step answers through the pinned input below, so only past steps carry their
+          // answer inline in the transcript.
+          renderBottomContent = !isCurrentStep,
           currentContinueButtonLoading = uiState.currentContinueButtonLoading,
           currentSkipButtonLoading = uiState.currentSkipButtonLoading,
           onEvent = onEvent,
@@ -532,14 +513,36 @@ private fun ClaimChatScrollableContent(
           appPackageId = appPackageId,
           imageLoader = imageLoader,
           openAppSettings = openAppSettings,
-          onResponseHeightChanged = { size ->
-            lastItemHeightAdjustingState.onItemHeightChanged(item.id, size)
+          modifier = Modifier,
+          closeFlow = closeFlow,
+        )
+      }
+    }
+    if (currentStep != null) {
+      // Pinned rather than scrolling with the transcript, so the input stays reachable while reading back
+      // through earlier answers. imePadding lifts it with the keyboard and settles it back on dismissal.
+      Box(
+        Modifier
+          .fillMaxWidth()
+          .imePadding()
+          .padding(horizontalPadding)
+          .padding(bottomInset)
+          .onSizeChanged { size ->
+            pinnedInputHeight = with(density) { size.height.toDp() } + spaceBetweenItems
           },
-          modifier = if (isLastItem) {
-            Modifier.requiredHeightIn(lastItemHeightAdjustingState.preferredMinHeightForFullScreenItem)
-          } else {
-            Modifier
-          },
+      ) {
+        StepBottomContent(
+          stepItem = currentStep,
+          isCurrentStep = true,
+          currentContinueButtonLoading = uiState.currentContinueButtonLoading,
+          currentSkipButtonLoading = uiState.currentSkipButtonLoading,
+          onEvent = onEvent,
+          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+          onNavigateToImageViewer = onNavigateToImageViewer,
+          navigateToDeflect = navigateToDeflect,
+          appPackageId = appPackageId,
+          imageLoader = imageLoader,
+          openAppSettings = openAppSettings,
           closeFlow = closeFlow,
         )
       }
@@ -580,6 +583,7 @@ private fun StepContentSection(
   stepItem: ClaimIntentStep,
   isCurrentStep: Boolean,
   showAnimationSequence: Boolean,
+  renderBottomContent: Boolean,
   currentContinueButtonLoading: Boolean,
   currentSkipButtonLoading: Boolean,
   onEvent: (ClaimChatEvent) -> Unit,
@@ -590,7 +594,6 @@ private fun StepContentSection(
   imageLoader: ImageLoader,
   openAppSettings: () -> Unit,
   closeFlow: () -> Unit,
-  onResponseHeightChanged: (IntSize) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   // AnimationSequence has 2 stages one after another:
@@ -647,7 +650,7 @@ private fun StepContentSection(
     }
 
     AnimatedVisibility(
-      visible = showBottomContent && !isAnimationInProcess,
+      visible = renderBottomContent && showBottomContent && !isAnimationInProcess,
       enter = fadeIn(animationSpec = tween(bottomContentAnimationDuration)),
       exit = ExitTransition.None,
     ) {
@@ -663,9 +666,6 @@ private fun StepContentSection(
         appPackageId = appPackageId,
         imageLoader = imageLoader,
         openAppSettings = openAppSettings,
-        modifier = Modifier.onSizeChanged { size ->
-          onResponseHeightChanged(size)
-        },
         closeFlow = closeFlow,
       )
     }
