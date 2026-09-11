@@ -215,12 +215,15 @@ private fun CrossSellsSheetContent(
       if (otherCrossSells.isNotEmpty()) {
         Column {
           Spacer(Modifier.height(24.dp))
-          HedvigText(stringResource(string.CROSS_SELL_TITLE), Modifier.semantics { heading() })
-          HedvigText(
-            text = stringResource(string.CROSS_SELL_SUBTITLE),
-            color = HedvigTheme.colorScheme.textSecondary,
-          )
-          Spacer(Modifier.height(24.dp))
+          // A recommendation already heads the sheet, so the list below it carries no heading of its own.
+          if (recommendedCrossSell == null && recommendedAddon == null) {
+            HedvigText(stringResource(string.CROSS_SELL_TITLE), Modifier.semantics { heading() })
+            HedvigText(
+              text = stringResource(string.CROSS_SELL_SUBTITLE),
+              color = HedvigTheme.colorScheme.textSecondary,
+            )
+            Spacer(Modifier.height(24.dp))
+          }
           CrossSellsSection(
             crossSells = otherCrossSells,
             onCrossSellClick = onCrossSellClick,

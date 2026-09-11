@@ -988,7 +988,7 @@ private fun HomeScreenSuccess(
               imageLoader = imageLoader,
             )
 
-            HomeSection.Addons -> AddonsSection(
+            HomeSection.Addons -> HomeAddonsSection(
               addonBannerInfos = uiState.addonBannerInfos,
               navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
               horizontalInsets = horizontalInsets,
@@ -1523,7 +1523,7 @@ private fun MainActionCarouselSection(
 }
 
 @Composable
-private fun AddonsSection(
+private fun HomeAddonsSection(
   addonBannerInfos: List<AddonBannerInfo>,
   navigateToAddonPurchaseFlow: (List<String>) -> Unit,
   horizontalInsets: PaddingValues,
