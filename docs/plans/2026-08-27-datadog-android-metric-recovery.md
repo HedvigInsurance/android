@@ -2,12 +2,14 @@
 
 **Status: three items open.** One is time-boxed to the release carrying the auth instrumentation:
 take the SLO window back to 7 days about a week after. See "After the release" below. The
-auth-unreachable gap that used to be a fourth item is closed as accepted, also below. The
-`OR`-branch cleanup is blocked on the
-pre-14.3.6 install base draining. Measured 2026-09-11, versions at or below 14.3.2 were 12.0% of
-prod view events over 30 days but only **1.1% over 7 days and 0.8% over one day**, so the 30-day
-figure lags badly and the trigger is closer than it looks. The claim-submission-failure action is
-unstarted. The guard-rail monitor is also still just a suggestion.
+auth-unreachable gap that used to be a fourth item is closed as accepted, also below.
+
+The `OR`-branch cleanup is blocked on the pre-14.3.6 install base draining. Measured 2026-09-11,
+versions at or below 14.3.2 were 12.0% of prod view events over 30 days but only **1.1% over 7 days
+and 0.8% over one day**, so the 30-day figure lags badly and the trigger is closer than it looks.
+
+The claim-submission-failure action is unstarted, and the guard-rail monitor is still just a
+suggestion.
 
 Last updated 2026-09-11.
 
