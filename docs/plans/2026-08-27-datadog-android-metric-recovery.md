@@ -236,27 +236,14 @@ The durable form of a failure signal is an action, not a screen or a UI state:
 logAction(type = ActionType.CUSTOM, name = "CLAIM_SUBMISSION_FAILED")
 ```
 
-Action-based metrics do not break when navigation changes.
+Action-based metrics do not break when navigation changes. An earlier version of this document
+added "which is why no iOS metric broke in this incident". That was wrong: the Nav2 to Nav3
+migration was Android-only, so iOS view names never moved at all. One thing is worth keeping from
+that check, because it constrains how to do this here: an action name is only durable if the app
+owns the constant. Of the three action-based `ios.*` metrics, one keys off a GraphQL type name owned
+by the backend schema and would die silently on a rename.
 
-To be precise about why no iOS metric broke here: the Nav2 to Nav3 migration was Android-only, so
-iOS view names never moved. Only 3 of the 13 `ios.*` metrics are actually action-based
-(`ios.addonPurchased`, `ios.addonUpgraded`, `ios.claims.end.count`), and only two of them are
-genuinely rename-proof. Those two take their names from a Swift enum in `ChangeAddonViewModel.swift`
-and go out through `log.addUserAction(...)`, whose sink is `DatadogLogger.swift`. The third is a
-cautionary tale: `ios.claims.end.count` filters
-`@action.name:ClaimIntentStepContentSummary`, which `ClaimIntentClientOctopus.swift` emits as
-`content.__typename`, a GraphQL type name owned by the backend schema. Rename that type and the
-metric dies silently, so an action name is only durable if the app owns the constant.
-
-So this is not a novel idea, it is catching up to a pattern already in production on the other
-platform, with one example of how to get it wrong.
-
-The counter-example is on iOS too. `ios.login.network.error` excludes user-facing translated strings,
-both the English and Swedish wording of the BankID cancellation and the "no existing Hedvig member"
-message, plus the entire United States by geolocation. Lokalise is one project shared across Android,
-iOS and the backends, so a translator editing that copy silently changes what a reliability metric
-counts. That is a worse coupling than view names, and it is a good argument for moving the signal
-into code rather than tightening the filter. Note that the two obvious instrumentation points are both wrong: `failedToStart` and
+Note that the two obvious instrumentation points are both wrong: `failedToStart` and
 `errorSubmittingStep` are transient, retryable states that are set and cleared repeatedly, so
 instrumenting them counts error *displays*, not failed claims, and a member on a flaky connection
 produces several. Emit at a terminal boundary instead, for example when the member abandons the flow
