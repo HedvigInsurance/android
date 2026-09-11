@@ -1,6 +1,14 @@
 package com.hedvig.android.feature.claim.chat.ui.step
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -72,7 +80,19 @@ internal fun TaskStepTopContent(
           AnimatedContent(showBlinkingAiDot && showPill) {
             Spacer(Modifier.width(8.dp))
           }
-          AnimatedContent(lastDescription) { description ->
+          val pacedDescription = rememberPacedDescription(taskContent.descriptions)
+          AnimatedContent(
+            targetState = pacedDescription,
+            transitionSpec = {
+              val outgoing = fadeOut(animationSpec = tween(90)) +
+                slideOutVertically(animationSpec = tween(90)) { height -> -height / 2 }
+              val incoming = fadeIn(animationSpec = tween(220, delayMillis = 90)) +
+                slideInVertically(animationSpec = tween(220, delayMillis = 90)) { height -> height / 2 }
+              // Snap the bounds rather than tweening them, so the neighbouring animation does not get
+              // pushed around as descriptions of different lengths swap in.
+              incoming togetherWith outgoing using SizeTransform(clip = false) { _, _ -> snap() }
+            },
+          ) { description ->
             if (description != null) {
               HedvigText(
                 description,
