@@ -17,14 +17,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -47,6 +46,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -112,6 +112,8 @@ import com.hedvig.android.feature.claim.chat.ui.common.EditButton
 import com.hedvig.android.feature.claim.chat.ui.common.RoundCornersPill
 import com.hedvig.android.feature.claim.chat.ui.common.SkippedLabel
 import com.hedvig.android.feature.claim.chat.ui.sentAnswersStartPadding
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import hedvig.resources.AUDIO_RECORDER_LISTEN
 import hedvig.resources.AUDIO_RECORDER_SEND
 import hedvig.resources.AUDIO_RECORDER_START
@@ -231,6 +233,11 @@ internal fun AudioRecorderBubble(
 ) {
   val isSubmitting = continueButtonLoading || skipButtonLoading
   val focusManager = LocalFocusManager.current
+  // A landscape keyboard leaves roughly 34dp of screen, too little for the inline card, so short windows
+  // answer in the full screen editor instead.
+  val isShortWindow = with(LocalDensity.current) {
+    LocalWindowInfo.current.containerSize.height.toDp()
+  } < SHORT_WINDOW_MAX_HEIGHT
   // The voice card is open either because the user asked for it or because a recording is already in flight.
   var voiceCardRequested by remember(isCurrentStep) { mutableStateOf(false) }
   val hasRecording = recordingState is AudioRecordingStepState.AudioRecording &&
@@ -274,9 +281,18 @@ internal fun AudioRecorderBubble(
     } else {
       AnimatedContent(
         targetState = when {
-          recordingState is AudioRecordingStepState.FreeTextDescription -> InputMode.Text
-          voiceCardRequested || hasRecording -> InputMode.Voice
-          else -> InputMode.Resting
+          // In a short window the full screen editor owns the text answer, so the row stays behind it.
+          recordingState is AudioRecordingStepState.FreeTextDescription -> {
+            if (isShortWindow) InputMode.Resting else InputMode.Text
+          }
+
+          voiceCardRequested || hasRecording -> {
+            InputMode.Voice
+          }
+
+          else -> {
+            InputMode.Resting
+          }
         },
         modifier = Modifier.fillMaxWidth(),
       ) { mode ->
@@ -332,6 +348,7 @@ internal fun AudioRecorderBubble(
                     onClick = {
                       focusManager.clearFocus()
                       onSwitchToFreeText()
+                      if (isShortWindow) onLaunchFullScreenEditText()
                     },
                     enabled = true,
                     buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
@@ -440,9 +457,7 @@ private fun InlineVoiceAnswerCard(
     shape = HedvigTheme.shapes.cornerXLarge,
     color = HedvigTheme.colorScheme.surfacePrimary,
   ) {
-    // Scrollable because the card is as tall as its content: in landscape, or on a short screen, the
-    // controls would otherwise be clipped below the fold with no way to reach them.
-    Box(Modifier.verticalScroll(rememberScrollState()).padding(16.dp)) {
+    Box(Modifier.padding(16.dp)) {
       IconButton(
         onClick = onClose,
         modifier = Modifier.align(Alignment.TopEnd).size(24.dp),
@@ -559,8 +574,6 @@ private fun AudioRecordingSheetContent(
       textAlign = TextAlign.Center,
     )
     DynamicClock(audioRecordingState, clock, audioPlayer)
-    Spacer(Modifier.height(16.dp))
-
     AnimatedContent(
       targetState = audioRecordingState,
       transitionSpec = {
@@ -583,7 +596,10 @@ private fun AudioRecordingSheetContent(
       },
     ) { target ->
       Box(
-        modifier = Modifier.height(158.dp).fillMaxWidth().padding(horizontal = 45.dp),
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = WAVE_BAND_HORIZONTAL_INSET, vertical = WAVE_BAND_VERTICAL_INSET)
+          .heightIn(min = WAVE_MAX_HEIGHT),
         contentAlignment = Alignment.Center,
         propagateMinConstraints = true,
       ) {
@@ -627,7 +643,7 @@ private fun AudioRecordingSheetContent(
       }
     }
     Row(
-      modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
       StartOverButton(
@@ -1270,6 +1286,16 @@ fun RestingAudioPlayer(modifier: Modifier = Modifier) {
     }
   }
 }
+
+/**
+ * The band the waves are drawn in is only as tall as [WAVE_MAX_HEIGHT], so its insets are what give it air.
+ * A taller state (the error, the spinner) grows the band rather than being boxed into a fixed height.
+ */
+private val WAVE_BAND_HORIZONTAL_INSET = 24.dp
+private val WAVE_BAND_VERTICAL_INSET = 24.dp
+
+// A window shorter than this cannot show the text card above the keyboard, so it answers full screen.
+private val SHORT_WINDOW_MAX_HEIGHT = 480.dp
 
 private val WAVE_WIDTH = 2.dp
 private val WAVE_SPACING = 3.dp
