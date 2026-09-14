@@ -1,2 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <!--
+  Android 11+ hides other packages unless they are declared here, which would make the Swish
+  installed-check report false on every device.
+  https://developer.android.com/training/package-visibility/declaring
+  -->
+  <queries>
+    <package android:name="se.bankgirot.swish" />
+    <package android:name="se.bankgirot.swish.sandbox" />
+  </queries>
+
+</manifest>

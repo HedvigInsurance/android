@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,6 +50,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun SwishPayinStatusDestination(
   viewModel: SwishPayinStatusViewModel,
+  allowSandboxSwishApp: Boolean,
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
   finishSwishSetup: () -> Unit,
@@ -56,6 +58,18 @@ internal fun SwishPayinStatusDestination(
   openUrl: (String) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  val swishAppHandover = rememberSwishAppHandover(allowSandboxSwishApp, openUrl)
+
+  val pendingApproval = uiState as? SwishPayinStatusUiState.PendingApproval
+  val urlToAutoOpen = pendingApproval?.redirectUrl?.takeIf { pendingApproval.allowAutoOpen }
+  LaunchedEffect(urlToAutoOpen, swishAppHandover) {
+    if (urlToAutoOpen == null) return@LaunchedEffect
+    // Without the app there is nothing to hand over to, so the member gets the button instead.
+    if (!swishAppHandover.isSwishInstalled) return@LaunchedEffect
+    viewModel.emit(SwishPayinStatusEvent.DidOpenSwishApp)
+    swishAppHandover.open(urlToAutoOpen)
+  }
+
   SwishPayinStatusScreen(
     uiState = uiState,
     navigateUp = navigateUp,
@@ -63,7 +77,7 @@ internal fun SwishPayinStatusDestination(
     onContinue = finishSwishSetup,
     onRetry = { viewModel.emit(SwishPayinStatusEvent.Retry) },
     onChangePaymentMethod = changePaymentMethod,
-    openUrl = openUrl,
+    openUrl = swishAppHandover::open,
   )
 }
 

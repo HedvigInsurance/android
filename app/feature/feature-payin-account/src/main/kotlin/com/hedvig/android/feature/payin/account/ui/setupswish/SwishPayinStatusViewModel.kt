@@ -46,10 +46,17 @@ internal class SwishPayinStatusViewModel(
 
 internal sealed interface SwishPayinStatusEvent {
   data object Retry : SwishPayinStatusEvent
+
+  data object DidOpenSwishApp : SwishPayinStatusEvent
 }
 
 internal sealed interface SwishPayinStatusUiState {
-  data class PendingApproval(val redirectUrl: String) : SwishPayinStatusUiState
+  /**
+   * @param allowAutoOpen whether the screen should still hand the member over to the Swish app
+   *   without being asked. Each new order starts out allowing it; it is spent on the first handover
+   *   so that coming back from Swish, or a rotation, does not bounce the member out again.
+   */
+  data class PendingApproval(val redirectUrl: String, val allowAutoOpen: Boolean = true) : SwishPayinStatusUiState
 
   data object Connected : SwishPayinStatusUiState
 
@@ -115,6 +122,13 @@ internal class SwishPayinStatusPresenter(
 
     CollectEvents { event ->
       when (event) {
+        SwishPayinStatusEvent.DidOpenSwishApp -> {
+          val state = uiState
+          if (state is SwishPayinStatusUiState.PendingApproval) {
+            uiState = state.copy(allowAutoOpen = false)
+          }
+        }
+
         SwishPayinStatusEvent.Retry -> {
           val state = uiState
           if (state is SwishPayinStatusUiState.Failed && !state.isRetrying) {

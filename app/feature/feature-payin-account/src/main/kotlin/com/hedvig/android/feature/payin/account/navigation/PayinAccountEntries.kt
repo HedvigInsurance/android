@@ -3,6 +3,7 @@ package com.hedvig.android.feature.payin.account.navigation
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.compose.ui.dropUnlessResumed
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.feature.payin.account.data.PayinAccount
 import com.hedvig.android.feature.payin.account.data.SwishSetupOrder
@@ -38,6 +39,7 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
   backstack: Backstack,
   globalSnackBarState: GlobalSnackBarState,
+  hedvigBuildConstants: HedvigBuildConstants,
   navigateToConnectPayment: () -> Unit,
   openUrl: (String) -> Unit,
 ) {
@@ -149,6 +151,8 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
       }
     SwishPayinStatusDestination(
       viewModel = viewModel,
+      // Staging orders can only be approved in the Swish sandbox app, never the real one.
+      allowSandboxSwishApp = !hedvigBuildConstants.isProduction,
       navigateUp = backstack::navigateUp,
       navigateBack = backstack::popBackstack,
       finishSwishSetup = finishSwishSetup,
