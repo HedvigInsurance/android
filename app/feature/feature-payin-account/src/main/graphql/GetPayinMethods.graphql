@@ -9,19 +9,6 @@ query GetPayinMethods {
         provider
         supportsPayin
         isActive
-        details {
-          ... on PaymentMethodBankAccountDetails {
-            account
-            bank
-          }
-          ... on PaymentMethodSwishDetails {
-            phoneNumber
-          }
-          ... on PaymentMethodInvoiceDetails {
-            delivery
-            email
-          }
-        }
       }
     }
   }
