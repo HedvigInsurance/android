@@ -15,19 +15,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -443,9 +439,7 @@ private fun InlineVoiceAnswerCard(
     shape = HedvigTheme.shapes.cornerXLarge,
     color = HedvigTheme.colorScheme.surfacePrimary,
   ) {
-    // Scrollable because the card is as tall as its content: in landscape, or on a short screen, the
-    // controls would otherwise be clipped below the fold with no way to reach them.
-    Box(Modifier.verticalScroll(rememberScrollState()).padding(16.dp)) {
+    Box(Modifier.padding(16.dp)) {
       IconButton(
         onClick = onClose,
         modifier = Modifier.align(Alignment.TopEnd).size(24.dp),
@@ -562,8 +556,6 @@ private fun AudioRecordingSheetContent(
       textAlign = TextAlign.Center,
     )
     DynamicClock(audioRecordingState, clock, audioPlayer)
-    Spacer(Modifier.height(16.dp))
-
     AnimatedContent(
       targetState = audioRecordingState,
       transitionSpec = {
@@ -586,7 +578,10 @@ private fun AudioRecordingSheetContent(
       },
     ) { target ->
       Box(
-        modifier = Modifier.height(158.dp).fillMaxWidth().padding(horizontal = 45.dp),
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = WAVE_BAND_HORIZONTAL_INSET, vertical = WAVE_BAND_VERTICAL_INSET)
+          .heightIn(min = WAVE_MAX_HEIGHT),
         contentAlignment = Alignment.Center,
         propagateMinConstraints = true,
       ) {
@@ -630,7 +625,7 @@ private fun AudioRecordingSheetContent(
       }
     }
     Row(
-      modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
       StartOverButton(
@@ -659,8 +654,6 @@ private fun AudioRecordingSheetContent(
         isEnabled = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback && !isSubmitting,
       )
     }
-    Spacer(Modifier.height(16.dp))
-    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
 
@@ -1275,6 +1268,13 @@ fun RestingAudioPlayer(modifier: Modifier = Modifier) {
     }
   }
 }
+
+/**
+ * The band the waves are drawn in is only as tall as [WAVE_MAX_HEIGHT], so its insets are what give it air.
+ * A taller state (the error, the spinner) grows the band rather than being boxed into a fixed height.
+ */
+private val WAVE_BAND_HORIZONTAL_INSET = 24.dp
+private val WAVE_BAND_VERTICAL_INSET = 24.dp
 
 private val WAVE_WIDTH = 2.dp
 private val WAVE_SPACING = 3.dp
