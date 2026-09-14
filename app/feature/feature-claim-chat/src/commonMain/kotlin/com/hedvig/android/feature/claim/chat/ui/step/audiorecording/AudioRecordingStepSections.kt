@@ -1462,7 +1462,8 @@ private val MINIMUM_WAVE_BAND_WIDTH = 160.dp
 // it only takes effect on the screens that have width to spare: tablets and unfolded foldables.
 private val MAXIMUM_WAVE_BAND_WIDTH = 560.dp
 
-// A window shorter than this shows the card's pieces along the free width instead of stacked.
+// A window shorter than this lays the voice card's pieces out along the free width instead of stacked, and
+// cannot show the text card above the keyboard at all, so that one answers in the full screen editor.
 private val SHORT_WINDOW_MAX_HEIGHT = 480.dp
 
 // The band is only as tall as WAVE_MAX_HEIGHT, so its insets are what give it air. A taller state, the
@@ -1470,9 +1471,6 @@ private val SHORT_WINDOW_MAX_HEIGHT = 480.dp
 private val WAVE_BAND_HORIZONTAL_INSET = 24.dp
 private val WAVE_BAND_ROW_INSET = 8.dp
 private val WAVE_BAND_VERTICAL_INSET = 24.dp
-
-// A window shorter than this cannot show the text card above the keyboard, so it answers full screen.
-private val SHORT_WINDOW_MAX_HEIGHT = 480.dp
 
 private val WAVE_WIDTH = 2.dp
 private val WAVE_SPACING = 3.dp
