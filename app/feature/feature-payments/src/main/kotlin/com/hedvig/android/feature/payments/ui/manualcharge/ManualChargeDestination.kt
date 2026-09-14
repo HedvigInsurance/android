@@ -66,6 +66,7 @@ import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeEvent.Ret
 import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeEvent.TriggerCharge
 import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeUiState.Failure
 import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeUiState.Loading
+import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeUiState.NoLongerChargeable
 import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeUiState.Success
 import hedvig.resources.GENERAL_ERROR_BODY
 import hedvig.resources.GENERAL_RETRY
@@ -175,6 +176,18 @@ private fun ManualChargeScreen(
         )
       }
 
+      NoLongerChargeable -> {
+        HedvigErrorSection(
+          onButtonClick = openConversation,
+          Modifier
+            .weight(1f)
+            .fillMaxWidth(),
+          title = stringResource(string.SELF_MANUAL_CHARGE_CHANGES_BEEN_MADE_TITLE),
+          subTitle = null,
+          buttonText = stringResource(string.claim_status_detail_chat_button_description),
+        )
+      }
+
       Loading -> {
         HedvigFullScreenCenterAlignedProgress(
           modifier = Modifier.weight(1f),
@@ -188,7 +201,7 @@ private fun ManualChargeScreen(
           onTriggerPayment = onTriggerPayment,
           onConnectPayinMethodClicked = onConnectPayinMethodClicked,
           onChoosePrimaryMethodClicked = onChoosePrimaryMethodClicked,
-          modifier = Modifier.weight(1f)
+          modifier = Modifier.weight(1f),
         )
       }
     }
@@ -202,7 +215,7 @@ private fun ManualChargeSuccessScreen(
   onTriggerPayment: () -> Unit,
   onConnectPayinMethodClicked: () -> Unit,
   onChoosePrimaryMethodClicked: () -> Unit,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
 ) {
   val currentMethods = uiState.manualChargeInfo.currentMethods
   val availablePayinMethods = uiState.manualChargeInfo.availablePayinMethods

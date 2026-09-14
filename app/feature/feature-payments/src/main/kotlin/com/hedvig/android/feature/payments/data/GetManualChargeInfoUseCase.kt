@@ -23,7 +23,22 @@ import octopus.ManualChargeInfoQuery
 import octopus.type.MemberPaymentProvider
 
 internal interface GetManualChargeInfoUseCase {
-  suspend fun invoke(): Either<ErrorMessage, ManualChargeInfo>
+  suspend fun invoke(): Either<ErrorMessage, ManualChargeInfoResult>
+}
+
+/**
+ * Separates "we could not load it" (the [Either] left) from the backend's own answer that there is
+ * nothing here to charge, so a caller can keep a usable screen through a network blip without also
+ * keeping one whose charge has gone away.
+ */
+internal sealed interface ManualChargeInfoResult {
+  data class Chargeable(val info: ManualChargeInfo) : ManualChargeInfoResult
+
+  /**
+   * `missedChargeIdToChargeManually` came back null, which per the schema means the latest charge
+   * either succeeded or the member may no longer settle it themselves.
+   */
+  data object NoLongerChargeable : ManualChargeInfoResult
 }
 
 @ContributesBinding(AppScope::class)
@@ -32,7 +47,7 @@ internal interface GetManualChargeInfoUseCase {
 internal class GetManualChargeInfoUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetManualChargeInfoUseCase {
-  override suspend fun invoke(): Either<ErrorMessage, ManualChargeInfo> = either {
+  override suspend fun invoke(): Either<ErrorMessage, ManualChargeInfoResult> = either {
     val currentMember = apolloClient.query(ManualChargeInfoQuery())
       .fetchPolicy(FetchPolicy.NetworkOnly)
       .safeExecute(::ErrorMessage)
@@ -47,12 +62,14 @@ internal class GetManualChargeInfoUseCaseImpl(
 
     if (showManualCharge == null) {
       logcat { "GetManualChargeInfoUseCaseImpl: missedChargeIdToChargeManually is null" }
-      raise(ErrorMessage())
+      return@either ManualChargeInfoResult.NoLongerChargeable
     }
 
     val latestFailedPastCharge = currentMember.pastCharges
       .firstOrNull { it.id == showManualCharge }
 
+    // The backend named a charge to settle but did not return it, which is not a state the member
+    // can act on either way, so it stays a plain failure they can retry out of.
     if (latestFailedPastCharge == null) {
       logcat { "GetManualChargeInfoUseCaseImpl: latestFailedPastCharge is null" }
       raise(ErrorMessage())
@@ -60,16 +77,18 @@ internal class GetManualChargeInfoUseCaseImpl(
 
     val currentMethods = currentMember.paymentMethods.payinMethods.mapNotNull { it.toPayinAccount() }
 
-    ManualChargeInfo(
-      chargeId = latestFailedPastCharge.id,
-      missedDueDate = latestFailedPastCharge.date,
-      amountDue = UiMoney.fromMoneyFragment(latestFailedPastCharge.net),
-      currentMethods = currentMethods,
-      availablePayinMethods = currentMember.paymentMethods.availableMethods
-        .filter { it.supportsPayin }
-        .map { it.provider },
-      primaryPayinMethod = currentMethods.firstOrNull { it.isDefault },
-      showCancellationWarning = showCancellationWarning,
+    ManualChargeInfoResult.Chargeable(
+      ManualChargeInfo(
+        chargeId = latestFailedPastCharge.id,
+        missedDueDate = latestFailedPastCharge.date,
+        amountDue = UiMoney.fromMoneyFragment(latestFailedPastCharge.net),
+        currentMethods = currentMethods,
+        availablePayinMethods = currentMember.paymentMethods.availableMethods
+          .filter { it.supportsPayin }
+          .map { it.provider },
+        primaryPayinMethod = currentMethods.firstOrNull { it.isDefault },
+        showCancellationWarning = showCancellationWarning,
+      ),
     )
   }
 }

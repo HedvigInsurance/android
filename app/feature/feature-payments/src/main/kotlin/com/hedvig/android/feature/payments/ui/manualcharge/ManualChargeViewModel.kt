@@ -12,6 +12,7 @@ import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.payments.data.GetManualChargeInfoUseCase
 import com.hedvig.android.feature.payments.data.ManualChargeInfo
+import com.hedvig.android.feature.payments.data.ManualChargeInfoResult
 import com.hedvig.android.feature.payments.data.TriggerManualChargeUseCase
 import com.hedvig.android.feature.payments.navigation.ManualChargeKey
 import com.hedvig.android.feature.payments.navigation.ManualChargeSuccessKey
@@ -84,10 +85,11 @@ private class ManualChargePresenter(
     LaunchedEffect(dataLoadIteration) {
       screenState = ManualChargeUiState.Loading
       getManualChargeInfoUseCase.invoke().fold(
-        ifRight = { manualChargeInfo ->
-          screenState = ManualChargeUiState.Success(
-            manualChargeInfo = manualChargeInfo,
-          )
+        ifRight = { result ->
+          screenState = when (result) {
+            is ManualChargeInfoResult.Chargeable -> ManualChargeUiState.Success(result.info)
+            ManualChargeInfoResult.NoLongerChargeable -> ManualChargeUiState.NoLongerChargeable
+          }
         },
         ifLeft = { failure ->
           screenState = ManualChargeUiState.Failure(failure)
@@ -95,17 +97,22 @@ private class ManualChargePresenter(
       )
     }
 
-    // Picks up a payin method connected or made primary further down the flow. It refreshes in
-    // place and keeps what is on screen if the refetch fails, so coming back here never flashes to
-    // loading or to an error over details the member can still act on.
+    // Picks up a payin method connected or made primary further down the flow. Only a failure to
+    // reach the backend is ignored, so coming back never flashes to loading or to an error over
+    // details the member can still act on. The backend withdrawing the charge is not ignored: those
+    // details are no longer payable, so leaving them on screen would offer a charge that cannot go
+    // through.
     LaunchedEffect(refreshIteration) {
       if (refreshIteration == 0) return@LaunchedEffect
-      getManualChargeInfoUseCase.invoke().onRight { manualChargeInfo ->
-        val currentState = screenState as? ManualChargeUiState.Success
-        screenState = ManualChargeUiState.Success(
-          manualChargeInfo = manualChargeInfo,
-          payButtonLoading = currentState?.payButtonLoading == true,
-        )
+      getManualChargeInfoUseCase.invoke().onRight { result ->
+        screenState = when (result) {
+          is ManualChargeInfoResult.Chargeable -> ManualChargeUiState.Success(
+            manualChargeInfo = result.info,
+            payButtonLoading = (screenState as? ManualChargeUiState.Success)?.payButtonLoading == true,
+          )
+
+          ManualChargeInfoResult.NoLongerChargeable -> ManualChargeUiState.NoLongerChargeable
+        }
       }
     }
     return screenState
@@ -114,6 +121,9 @@ private class ManualChargePresenter(
 
 internal sealed interface ManualChargeUiState {
   data object Loading : ManualChargeUiState
+
+  /** Nothing left for the member to settle here, so the screen offers a way to ask about it instead. */
+  data object NoLongerChargeable : ManualChargeUiState
 
   data class Failure(
     val error: ErrorMessage,
