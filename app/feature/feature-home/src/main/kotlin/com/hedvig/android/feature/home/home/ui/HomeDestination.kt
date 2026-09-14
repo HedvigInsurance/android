@@ -139,6 +139,7 @@ import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.Bandage
 import com.hedvig.android.design.system.hedvig.icon.CampaignOutline
 import com.hedvig.android.design.system.hedvig.icon.Close
+import com.hedvig.android.design.system.hedvig.icon.DocumentPlus
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
 import com.hedvig.android.design.system.hedvig.icon.HouseArrow
@@ -1403,6 +1404,7 @@ private fun QuickAction.homeIcon(): ImageVector = when (this) {
     QuickLinkTravelCertificate -> HedvigIcons.Travel
     QuickLinkForever -> HedvigIcons.CampaignOutline
     QuickLinkUpcomingPayment -> HedvigIcons.PaymentOutline
+    QuickLinkChangeTier -> HedvigIcons.DocumentPlus
     is QuickLinkSickAbroad -> HedvigIcons.Bandage
     is FirstVet -> HedvigIcons.HelipadOutline
     else -> HedvigIcons.Settings
