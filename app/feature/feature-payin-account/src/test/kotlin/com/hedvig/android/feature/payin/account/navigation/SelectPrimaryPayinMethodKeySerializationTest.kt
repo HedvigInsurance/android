@@ -2,8 +2,8 @@ package com.hedvig.android.feature.payin.account.navigation
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.hedvig.android.feature.payin.account.data.InvoiceDelivery
-import com.hedvig.android.feature.payin.account.data.PayinAccount
+import com.hedvig.android.data.paying.member.InvoiceDelivery
+import com.hedvig.android.data.paying.member.PayinAccount
 import com.hedvig.android.navigation.common.HedvigNavKey
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.json.Json

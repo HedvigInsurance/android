@@ -24,6 +24,7 @@ dependencies {
   implementation(projects.composeUi)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreResources)
+  implementation(projects.dataPayingMember)
   implementation(projects.designSystemHedvig)
   implementation(projects.featurePayinAccountNavigation)
   implementation(projects.moleculePublic)

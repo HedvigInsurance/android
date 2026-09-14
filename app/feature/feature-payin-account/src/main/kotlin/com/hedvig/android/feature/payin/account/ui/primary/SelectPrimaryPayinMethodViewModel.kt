@@ -8,7 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
-import com.hedvig.android.feature.payin.account.data.PayinAccount
+import com.hedvig.android.data.paying.member.PayinAccount
 import com.hedvig.android.feature.payin.account.data.SetAsDefaultUseCase
 import com.hedvig.android.feature.payin.account.data.provider
 import com.hedvig.android.molecule.public.MoleculePresenter

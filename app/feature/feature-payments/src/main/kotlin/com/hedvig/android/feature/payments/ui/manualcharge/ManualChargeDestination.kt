@@ -24,6 +24,8 @@ import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterPr
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.paying.member.PayinAccount
+import com.hedvig.android.data.paying.member.maskedAccountNumber
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -43,10 +45,14 @@ import com.hedvig.android.design.system.hedvig.icon.WarningFilled
 import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.feature.payments.data.ManualChargeInfo
-import hedvig.resources.BANK_PAYOUT_METHOD_CARD_TITLE
 import hedvig.resources.GENERAL_ERROR_BODY
 import hedvig.resources.GENERAL_RETRY
 import hedvig.resources.MANUAL_CHARGE_CANCELLATION_WARNING
+import hedvig.resources.PAYMENTS_ACCOUNT
+import hedvig.resources.PAYMENTS_AUTOGIRO_LABEL
+import hedvig.resources.PAYMENTS_BANK_LABEL
+import hedvig.resources.PAYMENTS_INVOICE
+import hedvig.resources.PAYMENTS_PAYMENT_METHOD
 import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_DETAILS_BODY
 import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_DETAILS_DUE_DATE
 import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_DETAILS_FINE_PRINT
@@ -54,11 +60,13 @@ import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_DETAILS_PAY
 import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_DETAILS_SINCE
 import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_DETAILS_VIEW_DETAILS
 import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_TITLE
+import hedvig.resources.PAYMENTS_SWISH_NUMBER
 import hedvig.resources.Res
 import hedvig.resources.SELF_MANUAL_CHARGE_CHANGES_BEEN_MADE_TITLE
 import hedvig.resources.claim_status_detail_chat_button_description
 import hedvig.resources.payment_details_receipt_card_total
 import hedvig.resources.something_went_wrong
+import hedvig.resources.swish
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 
@@ -233,22 +241,36 @@ private fun ManualChargeSuccessScreen(
             style = HedvigTheme.typography.label,
           )
         }
-        if (uiState.manualChargeInfo.bankDescriptor != null) {
-          Spacer(Modifier.height(10.dp))
-          Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-          ) {
-            HedvigText(
-              text = stringResource(Res.string.BANK_PAYOUT_METHOD_CARD_TITLE),
-              color = HedvigTheme.colorScheme.textSecondary,
-              style = HedvigTheme.typography.label,
-            )
-            HedvigText(
-              text = uiState.manualChargeInfo.bankDescriptor,
-              color = HedvigTheme.colorScheme.textSecondary,
-              style = HedvigTheme.typography.label,
-            )
+        val method = uiState.manualChargeInfo.primaryPayinMethod
+        if (method != null) {
+          DetailRow(
+            label = stringResource(Res.string.PAYMENTS_PAYMENT_METHOD),
+            value = when (method) {
+              is PayinAccount.Trustly -> stringResource(Res.string.PAYMENTS_AUTOGIRO_LABEL)
+              is PayinAccount.SwishPayin -> stringResource(Res.string.swish)
+              is PayinAccount.Invoice -> stringResource(Res.string.PAYMENTS_INVOICE)
+            },
+          )
+          when (method) {
+            is PayinAccount.SwishPayin -> {
+              DetailRow(
+                label = stringResource(Res.string.PAYMENTS_SWISH_NUMBER),
+                value = method.phoneNumber.orEmpty(),
+              )
+            }
+
+            is PayinAccount.Trustly -> {
+              DetailRow(
+                label = stringResource(Res.string.PAYMENTS_ACCOUNT),
+                value = method.maskedAccountNumber().orEmpty(),
+              )
+              DetailRow(
+                label = stringResource(Res.string.PAYMENTS_BANK_LABEL),
+                value = method.bankName.orEmpty(),
+              )
+            }
+
+            is PayinAccount.Invoice -> {}
           }
         }
       }
@@ -307,6 +329,28 @@ private fun ManualChargeSuccessScreen(
 }
 
 @Composable
+private fun DetailRow(label: String, value: String, modifier: Modifier = Modifier) {
+  Column(modifier) {
+    Spacer(Modifier.height(10.dp))
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+      HedvigText(
+        text = label,
+        color = HedvigTheme.colorScheme.textSecondary,
+        style = HedvigTheme.typography.label,
+      )
+      HedvigText(
+        text = value,
+        color = HedvigTheme.colorScheme.textSecondary,
+        style = HedvigTheme.typography.label,
+      )
+    }
+  }
+}
+
+@Composable
 @Preview
 @HedvigPreview
 private fun ManualChargeScreenSuccessPreview(
@@ -322,8 +366,13 @@ private fun ManualChargeScreenSuccessPreview(
             missedDueDate = LocalDate(2026, 1, 15),
             amountDue = UiMoney(100.0, UiCurrencyCode.SEK),
             chargeId = "chargeId",
-            bankDescriptor = "**** 8324",
-            bankAccountDisplayValue = "Swedbank",
+            primaryPayinMethod = PayinAccount.Trustly(
+              clearingNumber = "8327",
+              accountNumber = "91234124",
+              bankName = "Swedbank",
+              isPending = false,
+              isDefault = true,
+            ),
             showCancellationWarning = showCancellationWarning,
           ),
         ),

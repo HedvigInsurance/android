@@ -5,10 +5,12 @@ plugins {
 
 hedvig {
   apollo("octopus")
+  serialization()
 }
 
 dependencies {
   implementation(libs.arrow.core)
+  implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreCommonPublic)

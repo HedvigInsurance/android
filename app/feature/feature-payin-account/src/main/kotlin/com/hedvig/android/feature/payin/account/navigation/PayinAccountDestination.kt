@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.payin.account.navigation
 
-import com.hedvig.android.feature.payin.account.data.PayinAccount
+import com.hedvig.android.data.paying.member.PayinAccount
 import com.hedvig.android.navigation.common.HedvigNavKey
 import kotlinx.serialization.Serializable
 

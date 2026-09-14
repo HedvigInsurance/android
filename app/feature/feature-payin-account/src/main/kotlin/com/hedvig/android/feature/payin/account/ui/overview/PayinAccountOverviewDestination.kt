@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.EmptyContentDescription
+import com.hedvig.android.data.paying.member.InvoiceDelivery
+import com.hedvig.android.data.paying.member.PayinAccount
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults
@@ -38,8 +40,6 @@ import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.ChevronRight
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.feature.payin.account.data.InvoiceDelivery
-import com.hedvig.android.feature.payin.account.data.PayinAccount
 import com.hedvig.android.feature.payin.account.ui.components.PayinMethodRow
 import com.hedvig.android.feature.payin.account.ui.components.PrimaryMethodLabel
 import hedvig.resources.PAYMENT_ADD_METHOD_BUTTON
@@ -179,7 +179,8 @@ private fun PayoutAccountContent(
     }
     if (currentMethods
         .filter { !it.isPending }
-      .size > 1) {
+        .size > 1
+    ) {
       Spacer(Modifier.height(8.dp))
       HedvigTextButton(
         text = stringResource(Res.string.PAYMENT_CHOOSE_PRIMARY_BUTTON),

@@ -3,22 +3,7 @@ query GetPayinMethods {
     paymentMethods(version: 2) {
       chargingDay
       payinMethods {
-        provider
-        status
-        isDefault
-        details {
-          ... on PaymentMethodBankAccountDetails {
-            account
-            bank
-          }
-          ... on PaymentMethodSwishDetails {
-            phoneNumber
-          }
-          ... on PaymentMethodInvoiceDetails {
-            delivery
-            email
-          }
-        }
+        ...MemberPaymentMethodFragment
       }
       availableMethods {
         provider

@@ -22,6 +22,11 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.EmptyContentDescription
+import com.hedvig.android.data.paying.member.InvoiceDelivery
+import com.hedvig.android.data.paying.member.PayinAccount
+import com.hedvig.android.data.paying.member.PayinAccount.Invoice
+import com.hedvig.android.data.paying.member.PayinAccount.SwishPayin
+import com.hedvig.android.data.paying.member.PayinAccount.Trustly
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
@@ -47,11 +52,6 @@ import com.hedvig.android.design.system.hedvig.icon.HelipadFilled
 import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
 import com.hedvig.android.design.system.hedvig.icon.Plus
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
-import com.hedvig.android.feature.payin.account.data.InvoiceDelivery
-import com.hedvig.android.feature.payin.account.data.PayinAccount
-import com.hedvig.android.feature.payin.account.data.PayinAccount.Invoice
-import com.hedvig.android.feature.payin.account.data.PayinAccount.SwishPayin
-import com.hedvig.android.feature.payin.account.data.PayinAccount.Trustly
 import com.hedvig.android.feature.payin.account.data.provider
 import com.hedvig.android.feature.payin.account.ui.components.PayinMethodHandoverIllustration
 import com.hedvig.android.feature.payin.account.ui.components.PayinMethodRow

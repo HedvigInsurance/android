@@ -18,6 +18,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.EmptyContentDescription
+import com.hedvig.android.data.paying.member.InvoiceDelivery
+import com.hedvig.android.data.paying.member.PayinAccount
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -34,8 +36,6 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Trustly
 import com.hedvig.android.design.system.hedvig.icon.colored.Kivra
 import com.hedvig.android.design.system.hedvig.icon.colored.Swish
-import com.hedvig.android.feature.payin.account.data.InvoiceDelivery
-import com.hedvig.android.feature.payin.account.data.PayinAccount
 import com.hedvig.android.feature.payin.account.data.provider
 import com.hedvig.android.feature.payin.account.data.toDeliveryString
 import hedvig.resources.PAYMENTS_BANK_LABEL
@@ -173,15 +173,6 @@ private fun PayinAccount.Trustly.maskedAccount(): String? {
   val bank = bankName ?: return null
   val lastFour = accountNumber?.takeLast(4)?.takeIf { it.isNotBlank() } ?: return bank
   return "$bank ···· $lastFour"
-}
-
-internal fun PayinAccount.Trustly.maskedAccountNumber(): String? {
-  val whole = "${clearingNumber?.takeIf{ it.isNotBlank() } ?: ""}${accountNumber?.takeIf{ it.isNotBlank() } ?: ""}"
-  if (whole.length > 8) {
-    val lastFour = whole.takeLast(4).takeIf { it.isNotBlank() } ?: return null
-    return "**** $lastFour"
-  } else return null
-
 }
 
 internal fun formatSwishPhoneNumber(phoneNumber: String): String {

@@ -12,6 +12,8 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.paying.member.PayinAccount
+import com.hedvig.android.data.paying.member.toPayinAccount
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
@@ -59,8 +61,9 @@ internal class GetManualChargeInfoUseCaseImpl(
       chargeId = latestFailedPastCharge.id,
       missedDueDate = latestFailedPastCharge.date,
       amountDue = UiMoney.fromMoneyFragment(latestFailedPastCharge.net),
-      bankAccountDisplayValue = currentMember.paymentInformation.chargeMethod?.displayName,
-      bankDescriptor = currentMember.paymentInformation.chargeMethod?.descriptor,
+      primaryPayinMethod = currentMember.paymentMethods.payinMethods
+        .firstOrNull { it.isDefault }
+        ?.toPayinAccount(),
       showCancellationWarning = showCancellationWarning,
     )
   }
@@ -70,7 +73,7 @@ internal data class ManualChargeInfo(
   val chargeId: String?,
   val missedDueDate: LocalDate,
   val amountDue: UiMoney,
-  val bankDescriptor: String?,
-  val bankAccountDisplayValue: String?,
+  /** The method the member is charged on, absent when none is connected or it is one we cannot show. */
+  val primaryPayinMethod: PayinAccount?,
   val showCancellationWarning: Boolean,
 )
