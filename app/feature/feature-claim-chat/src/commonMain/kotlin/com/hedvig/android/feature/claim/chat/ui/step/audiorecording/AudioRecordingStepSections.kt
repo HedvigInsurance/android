@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -44,7 +45,13 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.layout.IntrinsicMeasurable
+import androidx.compose.ui.layout.IntrinsicMeasureScope
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.Measurable
+import androidx.compose.ui.layout.MeasurePolicy
+import androidx.compose.ui.layout.MeasureResult
+import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -63,6 +70,7 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
@@ -563,46 +571,40 @@ private fun AudioRecordingSheetContent(
   modifier: Modifier = Modifier,
 ) {
   if (isShortWindow) {
-    val fontScale = LocalDensity.current.fontScale
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
-      if (fontScale <= SHORT_WINDOW_HEADING_MAX_FONT_SCALE) {
-        Column(Modifier.widthIn(max = SHORT_WINDOW_HEADING_WIDTH)) {
-          AudioRecordingHeading()
-          DynamicClock(audioRecordingState, clock, audioPlayer)
-        }
-      } else {
-        // Past this text size the heading costs more width than the waveform beside it can spare, and the
-        // question it repeats is already on screen above the card, so only the clock stays.
-        DynamicClock(
-          audioRecordingState,
-          clock,
-          audioPlayer,
-          modifier = Modifier.width(SHORT_WINDOW_CLOCK_WIDTH * fontScale),
-        )
-      }
       AudioWaveBand(
         audioRecordingState = audioRecordingState,
         audioPlayer = audioPlayer,
         modifier = Modifier.weight(1f),
+        horizontalInset = WAVE_BAND_ROW_INSET,
       )
-      AudioRecordingControls(
-        submitAudioFile = submitAudioFile,
-        redo = redo,
-        isSubmitting = isSubmitting,
-        audioPlayer = audioPlayer,
-        audioRecordingState = audioRecordingState,
-        stopRecording = stopRecording,
-        startRecording = startRecording,
-        recordAudioPermissionState = recordAudioPermissionState,
-        fillWidth = false,
-      )
+      Column(
+        // Sized to the controls, which are the widest thing in it. The heading and the clock centre
+        // themselves inside that rather than claiming width the waveform is sharing.
+        modifier = Modifier.width(IntrinsicSize.Max),
+        horizontalAlignment = Alignment.CenterHorizontally,
+      ) {
+        AudioRecordingHeading()
+        DynamicClock(audioRecordingState, clock, audioPlayer, Modifier.fillMaxWidth())
+        AudioRecordingControls(
+          submitAudioFile = submitAudioFile,
+          redo = redo,
+          isSubmitting = isSubmitting,
+          audioPlayer = audioPlayer,
+          audioRecordingState = audioRecordingState,
+          stopRecording = stopRecording,
+          startRecording = startRecording,
+          recordAudioPermissionState = recordAudioPermissionState,
+          fillWidth = false,
+        )
+      }
     }
   } else {
     Column(modifier) {
       // Kept clear of the close button drawn over the top corner, which a long heading runs under at
       // large font scales.
-      AudioRecordingHeading(Modifier.padding(horizontal = CLOSE_BUTTON_CLEARANCE))
-      DynamicClock(audioRecordingState, clock, audioPlayer)
+      AudioRecordingHeading(Modifier.fillMaxWidth().padding(horizontal = CLOSE_BUTTON_CLEARANCE))
+      DynamicClock(audioRecordingState, clock, audioPlayer, Modifier.fillMaxWidth())
       AudioWaveBand(
         audioRecordingState = audioRecordingState,
         audioPlayer = audioPlayer,
@@ -628,7 +630,7 @@ private fun AudioRecordingSheetContent(
 private fun AudioRecordingHeading(modifier: Modifier = Modifier) {
   HedvigText(
     stringResource(Res.string.CLAIM_TRIAGING_TITLE),
-    modifier = modifier.fillMaxWidth().semantics {
+    modifier = modifier.semantics {
       heading()
     },
     textAlign = TextAlign.Center,
@@ -640,11 +642,12 @@ private fun AudioWaveBand(
   audioRecordingState: AudioRecordingStepState.AudioRecording,
   audioPlayer: AudioPlayer?,
   modifier: Modifier = Modifier,
+  horizontalInset: Dp = WAVE_BAND_HORIZONTAL_INSET,
 ) {
   BoxWithConstraints(modifier) {
     // Too few bars fit to read as a waveform at all, so it leaves rather than being drawn as a stub.
     if (maxWidth < MINIMUM_WAVE_BAND_WIDTH) return@BoxWithConstraints
-    AudioWaveBandContent(audioRecordingState, audioPlayer)
+    AudioWaveBandContent(audioRecordingState, audioPlayer, horizontalInset)
   }
 }
 
@@ -652,6 +655,7 @@ private fun AudioWaveBand(
 private fun AudioWaveBandContent(
   audioRecordingState: AudioRecordingStepState.AudioRecording,
   audioPlayer: AudioPlayer?,
+  horizontalInset: Dp,
 ) {
   AnimatedContent(
     modifier = Modifier.fillMaxWidth(),
@@ -677,7 +681,7 @@ private fun AudioWaveBandContent(
   ) { target ->
     Box(
       modifier = Modifier
-        .padding(horizontal = WAVE_BAND_HORIZONTAL_INSET, vertical = WAVE_BAND_VERTICAL_INSET)
+        .padding(horizontal = horizontalInset, vertical = WAVE_BAND_VERTICAL_INSET)
         .heightIn(min = WAVE_MAX_HEIGHT),
       contentAlignment = Alignment.Center,
       propagateMinConstraints = true,
@@ -781,30 +785,42 @@ private fun EqualWidthRow(
   modifier: Modifier = Modifier,
   content: @Composable () -> Unit,
 ) {
-  Layout(content, modifier) { measurables, constraints ->
-    if (measurables.isEmpty()) return@Layout layout(0, 0) {}
-    val spacing = horizontalSpacing.roundToPx()
-    val totalSpacing = spacing * (measurables.size - 1)
-    val available = (constraints.maxWidth - totalSpacing).coerceAtLeast(0)
-    val share = available / measurables.size
-    val childWidth = if (fillWidth) {
-      share
-    } else {
-      minOf(share, measurables.maxOf { it.maxIntrinsicWidth(constraints.maxHeight) })
-    }
-    val placeables = measurables.map {
-      it.measure(constraints.copy(minWidth = childWidth, maxWidth = childWidth, minHeight = 0))
-    }
-    val height = placeables.maxOf { it.height }
-    val width = placeables.sumOf { it.width } + totalSpacing
-    layout(width, height) {
-      var x = 0
-      for (placeable in placeables) {
-        placeable.place(x, (height - placeable.height) / 2)
-        x += placeable.width + spacing
+  val measurePolicy = remember(horizontalSpacing, fillWidth) {
+    object : MeasurePolicy {
+      override fun MeasureScope.measure(measurables: List<Measurable>, constraints: Constraints): MeasureResult {
+        if (measurables.isEmpty()) return layout(0, 0) {}
+        val spacing = horizontalSpacing.roundToPx()
+        val totalSpacing = spacing * (measurables.size - 1)
+        val available = (constraints.maxWidth - totalSpacing).coerceAtLeast(0)
+        val share = available / measurables.size
+        val childWidth = if (fillWidth) {
+          share
+        } else {
+          minOf(share, measurables.maxOf { it.maxIntrinsicWidth(constraints.maxHeight) })
+        }
+        val placeables = measurables.map {
+          it.measure(constraints.copy(minWidth = childWidth, maxWidth = childWidth, minHeight = 0))
+        }
+        val height = placeables.maxOf { it.height }
+        return layout(placeables.sumOf { it.width } + totalSpacing, height) {
+          var x = 0
+          for (placeable in placeables) {
+            placeable.place(x, (height - placeable.height) / 2)
+            x += placeable.width + spacing
+          }
+        }
+      }
+
+      // The default would add up the children's own widths, which is the lopsided total this row exists to
+      // avoid, and a parent sizing itself to that would then squeeze the widest child until its label wraps.
+      override fun IntrinsicMeasureScope.maxIntrinsicWidth(measurables: List<IntrinsicMeasurable>, height: Int): Int {
+        if (measurables.isEmpty()) return 0
+        val widest = measurables.maxOf { it.maxIntrinsicWidth(height) }
+        return widest * measurables.size + horizontalSpacing.roundToPx() * (measurables.size - 1)
       }
     }
   }
+  Layout(content, modifier, measurePolicy)
 }
 
 @Composable
@@ -871,7 +887,7 @@ private fun DynamicClock(
   val durationDescription = if (zeroed) null else stringResource(Res.string.TALKBACK_RECORDING_DURATION, shownState)
 
   Box(
-    modifier.fillMaxWidth().clearAndSetSemantics {
+    modifier.clearAndSetSemantics {
       if (durationDescription != null) {
         contentDescription = durationDescription
       }
@@ -1093,21 +1109,24 @@ private fun ControlButton(
             }
           },
         )
-        HedvigText(
-          text = if (startRecordingCountdown) countDownText else "",
-          color = when (audioRecordingState) {
-            AudioRecordingStepState.AudioRecording.NotRecording,
-            is AudioRecordingStepState.AudioRecording.Recording,
-            -> HedvigTheme.colorScheme.fillWhite
+        // Sized by the icon alone. The countdown's line box is taller than the icon once the text scale
+        // passes ~1.5, and letting it size the container puts this button's label out of line with the
+        // labels either side of it.
+        Box(Modifier.matchParentSize(), contentAlignment = Alignment.Center) {
+          HedvigText(
+            text = if (startRecordingCountdown) countDownText else "",
+            color = when (audioRecordingState) {
+              AudioRecordingStepState.AudioRecording.NotRecording,
+              is AudioRecordingStepState.AudioRecording.Recording,
+              -> HedvigTheme.colorScheme.fillWhite
 
-            is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillNegative
-          },
-          modifier = Modifier
-            .semantics {
+              is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillNegative
+            },
+            modifier = Modifier.semantics {
               liveRegion = LiveRegionMode.Assertive
-            }
-            .then(if (!startRecordingCountdown) Modifier.withoutPlacement() else Modifier),
-        )
+            },
+          )
+        }
       }
       Spacer(Modifier.height(4.dp))
       HedvigText(
@@ -1424,13 +1443,11 @@ private val MINIMUM_WAVE_BAND_WIDTH = 160.dp
 
 // A window shorter than this shows the card's pieces along the free width instead of stacked.
 private val SHORT_WINDOW_MAX_HEIGHT = 480.dp
-private val SHORT_WINDOW_HEADING_WIDTH = 220.dp
-private const val SHORT_WINDOW_HEADING_MAX_FONT_SCALE = 1.5f
-private val SHORT_WINDOW_CLOCK_WIDTH = 56.dp
 
 // The band is only as tall as WAVE_MAX_HEIGHT, so its insets are what give it air. A taller state, the
 // error or the spinner, grows the band rather than being boxed into a fixed height.
 private val WAVE_BAND_HORIZONTAL_INSET = 24.dp
+private val WAVE_BAND_ROW_INSET = 8.dp
 private val WAVE_BAND_VERTICAL_INSET = 24.dp
 
 private val WAVE_WIDTH = 2.dp
