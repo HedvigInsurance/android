@@ -32,14 +32,14 @@ internal class SetupSwishPayoutViewModel(
 internal sealed interface SetupSwishPayoutEvent {
   data object Save : SetupSwishPayoutEvent
 
-  data object ShowedSnackBar : SetupSwishPayoutEvent
+  data object FinishSetup : SetupSwishPayoutEvent
 }
 
 internal data class SetupSwishPayoutUiState(
   val phoneNumberState: TextFieldState,
   val isLoading: Boolean,
   val errorMessage: ErrorMessage?,
-  val showSuccessSnackBar: Boolean,
+  val isConnected: Boolean,
 )
 
 internal class SetupSwishPayoutPresenter(
@@ -53,7 +53,7 @@ internal class SetupSwishPayoutPresenter(
     val phoneNumberState = remember { lastState.phoneNumberState }
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<ErrorMessage?>(null) }
-    var showSuccessSnackBar by remember { mutableStateOf(false) }
+    var isConnected by remember { mutableStateOf(false) }
     var saveIteration by remember { mutableStateOf<String?>(null) }
 
     val currentSave = saveIteration
@@ -69,7 +69,7 @@ internal class SetupSwishPayoutPresenter(
           },
           ifRight = {
             isLoading = false
-            showSuccessSnackBar = true
+            isConnected = true
             saveIteration = null
           },
         )
@@ -84,7 +84,7 @@ internal class SetupSwishPayoutPresenter(
           }
         }
 
-        SetupSwishPayoutEvent.ShowedSnackBar -> {
+        SetupSwishPayoutEvent.FinishSetup -> {
           backstack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
         }
       }
@@ -94,7 +94,7 @@ internal class SetupSwishPayoutPresenter(
       phoneNumberState = phoneNumberState,
       isLoading = isLoading,
       errorMessage = errorMessage,
-      showSuccessSnackBar = showSuccessSnackBar,
+      isConnected = isConnected,
     )
   }
 }

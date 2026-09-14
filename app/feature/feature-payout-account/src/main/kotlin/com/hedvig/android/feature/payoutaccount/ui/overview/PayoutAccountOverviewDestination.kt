@@ -37,12 +37,12 @@ import com.hedvig.android.feature.payoutaccount.data.PayoutAccount
 import com.hedvig.android.feature.payoutaccount.data.PayoutAccount.BankAccount
 import com.hedvig.android.feature.payoutaccount.data.PayoutAccount.SwishPayout
 import com.hedvig.android.feature.payoutaccount.data.PayoutAccount.Trustly
+import com.hedvig.android.feature.payoutaccount.ui.components.LockedPayoutMethodRow
 import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewEvent.Retry
 import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewUiState.Content
 import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewUiState.Error
 import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewUiState.Loading
 import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewUiState.NoPayoutOptions
-import com.hedvig.android.feature.payoutaccount.ui.selectmethod.PayoutMethodRow
 import hedvig.resources.CHANGE_PAYOUT_METHOD_BUTTON_LABEL
 import hedvig.resources.MY_PAYMENT_UPDATING_MESSAGE
 import hedvig.resources.PAYMENTS_ACCOUNT
@@ -155,49 +155,43 @@ private fun PayoutAccountContent(
 
       is SwishPayout -> {
         val phoneNumber = currentMethod.phoneNumber.orEmpty()
-        PayoutMethodRow(
-          provider =  MemberPaymentProvider.SWISH,
+        LockedPayoutMethodRow(
+          provider = MemberPaymentProvider.SWISH,
           title = stringResource(string.swish),
           subtitle = if (currentMethod.isPending && phoneNumber.isBlank()) {
             stringResource(string.REFERRAL_PENDING_STATUS_LABEL)
           } else {
             phoneNumber
           },
-          onClick = {},
           modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-          isLocked = true
         )
       }
 
       is Trustly -> {
         val accountNumber = formatBankAccountNumber(currentMethod.clearingNumber, currentMethod.accountNumber)
-        PayoutMethodRow(
+        LockedPayoutMethodRow(
           title = formatBankAccountLabel(stringResource(string.trustly), currentMethod.bankName),
           subtitle = if (currentMethod.isPending && accountNumber.isBlank()) {
             stringResource(string.REFERRAL_PENDING_STATUS_LABEL)
           } else {
             accountNumber
           },
-          onClick = {},
           modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-          isLocked = true,
-          provider =  MemberPaymentProvider.TRUSTLY
+          provider = MemberPaymentProvider.TRUSTLY,
         )
       }
 
       is BankAccount -> {
         val accountNumber = formatBankAccountNumber(currentMethod.clearingNumber, currentMethod.accountNumber)
-        PayoutMethodRow(
+        LockedPayoutMethodRow(
           title = formatBankAccountLabel(stringResource(string.PAYMENTS_ACCOUNT), currentMethod.bankName),
           subtitle = if (currentMethod.isPending && accountNumber.isBlank()) {
             stringResource(string.REFERRAL_PENDING_STATUS_LABEL)
           } else {
             accountNumber
           },
-          onClick = {},
           modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-          isLocked = true,
-          provider =  MemberPaymentProvider.NORDEA
+          provider = MemberPaymentProvider.NORDEA,
         )
       }
     }

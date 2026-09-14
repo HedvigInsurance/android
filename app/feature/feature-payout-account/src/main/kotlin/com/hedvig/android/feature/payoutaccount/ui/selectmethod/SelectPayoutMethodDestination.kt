@@ -1,43 +1,38 @@
 package com.hedvig.android.feature.payoutaccount.ui.selectmethod
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
-import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
-import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.RadioGroup
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.icon.Card
-import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.icon.Lock
-import com.hedvig.android.design.system.hedvig.icon.Trustly
-import com.hedvig.android.design.system.hedvig.icon.colored.Kivra
-import com.hedvig.android.design.system.hedvig.icon.colored.Swish
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
+import com.hedvig.android.feature.payoutaccount.ui.components.PayoutMethodHandoverIllustration
+import com.hedvig.android.feature.payoutaccount.ui.components.PayoutProviderPillow
 import hedvig.resources.BANK_PAYOUT_METHOD_CARD_DESCRIPTION
 import hedvig.resources.BANK_PAYOUT_METHOD_CARD_TITLE
 import hedvig.resources.PAYOUT_METHOD_SWISH_DESCRIPTION
 import hedvig.resources.PAYOUT_METHOD_TRUSTLY_DESCRIPTION
 import hedvig.resources.PAYOUT_SELECT_PAYOUT_METHOD
 import hedvig.resources.Res.string
+import hedvig.resources.general_cancel_button
+import hedvig.resources.general_continue_button
 import hedvig.resources.swish
 import hedvig.resources.trustly
 import octopus.type.MemberPaymentProvider
@@ -51,168 +46,116 @@ internal fun SelectPayoutMethodDestination(
   onSwishSelected: () -> Unit,
   navigateUp: () -> Unit,
 ) {
+  // Held as the raw value so the choice survives process death without a saver of its own.
+  var selectedRawValue by rememberSaveable { mutableStateOf<String?>(null) }
+  val selectedProvider = selectedRawValue?.let { MemberPaymentProvider.safeValueOf(it) }
+  SelectPayoutMethodScreen(
+    availableProviders = availableProviders,
+    selectedProvider = selectedProvider,
+    onProviderSelected = { selectedRawValue = it.rawValue },
+    onSubmitSelected = {
+      when (selectedProvider) {
+        MemberPaymentProvider.TRUSTLY -> {
+          onTrustlySelected()
+        }
+
+        MemberPaymentProvider.NORDEA -> {
+          onNordeaSelected()
+        }
+
+        MemberPaymentProvider.SWISH -> {
+          onSwishSelected()
+        }
+
+        else -> {}
+      }
+    },
+    navigateUp = navigateUp,
+  )
+}
+
+@Composable
+private fun SelectPayoutMethodScreen(
+  availableProviders: List<MemberPaymentProvider>,
+  selectedProvider: MemberPaymentProvider?,
+  onProviderSelected: (MemberPaymentProvider) -> Unit,
+  onSubmitSelected: () -> Unit,
+  navigateUp: () -> Unit,
+) {
   HedvigScaffold(
-    topAppBarText = stringResource(string.PAYOUT_SELECT_PAYOUT_METHOD),
+    topAppBarText = null,
     navigateUp = navigateUp,
     modifier = Modifier.fillMaxSize(),
   ) {
     Spacer(Modifier.height(8.dp))
-    Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      for (provider in availableProviders) {
-        when (provider) {
-          MemberPaymentProvider.TRUSTLY -> {
-            PayoutMethodRow(
-              title = stringResource(string.trustly),
-              subtitle = stringResource(string.PAYOUT_METHOD_TRUSTLY_DESCRIPTION),
-              onClick = onTrustlySelected,
-              provider = provider,
-            )
-          }
-
-          MemberPaymentProvider.NORDEA -> {
-            PayoutMethodRow(
-              title = stringResource(string.BANK_PAYOUT_METHOD_CARD_TITLE),
-              subtitle = stringResource(string.BANK_PAYOUT_METHOD_CARD_DESCRIPTION),
-              onClick = onNordeaSelected,
-              provider = provider,
-            )
-          }
-
-          MemberPaymentProvider.SWISH -> {
-            PayoutMethodRow(
-              title = stringResource(string.swish),
-              subtitle = stringResource(string.PAYOUT_METHOD_SWISH_DESCRIPTION),
-              onClick = onSwishSelected,
-              provider = provider,
-            )
-          }
-
-          else -> {}
-        }
-      }
-    }
+    FlowHeading(
+      title = stringResource(string.PAYOUT_SELECT_PAYOUT_METHOD),
+      description = null,
+      baseStyle = HedvigTheme.typography.bodySmall,
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
+    Spacer(Modifier.weight(1f))
+    PayoutMethodHandoverIllustration(
+      selectedProvider,
+      modifier = Modifier.align(Alignment.CenterHorizontally),
+    )
+    Spacer(Modifier.weight(1f))
+    RadioGroup(
+      options = availableProviders.mapNotNull { it.toRadioOption() },
+      selectedOption = selectedProvider?.let { RadioOptionId(it.rawValue) },
+      onRadioOptionSelected = { onProviderSelected(MemberPaymentProvider.safeValueOf(it.id)) },
+      optionIcon = { PayoutProviderPillow(MemberPaymentProvider.safeValueOf(it.id)) },
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
+    Spacer(Modifier.height(16.dp))
+    HedvigButton(
+      onClick = onSubmitSelected,
+      enabled = selectedProvider != null,
+      text = stringResource(string.general_continue_button),
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+    )
+    Spacer(Modifier.height(8.dp))
+    HedvigTextButton(
+      onClick = navigateUp,
+      enabled = true,
+      text = stringResource(string.general_cancel_button),
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+    )
     Spacer(Modifier.height(16.dp))
   }
 }
 
+/**
+ * Null for providers this screen has no option for, so a value the backend adds later is left out
+ * of the group.
+ */
 @Composable
-internal fun PayoutMethodRow(
-  provider: MemberPaymentProvider,
-  title: String,
-  subtitle: String,
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-  isLocked: Boolean = false,
-) {
-  Box {
-    HedvigCard(
-      onClick = if (isLocked) null else onClick,
-      modifier = modifier.fillMaxWidth(),
-    ) {
-      Row(
-        modifier = Modifier
-          .heightIn(min = 64.dp)
-          .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        PayoutMethodPillow(provider, isLocked)
-        Spacer(Modifier.width(10.dp))
-        Column(Modifier.padding(vertical = 8.dp)) {
-          HedvigText(
-            text = title,
-            color = if (!isLocked) {
-              HedvigTheme.colorScheme.textPrimary
-            } else {
-              HedvigTheme.colorScheme.textSecondaryTranslucent
-            },
-          )
-          HedvigText(
-            text = subtitle,
-            color = if (!isLocked) {
-              HedvigTheme.colorScheme.textSecondary
-            } else {
-              HedvigTheme.colorScheme.textDisabledTranslucent
-            },
-          )
-        }
-        Spacer(Modifier.weight(1f))
-        Spacer(Modifier.width(4.dp))
-        if (isLocked) {
-          Icon(
-            HedvigIcons.Lock,
-            null,
-            tint = HedvigTheme.colorScheme.fillDisabledTransparent,
-            modifier = Modifier.size(28.dp), // todo: get icon from design!
-          )
-        }
-      }
-    }
-  }
-}
+private fun MemberPaymentProvider.toRadioOption(): RadioOption? {
+  val id = RadioOptionId(rawValue)
+  return when (this) {
+    MemberPaymentProvider.TRUSTLY -> RadioOption(
+      id = id,
+      text = stringResource(string.trustly),
+      label = stringResource(string.PAYOUT_METHOD_TRUSTLY_DESCRIPTION),
+    )
 
-@Composable
-private fun PayoutMethodPillow(
-  provider: MemberPaymentProvider,
-  isLocked: Boolean = false) {
-  val onDarkTile = provider == MemberPaymentProvider.TRUSTLY
-  Box {
-    Surface(
-      shape = HedvigTheme.shapes.cornerSmall,
-      color = when (isLocked) {
-        true -> if (onDarkTile)  HedvigTheme.colorScheme.fillDisabled
-        else HedvigTheme.colorScheme.fillWhite
-        false -> {
-          if (onDarkTile) HedvigTheme.colorScheme.fillBlack
-          else HedvigTheme.colorScheme.fillWhite
-        }
-      },
-      contentColor = if (onDarkTile) HedvigTheme.colorScheme.fillWhite else HedvigTheme.colorScheme.fillBlack,
-      modifier = Modifier.size(40.dp),
-    ) {
-      Box(Modifier.size(40.dp), contentAlignment = Alignment.Center) {
-        val alpha = if (isLocked) 0.5f else 1f
-        when (provider) {
-          MemberPaymentProvider.TRUSTLY -> {
-            Image(
-              HedvigIcons.Trustly,
-              null,
-              Modifier.size(28.dp),
-              alpha = alpha
-            )
-          }
+    MemberPaymentProvider.NORDEA -> RadioOption(
+      id = id,
+      text = stringResource(string.BANK_PAYOUT_METHOD_CARD_TITLE),
+      label = stringResource(string.BANK_PAYOUT_METHOD_CARD_DESCRIPTION),
+    )
 
-          MemberPaymentProvider.SWISH -> {
-            Image(
-              HedvigIcons.Swish,
-              null,
-              Modifier.size(28.dp),
-              alpha = alpha
-            )
-          }
+    MemberPaymentProvider.SWISH -> RadioOption(
+      id = id,
+      text = stringResource(string.swish),
+      label = stringResource(string.PAYOUT_METHOD_SWISH_DESCRIPTION),
+    )
 
-          MemberPaymentProvider.INVOICE -> {
-            Image(
-              HedvigIcons.Kivra,
-              null,
-              Modifier.size(28.dp),
-              alpha = alpha
-            )
-          }
-
-          MemberPaymentProvider.NORDEA -> {
-            Image(
-              HedvigIcons.Card,
-              null,
-              modifier = Modifier.size(28.dp),
-              alpha = alpha
-              // todo: get icon from design!
-            )
-          }
-
-          MemberPaymentProvider.UNKNOWN__ -> {}
-        }
-      }
-    }
+    else -> null
   }
 }
 
@@ -221,56 +164,17 @@ private fun PayoutMethodPillow(
 private fun PreviewSelectPayoutMethodScreen() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      SelectPayoutMethodDestination(
+      SelectPayoutMethodScreen(
         availableProviders = listOf(
           MemberPaymentProvider.SWISH,
           MemberPaymentProvider.TRUSTLY,
           MemberPaymentProvider.NORDEA,
         ),
-        onTrustlySelected = {},
-        onNordeaSelected = {},
-        onSwishSelected = {},
+        selectedProvider = MemberPaymentProvider.SWISH,
+        onProviderSelected = {},
+        onSubmitSelected = {},
         navigateUp = {},
       )
-    }
-  }
-}
-
-@Composable
-@HedvigShortMultiScreenPreview
-private fun PreviewPayoutMethodRow(
-  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) isLocked: Boolean,
-) {
-  HedvigTheme {
-    Surface(
-      color = HedvigTheme.colorScheme.backgroundPrimary,
-      modifier = Modifier.padding(16.dp),
-    ) {
-      Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-      ) {
-        PayoutMethodRow(
-          provider = MemberPaymentProvider.SWISH,
-          title = stringResource(string.swish),
-          subtitle = "123456789",
-          onClick = {},
-          isLocked = isLocked,
-        )
-        PayoutMethodRow(
-          provider = MemberPaymentProvider.NORDEA,
-          title = "Bank acc",
-          subtitle = "123456789",
-          onClick = {},
-          isLocked = isLocked,
-        )
-        PayoutMethodRow(
-          provider = MemberPaymentProvider.TRUSTLY,
-          title = "Trustly",
-          subtitle = "123456789",
-          onClick = {},
-          isLocked = isLocked,
-        )
-      }
     }
   }
 }

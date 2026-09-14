@@ -490,7 +490,6 @@ private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
   )
   payoutAccountEntries(
     backstack = backstack,
-    globalSnackBarState = globalSnackBarState,
     navigateToConnectPayment = navigateToConnectPayment,
   )
   payinAccountEntries(

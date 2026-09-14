@@ -2,7 +2,6 @@ package com.hedvig.android.feature.payoutaccount.navigation
 
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.EntryProviderScope
-import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.feature.payoutaccount.ui.editbankaccount.EditBankAccountDestination
 import com.hedvig.android.feature.payoutaccount.ui.editbankaccount.EditBankAccountViewModel
 import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewDestination
@@ -18,11 +17,7 @@ import com.hedvig.android.navigation.compose.popUpTo
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import octopus.type.MemberPaymentProvider
 
-fun EntryProviderScope<HedvigNavKey>.payoutAccountEntries(
-  backstack: Backstack,
-  globalSnackBarState: GlobalSnackBarState,
-  navigateToConnectPayment: () -> Unit,
-) {
+fun EntryProviderScope<HedvigNavKey>.payoutAccountEntries(backstack: Backstack, navigateToConnectPayment: () -> Unit) {
   entry<PayoutAccountKey> {
     val viewModel: PayoutAccountOverviewViewModel = metroViewModel()
     PayoutAccountOverviewDestination(
@@ -60,7 +55,6 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountEntries(
     val viewModel: EditBankAccountViewModel = metroViewModel()
     EditBankAccountDestination(
       viewModel = viewModel,
-      globalSnackBarState = globalSnackBarState,
       navigateUp = backstack::navigateUp,
     )
   }
@@ -69,7 +63,6 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountEntries(
     val viewModel: SetupSwishPayoutViewModel = metroViewModel()
     SetupSwishPayoutDestination(
       viewModel = viewModel,
-      globalSnackBarState = globalSnackBarState,
       navigateUp = backstack::navigateUp,
     )
   }
