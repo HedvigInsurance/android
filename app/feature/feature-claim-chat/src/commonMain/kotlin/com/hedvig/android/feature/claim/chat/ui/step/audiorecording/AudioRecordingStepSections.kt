@@ -46,6 +46,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -111,6 +112,8 @@ import com.hedvig.android.feature.claim.chat.ui.common.EditButton
 import com.hedvig.android.feature.claim.chat.ui.common.RoundCornersPill
 import com.hedvig.android.feature.claim.chat.ui.common.SkippedLabel
 import com.hedvig.android.feature.claim.chat.ui.sentAnswersStartPadding
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import hedvig.resources.AUDIO_RECORDER_LISTEN
 import hedvig.resources.AUDIO_RECORDER_SEND
 import hedvig.resources.AUDIO_RECORDER_START
@@ -230,6 +233,11 @@ internal fun AudioRecorderBubble(
 ) {
   val isSubmitting = continueButtonLoading || skipButtonLoading
   val focusManager = LocalFocusManager.current
+  // A landscape keyboard leaves roughly 34dp of screen, too little for the inline card, so short windows
+  // answer in the full screen editor instead.
+  val isShortWindow = with(LocalDensity.current) {
+    LocalWindowInfo.current.containerSize.height.toDp()
+  } < SHORT_WINDOW_MAX_HEIGHT
   // The voice card is open either because the user asked for it or because a recording is already in flight.
   var voiceCardRequested by remember(isCurrentStep) { mutableStateOf(false) }
   val hasRecording = recordingState is AudioRecordingStepState.AudioRecording &&
@@ -273,9 +281,18 @@ internal fun AudioRecorderBubble(
     } else {
       AnimatedContent(
         targetState = when {
-          recordingState is AudioRecordingStepState.FreeTextDescription -> InputMode.Text
-          voiceCardRequested || hasRecording -> InputMode.Voice
-          else -> InputMode.Resting
+          // In a short window the full screen editor owns the text answer, so the row stays behind it.
+          recordingState is AudioRecordingStepState.FreeTextDescription -> {
+            if (isShortWindow) InputMode.Resting else InputMode.Text
+          }
+
+          voiceCardRequested || hasRecording -> {
+            InputMode.Voice
+          }
+
+          else -> {
+            InputMode.Resting
+          }
         },
         modifier = Modifier.fillMaxWidth(),
       ) { mode ->
@@ -331,6 +348,7 @@ internal fun AudioRecorderBubble(
                     onClick = {
                       focusManager.clearFocus()
                       onSwitchToFreeText()
+                      if (isShortWindow) onLaunchFullScreenEditText()
                     },
                     enabled = true,
                     buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
@@ -1275,6 +1293,9 @@ fun RestingAudioPlayer(modifier: Modifier = Modifier) {
  */
 private val WAVE_BAND_HORIZONTAL_INSET = 24.dp
 private val WAVE_BAND_VERTICAL_INSET = 24.dp
+
+// A window shorter than this cannot show the text card above the keyboard, so it answers full screen.
+private val SHORT_WINDOW_MAX_HEIGHT = 480.dp
 
 private val WAVE_WIDTH = 2.dp
 private val WAVE_SPACING = 3.dp

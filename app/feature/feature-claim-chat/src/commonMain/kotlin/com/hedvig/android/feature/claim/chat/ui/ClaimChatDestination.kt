@@ -13,6 +13,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -33,7 +35,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -79,6 +83,7 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.design.system.hedvig.TopAppBarColors
+import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.design.system.hedvig.icon.ArrowDown
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.claim.chat.ClaimChatEvent
@@ -86,6 +91,7 @@ import com.hedvig.android.feature.claim.chat.ClaimChatEvent.SubmitInformation
 import com.hedvig.android.feature.claim.chat.ClaimChatUiState
 import com.hedvig.android.feature.claim.chat.ClaimChatViewModel
 import com.hedvig.android.feature.claim.chat.ClaimChatViewModelFactory
+import com.hedvig.android.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.android.feature.claim.chat.data.ClaimChatErrorMessage
 import com.hedvig.android.feature.claim.chat.data.ClaimIntentOutcome
 import com.hedvig.android.feature.claim.chat.data.ClaimIntentStep
@@ -108,6 +114,7 @@ import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import hedvig.resources.A11Y_SCROLL_DOWN
 import hedvig.resources.CHAT_CONVERSATION_CLAIM_TITLE
 import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
+import hedvig.resources.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER
 import hedvig.resources.CLAIM_CHAT_EDIT_ANSWER_BUTTON
 import hedvig.resources.CLAIM_CHAT_EDIT_EXPLANATION
 import hedvig.resources.EMBARK_UPDATE_APP_BODY
@@ -239,20 +246,45 @@ private fun ClaimChatScreen(
   openAppSettings: () -> Unit,
   openPlayStore: () -> Unit,
 ) {
-  ClaimChatScreenContent(
-    uiState = uiState,
-    onEvent = onEvent,
-    shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-    openAppSettings = openAppSettings,
-    onNavigateToImageViewer = onNavigateToImageViewer,
-    navigateToDeflect = navigateToDeflect,
-    appPackageId = appPackageId,
-    imageLoader = imageLoader,
-    navigateUp = navigateUp,
-    navigateBack = navigateBack,
-    openPlayStore = openPlayStore,
+  val currentFreeText = (uiState.currentStep?.stepContent as? StepContent.AudioRecording)
+    ?.recordingState.let { it as? AudioRecordingStepState.FreeTextDescription }
+    ?.freeText
+  // The inline text card is the answer everywhere it fits. It cannot fit above a landscape keyboard, which
+  // leaves around 34dp of the screen, so those windows get the full screen editor instead.
+  FreeTextOverlay(
+    freeTextMaxLength = uiState.showFreeTextOverlay?.maxLength ?: DEFAULT_FREE_TEXT_MAX_LENGTH,
+    freeTextValue = currentFreeText,
+    freeTextHint = stringResource(Res.string.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER),
+    freeTextTitle = stringResource(Res.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
+    freeTextOnCancelClick = {
+      onEvent(ClaimChatEvent.CloseFreeChatOverlay)
+      uiState.currentStep?.id?.let { onEvent(ClaimChatEvent.AudioRecording.SwitchToAudioRecording(it)) }
+    },
+    freeTextOnSaveClick = { answer ->
+      onEvent(ClaimChatEvent.UpdateFreeText(answer))
+      onEvent(ClaimChatEvent.CloseFreeChatOverlay)
+      uiState.currentStep?.id?.let { onEvent(ClaimChatEvent.AudioRecording.SubmitTextInput(it)) }
+    },
+    shouldShowOverlay = uiState.showFreeTextOverlay != null,
+    overlaidContent = {
+      ClaimChatScreenContent(
+        uiState = uiState,
+        onEvent = onEvent,
+        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+        openAppSettings = openAppSettings,
+        onNavigateToImageViewer = onNavigateToImageViewer,
+        navigateToDeflect = navigateToDeflect,
+        appPackageId = appPackageId,
+        imageLoader = imageLoader,
+        navigateUp = navigateUp,
+        navigateBack = navigateBack,
+        openPlayStore = openPlayStore,
+      )
+    },
   )
 }
+
+private const val DEFAULT_FREE_TEXT_MAX_LENGTH = 2000
 
 @Composable
 private fun ClaimChatScreenContent(
@@ -477,8 +509,6 @@ private fun ClaimChatScrollableContent(
   // Only the step that answers with text or voice is bottom attached, so that input stays reachable while
   // reading back through the conversation. Every other step keeps its actions inline in the transcript.
   val bottomAttachedStep = uiState.steps.lastOrNull()?.takeIf { it.stepContent is StepContent.AudioRecording }
-  // The transcript and the attached input are stacked, so the remaining height bounds the input rather than
-  // the input overflowing the screen. That also means nothing needs to measure it to reserve room.
   // When an input is attached it carries the bottom inset, so the list stops short of it.
   val listContentPadding = if (bottomAttachedStep == null) {
     contentPadding
@@ -489,83 +519,93 @@ private fun ClaimChatScrollableContent(
       .plus(PaddingValues(16.dp))
   }
 
-  Column(modifier) {
-    Box(Modifier.weight(1f), propagateMinConstraints = true) {
-      Box(
-        Modifier
-          .padding(contentPadding)
-          .onSizeChanged { size ->
-            lastItemHeightAdjustingState.onContainerSizeChanged(size)
-          },
-      )
-      LazyColumn(
-        state = lazyListState,
-        contentPadding = listContentPadding,
-        verticalArrangement = Arrangement.spacedBy(spaceBetweenItems, Alignment.Top),
-      ) {
-        items(
-          items = uiState.steps,
-          key = { step -> step.id.value },
-          contentType = { it.stepContent::class },
-        ) { item ->
-          val isCurrentStep = item.id == uiState.steps.lastOrNull()?.id
-          val showAnimationSequence = isCurrentStep &&
-            item.stepContent !is StepContent.Task &&
-            !uiState.stepsWithShownAnimations.contains(item.id)
-          val isLastItem = item == uiState.steps.lastOrNull()
-          val isBottomAttached = item.id == bottomAttachedStep?.id
+  BoxWithConstraints(modifier, propagateMinConstraints = true) {
+    val availableHeight = maxHeight
+    Column {
+      Box(Modifier.weight(1f), propagateMinConstraints = true) {
+        Box(
+          Modifier
+            .padding(contentPadding)
+            .onSizeChanged { size ->
+              lastItemHeightAdjustingState.onContainerSizeChanged(size)
+            },
+        )
+        LazyColumn(
+          state = lazyListState,
+          contentPadding = listContentPadding,
+          verticalArrangement = Arrangement.spacedBy(spaceBetweenItems, Alignment.Top),
+        ) {
+          items(
+            items = uiState.steps,
+            key = { step -> step.id.value },
+            contentType = { it.stepContent::class },
+          ) { item ->
+            val isCurrentStep = item.id == uiState.steps.lastOrNull()?.id
+            val showAnimationSequence = isCurrentStep &&
+              item.stepContent !is StepContent.Task &&
+              !uiState.stepsWithShownAnimations.contains(item.id)
+            val isLastItem = item == uiState.steps.lastOrNull()
+            val isBottomAttached = item.id == bottomAttachedStep?.id
 
-          StepContentSection(
-            stepItem = item,
-            isCurrentStep = isCurrentStep,
-            showAnimationSequence = showAnimationSequence,
-            renderBottomContent = !isBottomAttached,
-            currentContinueButtonLoading = uiState.currentContinueButtonLoading,
-            currentSkipButtonLoading = uiState.currentSkipButtonLoading,
-            onEvent = onEvent,
-            shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-            onNavigateToImageViewer = onNavigateToImageViewer,
-            navigateToDeflect = navigateToDeflect,
-            appPackageId = appPackageId,
-            imageLoader = imageLoader,
-            openAppSettings = openAppSettings,
-            onResponseHeightChanged = { size ->
-              lastItemHeightAdjustingState.onItemHeightChanged(item.id, size)
-            },
-            modifier = if (isLastItem && !isBottomAttached) {
-              Modifier.requiredHeightIn(lastItemHeightAdjustingState.preferredMinHeightForFullScreenItem)
-            } else {
-              Modifier
-            },
-            closeFlow = closeFlow,
-          )
+            StepContentSection(
+              stepItem = item,
+              isCurrentStep = isCurrentStep,
+              showAnimationSequence = showAnimationSequence,
+              renderBottomContent = !isBottomAttached,
+              currentContinueButtonLoading = uiState.currentContinueButtonLoading,
+              currentSkipButtonLoading = uiState.currentSkipButtonLoading,
+              onEvent = onEvent,
+              shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+              onNavigateToImageViewer = onNavigateToImageViewer,
+              navigateToDeflect = navigateToDeflect,
+              appPackageId = appPackageId,
+              imageLoader = imageLoader,
+              openAppSettings = openAppSettings,
+              onResponseHeightChanged = { size ->
+                lastItemHeightAdjustingState.onItemHeightChanged(item.id, size)
+              },
+              modifier = if (isLastItem && !isBottomAttached) {
+                Modifier.requiredHeightIn(lastItemHeightAdjustingState.preferredMinHeightForFullScreenItem)
+              } else {
+                Modifier
+              },
+              closeFlow = closeFlow,
+            )
+          }
         }
       }
-    }
-    if (bottomAttachedStep != null) {
-      Box(
-        // safeDrawing already carries the keyboard, so this is the bottom inset in full: it resolves to the
-        // navigation bar with the keyboard down and to the keyboard with it up. Adding imePadding on top of it
-        // would count the keyboard twice and lift the card a whole keyboard clear of where it belongs.
-        Modifier.padding(contentPadding),
-      ) {
-        // Keyed on the step: this sits outside the list, so without it the input's own state (which card is
-        // open, what has been typed) would carry over from one step to the next.
-        key(bottomAttachedStep.id) {
-          StepBottomContent(
-            stepItem = bottomAttachedStep,
-            isCurrentStep = true,
-            currentContinueButtonLoading = uiState.currentContinueButtonLoading,
-            currentSkipButtonLoading = uiState.currentSkipButtonLoading,
-            onEvent = onEvent,
-            shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-            onNavigateToImageViewer = onNavigateToImageViewer,
-            navigateToDeflect = navigateToDeflect,
-            appPackageId = appPackageId,
-            imageLoader = imageLoader,
-            openAppSettings = openAppSettings,
-            closeFlow = closeFlow,
-          )
+      if (bottomAttachedStep != null) {
+        Box(
+          Modifier
+            // A Column measures an unweighted child against an unbounded height, so without this the input is
+            // free to lay out taller than the screen and is then simply cut off. It is capped instead, and
+            // scrolls within the cap, which keeps every control reachable however little room is left. The
+            // keyboard makes that room small: the inset below is part of the capped height, not extra to it.
+            .heightIn(max = availableHeight)
+            // safeDrawing already carries the keyboard, so this is the bottom inset in full: it resolves to the
+            // navigation bar with the keyboard down and to the keyboard with it up. Adding imePadding on top of
+            // it would count the keyboard twice and lift the card a whole keyboard clear of where it belongs.
+            .padding(contentPadding),
+        ) {
+          // Keyed on the step: this sits outside the list, so without it the input's own state (which card is
+          // open, what has been typed) would carry over from one step to the next.
+          key(bottomAttachedStep.id) {
+            StepBottomContent(
+              modifier = Modifier.verticalScroll(rememberScrollState()),
+              stepItem = bottomAttachedStep,
+              isCurrentStep = true,
+              currentContinueButtonLoading = uiState.currentContinueButtonLoading,
+              currentSkipButtonLoading = uiState.currentSkipButtonLoading,
+              onEvent = onEvent,
+              shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+              onNavigateToImageViewer = onNavigateToImageViewer,
+              navigateToDeflect = navigateToDeflect,
+              appPackageId = appPackageId,
+              imageLoader = imageLoader,
+              openAppSettings = openAppSettings,
+              closeFlow = closeFlow,
+            )
+          }
         }
       }
     }
