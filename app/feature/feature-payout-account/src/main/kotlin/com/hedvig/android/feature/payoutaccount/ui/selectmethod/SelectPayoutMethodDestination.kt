@@ -37,7 +37,6 @@ import hedvig.resources.BANK_PAYOUT_METHOD_CARD_TITLE
 import hedvig.resources.PAYOUT_METHOD_SWISH_DESCRIPTION
 import hedvig.resources.PAYOUT_METHOD_TRUSTLY_DESCRIPTION
 import hedvig.resources.PAYOUT_SELECT_PAYOUT_METHOD
-import hedvig.resources.Res
 import hedvig.resources.Res.string
 import hedvig.resources.swish
 import hedvig.resources.trustly
@@ -105,58 +104,113 @@ internal fun PayoutMethodRow(
   modifier: Modifier = Modifier,
   isLocked: Boolean = false,
 ) {
-  HedvigCard(
-    onClick = if (isLocked) null else onClick,
-    modifier = modifier.fillMaxWidth(),
-  ) {
-    Row(
-      modifier = Modifier
-        .heightIn(min = 64.dp)
-        .padding(horizontal = 16.dp),
-      verticalAlignment = Alignment.CenterVertically,
+  Box {
+    HedvigCard(
+      onClick = if (isLocked) null else onClick,
+      modifier = modifier.fillMaxWidth(),
     ) {
-      PayoutMethodPillow(provider)
-      Spacer(Modifier.width(10.dp))
-      Column(Modifier.padding(vertical = 8.dp)) {
-        HedvigText(text = title)
-        HedvigText(
-          text = subtitle,
-          color = HedvigTheme.colorScheme.textSecondary,
-        )
-      }
-      Spacer(Modifier.weight(1f))
-      Spacer(Modifier.width(4.dp))
-      if (isLocked) {
-        Icon(
-          HedvigIcons.Lock,
-          null,
-          modifier = Modifier.size(28.dp), //todo: get icon from design!
-        )
+      Row(
+        modifier = Modifier
+          .heightIn(min = 64.dp)
+          .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        PayoutMethodPillow(provider, isLocked)
+        Spacer(Modifier.width(10.dp))
+        Column(Modifier.padding(vertical = 8.dp)) {
+          HedvigText(
+            text = title,
+            color = if (!isLocked) {
+              HedvigTheme.colorScheme.textPrimary
+            } else {
+              HedvigTheme.colorScheme.textSecondaryTranslucent
+            },
+          )
+          HedvigText(
+            text = subtitle,
+            color = if (!isLocked) {
+              HedvigTheme.colorScheme.textSecondary
+            } else {
+              HedvigTheme.colorScheme.textDisabledTranslucent
+            },
+          )
+        }
+        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.width(4.dp))
+        if (isLocked) {
+          Icon(
+            HedvigIcons.Lock,
+            null,
+            tint = HedvigTheme.colorScheme.fillDisabledTransparent,
+            modifier = Modifier.size(28.dp), // todo: get icon from design!
+          )
+        }
       }
     }
   }
 }
 
 @Composable
-private fun PayoutMethodPillow(provider: MemberPaymentProvider) {
+private fun PayoutMethodPillow(
+  provider: MemberPaymentProvider,
+  isLocked: Boolean = false) {
   val onDarkTile = provider == MemberPaymentProvider.TRUSTLY
-  Surface(
-    shape = HedvigTheme.shapes.cornerSmall,
-    color = if (onDarkTile) HedvigTheme.colorScheme.fillBlack else HedvigTheme.colorScheme.fillWhite,
-    contentColor = if (onDarkTile) HedvigTheme.colorScheme.fillWhite else HedvigTheme.colorScheme.fillBlack,
-    modifier = Modifier.size(40.dp),
-  ) {
-    Box(Modifier.size(40.dp), contentAlignment = Alignment.Center) {
-      when (provider) {
-        MemberPaymentProvider.TRUSTLY -> Icon(HedvigIcons.Trustly, null, Modifier.size(28.dp))
-        MemberPaymentProvider.SWISH -> Image(HedvigIcons.Swish, null, Modifier.size(28.dp))
-        MemberPaymentProvider.INVOICE -> Image(HedvigIcons.Kivra, null, Modifier.size(28.dp))
-        MemberPaymentProvider.NORDEA -> Icon(
-          HedvigIcons.Card,
-          null,
-          modifier = Modifier.size(28.dp), //todo: get icon from design!
-        )
-        MemberPaymentProvider.UNKNOWN__ -> {}
+  Box {
+    Surface(
+      shape = HedvigTheme.shapes.cornerSmall,
+      color = when (isLocked) {
+        true -> if (onDarkTile)  HedvigTheme.colorScheme.fillDisabled
+        else HedvigTheme.colorScheme.fillWhite
+        false -> {
+          if (onDarkTile) HedvigTheme.colorScheme.fillBlack
+          else HedvigTheme.colorScheme.fillWhite
+        }
+      },
+      contentColor = if (onDarkTile) HedvigTheme.colorScheme.fillWhite else HedvigTheme.colorScheme.fillBlack,
+      modifier = Modifier.size(40.dp),
+    ) {
+      Box(Modifier.size(40.dp), contentAlignment = Alignment.Center) {
+        val alpha = if (isLocked) 0.5f else 1f
+        when (provider) {
+          MemberPaymentProvider.TRUSTLY -> {
+            Image(
+              HedvigIcons.Trustly,
+              null,
+              Modifier.size(28.dp),
+              alpha = alpha
+            )
+          }
+
+          MemberPaymentProvider.SWISH -> {
+            Image(
+              HedvigIcons.Swish,
+              null,
+              Modifier.size(28.dp),
+              alpha = alpha
+            )
+          }
+
+          MemberPaymentProvider.INVOICE -> {
+            Image(
+              HedvigIcons.Kivra,
+              null,
+              Modifier.size(28.dp),
+              alpha = alpha
+            )
+          }
+
+          MemberPaymentProvider.NORDEA -> {
+            Image(
+              HedvigIcons.Card,
+              null,
+              modifier = Modifier.size(28.dp),
+              alpha = alpha
+              // todo: get icon from design!
+            )
+          }
+
+          MemberPaymentProvider.UNKNOWN__ -> {}
+        }
       }
     }
   }
@@ -188,15 +242,35 @@ private fun PreviewPayoutMethodRow(
   @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) isLocked: Boolean,
 ) {
   HedvigTheme {
-    Surface(color = HedvigTheme.colorScheme.backgroundPrimary,
-      modifier =Modifier.padding(16.dp)) {
-      PayoutMethodRow(
-        provider =  MemberPaymentProvider.SWISH,
-        title = stringResource(string.swish),
-        subtitle = "123456789",
-        onClick = {},
-        isLocked = isLocked
-      )
+    Surface(
+      color = HedvigTheme.colorScheme.backgroundPrimary,
+      modifier = Modifier.padding(16.dp),
+    ) {
+      Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+      ) {
+        PayoutMethodRow(
+          provider = MemberPaymentProvider.SWISH,
+          title = stringResource(string.swish),
+          subtitle = "123456789",
+          onClick = {},
+          isLocked = isLocked,
+        )
+        PayoutMethodRow(
+          provider = MemberPaymentProvider.NORDEA,
+          title = "Bank acc",
+          subtitle = "123456789",
+          onClick = {},
+          isLocked = isLocked,
+        )
+        PayoutMethodRow(
+          provider = MemberPaymentProvider.TRUSTLY,
+          title = "Trustly",
+          subtitle = "123456789",
+          onClick = {},
+          isLocked = isLocked,
+        )
+      }
     }
   }
 }
