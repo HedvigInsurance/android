@@ -16,7 +16,7 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import hedvig.resources.INSURANCE_ADDONS_SUBHEADING
-import hedvig.resources.Res.string
+import hedvig.resources.Res
 import hedvig.resources.cross_sell_see_price
 import org.jetbrains.compose.resources.stringResource
 
@@ -37,7 +37,7 @@ fun AddonsSection(
 ) {
   Column(modifier) {
     HedvigText(
-      text = stringResource(string.INSURANCE_ADDONS_SUBHEADING),
+      text = stringResource(Res.string.INSURANCE_ADDONS_SUBHEADING),
       style = headingStyle,
       modifier = Modifier.semantics { heading() },
     )
@@ -48,7 +48,7 @@ fun AddonsSection(
         subtitle = addon.description,
         pillowImage = null,
         pillow = { AddonPillow(addon.flowType) },
-        buttonText = stringResource(string.cross_sell_see_price),
+        buttonText = stringResource(Res.string.cross_sell_see_price),
         onButtonClick = { onAddonClick(addon.eligibleInsurancesIds) },
         imageLoader = imageLoader,
         modifier = Modifier.fillMaxWidth(),

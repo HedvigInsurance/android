@@ -40,7 +40,6 @@ import com.hedvig.android.design.system.hedvig.DialogDefaults.ButtonSize.SMALL
 import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle
 import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle.Buttons
 import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle.NoButtons
-import com.hedvig.android.design.system.hedvig.DialogDefaults.defaultButtonSize
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.ERROR
 import com.hedvig.android.design.system.hedvig.tokens.DialogTokens
@@ -86,7 +85,7 @@ fun HedvigAlertDialog(
   modifier: Modifier = Modifier,
   confirmButtonLabel: String = stringResource(Res.string.GENERAL_YES),
   dismissButtonLabel: String = stringResource(Res.string.GENERAL_NO),
-  buttonSize: DialogDefaults.ButtonSize = defaultButtonSize,
+  buttonSize: DialogDefaults.ButtonSize = DialogDefaults.defaultButtonSize,
 ) {
   HedvigAlertDialog(
     title = AnnotatedString(title),
@@ -109,7 +108,7 @@ fun HedvigAlertDialog(
   modifier: Modifier = Modifier,
   confirmButtonLabel: String = stringResource(Res.string.GENERAL_YES),
   dismissButtonLabel: String = stringResource(Res.string.GENERAL_NO),
-  buttonSize: DialogDefaults.ButtonSize = defaultButtonSize,
+  buttonSize: DialogDefaults.ButtonSize = DialogDefaults.defaultButtonSize,
 ) {
   HedvigDialog(
     style = Buttons(

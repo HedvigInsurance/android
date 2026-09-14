@@ -88,8 +88,6 @@ import hedvig.resources.CROSS_SELL_BANNER_TEXT
 import hedvig.resources.CROSS_SELL_SUBTITLE
 import hedvig.resources.CROSS_SELL_TITLE
 import hedvig.resources.Res
-import hedvig.resources.Res.plurals
-import hedvig.resources.Res.string
 import hedvig.resources.TALKBACK_OPEN_EXTERNAL_LINK
 import hedvig.resources.cross_sell_see_price
 import hedvig.resources.general_close_button
@@ -150,7 +148,7 @@ fun CrossSellBottomSheet(
           contentPadding = PaddingValues(horizontal = 16.dp),
           text = state.data?.recommendedCrossSell?.bannerText
             ?: state.data?.recommendedAddon?.bannerText
-            ?: stringResource(string.CROSS_SELL_BANNER_TEXT),
+            ?: stringResource(Res.string.CROSS_SELL_BANNER_TEXT),
         )
       }
     } else {
@@ -217,9 +215,9 @@ private fun CrossSellsSheetContent(
           Spacer(Modifier.height(24.dp))
           // A recommendation already heads the sheet, so the list below it carries no heading of its own.
           if (recommendedCrossSell == null && recommendedAddon == null) {
-            HedvigText(stringResource(string.CROSS_SELL_TITLE), Modifier.semantics { heading() })
+            HedvigText(stringResource(Res.string.CROSS_SELL_TITLE), Modifier.semantics { heading() })
             HedvigText(
-              text = stringResource(string.CROSS_SELL_SUBTITLE),
+              text = stringResource(Res.string.CROSS_SELL_SUBTITLE),
               color = HedvigTheme.colorScheme.textSecondary,
             )
             Spacer(Modifier.height(24.dp))
@@ -249,7 +247,7 @@ private fun CrossSellsSheetContent(
       }
     }
     HedvigButton(
-      text = stringResource(string.general_close_button),
+      text = stringResource(Res.string.general_close_button),
       onClick = dismissSheet,
       enabled = true,
       buttonStyle = ButtonStyle.Ghost,
@@ -310,7 +308,7 @@ private fun AddonRecommendationSection(
       }
     }
     Spacer(Modifier.height(24.dp))
-    val headingDescription = stringResource(string.CROSS_SELL_TITLE) +
+    val headingDescription = stringResource(Res.string.CROSS_SELL_TITLE) +
       ": ${recommendedAddon.title}"
     HedvigText(
       text = recommendedAddon.title,
@@ -378,7 +376,7 @@ private fun RecommendationSection(
   ) {
     StackedPillows(recommendedCrossSell, imageLoader)
     Spacer(Modifier.height(24.dp))
-    val headingDescription = stringResource(string.CROSS_SELL_TITLE) +
+    val headingDescription = stringResource(Res.string.CROSS_SELL_TITLE) +
       ": ${recommendedCrossSell.crossSell.title}"
     HedvigText(
       text = recommendedCrossSell.crossSell.title,
@@ -404,7 +402,7 @@ private fun RecommendationSection(
         stepProgressItems.joinToString(separator = "; ") { item -> "${item.title} - ${item.subtitle}" }
       val description = "$dataDescription; " +
         pluralStringResource(
-          plurals.A11Y_NUMBER_OF_ELIGIBLE_INSURANCES,
+          Res.plurals.A11Y_NUMBER_OF_ELIGIBLE_INSURANCES,
           recommendedCrossSell.bundleProgress.numberOfEligibleContracts,
           recommendedCrossSell.bundleProgress.numberOfEligibleContracts,
         )
@@ -423,7 +421,7 @@ private fun RecommendationSection(
         onCrossSellClick(recommendedCrossSell.crossSell.storeUrl)
         dismissSheet()
       },
-      onClickLabel = stringResource(string.TALKBACK_OPEN_EXTERNAL_LINK),
+      onClickLabel = stringResource(Res.string.TALKBACK_OPEN_EXTERNAL_LINK),
       enabled = true,
       modifier = Modifier
         .fillMaxWidth()
@@ -506,16 +504,16 @@ private fun StackedPillows(recommendedCrossSell: RecommendedCrossSell, imageLoad
 
 @Composable
 private fun getHedvigStepProgressData(bundleProgress: BundleProgress): List<StepProgressItem> {
-  val firstStepTitle = stringResource(string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_ONE_INSURANCE)
-  val firstStepSubtitle = stringResource(string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_NO_DISCOUNT)
+  val firstStepTitle = stringResource(Res.string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_ONE_INSURANCE)
+  val firstStepSubtitle = stringResource(Res.string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_NO_DISCOUNT)
   val stepOne = StepProgressItem(firstStepTitle, firstStepSubtitle)
-  val secondStepTitle = stringResource(string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_TWO_INSURANCES)
+  val secondStepTitle = stringResource(Res.string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_TWO_INSURANCES)
   val secondStepSubtitle = stringResource(
-    string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_CURRENT_APPLIED_DISCOUNT,
+    Res.string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_CURRENT_APPLIED_DISCOUNT,
     "${bundleProgress.discountPercent}%",
   )
   val stepTwo = StepProgressItem(secondStepTitle, secondStepSubtitle)
-  val thirdStepTitle = stringResource(string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_THREE_OR_MORE)
+  val thirdStepTitle = stringResource(Res.string.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_THREE_OR_MORE)
   val stepThree = StepProgressItem(thirdStepTitle, secondStepSubtitle)
   return listOf(stepOne, stepTwo, stepThree)
 }
@@ -612,7 +610,7 @@ private fun CrossSellItem(
       onSheetDismissed()
     },
     imageLoader = imageLoader,
-    onButtonClickLabel = stringResource(string.TALKBACK_OPEN_EXTERNAL_LINK),
+    onButtonClickLabel = stringResource(Res.string.TALKBACK_OPEN_EXTERNAL_LINK),
     isLoading = isLoading,
     modifier = modifier,
     buttonSize = buttonSize,
@@ -718,7 +716,7 @@ fun PillowRow(
 private fun CrossSellDragHandle(
   modifier: Modifier = Modifier,
   contentPadding: PaddingValues? = null,
-  text: String? = stringResource(string.CROSS_SELL_BANNER_TEXT),
+  text: String? = stringResource(Res.string.CROSS_SELL_BANNER_TEXT),
 ) {
   val direction = LocalLayoutDirection.current
   Box(

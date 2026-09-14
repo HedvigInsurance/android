@@ -18,6 +18,7 @@ import com.datadog.android.rum.model.ErrorEvent.Category.EXCEPTION
 import com.datadog.android.rum.tracking.ActivityViewTrackingStrategy
 import com.datadog.android.trace.opentelemetry.DatadogOpenTelemetry
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.datadog.core.di.authHost
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import io.opentelemetry.api.GlobalOpenTelemetry
@@ -40,7 +41,12 @@ abstract class DatadogInitializer : Initializer<Unit> {
         service = "android",
       )
       .useSite(DatadogSite.EU1)
-      .setFirstPartyHosts(listOf(hedvigBuildConstants.urlGraphqlOctopus.removePrefix("https://")))
+      .setFirstPartyHosts(
+        listOf(
+          hedvigBuildConstants.urlGraphqlOctopus.removePrefix("https://"),
+          authHost(hedvigBuildConstants),
+        ),
+      )
       .build()
     val sdkCore = Datadog.initialize(context, configuration, TrackingConsent.GRANTED)
     if (sdkCore == null) {

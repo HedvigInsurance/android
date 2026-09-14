@@ -49,10 +49,6 @@ import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Camp
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Campaign.Brightness.BLEAK
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Campaign.Brightness.BRIGHT
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Inbox
-import com.hedvig.android.design.system.hedvig.TooltipDefaults.arrowHeightDp
-import com.hedvig.android.design.system.hedvig.TooltipDefaults.arrowSpaceFromEdgeWhenOffCenteredDp
-import com.hedvig.android.design.system.hedvig.TooltipDefaults.arrowWidthDp
-import com.hedvig.android.design.system.hedvig.TooltipDefaults.defaultStyle
 import com.hedvig.android.design.system.hedvig.tokens.TooltipTokens
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
@@ -63,7 +59,7 @@ fun HedvigTooltip(
   showTooltip: Boolean,
   tooltipShown: () -> Unit,
   modifier: Modifier = Modifier,
-  tooltipStyle: TooltipStyle = defaultStyle,
+  tooltipStyle: TooltipStyle = TooltipDefaults.defaultStyle,
   beakDirection: BeakDirection = BottomCenter,
   maxWidth: Dp = TooltipDefaults.defaultMaxWidth,
 ) {
@@ -150,9 +146,11 @@ private fun InnerChatTooltip(
 private fun Shape.withBeak(beakDirection: BeakDirection): Shape {
   return object : Shape {
     override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
-      val arrowSpaceFromEdgeWhenOffCentered: Float = with(density) { arrowSpaceFromEdgeWhenOffCenteredDp.toPx() }
-      val arrowWidth = with(density) { arrowWidthDp.toPx() }
-      val arrowHeight = with(density) { arrowHeightDp.toPx() }
+      val arrowSpaceFromEdgeWhenOffCentered: Float = with(density) {
+        TooltipDefaults.arrowSpaceFromEdgeWhenOffCenteredDp.toPx()
+      }
+      val arrowWidth = with(density) { TooltipDefaults.arrowWidthDp.toPx() }
+      val arrowHeight = with(density) { TooltipDefaults.arrowHeightDp.toPx() }
       val squircleSize: Size = when (beakDirection) {
         BottomCenter, BottomStart, BottomEnd, TopCenter, TopStart, TopEnd -> {
           size.copy(height = size.height - arrowHeight)
