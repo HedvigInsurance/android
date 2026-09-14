@@ -43,6 +43,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -61,6 +62,7 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.lifecycle.Lifecycle
@@ -465,7 +467,7 @@ private fun InlineVoiceAnswerCard(
         startRecording = startRecording,
         isShortWindow = isShortWindow,
         // The close button is drawn over the content, so the trailing controls have to end short of it.
-        modifier = Modifier.padding(end = if (isShortWindow) 32.dp else 0.dp),
+        modifier = Modifier.padding(end = if (isShortWindow) CLOSE_BUTTON_CLEARANCE else 0.dp),
       )
     }
   }
@@ -579,12 +581,14 @@ private fun AudioRecordingSheetContent(
         stopRecording = stopRecording,
         startRecording = startRecording,
         recordAudioPermissionState = recordAudioPermissionState,
-        stretchButtons = false,
+        fillWidth = false,
       )
     }
   } else {
     Column(modifier) {
-      AudioRecordingHeading()
+      // Kept clear of the close button drawn over the top corner, which a long heading runs under at
+      // large font scales.
+      AudioRecordingHeading(Modifier.padding(horizontal = CLOSE_BUTTON_CLEARANCE))
       DynamicClock(audioRecordingState, clock, audioPlayer)
       AudioWaveBand(
         audioRecordingState = audioRecordingState,
@@ -600,7 +604,7 @@ private fun AudioRecordingSheetContent(
         stopRecording = stopRecording,
         startRecording = startRecording,
         recordAudioPermissionState = recordAudioPermissionState,
-        stretchButtons = true,
+        fillWidth = true,
         modifier = Modifier.fillMaxWidth(),
       )
     }
@@ -704,22 +708,19 @@ private fun AudioRecordingControls(
   stopRecording: () -> Unit,
   startRecording: () -> Unit,
   recordAudioPermissionState: PermissionState,
-  stretchButtons: Boolean,
+  fillWidth: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  Row(
+  EqualWidthRow(
+    horizontalSpacing = 4.dp,
+    fillWidth = fillWidth,
     modifier = modifier,
-    horizontalArrangement = Arrangement.SpaceEvenly,
   ) {
-    val buttonModifier = if (stretchButtons) Modifier.weight(1f) else Modifier
     StartOverButton(
-      modifier = buttonModifier,
       onStartOver = redo,
       isEnabled = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback && !isSubmitting,
     )
-    Spacer(Modifier.width(4.dp))
     ControlButton(
-      modifier = buttonModifier,
       audioPlayer = audioPlayer,
       onStartRecording = {
         when (recordAudioPermissionState.status) {
@@ -731,12 +732,53 @@ private fun AudioRecordingControls(
       audioRecordingState = audioRecordingState,
       isEnabled = !isSubmitting,
     )
-    Spacer(Modifier.width(4.dp))
     SendButton(
-      modifier = buttonModifier,
       onSend = submitAudioFile,
       isEnabled = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback && !isSubmitting,
     )
+  }
+}
+
+/**
+ * Lays children out in a row, every one of them as wide as the widest.
+ *
+ * The labels under the control icons differ in length, and the difference grows with the locale and the
+ * user's font scale, so letting each button take its own width leaves the group visibly lopsided and shifts
+ * the buttons sideways as the label changes between states.
+ *
+ * With [fillWidth] the children share the full width between them; without it the row wraps the widest
+ * child, which is what a row laid out along a short window's free width needs.
+ */
+@Composable
+private fun EqualWidthRow(
+  horizontalSpacing: Dp,
+  fillWidth: Boolean,
+  modifier: Modifier = Modifier,
+  content: @Composable () -> Unit,
+) {
+  Layout(content, modifier) { measurables, constraints ->
+    if (measurables.isEmpty()) return@Layout layout(0, 0) {}
+    val spacing = horizontalSpacing.roundToPx()
+    val totalSpacing = spacing * (measurables.size - 1)
+    val available = (constraints.maxWidth - totalSpacing).coerceAtLeast(0)
+    val share = available / measurables.size
+    val childWidth = if (fillWidth) {
+      share
+    } else {
+      minOf(share, measurables.maxOf { it.maxIntrinsicWidth(constraints.maxHeight) })
+    }
+    val placeables = measurables.map {
+      it.measure(constraints.copy(minWidth = childWidth, maxWidth = childWidth, minHeight = 0))
+    }
+    val height = placeables.maxOf { it.height }
+    val width = placeables.sumOf { it.width } + totalSpacing
+    layout(width, height) {
+      var x = 0
+      for (placeable in placeables) {
+        placeable.place(x, (height - placeable.height) / 2)
+        x += placeable.width + spacing
+      }
+    }
   }
 }
 
@@ -795,36 +837,32 @@ private fun DynamicClock(
     }
   }
 
-  val durationDescription = timerState?.let {
-    stringResource(Res.string.TALKBACK_RECORDING_DURATION, it)
-  }
+  // Before anything is recorded the clock reads 00:00 rather than going blank, so it stays paired with the
+  // heading above it instead of the heading appearing to sit on its own.
+  val zeroed = timerState == null
+  val shownState = timerState ?: TimerState(twoDigitsFormat.format(0), twoDigitsFormat.format(0))
 
-  if (timerState != null) {
-    Box(
-      Modifier.fillMaxWidth().clearAndSetSemantics {
-        if (durationDescription != null) {
-          contentDescription = durationDescription
-        }
-      }.wrapContentWidth(),
-    ) {
-      HedvigText(
-        text = ":",
-        color = HedvigTheme.colorScheme.textSecondary,
-      )
-      HedvigText(
-        text = timerState.minutes,
-        modifier = Modifier.requiredWidth(0.dp).align(Alignment.CenterStart).wrapContentWidth(Alignment.End, true),
-        color = HedvigTheme.colorScheme.textSecondary,
-      )
-      HedvigText(
-        text = timerState.seconds,
-        modifier = Modifier.requiredWidth(0.dp).align(Alignment.CenterEnd).wrapContentWidth(Alignment.Start, true),
-        color = HedvigTheme.colorScheme.textSecondary,
-      )
-    }
-  } else {
+  val durationDescription = if (zeroed) null else stringResource(Res.string.TALKBACK_RECORDING_DURATION, shownState)
+
+  Box(
+    Modifier.fillMaxWidth().clearAndSetSemantics {
+      if (durationDescription != null) {
+        contentDescription = durationDescription
+      }
+    }.wrapContentWidth(),
+  ) {
     HedvigText(
-      text = "",
+      text = ":",
+      color = HedvigTheme.colorScheme.textSecondary,
+    )
+    HedvigText(
+      text = shownState.minutes,
+      modifier = Modifier.requiredWidth(0.dp).align(Alignment.CenterStart).wrapContentWidth(Alignment.End, true),
+      color = HedvigTheme.colorScheme.textSecondary,
+    )
+    HedvigText(
+      text = shownState.seconds,
+      modifier = Modifier.requiredWidth(0.dp).align(Alignment.CenterEnd).wrapContentWidth(Alignment.Start, true),
       color = HedvigTheme.colorScheme.textSecondary,
     )
   }
@@ -1351,6 +1389,9 @@ fun RestingAudioPlayer(modifier: Modifier = Modifier) {
     }
   }
 }
+
+// Width the close button drawn over the card's corner needs kept clear of it.
+private val CLOSE_BUTTON_CLEARANCE = 32.dp
 
 // A window shorter than this shows the card's pieces along the free width instead of stacked.
 private val SHORT_WINDOW_MAX_HEIGHT = 480.dp
