@@ -1,6 +1,6 @@
 query GetPayinMethods {
   currentMember {
-    paymentMethods {
+    paymentMethods(version: 2) {
       chargingDay
       payinMethods {
         provider

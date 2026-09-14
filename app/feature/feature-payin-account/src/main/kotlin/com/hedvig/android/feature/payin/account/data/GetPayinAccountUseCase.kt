@@ -82,14 +82,9 @@ internal class GetPayinAccountUseCase(
         }
       }
     }
-    logcat { "availablePayinMethods: backend returned ${paymentMethods.availableMethods}" }
-    // TODO: the backend does not list Swish or Trustly as available payin methods yet, so the connect flow is
-    //  driven off a mock. Restore the commented-out filter below and delete `availablePayinMethods` once it does.
-    // val availablePayinMethods = paymentMethods.availableMethods
-    //   .filter { it.supportsPayin }
-    //   .map { it.provider }
-    val availablePayinMethods = listOf(MemberPaymentProvider.SWISH, MemberPaymentProvider.TRUSTLY)
-    logcat { "availablePayinMethods: using mocked $availablePayinMethods" }
+    val availablePayinMethods = paymentMethods.availableMethods
+      .filter { it.supportsPayin }
+      .map { it.provider }
     PayinAccountData(
       currentMethods = currentMethods,
       availablePayinMethods = availablePayinMethods,
