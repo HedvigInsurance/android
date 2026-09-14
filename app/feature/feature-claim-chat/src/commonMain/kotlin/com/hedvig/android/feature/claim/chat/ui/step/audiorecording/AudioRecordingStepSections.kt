@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
@@ -46,6 +47,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -433,6 +435,9 @@ private fun InlineVoiceAnswerCard(
   LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
     stopRecording()
   }
+  val isShortWindow = with(LocalDensity.current) {
+    LocalWindowInfo.current.containerSize.height.toDp()
+  } < SHORT_WINDOW_MAX_HEIGHT
   // An inline card rather than a sheet: the design keeps the question fully readable above it, with no scrim.
   Surface(
     modifier = modifier.fillMaxWidth(),
@@ -442,7 +447,9 @@ private fun InlineVoiceAnswerCard(
     Box(Modifier.padding(16.dp)) {
       IconButton(
         onClick = onClose,
-        modifier = Modifier.align(Alignment.TopEnd).size(24.dp),
+        modifier = Modifier
+          .align(if (isShortWindow) Alignment.CenterEnd else Alignment.TopEnd)
+          .size(24.dp),
       ) {
         Icon(HedvigIcons.Close, stringResource(Res.string.general_close_button), Modifier.size(24.dp))
       }
@@ -456,6 +463,9 @@ private fun InlineVoiceAnswerCard(
         stopRecording = stopRecording,
         recordAudioPermissionState = recordAudioPermissionState,
         startRecording = startRecording,
+        isShortWindow = isShortWindow,
+        // The close button is drawn over the content, so the trailing controls have to end short of it.
+        modifier = Modifier.padding(end = if (isShortWindow) 32.dp else 0.dp),
       )
     }
   }
@@ -546,114 +556,187 @@ private fun AudioRecordingSheetContent(
   stopRecording: () -> Unit,
   startRecording: () -> Unit,
   recordAudioPermissionState: PermissionState,
+  isShortWindow: Boolean,
+  modifier: Modifier = Modifier,
 ) {
-  Column {
-    HedvigText(
-      stringResource(Res.string.CLAIM_TRIAGING_TITLE),
-      modifier = Modifier.fillMaxWidth().semantics {
-        heading()
-      },
-      textAlign = TextAlign.Center,
-    )
-    DynamicClock(audioRecordingState, clock, audioPlayer)
-    AnimatedContent(
-      targetState = audioRecordingState,
-      transitionSpec = {
-        EnterTransition.None.togetherWith(ExitTransition.None)
-      },
-      contentKey = { state ->
-        when (state) {
-          is AudioRecordingStepState.AudioRecording.Playback -> {
-            if (state.isPrepared) "playback" else "loading"
-          }
+  if (isShortWindow) {
+    Row(modifier, verticalAlignment = Alignment.CenterVertically) {
+      Column(Modifier.widthIn(max = SHORT_WINDOW_HEADING_WIDTH)) {
+        AudioRecordingHeading()
+        DynamicClock(audioRecordingState, clock, audioPlayer)
+      }
+      AudioWaveBand(
+        audioRecordingState = audioRecordingState,
+        audioPlayer = audioPlayer,
+        modifier = Modifier.weight(1f),
+      )
+      AudioRecordingControls(
+        submitAudioFile = submitAudioFile,
+        redo = redo,
+        isSubmitting = isSubmitting,
+        audioPlayer = audioPlayer,
+        audioRecordingState = audioRecordingState,
+        stopRecording = stopRecording,
+        startRecording = startRecording,
+        recordAudioPermissionState = recordAudioPermissionState,
+        stretchButtons = false,
+      )
+    }
+  } else {
+    Column(modifier) {
+      AudioRecordingHeading()
+      DynamicClock(audioRecordingState, clock, audioPlayer)
+      AudioWaveBand(
+        audioRecordingState = audioRecordingState,
+        audioPlayer = audioPlayer,
+        modifier = Modifier.fillMaxWidth(),
+      )
+      AudioRecordingControls(
+        submitAudioFile = submitAudioFile,
+        redo = redo,
+        isSubmitting = isSubmitting,
+        audioPlayer = audioPlayer,
+        audioRecordingState = audioRecordingState,
+        stopRecording = stopRecording,
+        startRecording = startRecording,
+        recordAudioPermissionState = recordAudioPermissionState,
+        stretchButtons = true,
+        modifier = Modifier.fillMaxWidth(),
+      )
+    }
+  }
+}
 
-          is AudioRecordingStepState.AudioRecording.Recording -> {
-            "recording"
-          }
+@Composable
+private fun AudioRecordingHeading(modifier: Modifier = Modifier) {
+  HedvigText(
+    stringResource(Res.string.CLAIM_TRIAGING_TITLE),
+    modifier = modifier.fillMaxWidth().semantics {
+      heading()
+    },
+    textAlign = TextAlign.Center,
+  )
+}
 
-          else -> {
-            "resting"
+@Composable
+private fun AudioWaveBand(
+  audioRecordingState: AudioRecordingStepState.AudioRecording,
+  audioPlayer: AudioPlayer?,
+  modifier: Modifier = Modifier,
+) {
+  AnimatedContent(
+    modifier = modifier,
+    targetState = audioRecordingState,
+    transitionSpec = {
+      EnterTransition.None.togetherWith(ExitTransition.None)
+    },
+    contentKey = { state ->
+      when (state) {
+        is AudioRecordingStepState.AudioRecording.Playback -> {
+          if (state.isPrepared) "playback" else "loading"
+        }
+
+        is AudioRecordingStepState.AudioRecording.Recording -> {
+          "recording"
+        }
+
+        else -> {
+          "resting"
+        }
+      }
+    },
+  ) { target ->
+    Box(
+      modifier = Modifier
+        .padding(horizontal = WAVE_BAND_HORIZONTAL_INSET, vertical = WAVE_BAND_VERTICAL_INSET)
+        .heightIn(min = WAVE_MAX_HEIGHT),
+      contentAlignment = Alignment.Center,
+      propagateMinConstraints = true,
+    ) {
+      when (target) {
+        is AudioRecordingStepState.AudioRecording.Playback if !target.isPrepared && !target.hasError -> {
+          HedvigCircularProgressIndicator(Modifier.wrapContentSize())
+        }
+
+        is AudioRecordingStepState.AudioRecording.Playback if target.hasError -> {
+          EmptyState(
+            text = stringResource(Res.string.something_went_wrong),
+            modifier = Modifier,
+            iconStyle = EmptyStateDefaults.EmptyStateIconStyle.ERROR,
+            description = null,
+          )
+        }
+
+        is AudioRecordingStepState.AudioRecording.Playback -> {
+          val audioPlayerState by audioPlayer?.audioPlayerState?.collectAsStateWithLifecycle()
+            ?: remember { mutableStateOf(null) }
+          if (audioPlayerState is AudioPlayerState.Ready) {
+            AudioWaves(
+              isRecording = false,
+              progressPercentage = (audioPlayerState as AudioPlayerState.Ready).progressPercentage,
+            )
           }
         }
-      },
-    ) { target ->
-      Box(
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = WAVE_BAND_HORIZONTAL_INSET, vertical = WAVE_BAND_VERTICAL_INSET)
-          .heightIn(min = WAVE_MAX_HEIGHT),
-        contentAlignment = Alignment.Center,
-        propagateMinConstraints = true,
-      ) {
-        when (target) {
-          is AudioRecordingStepState.AudioRecording.Playback if !target.isPrepared && !target.hasError -> {
-            HedvigCircularProgressIndicator(Modifier.wrapContentSize())
-          }
 
-          is AudioRecordingStepState.AudioRecording.Playback if target.hasError -> {
-            EmptyState(
-              text = stringResource(Res.string.something_went_wrong),
-              modifier = Modifier,
-              iconStyle = EmptyStateDefaults.EmptyStateIconStyle.ERROR,
-              description = null,
-            )
-          }
+        is AudioRecordingStepState.AudioRecording.Recording -> {
+          AudioWaves(
+            isRecording = true,
+            progressPercentage = null,
+            amplitudes = target.amplitudes,
+          )
+        }
 
-          is AudioRecordingStepState.AudioRecording.Playback -> {
-            val audioPlayerState by audioPlayer?.audioPlayerState?.collectAsStateWithLifecycle()
-              ?: remember { mutableStateOf(null) }
-            if (audioPlayerState is AudioPlayerState.Ready) {
-              AudioWaves(
-                isRecording = false,
-                progressPercentage = (audioPlayerState as AudioPlayerState.Ready).progressPercentage,
-              )
-            }
-          }
-
-          is AudioRecordingStepState.AudioRecording.Recording -> {
-            AudioWaves(
-              isRecording = true,
-              progressPercentage = null,
-              amplitudes = target.amplitudes,
-            )
-          }
-
-          else -> {
-            RestingAudioPlayer()
-          }
+        else -> {
+          RestingAudioPlayer()
         }
       }
     }
-    Row(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.SpaceEvenly,
-    ) {
-      StartOverButton(
-        modifier = Modifier.weight(1f),
-        onStartOver = redo,
-        isEnabled = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback && !isSubmitting,
-      )
-      Spacer(Modifier.width(4.dp))
-      ControlButton(
-        modifier = Modifier.weight(1f),
-        audioPlayer = audioPlayer,
-        onStartRecording = {
-          when (recordAudioPermissionState.status) {
-            PermissionStatus.Granted -> startRecording()
-            is PermissionStatus.Denied -> recordAudioPermissionState.launchPermissionRequest()
-          }
-        },
-        onStopRecording = stopRecording,
-        audioRecordingState = audioRecordingState,
-        isEnabled = !isSubmitting,
-      )
-      Spacer(Modifier.width(4.dp))
-      SendButton(
-        modifier = Modifier.weight(1f),
-        onSend = submitAudioFile,
-        isEnabled = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback && !isSubmitting,
-      )
-    }
+  }
+}
+
+@Composable
+private fun AudioRecordingControls(
+  submitAudioFile: () -> Unit,
+  redo: () -> Unit,
+  isSubmitting: Boolean,
+  audioPlayer: AudioPlayer?,
+  audioRecordingState: AudioRecordingStepState.AudioRecording,
+  stopRecording: () -> Unit,
+  startRecording: () -> Unit,
+  recordAudioPermissionState: PermissionState,
+  stretchButtons: Boolean,
+  modifier: Modifier = Modifier,
+) {
+  Row(
+    modifier = modifier,
+    horizontalArrangement = Arrangement.SpaceEvenly,
+  ) {
+    val buttonModifier = if (stretchButtons) Modifier.weight(1f) else Modifier
+    StartOverButton(
+      modifier = buttonModifier,
+      onStartOver = redo,
+      isEnabled = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback && !isSubmitting,
+    )
+    Spacer(Modifier.width(4.dp))
+    ControlButton(
+      modifier = buttonModifier,
+      audioPlayer = audioPlayer,
+      onStartRecording = {
+        when (recordAudioPermissionState.status) {
+          PermissionStatus.Granted -> startRecording()
+          is PermissionStatus.Denied -> recordAudioPermissionState.launchPermissionRequest()
+        }
+      },
+      onStopRecording = stopRecording,
+      audioRecordingState = audioRecordingState,
+      isEnabled = !isSubmitting,
+    )
+    Spacer(Modifier.width(4.dp))
+    SendButton(
+      modifier = buttonModifier,
+      onSend = submitAudioFile,
+      isEnabled = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback && !isSubmitting,
+    )
   }
 }
 
@@ -1269,10 +1352,12 @@ fun RestingAudioPlayer(modifier: Modifier = Modifier) {
   }
 }
 
-/**
- * The band the waves are drawn in is only as tall as [WAVE_MAX_HEIGHT], so its insets are what give it air.
- * A taller state (the error, the spinner) grows the band rather than being boxed into a fixed height.
- */
+// A window shorter than this shows the card's pieces along the free width instead of stacked.
+private val SHORT_WINDOW_MAX_HEIGHT = 480.dp
+private val SHORT_WINDOW_HEADING_WIDTH = 220.dp
+
+// The band is only as tall as WAVE_MAX_HEIGHT, so its insets are what give it air. A taller state, the
+// error or the spinner, grows the band rather than being boxed into a fixed height.
 private val WAVE_BAND_HORIZONTAL_INSET = 24.dp
 private val WAVE_BAND_VERTICAL_INSET = 24.dp
 
@@ -1299,6 +1384,31 @@ private fun PreviewAudioRecordingSheetContent(
         stopRecording = {},
         startRecording = {},
         recordAudioPermissionState = MockPermissionState(granted = true),
+        isShortWindow = false,
+      )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewShortWindowAudioRecordingSheetContent(
+  @PreviewParameter(AudioRecordingSheetContentStateProvider::class)
+  state: AudioRecordingStepState.AudioRecording,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      AudioRecordingSheetContent(
+        clock = Clock.System,
+        submitAudioFile = {},
+        redo = {},
+        isSubmitting = false,
+        audioPlayer = null,
+        audioRecordingState = state,
+        stopRecording = {},
+        startRecording = {},
+        recordAudioPermissionState = MockPermissionState(granted = true),
+        isShortWindow = true,
       )
     }
   }
