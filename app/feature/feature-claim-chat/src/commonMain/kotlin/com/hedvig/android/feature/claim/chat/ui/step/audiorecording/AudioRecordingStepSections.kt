@@ -642,7 +642,7 @@ private fun AudioWaveBand(
   modifier: Modifier = Modifier,
   horizontalInset: Dp = WAVE_BAND_HORIZONTAL_INSET,
 ) {
-  BoxWithConstraints(modifier) {
+  BoxWithConstraints(modifier, contentAlignment = Alignment.Center) {
     // Too few bars fit to read as a waveform at all, so it leaves rather than being drawn as a stub.
     if (maxWidth < MINIMUM_WAVE_BAND_WIDTH) return@BoxWithConstraints
     AudioWaveBandContent(audioRecordingState, audioPlayer, horizontalInset)
@@ -656,7 +656,8 @@ private fun AudioWaveBandContent(
   horizontalInset: Dp,
 ) {
   AnimatedContent(
-    modifier = Modifier.fillMaxWidth(),
+    // widthIn before fillMaxWidth: the cap lowers the width offered, then the band fills whatever is left.
+    modifier = Modifier.widthIn(max = MAXIMUM_WAVE_BAND_WIDTH).fillMaxWidth(),
     targetState = audioRecordingState,
     transitionSpec = {
       EnterTransition.None.togetherWith(ExitTransition.None)
@@ -1438,6 +1439,11 @@ private val CLOSE_BUTTON_CLEARANCE = 32.dp
 
 // Below this the band cannot hold enough bars to read as a waveform, so it is dropped instead.
 private val MINIMUM_WAVE_BAND_WIDTH = 160.dp
+
+// Past this the band stops reading as a waveform and starts reading as a rule drawn across the card. No
+// phone reaches it in either arrangement, the widest being a large phone in landscape at about 520dp, so
+// it only takes effect on the screens that have width to spare: tablets and unfolded foldables.
+private val MAXIMUM_WAVE_BAND_WIDTH = 560.dp
 
 // A window shorter than this shows the card's pieces along the free width instead of stacked.
 private val SHORT_WINDOW_MAX_HEIGHT = 480.dp
