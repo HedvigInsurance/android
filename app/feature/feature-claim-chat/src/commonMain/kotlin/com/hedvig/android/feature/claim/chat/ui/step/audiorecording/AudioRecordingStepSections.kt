@@ -458,9 +458,7 @@ private fun InlineVoiceAnswerCard(
     Box(Modifier.padding(16.dp)) {
       IconButton(
         onClick = onClose,
-        modifier = Modifier
-          .align(if (isShortWindow) Alignment.CenterEnd else Alignment.TopEnd)
-          .size(24.dp),
+        modifier = Modifier.align(Alignment.TopEnd).size(24.dp),
       ) {
         Icon(HedvigIcons.Close, stringResource(Res.string.general_close_button), Modifier.size(24.dp))
       }
