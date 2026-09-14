@@ -46,6 +46,7 @@ import hedvig.resources.HOME_QUICK_ACTIONS_CHANGE_ADDRESS
 import hedvig.resources.HOME_QUICK_ACTIONS_EDIT_INSURANCE
 import hedvig.resources.HOME_QUICK_ACTIONS_INVITE
 import hedvig.resources.HOME_QUICK_ACTIONS_UPCOMING_PAYMENT
+import hedvig.resources.HOME_QUICK_ACTIONS_UPGRADE_COVERAGE
 import hedvig.resources.Res
 import hedvig.resources.insurance_details_change_amount
 import hedvig.resources.insurance_details_change_amount_subtitle
@@ -207,6 +208,15 @@ internal class GetMemberQuickActionsUseCaseImpl(
             hintTextRes = Res.string.HOME_QUICK_ACTIONS_INVITE,
           ),
         )
+        if (memberActionOptions.isTierChangeEnabled) {
+          add(
+            QuickAction.StandaloneQuickLink(
+              quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeTier,
+              titleRes = Res.string.HOME_QUICK_ACTIONS_UPGRADE_COVERAGE,
+              hintTextRes = Res.string.HOME_QUICK_ACTIONS_UPGRADE_COVERAGE,
+            ),
+          )
+        }
       }
     }
   }
