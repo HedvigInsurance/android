@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
@@ -27,11 +28,21 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
+import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.TextFieldSize
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.payoutaccount.data.PayoutAccount
+import com.hedvig.android.feature.payoutaccount.data.PayoutAccount.BankAccount
+import com.hedvig.android.feature.payoutaccount.data.PayoutAccount.SwishPayout
+import com.hedvig.android.feature.payoutaccount.data.PayoutAccount.Trustly
+import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewEvent.Retry
 import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewUiState.Content
+import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewUiState.Error
+import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewUiState.Loading
+import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewUiState.NoPayoutOptions
+import com.hedvig.android.feature.payoutaccount.ui.selectmethod.PayoutMethodRow
 import hedvig.resources.CHANGE_PAYOUT_METHOD_BUTTON_LABEL
 import hedvig.resources.MY_PAYMENT_UPDATING_MESSAGE
 import hedvig.resources.PAYMENTS_ACCOUNT
@@ -43,6 +54,7 @@ import hedvig.resources.PAYOUT_SELECT_PAYOUT_METHOD
 import hedvig.resources.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON
 import hedvig.resources.REFERRAL_PENDING_STATUS_LABEL
 import hedvig.resources.Res
+import hedvig.resources.Res.string
 import hedvig.resources.swish
 import hedvig.resources.trustly
 import octopus.type.MemberPaymentProvider
@@ -60,7 +72,7 @@ internal fun PayoutAccountOverviewDestination(
     uiState = uiState,
     onConnectPayoutMethodClicked = onConnectPayoutMethodClicked,
     navigateToConnectPayment = navigateToConnectPayment,
-    onRetry = { viewModel.emit(PayoutAccountOverviewEvent.Retry) },
+    onRetry = { viewModel.emit(Retry) },
     navigateUp = navigateUp,
   )
 }
@@ -74,12 +86,12 @@ private fun PayoutAccountOverviewScreen(
   navigateUp: () -> Unit,
 ) {
   HedvigScaffold(
-    topAppBarText = stringResource(Res.string.PAYOUT_PAGE_HEADING),
+    topAppBarText = stringResource(string.PAYOUT_PAGE_HEADING),
     navigateUp = navigateUp,
     modifier = Modifier.fillMaxSize(),
   ) {
     when (uiState) {
-      PayoutAccountOverviewUiState.Loading -> {
+      Loading -> {
         HedvigFullScreenCenterAlignedProgressDebounced(
           Modifier
             .weight(1f)
@@ -87,7 +99,7 @@ private fun PayoutAccountOverviewScreen(
         )
       }
 
-      PayoutAccountOverviewUiState.Error -> {
+      Error -> {
         HedvigErrorSection(
           onButtonClick = onRetry,
           modifier = Modifier
@@ -96,11 +108,11 @@ private fun PayoutAccountOverviewScreen(
         )
       }
 
-      PayoutAccountOverviewUiState.NoPayoutOptions -> {
+      NoPayoutOptions -> {
         HedvigInformationSection(
-          title = stringResource(Res.string.PAYOUT_NO_PAYOUT_OPTIONS_TITLE),
-          subTitle = stringResource(Res.string.PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE),
-          buttonText = stringResource(Res.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON),
+          title = stringResource(string.PAYOUT_NO_PAYOUT_OPTIONS_TITLE),
+          subTitle = stringResource(string.PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE),
+          buttonText = stringResource(string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON),
           onButtonClick = navigateToConnectPayment,
           modifier = Modifier
             .weight(1f)
@@ -134,46 +146,58 @@ private fun PayoutAccountContent(
         if (availablePayoutMethods.isNotEmpty()) {
           Spacer(Modifier.weight(1f))
           EmptyState(
-            text = stringResource(Res.string.PAYOUT_MISSING_INFO),
+            text = stringResource(string.PAYOUT_MISSING_INFO),
             description = null,
-            iconStyle = EmptyStateDefaults.EmptyStateIconStyle.INFO,
+            iconStyle = EmptyStateIconStyle.INFO,
           )
         }
       }
 
-      is PayoutAccount.SwishPayout -> {
+      is SwishPayout -> {
         val phoneNumber = currentMethod.phoneNumber.orEmpty()
-        PayoutAccountReadOnlyTextField(
-          label = stringResource(Res.string.swish),
-          text = if (currentMethod.isPending && phoneNumber.isBlank()) {
-            stringResource(Res.string.REFERRAL_PENDING_STATUS_LABEL)
+        PayoutMethodRow(
+          provider =  MemberPaymentProvider.SWISH,
+          title = stringResource(string.swish),
+          subtitle = if (currentMethod.isPending && phoneNumber.isBlank()) {
+            stringResource(string.REFERRAL_PENDING_STATUS_LABEL)
           } else {
             phoneNumber
           },
+          onClick = {},
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+          isLocked = true
         )
       }
 
-      is PayoutAccount.Trustly -> {
+      is Trustly -> {
         val accountNumber = formatBankAccountNumber(currentMethod.clearingNumber, currentMethod.accountNumber)
-        PayoutAccountReadOnlyTextField(
-          label = formatBankAccountLabel(stringResource(Res.string.trustly), currentMethod.bankName),
-          text = if (currentMethod.isPending && accountNumber.isBlank()) {
-            stringResource(Res.string.REFERRAL_PENDING_STATUS_LABEL)
+        PayoutMethodRow(
+          title = formatBankAccountLabel(stringResource(string.trustly), currentMethod.bankName),
+          subtitle = if (currentMethod.isPending && accountNumber.isBlank()) {
+            stringResource(string.REFERRAL_PENDING_STATUS_LABEL)
           } else {
             accountNumber
           },
+          onClick = {},
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+          isLocked = true,
+          provider =  MemberPaymentProvider.TRUSTLY
         )
       }
 
-      is PayoutAccount.BankAccount -> {
+      is BankAccount -> {
         val accountNumber = formatBankAccountNumber(currentMethod.clearingNumber, currentMethod.accountNumber)
-        PayoutAccountReadOnlyTextField(
-          label = formatBankAccountLabel(stringResource(Res.string.PAYMENTS_ACCOUNT), currentMethod.bankName),
-          text = if (currentMethod.isPending && accountNumber.isBlank()) {
-            stringResource(Res.string.REFERRAL_PENDING_STATUS_LABEL)
+        PayoutMethodRow(
+          title = formatBankAccountLabel(stringResource(string.PAYMENTS_ACCOUNT), currentMethod.bankName),
+          subtitle = if (currentMethod.isPending && accountNumber.isBlank()) {
+            stringResource(string.REFERRAL_PENDING_STATUS_LABEL)
           } else {
             accountNumber
           },
+          onClick = {},
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+          isLocked = true,
+          provider =  MemberPaymentProvider.NORDEA
         )
       }
     }
@@ -181,8 +205,8 @@ private fun PayoutAccountContent(
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
       if (currentMethod?.isPending == true) {
         HedvigNotificationCard(
-          message = stringResource(Res.string.MY_PAYMENT_UPDATING_MESSAGE),
-          priority = NotificationPriority.Info,
+          message = stringResource(string.MY_PAYMENT_UPDATING_MESSAGE),
+          priority = Info,
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
@@ -191,9 +215,9 @@ private fun PayoutAccountContent(
       if (availablePayoutMethods.isNotEmpty()) {
         HedvigButton(
           text = if (currentMethod == null) {
-            stringResource(Res.string.PAYOUT_SELECT_PAYOUT_METHOD)
+            stringResource(string.PAYOUT_SELECT_PAYOUT_METHOD)
           } else {
-            stringResource(Res.string.CHANGE_PAYOUT_METHOD_BUTTON_LABEL)
+            stringResource(string.CHANGE_PAYOUT_METHOD_BUTTON_LABEL)
           },
           onClick = onConnectPayoutMethodClicked,
           enabled = true,
@@ -213,7 +237,7 @@ private fun PayoutAccountReadOnlyTextField(label: String, text: String, modifier
     text = text,
     onValueChange = {},
     labelText = label,
-    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
+    textFieldSize = TextFieldSize.Medium,
     readOnly = true,
     modifier = modifier
       .fillMaxWidth()
@@ -252,31 +276,31 @@ private fun PreviewPayoutAccountOverviewScreen(
 
 private class PayoutAccountOverviewUiStateProvider : CollectionPreviewParameterProvider<PayoutAccountOverviewUiState>(
   listOf(
-    PayoutAccountOverviewUiState.Loading,
-    PayoutAccountOverviewUiState.Error,
-    PayoutAccountOverviewUiState.NoPayoutOptions,
+    Loading,
+    Error,
+    NoPayoutOptions,
     Content(
       currentMethod = null,
       availablePayoutMethods = listOf(MemberPaymentProvider.SWISH, MemberPaymentProvider.TRUSTLY),
     ),
     Content(
-      currentMethod = PayoutAccount.SwishPayout(phoneNumber = "070-123 45 67", isPending = false),
+      currentMethod = SwishPayout(phoneNumber = "070-123 45 67", isPending = false),
       availablePayoutMethods = listOf(MemberPaymentProvider.SWISH),
     ),
     Content(
-      currentMethod = PayoutAccount.SwishPayout(phoneNumber = "070-123 45 67", isPending = false),
+      currentMethod = SwishPayout(phoneNumber = "070-123 45 67", isPending = false),
       availablePayoutMethods = listOf(MemberPaymentProvider.SWISH, MemberPaymentProvider.TRUSTLY),
     ),
     Content(
-      currentMethod = PayoutAccount.SwishPayout(phoneNumber = null, isPending = true),
+      currentMethod = SwishPayout(phoneNumber = null, isPending = true),
       availablePayoutMethods = listOf(MemberPaymentProvider.SWISH),
     ),
     Content(
-      currentMethod = PayoutAccount.SwishPayout(phoneNumber = "070-123 45 67", isPending = true),
+      currentMethod = SwishPayout(phoneNumber = "070-123 45 67", isPending = true),
       availablePayoutMethods = listOf(MemberPaymentProvider.SWISH),
     ),
     Content(
-      currentMethod = PayoutAccount.Trustly(
+      currentMethod = Trustly(
         clearingNumber = "8327",
         accountNumber = "12345678",
         bankName = "Mock Swedbank",
@@ -285,7 +309,7 @@ private class PayoutAccountOverviewUiStateProvider : CollectionPreviewParameterP
       availablePayoutMethods = listOf(MemberPaymentProvider.TRUSTLY),
     ),
     Content(
-      currentMethod = PayoutAccount.BankAccount(
+      currentMethod = BankAccount(
         clearingNumber = "3300",
         accountNumber = "1234567",
         bankName = "Nordea",
@@ -294,7 +318,7 @@ private class PayoutAccountOverviewUiStateProvider : CollectionPreviewParameterP
       availablePayoutMethods = listOf(MemberPaymentProvider.NORDEA),
     ),
     Content(
-      currentMethod = PayoutAccount.BankAccount(
+      currentMethod = BankAccount(
         clearingNumber = null,
         accountNumber = null,
         bankName = null,
@@ -303,7 +327,7 @@ private class PayoutAccountOverviewUiStateProvider : CollectionPreviewParameterP
       availablePayoutMethods = listOf(MemberPaymentProvider.NORDEA),
     ),
     Content(
-      currentMethod = PayoutAccount.BankAccount(
+      currentMethod = BankAccount(
         clearingNumber = "3300",
         accountNumber = "1234567",
         bankName = "Nordea",
