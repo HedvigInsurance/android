@@ -6,11 +6,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +46,7 @@ import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProg
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -184,6 +188,7 @@ private fun ManualChargeScreen(
           onTriggerPayment = onTriggerPayment,
           onConnectPayinMethodClicked = onConnectPayinMethodClicked,
           onChoosePrimaryMethodClicked = onChoosePrimaryMethodClicked,
+          modifier = Modifier.weight(1f)
         )
       }
     }
@@ -197,12 +202,17 @@ private fun ManualChargeSuccessScreen(
   onTriggerPayment: () -> Unit,
   onConnectPayinMethodClicked: () -> Unit,
   onChoosePrimaryMethodClicked: () -> Unit,
+  modifier: Modifier = Modifier
 ) {
   val currentMethods = uiState.manualChargeInfo.currentMethods
   val availablePayinMethods = uiState.manualChargeInfo.availablePayinMethods
   val dateTimeFormatter = rememberHedvigMonthDateTimeFormatter()
   val dateTimeFormatterWithYear = rememberHedvigDateTimeFormatter()
-  Column {
+  Column(
+    modifier
+      .fillMaxSize()
+      .verticalScroll(rememberScrollState()),
+  ) {
     Column(
       modifier = Modifier
         .padding(
@@ -422,7 +432,7 @@ private fun DetailRow(label: String, value: String, modifier: Modifier = Modifie
 
 @Composable
 @Preview
-@HedvigPreview
+@HedvigShortMultiScreenPreview
 private fun ManualChargeScreenSuccessPreview(
   @PreviewParameter(
     BooleanCollectionPreviewParameterProvider::class,
@@ -440,7 +450,7 @@ private fun ManualChargeScreenSuccessPreview(
               SwishPayin(
                 "123456",
                 isPending = false,
-                isDefault = true
+                isDefault = true,
               ),
               Trustly(
                 clearingNumber = "8327",
@@ -448,11 +458,11 @@ private fun ManualChargeScreenSuccessPreview(
                 bankName = "Swedbank",
                 isPending = false,
                 isDefault = true,
-              )
+              ),
             ),
             availablePayinMethods = listOf(
               MemberPaymentProvider.SWISH,
-              MemberPaymentProvider.TRUSTLY
+              MemberPaymentProvider.TRUSTLY,
             ),
             primaryPayinMethod = Trustly(
               clearingNumber = "8327",
