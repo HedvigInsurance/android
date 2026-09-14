@@ -12,6 +12,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -562,10 +563,22 @@ private fun AudioRecordingSheetContent(
   modifier: Modifier = Modifier,
 ) {
   if (isShortWindow) {
+    val fontScale = LocalDensity.current.fontScale
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
-      Column(Modifier.widthIn(max = SHORT_WINDOW_HEADING_WIDTH)) {
-        AudioRecordingHeading()
-        DynamicClock(audioRecordingState, clock, audioPlayer)
+      if (fontScale <= SHORT_WINDOW_HEADING_MAX_FONT_SCALE) {
+        Column(Modifier.widthIn(max = SHORT_WINDOW_HEADING_WIDTH)) {
+          AudioRecordingHeading()
+          DynamicClock(audioRecordingState, clock, audioPlayer)
+        }
+      } else {
+        // Past this text size the heading costs more width than the waveform beside it can spare, and the
+        // question it repeats is already on screen above the card, so only the clock stays.
+        DynamicClock(
+          audioRecordingState,
+          clock,
+          audioPlayer,
+          modifier = Modifier.width(SHORT_WINDOW_CLOCK_WIDTH * fontScale),
+        )
       }
       AudioWaveBand(
         audioRecordingState = audioRecordingState,
@@ -628,8 +641,20 @@ private fun AudioWaveBand(
   audioPlayer: AudioPlayer?,
   modifier: Modifier = Modifier,
 ) {
+  BoxWithConstraints(modifier) {
+    // Too few bars fit to read as a waveform at all, so it leaves rather than being drawn as a stub.
+    if (maxWidth < MINIMUM_WAVE_BAND_WIDTH) return@BoxWithConstraints
+    AudioWaveBandContent(audioRecordingState, audioPlayer)
+  }
+}
+
+@Composable
+private fun AudioWaveBandContent(
+  audioRecordingState: AudioRecordingStepState.AudioRecording,
+  audioPlayer: AudioPlayer?,
+) {
   AnimatedContent(
-    modifier = modifier,
+    modifier = Modifier.fillMaxWidth(),
     targetState = audioRecordingState,
     transitionSpec = {
       EnterTransition.None.togetherWith(ExitTransition.None)
@@ -787,6 +812,7 @@ private fun DynamicClock(
   audioRecordingState: AudioRecordingStepState.AudioRecording,
   clock: Clock,
   audioPlayer: AudioPlayer?,
+  modifier: Modifier = Modifier,
 ) {
   data class TimerState(
     val minutes: String,
@@ -845,7 +871,7 @@ private fun DynamicClock(
   val durationDescription = if (zeroed) null else stringResource(Res.string.TALKBACK_RECORDING_DURATION, shownState)
 
   Box(
-    Modifier.fillMaxWidth().clearAndSetSemantics {
+    modifier.fillMaxWidth().clearAndSetSemantics {
       if (durationDescription != null) {
         contentDescription = durationDescription
       }
@@ -1393,9 +1419,14 @@ fun RestingAudioPlayer(modifier: Modifier = Modifier) {
 // Width the close button drawn over the card's corner needs kept clear of it.
 private val CLOSE_BUTTON_CLEARANCE = 32.dp
 
+// Below this the band cannot hold enough bars to read as a waveform, so it is dropped instead.
+private val MINIMUM_WAVE_BAND_WIDTH = 160.dp
+
 // A window shorter than this shows the card's pieces along the free width instead of stacked.
 private val SHORT_WINDOW_MAX_HEIGHT = 480.dp
 private val SHORT_WINDOW_HEADING_WIDTH = 220.dp
+private const val SHORT_WINDOW_HEADING_MAX_FONT_SCALE = 1.5f
+private val SHORT_WINDOW_CLOCK_WIDTH = 56.dp
 
 // The band is only as tall as WAVE_MAX_HEIGHT, so its insets are what give it air. A taller state, the
 // error or the spinner, grows the band rather than being boxed into a fixed height.
