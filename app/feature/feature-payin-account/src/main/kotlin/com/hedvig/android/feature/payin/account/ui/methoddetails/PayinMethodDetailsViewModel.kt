@@ -11,10 +11,10 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.paying.member.PayinAccount
+import com.hedvig.android.data.paying.member.provider
 import com.hedvig.android.feature.payin.account.data.GetPayinAccountUseCase
 import com.hedvig.android.feature.payin.account.data.RemoveMethodUseCase
 import com.hedvig.android.feature.payin.account.data.id
-import com.hedvig.android.feature.payin.account.data.provider
 import com.hedvig.android.feature.payin.account.navigation.PayinMethodId
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope

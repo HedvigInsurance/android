@@ -5,10 +5,10 @@ import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.data.paying.member.PayinAccount
+import com.hedvig.android.data.paying.member.provider
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.feature.payin.account.data.SwishSetupOrder
 import com.hedvig.android.feature.payin.account.data.id
-import com.hedvig.android.feature.payin.account.data.provider
 import com.hedvig.android.feature.payin.account.ui.methoddetails.PayinMethodDetailsDestination
 import com.hedvig.android.feature.payin.account.ui.methoddetails.PayinMethodDetailsViewModel
 import com.hedvig.android.feature.payin.account.ui.methoddetails.PayinMethodDetailsViewModelFactory

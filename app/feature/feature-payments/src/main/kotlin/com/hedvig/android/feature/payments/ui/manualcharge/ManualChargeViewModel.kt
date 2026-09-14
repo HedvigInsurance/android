@@ -41,6 +41,7 @@ private class ManualChargePresenter(
   @Composable
   override fun MoleculePresenterScope<ManualChargeEvent>.present(lastState: ManualChargeUiState): ManualChargeUiState {
     var dataLoadIteration by remember { mutableIntStateOf(0) }
+    var refreshIteration by remember { mutableIntStateOf(0) }
     var screenState by remember { mutableStateOf(lastState) }
     var triggerChargeIteration by remember { mutableIntStateOf(0) }
 
@@ -52,6 +53,10 @@ private class ManualChargePresenter(
 
         ManualChargeEvent.TriggerCharge -> {
           triggerChargeIteration++
+        }
+
+        ManualChargeEvent.Refresh -> {
+          refreshIteration++
         }
       }
     }
@@ -89,6 +94,20 @@ private class ManualChargePresenter(
         },
       )
     }
+
+    // Picks up a payin method connected or made primary further down the flow. It refreshes in
+    // place and keeps what is on screen if the refetch fails, so coming back here never flashes to
+    // loading or to an error over details the member can still act on.
+    LaunchedEffect(refreshIteration) {
+      if (refreshIteration == 0) return@LaunchedEffect
+      getManualChargeInfoUseCase.invoke().onRight { manualChargeInfo ->
+        val currentState = screenState as? ManualChargeUiState.Success
+        screenState = ManualChargeUiState.Success(
+          manualChargeInfo = manualChargeInfo,
+          payButtonLoading = currentState?.payButtonLoading == true,
+        )
+      }
+    }
     return screenState
   }
 }
@@ -108,6 +127,8 @@ internal sealed interface ManualChargeUiState {
 
 internal sealed interface ManualChargeEvent {
   data object Retry : ManualChargeEvent
+
+  data object Refresh : ManualChargeEvent
 
   data object TriggerCharge : ManualChargeEvent
 }

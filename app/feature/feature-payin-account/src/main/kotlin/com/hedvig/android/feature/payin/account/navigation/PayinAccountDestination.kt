@@ -1,14 +1,7 @@
 package com.hedvig.android.feature.payin.account.navigation
 
-import com.hedvig.android.data.paying.member.PayinAccount
 import com.hedvig.android.navigation.common.HedvigNavKey
 import kotlinx.serialization.Serializable
-
-@Serializable
-internal data class SelectPayinMethodKey(
-  val availableProviders: List<String>,
-  val currentProviders: List<String>,
-) : HedvigNavKey
 
 /**
  * Waiting on a Swish setup the member approves in the Swish app. Carries the phone number so a
@@ -23,8 +16,3 @@ internal data class SwishPayinStatusKey(
 
 @Serializable
 internal data object SetupInvoicePayinKey : HedvigNavKey
-
-@Serializable
-internal data class SelectPrimaryPayinMethodKey(
-  val currentMethods: List<PayinAccount>,
-) : HedvigNavKey

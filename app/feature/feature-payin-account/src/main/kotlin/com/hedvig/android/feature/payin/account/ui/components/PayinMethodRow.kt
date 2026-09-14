@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.data.paying.member.InvoiceDelivery
 import com.hedvig.android.data.paying.member.PayinAccount
+import com.hedvig.android.data.paying.member.provider
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -36,7 +37,6 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Trustly
 import com.hedvig.android.design.system.hedvig.icon.colored.Kivra
 import com.hedvig.android.design.system.hedvig.icon.colored.Swish
-import com.hedvig.android.feature.payin.account.data.provider
 import com.hedvig.android.feature.payin.account.data.toDeliveryString
 import hedvig.resources.PAYMENTS_BANK_LABEL
 import hedvig.resources.PAYMENT_PRIMARY_LABEL

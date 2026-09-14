@@ -15,6 +15,10 @@ query ManualChargeInfo {
       payinMethods {
         ...MemberPaymentMethodFragment
       }
+      availableMethods {
+        provider
+        supportsPayin
+      }
     }
     activeContracts {
       terminationDueToMissedPayments

@@ -3,6 +3,8 @@ package com.hedvig.android.feature.payments.navigation
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.compose.ui.dropUnlessResumed
+import com.hedvig.android.data.paying.member.PayinAccount
+import com.hedvig.android.data.paying.member.provider
 import com.hedvig.android.feature.forever.navigation.InviteFriendsKey
 import com.hedvig.android.feature.payin.account.navigation.PayinMethodId
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailExplanationContent
@@ -15,6 +17,7 @@ import com.hedvig.android.feature.payments.ui.history.PaymentHistoryDestination
 import com.hedvig.android.feature.payments.ui.history.PaymentHistoryViewModel
 import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeDestination
 import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeSuccessDestination
+import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeUiState
 import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeViewModel
 import com.hedvig.android.feature.payments.ui.payments.PaymentsDestination
 import com.hedvig.android.feature.payments.ui.payments.PaymentsViewModel
@@ -32,6 +35,8 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
   navigateToPayinAccount: () -> Unit,
   navigateToPayinMethodDetails: (PayinMethodId) -> Unit,
   navigateToPayoutAccount: () -> Unit,
+  navigateToSelectPayinMethod: (availableProviders: List<String>, currentProviders: List<String>) -> Unit,
+  navigateToSelectPrimaryPayinMethod: (currentMethods: List<PayinAccount>) -> Unit,
   openConversation: () -> Unit,
 ) {
   entry<PaymentsKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
@@ -63,6 +68,17 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
       navigateUp = backstack::navigateUp,
       onNavigateToPaymentDetails = dropUnlessResumed { chargeId: String ->
         backstack.add(PaymentDetailsKey(chargeId))
+      },
+      onConnectPayinMethodClicked = dropUnlessResumed {
+        val info = (viewModel.uiState.value as? ManualChargeUiState.Success)?.manualChargeInfo
+        navigateToSelectPayinMethod(
+          info?.availablePayinMethods?.map { it.rawValue } ?: emptyList(),
+          info?.currentMethods?.map { it.provider.rawValue } ?: emptyList(),
+        )
+      },
+      onChoosePrimaryMethodClicked = dropUnlessResumed {
+        val info = (viewModel.uiState.value as? ManualChargeUiState.Success)?.manualChargeInfo
+        navigateToSelectPrimaryPayinMethod(info?.currentMethods ?: emptyList())
       },
       openConversation = openConversation,
     )

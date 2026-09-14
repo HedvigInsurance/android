@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.data.paying.member.PayinAccount
+import com.hedvig.android.data.paying.member.provider
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
@@ -30,7 +31,6 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Minus
-import com.hedvig.android.feature.payin.account.data.provider
 import com.hedvig.android.feature.payin.account.ui.components.PayinMethodMark
 import com.hedvig.android.feature.payin.account.ui.components.PayinProviderPillow
 import com.hedvig.android.feature.payin.account.ui.components.toRadioOption

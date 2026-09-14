@@ -25,3 +25,10 @@ data class PayinMethodDetailsKey(
 /** The Swish payin setup screen, reachable both from the payin flow and from onboarding. */
 @Serializable
 data object SetupSwishPayinKey : HedvigNavKey
+
+/** The picker for connecting a new payin method, seeded with what the member can and already has. */
+@Serializable
+data class SelectPayinMethodKey(
+  val availableProviders: List<String>,
+  val currentProviders: List<String>,
+) : HedvigNavKey

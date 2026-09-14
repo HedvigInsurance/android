@@ -58,13 +58,6 @@ internal val PayinAccount.id: PayinMethodId
     is PayinAccount.Invoice -> PayinMethodId.Invoice
   }
 
-internal val PayinAccount.provider: MemberPaymentProvider
-  get() = when (this) {
-    is PayinAccount.Trustly -> MemberPaymentProvider.TRUSTLY
-    is PayinAccount.SwishPayin -> MemberPaymentProvider.SWISH
-    is PayinAccount.Invoice -> MemberPaymentProvider.INVOICE
-  }
-
 internal fun InvoiceDelivery?.toDeliveryString(): String? {
   return when (this) {
     // TODO: Add "Kivra" / "Kivra" to Lokalise

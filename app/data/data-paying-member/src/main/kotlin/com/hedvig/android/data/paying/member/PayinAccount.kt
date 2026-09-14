@@ -90,6 +90,14 @@ fun MemberPaymentMethodFragment.toPayinAccount(): PayinAccount? {
   }
 }
 
+/** Identifies the method to the backend: a member has at most one method per provider. */
+val PayinAccount.provider: MemberPaymentProvider
+  get() = when (this) {
+    is PayinAccount.Trustly -> MemberPaymentProvider.TRUSTLY
+    is PayinAccount.SwishPayin -> MemberPaymentProvider.SWISH
+    is PayinAccount.Invoice -> MemberPaymentProvider.INVOICE
+  }
+
 /** The last four digits of the account, the only part of it we ever put on screen. */
 fun PayinAccount.Trustly.maskedAccountNumber(): String? {
   val clearing = clearingNumber?.takeIf { it.isNotBlank() }.orEmpty()

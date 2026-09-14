@@ -20,6 +20,7 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlinx.datetime.LocalDate
 import octopus.ManualChargeInfoQuery
+import octopus.type.MemberPaymentProvider
 
 internal interface GetManualChargeInfoUseCase {
   suspend fun invoke(): Either<ErrorMessage, ManualChargeInfo>
@@ -57,13 +58,17 @@ internal class GetManualChargeInfoUseCaseImpl(
       raise(ErrorMessage())
     }
 
+    val currentMethods = currentMember.paymentMethods.payinMethods.mapNotNull { it.toPayinAccount() }
+
     ManualChargeInfo(
       chargeId = latestFailedPastCharge.id,
       missedDueDate = latestFailedPastCharge.date,
       amountDue = UiMoney.fromMoneyFragment(latestFailedPastCharge.net),
-      primaryPayinMethod = currentMember.paymentMethods.payinMethods
-        .firstOrNull { it.isDefault }
-        ?.toPayinAccount(),
+      currentMethods = currentMethods,
+      availablePayinMethods = currentMember.paymentMethods.availableMethods
+        .filter { it.supportsPayin }
+        .map { it.provider },
+      primaryPayinMethod = currentMethods.firstOrNull { it.isDefault },
       showCancellationWarning = showCancellationWarning,
     )
   }
@@ -73,6 +78,8 @@ internal data class ManualChargeInfo(
   val chargeId: String?,
   val missedDueDate: LocalDate,
   val amountDue: UiMoney,
+  val currentMethods: List<PayinAccount>,
+  val availablePayinMethods: List<MemberPaymentProvider>,
   /** The method the member is charged on, absent when none is connected or it is one we cannot show. */
   val primaryPayinMethod: PayinAccount?,
   val showCancellationWarning: Boolean,
