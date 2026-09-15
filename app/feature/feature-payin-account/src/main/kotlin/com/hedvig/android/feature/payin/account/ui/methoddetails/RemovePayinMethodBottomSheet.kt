@@ -39,6 +39,7 @@ import hedvig.resources.PAYMENT_REMOVE_TITLE
 import hedvig.resources.REMOVE_CONFIRMATION_BUTTON
 import hedvig.resources.Res
 import hedvig.resources.general_cancel_button
+import hedvig.resources.general_close_button
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -56,6 +57,30 @@ internal fun RemovePayinMethodBottomSheet(
       onConfirmRemove = onConfirmRemove,
       onDismiss = { sheetState.dismiss() },
     )
+  }
+}
+
+/**
+ * Stands in for [RemovePayinMethodBottomSheet] on the method the member is charged on. Removing it
+ * would leave nothing collecting payments, so the member is pointed at choosing a replacement first.
+ */
+@Composable
+internal fun CannotRemovePrimaryPayinMethodBottomSheet(sheetState: HedvigBottomSheetState<Unit>) {
+  HedvigBottomSheet(sheetState) {
+    HedvigText(
+      // TODO: Add "This is your primary payment method. Choose another primary method before
+      //  removing it." / "Detta är din primära betalningsmetod. Välj en annan primär metod innan du
+      //  tar bort den." to Lokalise
+      text = "This is your primary payment method. Choose another primary method before removing it.",
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(32.dp))
+    HedvigTextButton(
+      text = stringResource(Res.string.general_close_button),
+      onClick = { sheetState.dismiss() },
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(16.dp))
   }
 }
 

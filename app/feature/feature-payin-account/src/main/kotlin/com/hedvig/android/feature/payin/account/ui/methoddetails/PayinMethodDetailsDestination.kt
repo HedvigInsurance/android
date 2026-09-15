@@ -141,6 +141,8 @@ private fun PayinMethodDetailsScreen(
     errorMessage = removeErrorMessage,
     onConfirmRemove = onConfirmRemoveMethod,
   )
+  val cannotRemovePrimarySheetState = rememberHedvigBottomSheetState<Unit>()
+  CannotRemovePrimaryPayinMethodBottomSheet(cannotRemovePrimarySheetState)
   HedvigScaffold(
     topAppBarText = stringResource(Res.string.PAYMENTS_PAYMENT_METHOD),
     navigateUp = navigateUp,
@@ -237,7 +239,13 @@ private fun PayinMethodDetailsScreen(
     }
     HedvigRedTextButton(
       text = stringResource(Res.string.GENERAL_REMOVE),
-      onClick = { removeSheetState.show(method) },
+      onClick = {
+        if (method.isDefault) {
+          cannotRemovePrimarySheetState.show(Unit)
+        } else {
+          removeSheetState.show(method)
+        }
+      },
       modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
