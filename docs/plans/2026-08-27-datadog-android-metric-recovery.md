@@ -1,10 +1,10 @@
 # Datadog Android metric recovery
 
-**Status: three items open, one of them dated.** Monitor `93408872` is muted until
-**2026-09-22T08:00Z** and that expiry needs acting on, see "Muted until 2026-09-22" below. In the
-same week, take the SLO window back to 7 days. The auth-unreachable gap that used to be a separate
-item is closed as accepted, also below, though 2026-09-15 taught us its reading rule was only half
-written.
+**Status: three items open, one of them dated.** On **2026-09-23** the mute on monitor `93408872`
+expires and the SLO must move to a 7-day window at the same time. Those are one coordinated change,
+not two; doing only the first pages the team immediately. See "2026-09-23: unmute and switch to a
+7-day window, together" below. The auth-unreachable gap that used to be a separate item is closed as
+accepted, also below, though 2026-09-15 taught us its reading rule was only half written, twice.
 
 The `OR`-branch cleanup is blocked on the pre-14.3.6 install base draining. Measured 2026-09-11,
 versions at or below 14.3.2 were about 11.5% of prod view events over 30 days but only **1.1% over 7
@@ -308,20 +308,42 @@ evidence that login works.** Check that the denominator is non-zero before belie
 The rule above only covered the falsely-healthy direction. The opposite happened first.
 
 At 10:37 CEST on 2026-09-15 the monitor fired at **110.339% of the 30-day budget**. There was no
-outage. The denominator was **12 events over 30 days**, of which 3 were 5xx, and a 30-day budget at
-99% of 12 events allows 0.12 failures. The alert was arithmetic on a sample of twelve.
+outage.
 
-So state it in both directions: **this ratio is meaningless at low volume, whichever way it reads.**
-A red SLO on a 12-event denominator proves as little as a green one on zero. Before believing either,
-check the denominator:
+**Corrected 2026-09-15, second pass.** An earlier revision of this section blamed a 12-event
+denominator. That number came from a RUM event search, and this SLO is metric-based, so it was the
+wrong quantity entirely. The real figures, read from the metrics the SLO actually divides:
 
 ```bash
-pup rum aggregate \
-  --query '@type:resource @application.id:4d7b8355-396d-406e-b543-30a073050e8f env:prod
-           @resource.url_host:auth.prod.hedvigit.com @resource.url_path:"/member-login"
-           @session.type:user' \
-  --compute count --from 7d
+pup api "/api/v1/query?from=<t-30d>&to=<now>&query=sum:android.login.network.count%7Benv:prod%7D.as_count()"
+pup api "/api/v1/query?from=<t-30d>&to=<now>&query=sum:android.login.network.error%7Benv:prod%7D.as_count()"
 ```
+
+30-day totals were **2,451 denominator and 27 errors**, giving SLI 98.899% and 110.2% of budget,
+which reproduces the alert exactly. Add `.rollup(sum,86400)` to either query to get it per day, which
+is what makes the cause visible:
+
+| Period | Denominator | Errors | What it is |
+|---|---|---|---|
+| Aug 17 to Sep 02 | 22 to 90 per day | 13 | the **old, broken** metric definition |
+| Sep 03 to Sep 06 | 2 to 6 per day | 0 | collapsing |
+| Sep 07 to Sep 09 | 225, 692, 512 | 11 | the rewrite window |
+| Sep 10 to Sep 14 | no data | 0 | gap |
+| Sep 15 | 25 | 3 | the first real measurement |
+
+**Only 3 of the 27 errors and 25 of the 2,451 denominator events come from the current metric
+definition.** The monitor fired because its 30-day trailing window still contains data from the
+metric deleted and recreated on 2026-09-09. This document already warned that deleting a generated
+metric does not purge its timeseries; the alert is that warning coming true.
+
+So the low-volume rule still stands, and gains a second half:
+
+**This ratio is meaningless at low volume, whichever way it reads**, and **a trailing window that
+straddles a metric rewrite is measuring two different definitions at once.** Before believing any
+reading, check both: what the denominator is, and whether the window spans a definition change.
+
+Note which tool answers which question. A RUM event search shows retained sessions only and will
+under-report; the metric query above is what the SLO sees.
 
 Two things that event also settled, both worth keeping:
 
@@ -337,20 +359,25 @@ and it excludes the `/member-login/<uuid>` polling calls entirely (74 of them on
 12 initiations). Rebuild that table from the live metric once adoption is real, rather than from the
 view-impression proxy.
 
-## Muted until 2026-09-22: downtime on monitor 93408872
+## Muted until 2026-09-23: downtime on monitor 93408872
 
 Set 2026-09-15 after the alert above. Datadog downtime
 `b72d5680-5084-45e5-b4c7-20169460ecec`, scoped to monitor `93408872` only, running
-2026-09-15T09:40Z to **2026-09-22T08:00Z**. It expires on its own and Datadog notifies when it does.
+2026-09-15T09:40Z to **2026-09-23T08:00Z**. It expires on its own and Datadog notifies when it does.
 
-**Why time-boxed rather than open-ended.** The denominator stays small for the whole 14.4.8 rollout,
-so the monitor would keep paging `@slack-android-dev` on arithmetic rather than on outages. Training
-the team to ignore this monitor is how the original breakage went unnoticed for ten weeks, so the
-mute is deliberately short and expires in the same week the window change below is due.
+**Why time-boxed rather than open-ended.** Training the team to ignore this monitor is how the
+original breakage went unnoticed for ten weeks, so the mute is deliberately short and ends on the day
+the window change below is due.
 
-**When it expires, do not simply re-arm it.** Re-read the denominator first, then redo the budget
-table below against the live metric. If volume is still too low for a 7-day window at 99%, the lever
-is the target, not another mute.
+**The end date is 23 September, not 22, and the one-day difference matters.** The 15 September
+failures age out of a 7-day window exactly on the 22nd. Unmuting on the 23rd starts the new window
+clean.
+
+**Do not simply unmute and leave the 30-day window in place.** The monitor is currently latched in
+`Alert` and cannot clear on its own before October: with 25 legacy errors still in a 30-day window on
+22 September, clearing would need the denominator above 2,500, against a current run rate near 15 a
+day. It would page immediately on unmute and stay red for roughly three weeks. Do the window switch
+below at the same time.
 
 Cancel early if the rollout finishes sooner:
 
@@ -358,14 +385,33 @@ Cancel early if the rollout finishes sooner:
 pup downtime cancel b72d5680-5084-45e5-b4c7-20169460ecec
 ```
 
-## After the release: take the SLO window back to 7 days
+## 2026-09-23: unmute and switch to a 7-day window, together
 
-This waits for the release that carries the auth instrumentation, because before it there is
-legitimately no prod data on `android.login.network.count`. About a week after it is the right time.
+These are one change, not two. The mute above ends the same morning.
 
-Set the SLO `timeframe` and its `thresholds[].timeframe` back to `7d`, and the monitor query back to
-`error_budget("29588e73473d54f09814173755548b80").over("7d")`. All three have to move together or
-the monitor asks the SLO for a window it no longer defines.
+**Why the window switch is what fixes this.** A 7-day window on 23 September covers 16 to 23
+September only. Every pre-rewrite point, all of August and the 7 to 9 September spike, falls outside
+it. The blend problem is not waited out, it is excluded by construction. That is also why this is
+better than extending the mute into October: the legacy data stops mattering the moment the window no
+longer reaches it.
+
+Three things move together or the monitor asks the SLO for a window it no longer defines:
+
+1. the SLO `timeframe`,
+2. its `thresholds[].timeframe`,
+3. the monitor query, back to `error_budget("29588e73473d54f09814173755548b80").over("7d")`.
+
+**Pick the target from volume on the day, not from habit.** At the run rate on 2026-09-15, about 15 a
+day, a 7-day denominator lands near 105 and grows with adoption. Allowed failures before breaching:
+
+| Target | Allowed failures at ~105 over 7d |
+|---|---|
+| 99% | about 1 |
+| 95% | about 5 |
+| 90% | about 10 |
+
+99% makes a single 504 page you. Start at **95%** and tighten toward 99% as adoption raises the
+denominator. Re-measure before choosing; the number above is a floor.
 
 **Why.** `error_budget(...).over(30d)` is a trailing window, so once the budget is burned the monitor
 stays red until the burning events age out, up to a month. Seven days recovers four times faster.
