@@ -1,5 +1,6 @@
 package com.hedvig.android.app.navigation
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -7,6 +8,8 @@ import androidx.navigation3.runtime.NavEntry
 import assertk.assertThat
 import assertk.assertions.contains
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isTrue
 import com.hedvig.android.feature.help.center.navigation.HelpCenterKey
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.navigation.common.HedvigNavKey
@@ -25,6 +28,26 @@ import org.junit.Test
  */
 internal class HedvigContentKeysTest {
   private val entries = withHedvigContentKeys { key -> NavEntry(key = key) { } }
+
+  @Test
+  fun `the same key yields equal entries across calls, as navigation3's own provider does`() {
+    // navigation3 stores one content lambda per registration and hands the same reference to every
+    // NavEntry it builds, so its entries compare equal. NavEntry.equals compares content by identity,
+    // so a wrapper that allocates a fresh lambda per call would quietly break that.
+    val content: @Composable (HedvigNavKey) -> Unit = { }
+    val base: (HedvigNavKey) -> NavEntry<HedvigNavKey> = { NavEntry(key = it, content = content) }
+    assertThat(base(HomeKey) == base(HomeKey)).isTrue()
+
+    val wrapped = withHedvigContentKeys(base)
+    assertThat(wrapped(HomeKey) == wrapped(HomeKey)).isTrue()
+  }
+
+  @Test
+  fun `distinct keys still yield distinct entries`() {
+    val content: @Composable (HedvigNavKey) -> Unit = { }
+    val wrapped = withHedvigContentKeys { NavEntry(key = it, content = content) }
+    assertThat(wrapped(HomeKey) == wrapped(HelpCenterKey)).isFalse()
+  }
 
   @Test
   fun `a wrapped entry carries our derivation, not navigation3's default`() {
