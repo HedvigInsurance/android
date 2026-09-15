@@ -5,13 +5,17 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -32,29 +37,40 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.Button
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.INFO
-import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.SUCCESS
-import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.PaymentMethodHandoverIllustration
+import com.hedvig.android.design.system.hedvig.PaymentMethodMarkSize
+import com.hedvig.android.design.system.hedvig.PaymentMethodTileBadge
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
+import com.hedvig.android.design.system.hedvig.icon.Checkmark
+import com.hedvig.android.design.system.hedvig.icon.Close
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.Trustly
 import com.hedvig.android.feature.connect.payment.trustly.TrustlyEvent
 import com.hedvig.android.feature.connect.payment.trustly.TrustlyUiState
-import com.hedvig.android.feature.connect.payment.trustly.data.PreviewTrustlyCallback
 import com.hedvig.android.feature.connect.payment.trustly.sdk.TrustlyWebChromeClient
 import com.hedvig.android.feature.connect.payment.trustly.sdk.TrustlyWebView
 import com.hedvig.android.feature.connect.payment.trustly.sdk.TrustlyWebViewClient
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import hedvig.resources.GENERAL_RETRY
+import hedvig.resources.PAYMENT_CHANGE_METHOD_BUTTON
 import hedvig.resources.Res
 import hedvig.resources.general_close_button
-import hedvig.resources.general_done_button
+import hedvig.resources.general_continue_button
 import hedvig.resources.info_card_missing_payment_body
 import hedvig.resources.pay_in_confirmation_direct_debit_headline
 import hedvig.resources.pay_in_error_body
 import hedvig.resources.pay_in_explainer_direct_debit_headline
-import hedvig.resources.something_went_wrong
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -105,10 +121,11 @@ private fun TrustlyScreen(
       }
 
       TrustlyUiState.FailedToConnectCard -> {
-        HedvigErrorSection(
-          onButtonClick = retryConnectingCard,
-          title = stringResource(Res.string.something_went_wrong),
-          subTitle = stringResource(Res.string.pay_in_error_body),
+        TrustlyFailureScreen(
+          description = stringResource(Res.string.pay_in_error_body),
+          onRetry = retryConnectingCard,
+          onChangePaymentMethod = finishTrustlyFlow,
+          navigateUp = navigateUp,
         )
       }
 
@@ -130,27 +147,126 @@ private fun TrustlyScreen(
       }
 
       is TrustlyUiState.FailedToStartSession -> {
-        HedvigErrorSection(
-          onButtonClick = retryConnectingCard,
-          title = uiState.errorMessage.message ?: stringResource(Res.string.something_went_wrong),
-          subTitle = null,
+        TrustlyFailureScreen(
+          description = uiState.errorMessage.message ?: stringResource(Res.string.pay_in_error_body),
+          onRetry = retryConnectingCard,
+          onChangePaymentMethod = finishTrustlyFlow,
+          navigateUp = navigateUp,
         )
       }
 
       TrustlyUiState.SucceededInConnectingCard -> {
-        Column(
-          horizontalAlignment = Alignment.CenterHorizontally,
-          verticalArrangement = Arrangement.Center,
+        TrustlyStatusScreen(
+          title = stringResource(Res.string.pay_in_confirmation_direct_debit_headline),
+          // TODO: Add "Charged automatically each month" / "Dras automatiskt varje månad" to Lokalise
+          description = "Charged automatically each month",
+          badge = {
+            PaymentMethodTileBadge(
+              icon = HedvigIcons.Checkmark,
+              containerColor = HedvigTheme.colorScheme.signalGreenElement,
+              contentColor = HedvigTheme.colorScheme.fillWhite,
+            )
+          },
+          navigateUp = navigateUp,
         ) {
-          EmptyState(
-            iconStyle = SUCCESS,
-            text = stringResource(Res.string.pay_in_confirmation_direct_debit_headline),
-            description = null,
-            buttonStyle = Button(stringResource(Res.string.general_done_button), finishTrustlyFlow),
+          HedvigText(
+            // TODO: Add "You can change payment method later" / "Du kan byta betalningsmetod senare"
+            //  to Lokalise
+            text = "You can change payment method later",
+            style = HedvigTheme.typography.label,
+            color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
+          )
+          Spacer(Modifier.height(16.dp))
+          HedvigButton(
+            text = stringResource(Res.string.general_continue_button),
+            onClick = finishTrustlyFlow,
+            enabled = true,
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
           )
         }
       }
     }
+  }
+}
+
+/**
+ * The handover illustration with the outcome badged onto the Hedvig symbol, matching how the Swish
+ * setup reports the same two outcomes. [actions] fills the space below it.
+ */
+@Composable
+private fun TrustlyStatusScreen(
+  title: String,
+  description: String?,
+  badge: @Composable () -> Unit,
+  navigateUp: () -> Unit,
+  actions: @Composable ColumnScope.() -> Unit,
+) {
+  HedvigScaffold(
+    topAppBarText = null,
+    navigateUp = navigateUp,
+    modifier = Modifier.fillMaxSize(),
+  ) {
+    Spacer(Modifier.height(8.dp))
+    FlowHeading(
+      title = title,
+      description = description,
+      baseStyle = HedvigTheme.typography.bodySmall,
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
+    Spacer(Modifier.weight(1f))
+    PaymentMethodHandoverIllustration(
+      modifier = Modifier.align(Alignment.CenterHorizontally),
+      destinationBadge = badge,
+      mark = { Icon(HedvigIcons.Trustly, null, Modifier.size(PaymentMethodMarkSize)) },
+    )
+    Spacer(Modifier.weight(1f))
+    actions()
+    Spacer(Modifier.height(16.dp))
+  }
+}
+
+@Composable
+private fun TrustlyFailureScreen(
+  description: String,
+  onRetry: () -> Unit,
+  onChangePaymentMethod: () -> Unit,
+  navigateUp: () -> Unit,
+) {
+  TrustlyStatusScreen(
+    // TODO: Add "Connection failed" / "Anslutningen misslyckades" to Lokalise
+    title = "Connection failed",
+    description = description,
+    badge = {
+      PaymentMethodTileBadge(
+        icon = HedvigIcons.Close,
+        containerColor = HedvigTheme.colorScheme.signalRedElement,
+        contentColor = HedvigTheme.colorScheme.fillWhite,
+      )
+    },
+    navigateUp = navigateUp,
+  ) {
+    HedvigButton(
+      text = stringResource(Res.string.GENERAL_RETRY),
+      onClick = onRetry,
+      enabled = true,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+    )
+    Spacer(Modifier.height(8.dp))
+    HedvigTextButton(
+      text = stringResource(Res.string.PAYMENT_CHANGE_METHOD_BUTTON),
+      onClick = onChangePaymentMethod,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+    )
   }
 }
 
@@ -239,9 +355,10 @@ private fun TrustlyPreview(
   }
 }
 
+// Browsing is left out: it inflates the real Trustly WebView, which casts the local context to an
+// Activity, and the preview's context is not one.
 private class TrustlyUiStateProvider : CollectionPreviewParameterProvider<TrustlyUiState>(
   listOf(
-    TrustlyUiState.Browsing("", PreviewTrustlyCallback("", "")),
     TrustlyUiState.Loading,
     TrustlyUiState.FailedToConnectCard,
     TrustlyUiState.CancelledConnectingCard,
