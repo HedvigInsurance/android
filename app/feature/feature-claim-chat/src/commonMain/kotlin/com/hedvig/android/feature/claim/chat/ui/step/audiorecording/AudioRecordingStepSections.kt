@@ -132,7 +132,6 @@ import hedvig.resources.TALKBACK_RECORDING_NOW
 import hedvig.resources.claims_skip_button
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_close_button
-import hedvig.resources.general_save_button
 import hedvig.resources.something_went_wrong
 import kotlin.random.Random
 import kotlin.time.Clock
@@ -490,7 +489,7 @@ private fun InlineTextAnswerCard(
   ) {
     Column(Modifier.padding(16.dp)) {
       HedvigText(
-        stringResource(Res.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
+        stringResource(Res.string.CLAIM_TRIAGING_TITLE),
         style = HedvigTheme.typography.label,
         color = HedvigTheme.colorScheme.textSecondary,
       )
@@ -500,8 +499,10 @@ private fun InlineTextAnswerCard(
         labelText = "",
         textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Small,
         singleLine = false,
-        // The design gives the answer room to breathe rather than a single line that grows.
-        minLines = 3,
+        // The field starts at one line and grows with the answer, then scrolls inside itself rather than
+        // pushing the card any further up the conversation.
+        maxLines = TEXT_ANSWER_MAX_LINES,
+        readOnly = isSubmitting,
         modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
       )
       if (hasError && errorType is FreeTextErrorType.TooShort) {
@@ -516,15 +517,17 @@ private fun InlineTextAnswerCard(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
       ) {
+        // Stays tappable while the answer is in flight, which is the only way out of a submission that
+        // is taking too long.
         HedvigButton(
           text = stringResource(Res.string.general_cancel_button),
           onClick = onCancel,
-          enabled = !isSubmitting,
+          enabled = true,
           buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
           buttonSize = ButtonDefaults.ButtonSize.Medium,
         )
         HedvigButton(
-          text = stringResource(Res.string.general_save_button),
+          text = stringResource(Res.string.AUDIO_RECORDER_SEND),
           onClick = { onSave(text) },
           enabled = text.isNotBlank() && !isSubmitting,
           isLoading = isSubmitting,
@@ -1275,6 +1278,9 @@ fun RestingAudioPlayer(modifier: Modifier = Modifier) {
  */
 private val WAVE_BAND_HORIZONTAL_INSET = 24.dp
 private val WAVE_BAND_VERTICAL_INSET = 24.dp
+
+// The field grows with the answer to this many lines and then scrolls inside itself.
+private const val TEXT_ANSWER_MAX_LINES = 6
 
 private val WAVE_WIDTH = 2.dp
 private val WAVE_SPACING = 3.dp
