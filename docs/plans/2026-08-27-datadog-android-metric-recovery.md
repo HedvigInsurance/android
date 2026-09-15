@@ -1,8 +1,10 @@
 # Datadog Android metric recovery
 
-**Status: three items open.** One is time-boxed to the release carrying the auth instrumentation:
-take the SLO window back to 7 days about a week after. See "After the release" below. The
-auth-unreachable gap that used to be a fourth item is closed as accepted, also below.
+**Status: three items open, one of them dated.** Monitor `93408872` is muted until
+**2026-09-22T08:00Z** and that expiry needs acting on, see "Muted until 2026-09-22" below. In the
+same week, take the SLO window back to 7 days. The auth-unreachable gap that used to be a separate
+item is closed as accepted, also below, though 2026-09-15 taught us its reading rule was only half
+written.
 
 The `OR`-branch cleanup is blocked on the pre-14.3.6 install base draining. Measured 2026-09-11,
 versions at or below 14.3.2 were about 11.5% of prod view events over 30 days but only **1.1% over 7
@@ -300,6 +302,61 @@ fix.
 
 The thing to remember is the reading rule: **a green `Auth: login (Android)` is not by itself
 evidence that login works.** Check that the denominator is non-zero before believing it.
+
+### The corollary, learned the hard way on 2026-09-15
+
+The rule above only covered the falsely-healthy direction. The opposite happened first.
+
+At 10:37 CEST on 2026-09-15 the monitor fired at **110.339% of the 30-day budget**. There was no
+outage. The denominator was **12 events over 30 days**, of which 3 were 5xx, and a 30-day budget at
+99% of 12 events allows 0.12 failures. The alert was arithmetic on a sample of twelve.
+
+So state it in both directions: **this ratio is meaningless at low volume, whichever way it reads.**
+A red SLO on a 12-event denominator proves as little as a green one on zero. Before believing either,
+check the denominator:
+
+```bash
+pup rum aggregate \
+  --query '@type:resource @application.id:4d7b8355-396d-406e-b543-30a073050e8f env:prod
+           @resource.url_host:auth.prod.hedvigit.com @resource.url_path:"/member-login"
+           @session.type:user' \
+  --compute count --from 7d
+```
+
+Two things that event also settled, both worth keeping:
+
+**The instrumentation works.** Splitting the same auth host by path and app version on the day
+14.4.8 reached the internal track: `/member-authorization-codes` (which already went through
+`:app`'s instrumented OkHttp client) read 23 on 14.4.6 and 94 on 14.4.7, while `/member-login` and
+`/member-login/<uuid>` read **zero on both** and 12 and 74 on 14.4.8. That is the whole original
+diagnosis confirmed in production: `:authlib`'s Ktor client was invisible, and now it is not.
+
+**The budget table below is sized off the wrong quantity.** It uses login *view impressions* as the
+input. The SLI actually counts `POST /member-login`, which is a different and much smaller number,
+and it excludes the `/member-login/<uuid>` polling calls entirely (74 of them on the same day as the
+12 initiations). Rebuild that table from the live metric once adoption is real, rather than from the
+view-impression proxy.
+
+## Muted until 2026-09-22: downtime on monitor 93408872
+
+Set 2026-09-15 after the alert above. Datadog downtime
+`b72d5680-5084-45e5-b4c7-20169460ecec`, scoped to monitor `93408872` only, running
+2026-09-15T09:40Z to **2026-09-22T08:00Z**. It expires on its own and Datadog notifies when it does.
+
+**Why time-boxed rather than open-ended.** The denominator stays small for the whole 14.4.8 rollout,
+so the monitor would keep paging `@slack-android-dev` on arithmetic rather than on outages. Training
+the team to ignore this monitor is how the original breakage went unnoticed for ten weeks, so the
+mute is deliberately short and expires in the same week the window change below is due.
+
+**When it expires, do not simply re-arm it.** Re-read the denominator first, then redo the budget
+table below against the live metric. If volume is still too low for a 7-day window at 99%, the lever
+is the target, not another mute.
+
+Cancel early if the rollout finishes sooner:
+
+```bash
+pup downtime cancel b72d5680-5084-45e5-b4c7-20169460ecec
+```
 
 ## After the release: take the SLO window back to 7 days
 
