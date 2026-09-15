@@ -10,6 +10,9 @@ hedvig {
 }
 
 kotlin {
+  androidLibrary {
+    withHostTest {}
+  }
   sourceSets {
     commonMain.dependencies {
       implementation(libs.coroutines.core)
@@ -20,6 +23,13 @@ kotlin {
       implementation(projects.authEventCore)
       implementation(projects.coreBuildConstants)
       implementation(projects.coreCommonPublic)
+    }
+    getByName("androidHostTest").dependencies {
+      implementation(libs.assertK)
+      implementation(libs.coroutines.test)
+      implementation(libs.junit)
+      implementation(libs.turbine)
+      implementation(projects.loggingTest)
     }
   }
 }

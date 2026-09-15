@@ -9,11 +9,14 @@ interface FeatureManager {
   fun isFeatureEnabled(feature: Feature): Flow<Boolean>
 
   /**
-   * Suspends until flag values are available for the current session, whether freshly fetched from the
+   * Suspends until flag values are available for the current member, whether freshly fetched from the
    * backend or restored from the last fetch's local cache. A decision that must honor the flag, for
    * example a kill switch gating a whole flow, should await this and treat a failure to complete as "no
    * value available yet". Until the app has ever reached the backend there is nothing to restore either,
    * so this never completes; callers must impose their own timeout.
+   *
+   * Values are resolved for the member the app knows about at fetch time, so a flag whose strategy is
+   * sticky on the member resolves for them rather than anonymously once this completes.
    */
   suspend fun awaitReady()
 }
