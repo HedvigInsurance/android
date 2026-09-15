@@ -44,3 +44,20 @@ interface DeliberateLogoutOrigin
 interface TrackedScreen {
   val screenParameters: Map<String, Any?>
 }
+
+/**
+ * The identity under which a destination's saved state and retained `ViewModel` are held, and the
+ * key both `BackstackController.allLiveContentKeys` and `owningTabByContentKey` are built from.
+ *
+ * This deliberately does **not** use navigation3's own `defaultContentKey`. That function is
+ * `@PublishedApi internal`, so it cannot be called from here, and it is not a stable contract: nav3
+ * `1.2.0-rc01` changed it from `key.toString()` to `"$key:${key::class}"`. Because the controller
+ * has to produce content keys for destinations that have no live `NavEntry` (everything in
+ * `parkedRuns`, and everything restored from `SavedStateRegistry` after process death), it cannot
+ * simply read them off entries and must derive them itself. Owning the derivation is what keeps the
+ * two sides in agreement.
+ *
+ * Entries get this applied centrally in `withHedvigContentKeys`, so individual `entry<>` call sites
+ * never pass a `contentKey` themselves.
+ */
+fun HedvigNavKey.contentKey(): String = toString()
