@@ -60,6 +60,7 @@ private fun PreviewClaimChatComponents() {
           onSwitchToAudioRecording = {},
           onLaunchFullScreenEditText = {},
           onSaveFreeText = {},
+          onCancelSubmission = {},
           freeTextMaxLength = 2000,
           canSkip = true,
           onSkip = {},

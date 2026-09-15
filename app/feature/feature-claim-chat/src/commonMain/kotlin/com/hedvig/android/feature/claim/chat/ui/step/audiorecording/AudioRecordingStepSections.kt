@@ -187,6 +187,7 @@ internal fun AudioRecordingStep(
         )
       },
       onSaveFreeText = { text -> onEvent(ClaimChatEvent.UpdateFreeText(text)) },
+      onCancelSubmission = { onEvent(ClaimChatEvent.AudioRecording.CancelTextSubmission) },
       freeTextMaxLength = stepContent.freeTextMaxLength,
       canSkip = stepContent.isSkippable,
       onSkip = onSkip,
@@ -219,6 +220,7 @@ internal fun AudioRecorderBubble(
   onSwitchToAudioRecording: () -> Unit,
   onLaunchFullScreenEditText: () -> Unit,
   onSaveFreeText: (String) -> Unit,
+  onCancelSubmission: () -> Unit,
   freeTextMaxLength: Int,
   canSkip: Boolean,
   onSkip: () -> Unit,
@@ -289,6 +291,9 @@ internal fun AudioRecorderBubble(
               isSubmitting = isSubmitting,
               onCancel = {
                 focusManager.clearFocus()
+                // Calls off an answer still in flight before leaving, so Avbryt does what it says rather
+                // than closing over a submission that lands anyway.
+                onCancelSubmission()
                 onSwitchToAudioRecording()
               },
               onSave = { text ->
