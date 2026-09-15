@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -51,6 +52,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun SwishPayinStatusDestination(
   viewModel: SwishPayinStatusViewModel,
   allowSandboxSwishApp: Boolean,
+  showSuccessScreen: Boolean,
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
   finishSwishSetup: () -> Unit,
@@ -70,15 +72,31 @@ internal fun SwishPayinStatusDestination(
     swishAppHandover.open(urlToAutoOpen)
   }
 
-  SwishPayinStatusScreen(
-    uiState = uiState,
-    navigateUp = navigateUp,
-    onCancel = navigateBack,
-    onContinue = finishSwishSetup,
-    onRetry = { viewModel.emit(SwishPayinStatusEvent.Retry) },
-    onChangePaymentMethod = changePaymentMethod,
-    openUrl = swishAppHandover::open,
-  )
+  val leavesWithoutConfirming = !showSuccessScreen && uiState is SwishPayinStatusUiState.Connected
+  LaunchedEffect(leavesWithoutConfirming) {
+    if (leavesWithoutConfirming) finishSwishSetup()
+  }
+
+  if (leavesWithoutConfirming) {
+    // The pop is already under way, and the entry stays on screen for the duration of its exit
+    // animation, so drawing the connected screen here would flash it on the way out.
+    Surface(
+      color = HedvigTheme.colorScheme.backgroundPrimary,
+      modifier = Modifier.fillMaxSize(),
+    ) {
+      HedvigFullScreenCenterAlignedProgress()
+    }
+  } else {
+    SwishPayinStatusScreen(
+      uiState = uiState,
+      navigateUp = navigateUp,
+      onCancel = navigateBack,
+      onContinue = finishSwishSetup,
+      onRetry = { viewModel.emit(SwishPayinStatusEvent.Retry) },
+      onChangePaymentMethod = changePaymentMethod,
+      openUrl = swishAppHandover::open,
+    )
+  }
 }
 
 @Composable

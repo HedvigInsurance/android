@@ -84,7 +84,7 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
           }
 
           is PayinAccount.SwishPayin -> {
-            backstack.add(SetupSwishPayinKey)
+            backstack.add(SetupSwishPayinKey())
           }
 
           is PayinAccount.Invoice -> {
@@ -118,7 +118,7 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
         backstack.popUpTo<SelectPayinMethodKey>(inclusive = true)
         navigateToConnectPayment()
       },
-      onSwishSelected = dropUnlessResumed { backstack.add(SetupSwishPayinKey) },
+      onSwishSelected = dropUnlessResumed { backstack.add(SetupSwishPayinKey()) },
       onInvoiceSelected = dropUnlessResumed { backstack.add(SetupInvoicePayinKey) },
       navigateUp = backstack::navigateUp,
     )
@@ -131,14 +131,16 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
     backstack.removeAllOf<SelectPayinMethodKey>()
   }
 
-  entry<SetupSwishPayinKey> {
+  entry<SetupSwishPayinKey> { key ->
     val viewModel: SetupSwishPayinViewModel = metroViewModel()
     SetupSwishPayinDestination(
       viewModel = viewModel,
       globalSnackBarState = globalSnackBarState,
       onSuccessfullyConnected = finishSwishSetup,
       navigateToApproval = dropUnlessResumed { order: SwishSetupOrder, phoneNumber: String ->
-        backstack.add(SwishPayinStatusKey(order.successUrl, order.orderId, phoneNumber))
+        backstack.add(
+          SwishPayinStatusKey(order.successUrl, order.orderId, phoneNumber, key.showSuccessScreen),
+        )
       },
       navigateUp = backstack::navigateUp,
     )
@@ -153,6 +155,7 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
       viewModel = viewModel,
       // Staging orders can only be approved in the Swish sandbox app, never the real one.
       allowSandboxSwishApp = !hedvigBuildConstants.isProduction,
+      showSuccessScreen = key.showSuccessScreen,
       navigateUp = backstack::navigateUp,
       navigateBack = backstack::popBackstack,
       finishSwishSetup = finishSwishSetup,

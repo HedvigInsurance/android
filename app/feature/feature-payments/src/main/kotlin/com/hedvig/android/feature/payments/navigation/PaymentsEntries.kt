@@ -55,6 +55,9 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
         backstack.add(PaymentDetailsKey(id))
       },
       onPaymentMethodsClicked = dropUnlessResumed { navigateToPayinAccount() },
+      onPrimaryPayinMethodClicked = dropUnlessResumed { method: PayinMethodId ->
+        navigateToPayinMethodDetails(method)
+      },
       onOpenManualCharge = {
         backstack.add(ManualChargeKey)
       },

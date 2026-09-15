@@ -76,7 +76,9 @@ internal class OnboardingNavigator(
   fun openPayinSetup(provider: OnboardingPayinProvider) {
     val key = when (provider) {
       OnboardingPayinProvider.Trustly -> TrustlyKey
-      OnboardingPayinProvider.Swish -> SetupSwishPayinKey
+
+      // The step behind this already reports the connection, so the setup flow skips its own.
+      OnboardingPayinProvider.Swish -> SetupSwishPayinKey(showSuccessScreen = false)
     }
     backstack.add(key)
   }
