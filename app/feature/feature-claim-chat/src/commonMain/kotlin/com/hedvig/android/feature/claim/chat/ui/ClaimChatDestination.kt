@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -86,7 +87,6 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.design.system.hedvig.TopAppBarColors
-import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.design.system.hedvig.icon.ArrowDown
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.claim.chat.ClaimChatEvent
@@ -111,13 +111,13 @@ import com.hedvig.android.feature.claim.chat.ui.step.TaskStepBottomContent
 import com.hedvig.android.feature.claim.chat.ui.step.TaskStepTopContent
 import com.hedvig.android.feature.claim.chat.ui.step.UploadFilesStep
 import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.AudioRecordingStep
+import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.FullScreenTextAnswer
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import hedvig.resources.A11Y_SCROLL_DOWN
 import hedvig.resources.CHAT_CONVERSATION_CLAIM_TITLE
 import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
-import hedvig.resources.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER
 import hedvig.resources.CLAIM_CHAT_EDIT_ANSWER_BUTTON
 import hedvig.resources.CLAIM_CHAT_EDIT_EXPLANATION
 import hedvig.resources.EMBARK_UPDATE_APP_BODY
@@ -249,45 +249,44 @@ private fun ClaimChatScreen(
   openAppSettings: () -> Unit,
   openPlayStore: () -> Unit,
 ) {
-  val currentFreeText = (uiState.currentStep?.stepContent as? StepContent.AudioRecording)
-    ?.recordingState.let { it as? AudioRecordingStepState.FreeTextDescription }
-    ?.freeText
-  // The inline text card is the answer everywhere it fits. It cannot fit above a landscape keyboard, which
-  // leaves around 34dp of the screen, so those windows get the full screen editor instead.
-  FreeTextOverlay(
-    freeTextMaxLength = uiState.showFreeTextOverlay?.maxLength ?: DEFAULT_FREE_TEXT_MAX_LENGTH,
-    freeTextValue = currentFreeText,
-    freeTextHint = stringResource(Res.string.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER),
-    freeTextTitle = stringResource(Res.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
-    freeTextOnCancelClick = {
-      onEvent(ClaimChatEvent.CloseFreeChatOverlay)
-      uiState.currentStep?.id?.let { onEvent(ClaimChatEvent.AudioRecording.SwitchToAudioRecording(it)) }
-    },
-    freeTextOnSaveClick = { answer ->
-      onEvent(ClaimChatEvent.UpdateFreeText(answer))
-      onEvent(ClaimChatEvent.CloseFreeChatOverlay)
-      uiState.currentStep?.id?.let { onEvent(ClaimChatEvent.AudioRecording.SubmitTextInput(it)) }
-    },
-    shouldShowOverlay = uiState.showFreeTextOverlay != null,
-    overlaidContent = {
-      ClaimChatScreenContent(
-        uiState = uiState,
-        onEvent = onEvent,
-        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-        openAppSettings = openAppSettings,
-        onNavigateToImageViewer = onNavigateToImageViewer,
-        navigateToDeflect = navigateToDeflect,
-        appPackageId = appPackageId,
-        imageLoader = imageLoader,
-        navigateUp = navigateUp,
-        navigateBack = navigateBack,
-        openPlayStore = openPlayStore,
-      )
-    },
+  ClaimChatScreenContent(
+    uiState = uiState,
+    onEvent = onEvent,
+    shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+    openAppSettings = openAppSettings,
+    onNavigateToImageViewer = onNavigateToImageViewer,
+    navigateToDeflect = navigateToDeflect,
+    appPackageId = appPackageId,
+    imageLoader = imageLoader,
+    navigateUp = navigateUp,
+    navigateBack = navigateBack,
+    openPlayStore = openPlayStore,
   )
+  // The inline card is the answer wherever it fits. It cannot fit above a landscape keyboard, which leaves
+  // around 34dp under the app bar, so those windows answer in the same fields filling the screen instead.
+  val freeTextRestrictions = uiState.showFreeTextOverlay
+  if (freeTextRestrictions != null) {
+    val recordingState = (uiState.currentStep?.stepContent as? StepContent.AudioRecording)
+      ?.recordingState as? AudioRecordingStepState.FreeTextDescription
+    FullScreenTextAnswer(
+      initialText = recordingState?.freeText.orEmpty(),
+      maxLength = freeTextRestrictions.maxLength,
+      errorType = recordingState?.errorType,
+      hasError = recordingState?.hasError == true,
+      isSubmitting = uiState.currentContinueButtonLoading,
+      onCancel = {
+        onEvent(ClaimChatEvent.AudioRecording.CancelTextSubmission)
+        onEvent(ClaimChatEvent.CloseFreeChatOverlay)
+        uiState.currentStep?.id?.let { onEvent(ClaimChatEvent.AudioRecording.SwitchToAudioRecording(it)) }
+      },
+      onSave = { answer: String ->
+        onEvent(ClaimChatEvent.UpdateFreeText(answer))
+        onEvent(ClaimChatEvent.CloseFreeChatOverlay)
+        uiState.currentStep?.id?.let { onEvent(ClaimChatEvent.AudioRecording.SubmitTextInput(it)) }
+      },
+    )
+  }
 }
-
-private const val DEFAULT_FREE_TEXT_MAX_LENGTH = 2000
 
 @Composable
 private fun ClaimChatScreenContent(
@@ -455,7 +454,10 @@ private fun ClaimChatScreenContent(
         },
       )
     }
-    if (isScrolledBack) {
+    // Not while the keyboard is up: the member is answering, not reading back, and the arrow would sit on
+    // top of the input's own buttons.
+    val isKeyboardUp = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+    if (isScrolledBack && !isKeyboardUp) {
       ScrollToBottomButton(
         onClick = {
           coroutineScope.launch {
