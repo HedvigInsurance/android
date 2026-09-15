@@ -576,10 +576,6 @@ internal class ClaimChatPresenter(
 
             is ClaimChatEvent.AudioRecording.SwitchToFreeText -> {
               steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
-                showFreeTextOverlay = FreeTextRestrictions(
-                  content.freeTextMinLength,
-                  content.freeTextMaxLength,
-                )
                 step.copy(
                   stepContent = content.copy(
                     recordingState = FreeTextDescription(
