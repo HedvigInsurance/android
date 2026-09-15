@@ -31,7 +31,6 @@ import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.draw.innerShadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.semantics.Role
@@ -44,14 +43,15 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
+import com.hedvig.android.design.system.hedvig.tokens.ButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.GhostStyleButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.LargeSizeButtonTokens
+import com.hedvig.android.design.system.hedvig.tokens.LiquidGlassButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.MediumSizeButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.MiniSizeButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.PrimaryAltStyleButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.PrimaryStyleButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.RedStyleButtonTokens
-import com.hedvig.android.design.system.hedvig.tokens.RoundedLargeSizeButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.RoundedLiquidGlassStyleButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.RoundedPrimaryStyleButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.SecondaryAltStyleButtonTokens
@@ -78,7 +78,6 @@ fun HedvigButton(
   border: Color? = null,
   onClickLabel: String? = null,
   isLoading: Boolean = false,
-  shape: Shape? = null,
 ) {
   HedvigButton(
     onClick = onClick,
@@ -89,34 +88,73 @@ fun HedvigButton(
     interactionSource = interactionSource,
     border = border,
     onClickLabel = onClickLabel,
-    shape = shape,
     isLoading = isLoading,
   ) {
-    val buttonColors = buttonStyle.style.buttonColors
-    val loadingTransition = updateTransition(isLoading, label = "loading transition")
-    loadingTransition.AnimatedContent(
-      transitionSpec = {
-        fadeIn(tween(durationMillis = 220, delayMillis = 90)) togetherWith fadeOut(tween(90))
-      },
-      contentAlignment = Alignment.Center,
-    ) { loading ->
-      if (loading) {
-        LayoutWithoutPlacement(
-          sizeAdjustingContent = { HedvigText(text = text, modifier = Modifier.withoutPlacement()) },
-        ) {
-          val desc = stringResource(Res.string.TALKBACK_LOADING_STATE_BUTTON)
-          ThreeDotsLoading(
-            stableColor = buttonColors.activeLoadingIndicatorColor,
-            temporaryColor = buttonColors.inactiveLoadingIndicatorColor,
-            modifier = Modifier.wrapContentSize(Alignment.Center)
-              .semantics {
-                contentDescription = desc
-              },
-          )
-        }
-      } else {
-        HedvigText(text = text, textAlign = TextAlign.Center)
+    ButtonLabel(text = text, isLoading = isLoading, buttonColors = buttonStyle.style.buttonColors)
+  }
+}
+
+/**
+ * A pill of the iOS liquid glass material, lifted off the content behind it by a drop shadow.
+ * Unlike [HedvigButton] it takes no [ButtonSize]: Figma draws these at exactly one size, so there
+ * is nothing to choose. See [ButtonDefaults.LiquidGlassButtonStyle].
+ *
+ * @param isLoading Behaves as it does on [HedvigButton].
+ */
+@Composable
+fun HedvigLiquidGlassButton(
+  text: String,
+  onClick: () -> Unit,
+  enabled: Boolean,
+  modifier: Modifier = Modifier,
+  glassStyle: ButtonDefaults.LiquidGlassButtonStyle = ButtonDefaults.LiquidGlassButtonStyle.Tinted,
+  interactionSource: MutableInteractionSource? = null,
+  border: Color? = null,
+  onClickLabel: String? = null,
+  isLoading: Boolean = false,
+) {
+  val style = glassStyle.style
+  ButtonImpl(
+    onClick = onClick,
+    enabled = enabled,
+    modifier = modifier,
+    style = style,
+    size = Size.LiquidGlass,
+    interactionSource = interactionSource,
+    border = border,
+    onClickLabel = onClickLabel,
+    isLoading = isLoading,
+  ) {
+    ButtonLabel(text = text, isLoading = isLoading, buttonColors = style.buttonColors)
+  }
+}
+
+/** The label slot shared by [HedvigButton] and [HedvigLiquidGlassButton], including the loading swap. */
+@Composable
+private fun ButtonLabel(text: String, isLoading: Boolean, buttonColors: ButtonColors) {
+  val loadingTransition = updateTransition(isLoading, label = "loading transition")
+  loadingTransition.AnimatedContent(
+    transitionSpec = {
+      fadeIn(tween(durationMillis = 220, delayMillis = 90)) togetherWith fadeOut(tween(90))
+    },
+    contentAlignment = Alignment.Center,
+  ) { loading ->
+    if (loading) {
+      LayoutWithoutPlacement(
+        sizeAdjustingContent = { HedvigText(text = text, modifier = Modifier.withoutPlacement()) },
+      ) {
+        val desc = stringResource(Res.string.TALKBACK_LOADING_STATE_BUTTON)
+        ThreeDotsLoading(
+          stableColor = buttonColors.activeLoadingIndicatorColor,
+          temporaryColor = buttonColors.inactiveLoadingIndicatorColor,
+          modifier = Modifier.wrapContentSize(Alignment.Center)
+            .semantics {
+              contentDescription = desc
+            },
+        )
       }
+    } else {
+      HedvigText(text = text, textAlign = TextAlign.Center)
     }
   }
 }
@@ -131,14 +169,43 @@ fun HedvigButton(
   interactionSource: MutableInteractionSource? = null,
   border: Color? = null,
   onClickLabel: String? = null,
-  shape: Shape? = null,
   isLoading: Boolean = false,
+  content: @Composable RowScope.() -> Unit,
+) {
+  ButtonImpl(
+    onClick = onClick,
+    enabled = enabled,
+    modifier = modifier,
+    style = buttonStyle.style,
+    size = buttonSize.size,
+    interactionSource = interactionSource,
+    border = border,
+    onClickLabel = onClickLabel,
+    isLoading = isLoading,
+    content = content,
+  )
+}
+
+/**
+ * The one rendering path behind [HedvigButton] and [HedvigLiquidGlassButton]. [style] and [size] arrive
+ * already resolved, which is what keeps the two axes independent: a caller's [ButtonStyle] cannot
+ * reach in and change the metrics its [ButtonSize] asked for.
+ */
+@Composable
+private fun ButtonImpl(
+  onClick: () -> Unit,
+  enabled: Boolean,
+  modifier: Modifier,
+  style: Style,
+  size: Size,
+  interactionSource: MutableInteractionSource?,
+  border: Color?,
+  onClickLabel: String?,
+  isLoading: Boolean,
   content: @Composable RowScope.() -> Unit,
 ) {
   @Suppress("NAME_SHADOWING")
   val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
-  val style = buttonStyle.style
-  val size = buttonSize.sizeIn(style)
   val buttonColors = style.buttonColors
   val containerColor = buttonColors.containerColor(enabled)
   val contentColor = buttonColors.contentColor(enabled)
@@ -152,8 +219,7 @@ fun HedvigButton(
     },
   )
 
-  @Suppress("NAME_SHADOWING")
-  val shape = shape ?: size.shape
+  val shape = ButtonTokens.ContainerShape.value
   val glass = style.glassMaterial.takeIf { enabled }
   Surface(
     onClick = onClick,
@@ -271,7 +337,7 @@ fun HedvigButtonGhostWithBorder(
     modifier = modifier.border(
       width = 1.dp,
       color = HedvigTheme.colorScheme.borderPrimary,
-      shape = size.size.shape,
+      shape = ButtonTokens.ContainerShape.value,
     ),
     buttonSize = size,
     interactionSource = interactionSource,
@@ -288,14 +354,11 @@ private fun PreviewRoundedButtons() {
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.padding(16.dp),
       ) {
-        for (buttonStyle in listOf(
-          ButtonDefaults.ButtonStyle.RoundedPrimary,
-          ButtonDefaults.ButtonStyle.RoundedLiquidGlass,
-        )) {
+        for (glassStyle in ButtonDefaults.LiquidGlassButtonStyle.entries) {
           Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            HedvigButton("Make a claim", {}, enabled = true, buttonStyle = buttonStyle)
-            HedvigButton("Disabled", {}, enabled = false, buttonStyle = buttonStyle)
-            HedvigButton("Loading", {}, enabled = true, buttonStyle = buttonStyle, isLoading = true)
+            HedvigLiquidGlassButton("Make a claim", {}, enabled = true, glassStyle = glassStyle)
+            HedvigLiquidGlassButton("Disabled", {}, enabled = false, glassStyle = glassStyle)
+            HedvigLiquidGlassButton("Loading", {}, enabled = true, glassStyle = glassStyle, isLoading = true)
           }
         }
       }
@@ -314,12 +377,22 @@ object ButtonDefaults {
     SecondaryAlt,
     Ghost,
     Red,
+  }
 
-    /** A filled pill with the sheen and drop shadow of the iOS glass material. */
-    RoundedPrimary,
+  /**
+   * The two variants of [HedvigLiquidGlassButton]. Figma models them as one component with a
+   * boolean Tinted variant, so they are a pair here rather than two entries in [ButtonStyle]: both
+   * carry the same drop shadow and the same fixed padding, and neither takes a [ButtonSize].
+   */
+  enum class LiquidGlassButtonStyle {
+    /**
+     * An opaque pill, Figma's `Tinted = True`. Renders in the same colors as [ButtonStyle.Primary]
+     * at every state; the drop shadow is the only thing that distinguishes the two.
+     */
+    Tinted,
 
-    /** A translucent pill of the iOS glass material, letting the backdrop show through. */
-    RoundedLiquidGlass,
+    /** A translucent pill, Figma's `Tinted = False`, letting the backdrop show through. */
+    Regular,
   }
 
   enum class ButtonSize {
@@ -338,8 +411,12 @@ private val ButtonDefaults.ButtonStyle.style: Style
     ButtonDefaults.ButtonStyle.SecondaryAlt -> Style.SecondaryAlt
     ButtonDefaults.ButtonStyle.Ghost -> Style.Ghost
     ButtonDefaults.ButtonStyle.Red -> Style.Red
-    ButtonDefaults.ButtonStyle.RoundedPrimary -> Style.RoundedPrimary
-    ButtonDefaults.ButtonStyle.RoundedLiquidGlass -> Style.RoundedLiquidGlass
+  }
+
+private val ButtonDefaults.LiquidGlassButtonStyle.style: Style
+  get() = when (this) {
+    ButtonDefaults.LiquidGlassButtonStyle.Tinted -> Style.LiquidGlassTinted
+    ButtonDefaults.LiquidGlassButtonStyle.Regular -> Style.LiquidGlassRegular
   }
 
 private val ButtonSize.size: Size
@@ -349,16 +426,6 @@ private val ButtonSize.size: Size
     ButtonSize.Small -> Size.Small
     ButtonSize.Mini -> Size.Mini
   }
-
-/**
- * The metrics this size takes on within [style]. The rounded styles get their own pill metrics at
- * [ButtonSize.Large]; at every smaller size they fall back to the standard button metrics.
- */
-@Composable
-private fun ButtonSize.sizeIn(style: Style): Size = when {
-  style.glassMaterial != null && this == ButtonSize.Large -> Size.LargeRounded
-  else -> size
-}
 
 @Immutable
 private data class ButtonColors(
@@ -396,9 +463,6 @@ private sealed interface Size {
   @get:Composable
   val textStyle: TextStyle
 
-  @get:Composable
-  val shape: Shape
-
   object Large : Size {
     override val contentPadding: PaddingValues = PaddingValues(
       top = LargeSizeButtonTokens.TopPadding,
@@ -411,30 +475,20 @@ private sealed interface Size {
       @Composable
       @ReadOnlyComposable
       get() = LargeSizeButtonTokens.LabelTextFont.value
-
-    override val shape: Shape
-      @Composable
-      @ReadOnlyComposable
-      get() = LargeSizeButtonTokens.ContainerShape.value
   }
 
-  object LargeRounded : Size {
+  object LiquidGlass : Size {
     override val contentPadding: PaddingValues = PaddingValues(
-      top = RoundedLargeSizeButtonTokens.TopPadding,
-      bottom = RoundedLargeSizeButtonTokens.BottomPadding,
-      start = RoundedLargeSizeButtonTokens.HorizontalPadding,
-      end = RoundedLargeSizeButtonTokens.HorizontalPadding,
+      top = LiquidGlassButtonTokens.TopPadding,
+      bottom = LiquidGlassButtonTokens.BottomPadding,
+      start = LiquidGlassButtonTokens.HorizontalPadding,
+      end = LiquidGlassButtonTokens.HorizontalPadding,
     )
 
     override val textStyle: TextStyle
       @Composable
       @ReadOnlyComposable
-      get() = RoundedLargeSizeButtonTokens.LabelTextFont.value
-
-    override val shape: Shape
-      @Composable
-      @ReadOnlyComposable
-      get() = RoundedLargeSizeButtonTokens.ContainerShape.value
+      get() = LiquidGlassButtonTokens.LabelTextFont.value
   }
 
   object Medium : Size {
@@ -449,11 +503,6 @@ private sealed interface Size {
       @Composable
       @ReadOnlyComposable
       get() = MediumSizeButtonTokens.LabelTextFont.value
-
-    override val shape: Shape
-      @Composable
-      @ReadOnlyComposable
-      get() = MediumSizeButtonTokens.ContainerShape.value
   }
 
   object Small : Size {
@@ -468,11 +517,6 @@ private sealed interface Size {
       @Composable
       @ReadOnlyComposable
       get() = SmallSizeButtonTokens.LabelTextFont.value
-
-    override val shape: Shape
-      @Composable
-      @ReadOnlyComposable
-      get() = SmallSizeButtonTokens.ContainerShape.value
   }
 
   object Mini : Size {
@@ -487,11 +531,6 @@ private sealed interface Size {
       @Composable
       @ReadOnlyComposable
       get() = MiniSizeButtonTokens.LabelTextFont.value
-
-    override val shape: Shape
-      @Composable
-      @ReadOnlyComposable
-      get() = MiniSizeButtonTokens.ContainerShape.value
   }
 }
 
@@ -604,7 +643,7 @@ private sealed interface Style {
       }
   }
 
-  data object RoundedPrimary : Style {
+  data object LiquidGlassTinted : Style {
     // The fill inverts between themes: near-black on light, opaque white on dark.
     override val glassMaterial: GlassMaterial
       @Composable
@@ -629,7 +668,7 @@ private sealed interface Style {
       }
   }
 
-  data object RoundedLiquidGlass : Style {
+  data object LiquidGlassRegular : Style {
     override val glassMaterial: GlassMaterial
       @Composable
       get() = liquidGlassMaterial

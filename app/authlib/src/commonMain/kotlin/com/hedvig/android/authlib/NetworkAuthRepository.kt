@@ -24,11 +24,17 @@ import kotlinx.io.IOException
 
 private const val POLL_DELAY_MILLIS = 1000L
 
-public class NetworkAuthRepository(
+public class NetworkAuthRepository internal constructor(
   environment: AuthEnvironment,
   additionalHttpHeadersProvider: () -> Map<String, String>,
+  engine: HttpClientEngine?,
 ) : AuthRepository {
-  private val ktorClient: HttpClient = buildKtorClient(additionalHttpHeadersProvider)
+  public constructor(
+    environment: AuthEnvironment,
+    additionalHttpHeadersProvider: () -> Map<String, String>,
+  ) : this(environment, additionalHttpHeadersProvider, null)
+
+  private val ktorClient: HttpClient = buildKtorClient(additionalHttpHeadersProvider, engine)
 
   private val authService = AuthService(environment, ktorClient)
 

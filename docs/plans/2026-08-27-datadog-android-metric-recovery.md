@@ -1,8 +1,19 @@
 # Datadog Android metric recovery
 
-**Status: partially complete. One scheduled follow-up is blocked on an app release.**
+**Status: three items open.** One is time-boxed to the release carrying the auth instrumentation:
+take the SLO window back to 7 days about a week after. See "After the release" below. The
+auth-unreachable gap that used to be a fourth item is closed as accepted, also below.
 
-Last updated 2026-08-28.
+The `OR`-branch cleanup is blocked on the pre-14.3.6 install base draining. Measured 2026-09-11,
+versions at or below 14.3.2 were about 11.5% of prod view events over 30 days but only **1.1% over 7
+days and 0.7% over one day**, so the 30-day figure lags badly and the trigger is closer than it
+looks. Every number in this document is re-runnable; the commands are inline next to each one, and
+they should be re-run rather than trusted, because most of these are still moving.
+
+The claim-submission-failure action is unstarted, and the guard-rail monitor is still just a
+suggestion.
+
+Last updated 2026-09-11.
 
 ## What broke
 
@@ -16,7 +27,8 @@ Measured: app versions up to 14.3.2 emit 42 to 79 distinct `@view.name` values; 
 three or four, all activity-level. All 18 custom `android.*` RUM metrics filter on `@view.name` or
 `@view.url`, so all 18 broke. Control: `trace.android.request.hits` was flat across the same window
 (1.39M vs 1.41M), so usage never changed. The 13 `ios.*` metrics were unaffected, because iOS names
-views differently and its two newest metrics are action-based.
+views differently. Three of the 13 are action-based, which is a separate property worth knowing but
+not the reason they survived.
 
 Consumers all reference the metrics **by name**, so the "Apps (Android + iOS)" dashboard, monitor
 12054196, and the three Android SLOs need no edits of their own. The SLOs are metric-based
@@ -29,29 +41,13 @@ ingestion and are not retroactive.
 
 ### App code
 
-`Navigation3TrackingEffect` (from `dd-sdk-android-compose`, already pinned) now reports the top of the
-back stack as a RUM view, wired in `HedvigApp` off `Backstack.entries`. New view names are the nav key
-canonical class names, with no `/{arg}` placeholder suffix:
+`Navigation3TrackingEffect` now reports the top of the back stack as a RUM view, wired in `HedvigApp`
+off `Backstack.entries`, so view names are nav key canonical class names again. The same change fixed
+a pre-existing Firebase defect where `screenName` was `simpleName.removeSuffix("Key")` and silently
+merged four pairs of screens sharing a simple name, and it consolidated five KMP modules onto the
+`com.hedvig.android.*` namespace that the new naming depends on.
 
-```
-com.hedvig.android.feature.claim.chat.navigation.ClaimOutcomeNewClaimKey
-```
-
-The same change fixed a pre-existing Firebase defect found along the way: `screenName` was
-`simpleName.removeSuffix("Key")`, which silently merged four pairs of screens that share a simple name
-across features (`FirstVet`, `Forever`, `SubmitSuccess`, `SubmitFailure`).
-
-A Firebase screen name is now the key's fully qualified class name with the shared feature package
-prefix removed, so `change.tier.navigation.SubmitSuccessKey`. Prepending `com.hedvig.android.feature.`
-gets back to the declaration, which means a name read off a Firebase report greps straight to its key
-with no convention to decode. The prefix is dropped because GA4 truncates parameter values at 100
-characters and the longest key name is already 91. `ScreenNameTest` asserts uniqueness, reversibility
-and that length bound across every key on the classpath.
-
-That single prefix only works because the package namespace was consolidated at the same time: five
-KMP modules (`authlib`, `audio-player-data`, `ui-tiers-and-addons`, `feature-claim-chat`,
-`feature-remove-addons`) declared `com.hedvig.*` while every other module and, crucially, every
-generated Android namespace used `com.hedvig.android.*`. Those five now match the rest.
+Full reasoning, measurements and the `ScreenNameTest` invariants are in PR #3104.
 
 ### Datadog: 10 filter rewrites (applied 2026-08-27)
 
@@ -73,7 +69,18 @@ measures and they will confuse the next person.
 
 ### Trigger condition
 
-Remove them once traffic from app versions at or below 14.3.2 is negligible. Check with:
+Remove them once traffic from app versions at or below 14.3.2 is negligible.
+
+To get the share directly, over any window (this is where the header's 30d/7d/1d figures come from):
+
+```bash
+pup rum aggregate \
+  --query '@type:view @application.id:4d7b8355-396d-406e-b543-30a073050e8f @session.type:user' \
+  --compute count --group-by version --limit 200 --from 7d
+```
+
+Sum the buckets whose version is at or below 14.3.2 and divide by the total. Or check a single
+known-old view name, which returns nothing once the old builds are gone:
 
 ```
 pup rum aggregate \
@@ -96,7 +103,7 @@ pup rum aggregate \
   --compute count --group-by @view.name --limit 120 --from 30d
 ```
 
-### The 8 metrics to edit, with their target filters
+### The 6 metrics to edit, with their target filters
 
 Apply with `pup rum metrics update <id> --file payload.json`, where the payload is:
 
@@ -140,17 +147,31 @@ Apply with `pup rum metrics update <id> --file payload.json`, where the payload 
 @application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:com.hedvig.android.feature.claim.chat.navigation.* @error.source:network @connectivity.status:connected -@error.stack:java.net.ConnectException* -@error.stack:java.net.SocketException* -@error.stack:java.net.SocketTimeoutException* -@error.stack:java.net.UnknownHostException* -@error.stack:java.util.concurrent.CancellationException*
 ```
 
-#### `android.login.network.count`
+#### The two login metrics are not in this list
+
+**Superseded 2026-09-09. Do not put a `@view.name` filter on `android.login.network.count` or
+`android.login.network.error`.**
+
+Both were rebuilt on auth resource events and no longer mention `@view.name` at all. Their live
+filters are:
 
 ```
-@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:com.hedvig.android.feature.login.navigation.SwedishLoginKey @connectivity.status:connected
+count   @application.id:4d7b8355-396d-406e-b543-30a073050e8f @resource.url_host:(auth.prod.hedvigit.com OR auth.dev.hedvigit.com) @resource.url_path:"/member-login" @session.type:user
+error   the same, plus @resource.status_code:[500 TO 599]
 ```
 
-#### `android.login.network.error`
+Both are `event_type: resource` grouped by `env`, so the failure count is a subset of the attempt
+count by construction. SLO `29588e73473d54f09814173755548b80` moved to a 30-day window and monitor
+`93408872` follows it.
 
-```
-@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:com.hedvig.android.feature.login.navigation.SwedishLoginKey @connectivity.status:connected -@error.stack:java.net.ConnectException* -@error.stack:java.net.SocketException* -@error.stack:java.net.SocketTimeoutException* -@error.stack:java.net.UnknownHostException* -@error.stack:java.util.concurrent.CancellationException* -@error.stack:*CertPathValidatorException* -@error.message:*CertPathValidatorException* -@error.message:*Connection\ reset*
-```
+Applying a view-name filter here would put the denominator back to counting `apollo-router` calls
+that merely coincided with the login screen being open. That is the defect that made this SLO report
+534.351% of its error budget with no outage behind it: 96 of its 131 denominator events were GraphQL
+traffic, and the numerator counted a different event type entirely.
+
+Note for whoever does the remaining six: `event_type` cannot be changed with `pup rum metrics update`.
+The PATCH returns 200, applies the filter and silently discards the event type. A change of event
+type needs a delete and recreate under the same name, which does not purge the existing timeseries.
 
 #### `android.changeaddress.view.count`
 
@@ -177,57 +198,35 @@ on top of `Chat` (8,089), inflating the chat metric and the Chat (Android) SLO d
 10%. Login has the same hazard, where the wildcard would add `LoginKey`, `OtpInputKey` and
 `GenericAuthCredentialsInputKey`. Both must keep an explicit single-name filter.
 
-## PENDING: 8 deletions, deliberately held
+## Done: 8 dead metrics deleted 2026-09-10
 
-These metrics read zero and cannot be repaired, because they target screens that no longer exist.
-All were confirmed to have **no** dashboards, monitors, SLOs or notebooks attached. `android.claim.failure`
-joined this list on 2026-08-27, when the dashboard tile that was its only consumer was replaced (see
-the claim-failure section below).
+Eight metrics targeted screens deleted in March 2026, or 2023 in the case of `android.auth.failure`,
+and had read zero ever since. They were held back only because nobody knew whether deleting a
+generated metric also purges its already-computed timeseries.
 
-| Metric | Zero since | Why unrepairable |
-|---|---|---|
-| `android.claim.singleitempayout` | 2026-03 | No payout step in a chat-based flow |
-| `android.claim.submitclaim` | 2026-03 | Keyed on the deleted Summary screen's `@view.url` |
-| `android.claimsummary.network.count` | 2026-03 | Same deleted Summary screen |
-| `android.claimsummary.network.error` | 2026-03 | Same deleted Summary screen |
-| `android.resource.claimflow` | 2026-03 | Duplicate of `android.claimflow.network.count` |
-| `android.claimflow.errors` | 2026-03 | Duplicate of `android.claimflow.network.error` |
-| `android.auth.failure` | 2023-10 | Matches a hand-written `"BankId Error"` view removed in 2023 |
-| `android.claim.failure` | 2026-03 | Targets `ClaimFlowDestination.Failure`; the chat flow has no failure screen |
+It does not. Verified 2026-09-09, when `android.login.network.error` was deleted and recreated under
+the same name and kept all 24 of its points. These eight had no data to lose either way.
 
-**Why held:** neither the Datadog product docs nor the API reference state whether deleting a
-generated metric also purges the already-computed timeseries. Holding costs nothing, since these
-metrics already compute zero, so the only correct move was to wait for a definitive answer rather than
-risk pre-March history. Resolve by asking Datadog support, then delete.
-
-Their full definitions are recorded in this repo's git history via this document's companion tooling
-output; if any is deleted and needs restoring, recreate with `pup rum metrics create`.
+Deleted: `android.claim.singleitempayout`, `android.claim.submitclaim`,
+`android.claimsummary.network.count`, `android.claimsummary.network.error`,
+`android.resource.claimflow`, `android.claimflow.errors`, `android.auth.failure` and
+`android.claim.failure`. Confirmed first that no dashboard, notebook, monitor or SLO referenced any
+of them. Their full definitions are recorded in the message of the commit that deleted them, since
+Datadog keeps no history of a generated metric's definition.
 
 ## Claim-failure signal: replaced 2026-08-27
 
-`android.claim.failure` targeted `ClaimFlowDestination.Failure`, deleted in March, and there is no
-equivalent screen to repoint it at. `ClaimIntentOutcome` is a sealed interface with exactly one case,
-`Claim`. Failure surfaces as `ClaimChatUiState.FailedToStart` rendering an error section *inside* the
-`ClaimChatKey` view, so it produces no distinct view name and no filter can reach it.
+`android.claim.failure` targeted `ClaimFlowDestination.Failure`, deleted in March. Failure now
+surfaces as `ClaimChatUiState.FailedToStart` rendering inside the `ClaimChatKey` view, so it produces
+no distinct view name and no filter can reach it. Rather than count failures, the flow is measured as
+a completion ratio: `android.claim.started` counts claim-chat entry views, and the dashboard tile
+"Claim submissions per chat entry" computes `android.claim.success / android.claim.started * 100`.
+Both halves are structurally identical metrics, so counting semantics apply equally to each.
 
-Rather than count failures, the flow is now measured as a completion ratio:
-
-- **`android.claim.started`** created, counting views of the claim chat entry screen, accepting both
-  the old and new names exactly like `android.claim.success`.
-- The dashboard tile "Failure claim screen viewed" was replaced with **"Claim submissions per chat
-  entry"**, computing `android.claim.success / android.claim.started * 100`.
-
-Both halves of the ratio are structurally identical metrics (view count, grouped by `env`, same
-`uniqueness`), so any counting semantics apply equally to numerator and denominator.
-
-**Read this number as a trend, not an absolute conversion rate.** The denominator counts chat-screen
-views, and a member who backs out and resumes, or returns to a claim later, produces more than one.
-On the 30 days before the change the old-name equivalents were 305 chat views against 59 outcome
-views, so expect a figure in that region rather than a true per-attempt success rate. What matters is
-that it moves when claim submission degrades.
-
-Because that tile was `android.claim.failure`'s only consumer, that metric now has none, and it joins
-the held-deletion list above.
+**Read that tile as a trend, not a conversion rate.** The denominator counts chat-screen views, and a
+member who backs out and resumes produces more than one. Over the 30 days before the change the
+old-name equivalents were 305 chat views against 59 outcome views, so expect a figure in that region.
+What matters is that it moves when claim submission degrades.
 
 ### Still worth doing: emit an action for submission failure
 
@@ -237,8 +236,14 @@ The durable form of a failure signal is an action, not a screen or a UI state:
 logAction(type = ActionType.CUSTOM, name = "CLAIM_SUBMISSION_FAILED")
 ```
 
-Action-based metrics do not break when navigation changes, which is why no iOS metric broke in this
-incident. Note that the two obvious instrumentation points are both wrong: `failedToStart` and
+Action-based metrics do not break when navigation changes. An earlier version of this document
+added "which is why no iOS metric broke in this incident". That was wrong: the Nav2 to Nav3
+migration was Android-only, so iOS view names never moved at all. One thing is worth keeping from
+that check, because it constrains how to do this here: an action name is only durable if the app
+owns the constant. Of the three action-based `ios.*` metrics, one keys off a GraphQL type name owned
+by the backend schema and would die silently on a rename.
+
+Note that the two obvious instrumentation points are both wrong: `failedToStart` and
 `errorSubmittingStep` are transient, retryable states that are set and cleared repeatedly, so
 instrumenting them counts error *displays*, not failed claims, and a member on a flaky connection
 produces several. Emit at a terminal boundary instead, for example when the member abandons the flow
@@ -258,6 +263,98 @@ roughly the same 1.4%. This metric is the denominator of the Claims flow (Androi
 reads marginally better. Two keys in the new scope, `StartClaimPledgeKey` and `UpdateAppKey`, have no
 old equivalent to measure, but neither issues network requests in normal use.
 
+## Accepted: this SLO cannot see an unreachable auth service
+
+**Decided 2026-09-11. No action. Do not reopen this without new information.**
+
+The SLI counts `POST /member-login` resource events with a 5xx status. A request that never reaches
+the server produces a RUM error and no resource at all, so it lands in neither side of the ratio. If
+auth becomes unreachable the denominator collapses toward zero and the SLI reads 100% or no-data.
+Nothing fires. The worst outage produces the best number and silence.
+
+An earlier version of this document said to cover that by flipping `notify_no_data` to `true` on
+monitor `93408872`. **That does not work.** The monitor is `type: "slo alert"`, and `notify_no_data`
+is not honoured on SLO alert monitors: the field reads `false` and carries no `no_data_timeframe`.
+
+```bash
+pup api "/api/v1/monitor/93408872" | jq '.data | {type, notify_no_data: .options.notify_no_data}'
+```
+
+It is not a setting someone forgot to turn on. Across the org, all 32 SLO alert monitors have it
+`false`, and the only 2 monitors setting it `true` are ordinary metric monitors, both of the
+"no signs on the website" absence-alarm kind:
+
+```bash
+pup api "/api/v1/monitor?page_size=1000" \
+  | jq -r '.data[] | [.type, (.options.notify_no_data|tostring), .name] | @tsv' \
+  | sort | uniq -c -f1
+```
+
+Covering it properly would mean a second monitor watching `sum:android.login.network.count` for an
+absence. That is not being built, for two reasons. The gap has existed for as long as the SLO has,
+so nothing is getting worse. And a genuinely unreachable auth service is already caught server-side
+by the `Auth: post auth` and `Auth: get member credentials` SLOs, which run on APM traces with the
+full population and no client sampling, so someone gets paged either way. What this SLO uniquely
+sees is the network path between the member and the server, which is also the part Android cannot
+fix.
+
+The thing to remember is the reading rule: **a green `Auth: login (Android)` is not by itself
+evidence that login works.** Check that the denominator is non-zero before believing it.
+
+## After the release: take the SLO window back to 7 days
+
+This waits for the release that carries the auth instrumentation, because before it there is
+legitimately no prod data on `android.login.network.count`. About a week after it is the right time.
+
+Set the SLO `timeframe` and its `thresholds[].timeframe` back to `7d`, and the monitor query back to
+`error_budget("29588e73473d54f09814173755548b80").over("7d")`. All three have to move together or
+the monitor asks the SLO for a window it no longer defines.
+
+**Why.** `error_budget(...).over(30d)` is a trailing window, so once the budget is burned the monitor
+stays red until the burning events age out, up to a month. Seven days recovers four times faster.
+
+**Check the arithmetic against real traffic before doing it.** The window was widened to 30d to get a
+usable budget, and shortening it takes that back. At the expected volume:
+
+| Window and target | Budget |
+|---|---|
+| 7d at 99% | about 8 failures |
+| 30d at 99% | about 34 failures |
+| 7d at 97% | about 23 failures |
+
+Based on Swedish-login view impressions over the 30 days to 2026-09-11, which read 3,361 and are
+climbing, so roughly 780 attempts a week, a bit over 100 a day. A 7-day window at 99% means any week
+with eight 5xx responses breaches. Re-read the input with:
+
+```bash
+pup rum aggregate \
+  --query '@type:view @application.id:4d7b8355-396d-406e-b543-30a073050e8f @session.type:user
+           @view.name:(com.hedvig.android.feature.login.navigation.SwedishLoginKey OR
+                       com.hedvig.android.feature.login.navigation.LoginDestinations.SwedishLogin)' \
+  --compute count --from 30d
+```
+
+Both names are needed: the second is the pre-14.3.6 spelling, and dropping it undercounts.
+
+**Re-measure before acting on this.** An earlier reading of the same query returned 1,547, less than
+half the current figure, because login-view impressions were themselves suppressed by the Nav3
+breakage and are still recovering as the fixed build rolls out. The input is moving, and moving
+upward, so treat these numbers as a floor. Retries also mean one member can produce more than one
+attempt. If that turns out to be normal variance
+rather than a real signal, the lever to reach for is the **target**, not the window: 7d at a lower
+target buys headroom and keeps fast recovery. Pick it from the first weeks of real data rather than
+assuming 99%, which was inherited and never chosen for this signal.
+
+Burn-rate alerting solves both the recovery time and the sensitivity properly, and is the textbook
+answer. It was not done here only because it needs a new monitor, but the sizing does not have to be
+invented: the org already runs 9 burn-rate monitors, shaped like
+
+```
+burn_rate("<slo id>").over("7d").long_window("1h").short_window("5m") > 16.8
+```
+
+Revisit if the 7d window turns out to flap.
+
 ## Guard rail worth adding
 
 Nothing in Datadog would have caught this. A monitor on the share of Android views named
@@ -267,81 +364,12 @@ of ten weeks later. Equivalently, a monitor on distinct `@view.name` cardinality
 
 ## Rollback: the filters as they were before 2026-08-27
 
-Recorded here because these values live nowhere else. They were never in the repo, and Datadog
-keeps no history of a generated metric's definition. If a rewrite needs undoing, paste the value
-below back with `pup rum metrics update <id> --file payload.json`, same payload shape as above.
-
-10 metrics were rewritten. Note the rollback is **not** simply "delete the new half of
-the `OR`": three of these also dropped a dead branch or widened a wildcard, so the original text is
-the only reliable source.
-
-#### `android.changeaddress.view.count`
+All ten pre-change definitions were recorded in commit `9e5525fc27`, so they are recoverable with:
 
 ```
-@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:"com.hedvig.android.feature.changeaddress.navigation.ChangeAddressDestination.AddressResult?movingDate={movingDate}"
+git show 9e5525fc27:docs/plans/2026-08-27-datadog-android-metric-recovery.md
 ```
 
-#### `android.chat.network.count`
-
-```
-@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:"com.hedvig.android.feature.chat.navigation.ChatDestinations.Chat/{conversationId}" @connectivity.status:connected
-```
-
-#### `android.chat.network.errors`
-
-```
-@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:"com.hedvig.android.feature.chat.navigation.ChatDestinations.Chat/{conversationId}" @connectivity.status:connected -@error.stack:java.net.ConnectException* -@error.stack:java.net.SocketException* -@error.stack:java.net.SocketTimeoutException* -@error.stack:java.net.UnknownHostException* -@error.stack:java.util.concurrent.CancellationException*
-```
-
-#### `android.claim.success`
-
-```
-@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:(com.hedvig.android.data.claimflow.ClaimFlowDestination.ClaimSuccess OR com.hedvig.feature.claim.chat.ClaimOutcomeNewClaimDestination*)
-```
-
-#### `android.claimflow.network.count`
-
-```
-@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:(com.hedvig.feature.claim.chat.ClaimChatDestination* OR com.hedvig.android.data.claimflow.ClaimFlowDestination*) @connectivity.status:connected
-```
-
-#### `android.claimflow.network.error`
-
-```
-@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:(com.hedvig.feature.claim.chat.ClaimChatDestination* OR com.hedvig.android.data.claimflow.ClaimFlowDestination*) @error.source:network @connectivity.status:connected -@error.stack:java.net.ConnectException* -@error.stack:java.net.SocketException* -@error.stack:java.net.SocketTimeoutException* -@error.stack:java.net.UnknownHostException* -@error.stack:java.util.concurrent.CancellationException*
-```
-
-#### `android.login.network.count`
-
-```
-@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:com.hedvig.android.feature.login.navigation.LoginDestinations.SwedishLogin @connectivity.status:connected
-```
-
-#### `android.login.network.error`
-
-```
-@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:com.hedvig.android.feature.login.navigation.LoginDestinations.SwedishLogin @connectivity.status:connected -@error.stack:java.net.ConnectException* -@error.stack:java.net.SocketException* -@error.stack:java.net.SocketTimeoutException* -@error.stack:java.net.UnknownHostException* -@error.stack:java.util.concurrent.CancellationException* -@error.stack:*CertPathValidatorException* -@error.message:*CertPathValidatorException* -@error.message:*Connection\ reset*
-```
-
-#### `android.terminateinsurance.network.count`
-
-```
-@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination*
-```
-
-#### `android.terminateinsurance.network.error`
-
-```
-@application.id:4d7b8355-396d-406e-b543-30a073050e8f @view.name:com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination* -@error.type:java.io.IOException @connectivity.status:connected @error.source:network -@error.stack:java.net.SocketTimeoutException* -@error.stack:java.net.ConnectException*
-```
-
-### Created, so rollback is deletion
-
-- `android.claim.started` (`pup rum metrics delete android.claim.started`)
-
-### Dashboard
-
-On "Apps (Android + iOS)" (`tf2-8n6-9nn`), widget `1151568178197062` was a `query_value` titled
-**"Failure claim screen viewed"** reading `sum:android.claim.failure{env:prod}.as_count()`. It now
-shows "Claim submissions per chat entry". Restoring it means putting that single query back; no
-other widget was touched.
+They were written into this document because Datadog keeps no history of a generated metric's
+definition. Committing it satisfied that, so the values no longer need to sit in the living copy.
+Note that the two login entries there are doubly superseded: they were rebuilt again on 2026-09-09.

@@ -18,7 +18,6 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.design.system.hedvig.ClickableListDefaults.iconSize
 import com.hedvig.android.design.system.hedvig.icon.ChevronRight
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens
@@ -96,7 +95,7 @@ private fun ClickableListItem(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically,
           ) {
-            Icon(HedvigIcons.ChevronRight, "", Modifier.size(iconSize))
+            Icon(HedvigIcons.ChevronRight, "", Modifier.size(ClickableListDefaults.iconSize))
           }
         },
         spaceBetween = 4.dp,

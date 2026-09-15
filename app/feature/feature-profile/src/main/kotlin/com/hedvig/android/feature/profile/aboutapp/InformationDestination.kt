@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -195,11 +196,13 @@ private fun ColumnScope.InformationContent(
         HedvigText(stringResource(Res.string.PROFILE_ABOUT_APP_MEMBER_ID))
       },
       endSlot = {
-        HedvigText(
-          memberId,
-          color = HedvigTheme.colorScheme.textSecondary,
-          textAlign = TextAlign.End,
-        )
+        SelectionContainer {
+          HedvigText(
+            memberId,
+            color = HedvigTheme.colorScheme.textSecondary,
+            textAlign = TextAlign.End,
+          )
+        }
       },
     )
   }
