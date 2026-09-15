@@ -8,6 +8,9 @@ import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.animateScrollBy
@@ -370,16 +373,13 @@ private fun ClaimChatScreenContent(
   }
   val lazyListState = rememberLazyListState()
   val coroutineScope = rememberCoroutineScope()
-  val showScrollArrow by remember(lazyListState, uiState.currentStep?.id) {
-    derivedStateOf {
-      val layoutInfo = lazyListState.layoutInfo
-      val lazyListItemsCount = layoutInfo.totalItemsCount
-      val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()
-      val hasMoreToScroll = lastVisibleItem?.index != lazyListItemsCount - 1 && lazyListItemsCount > 0
-      // The arrow sits where a bottom attached input would be, so it stands down for that one step rather
-      // than overlapping it. Every other step still gets it.
-      hasMoreToScroll && uiState.currentStep?.stepContent !is StepContent.AudioRecording
-    }
+  // The conversation is scrolled back off the current question. The docked input stands down while that is
+  // true and the arrow back to the bottom takes its place, so the two never share the same corner.
+  val isScrolledBack by remember(lazyListState) {
+    // Not "the last item is off screen": with the input docked, the list can be a single question tall
+    // enough to stay partly in view however far back it is scrolled. Whether anything remains below is the
+    // question actually being asked.
+    derivedStateOf { lazyListState.canScrollForward }
   }
   // Track the size of the last item to scroll when it grows
   val lastItemSize by remember(lazyListState, uiState.steps.lastOrNull()?.id) {
@@ -437,6 +437,7 @@ private fun ClaimChatScreenContent(
       ClaimChatScrollableContent(
         uiState = uiState,
         lazyListState = lazyListState,
+        isScrolledBack = isScrolledBack,
         onEvent = onEvent,
         shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
         onNavigateToImageViewer = onNavigateToImageViewer,
@@ -454,11 +455,16 @@ private fun ClaimChatScreenContent(
         },
       )
     }
-    if (showScrollArrow) {
+    if (isScrolledBack) {
       ScrollToBottomButton(
         onClick = {
           coroutineScope.launch {
-            lazyListState.animateScrollToItem(index = uiState.steps.lastIndex)
+            val lastIndex = uiState.steps.lastIndex
+            if (lastIndex < 0) return@launch
+            // One question can be taller than the viewport, so landing on the start of the last item is not
+            // the same as reaching the bottom. Asking for an offset past the end of the list and letting the
+            // list clamp it lands on the bottom whatever the item's height.
+            lazyListState.animateScrollToItem(lastIndex, scrollOffset = SCROLL_PAST_END_OF_LIST)
           }
         },
         modifier = Modifier.align(Alignment.BottomCenter).padding(
@@ -483,6 +489,7 @@ private fun ClaimChatScreenContent(
 private fun ClaimChatScrollableContent(
   uiState: ClaimChatUiState.ClaimChat,
   lazyListState: LazyListState,
+  isScrolledBack: Boolean,
   onEvent: (ClaimChatEvent) -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   onNavigateToImageViewer: (String, String) -> Unit,
@@ -574,7 +581,11 @@ private fun ClaimChatScrollableContent(
           }
         }
       }
-      if (bottomAttachedStep != null) {
+      AnimatedVisibility(
+        visible = bottomAttachedStep != null && !isScrolledBack,
+        enter = slideInVertically { it } + fadeIn(),
+        exit = slideOutVertically { it } + fadeOut(),
+      ) {
         Box(
           Modifier
             // A Column measures an unweighted child against an unbounded height, so without this the input is
@@ -589,10 +600,11 @@ private fun ClaimChatScrollableContent(
         ) {
           // Keyed on the step: this sits outside the list, so without it the input's own state (which card is
           // open, what has been typed) would carry over from one step to the next.
-          key(bottomAttachedStep.id) {
+          val attached = bottomAttachedStep ?: return@AnimatedVisibility
+          key(attached.id) {
             StepBottomContent(
               modifier = Modifier.verticalScroll(rememberScrollState()),
-              stepItem = bottomAttachedStep,
+              stepItem = attached,
               isCurrentStep = true,
               currentContinueButtonLoading = uiState.currentContinueButtonLoading,
               currentSkipButtonLoading = uiState.currentSkipButtonLoading,
@@ -611,6 +623,9 @@ private fun ClaimChatScrollableContent(
     }
   }
 }
+
+// Any offset past the end of the last item; the list clamps it to the bottom.
+private const val SCROLL_PAST_END_OF_LIST = 100_000
 
 @Composable
 private fun ScrollToBottomButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
