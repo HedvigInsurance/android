@@ -17,22 +17,29 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -294,9 +301,8 @@ internal fun AudioRecorderBubble(
     } else {
       AnimatedContent(
         targetState = when {
-          // In a short window the full screen editor owns the text answer, so the row stays behind it.
           recordingState is AudioRecordingStepState.FreeTextDescription -> {
-            if (isShortWindow) InputMode.Resting else InputMode.Text
+            InputMode.Text
           }
 
           voiceCardRequested || hasRecording -> {
@@ -318,6 +324,7 @@ internal fun AudioRecorderBubble(
               errorType = freeText?.errorType,
               hasError = freeText?.hasError == true,
               isSubmitting = isSubmitting,
+              compact = isShortWindow,
               onCancel = {
                 focusManager.clearFocus()
                 // Calls off an answer still in flight before leaving, so Avbryt does what it says rather
@@ -502,13 +509,17 @@ private fun InlineVoiceAnswerCard(
 }
 
 /**
- * Text answer for a claim chat step, sitting directly above the keyboard.
+ * The text answer's own content, without a container.
  *
- * The field itself is the input, so focusing it raises the keyboard and the card rides above it. There is no
- * overlay and no scrim, which keeps the question readable while answering.
+ * Hosted two ways: inline above the keyboard where there is room for it, and full screen where there is not.
+ * Keeping it in one place is what stops the two from drifting into two different designs.
+ *
+ * With [compact] it collapses to a single row. A landscape keyboard leaves about 105dp of screen, which is
+ * one row: stacking a label and a button row above and below the field squeezes the field under the height
+ * a line of text needs and clips the member's own answer.
  */
 @Composable
-private fun InlineTextAnswerCard(
+private fun TextAnswerContent(
   initialText: String,
   maxLength: Int,
   errorType: FreeTextErrorType?,
@@ -517,35 +528,69 @@ private fun InlineTextAnswerCard(
   onCancel: () -> Unit,
   onSave: (String) -> Unit,
   modifier: Modifier = Modifier,
+  compact: Boolean = false,
 ) {
-  var text by remember { mutableStateOf(initialText) }
+  var text by rememberSaveable { mutableStateOf(initialText) }
   val focusRequester = remember { FocusRequester() }
   LaunchedEffect(Unit) {
     runCatching { focusRequester.requestFocus() }
   }
-  Surface(
-    modifier = modifier.fillMaxWidth(),
-    shape = HedvigTheme.shapes.cornerXLarge,
-    color = HedvigTheme.colorScheme.surfacePrimary,
-  ) {
-    Column(Modifier.padding(16.dp)) {
-      HedvigText(
-        stringResource(Res.string.CLAIM_TRIAGING_TITLE),
-        style = HedvigTheme.typography.label,
-        color = HedvigTheme.colorScheme.textSecondary,
-      )
-      HedvigTextField(
-        text = text,
-        onValueChange = { if (it.length <= maxLength) text = it },
-        labelText = "",
-        textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Small,
-        singleLine = false,
-        // The field starts at one line and grows with the answer, then scrolls inside itself rather than
-        // pushing the card any further up the conversation.
-        maxLines = TEXT_ANSWER_MAX_LINES,
-        readOnly = isSubmitting,
-        modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
-      )
+  val label = @Composable { labelModifier: Modifier ->
+    HedvigText(
+      stringResource(Res.string.CLAIM_TRIAGING_TITLE),
+      style = HedvigTheme.typography.label,
+      color = HedvigTheme.colorScheme.textSecondary,
+      modifier = labelModifier,
+    )
+  }
+  val actions = @Composable {
+    // Cancel stays tappable while the answer is in flight, which is the only way out of a submission that
+    // is taking too long.
+    HedvigButton(
+      text = stringResource(Res.string.general_cancel_button),
+      onClick = onCancel,
+      enabled = true,
+      buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
+      buttonSize = ButtonDefaults.ButtonSize.Medium,
+    )
+    HedvigButton(
+      text = stringResource(Res.string.AUDIO_RECORDER_SEND),
+      onClick = { onSave(text) },
+      enabled = text.isNotBlank() && !isSubmitting,
+      isLoading = isSubmitting,
+      buttonSize = ButtonDefaults.ButtonSize.Medium,
+    )
+  }
+  val field = @Composable {
+    HedvigTextField(
+      text = text,
+      onValueChange = { if (it.length <= maxLength) text = it },
+      labelText = "",
+      textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Small,
+      singleLine = false,
+      // The field starts at one line and grows with the answer, then scrolls inside itself rather than
+      // pushing the card any further up the conversation.
+      maxLines = if (compact) 1 else TEXT_ANSWER_MAX_LINES,
+      readOnly = isSubmitting,
+      modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
+    )
+  }
+  if (compact) {
+    // A landscape keyboard leaves around 105dp of screen. That is one row, so the answer, the way out and
+    // the way to send it share it: a label line or a stacked button row would push the field under the
+    // height a line of text needs and clip the member's own answer.
+    Row(
+      modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Box(Modifier.weight(1f)) { field() }
+      actions()
+    }
+  } else {
+    Column(modifier.padding(16.dp)) {
+      label(Modifier)
+      field()
       if (hasError && errorType is FreeTextErrorType.TooShort) {
         HedvigText(
           stringResource(Res.string.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR, errorType.minLength),
@@ -558,24 +603,79 @@ private fun InlineTextAnswerCard(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
       ) {
-        // Stays tappable while the answer is in flight, which is the only way out of a submission that
-        // is taking too long.
-        HedvigButton(
-          text = stringResource(Res.string.general_cancel_button),
-          onClick = onCancel,
-          enabled = true,
-          buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
-          buttonSize = ButtonDefaults.ButtonSize.Medium,
-        )
-        HedvigButton(
-          text = stringResource(Res.string.AUDIO_RECORDER_SEND),
-          onClick = { onSave(text) },
-          enabled = text.isNotBlank() && !isSubmitting,
-          isLoading = isSubmitting,
-          buttonSize = ButtonDefaults.ButtonSize.Medium,
-        )
+        actions()
       }
     }
+  }
+}
+
+/**
+ * The same text answer, filling the screen.
+ *
+ * Inside the chat a landscape keyboard leaves about 34dp under the app bar, which no editor can use. Taking
+ * the whole window reclaims the app bar's height too, which is what turns 34dp into about 105dp: enough for
+ * the answer and its two actions on one row.
+ */
+@Composable
+internal fun FullScreenTextAnswer(
+  initialText: String,
+  maxLength: Int,
+  errorType: FreeTextErrorType?,
+  hasError: Boolean,
+  isSubmitting: Boolean,
+  onCancel: () -> Unit,
+  onSave: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Surface(
+    modifier = modifier.fillMaxSize(),
+    color = HedvigTheme.colorScheme.backgroundPrimary,
+  ) {
+    Box(
+      modifier = Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing),
+      contentAlignment = Alignment.BottomStart,
+    ) {
+      TextAnswerContent(
+        initialText = initialText,
+        maxLength = maxLength,
+        errorType = errorType,
+        hasError = hasError,
+        isSubmitting = isSubmitting,
+        compact = true,
+        onCancel = onCancel,
+        onSave = onSave,
+      )
+    }
+  }
+}
+
+@Composable
+private fun InlineTextAnswerCard(
+  initialText: String,
+  maxLength: Int,
+  errorType: FreeTextErrorType?,
+  hasError: Boolean,
+  isSubmitting: Boolean,
+  compact: Boolean,
+  onCancel: () -> Unit,
+  onSave: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Surface(
+    modifier = modifier.fillMaxWidth(),
+    shape = HedvigTheme.shapes.cornerXLarge,
+    color = HedvigTheme.colorScheme.surfacePrimary,
+  ) {
+    TextAnswerContent(
+      initialText = initialText,
+      maxLength = maxLength,
+      errorType = errorType,
+      hasError = hasError,
+      isSubmitting = isSubmitting,
+      compact = compact,
+      onCancel = onCancel,
+      onSave = onSave,
+    )
   }
 }
 
