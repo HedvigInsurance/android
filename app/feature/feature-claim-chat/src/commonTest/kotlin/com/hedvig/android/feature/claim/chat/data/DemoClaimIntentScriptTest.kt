@@ -24,7 +24,17 @@ class DemoClaimIntentScriptTest {
     // The loop exits on the first non-step, which must be the outcome rather than a stall.
     assertThat(intent.next).isInstanceOf(ClaimIntent.Next.Outcome::class)
     assertThat(visited.map { it::class.simpleName }).isEqualTo(
-      listOf("AudioRecording", "Task", "Form", "ContentSelect", "ContentSelect", "ContentSelect", "Summary"),
+      listOf(
+        "Information",
+        "Information",
+        "AudioRecording",
+        "Task",
+        "Form",
+        "ContentSelect",
+        "ContentSelect",
+        "ContentSelect",
+        "Summary",
+      ),
     )
   }
 
