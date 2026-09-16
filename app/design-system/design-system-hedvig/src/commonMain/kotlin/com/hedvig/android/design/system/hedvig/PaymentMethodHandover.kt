@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
 import com.hedvig.android.design.system.hedvig.icon.Plus
+import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens
 
 /** The size a [PaymentMethodTile]'s mark is drawn at. */
 val PaymentMethodMarkSize = 39.dp
@@ -132,6 +133,7 @@ fun PaymentMethodTileBadge(
 fun PaymentMethodHandoverIllustration(
   modifier: Modifier = Modifier,
   destinationBadge: @Composable (() -> Unit)? = null,
+  loadingState: LoadingState = LoadingState.PROCESSING,
   mark: @Composable () -> Unit = { PaymentMethodPlusMark(Modifier.size(PaymentMethodMarkSize)) },
 ) {
   Row(
@@ -140,7 +142,13 @@ fun PaymentMethodHandoverIllustration(
     horizontalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     PaymentMethodTile(mark = mark)
-    ThreeDotsLoading()
+    when (loadingState) {
+      LoadingState.PROCESSING -> ThreeDotsLoading()
+      LoadingState.ACTIVE -> ThreeDotsLoaded()
+      LoadingState.INACTIVE -> ThreeDotsLoaded(
+        stableColor = ColorSchemeKeyTokens.SurfaceSecondaryTransparent.value
+      )
+    }
     Box {
       Surface(
         shape = HedvigTheme.shapes.cornerXXLarge,
@@ -164,6 +172,12 @@ fun PaymentMethodHandoverIllustration(
       }
     }
   }
+}
+
+enum class LoadingState {
+  PROCESSING,
+  ACTIVE,
+  INACTIVE
 }
 
 @HedvigPreview

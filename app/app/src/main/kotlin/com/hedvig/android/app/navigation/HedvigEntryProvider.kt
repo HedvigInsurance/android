@@ -109,7 +109,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   resetOnboardingSeenUseCase: ResetOnboardingSeenUseCase,
 ) {
   val shouldShowRequestPermissionRationale: (String) -> Boolean = androidAppHost::shouldShowPermissionRationale
-  val navigateToConnectPayment: () -> Unit = { backstack.add(TrustlyKey) }
+  val navigateToConnectPayment: () -> Unit = { backstack.add(TrustlyKey()) }
   val navigateToPayinAccount: () -> Unit = { backstack.add(PayinAccountKey) }
   val navigateToPayoutAccount: () -> Unit = { backstack.add(PayoutAccountKey) }
   val navigateToInbox: () -> Unit = { backstack.add(InboxKey) }

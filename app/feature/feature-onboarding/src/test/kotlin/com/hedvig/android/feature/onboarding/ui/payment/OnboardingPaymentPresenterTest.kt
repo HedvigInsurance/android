@@ -98,7 +98,7 @@ internal class OnboardingPaymentPresenterTest {
       sendEvent(OnboardingPaymentEvent.ConnectPayment)
       awaitItem()
       runCurrent()
-      assertThat(backstack.entries.last()).isEqualTo(TrustlyKey)
+      assertThat(backstack.entries.last()).isEqualTo(TrustlyKey(showSuccessScreen = false))
     }
   }
 

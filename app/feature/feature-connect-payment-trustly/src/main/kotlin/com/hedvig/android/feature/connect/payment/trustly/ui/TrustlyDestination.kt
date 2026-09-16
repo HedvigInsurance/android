@@ -63,7 +63,10 @@ import com.hedvig.android.feature.connect.payment.trustly.sdk.TrustlyWebViewClie
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import hedvig.resources.GENERAL_RETRY
+import hedvig.resources.PAYMENT_CHANGE_FOOTNOTE
 import hedvig.resources.PAYMENT_CHANGE_METHOD_BUTTON
+import hedvig.resources.PAYMENT_TRUSTLY_FAILURE_TITLE
+import hedvig.resources.PAYMENT_TRUSTLY_SUCCESS_SUBTITLE
 import hedvig.resources.Res
 import hedvig.resources.general_close_button
 import hedvig.resources.general_continue_button
@@ -76,10 +79,26 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun TrustlyDestination(
   viewModel: MoleculeViewModel<TrustlyEvent, TrustlyUiState>,
+  showSuccessScreen: Boolean,
   navigateUp: () -> Unit,
   finishTrustlyFlow: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  val leavesWithoutConfirming = !showSuccessScreen && uiState is TrustlyUiState.SucceededInConnectingCard
+  LaunchedEffect(leavesWithoutConfirming) {
+    if (leavesWithoutConfirming) finishTrustlyFlow()
+  }
+  if (leavesWithoutConfirming) {
+    // The pop is already under way, and the entry stays on screen for its exit animation, so
+    // drawing the connected screen here would flash it on the way out.
+    Surface(
+      color = HedvigTheme.colorScheme.backgroundPrimary,
+      modifier = Modifier.fillMaxSize(),
+    ) {
+      HedvigFullScreenCenterAlignedProgress()
+    }
+    return
+  }
   TrustlyScreen(
     uiState = uiState,
     navigateUp = navigateUp,
@@ -137,12 +156,23 @@ private fun TrustlyScreen(
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing),
         ) {
+          Spacer(Modifier.weight(1f))
           EmptyState(
             iconStyle = INFO,
             text = stringResource(Res.string.info_card_missing_payment_body),
             description = null,
-            buttonStyle = Button(stringResource(Res.string.general_close_button), finishTrustlyFlow),
+            buttonStyle = Button(stringResource(Res.string.PAYMENT_CHANGE_METHOD_BUTTON), finishTrustlyFlow),
           )
+          Spacer(Modifier.weight(1f))
+          Spacer(Modifier.height(8.dp))
+          HedvigTextButton(
+            text = stringResource(Res.string.general_close_button),
+            onClick = finishTrustlyFlow,
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
+          )
+          Spacer(Modifier.height(16.dp))
         }
       }
 
@@ -158,8 +188,7 @@ private fun TrustlyScreen(
       TrustlyUiState.SucceededInConnectingCard -> {
         TrustlyStatusScreen(
           title = stringResource(Res.string.pay_in_confirmation_direct_debit_headline),
-          // TODO: Add "Charged automatically each month" / "Dras automatiskt varje månad" to Lokalise
-          description = "Charged automatically each month",
+          description = stringResource(Res.string.PAYMENT_TRUSTLY_SUCCESS_SUBTITLE),
           badge = {
             PaymentMethodTileBadge(
               icon = HedvigIcons.Checkmark,
@@ -168,11 +197,10 @@ private fun TrustlyScreen(
             )
           },
           navigateUp = navigateUp,
+          active = true,
         ) {
           HedvigText(
-            // TODO: Add "You can change payment method later" / "Du kan byta betalningsmetod senare"
-            //  to Lokalise
-            text = "You can change payment method later",
+            text = stringResource(Res.string.PAYMENT_CHANGE_FOOTNOTE),
             style = HedvigTheme.typography.label,
             color = HedvigTheme.colorScheme.textSecondaryTranslucent,
             textAlign = TextAlign.Center,
@@ -203,6 +231,7 @@ private fun TrustlyScreen(
 private fun TrustlyStatusScreen(
   title: String,
   description: String?,
+  active: Boolean,
   badge: @Composable () -> Unit,
   navigateUp: () -> Unit,
   actions: @Composable ColumnScope.() -> Unit,
@@ -223,6 +252,11 @@ private fun TrustlyStatusScreen(
     PaymentMethodHandoverIllustration(
       modifier = Modifier.align(Alignment.CenterHorizontally),
       destinationBadge = badge,
+      loadingState = if (active) {
+        com.hedvig.android.design.system.hedvig.LoadingState.ACTIVE
+      } else {
+        com.hedvig.android.design.system.hedvig.LoadingState.INACTIVE
+      },
       mark = { Icon(HedvigIcons.Trustly, null, Modifier.size(PaymentMethodMarkSize)) },
     )
     Spacer(Modifier.weight(1f))
@@ -239,17 +273,17 @@ private fun TrustlyFailureScreen(
   navigateUp: () -> Unit,
 ) {
   TrustlyStatusScreen(
-    // TODO: Add "Connection failed" / "Anslutningen misslyckades" to Lokalise
-    title = "Connection failed",
+    title = stringResource(Res.string.PAYMENT_TRUSTLY_FAILURE_TITLE),
     description = description,
     badge = {
       PaymentMethodTileBadge(
         icon = HedvigIcons.Close,
-        containerColor = HedvigTheme.colorScheme.signalRedElement,
+        containerColor = HedvigTheme.colorScheme.signalAmberElement,
         contentColor = HedvigTheme.colorScheme.fillWhite,
       )
     },
     navigateUp = navigateUp,
+    active = false,
   ) {
     HedvigButton(
       text = stringResource(Res.string.GENERAL_RETRY),
