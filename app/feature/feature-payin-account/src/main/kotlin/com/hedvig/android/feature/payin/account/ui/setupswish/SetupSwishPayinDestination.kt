@@ -116,9 +116,8 @@ private fun SetupSwishPayinScreen(
   val explanationSheetState = rememberHedvigBottomSheetState<Unit>()
   RecurringSwishExplanationBottomSheet(
     sheetState = explanationSheetState,
-    onLearnMore = {
+    onLearnMore = null
       // TODO: point this at the recurring-Swish article once we know where it lives.
-    },
   )
 
   HedvigScaffold(

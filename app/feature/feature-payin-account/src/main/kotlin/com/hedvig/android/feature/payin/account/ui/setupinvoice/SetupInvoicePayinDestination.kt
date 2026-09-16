@@ -78,6 +78,10 @@ private fun SetupInvoicePayinScreen(
       verticalArrangement = Arrangement.Center,
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+      // TODO: Add "You can choose invoice as your billing method. You will then get a monthly
+      //  invoice via Kivra or email if you don't have Kivra account." / "Du kan välja faktura som
+      //  betalningsmetod. Du får då en månadsfaktura via Kivra, eller via e-post om du inte har ett
+      //  Kivra-konto." to Lokalise
       HedvigText(
         "You can choose invoice as your billing method. " +
           "You will then get a monthly invoice via Kivra or email if you don't have Kivra account.",
@@ -100,7 +104,8 @@ private fun SetupInvoicePayinScreen(
     }
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = "Set invoice as billing method", // todo
+      // TODO: Add "Set invoice as billing method" / "Välj faktura som betalningsmetod" to Lokalise
+      text = "Set invoice as billing method",
       onClick = onConnect,
       enabled = !uiState.isLoading,
       isLoading = uiState.isLoading,

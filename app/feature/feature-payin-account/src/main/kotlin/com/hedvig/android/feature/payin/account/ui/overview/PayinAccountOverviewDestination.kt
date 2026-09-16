@@ -44,6 +44,7 @@ import com.hedvig.android.feature.payin.account.ui.components.PayinMethodRow
 import com.hedvig.android.feature.payin.account.ui.components.PrimaryMethodLabel
 import hedvig.resources.PAYMENT_ADD_METHOD_BUTTON
 import hedvig.resources.PAYMENT_CHOOSE_PRIMARY_BUTTON
+import hedvig.resources.PAYMENT_METHODS_EMPTY
 import hedvig.resources.PAYMENT_METHODS_TITLE
 import hedvig.resources.Res
 import octopus.type.MemberPaymentProvider
@@ -143,10 +144,7 @@ private fun PayoutAccountContent(
       if (availablePayinMethods.isNotEmpty()) {
         Spacer(Modifier.weight(1f))
         EmptyState(
-          // TODO: Add "You haven't added a billing method yet. Add one to pay for your insurance." /
-          //  "Du har inte lagt till någon betalningsmetod än. Lägg till en för att betala för din försäkring."
-          //  to Lokalise
-          text = "You haven’t added a billing method yet. Add one to pay for your insurance.",
+          text = stringResource(Res.string.PAYMENT_METHODS_EMPTY),
           description = null,
           iconStyle = EmptyStateDefaults.EmptyStateIconStyle.INFO,
           modifier = Modifier

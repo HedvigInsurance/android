@@ -30,6 +30,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.payoutaccount.ui.components.PayoutSetupSuccessContent
 import hedvig.resources.BANK_PAYOUT_METHOD_CARD_TITLE
 import hedvig.resources.PAYMENTS_ACCOUNT
+import hedvig.resources.PAYMENT_PAYOUT_BANK_SUCCESS_TITLE
 import hedvig.resources.Res
 import hedvig.resources.general_save_button
 import hedvig.resources.something_went_wrong
@@ -62,8 +63,7 @@ private fun EditBankAccountScreen(
     if (uiState.isConnected) {
       PayoutSetupSuccessContent(
         provider = MemberPaymentProvider.NORDEA,
-        // TODO: Add "Bank account is connected" / "Bankkontot är anslutet" to Lokalise
-        title = "Bank account is connected",
+        title = stringResource(Res.string.PAYMENT_PAYOUT_BANK_SUCCESS_TITLE),
         onContinue = onFinishSetup,
       )
     } else {

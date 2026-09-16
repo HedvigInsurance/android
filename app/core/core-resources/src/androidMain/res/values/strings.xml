@@ -735,6 +735,7 @@
   <string name="PAYMENT_CONNECT_SUBTITLE">Add a new payment method for your insurance</string>
   <string name="PAYMENT_CONNECT_TITLE">Connect payment</string>
   <string name="PAYMENT_HISTORY_TITLE">Payment history</string>
+  <string name="PAYMENT_METHODS_EMPTY">You haven\'t added a billing method yet. Add one to pay for your insurance.</string>
   <string name="PAYMENT_METHODS_TITLE">Payment methods</string>
   <string name="PAYMENT_METHOD_TITLE">Payment method</string>
   <string name="PAYMENT_OPEN_SWISH_BUTTON">Open Swish</string>
@@ -742,6 +743,7 @@
   <string name="PAYMENT_OPTION_INVOICE_SUBTITLE">Invoice to your Kivra</string>
   <string name="PAYMENT_OPTION_SWISH_SUBTITLE">Payments and payouts via Swish</string>
   <string name="PAYMENT_OPTION_TRUSTLY_SUBTITLE">Connect your bank via Trustly</string>
+  <string name="PAYMENT_PAYOUT_BANK_SUCCESS_TITLE">Bank account is added for payouts</string>
   <string name="PAYMENT_PRIMARY_CONFIRM_TITLE">Confirm payment method</string>
   <string name="PAYMENT_PRIMARY_LABEL">Primary</string>
   <string name="PAYMENT_PRIMARY_SUBTITLE">This method will be used for your monthly payments</string>

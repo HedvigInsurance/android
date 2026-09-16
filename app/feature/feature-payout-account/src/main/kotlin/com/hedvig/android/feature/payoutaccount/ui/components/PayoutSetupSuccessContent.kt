@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.LoadingState
 import com.hedvig.android.design.system.hedvig.PaymentMethodTileBadge
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
@@ -41,6 +42,7 @@ internal fun ColumnScope.PayoutSetupSuccessContent(
   PayoutMethodHandoverIllustration(
     provider,
     modifier = Modifier.align(Alignment.CenterHorizontally),
+    loadingState = LoadingState.ACTIVE,
     destinationBadge = {
       PaymentMethodTileBadge(
         icon = HedvigIcons.Checkmark,

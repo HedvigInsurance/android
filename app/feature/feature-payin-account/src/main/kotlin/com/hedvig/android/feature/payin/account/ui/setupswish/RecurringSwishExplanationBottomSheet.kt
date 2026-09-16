@@ -18,12 +18,17 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
+import hedvig.resources.HOME_ADDONS_READ_MORE_BUTTON
 import hedvig.resources.PAYMENT_SWISH_EXPLANATION_BUTTON
 import hedvig.resources.Res
+import hedvig.resources.general_close_button
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun RecurringSwishExplanationBottomSheet(sheetState: HedvigBottomSheetState<Unit>, onLearnMore: () -> Unit) {
+internal fun RecurringSwishExplanationBottomSheet(
+  sheetState: HedvigBottomSheetState<Unit>,
+  onLearnMore: (() -> Unit)? = null,
+) {
   HedvigBottomSheet(sheetState) {
     RecurringSwishExplanationContent(
       onLearnMore = onLearnMore,
@@ -33,7 +38,10 @@ internal fun RecurringSwishExplanationBottomSheet(sheetState: HedvigBottomSheetS
 }
 
 @Composable
-private fun RecurringSwishExplanationContent(onLearnMore: () -> Unit, onDismiss: () -> Unit) {
+private fun RecurringSwishExplanationContent(
+  onLearnMore: (() -> Unit)? = null,
+  onDismiss: () -> Unit,
+) {
   HedvigText(
     text = stringResource(Res.string.PAYMENT_SWISH_EXPLANATION_BUTTON),
     textAlign = TextAlign.Center,
@@ -75,18 +83,19 @@ private fun RecurringSwishExplanationContent(onLearnMore: () -> Unit, onDismiss:
     )
   }
   Spacer(Modifier.height(16.dp))
-  HedvigButton(
-    // TODO: Add "Learn more" / "Läs mer" to Lokalise
-    text = "Learn more",
-    onClick = onLearnMore,
-    enabled = true,
-    buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-    modifier = Modifier.fillMaxWidth(),
-  )
+  if (onLearnMore!=null) {
+    HedvigButton(
+      text = stringResource(Res.string.HOME_ADDONS_READ_MORE_BUTTON),
+      onClick = onLearnMore,
+      enabled = true,
+      buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+      modifier = Modifier.fillMaxWidth(),
+    )
+  }
+
   Spacer(Modifier.height(8.dp))
   HedvigButton(
-    // TODO: Add "Got it" / "Okej" to Lokalise
-    text = "Got it",
+    text = stringResource(Res.string.general_close_button),
     onClick = onDismiss,
     enabled = true,
     modifier = Modifier.fillMaxWidth(),

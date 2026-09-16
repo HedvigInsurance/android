@@ -12,6 +12,7 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.LoadingState
 import com.hedvig.android.design.system.hedvig.PaymentMethodHandoverIllustration
 import com.hedvig.android.design.system.hedvig.PaymentMethodMarkSize
 import com.hedvig.android.design.system.hedvig.Surface
@@ -24,6 +25,7 @@ import octopus.type.MemberPaymentProvider
 @Composable
 internal fun PayoutMethodHandoverIllustration(
   provider: MemberPaymentProvider?,
+  loadingState: LoadingState = LoadingState.PROCESSING,
   modifier: Modifier = Modifier,
   destinationBadge: @Composable (() -> Unit)? = null,
 ) {
@@ -31,6 +33,7 @@ internal fun PayoutMethodHandoverIllustration(
     Spacer(Modifier.height(48.dp))
     PaymentMethodHandoverIllustration(
       destinationBadge = destinationBadge,
+      loadingState = loadingState,
       mark = { PayoutProviderMark(provider, Modifier.size(PaymentMethodMarkSize)) },
     )
     Spacer(Modifier.height(48.dp))
@@ -44,7 +47,9 @@ private fun PreviewPayoutMethodHandoverIllustration(
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      PayoutMethodHandoverIllustration(provider, Modifier.padding(16.dp))
+      PayoutMethodHandoverIllustration(provider,
+
+        modifier = Modifier.padding(16.dp))
     }
   }
 }
