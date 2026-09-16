@@ -561,6 +561,10 @@ private fun TextAnswerContent(
       // pushing the card any further up the conversation.
       maxLines = if (compact) 1 else TEXT_ANSWER_MAX_LINES,
       readOnly = isSubmitting,
+      // The card is the surface here, exactly as the Figma draws it: one card with the answer written
+      // straight onto it. The field's own background would be a second surface the design does not have,
+      // and its focus shift would arrive as a lighter box inside the card.
+      containerColor = Color.Transparent,
       modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
     )
   }
