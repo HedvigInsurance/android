@@ -116,8 +116,8 @@ private fun SetupSwishPayinScreen(
   val explanationSheetState = rememberHedvigBottomSheetState<Unit>()
   RecurringSwishExplanationBottomSheet(
     sheetState = explanationSheetState,
-    onLearnMore = null
-      // TODO: point this at the recurring-Swish article once we know where it lives.
+    onLearnMore = null,
+    // TODO: point this at the recurring-Swish article once we know where it lives.
   )
 
   HedvigScaffold(
@@ -182,6 +182,11 @@ private fun ColumnScope.EnterPhoneNumberSection(
   )
   Spacer(Modifier.height(16.dp))
   var input by remember { mutableStateOf(uiState.phoneNumber) }
+  // The stored number arrives a frame or two after this field is first drawn, so it has to be
+  // adopted rather than only read at first composition. Only while the field is still untouched.
+  LaunchedEffect(uiState.phoneNumber) {
+    if (input.isEmpty()) input = uiState.phoneNumber
+  }
   val visualTransformation = SwishPhoneNumberVisualTransformation(
     mask = "000-000-00-00",
     maskColor = HedvigTheme.colorScheme.textTertiary,

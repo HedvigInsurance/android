@@ -9,6 +9,8 @@ import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.core.common.validation.PhoneNumberRules
+import com.hedvig.android.data.paying.member.GetMemberPhoneNumberUseCase
 import com.hedvig.android.feature.payin.account.data.SetupSwishPayinUseCase
 import com.hedvig.android.feature.payin.account.data.SetupSwishResponse
 import com.hedvig.android.feature.payin.account.data.SwishSetupOrder
@@ -22,6 +24,7 @@ import dev.zacsweers.metro.Inject
 @HedvigViewModel(ActivityRetainedScope::class)
 internal class SetupSwishPayinViewModel(
   setupSwishPayoutUseCase: SetupSwishPayinUseCase,
+  getMemberPhoneNumberUseCase: GetMemberPhoneNumberUseCase,
 ) : MoleculeViewModel<SetupSwishPayoutEvent, SetupSwishPayoutUiState>(
     SetupSwishPayoutUiState(
       phoneNumber = "",
@@ -30,7 +33,7 @@ internal class SetupSwishPayinViewModel(
       showSuccessSnackBar = false,
       orderToApprove = null,
     ),
-    SetupSwishPayoutPresenter(setupSwishPayoutUseCase),
+    SetupSwishPayoutPresenter(setupSwishPayoutUseCase, getMemberPhoneNumberUseCase),
   )
 
 internal sealed interface SetupSwishPayoutEvent {
@@ -52,6 +55,7 @@ internal data class SetupSwishPayoutUiState(
 
 internal class SetupSwishPayoutPresenter(
   private val setupSwishPayoutUseCase: SetupSwishPayinUseCase,
+  private val getMemberPhoneNumberUseCase: GetMemberPhoneNumberUseCase,
 ) : MoleculePresenter<SetupSwishPayoutEvent, SetupSwishPayoutUiState> {
   @Composable
   override fun MoleculePresenterScope<SetupSwishPayoutEvent>.present(
@@ -63,6 +67,23 @@ internal class SetupSwishPayoutPresenter(
     var showSuccessSnackBar by remember { mutableStateOf(false) }
     var saveIteration by remember { mutableStateOf<String?>(null) }
     var orderToApprove by remember { mutableStateOf<SwishSetupOrder?>(null) }
+
+    // Seeds the field with the number the backend already holds, so the usual case is a confirm
+    // rather than a re-type. Anything the member has typed themselves wins.
+    LaunchedEffect(Unit) {
+      if (phoneNumberState.isNotEmpty()) return@LaunchedEffect
+      val storedNumber = getMemberPhoneNumberUseCase.invoke().getOrNull() ?: return@LaunchedEffect
+      // Null for a number this field cannot hold. Notably one stored in international form: Swish
+      // takes a Swedish mobile number without a country code, and turning "+46…" into "0…" is a
+      // guess that produces a number nobody can call, so it is left for the member to type.
+      val usableNumber = PhoneNumberRules.SwishPhoneNumber.cleanedForSubmission(storedNumber)
+      if (usableNumber == null || !PhoneNumberRules.SwishPhoneNumber.isWellFormed(usableNumber)) {
+        return@LaunchedEffect
+      }
+      if (phoneNumberState.isEmpty()) {
+        phoneNumberState = usableNumber.toString()
+      }
+    }
 
     val currentSave = saveIteration
     if (currentSave != null) {

@@ -38,10 +38,7 @@ internal fun RecurringSwishExplanationBottomSheet(
 }
 
 @Composable
-private fun RecurringSwishExplanationContent(
-  onLearnMore: (() -> Unit)? = null,
-  onDismiss: () -> Unit,
-) {
+private fun RecurringSwishExplanationContent(onLearnMore: (() -> Unit)? = null, onDismiss: () -> Unit) {
   HedvigText(
     text = stringResource(Res.string.PAYMENT_SWISH_EXPLANATION_BUTTON),
     textAlign = TextAlign.Center,
@@ -83,7 +80,7 @@ private fun RecurringSwishExplanationContent(
     )
   }
   Spacer(Modifier.height(16.dp))
-  if (onLearnMore!=null) {
+  if (onLearnMore != null) {
     HedvigButton(
       text = stringResource(Res.string.HOME_ADDONS_READ_MORE_BUTTON),
       onClick = onLearnMore,

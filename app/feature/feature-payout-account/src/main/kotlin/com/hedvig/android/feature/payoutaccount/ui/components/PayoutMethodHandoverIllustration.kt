@@ -47,9 +47,10 @@ private fun PreviewPayoutMethodHandoverIllustration(
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      PayoutMethodHandoverIllustration(provider,
-
-        modifier = Modifier.padding(16.dp))
+      PayoutMethodHandoverIllustration(
+        provider,
+        modifier = Modifier.padding(16.dp),
+      )
     }
   }
 }
