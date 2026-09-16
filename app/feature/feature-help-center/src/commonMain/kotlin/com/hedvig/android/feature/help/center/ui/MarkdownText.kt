@@ -14,9 +14,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.mikepenz.markdown.compose.Markdown
+import com.mikepenz.markdown.model.MarkdownAlertColors
+import com.mikepenz.markdown.model.MarkdownAlertPadding
 import com.mikepenz.markdown.model.MarkdownColors
 import com.mikepenz.markdown.model.MarkdownPadding
 import com.mikepenz.markdown.model.MarkdownTypography
+import com.mikepenz.markdown.model.markdownAlertColors
+import com.mikepenz.markdown.model.markdownAlertPadding
 
 @Composable
 fun MarkdownText(markdown: String, modifier: Modifier = Modifier, withArticleStyle: Boolean = false) {
@@ -30,6 +34,13 @@ fun MarkdownText(markdown: String, modifier: Modifier = Modifier, withArticleSty
     override val inlineCodeBackground: Color = colors.surfaceSecondary
     override val dividerColor: Color = colors.borderPrimary
     override val tableBackground: Color = colors.surfaceSecondary
+    override val alert: MarkdownAlertColors = markdownAlertColors(
+      note = colors.signalBlueElement,
+      tip = colors.signalGreenElement,
+      important = colors.signalBlueElement,
+      warning = colors.signalAmberElement,
+      caution = colors.signalRedElement,
+    )
   }
 
   val markdownTypography = if (withArticleStyle) {
@@ -89,6 +100,7 @@ fun MarkdownText(markdown: String, modifier: Modifier = Modifier, withArticleSty
         hoveredStyle = SpanStyle(color = colors.link, textDecoration = TextDecoration.Underline),
         pressedStyle = SpanStyle(color = colors.link, textDecoration = TextDecoration.Underline),
       )
+      override val alertTitle: TextStyle = paragraph.copy(fontWeight = FontWeight.Bold)
     }
   } else {
     object : MarkdownTypography {
@@ -113,6 +125,7 @@ fun MarkdownText(markdown: String, modifier: Modifier = Modifier, withArticleSty
         hoveredStyle = SpanStyle(color = colors.link, textDecoration = TextDecoration.Underline),
         pressedStyle = SpanStyle(color = colors.link, textDecoration = TextDecoration.Underline),
       )
+      override val alertTitle: TextStyle = paragraph.copy(fontWeight = FontWeight.Bold)
     }
   }
 
@@ -131,6 +144,7 @@ fun MarkdownText(markdown: String, modifier: Modifier = Modifier, withArticleSty
       override val listIndent: Dp = 0.dp
       override val listItemBottom: Dp = 0.dp
       override val listItemTop: Dp = 0.dp
+      override val alert: MarkdownAlertPadding = markdownAlertPadding()
     },
   )
 }
