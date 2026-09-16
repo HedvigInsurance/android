@@ -61,9 +61,10 @@ internal fun ContentSelectStep(
       },
     ) { isCurrentStep ->
       if (isCurrentStep) {
-        // An answer already on the step is something to confirm or change, so it keeps the confirm button.
-        // With nothing filled in there is nothing to confirm, and a tap answers the step outright. Where the
-        // step can be skipped, skipping is the only thing to confirm.
+        // An answer already on the step is something to confirm or change, so it keeps the confirm button,
+        // whether or not the step can also be skipped: without it a prefilled skippable step could be changed
+        // but never submitted. With nothing filled in there is nothing to confirm and a tap answers the step
+        // outright, so the only button left is skip, where the step offers it.
         val hasPrefilledAnswer = rememberSaveable(itemId) { stepContent.selectedOptionId != null }
         val answersOnClick = !hasPrefilledAnswer
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -82,7 +83,7 @@ internal fun ContentSelectStep(
             answersOnClick = answersOnClick,
           )
           Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            if (hasPrefilledAnswer && !canSkip) {
+            if (hasPrefilledAnswer) {
               HedvigButton(
                 text = stringResource(Res.string.GENERAL_CONFIRM),
                 onClick = {

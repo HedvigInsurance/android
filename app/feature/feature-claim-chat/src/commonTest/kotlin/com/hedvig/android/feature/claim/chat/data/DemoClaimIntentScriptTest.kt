@@ -33,6 +33,7 @@ class DemoClaimIntentScriptTest {
         "ContentSelect",
         "ContentSelect",
         "ContentSelect",
+        "ContentSelect",
         "Summary",
       ),
     )
@@ -95,6 +96,27 @@ class DemoClaimIntentScriptTest {
     // Every option carries the secondary line the picker is meant to render.
     assertThat(field.options.all { it.subtitle != null }).isTrue()
     assertThat(field.selectedOptions).isEqualTo(emptyList())
+  }
+
+  @Test
+  fun `every combination of prefill and skippability is represented among the select steps`() {
+    val script = DemoClaimIntentScript()
+
+    val selects = buildList {
+      var intent = script.start()
+      while (intent.next is ClaimIntent.Next.Step) {
+        val content = (intent.next as ClaimIntent.Next.Step).claimIntentStep.stepContent
+        if (content is StepContent.ContentSelect) add(content)
+        intent = script.advance()
+      }
+    }
+
+    // The confirm button is chosen from these two flags, and a prefilled skippable step used to leave the
+    // member with no way to submit. The script has to keep offering all four cases or that regresses unseen.
+    val combinations = selects.map { (it.selectedOptionId != null) to it.isSkippable }.toSet()
+    assertThat(combinations).isEqualTo(
+      setOf(false to false, false to true, true to false, true to true),
+    )
   }
 
   @Test
