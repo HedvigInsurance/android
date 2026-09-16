@@ -11,8 +11,8 @@ import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
-import com.hedvig.android.core.common.validation.PhoneNumberRules
 import com.hedvig.android.data.paying.member.GetMemberPhoneNumberUseCase
+import com.hedvig.android.data.paying.member.swishPhoneNumberOrNull
 import com.hedvig.android.feature.payoutaccount.data.SetupSwishPayoutUseCase
 import com.hedvig.android.feature.payoutaccount.navigation.SelectPayoutMethodKey
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -66,15 +66,9 @@ internal class SetupSwishPayoutPresenter(
     LaunchedEffect(Unit) {
       if (phoneNumberState.text.isNotEmpty()) return@LaunchedEffect
       val storedNumber = getMemberPhoneNumberUseCase.invoke().getOrNull() ?: return@LaunchedEffect
-      // Null for a number this field cannot hold. Notably one stored in international form: Swish
-      // takes a Swedish mobile number without a country code, and turning "+46…" into "0…" is a
-      // guess that produces a number nobody can call, so it is left for the member to type.
-      val usableNumber = PhoneNumberRules.SwishPhoneNumber.cleanedForSubmission(storedNumber)
-      if (usableNumber == null || !PhoneNumberRules.SwishPhoneNumber.isWellFormed(usableNumber)) {
-        return@LaunchedEffect
-      }
+      val usableNumber = swishPhoneNumberOrNull(storedNumber) ?: return@LaunchedEffect
       if (phoneNumberState.text.isEmpty()) {
-        phoneNumberState.setTextAndPlaceCursorAtEnd(usableNumber.toString())
+        phoneNumberState.setTextAndPlaceCursorAtEnd(usableNumber)
       }
     }
 

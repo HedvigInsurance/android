@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.validation.PhoneNumberRules
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
@@ -205,8 +206,11 @@ private fun ColumnScope.EnterPhoneNumberSection(
     onValueChange = {
       val digitsOnly = it.filter { char -> char.isDigit() }
       if (digitsOnly.length <= 15) {
-        updateText(digitsOnly)
-        input = digitsOnly
+        // The backend takes "+467…" as readily as "07…", so a leading + is kept rather than
+        // stripped out from under a number that was prefilled in that form.
+        val edited = if (it.startsWith("+")) "+$digitsOnly" else digitsOnly
+        updateText(edited)
+        input = edited
       }
     },
   )
@@ -217,9 +221,9 @@ private fun ColumnScope.EnterPhoneNumberSection(
       focusManager.clearFocus()
       onSave()
     },
+    // Counted in digits, so a leading + on a country-code number is not mistaken for one.
     enabled = !uiState.isLoading &&
-      uiState.phoneNumber.length >= 8 &&
-      uiState.phoneNumber.length <= 15,
+      PhoneNumberRules.SwishPhoneNumber.hasEnoughDigits(uiState.phoneNumber),
     isLoading = uiState.isLoading,
     modifier = Modifier
       .fillMaxWidth()
@@ -232,6 +236,12 @@ private class SwishPhoneNumberVisualTransformation(
   private val maskColor: Color,
 ) : VisualTransformation {
   override fun filter(text: AnnotatedString): TransformedText {
+    // The grouping and the placeholder are built around a domestic number. Regrouping a stored
+    // country-code one ("467…", "+467…") at the same positions reads as a different number
+    // altogether, so those are shown exactly as they are held.
+    if (text.text.isNotEmpty() && !text.text.startsWith("0")) {
+      return TransformedText(text, OffsetMapping.Identity)
+    }
     val trimmed = if (text.text.length >= 15) text.text.substring(0..14) else text.text
 
     val annotatedString = buildAnnotatedString {

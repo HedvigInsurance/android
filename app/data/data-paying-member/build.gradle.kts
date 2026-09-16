@@ -16,4 +16,7 @@ dependencies {
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
   implementation(projects.dataContract)
+
+  testImplementation(libs.assertK)
+  testImplementation(libs.junit)
 }
