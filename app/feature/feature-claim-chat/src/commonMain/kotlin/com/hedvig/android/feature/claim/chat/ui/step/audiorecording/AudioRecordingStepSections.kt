@@ -129,7 +129,9 @@ import hedvig.resources.TALKBACK_CLAIM_CHAT_YOUR_ANSWER
 import hedvig.resources.TALKBACK_PLAYBACK_BUTTON_STATE
 import hedvig.resources.TALKBACK_RECORDING_DURATION
 import hedvig.resources.TALKBACK_RECORDING_NOW
+import hedvig.resources.claims_record
 import hedvig.resources.claims_skip_button
+import hedvig.resources.claims_write
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_close_button
 import hedvig.resources.something_went_wrong
@@ -343,8 +345,7 @@ internal fun AudioRecorderBubble(
                   ) {
                     Icon(HedvigIcons.PenEdit, null, Modifier.size(24.dp))
                     Spacer(Modifier.width(8.dp))
-                    // TODO: Add "Write" / "Skriv" to Lokalise
-                    HedvigText("Write")
+                    HedvigText(stringResource(Res.string.claims_write))
                   }
                 }
                 HedvigButton(
@@ -359,8 +360,7 @@ internal fun AudioRecorderBubble(
                 ) {
                   Icon(HedvigIcons.Mic, null, Modifier.size(24.dp))
                   Spacer(Modifier.width(8.dp))
-                  // TODO: Add "Record" / "Spela in" to Lokalise
-                  HedvigText("Record")
+                  HedvigText(stringResource(Res.string.claims_record))
                 }
               }
               if (canSkip) {
