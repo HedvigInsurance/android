@@ -360,7 +360,7 @@ private fun FormContent(
             onClick = onSkip,
             isLoading = skipButtonLoading,
             modifier = Modifier.fillMaxWidth(),
-            buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
+            buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
           )
         }
       }
