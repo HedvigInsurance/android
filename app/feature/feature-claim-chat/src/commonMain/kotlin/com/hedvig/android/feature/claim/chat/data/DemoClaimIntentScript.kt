@@ -73,6 +73,8 @@ internal class DemoClaimIntentScript {
     val taskStepId = StepId("demo-task")
     private val selectInsuranceStepId = StepId("demo-select-insurance")
     private val travellingStepId = StepId("demo-travelling")
+    private val whoStepId = StepId("demo-who")
+    private val whenStepId = StepId("demo-when")
     private val summaryStepId = StepId("demo-summary")
 
     /**
@@ -140,6 +142,40 @@ internal class DemoClaimIntentScript {
               searchData = null,
             ),
           ),
+        ),
+      ),
+      // Pills with nothing filled in: a tap answers the step, so there is no confirm button.
+      ClaimIntentStep(
+        id = whoStepId,
+        text = "Who does the claim concern?",
+        hint = null,
+        isRegrettable = true,
+        stepContent = StepContent.ContentSelect(
+          options = listOf(
+            StepContent.ContentSelect.Option(id = "me", title = "Myself"),
+            StepContent.ContentSelect.Option(id = "partner", title = "My partner"),
+            StepContent.ContentSelect.Option(id = "child", title = "My child"),
+          ),
+          selectedOptionId = null,
+          style = StepContent.ContentSelectStyle.PILL,
+          isSkippable = false,
+        ),
+      ),
+      // The same pills with an answer already on the step, which is the case that keeps its confirm button.
+      ClaimIntentStep(
+        id = whenStepId,
+        text = "When did it happen?",
+        hint = null,
+        isRegrettable = true,
+        stepContent = StepContent.ContentSelect(
+          options = listOf(
+            StepContent.ContentSelect.Option(id = "today", title = "Today"),
+            StepContent.ContentSelect.Option(id = "week", title = "This week"),
+            StepContent.ContentSelect.Option(id = "earlier", title = "Earlier"),
+          ),
+          selectedOptionId = "week",
+          style = StepContent.ContentSelectStyle.PILL,
+          isSkippable = false,
         ),
       ),
       ClaimIntentStep(

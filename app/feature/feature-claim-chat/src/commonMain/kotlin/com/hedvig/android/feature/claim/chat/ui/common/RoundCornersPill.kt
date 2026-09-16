@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -23,6 +24,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 internal fun RoundCornersPill(
   modifier: Modifier = Modifier,
   isSelected: Boolean = false,
+  role: Role? = null,
   onClick: (() -> Unit)?,
   content: @Composable () -> Unit,
 ) {
@@ -47,6 +49,7 @@ internal fun RoundCornersPill(
       .then(
         if (onClick != null) {
           Modifier.clickable(
+            role = role,
             onClick = onClick,
           )
         } else {

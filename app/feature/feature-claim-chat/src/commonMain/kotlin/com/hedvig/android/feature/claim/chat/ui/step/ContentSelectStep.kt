@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -60,38 +61,44 @@ internal fun ContentSelectStep(
       },
     ) { isCurrentStep ->
       if (isCurrentStep) {
+        // An answer already on the step is something to confirm or change, so it keeps the confirm button.
+        // With nothing filled in there is nothing to confirm, and a tap answers the step outright. Where the
+        // step can be skipped, skipping is the only thing to confirm.
+        val hasPrefilledAnswer = rememberSaveable(itemId) { stepContent.selectedOptionId != null }
+        val answersOnClick = !hasPrefilledAnswer
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
           ContentSelectChips(
             options = options,
             onOptionClick = { option ->
               if (!isSubmitting) {
-                onEvent(
-                  ClaimChatEvent.Select(
-                    itemId,
-                    option.id,
-                  ),
-                )
+                onEvent(ClaimChatEvent.Select(itemId, option.id))
+                if (answersOnClick) {
+                  onEvent(ClaimChatEvent.SubmitSelect(itemId))
+                }
               }
             },
             selectedOptionId = stepContent.selectedOptionId,
             style = stepContent.style,
+            answersOnClick = answersOnClick,
           )
           Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            HedvigButton(
-              text = stringResource(Res.string.GENERAL_CONFIRM),
-              onClick = {
-                if (selectedOptionId != null) {
-                  onEvent(
-                    ClaimChatEvent.SubmitSelect(
-                      itemId,
-                    ),
-                  )
-                }
-              },
-              isLoading = currentContinueButtonLoading,
-              enabled = !isSubmitting && selectedOptionId != null,
-              modifier = Modifier.fillMaxWidth(),
-            )
+            if (hasPrefilledAnswer && !canSkip) {
+              HedvigButton(
+                text = stringResource(Res.string.GENERAL_CONFIRM),
+                onClick = {
+                  if (selectedOptionId != null) {
+                    onEvent(
+                      ClaimChatEvent.SubmitSelect(
+                        itemId,
+                      ),
+                    )
+                  }
+                },
+                isLoading = currentContinueButtonLoading,
+                enabled = !isSubmitting && selectedOptionId != null,
+                modifier = Modifier.fillMaxWidth(),
+              )
+            }
             if (canSkip) {
               HedvigButton(
                 stringResource(Res.string.claims_skip_button),
