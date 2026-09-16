@@ -117,7 +117,6 @@ internal fun ContentSelectStep(
           if (selected != null) {
             val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + selected.title
             RoundCornersPill(
-              onClick = null,
               modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentWidth(Alignment.End)

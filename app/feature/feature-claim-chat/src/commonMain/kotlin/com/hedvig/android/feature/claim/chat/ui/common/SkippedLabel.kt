@@ -17,7 +17,6 @@ import org.jetbrains.compose.resources.stringResource
 internal fun SkippedLabel() {
   val skippedLabelText = stringResource(Res.string.CLAIM_CHAT_SKIPPED_STEP)
   RoundCornersPill(
-    onClick = null,
     modifier = Modifier.fillMaxWidth().wrapContentWidth(Alignment.End),
   ) {
     HedvigText(
