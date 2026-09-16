@@ -517,12 +517,39 @@ They consult `retainedContentKeys` — wired to `backstackController.allLiveCont
 
 ```kotlin
 val allLiveContentKeys: Set<Any> get() = buildSet {
-  entries.forEach { add(it.toString()) }
-  parkedRuns.values.forEach { run -> run.forEach { add(it.toString()) } }
+  entries.forEach { add(it.contentKey()) }
+  parkedRuns.values.forEach { run -> run.forEach { add(it.contentKey()) } }
 }
 ```
 
 A key that merely *moved into* `parkedRuns` is still "live", so its saved state and ViewModel are kept. A key actually removed (popped from both) is disposed. Note `StashedSession` (Part IV) is deliberately **excluded** from this set, so a stashed logged-out session has all its per-entry state disposed while it waits.
+
+### The content key contract
+
+A destination's `contentKey` is the id its saved state and retained `ViewModel` are filed under. Two sides have to agree on it: the `NavEntry` that Nav3 renders, and the controller sets above (`allLiveContentKeys`, and `owningTabByContentKey` in II.10).
+
+**The controller has to derive it, not read it.** `NavDisplay` only ever builds entries for the *rendered* stack, so everything in `parkedRuns` — and everything rehydrated from `SavedStateRegistry` after process death — has no `NavEntry` to read a key off. Those are precisely the destinations `allLiveContentKeys` exists to protect, so reading from entries is not an option that exists here.
+
+**We own the derivation rather than reproducing Nav3's.** `defaultContentKey` is `@PublishedApi internal`, so it cannot be called from our code, and it is not a stable contract. One definition serves both sides:
+
+```kotlin
+// navigation-common, next to HedvigNavKey
+fun HedvigNavKey.contentKey(): String = "${this::class.qualifiedName ?: this::class}/$this"
+```
+
+Entries are stamped with it centrally, by wrapping the entry provider where it is handed to `NavDisplay`:
+
+```kotlin
+entryProvider = withHedvigContentKeys(
+  entryProvider { hedvigEntryProvider(…) },
+)
+```
+
+Applying the stamp at that single seam, rather than passing `contentKey` at each of the ~107 `entry<>` call sites, is what makes the contract hold by construction: a new destination cannot forget to opt in. `withHedvigContentKeys` memoizes per key — `NavEntry.equals` compares `content` by identity, and Nav3 hands the same content lambda to every entry it builds for a key, so re-wrapping on each call would make two entries for one destination compare unequal.
+
+**Qualified by type, not just `toString`.** A `data object`'s `toString` is only its simple name, and the same name ships more than once (`SubmitFailureKey` exists in both `feature-choose-tier` and `feature-addon-purchase`). Keying on `toString` alone gives two destinations one identity, which bleeds retained state between them and makes `SaveableStateProvider` throw `Key … was used multiple times` if both are ever live at once. `qualifiedName` is used rather than Nav3's own `"$key:${key::class}"` shape because this lives in KMP `commonMain` and `KClass.toString()` yields only the simple name on Native.
+
+The one thing a key author must respect: don't override `toString` with a value that is equal for two distinct destinations of the same type. The generated `data class` `toString` is always safe.
 
 ## II.9 Chrome (the nav bar/rail) as a Scene decorator
 
@@ -794,6 +821,7 @@ The fresh instance reads the ancestry back in `restoreAndPersist` via the **same
 6. **Features never import another feature's keys.** Cross-feature navigation is a `navigateToX` lambda from `:app`, or a dependency on a `-navigation` module.
 7. **No Activity-bound reference is captured in the `BackstackController` constructor.** Activity hooks are attached in `onCreate`; each Activity owns its own controller, so a recreated Activity gets a fresh controller (or reuses the retained one across a config change) without ever sharing hooks with another Activity.
 8. **GraphQL `octopus.*` types never appear in public APIs** (see CLAUDE.md data-layer rule).
+9. **A destination's `contentKey` comes from `HedvigNavKey.contentKey()` on both sides** — stamped onto entries by `withHedvigContentKeys`, derived directly by the controller for parked and restored keys. Never hand-roll one at an `entry<>` call site, and never reintroduce a bare `toString()` on the controller side (II.8).
 
 ## VI.2 Tests that guard the architecture
 
@@ -801,6 +829,8 @@ The fresh instance reads the ancestry back in `restoreAndPersist` via the **same
 - **`BackstackTest`** (`navigation-compose`) — the `Backstack` helper extensions.
 - **`HedvigDeepLinkMatcherTest`** — matching/priority/throw-as-non-match behaviour.
 - **`HedvigNavKeySavedStateTest`** (`navigation-common`) — key saved-state behaviour.
+- **`HedvigContentKeysTest`** (`:app`) — pins the content-key contract (II.8): entries carry our derivation, the controller reports the same value as live for both rendered and *parked* destinations, and repeated provider calls for one key stay equal. Every case fails if the stamping is removed.
+- **`ContentKeyTest`** (`navigation-common`, JVM + iOS) — two destinations sharing a `toString` must not share a content key. Fails if the type qualification is dropped.
 - The `TopLevelRunLogic` helpers are pure list functions, unit-testable without a controller.
 
 ## VI.3 Decisions, restated
@@ -815,6 +845,7 @@ The fresh instance reads the ancestry back in `restoreAndPersist` via the **same
 | KSP-generated serializer registrations | No hand-written boilerplate, no reflection (iOS-safe), can't silently rot | Per-module hand-written `SerializersModule` |
 | `NavigationStateBridge` as the only seam | One place owns launch-time stack decisions | Restore logic spread across `MainActivity` |
 | Chrome via `SceneDecoratorStrategy` | Bar rides inside `AnimatedContent`, stays static during transitions | Outer `Row/Column { chrome; content }` |
+| We own `contentKey()`, stamped at the entry-provider seam | The controller must derive keys for destinations with no `NavEntry` (parked, restored); Nav3's `defaultContentKey` is `@PublishedApi internal` and not a stable contract | Reproducing Nav3's derivation and pinning it with a drift test; passing `contentKey` at each of ~107 `entry<>` sites; reading keys off live entries (impossible for parked runs) |
 
 ---
 
@@ -850,6 +881,7 @@ The fresh instance reads the ancestry back in `restoreAndPersist` via the **same
 - **HedvigNavKey** — `interface HedvigNavKey : NavKey`; a serializable destination identity.
 - **Backstack** — the narrow interface Presenters use; backed by the concrete `BackstackController`.
 - **BackstackController** — per-Activity controller (owned by `NavRetainedViewModel`) owning `entries`, `parkedRuns`, `pendingDeepLink`, `stashedSession`, plus tab/login/deep-link logic. Survives config changes, dies with its Activity.
+- **contentKey** — the id a destination's saved state and retained `ViewModel` are filed under, from `HedvigNavKey.contentKey()`; stamped onto entries by `withHedvigContentKeys` and derived directly by the controller for parked/restored keys (II.8).
 - **Run** — a tab's slice of the back stack: its root key plus drill-down screens.
 - **Parked run** — a side tab's run lifted out of `entries` into `parkedRuns` while another tab is active.
 - **NavigationStateBridge** — the stateless object that seeds/restores/persists nav state across the Activity↔controller boundary and performs the escape-to-own-task handoff.
