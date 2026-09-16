@@ -504,6 +504,12 @@ private fun ClaimChatScreenContent(
     }
   }
 
+  // A new question ends the reading back: whatever the member had scrolled up to is now behind the answer they
+  // just gave. Without this the flag stays set until the list happens to reach its end, and the step that
+  // follows lands with its own controls below the fold and no scroll to bring them up.
+  LaunchedEffect(uiState.steps.lastIndex) {
+    isScrolledBack = false
+  }
   // Instant, not animated: this fires on every keystroke that rewraps the input, and a 400ms animation on each
   // one is the flicker. Against the end of the list it moves nothing, so there is nothing to animate.
   LaunchedEffect(dockedInputHeight, uiState.steps.lastIndex) {
