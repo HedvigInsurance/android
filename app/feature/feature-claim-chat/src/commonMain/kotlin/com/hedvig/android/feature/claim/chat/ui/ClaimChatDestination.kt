@@ -274,6 +274,7 @@ private fun ClaimChatScreen(
       ?.recordingState as? AudioRecordingStepState.FreeTextDescription
     FullScreenTextAnswer(
       initialText = recordingState?.freeText.orEmpty(),
+      minLength = freeTextRestrictions.minLength,
       maxLength = freeTextRestrictions.maxLength,
       errorType = recordingState?.errorType,
       hasError = recordingState?.hasError == true,

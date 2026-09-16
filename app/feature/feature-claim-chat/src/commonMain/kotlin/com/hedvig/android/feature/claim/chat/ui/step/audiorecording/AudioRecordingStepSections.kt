@@ -200,6 +200,7 @@ internal fun AudioRecordingStep(
       },
       onSaveFreeText = { text -> onEvent(ClaimChatEvent.UpdateFreeText(text)) },
       onCancelSubmission = { onEvent(ClaimChatEvent.AudioRecording.CancelTextSubmission) },
+      freeTextMinLength = stepContent.freeTextMinLength,
       freeTextMaxLength = stepContent.freeTextMaxLength,
       canSkip = stepContent.isSkippable,
       onSkip = onSkip,
@@ -233,6 +234,7 @@ internal fun AudioRecorderBubble(
   onLaunchFullScreenEditText: () -> Unit,
   onSaveFreeText: (String) -> Unit,
   onCancelSubmission: () -> Unit,
+  freeTextMinLength: Int,
   freeTextMaxLength: Int,
   canSkip: Boolean,
   onSkip: () -> Unit,
@@ -310,6 +312,7 @@ internal fun AudioRecorderBubble(
             val freeText = recordingState as? AudioRecordingStepState.FreeTextDescription
             InlineTextAnswerCard(
               initialText = freeText?.freeText.orEmpty(),
+              minLength = freeTextMinLength,
               maxLength = freeTextMaxLength,
               errorType = freeText?.errorType,
               hasError = freeText?.hasError == true,
@@ -503,6 +506,7 @@ private fun InlineVoiceAnswerCard(
 @Composable
 private fun TextAnswerContent(
   initialText: String,
+  minLength: Int,
   maxLength: Int,
   errorType: FreeTextErrorType?,
   hasError: Boolean,
@@ -513,6 +517,9 @@ private fun TextAnswerContent(
   compact: Boolean = false,
 ) {
   var text by rememberSaveable { mutableStateOf(initialText) }
+  // The card holds its own text, so the step's `canSubmit` only catches up on save. The length rule has to be
+  // applied here or nothing applies it before the answer is already sent.
+  val isLongEnough = text.trim().length >= minLength
   val focusRequester = remember { FocusRequester() }
   LaunchedEffect(Unit) {
     runCatching { focusRequester.requestFocus() }
@@ -538,7 +545,7 @@ private fun TextAnswerContent(
     HedvigButton(
       text = stringResource(Res.string.AUDIO_RECORDER_SEND),
       onClick = { onSave(text) },
-      enabled = text.isNotBlank() && !isSubmitting,
+      enabled = isLongEnough && !isSubmitting,
       isLoading = isSubmitting,
       buttonSize = ButtonDefaults.ButtonSize.Medium,
     )
@@ -573,9 +580,11 @@ private fun TextAnswerContent(
     Column(modifier.padding(16.dp)) {
       label(Modifier)
       field()
-      if (hasError && errorType is FreeTextErrorType.TooShort) {
+      // Says why send is out of reach, rather than leaving a disabled button to explain itself. Only once the
+      // member has started writing: on an empty field the placeholder is the instruction.
+      if ((hasError && errorType is FreeTextErrorType.TooShort) || (text.isNotBlank() && !isLongEnough)) {
         HedvigText(
-          stringResource(Res.string.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR, errorType.minLength),
+          stringResource(Res.string.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR, minLength),
           style = HedvigTheme.typography.label,
           color = HedvigTheme.colorScheme.textSecondary,
         )
@@ -601,6 +610,7 @@ private fun TextAnswerContent(
 @Composable
 internal fun FullScreenTextAnswer(
   initialText: String,
+  minLength: Int,
   maxLength: Int,
   errorType: FreeTextErrorType?,
   hasError: Boolean,
@@ -619,6 +629,7 @@ internal fun FullScreenTextAnswer(
     ) {
       TextAnswerContent(
         initialText = initialText,
+        minLength = minLength,
         maxLength = maxLength,
         errorType = errorType,
         hasError = hasError,
@@ -634,6 +645,7 @@ internal fun FullScreenTextAnswer(
 @Composable
 private fun InlineTextAnswerCard(
   initialText: String,
+  minLength: Int,
   maxLength: Int,
   errorType: FreeTextErrorType?,
   hasError: Boolean,
@@ -650,6 +662,7 @@ private fun InlineTextAnswerCard(
   ) {
     TextAnswerContent(
       initialText = initialText,
+      minLength = minLength,
       maxLength = maxLength,
       errorType = errorType,
       hasError = hasError,

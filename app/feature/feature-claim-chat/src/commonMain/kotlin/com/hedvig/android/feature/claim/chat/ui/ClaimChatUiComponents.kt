@@ -61,6 +61,7 @@ private fun PreviewClaimChatComponents() {
           onLaunchFullScreenEditText = {},
           onSaveFreeText = {},
           onCancelSubmission = {},
+          freeTextMinLength = 10,
           freeTextMaxLength = 2000,
           canSkip = true,
           onSkip = {},
