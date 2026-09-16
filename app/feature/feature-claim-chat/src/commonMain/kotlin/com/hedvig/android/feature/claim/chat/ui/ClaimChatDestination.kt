@@ -53,10 +53,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.heading
@@ -374,11 +379,39 @@ private fun ClaimChatScreenContent(
   val coroutineScope = rememberCoroutineScope()
   // The conversation is scrolled back off the current question. The docked input stands down while that is
   // true and the arrow back to the bottom takes its place, so the two never share the same corner.
-  val isScrolledBack by remember(lazyListState) {
-    // Not "the last item is off screen": with the input docked, the list can be a single question tall
-    // enough to stay partly in view however far back it is scrolled. Whether anything remains below is the
-    // question actually being asked.
-    derivedStateOf { lazyListState.canScrollForward }
+  //
+  // Driven by the gesture, not by `canScrollForward`. Reading the measurement would feed back on itself: the
+  // input standing down gives the list its height back, which can leave the list able to scroll forward again
+  // the moment the input returns, which stands it down again. That loop is visible as the arrow flickering,
+  // and it settles in a state where scrolling forward never brings the input back at all. Only a deliberate
+  // drag backwards sets this, and only arriving at the end of the list clears it.
+  var isScrolledBack by remember(lazyListState) { mutableStateOf(false) }
+  val dragBackThreshold = with(LocalDensity.current) { DRAG_BACK_BEFORE_INPUT_STANDS_DOWN.toPx() }
+  val standDownOnDragBack = remember(lazyListState, dragBackThreshold) {
+    object : NestedScrollConnection {
+      private var draggedBack = 0f
+
+      override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+        if (source != NestedScrollSource.UserInput) return Offset.Zero
+        // A positive y is a drag downwards, which walks the conversation backwards.
+        if (available.y > 0f) {
+          draggedBack += available.y
+          if (draggedBack > dragBackThreshold && lazyListState.canScrollForward) {
+            isScrolledBack = true
+          }
+        } else {
+          draggedBack = 0f
+        }
+        return Offset.Zero
+      }
+    }
+  }
+  // Reaching the end is the one thing that brings the input back. Once back it stays, even though it makes the
+  // list scrollable again, because nothing but another drag backwards can stand it down.
+  LaunchedEffect(lazyListState) {
+    snapshotFlow { lazyListState.canScrollForward }.collect { canScrollForward ->
+      if (!canScrollForward) isScrolledBack = false
+    }
   }
   // Track the size of the last item to scroll when it grows
   val lastItemSize by remember(lazyListState, uiState.steps.lastOrNull()?.id) {
@@ -437,6 +470,7 @@ private fun ClaimChatScreenContent(
         uiState = uiState,
         lazyListState = lazyListState,
         isScrolledBack = isScrolledBack,
+        standDownOnDragBack = standDownOnDragBack,
         onEvent = onEvent,
         shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
         onNavigateToImageViewer = onNavigateToImageViewer,
@@ -492,6 +526,7 @@ private fun ClaimChatScrollableContent(
   uiState: ClaimChatUiState.ClaimChat,
   lazyListState: LazyListState,
   isScrolledBack: Boolean,
+  standDownOnDragBack: NestedScrollConnection,
   onEvent: (ClaimChatEvent) -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   onNavigateToImageViewer: (String, String) -> Unit,
@@ -541,6 +576,7 @@ private fun ClaimChatScrollableContent(
         )
         LazyColumn(
           state = lazyListState,
+          modifier = Modifier.nestedScroll(standDownOnDragBack),
           contentPadding = listContentPadding,
           verticalArrangement = Arrangement.spacedBy(spaceBetweenItems, Alignment.Top),
         ) {
@@ -625,6 +661,10 @@ private fun ClaimChatScrollableContent(
     }
   }
 }
+
+// Far enough that a nudge or an overscroll settle does not stand the input down, short enough that a deliberate
+// look back does.
+private val DRAG_BACK_BEFORE_INPUT_STANDS_DOWN = 24.dp
 
 // Any offset past the end of the last item; the list clamps it to the bottom.
 private const val SCROLL_PAST_END_OF_LIST = 100_000
