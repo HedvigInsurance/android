@@ -21,7 +21,7 @@ the mistakes are not repeated.
 |---|------|----------|
 | 1 | Animated loading text | In scope. The trailing "Done" beat is **out** of v1. |
 | 2 | Summary sheet hierarchy | In scope. |
-| 3 | Remove Confirm + Pill | Dropped in the meeting. |
+| 3 | Remove Confirm + Pill | Dropped in the meeting, then reopened in Slack on 15 September and built. See below. |
 | 4 | Error escape hatch | Dropped in the meeting. |
 | 5 | Select insurance | In scope. Backend confirmed to deliver it as a `Form` step with `SINGLE_SELECT`. |
 | 6a | Input mode row and overlays | In scope. Draft preservation is **deferred**, see below. |
@@ -92,6 +92,26 @@ Apply the same hierarchy to every `AnswerValue` branch so `Text`, `Audio` and `F
 stay consistent. The audio branch already renders a player row, which matches the design.
 
 This is the smallest item and a good first landing.
+
+## 3. Remove Confirm + Pill, reopened
+
+Branch: `feat/claim-chat-pills-as-buttons`.
+
+Dropped in the meeting, then reopened by Richard in Slack on 15 September for the initial triage step,
+where nothing is ever prefilled. The rule that came out of that thread, which covers his ask without
+special casing the step:
+
+- Nothing prefilled: a tap on a pill answers the step, and there is no confirm button.
+- Something prefilled: the confirm button stays, because there is then something to accept or change.
+- Skippable: skipping is the only thing to confirm, so the button there is the skip button.
+
+Where a tap answers outright the pills are buttons. They carry `Role.Button` and leave the
+`selectableGroup`, because a selected or not-selected state describes an interaction the member no
+longer has.
+
+`RoundCornersPill` was split in two along the way. The overload without `onClick` keeps the bubble
+semantics for an answer already given; the one with it is built on the clickable `Surface`, so the
+label, the click and the role sit on one node.
 
 ## 5. Select insurance
 
@@ -225,6 +245,33 @@ referenced from `ContentSelectStep.kt`, `UploadFilesStep.kt`, `FormStep.kt:357`,
 those five files that items 5, 6a and 6b are rewriting, which is why it waits rather than
 running alongside them.
 
+## 8. Notices as messages
+
+Branch: `feat/claim-chat-notices-as-messages`. From Figma node `2777-36123`, raised after the original
+review.
+
+An `Information` step rendered as a `HedvigNotificationCard` under the step's text, coloured and iconed
+by severity, with a button that left nothing behind once tapped. The notice now joins the step's text
+as a paragraph, so it reads as an ordinary message, and acknowledging it leaves the button title in the
+log as an answer, the way every other step does.
+
+Severity no longer reaches the UI. Richard settled it in the thread: severity is for when something
+went wrong, crashes and errors, not for these. The field is still mapped from the API and nothing
+reads it.
+
+Open: a step carries its own `text` and `hint` independently of its content, and both are nullable. The
+Figma shows the notice alone. If the backend also fills `text` on these steps they render as two
+paragraphs, text first, which is unverified.
+
+## Landscape, a proposal
+
+Branch: `proposal/claim-chat-landscape-voice-bar`. Not part of the handoff.
+
+Portrait cannot be locked, that is an accessibility requirement, so the voice card has to work in a
+window roughly 316dp tall. The proposal lays the waveform along one side with the heading, the clock
+and the controls stacked on the other, switching on available height rather than on orientation. It is
+for the designers to accept or reject.
+
 ## Testing without the backend
 
 **Built and landed on `feat/claim-chat-demo-flow`.** This section originally assumed the use cases
@@ -253,6 +300,8 @@ The script drives:
   for item 5.
 - An audio recording step, for exercising mode switching and both overlays.
 - A summary step with text, audio and file answers, for item 2.
+- Two pill steps, one prefilled and one not, for item 3.
+- Two information steps of differing severity, for item 8.
 
 Compose previews cover the static states. The scripted fake covers the transitions, which is
 where all four risky items actually live.
@@ -265,7 +314,7 @@ that renders only the latest description look correct while still dropping messa
 
 ## Out of scope
 
-- Items 3 and 4, dropped in the meeting.
+- Item 4, dropped in the meeting. Item 3 was dropped with it and later reopened, see section 3.
 - The "Done" terminal beat of item 1.
 - Draft preservation across input mode switches, deferred out of item 6a.
 - Any change to `FreeTextOverlay`, which keeps serving `feature-terminate-insurance` unchanged.
