@@ -48,6 +48,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -413,18 +414,10 @@ private fun ClaimChatScreenContent(
       if (!canScrollForward) isScrolledBack = false
     }
   }
-  // Track the size of the last item to scroll when it grows
-  val lastItemSize by remember(lazyListState, uiState.steps.lastOrNull()?.id) {
-    derivedStateOf {
-      val layoutInfo = lazyListState.layoutInfo
-      val lastItem = layoutInfo.visibleItemsInfo.lastOrNull()
-      if (lastItem?.index == uiState.steps.lastIndex) {
-        lastItem.size
-      } else {
-        null
-      }
-    }
-  }
+  // The docked input changes height as the member types, opens a card or raises the keyboard, and every one of
+  // those takes height away from the list. Holding the list against its end keeps the question they are
+  // answering flush above the input instead of sliding behind it.
+  var dockedInputHeight by remember { mutableIntStateOf(0) }
 
   Box(modifier = modifier.fillMaxSize()) {
     Column(Modifier.matchParentSize()) {
@@ -471,6 +464,7 @@ private fun ClaimChatScreenContent(
         lazyListState = lazyListState,
         isScrolledBack = isScrolledBack,
         standDownOnDragBack = standDownOnDragBack,
+        onDockedInputHeightChanged = { dockedInputHeight = it },
         onEvent = onEvent,
         shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
         onNavigateToImageViewer = onNavigateToImageViewer,
@@ -511,12 +505,11 @@ private fun ClaimChatScreenContent(
     }
   }
 
-  LaunchedEffect(lastItemSize) {
-    if (lastItemSize != null && uiState.steps.isNotEmpty()) {
-      lazyListState.animateScrollBy(
-        value = 3000f,
-        animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing),
-      )
+  // Instant, not animated: this fires on every keystroke that rewraps the input, and a 400ms animation on each
+  // one is the flicker. Against the end of the list it moves nothing, so there is nothing to animate.
+  LaunchedEffect(dockedInputHeight, uiState.steps.lastIndex) {
+    if (!isScrolledBack && uiState.steps.isNotEmpty()) {
+      lazyListState.scrollToItem(uiState.steps.lastIndex, scrollOffset = SCROLL_PAST_END_OF_LIST)
     }
   }
 }
@@ -527,6 +520,7 @@ private fun ClaimChatScrollableContent(
   lazyListState: LazyListState,
   isScrolledBack: Boolean,
   standDownOnDragBack: NestedScrollConnection,
+  onDockedInputHeightChanged: (Int) -> Unit,
   onEvent: (ClaimChatEvent) -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   onNavigateToImageViewer: (String, String) -> Unit,
@@ -626,6 +620,7 @@ private fun ClaimChatScrollableContent(
       ) {
         Box(
           Modifier
+            .onSizeChanged { onDockedInputHeightChanged(it.height) }
             // A Column measures an unweighted child against an unbounded height, so without this the input is
             // free to lay out taller than the screen and is then simply cut off. It is capped instead, and
             // scrolls within the cap, which keeps every control reachable however little room is left. The
