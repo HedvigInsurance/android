@@ -515,6 +515,10 @@ private fun InlineTextAnswerCard(
         // pushing the card any further up the conversation.
         maxLines = TEXT_ANSWER_MAX_LINES,
         readOnly = isSubmitting,
+        // The card is the surface here, exactly as the Figma draws it: one card with the answer written straight
+        // onto it. The field's own background would be a second surface the design does not have, and its
+        // focus shift would arrive as a lighter box inside the card.
+        containerColor = Color.Transparent,
         modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
       )
       // Says why send is out of reach, rather than leaving a disabled button to explain itself. Only once the
