@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.selectableGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
@@ -27,12 +28,18 @@ internal fun ContentSelectChips(
   onOptionClick: (StepContent.ContentSelect.Option) -> Unit,
   style: StepContent.ContentSelectStyle,
   modifier: Modifier = Modifier,
+  answersOnClick: Boolean = false,
 ) {
   when (style) {
     StepContent.ContentSelectStyle.PILL -> {
       FlowRow(
-        modifier = modifier.semantics {
-          selectableGroup()
+        // Only a group to select within when there is something to confirm afterwards. Where a tap answers
+        // the step outright these are buttons, and a group that announces a selection would describe an
+        // interaction the member does not have.
+        modifier = if (answersOnClick) {
+          modifier
+        } else {
+          modifier.semantics { selectableGroup() }
         },
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -44,11 +51,16 @@ internal fun ContentSelectChips(
               stringResource(Res.string.TALKBACK_OPTION_NOT_SELECTED)
             RoundCornersPill(
               isSelected = item.id == selectedOptionId,
-              modifier = Modifier.semantics {
-                stateDescription = if (item.id == selectedOptionId) {
-                  selectedDescription
-                } else {
-                  notSelectedDescription
+              role = if (answersOnClick) Role.Button else null,
+              modifier = if (answersOnClick) {
+                Modifier
+              } else {
+                Modifier.semantics {
+                  stateDescription = if (item.id == selectedOptionId) {
+                    selectedDescription
+                  } else {
+                    notSelectedDescription
+                  }
                 }
               },
               onClick = {
@@ -73,7 +85,10 @@ internal fun ContentSelectChips(
               onOptionClick(item)
             },
             isSelected = item.id == selectedOptionId,
-            modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
+            role = if (answersOnClick) Role.Button else null,
+            modifier = Modifier
+              .weight(1f)
+              .padding(horizontal = 4.dp),
           ) {
             Row(
               Modifier.fillMaxWidth(),

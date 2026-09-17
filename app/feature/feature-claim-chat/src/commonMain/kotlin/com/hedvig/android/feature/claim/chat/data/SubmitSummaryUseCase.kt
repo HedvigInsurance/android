@@ -12,13 +12,17 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import octopus.ClaimIntentSubmitSummaryMutation
 
+internal interface SubmitSummaryUseCase {
+  suspend fun invoke(stepId: StepId): Either<ClaimChatErrorMessage, ClaimIntent>
+}
+
 @SingleIn(AppScope::class)
 @Inject
-internal class SubmitSummaryUseCase(
+internal class SubmitSummaryUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
-) {
-  suspend fun invoke(stepId: StepId): Either<ClaimChatErrorMessage, ClaimIntent> {
+) : SubmitSummaryUseCase {
+  override suspend fun invoke(stepId: StepId): Either<ClaimChatErrorMessage, ClaimIntent> {
     return either {
       apolloClient
         .mutation(ClaimIntentSubmitSummaryMutation(stepId = stepId.value))
