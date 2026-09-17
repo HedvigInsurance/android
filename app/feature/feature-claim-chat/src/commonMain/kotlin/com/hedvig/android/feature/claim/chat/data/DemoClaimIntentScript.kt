@@ -16,6 +16,7 @@ import kotlin.time.Duration.Companion.milliseconds
  *
  * The steps are chosen to cover the cases that are awkward to get a real backend to produce on demand:
  *
+ * - Two information steps of differing severity, which are meant to be indistinguishable from each other.
  * - An audio recording step, for the two input modes and their overlays.
  * - A task step whose descriptions arrive unevenly, including two at once, see [taskDescriptionSchedule].
  * - A single-select form over several contracts, for the insurance picker.
@@ -69,10 +70,15 @@ internal class DemoClaimIntentScript {
   companion object {
     val intentId = ClaimIntentId("demo-claim-intent")
 
+    private val shutOffValveStepId = StepId("demo-shut-off-valve")
+    private val reportToLandlordStepId = StepId("demo-report-to-landlord")
     private val describeStepId = StepId("demo-describe")
     val taskStepId = StepId("demo-task")
     private val selectInsuranceStepId = StepId("demo-select-insurance")
     private val travellingStepId = StepId("demo-travelling")
+    private val whoStepId = StepId("demo-who")
+    private val whenStepId = StepId("demo-when")
+    private val whoElseStepId = StepId("demo-who-else")
     private val summaryStepId = StepId("demo-summary")
 
     /**
@@ -91,6 +97,32 @@ internal class DemoClaimIntentScript {
     val taskCompletionDelay: Duration = 1000.milliseconds
 
     private val steps: List<ClaimIntentStep> = listOf(
+      // Two notices back to back, one of each severity, because they are meant to read identically. They come first
+      // because that is where a member meets them: things to do about the damage before describing it.
+      ClaimIntentStep(
+        id = shutOffValveStepId,
+        text = null,
+        hint = null,
+        isRegrettable = false,
+        stepContent = StepContent.Information(
+          notice = "If you haven't already: Shut off the main water valve and move what you can away from the " +
+            "water to limit the damage.",
+          buttonTitle = "I understand",
+          severity = InformationSeverity.Critical,
+        ),
+      ),
+      ClaimIntentStep(
+        id = reportToLandlordStepId,
+        text = null,
+        hint = null,
+        isRegrettable = false,
+        stepContent = StepContent.Information(
+          notice = "Report the water damage to your landlord if you haven't yet. They're responsible for the " +
+            "building and order the inspection, so we need their report to see whether the damage is covered.",
+          buttonTitle = "I understand",
+          severity = InformationSeverity.Info,
+        ),
+      ),
       ClaimIntentStep(
         id = describeStepId,
         text = "In order to help you faster we would like you to describe the situation.",
@@ -142,6 +174,58 @@ internal class DemoClaimIntentScript {
           ),
         ),
       ),
+      // Pills with nothing filled in: a tap answers the step, so there is no confirm button.
+      ClaimIntentStep(
+        id = whoStepId,
+        text = "Who does the claim concern?",
+        hint = null,
+        isRegrettable = true,
+        stepContent = StepContent.ContentSelect(
+          options = listOf(
+            StepContent.ContentSelect.Option(id = "me", title = "Myself"),
+            StepContent.ContentSelect.Option(id = "partner", title = "My partner"),
+            StepContent.ContentSelect.Option(id = "child", title = "My child"),
+          ),
+          selectedOptionId = null,
+          style = StepContent.ContentSelectStyle.PILL,
+          isSkippable = false,
+        ),
+      ),
+      // The same pills with an answer already on the step, which is the case that keeps its confirm button.
+      ClaimIntentStep(
+        id = whenStepId,
+        text = "When did it happen?",
+        hint = null,
+        isRegrettable = true,
+        stepContent = StepContent.ContentSelect(
+          options = listOf(
+            StepContent.ContentSelect.Option(id = "today", title = "Today"),
+            StepContent.ContentSelect.Option(id = "week", title = "This week"),
+            StepContent.ContentSelect.Option(id = "earlier", title = "Earlier"),
+          ),
+          selectedOptionId = "week",
+          style = StepContent.ContentSelectStyle.PILL,
+          isSkippable = false,
+        ),
+      ),
+      // Prefilled and skippable at once. This is the case that used to strand the member: the pills only
+      // selected, and with the confirm button gone there was nothing left but skip.
+      ClaimIntentStep(
+        id = whoElseStepId,
+        text = "Was anyone else affected?",
+        hint = null,
+        isRegrettable = true,
+        stepContent = StepContent.ContentSelect(
+          options = listOf(
+            StepContent.ContentSelect.Option(id = "nobody", title = "Nobody else"),
+            StepContent.ContentSelect.Option(id = "household", title = "Someone in my household"),
+            StepContent.ContentSelect.Option(id = "neighbour", title = "A neighbour"),
+          ),
+          selectedOptionId = "nobody",
+          style = StepContent.ContentSelectStyle.PILL,
+          isSkippable = true,
+        ),
+      ),
       ClaimIntentStep(
         id = travellingStepId,
         text = "Were you traveling at the time of the theft?",
@@ -154,7 +238,7 @@ internal class DemoClaimIntentScript {
           ),
           selectedOptionId = null,
           style = StepContent.ContentSelectStyle.BINARY,
-          isSkippable = false,
+          isSkippable = true,
         ),
       ),
       ClaimIntentStep(

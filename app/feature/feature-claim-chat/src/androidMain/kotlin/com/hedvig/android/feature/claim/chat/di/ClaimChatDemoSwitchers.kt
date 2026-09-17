@@ -31,6 +31,9 @@ import com.hedvig.android.feature.claim.chat.data.SubmitAudioRecordingUseCaseImp
 import com.hedvig.android.feature.claim.chat.data.SubmitFormUseCase
 import com.hedvig.android.feature.claim.chat.data.SubmitFormUseCaseDemo
 import com.hedvig.android.feature.claim.chat.data.SubmitFormUseCaseImpl
+import com.hedvig.android.feature.claim.chat.data.SubmitInformationUseCase
+import com.hedvig.android.feature.claim.chat.data.SubmitInformationUseCaseDemo
+import com.hedvig.android.feature.claim.chat.data.SubmitInformationUseCaseImpl
 import com.hedvig.android.feature.claim.chat.data.SubmitSelectUseCase
 import com.hedvig.android.feature.claim.chat.data.SubmitSelectUseCaseDemo
 import com.hedvig.android.feature.claim.chat.data.SubmitSelectUseCaseImpl
@@ -141,6 +144,17 @@ internal class SwitchingSubmitSelectUseCase(
 ) : SubmitSelectUseCase, DemoSwitcher<SubmitSelectUseCase>() {
   override suspend fun invoke(id: StepId, selectedId: String): Either<ClaimChatErrorMessage, ClaimIntent> =
     pick().invoke(id, selectedId)
+}
+
+@Inject
+@SingleIn(AppScope::class)
+@ContributesBinding(AppScope::class, binding = binding<SubmitInformationUseCase>())
+internal class SwitchingSubmitInformationUseCase(
+  override val demoManager: DemoManager,
+  override val prodImpl: SubmitInformationUseCaseImpl,
+  override val demoImpl: SubmitInformationUseCaseDemo,
+) : SubmitInformationUseCase, DemoSwitcher<SubmitInformationUseCase>() {
+  override suspend fun invoke(id: StepId): Either<ClaimChatErrorMessage, ClaimIntent> = pick().invoke(id)
 }
 
 @Inject
