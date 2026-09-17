@@ -536,7 +536,9 @@ private fun TextAnswerContent(
   var text by rememberSaveable { mutableStateOf(initialText) }
   // The card holds its own text, so the step's `canSubmit` only catches up on save. The length rule has to be
   // applied here or nothing applies it before the answer is already sent.
-  val isLongEnough = text.trim().length >= minLength
+  // A step that sets no minimum still cannot be answered with nothing, so blankness is its own rule rather
+  // than a length of zero.
+  val canSend = text.isNotBlank() && text.trim().length >= minLength
   val focusRequester = remember { FocusRequester() }
   LaunchedEffect(Unit) {
     runCatching { focusRequester.requestFocus() }
@@ -562,7 +564,7 @@ private fun TextAnswerContent(
     HedvigButton(
       text = stringResource(Res.string.AUDIO_RECORDER_SEND),
       onClick = { onSave(text) },
-      enabled = isLongEnough && !isSubmitting,
+      enabled = canSend && !isSubmitting,
       isLoading = isSubmitting,
       buttonSize = ButtonDefaults.ButtonSize.Medium,
     )
@@ -603,7 +605,7 @@ private fun TextAnswerContent(
       field()
       // Says why send is out of reach, rather than leaving a disabled button to explain itself. Only once the
       // member has started writing: on an empty field the placeholder is the instruction.
-      if ((hasError && errorType is FreeTextErrorType.TooShort) || (text.isNotBlank() && !isLongEnough)) {
+      if ((hasError && errorType is FreeTextErrorType.TooShort) || (text.isNotBlank() && !canSend)) {
         HedvigText(
           stringResource(Res.string.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR, minLength),
           style = HedvigTheme.typography.label,
