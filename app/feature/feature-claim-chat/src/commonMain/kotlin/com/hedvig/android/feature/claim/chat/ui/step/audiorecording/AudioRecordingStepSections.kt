@@ -246,7 +246,6 @@ internal fun AudioRecorderBubble(
         recordingState is AudioRecordingStepState.FreeTextDescription && recordingState.freeText != null -> {
           val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + recordingState.freeText
           RoundCornersPill(
-            onClick = null,
             modifier = Modifier.fillMaxWidth()
               .padding(start = 48.dp)
               .wrapContentWidth(Alignment.End)
@@ -1101,7 +1100,6 @@ private fun FreeTextInputSection(
 
       if (freeText != null) {
         RoundCornersPill(
-          onClick = null,
           modifier = Modifier.fillMaxWidth()
             .padding(start = 48.dp)
             .wrapContentWidth(Alignment.End)

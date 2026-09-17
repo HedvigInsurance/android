@@ -105,6 +105,13 @@ internal class SubmitSelectUseCaseDemo(
 }
 
 @Inject
+internal class SubmitInformationUseCaseDemo(
+  private val script: DemoClaimIntentScript,
+) : SubmitInformationUseCase {
+  override suspend fun invoke(id: StepId): Either<ClaimChatErrorMessage, ClaimIntent> = script.advance().right()
+}
+
+@Inject
 internal class SubmitSummaryUseCaseDemo(
   private val script: DemoClaimIntentScript,
 ) : SubmitSummaryUseCase {
