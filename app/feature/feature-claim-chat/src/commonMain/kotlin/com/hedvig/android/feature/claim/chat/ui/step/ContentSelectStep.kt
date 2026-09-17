@@ -29,6 +29,7 @@ import com.hedvig.android.feature.claim.chat.data.StepId
 import com.hedvig.android.feature.claim.chat.ui.common.ContentSelectChips
 import com.hedvig.android.feature.claim.chat.ui.common.EditButton
 import com.hedvig.android.feature.claim.chat.ui.common.RoundCornersPill
+import com.hedvig.android.feature.claim.chat.ui.common.SentAnswerRow
 import com.hedvig.android.feature.claim.chat.ui.common.SkippedLabel
 import hedvig.resources.GENERAL_CONFIRM
 import hedvig.resources.Res
@@ -115,20 +116,19 @@ internal fun ContentSelectStep(
       } else {
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
           val selected = options.firstOrNull { it.id == selectedOptionId }
-          if (selected != null) {
-            val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + selected.title
-            RoundCornersPill(
-              modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentWidth(Alignment.End)
-                .clearAndSetSemantics {
+          SentAnswerRow {
+            if (selected != null) {
+              val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + selected.title
+              RoundCornersPill(
+                modifier = Modifier.clearAndSetSemantics {
                   contentDescription = description
                 },
-            ) {
-              HedvigText(selected.title)
+              ) {
+                HedvigText(selected.title)
+              }
+            } else {
+              SkippedLabel()
             }
-          } else {
-            SkippedLabel()
           }
           EditButton(
             isRegrettable,

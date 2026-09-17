@@ -129,8 +129,8 @@ import com.hedvig.android.feature.claim.chat.data.FreeTextErrorType
 import com.hedvig.android.feature.claim.chat.data.StepContent
 import com.hedvig.android.feature.claim.chat.ui.common.EditButton
 import com.hedvig.android.feature.claim.chat.ui.common.RoundCornersPill
+import com.hedvig.android.feature.claim.chat.ui.common.SentAnswerRow
 import com.hedvig.android.feature.claim.chat.ui.common.SkippedLabel
-import com.hedvig.android.feature.claim.chat.ui.sentAnswersStartPadding
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import hedvig.resources.AUDIO_RECORDER_LISTEN
@@ -282,37 +282,36 @@ internal fun AudioRecorderBubble(
 
   Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
     if (!isCurrentStep) {
-      val sentFreeText = recordingState.sentFreeTextAnswer()
-      when {
-        sentFreeText != null -> {
-          val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + sentFreeText
-          RoundCornersPill(
-            modifier = Modifier.fillMaxWidth()
-              .padding(start = 48.dp)
-              .wrapContentWidth(Alignment.End)
-              .clearAndSetSemantics { contentDescription = description },
-          ) {
-            HedvigText(sentFreeText, textAlign = TextAlign.End)
+      SentAnswerRow {
+        val sentFreeText = recordingState.sentFreeTextAnswer()
+        when {
+          sentFreeText != null -> {
+            val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + sentFreeText
+            RoundCornersPill(
+              modifier = Modifier.clearAndSetSemantics { contentDescription = description },
+            ) {
+              HedvigText(sentFreeText, textAlign = TextAlign.End)
+            }
           }
-        }
 
-        recordingState is AudioRecordingStepState.AudioRecording.Playback -> {
-          val audioPlayer = when (recordingState.audioPath) {
-            is AudioPath.FilePath -> rememberAudioPlayer(
-              PlayableAudioSource.LocalFilePath(recordingState.audioPath.filePath),
-            )
+          recordingState is AudioRecordingStepState.AudioRecording.Playback -> {
+            val audioPlayer = when (recordingState.audioPath) {
+              is AudioPath.FilePath -> rememberAudioPlayer(
+                PlayableAudioSource.LocalFilePath(recordingState.audioPath.filePath),
+              )
 
-            is AudioPath.RemoteUrl -> rememberAudioPlayer(
-              PlayableAudioSource.RemoteUrl(
-                SignedAudioUrl.fromSignedAudioUrlString(recordingState.audioPath.remoteUrl),
-              ),
-            )
+              is AudioPath.RemoteUrl -> rememberAudioPlayer(
+                PlayableAudioSource.RemoteUrl(
+                  SignedAudioUrl.fromSignedAudioUrlString(recordingState.audioPath.remoteUrl),
+                ),
+              )
+            }
+            HedvigAudioPlayer(audioPlayer = audioPlayer)
           }
-          HedvigAudioPlayer(audioPlayer = audioPlayer, Modifier.padding(start = sentAnswersStartPadding))
-        }
 
-        else -> {
-          SkippedLabel()
+          else -> {
+            SkippedLabel()
+          }
         }
       }
     } else {
@@ -1397,19 +1396,18 @@ private fun FreeTextInputSection(
     } else {
       val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + freeText
 
-      if (freeText != null) {
-        RoundCornersPill(
-          modifier = Modifier.fillMaxWidth()
-            .padding(start = 48.dp)
-            .wrapContentWidth(Alignment.End)
-            .clearAndSetSemantics {
+      SentAnswerRow {
+        if (freeText != null) {
+          RoundCornersPill(
+            modifier = Modifier.clearAndSetSemantics {
               contentDescription = description
             },
-        ) {
-          HedvigText(freeText, textAlign = TextAlign.End)
+          ) {
+            HedvigText(freeText, textAlign = TextAlign.End)
+          }
+        } else {
+          SkippedLabel()
         }
-      } else {
-        SkippedLabel()
       }
     }
   }
