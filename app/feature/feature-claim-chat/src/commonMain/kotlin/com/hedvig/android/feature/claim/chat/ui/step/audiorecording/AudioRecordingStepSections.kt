@@ -536,9 +536,7 @@ private fun TextAnswerContent(
   var text by rememberSaveable { mutableStateOf(initialText) }
   // The card holds its own text, so the step's `canSubmit` only catches up on save. The length rule has to be
   // applied here or nothing applies it before the answer is already sent.
-  // A step that sets no minimum still cannot be answered with nothing, so blankness is its own rule rather
-  // than a length of zero.
-  val canSend = text.isNotBlank() && text.trim().length >= minLength
+  val canSend = text.trim().length >= minLength
   val focusRequester = remember { FocusRequester() }
   LaunchedEffect(Unit) {
     runCatching { focusRequester.requestFocus() }
