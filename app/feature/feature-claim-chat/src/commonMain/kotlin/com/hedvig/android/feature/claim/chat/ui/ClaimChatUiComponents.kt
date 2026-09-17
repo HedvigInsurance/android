@@ -25,6 +25,7 @@ import com.hedvig.android.feature.claim.chat.ui.step.MultiSelectBubbleWithDialog
 import com.hedvig.android.feature.claim.chat.ui.step.SingleSelectBubbleWithDialog
 import com.hedvig.android.feature.claim.chat.ui.step.TextInputBubble
 import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.AudioRecorderBubble
+import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.rememberFreeTextDraftState
 import kotlin.time.Clock
 
 @HedvigPreview
@@ -38,12 +39,13 @@ private fun PreviewClaimChatComponents() {
         modifier = Modifier.padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.End,
       ) {
+        val freeTextPreview = "some not really long free text"
         AudioRecorderBubble(
           isCurrentStep = true,
           recordingState = AudioRecordingStepState.FreeTextDescription(
             errorType = null,
             canSubmit = true,
-            freeText = "some not really long free text",
+            freeText = freeTextPreview,
           ),
           clock = Clock.System,
           onShouldShowRequestPermissionRationale = {
@@ -59,7 +61,7 @@ private fun PreviewClaimChatComponents() {
           submitFreeText = {},
           onSwitchToFreeText = {},
           onSwitchToAudioRecording = {},
-          onLaunchFullScreenEditText = {},
+          freeTextDraft = rememberFreeTextDraftState(sessionId = "preview", storedAnswer = freeTextPreview),
           onSaveFreeText = {},
           onCancelSubmission = {},
           freeTextMinLength = 10,
