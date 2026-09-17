@@ -25,6 +25,8 @@ class DemoClaimIntentScriptTest {
     assertThat(intent.next).isInstanceOf(ClaimIntent.Next.Outcome::class)
     assertThat(visited.map { it::class.simpleName }).isEqualTo(
       listOf(
+        "Information",
+        "Information",
         "AudioRecording",
         "Task",
         "Form",
