@@ -236,12 +236,23 @@ fun HedvigTextField(
   visualTransformation: VisualTransformation = VisualTransformation.None,
   onTextLayout: (TextLayoutResult) -> Unit = {},
   interactionSource: MutableInteractionSource? = null,
+  /** As on the [HedvigTextField] taking a `text: String`. */
+  containerColor: Color? = null,
+  /** As on the [HedvigTextField] taking a `text: String`. */
+  horizontalPadding: Dp? = null,
 ) {
   @Suppress("NAME_SHADOWING")
   val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
   val configuration = HedvigTextFieldDefaults.configuration()
-  val size = textFieldSize.size
-  val colors = HedvigTextFieldDefaults.colors()
+  val size = textFieldSize.sizeWithHorizontalPadding(horizontalPadding)
+  val colors = if (containerColor == null) {
+    HedvigTextFieldDefaults.colors()
+  } else {
+    HedvigTextFieldDefaults.colors(
+      containerColor = containerColor,
+      containerPulsatingColor = containerColor,
+    )
+  }
   val trailingIconColor by colors.trailingContentColor(
     readOnly = readOnly,
     enabled = enabled,
