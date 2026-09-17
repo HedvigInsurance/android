@@ -610,7 +610,7 @@ private fun ClaimChatScrollableContent(
               onResponseHeightChanged = { size ->
                 lastItemHeightAdjustingState.onItemHeightChanged(item.id, size)
               },
-              modifier = if (isLastItem && !isBottomAttached) {
+              modifier = if (isLastItem) {
                 Modifier.requiredHeightIn(lastItemHeightAdjustingState.preferredMinHeightForFullScreenItem)
               } else {
                 Modifier
