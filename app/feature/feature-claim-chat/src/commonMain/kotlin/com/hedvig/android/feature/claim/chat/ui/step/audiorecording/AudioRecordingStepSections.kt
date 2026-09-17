@@ -594,6 +594,10 @@ private fun TextAnswerContent(
       // straight onto it. The field's own background would be a second surface the design does not have,
       // and its focus shift would arrive as a lighter box inside the card.
       containerColor = Color.Transparent,
+      // With no container of its own, the field's inset has no edge to hold its content off, and leaves the
+      // answer indented past the label and the clear button indented past Send. The card's own padding is the
+      // one that positions everything here, so the field contributes none.
+      horizontalPadding = 0.dp,
       modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
     )
   }

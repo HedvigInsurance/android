@@ -91,11 +91,18 @@ fun HedvigTextField(
    * the container be the only surface. The error background is unaffected either way.
    */
   containerColor: Color? = null,
+  /**
+   * The gap between the field's own edge and everything inside it, in place of the size's built-in one. Null keeps
+   * that built-in gap, which is what holds the text off the wall of a field drawing its own container. A field with
+   * no container of its own has no wall to stand off, and the gap then reads as an indent against whatever the
+   * surrounding surface aligns to, so pass `0.dp` there and let that surface's own padding be the only one.
+   */
+  horizontalPadding: Dp? = null,
 ) {
   @Suppress("NAME_SHADOWING")
   val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
   val configuration = HedvigTextFieldDefaults.configuration()
-  val size = textFieldSize.size
+  val size = textFieldSize.sizeWithHorizontalPadding(horizontalPadding)
   val colors = if (containerColor == null) {
     HedvigTextFieldDefaults.colors()
   } else {
@@ -582,6 +589,29 @@ private val HedvigTextFieldDefaults.TextFieldSize.size: HedvigTextFieldSize
     HedvigTextFieldDefaults.TextFieldSize.Medium -> HedvigTextFieldSize.Medium
     HedvigTextFieldDefaults.TextFieldSize.Small -> HedvigTextFieldSize.Small
   }
+
+@Composable
+private fun HedvigTextFieldDefaults.TextFieldSize.sizeWithHorizontalPadding(
+  horizontalPadding: Dp?,
+): HedvigTextFieldSize {
+  return remember(this, horizontalPadding) {
+    val size = this.size
+    if (horizontalPadding == null) size else WithHorizontalPadding(size, horizontalPadding)
+  }
+}
+
+/**
+ * A size keeping every metric of the one it wraps except the horizontal one, so a caller can set the gap between
+ * the field's edge and its content without restating the vertical rhythm and type scale that go with the size.
+ */
+private class WithHorizontalPadding(
+  size: HedvigTextFieldSize,
+  private val horizontalPadding: Dp,
+) : HedvigTextFieldSize {
+  override val hedvigTextFieldSizeConstants: HedvigTextFieldSizeConstants = size.hedvigTextFieldSizeConstants
+
+  override fun horizontalPadding(): PaddingValues = PaddingValues(horizontal = horizontalPadding)
+}
 
 internal interface HedvigTextFieldSizeConstants {
   val topPadding: Dp
