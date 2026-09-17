@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 @Composable
-fun <T> BottomSheet(
+fun <T : Any> BottomSheet(
   onDismissRequest: () -> Unit,
   modifier: Modifier,
   sheetState: HedvigBottomSheetState<T>,
@@ -65,7 +65,7 @@ fun <T> BottomSheet(
 }
 
 @Composable
-fun <T> rememberInternalHedvigBottomSheetState(): HedvigBottomSheetState<T> {
+fun <T : Any> rememberInternalHedvigBottomSheetState(): HedvigBottomSheetState<T> {
   val materialState = rememberModalBottomSheetState(true)
   val scope = rememberCoroutineScope()
   val hedvigBottomSheetState: HedvigBottomSheetStateImpl<T> = remember(materialState, scope) {
@@ -89,7 +89,7 @@ fun <T> rememberInternalHedvigBottomSheetState(): HedvigBottomSheetState<T> {
   return hedvigBottomSheetState
 }
 
-private class HedvigBottomSheetStateImpl<T>(
+private class HedvigBottomSheetStateImpl<T : Any>(
   val materialState: SheetState,
   val scope: CoroutineScope,
 ) : HedvigBottomSheetState<T> {
@@ -115,7 +115,7 @@ private class HedvigBottomSheetStateImpl<T>(
 }
 
 @Composable
-private fun <T> HedvigBottomSheetState<T>.materialState(): SheetState {
+private fun <T : Any> HedvigBottomSheetState<T>.materialState(): SheetState {
   check(this is HedvigBottomSheetStateImpl) {
     val message = "Expected HedvigBottomSheetStateImpl, got ${this::class}"
     logcat { "materialBottomSheetStateImpl failed with: $message" }
