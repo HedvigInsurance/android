@@ -726,9 +726,12 @@ private fun HomeScreenSuccess(
             uiState.homeText != Active
         }
 
+        HomeSection.MissingPayinMethod -> {
+          applicableReminders.missingPayinMethodReminder() != null
+        }
+
         HomeSection.MemberReminders -> {
-          applicableReminders.homeActionRequiredReminders().isNotEmpty() ||
-            applicableReminders.missingPayinMethodReminder() != null
+          applicableReminders.homeActionRequiredReminders().isNotEmpty()
         }
 
         HomeSection.Quotes -> {
@@ -964,9 +967,15 @@ private fun HomeScreenSuccess(
               horizontalInsets = horizontalInsets,
             )
 
+            HomeSection.MissingPayinMethod -> MissingPayinMethodCard(
+              onConnectPaymentClick = navigateToConnectPayment,
+              modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(horizontalInsets),
+            )
+
             HomeSection.MemberReminders -> MemberRemindersSection(
               applicableReminders = applicableReminders,
-              navigateToConnectPayment = navigateToConnectPayment,
               navigateToConnectPayout = navigateToConnectPayout,
               navigateToMissingInfo = navigateToMissingInfo,
               onNavigateToNewConversation = onNavigateToNewConversation,
@@ -1104,6 +1113,7 @@ private enum class HomeSection {
   MainActionCarousel,
   ClaimStatusCards,
   VeryImportantMessages,
+  MissingPayinMethod,
   MemberReminders,
   Quotes,
   DiscoverInsurances,
@@ -1117,6 +1127,7 @@ private val homeSectionOrder: List<HomeSection> = listOf(
   HomeSection.MainActionCarousel,
   HomeSection.ClaimStatusCards,
   HomeSection.VeryImportantMessages,
+  HomeSection.MissingPayinMethod,
   HomeSection.MemberReminders,
   HomeSection.Quotes,
   HomeSection.QuickActionTiles,
@@ -1200,7 +1211,6 @@ private fun VeryImportantMessagesSection(
 @Composable
 private fun MemberRemindersSection(
   applicableReminders: List<MemberReminder>,
-  navigateToConnectPayment: () -> Unit,
   navigateToConnectPayout: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   onNavigateToNewConversation: () -> Unit,
@@ -1211,14 +1221,6 @@ private fun MemberRemindersSection(
 ) {
   val toDoReminders = applicableReminders.homeActionRequiredReminders()
   Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-    if (applicableReminders.missingPayinMethodReminder() != null) {
-      MissingPayinMethodCard(
-        onConnectPaymentClick = navigateToConnectPayment,
-        modifier = Modifier
-          .padding(horizontal = 16.dp)
-          .padding(horizontalInsets),
-      )
-    }
     if (toDoReminders.isNotEmpty()) {
       Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
