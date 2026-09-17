@@ -98,6 +98,12 @@ val PayinAccount.provider: MemberPaymentProvider
     is PayinAccount.Invoice -> MemberPaymentProvider.INVOICE
   }
 
+/**
+ * The order methods are shown in. Keyed on the provider, which a member has at most one method for, so a
+ * method keeps its place as others are added, removed or made primary.
+ */
+fun List<PayinAccount>.sortedForDisplay(): List<PayinAccount> = sortedBy { it.provider.rawValue }
+
 /** The last four digits of the account, the only part of it we ever put on screen. */
 fun PayinAccount.Trustly.maskedAccountNumber(): String? {
   val clearing = clearingNumber?.takeIf { it.isNotBlank() }.orEmpty()

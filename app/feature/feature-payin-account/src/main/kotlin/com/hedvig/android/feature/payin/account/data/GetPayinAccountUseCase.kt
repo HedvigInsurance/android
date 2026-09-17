@@ -11,6 +11,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.data.paying.member.InvoiceDelivery
 import com.hedvig.android.data.paying.member.PayinAccount
+import com.hedvig.android.data.paying.member.sortedForDisplay
 import com.hedvig.android.data.paying.member.toPayinAccount
 import com.hedvig.android.feature.payin.account.navigation.PayinMethodId
 import dev.zacsweers.metro.Inject
@@ -39,7 +40,7 @@ internal class GetPayinAccountUseCase(
 
     val paymentMethods = result.currentMember.paymentMethods
 
-    val currentMethods = paymentMethods.payinMethods.mapNotNull { it.toPayinAccount() }
+    val currentMethods = paymentMethods.payinMethods.mapNotNull { it.toPayinAccount() }.sortedForDisplay()
     val availablePayinMethods = paymentMethods.availableMethods
       .filter { it.supportsPayin }
       .map { it.provider }

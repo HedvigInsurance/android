@@ -13,6 +13,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.paying.member.PayinAccount
+import com.hedvig.android.data.paying.member.sortedForDisplay
 import com.hedvig.android.data.paying.member.toPayinAccount
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
@@ -75,7 +76,9 @@ internal class GetManualChargeInfoUseCaseImpl(
       raise(ErrorMessage())
     }
 
-    val currentMethods = currentMember.paymentMethods.payinMethods.mapNotNull { it.toPayinAccount() }
+    val currentMethods = currentMember.paymentMethods.payinMethods
+      .mapNotNull { it.toPayinAccount() }
+      .sortedForDisplay()
 
     ManualChargeInfoResult.Chargeable(
       ManualChargeInfo(
