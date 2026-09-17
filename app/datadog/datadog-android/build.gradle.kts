@@ -5,13 +5,13 @@ plugins {
 
 dependencies {
   api(libs.androidx.other.startup)
+  api(libs.ktor.client.core)
 
   implementation(libs.datadog.sdk.core)
   implementation(libs.datadog.sdk.logs)
   implementation(libs.datadog.sdk.okhttp)
   implementation(libs.datadog.sdk.rum)
   implementation(libs.datadog.sdk.trace.otel)
-  implementation(libs.ktor.client.core)
   implementation(libs.ktor.client.okhttp)
   implementation(libs.timber)
   implementation(projects.authCorePublic)

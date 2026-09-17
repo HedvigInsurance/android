@@ -55,6 +55,8 @@ fun HedvigBigCard(
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
   textStyle: TextStyle = BigCardDefaults.inputTextStyle,
+  /** A secondary line under [inputText], for when the chosen value needs qualifying. */
+  subtitleText: String? = null,
 ) {
   Surface(
     shape = HedvigTheme.shapes.cornerLarge,
@@ -68,10 +70,13 @@ fun HedvigBigCard(
   ) {
     LayoutWithoutPlacement(
       sizeAdjustingContent = {
-        // Always take up the space that the two texts would take
+        // Always take up the space that the texts would take
         Column(Modifier.padding(BigCardDefaults.padding)) {
           HedvigText(text = labelText, style = BigCardDefaults.labelTextStyle)
           HedvigText(text = "H", style = textStyle)
+          if (subtitleText != null) {
+            HedvigText(text = "H", style = BigCardDefaults.labelTextStyle)
+          }
         }
       },
     ) {
@@ -96,6 +101,13 @@ fun HedvigBigCard(
             style = textStyle,
             color = bigCardColors.inputTextColor(enabled),
           )
+          if (subtitleText != null) {
+            HedvigText(
+              text = subtitleText,
+              style = BigCardDefaults.labelTextStyle,
+              color = bigCardColors.labelTextColor(enabled),
+            )
+          }
         }
       }
     }
