@@ -22,6 +22,7 @@ import com.hedvig.android.feature.profile.navigation.ProfileKey
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.TopLevelTab
+import com.hedvig.android.navigation.common.contentKey
 import com.hedvig.android.navigation.compose.LoneDeepLinkChrome
 import com.hedvig.android.navigation.compose.popUpTo
 import org.junit.Rule
@@ -190,9 +191,9 @@ internal class BackstackControllerTest {
     val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
     controller.selectTopLevel(TopLevelTab.Home) // Insurances run now parked
     assertThat(controller.allLiveContentKeys).containsExactlyInAnyOrder(
-      HomeKey.toString(),
-      InsurancesKey.toString(),
-      HelpCenterKey.toString(),
+      HomeKey.contentKey(),
+      InsurancesKey.contentKey(),
+      HelpCenterKey.contentKey(),
     )
   }
 
@@ -537,7 +538,7 @@ internal class BackstackControllerTest {
     val controller = controllerWith(InsurancesKey)
     controller.navigateUp()
     assertThat(controller.entries.toList()).containsExactly(HomeKey)
-    assertThat(controller.allLiveContentKeys).containsExactlyInAnyOrder(HomeKey.toString())
+    assertThat(controller.allLiveContentKeys).containsExactlyInAnyOrder(HomeKey.contentKey())
   }
 
   @Test
@@ -561,9 +562,9 @@ internal class BackstackControllerTest {
   fun `owningTopLevelTab resolves positionally for the rendered stack`() {
     val controller = controllerWith(HomeKey, HelpCenterKey, InsurancesKey, HelpCenterKey)
     // HelpCenter sitting in the Home run belongs to Home; the Insurances run owns its own keys.
-    assertThat(controller.owningTopLevelTabForContentKey(HomeKey.toString()))
+    assertThat(controller.owningTopLevelTabForContentKey(HomeKey.contentKey()))
       .isEqualTo(TopLevelTab.Home)
-    assertThat(controller.owningTopLevelTabForContentKey(InsurancesKey.toString()))
+    assertThat(controller.owningTopLevelTabForContentKey(InsurancesKey.contentKey()))
       .isEqualTo(TopLevelTab.Insurances)
   }
 
@@ -571,9 +572,9 @@ internal class BackstackControllerTest {
   fun `owningTopLevelTab resolves keys parked in another run`() {
     val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
     controller.selectTopLevel(TopLevelTab.Profile) // park the Insurances run
-    assertThat(controller.owningTopLevelTabForContentKey(InsurancesKey.toString()))
+    assertThat(controller.owningTopLevelTabForContentKey(InsurancesKey.contentKey()))
       .isEqualTo(TopLevelTab.Insurances)
-    assertThat(controller.owningTopLevelTabForContentKey(ProfileKey.toString()))
+    assertThat(controller.owningTopLevelTabForContentKey(ProfileKey.contentKey()))
       .isEqualTo(TopLevelTab.Profile)
   }
 
@@ -581,18 +582,18 @@ internal class BackstackControllerTest {
   fun `owningTopLevelTab remembers a key after it is popped, so its exit still classifies`() {
     val controller = controllerWith(HomeKey, InsurancesKey)
     // Resolve while live so the accumulator records it (mirrors the spec running on the tab switch).
-    assertThat(controller.owningTopLevelTabForContentKey(InsurancesKey.toString()))
+    assertThat(controller.owningTopLevelTabForContentKey(InsurancesKey.contentKey()))
       .isEqualTo(TopLevelTab.Insurances)
     controller.popBackstack() // system-back to Home: InsurancesKey is removed and never parked
     assertThat(controller.entries.toList()).containsExactly(HomeKey)
     // The outgoing Insurances root must still classify as Insurances so its exit fades, not slides.
-    assertThat(controller.owningTopLevelTabForContentKey(InsurancesKey.toString()))
+    assertThat(controller.owningTopLevelTabForContentKey(InsurancesKey.contentKey()))
       .isEqualTo(TopLevelTab.Insurances)
   }
 
   @Test
   fun `owningTopLevelTab is null for an unknown key`() {
     val controller = controllerWith(HomeKey)
-    assertThat(controller.owningTopLevelTabForContentKey(LoginKey.toString())).isEqualTo(null)
+    assertThat(controller.owningTopLevelTabForContentKey(LoginKey.contentKey())).isEqualTo(null)
   }
 }

@@ -32,12 +32,16 @@ internal class BottomSheetSceneStrategyTest {
 
   @Test
   fun `calculateScene returns an overlay scene that overlays the entries below the sheet`() {
-    val entries = listOf(entry("a"), entry("b", BottomSheetSceneStrategy.bottomSheet()))
+    val below = entry("a")
+    val sheet = entry("b", BottomSheetSceneStrategy.bottomSheet())
+    val entries = listOf(below, sheet)
     val scene = with(strategy()) { with(SceneStrategyScope<String>()) { calculateScene(entries) } }
     assertThat(scene is OverlayScene<String>).isTrue()
     val overlay = scene as OverlayScene<String>
-    assertThat(overlay.overlaidEntries.map { it.contentKey } == listOf<Any>("a")).isTrue()
-    assertThat(overlay.entries.map { it.contentKey } == listOf<Any>("b")).isTrue()
+    // Compare against the entries this test built rather than a literal, so the assertion stays about
+    // which entry lands in which bucket and not about how navigation3 happens to derive contentKey.
+    assertThat(overlay.overlaidEntries.map { it.contentKey } == listOf(below.contentKey)).isTrue()
+    assertThat(overlay.entries.map { it.contentKey } == listOf(sheet.contentKey)).isTrue()
   }
 
   @Test
