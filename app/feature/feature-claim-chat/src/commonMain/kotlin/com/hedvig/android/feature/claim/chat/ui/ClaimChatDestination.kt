@@ -948,6 +948,9 @@ private fun StepBottomContent(
           redoRecording = {
             onEvent(ClaimChatEvent.AudioRecording.RedoRecording(stepItem.id))
           },
+          discardRecording = {
+            onEvent(ClaimChatEvent.AudioRecording.DiscardRecording(stepItem.id))
+          },
           submitFreeText = {
             onEvent(ClaimChatEvent.AudioRecording.SubmitTextInput(stepItem.id))
           },

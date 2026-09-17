@@ -80,6 +80,12 @@ internal sealed interface ClaimChatEvent {
 
     data class RedoRecording(override val id: StepId) : AudioRecording
 
+    /**
+     * Dismissing the voice card. One event rather than a stop followed by a reset, because stopping is
+     * asynchronous: its playback state would land after the reset and put the card straight back up.
+     */
+    data class DiscardRecording(override val id: StepId) : AudioRecording
+
     data class SwitchToFreeText(override val id: StepId) : AudioRecording
 
     data class SwitchToAudioRecording(override val id: StepId) : AudioRecording
@@ -567,7 +573,11 @@ internal class ClaimChatPresenter(
               }
             }
 
-            is ClaimChatEvent.AudioRecording.RedoRecording -> {
+            // Both throw the recording away and leave the step with nothing recorded. Redo keeps the card
+            // up to record again, discard closes it, and that difference lives in the UI.
+            is ClaimChatEvent.AudioRecording.RedoRecording,
+            is ClaimChatEvent.AudioRecording.DiscardRecording,
+            -> {
               audioRecordingManager.reset()
               steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
                 step.copy(stepContent = content.copy(recordingState = AudioRecording.NotRecording))

@@ -53,6 +53,7 @@ private fun PreviewClaimChatComponents() {
           stopRecording = {},
           submitAudioFile = {},
           redoRecording = {},
+          discardRecording = {},
           openAppSettings = {},
           freeTextAvailable = true,
           submitFreeText = {},
