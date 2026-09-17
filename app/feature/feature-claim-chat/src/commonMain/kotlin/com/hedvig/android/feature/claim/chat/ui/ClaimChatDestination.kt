@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -48,6 +49,8 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntSize
@@ -66,13 +69,11 @@ import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
-import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.design.system.hedvig.TopAppBarColors
@@ -86,10 +87,10 @@ import com.hedvig.android.feature.claim.chat.ClaimChatViewModelFactory
 import com.hedvig.android.feature.claim.chat.data.ClaimChatErrorMessage
 import com.hedvig.android.feature.claim.chat.data.ClaimIntentOutcome
 import com.hedvig.android.feature.claim.chat.data.ClaimIntentStep
-import com.hedvig.android.feature.claim.chat.data.InformationSeverity
 import com.hedvig.android.feature.claim.chat.data.StepContent
 import com.hedvig.android.feature.claim.chat.data.StepId
 import com.hedvig.android.feature.claim.chat.ui.common.HelipadRiveAnimation
+import com.hedvig.android.feature.claim.chat.ui.common.RoundCornersPill
 import com.hedvig.android.feature.claim.chat.ui.step.ChatClaimSummaryBottomContent
 import com.hedvig.android.feature.claim.chat.ui.step.ChatClaimSummaryTopContent
 import com.hedvig.android.feature.claim.chat.ui.step.ContentSelectStep
@@ -116,6 +117,7 @@ import hedvig.resources.RESUME_CLAIM_LEAVE_CANCEL
 import hedvig.resources.RESUME_CLAIM_LEAVE_CONFIRM
 import hedvig.resources.RESUME_CLAIM_LEAVE_TITLE
 import hedvig.resources.Res
+import hedvig.resources.TALKBACK_CLAIM_CHAT_YOUR_ANSWER
 import hedvig.resources.claims_alert_body
 import hedvig.resources.claims_skip_button
 import hedvig.resources.general_cancel_button
@@ -656,15 +658,12 @@ private fun StepTopContent(
   isCurrentStep: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  val hint = stepItem.hint?.let {
-    "\n\n$it"
-  }
-  val stepItemText = when {
-    stepItem.text != null && hint != null -> stepItem.text + hint
-    stepItem.text != null -> stepItem.text
-    hint != null -> hint
-    else -> null
-  }
+  // A notice is a message like any other, so it reads as one paragraph of the step's text rather than as a card
+  // bolted underneath it.
+  val notice = (stepItem.stepContent as? StepContent.Information)?.notice
+  val stepItemText = listOfNotNull(stepItem.text, notice, stepItem.hint)
+    .ifEmpty { null }
+    ?.joinToString("\n\n")
 
   Column(modifier) {
     val density = LocalDensity.current
@@ -721,23 +720,6 @@ private fun StepTopContent(
         isLastStep = isCurrentStep,
       )
       Spacer(Modifier.height(4.dp))
-    }
-
-    if (stepItem.stepContent is StepContent.Information) {
-      if (isAnimationComplete) {
-        val priority = when (stepItem.stepContent.severity) {
-          InformationSeverity.Critical -> NotificationDefaults.NotificationPriority.Error
-          InformationSeverity.Info -> NotificationDefaults.NotificationPriority.InfoInline
-        }
-        Spacer(Modifier.height(16.dp))
-        HedvigNotificationCard(
-          message = stepItem.stepContent.notice,
-          priority = priority,
-          withIcon = true,
-          modifier = Modifier.fillMaxWidth(),
-        )
-        Spacer(Modifier.height(4.dp))
-      }
     }
 
     AnimatedVisibility(
@@ -932,7 +914,6 @@ private fun StepBottomContent(
       }
 
       is StepContent.Information -> {
-        // Only the current step may be answered; a past step's notice keeps its top content but loses its button.
         if (isCurrentStep) {
           HedvigButton(
             modifier = Modifier.fillMaxWidth(),
@@ -943,6 +924,20 @@ private fun StepBottomContent(
             enabled = !currentContinueButtonLoading,
             isLoading = currentContinueButtonLoading,
           )
+        } else {
+          // Acknowledging is an answer, so it stays in the log as one instead of the button leaving nothing behind.
+          val buttonTitle = stepItem.stepContent.buttonTitle
+          val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + buttonTitle
+          RoundCornersPill(
+            modifier = Modifier
+              .fillMaxWidth()
+              .wrapContentWidth(Alignment.End)
+              .clearAndSetSemantics {
+                contentDescription = description
+              },
+          ) {
+            HedvigText(buttonTitle)
+          }
         }
       }
     }

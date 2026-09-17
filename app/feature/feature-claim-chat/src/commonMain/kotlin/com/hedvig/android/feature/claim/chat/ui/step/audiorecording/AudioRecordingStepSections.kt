@@ -142,7 +142,9 @@ import hedvig.resources.TALKBACK_CLAIM_CHAT_YOUR_ANSWER
 import hedvig.resources.TALKBACK_PLAYBACK_BUTTON_STATE
 import hedvig.resources.TALKBACK_RECORDING_DURATION
 import hedvig.resources.TALKBACK_RECORDING_NOW
+import hedvig.resources.claims_record
 import hedvig.resources.claims_skip_button
+import hedvig.resources.claims_write
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_close_button
 import hedvig.resources.something_went_wrong
@@ -201,6 +203,7 @@ internal fun AudioRecordingStep(
       },
       onSaveFreeText = { text -> onEvent(ClaimChatEvent.UpdateFreeText(text)) },
       onCancelSubmission = { onEvent(ClaimChatEvent.AudioRecording.CancelTextSubmission) },
+      freeTextMinLength = stepContent.freeTextMinLength,
       freeTextMaxLength = stepContent.freeTextMaxLength,
       canSkip = stepContent.isSkippable,
       onSkip = onSkip,
@@ -234,6 +237,7 @@ internal fun AudioRecorderBubble(
   onLaunchFullScreenEditText: () -> Unit,
   onSaveFreeText: (String) -> Unit,
   onCancelSubmission: () -> Unit,
+  freeTextMinLength: Int,
   freeTextMaxLength: Int,
   canSkip: Boolean,
   onSkip: () -> Unit,
@@ -255,7 +259,6 @@ internal fun AudioRecorderBubble(
         recordingState is AudioRecordingStepState.FreeTextDescription && recordingState.freeText != null -> {
           val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + recordingState.freeText
           RoundCornersPill(
-            onClick = null,
             modifier = Modifier.fillMaxWidth()
               .padding(start = 48.dp)
               .wrapContentWidth(Alignment.End)
@@ -298,6 +301,7 @@ internal fun AudioRecorderBubble(
             val freeText = recordingState as? AudioRecordingStepState.FreeTextDescription
             InlineTextAnswerCard(
               initialText = freeText?.freeText.orEmpty(),
+              minLength = freeTextMinLength,
               maxLength = freeTextMaxLength,
               errorType = freeText?.errorType,
               hasError = freeText?.hasError == true,
@@ -356,8 +360,7 @@ internal fun AudioRecorderBubble(
                   ) {
                     Icon(HedvigIcons.PenEdit, null, Modifier.size(24.dp))
                     Spacer(Modifier.width(8.dp))
-                    // TODO: Add "Write" / "Skriv" to Lokalise
-                    HedvigText("Write")
+                    HedvigText(stringResource(Res.string.claims_write))
                   }
                 }
                 HedvigButton(
@@ -372,8 +375,7 @@ internal fun AudioRecorderBubble(
                 ) {
                   Icon(HedvigIcons.Mic, null, Modifier.size(24.dp))
                   Spacer(Modifier.width(8.dp))
-                  // TODO: Add "Record" / "Spela in" to Lokalise
-                  HedvigText("Record")
+                  HedvigText(stringResource(Res.string.claims_record))
                 }
               }
               if (canSkip) {
@@ -493,6 +495,7 @@ private fun InlineVoiceAnswerCard(
 @Composable
 private fun InlineTextAnswerCard(
   initialText: String,
+  minLength: Int,
   maxLength: Int,
   errorType: FreeTextErrorType?,
   hasError: Boolean,
@@ -502,6 +505,9 @@ private fun InlineTextAnswerCard(
   modifier: Modifier = Modifier,
 ) {
   var text by remember { mutableStateOf(initialText) }
+  // The card holds its own text, so the step's `canSubmit` only catches up on save. The length rule has to be
+  // applied here or nothing applies it before the answer is already sent.
+  val isLongEnough = text.trim().length >= minLength
   val focusRequester = remember { FocusRequester() }
   LaunchedEffect(Unit) {
     runCatching { focusRequester.requestFocus() }
@@ -527,11 +533,17 @@ private fun InlineTextAnswerCard(
         // pushing the card any further up the conversation.
         maxLines = TEXT_ANSWER_MAX_LINES,
         readOnly = isSubmitting,
+        // The card is the surface here, exactly as the Figma draws it: one card with the answer written straight
+        // onto it. The field's own background would be a second surface the design does not have, and its
+        // focus shift would arrive as a lighter box inside the card.
+        containerColor = Color.Transparent,
         modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
       )
-      if (hasError && errorType is FreeTextErrorType.TooShort) {
+      // Says why send is out of reach, rather than leaving a disabled button to explain itself. Only once the
+      // member has started writing: on an empty field the placeholder is the instruction.
+      if ((hasError && errorType is FreeTextErrorType.TooShort) || (text.isNotBlank() && !isLongEnough)) {
         HedvigText(
-          stringResource(Res.string.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR, errorType.minLength),
+          stringResource(Res.string.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR, minLength),
           style = HedvigTheme.typography.label,
           color = HedvigTheme.colorScheme.textSecondary,
         )
@@ -553,7 +565,7 @@ private fun InlineTextAnswerCard(
         HedvigButton(
           text = stringResource(Res.string.AUDIO_RECORDER_SEND),
           onClick = { onSave(text) },
-          enabled = text.isNotBlank() && !isSubmitting,
+          enabled = isLongEnough && !isSubmitting,
           isLoading = isSubmitting,
           buttonSize = ButtonDefaults.ButtonSize.Medium,
         )
@@ -1253,7 +1265,6 @@ private fun FreeTextInputSection(
 
       if (freeText != null) {
         RoundCornersPill(
-          onClick = null,
           modifier = Modifier.fillMaxWidth()
             .padding(start = 48.dp)
             .wrapContentWidth(Alignment.End)

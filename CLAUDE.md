@@ -188,7 +188,22 @@ A no-arg ViewModel uses `@Inject` + `@HedvigViewModel(ActivityRetainedScope::cla
 
 The code the processor generates is always `public`, even though the VM is usually `internal`. This is required: Metro only discovers cross-module contributions whose `metro/hints` marker is public, so an `internal` generated contribution is silently dropped from `:app`'s graph and surfaces at runtime as `IllegalArgumentException: Unknown model class …`. Don't "fix" the generated wrapper to be `internal` — see `docs/architecture/navigation-and-di.md` §I.3.1.
 
-**Demo mode** is the one place we need two implementations of the same type. Use the `Provider<T>` fun interface and a `ProdOrDemoProvider<T>` (always `@SingleIn(AppScope::class)`), which picks `demoImpl` vs `prodImpl` off `DemoManager`. Inject `Provider<T>` and call `.provide()`. Do **not** reach for `Provider<T>` for anything else.
+**Demo mode** is the one place we need two implementations of the same type. Extend `DemoSwitcher<T>` (always `@SingleIn(AppScope::class)`), which picks `demoImpl` vs `prodImpl` off `DemoManager`. The switcher implements `T` itself and forwards each member through `pick()` (suspend members) or `pickFlow { }` (Flow-returning members), so consumers inject the plain `T` and never learn demo mode exists:
+
+```kotlin
+@Inject
+@SingleIn(AppScope::class)
+@ContributesBinding(AppScope::class, binding = binding<GetHomeDataUseCase>())
+internal class SwitchingGetHomeDataUseCase(
+  override val demoManager: DemoManager,
+  override val prodImpl: GetHomeDataUseCaseImpl,
+  override val demoImpl: GetHomeDataUseCaseDemo,
+) : GetHomeDataUseCase, DemoSwitcher<GetHomeDataUseCase>() {
+  override fun invoke(forceNetworkFetch: Boolean) = pickFlow { it.invoke(forceNetworkFetch) }
+}
+```
+
+**The `Switching` class carries the only `@ContributesBinding` for that type.** Neither the prod `Impl` nor the `Demo` is bound directly; binding either one too produces a duplicate binding in the graph.
 
 **WorkManager** workers are built through `MetroWorkerFactory`, a multibound `Map<KClass<out ListenableWorker>, ChildWorkerFactory>`. A worker contributes an `@AssistedFactory` `ChildWorkerFactory` keyed with `@WorkerKey`.
 

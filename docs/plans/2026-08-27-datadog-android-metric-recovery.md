@@ -1,10 +1,21 @@
 # Datadog Android metric recovery
 
-**Status: three items open.** The `OR`-branch cleanup is blocked on the pre-14.3.6 install base
-draining, which was still about 13% of prod view traffic on 2026-09-10. The
-claim-submission-failure action is unstarted. The guard-rail monitor is also still just a suggestion.
+**Status: three items open, one of them dated.** On **2026-09-23** the mute on monitor `93408872`
+expires and the SLO must move to a 7-day window at the same time. Those are one coordinated change,
+not two; doing only the first pages the team immediately. See "2026-09-23: unmute and switch to a
+7-day window, together" below. The auth-unreachable gap that used to be a separate item is closed as
+accepted, also below, though 2026-09-15 taught us its reading rule was only half written, twice.
 
-Last updated 2026-09-10.
+The `OR`-branch cleanup is blocked on the pre-14.3.6 install base draining. Measured 2026-09-11,
+versions at or below 14.3.2 were about 11.5% of prod view events over 30 days but only **1.1% over 7
+days and 0.7% over one day**, so the 30-day figure lags badly and the trigger is closer than it
+looks. Every number in this document is re-runnable; the commands are inline next to each one, and
+they should be re-run rather than trusted, because most of these are still moving.
+
+The claim-submission-failure action is unstarted, and the guard-rail monitor is still just a
+suggestion.
+
+Last updated 2026-09-11.
 
 ## What broke
 
@@ -18,7 +29,8 @@ Measured: app versions up to 14.3.2 emit 42 to 79 distinct `@view.name` values; 
 three or four, all activity-level. All 18 custom `android.*` RUM metrics filter on `@view.name` or
 `@view.url`, so all 18 broke. Control: `trace.android.request.hits` was flat across the same window
 (1.39M vs 1.41M), so usage never changed. The 13 `ios.*` metrics were unaffected, because iOS names
-views differently and its two newest metrics are action-based.
+views differently. Three of the 13 are action-based, which is a separate property worth knowing but
+not the reason they survived.
 
 Consumers all reference the metrics **by name**, so the "Apps (Android + iOS)" dashboard, monitor
 12054196, and the three Android SLOs need no edits of their own. The SLOs are metric-based
@@ -59,7 +71,18 @@ measures and they will confuse the next person.
 
 ### Trigger condition
 
-Remove them once traffic from app versions at or below 14.3.2 is negligible. Check with:
+Remove them once traffic from app versions at or below 14.3.2 is negligible.
+
+To get the share directly, over any window (this is where the header's 30d/7d/1d figures come from):
+
+```bash
+pup rum aggregate \
+  --query '@type:view @application.id:4d7b8355-396d-406e-b543-30a073050e8f @session.type:user' \
+  --compute count --group-by version --limit 200 --from 7d
+```
+
+Sum the buckets whose version is at or below 14.3.2 and divide by the total. Or check a single
+known-old view name, which returns nothing once the old builds are gone:
 
 ```
 pup rum aggregate \
@@ -215,8 +238,14 @@ The durable form of a failure signal is an action, not a screen or a UI state:
 logAction(type = ActionType.CUSTOM, name = "CLAIM_SUBMISSION_FAILED")
 ```
 
-Action-based metrics do not break when navigation changes, which is why no iOS metric broke in this
-incident. Note that the two obvious instrumentation points are both wrong: `failedToStart` and
+Action-based metrics do not break when navigation changes. An earlier version of this document
+added "which is why no iOS metric broke in this incident". That was wrong: the Nav2 to Nav3
+migration was Android-only, so iOS view names never moved at all. One thing is worth keeping from
+that check, because it constrains how to do this here: an action name is only durable if the app
+owns the constant. Of the three action-based `ios.*` metrics, one keys off a GraphQL type name owned
+by the backend schema and would die silently on a rename.
+
+Note that the two obvious instrumentation points are both wrong: `failedToStart` and
 `errorSubmittingStep` are transient, retryable states that are set and cleared repeatedly, so
 instrumenting them counts error *displays*, not failed claims, and a member on a flaky connection
 produces several. Emit at a terminal boundary instead, for example when the member abandons the flow
@@ -235,6 +264,199 @@ the denominator with a 0% error rate on the added traffic**, which dilutes the m
 roughly the same 1.4%. This metric is the denominator of the Claims flow (Android) SLO, so the SLO
 reads marginally better. Two keys in the new scope, `StartClaimPledgeKey` and `UpdateAppKey`, have no
 old equivalent to measure, but neither issues network requests in normal use.
+
+## Accepted: this SLO cannot see an unreachable auth service
+
+**Decided 2026-09-11. No action. Do not reopen this without new information.**
+
+The SLI counts `POST /member-login` resource events with a 5xx status. A request that never reaches
+the server produces a RUM error and no resource at all, so it lands in neither side of the ratio. If
+auth becomes unreachable the denominator collapses toward zero and the SLI reads 100% or no-data.
+Nothing fires. The worst outage produces the best number and silence.
+
+An earlier version of this document said to cover that by flipping `notify_no_data` to `true` on
+monitor `93408872`. **That does not work.** The monitor is `type: "slo alert"`, and `notify_no_data`
+is not honoured on SLO alert monitors: the field reads `false` and carries no `no_data_timeframe`.
+
+```bash
+pup api "/api/v1/monitor/93408872" | jq '.data | {type, notify_no_data: .options.notify_no_data}'
+```
+
+It is not a setting someone forgot to turn on. Across the org, all 32 SLO alert monitors have it
+`false`, and the only 2 monitors setting it `true` are ordinary metric monitors, both of the
+"no signs on the website" absence-alarm kind:
+
+```bash
+pup api "/api/v1/monitor?page_size=1000" \
+  | jq -r '.data[] | [.type, (.options.notify_no_data|tostring), .name] | @tsv' \
+  | sort | uniq -c -f1
+```
+
+Covering it properly would mean a second monitor watching `sum:android.login.network.count` for an
+absence. That is not being built, for two reasons. The gap has existed for as long as the SLO has,
+so nothing is getting worse. And a genuinely unreachable auth service is already caught server-side
+by the `Auth: post auth` and `Auth: get member credentials` SLOs, which run on APM traces with the
+full population and no client sampling, so someone gets paged either way. What this SLO uniquely
+sees is the network path between the member and the server, which is also the part Android cannot
+fix.
+
+The thing to remember is the reading rule: **a green `Auth: login (Android)` is not by itself
+evidence that login works.** Check that the denominator is non-zero before believing it.
+
+### The corollary, learned the hard way on 2026-09-15
+
+The rule above only covered the falsely-healthy direction. The opposite happened first.
+
+At 10:37 CEST on 2026-09-15 the monitor fired at **110.339% of the 30-day budget**. There was no
+outage.
+
+**Corrected 2026-09-15, second pass.** An earlier revision of this section blamed a 12-event
+denominator. That number came from a RUM event search, and this SLO is metric-based, so it was the
+wrong quantity entirely. The real figures, read from the metrics the SLO actually divides:
+
+```bash
+pup api "/api/v1/query?from=<t-30d>&to=<now>&query=sum:android.login.network.count%7Benv:prod%7D.as_count()"
+pup api "/api/v1/query?from=<t-30d>&to=<now>&query=sum:android.login.network.error%7Benv:prod%7D.as_count()"
+```
+
+30-day totals were **2,451 denominator and 27 errors**, giving SLI 98.899% and 110.2% of budget,
+which reproduces the alert exactly. Add `.rollup(sum,86400)` to either query to get it per day, which
+is what makes the cause visible:
+
+| Period | Denominator | Errors | What it is |
+|---|---|---|---|
+| Aug 17 to Sep 02 | 22 to 90 per day | 13 | the **old, broken** metric definition |
+| Sep 03 to Sep 06 | 2 to 6 per day | 0 | collapsing |
+| Sep 07 to Sep 09 | 225, 692, 512 | 11 | the rewrite window |
+| Sep 10 to Sep 14 | no data | 0 | gap |
+| Sep 15 | 25 | 3 | the first real measurement |
+
+**Only 3 of the 27 errors and 25 of the 2,451 denominator events come from the current metric
+definition.** The monitor fired because its 30-day trailing window still contains data from the
+metric deleted and recreated on 2026-09-09. This document already warned that deleting a generated
+metric does not purge its timeseries; the alert is that warning coming true.
+
+So the low-volume rule still stands, and gains a second half:
+
+**This ratio is meaningless at low volume, whichever way it reads**, and **a trailing window that
+straddles a metric rewrite is measuring two different definitions at once.** Before believing any
+reading, check both: what the denominator is, and whether the window spans a definition change.
+
+Note which tool answers which question. A RUM event search shows retained sessions only and will
+under-report; the metric query above is what the SLO sees.
+
+Two things that event also settled, both worth keeping:
+
+**The instrumentation works.** Splitting the same auth host by path and app version on the day
+14.4.8 reached the internal track: `/member-authorization-codes` (which already went through
+`:app`'s instrumented OkHttp client) read 23 on 14.4.6 and 94 on 14.4.7, while `/member-login` and
+`/member-login/<uuid>` read **zero on both** and 12 and 74 on 14.4.8. That is the whole original
+diagnosis confirmed in production: `:authlib`'s Ktor client was invisible, and now it is not.
+
+**The budget table below is sized off the wrong quantity.** It uses login *view impressions* as the
+input. The SLI actually counts `POST /member-login`, which is a different and much smaller number,
+and it excludes the `/member-login/<uuid>` polling calls entirely (74 of them on the same day as the
+12 initiations). Rebuild that table from the live metric once adoption is real, rather than from the
+view-impression proxy.
+
+## Muted until 2026-09-23: downtime on monitor 93408872
+
+Set 2026-09-15 after the alert above. Datadog downtime
+`b72d5680-5084-45e5-b4c7-20169460ecec`, scoped to monitor `93408872` only, running
+2026-09-15T09:40Z to **2026-09-23T08:00Z**. It expires on its own and Datadog notifies when it does.
+
+**Why time-boxed rather than open-ended.** Training the team to ignore this monitor is how the
+original breakage went unnoticed for ten weeks, so the mute is deliberately short and ends on the day
+the window change below is due.
+
+**The end date is 23 September, not 22, and the one-day difference matters.** The 15 September
+failures age out of a 7-day window exactly on the 22nd. Unmuting on the 23rd starts the new window
+clean.
+
+**Do not simply unmute and leave the 30-day window in place.** The monitor is currently latched in
+`Alert` and cannot clear on its own before October: with 25 legacy errors still in a 30-day window on
+22 September, clearing would need the denominator above 2,500, against a current run rate near 15 a
+day. It would page immediately on unmute and stay red for roughly three weeks. Do the window switch
+below at the same time.
+
+Cancel early if the rollout finishes sooner:
+
+```bash
+pup downtime cancel b72d5680-5084-45e5-b4c7-20169460ecec
+```
+
+## 2026-09-23: unmute and switch to a 7-day window, together
+
+These are one change, not two. The mute above ends the same morning.
+
+**Why the window switch is what fixes this.** A 7-day window on 23 September covers 16 to 23
+September only. Every pre-rewrite point, all of August and the 7 to 9 September spike, falls outside
+it. The blend problem is not waited out, it is excluded by construction. That is also why this is
+better than extending the mute into October: the legacy data stops mattering the moment the window no
+longer reaches it.
+
+Three things move together or the monitor asks the SLO for a window it no longer defines:
+
+1. the SLO `timeframe`,
+2. its `thresholds[].timeframe`,
+3. the monitor query, back to `error_budget("29588e73473d54f09814173755548b80").over("7d")`.
+
+**Pick the target from volume on the day, not from habit.** At the run rate on 2026-09-15, about 15 a
+day, a 7-day denominator lands near 105 and grows with adoption. Allowed failures before breaching:
+
+| Target | Allowed failures at ~105 over 7d |
+|---|---|
+| 99% | about 1 |
+| 95% | about 5 |
+| 90% | about 10 |
+
+99% makes a single 504 page you. Start at **95%** and tighten toward 99% as adoption raises the
+denominator. Re-measure before choosing; the number above is a floor.
+
+**Why.** `error_budget(...).over(30d)` is a trailing window, so once the budget is burned the monitor
+stays red until the burning events age out, up to a month. Seven days recovers four times faster.
+
+**Check the arithmetic against real traffic before doing it.** The window was widened to 30d to get a
+usable budget, and shortening it takes that back. At the expected volume:
+
+| Window and target | Budget |
+|---|---|
+| 7d at 99% | about 8 failures |
+| 30d at 99% | about 34 failures |
+| 7d at 97% | about 23 failures |
+
+Based on Swedish-login view impressions over the 30 days to 2026-09-11, which read 3,361 and are
+climbing, so roughly 780 attempts a week, a bit over 100 a day. A 7-day window at 99% means any week
+with eight 5xx responses breaches. Re-read the input with:
+
+```bash
+pup rum aggregate \
+  --query '@type:view @application.id:4d7b8355-396d-406e-b543-30a073050e8f @session.type:user
+           @view.name:(com.hedvig.android.feature.login.navigation.SwedishLoginKey OR
+                       com.hedvig.android.feature.login.navigation.LoginDestinations.SwedishLogin)' \
+  --compute count --from 30d
+```
+
+Both names are needed: the second is the pre-14.3.6 spelling, and dropping it undercounts.
+
+**Re-measure before acting on this.** An earlier reading of the same query returned 1,547, less than
+half the current figure, because login-view impressions were themselves suppressed by the Nav3
+breakage and are still recovering as the fixed build rolls out. The input is moving, and moving
+upward, so treat these numbers as a floor. Retries also mean one member can produce more than one
+attempt. If that turns out to be normal variance
+rather than a real signal, the lever to reach for is the **target**, not the window: 7d at a lower
+target buys headroom and keeps fast recovery. Pick it from the first weeks of real data rather than
+assuming 99%, which was inherited and never chosen for this signal.
+
+Burn-rate alerting solves both the recovery time and the sensitivity properly, and is the textbook
+answer. It was not done here only because it needs a new monitor, but the sizing does not have to be
+invented: the org already runs 9 burn-rate monitors, shaped like
+
+```
+burn_rate("<slo id>").over("7d").long_window("1h").short_window("5m") > 16.8
+```
+
+Revisit if the 7d window turns out to flap.
 
 ## Guard rail worth adding
 

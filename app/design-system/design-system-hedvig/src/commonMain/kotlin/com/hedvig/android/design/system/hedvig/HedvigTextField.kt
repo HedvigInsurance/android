@@ -83,12 +83,27 @@ fun HedvigTextField(
   visualTransformation: VisualTransformation = VisualTransformation.None,
   onTextLayout: (TextLayoutResult) -> Unit = {},
   interactionSource: MutableInteractionSource? = null,
+  /**
+   * The field's own background, in every state. Null keeps the design system's pair, which is built for a
+   * field sitting on the page: it shifts from the resting surface to the secondary one on focus so the field
+   * reads as active. Inside a container that is already the resting surface that cue has nothing to say, and
+   * the shift arrives as a lighter box the design does not have, so pass [Color.Transparent] there and let
+   * the container be the only surface. The error background is unaffected either way.
+   */
+  containerColor: Color? = null,
 ) {
   @Suppress("NAME_SHADOWING")
   val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
   val configuration = HedvigTextFieldDefaults.configuration()
   val size = textFieldSize.size
-  val colors = HedvigTextFieldDefaults.colors()
+  val colors = if (containerColor == null) {
+    HedvigTextFieldDefaults.colors()
+  } else {
+    HedvigTextFieldDefaults.colors(
+      containerColor = containerColor,
+      containerPulsatingColor = containerColor,
+    )
+  }
   val trailingIconColor by colors.trailingContentColor(
     readOnly = readOnly,
     enabled = enabled,

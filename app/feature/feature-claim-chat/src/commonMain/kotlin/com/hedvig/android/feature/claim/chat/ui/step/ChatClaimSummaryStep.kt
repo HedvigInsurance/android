@@ -195,9 +195,13 @@ internal fun ClaimSummaryAnswersContent(
     )
     Spacer(Modifier.height(24.dp))
     answers.forEachIndexed { index, answer ->
-      HedvigText(text = answer.title)
+      HedvigText(
+        text = answer.title,
+        style = HedvigTheme.typography.label,
+        color = HedvigTheme.colorScheme.textSecondary,
+      )
       Spacer(Modifier.height(4.dp))
-      CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textSecondary) {
+      CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textPrimary) {
         AnswerValue(
           value = answer.value,
           imageLoader = imageLoader,
