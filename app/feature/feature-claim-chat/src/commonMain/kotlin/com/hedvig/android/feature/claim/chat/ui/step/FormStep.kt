@@ -439,7 +439,7 @@ internal fun SearchForm(
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
-  val searchBottomSheetState = rememberHedvigBottomSheetState<String?>()
+  val searchBottomSheetState = rememberHedvigBottomSheetState<String>()
   val focusManager = LocalFocusManager.current
   Column(modifier) {
     if (selectedOption == null) {
@@ -488,9 +488,11 @@ internal fun SearchForm(
       automaticallyScrollableContent = false,
       scrimColor = null,
     ),
-    content = { suggestedQuery: String? ->
-      var searchQuery by remember {
-        mutableStateOf(suggestedQuery)
+    content = { suggestedQuery: String ->
+      // The field treats null as cleared, while the sheet's payload is non-null, so an empty suggestion
+      // starts the field cleared rather than holding an empty string.
+      var searchQuery: String? by remember {
+        mutableStateOf(suggestedQuery.takeIf { it.isNotEmpty() })
       }
       val focusRequester = remember { FocusRequester() }
       val keyboardController = LocalSoftwareKeyboardController.current
