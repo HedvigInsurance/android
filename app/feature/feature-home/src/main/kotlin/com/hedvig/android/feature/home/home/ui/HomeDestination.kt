@@ -188,8 +188,10 @@ import com.hedvig.android.memberreminders.MemberReminder.PaymentReminder.Connect
 import com.hedvig.android.memberreminders.MemberReminder.UpcomingRenewal
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.memberreminders.ui.MemberReminderToDoList
+import com.hedvig.android.memberreminders.ui.MissingPayinMethodCard
 import com.hedvig.android.memberreminders.ui.homeActionRequiredReminders
 import com.hedvig.android.memberreminders.ui.homeInformationalReminders
+import com.hedvig.android.memberreminders.ui.missingPayinMethodReminder
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
@@ -725,7 +727,8 @@ private fun HomeScreenSuccess(
         }
 
         HomeSection.MemberReminders -> {
-          applicableReminders.homeActionRequiredReminders().isNotEmpty()
+          applicableReminders.homeActionRequiredReminders().isNotEmpty() ||
+            applicableReminders.missingPayinMethodReminder() != null
         }
 
         HomeSection.Quotes -> {
@@ -1208,6 +1211,14 @@ private fun MemberRemindersSection(
 ) {
   val toDoReminders = applicableReminders.homeActionRequiredReminders()
   Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    if (applicableReminders.missingPayinMethodReminder() != null) {
+      MissingPayinMethodCard(
+        onConnectPaymentClick = navigateToConnectPayment,
+        modifier = Modifier
+          .padding(horizontal = 16.dp)
+          .padding(horizontalInsets),
+      )
+    }
     if (toDoReminders.isNotEmpty()) {
       Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -1223,7 +1234,6 @@ private fun MemberRemindersSection(
         )
         MemberReminderToDoList(
           memberReminders = toDoReminders,
-          navigateToConnectPayment = navigateToConnectPayment,
           navigateToConnectPayout = navigateToConnectPayout,
           navigateToAddMissingInfo = navigateToMissingInfo,
           onNavigateToNewConversation = onNavigateToNewConversation,

@@ -130,7 +130,6 @@ fun rememberMaxLineCountForReminders(memberReminders: List<MemberReminder>, maxW
 @Composable
 fun MemberReminderCards(
   memberReminders: List<MemberReminder>,
-  navigateToConnectPayment: () -> Unit,
   navigateToConnectPayout: () -> Unit,
   openUrl: (String) -> Unit,
   navigateToAddMissingInfo: (String, CoInsuredFlowType) -> Unit,
@@ -161,7 +160,6 @@ fun MemberReminderCards(
         MemberReminderCard(
           memberReminder = reminder,
           navigateToAddMissingInfo = navigateToAddMissingInfo,
-          navigateToConnectPayment = navigateToConnectPayment,
           navigateToConnectPayout = navigateToConnectPayout,
           openUrl = openUrl,
           onNavigateToNewConversation = onNavigateToNewConversation,
@@ -183,14 +181,15 @@ fun MemberReminderCards(
  * carousel with anything should ask this first.
  */
 fun List<MemberReminder>.cardReminders(): List<MemberReminder> {
-  return filter { it !is MemberReminder.DecideAnalyticsConsent }
+  return filter {
+    it !is MemberReminder.DecideAnalyticsConsent && it !is MemberReminder.PaymentReminder.ConnectPayment
+  }
 }
 
 @Composable
 private fun MemberReminderCard(
   memberReminder: MemberReminder,
   navigateToAddMissingInfo: (String, CoInsuredFlowType) -> Unit,
-  navigateToConnectPayment: () -> Unit,
   navigateToConnectPayout: () -> Unit,
   navigateToContactInfo: () -> Unit,
   navigateToChipId: () -> Unit,
@@ -210,15 +209,6 @@ private fun MemberReminderCard(
         },
         modifier = modifier,
         minLines = minLines,
-      )
-    }
-
-    is MemberReminder.PaymentReminder.ConnectPayment -> {
-      ReminderCardConnectPayment(
-        navigateToConnectPayment = navigateToConnectPayment,
-        modifier = modifier,
-        minLines = minLines,
-        memberReminder = memberReminder,
       )
     }
 
@@ -283,8 +273,11 @@ private fun MemberReminderCard(
       )
     }
 
-    // Filtered out by [cardReminders] before reaching here; the home "To do" list is where it is offered.
+    // Both are filtered out by [cardReminders] before reaching here: the analytics prompt is offered
+    // in the home "To do" list, and a missing payin method by [MissingPayinMethodCard].
     is MemberReminder.DecideAnalyticsConsent -> {}
+
+    is MemberReminder.PaymentReminder.ConnectPayment -> {}
   }
 }
 
@@ -348,26 +341,6 @@ internal fun ReminderMissingChipId(navigateToChipId: () -> Unit, minLines: Int, 
     style = InfoCardStyle.Button(
       buttonText = stringResource(Res.string.CHIP_ID_MISSING_BUTTON),
       onButtonClick = navigateToChipId,
-    ),
-    minLines = minLines,
-  )
-}
-
-@Composable
-private fun ReminderCardConnectPayment(
-  memberReminder: MemberReminder,
-  navigateToConnectPayment: () -> Unit,
-  modifier: Modifier = Modifier,
-  minLines: Int = 1,
-) {
-  val message = getMemberReminderMessage(memberReminder)
-  HedvigNotificationCard(
-    message = message,
-    modifier = modifier,
-    priority = NotificationPriority.Attention,
-    style = InfoCardStyle.Button(
-      buttonText = "Setup payment method", // todo
-      onButtonClick = navigateToConnectPayment,
     ),
     minLines = minLines,
   )
@@ -471,24 +444,11 @@ private fun PreviewReminderCardEnableNotifications() {
 
 @Preview
 @Composable
-private fun PreviewReminderCardConnectPayment() {
-  HedvigTheme {
-    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      ReminderCardConnectPayment(
-        navigateToConnectPayment = {},
-        memberReminder = MemberReminder.PaymentReminder.ConnectPayment(),
-      )
-    }
-  }
-}
-
-@Preview
-@Composable
 private fun PreviewReminderCardMissingPayment() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      ReminderCardConnectPayment(
-        navigateToConnectPayment = {},
+      ReminderCardMissingPayment(
+        onNavigateToNewConversation = {},
         memberReminder = MemberReminder.PaymentReminder.TerminationDueToMissedPayments(
           terminationDate = LocalDate(2029, 1, 1),
         ),

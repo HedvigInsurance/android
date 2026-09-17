@@ -81,7 +81,7 @@ fun ThreeDotsLoaded(
       Box(
         Modifier
           .size(circleRadius)
-          .background(stableColor, CircleShape)
+          .background(stableColor, CircleShape),
       )
     }
   }

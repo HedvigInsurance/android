@@ -31,7 +31,6 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
   backstack: Backstack,
-  navigateToConnectPayment: () -> Unit,
   navigateToPayinAccount: () -> Unit,
   navigateToPayinMethodDetails: (PayinMethodId) -> Unit,
   navigateToPayoutAccount: () -> Unit,
@@ -47,7 +46,7 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
         backstack.add(PaymentHistoryKey)
       },
       onPayoutAccountClicked = dropUnlessResumed { navigateToPayoutAccount() },
-      onChangeBankAccount = dropUnlessResumed { navigateToConnectPayment() },
+      onChangeBankAccount = dropUnlessResumed { navigateToPayinAccount() },
       onDiscountClicked = dropUnlessResumed {
         backstack.add(DiscountsKey)
       },

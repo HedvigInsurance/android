@@ -45,6 +45,7 @@ import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.paying.member.MemberType
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
+import com.hedvig.android.design.system.hedvig.HedvigAttentionCard
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -91,6 +92,7 @@ import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.U
 import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.UpcomingPaymentInfo.PaymentFailed
 import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Error
 import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Loading
+import com.hedvig.android.memberreminders.ui.MissingPayinMethodCard
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
@@ -266,6 +268,14 @@ private fun PaymentsContent(
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     Spacer(Modifier.height(8.dp))
+    if ((uiState as? Content)?.connectedPaymentInfo == ConnectedPaymentInfo.NeedsPayinSetup) {
+      MissingPayinMethodCard(
+        onConnectPaymentClick = onChangeBankAccount,
+        modifier = Modifier
+          .padding(horizontal = 16.dp)
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+      )
+    }
     when (val upcomingPaymentInfo = (uiState as? Content)?.upcomingPaymentInfo) {
       is PaymentFailed -> {
         if (upcomingPaymentInfo.isManualChargeAllowed != null) {
@@ -330,16 +340,6 @@ private fun PaymentsContent(
           )
         }
 
-        is ConnectedPaymentInfo.NeedsPayinSetup -> {
-          CardNotConnectedWarningCard(
-            connectedPaymentInfo = uiState.connectedPaymentInfo as? ConnectedPaymentInfo.NeedsPayinSetup,
-            onChangeBankAccount = onChangeBankAccount,
-            modifier = Modifier
-              .padding(horizontal = 16.dp)
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-          )
-        }
-
         ConnectedPaymentInfo.NeedsPayoutSetup -> {
           HedvigNotificationCard(
             message = stringResource(Res.string.PAYOUT_MISSING_INFO),
@@ -355,6 +355,8 @@ private fun PaymentsContent(
           )
         }
 
+        // NeedsPayinSetup leads the screen as its own card, above the upcoming payment.
+        ConnectedPaymentInfo.NeedsPayinSetup,
         ConnectedPaymentInfo.Unknown,
         is ConnectedPaymentInfo.Active,
         -> {
@@ -379,33 +381,6 @@ private fun PaymentsContent(
       onPaymentMethodsClicked = onPaymentMethodsClicked,
     )
   }
-}
-
-@Composable
-private fun CardNotConnectedWarningCard(
-  connectedPaymentInfo: ConnectedPaymentInfo.NeedsPayinSetup?,
-  onChangeBankAccount: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  val dateTimeFormatter = rememberHedvigDateTimeFormatter()
-  val dueDateToConnect = connectedPaymentInfo?.dueDateToConnect
-  val text = if (dueDateToConnect != null) {
-    stringResource(
-      Res.string.info_card_missing_payment_missing_payments_body,
-      dateTimeFormatter.format(dueDateToConnect),
-    )
-  } else {
-    stringResource(Res.string.info_card_missing_payment_body)
-  }
-  HedvigNotificationCard(
-    message = text,
-    style = Button(
-      buttonText = stringResource(Res.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE),
-      onButtonClick = onChangeBankAccount,
-    ),
-    priority = NotificationPriority.Attention,
-    modifier = modifier,
-  )
 }
 
 @Composable
@@ -748,83 +723,14 @@ private fun PaymentCard(
 
 @Composable
 private fun FailedPaymentInfo(amountDue: String, onReviewPaymentClick: () -> Unit, modifier: Modifier = Modifier) {
-  HedvigCard(
-    color = HedvigTheme.colorScheme.fillNegative,
-    modifier = modifier
-      .fillMaxWidth()
-      .border(
-        1.dp,
-        HedvigTheme.colorScheme.borderPrimary,
-        HedvigTheme.shapes.cornerXLarge,
-      )
-      .hedvigDropShadow(),
-  ) {
-    Column(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 16.dp),
-    ) {
-      Row(
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-      ) {
-        Box(
-          modifier = Modifier
-            .background(
-              color = HedvigTheme.colorScheme.signalRedFill,
-              shape = CircleShape,
-            )
-            .padding(8.dp),
-          contentAlignment = Alignment.Center,
-        ) {
-          Icon(
-            imageVector = HedvigIcons.WarningFilled,
-            contentDescription = null,
-            tint = HedvigTheme.colorScheme.signalRedElement,
-            modifier = Modifier.size(24.dp),
-          )
-        }
-        Column(
-          modifier = Modifier
-            .weight(1f),
-          verticalArrangement = Arrangement.spacedBy(2.dp),
-        ) {
-          HedvigText(
-            text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_TITLE),
-            style = HedvigTheme.typography.label,
-            color = HedvigTheme.colorScheme.textPrimary,
-          )
-          HedvigText(
-            text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE, amountDue),
-            style = HedvigTheme.typography.label,
-            color = HedvigTheme.colorScheme.textSecondary,
-          )
-        }
-      }
-      Spacer(Modifier.height(8.dp))
-      HedvigText(
-        text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_BODY),
-        style = HedvigTheme.typography.label,
-        color = HedvigTheme.colorScheme.textSecondary,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      )
-
-      Spacer(Modifier.height(12.dp))
-      HedvigButton(
-        text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_BUTTON),
-        onClick = onReviewPaymentClick,
-        enabled = true,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-        buttonSize = ButtonDefaults.ButtonSize.Small,
-      )
-    }
-  }
+  HedvigAttentionCard(
+    title = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_TITLE),
+    subtitle = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE, amountDue),
+    body = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_BODY),
+    buttonText = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_BUTTON),
+    onButtonClick = onReviewPaymentClick,
+    modifier = modifier,
+  )
 }
 
 @Composable
@@ -926,9 +832,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ),
         upcomingPaymentInfo = NoInfo,
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup(
-          null,
-        ),
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup,
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
         memberType = MemberType.STANDARD_TO_QASA_MEMBER,
       ),
@@ -998,9 +902,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           isManualChargeAllowed = null,
         ),
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup(
-          null,
-        ),
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup,
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
         memberType = MemberType.STANDARD_MEMBER,
       ),
@@ -1015,9 +917,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ),
         upcomingPaymentInfo = NoInfo,
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup(
-          null,
-        ),
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup,
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
         memberType = MemberType.STANDARD_MEMBER,
       ),
@@ -1036,9 +936,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           isManualChargeAllowed = null,
         ),
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup(
-          dueDateToConnect = System.now().plus(30.days).toLocalDateTime(TimeZone.UTC).date,
-        ),
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup,
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
         memberType = MemberType.STANDARD_MEMBER,
       ),
@@ -1057,9 +955,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           isManualChargeAllowed = null,
         ),
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup(
-          System.now().plus(30.days).toLocalDateTime(TimeZone.UTC).date,
-        ),
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup,
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
         memberType = MemberType.STANDARD_MEMBER,
       ),

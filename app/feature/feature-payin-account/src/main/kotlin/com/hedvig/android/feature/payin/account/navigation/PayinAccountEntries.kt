@@ -40,7 +40,7 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
   backstack: Backstack,
   globalSnackBarState: GlobalSnackBarState,
   hedvigBuildConstants: HedvigBuildConstants,
-  navigateToConnectPayment: () -> Unit,
+  navigateToTrustly: () -> Unit,
   openUrl: (String) -> Unit,
 ) {
   entry<PayinAccountKey> {
@@ -80,7 +80,7 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
         when (method) {
           is PayinAccount.Trustly -> {
             backstack.popUpTo<PayinMethodDetailsKey>(inclusive = true)
-            navigateToConnectPayment()
+            navigateToTrustly()
           }
 
           is PayinAccount.SwishPayin -> {
@@ -116,7 +116,7 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
       viewModel = viewModel,
       onTrustlySelected = dropUnlessResumed {
         backstack.popUpTo<SelectPayinMethodKey>(inclusive = true)
-        navigateToConnectPayment()
+        navigateToTrustly()
       },
       onSwishSelected = dropUnlessResumed { backstack.add(SetupSwishPayinKey()) },
       onInvoiceSelected = dropUnlessResumed { backstack.add(SetupInvoicePayinKey) },

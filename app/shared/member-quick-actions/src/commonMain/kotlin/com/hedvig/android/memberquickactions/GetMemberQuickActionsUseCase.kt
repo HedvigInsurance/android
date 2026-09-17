@@ -44,9 +44,9 @@ import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE
 import hedvig.resources.HOME_QUICK_ACTIONS_CHANGE_ADDRESS
 import hedvig.resources.HOME_QUICK_ACTIONS_EDIT_INSURANCE
-import hedvig.resources.MANAGE_BILLING_METHODS_BUTTON
 import hedvig.resources.HOME_QUICK_ACTIONS_INVITE
 import hedvig.resources.HOME_QUICK_ACTIONS_UPCOMING_PAYMENT
+import hedvig.resources.MANAGE_BILLING_METHODS_BUTTON
 import hedvig.resources.Res
 import hedvig.resources.insurance_details_change_amount
 import hedvig.resources.insurance_details_change_amount_subtitle

@@ -144,9 +144,11 @@ fun PaymentMethodHandoverIllustration(
     PaymentMethodTile(mark = mark)
     when (loadingState) {
       LoadingState.PROCESSING -> ThreeDotsLoading()
+
       LoadingState.ACTIVE -> ThreeDotsLoaded()
+
       LoadingState.INACTIVE -> ThreeDotsLoaded(
-        stableColor = ColorSchemeKeyTokens.SurfaceSecondaryTransparent.value
+        stableColor = ColorSchemeKeyTokens.SurfaceSecondaryTransparent.value,
       )
     }
     Box {
@@ -177,7 +179,7 @@ fun PaymentMethodHandoverIllustration(
 enum class LoadingState {
   PROCESSING,
   ACTIVE,
-  INACTIVE
+  INACTIVE,
 }
 
 @HedvigPreview

@@ -17,7 +17,7 @@ import com.hedvig.android.navigation.compose.popUpTo
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import octopus.type.MemberPaymentProvider
 
-fun EntryProviderScope<HedvigNavKey>.payoutAccountEntries(backstack: Backstack, navigateToConnectPayment: () -> Unit) {
+fun EntryProviderScope<HedvigNavKey>.payoutAccountEntries(backstack: Backstack, navigateToTrustly: () -> Unit) {
   entry<PayoutAccountKey> {
     val viewModel: PayoutAccountOverviewViewModel = metroViewModel()
     PayoutAccountOverviewDestination(
@@ -30,9 +30,9 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountEntries(backstack: Backstack, 
           ),
         )
       },
-      navigateToConnectPayment = dropUnlessResumed {
+      navigateToTrustly = dropUnlessResumed {
         backstack.popUpTo<PayoutAccountKey>(inclusive = true)
-        navigateToConnectPayment()
+        navigateToTrustly()
       },
       navigateUp = backstack::navigateUp,
     )
@@ -43,7 +43,7 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountEntries(backstack: Backstack, 
       availableProviders = key.availableProviders.map { MemberPaymentProvider.safeValueOf(it) },
       onTrustlySelected = dropUnlessResumed {
         backstack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
-        navigateToConnectPayment()
+        navigateToTrustly()
       },
       onNordeaSelected = dropUnlessResumed { backstack.add(EditBankAccountKey) },
       onSwishSelected = dropUnlessResumed { backstack.add(SetupSwishPayoutKey) },

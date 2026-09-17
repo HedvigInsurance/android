@@ -109,7 +109,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   resetOnboardingSeenUseCase: ResetOnboardingSeenUseCase,
 ) {
   val shouldShowRequestPermissionRationale: (String) -> Boolean = androidAppHost::shouldShowPermissionRationale
-  val navigateToConnectPayment: () -> Unit = { backstack.add(TrustlyKey()) }
+  val navigateToTrustly: () -> Unit = { backstack.add(TrustlyKey()) }
   val navigateToPayinAccount: () -> Unit = { backstack.add(PayinAccountKey) }
   val navigateToPayoutAccount: () -> Unit = { backstack.add(PayoutAccountKey) }
   val navigateToInbox: () -> Unit = { backstack.add(InboxKey) }
@@ -166,7 +166,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     globalSnackBarState = globalSnackBarState,
     hedvigBuildConstants = hedvigBuildConstants,
     openUrl = openUrl,
-    navigateToConnectPayment = navigateToConnectPayment,
+    navigateToTrustly = navigateToTrustly,
     navigateToPayinAccount = navigateToPayinAccount,
     navigateToPayoutAccount = navigateToPayoutAccount,
     navigateToNewConversation = navigateToNewConversation,
@@ -469,14 +469,13 @@ private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
   globalSnackBarState: GlobalSnackBarState,
   hedvigBuildConstants: HedvigBuildConstants,
   openUrl: (String) -> Unit,
-  navigateToConnectPayment: () -> Unit,
+  navigateToTrustly: () -> Unit,
   navigateToPayinAccount: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
   navigateToNewConversation: () -> Unit,
 ) {
   paymentsEntries(
     backstack = backstack,
-    navigateToConnectPayment = navigateToConnectPayment,
     navigateToPayinAccount = navigateToPayinAccount,
     navigateToPayinMethodDetails = { method -> backstack.add(PayinMethodDetailsKey(method)) },
     navigateToPayoutAccount = navigateToPayoutAccount,
@@ -490,13 +489,13 @@ private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
   )
   payoutAccountEntries(
     backstack = backstack,
-    navigateToConnectPayment = navigateToConnectPayment,
+    navigateToTrustly = navigateToTrustly,
   )
   payinAccountEntries(
     backstack = backstack,
     globalSnackBarState = globalSnackBarState,
     hedvigBuildConstants = hedvigBuildConstants,
-    navigateToConnectPayment = navigateToConnectPayment,
+    navigateToTrustly = navigateToTrustly,
     openUrl = openUrl,
   )
   connectPaymentEntries(backstack = backstack)

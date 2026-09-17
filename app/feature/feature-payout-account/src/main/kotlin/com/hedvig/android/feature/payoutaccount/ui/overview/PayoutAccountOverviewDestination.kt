@@ -64,14 +64,14 @@ import org.jetbrains.compose.resources.stringResource
 internal fun PayoutAccountOverviewDestination(
   viewModel: PayoutAccountOverviewViewModel,
   onConnectPayoutMethodClicked: () -> Unit,
-  navigateToConnectPayment: () -> Unit,
+  navigateToTrustly: () -> Unit,
   navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   PayoutAccountOverviewScreen(
     uiState = uiState,
     onConnectPayoutMethodClicked = onConnectPayoutMethodClicked,
-    navigateToConnectPayment = navigateToConnectPayment,
+    navigateToTrustly = navigateToTrustly,
     onRetry = { viewModel.emit(Retry) },
     navigateUp = navigateUp,
   )
@@ -81,7 +81,7 @@ internal fun PayoutAccountOverviewDestination(
 private fun PayoutAccountOverviewScreen(
   uiState: PayoutAccountOverviewUiState,
   onConnectPayoutMethodClicked: () -> Unit,
-  navigateToConnectPayment: () -> Unit,
+  navigateToTrustly: () -> Unit,
   onRetry: () -> Unit,
   navigateUp: () -> Unit,
 ) {
@@ -113,7 +113,7 @@ private fun PayoutAccountOverviewScreen(
           title = stringResource(string.PAYOUT_NO_PAYOUT_OPTIONS_TITLE),
           subTitle = stringResource(string.PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE),
           buttonText = stringResource(string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON),
-          onButtonClick = navigateToConnectPayment,
+          onButtonClick = navigateToTrustly,
           modifier = Modifier
             .weight(1f)
             .wrapContentHeight(),
@@ -260,7 +260,7 @@ private fun PreviewPayoutAccountOverviewScreen(
       PayoutAccountOverviewScreen(
         uiState = uiState,
         onConnectPayoutMethodClicked = {},
-        navigateToConnectPayment = {},
+        navigateToTrustly = {},
         onRetry = {},
         navigateUp = {},
       )
