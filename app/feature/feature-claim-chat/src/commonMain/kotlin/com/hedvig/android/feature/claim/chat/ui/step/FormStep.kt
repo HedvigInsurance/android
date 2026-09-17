@@ -404,7 +404,6 @@ private fun FormContent(
                   if (textValue.isNotEmpty()) {
                     val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + textValue
                     RoundCornersPill(
-                      onClick = null,
                       modifier = Modifier.clearAndSetSemantics {
                         contentDescription = description
                       },
@@ -780,7 +779,6 @@ private fun SentItemCard(
 ) {
   val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + "$itemTitle, $itemSubtitle"
   HedvigCard(
-    onClick = null,
     modifier = modifier.clearAndSetSemantics {
       contentDescription = description
     },

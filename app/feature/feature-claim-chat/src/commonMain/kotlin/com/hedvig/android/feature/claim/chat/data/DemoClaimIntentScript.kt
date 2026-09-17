@@ -73,6 +73,9 @@ internal class DemoClaimIntentScript {
     val taskStepId = StepId("demo-task")
     private val selectInsuranceStepId = StepId("demo-select-insurance")
     private val travellingStepId = StepId("demo-travelling")
+    private val whoStepId = StepId("demo-who")
+    private val whenStepId = StepId("demo-when")
+    private val whoElseStepId = StepId("demo-who-else")
     private val summaryStepId = StepId("demo-summary")
 
     /**
@@ -142,6 +145,58 @@ internal class DemoClaimIntentScript {
           ),
         ),
       ),
+      // Pills with nothing filled in: a tap answers the step, so there is no confirm button.
+      ClaimIntentStep(
+        id = whoStepId,
+        text = "Who does the claim concern?",
+        hint = null,
+        isRegrettable = true,
+        stepContent = StepContent.ContentSelect(
+          options = listOf(
+            StepContent.ContentSelect.Option(id = "me", title = "Myself"),
+            StepContent.ContentSelect.Option(id = "partner", title = "My partner"),
+            StepContent.ContentSelect.Option(id = "child", title = "My child"),
+          ),
+          selectedOptionId = null,
+          style = StepContent.ContentSelectStyle.PILL,
+          isSkippable = false,
+        ),
+      ),
+      // The same pills with an answer already on the step, which is the case that keeps its confirm button.
+      ClaimIntentStep(
+        id = whenStepId,
+        text = "When did it happen?",
+        hint = null,
+        isRegrettable = true,
+        stepContent = StepContent.ContentSelect(
+          options = listOf(
+            StepContent.ContentSelect.Option(id = "today", title = "Today"),
+            StepContent.ContentSelect.Option(id = "week", title = "This week"),
+            StepContent.ContentSelect.Option(id = "earlier", title = "Earlier"),
+          ),
+          selectedOptionId = "week",
+          style = StepContent.ContentSelectStyle.PILL,
+          isSkippable = false,
+        ),
+      ),
+      // Prefilled and skippable at once. This is the case that used to strand the member: the pills only
+      // selected, and with the confirm button gone there was nothing left but skip.
+      ClaimIntentStep(
+        id = whoElseStepId,
+        text = "Was anyone else affected?",
+        hint = null,
+        isRegrettable = true,
+        stepContent = StepContent.ContentSelect(
+          options = listOf(
+            StepContent.ContentSelect.Option(id = "nobody", title = "Nobody else"),
+            StepContent.ContentSelect.Option(id = "household", title = "Someone in my household"),
+            StepContent.ContentSelect.Option(id = "neighbour", title = "A neighbour"),
+          ),
+          selectedOptionId = "nobody",
+          style = StepContent.ContentSelectStyle.PILL,
+          isSkippable = true,
+        ),
+      ),
       ClaimIntentStep(
         id = travellingStepId,
         text = "Were you traveling at the time of the theft?",
@@ -154,7 +209,7 @@ internal class DemoClaimIntentScript {
           ),
           selectedOptionId = null,
           style = StepContent.ContentSelectStyle.BINARY,
-          isSkippable = false,
+          isSkippable = true,
         ),
       ),
       ClaimIntentStep(

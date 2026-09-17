@@ -943,7 +943,6 @@ private fun FreeTextInputSection(
 
       if (freeText != null) {
         RoundCornersPill(
-          onClick = null,
           modifier = Modifier.fillMaxWidth()
             .padding(start = 48.dp)
             .wrapContentWidth(Alignment.End)
