@@ -131,7 +131,8 @@ fun HedvigTabRow(
   val textMeasurer = rememberTextMeasurer(tabTitles.size)
   val layoutDirection = LocalLayoutDirection.current
   val density = LocalDensity.current
-  val (minItemWidth, fixedItemHeight) = remember(textMeasurer, tabTitles, density) {
+  val minimumTouchTargetSize = LocalMinimumInteractiveComponentSize.current
+  val (minItemWidth, fixedItemHeight) = remember(textMeasurer, tabTitles, density, minimumTouchTargetSize) {
     var width = 0
     var height = 0
     for (title in tabTitles) {
@@ -143,7 +144,12 @@ fun HedvigTabRow(
       val extraHorizontalSpace = tabInternalPadding.calculateStartPadding(layoutDirection)
         .plus(tabInternalPadding.calculateEndPadding(layoutDirection))
       val extraVerticalSpace = tabInternalPadding.calculateTopPadding() + tabInternalPadding.calculateBottomPadding()
-      DpSize(width.toDp() + extraHorizontalSpace, height.toDp() + extraVerticalSpace)
+      // Every tab is its own touch target, so the row cannot be shorter than the minimum even when
+      // the text and its padding would fit in less.
+      DpSize(
+        width.toDp() + extraHorizontalSpace,
+        (height.toDp() + extraVerticalSpace).coerceAtLeast(minimumTouchTargetSize),
+      )
     }
   }
   var indicatorOffset by rememberSaveable(stateSaver = IntOffset.Saver) { mutableStateOf(IntOffset(-1, -1)) }

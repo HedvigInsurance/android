@@ -221,12 +221,16 @@ private fun ButtonImpl(
 
   val shape = ButtonTokens.ContainerShape.value
   val glass = style.glassMaterial.takeIf { enabled }
+  // Sits ahead of the fill and glass drawing so that a button below the 48dp minimum touch target
+  // reserves the missing space around itself, while still being painted at the height its
+  // [ButtonSize] asks for.
+  val interactiveModifier = modifier.minimumInteractiveComponentSize()
   Surface(
     onClick = onClick,
     modifier = if (glass == null) {
-      modifier
+      interactiveModifier
     } else {
-      modifier.glassMaterial(glass, color, shape)
+      interactiveModifier.glassMaterial(glass, color, shape)
     },
     onClickLabel = onClickLabel,
     role = Role.Button,
