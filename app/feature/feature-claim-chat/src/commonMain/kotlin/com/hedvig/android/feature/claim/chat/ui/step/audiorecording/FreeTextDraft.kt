@@ -22,72 +22,36 @@ import androidx.compose.ui.text.input.TextFieldValue
  * the next keystroke in front of the answer.
  */
 @Stable
-internal class FreeTextDraftState(
-  initialValue: TextFieldValue = TextFieldValue(),
-  initialSessionId: String? = null,
-) {
+internal class FreeTextDraftState(initialValue: TextFieldValue = TextFieldValue()) {
   var value: TextFieldValue by mutableStateOf(initialValue)
 
-  /** The session the draft in hand belongs to, so a later one is not handed the previous answer. */
-  var sessionId: String? by mutableStateOf(initialSessionId)
-    private set
-
-  fun syncToSession(sessionId: String?, storedAnswer: String) {
-    val seed = freeTextDraftSeed(sessionId, this.sessionId, storedAnswer)
-    if (seed is FreeTextDraftSeed.Replace) {
-      // The caret goes after the seeded answer: an edited answer is there to be added to, and a field left
-      // to place its own would put the next keystroke in front of it.
-      value = TextFieldValue(seed.text, TextRange(seed.text.length))
-    }
-    this.sessionId = sessionId
-  }
-
   companion object {
+    /**
+     * A draft opened on [storedAnswer], with the caret after it rather than in front of it: an answer being
+     * edited is there to be added to, and a field left to place its own selection would start at index 0.
+     */
+    fun seededFrom(storedAnswer: String): FreeTextDraftState =
+      FreeTextDraftState(TextFieldValue(storedAnswer, TextRange(storedAnswer.length)))
+
     val Saver: Saver<FreeTextDraftState, Any> = listSaver(
-      save = { listOf(it.value.text, it.value.selection.start, it.value.selection.end, it.sessionId) },
-      restore = {
-        FreeTextDraftState(
-          initialValue = TextFieldValue(it[0] as String, TextRange(it[1] as Int, it[2] as Int)),
-          initialSessionId = it[3] as String?,
-        )
-      },
+      save = { listOf(it.value.text, it.value.selection.start, it.value.selection.end) },
+      restore = { FreeTextDraftState(TextFieldValue(it[0] as String, TextRange(it[1] as Int, it[2] as Int))) },
     )
   }
 }
 
-/** What a draft should hold now that the editor is open for [activeSessionId]. */
-internal sealed interface FreeTextDraftSeed {
-  /** The draft in hand belongs to this session, so whatever has been typed stands. */
-  data object Keep : FreeTextDraftSeed
-
-  data class Replace(val text: String) : FreeTextDraftSeed
-}
-
 /**
- * A session is one visit to the free text editor, named by the step being answered. It outlives the card
- * drawing it, so the answer is only ever seeded at its start: from the answer the step already holds, which
- * is what an edited or resumed step comes back with. Leaving the editor ends the session and drops the draft,
- * so the next step does not open on the previous one's answer.
- */
-internal fun freeTextDraftSeed(
-  activeSessionId: String?,
-  seededSessionId: String?,
-  storedAnswer: String,
-): FreeTextDraftSeed = when {
-  activeSessionId == seededSessionId -> FreeTextDraftSeed.Keep
-  activeSessionId == null -> FreeTextDraftSeed.Replace("")
-  else -> FreeTextDraftSeed.Replace(storedAnswer)
-}
-
-/**
- * [sessionId] names the step being answered while the editor is open, and is null whenever it is not.
+ * [sessionId] names the step being answered while the editor is open, and is null whenever it is not, which
+ * makes it exactly the thing a draft may not outlive.
+ *
+ * A session is one visit to the free text editor. Keying the draft on it draws the line in one place: an
+ * unchanged session is remembered through a configuration change, which is the rotation the two cards cannot
+ * survive on their own, while any change to it re-runs the factory and opens on the answer the step itself
+ * holds. Leaving the editor is such a change, so a draft that was cancelled is gone before the same step can
+ * be opened again, and so is moving on, so the next step never opens on the previous one's answer.
  */
 @Composable
-internal fun rememberFreeTextDraftState(sessionId: String?, storedAnswer: String): FreeTextDraftState {
-  val state = rememberSaveable(saver = FreeTextDraftState.Saver) { FreeTextDraftState() }
-  // Seeded during composition rather than from an effect: both cards read the draft in this same pass, and an
-  // effect would let them draw the previous session's answer for a frame first. Every call after the first of
-  // a session is a no-op, so this settles rather than feeding back into another composition.
-  state.syncToSession(sessionId, storedAnswer)
-  return state
-}
+internal fun rememberFreeTextDraftState(sessionId: String?, storedAnswer: String): FreeTextDraftState =
+  rememberSaveable(sessionId, saver = FreeTextDraftState.Saver) {
+    FreeTextDraftState.seededFrom(storedAnswer)
+  }
