@@ -33,7 +33,7 @@ query Onboarding {
         currencyCode
       }
     }
-    paymentMethods {
+    paymentMethods(version: 2) {
       payinMethods {
         status
         isDefault

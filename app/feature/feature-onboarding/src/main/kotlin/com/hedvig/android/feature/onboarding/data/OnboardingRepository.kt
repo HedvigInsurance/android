@@ -100,10 +100,7 @@ internal class OnboardingRepositoryImpl(
       },
       availablePayinProviders = member.paymentMethods.availableMethods
         .filter { it.supportsPayin }
-        .mapNotNull { it.provider.toOnboardingPayinProvider() }
-        // TODO: the backend does not list Swish or Trustly as available payin methods yet, so both
-        //  are offered unconditionally. Delete this fallback once it does.
-        .ifEmpty { listOf(OnboardingPayinProvider.Trustly, OnboardingPayinProvider.Swish) },
+        .mapNotNull { it.provider.toOnboardingPayinProvider() },
       crossSells = member.crossSellV2.otherCrossSells.map { crossSell ->
         OnboardingCrossSell(
           id = crossSell.id,
