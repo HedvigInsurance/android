@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigLiquidGlassButton
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
@@ -43,6 +44,45 @@ internal fun ShowcaseButton() {
             }
           }
           ButtonSizesRow(size, index == 0)
+        }
+      }
+      Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Box(modifier = Modifier.align(Alignment.CenterVertically)) {
+          LayoutWithoutPlacement(
+            sizeAdjustingContent = {
+              HedvigText(
+                text = ButtonDefaults.ButtonSize.entries.map { it.name }.maxBy { it.length },
+                style = HedvigTheme.typography.bodyMedium,
+              )
+            },
+          ) {
+            HedvigText(text = "Glass", style = HedvigTheme.typography.bodyMedium)
+          }
+        }
+        LiquidGlassButtonsRow()
+      }
+    }
+  }
+}
+
+/**
+ * Liquid glass buttons take no [ButtonDefaults.ButtonSize], so they get a row of their own rather
+ * than a column inside each size.
+ */
+@Composable
+private fun LiquidGlassButtonsRow() {
+  Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+    for (type in ShowcaseButtonType.entries) {
+      Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        for (glassStyle in ButtonDefaults.LiquidGlassButtonStyle.entries) {
+          HedvigLiquidGlassButton(
+            text = "Button label",
+            onClick = {},
+            enabled = type != ShowcaseButtonType.Disabled,
+            glassStyle = glassStyle,
+            isLoading = type == ShowcaseButtonType.Loading,
+            interactionSource = showcaseInteractionSource(type),
+          )
         }
       }
     }
@@ -90,25 +130,31 @@ private fun ShowcaseButton(
     buttonStyle = buttonStyle,
     buttonSize = buttonSize,
     isLoading = showcaseButtonType == ShowcaseButtonType.Loading,
-    interactionSource = if (showcaseButtonType == ShowcaseButtonType.Hover) {
-      remember {
-        object : MutableInteractionSource {
-          override val interactions: Flow<Interaction>
-            get() = flowOf(HoverInteraction.Enter())
-
-          override suspend fun emit(interaction: Interaction) {
-          }
-
-          override fun tryEmit(interaction: Interaction): Boolean {
-            return false
-          }
-        }
-      }
-    } else {
-      null
-    },
+    interactionSource = showcaseInteractionSource(showcaseButtonType),
     modifier = modifier,
   )
+}
+
+/** A source that reports a permanent hover, so the hover column renders in its hovered colors. */
+@Composable
+private fun showcaseInteractionSource(type: ShowcaseButtonType): MutableInteractionSource? {
+  return if (type == ShowcaseButtonType.Hover) {
+    remember {
+      object : MutableInteractionSource {
+        override val interactions: Flow<Interaction>
+          get() = flowOf(HoverInteraction.Enter())
+
+        override suspend fun emit(interaction: Interaction) {
+        }
+
+        override fun tryEmit(interaction: Interaction): Boolean {
+          return false
+        }
+      }
+    }
+  } else {
+    null
+  }
 }
 
 private enum class ShowcaseButtonType {

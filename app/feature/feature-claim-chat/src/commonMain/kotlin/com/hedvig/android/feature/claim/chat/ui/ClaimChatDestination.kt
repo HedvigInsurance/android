@@ -3,16 +3,18 @@ package com.hedvig.android.feature.claim.chat.ui
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -22,32 +24,48 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntSize
@@ -66,17 +84,14 @@ import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
-import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.design.system.hedvig.TopAppBarColors
-import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.design.system.hedvig.icon.ArrowDown
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.claim.chat.ClaimChatEvent
@@ -88,10 +103,10 @@ import com.hedvig.android.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.android.feature.claim.chat.data.ClaimChatErrorMessage
 import com.hedvig.android.feature.claim.chat.data.ClaimIntentOutcome
 import com.hedvig.android.feature.claim.chat.data.ClaimIntentStep
-import com.hedvig.android.feature.claim.chat.data.InformationSeverity
 import com.hedvig.android.feature.claim.chat.data.StepContent
 import com.hedvig.android.feature.claim.chat.data.StepId
 import com.hedvig.android.feature.claim.chat.ui.common.HelipadRiveAnimation
+import com.hedvig.android.feature.claim.chat.ui.common.RoundCornersPill
 import com.hedvig.android.feature.claim.chat.ui.step.ChatClaimSummaryBottomContent
 import com.hedvig.android.feature.claim.chat.ui.step.ChatClaimSummaryTopContent
 import com.hedvig.android.feature.claim.chat.ui.step.ContentSelectStep
@@ -101,13 +116,13 @@ import com.hedvig.android.feature.claim.chat.ui.step.TaskStepBottomContent
 import com.hedvig.android.feature.claim.chat.ui.step.TaskStepTopContent
 import com.hedvig.android.feature.claim.chat.ui.step.UploadFilesStep
 import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.AudioRecordingStep
+import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.FullScreenTextAnswer
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import hedvig.resources.A11Y_SCROLL_DOWN
 import hedvig.resources.CHAT_CONVERSATION_CLAIM_TITLE
 import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
-import hedvig.resources.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER
 import hedvig.resources.CLAIM_CHAT_EDIT_ANSWER_BUTTON
 import hedvig.resources.CLAIM_CHAT_EDIT_EXPLANATION
 import hedvig.resources.EMBARK_UPDATE_APP_BODY
@@ -119,6 +134,7 @@ import hedvig.resources.RESUME_CLAIM_LEAVE_CANCEL
 import hedvig.resources.RESUME_CLAIM_LEAVE_CONFIRM
 import hedvig.resources.RESUME_CLAIM_LEAVE_TITLE
 import hedvig.resources.Res
+import hedvig.resources.TALKBACK_CLAIM_CHAT_YOUR_ANSWER
 import hedvig.resources.claims_alert_body
 import hedvig.resources.claims_skip_button
 import hedvig.resources.general_cancel_button
@@ -239,38 +255,44 @@ private fun ClaimChatScreen(
   openAppSettings: () -> Unit,
   openPlayStore: () -> Unit,
 ) {
-  val currentFreeText = (uiState.currentStep?.stepContent as? StepContent.AudioRecording)
-    ?.recordingState.let { it as? AudioRecordingStepState.FreeTextDescription }
-    ?.freeText
-  FreeTextOverlay(
-    freeTextMaxLength = uiState.showFreeTextOverlay?.maxLength ?: 2000,
-    freeTextValue = currentFreeText,
-    freeTextHint = stringResource(Res.string.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER),
-    freeTextTitle = stringResource(Res.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
-    freeTextOnCancelClick = {
-      onEvent(ClaimChatEvent.CloseFreeChatOverlay)
-    },
-    freeTextOnSaveClick = { feedback ->
-      onEvent(ClaimChatEvent.UpdateFreeText(feedback))
-      onEvent(ClaimChatEvent.CloseFreeChatOverlay)
-    },
-    shouldShowOverlay = uiState.showFreeTextOverlay != null,
-    overlaidContent = {
-      ClaimChatScreenContent(
-        uiState = uiState,
-        onEvent = onEvent,
-        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-        openAppSettings = openAppSettings,
-        onNavigateToImageViewer = onNavigateToImageViewer,
-        navigateToDeflect = navigateToDeflect,
-        appPackageId = appPackageId,
-        imageLoader = imageLoader,
-        navigateUp = navigateUp,
-        navigateBack = navigateBack,
-        openPlayStore = openPlayStore,
-      )
-    },
+  ClaimChatScreenContent(
+    uiState = uiState,
+    onEvent = onEvent,
+    shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+    openAppSettings = openAppSettings,
+    onNavigateToImageViewer = onNavigateToImageViewer,
+    navigateToDeflect = navigateToDeflect,
+    appPackageId = appPackageId,
+    imageLoader = imageLoader,
+    navigateUp = navigateUp,
+    navigateBack = navigateBack,
+    openPlayStore = openPlayStore,
   )
+  // The inline card is the answer wherever it fits. It cannot fit above a landscape keyboard, which leaves
+  // around 34dp under the app bar, so those windows answer in the same fields filling the screen instead.
+  val freeTextRestrictions = uiState.showFreeTextOverlay
+  if (freeTextRestrictions != null) {
+    val recordingState = (uiState.currentStep?.stepContent as? StepContent.AudioRecording)
+      ?.recordingState as? AudioRecordingStepState.FreeTextDescription
+    FullScreenTextAnswer(
+      initialText = recordingState?.freeText.orEmpty(),
+      minLength = freeTextRestrictions.minLength,
+      maxLength = freeTextRestrictions.maxLength,
+      errorType = recordingState?.errorType,
+      hasError = recordingState?.hasError == true,
+      isSubmitting = uiState.currentContinueButtonLoading,
+      onCancel = {
+        onEvent(ClaimChatEvent.AudioRecording.CancelTextSubmission)
+        onEvent(ClaimChatEvent.CloseFreeChatOverlay)
+        uiState.currentStep?.id?.let { onEvent(ClaimChatEvent.AudioRecording.SwitchToAudioRecording(it)) }
+      },
+      onSave = { answer: String ->
+        onEvent(ClaimChatEvent.UpdateFreeText(answer))
+        onEvent(ClaimChatEvent.CloseFreeChatOverlay)
+        uiState.currentStep?.id?.let { onEvent(ClaimChatEvent.AudioRecording.SubmitTextInput(it)) }
+      },
+    )
+  }
 }
 
 @Composable
@@ -357,26 +379,46 @@ private fun ClaimChatScreenContent(
   }
   val lazyListState = rememberLazyListState()
   val coroutineScope = rememberCoroutineScope()
-  val showScrollArrow by remember(lazyListState, uiState.currentStep?.id) {
-    derivedStateOf {
-      val layoutInfo = lazyListState.layoutInfo
-      val lazyListItemsCount = layoutInfo.totalItemsCount
-      val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()
-      (lastVisibleItem?.index != lazyListItemsCount - 1 && lazyListItemsCount > 0)
-    }
-  }
-  // Track the size of the last item to scroll when it grows
-  val lastItemSize by remember(lazyListState, uiState.steps.lastOrNull()?.id) {
-    derivedStateOf {
-      val layoutInfo = lazyListState.layoutInfo
-      val lastItem = layoutInfo.visibleItemsInfo.lastOrNull()
-      if (lastItem?.index == uiState.steps.lastIndex) {
-        lastItem.size
-      } else {
-        null
+  // The conversation is scrolled back off the current question. The docked input stands down while that is
+  // true and the arrow back to the bottom takes its place, so the two never share the same corner.
+  //
+  // Driven by the gesture, not by `canScrollForward`. Reading the measurement would feed back on itself: the
+  // input standing down gives the list its height back, which can leave the list able to scroll forward again
+  // the moment the input returns, which stands it down again. That loop is visible as the arrow flickering,
+  // and it settles in a state where scrolling forward never brings the input back at all. Only a deliberate
+  // drag backwards sets this, and only arriving at the end of the list clears it.
+  var isScrolledBack by remember(lazyListState) { mutableStateOf(false) }
+  val dragBackThreshold = with(LocalDensity.current) { DRAG_BACK_BEFORE_INPUT_STANDS_DOWN.toPx() }
+  val standDownOnDragBack = remember(lazyListState, dragBackThreshold) {
+    object : NestedScrollConnection {
+      private var draggedBack = 0f
+
+      override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+        if (source != NestedScrollSource.UserInput) return Offset.Zero
+        // A positive y is a drag downwards, which walks the conversation backwards.
+        if (available.y > 0f) {
+          draggedBack += available.y
+          if (draggedBack > dragBackThreshold && lazyListState.canScrollForward) {
+            isScrolledBack = true
+          }
+        } else {
+          draggedBack = 0f
+        }
+        return Offset.Zero
       }
     }
   }
+  // Reaching the end is the one thing that brings the input back. Once back it stays, even though it makes the
+  // list scrollable again, because nothing but another drag backwards can stand it down.
+  LaunchedEffect(lazyListState) {
+    snapshotFlow { lazyListState.canScrollForward }.collect { canScrollForward ->
+      if (!canScrollForward) isScrolledBack = false
+    }
+  }
+  // The docked input changes height as the member types, opens a card or raises the keyboard, and every one of
+  // those takes height away from the list. Holding the list against its end keeps the question they are
+  // answering flush above the input instead of sliding behind it.
+  var dockedInputHeight by remember { mutableIntStateOf(0) }
 
   Box(modifier = modifier.fillMaxSize()) {
     Column(Modifier.matchParentSize()) {
@@ -421,6 +463,9 @@ private fun ClaimChatScreenContent(
       ClaimChatScrollableContent(
         uiState = uiState,
         lazyListState = lazyListState,
+        isScrolledBack = isScrolledBack,
+        standDownOnDragBack = standDownOnDragBack,
+        onDockedInputHeightChanged = { dockedInputHeight = it },
         onEvent = onEvent,
         shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
         onNavigateToImageViewer = onNavigateToImageViewer,
@@ -438,11 +483,19 @@ private fun ClaimChatScreenContent(
         },
       )
     }
-    if (showScrollArrow) {
+    // Not while the keyboard is up: the member is answering, not reading back, and the arrow would sit on
+    // top of the input's own buttons.
+    val isKeyboardUp = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+    if (isScrolledBack && !isKeyboardUp) {
       ScrollToBottomButton(
         onClick = {
           coroutineScope.launch {
-            lazyListState.animateScrollToItem(index = uiState.steps.lastIndex)
+            val lastIndex = uiState.steps.lastIndex
+            if (lastIndex < 0) return@launch
+            // One question can be taller than the viewport, so landing on the start of the last item is not
+            // the same as reaching the bottom. Asking for an offset past the end of the list and letting the
+            // list clamp it lands on the bottom whatever the item's height.
+            lazyListState.animateScrollToItem(lastIndex, scrollOffset = SCROLL_PAST_END_OF_LIST)
           }
         },
         modifier = Modifier.align(Alignment.BottomCenter).padding(
@@ -453,12 +506,17 @@ private fun ClaimChatScreenContent(
     }
   }
 
-  LaunchedEffect(lastItemSize) {
-    if (lastItemSize != null && uiState.steps.isNotEmpty()) {
-      lazyListState.animateScrollBy(
-        value = 3000f,
-        animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing),
-      )
+  // A new question ends the reading back: whatever the member had scrolled up to is now behind the answer they
+  // just gave. Without this the flag stays set until the list happens to reach its end, and the step that
+  // follows lands with its own controls below the fold and no scroll to bring them up.
+  LaunchedEffect(uiState.steps.lastIndex) {
+    isScrolledBack = false
+  }
+  // Instant, not animated: this fires on every keystroke that rewraps the input, and a 400ms animation on each
+  // one is the flicker. Against the end of the list it moves nothing, so there is nothing to animate.
+  LaunchedEffect(dockedInputHeight, uiState.steps.lastIndex) {
+    if (!isScrolledBack && uiState.steps.isNotEmpty()) {
+      lazyListState.scrollToItem(uiState.steps.lastIndex, scrollOffset = SCROLL_PAST_END_OF_LIST)
     }
   }
 }
@@ -467,6 +525,9 @@ private fun ClaimChatScreenContent(
 private fun ClaimChatScrollableContent(
   uiState: ClaimChatUiState.ClaimChat,
   lazyListState: LazyListState,
+  isScrolledBack: Boolean,
+  standDownOnDragBack: NestedScrollConnection,
+  onDockedInputHeightChanged: (Int) -> Unit,
   onEvent: (ClaimChatEvent) -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   onNavigateToImageViewer: (String, String) -> Unit,
@@ -490,57 +551,125 @@ private fun ClaimChatScrollableContent(
     steps = uiState.steps,
   )
 
-  Box(modifier, propagateMinConstraints = true) {
-    Box(
-      Modifier
-        .padding(contentPadding)
-        .onSizeChanged { size ->
-          lastItemHeightAdjustingState.onContainerSizeChanged(size)
-        },
-    )
-    LazyColumn(
-      state = lazyListState,
-      contentPadding = contentPadding,
-      verticalArrangement = Arrangement.spacedBy(spaceBetweenItems, Alignment.Top),
-    ) {
-      items(
-        items = uiState.steps,
-        key = { step -> step.id.value },
-        contentType = { it.stepContent::class },
-      ) { item ->
-        val isCurrentStep = item.id == uiState.steps.lastOrNull()?.id
-        val showAnimationSequence = isCurrentStep &&
-          item.stepContent !is StepContent.Task &&
-          !uiState.stepsWithShownAnimations.contains(item.id)
-        val isLastItem = item == uiState.steps.lastOrNull()
+  // Only the step that answers with text or voice is bottom attached, so that input stays reachable while
+  // reading back through the conversation. Every other step keeps its actions inline in the transcript.
+  val bottomAttachedStep = uiState.steps.lastOrNull()?.takeIf { it.stepContent is StepContent.AudioRecording }
+  // When an input is attached it carries the bottom inset, so the list stops short of it.
+  val listContentPadding = if (bottomAttachedStep == null) {
+    contentPadding
+  } else {
+    WindowInsets.safeDrawing
+      .only(WindowInsetsSides.Horizontal)
+      .asPaddingValues()
+      .plus(PaddingValues(16.dp))
+  }
 
-        StepContentSection(
-          stepItem = item,
-          isCurrentStep = isCurrentStep,
-          showAnimationSequence = showAnimationSequence,
-          currentContinueButtonLoading = uiState.currentContinueButtonLoading,
-          currentSkipButtonLoading = uiState.currentSkipButtonLoading,
-          onEvent = onEvent,
-          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-          onNavigateToImageViewer = onNavigateToImageViewer,
-          navigateToDeflect = navigateToDeflect,
-          appPackageId = appPackageId,
-          imageLoader = imageLoader,
-          openAppSettings = openAppSettings,
-          onResponseHeightChanged = { size ->
-            lastItemHeightAdjustingState.onItemHeightChanged(item.id, size)
-          },
-          modifier = if (isLastItem) {
-            Modifier.requiredHeightIn(lastItemHeightAdjustingState.preferredMinHeightForFullScreenItem)
-          } else {
-            Modifier
-          },
-          closeFlow = closeFlow,
+  BoxWithConstraints(modifier, propagateMinConstraints = true) {
+    val availableHeight = maxHeight
+    Column {
+      Box(Modifier.weight(1f), propagateMinConstraints = true) {
+        Box(
+          Modifier
+            .padding(contentPadding)
+            .onSizeChanged { size ->
+              lastItemHeightAdjustingState.onContainerSizeChanged(size)
+            },
         )
+        LazyColumn(
+          state = lazyListState,
+          modifier = Modifier.nestedScroll(standDownOnDragBack),
+          contentPadding = listContentPadding,
+          verticalArrangement = Arrangement.spacedBy(spaceBetweenItems, Alignment.Top),
+        ) {
+          items(
+            items = uiState.steps,
+            key = { step -> step.id.value },
+            contentType = { it.stepContent::class },
+          ) { item ->
+            val isCurrentStep = item.id == uiState.steps.lastOrNull()?.id
+            val showAnimationSequence = isCurrentStep &&
+              item.stepContent !is StepContent.Task &&
+              !uiState.stepsWithShownAnimations.contains(item.id)
+            val isLastItem = item == uiState.steps.lastOrNull()
+            val isBottomAttached = item.id == bottomAttachedStep?.id
+
+            StepContentSection(
+              stepItem = item,
+              isCurrentStep = isCurrentStep,
+              showAnimationSequence = showAnimationSequence,
+              renderBottomContent = !isBottomAttached,
+              currentContinueButtonLoading = uiState.currentContinueButtonLoading,
+              currentSkipButtonLoading = uiState.currentSkipButtonLoading,
+              onEvent = onEvent,
+              shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+              onNavigateToImageViewer = onNavigateToImageViewer,
+              navigateToDeflect = navigateToDeflect,
+              appPackageId = appPackageId,
+              imageLoader = imageLoader,
+              openAppSettings = openAppSettings,
+              onResponseHeightChanged = { size ->
+                lastItemHeightAdjustingState.onItemHeightChanged(item.id, size)
+              },
+              modifier = if (isLastItem) {
+                Modifier.requiredHeightIn(lastItemHeightAdjustingState.preferredMinHeightForFullScreenItem)
+              } else {
+                Modifier
+              },
+              closeFlow = closeFlow,
+            )
+          }
+        }
+      }
+      AnimatedVisibility(
+        visible = bottomAttachedStep != null && !isScrolledBack,
+        enter = slideInVertically { it } + fadeIn(),
+        exit = slideOutVertically { it } + fadeOut(),
+      ) {
+        Box(
+          Modifier
+            .onSizeChanged { onDockedInputHeightChanged(it.height) }
+            // A Column measures an unweighted child against an unbounded height, so without this the input is
+            // free to lay out taller than the screen and is then simply cut off. It is capped instead, and
+            // scrolls within the cap, which keeps every control reachable however little room is left. The
+            // keyboard makes that room small: the inset below is part of the capped height, not extra to it.
+            .heightIn(max = availableHeight)
+            // safeDrawing already carries the keyboard, so this is the bottom inset in full: it resolves to the
+            // navigation bar with the keyboard down and to the keyboard with it up. Adding imePadding on top of
+            // it would count the keyboard twice and lift the card a whole keyboard clear of where it belongs.
+            .padding(contentPadding),
+        ) {
+          // Keyed on the step: this sits outside the list, so without it the input's own state (which card is
+          // open, what has been typed) would carry over from one step to the next.
+          val attached = bottomAttachedStep ?: return@AnimatedVisibility
+          key(attached.id) {
+            StepBottomContent(
+              modifier = Modifier.verticalScroll(rememberScrollState()),
+              stepItem = attached,
+              isCurrentStep = true,
+              currentContinueButtonLoading = uiState.currentContinueButtonLoading,
+              currentSkipButtonLoading = uiState.currentSkipButtonLoading,
+              onEvent = onEvent,
+              shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+              onNavigateToImageViewer = onNavigateToImageViewer,
+              navigateToDeflect = navigateToDeflect,
+              appPackageId = appPackageId,
+              imageLoader = imageLoader,
+              openAppSettings = openAppSettings,
+              closeFlow = closeFlow,
+            )
+          }
+        }
       }
     }
   }
 }
+
+// Far enough that a nudge or an overscroll settle does not stand the input down, short enough that a deliberate
+// look back does.
+private val DRAG_BACK_BEFORE_INPUT_STANDS_DOWN = 24.dp
+
+// Any offset past the end of the last item; the list clamps it to the bottom.
+private const val SCROLL_PAST_END_OF_LIST = 100_000
 
 @Composable
 private fun ScrollToBottomButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
@@ -575,6 +704,7 @@ private fun StepContentSection(
   stepItem: ClaimIntentStep,
   isCurrentStep: Boolean,
   showAnimationSequence: Boolean,
+  renderBottomContent: Boolean,
   currentContinueButtonLoading: Boolean,
   currentSkipButtonLoading: Boolean,
   onEvent: (ClaimChatEvent) -> Unit,
@@ -642,7 +772,7 @@ private fun StepContentSection(
     }
 
     AnimatedVisibility(
-      visible = showBottomContent && !isAnimationInProcess,
+      visible = renderBottomContent && showBottomContent && !isAnimationInProcess,
       enter = fadeIn(animationSpec = tween(bottomContentAnimationDuration)),
       exit = ExitTransition.None,
     ) {
@@ -678,15 +808,12 @@ private fun StepTopContent(
   isCurrentStep: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  val hint = stepItem.hint?.let {
-    "\n\n$it"
-  }
-  val stepItemText = when {
-    stepItem.text != null && hint != null -> stepItem.text + hint
-    stepItem.text != null -> stepItem.text
-    hint != null -> hint
-    else -> null
-  }
+  // A notice is a message like any other, so it reads as one paragraph of the step's text rather than as a card
+  // bolted underneath it.
+  val notice = (stepItem.stepContent as? StepContent.Information)?.notice
+  val stepItemText = listOfNotNull(stepItem.text, notice, stepItem.hint)
+    .ifEmpty { null }
+    ?.joinToString("\n\n")
 
   Column(modifier) {
     val density = LocalDensity.current
@@ -743,23 +870,6 @@ private fun StepTopContent(
         isLastStep = isCurrentStep,
       )
       Spacer(Modifier.height(4.dp))
-    }
-
-    if (stepItem.stepContent is StepContent.Information) {
-      if (isAnimationComplete) {
-        val priority = when (stepItem.stepContent.severity) {
-          InformationSeverity.Critical -> NotificationDefaults.NotificationPriority.Error
-          InformationSeverity.Info -> NotificationDefaults.NotificationPriority.InfoInline
-        }
-        Spacer(Modifier.height(16.dp))
-        HedvigNotificationCard(
-          message = stepItem.stepContent.notice,
-          priority = priority,
-          withIcon = true,
-          modifier = Modifier.fillMaxWidth(),
-        )
-        Spacer(Modifier.height(4.dp))
-      }
     }
 
     AnimatedVisibility(
@@ -954,7 +1064,6 @@ private fun StepBottomContent(
       }
 
       is StepContent.Information -> {
-        // Only the current step may be answered; a past step's notice keeps its top content but loses its button.
         if (isCurrentStep) {
           HedvigButton(
             modifier = Modifier.fillMaxWidth(),
@@ -965,6 +1074,20 @@ private fun StepBottomContent(
             enabled = !currentContinueButtonLoading,
             isLoading = currentContinueButtonLoading,
           )
+        } else {
+          // Acknowledging is an answer, so it stays in the log as one instead of the button leaving nothing behind.
+          val buttonTitle = stepItem.stepContent.buttonTitle
+          val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + buttonTitle
+          RoundCornersPill(
+            modifier = Modifier
+              .fillMaxWidth()
+              .wrapContentWidth(Alignment.End)
+              .clearAndSetSemantics {
+                contentDescription = description
+              },
+          ) {
+            HedvigText(buttonTitle)
+          }
         }
       }
     }

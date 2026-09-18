@@ -163,7 +163,7 @@ data class PriceInfoForBottomSheet(
 )
 
 @Composable
-fun <T> HedvigBottomSheet(
+fun <T : Any> HedvigBottomSheet(
   hedvigBottomSheetState: HedvigBottomSheetState<T>,
   modifier: Modifier = Modifier,
   contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp),
@@ -196,12 +196,12 @@ fun HedvigBottomSheetState<Unit>.show() {
 }
 
 @Composable
-fun <T> rememberHedvigBottomSheetState(): HedvigBottomSheetState<T> {
+fun <T : Any> rememberHedvigBottomSheetState(): HedvigBottomSheetState<T> {
   return rememberInternalHedvigBottomSheetState()
 }
 
 @Composable
-private fun <T> InternalHedvigBottomSheet(
+private fun <T : Any> InternalHedvigBottomSheet(
   onDismissRequest: () -> Unit,
   sheetState: HedvigBottomSheetState<T>,
   contentPadding: PaddingValues,

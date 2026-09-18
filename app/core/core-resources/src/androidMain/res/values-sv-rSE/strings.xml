@@ -225,6 +225,7 @@
   <string name="CLAIMS_TYPE_OF_DAMAGE_INFO_TEXT">Beskriv din skada så detaljerat som möjligt så att vi kan erbjuda dig bästa möjliga hjälp.</string>
   <string name="CLAIMS_USE_AUDIO_RECORDING">Gör röstinspelning</string>
   <string name="CLAIMS_USE_TEXT_INSTEAD">Beskriv i text</string>
+  <string name="CLAIMS_VOICE_RECORDING_SENDING">Skickar...</string>
   <string name="CLAIMS_YOUR_CLAIM">Din skadeanmälan</string>
   <string name="CLAIM_CHAT_AUDIO_RECORDING_LABEL">Röstinspelning</string>
   <string name="CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE">Annat föremål</string>
@@ -276,7 +277,9 @@
   <string name="CLAIM_CHAT_TITLE">Skadeanmälan</string>
   <string name="CLAIM_CHAT_UNKNOWN_STEP">Unknown step</string>
   <string name="CLAIM_CHAT_USE_AUDIO">Spela in med röst</string>
+  <string name="CLAIM_CHAT_USE_AUDIO_SHORT">Spela in</string>
   <string name="CLAIM_CHAT_USE_TEXT_INPUT">Beskriv i text</string>
+  <string name="CLAIM_CHAT_USE_TEXT_INPUT_SHORT">Skriv</string>
   <string name="CLAIM_DETAILS_DATE_OF_ACCIDENT">Händelsedatum</string>
   <string name="CLAIM_FLOW_CHAT_SUBMIT_CLAIM_BUTTON">Skicka in din skadeanmälan</string>
   <string name="CLAIM_TRIAGING_ABOUT_TITILE">Vilken försäkring gäller det?</string>

@@ -16,13 +16,17 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import octopus.ClaimIntentStartMutation
 
+internal interface StartClaimIntentUseCase {
+  suspend fun invoke(developmentFlow: Boolean): Either<ClaimChatErrorMessage, ClaimIntent>
+}
+
 @SingleIn(AppScope::class)
 @Inject
-internal class StartClaimIntentUseCase(
+internal class StartClaimIntentUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
-) {
-  suspend fun invoke(developmentFlow: Boolean): Either<ClaimChatErrorMessage, ClaimIntent> {
+) : StartClaimIntentUseCase {
+  override suspend fun invoke(developmentFlow: Boolean): Either<ClaimChatErrorMessage, ClaimIntent> {
     return either {
       apolloClient
         .mutation(

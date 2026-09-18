@@ -26,7 +26,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productvariant.AddonVariant
@@ -87,7 +89,9 @@ internal fun CoverageTab(
         bottomSheetState.show(insurableLimit)
       },
     )
-    Spacer(Modifier.height(16.dp))
+    if (insurableLimits.isNotEmpty()) {
+      Spacer(Modifier.height(16.dp))
+    }
     if (perils.isNotEmpty()) {
       PerilList(
         perilItems = perils.map {
@@ -198,11 +202,13 @@ private fun ColumnScope.InsurableLimitSection(
 
 @HedvigPreview
 @Composable
-private fun PreviewCoverageTab() {
+private fun PreviewCoverageTab(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) emptyLimits: Boolean,
+) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       CoverageTab(
-        previewInsurableLimits,
+        if (emptyLimits) listOf() else previewInsurableLimits,
         previewPerils,
         listOf(
           Addon(fakeAddonVariant, UiMoney(19.0, UiCurrencyCode.SEK)),

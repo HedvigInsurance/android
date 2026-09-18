@@ -53,6 +53,7 @@ import com.hedvig.android.app.navigation.ScreenParameterExtractor
 import com.hedvig.android.app.navigation.hedvigEntryProvider
 import com.hedvig.android.app.navigation.screenName
 import com.hedvig.android.app.navigation.shouldFadeThrough
+import com.hedvig.android.app.navigation.withHedvigContentKeys
 import com.hedvig.android.app.urihandler.AuthorizationCodeUriHandler
 import com.hedvig.android.app.urihandler.DeepLinkFirstUriHandler
 import com.hedvig.android.app.urihandler.SafeAndroidUriHandler
@@ -219,23 +220,25 @@ internal fun HedvigApp(
                     transitionSpec = hedvigTransitionSpec(backstackController, density),
                     popTransitionSpec = popSpec,
                     predictivePopTransitionSpec = { popSpec() },
-                    entryProvider = entryProvider {
-                      hedvigEntryProvider(
-                        backstack = backstackController,
-                        scope = scope,
-                        windowSizeClass = windowSizeClass,
-                        memberIdService = memberIdService,
-                        globalSnackBarState = globalSnackBarState,
-                        externalNavigator = externalNavigator,
-                        androidAppHost = androidAppHost,
-                        openUrl = authorizationCodeUriHandler::openUri,
-                        openCrossSellUrl = authorizationCodeUriHandler::openUri,
-                        imageLoader = imageLoader,
-                        languageService = languageService,
-                        hedvigBuildConstants = hedvigBuildConstants,
-                        resetOnboardingSeenUseCase = resetOnboardingSeenUseCase,
-                      )
-                    },
+                    entryProvider = withHedvigContentKeys(
+                      entryProvider {
+                        hedvigEntryProvider(
+                          backstack = backstackController,
+                          scope = scope,
+                          windowSizeClass = windowSizeClass,
+                          memberIdService = memberIdService,
+                          globalSnackBarState = globalSnackBarState,
+                          externalNavigator = externalNavigator,
+                          androidAppHost = androidAppHost,
+                          openUrl = authorizationCodeUriHandler::openUri,
+                          openCrossSellUrl = authorizationCodeUriHandler::openUri,
+                          imageLoader = imageLoader,
+                          languageService = languageService,
+                          hedvigBuildConstants = hedvigBuildConstants,
+                          resetOnboardingSeenUseCase = resetOnboardingSeenUseCase,
+                        )
+                      },
+                    ),
                   )
                 }
               }

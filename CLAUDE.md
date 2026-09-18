@@ -188,7 +188,22 @@ A no-arg ViewModel uses `@Inject` + `@HedvigViewModel(ActivityRetainedScope::cla
 
 The code the processor generates is always `public`, even though the VM is usually `internal`. This is required: Metro only discovers cross-module contributions whose `metro/hints` marker is public, so an `internal` generated contribution is silently dropped from `:app`'s graph and surfaces at runtime as `IllegalArgumentException: Unknown model class …`. Don't "fix" the generated wrapper to be `internal` — see `docs/architecture/navigation-and-di.md` §I.3.1.
 
-**Demo mode** is the one place we need two implementations of the same type. Use the `Provider<T>` fun interface and a `ProdOrDemoProvider<T>` (always `@SingleIn(AppScope::class)`), which picks `demoImpl` vs `prodImpl` off `DemoManager`. Inject `Provider<T>` and call `.provide()`. Do **not** reach for `Provider<T>` for anything else.
+**Demo mode** is the one place we need two implementations of the same type. Extend `DemoSwitcher<T>` (always `@SingleIn(AppScope::class)`), which picks `demoImpl` vs `prodImpl` off `DemoManager`. The switcher implements `T` itself and forwards each member through `pick()` (suspend members) or `pickFlow { }` (Flow-returning members), so consumers inject the plain `T` and never learn demo mode exists:
+
+```kotlin
+@Inject
+@SingleIn(AppScope::class)
+@ContributesBinding(AppScope::class, binding = binding<GetHomeDataUseCase>())
+internal class SwitchingGetHomeDataUseCase(
+  override val demoManager: DemoManager,
+  override val prodImpl: GetHomeDataUseCaseImpl,
+  override val demoImpl: GetHomeDataUseCaseDemo,
+) : GetHomeDataUseCase, DemoSwitcher<GetHomeDataUseCase>() {
+  override fun invoke(forceNetworkFetch: Boolean) = pickFlow { it.invoke(forceNetworkFetch) }
+}
+```
+
+**The `Switching` class carries the only `@ContributesBinding` for that type.** Neither the prod `Impl` nor the `Demo` is bound directly; binding either one too produces a duplicate binding in the graph.
 
 **WorkManager** workers are built through `MetroWorkerFactory`, a multibound `Map<KClass<out ListenableWorker>, ChildWorkerFactory>`. A worker contributes an `@AssistedFactory` `ChildWorkerFactory` keyed with `@WorkerKey`.
 
@@ -479,6 +494,47 @@ Configuration in `.editorconfig`:
 - **Destinations / nav keys:** `{Feature}Key` (e.g. `InsurancesKey`, `ChatKey`)
 - **Entry functions:** `{feature}Entries`
 - **Use cases:** `{Action}{Domain}UseCase` (e.g., `GetHomeDataUseCase`)
+
+### Imports
+
+**Import the type, never the namespace.** An import may shorten a qualified reference only when the
+short name still says what it is to someone reading that line cold, without scrolling to the import
+list. Sealed subclasses, enum entries and other types pass that test. A member reached through a
+receiver that carries the meaning does not.
+
+Always allowed (this is the house style, ~1200 such imports exist):
+
+```kotlin
+import com.hedvig.android.feature.home.home.ui.HomeUiState.Success   // `is Success ->` reads fine
+import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.TopEnd
+import kotlin.time.Duration.Companion.seconds                        // enables the `5.seconds` idiom
+```
+
+Never allowed, because the receiver is the meaning:
+
+```kotlin
+import hedvig.resources.Res.string      // ❌ `stringResource(string.FOO)`  → use `Res.string.FOO`
+import hedvig.resources.Res.drawable    // ❌ `painterResource(drawable.x)` → use `Res.drawable.x`
+import kotlin.time.Clock.System         // ❌ `System.now()`               → use `Clock.System.now()`
+import ...hedvig.TooltipDefaults.defaultStyle  // ❌ `defaultStyle` alone names nothing
+```
+
+`Res` and `Clock` are the two that come up most: 193 files import `hedvig.resources.Res` plainly and
+that is the standard. `System.now()` additionally reads as `java.lang.System` to anyone skimming.
+
+**Separately: never make an import-only change to a line you are not otherwise editing.** Converting
+existing `HomeEvent.RefreshData` call sites to a bare `RefreshData` (or the reverse) is a whole-file
+rewrite disguised as a diff. It buries the real change under churn and makes review and `git blame`
+worse for no behavioural gain.
+
+**Why:** both halves of this rule protect the reader. The first protects whoever reads the line
+later, the second protects whoever reviews the PR now. PR #3100 was one screen refactor carrying 29
+gratuitous new imports and ~60 rewritten call sites, and the formatting noise overshadowed the
+actual work.
+
+**How to apply:** if you are touching a line for a real reason, use the correct form. If you are not
+touching it, leave its qualification exactly as it is. Import cleanups that are genuinely wanted go
+in their own commit.
 
 ### Comments
 

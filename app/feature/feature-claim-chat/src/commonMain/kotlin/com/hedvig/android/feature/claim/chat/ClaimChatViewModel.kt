@@ -57,6 +57,7 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
 import kotlin.time.Instant
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -68,6 +69,10 @@ internal sealed interface ClaimChatEvent {
     data class SubmitAudioFile(override val id: StepId) : AudioRecording
 
     data class SubmitTextInput(override val id: StepId) : AudioRecording
+
+    data object CancelTextSubmission : AudioRecording {
+      override val id: StepId get() = error("Cancelling is not tied to a step")
+    }
 
     data class StartRecording(override val id: StepId) : AudioRecording
 
@@ -260,6 +265,10 @@ internal class ClaimChatPresenter(
     }
     var showFreeTextOverlay by remember { mutableStateOf<FreeTextRestrictions?>(null) }
     var currentContinueButtonLoading by remember { mutableStateOf(false) }
+    // Held so the member can call off an answer that is taking too long. Cancelling the job cancels the
+    // call it is waiting on; an answer the backend has already taken stands, which is the best a client can
+    // promise here.
+    var submitTextJob by remember { mutableStateOf<Job?>(null) }
     var currentSkipButtonLoading by remember { mutableStateOf(false) }
     var errorSubmittingStep by remember { mutableStateOf<ClaimChatErrorMessage?>(null) }
     var showConfirmEditDialogForStep by remember { mutableStateOf<StepId?>(null) }
@@ -507,13 +516,19 @@ internal class ClaimChatPresenter(
               }
             }
 
+            ClaimChatEvent.AudioRecording.CancelTextSubmission -> {
+              submitTextJob?.cancel()
+              submitTextJob = null
+              currentContinueButtonLoading = false
+            }
+
             is ClaimChatEvent.AudioRecording.SubmitTextInput -> {
               val recordingState = steps.find { it.id == event.id }
                 ?.stepContent.let { it as? StepContent.AudioRecording }
                 ?.recordingState as? FreeTextDescription
               val freeTextInput = recordingState?.freeText ?: return@CollectEvents
               currentContinueButtonLoading = true
-              launch {
+              submitTextJob = launch {
                 submitAudioRecordingUseCase
                   .invoke(event.id, freeTextInput)
                   .fold(
@@ -561,10 +576,6 @@ internal class ClaimChatPresenter(
 
             is ClaimChatEvent.AudioRecording.SwitchToFreeText -> {
               steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
-                showFreeTextOverlay = FreeTextRestrictions(
-                  content.freeTextMinLength,
-                  content.freeTextMaxLength,
-                )
                 step.copy(
                   stepContent = content.copy(
                     recordingState = FreeTextDescription(

@@ -10,6 +10,7 @@ hedvig {
 dependencies {
   api(libs.kotlinx.datetime)
   api(projects.authCoreApi)
+  api(libs.ktor.client.core)
   api(projects.authlib)
 
   implementation(libs.androidx.datastore.core)
@@ -25,6 +26,7 @@ dependencies {
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
+  testImplementation(libs.ktor.client.mock)
   testImplementation(libs.turbine)
   testImplementation(projects.authCoreTest)
   testImplementation(projects.coreDatastoreTest)

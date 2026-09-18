@@ -225,6 +225,7 @@
   <string name="CLAIMS_TYPE_OF_DAMAGE_INFO_TEXT">Please provide a detailed description of the damage to make it easier for us to handle your claim.</string>
   <string name="CLAIMS_USE_AUDIO_RECORDING">Use voice recording</string>
   <string name="CLAIMS_USE_TEXT_INSTEAD">Describe using text</string>
+  <string name="CLAIMS_VOICE_RECORDING_SENDING">Sending...</string>
   <string name="CLAIMS_YOUR_CLAIM">Your claim</string>
   <string name="CLAIM_CHAT_AUDIO_RECORDING_LABEL">Voice recording</string>
   <string name="CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE">Other item</string>
@@ -276,7 +277,9 @@
   <string name="CLAIM_CHAT_TITLE">Claim</string>
   <string name="CLAIM_CHAT_UNKNOWN_STEP">Unknown step</string>
   <string name="CLAIM_CHAT_USE_AUDIO">Record with voice</string>
+  <string name="CLAIM_CHAT_USE_AUDIO_SHORT">Record</string>
   <string name="CLAIM_CHAT_USE_TEXT_INPUT">Describe using text</string>
+  <string name="CLAIM_CHAT_USE_TEXT_INPUT_SHORT">Write</string>
   <string name="CLAIM_DETAILS_DATE_OF_ACCIDENT">Date of occurrence</string>
   <string name="CLAIM_FLOW_CHAT_SUBMIT_CLAIM_BUTTON">Submit your claim</string>
   <string name="CLAIM_TRIAGING_ABOUT_TITILE">What insurance is it about?</string>
