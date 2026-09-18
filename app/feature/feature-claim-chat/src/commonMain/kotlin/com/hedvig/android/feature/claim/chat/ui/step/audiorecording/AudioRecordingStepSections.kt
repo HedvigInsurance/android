@@ -588,7 +588,10 @@ private fun TextAnswerContent(
     HedvigTextField(
       textValue = draft.value,
       onValueChange = { if (it.text.length <= maxLength) draft.value = it },
-      labelText = "",
+      // The card writes the label itself, above the field and on the card's own left edge, which is where the
+      // design puts it. A label inside the field as well would reserve a second, empty row above the answer,
+      // pushing the answer to the bottom of the field while the clear button stayed centred on the whole of it.
+      labelText = null,
       textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Small,
       singleLine = false,
       // The field starts at one line and grows with the answer, then scrolls inside itself rather than

@@ -66,7 +66,13 @@ import org.jetbrains.compose.resources.stringResource
 fun HedvigTextField(
   text: String,
   onValueChange: (String) -> Unit,
-  labelText: String,
+  /**
+   * The field's own label, laid out inside the field on the row above the text and standing in for the text while
+   * the field is empty and unfocused. Null leaves the field holding nothing but its text: no row is reserved above
+   * it, so the text keeps the middle of the field and shares a centre line with the trailing content. Pass null
+   * where the surrounding surface already names the field, and let that name be the only one.
+   */
+  labelText: String?,
   textFieldSize: HedvigTextFieldDefaults.TextFieldSize,
   modifier: Modifier = Modifier,
   suffix: @Composable (() -> Unit)? = null,
@@ -134,7 +140,11 @@ fun HedvigTextField(
     ),
     enabled = enabled,
     readOnly = readOnly,
-    label = { HedvigText(text = labelText) },
+    label = if (labelText != null) {
+      { HedvigText(text = labelText) }
+    } else {
+      null
+    },
     suffix = suffix,
     leadingContent = leadingContent,
     trailingContent = TrailingContent(
@@ -209,7 +219,7 @@ private fun TrailingContent(
 fun HedvigTextField(
   textValue: TextFieldValue,
   onValueChange: (TextFieldValue) -> Unit,
-  labelText: String,
+  labelText: String?,
   textFieldSize: HedvigTextFieldDefaults.TextFieldSize,
   modifier: Modifier = Modifier,
   suffix: @Composable (() -> Unit)? = null,
@@ -258,7 +268,11 @@ fun HedvigTextField(
     modifier = modifier,
     enabled = enabled,
     readOnly = readOnly,
-    label = { HedvigText(text = labelText) },
+    label = if (labelText != null) {
+      { HedvigText(text = labelText) }
+    } else {
+      null
+    },
     suffix = suffix,
     leadingContent = leadingContent,
     trailingContent = TrailingContent(
@@ -295,7 +309,7 @@ fun HedvigTextField(
 fun HedvigTextField(
   text: String,
   onValueChange: (String) -> Unit,
-  labelText: String,
+  labelText: String?,
   textFieldSize: HedvigTextFieldDefaults.TextFieldSize,
   supportingText: @Composable (() -> Unit)?,
   modifier: Modifier = Modifier,
@@ -321,7 +335,11 @@ fun HedvigTextField(
     modifier = modifier,
     enabled = enabled,
     readOnly = readOnly,
-    label = { HedvigText(text = labelText) },
+    label = if (labelText != null) {
+      { HedvigText(text = labelText) }
+    } else {
+      null
+    },
     suffix = suffix,
     leadingContent = leadingContent,
     supportingText = supportingText,
@@ -340,7 +358,7 @@ fun HedvigTextField(
 @Composable
 fun HedvigTextField(
   state: TextFieldState,
-  labelText: String,
+  labelText: String?,
   textFieldSize: HedvigTextFieldDefaults.TextFieldSize,
   modifier: Modifier = Modifier,
   suffix: @Composable (() -> Unit)? = null,
@@ -373,7 +391,11 @@ fun HedvigTextField(
     modifier = modifier,
     enabled = enabled,
     readOnly = readOnly,
-    label = { HedvigText(text = labelText) },
+    label = if (labelText != null) {
+      { HedvigText(text = labelText) }
+    } else {
+      null
+    },
     suffix = suffix,
     leadingContent = leadingContent,
     trailingContent = TrailingContent(
