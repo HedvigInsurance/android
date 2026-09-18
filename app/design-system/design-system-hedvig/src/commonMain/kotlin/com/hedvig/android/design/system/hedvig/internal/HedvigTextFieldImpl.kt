@@ -86,7 +86,12 @@ internal fun HedvigDecorationBox(
   val isFocused = interactionSource.collectIsFocusedAsState().value
   val inputPhase = when {
     isFocused -> InputPhase.Focused
-    transformedText.isEmpty() -> InputPhase.UnfocusedEmpty
+
+    // The empty phase exists to let the label take the text's place and its type scale. Without a label there is
+    // nothing to put there, and the phase would lay the text out at zero height and collapse the field instead, so
+    // a field with no label keeps one layout throughout.
+    transformedText.isEmpty() && label != null -> InputPhase.UnfocusedEmpty
+
     else -> InputPhase.UnfocusedNotEmpty
   }
 
