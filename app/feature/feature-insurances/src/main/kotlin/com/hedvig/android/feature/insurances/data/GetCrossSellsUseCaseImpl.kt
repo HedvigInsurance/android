@@ -20,7 +20,7 @@ import octopus.CrossSellsQuery
 internal class GetCrossSellsUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetCrossSellsUseCase {
-  override suspend fun invoke(): Either<ErrorMessage, CrossSellResult> {
+  override suspend fun invoke(): Either<ErrorMessage, List<CrossSell>> {
     return either {
       val result = apolloClient
         .query(CrossSellsQuery())
@@ -45,12 +45,7 @@ internal class GetCrossSellsUseCaseImpl(
           ),
         )
       }
-      CrossSellResult(result.currentMember.crossSellV2.discountAvailable, crossSells)
+      crossSells
     }
   }
 }
-
-data class CrossSellResult(
-  val hasDiscounts: Boolean,
-  val crossSells: List<CrossSell>,
-)
