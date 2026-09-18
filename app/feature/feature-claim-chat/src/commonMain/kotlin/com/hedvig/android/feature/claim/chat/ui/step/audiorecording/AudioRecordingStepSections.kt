@@ -177,6 +177,7 @@ internal fun AudioRecordingStep(
   submitAudioFile: () -> Unit,
   stopRecording: () -> Unit,
   redoRecording: () -> Unit,
+  discardRecording: () -> Unit,
   onSkip: () -> Unit,
   isCurrentStep: Boolean,
   continueButtonLoading: Boolean,
@@ -197,6 +198,7 @@ internal fun AudioRecordingStep(
       stopRecording = stopRecording,
       submitAudioFile = submitAudioFile,
       redoRecording = redoRecording,
+      discardRecording = discardRecording,
       openAppSettings = openAppSettings,
       freeTextAvailable = true,
       submitFreeText = submitFreeText,
@@ -238,6 +240,7 @@ internal fun AudioRecorderBubble(
   stopRecording: () -> Unit,
   submitAudioFile: () -> Unit,
   redoRecording: () -> Unit,
+  discardRecording: () -> Unit,
   openAppSettings: () -> Unit,
   freeTextAvailable: Boolean,
   submitFreeText: () -> Unit,
@@ -357,9 +360,8 @@ internal fun AudioRecorderBubble(
               openAppSettings = openAppSettings,
               isSubmitting = isSubmitting,
               onClose = {
-                stopRecording()
                 voiceCardRequested = false
-                onSwitchToAudioRecording()
+                discardRecording()
               },
             )
           }
