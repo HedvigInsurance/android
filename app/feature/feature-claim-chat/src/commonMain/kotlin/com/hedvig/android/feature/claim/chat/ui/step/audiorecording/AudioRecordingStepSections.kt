@@ -140,10 +140,10 @@ import hedvig.resources.AUDIO_RECORDER_START_OVER
 import hedvig.resources.AUDIO_RECORDER_STOP
 import hedvig.resources.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR
 import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
+import hedvig.resources.CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE
 import hedvig.resources.CLAIMS_USE_AUDIO_RECORDING
 import hedvig.resources.CLAIM_CHAT_USE_AUDIO
 import hedvig.resources.CLAIM_CHAT_USE_TEXT_INPUT
-import hedvig.resources.CLAIM_TRIAGING_TITLE
 import hedvig.resources.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE
 import hedvig.resources.Res
 import hedvig.resources.SAVE_AND_CONTINUE_BUTTON_LABEL
@@ -543,7 +543,7 @@ private fun TextAnswerContent(
   }
   val label = @Composable { labelModifier: Modifier ->
     HedvigText(
-      stringResource(Res.string.CLAIM_TRIAGING_TITLE),
+      stringResource(Res.string.CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE),
       style = HedvigTheme.typography.label,
       color = HedvigTheme.colorScheme.textSecondary,
       modifier = labelModifier,
@@ -768,7 +768,7 @@ private fun AudioRecordingSheetContent(
 @Composable
 private fun AudioRecordingHeading(modifier: Modifier = Modifier) {
   HedvigText(
-    stringResource(Res.string.CLAIM_TRIAGING_TITLE),
+    stringResource(Res.string.CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE),
     modifier = modifier.semantics {
       heading()
     },
