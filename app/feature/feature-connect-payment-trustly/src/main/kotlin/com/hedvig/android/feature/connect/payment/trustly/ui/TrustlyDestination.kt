@@ -82,6 +82,7 @@ internal fun TrustlyDestination(
   showSuccessScreen: Boolean,
   navigateUp: () -> Unit,
   finishTrustlyFlow: () -> Unit,
+  changePaymentMethod: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val leavesWithoutConfirming = !showSuccessScreen && uiState is TrustlyUiState.SucceededInConnectingCard
@@ -107,6 +108,7 @@ internal fun TrustlyDestination(
     connectingCardCancelled = { viewModel.emit(TrustlyEvent.ConnectingCardCancelled) },
     retryConnectingCard = { viewModel.emit(TrustlyEvent.RetryConnectingCard) },
     finishTrustlyFlow = finishTrustlyFlow,
+    changePaymentMethod = changePaymentMethod,
   )
 }
 
@@ -119,6 +121,7 @@ private fun TrustlyScreen(
   connectingCardCancelled: () -> Unit,
   retryConnectingCard: () -> Unit,
   finishTrustlyFlow: () -> Unit,
+  changePaymentMethod: () -> Unit,
 ) {
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,
@@ -143,7 +146,7 @@ private fun TrustlyScreen(
         TrustlyFailureScreen(
           description = stringResource(Res.string.pay_in_error_body),
           onRetry = retryConnectingCard,
-          onChangePaymentMethod = finishTrustlyFlow,
+          onChangePaymentMethod = changePaymentMethod,
           navigateUp = navigateUp,
         )
       }
@@ -161,7 +164,7 @@ private fun TrustlyScreen(
             iconStyle = INFO,
             text = stringResource(Res.string.info_card_missing_payment_body),
             description = null,
-            buttonStyle = Button(stringResource(Res.string.PAYMENT_CHANGE_METHOD_BUTTON), finishTrustlyFlow),
+            buttonStyle = Button(stringResource(Res.string.PAYMENT_CHANGE_METHOD_BUTTON), changePaymentMethod),
           )
           Spacer(Modifier.weight(1f))
           Spacer(Modifier.height(8.dp))
@@ -180,7 +183,7 @@ private fun TrustlyScreen(
         TrustlyFailureScreen(
           description = uiState.errorMessage.message ?: stringResource(Res.string.pay_in_error_body),
           onRetry = retryConnectingCard,
-          onChangePaymentMethod = finishTrustlyFlow,
+          onChangePaymentMethod = changePaymentMethod,
           navigateUp = navigateUp,
         )
       }
@@ -384,6 +387,7 @@ private fun TrustlyPreview(
         connectingCardCancelled = {},
         retryConnectingCard = {},
         finishTrustlyFlow = {},
+        changePaymentMethod = {},
       )
     }
   }

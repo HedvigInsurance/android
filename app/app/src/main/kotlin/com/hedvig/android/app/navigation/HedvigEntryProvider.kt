@@ -498,7 +498,26 @@ private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
     navigateToTrustly = navigateToTrustly,
     openUrl = openUrl,
   )
-  connectPaymentEntries(backstack = backstack)
+  /**
+   * Lands the member on the payin overview, which is what the button offers. In-app the overview
+   * already sits below the Trustly flow, so this pops back onto it. A lone deep link has nothing
+   * below it — a pop there would finish the app — so it re-roots into the overview's own ancestry
+   * instead. Every other host keeps a plain pop back to whatever pushed Trustly, because their way
+   * of changing the method is their own screen, not the overview (onboarding's payin step, the
+   * payout account screen).
+   */
+  val changePayinMethod: () -> Unit = {
+    val overviewIndex = backstack.entries.indexOfLast { it is PayinAccountKey }
+    when {
+      overviewIndex != -1 -> backstack.popUpToIndex(overviewIndex)
+      backstack.entries.size == 1 -> backstack.reseed(syntheticStackFor(PayinAccountKey))
+      else -> backstack.popBackstack()
+    }
+  }
+  connectPaymentEntries(
+    backstack = backstack,
+    changePaymentMethod = changePayinMethod,
+  )
 }
 
 private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(

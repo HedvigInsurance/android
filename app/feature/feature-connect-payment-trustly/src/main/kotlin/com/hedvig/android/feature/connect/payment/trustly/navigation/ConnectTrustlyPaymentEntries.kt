@@ -8,7 +8,7 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun EntryProviderScope<HedvigNavKey>.connectPaymentEntries(backstack: Backstack) {
+fun EntryProviderScope<HedvigNavKey>.connectPaymentEntries(backstack: Backstack, changePaymentMethod: () -> Unit) {
   entry<TrustlyKey> { key ->
     val viewModel: TrustlyViewModel = metroViewModel()
     TrustlyDestination(
@@ -16,6 +16,7 @@ fun EntryProviderScope<HedvigNavKey>.connectPaymentEntries(backstack: Backstack)
       showSuccessScreen = key.showSuccessScreen,
       navigateUp = backstack::navigateUp,
       finishTrustlyFlow = backstack::popBackstack,
+      changePaymentMethod = changePaymentMethod,
     )
   }
 }
