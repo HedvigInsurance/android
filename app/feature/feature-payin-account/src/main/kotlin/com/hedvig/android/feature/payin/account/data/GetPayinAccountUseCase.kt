@@ -11,17 +11,17 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.data.paying.member.InvoiceDelivery
 import com.hedvig.android.data.paying.member.PayinAccount
+import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.data.paying.member.sortedForDisplay
 import com.hedvig.android.data.paying.member.toPayinAccount
 import com.hedvig.android.feature.payin.account.navigation.PayinMethodId
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import octopus.GetPayinMethodsQuery
-import octopus.type.MemberPaymentProvider
 
 internal data class PayinAccountData(
   val currentMethods: List<PayinAccount>,
-  val availablePayinMethods: List<MemberPaymentProvider>,
+  val availablePayinMethods: List<PaymentProvider>,
   /** Day of the month the member is charged on. Set per member, so it is the same for every method. */
   val chargingDay: Int?,
 )
@@ -43,7 +43,7 @@ internal class GetPayinAccountUseCase(
     val currentMethods = paymentMethods.payinMethods.mapNotNull { it.toPayinAccount() }.sortedForDisplay()
     val availablePayinMethods = paymentMethods.availableMethods
       .filter { it.supportsPayin }
-      .map { it.provider }
+      .mapNotNull { PaymentProvider.fromRawValue(it.provider.rawValue) }
     PayinAccountData(
       currentMethods = currentMethods,
       availablePayinMethods = availablePayinMethods,

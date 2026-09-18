@@ -21,7 +21,6 @@ import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.data.toFailedCharge
 import com.hedvig.android.feature.payments.data.toPrimaryPayinMethod
-import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.Inject
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
@@ -82,7 +81,6 @@ internal data class GetUpcomingPaymentUseCaseImpl(
         val paymentMethods = result.currentMember.paymentMethods
         val payinMethod = paymentMethods.defaultPayinMethod
           ?: paymentMethods.payinMethods.find { it.isDefault }
-        logcat { "Mariia: payinMethod $payinMethod" }
         val payoutMethod = paymentMethods.defaultPayoutMethod
           ?: paymentMethods.payoutMethods.find { it.isDefault }
         if (payinMethod == null) {
@@ -109,14 +107,22 @@ internal data class GetUpcomingPaymentUseCaseImpl(
             }
 
             MemberType.STANDARD_TO_QASA_MEMBER -> {
-              TODO()
+              if (result.currentMember.futureCharge == null) {
+                if (payoutMethod == null) {
+                  return@run PaymentConnection.NeedsPayoutSetup
+                } else {
+                  return@run PaymentConnection.Active
+                }
+              } else {
+                return@run PaymentConnection.NeedsPayinSetup(
+                  firstKnownTerminationDateForContractTerminatedDueToMissedPayments,
+                )
+              }
             }
           }
         }
         when (payinMethod.status) {
           MemberPaymentMethodStatus.ACTIVE -> {
-            logcat { "Mariia: MemberPaymentMethodStatus.ACTIVE" }
-            logcat { "Mariia: payoutMethod $payoutMethod" }
             if (payoutMethod == null) {
               return@run PaymentConnection.NeedsPayoutSetup
             } else {

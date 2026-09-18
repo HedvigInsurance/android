@@ -9,6 +9,7 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.data.paying.member.PaymentProvider
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import octopus.GetPayoutMethodsQuery
@@ -19,7 +20,7 @@ import octopus.type.MemberPaymentProvider
 
 internal data class PayoutAccountData(
   val currentMethod: PayoutAccount?,
-  val availablePayoutMethods: List<MemberPaymentProvider>,
+  val availablePayoutMethods: List<PaymentProvider>,
 )
 
 @SingleIn(AppScope::class)
@@ -73,7 +74,7 @@ internal class GetPayoutAccountUseCase(
 
     val availablePayoutMethods = paymentMethods.availableMethods
       .filter { it.supportsPayout }
-      .map { it.provider }
+      .mapNotNull { PaymentProvider.fromRawValue(it.provider.rawValue) }
 
     PayoutAccountData(
       currentMethod = currentMethod,

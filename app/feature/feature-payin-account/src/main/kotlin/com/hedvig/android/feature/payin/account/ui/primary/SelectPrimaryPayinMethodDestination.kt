@@ -27,6 +27,7 @@ import com.hedvig.android.data.paying.member.PayinAccount
 import com.hedvig.android.data.paying.member.PayinAccount.Invoice
 import com.hedvig.android.data.paying.member.PayinAccount.SwishPayin
 import com.hedvig.android.data.paying.member.PayinAccount.Trustly
+import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.data.paying.member.provider
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -38,7 +39,6 @@ import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Error
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
@@ -68,11 +68,9 @@ import hedvig.resources.PAYMENT_PRIMARY_CONFIRM_TITLE
 import hedvig.resources.PAYMENT_PRIMARY_SUBTITLE
 import hedvig.resources.PAYMENT_PRIMARY_TITLE
 import hedvig.resources.Res
-import hedvig.resources.Res.string
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_continue_button
 import hedvig.resources.pillow_new_680
-import octopus.type.MemberPaymentProvider
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -151,7 +149,7 @@ private fun SelectPrimaryPayinMethodScreen(
         val method = uiState.methods.firstOrNull { it.provider.rawValue == id.id }
         if (method != null) onMethodSelected(method)
       },
-      optionIcon = { PayinProviderPillow(MemberPaymentProvider.safeValueOf(it.id)) },
+      optionIcon = { PayinProviderPillow(PaymentProvider.fromRawValue(it.id)) },
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     if (uiState.errorMessage != null) {
@@ -166,7 +164,7 @@ private fun SelectPrimaryPayinMethodScreen(
     }
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = stringResource(string.general_continue_button),
+      text = stringResource(Res.string.general_continue_button),
       onClick = {
         val method = uiState.selectedMethod
         if (method != null) confirmationSheetState.show(method)
@@ -179,7 +177,7 @@ private fun SelectPrimaryPayinMethodScreen(
     )
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
-      text = stringResource(string.general_cancel_button),
+      text = stringResource(Res.string.general_cancel_button),
       onClick = navigateBack,
       modifier = Modifier
         .fillMaxWidth()
@@ -218,12 +216,12 @@ private fun ConfirmPrimaryPayinMethodBottomSheetContent(
   onDismiss: () -> Unit,
 ) {
   HedvigText(
-    text = stringResource(string.PAYMENT_PRIMARY_CONFIRM_TITLE),
+    text = stringResource(Res.string.PAYMENT_PRIMARY_CONFIRM_TITLE),
     textAlign = TextAlign.Center,
     modifier = Modifier.fillMaxWidth(),
   )
   Spacer(Modifier.height(24.dp))
-  if (method.provider != MemberPaymentProvider.INVOICE) {
+  if (method.provider != PaymentProvider.Invoice) {
     HedvigNotificationCard(
       message = stringResource(Res.string.PAYMENT_CONFIRM_PRIMARY_WARNING, payinMethodTitle(method)),
       priority = Info,
@@ -233,7 +231,7 @@ private fun ConfirmPrimaryPayinMethodBottomSheetContent(
   }
   Surface(
     shape = HedvigTheme.shapes.cornerLarge,
-    color = colorScheme.surfacePrimary,
+    color = HedvigTheme.colorScheme.surfacePrimary,
     modifier = Modifier.fillMaxWidth(),
   ) {
     PayinMethodRow(
@@ -244,7 +242,7 @@ private fun ConfirmPrimaryPayinMethodBottomSheetContent(
   }
   Spacer(Modifier.height(16.dp))
   HedvigButton(
-    text = stringResource(string.general_continue_button),
+    text = stringResource(Res.string.general_continue_button),
     onClick = onConfirm,
     enabled = !isConfirming,
     isLoading = isConfirming,
@@ -252,7 +250,7 @@ private fun ConfirmPrimaryPayinMethodBottomSheetContent(
   )
   Spacer(Modifier.height(8.dp))
   HedvigTextButton(
-    text = stringResource(string.general_cancel_button),
+    text = stringResource(Res.string.general_cancel_button),
     onClick = onDismiss,
     modifier = Modifier.fillMaxWidth(),
   )
@@ -263,7 +261,7 @@ private fun ConfirmPrimaryPayinMethodBottomSheetContent(
 @HedvigShortMultiScreenPreview
 private fun ConfirmPrimaryPayinMethodBottomSheetPreview() {
   HedvigTheme {
-    Surface(color = colorScheme.backgroundPrimary) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       Column(
         Modifier.fillMaxWidth().padding(horizontal = 16.dp),
       ) {
@@ -288,7 +286,7 @@ private fun PreviewSelectPrimaryPayinMethodScreen(
   @PreviewParameter(SelectedMethodIndexProvider::class) selectedMethod: Int?,
 ) {
   HedvigTheme {
-    Surface(color = colorScheme.backgroundPrimary) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       val methods = listOf(
         Trustly(
           "8327",

@@ -10,16 +10,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme
 import com.hedvig.android.design.system.hedvig.PaymentMethodHandoverIllustration
 import com.hedvig.android.design.system.hedvig.PaymentMethodMarkSize
 import com.hedvig.android.design.system.hedvig.Surface
-import octopus.type.MemberPaymentProvider
 
 @Composable
-internal fun PayinMethodHandoverIllustration(provider: MemberPaymentProvider?, modifier: Modifier = Modifier) {
+internal fun PayinMethodHandoverIllustration(provider: PaymentProvider?, modifier: Modifier = Modifier) {
   Column(modifier) {
     Spacer(Modifier.height(48.dp))
     PaymentMethodHandoverIllustration(
@@ -32,10 +31,10 @@ internal fun PayinMethodHandoverIllustration(provider: MemberPaymentProvider?, m
 @Composable
 @HedvigPreview
 private fun PreviewPayinMethodHandoverIllustration(
-  @PreviewParameter(PayinPreviewProvider::class) provider: MemberPaymentProvider?,
+  @PreviewParameter(PayinPreviewProvider::class) provider: PaymentProvider?,
 ) {
   HedvigTheme {
-    Surface(color = colorScheme.backgroundPrimary) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       PayinMethodHandoverIllustration(
         provider,
         Modifier.padding(16.dp),
@@ -45,11 +44,11 @@ private fun PreviewPayinMethodHandoverIllustration(
 }
 
 private class PayinPreviewProvider :
-  CollectionPreviewParameterProvider<MemberPaymentProvider?>(
+  CollectionPreviewParameterProvider<PaymentProvider?>(
     listOf(
       null,
-      MemberPaymentProvider.TRUSTLY,
-      MemberPaymentProvider.SWISH,
-      MemberPaymentProvider.INVOICE,
+      PaymentProvider.Trustly,
+      PaymentProvider.Swish,
+      PaymentProvider.Invoice,
     ),
   )

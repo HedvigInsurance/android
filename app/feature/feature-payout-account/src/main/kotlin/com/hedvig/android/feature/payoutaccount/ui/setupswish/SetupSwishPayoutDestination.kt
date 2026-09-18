@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.common.validation.PhoneNumberRules
+import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
@@ -34,7 +35,6 @@ import hedvig.resources.Res
 import hedvig.resources.TIER_FLOW_COMMIT_PROCESSING_ERROR_DESCRIPTION
 import hedvig.resources.general_save_button
 import hedvig.resources.swish
-import octopus.type.MemberPaymentProvider
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -62,7 +62,7 @@ private fun SetupSwishPayoutScreen(
   ) {
     if (uiState.isConnected) {
       PayoutSetupSuccessContent(
-        provider = MemberPaymentProvider.SWISH,
+        provider = PaymentProvider.Swish,
         title = stringResource(Res.string.PAYMENT_SWISH_SUCCESS_TITLE),
         onContinue = onFinishSetup,
       )

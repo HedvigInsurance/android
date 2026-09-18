@@ -10,6 +10,7 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.safeExecuteAllowingPartialResponses
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
@@ -18,7 +19,7 @@ import octopus.SetAsDefaultPayinMutation
 import octopus.type.MemberPaymentProvider
 
 internal interface SetAsDefaultUseCase {
-  suspend fun invoke(provider: MemberPaymentProvider): Either<ErrorMessage, PayinAccountData>
+  suspend fun invoke(provider: PaymentProvider): Either<ErrorMessage, PayinAccountData>
 }
 
 @ContributesBinding(AppScope::class)
@@ -28,10 +29,10 @@ internal class SetAsDefaultUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val getPayinAccountUseCase: GetPayinAccountUseCase,
 ) : SetAsDefaultUseCase {
-  override suspend fun invoke(provider: MemberPaymentProvider): Either<ErrorMessage, PayinAccountData> {
+  override suspend fun invoke(provider: PaymentProvider): Either<ErrorMessage, PayinAccountData> {
     return either {
       apolloClient
-        .mutation(SetAsDefaultPayinMutation(provider))
+        .mutation(SetAsDefaultPayinMutation(MemberPaymentProvider.safeValueOf(provider.rawValue)))
         .safeExecuteAllowingPartialResponses()
         .fold(
           fa = { error ->

@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
@@ -34,7 +35,6 @@ import hedvig.resources.PAYMENT_PAYOUT_BANK_SUCCESS_TITLE
 import hedvig.resources.Res
 import hedvig.resources.general_save_button
 import hedvig.resources.something_went_wrong
-import octopus.type.MemberPaymentProvider
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -62,7 +62,7 @@ private fun EditBankAccountScreen(
   ) {
     if (uiState.isConnected) {
       PayoutSetupSuccessContent(
-        provider = MemberPaymentProvider.NORDEA,
+        provider = PaymentProvider.Nordea,
         title = stringResource(Res.string.PAYMENT_PAYOUT_BANK_SUCCESS_TITLE),
         onContinue = onFinishSetup,
       )

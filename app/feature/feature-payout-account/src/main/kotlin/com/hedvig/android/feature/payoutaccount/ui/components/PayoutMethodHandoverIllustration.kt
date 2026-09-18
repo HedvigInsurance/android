@@ -10,13 +10,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.LoadingState
 import com.hedvig.android.design.system.hedvig.PaymentMethodHandoverIllustration
 import com.hedvig.android.design.system.hedvig.PaymentMethodMarkSize
 import com.hedvig.android.design.system.hedvig.Surface
-import octopus.type.MemberPaymentProvider
 
 /**
  * @param destinationBadge marks where the setup has got to once it has an outcome to show; absent
@@ -24,7 +24,7 @@ import octopus.type.MemberPaymentProvider
  */
 @Composable
 internal fun PayoutMethodHandoverIllustration(
-  provider: MemberPaymentProvider?,
+  provider: PaymentProvider?,
   loadingState: LoadingState = LoadingState.PROCESSING,
   modifier: Modifier = Modifier,
   destinationBadge: @Composable (() -> Unit)? = null,
@@ -43,7 +43,7 @@ internal fun PayoutMethodHandoverIllustration(
 @Composable
 @HedvigPreview
 private fun PreviewPayoutMethodHandoverIllustration(
-  @PreviewParameter(PayoutPreviewProvider::class) provider: MemberPaymentProvider?,
+  @PreviewParameter(PayoutPreviewProvider::class) provider: PaymentProvider?,
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
@@ -56,11 +56,11 @@ private fun PreviewPayoutMethodHandoverIllustration(
 }
 
 private class PayoutPreviewProvider :
-  CollectionPreviewParameterProvider<MemberPaymentProvider?>(
+  CollectionPreviewParameterProvider<PaymentProvider?>(
     listOf(
       null,
-      MemberPaymentProvider.TRUSTLY,
-      MemberPaymentProvider.SWISH,
-      MemberPaymentProvider.NORDEA,
+      PaymentProvider.Trustly,
+      PaymentProvider.Swish,
+      PaymentProvider.Nordea,
     ),
   )

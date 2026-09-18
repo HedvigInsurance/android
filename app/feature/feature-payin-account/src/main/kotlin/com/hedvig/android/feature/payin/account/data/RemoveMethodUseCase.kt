@@ -9,6 +9,7 @@ import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.safeExecuteAllowingPartialResponses
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
@@ -18,7 +19,7 @@ import octopus.RemovePayinMethodMutation
 import octopus.type.MemberPaymentProvider
 
 internal interface RemoveMethodUseCase {
-  suspend fun invoke(provider: MemberPaymentProvider): Either<ErrorMessage, Unit>
+  suspend fun invoke(provider: PaymentProvider): Either<ErrorMessage, Unit>
 }
 
 @ContributesBinding(AppScope::class)
@@ -28,9 +29,9 @@ internal class RemoveMethodUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val networkCacheManager: NetworkCacheManager,
 ) : RemoveMethodUseCase {
-  override suspend fun invoke(provider: MemberPaymentProvider): Either<ErrorMessage, Unit> = either {
+  override suspend fun invoke(provider: PaymentProvider): Either<ErrorMessage, Unit> = either {
     apolloClient
-      .mutation(RemovePayinMethodMutation(provider))
+      .mutation(RemovePayinMethodMutation(MemberPaymentProvider.safeValueOf(provider.rawValue)))
       .safeExecuteAllowingPartialResponses()
       .fold(
         fa = { error ->

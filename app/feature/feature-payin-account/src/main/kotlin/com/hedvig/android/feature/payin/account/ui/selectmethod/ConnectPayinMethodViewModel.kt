@@ -7,13 +7,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.feature.payin.account.ui.selectmethod.SelectPayinMethodEvent.SelectProvider
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
-import octopus.type.MemberPaymentProvider
 
 @AssistedInject
 @HedvigViewModel(ActivityRetainedScope::class)
@@ -22,21 +22,21 @@ internal class ConnectPayinMethodViewModel(
   @Assisted currentProviders: List<String>,
 ) : MoleculeViewModel<SelectPayinMethodEvent, ConnectPayinMethodUiState>(
     initialState = ConnectPayinMethodUiState(
-      availableProviders = availableProviders.map(MemberPaymentProvider::safeValueOf),
+      availableProviders = availableProviders.mapNotNull(PaymentProvider::fromRawValue),
       selectedProvider = null,
-      currentProviders = currentProviders.map(MemberPaymentProvider::safeValueOf),
+      currentProviders = currentProviders.mapNotNull(PaymentProvider::fromRawValue),
     ),
     presenter = SelectPayinMethodPresenter(),
   )
 
 internal sealed interface SelectPayinMethodEvent {
-  data class SelectProvider(val provider: MemberPaymentProvider) : SelectPayinMethodEvent
+  data class SelectProvider(val provider: PaymentProvider) : SelectPayinMethodEvent
 }
 
 internal data class ConnectPayinMethodUiState(
-  val currentProviders: List<MemberPaymentProvider>,
-  val availableProviders: List<MemberPaymentProvider>,
-  val selectedProvider: MemberPaymentProvider?,
+  val currentProviders: List<PaymentProvider>,
+  val availableProviders: List<PaymentProvider>,
+  val selectedProvider: PaymentProvider?,
 )
 
 internal class SelectPayinMethodPresenter :

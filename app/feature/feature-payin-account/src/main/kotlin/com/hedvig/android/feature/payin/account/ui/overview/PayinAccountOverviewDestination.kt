@@ -25,6 +25,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.data.paying.member.InvoiceDelivery
 import com.hedvig.android.data.paying.member.PayinAccount
+import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults
@@ -47,7 +48,6 @@ import hedvig.resources.PAYMENT_CHOOSE_PRIMARY_BUTTON
 import hedvig.resources.PAYMENT_METHODS_EMPTY
 import hedvig.resources.PAYMENT_METHODS_TITLE
 import hedvig.resources.Res
-import octopus.type.MemberPaymentProvider
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -129,7 +129,7 @@ private fun PayinAccountOverviewScreen(
 @Composable
 private fun PayoutAccountContent(
   currentMethods: List<PayinAccount>,
-  availablePayinMethods: List<MemberPaymentProvider>,
+  availablePayinMethods: List<PaymentProvider>,
   onConnectPayinMethodClicked: () -> Unit,
   onChoosePrimaryMethodClicked: () -> Unit,
   onPayinMethodClicked: (PayinAccount) -> Unit,
@@ -243,7 +243,7 @@ private class PayinAccountOverviewUiStateProvider : CollectionPreviewParameterPr
     PayinAccountOverviewUiState.Error,
     PayinAccountOverviewUiState.Content(
       currentMethods = emptyList(),
-      availablePayinMethods = listOf(MemberPaymentProvider.SWISH, MemberPaymentProvider.TRUSTLY),
+      availablePayinMethods = listOf(PaymentProvider.Swish, PaymentProvider.Trustly),
     ),
     PayinAccountOverviewUiState.Content(
       currentMethods = listOf(
@@ -253,7 +253,7 @@ private class PayinAccountOverviewUiStateProvider : CollectionPreviewParameterPr
           isDefault = true,
         ),
       ),
-      availablePayinMethods = listOf(MemberPaymentProvider.SWISH),
+      availablePayinMethods = listOf(PaymentProvider.Swish),
     ),
     PayinAccountOverviewUiState.Content(
       currentMethods = listOf(
@@ -263,11 +263,11 @@ private class PayinAccountOverviewUiStateProvider : CollectionPreviewParameterPr
           isDefault = true,
         ),
       ),
-      availablePayinMethods = listOf(MemberPaymentProvider.SWISH, MemberPaymentProvider.TRUSTLY),
+      availablePayinMethods = listOf(PaymentProvider.Swish, PaymentProvider.Trustly),
     ),
     PayinAccountOverviewUiState.Content(
       currentMethods = listOf(PayinAccount.SwishPayin(phoneNumber = null, isPending = true, isDefault = true)),
-      availablePayinMethods = listOf(MemberPaymentProvider.SWISH),
+      availablePayinMethods = listOf(PaymentProvider.Swish),
     ),
     PayinAccountOverviewUiState.Content(
       currentMethods = listOf(
@@ -284,7 +284,7 @@ private class PayinAccountOverviewUiStateProvider : CollectionPreviewParameterPr
           isDefault = true,
         ),
       ),
-      availablePayinMethods = listOf(MemberPaymentProvider.SWISH),
+      availablePayinMethods = listOf(PaymentProvider.Swish),
     ),
     PayinAccountOverviewUiState.Content(
       currentMethods = listOf(
@@ -307,7 +307,7 @@ private class PayinAccountOverviewUiStateProvider : CollectionPreviewParameterPr
           email = "",
         ),
       ),
-      availablePayinMethods = listOf(MemberPaymentProvider.TRUSTLY),
+      availablePayinMethods = listOf(PaymentProvider.Trustly),
     ),
     PayinAccountOverviewUiState.Content(
       currentMethods = listOf(
@@ -324,7 +324,7 @@ private class PayinAccountOverviewUiStateProvider : CollectionPreviewParameterPr
           isDefault = false,
         ),
       ),
-      availablePayinMethods = listOf(MemberPaymentProvider.TRUSTLY),
+      availablePayinMethods = listOf(PaymentProvider.Trustly),
     ),
   ),
 )

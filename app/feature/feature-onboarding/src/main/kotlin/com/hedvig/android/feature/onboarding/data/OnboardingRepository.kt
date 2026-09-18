@@ -10,7 +10,6 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
-import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import octopus.OnboardingQuery
@@ -87,7 +86,6 @@ internal class OnboardingRepositoryImpl(
         )
       },
       payinStatus = member.paymentMethods.payinMethods.let { methods ->
-        logcat { "Mariia: methods $methods " }
         when {
           methods.any { it.status.rawValue == "ACTIVE" && it.isDefault } -> OnboardingPayinStatus.Active
 

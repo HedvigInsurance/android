@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle
@@ -58,10 +59,8 @@ import hedvig.resources.PAYOUT_SELECT_PAYOUT_METHOD
 import hedvig.resources.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON
 import hedvig.resources.REFERRAL_PENDING_STATUS_LABEL
 import hedvig.resources.Res
-import hedvig.resources.Res.string
 import hedvig.resources.swish
 import hedvig.resources.trustly
-import octopus.type.MemberPaymentProvider
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -99,7 +98,7 @@ private fun PayoutAccountOverviewScreen(
   navigateUp: () -> Unit,
 ) {
   HedvigScaffold(
-    topAppBarText = stringResource(string.PAYOUT_PAGE_HEADING),
+    topAppBarText = stringResource(Res.string.PAYOUT_PAGE_HEADING),
     navigateUp = navigateUp,
     modifier = Modifier.fillMaxSize(),
   ) {
@@ -123,9 +122,9 @@ private fun PayoutAccountOverviewScreen(
 
       NoPayoutOptions -> {
         HedvigInformationSection(
-          title = stringResource(string.PAYOUT_NO_PAYOUT_OPTIONS_TITLE),
-          subTitle = stringResource(string.PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE),
-          buttonText = stringResource(string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON),
+          title = stringResource(Res.string.PAYOUT_NO_PAYOUT_OPTIONS_TITLE),
+          subTitle = stringResource(Res.string.PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE),
+          buttonText = stringResource(Res.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON),
           onButtonClick = navigateToTrustly,
           modifier = Modifier
             .weight(1f)
@@ -148,7 +147,7 @@ private fun PayoutAccountOverviewScreen(
 @Composable
 private fun PayoutAccountContent(
   currentMethod: PayoutAccount?,
-  availablePayoutMethods: List<MemberPaymentProvider>,
+  availablePayoutMethods: List<PaymentProvider>,
   onConnectPayoutMethodClicked: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -159,7 +158,7 @@ private fun PayoutAccountContent(
         if (availablePayoutMethods.isNotEmpty()) {
           Spacer(Modifier.weight(1f))
           EmptyState(
-            text = stringResource(string.PAYOUT_MISSING_INFO),
+            text = stringResource(Res.string.PAYOUT_MISSING_INFO),
             description = null,
             iconStyle = EmptyStateIconStyle.INFO,
           )
@@ -169,10 +168,10 @@ private fun PayoutAccountContent(
       is SwishPayout -> {
         val phoneNumber = currentMethod.phoneNumber.orEmpty()
         LockedPayoutMethodRow(
-          provider = MemberPaymentProvider.SWISH,
-          title = stringResource(string.swish),
+          provider = PaymentProvider.Swish,
+          title = stringResource(Res.string.swish),
           subtitle = if (currentMethod.isPending && phoneNumber.isBlank()) {
-            stringResource(string.REFERRAL_PENDING_STATUS_LABEL)
+            stringResource(Res.string.REFERRAL_PENDING_STATUS_LABEL)
           } else {
             phoneNumber
           },
@@ -183,28 +182,28 @@ private fun PayoutAccountContent(
       is Trustly -> {
         val accountNumber = formatBankAccountNumber(currentMethod.clearingNumber, currentMethod.accountNumber)
         LockedPayoutMethodRow(
-          title = formatBankAccountLabel(stringResource(string.trustly), currentMethod.bankName),
+          title = formatBankAccountLabel(stringResource(Res.string.trustly), currentMethod.bankName),
           subtitle = if (currentMethod.isPending && accountNumber.isBlank()) {
-            stringResource(string.REFERRAL_PENDING_STATUS_LABEL)
+            stringResource(Res.string.REFERRAL_PENDING_STATUS_LABEL)
           } else {
             accountNumber
           },
           modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-          provider = MemberPaymentProvider.TRUSTLY,
+          provider = PaymentProvider.Trustly,
         )
       }
 
       is BankAccount -> {
         val accountNumber = formatBankAccountNumber(currentMethod.clearingNumber, currentMethod.accountNumber)
         LockedPayoutMethodRow(
-          title = formatBankAccountLabel(stringResource(string.PAYMENTS_ACCOUNT), currentMethod.bankName),
+          title = formatBankAccountLabel(stringResource(Res.string.PAYMENTS_ACCOUNT), currentMethod.bankName),
           subtitle = if (currentMethod.isPending && accountNumber.isBlank()) {
-            stringResource(string.REFERRAL_PENDING_STATUS_LABEL)
+            stringResource(Res.string.REFERRAL_PENDING_STATUS_LABEL)
           } else {
             accountNumber
           },
           modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-          provider = MemberPaymentProvider.NORDEA,
+          provider = PaymentProvider.Nordea,
         )
       }
     }
@@ -212,7 +211,7 @@ private fun PayoutAccountContent(
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
       if (currentMethod?.isPending == true) {
         HedvigNotificationCard(
-          message = stringResource(string.MY_PAYMENT_UPDATING_MESSAGE),
+          message = stringResource(Res.string.MY_PAYMENT_UPDATING_MESSAGE),
           priority = Info,
           modifier = Modifier
             .fillMaxWidth()
@@ -222,9 +221,9 @@ private fun PayoutAccountContent(
       if (availablePayoutMethods.isNotEmpty()) {
         HedvigButton(
           text = if (currentMethod == null) {
-            stringResource(string.PAYOUT_SELECT_PAYOUT_METHOD)
+            stringResource(Res.string.PAYOUT_SELECT_PAYOUT_METHOD)
           } else {
-            stringResource(string.CHANGE_PAYOUT_METHOD_BUTTON_LABEL)
+            stringResource(Res.string.CHANGE_PAYOUT_METHOD_BUTTON_LABEL)
           },
           onClick = onConnectPayoutMethodClicked,
           enabled = true,
@@ -288,23 +287,23 @@ private class PayoutAccountOverviewUiStateProvider : CollectionPreviewParameterP
     NoPayoutOptions,
     Content(
       currentMethod = null,
-      availablePayoutMethods = listOf(MemberPaymentProvider.SWISH, MemberPaymentProvider.TRUSTLY),
+      availablePayoutMethods = listOf(PaymentProvider.Swish, PaymentProvider.Trustly),
     ),
     Content(
       currentMethod = SwishPayout(phoneNumber = "070-123 45 67", isPending = false),
-      availablePayoutMethods = listOf(MemberPaymentProvider.SWISH),
+      availablePayoutMethods = listOf(PaymentProvider.Swish),
     ),
     Content(
       currentMethod = SwishPayout(phoneNumber = "070-123 45 67", isPending = false),
-      availablePayoutMethods = listOf(MemberPaymentProvider.SWISH, MemberPaymentProvider.TRUSTLY),
+      availablePayoutMethods = listOf(PaymentProvider.Swish, PaymentProvider.Trustly),
     ),
     Content(
       currentMethod = SwishPayout(phoneNumber = null, isPending = true),
-      availablePayoutMethods = listOf(MemberPaymentProvider.SWISH),
+      availablePayoutMethods = listOf(PaymentProvider.Swish),
     ),
     Content(
       currentMethod = SwishPayout(phoneNumber = "070-123 45 67", isPending = true),
-      availablePayoutMethods = listOf(MemberPaymentProvider.SWISH),
+      availablePayoutMethods = listOf(PaymentProvider.Swish),
     ),
     Content(
       currentMethod = Trustly(
@@ -313,7 +312,7 @@ private class PayoutAccountOverviewUiStateProvider : CollectionPreviewParameterP
         bankName = "Mock Swedbank",
         isPending = false,
       ),
-      availablePayoutMethods = listOf(MemberPaymentProvider.TRUSTLY),
+      availablePayoutMethods = listOf(PaymentProvider.Trustly),
     ),
     Content(
       currentMethod = BankAccount(
@@ -322,7 +321,7 @@ private class PayoutAccountOverviewUiStateProvider : CollectionPreviewParameterP
         bankName = "Nordea",
         isPending = false,
       ),
-      availablePayoutMethods = listOf(MemberPaymentProvider.NORDEA),
+      availablePayoutMethods = listOf(PaymentProvider.Nordea),
     ),
     Content(
       currentMethod = BankAccount(
@@ -331,7 +330,7 @@ private class PayoutAccountOverviewUiStateProvider : CollectionPreviewParameterP
         bankName = null,
         isPending = true,
       ),
-      availablePayoutMethods = listOf(MemberPaymentProvider.NORDEA),
+      availablePayoutMethods = listOf(PaymentProvider.Nordea),
     ),
     Content(
       currentMethod = BankAccount(
@@ -340,7 +339,7 @@ private class PayoutAccountOverviewUiStateProvider : CollectionPreviewParameterP
         bankName = "Nordea",
         isPending = true,
       ),
-      availablePayoutMethods = listOf(MemberPaymentProvider.NORDEA),
+      availablePayoutMethods = listOf(PaymentProvider.Nordea),
     ),
   ),
 )

@@ -2,6 +2,7 @@ package com.hedvig.android.feature.payoutaccount.navigation
 
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.EntryProviderScope
+import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.feature.payoutaccount.ui.editbankaccount.EditBankAccountDestination
 import com.hedvig.android.feature.payoutaccount.ui.editbankaccount.EditBankAccountViewModel
 import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewDestination
@@ -15,7 +16,6 @@ import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.popUpTo
 import dev.zacsweers.metrox.viewmodel.metroViewModel
-import octopus.type.MemberPaymentProvider
 
 fun EntryProviderScope<HedvigNavKey>.payoutAccountEntries(backstack: Backstack, navigateToTrustly: () -> Unit) {
   entry<PayoutAccountKey> {
@@ -40,7 +40,7 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountEntries(backstack: Backstack, 
 
   entry<SelectPayoutMethodKey> { key ->
     SelectPayoutMethodDestination(
-      availableProviders = key.availableProviders.map { MemberPaymentProvider.safeValueOf(it) },
+      availableProviders = key.availableProviders.mapNotNull { PaymentProvider.fromRawValue(it) },
       onTrustlySelected = dropUnlessResumed {
         backstack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
         navigateToTrustly()

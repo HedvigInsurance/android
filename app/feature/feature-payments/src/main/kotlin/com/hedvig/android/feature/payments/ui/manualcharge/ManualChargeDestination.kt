@@ -36,6 +36,7 @@ import com.hedvig.android.data.paying.member.PayinAccount
 import com.hedvig.android.data.paying.member.PayinAccount.Invoice
 import com.hedvig.android.data.paying.member.PayinAccount.SwishPayin
 import com.hedvig.android.data.paying.member.PayinAccount.Trustly
+import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.data.paying.member.maskedAccountNumber
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
@@ -87,14 +88,12 @@ import hedvig.resources.PAYMENTS_SWISH_NUMBER
 import hedvig.resources.PAYMENT_ADD_METHOD_BUTTON
 import hedvig.resources.PAYMENT_CHOOSE_PRIMARY_BUTTON
 import hedvig.resources.Res
-import hedvig.resources.Res.string
 import hedvig.resources.SELF_MANUAL_CHARGE_CHANGES_BEEN_MADE_TITLE
 import hedvig.resources.claim_status_detail_chat_button_description
 import hedvig.resources.payment_details_receipt_card_total
 import hedvig.resources.something_went_wrong
 import hedvig.resources.swish
 import kotlinx.datetime.LocalDate
-import octopus.type.MemberPaymentProvider
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -144,24 +143,24 @@ private fun ManualChargeScreen(
 ) {
   HedvigScaffold(
     navigateUp = navigateUp,
-    topAppBarText = stringResource(string.PAYMENTS_PAYMENT_OVERDUE_TITLE),
+    topAppBarText = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_TITLE),
   ) {
     when (uiState) {
       is Failure -> {
         val title = if (uiState.error.message != null) {
-          stringResource(string.SELF_MANUAL_CHARGE_CHANGES_BEEN_MADE_TITLE)
+          stringResource(Res.string.SELF_MANUAL_CHARGE_CHANGES_BEEN_MADE_TITLE)
         } else {
-          stringResource(string.something_went_wrong)
+          stringResource(Res.string.something_went_wrong)
         }
         val subTitle = if (uiState.error.message != null) {
           uiState.error.message
         } else {
-          stringResource(string.GENERAL_ERROR_BODY)
+          stringResource(Res.string.GENERAL_ERROR_BODY)
         }
         val buttonText = if (uiState.error.message != null) {
-          stringResource(string.claim_status_detail_chat_button_description)
+          stringResource(Res.string.claim_status_detail_chat_button_description)
         } else {
-          stringResource(string.GENERAL_RETRY)
+          stringResource(Res.string.GENERAL_RETRY)
         }
         val onButtonClick = if (uiState.error.message != null) openConversation else reload
 
@@ -182,9 +181,9 @@ private fun ManualChargeScreen(
           Modifier
             .weight(1f)
             .fillMaxWidth(),
-          title = stringResource(string.SELF_MANUAL_CHARGE_CHANGES_BEEN_MADE_TITLE),
+          title = stringResource(Res.string.SELF_MANUAL_CHARGE_CHANGES_BEEN_MADE_TITLE),
           subTitle = null,
-          buttonText = stringResource(string.claim_status_detail_chat_button_description),
+          buttonText = stringResource(Res.string.claim_status_detail_chat_button_description),
         )
       }
 
@@ -264,19 +263,19 @@ private fun ManualChargeSuccessScreen(
         Column(modifier = Modifier.weight(1f)) {
           HedvigText(
             text = stringResource(
-              string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_SINCE,
+              Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_SINCE,
               dateTimeFormatter.format(uiState.manualChargeInfo.missedDueDate),
             ),
           )
           HedvigText(
-            text = stringResource(string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_BODY),
+            text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_BODY),
             color = HedvigTheme.colorScheme.textSecondary,
           )
         }
       }
       if (uiState.manualChargeInfo.chargeId != null) {
         HedvigButton(
-          text = stringResource(string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_VIEW_DETAILS),
+          text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_VIEW_DETAILS),
           onClick = {
             onNavigateToPaymentDetails(uiState.manualChargeInfo.chargeId)
           },
@@ -297,7 +296,7 @@ private fun ManualChargeSuccessScreen(
           horizontalArrangement = Arrangement.SpaceBetween,
         ) {
           HedvigText(
-            text = stringResource(string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_DUE_DATE),
+            text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_DUE_DATE),
             color = HedvigTheme.colorScheme.textSecondary,
             style = HedvigTheme.typography.label,
           )
@@ -310,28 +309,28 @@ private fun ManualChargeSuccessScreen(
         val method = uiState.manualChargeInfo.primaryPayinMethod
         if (method != null) {
           DetailRow(
-            label = stringResource(string.PAYMENTS_PAYMENT_METHOD),
+            label = stringResource(Res.string.PAYMENTS_PAYMENT_METHOD),
             value = when (method) {
-              is Trustly -> stringResource(string.PAYMENTS_AUTOGIRO_LABEL)
-              is SwishPayin -> stringResource(string.swish)
-              is Invoice -> stringResource(string.PAYMENTS_INVOICE)
+              is Trustly -> stringResource(Res.string.PAYMENTS_AUTOGIRO_LABEL)
+              is SwishPayin -> stringResource(Res.string.swish)
+              is Invoice -> stringResource(Res.string.PAYMENTS_INVOICE)
             },
           )
           when (method) {
             is SwishPayin -> {
               DetailRow(
-                label = stringResource(string.PAYMENTS_SWISH_NUMBER),
+                label = stringResource(Res.string.PAYMENTS_SWISH_NUMBER),
                 value = method.phoneNumber.orEmpty(),
               )
             }
 
             is Trustly -> {
               DetailRow(
-                label = stringResource(string.PAYMENTS_ACCOUNT),
+                label = stringResource(Res.string.PAYMENTS_ACCOUNT),
                 value = method.maskedAccountNumber().orEmpty(),
               )
               DetailRow(
-                label = stringResource(string.PAYMENTS_BANK_LABEL),
+                label = stringResource(Res.string.PAYMENTS_BANK_LABEL),
                 value = method.bankName.orEmpty(),
               )
             }
@@ -353,7 +352,7 @@ private fun ManualChargeSuccessScreen(
         verticalAlignment = Alignment.CenterVertically,
       ) {
         HedvigText(
-          text = stringResource(string.payment_details_receipt_card_total),
+          text = stringResource(Res.string.payment_details_receipt_card_total),
         )
         HedvigText(
           text = uiState.manualChargeInfo.amountDue.toString(),
@@ -362,7 +361,7 @@ private fun ManualChargeSuccessScreen(
       }
 
       HedvigButton(
-        text = stringResource(string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_PAY, uiState.manualChargeInfo.amountDue),
+        text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_PAY, uiState.manualChargeInfo.amountDue),
         onClick = onTriggerPayment,
         enabled = !uiState.payButtonLoading,
         buttonSize = ButtonSize.Medium,
@@ -372,7 +371,7 @@ private fun ManualChargeSuccessScreen(
 
       Spacer(modifier = Modifier.height(8.dp))
       HedvigText(
-        text = stringResource(string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_FINE_PRINT),
+        text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_FINE_PRINT),
         color = HedvigTheme.colorScheme.textSecondaryTranslucent,
         textAlign = TextAlign.Center,
         style = HedvigTheme.typography.label,
@@ -383,7 +382,7 @@ private fun ManualChargeSuccessScreen(
     }
     if (uiState.manualChargeInfo.showCancellationWarning) {
       HedvigNotificationCard(
-        message = stringResource(string.MANUAL_CHARGE_CANCELLATION_WARNING),
+        message = stringResource(Res.string.MANUAL_CHARGE_CANCELLATION_WARNING),
         priority = AttentionRound,
         modifier = Modifier
           .fillMaxWidth()
@@ -395,7 +394,7 @@ private fun ManualChargeSuccessScreen(
     Spacer(Modifier.height(16.dp))
     if (availablePayinMethods.isNotEmpty()) {
       HedvigButton(
-        text = stringResource(string.PAYMENT_ADD_METHOD_BUTTON),
+        text = stringResource(Res.string.PAYMENT_ADD_METHOD_BUTTON),
         onClick = onConnectPayinMethodClicked,
         enabled = true,
         buttonStyle = ButtonStyle.Secondary,
@@ -410,7 +409,7 @@ private fun ManualChargeSuccessScreen(
     ) {
       Spacer(Modifier.height(8.dp))
       HedvigTextButton(
-        text = stringResource(string.PAYMENT_CHOOSE_PRIMARY_BUTTON),
+        text = stringResource(Res.string.PAYMENT_CHOOSE_PRIMARY_BUTTON),
         onClick = onChoosePrimaryMethodClicked,
         modifier = Modifier
           .fillMaxWidth()
@@ -474,8 +473,8 @@ private fun ManualChargeScreenSuccessPreview(
               ),
             ),
             availablePayinMethods = listOf(
-              MemberPaymentProvider.SWISH,
-              MemberPaymentProvider.TRUSTLY,
+              PaymentProvider.Swish,
+              PaymentProvider.Trustly,
             ),
             primaryPayinMethod = Trustly(
               clearingNumber = "8327",

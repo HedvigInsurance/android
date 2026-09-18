@@ -20,12 +20,12 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.data.paying.member.InvoiceDelivery
 import com.hedvig.android.data.paying.member.PayinAccount
+import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.data.paying.member.provider
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.PaymentMethodPillow
 import com.hedvig.android.design.system.hedvig.PaymentMethodPillowMarkSize
@@ -43,7 +43,6 @@ import hedvig.resources.PAYMENT_PRIMARY_LABEL
 import hedvig.resources.REFERRAL_PENDING_STATUS_LABEL
 import hedvig.resources.Res
 import hedvig.resources.swish
-import octopus.type.MemberPaymentProvider
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -51,8 +50,8 @@ import org.jetbrains.compose.resources.stringResource
  * behind Trustly's monochrome one, which picks up the tile's content colour.
  */
 @Composable
-internal fun PayinProviderPillow(provider: MemberPaymentProvider?, modifier: Modifier = Modifier) {
-  val onDarkTile = provider == MemberPaymentProvider.TRUSTLY
+internal fun PayinProviderPillow(provider: PaymentProvider?, modifier: Modifier = Modifier) {
+  val onDarkTile = provider == PaymentProvider.Trustly
   PaymentMethodPillow(
     modifier = modifier,
     containerColor = if (onDarkTile) HedvigTheme.colorScheme.fillBlack else HedvigTheme.colorScheme.fillWhite,
@@ -67,11 +66,11 @@ internal fun PayinProviderPillow(provider: MemberPaymentProvider?, modifier: Mod
  * so one the backend adds later still renders.
  */
 @Composable
-internal fun PayinProviderMark(provider: MemberPaymentProvider?, modifier: Modifier = Modifier) {
+internal fun PayinProviderMark(provider: PaymentProvider?, modifier: Modifier = Modifier) {
   when (provider) {
-    MemberPaymentProvider.TRUSTLY -> Icon(HedvigIcons.Trustly, EmptyContentDescription, modifier)
-    MemberPaymentProvider.SWISH -> Image(HedvigIcons.Swish, EmptyContentDescription, modifier)
-    MemberPaymentProvider.INVOICE -> Image(HedvigIcons.Kivra, EmptyContentDescription, modifier)
+    PaymentProvider.Trustly -> Icon(HedvigIcons.Trustly, EmptyContentDescription, modifier)
+    PaymentProvider.Swish -> Image(HedvigIcons.Swish, EmptyContentDescription, modifier)
+    PaymentProvider.Invoice -> Image(HedvigIcons.Kivra, EmptyContentDescription, modifier)
     else -> PaymentMethodPlusMark(modifier)
   }
 }
@@ -193,7 +192,7 @@ private fun PreviewPayinMethodRow(
   @PreviewParameter(PayinAccountPreviewProvider::class) account: PayinAccount,
 ) {
   HedvigTheme {
-    Surface(color = colorScheme.backgroundPrimary) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       HedvigCard(
         shape = HedvigTheme.shapes.cornerLarge,
         modifier = Modifier

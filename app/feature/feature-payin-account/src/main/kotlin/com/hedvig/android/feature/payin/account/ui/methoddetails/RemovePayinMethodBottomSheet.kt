@@ -21,7 +21,6 @@ import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.PaymentMethodMarkSize
 import com.hedvig.android.design.system.hedvig.PaymentMethodTile
@@ -100,7 +99,7 @@ private fun RemovePayinMethodBottomSheetContent(
   HedvigText(
     text = stringResource(Res.string.PAYMENT_REMOVE_SUBTITLE),
     textAlign = TextAlign.Center,
-    color = colorScheme.textSecondary,
+    color = HedvigTheme.colorScheme.textSecondary,
     modifier = Modifier.fillMaxWidth(),
   )
   Box(
@@ -113,8 +112,8 @@ private fun RemovePayinMethodBottomSheetContent(
       badge = {
         PaymentMethodTileBadge(
           icon = HedvigIcons.Minus,
-          containerColor = colorScheme.fillPrimary,
-          contentColor = colorScheme.fillNegative,
+          containerColor = HedvigTheme.colorScheme.fillPrimary,
+          contentColor = HedvigTheme.colorScheme.fillNegative,
         )
       },
       mark = { PayinMethodMark(method, Modifier.size(PaymentMethodMarkSize)) },
@@ -157,7 +156,7 @@ private fun RemovePayinMethodBottomSheetContent(
 @HedvigShortMultiScreenPreview
 private fun PreviewRemovePayinMethodBottomSheetContent() {
   HedvigTheme {
-    Surface(color = colorScheme.backgroundPrimary) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       Column(
         Modifier
           .fillMaxWidth()

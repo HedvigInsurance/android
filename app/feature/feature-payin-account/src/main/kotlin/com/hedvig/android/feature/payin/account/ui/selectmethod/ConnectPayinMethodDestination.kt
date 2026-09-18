@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
@@ -34,7 +35,6 @@ import hedvig.resources.PAYMENT_OPTION_TRUSTLY_SUBTITLE
 import hedvig.resources.Res
 import hedvig.resources.general_cancel_button
 import hedvig.resources.swish
-import octopus.type.MemberPaymentProvider
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -51,15 +51,15 @@ internal fun ConnectPayinMethodDestination(
     onProviderSelected = { viewModel.emit(SelectPayinMethodEvent.SelectProvider(it)) },
     onSubmitSelected = {
       when (uiState.selectedProvider) {
-        MemberPaymentProvider.TRUSTLY -> {
+        PaymentProvider.Trustly -> {
           onTrustlySelected()
         }
 
-        MemberPaymentProvider.SWISH -> {
+        PaymentProvider.Swish -> {
           onSwishSelected()
         }
 
-        MemberPaymentProvider.INVOICE -> {
+        PaymentProvider.Invoice -> {
           onInvoiceSelected()
         }
 
@@ -73,7 +73,7 @@ internal fun ConnectPayinMethodDestination(
 @Composable
 private fun ConnectPayinMethodScreen(
   uiState: ConnectPayinMethodUiState,
-  onProviderSelected: (MemberPaymentProvider) -> Unit,
+  onProviderSelected: (PaymentProvider) -> Unit,
   onSubmitSelected: () -> Unit,
   navigateUp: () -> Unit,
 ) {
@@ -102,8 +102,8 @@ private fun ConnectPayinMethodScreen(
         )
       },
       selectedOption = uiState.selectedProvider?.let { RadioOptionId(it.rawValue) },
-      onRadioOptionSelected = { onProviderSelected(MemberPaymentProvider.safeValueOf(it.id)) },
-      optionIcon = { PayinProviderPillow(MemberPaymentProvider.safeValueOf(it.id)) },
+      onRadioOptionSelected = { option -> PaymentProvider.fromRawValue(option.id)?.let(onProviderSelected) },
+      optionIcon = { PayinProviderPillow(PaymentProvider.fromRawValue(it.id)) },
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
@@ -133,10 +133,10 @@ private fun ConnectPayinMethodScreen(
  * of the group.
  */
 @Composable
-private fun MemberPaymentProvider.toRadioOption(currentProviders: List<MemberPaymentProvider>): RadioOption? {
+private fun PaymentProvider.toRadioOption(currentProviders: List<PaymentProvider>): RadioOption? {
   val id = RadioOptionId(rawValue)
   return when (this) {
-    MemberPaymentProvider.TRUSTLY -> RadioOption(
+    PaymentProvider.Trustly -> RadioOption(
       id = id,
       text = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_BANK_LABEL),
       label = if (currentProviders.contains(this)) {
@@ -146,7 +146,7 @@ private fun MemberPaymentProvider.toRadioOption(currentProviders: List<MemberPay
       },
     )
 
-    MemberPaymentProvider.SWISH -> RadioOption(
+    PaymentProvider.Swish -> RadioOption(
       id = id,
       text = stringResource(Res.string.swish),
       label = if (currentProviders.contains(this)) {
@@ -156,7 +156,7 @@ private fun MemberPaymentProvider.toRadioOption(currentProviders: List<MemberPay
       },
     )
 
-    MemberPaymentProvider.INVOICE -> RadioOption(
+    PaymentProvider.Invoice -> RadioOption(
       id = id,
       text = stringResource(Res.string.PAYMENTS_INVOICE),
       label = if (currentProviders.contains(this)) {
@@ -178,13 +178,13 @@ private fun PreviewConnectPayinMethodScreen() {
       ConnectPayinMethodScreen(
         uiState = ConnectPayinMethodUiState(
           availableProviders = listOf(
-            MemberPaymentProvider.SWISH,
-            MemberPaymentProvider.INVOICE,
-            MemberPaymentProvider.TRUSTLY,
+            PaymentProvider.Swish,
+            PaymentProvider.Invoice,
+            PaymentProvider.Trustly,
           ),
-          selectedProvider = MemberPaymentProvider.TRUSTLY,
+          selectedProvider = PaymentProvider.Trustly,
           currentProviders = listOf(
-            MemberPaymentProvider.SWISH,
+            PaymentProvider.Swish,
           ),
         ),
         onProviderSelected = {},

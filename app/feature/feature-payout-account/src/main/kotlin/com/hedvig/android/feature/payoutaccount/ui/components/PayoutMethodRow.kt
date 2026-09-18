@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.EmptyContentDescription
+import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -32,7 +33,6 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Lock
 import com.hedvig.android.design.system.hedvig.icon.Trustly
 import com.hedvig.android.design.system.hedvig.icon.colored.Swish
-import octopus.type.MemberPaymentProvider
 
 /** How far the brand mark fades on a locked row, where it reads as a label rather than an action. */
 private const val LockedMarkAlpha = 0.5f
@@ -43,7 +43,7 @@ private const val LockedMarkAlpha = 0.5f
  */
 @Composable
 internal fun LockedPayoutMethodRow(
-  provider: MemberPaymentProvider,
+  provider: PaymentProvider,
   title: String,
   subtitle: String,
   modifier: Modifier = Modifier,
@@ -85,7 +85,7 @@ internal fun LockedPayoutMethodRow(
  * behind the monochrome ones, which pick up the tile's content colour.
  */
 @Composable
-internal fun PayoutProviderPillow(provider: MemberPaymentProvider?, modifier: Modifier = Modifier) {
+internal fun PayoutProviderPillow(provider: PaymentProvider?, modifier: Modifier = Modifier) {
   val onDarkTile = provider.onDarkTile
   PaymentMethodPillow(
     modifier = modifier,
@@ -96,7 +96,7 @@ internal fun PayoutProviderPillow(provider: MemberPaymentProvider?, modifier: Mo
 }
 
 @Composable
-private fun LockedPayoutProviderPillow(provider: MemberPaymentProvider, modifier: Modifier = Modifier) {
+private fun LockedPayoutProviderPillow(provider: PaymentProvider, modifier: Modifier = Modifier) {
   val onDarkTile = provider.onDarkTile
   PaymentMethodPillow(
     modifier = modifier,
@@ -119,27 +119,27 @@ private fun LockedPayoutProviderPillow(provider: MemberPaymentProvider, modifier
  * backend adds later still renders.
  */
 @Composable
-internal fun PayoutProviderMark(provider: MemberPaymentProvider?, modifier: Modifier = Modifier) {
+internal fun PayoutProviderMark(provider: PaymentProvider?, modifier: Modifier = Modifier) {
   when (provider) {
-    MemberPaymentProvider.TRUSTLY -> Icon(HedvigIcons.Trustly, EmptyContentDescription, modifier)
+    PaymentProvider.Trustly -> Icon(HedvigIcons.Trustly, EmptyContentDescription, modifier)
 
     // todo: get icon from design!
-    MemberPaymentProvider.NORDEA -> Icon(HedvigIcons.Card, EmptyContentDescription, modifier)
+    PaymentProvider.Nordea -> Icon(HedvigIcons.Card, EmptyContentDescription, modifier)
 
-    MemberPaymentProvider.SWISH -> Image(HedvigIcons.Swish, EmptyContentDescription, modifier)
+    PaymentProvider.Swish -> Image(HedvigIcons.Swish, EmptyContentDescription, modifier)
 
     else -> PaymentMethodPlusMark(modifier)
   }
 }
 
 /** Trustly's mark is monochrome, so it reads better inverted on a dark tile than on the white one. */
-private val MemberPaymentProvider?.onDarkTile: Boolean
-  get() = this == MemberPaymentProvider.TRUSTLY
+private val PaymentProvider?.onDarkTile: Boolean
+  get() = this == PaymentProvider.Trustly
 
 @Composable
 @HedvigPreview
 private fun PreviewLockedPayoutMethodRow(
-  @PreviewParameter(PayoutProviderPreviewProvider::class) provider: MemberPaymentProvider,
+  @PreviewParameter(PayoutProviderPreviewProvider::class) provider: PaymentProvider,
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
@@ -159,10 +159,10 @@ private fun PreviewLockedPayoutMethodRow(
 }
 
 private class PayoutProviderPreviewProvider :
-  CollectionPreviewParameterProvider<MemberPaymentProvider>(
+  CollectionPreviewParameterProvider<PaymentProvider>(
     listOf(
-      MemberPaymentProvider.SWISH,
-      MemberPaymentProvider.TRUSTLY,
-      MemberPaymentProvider.NORDEA,
+      PaymentProvider.Swish,
+      PaymentProvider.Trustly,
+      PaymentProvider.Nordea,
     ),
   )

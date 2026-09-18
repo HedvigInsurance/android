@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.feature.payoutaccount.data.GetPayoutAccountUseCase
 import com.hedvig.android.feature.payoutaccount.data.PayoutAccount
 import com.hedvig.android.feature.payoutaccount.data.PayoutAccountData
@@ -16,7 +17,6 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Inject
-import octopus.type.MemberPaymentProvider
 
 @Inject
 @HedvigViewModel(ActivityRetainedScope::class)
@@ -42,7 +42,7 @@ internal sealed interface PayoutAccountOverviewUiState {
 
   data class Content(
     val currentMethod: PayoutAccount?,
-    val availablePayoutMethods: List<MemberPaymentProvider>,
+    val availablePayoutMethods: List<PaymentProvider>,
   ) : PayoutAccountOverviewUiState
 }
 

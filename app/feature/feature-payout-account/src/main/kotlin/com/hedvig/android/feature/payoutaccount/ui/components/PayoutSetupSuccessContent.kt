@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.LoadingState
@@ -18,7 +19,6 @@ import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import hedvig.resources.Res
 import hedvig.resources.general_continue_button
-import octopus.type.MemberPaymentProvider
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -26,11 +26,7 @@ import org.jetbrains.compose.resources.stringResource
  * checkmark and the only thing left to do is leave the flow.
  */
 @Composable
-internal fun ColumnScope.PayoutSetupSuccessContent(
-  provider: MemberPaymentProvider,
-  title: String,
-  onContinue: () -> Unit,
-) {
+internal fun ColumnScope.PayoutSetupSuccessContent(provider: PaymentProvider, title: String, onContinue: () -> Unit) {
   Spacer(Modifier.height(8.dp))
   FlowHeading(
     title = title,

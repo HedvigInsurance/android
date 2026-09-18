@@ -123,9 +123,8 @@ import hedvig.resources.Res
 import hedvig.resources.TAB_PAYMENTS_TITLE
 import hedvig.resources.info_card_missing_payment_body
 import hedvig.resources.info_card_missing_payment_missing_payments_body
-import kotlin.time.Clock
 import hedvig.resources.swish
-import kotlin.time.Clock.System
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
