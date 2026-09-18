@@ -10,6 +10,13 @@ apply {
   from(file("gradle/projectDependencyGraph.gradle"))
 }
 
+tasks.register("accessibilityChecks") {
+  group = "verification"
+  description = "Runs the design system accessibility checks against a connected device or emulator. " +
+    "Start one first: the task fails with \"No online devices found\" otherwise."
+  dependsOn(":accessibility-test:connectedAndroidTest")
+}
+
 dependencyAnalysis {
   issues {
     all {
