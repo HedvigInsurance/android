@@ -562,6 +562,11 @@ private fun ClaimChatScrollableContent(
   // Only the step that answers with text or voice is bottom attached, so that input stays reachable while
   // reading back through the conversation. Every other step keeps its actions inline in the transcript.
   val bottomAttachedStep = uiState.steps.lastOrNull()?.takeIf { it.stepContent is StepContent.AudioRecording }
+  // An inline step opens its bottom half off the same signal that marks the reveal shown, so gating the dock on
+  // that signal gives it the wait every other step already has. The docked input sits outside the list and cannot
+  // see the reveal state held per item.
+  val bottomAttachedStepIsRevealed = bottomAttachedStep != null &&
+    uiState.stepsWithShownAnimations.contains(bottomAttachedStep.id)
   // When an input is attached it carries the bottom inset, so the list stops short of it.
   val listContentPadding = if (bottomAttachedStep == null) {
     contentPadding
@@ -631,7 +636,7 @@ private fun ClaimChatScrollableContent(
         }
       }
       AnimatedVisibility(
-        visible = bottomAttachedStep != null && !isScrolledBack,
+        visible = bottomAttachedStepIsRevealed && !isScrolledBack,
         enter = slideInVertically { it } + fadeIn(),
         exit = slideOutVertically { it } + fadeOut(),
       ) {
