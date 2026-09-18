@@ -379,6 +379,11 @@ private fun ClaimChatScreenContent(
   }
   val lazyListState = rememberLazyListState()
   val coroutineScope = rememberCoroutineScope()
+  val lastItemHeightAdjustingState = rememberLastItemHeightAdjustingState(
+    density = LocalDensity.current,
+    spaceBetweenItems = SPACE_BETWEEN_STEPS,
+    steps = uiState.steps,
+  )
   // The conversation is scrolled back off the current question. The docked input stands down while that is
   // true and the arrow back to the bottom takes its place, so the two never share the same corner.
   //
@@ -463,6 +468,7 @@ private fun ClaimChatScreenContent(
       ClaimChatScrollableContent(
         uiState = uiState,
         lazyListState = lazyListState,
+        lastItemHeightAdjustingState = lastItemHeightAdjustingState,
         isScrolledBack = isScrolledBack,
         standDownOnDragBack = standDownOnDragBack,
         onDockedInputHeightChanged = { dockedInputHeight = it },
@@ -512,9 +518,18 @@ private fun ClaimChatScreenContent(
   LaunchedEffect(uiState.steps.lastIndex) {
     isScrolledBack = false
   }
+  // The minimum height is also a key, not just the step count. It is measured from the step above, whose answer
+  // only takes the shape it keeps once it stops being the step being answered, so it lands a layout pass after
+  // the new step does. Scrolling on the step count alone reaches the end of a list whose last item is about to
+  // grow, and the controls it grows by end up below the fold with nothing left to bring them back up.
+  //
   // Instant, not animated: this fires on every keystroke that rewraps the input, and a 400ms animation on each
   // one is the flicker. Against the end of the list it moves nothing, so there is nothing to animate.
-  LaunchedEffect(dockedInputHeight, uiState.steps.lastIndex) {
+  LaunchedEffect(
+    dockedInputHeight,
+    uiState.steps.lastIndex,
+    lastItemHeightAdjustingState.preferredMinHeightForFullScreenItem,
+  ) {
     if (!isScrolledBack && uiState.steps.isNotEmpty()) {
       lazyListState.scrollToItem(uiState.steps.lastIndex, scrollOffset = SCROLL_PAST_END_OF_LIST)
     }
@@ -525,6 +540,7 @@ private fun ClaimChatScreenContent(
 private fun ClaimChatScrollableContent(
   uiState: ClaimChatUiState.ClaimChat,
   lazyListState: LazyListState,
+  lastItemHeightAdjustingState: LastItemHeightAdjustingState,
   isScrolledBack: Boolean,
   standDownOnDragBack: NestedScrollConnection,
   onDockedInputHeightChanged: (Int) -> Unit,
@@ -538,22 +554,19 @@ private fun ClaimChatScrollableContent(
   closeFlow: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val density = LocalDensity.current
-  val spaceBetweenItems = 8.dp
   val contentPadding = WindowInsets.safeDrawing
     .only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal)
     .asPaddingValues()
     .plus(PaddingValues(16.dp))
 
-  val lastItemHeightAdjustingState = rememberLastItemHeightAdjustingState(
-    density = density,
-    spaceBetweenItems = spaceBetweenItems,
-    steps = uiState.steps,
-  )
-
   // Only the step that answers with text or voice is bottom attached, so that input stays reachable while
   // reading back through the conversation. Every other step keeps its actions inline in the transcript.
   val bottomAttachedStep = uiState.steps.lastOrNull()?.takeIf { it.stepContent is StepContent.AudioRecording }
+  // An inline step opens its bottom half off the same signal that marks the reveal shown, so gating the dock on
+  // that signal gives it the wait every other step already has. The docked input sits outside the list and cannot
+  // see the reveal state held per item.
+  val bottomAttachedStepIsRevealed = bottomAttachedStep != null &&
+    uiState.stepsWithShownAnimations.contains(bottomAttachedStep.id)
   // When an input is attached it carries the bottom inset, so the list stops short of it.
   val listContentPadding = if (bottomAttachedStep == null) {
     contentPadding
@@ -568,9 +581,11 @@ private fun ClaimChatScrollableContent(
     val availableHeight = maxHeight
     Column {
       Box(Modifier.weight(1f), propagateMinConstraints = true) {
+        // The list's own padding, not the screen's: with an input docked the list stops short of the bottom
+        // inset and the area a step can fill is that much taller than the one the screen leaves.
         Box(
           Modifier
-            .padding(contentPadding)
+            .padding(listContentPadding)
             .onSizeChanged { size ->
               lastItemHeightAdjustingState.onContainerSizeChanged(size)
             },
@@ -579,7 +594,7 @@ private fun ClaimChatScrollableContent(
           state = lazyListState,
           modifier = Modifier.nestedScroll(standDownOnDragBack),
           contentPadding = listContentPadding,
-          verticalArrangement = Arrangement.spacedBy(spaceBetweenItems, Alignment.Top),
+          verticalArrangement = Arrangement.spacedBy(SPACE_BETWEEN_STEPS, Alignment.Top),
         ) {
           items(
             items = uiState.steps,
@@ -621,7 +636,7 @@ private fun ClaimChatScrollableContent(
         }
       }
       AnimatedVisibility(
-        visible = bottomAttachedStep != null && !isScrolledBack,
+        visible = bottomAttachedStepIsRevealed && !isScrolledBack,
         enter = slideInVertically { it } + fadeIn(),
         exit = slideOutVertically { it } + fadeOut(),
       ) {
@@ -663,6 +678,8 @@ private fun ClaimChatScrollableContent(
     }
   }
 }
+
+private val SPACE_BETWEEN_STEPS = 8.dp
 
 // Far enough that a nudge or an overscroll settle does not stand the input down, short enough that a deliberate
 // look back does.
