@@ -1,0 +1,5 @@
+mutation RemovePayinMethod($provider: MemberPaymentProvider!) {
+  paymentMethodRemoveMethod(provider: $provider) {
+    message
+  }
+}

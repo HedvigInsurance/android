@@ -24,7 +24,7 @@ query UpcomingPayment {
         ...MoneyFragment
       }
     }
-    paymentMethods {
+    paymentMethods(version: 2) {
       payinMethods {
         ...MemberPaymentMethodFragment
       }

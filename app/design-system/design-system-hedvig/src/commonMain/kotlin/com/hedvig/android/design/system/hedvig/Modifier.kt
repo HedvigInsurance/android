@@ -22,7 +22,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.drawOutline
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
@@ -49,6 +52,25 @@ fun Modifier.clearFocusOnTap(): Modifier = this.composed {
       onTap = { focusManager.clearFocus() },
     )
   }
+}
+
+/** Draws a dashed outline that follows [shape], on top of the content so it is not clipped. */
+fun Modifier.dashedBorder(
+  color: Color,
+  shape: Shape,
+  strokeWidth: Dp = 1.dp,
+  dashOn: Dp = 4.dp,
+  dashOff: Dp = 4.dp,
+): Modifier = this.drawWithContent {
+  drawContent()
+  drawOutline(
+    outline = shape.createOutline(size, layoutDirection, this),
+    color = color,
+    style = Stroke(
+      width = strokeWidth.toPx(),
+      pathEffect = PathEffect.dashPathEffect(floatArrayOf(dashOn.toPx(), dashOff.toPx())),
+    ),
+  )
 }
 
 /**

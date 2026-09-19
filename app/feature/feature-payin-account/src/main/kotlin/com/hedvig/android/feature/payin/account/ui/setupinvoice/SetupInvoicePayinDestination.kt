@@ -1,0 +1,138 @@
+package com.hedvig.android.feature.payin.account.ui.setupinvoice
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.Surface
+import hedvig.resources.CONTACT_INFO_CHANGES_SAVED
+import hedvig.resources.PAYMENTS_INVOICE
+import hedvig.resources.Res
+import org.jetbrains.compose.resources.stringResource
+
+@Composable
+internal fun SetupInvoicePayinDestination(
+  viewModel: SetupInvoicePayinViewModel,
+  globalSnackBarState: GlobalSnackBarState,
+  navigateUp: () -> Unit,
+) {
+  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  SetupInvoicePayinScreen(
+    uiState = uiState,
+    globalSnackBarState = globalSnackBarState,
+    onConnect = { viewModel.emit(SetupInvoicePayinEvent.Connect) },
+    showedSnackBar = { viewModel.emit(SetupInvoicePayinEvent.ShowedSnackBar) },
+    navigateUp = navigateUp,
+  )
+}
+
+@Composable
+private fun SetupInvoicePayinScreen(
+  uiState: SetupInvoicePayinUiState,
+  globalSnackBarState: GlobalSnackBarState,
+  onConnect: () -> Unit,
+  showedSnackBar: () -> Unit,
+  navigateUp: () -> Unit,
+) {
+  val changesSaved = stringResource(Res.string.CONTACT_INFO_CHANGES_SAVED)
+  LaunchedEffect(uiState.showSuccessSnackBar) {
+    if (!uiState.showSuccessSnackBar) return@LaunchedEffect
+    globalSnackBarState.show(changesSaved, NotificationPriority.Campaign)
+    showedSnackBar()
+  }
+
+  HedvigScaffold(
+    topAppBarText = stringResource(Res.string.PAYMENTS_INVOICE),
+    navigateUp = navigateUp,
+    modifier = Modifier.fillMaxSize(),
+  ) {
+    // todo: some text here??
+    Column(
+      modifier = Modifier
+        .weight(1f)
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+      verticalArrangement = Arrangement.Center,
+      horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+      // TODO: Add "You can choose invoice as your billing method. You will then get a monthly
+      //  invoice via Kivra or email if you don't have Kivra account." / "Du kan välja faktura som
+      //  betalningsmetod. Du får då en månadsfaktura via Kivra, eller via e-post om du inte har ett
+      //  Kivra-konto." to Lokalise
+      HedvigText(
+        "You can choose invoice as your billing method. " +
+          "You will then get a monthly invoice via Kivra or email if you don't have Kivra account.",
+        textAlign = TextAlign.Center,
+      )
+    }
+    AnimatedVisibility(
+      visible = uiState.errorMessage != null,
+      enter = expandVertically(),
+      exit = shrinkVertically(),
+    ) {
+      HedvigNotificationCard(
+        message = uiState.errorMessage ?: "",
+        priority = NotificationPriority.Attention,
+        modifier = Modifier
+          .padding(horizontal = 16.dp)
+          .padding(bottom = 4.dp)
+          .fillMaxWidth(),
+      )
+    }
+    Spacer(Modifier.height(16.dp))
+    HedvigButton(
+      // TODO: Add "Set invoice as billing method" / "Välj faktura som betalningsmetod" to Lokalise
+      text = "Set invoice as billing method",
+      onClick = onConnect,
+      enabled = !uiState.isLoading,
+      isLoading = uiState.isLoading,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+    )
+    Spacer(Modifier.height(16.dp))
+  }
+}
+
+@Composable
+@HedvigShortMultiScreenPreview
+private fun PreviewPayoutAccountOverviewScreen() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      SetupInvoicePayinScreen(
+        uiState = SetupInvoicePayinUiState(
+          false,
+          null,
+          showSuccessSnackBar = false,
+        ),
+        globalSnackBarState = GlobalSnackBarState(),
+        {},
+        {},
+        {},
+      )
+    }
+  }
+}
