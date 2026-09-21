@@ -51,6 +51,8 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.IntrinsicMeasurable
 import androidx.compose.ui.layout.IntrinsicMeasureScope
 import androidx.compose.ui.layout.Layout
@@ -336,98 +338,104 @@ internal fun AudioRecorderBubble(
         },
         modifier = Modifier.fillMaxWidth(),
       ) { mode ->
-        when (mode) {
-          InputMode.Text -> {
-            // A short window answers full screen, and the screen is already drawing that editor over this
-            // card. Leaving the card composed underneath would put a second field on the same answer, and it
-            // would take the focus the member is typing into.
-            if (!isShortWindow) {
-              val freeText = recordingState as? AudioRecordingStepState.FreeTextDescription
-              InlineTextAnswerCard(
-                draft = freeTextDraft,
-                minLength = freeTextMinLength,
-                maxLength = freeTextMaxLength,
-                errorType = freeText?.errorType,
-                hasError = freeText?.hasError == true,
+        // Both children are composed while the crossfade runs, and the entering one is laid out at the top
+        // of the still shrinking container, right where the leaving card’s close button was. A second tap
+        // arriving mid transition would otherwise land on Write or Record and reopen the card it just
+        // closed, so only the settled child takes touches.
+        Box(Modifier.touchesOnlyWhenSettled(transition.currentState == transition.targetState)) {
+          when (mode) {
+            InputMode.Text -> {
+              // A short window answers full screen, and the screen is already drawing that editor over this
+              // card. Leaving the card composed underneath would put a second field on the same answer, and it
+              // would take the focus the member is typing into.
+              if (!isShortWindow) {
+                val freeText = recordingState as? AudioRecordingStepState.FreeTextDescription
+                InlineTextAnswerCard(
+                  draft = freeTextDraft,
+                  minLength = freeTextMinLength,
+                  maxLength = freeTextMaxLength,
+                  errorType = freeText?.errorType,
+                  hasError = freeText?.hasError == true,
+                  isSubmitting = isSubmitting,
+                  onCancel = {
+                    focusManager.clearFocus()
+                    // Calls off an answer still in flight before leaving, so Avbryt does what it says rather
+                    // than closing over a submission that lands anyway.
+                    onCancelSubmission()
+                    onSwitchToAudioRecording()
+                  },
+                  onSave = { text ->
+                    focusManager.clearFocus()
+                    onSaveFreeText(text)
+                    submitFreeText()
+                  },
+                )
+              }
+            }
+
+            InputMode.Voice -> {
+              InlineVoiceAnswerCard(
+                audioRecordingState = recordingState as? AudioRecordingStepState.AudioRecording
+                  ?: AudioRecordingStepState.AudioRecording.NotRecording,
+                clock = clock,
+                shouldShowRequestPermissionRationale = onShouldShowRequestPermissionRationale,
+                startRecording = startRecording,
+                stopRecording = stopRecording,
+                submitAudioFile = submitAudioFile,
+                redo = redoRecording,
+                openAppSettings = openAppSettings,
                 isSubmitting = isSubmitting,
-                onCancel = {
-                  focusManager.clearFocus()
-                  // Calls off an answer still in flight before leaving, so Avbryt does what it says rather
-                  // than closing over a submission that lands anyway.
-                  onCancelSubmission()
-                  onSwitchToAudioRecording()
-                },
-                onSave = { text ->
-                  focusManager.clearFocus()
-                  onSaveFreeText(text)
-                  submitFreeText()
-                },
+                onClose = discardRecording,
               )
             }
-          }
 
-          InputMode.Voice -> {
-            InlineVoiceAnswerCard(
-              audioRecordingState = recordingState as? AudioRecordingStepState.AudioRecording
-                ?: AudioRecordingStepState.AudioRecording.NotRecording,
-              clock = clock,
-              shouldShowRequestPermissionRationale = onShouldShowRequestPermissionRationale,
-              startRecording = startRecording,
-              stopRecording = stopRecording,
-              submitAudioFile = submitAudioFile,
-              redo = redoRecording,
-              openAppSettings = openAppSettings,
-              isSubmitting = isSubmitting,
-              onClose = discardRecording,
-            )
-          }
-
-          InputMode.Resting -> {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-              Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-              ) {
-                if (freeTextAvailable) {
+            InputMode.Resting -> {
+              Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(
+                  modifier = Modifier.fillMaxWidth(),
+                  horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                  if (freeTextAvailable) {
+                    HedvigButton(
+                      onClick = {
+                        focusManager.clearFocus()
+                        onSwitchToFreeText()
+                      },
+                      enabled = true,
+                      buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+                      buttonSize = ButtonDefaults.ButtonSize.Large,
+                      modifier = Modifier.weight(1f),
+                    ) {
+                      Icon(HedvigIcons.PenEdit, null, Modifier.size(24.dp))
+                      Spacer(Modifier.width(8.dp))
+                      HedvigText(stringResource(Res.string.claims_write))
+                    }
+                  }
                   HedvigButton(
                     onClick = {
                       focusManager.clearFocus()
-                      onSwitchToFreeText()
+                      openRecorder()
                     },
                     enabled = true,
                     buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
                     buttonSize = ButtonDefaults.ButtonSize.Large,
                     modifier = Modifier.weight(1f),
                   ) {
-                    Icon(HedvigIcons.PenEdit, null, Modifier.size(24.dp))
+                    Icon(HedvigIcons.Mic, null, Modifier.size(24.dp))
                     Spacer(Modifier.width(8.dp))
-                    HedvigText(stringResource(Res.string.claims_write))
+                    HedvigText(stringResource(Res.string.claims_record))
                   }
                 }
-                HedvigButton(
-                  onClick = {
-                    focusManager.clearFocus()
-                    openRecorder()
-                  },
-                  enabled = true,
-                  buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-                  buttonSize = ButtonDefaults.ButtonSize.Large,
-                  modifier = Modifier.weight(1f),
-                ) {
-                  Icon(HedvigIcons.Mic, null, Modifier.size(24.dp))
-                  Spacer(Modifier.width(8.dp))
-                  HedvigText(stringResource(Res.string.claims_record))
+                if (canSkip) {
+                  HedvigButton(
+                    stringResource(Res.string.claims_skip_button),
+                    onClick = onSkip,
+                    isLoading = skipButtonLoading,
+                    enabled = !isSubmitting,
+                    modifier = Modifier.fillMaxWidth(),
+                    buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
+                  )
                 }
-              }
-              if (canSkip) {
-                HedvigButton(
-                  stringResource(Res.string.claims_skip_button),
-                  onClick = onSkip,
-                  isLoading = skipButtonLoading,
-                  enabled = !isSubmitting,
-                  modifier = Modifier.fillMaxWidth(),
-                  buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
-                )
               }
             }
           }
@@ -438,6 +446,26 @@ internal fun AudioRecorderBubble(
 }
 
 private enum class InputMode { Resting, Text, Voice }
+
+/**
+ * Swallows touches while [settled] is false.
+ *
+ * [AnimatedContent] keeps both children composed and hit testable for the length of the crossfade, and lays
+ * the entering one out at the top of a container that is still the size of the leaving one. The entering
+ * child therefore answers taps aimed at what the member can still see, so it only takes touches once its own
+ * transition has finished.
+ */
+private fun Modifier.touchesOnlyWhenSettled(settled: Boolean): Modifier = if (settled) {
+  this
+} else {
+  pointerInput(Unit) {
+    awaitPointerEventScope {
+      while (true) {
+        awaitPointerEvent(PointerEventPass.Initial).changes.forEach { it.consume() }
+      }
+    }
+  }
+}
 
 @Composable
 private fun InlineVoiceAnswerCard(
