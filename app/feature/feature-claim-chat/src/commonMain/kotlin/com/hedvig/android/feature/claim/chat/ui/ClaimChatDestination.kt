@@ -337,47 +337,34 @@ private fun ClaimChatScreenContent(
   }
 
   if (uiState.errorSubmittingStep != null) {
-    val retryFailedSubmission = uiState.retryFailedSubmission
-    val messageRes = when (uiState.errorSubmittingStep) {
-      ClaimChatErrorMessage.NeedsUpdate -> Res.string.EMBARK_UPDATE_APP_BODY
-      ClaimChatErrorMessage.ConnectionError -> Res.string.NETWORK_ERROR_ALERT_MESSAGE
-      ClaimChatErrorMessage.GeneralError -> Res.string.something_went_wrong
+    val dismiss = stringResource(Res.string.general_close_button) to null
+    val (messageRes, button) = when (uiState.errorSubmittingStep) {
+      ClaimChatErrorMessage.NeedsUpdate -> {
+        Res.string.EMBARK_UPDATE_APP_BODY to (stringResource(Res.string.EMBARK_UPDATE_APP_BUTTON) to openPlayStore)
+      }
+
+      ClaimChatErrorMessage.ConnectionError -> {
+        Res.string.NETWORK_ERROR_ALERT_MESSAGE to if (uiState.canRetryFailedSubmission) {
+          stringResource(Res.string.NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION) to
+            { onEvent(ClaimChatEvent.RetryFailedSubmission) }
+        } else {
+          dismiss
+        }
+      }
+
+      ClaimChatErrorMessage.GeneralError -> {
+        Res.string.something_went_wrong to dismiss
+      }
     }
+    val (buttonText, onButtonClick) = button
     ErrorDialog(
       title = stringResource(Res.string.general_error),
       message = stringResource(messageRes),
       onDismiss = {
         onEvent(ClaimChatEvent.DismissErrorDialog)
       },
-      buttonText = when {
-        uiState.errorSubmittingStep == ClaimChatErrorMessage.NeedsUpdate -> {
-          stringResource(Res.string.EMBARK_UPDATE_APP_BUTTON)
-        }
-
-        retryFailedSubmission != null -> {
-          stringResource(Res.string.NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION)
-        }
-
-        else -> {
-          stringResource(Res.string.general_close_button)
-        }
-      },
-      onButtonClick = when {
-        uiState.errorSubmittingStep == ClaimChatErrorMessage.NeedsUpdate -> {
-          openPlayStore
-        }
-
-        retryFailedSubmission != null -> {
-          {
-            onEvent(ClaimChatEvent.DismissErrorDialog)
-            onEvent(retryFailedSubmission)
-          }
-        }
-
-        else -> {
-          null
-        }
-      },
+      buttonText = buttonText,
+      onButtonClick = onButtonClick,
     )
   }
   if (uiState.showConfirmEditDialogForStep != null) {
