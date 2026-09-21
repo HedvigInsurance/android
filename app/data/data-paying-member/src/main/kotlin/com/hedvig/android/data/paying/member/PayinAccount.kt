@@ -46,6 +46,15 @@ enum class InvoiceDelivery {
   Mail,
 }
 
+/** How the invoice reaches the member, named the way the member is shown it. */
+fun InvoiceDelivery?.toDeliveryString(): String? {
+  return when (this) {
+    InvoiceDelivery.Kivra -> "Kivra"
+    InvoiceDelivery.Mail -> "Email"
+    null -> null
+  }
+}
+
 /** Null for a provider the app has no screen for, which callers drop from the methods they show. */
 fun MemberPaymentMethodFragment.toPayinAccount(): PayinAccount? {
   val isPending = status == MemberPaymentMethodStatus.PENDING
@@ -112,6 +121,15 @@ fun PayinAccount.Trustly.maskedAccountNumber(): String? {
   if (whole.length <= 8) return null
   return "**** ${whole.takeLast(4)}"
 }
+
+/**
+ * The account on one line, as a row subtitle shows it: the bank followed by [maskedAccountNumber].
+ * Either half alone when the backend gave only that one, and null when it gave neither.
+ */
+fun PayinAccount.Trustly.bankAndMaskedAccount(): String? = listOfNotNull(
+  bankName?.takeIf { it.isNotBlank() },
+  maskedAccountNumber(),
+).joinToString(" ").ifEmpty { null }
 
 private fun PaymentMethodInvoiceDelivery?.toInvoiceDelivery(): InvoiceDelivery? {
   return when (this) {

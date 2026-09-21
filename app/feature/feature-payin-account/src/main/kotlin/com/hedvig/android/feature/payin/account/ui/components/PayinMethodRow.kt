@@ -20,7 +20,10 @@ import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.data.paying.member.InvoiceDelivery
 import com.hedvig.android.data.paying.member.PayinAccount
 import com.hedvig.android.data.paying.member.PaymentProvider
+import com.hedvig.android.data.paying.member.bankAndMaskedAccount
+import com.hedvig.android.data.paying.member.formatSwishPhoneNumber
 import com.hedvig.android.data.paying.member.provider
+import com.hedvig.android.data.paying.member.toDeliveryString
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -36,7 +39,6 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Trustly
 import com.hedvig.android.design.system.hedvig.icon.colored.Kivra
 import com.hedvig.android.design.system.hedvig.icon.colored.Swish
-import com.hedvig.android.feature.payin.account.data.toDeliveryString
 import hedvig.resources.PAYMENTS_BANK_LABEL
 import hedvig.resources.PAYMENT_PRIMARY_LABEL
 import hedvig.resources.REFERRAL_PENDING_STATUS_LABEL
@@ -91,7 +93,7 @@ internal fun payinMethodSubtitle(method: PayinAccount): String? {
   val pendingLabel = stringResource(Res.string.REFERRAL_PENDING_STATUS_LABEL)
   return when (method) {
     is PayinAccount.Trustly -> {
-      method.maskedAccount() ?: pendingLabel.takeIf { method.isPending }
+      method.bankAndMaskedAccount() ?: pendingLabel.takeIf { method.isPending }
     }
 
     is PayinAccount.SwishPayin -> {
@@ -165,24 +167,6 @@ internal fun PrimaryMethodLabel(modifier: Modifier = Modifier) {
       modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp),
     )
   }
-}
-
-private fun PayinAccount.Trustly.maskedAccount(): String? {
-  val bank = bankName ?: return null
-  val lastFour = accountNumber?.takeLast(4)?.takeIf { it.isNotBlank() } ?: return bank
-  return "$bank ···· $lastFour"
-}
-
-internal fun formatSwishPhoneNumber(phoneNumber: String): String {
-  val digits = phoneNumber.take(15)
-  val sb = StringBuilder()
-  for (i in digits.indices) {
-    sb.append(digits[i])
-    if (i in setOf(2, 5, 7)) {
-      sb.append("-")
-    }
-  }
-  return sb.toString()
 }
 
 @Composable

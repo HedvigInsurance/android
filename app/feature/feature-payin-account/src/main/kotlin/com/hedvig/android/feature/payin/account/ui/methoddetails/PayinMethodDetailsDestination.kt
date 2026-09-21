@@ -22,6 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.data.paying.member.InvoiceDelivery
 import com.hedvig.android.data.paying.member.PayinAccount
 import com.hedvig.android.data.paying.member.maskedAccountNumber
+import com.hedvig.android.data.paying.member.toDeliveryString
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -44,7 +45,6 @@ import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
-import com.hedvig.android.feature.payin.account.data.toDeliveryString
 import com.hedvig.android.feature.payin.account.ui.components.PayinMethodRow
 import com.hedvig.android.feature.payin.account.ui.components.PrimaryMethodLabel
 import hedvig.resources.GENERAL_REMOVE

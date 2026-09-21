@@ -39,6 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.validation.PhoneNumberRules
+import com.hedvig.android.data.paying.member.formatSwishPhoneNumber
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
@@ -58,7 +59,6 @@ import com.hedvig.android.design.system.hedvig.icon.colored.Swish
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.payin.account.data.SwishSetupOrder
-import com.hedvig.android.feature.payin.account.ui.components.formatSwishPhoneNumber
 import hedvig.resources.CONTACT_INFO_CHANGES_SAVED
 import hedvig.resources.GENERAL_CONFIRM
 import hedvig.resources.ODYSSEY_PHONE_NUMBER_LABEL

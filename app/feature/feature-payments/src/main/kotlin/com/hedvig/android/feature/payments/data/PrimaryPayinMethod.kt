@@ -1,12 +1,13 @@
 package com.hedvig.android.feature.payments.data
 
+import com.hedvig.android.data.paying.member.PayinAccount
+import com.hedvig.android.data.paying.member.bankAndMaskedAccount
+import com.hedvig.android.data.paying.member.formatSwishPhoneNumber
+import com.hedvig.android.data.paying.member.toDeliveryString
+import com.hedvig.android.data.paying.member.toPayinAccount
 import com.hedvig.android.feature.payin.account.navigation.PayinMethodId
 import octopus.fragment.MemberPaymentMethodFragment
-import octopus.fragment.MemberPaymentMethodFragment.PaymentMethodBankAccountDetailsDetails
-import octopus.fragment.MemberPaymentMethodFragment.PaymentMethodInvoiceDetailsDetails
-import octopus.fragment.MemberPaymentMethodFragment.PaymentMethodSwishDetailsDetails
 import octopus.type.MemberPaymentProvider
-import octopus.type.PaymentMethodInvoiceDelivery
 
 /**
  * The method the member is currently charged with, summarised for the payments overview.
@@ -27,44 +28,19 @@ internal fun MemberPaymentMethodFragment.toPrimaryPayinMethod(): PrimaryPayinMet
     MemberPaymentProvider.INVOICE -> PayinMethodId.Invoice
     MemberPaymentProvider.NORDEA, MemberPaymentProvider.UNKNOWN__ -> return null
   }
-  return PrimaryPayinMethod(id = id, descriptor = details?.descriptor())
+  return PrimaryPayinMethod(id = id, descriptor = toPayinAccount()?.descriptor())
 }
 
-private fun MemberPaymentMethodFragment.Details.descriptor(): String? = when (this) {
-  is PaymentMethodSwishDetailsDetails -> {
-    formatSwishPhoneNumber(phoneNumber)
+private fun PayinAccount.descriptor(): String? = when (this) {
+  is PayinAccount.Trustly -> {
+    bankAndMaskedAccount()
   }
 
-  is PaymentMethodBankAccountDetailsDetails -> {
-    val lastFour = account.substringAfter('-', "").takeLast(4).takeIf { it.isNotBlank() }
-    if (lastFour == null) bank else "$bank ···· $lastFour"
+  is PayinAccount.SwishPayin -> {
+    phoneNumber?.let(::formatSwishPhoneNumber)
   }
 
-  is PaymentMethodInvoiceDetailsDetails -> {
-    when (delivery) {
-      // TODO: Add "Kivra" / "Kivra" to Lokalise
-      PaymentMethodInvoiceDelivery.KIVRA -> "Kivra"
-
-      // TODO: Add "Email" / "E-post" to Lokalise
-      PaymentMethodInvoiceDelivery.MAIL -> "Email"
-
-      PaymentMethodInvoiceDelivery.UNKNOWN__ -> null
-    }
+  is PayinAccount.Invoice -> {
+    delivery.toDeliveryString()
   }
-
-  else -> {
-    null
-  }
-}
-
-private fun formatSwishPhoneNumber(phoneNumber: String): String {
-  val digits = phoneNumber.take(15)
-  val sb = StringBuilder()
-  for (i in digits.indices) {
-    sb.append(digits[i])
-    if (i in setOf(2, 5, 7)) {
-      sb.append("-")
-    }
-  }
-  return sb.toString()
 }

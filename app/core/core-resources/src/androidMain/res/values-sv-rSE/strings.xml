@@ -499,6 +499,7 @@
   <string name="HC_QUICK_ACTIONS_FIRSTVET_SUBTITLE">Boka ett samtal med en veterinär</string>
   <string name="HC_QUICK_ACTIONS_FIRSTVET_TITLE">FirstVet</string>
   <string name="HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE">Ändra bank eller bankkonto</string>
+  <string name="HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE_2">Hantera dina betalningsmetoder</string>
   <string name="HC_QUICK_ACTIONS_PAYMENTS_TITLE">Betalning</string>
   <string name="HC_QUICK_ACTIONS_REMOVE_ADDON_SUBTITLE">Ändra eller ta bort aktiva tillägg</string>
   <string name="HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE">Få akut hjälp på din resa</string>
@@ -568,7 +569,6 @@
   <string name="LETTER_TO_EIR_SUBJECT">Fråga angående skadeanmälan - Fordon reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Välj land och språk</string>
   <string name="LOGOUT_BUTTON">Logga ut</string>
-  <string name="MANAGE_BILLING_METHODS_BUTTON">Manage your payment methods</string>
   <string name="MANUAL_CHARGE_CANCELLATION_WARNING">Aktivera ditt försäkringsskydd igen genom att kontakta oss när din betalning har registrerats</string>
   <string name="MARKETING_GET_HEDVIG">Få ett prisförslag</string>
   <string name="MISSING_CONTACT_INFO_CARD_BUTTON">Se över kontaktuppgifter</string>

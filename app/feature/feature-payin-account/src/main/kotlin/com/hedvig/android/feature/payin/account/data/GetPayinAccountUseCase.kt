@@ -9,7 +9,6 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
-import com.hedvig.android.data.paying.member.InvoiceDelivery
 import com.hedvig.android.data.paying.member.PayinAccount
 import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.data.paying.member.sortedForDisplay
@@ -58,15 +57,3 @@ internal val PayinAccount.id: PayinMethodId
     is PayinAccount.SwishPayin -> PayinMethodId.Swish
     is PayinAccount.Invoice -> PayinMethodId.Invoice
   }
-
-internal fun InvoiceDelivery?.toDeliveryString(): String? {
-  return when (this) {
-    // TODO: Add "Kivra" / "Kivra" to Lokalise
-    InvoiceDelivery.Kivra -> "Kivra"
-
-    // TODO: Add "Email" / "E-post" to Lokalise
-    InvoiceDelivery.Mail -> "Email"
-
-    null -> null
-  }
-}
