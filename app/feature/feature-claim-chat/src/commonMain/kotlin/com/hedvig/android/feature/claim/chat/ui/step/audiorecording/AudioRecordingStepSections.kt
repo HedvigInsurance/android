@@ -39,7 +39,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -121,7 +120,6 @@ import com.hedvig.android.design.system.hedvig.icon.Play
 import com.hedvig.android.design.system.hedvig.icon.Reload
 import com.hedvig.android.design.system.hedvig.icon.Stop
 import com.hedvig.android.feature.claim.chat.ClaimChatEvent
-import com.hedvig.android.feature.claim.chat.FreeTextRestrictions
 import com.hedvig.android.feature.claim.chat.data.AudioPath
 import com.hedvig.android.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.android.feature.claim.chat.data.ClaimIntentStep
@@ -129,8 +127,8 @@ import com.hedvig.android.feature.claim.chat.data.FreeTextErrorType
 import com.hedvig.android.feature.claim.chat.data.StepContent
 import com.hedvig.android.feature.claim.chat.ui.common.EditButton
 import com.hedvig.android.feature.claim.chat.ui.common.RoundCornersPill
+import com.hedvig.android.feature.claim.chat.ui.common.SentAnswerRow
 import com.hedvig.android.feature.claim.chat.ui.common.SkippedLabel
-import com.hedvig.android.feature.claim.chat.ui.sentAnswersStartPadding
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import hedvig.resources.AUDIO_RECORDER_LISTEN
@@ -140,10 +138,10 @@ import hedvig.resources.AUDIO_RECORDER_START_OVER
 import hedvig.resources.AUDIO_RECORDER_STOP
 import hedvig.resources.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR
 import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
+import hedvig.resources.CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE
 import hedvig.resources.CLAIMS_USE_AUDIO_RECORDING
 import hedvig.resources.CLAIM_CHAT_USE_AUDIO
 import hedvig.resources.CLAIM_CHAT_USE_TEXT_INPUT
-import hedvig.resources.CLAIM_TRIAGING_TITLE
 import hedvig.resources.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE
 import hedvig.resources.Res
 import hedvig.resources.SAVE_AND_CONTINUE_BUTTON_LABEL
@@ -172,11 +170,12 @@ internal fun AudioRecordingStep(
   stepContent: StepContent.AudioRecording,
   onShowFreeText: () -> Unit,
   onSwitchToAudioRecording: () -> Unit,
-  onLaunchFullScreenEditText: (restrictions: FreeTextRestrictions) -> Unit,
+  freeTextDraft: FreeTextDraftState,
   submitFreeText: () -> Unit,
   submitAudioFile: () -> Unit,
   stopRecording: () -> Unit,
   redoRecording: () -> Unit,
+  discardRecording: () -> Unit,
   onSkip: () -> Unit,
   isCurrentStep: Boolean,
   continueButtonLoading: Boolean,
@@ -196,20 +195,16 @@ internal fun AudioRecordingStep(
       startRecording = startRecording,
       stopRecording = stopRecording,
       submitAudioFile = submitAudioFile,
+      openRecorder = { onEvent(ClaimChatEvent.AudioRecording.OpenRecorder(item.id)) },
+      isRecorderOpen = stepContent.isRecorderOpen,
       redoRecording = redoRecording,
+      discardRecording = discardRecording,
       openAppSettings = openAppSettings,
       freeTextAvailable = true,
       submitFreeText = submitFreeText,
       onSwitchToFreeText = onShowFreeText,
       onSwitchToAudioRecording = onSwitchToAudioRecording,
-      onLaunchFullScreenEditText = {
-        onLaunchFullScreenEditText(
-          FreeTextRestrictions(
-            stepContent.freeTextMinLength,
-            stepContent.freeTextMaxLength,
-          ),
-        )
-      },
+      freeTextDraft = freeTextDraft,
       onSaveFreeText = { text -> onEvent(ClaimChatEvent.UpdateFreeText(text)) },
       onCancelSubmission = { onEvent(ClaimChatEvent.AudioRecording.CancelTextSubmission) },
       freeTextMinLength = stepContent.freeTextMinLength,
@@ -229,6 +224,29 @@ internal fun AudioRecordingStep(
   }
 }
 
+/**
+ * The submitted free text to render in the transcript, or null when the step should read as skipped instead.
+ *
+ * The describe step's `freeTextMinLength` is 0, so the backend accepts an empty answer and hands it back as an empty
+ * [AudioRecordingStepState.FreeTextDescription.freeText]. Rendering that verbatim gives an empty bubble, so a blank
+ * answer reads as "Skipped" like every other skipped step. This is display only, submitting nothing stays allowed.
+ */
+internal fun AudioRecordingStepState.sentFreeTextAnswer(): String? =
+  (this as? AudioRecordingStepState.FreeTextDescription)?.freeText?.takeIf { it.isNotBlank() }
+
+/**
+ * Whether the window is too short for the cards' stacked arrangement, which in practice means a landscape
+ * phone with the keyboard up.
+ *
+ * Read from the window rather than from the event that opened a card, so that it answers again every time the
+ * window changes: the same free text answer belongs inline in one orientation and full screen in the other,
+ * and the member can turn the phone at any point while writing it.
+ */
+@Composable
+internal fun isShortWindow(): Boolean = with(LocalDensity.current) {
+  LocalWindowInfo.current.containerSize.height.toDp()
+} < SHORT_WINDOW_MAX_HEIGHT
+
 @Composable
 internal fun AudioRecorderBubble(
   recordingState: AudioRecordingStepState,
@@ -237,13 +255,16 @@ internal fun AudioRecorderBubble(
   startRecording: () -> Unit,
   stopRecording: () -> Unit,
   submitAudioFile: () -> Unit,
+  openRecorder: () -> Unit,
+  isRecorderOpen: Boolean,
   redoRecording: () -> Unit,
+  discardRecording: () -> Unit,
   openAppSettings: () -> Unit,
   freeTextAvailable: Boolean,
   submitFreeText: () -> Unit,
   onSwitchToFreeText: () -> Unit,
   onSwitchToAudioRecording: () -> Unit,
-  onLaunchFullScreenEditText: () -> Unit,
+  freeTextDraft: FreeTextDraftState,
   onSaveFreeText: (String) -> Unit,
   onCancelSubmission: () -> Unit,
   freeTextMinLength: Int,
@@ -258,47 +279,43 @@ internal fun AudioRecorderBubble(
   val isSubmitting = continueButtonLoading || skipButtonLoading
   val focusManager = LocalFocusManager.current
   // A landscape keyboard leaves roughly 34dp of screen, too little for the inline card, so short windows
-  // answer in the full screen editor instead.
-  val isShortWindow = with(LocalDensity.current) {
-    LocalWindowInfo.current.containerSize.height.toDp()
-  } < SHORT_WINDOW_MAX_HEIGHT
-  // The voice card is open either because the user asked for it or because a recording is already in flight.
-  var voiceCardRequested by remember(isCurrentStep) { mutableStateOf(false) }
+  // answer in the full screen editor instead, which the screen draws over this one.
+  val isShortWindow = isShortWindow()
   val hasRecording = recordingState is AudioRecordingStepState.AudioRecording &&
     recordingState !is AudioRecordingStepState.AudioRecording.NotRecording
 
   Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
     if (!isCurrentStep) {
-      when {
-        recordingState is AudioRecordingStepState.FreeTextDescription && recordingState.freeText != null -> {
-          val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + recordingState.freeText
-          RoundCornersPill(
-            modifier = Modifier.fillMaxWidth()
-              .padding(start = 48.dp)
-              .wrapContentWidth(Alignment.End)
-              .clearAndSetSemantics { contentDescription = description },
-          ) {
-            HedvigText(recordingState.freeText, textAlign = TextAlign.End)
+      SentAnswerRow {
+        val sentFreeText = recordingState.sentFreeTextAnswer()
+        when {
+          sentFreeText != null -> {
+            val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + sentFreeText
+            RoundCornersPill(
+              modifier = Modifier.clearAndSetSemantics { contentDescription = description },
+            ) {
+              HedvigText(sentFreeText, textAlign = TextAlign.End)
+            }
           }
-        }
 
-        recordingState is AudioRecordingStepState.AudioRecording.Playback -> {
-          val audioPlayer = when (recordingState.audioPath) {
-            is AudioPath.FilePath -> rememberAudioPlayer(
-              PlayableAudioSource.LocalFilePath(recordingState.audioPath.filePath),
-            )
+          recordingState is AudioRecordingStepState.AudioRecording.Playback -> {
+            val audioPlayer = when (recordingState.audioPath) {
+              is AudioPath.FilePath -> rememberAudioPlayer(
+                PlayableAudioSource.LocalFilePath(recordingState.audioPath.filePath),
+              )
 
-            is AudioPath.RemoteUrl -> rememberAudioPlayer(
-              PlayableAudioSource.RemoteUrl(
-                SignedAudioUrl.fromSignedAudioUrlString(recordingState.audioPath.remoteUrl),
-              ),
-            )
+              is AudioPath.RemoteUrl -> rememberAudioPlayer(
+                PlayableAudioSource.RemoteUrl(
+                  SignedAudioUrl.fromSignedAudioUrlString(recordingState.audioPath.remoteUrl),
+                ),
+              )
+            }
+            HedvigAudioPlayer(audioPlayer = audioPlayer)
           }
-          HedvigAudioPlayer(audioPlayer = audioPlayer, Modifier.padding(start = sentAnswersStartPadding))
-        }
 
-        else -> {
-          SkippedLabel()
+          else -> {
+            SkippedLabel()
+          }
         }
       }
     } else {
@@ -308,7 +325,8 @@ internal fun AudioRecorderBubble(
             InputMode.Text
           }
 
-          voiceCardRequested || hasRecording -> {
+          // Open either because the member asked for the card or because a recording is already in flight.
+          isRecorderOpen || hasRecording -> {
             InputMode.Voice
           }
 
@@ -320,28 +338,32 @@ internal fun AudioRecorderBubble(
       ) { mode ->
         when (mode) {
           InputMode.Text -> {
-            val freeText = recordingState as? AudioRecordingStepState.FreeTextDescription
-            InlineTextAnswerCard(
-              initialText = freeText?.freeText.orEmpty(),
-              minLength = freeTextMinLength,
-              maxLength = freeTextMaxLength,
-              errorType = freeText?.errorType,
-              hasError = freeText?.hasError == true,
-              isSubmitting = isSubmitting,
-              compact = isShortWindow,
-              onCancel = {
-                focusManager.clearFocus()
-                // Calls off an answer still in flight before leaving, so Avbryt does what it says rather
-                // than closing over a submission that lands anyway.
-                onCancelSubmission()
-                onSwitchToAudioRecording()
-              },
-              onSave = { text ->
-                focusManager.clearFocus()
-                onSaveFreeText(text)
-                submitFreeText()
-              },
-            )
+            // A short window answers full screen, and the screen is already drawing that editor over this
+            // card. Leaving the card composed underneath would put a second field on the same answer, and it
+            // would take the focus the member is typing into.
+            if (!isShortWindow) {
+              val freeText = recordingState as? AudioRecordingStepState.FreeTextDescription
+              InlineTextAnswerCard(
+                draft = freeTextDraft,
+                minLength = freeTextMinLength,
+                maxLength = freeTextMaxLength,
+                errorType = freeText?.errorType,
+                hasError = freeText?.hasError == true,
+                isSubmitting = isSubmitting,
+                onCancel = {
+                  focusManager.clearFocus()
+                  // Calls off an answer still in flight before leaving, so Avbryt does what it says rather
+                  // than closing over a submission that lands anyway.
+                  onCancelSubmission()
+                  onSwitchToAudioRecording()
+                },
+                onSave = { text ->
+                  focusManager.clearFocus()
+                  onSaveFreeText(text)
+                  submitFreeText()
+                },
+              )
+            }
           }
 
           InputMode.Voice -> {
@@ -356,11 +378,7 @@ internal fun AudioRecorderBubble(
               redo = redoRecording,
               openAppSettings = openAppSettings,
               isSubmitting = isSubmitting,
-              onClose = {
-                stopRecording()
-                voiceCardRequested = false
-                onSwitchToAudioRecording()
-              },
+              onClose = discardRecording,
             )
           }
 
@@ -375,7 +393,6 @@ internal fun AudioRecorderBubble(
                     onClick = {
                       focusManager.clearFocus()
                       onSwitchToFreeText()
-                      if (isShortWindow) onLaunchFullScreenEditText()
                     },
                     enabled = true,
                     buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
@@ -390,7 +407,7 @@ internal fun AudioRecorderBubble(
                 HedvigButton(
                   onClick = {
                     focusManager.clearFocus()
-                    voiceCardRequested = true
+                    openRecorder()
                   },
                   enabled = true,
                   buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
@@ -476,9 +493,7 @@ private fun InlineVoiceAnswerCard(
   LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
     stopRecording()
   }
-  val isShortWindow = with(LocalDensity.current) {
-    LocalWindowInfo.current.containerSize.height.toDp()
-  } < SHORT_WINDOW_MAX_HEIGHT
+  val isShortWindow = isShortWindow()
   // An inline card rather than a sheet: the design keeps the question fully readable above it, with no scrim.
   Surface(
     modifier = modifier.fillMaxWidth(),
@@ -514,7 +529,9 @@ private fun InlineVoiceAnswerCard(
  * The text answer's own content, without a container.
  *
  * Hosted two ways: inline above the keyboard where there is room for it, and full screen where there is not.
- * Keeping it in one place is what stops the two from drifting into two different designs.
+ * Keeping it in one place is what stops the two from drifting into two different designs. Which host is on
+ * screen follows the window, and can change under a member who is part way through an answer, so the answer
+ * itself is held in [draft], above both of them.
  *
  * With [compact] it collapses to a single row. A landscape keyboard leaves about 105dp of screen, which is
  * one row: stacking a label and a button row above and below the field squeezes the field under the height
@@ -522,7 +539,7 @@ private fun InlineVoiceAnswerCard(
  */
 @Composable
 private fun TextAnswerContent(
-  initialText: String,
+  draft: FreeTextDraftState,
   minLength: Int,
   maxLength: Int,
   errorType: FreeTextErrorType?,
@@ -533,8 +550,8 @@ private fun TextAnswerContent(
   modifier: Modifier = Modifier,
   compact: Boolean = false,
 ) {
-  var text by rememberSaveable { mutableStateOf(initialText) }
-  // The card holds its own text, so the step's `canSubmit` only catches up on save. The length rule has to be
+  val text = draft.value.text
+  // The draft holds the answer, so the step's `canSubmit` only catches up on save. The length rule has to be
   // applied here or nothing applies it before the answer is already sent.
   val canSend = text.trim().length >= minLength
   val focusRequester = remember { FocusRequester() }
@@ -543,7 +560,7 @@ private fun TextAnswerContent(
   }
   val label = @Composable { labelModifier: Modifier ->
     HedvigText(
-      stringResource(Res.string.CLAIM_TRIAGING_TITLE),
+      stringResource(Res.string.CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE),
       style = HedvigTheme.typography.label,
       color = HedvigTheme.colorScheme.textSecondary,
       modifier = labelModifier,
@@ -569,9 +586,12 @@ private fun TextAnswerContent(
   }
   val field = @Composable {
     HedvigTextField(
-      text = text,
-      onValueChange = { if (it.length <= maxLength) text = it },
-      labelText = "",
+      textValue = draft.value,
+      onValueChange = { if (it.text.length <= maxLength) draft.value = it },
+      // The card writes the label itself, above the field and on the card's own left edge, which is where the
+      // design puts it. A label inside the field as well would reserve a second, empty row above the answer,
+      // pushing the answer to the bottom of the field while the clear button stayed centred on the whole of it.
+      labelText = null,
       textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Small,
       singleLine = false,
       // The field starts at one line and grows with the answer, then scrolls inside itself rather than
@@ -582,6 +602,10 @@ private fun TextAnswerContent(
       // straight onto it. The field's own background would be a second surface the design does not have,
       // and its focus shift would arrive as a lighter box inside the card.
       containerColor = Color.Transparent,
+      // With no container of its own, the field's inset has no edge to hold its content off, and leaves the
+      // answer indented past the label and the clear button indented past Send. The card's own padding is the
+      // one that positions everything here, so the field contributes none.
+      horizontalPadding = 0.dp,
       modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
     )
   }
@@ -630,7 +654,7 @@ private fun TextAnswerContent(
  */
 @Composable
 internal fun FullScreenTextAnswer(
-  initialText: String,
+  draft: FreeTextDraftState,
   minLength: Int,
   maxLength: Int,
   errorType: FreeTextErrorType?,
@@ -649,7 +673,7 @@ internal fun FullScreenTextAnswer(
       contentAlignment = Alignment.BottomStart,
     ) {
       TextAnswerContent(
-        initialText = initialText,
+        draft = draft,
         minLength = minLength,
         maxLength = maxLength,
         errorType = errorType,
@@ -665,13 +689,12 @@ internal fun FullScreenTextAnswer(
 
 @Composable
 private fun InlineTextAnswerCard(
-  initialText: String,
+  draft: FreeTextDraftState,
   minLength: Int,
   maxLength: Int,
   errorType: FreeTextErrorType?,
   hasError: Boolean,
   isSubmitting: Boolean,
-  compact: Boolean,
   onCancel: () -> Unit,
   onSave: (String) -> Unit,
   modifier: Modifier = Modifier,
@@ -682,13 +705,12 @@ private fun InlineTextAnswerCard(
     color = HedvigTheme.colorScheme.surfacePrimary,
   ) {
     TextAnswerContent(
-      initialText = initialText,
+      draft = draft,
       minLength = minLength,
       maxLength = maxLength,
       errorType = errorType,
       hasError = hasError,
       isSubmitting = isSubmitting,
-      compact = compact,
       onCancel = onCancel,
       onSave = onSave,
     )
@@ -768,7 +790,7 @@ private fun AudioRecordingSheetContent(
 @Composable
 private fun AudioRecordingHeading(modifier: Modifier = Modifier) {
   HedvigText(
-    stringResource(Res.string.CLAIM_TRIAGING_TITLE),
+    stringResource(Res.string.CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE),
     modifier = modifier.semantics {
       heading()
     },
@@ -1384,19 +1406,18 @@ private fun FreeTextInputSection(
     } else {
       val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + freeText
 
-      if (freeText != null) {
-        RoundCornersPill(
-          modifier = Modifier.fillMaxWidth()
-            .padding(start = 48.dp)
-            .wrapContentWidth(Alignment.End)
-            .clearAndSetSemantics {
+      SentAnswerRow {
+        if (freeText != null) {
+          RoundCornersPill(
+            modifier = Modifier.clearAndSetSemantics {
               contentDescription = description
             },
-        ) {
-          HedvigText(freeText, textAlign = TextAlign.End)
+          ) {
+            HedvigText(freeText, textAlign = TextAlign.End)
+          }
+        } else {
+          SkippedLabel()
         }
-      } else {
-        SkippedLabel()
       }
     }
   }

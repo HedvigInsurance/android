@@ -90,9 +90,9 @@ import com.hedvig.android.feature.claim.chat.data.StepContent.Form.FieldType
 import com.hedvig.android.feature.claim.chat.data.StepId
 import com.hedvig.android.feature.claim.chat.ui.common.EditButton
 import com.hedvig.android.feature.claim.chat.ui.common.RoundCornersPill
+import com.hedvig.android.feature.claim.chat.ui.common.SentAnswerRow
 import com.hedvig.android.feature.claim.chat.ui.common.SkippedLabel
 import com.hedvig.android.feature.claim.chat.ui.common.YesNoBubble
-import com.hedvig.android.feature.claim.chat.ui.sentAnswersStartPadding
 import hedvig.resources.CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE
 import hedvig.resources.CLAIM_CHAT_FIELD_SEARCH_NOTHING_FOUND
 import hedvig.resources.CLAIM_CHAT_FIELD_SEARCH_SUGGESTION
@@ -371,10 +371,7 @@ private fun FormContent(
             when (field.type) {
               FieldType.SEARCH -> {
                 val selected = field.selectedOptions.firstOrNull()
-                Column(
-                  Modifier.fillMaxWidth().padding(start = sentAnswersStartPadding),
-                  horizontalAlignment = Alignment.End,
-                ) {
+                SentAnswerRow {
                   if (selected == null) {
                     SkippedLabel()
                   } else {
@@ -396,11 +393,7 @@ private fun FormContent(
                 val initialTextValue = field.selectedOptions.joinToString { it.text }
                 val suffix = if (initialTextValue.isNotEmpty() && field.suffix != null) " ${field.suffix}" else ""
                 val textValue = "$initialTextValue$suffix"
-                Column(
-                  Modifier.fillMaxWidth()
-                    .padding(start = sentAnswersStartPadding),
-                  horizontalAlignment = Alignment.End,
-                ) {
+                SentAnswerRow {
                   if (textValue.isNotEmpty()) {
                     val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + textValue
                     RoundCornersPill(
@@ -418,7 +411,9 @@ private fun FormContent(
             }
           }
         } else {
-          SkippedLabel()
+          SentAnswerRow {
+            SkippedLabel()
+          }
         }
         EditButton(canBeChanged, onRegret)
       }

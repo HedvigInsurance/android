@@ -60,6 +60,11 @@ internal sealed interface StepContent {
     val recordingState: AudioRecordingStepState,
     val freeTextMinLength: Int,
     val freeTextMaxLength: Int,
+    /**
+     * Whether the voice card is up. Orthogonal to [recordingState], which says what has been recorded so far:
+     * the card is open with nothing recorded both before Start is pressed and after starting over.
+     */
+    val isRecorderOpen: Boolean = false,
   ) : StepContent
 
   data class FileUpload(

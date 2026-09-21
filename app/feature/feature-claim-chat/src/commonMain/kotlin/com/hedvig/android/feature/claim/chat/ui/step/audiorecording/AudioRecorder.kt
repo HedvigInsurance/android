@@ -66,6 +66,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
 import com.hedvig.android.feature.claim.chat.data.AudioPath
 import com.hedvig.android.feature.claim.chat.data.AudioRecordingStepState
+import com.hedvig.android.feature.claim.chat.ui.common.SentAnswerRow
 import com.hedvig.android.feature.claim.chat.ui.common.SkippedLabel
 import hedvig.resources.A11Y_AUDIO_RECORDING
 import hedvig.resources.CLAIMS_USE_TEXT_INSTEAD
@@ -110,7 +111,9 @@ internal fun AudioRecorder(
 
     else -> {
       if (!isCurrentStep) {
-        SkippedLabel()
+        SentAnswerRow {
+          SkippedLabel()
+        }
       } else {
         val isRecording = uiState is AudioRecordingStepState.AudioRecording.Recording
         val isRecordingTransition = updateTransition(isRecording)
@@ -264,12 +267,9 @@ private fun Playback(
         )
       }
       if (!isCurrentStep) {
-        HedvigAudioPlayer(
-          audioPlayer = audioPlayer,
-          modifier = Modifier.then(
-            Modifier.padding(start = 48.dp),
-          ),
-        )
+        SentAnswerRow {
+          HedvigAudioPlayer(audioPlayer = audioPlayer)
+        }
       } else {
         HedvigAudioPlayer(
           audioPlayer = audioPlayer,

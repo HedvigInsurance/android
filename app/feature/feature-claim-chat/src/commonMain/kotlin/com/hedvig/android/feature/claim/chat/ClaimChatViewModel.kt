@@ -74,11 +74,21 @@ internal sealed interface ClaimChatEvent {
       override val id: StepId get() = error("Cancelling is not tied to a step")
     }
 
+    /** Opens the voice card on a step with nothing recorded yet, ready for Start. */
+    data class OpenRecorder(override val id: StepId) : AudioRecording
+
     data class StartRecording(override val id: StepId) : AudioRecording
 
     data class StopRecording(override val id: StepId) : AudioRecording
 
+    /** Throws the recording away and keeps the card up, so the member can record again straight away. */
     data class RedoRecording(override val id: StepId) : AudioRecording
+
+    /**
+     * Dismissing the voice card. Tearing the recorder down and closing the card is one event, so the step is
+     * left with nothing recorded rather than holding a file a later Send would submit.
+     */
+    data class DiscardRecording(override val id: StepId) : AudioRecording
 
     data class SwitchToFreeText(override val id: StepId) : AudioRecording
 
@@ -119,12 +129,6 @@ internal sealed interface ClaimChatEvent {
 
   data class SubmitFile(val id: StepId) : ClaimChatEvent
 
-  data class OpenFreeTextOverlay(
-    val restrictions: FreeTextRestrictions,
-  ) : ClaimChatEvent
-
-  data object CloseFreeChatOverlay : ClaimChatEvent
-
   data object DismissErrorDialog : ClaimChatEvent
 
   data class SubmitClaim(val id: StepId) : ClaimChatEvent
@@ -164,7 +168,6 @@ internal sealed interface ClaimChatUiState {
     val errorSubmittingStep: ClaimChatErrorMessage?,
     val currentContinueButtonLoading: Boolean = false,
     val currentSkipButtonLoading: Boolean = false,
-    val showFreeTextOverlay: FreeTextRestrictions?,
     val showConfirmEditDialogForStep: StepId?,
     val stepsWithShownAnimations: List<StepId>,
     val progress: Float?,
@@ -263,7 +266,6 @@ internal class ClaimChatPresenter(
     val currentStep by remember {
       derivedStateOf { steps.lastOrNull() }
     }
-    var showFreeTextOverlay by remember { mutableStateOf<FreeTextRestrictions?>(null) }
     var currentContinueButtonLoading by remember { mutableStateOf(false) }
     // Held so the member can call off an answer that is taking too long. Cancelling the job cancels the
     // call it is waiting on; an answer the backend has already taken stands, which is the best a client can
@@ -567,10 +569,33 @@ internal class ClaimChatPresenter(
               }
             }
 
+            is ClaimChatEvent.AudioRecording.OpenRecorder -> {
+              steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
+                step.copy(stepContent = content.copy(isRecorderOpen = true))
+              }
+            }
+
             is ClaimChatEvent.AudioRecording.RedoRecording -> {
               audioRecordingManager.reset()
               steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
-                step.copy(stepContent = content.copy(recordingState = AudioRecording.NotRecording))
+                step.copy(
+                  stepContent = content.copy(
+                    recordingState = AudioRecording.NotRecording,
+                    isRecorderOpen = true,
+                  ),
+                )
+              }
+            }
+
+            is ClaimChatEvent.AudioRecording.DiscardRecording -> {
+              audioRecordingManager.reset()
+              steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
+                step.copy(
+                  stepContent = content.copy(
+                    recordingState = AudioRecording.NotRecording,
+                    isRecorderOpen = false,
+                  ),
+                )
               }
             }
 
@@ -715,14 +740,6 @@ internal class ClaimChatPresenter(
             logcat { "ClaimChatEvent.AddFile error: $e" }
             errorSubmittingStep = ClaimChatErrorMessage.GeneralError
           }
-        }
-
-        ClaimChatEvent.CloseFreeChatOverlay -> {
-          showFreeTextOverlay = null
-        }
-
-        is ClaimChatEvent.OpenFreeTextOverlay -> {
-          showFreeTextOverlay = event.restrictions
         }
 
         is ClaimChatEvent.Skip -> {
@@ -1074,7 +1091,6 @@ internal class ClaimChatPresenter(
         steps = steps,
         currentStep = currentStep,
         outcome = outcome,
-        showFreeTextOverlay = showFreeTextOverlay,
         errorSubmittingStep = errorSubmittingStep,
         currentContinueButtonLoading = currentContinueButtonLoading,
         currentSkipButtonLoading = currentSkipButtonLoading,
@@ -1091,11 +1107,6 @@ internal class ClaimChatPresenter(
     }
   }
 }
-
-internal data class FreeTextRestrictions(
-  val minLength: Int,
-  val maxLength: Int,
-)
 
 @Composable
 private fun ObserveIncompleteTaskEffect(
@@ -1216,7 +1227,7 @@ private fun SnapshotStateList<ClaimIntentStep>.updateStepWithSuccess(
 
 private fun ClaimIntentStep.clearContent(): ClaimIntentStep = when (val content = stepContent) {
   is StepContent.AudioRecording -> copy(
-    stepContent = content.copy(recordingState = AudioRecording.NotRecording),
+    stepContent = content.copy(recordingState = AudioRecording.NotRecording, isRecorderOpen = false),
   )
 
   is StepContent.ContentSelect -> copy(
