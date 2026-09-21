@@ -44,13 +44,13 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.compose.dropUnlessResumed
 import arrow.core.nonEmptyListOf
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.crosssells.AddonsSection
 import com.hedvig.android.crosssells.CrossSellItemPlaceholder
 import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.data.addons.data.AddonBannerInfo
@@ -62,19 +62,16 @@ import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
 import com.hedvig.android.design.system.hedvig.EmptyState
-import com.hedvig.android.design.system.hedvig.FeatureAddonBanner
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
-import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.InsuranceCard
 import com.hedvig.android.design.system.hedvig.InsuranceCardPlaceholder
-import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
-import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
@@ -94,14 +91,9 @@ import com.hedvig.android.pullrefresh.PullRefreshState
 import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.A11Y_VIEW_DETAILS
-import hedvig.resources.ADDON_FLOW_SEE_PRICE_BUTTON
 import hedvig.resources.DASHBOARD_SCREEN_TITLE
 import hedvig.resources.INSURANCES_NO_ACTIVE
-import hedvig.resources.INSURANCE_ADDONS_SUBHEADING
-import hedvig.resources.INSURANCE_OFFERS_SUBHEADING
 import hedvig.resources.Res
-import hedvig.resources.insurances_tab_moving_flow_info_button_title
-import hedvig.resources.insurances_tab_moving_flow_info_title
 import hedvig.resources.insurances_tab_terminated_insurance_subtitile
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.pluralStringResource
@@ -113,7 +105,6 @@ internal fun InsuranceDestination(
   onInsuranceCardClick: (contractId: String) -> Unit,
   onCrossSellClick: (String) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
-  onNavigateToMovingFlow: () -> Unit,
   imageLoader: ImageLoader,
   onNavigateToAddonPurchaseFlow: (List<ContractId>) -> Unit,
 ) {
@@ -124,7 +115,6 @@ internal fun InsuranceDestination(
     onInsuranceCardClick = onInsuranceCardClick,
     onCrossSellClick = onCrossSellClick,
     navigateToCancelledInsurances = navigateToCancelledInsurances,
-    onNavigateToMovingFlow = onNavigateToMovingFlow,
     imageLoader = imageLoader,
     onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
   )
@@ -137,7 +127,6 @@ private fun InsuranceScreen(
   onInsuranceCardClick: (contractId: String) -> Unit,
   onCrossSellClick: (String) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
-  onNavigateToMovingFlow: () -> Unit,
   imageLoader: ImageLoader,
   onNavigateToAddonPurchaseFlow: (List<ContractId>) -> Unit,
 ) {
@@ -182,7 +171,6 @@ private fun InsuranceScreen(
             onInsuranceCardClick = onInsuranceCardClick,
             onCrossSellClick = onCrossSellClick,
             navigateToCancelledInsurances = navigateToCancelledInsurances,
-            onNavigateToMovingFlow = onNavigateToMovingFlow,
             modifier = Modifier.fillMaxSize(),
             pullRefreshState = pullRefreshState,
             onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
@@ -208,7 +196,6 @@ private fun InsuranceScreenContent(
   onInsuranceCardClick: (contractId: String) -> Unit,
   onCrossSellClick: (String) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
-  onNavigateToMovingFlow: () -> Unit,
   onNavigateToAddonPurchaseFlow: (List<ContractId>) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -256,46 +243,22 @@ private fun InsuranceScreenContent(
           if (uiState.crossSells.isNotEmpty()) {
             Spacer(Modifier.height(24.dp))
             CrossSellsSection(
-              title = stringResource(Res.string.INSURANCE_OFFERS_SUBHEADING),
               crossSells = uiState.crossSells,
               onCrossSellClick = onCrossSellClick,
               modifier = Modifier.padding(horizontal = 16.dp),
               onSheetDismissed = {},
               imageLoader = imageLoader,
-              hasCrossSellDiscounts = uiState.hasCrossSellDiscounts,
+              buttonSize = ButtonSize.Small,
             )
           }
           if (uiState.addonBannerInfoList.isNotEmpty()) {
             Spacer(Modifier.height(24.dp))
-            Row(
-              modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .semantics { heading() },
-              verticalAlignment = Alignment.CenterVertically,
-            ) {
-              HedvigText(text = stringResource(Res.string.INSURANCE_ADDONS_SUBHEADING))
-            }
-            Spacer(Modifier.height(16.dp))
-            uiState.addonBannerInfoList.forEachIndexed { index, bannerInfo ->
-              TravelAddonBanner(
-                addonBannerInfo = bannerInfo,
-                launchAddonPurchaseFlow = {
-                  onNavigateToAddonPurchaseFlow(bannerInfo.eligibleInsurancesIds.map(::ContractId))
-                },
-                modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(horizontal = 16.dp),
-              )
-              if (index != uiState.addonBannerInfoList.lastIndex) {
-                Spacer(Modifier.height(16.dp))
-              }
-            }
-          }
-          if (uiState.shouldSuggestMovingFlow) {
-            Spacer(Modifier.height(8.dp))
-            MovingFlowSuggestionSection(
-              onNavigateToMovingFlow = onNavigateToMovingFlow,
+            AddonsSection(
+              addons = uiState.addonBannerInfoList,
+              onAddonClick = { eligibleInsuranceIds ->
+                onNavigateToAddonPurchaseFlow(eligibleInsuranceIds.map(::ContractId))
+              },
+              imageLoader = imageLoader,
               modifier = Modifier.padding(horizontal = 16.dp),
             )
           }
@@ -475,37 +438,6 @@ private fun TerminatedContractsButton(text: String, onClick: () -> Unit, modifie
   }
 }
 
-@Composable
-private fun MovingFlowSuggestionSection(onNavigateToMovingFlow: () -> Unit, modifier: Modifier = Modifier) {
-  Column(modifier) {
-    HedvigNotificationCard(
-      message = stringResource(Res.string.insurances_tab_moving_flow_info_title),
-      priority = NotificationPriority.Campaign,
-      style = InfoCardStyle.Button(
-        stringResource(Res.string.insurances_tab_moving_flow_info_button_title),
-        dropUnlessResumed { onNavigateToMovingFlow() },
-      ),
-      modifier = Modifier.hedvigDropShadow(),
-    )
-  }
-}
-
-@Composable
-private fun TravelAddonBanner(
-  addonBannerInfo: AddonBannerInfo,
-  launchAddonPurchaseFlow: (ids: List<String>) -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  FeatureAddonBanner(
-    modifier = modifier,
-    title = addonBannerInfo.title,
-    description = addonBannerInfo.description,
-    buttonText = stringResource(Res.string.ADDON_FLOW_SEE_PRICE_BUTTON),
-    labels = addonBannerInfo.labels,
-    onButtonClick = dropUnlessResumed { launchAddonPurchaseFlow(addonBannerInfo.eligibleInsurancesIds) },
-  )
-}
-
 @HedvigMultiScreenPreview
 @Composable
 private fun PreviewInsuranceScreen(
@@ -532,7 +464,6 @@ private fun PreviewInsuranceScreen(
             )
           },
           quantityOfCancelledInsurances = 1,
-          shouldSuggestMovingFlow = true,
           hasError = false,
           isLoading = false,
           isRetrying = false,
@@ -546,9 +477,7 @@ private fun PreviewInsuranceScreen(
             ),
           ),
           pendingContracts = listOf(previewPendingContract),
-          hasCrossSellDiscounts = true,
         ),
-        {},
         {},
         {},
         {},
@@ -576,7 +505,6 @@ private fun PreviewInsuranceDestinationAnimation() {
             onInsuranceCardClick = {},
             onCrossSellClick = {},
             navigateToCancelledInsurances = {},
-            onNavigateToMovingFlow = {},
             onNavigateToAddonPurchaseFlow = {},
           )
         },
@@ -594,10 +522,8 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isLoading = false,
       isRetrying = false,
       quantityOfCancelledInsurances = 0,
-      shouldSuggestMovingFlow = true,
       addonBannerInfoList = emptyList(),
       pendingContracts = listOf(previewPendingContract),
-      hasCrossSellDiscounts = true,
     ),
     InsuranceUiState(
       contracts = listOf(),
@@ -606,7 +532,6 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isLoading = true,
       isRetrying = false,
       quantityOfCancelledInsurances = 0,
-      shouldSuggestMovingFlow = true,
       addonBannerInfoList = emptyList(),
       pendingContracts = listOf(previewPendingContract),
     ),
@@ -628,7 +553,6 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       hasError = false,
       isLoading = false,
       isRetrying = false,
-      shouldSuggestMovingFlow = true,
       addonBannerInfoList = listOf(
         AddonBannerInfo(
           title = "Travel Plus",
@@ -647,7 +571,6 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isLoading = true,
       isRetrying = false,
       quantityOfCancelledInsurances = 0,
-      shouldSuggestMovingFlow = true,
       addonBannerInfoList = emptyList(),
       pendingContracts = listOf(previewPendingContract),
     ),
@@ -677,7 +600,6 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isLoading = false,
       isRetrying = false,
       quantityOfCancelledInsurances = 0,
-      shouldSuggestMovingFlow = true,
       addonBannerInfoList = emptyList(),
       pendingContracts = listOf(previewPendingContract),
     ),
@@ -688,7 +610,6 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isLoading = true,
       isRetrying = false,
       quantityOfCancelledInsurances = 0,
-      shouldSuggestMovingFlow = true,
       addonBannerInfoList = emptyList(),
       pendingContracts = listOf(previewPendingContract),
     ),
@@ -699,7 +620,6 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isLoading = false,
       isRetrying = false,
       quantityOfCancelledInsurances = 0,
-      shouldSuggestMovingFlow = true,
       addonBannerInfoList = emptyList(),
       pendingContracts = listOf(previewPendingContract),
     ),

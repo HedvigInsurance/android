@@ -269,10 +269,7 @@ private data class SuccessData(
       crossSellRecommendationNotification: CrossSellRecommendationNotification,
       quickActions: List<QuickAction>,
     ): SuccessData {
-      val crossSellsAction = if (homeData.crossSells.recommendedCrossSell != null ||
-        homeData.crossSells.recommendedAddon != null ||
-        homeData.crossSells.otherCrossSells.isNotEmpty()
-      ) {
+      val crossSellsAction = if (!homeData.crossSells.isEmpty) {
         HomeTopBarAction.CrossSellsAction(homeData.crossSells, crossSellRecommendationNotification)
       } else {
         null
