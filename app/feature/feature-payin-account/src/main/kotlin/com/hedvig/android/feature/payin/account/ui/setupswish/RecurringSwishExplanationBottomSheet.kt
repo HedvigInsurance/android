@@ -21,6 +21,12 @@ import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import hedvig.resources.HOME_ADDONS_READ_MORE_BUTTON
 import hedvig.resources.PAYMENT_SWISH_EXPLANATION_BUTTON
 import hedvig.resources.Res
+import hedvig.resources.SWISH_EXPLANATION_ITEM_1_TEXT
+import hedvig.resources.SWISH_EXPLANATION_ITEM_1_TITLE
+import hedvig.resources.SWISH_EXPLANATION_ITEM_2_TEXT
+import hedvig.resources.SWISH_EXPLANATION_ITEM_2_TITLE
+import hedvig.resources.SWISH_EXPLANATION_ITEM_3_TEXT
+import hedvig.resources.SWISH_EXPLANATION_ITEM_3_TITLE
 import hedvig.resources.general_close_button
 import org.jetbrains.compose.resources.stringResource
 
@@ -51,32 +57,16 @@ private fun RecurringSwishExplanationContent(onLearnMore: (() -> Unit)? = null, 
     modifier = Modifier.fillMaxWidth(),
   ) {
     ExplanationItem(
-      // TODO: Add "Paid automatically" / "Betalas automatiskt" to Lokalise
-      title = "Paid automatically",
-      // TODO: Add "Your premium is then charged automatically each month, no monthly approval needed." /
-      //  "Din premie dras sedan automatiskt varje månad, utan att du behöver godkänna varje gång." to Lokalise
-      description = "Your premium is then charged automatically each month, no monthly approval needed.",
+      title = stringResource(Res.string.SWISH_EXPLANATION_ITEM_1_TITLE),
+      description = stringResource(Res.string.SWISH_EXPLANATION_ITEM_1_TEXT),
     )
     ExplanationItem(
-      // TODO: Add "Get paid instantly" / "Få betalt direkt" to Lokalise
-      title = "Get paid instantly",
-      // TODO: Add "When a claim is approved, your compensation lands in your account right away via Swish." /
-      //  "När en skadeanmälan godkänns landar din ersättning direkt på ditt konto via Swish." to Lokalise
-      description = "When a claim is approved, your compensation lands in your account right away via Swish.",
+      title = stringResource(Res.string.SWISH_EXPLANATION_ITEM_2_TITLE),
+      description = stringResource(Res.string.SWISH_EXPLANATION_ITEM_2_TEXT),
     )
     ExplanationItem(
-      // TODO: Add "Get notified" / "Få påminnelser" to Lokalise
-      title = "Get notified",
-      // TODO: Add "We'll send you a reminder a few days before each monthly payment." /
-      //  "Vi skickar en påminnelse några dagar före varje månadsbetalning." to Lokalise
-      description = "We'll send you a reminder a few days before each monthly payment.",
-    )
-    ExplanationItem(
-      // TODO: Add "Change anytime" / "Ändra när du vill" to Lokalise
-      title = "Change anytime",
-      // TODO: Add "You can change or remove Swish anytime in Settings." /
-      //  "Du kan ändra eller ta bort Swish när som helst i inställningarna." to Lokalise
-      description = "You can change or remove Swish anytime in Settings.",
+      title = stringResource(Res.string.SWISH_EXPLANATION_ITEM_3_TITLE),
+      description = stringResource(Res.string.SWISH_EXPLANATION_ITEM_3_TEXT),
     )
   }
   Spacer(Modifier.height(16.dp))
