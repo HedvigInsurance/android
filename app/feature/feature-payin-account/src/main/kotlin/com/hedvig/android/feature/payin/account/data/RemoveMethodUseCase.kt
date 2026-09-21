@@ -41,7 +41,7 @@ internal class RemoveMethodUseCaseImpl(
         fb = { result ->
           val userError = result.paymentMethodRemoveMethod?.message
           if (userError != null) {
-            logcat(LogPriority.ERROR) { "RemovePayinMethodMutation user error: $userError" }
+            logcat(LogPriority.WARN) { "RemovePayinMethodMutation user error: $userError" }
             raise(ErrorMessage(userError))
           }
           // The removed method is still in every cached payment query until the next fetch.

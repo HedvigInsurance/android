@@ -14,6 +14,7 @@ import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import octopus.OnboardingQuery
 import octopus.OnboardingUpdateContactInfoMutation
+import octopus.type.MemberPaymentMethodStatus
 import octopus.type.MemberPaymentProvider
 
 internal interface OnboardingRepository {
@@ -87,11 +88,11 @@ internal class OnboardingRepositoryImpl(
       },
       payinStatus = member.paymentMethods.payinMethods.let { methods ->
         when {
-          methods.any { it.status.rawValue == "ACTIVE" && it.isDefault } -> OnboardingPayinStatus.Active
+          methods.any { it.status == MemberPaymentMethodStatus.ACTIVE && it.isDefault } -> OnboardingPayinStatus.Active
 
           // A PENDING method counts as "connected enough" to skip the step (bank activation takes
           // days), but the step UI still shows it as pending rather than claiming it is connected.
-          methods.any { it.status.rawValue == "PENDING" } -> OnboardingPayinStatus.Pending
+          methods.any { it.status == MemberPaymentMethodStatus.PENDING } -> OnboardingPayinStatus.Pending
 
           else -> OnboardingPayinStatus.NeedsSetup
         }

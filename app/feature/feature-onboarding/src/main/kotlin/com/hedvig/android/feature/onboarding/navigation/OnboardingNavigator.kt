@@ -74,11 +74,9 @@ internal class OnboardingNavigator(
    * status on resume.
    */
   fun openPayinSetup(provider: OnboardingPayinProvider) {
+    // The step behind these already reports the connection, so each setup flow skips its own.
     val key = when (provider) {
-      // The step behind this already reports the connection, so the setup flow skips its own.
       OnboardingPayinProvider.Trustly -> TrustlyKey(showSuccessScreen = false)
-
-      // The step behind this already reports the connection, so the setup flow skips its own.
       OnboardingPayinProvider.Swish -> SetupSwishPayinKey(showSuccessScreen = false)
     }
     backstack.add(key)

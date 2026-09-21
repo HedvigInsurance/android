@@ -42,7 +42,6 @@ internal fun SelectPayinMethodDestination(
   viewModel: SelectPayinMethodViewModel,
   onTrustlySelected: () -> Unit,
   onSwishSelected: () -> Unit,
-  onInvoiceSelected: () -> Unit,
   navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -57,10 +56,6 @@ internal fun SelectPayinMethodDestination(
 
         PaymentProvider.Swish -> {
           onSwishSelected()
-        }
-
-        PaymentProvider.Invoice -> {
-          onInvoiceSelected()
         }
 
         else -> {}
@@ -103,6 +98,9 @@ private fun SelectPayinMethodScreen(
       },
       selectedOption = uiState.selectedProvider?.let { RadioOptionId(it.rawValue) },
       onRadioOptionSelected = { option -> PaymentProvider.fromRawValue(option.id)?.let(onProviderSelected) },
+      // Shown when the backend offers it, but there is nothing to hand the member over to: invoice
+      // is set up for them rather than by them.
+      disabledOptions = listOf(RadioOptionId(PaymentProvider.Invoice.rawValue)),
       optionIcon = { PayinProviderPillow(PaymentProvider.fromRawValue(it.id)) },
       modifier = Modifier.padding(horizontal = 16.dp),
     )

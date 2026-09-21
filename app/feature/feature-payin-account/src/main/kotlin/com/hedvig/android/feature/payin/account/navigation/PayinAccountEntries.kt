@@ -21,8 +21,6 @@ import com.hedvig.android.feature.payin.account.ui.primary.SelectPrimaryPayinMet
 import com.hedvig.android.feature.payin.account.ui.selectmethod.SelectPayinMethodDestination
 import com.hedvig.android.feature.payin.account.ui.selectmethod.SelectPayinMethodViewModel
 import com.hedvig.android.feature.payin.account.ui.selectmethod.SelectPayinMethodViewModelFactory
-import com.hedvig.android.feature.payin.account.ui.setupinvoice.SetupInvoicePayinDestination
-import com.hedvig.android.feature.payin.account.ui.setupinvoice.SetupInvoicePayinViewModel
 import com.hedvig.android.feature.payin.account.ui.setupswish.SetupSwishPayinDestination
 import com.hedvig.android.feature.payin.account.ui.setupswish.SetupSwishPayinViewModel
 import com.hedvig.android.feature.payin.account.ui.setupswish.SwishPayinStatusDestination
@@ -87,9 +85,9 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
             backstack.add(SetupSwishPayinKey())
           }
 
-          is PayinAccount.Invoice -> {
-            backstack.add(SetupInvoicePayinKey)
-          }
+          // Invoice has no setup flow of its own, so the details screen offers no change
+          // button for it and this never fires.
+          is PayinAccount.Invoice -> {}
         }
       },
     )
@@ -119,7 +117,6 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
         navigateToTrustly()
       },
       onSwishSelected = dropUnlessResumed { backstack.add(SetupSwishPayinKey()) },
-      onInvoiceSelected = dropUnlessResumed { backstack.add(SetupInvoicePayinKey) },
       navigateUp = backstack::navigateUp,
     )
   }
@@ -162,15 +159,6 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
       // Back to the picker, leaving the number behind with the attempt that failed.
       changePaymentMethod = { backstack.popUpTo<SetupSwishPayinKey>(inclusive = true) },
       openUrl = openUrl,
-    )
-  }
-
-  entry<SetupInvoicePayinKey> {
-    val viewModel: SetupInvoicePayinViewModel = metroViewModel()
-    SetupInvoicePayinDestination(
-      viewModel = viewModel,
-      globalSnackBarState = globalSnackBarState,
-      navigateUp = backstack::navigateUp,
     )
   }
 }

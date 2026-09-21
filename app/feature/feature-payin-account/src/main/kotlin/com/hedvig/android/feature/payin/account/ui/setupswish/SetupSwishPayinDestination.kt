@@ -202,15 +202,12 @@ private fun ColumnScope.EnterPhoneNumberSection(
     visualTransformation = visualTransformation,
     errorState = HedvigTextFieldDefaults.ErrorState.NoError,
     interactionSource = remember { MutableInteractionSource() },
-    onValueChange = {
-      val digitsOnly = it.filter { char -> char.isDigit() }
-      if (digitsOnly.length <= 15) {
-        // The backend takes "+467…" as readily as "07…", so a leading + is kept rather than
-        // stripped out from under a number that was prefilled in that form.
-        val edited = if (it.startsWith("+")) "+$digitsOnly" else digitsOnly
-        updateText(edited)
-        input = edited
-      }
+    onValueChange = { proposed ->
+      // The rules keep a leading + (the backend takes "+467…" as readily as "07…"), drop
+      // separators so a pasted number still lands, and cap the digits.
+      val edited = PhoneNumberRules.SwishPhoneNumber.acceptEdit(input, proposed).toString()
+      updateText(edited)
+      input = edited
     },
   )
   Spacer(Modifier.height(16.dp))
@@ -241,7 +238,7 @@ private class SwishPhoneNumberVisualTransformation(
     if (text.text.isNotEmpty() && !text.text.startsWith("0")) {
       return TransformedText(text, OffsetMapping.Identity)
     }
-    val trimmed = if (text.text.length >= 15) text.text.substring(0..14) else text.text
+    val trimmed = text.text.take(PhoneNumberRules.E164_MAX_DIGITS)
 
     val annotatedString = buildAnnotatedString {
       append(formatSwishPhoneNumber(trimmed))

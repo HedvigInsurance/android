@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.data.paying.member.InvoiceDelivery
 import com.hedvig.android.data.paying.member.PayinAccount
+import com.hedvig.android.data.paying.member.formatSwishPhoneNumber
 import com.hedvig.android.data.paying.member.maskedAccountNumber
 import com.hedvig.android.data.paying.member.toDeliveryString
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
@@ -196,7 +197,7 @@ private fun PayinMethodDetailsScreen(
       is PayinAccount.SwishPayin -> {
         DetailRow(
           label = stringResource(Res.string.PAYMENTS_SWISH_NUMBER),
-          value = method.phoneNumber.orEmpty(),
+          value = method.phoneNumber?.let(::formatSwishPhoneNumber).orEmpty(),
         )
       }
 

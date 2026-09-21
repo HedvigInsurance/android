@@ -9,6 +9,7 @@ import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.safeExecuteAllowingPartialResponses
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
@@ -34,7 +35,7 @@ internal class SetupSwishPayinUseCaseImpl(
       .safeExecuteAllowingPartialResponses()
       .fold(
         fa = { error ->
-          logcat { "SetupSwishPayinMutation error: $error" }
+          logcat(LogPriority.ERROR) { "SetupSwishPayinMutation error: $error" }
           raise(ErrorMessage())
         },
         fb = { result ->
@@ -57,7 +58,7 @@ internal class SetupSwishPayinUseCaseImpl(
             }
 
             PaymentMethodSetupStatus.FAILED, PaymentMethodSetupStatus.UNKNOWN__ -> {
-              logcat {
+              logcat(LogPriority.WARN) {
                 "SetupSwishPayinMutation FAILED: ${output.error?.message}"
               }
               val userMessage = output.error?.message
@@ -66,7 +67,7 @@ internal class SetupSwishPayinUseCaseImpl(
           }
         },
         fab = { errors, _ ->
-          logcat { "SetupSwishPayinMutation data with errors: $errors" }
+          logcat(LogPriority.ERROR) { "SetupSwishPayinMutation data with errors: $errors" }
           raise(ErrorMessage())
         },
       )

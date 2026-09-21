@@ -45,6 +45,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.LoadingState as HandoverLoadingState
 import com.hedvig.android.design.system.hedvig.PaymentMethodHandoverIllustration
 import com.hedvig.android.design.system.hedvig.PaymentMethodMarkSize
 import com.hedvig.android.design.system.hedvig.PaymentMethodTileBadge
@@ -255,11 +256,7 @@ private fun TrustlyStatusScreen(
     PaymentMethodHandoverIllustration(
       modifier = Modifier.align(Alignment.CenterHorizontally),
       destinationBadge = badge,
-      loadingState = if (active) {
-        com.hedvig.android.design.system.hedvig.LoadingState.ACTIVE
-      } else {
-        com.hedvig.android.design.system.hedvig.LoadingState.INACTIVE
-      },
+      loadingState = if (active) HandoverLoadingState.ACTIVE else HandoverLoadingState.INACTIVE,
       mark = { Icon(HedvigIcons.Trustly, null, Modifier.size(PaymentMethodMarkSize)) },
     )
     Spacer(Modifier.weight(1f))

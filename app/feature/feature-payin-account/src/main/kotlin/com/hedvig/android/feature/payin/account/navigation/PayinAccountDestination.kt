@@ -14,6 +14,3 @@ internal data class SwishPayinStatusKey(
   val phoneNumber: String,
   val showSuccessScreen: Boolean = true,
 ) : HedvigNavKey
-
-@Serializable
-internal data object SetupInvoicePayinKey : HedvigNavKey

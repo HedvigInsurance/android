@@ -10,6 +10,7 @@ import com.hedvig.android.apollo.safeExecuteAllowingPartialResponses
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.data.paying.member.PaymentProvider
+import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
@@ -35,19 +36,19 @@ internal class SetAsDefaultUseCaseImpl(
         .safeExecuteAllowingPartialResponses()
         .fold(
           fa = { error ->
-            logcat { "SetAsDefaultUseCaseImpl error: $error" }
+            logcat(LogPriority.ERROR) { "SetAsDefaultPayinMutation error: $error" }
             raise(ErrorMessage())
           },
           fb = { result ->
             val userError = result.paymentMethodSetDefaultPayin?.message
             if (userError != null) {
-              logcat { "SetAsDefaultUseCaseImpl userError not null: $userError" }
+              logcat(LogPriority.WARN) { "SetAsDefaultPayinMutation user error: $userError" }
               raise(ErrorMessage(userError))
             }
             getPayinAccountUseCase.invoke().bind()
           },
           fab = { errors, _ ->
-            logcat { "SetAsDefaultUseCaseImpl data with errors: $errors" }
+            logcat(LogPriority.ERROR) { "SetAsDefaultPayinMutation data with errors: $errors" }
             raise(ErrorMessage())
           },
         )
