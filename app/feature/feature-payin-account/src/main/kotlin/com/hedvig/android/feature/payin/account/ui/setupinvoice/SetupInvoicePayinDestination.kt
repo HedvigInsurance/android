@@ -118,7 +118,7 @@ private fun SetupInvoicePayinScreen(
 
 @Composable
 @HedvigShortMultiScreenPreview
-private fun PreviewPayoutAccountOverviewScreen() {
+private fun PreviewSetupInvoicePayinScreen() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       SetupInvoicePayinScreen(

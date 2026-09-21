@@ -53,7 +53,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun PayinAccountOverviewDestination(
   viewModel: PayinAccountOverviewViewModel,
-  onConnectPayoutMethodClicked: () -> Unit,
+  onConnectPayinMethodClicked: () -> Unit,
   onChoosePrimaryMethodClicked: () -> Unit,
   onPayinMethodClicked: (PayinAccount) -> Unit,
   navigateUp: () -> Unit,
@@ -70,7 +70,7 @@ internal fun PayinAccountOverviewDestination(
   }
   PayinAccountOverviewScreen(
     uiState = uiState,
-    onConnectPayoutMethodClicked = onConnectPayoutMethodClicked,
+    onConnectPayinMethodClicked = onConnectPayinMethodClicked,
     onChoosePrimaryMethodClicked = onChoosePrimaryMethodClicked,
     onPayinMethodClicked = onPayinMethodClicked,
     onRetry = { viewModel.emit(PayinAccountOverviewEvent.Retry) },
@@ -81,7 +81,7 @@ internal fun PayinAccountOverviewDestination(
 @Composable
 private fun PayinAccountOverviewScreen(
   uiState: PayinAccountOverviewUiState,
-  onConnectPayoutMethodClicked: () -> Unit,
+  onConnectPayinMethodClicked: () -> Unit,
   onChoosePrimaryMethodClicked: () -> Unit,
   onPayinMethodClicked: (PayinAccount) -> Unit,
   onRetry: () -> Unit,
@@ -113,10 +113,10 @@ private fun PayinAccountOverviewScreen(
       }
 
       is PayinAccountOverviewUiState.Content -> {
-        PayoutAccountContent(
+        PayinAccountContent(
           currentMethods = uiState.currentMethods,
           availablePayinMethods = uiState.availablePayinMethods,
-          onConnectPayinMethodClicked = onConnectPayoutMethodClicked,
+          onConnectPayinMethodClicked = onConnectPayinMethodClicked,
           onChoosePrimaryMethodClicked = onChoosePrimaryMethodClicked,
           onPayinMethodClicked = onPayinMethodClicked,
           modifier = Modifier.weight(1f),
@@ -127,7 +127,7 @@ private fun PayinAccountOverviewScreen(
 }
 
 @Composable
-private fun PayoutAccountContent(
+private fun PayinAccountContent(
   currentMethods: List<PayinAccount>,
   availablePayinMethods: List<PaymentProvider>,
   onConnectPayinMethodClicked: () -> Unit,
@@ -227,7 +227,7 @@ private fun PreviewPayinAccountOverviewScreen(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       PayinAccountOverviewScreen(
         uiState = uiState,
-        onConnectPayoutMethodClicked = {},
+        onConnectPayinMethodClicked = {},
         onChoosePrimaryMethodClicked = {},
         onPayinMethodClicked = {},
         onRetry = {},

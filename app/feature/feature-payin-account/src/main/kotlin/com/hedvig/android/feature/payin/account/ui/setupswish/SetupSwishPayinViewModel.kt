@@ -23,28 +23,28 @@ import dev.zacsweers.metro.Inject
 @Inject
 @HedvigViewModel(ActivityRetainedScope::class)
 internal class SetupSwishPayinViewModel(
-  setupSwishPayoutUseCase: SetupSwishPayinUseCase,
+  setupSwishPayinUseCase: SetupSwishPayinUseCase,
   getMemberPhoneNumberUseCase: GetMemberPhoneNumberUseCase,
-) : MoleculeViewModel<SetupSwishPayoutEvent, SetupSwishPayoutUiState>(
-    SetupSwishPayoutUiState(
+) : MoleculeViewModel<SetupSwishPayinEvent, SetupSwishPayinUiState>(
+    SetupSwishPayinUiState(
       phoneNumber = "",
       isLoading = false,
       error = null,
       showSuccessSnackBar = false,
       orderToApprove = null,
     ),
-    SetupSwishPayoutPresenter(setupSwishPayoutUseCase, getMemberPhoneNumberUseCase),
+    SetupSwishPayinPresenter(setupSwishPayinUseCase, getMemberPhoneNumberUseCase),
   )
 
-internal sealed interface SetupSwishPayoutEvent {
-  data object Save : SetupSwishPayoutEvent
+internal sealed interface SetupSwishPayinEvent {
+  data object Save : SetupSwishPayinEvent
 
-  data object ShowedSnackBar : SetupSwishPayoutEvent
+  data object ShowedSnackBar : SetupSwishPayinEvent
 
-  data class UpdateText(val newText: String) : SetupSwishPayoutEvent
+  data class UpdateText(val newText: String) : SetupSwishPayinEvent
 }
 
-internal data class SetupSwishPayoutUiState(
+internal data class SetupSwishPayinUiState(
   val showSuccessSnackBar: Boolean,
   /** Set once the setup needs approving in the Swish app, which the caller moves on to. */
   val orderToApprove: SwishSetupOrder? = null,
@@ -53,14 +53,14 @@ internal data class SetupSwishPayoutUiState(
   val error: ErrorMessage?,
 )
 
-internal class SetupSwishPayoutPresenter(
-  private val setupSwishPayoutUseCase: SetupSwishPayinUseCase,
+internal class SetupSwishPayinPresenter(
+  private val setupSwishPayinUseCase: SetupSwishPayinUseCase,
   private val getMemberPhoneNumberUseCase: GetMemberPhoneNumberUseCase,
-) : MoleculePresenter<SetupSwishPayoutEvent, SetupSwishPayoutUiState> {
+) : MoleculePresenter<SetupSwishPayinEvent, SetupSwishPayinUiState> {
   @Composable
-  override fun MoleculePresenterScope<SetupSwishPayoutEvent>.present(
-    lastState: SetupSwishPayoutUiState,
-  ): SetupSwishPayoutUiState {
+  override fun MoleculePresenterScope<SetupSwishPayinEvent>.present(
+    lastState: SetupSwishPayinUiState,
+  ): SetupSwishPayinUiState {
     var phoneNumberState by remember { mutableStateOf(lastState.phoneNumber) }
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<ErrorMessage?>(null) }
@@ -84,7 +84,7 @@ internal class SetupSwishPayoutPresenter(
       LaunchedEffect(currentSave) {
         isLoading = true
         errorMessage = null
-        setupSwishPayoutUseCase.invoke(phoneNumberState).fold(
+        setupSwishPayinUseCase.invoke(phoneNumberState).fold(
           ifLeft = {
             isLoading = false
             errorMessage = it
@@ -109,23 +109,23 @@ internal class SetupSwishPayoutPresenter(
 
     CollectEvents { event ->
       when (event) {
-        SetupSwishPayoutEvent.Save -> {
+        SetupSwishPayinEvent.Save -> {
           if (!isLoading) {
             saveIteration = phoneNumberState
           }
         }
 
-        SetupSwishPayoutEvent.ShowedSnackBar -> {
+        SetupSwishPayinEvent.ShowedSnackBar -> {
           showSuccessSnackBar = false
         }
 
-        is SetupSwishPayoutEvent.UpdateText -> {
+        is SetupSwishPayinEvent.UpdateText -> {
           phoneNumberState = event.newText
         }
       }
     }
 
-    return SetupSwishPayoutUiState(
+    return SetupSwishPayinUiState(
       phoneNumber = phoneNumberState,
       isLoading = isLoading,
       error = errorMessage,

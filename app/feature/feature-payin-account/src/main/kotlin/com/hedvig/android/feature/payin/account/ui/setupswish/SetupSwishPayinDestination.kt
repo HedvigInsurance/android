@@ -85,21 +85,21 @@ internal fun SetupSwishPayinDestination(
   SetupSwishPayinScreen(
     uiState = uiState,
     globalSnackBarState = globalSnackBarState,
-    onSave = { viewModel.emit(SetupSwishPayoutEvent.Save) },
+    onSave = { viewModel.emit(SetupSwishPayinEvent.Save) },
     showedSnackBar = {
-      viewModel.emit(SetupSwishPayoutEvent.ShowedSnackBar)
+      viewModel.emit(SetupSwishPayinEvent.ShowedSnackBar)
       onSuccessfullyConnected()
     },
     navigateUp = navigateUp,
     updateText = {
-      viewModel.emit(SetupSwishPayoutEvent.UpdateText(it))
+      viewModel.emit(SetupSwishPayinEvent.UpdateText(it))
     },
   )
 }
 
 @Composable
 private fun SetupSwishPayinScreen(
-  uiState: SetupSwishPayoutUiState,
+  uiState: SetupSwishPayinUiState,
   globalSnackBarState: GlobalSnackBarState,
   onSave: () -> Unit,
   showedSnackBar: () -> Unit,
@@ -162,7 +162,7 @@ private fun SetupSwishPayinScreen(
 
 @Composable
 private fun ColumnScope.EnterPhoneNumberSection(
-  uiState: SetupSwishPayoutUiState,
+  uiState: SetupSwishPayinUiState,
   onSave: () -> Unit,
   onLearnMoreAboutRecurringSwish: () -> Unit,
   updateText: (String) -> Unit,
@@ -250,7 +250,7 @@ private class SwishPhoneNumberVisualTransformation(
       }
     }
 
-    val personalNumberOffsetTranslator = object : OffsetMapping {
+    val offsetTranslator = object : OffsetMapping {
       override fun originalToTransformed(offset: Int): Int {
         return when {
           offset <= 2 -> offset
@@ -269,14 +269,14 @@ private class SwishPhoneNumberVisualTransformation(
         }.coerceAtMost(text.length)
       }
     }
-    return TransformedText(annotatedString, personalNumberOffsetTranslator)
+    return TransformedText(annotatedString, offsetTranslator)
   }
 }
 
 @Composable
 @HedvigShortMultiScreenPreview
 private fun PreviewSetupSwishPayinScreen(
-  @PreviewParameter(SetupSwishPayinUiStateProvider::class) uiState: SetupSwishPayoutUiState,
+  @PreviewParameter(SetupSwishPayinUiStateProvider::class) uiState: SetupSwishPayinUiState,
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
@@ -292,21 +292,21 @@ private fun PreviewSetupSwishPayinScreen(
   }
 }
 
-private class SetupSwishPayinUiStateProvider : CollectionPreviewParameterProvider<SetupSwishPayoutUiState>(
+private class SetupSwishPayinUiStateProvider : CollectionPreviewParameterProvider<SetupSwishPayinUiState>(
   listOf(
-    SetupSwishPayoutUiState(
+    SetupSwishPayinUiState(
       phoneNumber = "287334432273",
       isLoading = false,
       error = null,
       showSuccessSnackBar = false,
     ),
-    SetupSwishPayoutUiState(
+    SetupSwishPayinUiState(
       phoneNumber = "",
       isLoading = false,
       error = ErrorMessage(),
       showSuccessSnackBar = false,
     ),
-    SetupSwishPayoutUiState(
+    SetupSwishPayinUiState(
       phoneNumber = "837286428",
       isLoading = true,
       error = null,

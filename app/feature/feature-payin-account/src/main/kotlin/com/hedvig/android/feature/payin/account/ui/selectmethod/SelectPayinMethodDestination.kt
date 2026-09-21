@@ -38,15 +38,15 @@ import hedvig.resources.swish
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun ConnectPayinMethodDestination(
-  viewModel: ConnectPayinMethodViewModel,
+internal fun SelectPayinMethodDestination(
+  viewModel: SelectPayinMethodViewModel,
   onTrustlySelected: () -> Unit,
   onSwishSelected: () -> Unit,
   onInvoiceSelected: () -> Unit,
   navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  ConnectPayinMethodScreen(
+  SelectPayinMethodScreen(
     uiState = uiState,
     onProviderSelected = { viewModel.emit(SelectPayinMethodEvent.SelectProvider(it)) },
     onSubmitSelected = {
@@ -71,8 +71,8 @@ internal fun ConnectPayinMethodDestination(
 }
 
 @Composable
-private fun ConnectPayinMethodScreen(
-  uiState: ConnectPayinMethodUiState,
+private fun SelectPayinMethodScreen(
+  uiState: SelectPayinMethodUiState,
   onProviderSelected: (PaymentProvider) -> Unit,
   onSubmitSelected: () -> Unit,
   navigateUp: () -> Unit,
@@ -172,11 +172,11 @@ private fun PaymentProvider.toRadioOption(currentProviders: List<PaymentProvider
 
 @Composable
 @HedvigShortMultiScreenPreview
-private fun PreviewConnectPayinMethodScreen() {
+private fun PreviewSelectPayinMethodScreen() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      ConnectPayinMethodScreen(
-        uiState = ConnectPayinMethodUiState(
+      SelectPayinMethodScreen(
+        uiState = SelectPayinMethodUiState(
           availableProviders = listOf(
             PaymentProvider.Swish,
             PaymentProvider.Invoice,

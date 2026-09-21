@@ -20,7 +20,7 @@ data class PrimaryPayinMethod(
   val descriptor: String?,
 )
 
-fun MemberPaymentMethodFragment.toPrimaryPayinMethod(): PrimaryPayinMethod? {
+internal fun MemberPaymentMethodFragment.toPrimaryPayinMethod(): PrimaryPayinMethod? {
   val id = when (provider) {
     MemberPaymentProvider.TRUSTLY -> PayinMethodId.Trustly
     MemberPaymentProvider.SWISH -> PayinMethodId.Swish

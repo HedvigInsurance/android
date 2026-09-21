@@ -17,11 +17,11 @@ import dev.zacsweers.metro.AssistedInject
 
 @AssistedInject
 @HedvigViewModel(ActivityRetainedScope::class)
-internal class ConnectPayinMethodViewModel(
+internal class SelectPayinMethodViewModel(
   @Assisted availableProviders: List<String>,
   @Assisted currentProviders: List<String>,
-) : MoleculeViewModel<SelectPayinMethodEvent, ConnectPayinMethodUiState>(
-    initialState = ConnectPayinMethodUiState(
+) : MoleculeViewModel<SelectPayinMethodEvent, SelectPayinMethodUiState>(
+    initialState = SelectPayinMethodUiState(
       availableProviders = availableProviders.mapNotNull(PaymentProvider::fromRawValue),
       selectedProvider = null,
       currentProviders = currentProviders.mapNotNull(PaymentProvider::fromRawValue),
@@ -33,18 +33,18 @@ internal sealed interface SelectPayinMethodEvent {
   data class SelectProvider(val provider: PaymentProvider) : SelectPayinMethodEvent
 }
 
-internal data class ConnectPayinMethodUiState(
+internal data class SelectPayinMethodUiState(
   val currentProviders: List<PaymentProvider>,
   val availableProviders: List<PaymentProvider>,
   val selectedProvider: PaymentProvider?,
 )
 
 internal class SelectPayinMethodPresenter :
-  MoleculePresenter<SelectPayinMethodEvent, ConnectPayinMethodUiState> {
+  MoleculePresenter<SelectPayinMethodEvent, SelectPayinMethodUiState> {
   @Composable
   override fun MoleculePresenterScope<SelectPayinMethodEvent>.present(
-    lastState: ConnectPayinMethodUiState,
-  ): ConnectPayinMethodUiState {
+    lastState: SelectPayinMethodUiState,
+  ): SelectPayinMethodUiState {
     var selectedProvider by remember { mutableStateOf(lastState.selectedProvider) }
 
     CollectEvents { event ->
