@@ -14,6 +14,7 @@ sentry.properties
 .kotlin
 mapping.txt
 .superpowers
+.claude/worktrees/
 
 open_source_licenses.html
 
