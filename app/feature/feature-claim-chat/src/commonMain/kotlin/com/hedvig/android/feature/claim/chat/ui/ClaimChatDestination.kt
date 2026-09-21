@@ -107,6 +107,7 @@ import com.hedvig.android.feature.claim.chat.data.StepContent
 import com.hedvig.android.feature.claim.chat.data.StepId
 import com.hedvig.android.feature.claim.chat.ui.common.HelipadRiveAnimation
 import com.hedvig.android.feature.claim.chat.ui.common.RoundCornersPill
+import com.hedvig.android.feature.claim.chat.ui.common.SentAnswerRow
 import com.hedvig.android.feature.claim.chat.ui.step.ChatClaimSummaryBottomContent
 import com.hedvig.android.feature.claim.chat.ui.step.ChatClaimSummaryTopContent
 import com.hedvig.android.feature.claim.chat.ui.step.ContentSelectStep
@@ -1098,15 +1099,14 @@ private fun StepBottomContent(
           // Acknowledging is an answer, so it stays in the log as one instead of the button leaving nothing behind.
           val buttonTitle = stepItem.stepContent.buttonTitle
           val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + buttonTitle
-          RoundCornersPill(
-            modifier = Modifier
-              .fillMaxWidth()
-              .wrapContentWidth(Alignment.End)
-              .clearAndSetSemantics {
+          SentAnswerRow {
+            RoundCornersPill(
+              modifier = Modifier.clearAndSetSemantics {
                 contentDescription = description
               },
-          ) {
-            HedvigText(buttonTitle)
+            ) {
+              HedvigText(buttonTitle)
+            }
           }
         }
       }
@@ -1115,5 +1115,3 @@ private fun StepBottomContent(
 }
 
 internal val animationSize = 32.sp
-
-internal val sentAnswersStartPadding = 45.dp
