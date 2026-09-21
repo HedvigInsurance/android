@@ -233,6 +233,16 @@ internal fun AudioRecordingStep(
   }
 }
 
+/**
+ * The submitted free text to render in the transcript, or null when the step should read as skipped instead.
+ *
+ * The describe step's `freeTextMinLength` is 0, so the backend accepts an empty answer and hands it back as an empty
+ * [AudioRecordingStepState.FreeTextDescription.freeText]. Rendering that verbatim gives an empty bubble, so a blank
+ * answer reads as "Skipped" like every other skipped step. This is display only, submitting nothing stays allowed.
+ */
+internal fun AudioRecordingStepState.sentFreeTextAnswer(): String? =
+  (this as? AudioRecordingStepState.FreeTextDescription)?.freeText?.takeIf { it.isNotBlank() }
+
 @Composable
 internal fun AudioRecorderBubble(
   recordingState: AudioRecordingStepState,
@@ -274,16 +284,17 @@ internal fun AudioRecorderBubble(
 
   Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
     if (!isCurrentStep) {
+      val sentFreeText = recordingState.sentFreeTextAnswer()
       when {
-        recordingState is AudioRecordingStepState.FreeTextDescription && recordingState.freeText != null -> {
-          val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + recordingState.freeText
+        sentFreeText != null -> {
+          val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + sentFreeText
           RoundCornersPill(
             modifier = Modifier.fillMaxWidth()
               .padding(start = 48.dp)
               .wrapContentWidth(Alignment.End)
               .clearAndSetSemantics { contentDescription = description },
           ) {
-            HedvigText(recordingState.freeText, textAlign = TextAlign.End)
+            HedvigText(sentFreeText, textAlign = TextAlign.End)
           }
         }
 
