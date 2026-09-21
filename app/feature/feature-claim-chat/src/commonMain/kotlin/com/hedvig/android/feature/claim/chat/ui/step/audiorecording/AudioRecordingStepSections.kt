@@ -197,6 +197,8 @@ internal fun AudioRecordingStep(
       startRecording = startRecording,
       stopRecording = stopRecording,
       submitAudioFile = submitAudioFile,
+      openRecorder = { onEvent(ClaimChatEvent.AudioRecording.OpenRecorder(item.id)) },
+      isRecorderOpen = stepContent.isRecorderOpen,
       redoRecording = redoRecording,
       discardRecording = discardRecording,
       openAppSettings = openAppSettings,
@@ -239,6 +241,8 @@ internal fun AudioRecorderBubble(
   startRecording: () -> Unit,
   stopRecording: () -> Unit,
   submitAudioFile: () -> Unit,
+  openRecorder: () -> Unit,
+  isRecorderOpen: Boolean,
   redoRecording: () -> Unit,
   discardRecording: () -> Unit,
   openAppSettings: () -> Unit,
@@ -265,8 +269,6 @@ internal fun AudioRecorderBubble(
   val isShortWindow = with(LocalDensity.current) {
     LocalWindowInfo.current.containerSize.height.toDp()
   } < SHORT_WINDOW_MAX_HEIGHT
-  // The voice card is open either because the user asked for it or because a recording is already in flight.
-  var voiceCardRequested by remember(isCurrentStep) { mutableStateOf(false) }
   val hasRecording = recordingState is AudioRecordingStepState.AudioRecording &&
     recordingState !is AudioRecordingStepState.AudioRecording.NotRecording
 
@@ -311,7 +313,8 @@ internal fun AudioRecorderBubble(
             InputMode.Text
           }
 
-          voiceCardRequested || hasRecording -> {
+          // Open either because the member asked for the card or because a recording is already in flight.
+          isRecorderOpen || hasRecording -> {
             InputMode.Voice
           }
 
@@ -359,10 +362,7 @@ internal fun AudioRecorderBubble(
               redo = redoRecording,
               openAppSettings = openAppSettings,
               isSubmitting = isSubmitting,
-              onClose = {
-                voiceCardRequested = false
-                discardRecording()
-              },
+              onClose = discardRecording,
             )
           }
 
@@ -392,7 +392,7 @@ internal fun AudioRecorderBubble(
                 HedvigButton(
                   onClick = {
                     focusManager.clearFocus()
-                    voiceCardRequested = true
+                    openRecorder()
                   },
                   enabled = true,
                   buttonStyle = ButtonDefaults.ButtonStyle.Secondary,

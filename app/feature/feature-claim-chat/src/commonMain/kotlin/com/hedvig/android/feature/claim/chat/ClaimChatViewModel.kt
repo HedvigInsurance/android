@@ -74,10 +74,14 @@ internal sealed interface ClaimChatEvent {
       override val id: StepId get() = error("Cancelling is not tied to a step")
     }
 
+    /** Opens the voice card on a step with nothing recorded yet, ready for Start. */
+    data class OpenRecorder(override val id: StepId) : AudioRecording
+
     data class StartRecording(override val id: StepId) : AudioRecording
 
     data class StopRecording(override val id: StepId) : AudioRecording
 
+    /** Throws the recording away and keeps the card up, so the member can record again straight away. */
     data class RedoRecording(override val id: StepId) : AudioRecording
 
     /**
@@ -573,14 +577,33 @@ internal class ClaimChatPresenter(
               }
             }
 
-            // Both throw the recording away and leave the step with nothing recorded. Redo keeps the card
-            // up to record again, discard closes it, and that difference lives in the UI.
-            is ClaimChatEvent.AudioRecording.RedoRecording,
-            is ClaimChatEvent.AudioRecording.DiscardRecording,
-            -> {
+            is ClaimChatEvent.AudioRecording.OpenRecorder -> {
+              steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
+                step.copy(stepContent = content.copy(isRecorderOpen = true))
+              }
+            }
+
+            is ClaimChatEvent.AudioRecording.RedoRecording -> {
               audioRecordingManager.reset()
               steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
-                step.copy(stepContent = content.copy(recordingState = AudioRecording.NotRecording))
+                step.copy(
+                  stepContent = content.copy(
+                    recordingState = AudioRecording.NotRecording,
+                    isRecorderOpen = true,
+                  ),
+                )
+              }
+            }
+
+            is ClaimChatEvent.AudioRecording.DiscardRecording -> {
+              audioRecordingManager.reset()
+              steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
+                step.copy(
+                  stepContent = content.copy(
+                    recordingState = AudioRecording.NotRecording,
+                    isRecorderOpen = false,
+                  ),
+                )
               }
             }
 
@@ -1226,7 +1249,7 @@ private fun SnapshotStateList<ClaimIntentStep>.updateStepWithSuccess(
 
 private fun ClaimIntentStep.clearContent(): ClaimIntentStep = when (val content = stepContent) {
   is StepContent.AudioRecording -> copy(
-    stepContent = content.copy(recordingState = AudioRecording.NotRecording),
+    stepContent = content.copy(recordingState = AudioRecording.NotRecording, isRecorderOpen = false),
   )
 
   is StepContent.ContentSelect -> copy(
