@@ -138,10 +138,10 @@ import hedvig.resources.AUDIO_RECORDER_START_OVER
 import hedvig.resources.AUDIO_RECORDER_STOP
 import hedvig.resources.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR
 import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
+import hedvig.resources.CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE
 import hedvig.resources.CLAIMS_USE_AUDIO_RECORDING
 import hedvig.resources.CLAIM_CHAT_USE_AUDIO
 import hedvig.resources.CLAIM_CHAT_USE_TEXT_INPUT
-import hedvig.resources.CLAIM_TRIAGING_TITLE
 import hedvig.resources.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE
 import hedvig.resources.Res
 import hedvig.resources.SAVE_AND_CONTINUE_BUTTON_LABEL
@@ -195,6 +195,8 @@ internal fun AudioRecordingStep(
       startRecording = startRecording,
       stopRecording = stopRecording,
       submitAudioFile = submitAudioFile,
+      openRecorder = { onEvent(ClaimChatEvent.AudioRecording.OpenRecorder(item.id)) },
+      isRecorderOpen = stepContent.isRecorderOpen,
       redoRecording = redoRecording,
       discardRecording = discardRecording,
       openAppSettings = openAppSettings,
@@ -253,6 +255,8 @@ internal fun AudioRecorderBubble(
   startRecording: () -> Unit,
   stopRecording: () -> Unit,
   submitAudioFile: () -> Unit,
+  openRecorder: () -> Unit,
+  isRecorderOpen: Boolean,
   redoRecording: () -> Unit,
   discardRecording: () -> Unit,
   openAppSettings: () -> Unit,
@@ -277,8 +281,6 @@ internal fun AudioRecorderBubble(
   // A landscape keyboard leaves roughly 34dp of screen, too little for the inline card, so short windows
   // answer in the full screen editor instead, which the screen draws over this one.
   val isShortWindow = isShortWindow()
-  // The voice card is open either because the user asked for it or because a recording is already in flight.
-  var voiceCardRequested by remember(isCurrentStep) { mutableStateOf(false) }
   val hasRecording = recordingState is AudioRecordingStepState.AudioRecording &&
     recordingState !is AudioRecordingStepState.AudioRecording.NotRecording
 
@@ -323,7 +325,8 @@ internal fun AudioRecorderBubble(
             InputMode.Text
           }
 
-          voiceCardRequested || hasRecording -> {
+          // Open either because the member asked for the card or because a recording is already in flight.
+          isRecorderOpen || hasRecording -> {
             InputMode.Voice
           }
 
@@ -375,10 +378,7 @@ internal fun AudioRecorderBubble(
               redo = redoRecording,
               openAppSettings = openAppSettings,
               isSubmitting = isSubmitting,
-              onClose = {
-                voiceCardRequested = false
-                discardRecording()
-              },
+              onClose = discardRecording,
             )
           }
 
@@ -407,7 +407,7 @@ internal fun AudioRecorderBubble(
                 HedvigButton(
                   onClick = {
                     focusManager.clearFocus()
-                    voiceCardRequested = true
+                    openRecorder()
                   },
                   enabled = true,
                   buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
@@ -560,7 +560,7 @@ private fun TextAnswerContent(
   }
   val label = @Composable { labelModifier: Modifier ->
     HedvigText(
-      stringResource(Res.string.CLAIM_TRIAGING_TITLE),
+      stringResource(Res.string.CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE),
       style = HedvigTheme.typography.label,
       color = HedvigTheme.colorScheme.textSecondary,
       modifier = labelModifier,
@@ -790,7 +790,7 @@ private fun AudioRecordingSheetContent(
 @Composable
 private fun AudioRecordingHeading(modifier: Modifier = Modifier) {
   HedvigText(
-    stringResource(Res.string.CLAIM_TRIAGING_TITLE),
+    stringResource(Res.string.CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE),
     modifier = modifier.semantics {
       heading()
     },

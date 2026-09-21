@@ -54,6 +54,8 @@ private fun PreviewClaimChatComponents() {
           startRecording = {},
           stopRecording = {},
           submitAudioFile = {},
+          openRecorder = {},
+          isRecorderOpen = false,
           redoRecording = {},
           discardRecording = {},
           openAppSettings = {},

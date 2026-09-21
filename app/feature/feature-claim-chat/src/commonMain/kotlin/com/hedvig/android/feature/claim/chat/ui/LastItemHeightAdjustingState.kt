@@ -57,7 +57,7 @@ internal class LastItemHeightAdjustingState(
   private var minHeightForFullScreenItem by mutableStateOf(0.dp)
 
   val preferredMinHeightForFullScreenItem: Dp by derivedStateOf {
-    minHeightForFullScreenItem - spaceBetweenItems - if (steps().size < 2) {
+    val heightTakenByPreviousStep = if (steps().size < 2) {
       0.dp
     } else {
       val isPreviousStepTask = steps().dropLast(1).last().stepContent is StepContent.Task
@@ -74,6 +74,10 @@ internal class LastItemHeightAdjustingState(
         (heightOfItemBottomContentMap[stepId]?.height?.toDp() ?: 0.dp) + adjustmentForTask
       }
     }
+    // A previous answer taller than the viewport makes this subtraction negative, which is not a meaningful
+    // minimum height. requiredHeightIn coerces a negative minimum to zero itself, so this changes no layout
+    // today. It keeps the value honest for anything else that reads it, such as a key on a scroll effect.
+    (minHeightForFullScreenItem - spaceBetweenItems - heightTakenByPreviousStep).coerceAtLeast(0.dp)
   }
 
   fun onContainerSizeChanged(size: IntSize) {
