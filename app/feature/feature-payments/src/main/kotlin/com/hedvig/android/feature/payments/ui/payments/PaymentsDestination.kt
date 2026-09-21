@@ -258,9 +258,11 @@ private fun PaymentsContent(
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     Spacer(Modifier.height(8.dp))
-    if ((uiState as? Content)?.connectedPaymentInfo == ConnectedPaymentInfo.NeedsPayinSetup) {
+    val needsPayinSetup = (uiState as? Content)?.connectedPaymentInfo as? ConnectedPaymentInfo.NeedsPayinSetup
+    if (needsPayinSetup != null) {
       MissingPayinMethodCard(
         onConnectPaymentClick = onChangeBankAccount,
+        dueDateToConnect = needsPayinSetup.dueDateToConnect,
         modifier = Modifier
           .padding(horizontal = 16.dp)
           .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
@@ -346,7 +348,7 @@ private fun PaymentsContent(
         }
 
         // NeedsPayinSetup leads the screen as its own card, above the upcoming payment.
-        ConnectedPaymentInfo.NeedsPayinSetup,
+        is ConnectedPaymentInfo.NeedsPayinSetup,
         ConnectedPaymentInfo.Unknown,
         is ConnectedPaymentInfo.Active,
         -> {
@@ -822,7 +824,9 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ),
         upcomingPaymentInfo = NoInfo,
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup,
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup(
+          dueDateToConnect = Clock.System.now().plus(30.days).toLocalDateTime(TimeZone.UTC).date,
+        ),
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
         memberType = MemberType.STANDARD_TO_QASA_MEMBER,
       ),
@@ -892,7 +896,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           isManualChargeAllowed = null,
         ),
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup,
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup(dueDateToConnect = null),
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
         memberType = MemberType.STANDARD_MEMBER,
       ),
@@ -907,7 +911,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ),
         upcomingPaymentInfo = NoInfo,
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup,
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup(dueDateToConnect = null),
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
         memberType = MemberType.STANDARD_MEMBER,
       ),
@@ -926,7 +930,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           isManualChargeAllowed = null,
         ),
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup,
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup(dueDateToConnect = null),
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
         memberType = MemberType.STANDARD_MEMBER,
       ),
@@ -945,7 +949,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           isManualChargeAllowed = null,
         ),
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup,
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup(dueDateToConnect = null),
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
         memberType = MemberType.STANDARD_MEMBER,
       ),

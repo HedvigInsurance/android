@@ -88,7 +88,7 @@ private fun PaymentConnection.toConnectedPaymentInfo(): ConnectedPaymentInfo {
   return when (this) {
     Active -> ConnectedPaymentInfo.Active
     Pending -> ConnectedPaymentInfo.Pending
-    is NeedsPayinSetup -> ConnectedPaymentInfo.NeedsPayinSetup
+    is NeedsPayinSetup -> ConnectedPaymentInfo.NeedsPayinSetup(dueDateToConnect = terminationDateIfNotConnected)
     Unknown -> ConnectedPaymentInfo.Unknown
     PaymentConnection.NeedsPayoutSetup -> ConnectedPaymentInfo.NeedsPayoutSetup
   }
@@ -137,7 +137,7 @@ internal sealed interface PaymentsUiState {
     sealed interface ConnectedPaymentInfo {
       object Unknown : ConnectedPaymentInfo
 
-      data object NeedsPayinSetup : ConnectedPaymentInfo
+      data class NeedsPayinSetup(val dueDateToConnect: LocalDate?) : ConnectedPaymentInfo
 
       data object Pending : ConnectedPaymentInfo
 
