@@ -424,10 +424,33 @@ internal sealed interface ClaimChatErrorMessage : ErrorMessage {
   }
 }
 
+/**
+ * Reading the file we were asked to upload failed, so the upload never became a network problem.
+ * Wrapped at the read site because it is thrown while writing the request body, where it would
+ * otherwise be indistinguishable from the transport failing.
+ */
+internal class LocalFileUnreadableException(fileName: String, cause: Throwable) :
+  IOException("Could not read local file $fileName", cause)
+
 internal fun ErrorMessage.toClaimChatErrorMessage(): ClaimChatErrorMessage {
-  return if (throwable is IOException) {
+  val throwable = throwable ?: return ClaimChatErrorMessage.GeneralError
+  return if (throwable is IOException && !throwable.isCausedByUnreadableLocalFile()) {
     ClaimChatErrorMessage.ConnectionError
   } else {
     ClaimChatErrorMessage.GeneralError
   }
+}
+
+/**
+ * Walks the chain because the engine wraps whatever the body writer threw, so the marker is rarely
+ * the outermost throwable.
+ */
+private fun Throwable.isCausedByUnreadableLocalFile(): Boolean {
+  val seen = mutableSetOf<Throwable>()
+  var current: Throwable? = this
+  while (current != null && seen.add(current)) {
+    if (current is LocalFileUnreadableException) return true
+    current = current.cause
+  }
+  return false
 }
