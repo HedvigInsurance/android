@@ -133,6 +133,7 @@ import hedvig.resources.EMBARK_UPDATE_APP_BODY
 import hedvig.resources.EMBARK_UPDATE_APP_BUTTON
 import hedvig.resources.GENERAL_ARE_YOU_SURE
 import hedvig.resources.NETWORK_ERROR_ALERT_MESSAGE
+import hedvig.resources.NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION
 import hedvig.resources.RESUME_CLAIM_LEAVE_BODY
 import hedvig.resources.RESUME_CLAIM_LEAVE_CANCEL
 import hedvig.resources.RESUME_CLAIM_LEAVE_CONFIRM
@@ -144,6 +145,7 @@ import hedvig.resources.claims_skip_button
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_close_button
 import hedvig.resources.general_error
+import hedvig.resources.something_went_wrong
 import kotlin.time.Clock
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -335,9 +337,11 @@ private fun ClaimChatScreenContent(
   }
 
   if (uiState.errorSubmittingStep != null) {
+    val retryFailedSubmission = uiState.retryFailedSubmission
     val messageRes = when (uiState.errorSubmittingStep) {
       ClaimChatErrorMessage.NeedsUpdate -> Res.string.EMBARK_UPDATE_APP_BODY
-      ClaimChatErrorMessage.GeneralError -> Res.string.NETWORK_ERROR_ALERT_MESSAGE
+      ClaimChatErrorMessage.ConnectionError -> Res.string.NETWORK_ERROR_ALERT_MESSAGE
+      ClaimChatErrorMessage.GeneralError -> Res.string.something_went_wrong
     }
     ErrorDialog(
       title = stringResource(Res.string.general_error),
@@ -345,13 +349,34 @@ private fun ClaimChatScreenContent(
       onDismiss = {
         onEvent(ClaimChatEvent.DismissErrorDialog)
       },
-      buttonText = when (uiState.errorSubmittingStep) {
-        ClaimChatErrorMessage.NeedsUpdate -> stringResource(Res.string.EMBARK_UPDATE_APP_BUTTON)
-        ClaimChatErrorMessage.GeneralError -> stringResource(Res.string.general_close_button)
+      buttonText = when {
+        uiState.errorSubmittingStep == ClaimChatErrorMessage.NeedsUpdate -> {
+          stringResource(Res.string.EMBARK_UPDATE_APP_BUTTON)
+        }
+
+        retryFailedSubmission != null -> {
+          stringResource(Res.string.NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION)
+        }
+
+        else -> {
+          stringResource(Res.string.general_close_button)
+        }
       },
-      onButtonClick = when (uiState.errorSubmittingStep) {
-        ClaimChatErrorMessage.NeedsUpdate -> openPlayStore
-        ClaimChatErrorMessage.GeneralError -> null
+      onButtonClick = when {
+        uiState.errorSubmittingStep == ClaimChatErrorMessage.NeedsUpdate -> {
+          openPlayStore
+        }
+
+        retryFailedSubmission != null -> {
+          {
+            onEvent(ClaimChatEvent.DismissErrorDialog)
+            onEvent(retryFailedSubmission)
+          }
+        }
+
+        else -> {
+          null
+        }
       },
     )
   }

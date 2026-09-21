@@ -10,6 +10,7 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.shared.partners.deflect.DeflectData
 import kotlinx.datetime.LocalDate
+import kotlinx.io.IOException
 import octopus.fragment.AudioRecordingFragment
 import octopus.fragment.ClaimIntentFragment
 import octopus.fragment.ClaimIntentMutationOutputFragment
@@ -408,8 +409,25 @@ internal sealed interface ClaimChatErrorMessage : ErrorMessage {
     override val throwable = null
   }
 
+  /**
+   * The request never reached a verdict: it timed out, stalled or lost its connection. Retrying the
+   * same request is worth offering, which is what separates this from [GeneralError].
+   */
+  data object ConnectionError : ClaimChatErrorMessage {
+    override val message = null
+    override val throwable = null
+  }
+
   data object NeedsUpdate : ClaimChatErrorMessage {
     override val message = null
     override val throwable = null
+  }
+}
+
+internal fun ErrorMessage.toClaimChatErrorMessage(): ClaimChatErrorMessage {
+  return if (throwable is IOException) {
+    ClaimChatErrorMessage.ConnectionError
+  } else {
+    ClaimChatErrorMessage.GeneralError
   }
 }
