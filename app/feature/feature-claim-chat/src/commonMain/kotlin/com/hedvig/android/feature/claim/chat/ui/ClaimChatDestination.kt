@@ -77,7 +77,6 @@ import androidx.navigationevent.compose.NavigationEventHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.plus
-import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
@@ -917,18 +916,8 @@ private fun StepTopContent(
           ChatClaimSummaryTopContent(
             keyDetails = stepItem.stepContent.keyDetails.ifEmpty { stepItem.stepContent.items },
             answers = stepItem.stepContent.answers,
-            recordingUrls = stepItem.stepContent.audioRecordings.map { it.url },
             onNavigateToImageViewer = onNavigateToImageViewer,
             imageLoader = imageLoader,
-            fileUploads = stepItem.stepContent.fileUploads.map {
-              UiFile(
-                name = it.fileName,
-                localPath = null,
-                url = it.url,
-                mimeType = it.contentType,
-                id = it.url,
-              )
-            },
           )
         }
       }

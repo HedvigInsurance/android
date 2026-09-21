@@ -4,7 +4,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,8 +38,6 @@ import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.claim.chat.data.StepContent
 import com.hedvig.android.feature.claim.chat.ui.common.FilesRow
-import hedvig.resources.CLAIM_CHAT_FILE_TITLE
-import hedvig.resources.CLAIM_CHAT_RECORDING_TITLE
 import hedvig.resources.EMBARK_SUBMIT_CLAIM
 import hedvig.resources.Res
 import hedvig.resources.claim_status_claim_details_title
@@ -72,8 +69,6 @@ internal fun ChatClaimSummaryBottomContent(
 internal fun ChatClaimSummaryTopContent(
   keyDetails: List<StepContent.Summary.Item>,
   answers: List<StepContent.Summary.Answer>,
-  recordingUrls: List<String>,
-  fileUploads: List<UiFile>,
   imageLoader: ImageLoader,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   modifier: Modifier = Modifier,
@@ -136,41 +131,6 @@ internal fun ChatClaimSummaryTopContent(
             text = stringResource(Res.string.claim_status_show_all_answers),
             onClick = { answersSheetState.show(answers) },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-          )
-        }
-        if (recordingUrls.isNotEmpty()) {
-          Spacer(Modifier.height(24.dp))
-          HedvigText(
-            stringResource(Res.string.CLAIM_CHAT_RECORDING_TITLE),
-            Modifier.padding(horizontal = 16.dp),
-          )
-          Spacer(Modifier.height(8.dp))
-          recordingUrls.forEachIndexed { index, string ->
-            val audioPlayer = rememberAudioPlayer(
-              PlayableAudioSource.RemoteUrl(
-                SignedAudioUrl.fromSignedAudioUrlString(string),
-              ),
-            )
-            HedvigAudioPlayer(audioPlayer = audioPlayer, Modifier.padding(horizontal = 16.dp))
-            if (index != recordingUrls.lastIndex) {
-              Spacer(Modifier.height(8.dp))
-            }
-          }
-        }
-        if (fileUploads.isNotEmpty()) {
-          Spacer(Modifier.height(24.dp))
-          HedvigText(
-            stringResource(Res.string.CLAIM_CHAT_FILE_TITLE),
-            Modifier.padding(horizontal = 16.dp),
-          )
-          Spacer(Modifier.height(8.dp))
-          FilesRow(
-            uiFiles = fileUploads,
-            imageLoader = imageLoader,
-            onNavigateToImageViewer = onNavigateToImageViewer,
-            onRemoveFile = null,
-            alignment = Alignment.Start,
-            contentPadding = PaddingValues(horizontal = 16.dp),
           )
         }
       }
@@ -281,10 +241,6 @@ private fun PreviewSummaryTopContent() {
             StepContent.Summary.Item("Location", "Stockholm"),
           ),
           answers = previewAnswers(),
-          recordingUrls = listOf(""),
-          fileUploads = listOf(
-            UiFile("receipt.pdf", null, "https://example.com/receipt.pdf", "application/pdf", "file-1"),
-          ),
           imageLoader = rememberPreviewImageLoader(),
           onNavigateToImageViewer = { _, _ -> },
         )
