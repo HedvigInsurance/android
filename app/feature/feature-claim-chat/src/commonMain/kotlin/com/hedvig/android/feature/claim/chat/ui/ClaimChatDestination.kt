@@ -117,7 +117,10 @@ import com.hedvig.android.feature.claim.chat.ui.step.TaskStepBottomContent
 import com.hedvig.android.feature.claim.chat.ui.step.TaskStepTopContent
 import com.hedvig.android.feature.claim.chat.ui.step.UploadFilesStep
 import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.AudioRecordingStep
+import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.FreeTextDraftState
 import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.FullScreenTextAnswer
+import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.isShortWindow
+import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.rememberFreeTextDraftState
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
@@ -256,9 +259,18 @@ private fun ClaimChatScreen(
   openAppSettings: () -> Unit,
   openPlayStore: () -> Unit,
 ) {
+  val audioRecordingContent = uiState.currentStep?.stepContent as? StepContent.AudioRecording
+  val freeTextAnswer = audioRecordingContent?.recordingState as? AudioRecordingStepState.FreeTextDescription
+  // The answer being written, held here because neither card that can draw it survives the window changing
+  // size under it.
+  val freeTextDraft = rememberFreeTextDraftState(
+    sessionId = uiState.currentStep?.id?.value?.takeIf { freeTextAnswer != null },
+    storedAnswer = freeTextAnswer?.freeText.orEmpty(),
+  )
   ClaimChatScreenContent(
     uiState = uiState,
     onEvent = onEvent,
+    freeTextDraft = freeTextDraft,
     shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
     openAppSettings = openAppSettings,
     onNavigateToImageViewer = onNavigateToImageViewer,
@@ -271,25 +283,22 @@ private fun ClaimChatScreen(
   )
   // The inline card is the answer wherever it fits. It cannot fit above a landscape keyboard, which leaves
   // around 34dp under the app bar, so those windows answer in the same fields filling the screen instead.
-  val freeTextRestrictions = uiState.showFreeTextOverlay
-  if (freeTextRestrictions != null) {
-    val recordingState = (uiState.currentStep?.stepContent as? StepContent.AudioRecording)
-      ?.recordingState as? AudioRecordingStepState.FreeTextDescription
+  // Asked of the window rather than of the tap that opened the answer, so that turning the phone part way
+  // through one moves it to whichever card fits now, in both directions.
+  if (audioRecordingContent != null && freeTextAnswer != null && isShortWindow()) {
     FullScreenTextAnswer(
-      initialText = recordingState?.freeText.orEmpty(),
-      minLength = freeTextRestrictions.minLength,
-      maxLength = freeTextRestrictions.maxLength,
-      errorType = recordingState?.errorType,
-      hasError = recordingState?.hasError == true,
+      draft = freeTextDraft,
+      minLength = audioRecordingContent.freeTextMinLength,
+      maxLength = audioRecordingContent.freeTextMaxLength,
+      errorType = freeTextAnswer.errorType,
+      hasError = freeTextAnswer.hasError,
       isSubmitting = uiState.currentContinueButtonLoading,
       onCancel = {
         onEvent(ClaimChatEvent.AudioRecording.CancelTextSubmission)
-        onEvent(ClaimChatEvent.CloseFreeChatOverlay)
         uiState.currentStep?.id?.let { onEvent(ClaimChatEvent.AudioRecording.SwitchToAudioRecording(it)) }
       },
       onSave = { answer: String ->
         onEvent(ClaimChatEvent.UpdateFreeText(answer))
-        onEvent(ClaimChatEvent.CloseFreeChatOverlay)
         uiState.currentStep?.id?.let { onEvent(ClaimChatEvent.AudioRecording.SubmitTextInput(it)) }
       },
     )
@@ -300,6 +309,7 @@ private fun ClaimChatScreen(
 private fun ClaimChatScreenContent(
   uiState: ClaimChatUiState.ClaimChat,
   onEvent: (ClaimChatEvent) -> Unit,
+  freeTextDraft: FreeTextDraftState,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openAppSettings: () -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
@@ -468,6 +478,7 @@ private fun ClaimChatScreenContent(
       }
       ClaimChatScrollableContent(
         uiState = uiState,
+        freeTextDraft = freeTextDraft,
         lazyListState = lazyListState,
         lastItemHeightAdjustingState = lastItemHeightAdjustingState,
         isScrolledBack = isScrolledBack,
@@ -540,6 +551,7 @@ private fun ClaimChatScreenContent(
 @Composable
 private fun ClaimChatScrollableContent(
   uiState: ClaimChatUiState.ClaimChat,
+  freeTextDraft: FreeTextDraftState,
   lazyListState: LazyListState,
   lastItemHeightAdjustingState: LastItemHeightAdjustingState,
   isScrolledBack: Boolean,
@@ -611,6 +623,7 @@ private fun ClaimChatScrollableContent(
 
             StepContentSection(
               stepItem = item,
+              freeTextDraft = freeTextDraft,
               isCurrentStep = isCurrentStep,
               showAnimationSequence = showAnimationSequence,
               renderBottomContent = !isBottomAttached,
@@ -661,6 +674,7 @@ private fun ClaimChatScrollableContent(
             StepBottomContent(
               modifier = Modifier.verticalScroll(rememberScrollState()),
               stepItem = attached,
+              freeTextDraft = freeTextDraft,
               isCurrentStep = true,
               currentContinueButtonLoading = uiState.currentContinueButtonLoading,
               currentSkipButtonLoading = uiState.currentSkipButtonLoading,
@@ -720,6 +734,7 @@ private fun ScrollToBottomButton(onClick: () -> Unit, modifier: Modifier = Modif
 @Composable
 private fun StepContentSection(
   stepItem: ClaimIntentStep,
+  freeTextDraft: FreeTextDraftState,
   isCurrentStep: Boolean,
   showAnimationSequence: Boolean,
   renderBottomContent: Boolean,
@@ -796,6 +811,7 @@ private fun StepContentSection(
     ) {
       StepBottomContent(
         stepItem = stepItem,
+        freeTextDraft = freeTextDraft,
         isCurrentStep = isCurrentStep,
         currentContinueButtonLoading = currentContinueButtonLoading,
         currentSkipButtonLoading = currentSkipButtonLoading,
@@ -929,6 +945,7 @@ private fun CommonPaddingWrapper(content: @Composable () -> Unit) {
 @Composable
 private fun StepBottomContent(
   stepItem: ClaimIntentStep,
+  freeTextDraft: FreeTextDraftState,
   isCurrentStep: Boolean,
   currentContinueButtonLoading: Boolean,
   currentSkipButtonLoading: Boolean,
@@ -954,9 +971,7 @@ private fun StepBottomContent(
           onSwitchToAudioRecording = {
             onEvent(ClaimChatEvent.AudioRecording.SwitchToAudioRecording(stepItem.id))
           },
-          onLaunchFullScreenEditText = { restrictions ->
-            onEvent(ClaimChatEvent.OpenFreeTextOverlay(restrictions))
-          },
+          freeTextDraft = freeTextDraft,
           startRecording = {
             onEvent(ClaimChatEvent.AudioRecording.StartRecording(stepItem.id))
           },

@@ -129,12 +129,6 @@ internal sealed interface ClaimChatEvent {
 
   data class SubmitFile(val id: StepId) : ClaimChatEvent
 
-  data class OpenFreeTextOverlay(
-    val restrictions: FreeTextRestrictions,
-  ) : ClaimChatEvent
-
-  data object CloseFreeChatOverlay : ClaimChatEvent
-
   data object DismissErrorDialog : ClaimChatEvent
 
   data class SubmitClaim(val id: StepId) : ClaimChatEvent
@@ -174,7 +168,6 @@ internal sealed interface ClaimChatUiState {
     val errorSubmittingStep: ClaimChatErrorMessage?,
     val currentContinueButtonLoading: Boolean = false,
     val currentSkipButtonLoading: Boolean = false,
-    val showFreeTextOverlay: FreeTextRestrictions?,
     val showConfirmEditDialogForStep: StepId?,
     val stepsWithShownAnimations: List<StepId>,
     val progress: Float?,
@@ -273,7 +266,6 @@ internal class ClaimChatPresenter(
     val currentStep by remember {
       derivedStateOf { steps.lastOrNull() }
     }
-    var showFreeTextOverlay by remember { mutableStateOf<FreeTextRestrictions?>(null) }
     var currentContinueButtonLoading by remember { mutableStateOf(false) }
     // Held so the member can call off an answer that is taking too long. Cancelling the job cancels the
     // call it is waiting on; an answer the backend has already taken stands, which is the best a client can
@@ -750,14 +742,6 @@ internal class ClaimChatPresenter(
           }
         }
 
-        ClaimChatEvent.CloseFreeChatOverlay -> {
-          showFreeTextOverlay = null
-        }
-
-        is ClaimChatEvent.OpenFreeTextOverlay -> {
-          showFreeTextOverlay = event.restrictions
-        }
-
         is ClaimChatEvent.Skip -> {
           val claimChatState = claimIntentId != null
           if (!claimChatState) return@CollectEvents
@@ -1107,7 +1091,6 @@ internal class ClaimChatPresenter(
         steps = steps,
         currentStep = currentStep,
         outcome = outcome,
-        showFreeTextOverlay = showFreeTextOverlay,
         errorSubmittingStep = errorSubmittingStep,
         currentContinueButtonLoading = currentContinueButtonLoading,
         currentSkipButtonLoading = currentSkipButtonLoading,
@@ -1124,11 +1107,6 @@ internal class ClaimChatPresenter(
     }
   }
 }
-
-internal data class FreeTextRestrictions(
-  val minLength: Int,
-  val maxLength: Int,
-)
 
 @Composable
 private fun ObserveIncompleteTaskEffect(
