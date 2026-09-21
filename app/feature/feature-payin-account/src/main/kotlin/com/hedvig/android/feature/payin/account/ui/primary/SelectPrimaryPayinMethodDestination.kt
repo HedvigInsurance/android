@@ -1,16 +1,11 @@
 package com.hedvig.android.feature.payin.account.ui.primary
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -21,7 +16,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.data.paying.member.InvoiceDelivery
 import com.hedvig.android.data.paying.member.PayinAccount
 import com.hedvig.android.data.paying.member.PayinAccount.Invoice
@@ -33,25 +27,18 @@ import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
-import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Error
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.ThreeDotsLoading
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
-import com.hedvig.android.design.system.hedvig.hedvigDropShadow
-import com.hedvig.android.design.system.hedvig.icon.HelipadFilled
-import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
-import com.hedvig.android.design.system.hedvig.icon.Plus
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.payin.account.ui.components.PayinMethodHandoverIllustration
 import com.hedvig.android.feature.payin.account.ui.components.PayinMethodRow
@@ -62,16 +49,12 @@ import com.hedvig.android.feature.payin.account.ui.components.toRadioOption
 import com.hedvig.android.feature.payin.account.ui.primary.SelectPrimaryPayinMethodEvent.ConfirmSelectedMethod
 import com.hedvig.android.feature.payin.account.ui.primary.SelectPrimaryPayinMethodEvent.SelectMethod
 import hedvig.resources.PAYMENT_CONFIRM_PRIMARY_WARNING
-import hedvig.resources.PAYMENT_CONNECT_SUBTITLE
-import hedvig.resources.PAYMENT_CONNECT_TITLE
 import hedvig.resources.PAYMENT_PRIMARY_CONFIRM_TITLE
 import hedvig.resources.PAYMENT_PRIMARY_SUBTITLE
 import hedvig.resources.PAYMENT_PRIMARY_TITLE
 import hedvig.resources.Res
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_continue_button
-import hedvig.resources.pillow_new_680
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

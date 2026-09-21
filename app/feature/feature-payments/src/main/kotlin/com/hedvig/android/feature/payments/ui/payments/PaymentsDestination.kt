@@ -1,8 +1,6 @@
 package com.hedvig.android.feature.payments.ui.payments
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,7 +23,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -44,9 +41,7 @@ import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.paying.member.MemberType
-import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigAttentionCard
-import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigInformationSection
@@ -62,7 +57,6 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyl
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.Campaign
 import com.hedvig.android.design.system.hedvig.icon.Card
 import com.hedvig.android.design.system.hedvig.icon.ChevronRight
@@ -70,7 +64,6 @@ import com.hedvig.android.design.system.hedvig.icon.Clock
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.PaymentOutline
 import com.hedvig.android.design.system.hedvig.icon.Trustly
-import com.hedvig.android.design.system.hedvig.icon.WarningFilled
 import com.hedvig.android.design.system.hedvig.icon.colored.Kivra
 import com.hedvig.android.design.system.hedvig.icon.colored.Swish
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
@@ -117,12 +110,9 @@ import hedvig.resources.PAYMENT_METHODS_TITLE
 import hedvig.resources.PAYOUT_ADD_PAYOUT_METHOD
 import hedvig.resources.PAYOUT_MISSING_INFO
 import hedvig.resources.PAYOUT_PAGE_HEADING
-import hedvig.resources.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE
 import hedvig.resources.R
 import hedvig.resources.Res
 import hedvig.resources.TAB_PAYMENTS_TITLE
-import hedvig.resources.info_card_missing_payment_body
-import hedvig.resources.info_card_missing_payment_missing_payments_body
 import hedvig.resources.swish
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days

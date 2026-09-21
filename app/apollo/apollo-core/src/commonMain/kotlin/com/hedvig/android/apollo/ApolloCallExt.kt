@@ -20,7 +20,6 @@ import com.hedvig.android.apollo.ApolloOperationError.OperationError
 import com.hedvig.android.apollo.ApolloOperationError.OperationException
 import com.hedvig.android.apollo.parseResponse
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.logger.logcat
 import kotlin.jvm.JvmInline
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

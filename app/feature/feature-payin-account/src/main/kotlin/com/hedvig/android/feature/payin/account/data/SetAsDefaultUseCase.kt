@@ -6,7 +6,6 @@ import arrow.core.raise.context.either
 import arrow.core.raise.context.raise
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
-import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.safeExecuteAllowingPartialResponses
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope

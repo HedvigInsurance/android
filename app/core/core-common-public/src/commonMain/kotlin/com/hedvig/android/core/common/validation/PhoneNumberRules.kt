@@ -80,7 +80,7 @@ data class PhoneNumberRules(
     val MemberPhoneNumber = PhoneNumberRules(minDigits = 6, allowLeadingPlus = true)
 
     /**
-     * Swish takes a Swedish mobile number written `07…`, `467…` or `+467…`, and normalises between
+     * Swish takes a Swedish mobile number written `07…`, `467…` or `+467…`, and BE normalises between
      * those itself, so a country code is neither required nor stripped here. Eight digits is Swish's
      * own floor.
      */

@@ -32,13 +32,11 @@ import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterPr
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.data.paying.member.PayinAccount
 import com.hedvig.android.data.paying.member.PayinAccount.Invoice
 import com.hedvig.android.data.paying.member.PayinAccount.SwishPayin
 import com.hedvig.android.data.paying.member.PayinAccount.Trustly
 import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.data.paying.member.maskedAccountNumber
-import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -53,7 +51,6 @@ import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.Icon
-import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.AttentionRound
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
