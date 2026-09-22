@@ -80,6 +80,12 @@ internal class LastItemHeightAdjustingState(
     (minHeightForFullScreenItem - spaceBetweenItems - heightTakenByPreviousStep).coerceAtLeast(0.dp)
   }
 
+  /** The height last reported for the current step's answer area, 0.dp before it has reported one. */
+  val lastItemBottomContentHeight: Dp by derivedStateOf {
+    val lastStepId = steps().lastOrNull()?.id ?: return@derivedStateOf 0.dp
+    with(density) { heightOfItemBottomContentMap[lastStepId]?.height?.toDp() ?: 0.dp }
+  }
+
   fun onContainerSizeChanged(size: IntSize) {
     minHeightForFullScreenItem = with(density) { size.height.toDp() }
   }
