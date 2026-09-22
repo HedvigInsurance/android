@@ -477,7 +477,7 @@ private fun ClaimChatScreenContent(
           )
         }
       }
-     AnimatedVisibility(
+      AnimatedVisibility(
         visible = uiState.steps.size <= 1,
         exit = shrinkVertically() + fadeOut(),
       ) {

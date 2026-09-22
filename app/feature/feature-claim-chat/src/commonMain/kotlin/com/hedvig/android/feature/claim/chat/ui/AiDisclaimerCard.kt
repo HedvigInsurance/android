@@ -2,11 +2,18 @@ package com.hedvig.android.feature.claim.chat.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -34,7 +41,14 @@ internal fun AiDisclaimerCard(modifier: Modifier = Modifier) {
       .fillMaxWidth()
       .background(background)
       .horizontalDivider(DividerPosition.Bottom, color = HedvigTheme.colorScheme.borderPrimary)
-      .padding(start = 16.dp, top = 11.dp, end = 16.dp, bottom = 13.dp),
+      // The fill and the rule run edge to edge; only the text steps aside for the cutout and the navigation
+      // bar, which a landscape window puts down one side of the screen.
+      .padding(
+        WindowInsets.safeDrawing
+          .only(WindowInsetsSides.Horizontal)
+          .asPaddingValues()
+          .plus(PaddingValues(start = 16.dp, top = 11.dp, end = 16.dp, bottom = 13.dp)),
+      ),
   )
 }
 
