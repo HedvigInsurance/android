@@ -8,6 +8,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Canvas
@@ -475,6 +476,12 @@ private fun ClaimChatScreenContent(
               ),
           )
         }
+      }
+     AnimatedVisibility(
+        visible = uiState.steps.size <= 1,
+        exit = shrinkVertically() + fadeOut(),
+      ) {
+        AiDisclaimerCard()
       }
       ClaimChatScrollableContent(
         uiState = uiState,

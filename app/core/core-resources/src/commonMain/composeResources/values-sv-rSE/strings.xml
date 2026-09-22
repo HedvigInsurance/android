@@ -226,6 +226,7 @@
   <string name="CLAIMS_USE_TEXT_INSTEAD">Beskriv i text</string>
   <string name="CLAIMS_VOICE_RECORDING_SENDING">Skickar...</string>
   <string name="CLAIMS_YOUR_CLAIM">Din skadeanmälan</string>
+  <string name="CLAIM_CHAT_AI_INFO">Vi använder AI för att stödja processen kring att skicka in och hantera ditt skadeärende. En skadereglerare granskar alltid ditt ärende innan något beslut fattas.</string>
   <string name="CLAIM_CHAT_AUDIO_RECORDING_LABEL">Röstinspelning</string>
   <string name="CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE">Annat föremål</string>
   <string name="CLAIM_CHAT_DATE_AND_LOCATION_HINT">Om du inte vet exakt datum, fyll i på ett ungefär när det inträffade.</string>
@@ -261,9 +262,6 @@
   <string name="CLAIM_CHAT_SINGLE_ITEM_DETAILS_HINT">Om du inte minns inköpsdatum behöver du inte fylla i något.</string>
   <string name="CLAIM_CHAT_SKIPPED_STEP">Saknas</string>
   <string name="CLAIM_CHAT_SKIP_STEP">Hoppa över</string>
-  <string name="CLAIM_CHAT_STROLLER_THEFT_ACCESSORIES_DESCRIPTION">Stulna tillbehör</string>
-  <string name="CLAIM_CHAT_STROLLER_THEFT_ACCESSORIES_DESCRIPTION_MESSAGE">Berätta om tillbehören som blev stulna, t.ex. vad det var och ungefär vad de kostade.</string>
-  <string name="CLAIM_CHAT_STROLLER_THEFT_ACCESSORIES_MESSAGE">Blev några tillbehör stulna tillsammans med barnvagnen?</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_ALONE_TIME">Välj tid</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_ALONE_TIME_MESSAGE">Ungefär hur länge stod barnvagnen där innan du märkte att den var borta?</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_FULL_DAY_OR_MORE">Ett dygn eller mer</string>
@@ -501,6 +499,7 @@
   <string name="HC_QUICK_ACTIONS_FIRSTVET_SUBTITLE">Boka ett samtal med en veterinär</string>
   <string name="HC_QUICK_ACTIONS_FIRSTVET_TITLE">FirstVet</string>
   <string name="HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE">Ändra bank eller bankkonto</string>
+  <string name="HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE_2">Hantera betalningsmetoder</string>
   <string name="HC_QUICK_ACTIONS_PAYMENTS_TITLE">Betalning</string>
   <string name="HC_QUICK_ACTIONS_REMOVE_ADDON_SUBTITLE">Ändra eller ta bort aktiva tillägg</string>
   <string name="HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE">Få akut hjälp på din resa</string>
@@ -570,7 +569,6 @@
   <string name="LETTER_TO_EIR_SUBJECT">Fråga angående skadeanmälan - Fordon reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Välj land och språk</string>
   <string name="LOGOUT_BUTTON">Logga ut</string>
-  <string name="MANAGE_BILLING_METHODS_BUTTON">Manage your payment methods</string>
   <string name="MANUAL_CHARGE_CANCELLATION_WARNING">Aktivera ditt försäkringsskydd igen genom att kontakta oss när din betalning har registrerats</string>
   <string name="MARKETING_GET_HEDVIG">Få ett prisförslag</string>
   <string name="MISSING_CONTACT_INFO_CARD_BUTTON">Se över kontaktuppgifter</string>
@@ -959,6 +957,12 @@
   <string name="SUMMARY_SCREEN_LEARN_MORE_BUTTON">Läs mer</string>
   <string name="SUMMARY_SELECTED_PROBLEM_DESCRIPTION">Skada %1$s</string>
   <string name="SUMMARY_TOTAL_PRICE_SUBTITLE">Ändringar aktiveras %1$s</string>
+  <string name="SWISH_EXPLANATION_ITEM_1_TEXT">Din försäkring betalas via Swish varje månad. Du behöver inte godkänna varje gång.</string>
+  <string name="SWISH_EXPLANATION_ITEM_1_TITLE">Betalas automatiskt</string>
+  <string name="SWISH_EXPLANATION_ITEM_2_TEXT">Ersättning från skador skickas till ditt Swish-nummer.</string>
+  <string name="SWISH_EXPLANATION_ITEM_2_TITLE">Utbetalningar direkt</string>
+  <string name="SWISH_EXPLANATION_ITEM_3_TEXT">Du kan byta eller ta bort betalningsmetod i inställningar.</string>
+  <string name="SWISH_EXPLANATION_ITEM_3_TITLE">Byt när du vill</string>
   <string name="TAB_HOME_TITLE">Hem</string>
   <string name="TAB_INSURANCES_TITLE">Försäkringar</string>
   <string name="TAB_PAYMENTS_TITLE">Betalningar</string>

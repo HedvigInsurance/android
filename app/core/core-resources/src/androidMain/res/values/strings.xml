@@ -227,6 +227,7 @@
   <string name="CLAIMS_USE_TEXT_INSTEAD">Describe using text</string>
   <string name="CLAIMS_VOICE_RECORDING_SENDING">Sending...</string>
   <string name="CLAIMS_YOUR_CLAIM">Your claim</string>
+  <string name="CLAIM_CHAT_AI_INFO">We use AI to support the process of submitting and handling your claim.  A claims handler always reviews your claim before any decision is made.</string>
   <string name="CLAIM_CHAT_AUDIO_RECORDING_LABEL">Voice recording</string>
   <string name="CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE">Other item</string>
   <string name="CLAIM_CHAT_DATE_AND_LOCATION_HINT">If you don\'t know the exact date, enter an approximate date.</string>
@@ -262,9 +263,6 @@
   <string name="CLAIM_CHAT_SINGLE_ITEM_DETAILS_HINT">If you don\'t remember the purchase date, you don\'t need to fill in anything.</string>
   <string name="CLAIM_CHAT_SKIPPED_STEP">Skipped</string>
   <string name="CLAIM_CHAT_SKIP_STEP">Skip</string>
-  <string name="CLAIM_CHAT_STROLLER_THEFT_ACCESSORIES_DESCRIPTION">Stolen accessories</string>
-  <string name="CLAIM_CHAT_STROLLER_THEFT_ACCESSORIES_DESCRIPTION_MESSAGE">Tell us about the accessories that were stolen, e.g. what they were and roughly what they cost.</string>
-  <string name="CLAIM_CHAT_STROLLER_THEFT_ACCESSORIES_MESSAGE">Were any accessories stolen along with the stroller?</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_ALONE_TIME">Select time</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_ALONE_TIME_MESSAGE">Roughly how long had the stroller been there before you noticed it was gone?</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_FULL_DAY_OR_MORE">A day or more</string>
@@ -502,6 +500,7 @@
   <string name="HC_QUICK_ACTIONS_FIRSTVET_SUBTITLE">Schedule a call with a vet</string>
   <string name="HC_QUICK_ACTIONS_FIRSTVET_TITLE">FirstVet</string>
   <string name="HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE">Change bank or bank account</string>
+  <string name="HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE_2">Manage payment methods</string>
   <string name="HC_QUICK_ACTIONS_PAYMENTS_TITLE">Payments</string>
   <string name="HC_QUICK_ACTIONS_REMOVE_ADDON_SUBTITLE">Change or remove active addons</string>
   <string name="HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE">Get emergency help when sick abroad</string>
@@ -571,7 +570,6 @@
   <string name="LETTER_TO_EIR_SUBJECT">Question regarding claim, Vehicle reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Preferences</string>
   <string name="LOGOUT_BUTTON">Logout</string>
-  <string name="MANAGE_BILLING_METHODS_BUTTON">Manage your payment methods</string>
   <string name="MANUAL_CHARGE_CANCELLATION_WARNING">Activate your coverage again by contacting us once your payment has been processed</string>
   <string name="MARKETING_GET_HEDVIG">Get a price quote</string>
   <string name="MISSING_CONTACT_INFO_CARD_BUTTON">Review contact info</string>
@@ -960,6 +958,12 @@
   <string name="SUMMARY_SCREEN_LEARN_MORE_BUTTON">Learn more</string>
   <string name="SUMMARY_SELECTED_PROBLEM_DESCRIPTION">Damage %1$s</string>
   <string name="SUMMARY_TOTAL_PRICE_SUBTITLE">Changes activate %s</string>
+  <string name="SWISH_EXPLANATION_ITEM_1_TEXT">Your insurance is paid via Swish each month. No need to approve every time.</string>
+  <string name="SWISH_EXPLANATION_ITEM_1_TITLE">Paid automatically</string>
+  <string name="SWISH_EXPLANATION_ITEM_2_TEXT">Claims payouts are sent to your Swish number.</string>
+  <string name="SWISH_EXPLANATION_ITEM_2_TITLE">Payouts straight to Swish</string>
+  <string name="SWISH_EXPLANATION_ITEM_3_TEXT">Switch or remove your payment method in settings.</string>
+  <string name="SWISH_EXPLANATION_ITEM_3_TITLE">Change anytime</string>
   <string name="TAB_HOME_TITLE">Home</string>
   <string name="TAB_INSURANCES_TITLE">Insurances</string>
   <string name="TAB_PAYMENTS_TITLE">Payments</string>
