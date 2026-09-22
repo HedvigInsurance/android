@@ -148,9 +148,13 @@ private fun List<Error>?.mapToOperationErrors(): Nel<ApolloOperationError>? {
   }.toNonEmptyListOrNull()
 }
 
+/**
+ * A lone error passes through with its type intact, since flattening it into a message leaves
+ * callers unable to tell a transport failure from a rejection the backend answered with.
+ */
 private fun <D : Operation.Data> IorNel<ApolloOperationError, D>.mergeApolloErrors(): Ior<ApolloOperationError, D> {
   return mapLeft { errors ->
-    if (errors.size == 1 && errors.head is OperationError.Unathenticated) {
+    if (errors.size == 1) {
       errors.head
     } else {
       OperationError.Other(
