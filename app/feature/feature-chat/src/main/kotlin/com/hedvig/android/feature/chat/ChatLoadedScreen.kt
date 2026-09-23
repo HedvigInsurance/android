@@ -141,6 +141,7 @@ import com.hedvig.android.feature.chat.data.BannerText
 import com.hedvig.android.feature.chat.data.BannerText.ClosedConversation
 import com.hedvig.android.feature.chat.data.ConversationInfo.Info
 import com.hedvig.android.feature.chat.data.ConversationInfo.Info.ClaimInfo
+import com.hedvig.android.feature.chat.data.InChatCrossSell
 import com.hedvig.android.feature.chat.model.CbmChatMessage
 import com.hedvig.android.feature.chat.model.CbmChatMessage.Banner.Style
 import com.hedvig.android.feature.chat.model.CbmChatMessage.ChatMessageFile
@@ -156,6 +157,7 @@ import com.hedvig.android.feature.chat.model.Sender.HEDVIG
 import com.hedvig.android.feature.chat.model.Sender.MEMBER
 import com.hedvig.android.feature.chat.ui.ChatBanner
 import com.hedvig.android.feature.chat.ui.ChatInput
+import com.hedvig.android.feature.chat.ui.InChatCrossSellCard
 import com.hedvig.android.feature.chat.ui.TextWithClickableUrls
 import com.hedvig.android.feature.chat.ui.adjustSizeToImageRatio
 import com.hedvig.android.feature.chat.ui.backgroundColor
@@ -206,6 +208,8 @@ internal fun CbmChatLoadedScreen(
   onSendPhoto: (List<Uri>) -> Unit,
   onSendMedia: (List<Uri>) -> Unit,
   onCloseBannerClick: () -> Unit,
+  onDismissCrossSellClick: (InChatCrossSell) -> Unit,
+  onCrossSellClick: (InChatCrossSell) -> Unit,
   errorSnackbarState: ErrorSnackbarState?,
 ) {
   val lazyListState = rememberLazyListState()
@@ -235,6 +239,8 @@ internal fun CbmChatLoadedScreen(
     },
     errorSnackbarState = errorSnackbarState,
     onCloseBannerClick = onCloseBannerClick,
+    onDismissCrossSellClick = onDismissCrossSellClick,
+    onCrossSellClick = onCrossSellClick,
   )
 }
 
@@ -247,6 +253,8 @@ private fun ChatLoadedScreen(
   simpleVideoCache: Cache,
   openUrl: (String) -> Unit,
   onCloseBannerClick: () -> Unit,
+  onDismissCrossSellClick: (InChatCrossSell) -> Unit,
+  onCrossSellClick: (InChatCrossSell) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   chatInput: @Composable () -> Unit,
@@ -272,6 +280,40 @@ private fun ChatLoadedScreen(
           .weight(1f)
           .clearFocusOnTap(),
       )
+      // Hold on to the offer while the card animates away, so that it does not blank out mid-exit.
+      var lastCrossSell by remember { mutableStateOf<InChatCrossSell?>(null) }
+      if (uiState.crossSell != null) {
+        lastCrossSell = uiState.crossSell
+      }
+      AnimatedVisibility(
+        visible = WindowInsets.imeAnimationTarget.asPaddingValues().calculateBottomPadding() == 0.dp &&
+          uiState.crossSell != null,
+        enter = expandVertically(
+          spring(
+            stiffness = Spring.StiffnessMedium,
+            visibilityThreshold = IntSize.VisibilityThreshold,
+          ),
+        ),
+        exit = shrinkVertically(
+          spring(
+            stiffness = Spring.StiffnessMedium,
+            visibilityThreshold = IntSize.VisibilityThreshold,
+          ),
+        ),
+      ) {
+        val crossSell = lastCrossSell
+        if (crossSell != null) {
+          InChatCrossSellCard(
+            discountPercent = crossSell.discountPercent,
+            onDismissClick = { onDismissCrossSellClick(crossSell) },
+            onSeePriceClick = { onCrossSellClick(crossSell) },
+            modifier = Modifier
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+              .padding(horizontal = 16.dp)
+              .padding(bottom = 16.dp),
+          )
+        }
+      }
       AnimatedVisibility(
         visible = WindowInsets.imeAnimationTarget.asPaddingValues().calculateBottomPadding() == 0.dp &&
           uiState.bannerText != null,
@@ -1304,6 +1346,7 @@ private fun PreviewChatLoadedScreen() {
           showUploading = true,
           showFileTooBigErrorToast = false,
           showFileFailedToBeSentToast = false,
+          crossSell = InChatCrossSell(id = "1", storeUrl = "", discountPercent = 15),
         ),
         lazyListState = rememberLazyListState(),
         imageLoader = rememberPreviewImageLoader(),
@@ -1314,6 +1357,8 @@ private fun PreviewChatLoadedScreen() {
         simpleVideoCache = rememberPreviewSimpleCache(),
         errorSnackbarState = null,
         onCloseBannerClick = {},
+        onDismissCrossSellClick = {},
+        onCrossSellClick = {},
       )
     }
   }

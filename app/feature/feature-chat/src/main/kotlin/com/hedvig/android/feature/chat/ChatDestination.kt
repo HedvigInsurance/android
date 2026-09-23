@@ -48,6 +48,7 @@ import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.TopAppBarText.Claim
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.TopAppBarText.Legacy
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.TopAppBarText.NewConversation
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.TopAppBarText.ServiceConversation
+import com.hedvig.android.feature.chat.data.InChatCrossSell
 import com.hedvig.android.logger.logcat
 import hedvig.resources.CHAT_CONVERSATION_HISTORY_TITLE
 import hedvig.resources.CHAT_CONVERSATION_QUESTION_TITLE
@@ -100,6 +101,13 @@ internal fun CbmChatDestination(
     onCloseBannerClick = {
       viewModel.emit(CbmChatEvent.HideBanner)
     },
+    onDismissCrossSellClick = { crossSell ->
+      viewModel.emit(CbmChatEvent.DismissCrossSell(crossSell.id))
+    },
+    onCrossSellClick = { crossSell ->
+      viewModel.emit(CbmChatEvent.CrossSellClicked(crossSell.id))
+      openUrl(crossSell.storeUrl)
+    },
   )
 }
 
@@ -121,6 +129,8 @@ private fun ChatScreen(
   onRetryLoadingChat: () -> Unit,
   showedFileTooBigError: () -> Unit,
   onCloseBannerClick: () -> Unit,
+  onDismissCrossSellClick: (InChatCrossSell) -> Unit,
+  onCrossSellClick: (InChatCrossSell) -> Unit,
   showedFileFailedToBeSentToast: () -> Unit,
 ) {
   Surface(
@@ -182,6 +192,8 @@ private fun ChatScreen(
                 null
               },
               onCloseBannerClick = onCloseBannerClick,
+              onDismissCrossSellClick = onDismissCrossSellClick,
+              onCrossSellClick = onCrossSellClick,
             )
           }
         }
@@ -304,6 +316,8 @@ private fun PreviewChatScreen(
         showedFileTooBigError = {},
         showedFileFailedToBeSentToast = {},
         onCloseBannerClick = {},
+        onDismissCrossSellClick = {},
+        onCrossSellClick = {},
       )
     }
   }

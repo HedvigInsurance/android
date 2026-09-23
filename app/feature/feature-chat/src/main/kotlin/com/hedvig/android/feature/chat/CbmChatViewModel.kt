@@ -43,12 +43,20 @@ import com.hedvig.android.feature.chat.data.CbmChatRepository
 import com.hedvig.android.feature.chat.data.ConversationInfo
 import com.hedvig.android.feature.chat.data.ConversationInfo.Info
 import com.hedvig.android.feature.chat.data.ConversationInfo.NoConversation
+import com.hedvig.android.feature.chat.data.GetInChatCrossSellUseCase
+import com.hedvig.android.feature.chat.data.InChatCrossSell
+import com.hedvig.android.feature.chat.data.InChatCrossSellStore
+import com.hedvig.android.feature.chat.data.InChatCrossSellTrackingEvent.CLICKED
+import com.hedvig.android.feature.chat.data.InChatCrossSellTrackingEvent.DISMISSED
+import com.hedvig.android.feature.chat.data.InChatCrossSellTrackingEvent.PROMPTED
 import com.hedvig.android.feature.chat.data.MessageSendError
+import com.hedvig.android.feature.chat.data.logInChatCrossSell
 import com.hedvig.android.feature.chat.model.CbmChatMessage
 import com.hedvig.android.feature.chat.model.Sender
 import com.hedvig.android.feature.chat.model.toChatMessage
 import com.hedvig.android.feature.chat.model.toLatestChatMessage
 import com.hedvig.android.feature.chat.paging.ChatRemoteMediator
+import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -81,6 +89,8 @@ internal class CbmChatViewModel @AssistedInject constructor(
   chatRepository: CbmChatRepository,
   clock: Clock,
   context: Context,
+  getInChatCrossSellUseCase: GetInChatCrossSellUseCase,
+  inChatCrossSellStore: InChatCrossSellStore,
   coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + AndroidUiDispatcher.Main),
 ) : MoleculeViewModel<CbmChatEvent, CbmChatUiState>(
     initialState = CbmChatUiState.Initializing,
@@ -97,6 +107,8 @@ internal class CbmChatViewModel @AssistedInject constructor(
       ),
       chatDao = chatDao,
       chatRepository = chatRepository,
+      getInChatCrossSellUseCase = getInChatCrossSellUseCase,
+      inChatCrossSellStore = inChatCrossSellStore,
       context,
     ),
     coroutineScope = coroutineScope,
@@ -138,6 +150,8 @@ internal class CbmChatPresenter(
   private val pagingData: Flow<PagingData<CbmUiChatMessage>>,
   private val chatDao: ChatDao,
   private val chatRepository: CbmChatRepository,
+  private val getInChatCrossSellUseCase: GetInChatCrossSellUseCase,
+  private val inChatCrossSellStore: InChatCrossSellStore,
   private val context: Context,
 ) : MoleculePresenter<CbmChatEvent, CbmChatUiState> {
   @OptIn(ExperimentalPagingApi::class)
@@ -156,6 +170,7 @@ internal class CbmChatPresenter(
     val numberOfOngoingUploads = remember { MutableStateFlow<Int>(0) }
     var showFileTooBigErrorToast by remember { mutableStateOf(false) }
     var hideBanner by remember { mutableStateOf(false) }
+    var hideCrossSell by remember { mutableStateOf(false) }
     var showFileFailedToBeSendToast by remember { mutableStateOf(false) }
     val a11yOn = isAccessibilityEnabled(context)
     val enableInlineMediaPlayer = !a11yOn
@@ -266,6 +281,23 @@ internal class CbmChatPresenter(
         CbmChatEvent.HideBanner -> {
           hideBanner = true
         }
+
+        is CbmChatEvent.DismissCrossSell -> {
+          hideCrossSell = true
+          launch {
+            logInChatCrossSell(DISMISSED, conversationId, event.crossSellId)
+            inChatCrossSellStore.dismiss(conversationId.toString())
+          }
+        }
+
+        is CbmChatEvent.CrossSellClicked -> {
+          hideCrossSell = true
+          launch {
+            logInChatCrossSell(CLICKED, conversationId, event.crossSellId)
+            // Taking the offer ends it for this conversation, just as turning it down does.
+            inChatCrossSellStore.dismiss(conversationId.toString())
+          }
+        }
       }
     }
 
@@ -286,9 +318,12 @@ internal class CbmChatPresenter(
           conversationId = conversationId,
           chatDao = chatDao,
           chatRepository = chatRepository,
+          getInChatCrossSellUseCase = getInChatCrossSellUseCase,
+          inChatCrossSellStore = inChatCrossSellStore,
           showUploading = numberOfOngoingUploads.collectAsState().value > 0,
           showFileTooBigErrorToast = showFileTooBigErrorToast,
           hideBanner = hideBanner,
+          hideCrossSell = hideCrossSell,
           showFileFailedToBeSendToast = showFileFailedToBeSendToast,
         )
       }
@@ -305,9 +340,12 @@ private fun presentLoadedChat(
   conversationId: Uuid,
   chatDao: ChatDao,
   chatRepository: CbmChatRepository,
+  getInChatCrossSellUseCase: GetInChatCrossSellUseCase,
+  inChatCrossSellStore: InChatCrossSellStore,
   showUploading: Boolean,
   showFileTooBigErrorToast: Boolean,
   hideBanner: Boolean,
+  hideCrossSell: Boolean,
   showFileFailedToBeSendToast: Boolean,
 ): CbmChatUiState.Loaded {
   val latestMessage by remember(chatDao) {
@@ -341,6 +379,13 @@ private fun presentLoadedChat(
         }
       }
   }
+  val crossSell = presentInChatCrossSell(
+    conversationId = conversationId,
+    chatDao = chatDao,
+    getInChatCrossSellUseCase = getInChatCrossSellUseCase,
+    inChatCrossSellStore = inChatCrossSellStore,
+    hideCrossSell = hideCrossSell,
+  )
   return CbmChatUiState.Loaded(
     backendConversationInfo = backendConversationInfo,
     messages = lazyPagingItems,
@@ -351,13 +396,65 @@ private fun presentLoadedChat(
     showUploading = showUploading,
     showFileTooBigErrorToast = showFileTooBigErrorToast,
     showFileFailedToBeSentToast = showFileFailedToBeSendToast,
+    crossSell = crossSell,
   )
 }
+
+/**
+ * The cross-sell offer this conversation should carry, if any. It is fetched only once Hedvig has
+ * answered [MESSAGES_FROM_HEDVIG_BEFORE_CROSS_SELL] times, so that an offer never lands before the
+ * member has been helped, and never for a conversation the offer was already settled in.
+ */
+@Composable
+private fun presentInChatCrossSell(
+  conversationId: Uuid,
+  chatDao: ChatDao,
+  getInChatCrossSellUseCase: GetInChatCrossSellUseCase,
+  inChatCrossSellStore: InChatCrossSellStore,
+  hideCrossSell: Boolean,
+): InChatCrossSell? {
+  // Assume it was settled until the stored answer arrives, so the card never flashes in and back out.
+  val wasSettledBefore by remember(conversationId, inChatCrossSellStore) {
+    inChatCrossSellStore.observeDismissedConversationIds().map { conversationId.toString() in it }
+  }.collectAsState(true)
+  val hedvigHasAnswered by remember(conversationId, chatDao) {
+    chatDao.countMessagesFromHedvig(conversationId).map { it >= MESSAGES_FROM_HEDVIG_BEFORE_CROSS_SELL }
+  }.collectAsState(false)
+
+  var crossSell by remember { mutableStateOf<InChatCrossSell?>(null) }
+  val shouldOffer = hedvigHasAnswered && !wasSettledBefore && !hideCrossSell
+  LaunchedEffect(shouldOffer) {
+    if (!shouldOffer || crossSell != null) return@LaunchedEffect
+    getInChatCrossSellUseCase.invoke().fold(
+      ifLeft = { logcat(LogPriority.WARN) { "Could not load the in-chat cross sell: ${it.message}" } },
+      ifRight = { crossSell = it },
+    )
+  }
+  val offeredCrossSell = crossSell.takeIf { shouldOffer }
+  LaunchedEffect(offeredCrossSell) {
+    val shown = offeredCrossSell ?: return@LaunchedEffect
+    if (inChatCrossSellStore.markPrompted(conversationId.toString())) {
+      logInChatCrossSell(PROMPTED, conversationId, shown.id)
+    }
+  }
+  return offeredCrossSell
+}
+
+/** Hedvig has to have answered this many times before the member is offered anything. */
+private const val MESSAGES_FROM_HEDVIG_BEFORE_CROSS_SELL = 2
 
 internal sealed interface CbmChatEvent {
   data object RetryLoadingChat : CbmChatEvent
 
   data object HideBanner : CbmChatEvent
+
+  data class DismissCrossSell(
+    val crossSellId: String,
+  ) : CbmChatEvent
+
+  data class CrossSellClicked(
+    val crossSellId: String,
+  ) : CbmChatEvent
 
   data class SendTextMessage(
     val message: String,
@@ -398,6 +495,7 @@ internal sealed interface CbmChatUiState {
     val showFileTooBigErrorToast: Boolean,
     // When we fail to persist the message in a way where we can retry it later, we simply fall back to showing an error
     val showFileFailedToBeSentToast: Boolean,
+    val crossSell: InChatCrossSell?,
   ) : CbmChatUiState {
     val topAppBarText: TopAppBarText = when (backendConversationInfo) {
       NoConversation -> {
