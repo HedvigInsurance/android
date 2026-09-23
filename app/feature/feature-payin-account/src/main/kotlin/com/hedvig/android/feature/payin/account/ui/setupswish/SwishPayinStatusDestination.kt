@@ -15,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -99,6 +100,7 @@ internal fun SwishPayinStatusDestination(
   } else {
     SwishPayinStatusScreen(
       uiState = uiState,
+      isSwishInstalled = swishAppHandover.isSwishInstalled,
       navigateUp = navigateUp,
       onCancel = navigateBack,
       onContinue = finishSwishSetup,
@@ -112,6 +114,7 @@ internal fun SwishPayinStatusDestination(
 @Composable
 private fun SwishPayinStatusScreen(
   uiState: SwishPayinStatusUiState,
+  isSwishInstalled: Boolean,
   navigateUp: () -> Unit,
   onCancel: () -> Unit,
   onContinue: () -> Unit,
@@ -160,7 +163,14 @@ private fun SwishPayinStatusScreen(
       }
 
       is PendingApproval -> {
-        SwishPendingIllustration()
+        if (isSwishInstalled) {
+          SwishPendingIllustration()
+        } else {
+          SwishApprovalQrCode(
+            redirectUrl = uiState.redirectUrl,
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+          )
+        }
       }
     }
 
@@ -169,15 +179,17 @@ private fun SwishPayinStatusScreen(
       is PendingApproval -> {
         ChangeMethodFootnote()
         Spacer(Modifier.height(16.dp))
-        HedvigButton(
-          text = stringResource(Res.string.PAYMENT_OPEN_SWISH_BUTTON),
-          onClick = { openUrl(uiState.redirectUrl) },
-          enabled = true,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        )
-        Spacer(Modifier.height(8.dp))
+        if (isSwishInstalled) {
+          HedvigButton(
+            text = stringResource(Res.string.PAYMENT_OPEN_SWISH_BUTTON),
+            onClick = { openUrl(uiState.redirectUrl) },
+            enabled = true,
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
+          )
+          Spacer(Modifier.height(8.dp))
+        }
         HedvigTextButton(
           text = stringResource(Res.string.general_cancel_button),
           onClick = onCancel,
@@ -270,6 +282,23 @@ private fun SwishPendingIllustration() {
   }
 }
 
+@Composable
+private fun SwishApprovalQrCode(redirectUrl: String, modifier: Modifier = Modifier) {
+  Surface(
+    color = Color.White,
+    shape = HedvigTheme.shapes.cornerMedium,
+    border = HedvigTheme.colorScheme.borderPrimary,
+    modifier = modifier,
+  ) {
+    QRCode(
+      token = redirectUrl,
+      modifier = Modifier
+        .size(180.dp)
+        .padding(16.dp),
+    )
+  }
+}
+
 /** Marks the Hedvig symbol with where the setup has got to: landed, or rejected. */
 @Composable
 private fun SetupStatusBadge(uiState: SwishPayinStatusUiState) {
@@ -299,10 +328,22 @@ private fun SetupStatusBadge(uiState: SwishPayinStatusUiState) {
 private fun PreviewSwishPayinStatusScreen(
   @PreviewParameter(SwishPayinStatusUiStateProvider::class) uiState: SwishPayinStatusUiState,
 ) {
+  SwishPayinStatusScreenPreviewContent(uiState, isSwishInstalled = true)
+}
+
+@Composable
+@HedvigShortMultiScreenPreview
+private fun PreviewSwishPayinStatusScreenWithoutSwishApp() {
+  SwishPayinStatusScreenPreviewContent(PendingApproval("https://swish"), isSwishInstalled = false)
+}
+
+@Composable
+private fun SwishPayinStatusScreenPreviewContent(uiState: SwishPayinStatusUiState, isSwishInstalled: Boolean) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       SwishPayinStatusScreen(
         uiState = uiState,
+        isSwishInstalled = isSwishInstalled,
         navigateUp = {},
         onCancel = {},
         onContinue = {},
