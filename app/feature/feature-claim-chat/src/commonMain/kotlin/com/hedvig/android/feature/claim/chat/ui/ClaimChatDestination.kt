@@ -127,6 +127,7 @@ import hedvig.resources.EMBARK_UPDATE_APP_BODY
 import hedvig.resources.EMBARK_UPDATE_APP_BUTTON
 import hedvig.resources.GENERAL_ARE_YOU_SURE
 import hedvig.resources.NETWORK_ERROR_ALERT_MESSAGE
+import hedvig.resources.NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION
 import hedvig.resources.RESUME_CLAIM_LEAVE_BODY
 import hedvig.resources.RESUME_CLAIM_LEAVE_CANCEL
 import hedvig.resources.RESUME_CLAIM_LEAVE_CONFIRM
@@ -138,6 +139,7 @@ import hedvig.resources.claims_skip_button
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_close_button
 import hedvig.resources.general_error
+import hedvig.resources.something_went_wrong
 import kotlin.time.Clock
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -329,24 +331,34 @@ private fun ClaimChatScreenContent(
   }
 
   if (uiState.errorSubmittingStep != null) {
-    val messageRes = when (uiState.errorSubmittingStep) {
-      ClaimChatErrorMessage.NeedsUpdate -> Res.string.EMBARK_UPDATE_APP_BODY
-      ClaimChatErrorMessage.GeneralError -> Res.string.NETWORK_ERROR_ALERT_MESSAGE
+    val dismiss = stringResource(Res.string.general_close_button) to null
+    val (messageRes, button) = when (uiState.errorSubmittingStep) {
+      ClaimChatErrorMessage.NeedsUpdate -> {
+        Res.string.EMBARK_UPDATE_APP_BODY to (stringResource(Res.string.EMBARK_UPDATE_APP_BUTTON) to openPlayStore)
+      }
+
+      ClaimChatErrorMessage.ConnectionError -> {
+        Res.string.NETWORK_ERROR_ALERT_MESSAGE to if (uiState.canRetryFailedSubmission) {
+          stringResource(Res.string.NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION) to
+            { onEvent(ClaimChatEvent.RetryFailedSubmission) }
+        } else {
+          dismiss
+        }
+      }
+
+      ClaimChatErrorMessage.GeneralError -> {
+        Res.string.something_went_wrong to dismiss
+      }
     }
+    val (buttonText, onButtonClick) = button
     ErrorDialog(
       title = stringResource(Res.string.general_error),
       message = stringResource(messageRes),
       onDismiss = {
         onEvent(ClaimChatEvent.DismissErrorDialog)
       },
-      buttonText = when (uiState.errorSubmittingStep) {
-        ClaimChatErrorMessage.NeedsUpdate -> stringResource(Res.string.EMBARK_UPDATE_APP_BUTTON)
-        ClaimChatErrorMessage.GeneralError -> stringResource(Res.string.general_close_button)
-      },
-      onButtonClick = when (uiState.errorSubmittingStep) {
-        ClaimChatErrorMessage.NeedsUpdate -> openPlayStore
-        ClaimChatErrorMessage.GeneralError -> null
-      },
+      buttonText = buttonText,
+      onButtonClick = onButtonClick,
     )
   }
   if (uiState.showConfirmEditDialogForStep != null) {

@@ -40,10 +40,10 @@ internal class SubmitFileUploadUseCase(
         fileService.convertToCommonFile(fileUri)
       }
       val fileIds = buildList {
-        commonFiles.forEach {
+        commonFiles.forEach { commonFile ->
           val uploadResult = either {
-            uploadFileUseCase.invoke(it, uploadUrl)
-          }.mapLeft { ClaimChatErrorMessage.GeneralError }
+            uploadFileUseCase.invoke(commonFile, uploadUrl)
+          }.mapLeft { it.toClaimChatErrorMessage() }
             .bind()
           add(uploadResult.fileId)
         }
