@@ -65,62 +65,6 @@ internal fun ChatClaimSummaryBottomContent(
   }
 }
 
-/**
- * The answers to show behind "Show all answers".
- *
- * [StepContent.Summary.answers] does not carry a recording the member made by voice; that arrives only in
- * [StepContent.Summary.audioRecordings]. The sheet is the recording's only surface on this screen, so when the
- * answers carry no recording of their own the legacy list supplies them, which keeps a voice answer reachable
- * on a claim whose other answers came through normally. Uploads follow the same rule.
- *
- * The answers win for a kind as soon as they hold one of it, rather than each url being matched against them.
- * The two lists are the same claim seen twice, and nothing in the payload promises that the same file is named
- * identically in both, so a url comparison would be free to decide two names are two recordings and play the
- * member their answer twice.
- *
- * [recordingTitle] and [fileTitle] stand in for the questions, which neither list carries.
- */
-internal fun StepContent.Summary.answersToShow(
-  recordingTitle: String,
-  fileTitle: String,
-): List<StepContent.Summary.Answer> {
-  val answersCarryAudio = answers.any { it.value is StepContent.Summary.Answer.Value.Audio }
-  val answersCarryFiles = answers.any { it.value is StepContent.Summary.Answer.Value.Files }
-  val unansweredRecordings = if (answersCarryAudio) {
-    emptyList()
-  } else {
-    audioRecordings.distinctBy { it.url.withoutSigning() }
-  }
-  val unlistedUploads = if (answersCarryFiles) {
-    emptyList()
-  } else {
-    fileUploads.distinctBy { it.url.withoutSigning() }
-  }
-  return buildList {
-    addAll(answers)
-    for (audioRecording in unansweredRecordings) {
-      add(
-        StepContent.Summary.Answer(
-          title = recordingTitle,
-          value = StepContent.Summary.Answer.Value.Audio(audioRecording.url, null),
-        ),
-      )
-    }
-    if (unlistedUploads.isNotEmpty()) {
-      // The sheet draws a set of files as a single row, so they share one answer.
-      add(
-        StepContent.Summary.Answer(
-          title = fileTitle,
-          value = StepContent.Summary.Answer.Value.Files(unlistedUploads),
-        ),
-      )
-    }
-  }
-}
-
-/** The url stripped of its signing query, which the backend varies between fetches of the same file. */
-private fun String.withoutSigning(): String = substringBefore("?")
-
 @Composable
 internal fun ChatClaimSummaryTopContent(
   keyDetails: List<StepContent.Summary.Item>,

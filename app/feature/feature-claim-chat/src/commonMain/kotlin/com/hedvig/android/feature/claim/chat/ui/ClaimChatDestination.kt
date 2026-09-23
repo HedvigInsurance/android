@@ -109,7 +109,6 @@ import com.hedvig.android.feature.claim.chat.ui.step.FormStep
 import com.hedvig.android.feature.claim.chat.ui.step.TaskStepBottomContent
 import com.hedvig.android.feature.claim.chat.ui.step.TaskStepTopContent
 import com.hedvig.android.feature.claim.chat.ui.step.UploadFilesStep
-import com.hedvig.android.feature.claim.chat.ui.step.answersToShow
 import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.AudioRecordingStep
 import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.FreeTextDraftState
 import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.FullScreenTextAnswer
@@ -123,8 +122,6 @@ import hedvig.resources.CHAT_CONVERSATION_CLAIM_TITLE
 import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
 import hedvig.resources.CLAIM_CHAT_EDIT_ANSWER_BUTTON
 import hedvig.resources.CLAIM_CHAT_EDIT_EXPLANATION
-import hedvig.resources.CLAIM_CHAT_FILE_TITLE
-import hedvig.resources.CLAIM_CHAT_RECORDING_TITLE
 import hedvig.resources.EMBARK_UPDATE_APP_BODY
 import hedvig.resources.EMBARK_UPDATE_APP_BUTTON
 import hedvig.resources.GENERAL_ARE_YOU_SURE
@@ -841,13 +838,9 @@ private fun StepTopContent(
         Spacer(Modifier.height(16.dp))
         val summary = stepItem.stepContent
         if (summary is StepContent.Summary) {
-          val recordingTitle = stringResource(Res.string.CLAIM_CHAT_RECORDING_TITLE)
-          val fileTitle = stringResource(Res.string.CLAIM_CHAT_FILE_TITLE)
           ChatClaimSummaryTopContent(
             keyDetails = summary.keyDetails.ifEmpty { summary.items },
-            answers = remember(summary, recordingTitle, fileTitle) {
-              summary.answersToShow(recordingTitle, fileTitle)
-            },
+            answers = summary.answers,
             onNavigateToImageViewer = onNavigateToImageViewer,
             imageLoader = imageLoader,
           )
