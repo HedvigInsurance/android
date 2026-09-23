@@ -79,12 +79,13 @@ fun <D : Query.Data> ApolloCall<D>.safeWatch(): Flow<Either<ApolloOperationError
   return this.watch().map { iorNel { parseResponse(it) }.dropPartialResponses() }
 }
 
+/**
+ * [ErrorMessage.message] is copy a screen may put in front of a member, and nothing describing how
+ * a GraphQL call failed qualifies, so it stays null and each screen falls back to its own wording.
+ * The detail worth keeping is in [ErrorMessage.throwable] and in this object's [toString].
+ */
 fun ErrorMessage(apolloOperationError: ApolloOperationError): ErrorMessage = object : ErrorMessage {
-  override val message = when (apolloOperationError) {
-    is CacheMiss -> "Cache miss"
-    is OperationError -> apolloOperationError.toString()
-    is OperationException -> apolloOperationError.throwable.message
-  }
+  override val message: String? = null
   override val throwable = when (apolloOperationError) {
     is CacheMiss -> apolloOperationError.throwable
     is OperationError -> null
@@ -92,7 +93,7 @@ fun ErrorMessage(apolloOperationError: ApolloOperationError): ErrorMessage = obj
   }
 
   override fun toString(): String {
-    return "ErrorMessage(message=$message, throwable=$throwable)"
+    return "ErrorMessage(apolloOperationError=$apolloOperationError, throwable=$throwable)"
   }
 }
 
