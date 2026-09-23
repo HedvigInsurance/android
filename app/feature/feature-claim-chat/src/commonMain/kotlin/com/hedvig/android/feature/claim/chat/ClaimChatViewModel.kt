@@ -129,6 +129,9 @@ internal sealed interface ClaimChatEvent {
 
   data class SubmitFile(val id: StepId) : ClaimChatEvent
 
+  /** Runs the submission that failed again, for the failures a plain retry can clear. */
+  data object RetryFailedSubmission : ClaimChatEvent
+
   data object DismissErrorDialog : ClaimChatEvent
 
   data class SubmitClaim(val id: StepId) : ClaimChatEvent
@@ -166,6 +169,11 @@ internal sealed interface ClaimChatUiState {
     val currentStep: ClaimIntentStep?,
     val outcome: ClaimIntentOutcome?,
     val errorSubmittingStep: ClaimChatErrorMessage?,
+    /**
+     * Whether the error dialog should offer to run the failed submission again, rather than only
+     * letting the member dismiss it.
+     */
+    val canRetryFailedSubmission: Boolean,
     val currentContinueButtonLoading: Boolean = false,
     val currentSkipButtonLoading: Boolean = false,
     val showConfirmEditDialogForStep: StepId?,
@@ -273,6 +281,7 @@ internal class ClaimChatPresenter(
     var submitTextJob by remember { mutableStateOf<Job?>(null) }
     var currentSkipButtonLoading by remember { mutableStateOf(false) }
     var errorSubmittingStep by remember { mutableStateOf<ClaimChatErrorMessage?>(null) }
+    var retryableFileSubmission by remember { mutableStateOf<StepId?>(null) }
     var showConfirmEditDialogForStep by remember { mutableStateOf<StepId?>(null) }
     var progress by remember {
       mutableStateOf<Float?>(
@@ -933,9 +942,18 @@ internal class ClaimChatPresenter(
 
         ClaimChatEvent.DismissErrorDialog -> {
           errorSubmittingStep = null
+          retryableFileSubmission = null
         }
 
-        is ClaimChatEvent.SubmitFile -> {
+        is ClaimChatEvent.SubmitFile,
+        ClaimChatEvent.RetryFailedSubmission,
+        -> {
+          val stepId = when (event) {
+            is ClaimChatEvent.SubmitFile -> event.id
+            else -> retryableFileSubmission ?: return@CollectEvents
+          }
+          errorSubmittingStep = null
+          retryableFileSubmission = null
           val stepContent = currentStep?.stepContent as? StepContent.FileUpload ?: return@CollectEvents
           val fileUris = stepContent.localFiles.mapNotNull { file ->
             file.localPath?.let { Uri.parse(it) }
@@ -947,7 +965,7 @@ internal class ClaimChatPresenter(
           launch {
             submitFileUploadUseCase
               .invoke(
-                stepId = event.id,
+                stepId = stepId,
                 fileUris = fileUris,
                 uploadUrl = stepContent.uploadUri,
                 remoteFileIds = remoteFileIds.map {
@@ -955,10 +973,13 @@ internal class ClaimChatPresenter(
                 },
               )
               .fold(
-                ifLeft = {
-                  errorSubmittingStep = it
+                ifLeft = { errorMessage ->
+                  errorSubmittingStep = errorMessage
+                  if (errorMessage == ClaimChatErrorMessage.ConnectionError) {
+                    retryableFileSubmission = stepId
+                  }
                   currentContinueButtonLoading = false
-                  logcat { "ClaimChatEvent.FileUpload $it" }
+                  logcat { "ClaimChatEvent.FileUpload $errorMessage" }
                 },
                 ifRight = { claimIntent ->
                   currentContinueButtonLoading = false
@@ -1092,6 +1113,7 @@ internal class ClaimChatPresenter(
         currentStep = currentStep,
         outcome = outcome,
         errorSubmittingStep = errorSubmittingStep,
+        canRetryFailedSubmission = retryableFileSubmission != null,
         currentContinueButtonLoading = currentContinueButtonLoading,
         currentSkipButtonLoading = currentSkipButtonLoading,
         showConfirmEditDialogForStep = showConfirmEditDialogForStep,
