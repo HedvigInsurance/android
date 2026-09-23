@@ -172,6 +172,7 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
       StepContent.Summary(
         items = items.map { StepContent.Summary.Item(it.title, it.value) },
         audioRecordings = audioRecordings.map { StepContent.Summary.AudioRecording(it.url) },
+        freeTexts = freeTexts,
         fileUploads = fileUploads.map {
           StepContent.Summary.FileUpload(
             it.url,

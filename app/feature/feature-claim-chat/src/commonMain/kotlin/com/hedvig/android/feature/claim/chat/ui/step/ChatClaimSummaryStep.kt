@@ -4,6 +4,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -38,6 +39,9 @@ import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.claim.chat.data.StepContent
 import com.hedvig.android.feature.claim.chat.ui.common.FilesRow
+import hedvig.resources.CLAIM_CHAT_FILE_TITLE
+import hedvig.resources.CLAIM_CHAT_FREE_TEXT_LABEL
+import hedvig.resources.CLAIM_CHAT_RECORDING_TITLE
 import hedvig.resources.EMBARK_SUBMIT_CLAIM
 import hedvig.resources.Res
 import hedvig.resources.claim_status_claim_details_title
@@ -65,66 +69,13 @@ internal fun ChatClaimSummaryBottomContent(
   }
 }
 
-/**
- * The answers to show behind "Show all answers".
- *
- * [StepContent.Summary.answers] does not carry a recording the member made by voice; that arrives only in
- * [StepContent.Summary.audioRecordings]. The sheet is the recording's only surface on this screen, so when the
- * answers carry no recording of their own the legacy list supplies them, which keeps a voice answer reachable
- * on a claim whose other answers came through normally. Uploads follow the same rule.
- *
- * The answers win for a kind as soon as they hold one of it, rather than each url being matched against them.
- * The two lists are the same claim seen twice, and nothing in the payload promises that the same file is named
- * identically in both, so a url comparison would be free to decide two names are two recordings and play the
- * member their answer twice.
- *
- * [recordingTitle] and [fileTitle] stand in for the questions, which neither list carries.
- */
-internal fun StepContent.Summary.answersToShow(
-  recordingTitle: String,
-  fileTitle: String,
-): List<StepContent.Summary.Answer> {
-  val answersCarryAudio = answers.any { it.value is StepContent.Summary.Answer.Value.Audio }
-  val answersCarryFiles = answers.any { it.value is StepContent.Summary.Answer.Value.Files }
-  val unansweredRecordings = if (answersCarryAudio) {
-    emptyList()
-  } else {
-    audioRecordings.distinctBy { it.url.withoutSigning() }
-  }
-  val unlistedUploads = if (answersCarryFiles) {
-    emptyList()
-  } else {
-    fileUploads.distinctBy { it.url.withoutSigning() }
-  }
-  return buildList {
-    addAll(answers)
-    for (audioRecording in unansweredRecordings) {
-      add(
-        StepContent.Summary.Answer(
-          title = recordingTitle,
-          value = StepContent.Summary.Answer.Value.Audio(audioRecording.url, null),
-        ),
-      )
-    }
-    if (unlistedUploads.isNotEmpty()) {
-      // The sheet draws a set of files as a single row, so they share one answer.
-      add(
-        StepContent.Summary.Answer(
-          title = fileTitle,
-          value = StepContent.Summary.Answer.Value.Files(unlistedUploads),
-        ),
-      )
-    }
-  }
-}
-
-/** The url stripped of its signing query, which the backend varies between fetches of the same file. */
-private fun String.withoutSigning(): String = substringBefore("?")
-
 @Composable
 internal fun ChatClaimSummaryTopContent(
   keyDetails: List<StepContent.Summary.Item>,
   answers: List<StepContent.Summary.Answer>,
+  recordingUrls: List<String>,
+  freeTexts: List<String>,
+  fileUploads: List<UiFile>,
   imageLoader: ImageLoader,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   modifier: Modifier = Modifier,
@@ -187,6 +138,56 @@ internal fun ChatClaimSummaryTopContent(
             text = stringResource(Res.string.claim_status_show_all_answers),
             onClick = { answersSheetState.show(answers) },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+          )
+        }
+        if (recordingUrls.isNotEmpty()) {
+          Spacer(Modifier.height(24.dp))
+          HedvigText(
+            stringResource(Res.string.CLAIM_CHAT_RECORDING_TITLE),
+            Modifier.padding(horizontal = 16.dp),
+          )
+          Spacer(Modifier.height(8.dp))
+          recordingUrls.forEachIndexed { index, string ->
+            val audioPlayer = rememberAudioPlayer(
+              PlayableAudioSource.RemoteUrl(
+                SignedAudioUrl.fromSignedAudioUrlString(string),
+              ),
+            )
+            HedvigAudioPlayer(audioPlayer = audioPlayer, Modifier.padding(horizontal = 16.dp))
+            if (index != recordingUrls.lastIndex) {
+              Spacer(Modifier.height(8.dp))
+            }
+          }
+        }
+        if (freeTexts.isNotEmpty()) {
+          Spacer(Modifier.height(24.dp))
+          HedvigText(
+            stringResource(Res.string.CLAIM_CHAT_FREE_TEXT_LABEL),
+            Modifier.padding(horizontal = 16.dp),
+          )
+          Spacer(Modifier.height(8.dp))
+          for (freeText in freeTexts) {
+            HedvigText(
+              text = freeText,
+              color = HedvigTheme.colorScheme.textSecondary,
+              modifier = Modifier.padding(horizontal = 16.dp),
+            )
+          }
+        }
+        if (fileUploads.isNotEmpty()) {
+          Spacer(Modifier.height(24.dp))
+          HedvigText(
+            stringResource(Res.string.CLAIM_CHAT_FILE_TITLE),
+            Modifier.padding(horizontal = 16.dp),
+          )
+          Spacer(Modifier.height(8.dp))
+          FilesRow(
+            uiFiles = fileUploads,
+            imageLoader = imageLoader,
+            onNavigateToImageViewer = onNavigateToImageViewer,
+            onRemoveFile = null,
+            alignment = Alignment.Start,
+            contentPadding = PaddingValues(horizontal = 16.dp),
           )
         }
       }
@@ -297,6 +298,11 @@ private fun PreviewSummaryTopContent() {
             StepContent.Summary.Item("Location", "Stockholm"),
           ),
           answers = previewAnswers(),
+          recordingUrls = listOf(""),
+          freeTexts = listOf("My bike was stolen outside the station."),
+          fileUploads = listOf(
+            UiFile("receipt.pdf", null, "https://example.com/receipt.pdf", "application/pdf", "file-1"),
+          ),
           imageLoader = rememberPreviewImageLoader(),
           onNavigateToImageViewer = { _, _ -> },
         )
