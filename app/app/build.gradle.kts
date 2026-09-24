@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "14.4.8"
+    versionName = "14.5.0"
 
     resourceConfigurations.addAll(listOf("en", "sv-rSE"))
   }
