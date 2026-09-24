@@ -87,7 +87,7 @@ import com.hedvig.android.navigation.compose.BottomSheetSceneStrategy
 import com.hedvig.android.navigation.compose.HedvigDeepLinkMatcher
 import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.entryDecorators
-import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
+import com.hedvig.android.notification.badge.data.payment.PaymentsNotificationBadgeService
 import com.hedvig.android.ui.force.upgrade.ForceUpgradeBlockingScreen
 import hedvig.resources.EXIT_DEMO_MODE_BUTTON
 import hedvig.resources.Res
@@ -122,7 +122,7 @@ internal fun HedvigApp(
   externalNavigator: ExternalNavigator,
   logoutUseCase: LogoutUseCase,
   getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase,
-  missedPaymentNotificationService: MissedPaymentNotificationService,
+  paymentsNotificationBadgeService: PaymentsNotificationBadgeService,
   currentDestinationHolder: CurrentDestinationHolder,
   eventTrackingClient: EventTrackingClient,
   screenParameterExtractor: ScreenParameterExtractor,
@@ -137,7 +137,7 @@ internal fun HedvigApp(
     windowSizeClass = windowSizeClass,
     settingsDataStore = settingsDataStore,
     featureManager = featureManager,
-    missedPaymentNotificationService = missedPaymentNotificationService,
+    paymentsNotificationBadgeService = paymentsNotificationBadgeService,
   )
   val darkTheme = hedvigAppState.darkTheme
   HedvigTheme(darkTheme = darkTheme) {
