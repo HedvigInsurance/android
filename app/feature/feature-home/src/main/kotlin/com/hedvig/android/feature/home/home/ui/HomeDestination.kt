@@ -189,8 +189,10 @@ import com.hedvig.android.memberreminders.MemberReminder.PaymentReminder.Connect
 import com.hedvig.android.memberreminders.MemberReminder.UpcomingRenewal
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.memberreminders.ui.MemberReminderToDoList
+import com.hedvig.android.memberreminders.ui.MissingPayinMethodCard
 import com.hedvig.android.memberreminders.ui.homeActionRequiredReminders
 import com.hedvig.android.memberreminders.ui.homeInformationalReminders
+import com.hedvig.android.memberreminders.ui.missingPayinMethodReminder
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
@@ -723,6 +725,10 @@ private fun HomeScreenSuccess(
             uiState.homeText != Active
         }
 
+        HomeSection.MissingPayinMethod -> {
+          applicableReminders.missingPayinMethodReminder() != null
+        }
+
         HomeSection.MemberReminders -> {
           applicableReminders.homeActionRequiredReminders().isNotEmpty()
         }
@@ -960,9 +966,15 @@ private fun HomeScreenSuccess(
               horizontalInsets = horizontalInsets,
             )
 
+            HomeSection.MissingPayinMethod -> MissingPayinMethodCard(
+              onConnectPaymentClick = navigateToConnectPayment,
+              modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(horizontalInsets),
+            )
+
             HomeSection.MemberReminders -> MemberRemindersSection(
               applicableReminders = applicableReminders,
-              navigateToConnectPayment = navigateToConnectPayment,
               navigateToConnectPayout = navigateToConnectPayout,
               navigateToMissingInfo = navigateToMissingInfo,
               onNavigateToNewConversation = onNavigateToNewConversation,
@@ -1100,6 +1112,7 @@ private enum class HomeSection {
   MainActionCarousel,
   ClaimStatusCards,
   VeryImportantMessages,
+  MissingPayinMethod,
   MemberReminders,
   Quotes,
   DiscoverInsurances,
@@ -1113,6 +1126,7 @@ private val homeSectionOrder: List<HomeSection> = listOf(
   HomeSection.MainActionCarousel,
   HomeSection.ClaimStatusCards,
   HomeSection.VeryImportantMessages,
+  HomeSection.MissingPayinMethod,
   HomeSection.MemberReminders,
   HomeSection.Quotes,
   HomeSection.QuickActionTiles,
@@ -1196,7 +1210,6 @@ private fun VeryImportantMessagesSection(
 @Composable
 private fun MemberRemindersSection(
   applicableReminders: List<MemberReminder>,
-  navigateToConnectPayment: () -> Unit,
   navigateToConnectPayout: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   onNavigateToNewConversation: () -> Unit,
@@ -1222,7 +1235,6 @@ private fun MemberRemindersSection(
         )
         MemberReminderToDoList(
           memberReminders = toDoReminders,
-          navigateToConnectPayment = navigateToConnectPayment,
           navigateToConnectPayout = navigateToConnectPayout,
           navigateToAddMissingInfo = navigateToMissingInfo,
           onNavigateToNewConversation = onNavigateToNewConversation,

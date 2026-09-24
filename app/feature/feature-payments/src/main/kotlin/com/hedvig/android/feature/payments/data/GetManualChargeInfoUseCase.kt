@@ -12,6 +12,10 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.paying.member.PayinAccount
+import com.hedvig.android.data.paying.member.PaymentProvider
+import com.hedvig.android.data.paying.member.sortedForDisplay
+import com.hedvig.android.data.paying.member.toPayinAccount
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
@@ -20,7 +24,22 @@ import kotlinx.datetime.LocalDate
 import octopus.ManualChargeInfoQuery
 
 internal interface GetManualChargeInfoUseCase {
-  suspend fun invoke(): Either<ErrorMessage, ManualChargeInfo>
+  suspend fun invoke(): Either<ErrorMessage, ManualChargeInfoResult>
+}
+
+/**
+ * Separates "we could not load it" (the [Either] left) from the backend's own answer that there is
+ * nothing here to charge, so a caller can keep a usable screen through a network blip without also
+ * keeping one whose charge has gone away.
+ */
+internal sealed interface ManualChargeInfoResult {
+  data class Chargeable(val info: ManualChargeInfo) : ManualChargeInfoResult
+
+  /**
+   * `missedChargeIdToChargeManually` came back null, which per the schema means the latest charge
+   * either succeeded or the member may no longer settle it themselves.
+   */
+  data object NoLongerChargeable : ManualChargeInfoResult
 }
 
 @ContributesBinding(AppScope::class)
@@ -29,7 +48,7 @@ internal interface GetManualChargeInfoUseCase {
 internal class GetManualChargeInfoUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetManualChargeInfoUseCase {
-  override suspend fun invoke(): Either<ErrorMessage, ManualChargeInfo> = either {
+  override suspend fun invoke(): Either<ErrorMessage, ManualChargeInfoResult> = either {
     val currentMember = apolloClient.query(ManualChargeInfoQuery())
       .fetchPolicy(FetchPolicy.NetworkOnly)
       .safeExecute(::ErrorMessage)
@@ -44,24 +63,35 @@ internal class GetManualChargeInfoUseCaseImpl(
 
     if (showManualCharge == null) {
       logcat { "GetManualChargeInfoUseCaseImpl: missedChargeIdToChargeManually is null" }
-      raise(ErrorMessage())
+      return@either ManualChargeInfoResult.NoLongerChargeable
     }
 
     val latestFailedPastCharge = currentMember.pastCharges
       .firstOrNull { it.id == showManualCharge }
 
+    // The backend named a charge to settle but did not return it, which is not a state the member
+    // can act on either way, so it stays a plain failure they can retry out of.
     if (latestFailedPastCharge == null) {
       logcat { "GetManualChargeInfoUseCaseImpl: latestFailedPastCharge is null" }
       raise(ErrorMessage())
     }
 
-    ManualChargeInfo(
-      chargeId = latestFailedPastCharge.id,
-      missedDueDate = latestFailedPastCharge.date,
-      amountDue = UiMoney.fromMoneyFragment(latestFailedPastCharge.net),
-      bankAccountDisplayValue = currentMember.paymentInformation.chargeMethod?.displayName,
-      bankDescriptor = currentMember.paymentInformation.chargeMethod?.descriptor,
-      showCancellationWarning = showCancellationWarning,
+    val currentMethods = currentMember.paymentMethods.payinMethods
+      .mapNotNull { it.toPayinAccount() }
+      .sortedForDisplay()
+
+    ManualChargeInfoResult.Chargeable(
+      ManualChargeInfo(
+        chargeId = latestFailedPastCharge.id,
+        missedDueDate = latestFailedPastCharge.date,
+        amountDue = UiMoney.fromMoneyFragment(latestFailedPastCharge.net),
+        currentMethods = currentMethods,
+        availablePayinMethods = currentMember.paymentMethods.availableMethods
+          .filter { it.supportsPayin }
+          .mapNotNull { PaymentProvider.fromRawValue(it.provider.rawValue) },
+        primaryPayinMethod = currentMethods.firstOrNull { it.isDefault },
+        showCancellationWarning = showCancellationWarning,
+      ),
     )
   }
 }
@@ -70,7 +100,9 @@ internal data class ManualChargeInfo(
   val chargeId: String?,
   val missedDueDate: LocalDate,
   val amountDue: UiMoney,
-  val bankDescriptor: String?,
-  val bankAccountDisplayValue: String?,
+  val currentMethods: List<PayinAccount>,
+  val availablePayinMethods: List<PaymentProvider>,
+  /** The method the member is charged on, absent when none is connected or it is one we cannot show. */
+  val primaryPayinMethod: PayinAccount?,
   val showCancellationWarning: Boolean,
 )
