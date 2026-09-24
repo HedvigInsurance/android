@@ -52,6 +52,7 @@ import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
 import com.hedvig.android.feature.movingflow.movingFlowEntries
 import com.hedvig.android.feature.onboarding.data.ResetOnboardingSeenUseCase
 import com.hedvig.android.feature.onboarding.navigation.onboardingEntries
+import com.hedvig.android.feature.payin.account.navigation.payinAccountEntries
 import com.hedvig.android.feature.payments.navigation.paymentsEntries
 import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountKey
 import com.hedvig.android.feature.payoutaccount.navigation.payoutAccountEntries
@@ -467,6 +468,12 @@ private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
     navigateToConnectPayment = navigateToConnectPayment,
     navigateToPayoutAccount = navigateToPayoutAccount,
     openConversation = navigateToNewConversation,
+  )
+  payinAccountEntries(
+    backstack = backstack,
+    navigateToTrustly = navigateToConnectPayment,
+    // The Swish payin setup flow registers its own entries.
+    navigateToSetupSwish = {},
   )
   payoutAccountEntries(
     backstack = backstack,

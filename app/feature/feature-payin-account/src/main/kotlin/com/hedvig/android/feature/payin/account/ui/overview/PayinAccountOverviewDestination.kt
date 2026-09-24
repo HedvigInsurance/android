@@ -1,0 +1,330 @@
+package com.hedvig.android.feature.payin.account.ui.overview
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.compose.ui.EmptyContentDescription
+import com.hedvig.android.data.paying.member.InvoiceDelivery
+import com.hedvig.android.data.paying.member.PayinAccount
+import com.hedvig.android.data.paying.member.PaymentProvider
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
+import com.hedvig.android.design.system.hedvig.EmptyState
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.icon.ChevronRight
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.feature.payin.account.ui.components.PayinMethodRow
+import com.hedvig.android.feature.payin.account.ui.components.PrimaryMethodLabel
+import hedvig.resources.PAYMENT_ADD_METHOD_BUTTON
+import hedvig.resources.PAYMENT_CHOOSE_PRIMARY_BUTTON
+import hedvig.resources.PAYMENT_METHODS_EMPTY
+import hedvig.resources.PAYMENT_METHODS_TITLE
+import hedvig.resources.Res
+import org.jetbrains.compose.resources.stringResource
+
+@Composable
+internal fun PayinAccountOverviewDestination(
+  viewModel: PayinAccountOverviewViewModel,
+  onConnectPayinMethodClicked: () -> Unit,
+  onChoosePrimaryMethodClicked: () -> Unit,
+  onPayinMethodClicked: (PayinAccount) -> Unit,
+  navigateUp: () -> Unit,
+) {
+  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  var hasResumedOnce by rememberSaveable { mutableStateOf(false) }
+  LifecycleResumeEffect(Unit) {
+    if (hasResumedOnce) {
+      viewModel.emit(PayinAccountOverviewEvent.Refresh)
+    } else {
+      hasResumedOnce = true
+    }
+    onPauseOrDispose {}
+  }
+  PayinAccountOverviewScreen(
+    uiState = uiState,
+    onConnectPayinMethodClicked = onConnectPayinMethodClicked,
+    onChoosePrimaryMethodClicked = onChoosePrimaryMethodClicked,
+    onPayinMethodClicked = onPayinMethodClicked,
+    onRetry = { viewModel.emit(PayinAccountOverviewEvent.Retry) },
+    navigateUp = navigateUp,
+  )
+}
+
+@Composable
+private fun PayinAccountOverviewScreen(
+  uiState: PayinAccountOverviewUiState,
+  onConnectPayinMethodClicked: () -> Unit,
+  onChoosePrimaryMethodClicked: () -> Unit,
+  onPayinMethodClicked: (PayinAccount) -> Unit,
+  onRetry: () -> Unit,
+  navigateUp: () -> Unit,
+) {
+  HedvigScaffold(
+    topAppBarText = stringResource(Res.string.PAYMENT_METHODS_TITLE),
+    navigateUp = navigateUp,
+    modifier = Modifier.fillMaxSize(),
+  ) {
+    when (uiState) {
+      PayinAccountOverviewUiState.Loading -> {
+        HedvigFullScreenCenterAlignedProgressDebounced(
+          Modifier
+            .weight(1f)
+            .wrapContentHeight(),
+        )
+      }
+
+      PayinAccountOverviewUiState.Error -> {
+        HedvigErrorSection(
+          onButtonClick = onRetry,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .weight(1f)
+            .wrapContentHeight(),
+        )
+      }
+
+      is PayinAccountOverviewUiState.Content -> {
+        PayinAccountContent(
+          currentMethods = uiState.currentMethods,
+          availablePayinMethods = uiState.availablePayinMethods,
+          onConnectPayinMethodClicked = onConnectPayinMethodClicked,
+          onChoosePrimaryMethodClicked = onChoosePrimaryMethodClicked,
+          onPayinMethodClicked = onPayinMethodClicked,
+          modifier = Modifier.weight(1f),
+        )
+      }
+    }
+  }
+}
+
+@Composable
+private fun PayinAccountContent(
+  currentMethods: List<PayinAccount>,
+  availablePayinMethods: List<PaymentProvider>,
+  onConnectPayinMethodClicked: () -> Unit,
+  onChoosePrimaryMethodClicked: () -> Unit,
+  onPayinMethodClicked: (PayinAccount) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Column(
+    modifier
+      .verticalScroll(rememberScrollState()),
+  ) {
+    Spacer(Modifier.height(8.dp))
+    if (currentMethods.isEmpty()) {
+      if (availablePayinMethods.isNotEmpty()) {
+        Spacer(Modifier.weight(1f))
+        EmptyState(
+          text = stringResource(Res.string.PAYMENT_METHODS_EMPTY),
+          description = null,
+          iconStyle = EmptyStateDefaults.EmptyStateIconStyle.INFO,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        )
+      }
+    } else {
+      Column(
+        Modifier.padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+      ) {
+        for (method in currentMethods) {
+          CurrentPayinMethodRow(method = method, onClick = { onPayinMethodClicked(method) })
+        }
+      }
+    }
+    Spacer(Modifier.weight(1f))
+    Spacer(Modifier.height(16.dp))
+    if (availablePayinMethods.isNotEmpty()) {
+      HedvigButton(
+        text = stringResource(Res.string.PAYMENT_ADD_METHOD_BUTTON),
+        onClick = onConnectPayinMethodClicked,
+        enabled = true,
+        buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      )
+    }
+    if (currentMethods
+        .filter { !it.isPending }
+        .size > 1
+    ) {
+      Spacer(Modifier.height(8.dp))
+      HedvigTextButton(
+        text = stringResource(Res.string.PAYMENT_CHOOSE_PRIMARY_BUTTON),
+        onClick = onChoosePrimaryMethodClicked,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      )
+    }
+    Spacer(Modifier.height(16.dp))
+  }
+}
+
+@Composable
+private fun CurrentPayinMethodRow(method: PayinAccount, onClick: () -> Unit, modifier: Modifier = Modifier) {
+  HedvigCard(
+    onClick = if (method.isPending) null else onClick,
+    shape = HedvigTheme.shapes.cornerLarge,
+    modifier = modifier.fillMaxWidth(),
+  ) {
+    PayinMethodRow(
+      method = method,
+      modifier = Modifier.fillMaxWidth(),
+      endSlot = {
+        if (method.isDefault) {
+          PrimaryMethodLabel()
+        }
+        if (!method.isPending) {
+          Icon(
+            imageVector = HedvigIcons.ChevronRight,
+            contentDescription = EmptyContentDescription,
+            modifier = Modifier.size(24.dp),
+          )
+        }
+      },
+    )
+  }
+}
+
+@Composable
+@HedvigShortMultiScreenPreview
+private fun PreviewPayinAccountOverviewScreen(
+  @PreviewParameter(PayinAccountOverviewUiStateProvider::class) uiState: PayinAccountOverviewUiState,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      PayinAccountOverviewScreen(
+        uiState = uiState,
+        onConnectPayinMethodClicked = {},
+        onChoosePrimaryMethodClicked = {},
+        onPayinMethodClicked = {},
+        onRetry = {},
+        navigateUp = {},
+      )
+    }
+  }
+}
+
+private class PayinAccountOverviewUiStateProvider : CollectionPreviewParameterProvider<PayinAccountOverviewUiState>(
+  listOf(
+    PayinAccountOverviewUiState.Loading,
+    PayinAccountOverviewUiState.Error,
+    PayinAccountOverviewUiState.Content(
+      currentMethods = emptyList(),
+      availablePayinMethods = listOf(PaymentProvider.Swish, PaymentProvider.Trustly),
+    ),
+    PayinAccountOverviewUiState.Content(
+      currentMethods = listOf(
+        PayinAccount.SwishPayin(
+          phoneNumber = "0701234567",
+          isPending = false,
+          isDefault = true,
+        ),
+      ),
+      availablePayinMethods = listOf(PaymentProvider.Swish),
+    ),
+    PayinAccountOverviewUiState.Content(
+      currentMethods = listOf(
+        PayinAccount.SwishPayin(
+          phoneNumber = "0701234567",
+          isPending = false,
+          isDefault = true,
+        ),
+      ),
+      availablePayinMethods = listOf(PaymentProvider.Swish, PaymentProvider.Trustly),
+    ),
+    PayinAccountOverviewUiState.Content(
+      currentMethods = listOf(PayinAccount.SwishPayin(phoneNumber = null, isPending = true, isDefault = true)),
+      availablePayinMethods = listOf(PaymentProvider.Swish),
+    ),
+    PayinAccountOverviewUiState.Content(
+      currentMethods = listOf(
+        PayinAccount.Trustly(
+          clearingNumber = "****",
+          accountNumber = "*45678",
+          bankName = "Swedbank",
+          isPending = true,
+          isDefault = false,
+        ),
+        PayinAccount.SwishPayin(
+          phoneNumber = "0701234567",
+          isPending = false,
+          isDefault = true,
+        ),
+      ),
+      availablePayinMethods = listOf(PaymentProvider.Swish),
+    ),
+    PayinAccountOverviewUiState.Content(
+      currentMethods = listOf(
+        PayinAccount.Trustly(
+          clearingNumber = "****",
+          accountNumber = "*45678",
+          bankName = "Swedbank",
+          isPending = false,
+          isDefault = true,
+        ),
+        PayinAccount.SwishPayin(
+          phoneNumber = "0701234567",
+          isPending = false,
+          isDefault = false,
+        ),
+        PayinAccount.Invoice(
+          delivery = InvoiceDelivery.Kivra,
+          isPending = false,
+          isDefault = false,
+          email = "",
+        ),
+      ),
+      availablePayinMethods = listOf(PaymentProvider.Trustly),
+    ),
+    PayinAccountOverviewUiState.Content(
+      currentMethods = listOf(
+        PayinAccount.Trustly(
+          clearingNumber = "****",
+          accountNumber = "*45678",
+          bankName = "Swedbank",
+          isPending = false,
+          isDefault = true,
+        ),
+        PayinAccount.SwishPayin(
+          phoneNumber = "0701234567",
+          isPending = false,
+          isDefault = false,
+        ),
+      ),
+      availablePayinMethods = listOf(PaymentProvider.Trustly),
+    ),
+  ),
+)

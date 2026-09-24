@@ -1,0 +1,175 @@
+package com.hedvig.android.feature.payin.account.ui.methoddetails
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.hedvig.android.data.paying.member.PayinAccount
+import com.hedvig.android.data.paying.member.provider
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.PaymentMethodMarkSize
+import com.hedvig.android.design.system.hedvig.PaymentMethodTile
+import com.hedvig.android.design.system.hedvig.PaymentMethodTileBadge
+import com.hedvig.android.design.system.hedvig.RadioGroup
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.Minus
+import com.hedvig.android.feature.payin.account.ui.components.PayinMethodMark
+import com.hedvig.android.feature.payin.account.ui.components.PayinProviderPillow
+import com.hedvig.android.feature.payin.account.ui.components.toRadioOption
+import hedvig.resources.PAYMENT_REMOVE_SUBTITLE
+import hedvig.resources.PAYMENT_REMOVE_TITLE
+import hedvig.resources.REMOVE_CONFIRMATION_BUTTON
+import hedvig.resources.Res
+import hedvig.resources.general_cancel_button
+import hedvig.resources.general_close_button
+import org.jetbrains.compose.resources.stringResource
+
+@Composable
+internal fun RemovePayinMethodBottomSheet(
+  sheetState: HedvigBottomSheetState<PayinAccount>,
+  isRemoving: Boolean,
+  errorMessage: String?,
+  onConfirmRemove: () -> Unit,
+) {
+  HedvigBottomSheet(sheetState) { method ->
+    RemovePayinMethodBottomSheetContent(
+      method = method,
+      isRemoving = isRemoving,
+      errorMessage = errorMessage,
+      onConfirmRemove = onConfirmRemove,
+      onDismiss = { sheetState.dismiss() },
+    )
+  }
+}
+
+/**
+ * Stands in for [RemovePayinMethodBottomSheet] on the method the member is charged on. Removing it
+ * would leave nothing collecting payments, so the member is pointed at choosing a replacement first.
+ */
+@Composable
+internal fun CannotRemovePrimaryPayinMethodBottomSheet(sheetState: HedvigBottomSheetState<Unit>) {
+  HedvigBottomSheet(sheetState) {
+    HedvigText(
+      // TODO: Add "This is your primary payment method. Choose another primary method before
+      //  removing it." / "Detta är din primära betalningsmetod. Välj en annan primär metod innan du
+      //  tar bort den." to Lokalise
+      text = "This is your primary payment method. Choose another primary method before removing it.",
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(32.dp))
+    HedvigTextButton(
+      text = stringResource(Res.string.general_close_button),
+      onClick = { sheetState.dismiss() },
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(16.dp))
+  }
+}
+
+@Composable
+private fun RemovePayinMethodBottomSheetContent(
+  method: PayinAccount,
+  isRemoving: Boolean,
+  errorMessage: String?,
+  onConfirmRemove: () -> Unit,
+  onDismiss: () -> Unit,
+) {
+  HedvigText(
+    text = stringResource(Res.string.PAYMENT_REMOVE_TITLE),
+    textAlign = TextAlign.Center,
+    modifier = Modifier.fillMaxWidth(),
+  )
+  HedvigText(
+    text = stringResource(Res.string.PAYMENT_REMOVE_SUBTITLE),
+    textAlign = TextAlign.Center,
+    color = HedvigTheme.colorScheme.textSecondary,
+    modifier = Modifier.fillMaxWidth(),
+  )
+  Box(
+    contentAlignment = Alignment.Center,
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(vertical = 64.dp),
+  ) {
+    PaymentMethodTile(
+      badge = {
+        PaymentMethodTileBadge(
+          icon = HedvigIcons.Minus,
+          containerColor = HedvigTheme.colorScheme.fillPrimary,
+          contentColor = HedvigTheme.colorScheme.fillNegative,
+        )
+      },
+      mark = { PayinMethodMark(method, Modifier.size(PaymentMethodMarkSize)) },
+    )
+  }
+  if (errorMessage != null) {
+    HedvigNotificationCard(
+      message = errorMessage,
+      priority = NotificationPriority.Error,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+  }
+  val option = method.toRadioOption()
+  RadioGroup(
+    options = listOf(option),
+    selectedOption = option.id,
+    onRadioOptionSelected = {},
+    optionIcon = { PayinProviderPillow(method.provider) },
+    modifier = Modifier.fillMaxWidth(),
+  )
+  Spacer(Modifier.height(16.dp))
+  HedvigButton(
+    text = stringResource(Res.string.REMOVE_CONFIRMATION_BUTTON),
+    onClick = onConfirmRemove,
+    enabled = !isRemoving,
+    isLoading = isRemoving,
+    modifier = Modifier.fillMaxWidth(),
+  )
+  Spacer(Modifier.height(8.dp))
+  HedvigTextButton(
+    text = stringResource(Res.string.general_cancel_button),
+    onClick = onDismiss,
+    modifier = Modifier.fillMaxWidth(),
+  )
+  Spacer(Modifier.height(16.dp))
+}
+
+@Composable
+@HedvigShortMultiScreenPreview
+private fun PreviewRemovePayinMethodBottomSheetContent() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      Column(
+        Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      ) {
+        RemovePayinMethodBottomSheetContent(
+          method = PayinAccount.SwishPayin("0709901232", isPending = false, isDefault = false),
+          isRemoving = false,
+          errorMessage = null,
+          onConfirmRemove = {},
+          onDismiss = {},
+        )
+      }
+    }
+  }
+}
