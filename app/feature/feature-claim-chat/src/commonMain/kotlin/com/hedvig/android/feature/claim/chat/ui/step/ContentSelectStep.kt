@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -28,6 +29,7 @@ import com.hedvig.android.feature.claim.chat.data.StepId
 import com.hedvig.android.feature.claim.chat.ui.common.ContentSelectChips
 import com.hedvig.android.feature.claim.chat.ui.common.EditButton
 import com.hedvig.android.feature.claim.chat.ui.common.RoundCornersPill
+import com.hedvig.android.feature.claim.chat.ui.common.SentAnswerRow
 import com.hedvig.android.feature.claim.chat.ui.common.SkippedLabel
 import hedvig.resources.GENERAL_CONFIRM
 import hedvig.resources.Res
@@ -60,38 +62,45 @@ internal fun ContentSelectStep(
       },
     ) { isCurrentStep ->
       if (isCurrentStep) {
+        // An answer already on the step is something to confirm or change, so it keeps the confirm button,
+        // whether or not the step can also be skipped: without it a prefilled skippable step could be changed
+        // but never submitted. With nothing filled in there is nothing to confirm and a tap answers the step
+        // outright, so the only button left is skip, where the step offers it.
+        val hasPrefilledAnswer = rememberSaveable(itemId) { stepContent.selectedOptionId != null }
+        val answersOnClick = !hasPrefilledAnswer
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
           ContentSelectChips(
             options = options,
             onOptionClick = { option ->
               if (!isSubmitting) {
-                onEvent(
-                  ClaimChatEvent.Select(
-                    itemId,
-                    option.id,
-                  ),
-                )
+                onEvent(ClaimChatEvent.Select(itemId, option.id))
+                if (answersOnClick) {
+                  onEvent(ClaimChatEvent.SubmitSelect(itemId))
+                }
               }
             },
             selectedOptionId = stepContent.selectedOptionId,
             style = stepContent.style,
+            answersOnClick = answersOnClick,
           )
           Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            HedvigButton(
-              text = stringResource(Res.string.GENERAL_CONFIRM),
-              onClick = {
-                if (selectedOptionId != null) {
-                  onEvent(
-                    ClaimChatEvent.SubmitSelect(
-                      itemId,
-                    ),
-                  )
-                }
-              },
-              isLoading = currentContinueButtonLoading,
-              enabled = !isSubmitting && selectedOptionId != null,
-              modifier = Modifier.fillMaxWidth(),
-            )
+            if (hasPrefilledAnswer) {
+              HedvigButton(
+                text = stringResource(Res.string.GENERAL_CONFIRM),
+                onClick = {
+                  if (selectedOptionId != null) {
+                    onEvent(
+                      ClaimChatEvent.SubmitSelect(
+                        itemId,
+                      ),
+                    )
+                  }
+                },
+                isLoading = currentContinueButtonLoading,
+                enabled = !isSubmitting && selectedOptionId != null,
+                modifier = Modifier.fillMaxWidth(),
+              )
+            }
             if (canSkip) {
               HedvigButton(
                 stringResource(Res.string.claims_skip_button),
@@ -99,7 +108,7 @@ internal fun ContentSelectStep(
                 isLoading = skipButtonLoading,
                 enabled = !isSubmitting,
                 modifier = Modifier.fillMaxWidth(),
-                buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+                buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
               )
             }
           }
@@ -107,21 +116,19 @@ internal fun ContentSelectStep(
       } else {
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
           val selected = options.firstOrNull { it.id == selectedOptionId }
-          if (selected != null) {
-            val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + selected.title
-            RoundCornersPill(
-              onClick = null,
-              modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentWidth(Alignment.End)
-                .clearAndSetSemantics {
+          SentAnswerRow {
+            if (selected != null) {
+              val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + selected.title
+              RoundCornersPill(
+                modifier = Modifier.clearAndSetSemantics {
                   contentDescription = description
                 },
-            ) {
-              HedvigText(selected.title)
+              ) {
+                HedvigText(selected.title)
+              }
+            } else {
+              SkippedLabel()
             }
-          } else {
-            SkippedLabel()
           }
           EditButton(
             isRegrettable,

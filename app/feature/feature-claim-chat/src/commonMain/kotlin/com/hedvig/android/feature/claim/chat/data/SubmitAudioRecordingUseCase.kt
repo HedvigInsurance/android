@@ -17,18 +17,28 @@ import dev.zacsweers.metro.SingleIn
 import octopus.ClaimIntentSubmitAudioMutation
 import octopus.type.ClaimIntentSubmitAudioInput
 
+internal interface SubmitAudioRecordingUseCase {
+  suspend fun invoke(stepId: StepId, freeText: String): Either<ClaimChatErrorMessage, ClaimIntent>
+
+  suspend fun invoke(
+    stepId: StepId,
+    commonFile: CommonFile,
+    uploadUrl: String,
+  ): Either<ClaimChatErrorMessage, ClaimIntent>
+}
+
 @SingleIn(AppScope::class)
 @Inject
-internal class SubmitAudioRecordingUseCase(
+internal class SubmitAudioRecordingUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val uploadFileUseCase: UploadFileUseCase,
   private val languageService: LanguageService,
-) {
-  suspend fun invoke(stepId: StepId, freeText: String): Either<ClaimChatErrorMessage, ClaimIntent> {
+) : SubmitAudioRecordingUseCase {
+  override suspend fun invoke(stepId: StepId, freeText: String): Either<ClaimChatErrorMessage, ClaimIntent> {
     return either { invoke(stepId, null, freeText) }
   }
 
-  suspend fun invoke(
+  override suspend fun invoke(
     stepId: StepId,
     commonFile: CommonFile,
     uploadUrl: String,
@@ -36,7 +46,7 @@ internal class SubmitAudioRecordingUseCase(
     return either {
       val uploadResult = either {
         uploadFileUseCase.invoke(commonFile, uploadUrl)
-      }.mapLeft { ClaimChatErrorMessage.GeneralError }
+      }.mapLeft { it.toClaimChatErrorMessage() }
         .bind()
       val fileId = uploadResult.fileId
       logcat { "SubmitFileUploadUseCase uploaded file with Uri:${commonFile.fileName} got back fileId:$fileId" }

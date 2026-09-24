@@ -16,6 +16,7 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.StashedSession
 import com.hedvig.android.navigation.common.SuppressesAppStoreReviewRequest
 import com.hedvig.android.navigation.common.TopLevelTab
+import com.hedvig.android.navigation.common.contentKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.LoneDeepLinkChrome
 
@@ -129,17 +130,17 @@ internal class BackstackController(
 
   /**
    * Every key whose decorator state must survive: the rendered stack plus all parked runs, mapped
-   * to their `contentKey` (`toString()`). The retained decorators consult this set in `onPop` so a
+   * to their [contentKey]. The retained decorators consult this set in `onPop` so a
    * key that merely moved into [parkedRuns] keeps its saved state and ViewModel.
    */
   val allLiveContentKeys: Set<Any>
     get() = buildSet {
-      entries.forEach { add(it.toString()) }
-      parkedRuns.values.forEach { run -> run.forEach { add(it.toString()) } }
+      entries.forEach { add(it.contentKey()) }
+      parkedRuns.values.forEach { run -> run.forEach { add(it.contentKey()) } }
     }
 
   /**
-   * `contentKey` (`toString()`) → the top-level tab that owns it, used by the [HedvigNavDisplay]
+   * [contentKey] → the top-level tab that owns it, used by the [HedvigNavDisplay]
    * transition classifier to fade between tabs and slide within one. A screen's owner is *positional*
    * (which run it sits in), so it can't be read off a single key in isolation; this resolves it from
    * the full rendered stack plus all [parkedRuns].
@@ -156,10 +157,10 @@ internal class BackstackController(
     var tab: TopLevelTab? = null
     entries.forEach { key ->
       tab = key.topLevelTabOrNull() ?: tab
-      tab?.let { owningTabByContentKey[key.toString()] = it }
+      tab?.let { owningTabByContentKey[key.contentKey()] = it }
     }
     parkedRuns.forEach { (parkedTab, run) ->
-      run.forEach { owningTabByContentKey[it.toString()] = parkedTab }
+      run.forEach { owningTabByContentKey[it.contentKey()] = parkedTab }
     }
     return owningTabByContentKey[contentKey.toString()]
   }

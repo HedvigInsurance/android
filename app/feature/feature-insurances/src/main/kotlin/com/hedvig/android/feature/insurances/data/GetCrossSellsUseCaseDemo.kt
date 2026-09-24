@@ -12,47 +12,44 @@ import dev.zacsweers.metro.SingleIn
 @Inject
 @SingleIn(AppScope::class)
 internal class GetCrossSellsUseCaseDemo : GetCrossSellsUseCase {
-  override suspend fun invoke(): Either<ErrorMessage, CrossSellResult> {
+  override suspend fun invoke(): Either<ErrorMessage, List<CrossSell>> {
     return either {
-      CrossSellResult(
-        false,
-        listOf(
-          CrossSell(
-            "1",
-            "Home Insurance",
-            "For you, your family and your home",
-            "",
-            ImageAsset("", "", ""),
-            ImageAsset("", "", ""),
-            buttonText = "button",
-          ),
-          CrossSell(
-            "2",
-            "Pet Insurance",
-            "For your dog or cat",
-            "",
-            ImageAsset("", "", ""),
-            ImageAsset("", "", ""),
-            buttonText = "button",
-          ),
-          CrossSell(
-            "3",
-            "Car Insurance",
-            "For your and your car",
-            "",
-            ImageAsset("", "", ""),
-            ImageAsset("", "", ""),
-            buttonText = "button",
-          ),
-          CrossSell(
-            "4",
-            "Accident Insurance",
-            "No loopholes on our part. No worries on your part.",
-            "",
-            ImageAsset("", "", ""),
-            ImageAsset("", "", ""),
-            buttonText = "button",
-          ),
+      listOf(
+        CrossSell(
+          "1",
+          "Home Insurance",
+          "For you, your family and your home",
+          "",
+          ImageAsset("", "", ""),
+          ImageAsset("", "", ""),
+          buttonText = "button",
+        ),
+        CrossSell(
+          "2",
+          "Pet Insurance",
+          "For your dog or cat",
+          "",
+          ImageAsset("", "", ""),
+          ImageAsset("", "", ""),
+          buttonText = "button",
+        ),
+        CrossSell(
+          "3",
+          "Car Insurance",
+          "For your and your car",
+          "",
+          ImageAsset("", "", ""),
+          ImageAsset("", "", ""),
+          buttonText = "button",
+        ),
+        CrossSell(
+          "4",
+          "Accident Insurance",
+          "No loopholes on our part. No worries on your part.",
+          "",
+          ImageAsset("", "", ""),
+          ImageAsset("", "", ""),
+          buttonText = "button",
         ),
       )
     }

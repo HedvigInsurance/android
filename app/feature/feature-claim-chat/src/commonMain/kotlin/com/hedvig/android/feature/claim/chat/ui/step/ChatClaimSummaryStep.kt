@@ -40,6 +40,7 @@ import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.claim.chat.data.StepContent
 import com.hedvig.android.feature.claim.chat.ui.common.FilesRow
 import hedvig.resources.CLAIM_CHAT_FILE_TITLE
+import hedvig.resources.CLAIM_CHAT_FREE_TEXT_LABEL
 import hedvig.resources.CLAIM_CHAT_RECORDING_TITLE
 import hedvig.resources.EMBARK_SUBMIT_CLAIM
 import hedvig.resources.Res
@@ -73,6 +74,7 @@ internal fun ChatClaimSummaryTopContent(
   keyDetails: List<StepContent.Summary.Item>,
   answers: List<StepContent.Summary.Answer>,
   recordingUrls: List<String>,
+  freeTexts: List<String>,
   fileUploads: List<UiFile>,
   imageLoader: ImageLoader,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
@@ -157,6 +159,21 @@ internal fun ChatClaimSummaryTopContent(
             }
           }
         }
+        if (freeTexts.isNotEmpty()) {
+          Spacer(Modifier.height(24.dp))
+          HedvigText(
+            stringResource(Res.string.CLAIM_CHAT_FREE_TEXT_LABEL),
+            Modifier.padding(horizontal = 16.dp),
+          )
+          Spacer(Modifier.height(8.dp))
+          for (freeText in freeTexts) {
+            HedvigText(
+              text = freeText,
+              color = HedvigTheme.colorScheme.textSecondary,
+              modifier = Modifier.padding(horizontal = 16.dp),
+            )
+          }
+        }
         if (fileUploads.isNotEmpty()) {
           Spacer(Modifier.height(24.dp))
           HedvigText(
@@ -195,9 +212,13 @@ internal fun ClaimSummaryAnswersContent(
     )
     Spacer(Modifier.height(24.dp))
     answers.forEachIndexed { index, answer ->
-      HedvigText(text = answer.title)
+      HedvigText(
+        text = answer.title,
+        style = HedvigTheme.typography.label,
+        color = HedvigTheme.colorScheme.textSecondary,
+      )
       Spacer(Modifier.height(4.dp))
-      CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textSecondary) {
+      CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textPrimary) {
         AnswerValue(
           value = answer.value,
           imageLoader = imageLoader,
@@ -278,6 +299,7 @@ private fun PreviewSummaryTopContent() {
           ),
           answers = previewAnswers(),
           recordingUrls = listOf(""),
+          freeTexts = listOf("My bike was stolen outside the station."),
           fileUploads = listOf(
             UiFile("receipt.pdf", null, "https://example.com/receipt.pdf", "application/pdf", "file-1"),
           ),

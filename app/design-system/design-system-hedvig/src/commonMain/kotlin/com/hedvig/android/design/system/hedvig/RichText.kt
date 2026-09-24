@@ -9,13 +9,18 @@ import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import com.mikepenz.markdown.compose.Markdown
+import com.mikepenz.markdown.model.MarkdownAlertColors
+import com.mikepenz.markdown.model.MarkdownAlertPadding
 import com.mikepenz.markdown.model.MarkdownColors
 import com.mikepenz.markdown.model.MarkdownPadding
 import com.mikepenz.markdown.model.MarkdownTypography
+import com.mikepenz.markdown.model.markdownAlertColors
+import com.mikepenz.markdown.model.markdownAlertPadding
 import com.mikepenz.markdown.model.markdownAnnotator
 import com.mikepenz.markdown.model.markdownAnnotatorConfig
 
@@ -51,6 +56,13 @@ fun HedvigMarkdownText(
     override val inlineCodeBackground: Color = colors.surfaceSecondary
     override val dividerColor: Color = colors.borderPrimary
     override val tableBackground: Color = colors.surfaceSecondary
+    override val alert: MarkdownAlertColors = markdownAlertColors(
+      note = colors.signalBlueElement,
+      tip = colors.signalGreenElement,
+      important = colors.signalBlueElement,
+      warning = colors.signalAmberElement,
+      caution = colors.signalRedElement,
+    )
   }
 
   val markdownTypography = object : MarkdownTypography {
@@ -75,6 +87,7 @@ fun HedvigMarkdownText(
       hoveredStyle = linkSpanStyle,
       pressedStyle = linkSpanStyle,
     )
+    override val alertTitle: TextStyle = paragraph.copy(fontWeight = FontWeight.Bold)
   }
 
   Markdown(
@@ -93,6 +106,7 @@ fun HedvigMarkdownText(
       override val listIndent = 0.dp
       override val listItemBottom = 0.dp
       override val listItemTop = 0.dp
+      override val alert: MarkdownAlertPadding = markdownAlertPadding()
     },
   )
 }

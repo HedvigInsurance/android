@@ -22,13 +22,17 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import octopus.ClaimIntentQuery
 
+internal interface GetClaimIntentUseCase {
+  fun invoke(claimIntentId: ClaimIntentId): Flow<Either<ClaimChatErrorMessage, TaskStepContent>>
+}
+
 @SingleIn(AppScope::class)
 @Inject
-internal class GetClaimIntentUseCase(
+internal class GetClaimIntentUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
-) {
-  fun invoke(claimIntentId: ClaimIntentId): Flow<Either<ClaimChatErrorMessage, TaskStepContent>> {
+) : GetClaimIntentUseCase {
+  override fun invoke(claimIntentId: ClaimIntentId): Flow<Either<ClaimChatErrorMessage, TaskStepContent>> {
     return flow {
       var retries = 0
       while (currentCoroutineContext().isActive) {

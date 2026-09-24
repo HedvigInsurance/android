@@ -53,6 +53,7 @@ import com.hedvig.android.app.navigation.ScreenParameterExtractor
 import com.hedvig.android.app.navigation.hedvigEntryProvider
 import com.hedvig.android.app.navigation.screenName
 import com.hedvig.android.app.navigation.shouldFadeThrough
+import com.hedvig.android.app.navigation.withHedvigContentKeys
 import com.hedvig.android.app.urihandler.AuthorizationCodeUriHandler
 import com.hedvig.android.app.urihandler.DeepLinkFirstUriHandler
 import com.hedvig.android.app.urihandler.SafeAndroidUriHandler
@@ -65,11 +66,13 @@ import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedU
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.tracking.EventTrackingClient
+import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.design.system.hedvig.DemoModeLabel
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.design.system.hedvig.rememberGlobalSnackBarState
+import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseKey
 import com.hedvig.android.feature.cross.sell.sheet.CrossSellSheet
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.onboarding.data.ResetOnboardingSeenUseCase
@@ -175,6 +178,15 @@ internal fun HedvigApp(
       CrossSellSheet(
         isInScreenEligibleForCrossSells = hedvigAppState.isInScreenEligibleForCrossSells,
         onCrossSellClick = authorizationCodeUriHandler::openUri,
+        onAddonClick = { eligibleInsuranceIds ->
+          backstackController.add(
+            AddonPurchaseKey(
+              insuranceIds = eligibleInsuranceIds,
+              preselectedAddonDisplayName = null,
+              source = AddonBannerSource.AFTER_FINISHING_SUCCESSFUL_FLOW,
+            ),
+          )
+        },
         imageLoader,
       )
       SharedTransitionLayout(Modifier.fillMaxSize()) {
@@ -219,23 +231,25 @@ internal fun HedvigApp(
                     transitionSpec = hedvigTransitionSpec(backstackController, density),
                     popTransitionSpec = popSpec,
                     predictivePopTransitionSpec = { popSpec() },
-                    entryProvider = entryProvider {
-                      hedvigEntryProvider(
-                        backstack = backstackController,
-                        scope = scope,
-                        windowSizeClass = windowSizeClass,
-                        memberIdService = memberIdService,
-                        globalSnackBarState = globalSnackBarState,
-                        externalNavigator = externalNavigator,
-                        androidAppHost = androidAppHost,
-                        openUrl = authorizationCodeUriHandler::openUri,
-                        openCrossSellUrl = authorizationCodeUriHandler::openUri,
-                        imageLoader = imageLoader,
-                        languageService = languageService,
-                        hedvigBuildConstants = hedvigBuildConstants,
-                        resetOnboardingSeenUseCase = resetOnboardingSeenUseCase,
-                      )
-                    },
+                    entryProvider = withHedvigContentKeys(
+                      entryProvider {
+                        hedvigEntryProvider(
+                          backstack = backstackController,
+                          scope = scope,
+                          windowSizeClass = windowSizeClass,
+                          memberIdService = memberIdService,
+                          globalSnackBarState = globalSnackBarState,
+                          externalNavigator = externalNavigator,
+                          androidAppHost = androidAppHost,
+                          openUrl = authorizationCodeUriHandler::openUri,
+                          openCrossSellUrl = authorizationCodeUriHandler::openUri,
+                          imageLoader = imageLoader,
+                          languageService = languageService,
+                          hedvigBuildConstants = hedvigBuildConstants,
+                          resetOnboardingSeenUseCase = resetOnboardingSeenUseCase,
+                        )
+                      },
+                    ),
                   )
                 }
               }

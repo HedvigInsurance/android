@@ -17,13 +17,17 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import octopus.ClaimIntentSubmitTaskMutation
 
+internal interface SubmitTaskUseCase {
+  suspend fun invoke(stepId: String): Either<ClaimChatErrorMessage, ClaimIntent>
+}
+
 @SingleIn(AppScope::class)
 @Inject
-internal class SubmitTaskUseCase(
+internal class SubmitTaskUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
-) {
-  suspend fun invoke(stepId: String): Either<ClaimChatErrorMessage, ClaimIntent> {
+) : SubmitTaskUseCase {
+  override suspend fun invoke(stepId: String): Either<ClaimChatErrorMessage, ClaimIntent> {
     val maxAttempts = 6
     repeat(maxAttempts) { attempt ->
       val result = either {

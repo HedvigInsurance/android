@@ -12,6 +12,7 @@ import dev.zacsweers.metro.SingleIn
 import io.ktor.client.request.forms.InputProvider
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
+import kotlinx.io.IOException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -34,7 +35,13 @@ internal class UploadFileUseCase(
         }
         append(
           "files",
-          InputProvider { commonFile.source() },
+          InputProvider {
+            try {
+              commonFile.source()
+            } catch (e: IOException) {
+              throw LocalFileUnreadableException(commonFile.fileName, e)
+            }
+          },
           Headers.build {
             append(HttpHeaders.ContentType, commonFile.mimeType)
             append(HttpHeaders.ContentDisposition, """filename="${commonFile.fileName}"""")
