@@ -48,6 +48,7 @@ import com.hedvig.android.feature.claim.chat.data.StepContent
 import com.hedvig.android.feature.claim.chat.data.StepId
 import com.hedvig.android.feature.claim.chat.ui.common.EditButton
 import com.hedvig.android.feature.claim.chat.ui.common.FilesRow
+import com.hedvig.android.feature.claim.chat.ui.common.SentAnswerRow
 import com.hedvig.android.feature.claim.chat.ui.common.SkippedLabel
 import hedvig.resources.Res
 import hedvig.resources.claim_status_detail_add_files
@@ -151,7 +152,9 @@ internal fun UploadFilesStep(
             Spacer(Modifier.height(8.dp))
           }
         } else {
-          SkippedLabel()
+          SentAnswerRow {
+            SkippedLabel()
+          }
         }
         EditButton(
           canEdit,

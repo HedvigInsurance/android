@@ -98,11 +98,11 @@ import com.hedvig.android.compose.pager.indicator.CardCarousel
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.common.image.storyblokResized
+import com.hedvig.android.crosssells.AddonsSection
 import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellBottomSheet
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.CrossSellsSection
-import com.hedvig.android.crosssells.PillowRow
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.FlowType
@@ -221,8 +221,6 @@ import hedvig.resources.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE
-import hedvig.resources.HOME_ADDONS_READ_MORE_BUTTON
-import hedvig.resources.HOME_DISCOVER_SECTION_TITLE
 import hedvig.resources.HOME_GREETING_SUBTITLE
 import hedvig.resources.HOME_GREETING_TITLE
 import hedvig.resources.HOME_QUOTES_SECTION_TITLE
@@ -358,6 +356,7 @@ private fun HomeScreen(
     state = crossSellBottomSheetState,
     markCrossSellsNotificationAsSeen = markCrossSellsNotificationAsSeen,
     onCrossSellClick = openCrossSellUrl,
+    onAddonClick = navigateToAddonPurchaseFlow,
     imageLoader = imageLoader,
   )
 
@@ -1001,7 +1000,7 @@ private fun HomeScreenSuccess(
               imageLoader = imageLoader,
             )
 
-            HomeSection.Addons -> AddonsSection(
+            HomeSection.Addons -> HomeAddonsSection(
               addonBannerInfos = uiState.addonBannerInfos,
               navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
               horizontalInsets = horizontalInsets,
@@ -1537,38 +1536,22 @@ private fun MainActionCarouselSection(
 }
 
 @Composable
-private fun AddonsSection(
+private fun HomeAddonsSection(
   addonBannerInfos: List<AddonBannerInfo>,
   navigateToAddonPurchaseFlow: (List<String>) -> Unit,
   horizontalInsets: PaddingValues,
   imageLoader: ImageLoader,
 ) {
-  Column(
-    verticalArrangement = Arrangement.spacedBy(16.dp),
+  AddonsSection(
+    addons = addonBannerInfos,
+    onAddonClick = navigateToAddonPurchaseFlow,
+    imageLoader = imageLoader,
+    headingStyle = HedvigTheme.typography.headlineSmall,
     modifier = Modifier
       .fillMaxWidth()
       .padding(horizontal = 16.dp)
       .padding(horizontalInsets),
-  ) {
-    HedvigText(
-      text = stringResource(Res.string.INSURANCE_ADDONS_SUBHEADING),
-      style = HedvigTheme.typography.headlineSmall,
-      modifier = Modifier.semantics { heading() },
-    )
-    addonBannerInfos.forEach { addon ->
-      PillowRow(
-        title = addon.title,
-        subtitle = addon.description,
-        pillowImage = null,
-        pillow = { AddonPillow(addon.flowType) },
-        buttonText = stringResource(Res.string.HOME_ADDONS_READ_MORE_BUTTON),
-        onButtonClick = { navigateToAddonPurchaseFlow(addon.eligibleInsurancesIds) },
-        imageLoader = imageLoader,
-        modifier = Modifier.fillMaxWidth(),
-        buttonSize = ButtonSize.Small,
-      )
-    }
-  }
+  )
 }
 
 @Composable
@@ -1578,7 +1561,6 @@ private fun DiscoverInsurancesSection(
   imageLoader: ImageLoader,
 ) {
   CrossSellsSection(
-    title = stringResource(Res.string.HOME_DISCOVER_SECTION_TITLE),
     crossSells = crossSells,
     onCrossSellClick = onCrossSellClick,
     modifier = Modifier.padding(horizontal = 16.dp),
@@ -1628,6 +1610,7 @@ private fun CrossSellBottomSheet(
   state: HedvigBottomSheetState<CrossSellSheetData>,
   markCrossSellsNotificationAsSeen: () -> Unit,
   onCrossSellClick: (String) -> Unit,
+  onAddonClick: (eligibleInsuranceIds: List<String>) -> Unit,
   imageLoader: ImageLoader,
 ) {
   LaunchedEffect(state) {
@@ -1640,6 +1623,7 @@ private fun CrossSellBottomSheet(
   CrossSellBottomSheet(
     state = state,
     onCrossSellClick = onCrossSellClick,
+    onAddonClick = onAddonClick,
     imageLoader = imageLoader,
   )
 }

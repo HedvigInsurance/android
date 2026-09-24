@@ -1,11 +1,6 @@
 package com.hedvig.android.feature.claim.chat.ui.common
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -14,11 +9,9 @@ import hedvig.resources.Res
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun SkippedLabel() {
+internal fun SkippedLabel(modifier: Modifier = Modifier) {
   val skippedLabelText = stringResource(Res.string.CLAIM_CHAT_SKIPPED_STEP)
-  RoundCornersPill(
-    modifier = Modifier.fillMaxWidth().wrapContentWidth(Alignment.End),
-  ) {
+  RoundCornersPill(modifier) {
     HedvigText(
       skippedLabelText,
       color = HedvigTheme.colorScheme.textSecondaryTranslucent,

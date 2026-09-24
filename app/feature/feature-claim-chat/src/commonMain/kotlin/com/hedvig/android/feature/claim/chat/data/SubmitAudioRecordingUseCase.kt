@@ -46,7 +46,7 @@ internal class SubmitAudioRecordingUseCaseImpl(
     return either {
       val uploadResult = either {
         uploadFileUseCase.invoke(commonFile, uploadUrl)
-      }.mapLeft { ClaimChatErrorMessage.GeneralError }
+      }.mapLeft { it.toClaimChatErrorMessage() }
         .bind()
       val fileId = uploadResult.fileId
       logcat { "SubmitFileUploadUseCase uploaded file with Uri:${commonFile.fileName} got back fileId:$fileId" }

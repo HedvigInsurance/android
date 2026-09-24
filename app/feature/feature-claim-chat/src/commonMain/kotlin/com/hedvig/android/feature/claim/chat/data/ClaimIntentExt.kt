@@ -10,6 +10,7 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.shared.partners.deflect.DeflectData
 import kotlinx.datetime.LocalDate
+import kotlinx.io.IOException
 import octopus.fragment.AudioRecordingFragment
 import octopus.fragment.ClaimIntentFragment
 import octopus.fragment.ClaimIntentMutationOutputFragment
@@ -172,6 +173,7 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
       StepContent.Summary(
         items = items.map { StepContent.Summary.Item(it.title, it.value) },
         audioRecordings = audioRecordings.map { StepContent.Summary.AudioRecording(it.url) },
+        freeTexts = freeTexts,
         fileUploads = fileUploads.map {
           StepContent.Summary.FileUpload(
             it.url,
@@ -408,8 +410,48 @@ internal sealed interface ClaimChatErrorMessage : ErrorMessage {
     override val throwable = null
   }
 
+  /**
+   * The request never reached a verdict: it timed out, stalled or lost its connection. Retrying the
+   * same request is worth offering, which is what separates this from [GeneralError].
+   */
+  data object ConnectionError : ClaimChatErrorMessage {
+    override val message = null
+    override val throwable = null
+  }
+
   data object NeedsUpdate : ClaimChatErrorMessage {
     override val message = null
     override val throwable = null
   }
+}
+
+/**
+ * Reading the file we were asked to upload failed, so the upload never became a network problem.
+ * Wrapped at the read site because it is thrown while writing the request body, where it would
+ * otherwise be indistinguishable from the transport failing.
+ */
+internal class LocalFileUnreadableException(fileName: String, cause: Throwable) :
+  IOException("Could not read local file $fileName", cause)
+
+internal fun ErrorMessage.toClaimChatErrorMessage(): ClaimChatErrorMessage {
+  val throwable = throwable ?: return ClaimChatErrorMessage.GeneralError
+  return if (throwable is IOException && !throwable.isCausedByUnreadableLocalFile()) {
+    ClaimChatErrorMessage.ConnectionError
+  } else {
+    ClaimChatErrorMessage.GeneralError
+  }
+}
+
+/**
+ * Walks the chain because the engine wraps whatever the body writer threw, so the marker is rarely
+ * the outermost throwable.
+ */
+private fun Throwable.isCausedByUnreadableLocalFile(): Boolean {
+  val seen = mutableSetOf<Throwable>()
+  var current: Throwable? = this
+  while (current != null && seen.add(current)) {
+    if (current is LocalFileUnreadableException) return true
+    current = current.cause
+  }
+  return false
 }
