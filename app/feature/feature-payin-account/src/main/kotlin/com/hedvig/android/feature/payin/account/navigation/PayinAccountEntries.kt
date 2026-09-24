@@ -3,8 +3,11 @@ package com.hedvig.android.feature.payin.account.navigation
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.compose.ui.dropUnlessResumed
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.data.paying.member.PayinAccount
 import com.hedvig.android.data.paying.member.provider
+import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
+import com.hedvig.android.feature.payin.account.data.SwishSetupOrder
 import com.hedvig.android.feature.payin.account.data.id
 import com.hedvig.android.feature.payin.account.ui.methoddetails.PayinMethodDetailsDestination
 import com.hedvig.android.feature.payin.account.ui.methoddetails.PayinMethodDetailsViewModel
@@ -18,17 +21,25 @@ import com.hedvig.android.feature.payin.account.ui.primary.SelectPrimaryPayinMet
 import com.hedvig.android.feature.payin.account.ui.selectmethod.SelectPayinMethodDestination
 import com.hedvig.android.feature.payin.account.ui.selectmethod.SelectPayinMethodViewModel
 import com.hedvig.android.feature.payin.account.ui.selectmethod.SelectPayinMethodViewModelFactory
+import com.hedvig.android.feature.payin.account.ui.setupswish.SetupSwishPayinDestination
+import com.hedvig.android.feature.payin.account.ui.setupswish.SetupSwishPayinViewModel
+import com.hedvig.android.feature.payin.account.ui.setupswish.SwishPayinStatusDestination
+import com.hedvig.android.feature.payin.account.ui.setupswish.SwishPayinStatusViewModel
+import com.hedvig.android.feature.payin.account.ui.setupswish.SwishPayinStatusViewModelFactory
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.popUpTo
+import com.hedvig.android.navigation.compose.removeAllOf
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
   backstack: Backstack,
+  globalSnackBarState: GlobalSnackBarState,
+  hedvigBuildConstants: HedvigBuildConstants,
   navigateToTrustly: () -> Unit,
-  navigateToSetupSwish: () -> Unit,
+  openUrl: (String) -> Unit,
 ) {
   entry<PayinAccountKey> {
     val viewModel: PayinAccountOverviewViewModel = metroViewModel()
@@ -71,7 +82,7 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
           }
 
           is PayinAccount.SwishPayin -> {
-            navigateToSetupSwish()
+            backstack.add(SetupSwishPayinKey())
           }
 
           // Invoice has no setup flow of its own, so the details screen offers no change
@@ -105,8 +116,49 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
         backstack.popUpTo<SelectPayinMethodKey>(inclusive = true)
         navigateToTrustly()
       },
-      onSwishSelected = dropUnlessResumed { navigateToSetupSwish() },
+      onSwishSelected = dropUnlessResumed { backstack.add(SetupSwishPayinKey()) },
       navigateUp = backstack::navigateUp,
+    )
+  }
+
+  // Leaves the whole Swish flow behind: both of its screens, plus the method picker when the member
+  // came through one, so a connected member never lands back inside the flow they just finished.
+  val finishSwishSetup: () -> Unit = {
+    backstack.popUpTo<SetupSwishPayinKey>(inclusive = true)
+    backstack.removeAllOf<SelectPayinMethodKey>()
+  }
+
+  entry<SetupSwishPayinKey> { key ->
+    val viewModel: SetupSwishPayinViewModel = metroViewModel()
+    SetupSwishPayinDestination(
+      viewModel = viewModel,
+      globalSnackBarState = globalSnackBarState,
+      onSuccessfullyConnected = finishSwishSetup,
+      navigateToApproval = dropUnlessResumed { order: SwishSetupOrder, phoneNumber: String ->
+        backstack.add(
+          SwishPayinStatusKey(order.successUrl, order.orderId, phoneNumber, key.showSuccessScreen),
+        )
+      },
+      navigateUp = backstack::navigateUp,
+    )
+  }
+
+  entry<SwishPayinStatusKey> { key ->
+    val viewModel: SwishPayinStatusViewModel =
+      assistedMetroViewModel<SwishPayinStatusViewModel, SwishPayinStatusViewModelFactory> {
+        create(key.successUrl, key.orderId, key.phoneNumber)
+      }
+    SwishPayinStatusDestination(
+      viewModel = viewModel,
+      // Staging orders can only be approved in the Swish sandbox app, never the real one.
+      allowSandboxSwishApp = !hedvigBuildConstants.isProduction,
+      showSuccessScreen = key.showSuccessScreen,
+      navigateUp = backstack::navigateUp,
+      navigateBack = backstack::popBackstack,
+      finishSwishSetup = finishSwishSetup,
+      // Back to the picker, leaving the number behind with the attempt that failed.
+      changePaymentMethod = { backstack.popUpTo<SetupSwishPayinKey>(inclusive = true) },
+      openUrl = openUrl,
     )
   }
 }

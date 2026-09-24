@@ -68,7 +68,7 @@ internal class OnboardingNavigator(
 
   /** Pushes the Trustly connect-payment flow; it pops itself back here when done. */
   fun openConnectPayment() {
-    backstack.add(TrustlyKey)
+    backstack.add(TrustlyKey())
   }
 
   /** Pushes the shared Forever screen; the member leaves it with system back. */
