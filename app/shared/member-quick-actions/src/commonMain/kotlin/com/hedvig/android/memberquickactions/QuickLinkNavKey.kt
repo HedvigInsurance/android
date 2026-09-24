@@ -54,7 +54,7 @@ fun QuickLinkDestination.OuterDestination.toNavKey(): HedvigNavKey = when (this)
   }
 
   QuickLinkConnectPayment -> {
-    TrustlyKey
+    TrustlyKey()
   }
 
   QuickLinkTermination -> {

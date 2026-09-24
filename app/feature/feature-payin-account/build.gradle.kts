@@ -31,6 +31,7 @@ dependencies {
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
   implementation(projects.navigationCore)
+  implementation(libs.zXing)
   testImplementation(libs.assertK)
   testImplementation(libs.kotlinx.serialization.json)
   testImplementation(libs.junit)

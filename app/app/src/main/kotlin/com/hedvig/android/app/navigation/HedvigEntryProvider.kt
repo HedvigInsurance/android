@@ -105,7 +105,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   resetOnboardingSeenUseCase: ResetOnboardingSeenUseCase,
 ) {
   val shouldShowRequestPermissionRationale: (String) -> Boolean = androidAppHost::shouldShowPermissionRationale
-  val navigateToConnectPayment: () -> Unit = { backstack.add(TrustlyKey) }
+  val navigateToConnectPayment: () -> Unit = { backstack.add(TrustlyKey()) }
   val navigateToPayoutAccount: () -> Unit = { backstack.add(PayoutAccountKey) }
   val navigateToInbox: () -> Unit = { backstack.add(InboxKey) }
   val navigateToNewConversation: () -> Unit = { backstack.add(ChatKey(Uuid.randomUUID().toString())) }
@@ -159,6 +159,8 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   addPaymentsEntries(
     backstack = backstack,
     globalSnackBarState = globalSnackBarState,
+    hedvigBuildConstants = hedvigBuildConstants,
+    openUrl = openUrl,
     navigateToConnectPayment = navigateToConnectPayment,
     navigateToPayoutAccount = navigateToPayoutAccount,
     navigateToNewConversation = navigateToNewConversation,
@@ -459,6 +461,8 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
 private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
   backstack: BackstackController,
   globalSnackBarState: GlobalSnackBarState,
+  hedvigBuildConstants: HedvigBuildConstants,
+  openUrl: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
   navigateToNewConversation: () -> Unit,
@@ -471,16 +475,27 @@ private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
   )
   payinAccountEntries(
     backstack = backstack,
+    globalSnackBarState = globalSnackBarState,
+    hedvigBuildConstants = hedvigBuildConstants,
     navigateToTrustly = navigateToConnectPayment,
-    // The Swish payin setup flow registers its own entries.
-    navigateToSetupSwish = {},
+    openUrl = openUrl,
   )
   payoutAccountEntries(
     backstack = backstack,
     globalSnackBarState = globalSnackBarState,
     navigateToConnectPayment = navigateToConnectPayment,
   )
-  connectPaymentEntries(backstack = backstack)
+  val changePayinMethod: () -> Unit = {
+    when (val target = changePayinMethodTarget(backstack.entries)) {
+      is ChangePayinMethodTarget.PopTo -> backstack.popUpToIndex(target.index)
+      is ChangePayinMethodTarget.Reseed -> backstack.reseed(target.stack)
+      ChangePayinMethodTarget.PopOne -> backstack.popBackstack()
+    }
+  }
+  connectPaymentEntries(
+    backstack = backstack,
+    changePaymentMethod = changePayinMethod,
+  )
 }
 
 private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
