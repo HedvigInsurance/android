@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
@@ -16,12 +17,14 @@ import androidx.navigation3.scene.SceneDecoratorStrategy
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NavigationBar
 import com.hedvig.android.design.system.hedvig.NavigationRail
+import com.hedvig.android.design.system.hedvig.NotificationCircleDefaultColor
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.NavigationSuiteType
 import com.hedvig.android.navigation.compose.rememberNavSuiteSceneDecoratorStrategy
+import com.hedvig.android.notification.badge.data.payment.PaymentsNotificationBadge
 
 private val WindowSizeClass.navigationSuiteType: NavigationSuiteType
   get() = when (widthSizeClass) {
@@ -49,15 +52,20 @@ internal fun rememberHedvigChromeStrategy(
       sharedTransitionScope = sharedTransitionScope,
       navigationSuiteType = { hedvigAppState.windowSizeClass.navigationSuiteType },
       chromeContent = {
-        val showPaymentsBadge by hedvigAppState.showPaymentsBadge.collectAsState()
+        val paymentsBadge by hedvigAppState.paymentsBadge.collectAsState()
+        val paymentsBadgeColor = when (paymentsBadge) {
+          PaymentsNotificationBadge.PreChargeNotice -> HedvigTheme.colorScheme.signalBlueElement
+          PaymentsNotificationBadge.MissedPayment -> NotificationCircleDefaultColor
+          null -> null
+        }
         val topLevelTabs by hedvigAppState.topLevelTabs.collectAsState()
         NavigationSuiteChrome(
           navigationSuiteType = hedvigAppState.windowSizeClass.navigationSuiteType,
           topLevelTabs = topLevelTabs,
           currentTopLevelTab = hedvigAppState.backstackController.currentTopLevel,
           onNavigateToTopLevelTab = hedvigAppState.backstackController::selectTopLevel,
-          getShowNotificationBadge = { tab ->
-            if (tab == TopLevelTab.Payments) showPaymentsBadge else false
+          getNotificationBadgeColor = { tab ->
+            if (tab == TopLevelTab.Payments) paymentsBadgeColor else null
           },
         )
       },
@@ -86,14 +94,14 @@ internal fun NavigationSuiteChrome(
   currentTopLevelTab: TopLevelTab?,
   onNavigateToTopLevelTab: (TopLevelTab) -> Unit,
   modifier: Modifier = Modifier,
-  getShowNotificationBadge: (TopLevelTab) -> Boolean = { false },
+  getNotificationBadgeColor: (TopLevelTab) -> Color? = { null },
 ) {
   when (navigationSuiteType) {
     NavigationSuiteType.NavigationBar -> NavigationBar(
       destinations = topLevelTabs,
       onNavigateToDestination = onNavigateToTopLevelTab,
       getIsCurrentlySelected = { it == currentTopLevelTab },
-      getShowNotificationBadge = getShowNotificationBadge,
+      getNotificationBadgeColor = getNotificationBadgeColor,
       modifier = modifier,
     )
 
@@ -102,7 +110,7 @@ internal fun NavigationSuiteChrome(
       onNavigateToDestination = onNavigateToTopLevelTab,
       getIsCurrentlySelected = { it == currentTopLevelTab },
       isExtraTall = navigationSuiteType == NavigationSuiteType.NavigationRailXLarge,
-      getShowNotificationBadge = getShowNotificationBadge,
+      getNotificationBadgeColor = getNotificationBadgeColor,
       modifier = modifier,
     )
   }

@@ -14,7 +14,8 @@ import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.navigation.common.CrossSellEligibleDestination
 import com.hedvig.android.navigation.common.TopLevelTab
-import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
+import com.hedvig.android.notification.badge.data.payment.PaymentsNotificationBadge
+import com.hedvig.android.notification.badge.data.payment.PaymentsNotificationBadgeService
 import com.hedvig.android.theme.Theme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +31,7 @@ internal fun rememberHedvigAppState(
   windowSizeClass: WindowSizeClass,
   settingsDataStore: SettingsDataStore,
   featureManager: FeatureManager,
-  missedPaymentNotificationService: MissedPaymentNotificationService,
+  paymentsNotificationBadgeService: PaymentsNotificationBadgeService,
   coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ): HedvigAppState {
   val appState = remember(
@@ -39,7 +40,7 @@ internal fun rememberHedvigAppState(
     coroutineScope,
     settingsDataStore,
     featureManager,
-    missedPaymentNotificationService,
+    paymentsNotificationBadgeService,
   ) {
     HedvigAppState(
       backstackController = backstackController,
@@ -47,7 +48,7 @@ internal fun rememberHedvigAppState(
       coroutineScope = coroutineScope,
       settingsDataStore = settingsDataStore,
       featureManager = featureManager,
-      missedPaymentNotificationService = missedPaymentNotificationService,
+      paymentsNotificationBadgeService = paymentsNotificationBadgeService,
     )
   }
   return appState
@@ -60,7 +61,7 @@ internal class HedvigAppState(
   coroutineScope: CoroutineScope,
   private val settingsDataStore: SettingsDataStore,
   featureManager: FeatureManager,
-  missedPaymentNotificationService: MissedPaymentNotificationService,
+  paymentsNotificationBadgeService: PaymentsNotificationBadgeService,
 ) {
   /**
    * App kill-switch. If this is enabled we must show nothing in the app but a button to try to update the app
@@ -86,12 +87,12 @@ internal class HedvigAppState(
     ),
   )
 
-  val showPaymentsBadge: StateFlow<Boolean> = flow {
-    emitAll(missedPaymentNotificationService.showRedDotNotification())
+  val paymentsBadge: StateFlow<PaymentsNotificationBadge?> = flow {
+    emitAll(paymentsNotificationBadgeService.badge())
   }.stateIn(
     coroutineScope,
     SharingStarted.WhileSubscribed(5_000),
-    false,
+    null,
   )
 
   val darkTheme: Boolean

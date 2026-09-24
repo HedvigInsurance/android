@@ -20,47 +20,55 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
 import octopus.MissedPaymentQuery
 
-internal interface GetIfMissedPaymentUseCase {
-  fun invoke(): Flow<Boolean>
+internal interface GetPaymentsNotificationBadgeUseCase {
+  fun invoke(): Flow<PaymentsNotificationBadge?>
 }
 
 @ContributesBinding(AppScope::class)
 @SingleIn(AppScope::class)
 @Inject
-internal class GetIfMissedPaymentUseCaseImpl(
+internal class GetPaymentsNotificationBadgeUseCaseImpl(
   private val apolloClient: ApolloClient,
-) : GetIfMissedPaymentUseCase {
-  override fun invoke(): Flow<Boolean> {
+) : GetPaymentsNotificationBadgeUseCase {
+  override fun invoke(): Flow<PaymentsNotificationBadge?> {
     return flow {
       while (currentCoroutineContext().isActive) {
-        val hasMissedPayment = apolloClient
+        val badge = apolloClient
           .query(MissedPaymentQuery())
           .fetchPolicy(FetchPolicy.CacheAndNetwork)
           .safeFlow {
-            logcat { "GetIfMissedPaymentUseCaseImpl error: $it" }
+            logcat { "GetPaymentsNotificationBadgeUseCaseImpl error: $it" }
             ErrorMessage()
           }
           .map { result ->
             result.fold(
               {
-                logcat { "GetIfMissedPaymentUseCaseImpl: error when loading missed payment: $it" }
-                false
+                logcat { "GetPaymentsNotificationBadgeUseCaseImpl: error when loading payments badge: $it" }
+                null
               },
-              { data ->
-                data.currentMember.missedChargeIdToChargeManually != null
-              },
+              { data -> data.currentMember.toPaymentsNotificationBadge() },
             )
           }
-          .firstOrNull() ?: false
+          .firstOrNull()
 
-        emit(hasMissedPayment)
+        emit(badge)
 
-        if (!hasMissedPayment) {
+        // A missed payment is re-checked so the dot clears once the member pays it. The pre-charge
+        // notice changes about once a day, so one read per session is enough.
+        if (badge != PaymentsNotificationBadge.MissedPayment) {
           break
         }
 
         delay(15.seconds)
       }
     }
+  }
+}
+
+private fun MissedPaymentQuery.Data.CurrentMember.toPaymentsNotificationBadge(): PaymentsNotificationBadge? {
+  return when {
+    showPreChargeNotice -> PaymentsNotificationBadge.PreChargeNotice
+    missedChargeIdToChargeManually != null -> PaymentsNotificationBadge.MissedPayment
+    else -> null
   }
 }
