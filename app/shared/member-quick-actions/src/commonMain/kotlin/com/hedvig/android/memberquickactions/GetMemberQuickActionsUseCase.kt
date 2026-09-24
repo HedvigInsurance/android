@@ -34,7 +34,7 @@ import hedvig.resources.HC_QUICK_ACTIONS_EDIT_INSURANCE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_FIRSTVET_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_FIRSTVET_TITLE
-import hedvig.resources.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE_2
 import hedvig.resources.HC_QUICK_ACTIONS_PAYMENTS_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_SICK_ABROAD_TITLE
@@ -154,7 +154,7 @@ internal class GetMemberQuickActionsUseCaseImpl(
             QuickAction.StandaloneQuickLink(
               quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkConnectPayment,
               titleRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_TITLE,
-              hintTextRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE,
+              hintTextRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE_2,
             ),
           )
         }

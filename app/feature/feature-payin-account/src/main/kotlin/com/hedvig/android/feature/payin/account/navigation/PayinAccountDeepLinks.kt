@@ -15,5 +15,6 @@ internal class PayinAccountDeepLinkMatcherProvider(
   private val container: HedvigDeepLinkContainer,
 ) : DeepLinkMatcherProvider {
   override fun matchers(): List<DeepLinkMatcher<HedvigNavKey, *>> =
-    uriDeepLinkMatchers(container.connectSwish, SetupSwishPayinKey.serializer())
+    uriDeepLinkMatchers(container.connectPayment, PayinAccountKey.serializer()) +
+      uriDeepLinkMatchers(container.connectSwish, SetupSwishPayinKey.serializer())
 }
