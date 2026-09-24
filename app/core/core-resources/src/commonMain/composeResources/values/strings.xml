@@ -751,6 +751,8 @@
   <string name="PAYMENT_PRIMARY_LABEL">Primary</string>
   <string name="PAYMENT_PRIMARY_SUBTITLE">This method will be used for your monthly payments</string>
   <string name="PAYMENT_PRIMARY_TITLE">Choose payment method</string>
+  <string name="PAYMENT_REMOVE_PRIMARY_SUBTITLE">Choose another primary method before removing it.</string>
+  <string name="PAYMENT_REMOVE_PRIMARY_TITLE">This is your primary payment method</string>
   <string name="PAYMENT_REMOVE_SUBTITLE">You can add it back any time</string>
   <string name="PAYMENT_REMOVE_TITLE">Remove payment method</string>
   <string name="PAYMENT_SWISH_APPROVE_TITLE">Approve the connection in Swish</string>

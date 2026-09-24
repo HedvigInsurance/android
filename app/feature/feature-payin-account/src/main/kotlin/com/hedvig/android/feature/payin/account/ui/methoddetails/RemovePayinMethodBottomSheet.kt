@@ -33,6 +33,8 @@ import com.hedvig.android.design.system.hedvig.icon.Minus
 import com.hedvig.android.feature.payin.account.ui.components.PayinMethodMark
 import com.hedvig.android.feature.payin.account.ui.components.PayinProviderPillow
 import com.hedvig.android.feature.payin.account.ui.components.toRadioOption
+import hedvig.resources.PAYMENT_REMOVE_PRIMARY_SUBTITLE
+import hedvig.resources.PAYMENT_REMOVE_PRIMARY_TITLE
 import hedvig.resources.PAYMENT_REMOVE_SUBTITLE
 import hedvig.resources.PAYMENT_REMOVE_TITLE
 import hedvig.resources.REMOVE_CONFIRMATION_BUTTON
@@ -67,11 +69,13 @@ internal fun RemovePayinMethodBottomSheet(
 internal fun CannotRemovePrimaryPayinMethodBottomSheet(sheetState: HedvigBottomSheetState<Unit>) {
   HedvigBottomSheet(sheetState) {
     HedvigText(
-      // TODO: Add "This is your primary payment method. Choose another primary method before
-      //  removing it." / "Detta är din primära betalningsmetod. Välj en annan primär metod innan du
-      //  tar bort den." to Lokalise
-      text = "This is your primary payment method. Choose another primary method before removing it.",
+      text = stringResource(Res.string.PAYMENT_REMOVE_PRIMARY_TITLE),
       modifier = Modifier.fillMaxWidth(),
+    )
+    HedvigText(
+      text = stringResource(Res.string.PAYMENT_REMOVE_PRIMARY_SUBTITLE),
+      modifier = Modifier.fillMaxWidth(),
+      color = HedvigTheme.colorScheme.textSecondary,
     )
     Spacer(Modifier.height(32.dp))
     HedvigTextButton(

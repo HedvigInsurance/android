@@ -751,6 +751,8 @@
   <string name="PAYMENT_PRIMARY_LABEL">Förvald</string>
   <string name="PAYMENT_PRIMARY_SUBTITLE">Den här metoden används för dina månadsbetalningar</string>
   <string name="PAYMENT_PRIMARY_TITLE">Välj betalningsmetod</string>
+  <string name="PAYMENT_REMOVE_PRIMARY_SUBTITLE">Välj en annan primär metod innan du tar bort den.</string>
+  <string name="PAYMENT_REMOVE_PRIMARY_TITLE">Detta är din primära betalningsmetod</string>
   <string name="PAYMENT_REMOVE_SUBTITLE">Du kan lägga till den igen när som helst</string>
   <string name="PAYMENT_REMOVE_TITLE">Ta bort betalningsmetod</string>
   <string name="PAYMENT_SWISH_APPROVE_TITLE">Godkänn kopplingen i Swish</string>
