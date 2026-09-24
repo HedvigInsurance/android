@@ -9,6 +9,7 @@ import com.hedvig.android.feature.onboarding.data.OnboardingContract
 import com.hedvig.android.feature.onboarding.data.OnboardingCrossSell
 import com.hedvig.android.feature.onboarding.data.OnboardingData
 import com.hedvig.android.feature.onboarding.data.OnboardingMemberIdProvider
+import com.hedvig.android.feature.onboarding.data.OnboardingPayinProvider
 import com.hedvig.android.feature.onboarding.data.OnboardingPayinStatus
 import com.hedvig.android.feature.onboarding.data.OnboardingReferralInformation
 import com.hedvig.android.feature.onboarding.data.OnboardingRepository
@@ -81,5 +82,6 @@ internal fun testOnboardingData(
   contracts = contracts,
   referralInformation = referralInformation,
   payinStatus = payinStatus,
+  availablePayinProviders = OnboardingPayinProvider.entries,
   crossSells = crossSells,
 )

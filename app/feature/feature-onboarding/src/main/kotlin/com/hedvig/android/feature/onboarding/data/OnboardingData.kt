@@ -12,6 +12,7 @@ internal data class OnboardingData(
   val contracts: List<OnboardingContract>,
   val referralInformation: OnboardingReferralInformation?,
   val payinStatus: OnboardingPayinStatus,
+  val availablePayinProviders: List<OnboardingPayinProvider>,
   val crossSells: List<OnboardingCrossSell>,
 ) {
   /** Contracts missing co-insured OR co-owner info, i.e. anything the co-insured step should show. */
@@ -30,6 +31,15 @@ internal data class OnboardingData(
    * step UI still distinguishes pending from active so it never falsely claims "connected".
    */
   val hasConnectedPayinMethod: Boolean = payinStatus != OnboardingPayinStatus.NeedsSetup
+}
+
+/**
+ * The payin providers onboarding can connect. Only these two are offered during onboarding, so a
+ * provider the backend adds later is left out until this step knows how to hand off to it.
+ */
+internal enum class OnboardingPayinProvider {
+  Trustly,
+  Swish,
 }
 
 /** Mirrors the backend `MemberPaymentConnectionStatus`. */
