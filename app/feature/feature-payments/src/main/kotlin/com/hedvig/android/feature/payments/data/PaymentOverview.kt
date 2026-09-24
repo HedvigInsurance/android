@@ -8,6 +8,7 @@ data class PaymentOverview(
   val memberChargeShortInfo: MemberChargeShortInfo?,
   val ongoingCharges: List<OngoingCharge>,
   val paymentConnection: PaymentConnection,
+  val primaryPayinMethod: PrimaryPayinMethod?,
   val isManualChargeAllowed: ManualChargeToPrompt?,
   val memberType: MemberType,
 ) {

@@ -52,6 +52,11 @@ import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
 import com.hedvig.android.feature.movingflow.movingFlowEntries
 import com.hedvig.android.feature.onboarding.data.ResetOnboardingSeenUseCase
 import com.hedvig.android.feature.onboarding.navigation.onboardingEntries
+import com.hedvig.android.feature.payin.account.navigation.PayinAccountKey
+import com.hedvig.android.feature.payin.account.navigation.PayinMethodDetailsKey
+import com.hedvig.android.feature.payin.account.navigation.SelectPayinMethodKey
+import com.hedvig.android.feature.payin.account.navigation.SelectPrimaryPayinMethodKey
+import com.hedvig.android.feature.payin.account.navigation.payinAccountEntries
 import com.hedvig.android.feature.payments.navigation.paymentsEntries
 import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountKey
 import com.hedvig.android.feature.payoutaccount.navigation.payoutAccountEntries
@@ -104,7 +109,8 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   resetOnboardingSeenUseCase: ResetOnboardingSeenUseCase,
 ) {
   val shouldShowRequestPermissionRationale: (String) -> Boolean = androidAppHost::shouldShowPermissionRationale
-  val navigateToConnectPayment: () -> Unit = { backstack.add(TrustlyKey) }
+  val navigateToTrustly: () -> Unit = { backstack.add(TrustlyKey()) }
+  val navigateToPayinAccount: () -> Unit = { backstack.add(PayinAccountKey) }
   val navigateToPayoutAccount: () -> Unit = { backstack.add(PayoutAccountKey) }
   val navigateToInbox: () -> Unit = { backstack.add(InboxKey) }
   val navigateToNewConversation: () -> Unit = { backstack.add(ChatKey(Uuid.randomUUID().toString())) }
@@ -136,7 +142,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     navigateToNewConversation = navigateToNewConversation,
     navigateToConversation = navigateToConversation,
     navigateToInbox = navigateToInbox,
-    navigateToConnectPayment = navigateToConnectPayment,
+    navigateToPayinAccount = navigateToPayinAccount,
     navigateToPayoutAccount = navigateToPayoutAccount,
     navigateToTravelCertificate = navigateToTravelCertificate,
     navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
@@ -158,7 +164,10 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   addPaymentsEntries(
     backstack = backstack,
     globalSnackBarState = globalSnackBarState,
-    navigateToConnectPayment = navigateToConnectPayment,
+    hedvigBuildConstants = hedvigBuildConstants,
+    openUrl = openUrl,
+    navigateToTrustly = navigateToTrustly,
+    navigateToPayinAccount = navigateToPayinAccount,
     navigateToPayoutAccount = navigateToPayoutAccount,
     navigateToNewConversation = navigateToNewConversation,
   )
@@ -169,7 +178,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     languageService = languageService,
     externalNavigator = externalNavigator,
     openUrl = openUrl,
-    navigateToConnectPayment = navigateToConnectPayment,
+    navigateToPayinAccount = navigateToPayinAccount,
     navigateToPayoutAccount = navigateToPayoutAccount,
     navigateToNewConversation = navigateToNewConversation,
     onResetOnboardingForDebug = {
@@ -243,7 +252,7 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
   navigateToNewConversation: () -> Unit,
   navigateToConversation: (String) -> Unit,
   navigateToInbox: () -> Unit,
-  navigateToConnectPayment: () -> Unit,
+  navigateToPayinAccount: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
   navigateToTravelCertificate: () -> Unit,
   navigateToAddonPurchaseFlow: (List<String>) -> Unit,
@@ -267,7 +276,7 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
     onNavigateToInbox = navigateToInbox,
     onNavigateToNewConversation = navigateToNewConversation,
     navigateToClaimDetails = { claimId -> backstack.add(ClaimDetailsKey(claimId)) },
-    navigateToConnectPayment = navigateToConnectPayment,
+    navigateToConnectPayment = navigateToPayinAccount,
     navigateToConnectPayout = navigateToPayoutAccount,
     navigateToContactInfo = { backstack.add(ContactInfoKey) },
     navigateToMissingInfo = { contractId: String, type: CoInsuredFlowType ->
@@ -458,22 +467,48 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
 private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
   backstack: BackstackController,
   globalSnackBarState: GlobalSnackBarState,
-  navigateToConnectPayment: () -> Unit,
+  hedvigBuildConstants: HedvigBuildConstants,
+  openUrl: (String) -> Unit,
+  navigateToTrustly: () -> Unit,
+  navigateToPayinAccount: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
   navigateToNewConversation: () -> Unit,
 ) {
   paymentsEntries(
     backstack = backstack,
-    navigateToConnectPayment = navigateToConnectPayment,
+    navigateToPayinAccount = navigateToPayinAccount,
+    navigateToPayinMethodDetails = { method -> backstack.add(PayinMethodDetailsKey(method)) },
     navigateToPayoutAccount = navigateToPayoutAccount,
+    navigateToSelectPayinMethod = { availableProviders, currentProviders ->
+      backstack.add(SelectPayinMethodKey(availableProviders, currentProviders))
+    },
+    navigateToSelectPrimaryPayinMethod = { currentMethods ->
+      backstack.add(SelectPrimaryPayinMethodKey(currentMethods))
+    },
     openConversation = navigateToNewConversation,
   )
   payoutAccountEntries(
     backstack = backstack,
-    globalSnackBarState = globalSnackBarState,
-    navigateToConnectPayment = navigateToConnectPayment,
+    navigateToTrustly = navigateToTrustly,
   )
-  connectPaymentEntries(backstack = backstack)
+  payinAccountEntries(
+    backstack = backstack,
+    globalSnackBarState = globalSnackBarState,
+    hedvigBuildConstants = hedvigBuildConstants,
+    navigateToTrustly = navigateToTrustly,
+    openUrl = openUrl,
+  )
+  val changePayinMethod: () -> Unit = {
+    when (val target = changePayinMethodTarget(backstack.entries)) {
+      is ChangePayinMethodTarget.PopTo -> backstack.popUpToIndex(target.index)
+      is ChangePayinMethodTarget.Reseed -> backstack.reseed(target.stack)
+      ChangePayinMethodTarget.PopOne -> backstack.popBackstack()
+    }
+  }
+  connectPaymentEntries(
+    backstack = backstack,
+    changePaymentMethod = changePayinMethod,
+  )
 }
 
 private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
@@ -483,7 +518,7 @@ private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
   languageService: LanguageService,
   externalNavigator: ExternalNavigator,
   openUrl: (String) -> Unit,
-  navigateToConnectPayment: () -> Unit,
+  navigateToPayinAccount: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
   navigateToNewConversation: () -> Unit,
   onResetOnboardingForDebug: () -> Unit,
@@ -501,7 +536,7 @@ private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
     globalSnackBarState = globalSnackBarState,
     backstack = backstack,
     hedvigBuildConstants = hedvigBuildConstants,
-    navigateToConnectPayment = navigateToConnectPayment,
+    navigateToConnectPayment = navigateToPayinAccount,
     navigateToConnectPayout = navigateToPayoutAccount,
     navigateToAddMissingInfo = { contractId: String, type: CoInsuredFlowType ->
       backstack.add(CoInsuredAddInfoKey(contractId, type))

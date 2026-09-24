@@ -175,10 +175,21 @@ private fun <D : Operation.Data> iorFromErrorsAndData(
   data: D?,
 ): Ior<Nel<ApolloOperationError>, D> {
   return when {
-    errors != null && data != null -> Ior.Both(errors, data)
-    errors != null -> Ior.Left(errors)
-    data != null -> Ior.Right(data)
-    else -> error("Non compliant server")
+    errors != null && data != null -> {
+      Ior.Both(errors, data)
+    }
+
+    errors != null -> {
+      Ior.Left(errors)
+    }
+
+    data != null -> {
+      Ior.Right(data)
+    }
+
+    else -> {
+      error("Non compliant server")
+    }
   }
 }
 
