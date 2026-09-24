@@ -1,6 +1,6 @@
 query GetPayoutMethods {
   currentMember {
-    paymentMethods {
+    paymentMethods(version: 2) {
       payoutMethods {
         provider
         status
