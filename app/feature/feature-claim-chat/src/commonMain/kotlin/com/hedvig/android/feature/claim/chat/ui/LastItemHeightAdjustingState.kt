@@ -55,10 +55,13 @@ internal class LastItemHeightAdjustingState(
   private val steps: () -> List<ClaimIntentStep>,
 ) {
   private var minHeightForFullScreenItem by mutableStateOf(0.dp)
+  private var leadingItemHeight by mutableStateOf(0.dp)
 
   val preferredMinHeightForFullScreenItem: Dp by derivedStateOf {
     val heightTakenByPreviousStep = if (steps().size < 2) {
-      0.dp
+      // The first step has no step above it, but it does have the AI disclaimer, which sits in the list with it.
+      // Without this the step asks for the whole viewport and the re-pin scrolls the disclaimer out of sight.
+      leadingItemHeight
     } else {
       val isPreviousStepTask = steps().dropLast(1).last().stepContent is StepContent.Task
       val stepId = steps()
@@ -88,6 +91,11 @@ internal class LastItemHeightAdjustingState(
 
   fun onContainerSizeChanged(size: IntSize) {
     minHeightForFullScreenItem = with(density) { size.height.toDp() }
+  }
+
+  /** The height the list gives the item above the first step, only counted while there is a single step. */
+  fun onLeadingItemHeightChanged(height: Int) {
+    leadingItemHeight = with(density) { height.toDp() }
   }
 
   fun onItemHeightChanged(stepId: StepId, size: IntSize) {
