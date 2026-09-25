@@ -70,7 +70,7 @@ internal class SubmitFileUploadUseCase(
       .safeExecute()
       .mapLeft {
         logcat { "SubmitFileUploadUseCase error: $it" }
-        ClaimChatErrorMessage.GeneralError
+        it.toClaimChatErrorMessage()
       }
       .bind()
       .claimIntentSubmitFileUpload

@@ -36,7 +36,7 @@ internal class SubmitTaskUseCaseImpl(
           .safeExecute()
           .mapLeft {
             logcat(LogPriority.WARN) { "SubmitTaskUseCase error (attempt ${attempt + 1}/$maxAttempts): $it" }
-            ClaimChatErrorMessage.GeneralError
+            it.toClaimChatErrorMessage()
           }
           .bind()
           .claimIntentSubmitTask
