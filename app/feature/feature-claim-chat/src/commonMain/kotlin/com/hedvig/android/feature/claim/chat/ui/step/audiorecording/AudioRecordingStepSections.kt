@@ -44,6 +44,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
@@ -189,6 +190,7 @@ internal fun AudioRecordingStep(
   startRecording: () -> Unit,
   onEvent: (ClaimChatEvent) -> Unit,
   modifier: Modifier = Modifier,
+  floating: Boolean = false,
 ) {
   Column(modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
     AudioRecorderBubble(
@@ -217,6 +219,7 @@ internal fun AudioRecordingStep(
       isCurrentStep = isCurrentStep,
       continueButtonLoading = continueButtonLoading,
       skipButtonLoading = skipButtonLoading,
+      floating = floating,
     )
     EditButton(
       canBeChanged = item.isRegrettable && !isCurrentStep,
@@ -278,8 +281,15 @@ internal fun AudioRecorderBubble(
   continueButtonLoading: Boolean,
   skipButtonLoading: Boolean,
   modifier: Modifier = Modifier,
+  floating: Boolean = false,
 ) {
   val isSubmitting = continueButtonLoading || skipButtonLoading
+  // Drawn over the conversation rather than in line with it, so the card lifts off whatever scrolls behind.
+  val cardModifier = if (floating) {
+    Modifier.shadow(FLOATING_CARD_ELEVATION, HedvigTheme.shapes.cornerXLarge)
+  } else {
+    Modifier
+  }
   val focusManager = LocalFocusManager.current
   // A landscape keyboard leaves roughly 34dp of screen, too little for the inline card, so short windows
   // answer in the full screen editor instead, which the screen draws over this one.
@@ -370,6 +380,7 @@ internal fun AudioRecorderBubble(
                     onSaveFreeText(text)
                     submitFreeText()
                   },
+                  modifier = cardModifier,
                 )
               }
             }
@@ -387,6 +398,7 @@ internal fun AudioRecorderBubble(
                 openAppSettings = openAppSettings,
                 isSubmitting = isSubmitting,
                 onClose = discardRecording,
+                modifier = cardModifier,
               )
             }
 
@@ -456,7 +468,7 @@ private enum class InputMode { Resting, Text, Voice }
  * child therefore answers taps aimed at what the member can still see, so it only takes touches once its own
  * transition has finished.
  */
-private fun Modifier.touchesOnlyWhenSettled(settled: Boolean): Modifier = if (settled) {
+internal fun Modifier.touchesOnlyWhenSettled(settled: Boolean): Modifier = if (settled) {
   this
 } else {
   pointerInput(Unit) {
@@ -1647,6 +1659,8 @@ fun RestingAudioPlayer(modifier: Modifier = Modifier) {
 
 // Width the close button drawn over the card's corner needs kept clear of it.
 private val CLOSE_BUTTON_CLEARANCE = 32.dp
+
+private val FLOATING_CARD_ELEVATION = 8.dp
 
 // Below this the band cannot hold enough bars to read as a waveform, so it is dropped instead.
 private val MINIMUM_WAVE_BAND_WIDTH = 160.dp
