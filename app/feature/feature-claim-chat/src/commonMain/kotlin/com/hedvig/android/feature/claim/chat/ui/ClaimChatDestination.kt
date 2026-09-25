@@ -1,12 +1,18 @@
 package com.hedvig.android.feature.claim.chat.ui
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +34,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -36,11 +43,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.IntState
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -52,6 +62,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -116,6 +127,7 @@ import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.FreeTextDraf
 import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.FullScreenTextAnswer
 import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.isShortWindow
 import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.rememberFreeTextDraftState
+import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.touchesOnlyWhenSettled
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
@@ -278,7 +290,7 @@ private fun ClaimChatScreen(
     navigateBack = navigateBack,
     openPlayStore = openPlayStore,
   )
-  // The inline card is the answer wherever it fits. It cannot fit above a landscape keyboard, which leaves
+  // The card is the answer wherever it fits. It cannot fit above a landscape keyboard, which leaves
   // around 34dp under the app bar, so those windows answer in the same fields filling the screen instead.
   // Asked of the window rather than of the tap that opened the answer, so that turning the phone part way
   // through one moves it to whichever card fits now, in both directions.
@@ -442,6 +454,19 @@ private fun ClaimChatScreenContent(
       if (!canScrollForward) isScrolledBack = false
     }
   }
+  // A short window answers in line, and full screen once writing, so only taller ones float the answer.
+  val floatsAnswer = !isShortWindow()
+  val floatingCardHeight = remember { mutableIntStateOf(0) }
+  var revealedStepId by remember { mutableStateOf<StepId?>(null) }
+  // One instance for the life of the screen: the slot reads the card's height at layout, so the card growing or
+  // the keyboard moving never recomposes the list's items.
+  val floatingAnswerSlot = remember(floatsAnswer) {
+    if (floatsAnswer) {
+      FloatingAnswerSlot(cardHeight = floatingCardHeight, onRevealed = { revealedStepId = it })
+    } else {
+      null
+    }
+  }
   Box(modifier = modifier.fillMaxSize()) {
     Column(Modifier.matchParentSize()) {
       val legacyTitle = stringResource(Res.string.CHAT_CONVERSATION_CLAIM_TITLE)
@@ -489,6 +514,7 @@ private fun ClaimChatScreenContent(
         lazyListState = lazyListState,
         lastItemHeightAdjustingState = lastItemHeightAdjustingState,
         standDownOnDragBack = standDownOnDragBack,
+        floatingAnswerSlot = floatingAnswerSlot,
         onEvent = onEvent,
         shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
         onNavigateToImageViewer = onNavigateToImageViewer,
@@ -509,6 +535,37 @@ private fun ClaimChatScreenContent(
     // Not while the keyboard is up: the member is answering, not reading back, and the arrow would sit on
     // top of the input's own buttons.
     val isKeyboardUp = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+    if (floatsAnswer) {
+      val floatingStep = uiState.steps.lastOrNull()?.takeIf { it.stepContent is StepContent.AudioRecording }
+      FloatingAnswerCard(
+        step = floatingStep,
+        // Held back until the question has revealed, like the inline answer, and stood down while reading back
+        // unless the member is typing into it.
+        shown = floatingStep != null && revealedStepId == floatingStep.id && (!isScrolledBack || isKeyboardUp),
+        onHeightChanged = { floatingCardHeight.intValue = it },
+        modifier = Modifier
+          .align(Alignment.BottomCenter)
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal))
+          .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+      ) { step ->
+        StepBottomContent(
+          stepItem = step,
+          freeTextDraft = freeTextDraft,
+          isCurrentStep = true,
+          currentContinueButtonLoading = uiState.currentContinueButtonLoading,
+          currentSkipButtonLoading = uiState.currentSkipButtonLoading,
+          onEvent = onEvent,
+          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+          onNavigateToImageViewer = onNavigateToImageViewer,
+          navigateToDeflect = navigateToDeflect,
+          appPackageId = appPackageId,
+          imageLoader = imageLoader,
+          openAppSettings = openAppSettings,
+          closeFlow = navigateBack,
+          floating = true,
+        )
+      }
+    }
     if (isScrolledBack && !isKeyboardUp) {
       ScrollToBottomButton(
         onClick = {
@@ -567,6 +624,7 @@ private fun ClaimChatScrollableContent(
   lazyListState: LazyListState,
   lastItemHeightAdjustingState: LastItemHeightAdjustingState,
   standDownOnDragBack: NestedScrollConnection,
+  floatingAnswerSlot: FloatingAnswerSlot?,
   onEvent: (ClaimChatEvent) -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   onNavigateToImageViewer: (String, String) -> Unit,
@@ -623,6 +681,7 @@ private fun ClaimChatScrollableContent(
           showAnimationSequence = showAnimationSequence,
           currentContinueButtonLoading = uiState.currentContinueButtonLoading,
           currentSkipButtonLoading = uiState.currentSkipButtonLoading,
+          floatingAnswerSlot = floatingAnswerSlot,
           onEvent = onEvent,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           onNavigateToImageViewer = onNavigateToImageViewer,
@@ -691,6 +750,69 @@ private fun Modifier.breakOutOfContentPadding(contentPadding: PaddingValues): Mo
     }
   }
 
+/**
+ * The floating card's place in the list. The slot takes the card's height, so the list lays out exactly as it
+ * would with the answer inline: the card is measured on its own, and nothing about its size depends on the list.
+ */
+private class FloatingAnswerSlot(private val cardHeight: IntState, val onRevealed: (StepId) -> Unit) {
+  fun Modifier.slotHeight(): Modifier = layout { measurable, constraints ->
+    val height = cardHeight.intValue
+    val placeable = measurable.measure(constraints.copy(minHeight = height, maxHeight = height))
+    layout(placeable.width, height) { placeable.place(0, 0) }
+  }
+}
+
+/**
+ * The current answer, drawn over the bottom of the conversation.
+ *
+ * Composed as soon as [step] arrives, hidden below the screen, so that its height is already known when the step
+ * reveals and the slot lands at its final height in one pass. [shown] slides it up into place and back out.
+ * An answered step leaves by sliding out as it is, while its answer takes its place in the conversation.
+ */
+@Composable
+private fun FloatingAnswerCard(
+  step: ClaimIntentStep?,
+  shown: Boolean,
+  onHeightChanged: (Int) -> Unit,
+  modifier: Modifier = Modifier,
+  content: @Composable (ClaimIntentStep) -> Unit,
+) {
+  AnimatedContent(
+    targetState = step,
+    contentKey = { it?.id },
+    transitionSpec = {
+      EnterTransition.None togetherWith (slideOutVertically { it } + fadeOut()) using SizeTransform(clip = false)
+    },
+    contentAlignment = Alignment.BottomCenter,
+    modifier = modifier,
+  ) { cardStep ->
+    if (cardStep == null) return@AnimatedContent
+    val isCurrent = transition.targetState == EnterExitState.Visible
+    // A card on its way out keeps whatever position it had when its step stopped being the current one.
+    var wasShown by remember { mutableStateOf(false) }
+    val isShown = if (isCurrent) shown else wasShown
+    SideEffect { if (isCurrent) wasShown = shown }
+    val hiddenFraction by animateFloatAsState(
+      targetValue = if (isShown) 0f else 1f,
+      animationSpec = tween(FLOATING_CARD_SLIDE_MILLIS),
+    )
+    val distanceBelowCard = with(LocalDensity.current) {
+      WindowInsets.safeDrawing.getBottom(this) + 16.dp.toPx()
+    }
+    Box(
+      Modifier
+        .onSizeChanged { if (isCurrent) onHeightChanged(it.height) }
+        .graphicsLayer { translationY = hiddenFraction * (size.height + distanceBelowCard) }
+        .touchesOnlyWhenSettled(isCurrent && isShown && hiddenFraction == 0f)
+        .then(if (isCurrent && isShown) Modifier else Modifier.clearAndSetSemantics {}),
+    ) {
+      content(cardStep)
+    }
+  }
+}
+
+private const val FLOATING_CARD_SLIDE_MILLIS = 300
+
 // Far enough that a nudge or an overscroll settle does not stand the re-pin down, short enough that a
 // deliberate look back does.
 private val DRAG_BACK_BEFORE_REPIN_STANDS_DOWN = 24.dp
@@ -734,6 +856,7 @@ private fun StepContentSection(
   showAnimationSequence: Boolean,
   currentContinueButtonLoading: Boolean,
   currentSkipButtonLoading: Boolean,
+  floatingAnswerSlot: FloatingAnswerSlot?,
   onEvent: (ClaimChatEvent) -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
@@ -809,6 +932,7 @@ private fun StepContentSection(
         isCurrentStep = isCurrentStep,
         currentContinueButtonLoading = currentContinueButtonLoading,
         currentSkipButtonLoading = currentSkipButtonLoading,
+        floatingAnswerSlot = floatingAnswerSlot,
         onEvent = onEvent,
         shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
         onNavigateToImageViewer = onNavigateToImageViewer,
@@ -954,9 +1078,16 @@ private fun StepBottomContent(
   openAppSettings: () -> Unit,
   closeFlow: () -> Unit,
   modifier: Modifier = Modifier,
+  floatingAnswerSlot: FloatingAnswerSlot? = null,
+  floating: Boolean = false,
 ) {
   Column(modifier) {
     when (stepItem.stepContent) {
+      is StepContent.AudioRecording if isCurrentStep && floatingAnswerSlot != null -> {
+        LaunchedEffect(stepItem.id) { floatingAnswerSlot.onRevealed(stepItem.id) }
+        Spacer(with(floatingAnswerSlot) { Modifier.fillMaxWidth().slotHeight() })
+      }
+
       is StepContent.AudioRecording -> {
         AudioRecordingStep(
           item = stepItem,
@@ -996,6 +1127,7 @@ private fun StepBottomContent(
           onEvent = onEvent,
           continueButtonLoading = currentContinueButtonLoading,
           skipButtonLoading = currentSkipButtonLoading,
+          floating = floating,
         )
       }
 
