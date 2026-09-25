@@ -1385,6 +1385,10 @@ type ClaimIntentStepContentFormField {
 type ClaimIntentStepContentFormFieldOption {
   title: String!
   subtitle: String
+  """
+  Outside the picker, where the picked option stands alone, display this instead of `title`.
+  """
+  selectedTitle: String
   imageUrl: String
   isCustomSearchEntry: Boolean!
   value: ClaimIntentStepContentFormFieldValue!
@@ -2861,6 +2865,14 @@ type Member {
   Id of the latest charge if it failed and self manual charge allowed.
   """
   missedChargeIdToChargeManually: UUID
+  """
+  True if the app should show a notice about an upcoming charge.
+  """
+  showPreChargeNotice: Boolean!
+  """
+  True if the app should show a notice about an upcoming charge retry.
+  """
+  showRetryChargeNotice: Boolean!
   """
   The member's payment methods: what they can be charged with, what they are paid out to,
   and which connection is still missing.
