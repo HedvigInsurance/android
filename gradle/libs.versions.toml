@@ -92,7 +92,6 @@ playReview = "2.0.2"
 playServicesBase = "18.10.1"
 robolectric = "4.17"
 room = "2.8.5"
-slimber = "2.0.0"
 sqlite = "2.7.1"
 testParameterInjector = "1.22"
 timber = "5.0.1"
@@ -241,7 +240,6 @@ room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
 ksp-symbolProcessingApi = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 rive-android = { module = "app.rive:rive-android", version.ref = "rive" }
-slimber = { module = "com.github.PaulWoitaschek:Slimber", version.ref = "slimber" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
