@@ -29,22 +29,26 @@ internal class SubmitFileUploadUseCase(
   private val fileService: FileService,
   private val languageService: LanguageService,
 ) {
+  /**
+   * @param onFileUploaded Reports each file the backend has accepted, as it happens, so that a
+   *   failure part way through does not cost the member the files that already made it.
+   */
   suspend fun invoke(
     stepId: StepId,
     fileUris: List<Uri>,
     uploadUrl: String,
     remoteFileIds: List<CommonFileId>,
+    onFileUploaded: (uri: Uri, fileId: CommonFileId) -> Unit,
   ): Either<ClaimChatErrorMessage, ClaimIntent> {
     return either {
-      val commonFiles = fileUris.map { fileUri ->
-        fileService.convertToCommonFile(fileUri)
-      }
       val fileIds = buildList {
-        commonFiles.forEach { commonFile ->
+        fileUris.forEach { fileUri ->
+          val commonFile = fileService.convertToCommonFile(fileUri)
           val uploadResult = either {
             uploadFileUseCase.invoke(commonFile, uploadUrl)
           }.mapLeft { it.toClaimChatErrorMessage() }
             .bind()
+          onFileUploaded(fileUri, uploadResult.fileId)
           add(uploadResult.fileId)
         }
         addAll(remoteFileIds)

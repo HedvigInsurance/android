@@ -50,6 +50,7 @@ import com.hedvig.android.feature.claim.chat.data.SubmitSummaryUseCase
 import com.hedvig.android.feature.claim.chat.data.SubmitTaskUseCase
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
+import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -738,7 +739,7 @@ internal class ClaimChatPresenter(
             )
 
             steps.updateStepWithSuccess<StepContent.FileUpload>(event.id) { step, content ->
-              if (event.uri in content.localFiles.map { it.id }) return@updateStepWithSuccess step
+              if (content.allFiles.any { it.localPath == event.uri }) return@updateStepWithSuccess step
               step.copy(
                 stepContent = content.copy(
                   localFiles = content.localFiles + localFile,
@@ -970,6 +971,9 @@ internal class ClaimChatPresenter(
                 uploadUrl = stepContent.uploadUri,
                 remoteFileIds = remoteFileIds.map {
                   CommonFileId(it)
+                },
+                onFileUploaded = { uri, fileId ->
+                  steps.markFileAsUploaded(stepId, uri.toString(), fileId)
                 },
               )
               .fold(
@@ -1244,6 +1248,30 @@ private fun SnapshotStateList<ClaimIntentStep>.updateStepWithSuccess(
       return@withMutableSnapshot true
     }
     return@withMutableSnapshot false
+  }
+}
+
+/**
+ * Moves a file the backend has accepted out of the pending list, so that a later failure in the
+ * same submission does not send it a second time when the member retries.
+ */
+internal fun SnapshotStateList<ClaimIntentStep>.markFileAsUploaded(
+  stepId: StepId,
+  localPath: String,
+  fileId: CommonFileId,
+) {
+  updateStepWithSuccess<StepContent.FileUpload>(stepId) { step, content ->
+    val uploaded = content.localFiles.find { it.localPath == localPath }
+    if (uploaded == null) {
+      logcat(LogPriority.WARN) { "markFileAsUploaded found no pending file for path:$localPath" }
+      return@updateStepWithSuccess step
+    }
+    step.copy(
+      stepContent = content.copy(
+        localFiles = content.localFiles - uploaded,
+        remoteFiles = content.remoteFiles + uploaded.copy(id = fileId.value),
+      ),
+    )
   }
 }
 
