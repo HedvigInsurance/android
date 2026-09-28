@@ -12,6 +12,7 @@ data class PaymentOverview(
   val isManualChargeAllowed: ManualChargeToPrompt?,
   val memberType: MemberType,
   val showRetryChargeNotice: Boolean,
+  val anyPayinMethodIsPending: Boolean,
 ) {
   data class OngoingCharge(
     val id: String,

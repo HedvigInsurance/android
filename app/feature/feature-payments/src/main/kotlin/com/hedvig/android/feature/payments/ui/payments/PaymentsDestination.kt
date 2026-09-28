@@ -365,7 +365,7 @@ private fun PaymentsContent(
         )
         Spacer(Modifier.height(8.dp))
       }
-      if (uiState.connectedPaymentInfo is ConnectedPaymentInfo.Pending) {
+      if (uiState.anyPayinMethodIsPending) {
           HedvigNotificationCard(
             message = stringResource(Res.string.PAYMENT_METHOD_PENDING),
             priority = InfoInline,
@@ -810,6 +810,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
         memberType = MemberType.STANDARD_MEMBER,
         showRetryChargeNotice = true,
+        anyPayinMethodIsPending = false,
       ),
     )
     add(
@@ -826,6 +827,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
         memberType = MemberType.STANDARD_MEMBER,
         showRetryChargeNotice = false,
+        anyPayinMethodIsPending = false,
       ),
     )
     add(
@@ -844,6 +846,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
         memberType = MemberType.STANDARD_TO_QASA_MEMBER,
         showRetryChargeNotice = false,
+        anyPayinMethodIsPending = false,
       ),
     )
     add(
@@ -860,6 +863,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
         memberType = MemberType.STANDARD_MEMBER,
         showRetryChargeNotice = false,
+        anyPayinMethodIsPending = false,
       ),
     )
     add(
@@ -882,6 +886,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
         memberType = MemberType.STANDARD_MEMBER,
         showRetryChargeNotice = false,
+        anyPayinMethodIsPending = false,
       ),
     )
     add(
@@ -898,6 +903,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
         memberType = MemberType.STANDARD_MEMBER,
         showRetryChargeNotice = false,
+        anyPayinMethodIsPending = false,
       ),
     )
     add(
@@ -918,6 +924,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
         memberType = MemberType.STANDARD_MEMBER,
         showRetryChargeNotice = false,
+        anyPayinMethodIsPending = false,
       ),
     )
     add(
@@ -934,6 +941,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
         memberType = MemberType.STANDARD_MEMBER,
         showRetryChargeNotice = false,
+        anyPayinMethodIsPending = false,
       ),
     )
     add(
@@ -954,6 +962,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
         memberType = MemberType.STANDARD_MEMBER,
         showRetryChargeNotice = false,
+        anyPayinMethodIsPending = false,
       ),
     )
     add(
@@ -974,6 +983,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
         memberType = MemberType.STANDARD_MEMBER,
         showRetryChargeNotice = false,
+        anyPayinMethodIsPending = false,
       ),
     )
     add(
@@ -986,6 +996,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
         memberType = MemberType.STANDARD_TO_QASA_MEMBER,
         showRetryChargeNotice = false,
+        anyPayinMethodIsPending = false,
       ),
     )
     add(
@@ -998,6 +1009,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
         memberType = MemberType.STANDARD_TO_QASA_MEMBER,
         showRetryChargeNotice = false,
+        anyPayinMethodIsPending = false,
       ),
     )
     add(
@@ -1010,6 +1022,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
         memberType = MemberType.QASA_ONLY_MEMBER,
         showRetryChargeNotice = false,
+        anyPayinMethodIsPending = false,
       ),
     )
     add(
@@ -1022,6 +1035,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
         memberType = MemberType.QASA_ONLY_MEMBER,
         showRetryChargeNotice = false,
+        anyPayinMethodIsPending = false,
       ),
     )
     add(
@@ -1038,6 +1052,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
         memberType = MemberType.STANDARD_MEMBER,
         showRetryChargeNotice = false,
+        anyPayinMethodIsPending = false,
       ),
     )
   },

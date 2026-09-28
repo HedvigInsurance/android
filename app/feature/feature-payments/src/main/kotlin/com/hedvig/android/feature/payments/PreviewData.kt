@@ -286,6 +286,7 @@ internal val paymentOverViewPreviewData: PaymentOverview
       isManualChargeAllowed = ManualChargeToPrompt(UiMoney(200.0, UiCurrencyCode.SEK)),
       memberType = MemberType.STANDARD_MEMBER,
       showRetryChargeNotice = false,
+      anyPayinMethodIsPending = false,
     )
   }
 

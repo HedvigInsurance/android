@@ -13,6 +13,7 @@ import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.paying.member.GetMemberTypeUseCase
 import com.hedvig.android.data.paying.member.MemberType
+import com.hedvig.android.data.paying.member.toPayinAccount
 import com.hedvig.android.feature.payments.data.ManualChargeToPrompt
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberChargeShortInfo
@@ -142,6 +143,9 @@ internal data class GetUpcomingPaymentUseCaseImpl(
       isManualChargeAllowed = isManualChargeAllowed,
       memberType = memberType,
       showRetryChargeNotice = result.currentMember.showRetryChargeNotice,
+      anyPayinMethodIsPending = result.currentMember.paymentMethods.payinMethods
+        .mapNotNull { it.toPayinAccount() }
+        .any { it.isPending },
     )
   }
 }
@@ -179,6 +183,7 @@ internal class GetUpcomingPaymentUseCaseDemo(
       isManualChargeAllowed = null,
       memberType = MemberType.STANDARD_MEMBER,
       showRetryChargeNotice = false,
+      anyPayinMethodIsPending = false,
     ).right()
   }
 }

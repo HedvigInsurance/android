@@ -79,6 +79,7 @@ internal class PaymentsPresenter(
           primaryPayinMethod = paymentOverview.primaryPayinMethod,
           memberType = paymentOverview.memberType,
           showRetryChargeNotice = paymentOverview.showRetryChargeNotice,
+          anyPayinMethodIsPending = paymentOverview.anyPayinMethodIsPending,
         )
       },
     )
@@ -113,6 +114,7 @@ internal sealed interface PaymentsUiState {
     val primaryPayinMethod: PrimaryPayinMethod?,
     val memberType: MemberType,
     val showRetryChargeNotice: Boolean,
+    val anyPayinMethodIsPending: Boolean,
   ) : PaymentsUiState {
     sealed interface UpcomingPayment {
       data object NoUpcomingPayment : UpcomingPayment
