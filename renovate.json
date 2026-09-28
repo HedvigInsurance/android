@@ -8,23 +8,44 @@
   "commitMessageExtra": "{{{currentValue}}} to {{#if isPinDigest}}{{{newDigestShort}}}{{else}}{{#if isMajor}}{{prettyNewMajor}}{{else}}{{#if isSingleVersion}}{{prettyNewVersion}}{{else}}{{#if newValue}}{{{newValue}}}{{else}}{{{newDigestShort}}}{{/if}}{{/if}}{{/if}}{{/if}}",
   "packageRules": [
     {
-      "description": "Minor and patch updates are low risk, so they share one PR",
-      "matchUpdateTypes": ["minor", "patch"],
+      "description": "Patch updates are low risk, so they share one PR",
+      "matchUpdateTypes": ["patch"],
       "groupName": "all non-major dependencies",
       "groupSlug": "all-minor-patch"
     },
     {
-      "description": "Majors can need migration work, so they stay out of the non-major PR and cannot block it",
-      "matchUpdateTypes": ["major"],
-      "groupName": "all major dependencies",
-      "groupSlug": "all-major"
+      "description": "Minor updates join them too, except before 1.0 where semver allows a minor to break the API, so those get their own PR like a major",
+      "matchUpdateTypes": ["minor"],
+      "matchCurrentVersion": "!/^0\\./",
+      "groupName": "all non-major dependencies",
+      "groupSlug": "all-minor-patch"
     },
     {
-      "description": "Before 1.0 a minor bump is allowed to break the API, so treat it as a major",
-      "matchCurrentVersion": "/^0\\./",
-      "matchUpdateTypes": ["minor"],
-      "groupName": "all major dependencies",
-      "groupSlug": "all-major"
+      "description": "Majors get one PR each, but these families span several catalog versions that must move together",
+      "matchUpdateTypes": ["major"],
+      "matchPackageNames": [
+        "/^com\\.android\\.tools\\.build:gradle$/",
+        "/^com\\.android\\.(application|library|kotlin\\.multiplatform\\.library|lint)([.:]|$)/",
+        "/^com\\.android\\.tools\\.lint:/"
+      ],
+      "groupName": "android gradle plugin"
+    },
+    {
+      "description": "ktlintCore must match the ktlint that kotlinter bundles, so the custom ruleset links against the same API",
+      "matchUpdateTypes": ["major"],
+      "matchPackageNames": [
+        "/^org\\.jmailen\\./",
+        "/^com\\.pinterest\\.ktlint:/"
+      ],
+      "groupName": "kotlinter"
+    },
+    {
+      "description": "Compose Multiplatform is one release train spread over several catalog versions",
+      "matchUpdateTypes": ["major"],
+      "matchPackageNames": [
+        "/^org\\.jetbrains\\.compose([.:]|$)/"
+      ],
+      "groupName": "compose multiplatform"
     },
     {
       "description": "Metro is a Kotlin compiler plugin, so a Kotlin bump usually needs a matching Metro release. Kept apart so a compiler upgrade never blocks library updates",
