@@ -4,39 +4,35 @@
     "config:recommended",
     "schedule:daily"
   ],
+  "minimumReleaseAge": "7 days",
   "commitMessageExtra": "{{{currentValue}}} to {{#if isPinDigest}}{{{newDigestShort}}}{{else}}{{#if isMajor}}{{prettyNewMajor}}{{else}}{{#if isSingleVersion}}{{prettyNewVersion}}{{else}}{{#if newValue}}{{{newValue}}}{{else}}{{{newDigestShort}}}{{/if}}{{/if}}{{/if}}{{/if}}",
   "packageRules": [
     {
-      "description": "Metro is a Kotlin compiler plugin, so a Kotlin bump usually needs a matching Metro release",
+      "description": "Minor and patch updates are low risk, so they share one PR",
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "all non-major dependencies",
+      "groupSlug": "all-minor-patch"
+    },
+    {
+      "description": "Majors can need migration work, so they stay out of the non-major PR and cannot block it",
+      "matchUpdateTypes": ["major"],
+      "groupName": "all major dependencies",
+      "groupSlug": "all-major"
+    },
+    {
+      "description": "Before 1.0 a minor bump is allowed to break the API, so treat it as a major",
+      "matchCurrentVersion": "/^0\\./",
+      "matchUpdateTypes": ["minor"],
+      "groupName": "all major dependencies",
+      "groupSlug": "all-major"
+    },
+    {
+      "description": "Metro is a Kotlin compiler plugin, so a Kotlin bump usually needs a matching Metro release. Kept apart so a compiler upgrade never blocks library updates",
       "matchPackageNames": [
         "/^org\\.jetbrains\\.kotlin[.:]/",
         "/^dev\\.zacsweers\\.metro([.:]|$)/"
       ],
       "groupName": "kotlin"
-    },
-    {
-      "description": "AGP, the lint plugin and lint-api ship together and must stay on the same release",
-      "matchPackageNames": [
-        "/^com\\.android\\.tools\\.build:gradle$/",
-        "/^com\\.android\\.(application|library|kotlin\\.multiplatform\\.library|lint)([.:]|$)/",
-        "/^com\\.android\\.tools\\.lint:/"
-      ],
-      "groupName": "android gradle plugin"
-    },
-    {
-      "description": "ktlintCore must match the ktlint that kotlinter bundles, so the custom ruleset links against the same API",
-      "matchPackageNames": [
-        "/^org\\.jmailen\\./",
-        "/^com\\.pinterest\\.ktlint:/"
-      ],
-      "groupName": "kotlinter"
-    },
-    {
-      "description": "Compose Multiplatform artifacts are one release train spread over several catalog versions",
-      "matchPackageNames": [
-        "/^org\\.jetbrains\\.compose([.:]|$)/"
-      ],
-      "groupName": "compose multiplatform"
     }
   ]
 }
