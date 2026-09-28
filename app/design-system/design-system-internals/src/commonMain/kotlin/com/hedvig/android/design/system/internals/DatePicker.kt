@@ -191,8 +191,6 @@ private fun HedvigDatePicker(
     dateFormatter = dateFormatter,
     colors = colors,
     modifier = modifier,
-    // Material's Input mode crashes in OutlinedTextFieldMeasurePolicy.measure (NoSuchElementException)
-    showModeToggle = false,
   )
 }
 
