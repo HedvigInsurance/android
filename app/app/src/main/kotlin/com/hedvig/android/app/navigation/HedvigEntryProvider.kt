@@ -196,17 +196,17 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     externalNavigator = externalNavigator,
     navigateToNewConversation = navigateToNewConversation,
     navigateToInbox = navigateToInbox,
-    openPrivacyPolicy = { openUrl(privacyPolicyUrl(languageService.getLanguage())) },
+    openPrivacyPolicy = { openUrl(privacyPolicyInAppUrl(languageService.getLanguage())) },
   )
 }
 
 /**
- * The public privacy-policy page, per language. Mirrors the links used by the profile "about app"
- * screen; kept here so `:app` owns the URL rather than `feature-onboarding`.
+ * The app-specific privacy notice, per language. Mirrors the "Privacy policy (Hedvig app)" link on the
+ * profile "about app" screen; used in `feature-onboarding` and UsageData destination in profile.
  */
-private fun privacyPolicyUrl(language: Language): String = when (language) {
-  Language.SV_SE -> "https://www.hedvig.com/se/hedvig/personuppgifter"
-  Language.EN_SE -> "https://www.hedvig.com/se-en/hedvig/privacy-policy"
+private fun privacyPolicyInAppUrl(language: Language): String = when (language) {
+  Language.SV_SE -> "https://www.hedvig.com/se/hedvig/integritetsnotis-appen"
+  Language.EN_SE -> "https://www.hedvig.com/se-en/hedvig/privacy-notice-app"
 }
 
 private fun EntryProviderScope<HedvigNavKey>.addLoginEntries(
@@ -513,7 +513,7 @@ private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
     onNavigateToTravelCertificate = { backstack.add(TravelCertificateKey) },
     onNavigateToInsuranceEvidence = { backstack.add(InsuranceEvidenceKey) },
     openUrl = openUrl,
-    openPrivacyPolicy = { openUrl(privacyPolicyUrl(languageService.getLanguage())) },
+    openPrivacyPolicy = { openUrl(privacyPolicyInAppUrl(languageService.getLanguage())) },
     navigateToChipId = { backstack.add(ChipIdKey()) },
     languageService = languageService,
     onResetOnboardingForDebug = onResetOnboardingForDebug,
