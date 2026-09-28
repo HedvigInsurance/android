@@ -3,9 +3,11 @@
 # (prod-env/compliance/oss-register) see the real tree. GitHub cannot parse
 # Gradle builds itself, so without this the graph holds only GitHub Actions.
 #
-# Only runtime classpaths are submitted. The app is distributed software, so the
-# register's question is what ships in the APK; test, lint and annotation
-# processor configurations do not, and they would triple the graph with noise.
+# Only release runtime classpaths are submitted. The app is distributed software,
+# so the register's question is what ships in the APK. Test, lint and annotation
+# processor configurations do not ship, and neither does the plain
+# `runtimeClasspath` of the root project and the build-logic included build,
+# which is the Android Gradle Plugin itself.
 name: Dependency submission
 
 on:
@@ -42,5 +44,5 @@ jobs:
       - uses: gradle/actions/dependency-submission@v6
         with:
           cache-read-only: true
-          dependency-graph-include-configurations: '^((.*[rR]elease)?[rR]untimeClasspath)$'
+          dependency-graph-include-configurations: '[rR]eleaseRuntimeClasspath$'
           additional-arguments: --no-configuration-cache
