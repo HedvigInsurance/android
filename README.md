@@ -34,6 +34,10 @@ run `./gradlew ktlintFormat` to make ktlint to format all files according to the
 Generated from `./gradlew :generateProjectDependencyGraph`*\
 *Note that this requires `dot` from graphviz to be on your path. Run `brew install graphviz`
 
+## Renovate
+
+`renovate.json` is a file which Renovate looks at in order to be able to suggest upgrading private artifacts to their latest version.
+
 ## Removing unused resources
 
 The [android-remove-unused-resources-plugin](https://github.com/irgaly/android-remove-unused-resources-plugin/tree/main#usage)
