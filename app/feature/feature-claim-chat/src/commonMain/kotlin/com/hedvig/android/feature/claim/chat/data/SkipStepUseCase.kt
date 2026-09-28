@@ -33,7 +33,7 @@ internal class SkipStepUseCaseImpl(
       .safeExecute()
       .mapLeft {
         logcat { "SkipStepUseCase error: $it" }
-        ClaimChatErrorMessage.GeneralError
+        it.toClaimChatErrorMessage()
       }
       .bind()
       .claimIntentSkipStep

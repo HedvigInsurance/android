@@ -56,6 +56,7 @@ kotlin {
       implementation(projects.partnersDeflect)
     }
     commonTest.dependencies {
+      implementation(libs.apollo.testingSupport)
       implementation(libs.assertK)
       implementation(libs.coroutines.test)
       implementation(libs.kotlin.test)
