@@ -285,6 +285,7 @@ internal val paymentOverViewPreviewData: PaymentOverview
       primaryPayinMethod = PrimaryPayinMethod(PayinMethodId.Swish, "070-990 12 32"),
       isManualChargeAllowed = ManualChargeToPrompt(UiMoney(200.0, UiCurrencyCode.SEK)),
       memberType = MemberType.STANDARD_MEMBER,
+      showRetryChargeNotice = false,
     )
   }
 

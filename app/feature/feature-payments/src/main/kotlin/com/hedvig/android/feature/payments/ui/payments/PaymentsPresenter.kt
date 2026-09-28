@@ -78,6 +78,7 @@ internal class PaymentsPresenter(
           connectedPaymentInfo = paymentOverview.paymentConnection.toConnectedPaymentInfo(),
           primaryPayinMethod = paymentOverview.primaryPayinMethod,
           memberType = paymentOverview.memberType,
+          showRetryChargeNotice = paymentOverview.showRetryChargeNotice,
         )
       },
     )
@@ -111,6 +112,7 @@ internal sealed interface PaymentsUiState {
     val connectedPaymentInfo: ConnectedPaymentInfo,
     val primaryPayinMethod: PrimaryPayinMethod?,
     val memberType: MemberType,
+    val showRetryChargeNotice: Boolean,
   ) : PaymentsUiState {
     sealed interface UpcomingPayment {
       data object NoUpcomingPayment : UpcomingPayment

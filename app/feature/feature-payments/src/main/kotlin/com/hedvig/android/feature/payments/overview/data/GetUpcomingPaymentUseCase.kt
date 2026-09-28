@@ -141,6 +141,7 @@ internal data class GetUpcomingPaymentUseCaseImpl(
       },
       isManualChargeAllowed = isManualChargeAllowed,
       memberType = memberType,
+      showRetryChargeNotice = result.currentMember.showRetryChargeNotice,
     )
   }
 }
@@ -177,6 +178,7 @@ internal class GetUpcomingPaymentUseCaseDemo(
       primaryPayinMethod = null,
       isManualChargeAllowed = null,
       memberType = MemberType.STANDARD_MEMBER,
+      showRetryChargeNotice = false,
     ).right()
   }
 }
