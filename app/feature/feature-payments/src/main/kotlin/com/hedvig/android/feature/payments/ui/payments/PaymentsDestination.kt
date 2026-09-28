@@ -115,6 +115,7 @@ import hedvig.resources.PAYOUT_ADD_PAYOUT_METHOD
 import hedvig.resources.PAYOUT_MISSING_INFO
 import hedvig.resources.PAYOUT_PAGE_HEADING
 import hedvig.resources.R
+import hedvig.resources.REFERRAL_PENDING_STATUS_LABEL
 import hedvig.resources.Res
 import hedvig.resources.TAB_PAYMENTS_TITLE
 import hedvig.resources.swish
@@ -432,7 +433,7 @@ private fun PrimaryPayinMethodSection(method: PrimaryPayinMethod, onClick: () ->
       modifier = sideSpacing.padding(vertical = 8.dp),
     )
     HedvigCard(
-      onClick = onClick,
+      onClick = onClick.takeUnless { method.isPending },
       shape = HedvigTheme.shapes.cornerLarge,
       modifier = sideSpacing.fillMaxWidth(),
     ) {
@@ -457,7 +458,11 @@ private fun PrimaryPayinMethodSection(method: PrimaryPayinMethod, onClick: () ->
               PayinMethodId.Invoice -> method.descriptor ?: stringResource(Res.string.PAYMENTS_INVOICE)
             },
           )
-          val subtitle = method.descriptor.takeIf { method.id != PayinMethodId.Invoice }
+          val subtitle = when {
+            method.isPending -> stringResource(Res.string.REFERRAL_PENDING_STATUS_LABEL)
+            method.id == PayinMethodId.Invoice -> null
+            else -> method.descriptor
+          }
           if (subtitle != null) {
             HedvigText(
               text = subtitle,
@@ -466,11 +471,13 @@ private fun PrimaryPayinMethodSection(method: PrimaryPayinMethod, onClick: () ->
             )
           }
         }
-        Icon(
-          imageVector = HedvigIcons.ChevronRight,
-          contentDescription = null,
-          modifier = Modifier.size(24.dp),
-        )
+        if (!method.isPending) {
+          Icon(
+            imageVector = HedvigIcons.ChevronRight,
+            contentDescription = null,
+            modifier = Modifier.size(24.dp),
+          )
+        }
       }
     }
   }
