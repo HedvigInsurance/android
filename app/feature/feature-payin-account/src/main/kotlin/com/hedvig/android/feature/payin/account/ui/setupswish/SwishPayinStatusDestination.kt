@@ -290,8 +290,8 @@ private fun SwishApprovalQrCode(redirectUrl: String, modifier: Modifier = Modifi
     border = HedvigTheme.colorScheme.borderPrimary,
     modifier = modifier,
   ) {
-    QRCode(
-      token = redirectUrl,
+    SwishQrCode(
+      content = redirectUrl,
       modifier = Modifier
         .size(180.dp)
         .padding(16.dp),
