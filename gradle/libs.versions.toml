@@ -66,7 +66,7 @@ jetbrains-navigationevent = "1.1.0"
 jetbrains-graphics = "1.0.0-alpha09"
 jetbrains-lifecycle = "2.11.0"
 jetbrains-material = "1.12.0"
-jetbrains-material3 = "1.11.0-alpha07"
+jetbrains-material3 = "1.12.0-alpha03"
 jetbrainsMarkdown = "0.7.13"
 arrow = "2.2.3"
 assertK = "0.28.1"
@@ -119,6 +119,8 @@ androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
 androidx-compose-material3-windowSizeClass = { module = "androidx.compose.material3:material3-window-size-class" }
 androidx-compose-materialIconsCore = { module = "androidx.compose.material:material-icons-core" }
 androidx-compose-materialRipple = { module = "androidx.compose.material:material-ripple" }
+androidx-compose-uiTestJunit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "androidx-ui-alpha" }
+androidx-compose-uiTestJunit4Accessibility = { module = "androidx.compose.ui:ui-test-junit4-accessibility", version.ref = "androidx-ui-alpha" }
 androidx-compose-uiTestManifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidx-ui-alpha" }
 androidx-compose-uiTooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "androidx-ui-alpha" }
 androidx-compose-uiToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "androidx-ui-alpha" }

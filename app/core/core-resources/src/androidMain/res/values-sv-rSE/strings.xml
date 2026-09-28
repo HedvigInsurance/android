@@ -227,7 +227,7 @@
   <string name="CLAIMS_USE_TEXT_INSTEAD">Beskriv i text</string>
   <string name="CLAIMS_VOICE_RECORDING_SENDING">Skickar...</string>
   <string name="CLAIMS_YOUR_CLAIM">Din skadeanmälan</string>
-  <string name="CLAIM_CHAT_AI_INFO">Vi använder AI för att stödja processen kring att skicka in och hantera ditt skadeärende. En skadereglerare granskar alltid ditt ärende innan något beslut fattas.</string>
+  <string name="CLAIM_CHAT_AI_INFO">Vi använder AI som stöd när du anmäler din skada och när vi hanterar den. Vårt team granskar alltid ärendet innan vi fattar något beslut.</string>
   <string name="CLAIM_CHAT_AUDIO_RECORDING_LABEL">Röstinspelning</string>
   <string name="CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE">Annat föremål</string>
   <string name="CLAIM_CHAT_DATE_AND_LOCATION_HINT">Om du inte vet exakt datum, fyll i på ett ungefär när det inträffade.</string>
@@ -567,6 +567,8 @@
   <string name="LEGAL_CATEGORY_LABEL">Juridisk information</string>
   <string name="LEGAL_INFORMATION">Legal information</string>
   <string name="LEGAL_PRIVACY_POLICY">Personuppgifter</string>
+  <string name="LEGAL_PRIVACY_POLICY_APP">Integritetsnotis för Hedvig-appen</string>
+  <string name="LEGAL_PRIVACY_POLICY_APP_SHORT">Integritetsnotis</string>
   <string name="LETTER_TO_EIR_SUBJECT">Fråga angående skadeanmälan - Fordon reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Välj land och språk</string>
   <string name="LOGOUT_BUTTON">Logga ut</string>
@@ -752,6 +754,8 @@
   <string name="PAYMENT_PRIMARY_LABEL">Förvald</string>
   <string name="PAYMENT_PRIMARY_SUBTITLE">Den här metoden används för dina månadsbetalningar</string>
   <string name="PAYMENT_PRIMARY_TITLE">Välj betalningsmetod</string>
+  <string name="PAYMENT_REMOVE_PRIMARY_SUBTITLE">Välj en annan metod innan du tar bort den.</string>
+  <string name="PAYMENT_REMOVE_PRIMARY_TITLE">Byt förvald metod först</string>
   <string name="PAYMENT_REMOVE_SUBTITLE">Du kan lägga till den igen när som helst</string>
   <string name="PAYMENT_REMOVE_TITLE">Ta bort betalningsmetod</string>
   <string name="PAYMENT_SWISH_APPROVE_TITLE">Godkänn kopplingen i Swish</string>

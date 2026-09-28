@@ -759,8 +759,9 @@ private fun HomeScreenSuccess(
     val heroCollapsePx = rememberSaveable { mutableFloatStateOf(0f) }
     val maxHeroCollapsePx = remember { mutableFloatStateOf(0f) }
     // The greeting's current fade, published from the hero's layout so the floating icons — which sit
-    // above the list, not inside it — can leave on exactly the same curve.
-    val heroContentAlpha = remember { mutableFloatStateOf(1f) }
+    // above the list, not inside it — can leave on exactly the same curve. Saved alongside the collapse, since
+    // coming back to a list scrolled past the hero never lays the hero out to republish it.
+    val heroContentAlpha = rememberSaveable { mutableFloatStateOf(1f) }
     val heroCollapseConnection = remember {
       object : NestedScrollConnection {
         override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
