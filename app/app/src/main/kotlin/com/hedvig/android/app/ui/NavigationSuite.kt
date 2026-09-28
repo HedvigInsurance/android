@@ -54,7 +54,7 @@ internal fun rememberHedvigChromeStrategy(
       chromeContent = {
         val paymentsBadge by hedvigAppState.paymentsBadge.collectAsState()
         val paymentsBadgeColor = when (paymentsBadge) {
-          PaymentsNotificationBadge.PreChargeNotice -> HedvigTheme.colorScheme.signalBlueElement
+          PaymentsNotificationBadge.ChargeNotice -> HedvigTheme.colorScheme.signalBlueElement
           PaymentsNotificationBadge.MissedPayment -> NotificationCircleDefaultColor
           null -> null
         }

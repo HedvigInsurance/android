@@ -2870,6 +2870,10 @@ type Member {
   """
   showPreChargeNotice: Boolean!
   """
+  True if the app should show a notice about an upcoming charge retry.
+  """
+  showRetryChargeNotice: Boolean!
+  """
   The member's payment methods: what they can be charged with, what they are paid out to,
   and which connection is still missing.
   """

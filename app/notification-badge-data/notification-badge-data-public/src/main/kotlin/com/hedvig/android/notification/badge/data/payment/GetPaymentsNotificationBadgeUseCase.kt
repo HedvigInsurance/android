@@ -53,8 +53,8 @@ internal class GetPaymentsNotificationBadgeUseCaseImpl(
 
         emit(badge)
 
-        // A missed payment is re-checked so the dot clears once the member pays it. The pre-charge
-        // notice changes about once a day, so one read per session is enough.
+        // A missed payment is re-checked so the dot clears once the member pays it. The charge
+        // notices change about once a day, so one read per session is enough.
         if (badge != PaymentsNotificationBadge.MissedPayment) {
           break
         }
@@ -67,7 +67,7 @@ internal class GetPaymentsNotificationBadgeUseCaseImpl(
 
 private fun MissedPaymentQuery.Data.CurrentMember.toPaymentsNotificationBadge(): PaymentsNotificationBadge? {
   return when {
-    showPreChargeNotice -> PaymentsNotificationBadge.PreChargeNotice
+    showPreChargeNotice || showRetryChargeNotice -> PaymentsNotificationBadge.ChargeNotice
     missedChargeIdToChargeManually != null -> PaymentsNotificationBadge.MissedPayment
     else -> null
   }

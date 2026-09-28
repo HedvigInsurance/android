@@ -10,9 +10,10 @@ import dev.zacsweers.metro.binding
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
-/** The dot on the Payments tab. When both apply, the pre-charge notice wins over the missed payment. */
+/** The dot on the Payments tab. When both apply, the charge notice wins over the missed payment. */
 enum class PaymentsNotificationBadge {
-  PreChargeNotice,
+  /** An upcoming charge, or an upcoming retry of a failed one. */
+  ChargeNotice,
   MissedPayment,
 }
 
