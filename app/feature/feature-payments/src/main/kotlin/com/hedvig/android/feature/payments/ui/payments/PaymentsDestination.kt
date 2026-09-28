@@ -57,6 +57,7 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyl
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle.Button
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.InfoInline
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.Campaign
 import com.hedvig.android.design.system.hedvig.icon.Card
@@ -109,6 +110,7 @@ import hedvig.resources.PAYMENTS_PROCESSING_PAYMENT
 import hedvig.resources.PAYMENTS_RETRY_INFO
 import hedvig.resources.PAYMENTS_UPCOMING_PAYMENT
 import hedvig.resources.PAYMENT_METHODS_TITLE
+import hedvig.resources.PAYMENT_METHOD_PENDING
 import hedvig.resources.PAYOUT_ADD_PAYOUT_METHOD
 import hedvig.resources.PAYOUT_MISSING_INFO
 import hedvig.resources.PAYOUT_PAGE_HEADING
@@ -286,7 +288,7 @@ private fun PaymentsContent(
     }
     if ((uiState as? Content)?.showRetryChargeNotice == true) {
       HedvigNotificationCard(
-        priority = NotificationPriority.InfoInline,
+        priority = InfoInline,
         message = stringResource(Res.string.PAYMENTS_RETRY_INFO),
         withIcon = true,
         modifier = Modifier
@@ -330,19 +332,6 @@ private fun PaymentsContent(
       )
 
       when (uiState.connectedPaymentInfo) {
-        ConnectedPaymentInfo.Pending -> {
-          HedvigNotificationCard(
-            message = stringResource(Res.string.MY_PAYMENT_UPDATING_MESSAGE),
-            priority = Info,
-            modifier = Modifier
-              .padding(horizontal = 16.dp)
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-            style = Button(
-              buttonText = androidx.compose.ui.res.stringResource(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT),
-              onButtonClick = onChangeBankAccount,
-            ),
-          )
-        }
 
         ConnectedPaymentInfo.NeedsPayoutSetup -> {
           HedvigNotificationCard(
@@ -360,21 +349,32 @@ private fun PaymentsContent(
         }
 
         // NeedsPayinSetup leads the screen as its own card, above the upcoming payment.
+        // Pending card is rendered below
         is ConnectedPaymentInfo.NeedsPayinSetup,
         ConnectedPaymentInfo.Unknown,
         is ConnectedPaymentInfo.Active,
+        ConnectedPaymentInfo.Pending
         -> {
         }
       }
-    }
-
-    val primaryPayinMethod = (uiState as? Content)?.primaryPayinMethod
-    if (primaryPayinMethod != null) {
-      PrimaryPayinMethodSection(
-        method = primaryPayinMethod,
-        onClick = { onPrimaryPayinMethodClicked(primaryPayinMethod.id) },
-      )
-      Spacer(Modifier.height(8.dp))
+      val primaryPayinMethod = uiState.primaryPayinMethod
+      if (primaryPayinMethod != null) {
+        PrimaryPayinMethodSection(
+          method = primaryPayinMethod,
+          onClick = { onPrimaryPayinMethodClicked(primaryPayinMethod.id) },
+        )
+        Spacer(Modifier.height(8.dp))
+      }
+      if (uiState.connectedPaymentInfo is ConnectedPaymentInfo.Pending) {
+          HedvigNotificationCard(
+            message = stringResource(Res.string.PAYMENT_METHOD_PENDING),
+            priority = InfoInline,
+            withIcon = true,
+            modifier = Modifier
+              .padding(horizontal = 16.dp)
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          )
+      }
     }
 
     PaymentsListItems(
