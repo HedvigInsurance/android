@@ -1,0 +1,46 @@
+# Submits the resolved dependency tree to the repo's GitHub dependency graph so
+# the SBOM export, Dependabot alerts and Hedvig's open-source register
+# (prod-env/compliance/oss-register) see the real tree. GitHub cannot parse
+# Gradle builds itself, so without this the graph holds only GitHub Actions.
+#
+# Only runtime classpaths are submitted. The app is distributed software, so the
+# register's question is what ships in the APK; test, lint and annotation
+# processor configurations do not, and they would triple the graph with noise.
+name: Dependency submission
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dependency-submission
+  cancel-in-progress: true
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest-8-vcpu
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - name: Copy CI gradle.properties
+        run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
+      - uses: actions/setup-java@v6.0.1
+        with:
+          java-version: '21'
+          distribution: 'zulu'
+      - name: Prebuild
+        run: ./scripts/ci-prebuild.sh
+        env:
+          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+      - uses: gradle/actions/dependency-submission@v6
+        with:
+          cache-read-only: true
+          dependency-graph-include-configurations: '^((.*[rR]elease)?[rR]untimeClasspath)$'
+          additional-arguments: --no-configuration-cache
