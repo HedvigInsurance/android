@@ -286,9 +286,9 @@ private fun PaymentsContent(
     }
     if ((uiState as? Content)?.showRetryChargeNotice == true) {
       HedvigNotificationCard(
-        priority = NotificationDefaults.NotificationPriority.InfoInline,
+        priority = NotificationPriority.InfoInline,
         message = stringResource(Res.string.PAYMENTS_RETRY_INFO),
-        withIcon = false,
+        withIcon = true,
         modifier = Modifier
           .padding(horizontal = 16.dp)
           .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
