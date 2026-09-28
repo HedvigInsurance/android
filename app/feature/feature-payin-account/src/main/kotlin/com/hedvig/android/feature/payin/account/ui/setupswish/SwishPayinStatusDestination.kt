@@ -163,13 +163,15 @@ private fun SwishPayinStatusScreen(
       }
 
       is PendingApproval -> {
+        SwishApprovalQrCode(
+          redirectUrl = uiState.redirectUrl,
+          modifier = Modifier.align(Alignment.CenterHorizontally),
+        )
         if (isSwishInstalled) {
-          SwishPendingIllustration()
-        } else {
-          SwishApprovalQrCode(
-            redirectUrl = uiState.redirectUrl,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-          )
+          Spacer(Modifier.height(18.dp))
+          Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+            ThreeDotsLoading()
+          }
         }
       }
     }
