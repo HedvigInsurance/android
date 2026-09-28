@@ -87,9 +87,9 @@ internal class HedvigAppState(
     ),
   )
 
-  val paymentsBadge: StateFlow<PaymentsNotificationBadge?> = flow {
-    emitAll(paymentsNotificationBadgeService.badge())
-  }.stateIn(
+  val paymentsBadge: StateFlow<PaymentsNotificationBadge?> = paymentsNotificationBadgeService
+    .badge()
+    .stateIn(
     coroutineScope,
     SharingStarted.WhileSubscribed(5_000),
     null,
