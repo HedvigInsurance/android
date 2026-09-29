@@ -35,7 +35,6 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.paying.member.PayinAccount.Invoice
 import com.hedvig.android.data.paying.member.PayinAccount.SwishPayin
 import com.hedvig.android.data.paying.member.PayinAccount.Trustly
-import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.data.paying.member.maskedAccountNumber
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle
@@ -449,10 +448,6 @@ private fun ManualChargeScreenSuccessPreview(
                 isPending = false,
                 isDefault = true,
               ),
-            ),
-            availablePayinMethods = listOf(
-              PaymentProvider.Swish,
-              PaymentProvider.Trustly,
             ),
             primaryPayinMethod = Trustly(
               clearingNumber = "8327",

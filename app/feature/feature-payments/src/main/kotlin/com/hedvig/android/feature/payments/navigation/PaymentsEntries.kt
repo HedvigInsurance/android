@@ -33,7 +33,6 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
   navigateToPayinAccount: () -> Unit,
   navigateToPayinMethodDetails: (PayinMethodId) -> Unit,
   navigateToPayoutAccount: () -> Unit,
-  navigateToSelectPayinMethod: (availableProviders: List<String>, currentProviders: List<String>) -> Unit,
   navigateToSelectPrimaryPayinMethod: (currentMethods: List<PayinAccount>) -> Unit,
   openConversation: () -> Unit,
 ) {

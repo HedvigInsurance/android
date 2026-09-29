@@ -13,7 +13,6 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.paying.member.PayinAccount
-import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.data.paying.member.sortedForDisplay
 import com.hedvig.android.data.paying.member.toPayinAccount
 import com.hedvig.android.logger.logcat
@@ -86,9 +85,6 @@ internal class GetManualChargeInfoUseCaseImpl(
         missedDueDate = latestFailedPastCharge.date,
         amountDue = UiMoney.fromMoneyFragment(latestFailedPastCharge.net),
         currentMethods = currentMethods,
-        availablePayinMethods = currentMember.paymentMethods.availableMethods
-          .filter { it.supportsPayin }
-          .mapNotNull { PaymentProvider.fromRawValue(it.provider.rawValue) },
         primaryPayinMethod = currentMethods.firstOrNull { it.isDefault },
         showCancellationWarning = showCancellationWarning,
       ),
@@ -101,7 +97,6 @@ internal data class ManualChargeInfo(
   val missedDueDate: LocalDate,
   val amountDue: UiMoney,
   val currentMethods: List<PayinAccount>,
-  val availablePayinMethods: List<PaymentProvider>,
   /** The method the member is charged on, absent when none is connected or it is one we cannot show. */
   val primaryPayinMethod: PayinAccount?,
   val showCancellationWarning: Boolean,

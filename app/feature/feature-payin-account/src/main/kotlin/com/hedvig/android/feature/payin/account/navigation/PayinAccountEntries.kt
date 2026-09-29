@@ -50,8 +50,8 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
         val content = viewModel.uiState.value as? PayinAccountOverviewUiState.Content
         backstack.add(
           SelectPayinMethodKey(
-            availableProviders = content?.availablePayinMethods?.map { it.rawValue } ?: emptyList(),
-            currentProviders = content?.currentMethods?.map { it.provider.rawValue } ?: emptyList(),
+            availableProviders = content?.availablePayinMethods ?: emptyList(),
+            currentProviders = content?.currentMethods?.map { it.provider } ?: emptyList(),
           ),
         )
       },

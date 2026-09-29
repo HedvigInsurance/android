@@ -22,7 +22,7 @@ val HedvigIcons.Bank: ImageVector
       defaultWidth = 40.dp,
       defaultHeight = 40.dp,
       viewportWidth = 40f,
-      viewportHeight = 40f
+      viewportHeight = 40f,
     ).apply {
       path(fill = SolidColor(Color(0xFFFAFAFA))) {
         moveTo(0f, 8f)
@@ -116,5 +116,3 @@ val HedvigIcons.Bank: ImageVector
 
 @Suppress("ObjectPropertyName")
 private var _23BankIconTile4040: ImageVector? = null
-
-

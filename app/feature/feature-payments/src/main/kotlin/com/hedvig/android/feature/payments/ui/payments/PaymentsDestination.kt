@@ -333,7 +333,6 @@ private fun PaymentsContent(
       )
 
       when (uiState.connectedPaymentInfo) {
-
         ConnectedPaymentInfo.NeedsPayoutSetup -> {
           HedvigNotificationCard(
             message = stringResource(Res.string.PAYOUT_MISSING_INFO),
@@ -354,7 +353,7 @@ private fun PaymentsContent(
         is ConnectedPaymentInfo.NeedsPayinSetup,
         ConnectedPaymentInfo.Unknown,
         is ConnectedPaymentInfo.Active,
-        ConnectedPaymentInfo.Pending
+        ConnectedPaymentInfo.Pending,
         -> {
         }
       }
@@ -367,14 +366,14 @@ private fun PaymentsContent(
         Spacer(Modifier.height(8.dp))
       }
       if (uiState.anyPayinMethodIsPending) {
-          HedvigNotificationCard(
-            message = stringResource(Res.string.PAYMENT_METHOD_PENDING),
-            priority = InfoInline,
-            withIcon = true,
-            modifier = Modifier
-              .padding(horizontal = 16.dp)
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-          )
+        HedvigNotificationCard(
+          message = stringResource(Res.string.PAYMENT_METHOD_PENDING),
+          priority = InfoInline,
+          withIcon = true,
+          modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+        )
       }
     }
 

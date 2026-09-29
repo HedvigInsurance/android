@@ -4,6 +4,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.hedvig.android.data.paying.member.InvoiceDelivery
 import com.hedvig.android.data.paying.member.PayinAccount
+import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.navigation.common.HedvigNavKey
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.json.Json
@@ -18,6 +19,7 @@ internal class SelectPrimaryPayinMethodKeySerializationTest {
       polymorphic(HedvigNavKey::class) {
         subclass(SelectPrimaryPayinMethodKey::class)
         subclass(PayinMethodDetailsKey::class)
+        subclass(SelectPayinMethodKey::class)
       }
     }
   }
@@ -47,5 +49,17 @@ internal class SelectPrimaryPayinMethodKeySerializationTest {
 
       assertThat(json.decodeFromString(PolymorphicSerializer(HedvigNavKey::class), encoded)).isEqualTo(key)
     }
+  }
+
+  @Test
+  fun `select payin method key survives a serialization round trip for every provider`() {
+    val key = SelectPayinMethodKey(
+      availableProviders = PaymentProvider.entries,
+      currentProviders = listOf(PaymentProvider.Trustly),
+    )
+
+    val encoded = json.encodeToString(PolymorphicSerializer(HedvigNavKey::class), key)
+
+    assertThat(json.decodeFromString(PolymorphicSerializer(HedvigNavKey::class), encoded)).isEqualTo(key)
   }
 }
