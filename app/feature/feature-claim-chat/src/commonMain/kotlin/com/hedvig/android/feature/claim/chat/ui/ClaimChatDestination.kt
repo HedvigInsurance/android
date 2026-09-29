@@ -255,7 +255,7 @@ internal fun ClaimChatScreenContent(
 }
 
 @Composable
-private fun ClaimChatScreen(
+internal fun ClaimChatScreen(
   uiState: ClaimChatUiState.ClaimChat,
   onEvent: (ClaimChatEvent) -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
