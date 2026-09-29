@@ -7,6 +7,7 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -125,6 +126,8 @@ import com.hedvig.android.feature.claim.chat.ui.step.UploadFilesStep
 import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.AudioRecordingStep
 import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.FreeTextDraftState
 import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.FullScreenTextAnswer
+import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.InputMode
+import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.answerInputMode
 import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.isShortWindow
 import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.rememberFreeTextDraftState
 import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.touchesOnlyWhenSettled
@@ -562,7 +565,6 @@ private fun ClaimChatScreenContent(
           imageLoader = imageLoader,
           openAppSettings = openAppSettings,
           closeFlow = navigateBack,
-          floating = true,
           canTakeFocus = isSettled,
         )
       }
@@ -802,10 +804,16 @@ private fun FloatingAnswerCard(
       WindowInsets.safeDrawing.getBottom(this) + 16.dp.toPx()
     }
     val isSettled = isCurrent && isShown && hiddenFraction == 0f
+    // Only the answer cards lift off the conversation; the row of ways to answer is not a card. A card fills the
+    // content exactly, so a shadow in the cards' shape falls where the card is.
+    val showsAnswerCard = (cardStep.stepContent as? StepContent.AudioRecording)
+      ?.let { answerInputMode(it.recordingState, it.isRecorderOpen) != InputMode.Resting } == true
+    val elevation by animateDpAsState(if (showsAnswerCard) FLOATING_CARD_ELEVATION else 0.dp)
     Box(
       Modifier
         .onSizeChanged { if (isCurrent) onHeightChanged(it.height) }
         .graphicsLayer { translationY = hiddenFraction * (size.height + distanceBelowCard) }
+        .shadow(elevation, HedvigTheme.shapes.cornerXLarge, clip = false)
         .touchesOnlyWhenSettled(isSettled)
         .then(if (isCurrent && isShown) Modifier else Modifier.clearAndSetSemantics {}),
     ) {
@@ -815,6 +823,8 @@ private fun FloatingAnswerCard(
 }
 
 private const val FLOATING_CARD_SLIDE_MILLIS = 300
+
+private val FLOATING_CARD_ELEVATION = 8.dp
 
 // Far enough that a nudge or an overscroll settle does not stand the re-pin down, short enough that a
 // deliberate look back does.
@@ -1082,7 +1092,6 @@ private fun StepBottomContent(
   closeFlow: () -> Unit,
   modifier: Modifier = Modifier,
   floatingAnswerSlot: FloatingAnswerSlot? = null,
-  floating: Boolean = false,
   canTakeFocus: Boolean = true,
 ) {
   Column(modifier) {
@@ -1131,7 +1140,6 @@ private fun StepBottomContent(
           onEvent = onEvent,
           continueButtonLoading = currentContinueButtonLoading,
           skipButtonLoading = currentSkipButtonLoading,
-          floating = floating,
           canTakeFocus = canTakeFocus,
         )
       }

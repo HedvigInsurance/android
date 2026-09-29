@@ -44,7 +44,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
@@ -190,7 +189,6 @@ internal fun AudioRecordingStep(
   startRecording: () -> Unit,
   onEvent: (ClaimChatEvent) -> Unit,
   modifier: Modifier = Modifier,
-  floating: Boolean = false,
   canTakeFocus: Boolean = true,
 ) {
   Column(modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -220,7 +218,6 @@ internal fun AudioRecordingStep(
       isCurrentStep = isCurrentStep,
       continueButtonLoading = continueButtonLoading,
       skipButtonLoading = skipButtonLoading,
-      floating = floating,
       canTakeFocus = canTakeFocus,
     )
     EditButton(
@@ -283,22 +280,13 @@ internal fun AudioRecorderBubble(
   continueButtonLoading: Boolean,
   skipButtonLoading: Boolean,
   modifier: Modifier = Modifier,
-  floating: Boolean = false,
   canTakeFocus: Boolean = true,
 ) {
   val isSubmitting = continueButtonLoading || skipButtonLoading
-  // Drawn over the conversation rather than in line with it, so the card lifts off whatever scrolls behind.
-  val cardModifier = if (floating) {
-    Modifier.shadow(FLOATING_CARD_ELEVATION, HedvigTheme.shapes.cornerXLarge)
-  } else {
-    Modifier
-  }
   val focusManager = LocalFocusManager.current
   // A landscape keyboard leaves roughly 34dp of screen, too little for the inline card, so short windows
   // answer in the full screen editor instead, which the screen draws over this one.
   val isShortWindow = isShortWindow()
-  val hasRecording = recordingState is AudioRecordingStepState.AudioRecording &&
-    recordingState !is AudioRecordingStepState.AudioRecording.NotRecording
 
   Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
     if (!isCurrentStep) {
@@ -336,20 +324,7 @@ internal fun AudioRecorderBubble(
       }
     } else {
       AnimatedContent(
-        targetState = when {
-          recordingState is AudioRecordingStepState.FreeTextDescription -> {
-            InputMode.Text
-          }
-
-          // Open either because the member asked for the card or because a recording is already in flight.
-          isRecorderOpen || hasRecording -> {
-            InputMode.Voice
-          }
-
-          else -> {
-            InputMode.Resting
-          }
-        },
+        targetState = answerInputMode(recordingState, isRecorderOpen),
         modifier = Modifier.fillMaxWidth(),
       ) { mode ->
         // Both children are composed while the crossfade runs, and the entering one is laid out at the top
@@ -384,7 +359,6 @@ internal fun AudioRecorderBubble(
                     submitFreeText()
                   },
                   canTakeFocus = canTakeFocus,
-                  modifier = cardModifier,
                 )
               }
             }
@@ -402,7 +376,6 @@ internal fun AudioRecorderBubble(
                 openAppSettings = openAppSettings,
                 isSubmitting = isSubmitting,
                 onClose = discardRecording,
-                modifier = cardModifier,
               )
             }
 
@@ -462,7 +435,23 @@ internal fun AudioRecorderBubble(
   }
 }
 
-private enum class InputMode { Resting, Text, Voice }
+/** Whether the step shows the row of ways to answer, or one of the two answer cards. */
+internal enum class InputMode { Resting, Text, Voice }
+
+internal fun answerInputMode(recordingState: AudioRecordingStepState, isRecorderOpen: Boolean): InputMode = when {
+  recordingState is AudioRecordingStepState.FreeTextDescription -> {
+    InputMode.Text
+  }
+
+  // Open either because the member asked for the card or because a recording is already in flight.
+  isRecorderOpen || recordingState !is AudioRecordingStepState.AudioRecording.NotRecording -> {
+    InputMode.Voice
+  }
+
+  else -> {
+    InputMode.Resting
+  }
+}
 
 /**
  * Swallows touches while [settled] is false.
@@ -1672,8 +1661,6 @@ fun RestingAudioPlayer(modifier: Modifier = Modifier) {
 
 // Width the close button drawn over the card's corner needs kept clear of it.
 private val CLOSE_BUTTON_CLEARANCE = 32.dp
-
-private val FLOATING_CARD_ELEVATION = 8.dp
 
 // Below this the band cannot hold enough bars to read as a waveform, so it is dropped instead.
 private val MINIMUM_WAVE_BAND_WIDTH = 160.dp
