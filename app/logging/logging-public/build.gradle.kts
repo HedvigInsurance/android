@@ -11,7 +11,6 @@ kotlin {
       implementation(projects.apolloOperationError)
     }
     androidMain.dependencies {
-      implementation(libs.slimber)
       implementation(libs.timber)
     }
   }
