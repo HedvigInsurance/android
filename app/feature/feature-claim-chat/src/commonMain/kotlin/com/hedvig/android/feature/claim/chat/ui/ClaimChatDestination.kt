@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -63,6 +62,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -634,7 +634,7 @@ private fun ClaimChatScrollableContent(
             lastItemHeightAdjustingState.onItemHeightChanged(item.id, size)
           },
           modifier = if (isCurrentStep) {
-            Modifier.requiredHeightIn(lastItemHeightAdjustingState.preferredMinHeightForFullScreenItem)
+            Modifier.minHeightReadAtLayout { lastItemHeightAdjustingState.preferredMinHeightForFullScreenItem }
           } else {
             Modifier
           },
@@ -646,6 +646,21 @@ private fun ClaimChatScrollableContent(
 }
 
 private val SPACE_BETWEEN_STEPS = 8.dp
+
+/**
+ * A minimum height read during layout rather than composition.
+ *
+ * The minimum changes on every frame the keyboard moves. Read in composition, it invalidates the item on its own,
+ * and the item can then recompose with the step list it was last given in the same frame that the list hands a
+ * new step to the item below it. The step that was just answered then keeps drawing itself as the current step for
+ * a frame, and the new step's minimum is measured against that.
+ */
+private fun Modifier.minHeightReadAtLayout(minHeight: () -> Dp): Modifier = layout { measurable, constraints ->
+  val placeable = measurable.measure(
+    constraints.copy(minHeight = minHeight().roundToPx().coerceAtMost(constraints.maxHeight)),
+  )
+  layout(placeable.width, placeable.height) { placeable.place(0, 0) }
+}
 
 private const val AI_DISCLAIMER_ITEM_KEY = "claim_chat_ai_disclaimer"
 
