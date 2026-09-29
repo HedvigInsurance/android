@@ -6,7 +6,7 @@ import arrow.core.raise.context.either
 import arrow.core.raise.context.raise
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
-import com.hedvig.android.apollo.safeExecuteAllowingPartialResponses
+import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.data.paying.member.PaymentProvider
@@ -31,27 +31,19 @@ internal class SetAsDefaultUseCaseImpl(
 ) : SetAsDefaultUseCase {
   override suspend fun invoke(provider: PaymentProvider): Either<ErrorMessage, PayinAccountData> {
     return either {
-      apolloClient
+      val result = apolloClient
         .mutation(SetAsDefaultPayinMutation(MemberPaymentProvider.safeValueOf(provider.rawValue)))
-        .safeExecuteAllowingPartialResponses()
-        .fold(
-          fa = { error ->
-            logcat(LogPriority.ERROR) { "SetAsDefaultPayinMutation error: $error" }
-            raise(ErrorMessage())
-          },
-          fb = { result ->
-            val userError = result.paymentMethodSetDefaultPayin?.message
-            if (userError != null) {
-              logcat(LogPriority.WARN) { "SetAsDefaultPayinMutation user error: $userError" }
-              raise(ErrorMessage(userError))
-            }
-            getPayinAccountUseCase.invoke().bind()
-          },
-          fab = { errors, _ ->
-            logcat(LogPriority.ERROR) { "SetAsDefaultPayinMutation data with errors: $errors" }
-            raise(ErrorMessage())
-          },
-        )
+        .safeExecute()
+        .mapLeft { error ->
+          logcat(LogPriority.ERROR, error) { "SetAsDefaultPayinMutation error: $error" }
+          ErrorMessage()
+        }.bind()
+      val userError = result.paymentMethodSetDefaultPayin?.message
+      if (userError != null) {
+        logcat(LogPriority.WARN) { "SetAsDefaultPayinMutation user error: $userError" }
+        raise(ErrorMessage(userError))
+      }
+      getPayinAccountUseCase.invoke().bind()
     }
   }
 }
