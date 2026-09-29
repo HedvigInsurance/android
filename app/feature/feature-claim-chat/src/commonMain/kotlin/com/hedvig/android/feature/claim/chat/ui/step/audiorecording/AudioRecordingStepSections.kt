@@ -191,6 +191,7 @@ internal fun AudioRecordingStep(
   onEvent: (ClaimChatEvent) -> Unit,
   modifier: Modifier = Modifier,
   floating: Boolean = false,
+  canTakeFocus: Boolean = true,
 ) {
   Column(modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
     AudioRecorderBubble(
@@ -220,6 +221,7 @@ internal fun AudioRecordingStep(
       continueButtonLoading = continueButtonLoading,
       skipButtonLoading = skipButtonLoading,
       floating = floating,
+      canTakeFocus = canTakeFocus,
     )
     EditButton(
       canBeChanged = item.isRegrettable && !isCurrentStep,
@@ -282,6 +284,7 @@ internal fun AudioRecorderBubble(
   skipButtonLoading: Boolean,
   modifier: Modifier = Modifier,
   floating: Boolean = false,
+  canTakeFocus: Boolean = true,
 ) {
   val isSubmitting = continueButtonLoading || skipButtonLoading
   // Drawn over the conversation rather than in line with it, so the card lifts off whatever scrolls behind.
@@ -380,6 +383,7 @@ internal fun AudioRecorderBubble(
                     onSaveFreeText(text)
                     submitFreeText()
                   },
+                  canTakeFocus = canTakeFocus,
                   modifier = cardModifier,
                 )
               }
@@ -591,6 +595,7 @@ private fun TextAnswerContent(
   modifier: Modifier = Modifier,
   fillHeight: Boolean = false,
   showLabel: Boolean = true,
+  canTakeFocus: Boolean = true,
 ) {
   val text = draft.value.text
   // The draft holds the answer, so the step's `canSubmit` only catches up on save. The length rule has to be
@@ -598,8 +603,14 @@ private fun TextAnswerContent(
   val canSend = text.trim().length >= minLength
   val showsMinLengthHint = (hasError && errorType is FreeTextErrorType.TooShort) || (text.isNotBlank() && !canSend)
   val focusRequester = remember { FocusRequester() }
-  LaunchedEffect(Unit) {
-    runCatching { focusRequester.requestFocus() }
+  // Asked for once, as soon as the host can show the field. A card still sliding in cannot, and focusing the field
+  // then would open the keyboard under a card that is not on screen yet.
+  var hasRequestedFocus by remember { mutableStateOf(false) }
+  LaunchedEffect(canTakeFocus) {
+    if (canTakeFocus && !hasRequestedFocus) {
+      hasRequestedFocus = true
+      runCatching { focusRequester.requestFocus() }
+    }
   }
   val label = @Composable { labelModifier: Modifier ->
     HedvigText(
@@ -759,6 +770,7 @@ private fun InlineTextAnswerCard(
   isSubmitting: Boolean,
   onCancel: () -> Unit,
   onSave: (String) -> Unit,
+  canTakeFocus: Boolean,
   modifier: Modifier = Modifier,
 ) {
   Surface(
@@ -775,6 +787,7 @@ private fun InlineTextAnswerCard(
       isSubmitting = isSubmitting,
       onCancel = onCancel,
       onSave = onSave,
+      canTakeFocus = canTakeFocus,
     )
   }
 }

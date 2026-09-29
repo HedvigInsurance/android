@@ -547,7 +547,7 @@ private fun ClaimChatScreenContent(
           .align(Alignment.BottomCenter)
           .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal))
           .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-      ) { step ->
+      ) { step, isSettled ->
         StepBottomContent(
           stepItem = step,
           freeTextDraft = freeTextDraft,
@@ -563,6 +563,7 @@ private fun ClaimChatScreenContent(
           openAppSettings = openAppSettings,
           closeFlow = navigateBack,
           floating = true,
+          canTakeFocus = isSettled,
         )
       }
     }
@@ -768,6 +769,7 @@ private class FloatingAnswerSlot(private val cardHeight: IntState, val onReveale
  * Composed as soon as [step] arrives, hidden below the screen, so that its height is already known when the step
  * reveals and the slot lands at its final height in one pass. [shown] slides it up into place and back out.
  * An answered step leaves by sliding out as it is, while its answer takes its place in the conversation.
+ * [content] is told once the card has settled in place, which is when it can take focus and touches.
  */
 @Composable
 private fun FloatingAnswerCard(
@@ -775,7 +777,7 @@ private fun FloatingAnswerCard(
   shown: Boolean,
   onHeightChanged: (Int) -> Unit,
   modifier: Modifier = Modifier,
-  content: @Composable (ClaimIntentStep) -> Unit,
+  content: @Composable (step: ClaimIntentStep, isSettled: Boolean) -> Unit,
 ) {
   AnimatedContent(
     targetState = step,
@@ -799,14 +801,15 @@ private fun FloatingAnswerCard(
     val distanceBelowCard = with(LocalDensity.current) {
       WindowInsets.safeDrawing.getBottom(this) + 16.dp.toPx()
     }
+    val isSettled = isCurrent && isShown && hiddenFraction == 0f
     Box(
       Modifier
         .onSizeChanged { if (isCurrent) onHeightChanged(it.height) }
         .graphicsLayer { translationY = hiddenFraction * (size.height + distanceBelowCard) }
-        .touchesOnlyWhenSettled(isCurrent && isShown && hiddenFraction == 0f)
+        .touchesOnlyWhenSettled(isSettled)
         .then(if (isCurrent && isShown) Modifier else Modifier.clearAndSetSemantics {}),
     ) {
-      content(cardStep)
+      content(cardStep, isSettled)
     }
   }
 }
@@ -1080,6 +1083,7 @@ private fun StepBottomContent(
   modifier: Modifier = Modifier,
   floatingAnswerSlot: FloatingAnswerSlot? = null,
   floating: Boolean = false,
+  canTakeFocus: Boolean = true,
 ) {
   Column(modifier) {
     when (stepItem.stepContent) {
@@ -1128,6 +1132,7 @@ private fun StepBottomContent(
           continueButtonLoading = currentContinueButtonLoading,
           skipButtonLoading = currentSkipButtonLoading,
           floating = floating,
+          canTakeFocus = canTakeFocus,
         )
       }
 
