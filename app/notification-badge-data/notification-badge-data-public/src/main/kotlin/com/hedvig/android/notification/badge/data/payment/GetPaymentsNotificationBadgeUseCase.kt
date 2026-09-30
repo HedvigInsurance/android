@@ -67,7 +67,7 @@ internal class GetPaymentsNotificationBadgeUseCaseImpl(
 
 private fun MissedPaymentQuery.Data.CurrentMember.toPaymentsNotificationBadge(): PaymentsNotificationBadge? {
   return when {
-    showPreChargeNotice || showRetryChargeNotice -> PaymentsNotificationBadge.ChargeNotice
+    showPreChargeNotice != null || showRetryChargeNotice != null -> PaymentsNotificationBadge.ChargeNotice
     missedChargeIdToChargeManually != null -> PaymentsNotificationBadge.MissedPayment
     else -> null
   }

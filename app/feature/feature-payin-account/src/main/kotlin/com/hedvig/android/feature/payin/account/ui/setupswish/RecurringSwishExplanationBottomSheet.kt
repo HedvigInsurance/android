@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
@@ -16,6 +17,7 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import hedvig.resources.HOME_ADDONS_READ_MORE_BUTTON
@@ -48,6 +50,7 @@ private fun RecurringSwishExplanationContent(onLearnMore: (() -> Unit)? = null, 
   HedvigText(
     text = stringResource(Res.string.PAYMENT_SWISH_EXPLANATION_BUTTON),
     textAlign = TextAlign.Center,
+    style = LocalTextStyle.current.copy(lineBreak = LineBreak.Heading),
     modifier = Modifier
       .fillMaxWidth()
       .padding(bottom = 24.dp),
