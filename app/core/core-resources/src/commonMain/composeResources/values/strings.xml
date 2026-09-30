@@ -727,6 +727,7 @@
   <string name="PAYMENTS_REFERRALS_INFO_DESCRIPTION">Invite your friends and get a 10 SEK discount per month for each friend who signs an insurance with Hedvig.</string>
   <string name="PAYMENTS_REFERRALS_INFO_TITLE">Hedvig Forever</string>
   <string name="PAYMENTS_REFERRAL_DISCOUNT">Referral discount</string>
+  <string name="PAYMENTS_RETRY_INFO">We couldn't collect your payment and will try again automatically. Make sure there's enough in your account before the next attempt.</string>
   <string name="PAYMENTS_SUBTITLE_PAYMENT_METHOD">Payment method</string>
   <string name="PAYMENTS_SUBTOTAL">Subtotal</string>
   <string name="PAYMENTS_SWISH_NUMBER">Phone number</string>
@@ -742,6 +743,7 @@
   <string name="PAYMENT_HISTORY_TITLE">Payment history</string>
   <string name="PAYMENT_METHODS_EMPTY">No payment method added. Add one to pay for your insurance.</string>
   <string name="PAYMENT_METHODS_TITLE">Payment methods</string>
+  <string name="PAYMENT_METHOD_PENDING">It can take a few days for your new payment method to take effect.</string>
   <string name="PAYMENT_METHOD_TITLE">Payment method</string>
   <string name="PAYMENT_OPEN_SWISH_BUTTON">Open Swish</string>
   <string name="PAYMENT_OPTION_CONNECTED_LABEL">Connected</string>
@@ -806,7 +808,7 @@
   <string name="PROFILE_NOTIFICATIONS_STATUS_ON">Turned on</string>
   <string name="PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT">Change bank account</string>
   <string name="PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON">Connect direct debit</string>
-  <string name="PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE">Connect payment</string>
+  <string name="PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE">Connect payment method</string>
   <string name="PROFILE_ROW_TRAVEL_CERTIFICATE">Travel certificates</string>
   <string name="PROFILE_TITLE">Your profile</string>
   <string name="PUPPY_GUIDE_GO_BUTTON">Go to guides</string>
@@ -1335,7 +1337,7 @@
   <string name="home_tab_welcome_title_without_name">Hi, how can we help you?</string>
   <string name="important_message_hide">Hide</string>
   <string name="important_message_read_more">Read more</string>
-  <string name="info_card_missing_payment_body">For your insurance to stay active, you need to connect a payment method</string>
+  <string name="info_card_missing_payment_body">For your insurance to stay active, you need to connect a payment method.</string>
   <string name="info_card_missing_payment_missing_payments_body">Your insurance will be terminated due to multiple failed payment attempts. Send a message through the app before %1$s to avoid termination.</string>
   <string name="insurance_card_title_rental_insurance">Rental insurance</string>
   <string name="insurance_details_address_update_body">Your insurance will be updated on %1$s to your new home at %2$s.</string>
