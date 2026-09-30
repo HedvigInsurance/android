@@ -37,7 +37,7 @@ internal class EditBankAccountViewModel(
       bankName = null,
       isLoading = false,
       errorMessage = null,
-      showSuccessSnackBar = false,
+      isConnected = false,
     ),
     EditBankAccountPresenter(setupNordeaPayoutUseCase, backstack),
   )
@@ -45,7 +45,7 @@ internal class EditBankAccountViewModel(
 internal sealed interface EditBankAccountEvent {
   data object Save : EditBankAccountEvent
 
-  data object ShowedSnackBar : EditBankAccountEvent
+  data object FinishSetup : EditBankAccountEvent
 }
 
 internal data class EditBankAccountUiState(
@@ -53,7 +53,7 @@ internal data class EditBankAccountUiState(
   val bankName: String?,
   val isLoading: Boolean,
   val errorMessage: String?,
-  val showSuccessSnackBar: Boolean,
+  val isConnected: Boolean,
 ) {
   val canSave: Boolean
     get() = !isLoading && accountNumberState.text.length in 10..17
@@ -74,7 +74,7 @@ internal class EditBankAccountPresenter(
     val bankName = bankNameForClearingNumber(accountNumberState.text.toString().take(4))
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    var showSuccessSnackBar by remember { mutableStateOf(false) }
+    var isConnected by remember { mutableStateOf(false) }
     var saveIteration by remember { mutableStateOf<String?>(null) }
 
     val currentSave = saveIteration
@@ -90,7 +90,7 @@ internal class EditBankAccountPresenter(
           },
           ifRight = {
             isLoading = false
-            showSuccessSnackBar = true
+            isConnected = true
             saveIteration = null
           },
         )
@@ -111,7 +111,7 @@ internal class EditBankAccountPresenter(
           }
         }
 
-        EditBankAccountEvent.ShowedSnackBar -> {
+        EditBankAccountEvent.FinishSetup -> {
           backstack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
         }
       }
@@ -122,7 +122,7 @@ internal class EditBankAccountPresenter(
       bankName = bankName,
       isLoading = isLoading,
       errorMessage = errorMessage,
-      showSuccessSnackBar = showSuccessSnackBar,
+      isConnected = isConnected,
     )
   }
 }
