@@ -33,11 +33,13 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.InfoInline
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.ChevronRight
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -47,6 +49,7 @@ import hedvig.resources.PAYMENT_ADD_METHOD_BUTTON
 import hedvig.resources.PAYMENT_CHOOSE_PRIMARY_BUTTON
 import hedvig.resources.PAYMENT_METHODS_EMPTY
 import hedvig.resources.PAYMENT_METHODS_TITLE
+import hedvig.resources.PAYMENT_METHOD_PENDING
 import hedvig.resources.Res
 import org.jetbrains.compose.resources.stringResource
 
@@ -157,6 +160,14 @@ private fun PayinAccountContent(
         Modifier.padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
       ) {
+        val anyMethodIsPending = currentMethods.any { it.isPending }
+        if (anyMethodIsPending) {
+          HedvigNotificationCard(
+            message = stringResource(Res.string.PAYMENT_METHOD_PENDING),
+            priority = InfoInline,
+            withIcon = true,
+          )
+        }
         for (method in currentMethods) {
           CurrentPayinMethodRow(method = method, onClick = { onPayinMethodClicked(method) })
         }

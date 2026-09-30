@@ -4,6 +4,7 @@ on:
     branches:
       - develop
       - feat/xsell-addon-rec
+      - payin-split/9-fixes-n-smal-changes
   workflow_dispatch:
 
 concurrency:
