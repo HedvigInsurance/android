@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
@@ -77,7 +78,7 @@ fun NavigationBar(
   onNavigateToDestination: (TopLevelTab) -> Unit,
   getIsCurrentlySelected: (TopLevelTab) -> Boolean,
   modifier: Modifier = Modifier,
-  getShowNotificationBadge: (TopLevelTab) -> Boolean = { false },
+  getNotificationBadgeColor: (TopLevelTab) -> Color? = { null },
 ) {
   val borderColor = NavigationTokens.BorderColor.value
   NavigationContainer(modifier) {
@@ -111,7 +112,7 @@ fun NavigationBar(
             top = NavigationBarTokens.ItemTopPadding,
             bottom = NavigationBarTokens.ItemBottomPadding,
           ),
-          showNotificationBadge = getShowNotificationBadge(destination),
+          notificationBadgeColor = getNotificationBadgeColor(destination),
           modifier = Modifier.weight(1f)
             .semantics {
               role = Role.Tab
@@ -130,7 +131,7 @@ fun NavigationRail(
   getIsCurrentlySelected: (TopLevelTab) -> Boolean,
   isExtraTall: Boolean,
   modifier: Modifier = Modifier,
-  getShowNotificationBadge: (TopLevelTab) -> Boolean = { false },
+  getNotificationBadgeColor: (TopLevelTab) -> Color? = { null },
 ) {
   val borderColor = NavigationTokens.BorderColor.value
   NavigationContainer(modifier.fillMaxHeight()) {
@@ -180,7 +181,7 @@ fun NavigationRail(
             top = NavigationRailTokens.ItemTopPadding,
             bottom = NavigationRailTokens.ItemBottomPadding,
           ),
-          showNotificationBadge = getShowNotificationBadge(destination),
+          notificationBadgeColor = getNotificationBadgeColor(destination),
           modifier = Modifier.semantics {
             role = Role.Tab
             this.selected = selected
@@ -218,7 +219,7 @@ private fun NavigationItem(
   onClick: () -> Unit,
   itemPaddings: PaddingValues,
   modifier: Modifier = Modifier,
-  showNotificationBadge: Boolean = false,
+  notificationBadgeColor: Color? = null,
 ) {
   val interactionSource = remember { MutableInteractionSource() }
   var itemWidthPx by remember { mutableIntStateOf(0) }
@@ -242,7 +243,11 @@ private fun NavigationItem(
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     Box(
-      modifier = Modifier.notificationCircle(showNotificationBadge),
+      modifier = if (notificationBadgeColor != null) {
+        Modifier.notificationCircle(color = notificationBadgeColor)
+      } else {
+        Modifier
+      },
     ) {
       Icon(
         imageVector = icon,

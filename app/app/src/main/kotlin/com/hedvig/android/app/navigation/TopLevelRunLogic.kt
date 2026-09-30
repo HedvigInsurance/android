@@ -2,6 +2,7 @@ package com.hedvig.android.app.navigation
 
 import com.hedvig.android.app.ui.startDestination
 import com.hedvig.android.feature.home.home.navigation.HomeKey
+import com.hedvig.android.feature.payin.account.navigation.PayinAccountKey
 import com.hedvig.android.navigation.common.DeepLinkAncestry
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.TopLevelTab
@@ -64,4 +65,30 @@ internal fun syntheticStackFor(key: HedvigNavKey): List<HedvigNavKey> {
     addAll(ancestry?.syntheticParents.orEmpty())
     add(key)
   }.distinct()
+}
+
+/**
+ * What the "change payment method" affordance does from inside a payin setup flow, given the [stack]
+ * it runs on. The payin overview is where methods are changed, so the flow returns to it whenever the
+ * stack holds one. A lone deep link has nothing under it — popping would finish the app — so the
+ * overview's own ancestry is built instead. Any other host offers its own way to change the method
+ * (onboarding's payin step, the payout account screen) and just gets its screen back.
+ */
+internal sealed interface ChangePayinMethodTarget {
+  /** The overview already in the stack, at [index]. */
+  data class PopTo(val index: Int) : ChangePayinMethodTarget
+
+  /** Re-root onto [stack], the overview plus the ancestry it would have been reached through. */
+  data class Reseed(val stack: List<HedvigNavKey>) : ChangePayinMethodTarget
+
+  data object PopOne : ChangePayinMethodTarget
+}
+
+internal fun changePayinMethodTarget(stack: List<HedvigNavKey>): ChangePayinMethodTarget {
+  val overviewIndex = stack.indexOfLast { it is PayinAccountKey }
+  return when {
+    overviewIndex != -1 -> ChangePayinMethodTarget.PopTo(overviewIndex)
+    stack.size == 1 -> ChangePayinMethodTarget.Reseed(syntheticStackFor(PayinAccountKey))
+    else -> ChangePayinMethodTarget.PopOne
+  }
 }
