@@ -788,8 +788,10 @@ reporting, it just stops matching, so nothing alerts. Dropping `NavigationViewTr
 Nav3 migration left `ActivityViewTrackingStrategy` naming every view after the single Activity, which
 broke all 18 view-filtered metrics for ten weeks before anyone noticed. `Navigation3TrackingEffect`
 in `HedvigApp`, wired off `Backstack.entries`, is what keeps them working. Monitor 124820537 now
-watches for a recurrence. Prefer an action (`@action.name`) over a view name for anything important:
-actions survive navigation changes.
+watches for a recurrence. A destination that an analytics query names should implement `AnalyticsNamed` and pin the exact string
+that query matches, which is what makes a rename safe; `AnalyticsNameTest` fails if a pinned name and
+its Datadog filter drift apart. Only reach for an action (`@action.name`) when you need to count an
+event rather than a screen, since a view is reported again each time the screen is resumed.
 
 **An SLO's numerator and denominator must be the same RUM event type.** A `resource` event and an
 `error` event are different populations, so subtracting one from the other is not a failure rate.
