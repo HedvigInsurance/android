@@ -13,6 +13,7 @@ import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.paying.member.GetMemberTypeUseCase
 import com.hedvig.android.data.paying.member.MemberType
+import com.hedvig.android.data.paying.member.toPayinAccount
 import com.hedvig.android.feature.payments.data.ManualChargeToPrompt
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberChargeShortInfo
@@ -20,7 +21,7 @@ import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.data.toFailedCharge
-import com.hedvig.android.logger.logcat
+import com.hedvig.android.feature.payments.data.toPrimaryPayinMethod
 import dev.zacsweers.metro.Inject
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
@@ -28,6 +29,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import octopus.UpcomingPaymentQuery
 import octopus.fragment.MemberChargeFragment
+import octopus.fragment.MemberPaymentMethodFragment
 import octopus.type.MemberChargeStatus
 import octopus.type.MemberPaymentMethodStatus
 
@@ -72,11 +74,14 @@ internal data class GetUpcomingPaymentUseCaseImpl(
         val id = it.id ?: return@mapNotNull null
         OngoingCharge(id, it.date, UiMoney.fromMoneyFragment(it.net))
       },
+      primaryPayinMethod = result.currentMember.paymentMethods.let { paymentMethods ->
+        paymentMethods.defaultPayinMethod as MemberPaymentMethodFragment?
+          ?: paymentMethods.payinMethods.find { it.isDefault }
+      }?.toPrimaryPayinMethod(),
       paymentConnection = run {
         val paymentMethods = result.currentMember.paymentMethods
         val payinMethod = paymentMethods.defaultPayinMethod
           ?: paymentMethods.payinMethods.find { it.isDefault }
-        logcat { "Mariia: payinMethod $payinMethod" }
         val payoutMethod = paymentMethods.defaultPayoutMethod
           ?: paymentMethods.payoutMethods.find { it.isDefault }
         if (payinMethod == null) {
@@ -103,14 +108,22 @@ internal data class GetUpcomingPaymentUseCaseImpl(
             }
 
             MemberType.STANDARD_TO_QASA_MEMBER -> {
-              TODO()
+              if (result.currentMember.futureCharge == null) {
+                if (payoutMethod == null) {
+                  return@run PaymentConnection.NeedsPayoutSetup
+                } else {
+                  return@run PaymentConnection.Active
+                }
+              } else {
+                return@run PaymentConnection.NeedsPayinSetup(
+                  firstKnownTerminationDateForContractTerminatedDueToMissedPayments,
+                )
+              }
             }
           }
         }
         when (payinMethod.status) {
           MemberPaymentMethodStatus.ACTIVE -> {
-            logcat { "Mariia: MemberPaymentMethodStatus.ACTIVE" }
-            logcat { "Mariia: payoutMethod $payoutMethod" }
             if (payoutMethod == null) {
               return@run PaymentConnection.NeedsPayoutSetup
             } else {
@@ -129,6 +142,10 @@ internal data class GetUpcomingPaymentUseCaseImpl(
       },
       isManualChargeAllowed = isManualChargeAllowed,
       memberType = memberType,
+      showRetryChargeNotice = result.currentMember.showRetryChargeNotice,
+      anyPayinMethodIsPending = result.currentMember.paymentMethods.payinMethods
+        .mapNotNull { it.toPayinAccount() }
+        .any { it.isPending },
     )
   }
 }
@@ -162,8 +179,11 @@ internal class GetUpcomingPaymentUseCaseDemo(
       ),
       emptyList(),
       PaymentConnection.Unknown,
+      primaryPayinMethod = null,
       isManualChargeAllowed = null,
       memberType = MemberType.STANDARD_MEMBER,
+      showRetryChargeNotice = false,
+      anyPayinMethodIsPending = false,
     ).right()
   }
 }

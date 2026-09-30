@@ -47,6 +47,7 @@ kotlin {
       implementation(projects.featureHelpCenterNavigation)
       implementation(projects.featureMovingflowNavigation)
       implementation(projects.featurePaymentsNavigation)
+      implementation(projects.featurePayinAccountNavigation)
       implementation(projects.featureTerminateInsuranceNavigation)
       implementation(projects.featureTravelCertificateNavigation)
     }
