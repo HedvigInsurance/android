@@ -22,6 +22,9 @@ dependencies {
   implementation(projects.initializable)
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
+
+  testImplementation(libs.assertK)
+  testImplementation(libs.junit)
 }
 
 android {

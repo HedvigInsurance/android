@@ -38,6 +38,7 @@ kotlin {
     getByName("mobileMain") {
       dependencies {
         implementation(libs.datadog.sdk.ktor)
+        implementation(projects.datadogCore)
       }
     }
     androidMain.dependencies {
