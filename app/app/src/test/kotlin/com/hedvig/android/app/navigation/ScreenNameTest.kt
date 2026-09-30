@@ -4,6 +4,7 @@ import assertk.assertThat
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isGreaterThan
+import com.hedvig.android.navigation.common.AnalyticsNamed
 import com.hedvig.android.navigation.common.HedvigNavKey
 import io.github.classgraph.ClassGraph
 import kotlin.reflect.KClass
@@ -66,6 +67,16 @@ internal class ScreenNameTest {
     assertThat(tooLong).isEmpty()
   }
 
+  @Test
+  fun `a pinned key reports its pinned name with the shared feature prefix removed`() {
+    assertThat(PinnedFakeKey.screenName()).isEqualTo("fake.navigation.PinnedFakeKey")
+  }
+
+  @Test
+  fun `a key without a pinned name still derives one from its class`() {
+    assertThat(DerivedFakeKey.screenName()).isEqualTo(screenNameFor(DerivedFakeKey::class))
+  }
+
   private fun keyClass(qualifiedName: String): KClass<*> = Class.forName(qualifiedName).kotlin
 
   private fun concreteNavKeysOnClasspath(): Set<KClass<*>> = ClassGraph()
@@ -86,3 +97,10 @@ internal class ScreenNameTest {
     const val ANALYTICS_PARAMETER_LIMIT = 100
   }
 }
+
+private data object PinnedFakeKey : HedvigNavKey, AnalyticsNamed {
+  const val ANALYTICS_NAME = "com.hedvig.android.feature.fake.navigation.PinnedFakeKey"
+  override val analyticsName = ANALYTICS_NAME
+}
+
+private data object DerivedFakeKey : HedvigNavKey
