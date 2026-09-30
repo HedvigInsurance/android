@@ -58,6 +58,7 @@ import hedvig.resources.HC_CHAT_BUTTON
 import hedvig.resources.LEGAL_A11Y
 import hedvig.resources.LEGAL_INFORMATION
 import hedvig.resources.LEGAL_PRIVACY_POLICY
+import hedvig.resources.LEGAL_PRIVACY_POLICY_APP
 import hedvig.resources.PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS
 import hedvig.resources.PROFILE_ABOUT_APP_MEMBER_ID
 import hedvig.resources.PROFILE_ABOUT_APP_TITLE
@@ -357,6 +358,12 @@ internal fun LegalInfoSection(
     )
     LinkRow(
       modifier = horizontalDividerModifier,
+      text = stringResource(Res.string.LEGAL_PRIVACY_POLICY_APP),
+      link = linkContainer.getPrivacyPolicyInAppLink(),
+      onLinkClick = openUrl,
+    )
+    LinkRow(
+      modifier = horizontalDividerModifier,
       text = stringResource(Res.string.LEGAL_INFORMATION),
       link = linkContainer.getLegalInfoLink(),
       onLinkClick = openUrl,
@@ -375,10 +382,20 @@ private class LinkContainer(
   private val privacyPolicyLinkEn = "https://www.hedvig.com/se-en/hedvig/privacy-policy"
   private val privacyPolicyLinkSe = "https://www.hedvig.com/se/hedvig/personuppgifter"
 
+  private val privacyPolicyAppLinkEn = "https://www.hedvig.com/se-en/hedvig/privacy-notice-app"
+  private val privacyPolicyAppLinkSe = "https://www.hedvig.com/se/hedvig/integritetsnotis-appen"
+
   fun getPrivacyPolicyLink(): String {
     return when (languageService.getLanguage()) {
       Language.SV_SE -> privacyPolicyLinkSe
       Language.EN_SE -> privacyPolicyLinkEn
+    }
+  }
+
+  fun getPrivacyPolicyInAppLink(): String {
+    return when (languageService.getLanguage()) {
+      Language.SV_SE -> privacyPolicyAppLinkSe
+      Language.EN_SE -> privacyPolicyAppLinkEn
     }
   }
 

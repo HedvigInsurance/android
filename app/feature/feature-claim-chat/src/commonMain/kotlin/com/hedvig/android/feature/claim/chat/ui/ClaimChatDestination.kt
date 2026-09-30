@@ -7,8 +7,6 @@ import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +17,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -56,12 +55,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -401,6 +402,12 @@ private fun ClaimChatScreenContent(
     spaceBetweenItems = SPACE_BETWEEN_STEPS,
     steps = uiState.steps,
   )
+  // Only in front of the first question, as on iOS. It leaves as soon as a second step lands, and a resumed claim that
+  // is already past the first step never shows it.
+  val showAiDisclaimer = uiState.steps.size <= 1
+  // The disclaimer is an item of its own at the top of the list, so while it is there a step's list index is one
+  // more than its index in the steps.
+  val stepsListIndexOffset = if (showAiDisclaimer) 1 else 0
   // The conversation is scrolled back off the current question. While that is true the list is left where the
   // member put it: the re-pin to the end stands down and the arrow back to the bottom appears.
   //
@@ -475,14 +482,9 @@ private fun ClaimChatScreenContent(
           )
         }
       }
-      AnimatedVisibility(
-        visible = uiState.steps.size <= 1,
-        exit = shrinkVertically() + fadeOut(),
-      ) {
-        AiDisclaimerCard()
-      }
       ClaimChatScrollableContent(
         uiState = uiState,
+        showAiDisclaimer = showAiDisclaimer,
         freeTextDraft = freeTextDraft,
         lazyListState = lazyListState,
         lastItemHeightAdjustingState = lastItemHeightAdjustingState,
@@ -513,10 +515,11 @@ private fun ClaimChatScreenContent(
           coroutineScope.launch {
             val lastIndex = uiState.steps.lastIndex
             if (lastIndex < 0) return@launch
+            val lastListIndex = lastIndex + stepsListIndexOffset
             // One question can be taller than the viewport, so landing on the start of the last item is not
             // the same as reaching the bottom. Asking for an offset past the end of the list and letting the
             // list clamp it lands on the bottom whatever the item's height.
-            lazyListState.animateScrollToItem(lastIndex, scrollOffset = SCROLL_PAST_END_OF_LIST)
+            lazyListState.animateScrollToItem(lastListIndex, scrollOffset = SCROLL_PAST_END_OF_LIST)
           }
         },
         modifier = Modifier.align(Alignment.BottomCenter).padding(
@@ -551,7 +554,7 @@ private fun ClaimChatScreenContent(
     lastItemHeightAdjustingState.lastItemBottomContentHeight,
   ) {
     if (!isScrolledBack && uiState.steps.isNotEmpty()) {
-      lazyListState.scrollToItem(uiState.steps.lastIndex, scrollOffset = SCROLL_PAST_END_OF_LIST)
+      lazyListState.scrollToItem(uiState.steps.lastIndex + stepsListIndexOffset, scrollOffset = SCROLL_PAST_END_OF_LIST)
     }
   }
 }
@@ -559,6 +562,7 @@ private fun ClaimChatScreenContent(
 @Composable
 private fun ClaimChatScrollableContent(
   uiState: ClaimChatUiState.ClaimChat,
+  showAiDisclaimer: Boolean,
   freeTextDraft: FreeTextDraftState,
   lazyListState: LazyListState,
   lastItemHeightAdjustingState: LastItemHeightAdjustingState,
@@ -592,6 +596,16 @@ private fun ClaimChatScrollableContent(
       contentPadding = contentPadding,
       verticalArrangement = Arrangement.spacedBy(SPACE_BETWEEN_STEPS, Alignment.Top),
     ) {
+      if (showAiDisclaimer) {
+        item(key = AI_DISCLAIMER_ITEM_KEY, contentType = AI_DISCLAIMER_ITEM_KEY) {
+          AiDisclaimerCard(
+            Modifier
+              .animateItem()
+              .onSizeChanged { size -> lastItemHeightAdjustingState.onLeadingItemHeightChanged(size.height) }
+              .breakOutOfContentPadding(contentPadding),
+          )
+        }
+      }
       items(
         items = uiState.steps,
         key = { step -> step.id.value },
@@ -620,7 +634,7 @@ private fun ClaimChatScrollableContent(
             lastItemHeightAdjustingState.onItemHeightChanged(item.id, size)
           },
           modifier = if (isCurrentStep) {
-            Modifier.requiredHeightIn(lastItemHeightAdjustingState.preferredMinHeightForFullScreenItem)
+            Modifier.minHeightReadAtLayout { lastItemHeightAdjustingState.preferredMinHeightForFullScreenItem }
           } else {
             Modifier
           },
@@ -632,6 +646,50 @@ private fun ClaimChatScrollableContent(
 }
 
 private val SPACE_BETWEEN_STEPS = 8.dp
+
+/**
+ * A minimum height read during layout rather than composition.
+ *
+ * The minimum changes on every frame the keyboard moves. Read in composition, it invalidates the item on its own,
+ * and the item can then recompose with the step list it was last given in the same frame that the list hands a
+ * new step to the item below it. The step that was just answered then keeps drawing itself as the current step for
+ * a frame, and the new step's minimum is measured against that.
+ */
+private fun Modifier.minHeightReadAtLayout(minHeight: () -> Dp): Modifier = layout { measurable, constraints ->
+  val placeable = measurable.measure(
+    constraints.copy(minHeight = minHeight().roundToPx().coerceAtMost(constraints.maxHeight)),
+  )
+  layout(placeable.width, placeable.height) { placeable.place(0, 0) }
+}
+
+private const val AI_DISCLAIMER_ITEM_KEY = "claim_chat_ai_disclaimer"
+
+/**
+ * Lets a list item run edge to edge and flush with the top of the list, over the list's own content padding, the
+ * way the AI disclaimer sat when it was outside the list. The item keeps the same gap to the step below it that the
+ * top padding gave it then.
+ */
+private fun Modifier.breakOutOfContentPadding(contentPadding: PaddingValues): Modifier =
+  layout { measurable, constraints ->
+    val start = contentPadding.calculateStartPadding(layoutDirection).roundToPx()
+    val end = contentPadding.calculateEndPadding(layoutDirection).roundToPx()
+    val top = contentPadding.calculateTopPadding().roundToPx()
+    val horizontal = start + end
+    val placeable = measurable.measure(
+      constraints.copy(
+        minWidth = constraints.minWidth + horizontal,
+        maxWidth = if (constraints.hasBoundedWidth) constraints.maxWidth + horizontal else constraints.maxWidth,
+      ),
+    )
+    // The list places the item below its top padding, so pulling it up by that much puts it flush with the top. The
+    // height it reports leaves out the part pulled up, and adds back what the spacing between items does not cover
+    // of the gap the top padding used to give it.
+    val gapBelow = (top - SPACE_BETWEEN_STEPS.roundToPx()).coerceAtLeast(0)
+    val height = (placeable.height - top + gapBelow).coerceAtLeast(0)
+    layout(placeable.width - horizontal, height) {
+      placeable.placeRelative(-start, -top)
+    }
+  }
 
 // Far enough that a nudge or an overscroll settle does not stand the re-pin down, short enough that a
 // deliberate look back does.

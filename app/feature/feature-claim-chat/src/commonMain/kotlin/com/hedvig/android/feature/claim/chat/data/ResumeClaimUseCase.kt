@@ -33,7 +33,7 @@ internal class ResumeClaimUseCaseImpl(
         .safeExecute()
         .mapLeft { error ->
           logcat(operationError = error) { "ResumeClaimUseCase failed with $error" }
-          ClaimChatErrorMessage.GeneralError
+          error.toClaimChatErrorMessage()
         }
         .bind()
         .currentMember.resumableClaimIntent

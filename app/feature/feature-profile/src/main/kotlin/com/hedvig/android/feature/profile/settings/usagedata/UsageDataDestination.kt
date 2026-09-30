@@ -39,7 +39,7 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Inject
-import hedvig.resources.LEGAL_PRIVACY_POLICY
+import hedvig.resources.LEGAL_PRIVACY_POLICY_APP_SHORT
 import hedvig.resources.ONBOARDING_ANALYTICS_ALLOW_BUTTON
 import hedvig.resources.ONBOARDING_ANALYTICS_DENY_BUTTON
 import hedvig.resources.ONBOARDING_ANALYTICS_SUBTITLE
@@ -135,7 +135,7 @@ private fun UsageDataScreen(
         .padding(horizontal = 8.dp, vertical = 4.dp),
     ) {
       HedvigText(
-        text = stringResource(Res.string.LEGAL_PRIVACY_POLICY),
+        text = stringResource(Res.string.LEGAL_PRIVACY_POLICY_APP_SHORT),
         style = HedvigTheme.typography.bodySmall,
         textDecoration = TextDecoration.Underline,
       )

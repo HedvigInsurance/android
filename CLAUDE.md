@@ -592,6 +592,72 @@ Place `.graphql` files in module's `src/main/graphql/`. Apollo generates type-sa
 - Use test modules for shared test utilities
 - Navigation invariants are covered by `ExhaustiveBackStackSerializationTest` (every `HedvigNavKey` round-trips through serialization) and `BackstackTest`. If you add a key, these guard process-death survival.
 
+### Accessibility checks
+
+Automated accessibility checks run through a single global task:
+
+```bash
+./gradlew accessibilityChecks
+```
+
+Android Studio has the same thing as the shared **Run accessibility checks** run configuration
+(`.idea/runConfigurations/`, tracked in git next to "Run all unit tests").
+
+The task runs the instrumented tests in `:accessibility-test` against a connected
+device or emulator, so **one must be attached** — without it the task stops at
+`No online devices found`. It is backed by the Accessibility Test Framework, the same engine behind
+Accessibility Scanner and the Play Console pre-launch report, and covers content labelling, touch
+target size, colour contrast and traversal order.
+
+**The task never fails the build.** `ignoreFailures` is set on the connected test task, so
+violations are reported rather than gating. They land, per failing case with the full ATF message,
+in `app/design-system/accessibility-test/build/reports/androidTests/connected/release/index.html`,
+whose path Gradle prints at the end of the run.
+
+**Scope: design system components only.** `assertAccessible` and every accessibility test live
+together in `:accessibility-test`, which depends on `:design-system-hedvig`. Design system components
+are a library API and therefore `public`, so a sibling module can exercise all of them.
+
+Feature screens are mostly `internal`, which a sibling module cannot reach, so covering them would
+mean per-module `androidTest` source sets (a module's own test compilation is a friend of its main
+one and does see `internal`) plus a `hedvig { accessibilityTests() }` handler to aggregate them. That
+is deliberately not built, for two reasons worth knowing before anyone revisits it: AGP produces one
+instrumentation APK per module with no way to merge them, so N covered modules means N installs and N
+instrumentation startups on every run; and 19 of the 60 modules calling `compose()` are KMP with an
+android target, which needs AGP's `withDeviceTestBuilder {}` rather than `src/androidTest` — a second
+code path with no precedent in this repo.
+
+**Adding coverage.** Write the test next to the existing ones in `:accessibility-test`. Nothing needs
+registering: `AndroidJUnitRunner` discovers every `@Test` in the module's APK, and `accessibilityChecks`
+already depends on it. To reach a `public` component owned by some other module, add it to the
+`dependencies` block of `app/design-system/accessibility-test/build.gradle.kts` —
+**that block is the only place that changes**:
+
+```kotlin
+androidTestImplementation(projects.featureHome)
+```
+
+The module is not named `feature-*`, so `configureFeatureModuleGuidelines()` exits early for it and
+it may depend on feature modules directly.
+
+`assertAccessible` cannot move into `:design-system-hedvig` to save the extra module: it pulls JUnit,
+`compose-ui-test` and the Accessibility Test Framework, which would land on the production classpath
+of every UI module. A dedicated `-test` module is how this repo already handles that everywhere else
+(`molecule-test`, `core-common-test`, `logging-test`, and eight more).
+
+Write tests through `assertAccessible(darkTheme) { ... }` from `AccessibilityAssertions.kt`, which
+wraps the content in `HedvigTheme`, enables the checks and walks the tree. Parameterize over both
+themes: contrast is measured off rendered pixels, so a component can pass in one and fail in the
+other.
+
+**Three things that will otherwise cost you an hour:**
+- ATF checks require *instrumented* tests. They cannot run on Robolectric or the JVM, which is why
+  this is the only part of the codebase needing a device.
+- AGP 9 builds library modules release-only. The real task is `connectedReleaseAndroidTest`, there is
+  no `assembleDebugAndroidTest`, and a `debugImplementation` line in this module does nothing.
+- Use `androidx.compose.ui.test.junit4.v2.createAndroidComposeRule`. The non-`v2` one is deprecated
+  and returns the identical type, so the swap is import-only.
+
 ## CI/CD
 
 GitHub Actions workflows (in `.github/workflows/`):
@@ -711,6 +777,38 @@ Text("This is some text for feature X")
 `strings.xml` from Lokalise, a key that **survives** the run exists in Lokalise; a key that
 **disappears** was only added locally and would break the build once someone else syncs. Use this
 before relying on (or committing code that references) a key you didn't personally add to Lokalise.
+
+### Working with Datadog RUM metrics and SLOs
+
+The `android.*` RUM metrics are generated from RUM events at ingestion, and the Android SLOs divide
+one by another. Three rules and two mechanical traps, each learned by breaking one of them.
+
+**A metric that filters on `@view.name` dies silently when navigation naming changes.** It keeps
+reporting, it just stops matching, so nothing alerts. Dropping `NavigationViewTrackingEffect` in the
+Nav3 migration left `ActivityViewTrackingStrategy` naming every view after the single Activity, which
+broke all 18 view-filtered metrics for ten weeks before anyone noticed. `Navigation3TrackingEffect`
+in `HedvigApp`, wired off `Backstack.entries`, is what keeps them working. Monitor 124820537 now
+watches for a recurrence. Prefer an action (`@action.name`) over a view name for anything important:
+actions survive navigation changes.
+
+**An SLO's numerator and denominator must be the same RUM event type.** A `resource` event and an
+`error` event are different populations, so subtracting one from the other is not a failure rate.
+Write the numerator as the denominator's filter plus `@resource.status_code:[500 TO 599]` and nothing
+else, so failures are a subset of attempts by construction. `Claims flow (Android)` spent nineteen
+days alerting at 93% because it divided failed CDN image loads by successful claim-chat calls.
+
+**Never widen a `@view.name` filter to a package wildcard for chat or login.** The chat wildcard
+`com.hedvig.android.feature.chat.navigation.*` also matches `Inbox` and inflates the denominator by
+about 10%; login's would pull in `LoginKey`, `OtpInputKey` and `GenericAuthCredentialsInputKey`. Both
+need explicit single-name filters. Claim flow is the exception where the wildcard is intended.
+
+**Two mechanical traps.** `event_type` cannot be changed with `pup rum metrics update`: the PATCH
+returns 200, applies the filter and silently discards the event type. It needs a delete and recreate,
+and that does **not** purge the existing timeseries, so rebuilding under the same name leaves the SLO
+dividing two definitions for a whole window. Create the replacement under a new name instead: a new
+metric starts empty and is not retroactive, so the SLO reads correctly immediately. Separately, the
+RUM query links embedded in a monitor's notification message are frozen copies of a filter that
+nothing validates, so re-check them whenever the metric changes.
 
 ## Debugging
 

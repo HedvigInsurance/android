@@ -69,7 +69,7 @@ internal class SubmitAudioRecordingUseCaseImpl(
       .safeExecute()
       .mapLeft {
         logcat { "SubmitAudioRecordingUseCase error: $it" }
-        ClaimChatErrorMessage.GeneralError
+        it.toClaimChatErrorMessage()
       }
       .bind()
       .claimIntentSubmitAudio

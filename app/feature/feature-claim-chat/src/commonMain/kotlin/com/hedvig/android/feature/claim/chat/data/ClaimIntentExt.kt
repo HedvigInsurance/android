@@ -2,6 +2,8 @@ package com.hedvig.android.feature.claim.chat.data
 
 import arrow.core.raise.Raise
 import arrow.core.raise.context.raise
+import com.apollographql.apollo.exception.ApolloNetworkException
+import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.locale.CommonLocale
 import com.hedvig.android.core.uidata.UiFile
@@ -432,6 +434,19 @@ internal sealed interface ClaimChatErrorMessage : ErrorMessage {
  */
 internal class LocalFileUnreadableException(fileName: String, cause: Throwable) :
   IOException("Could not read local file $fileName", cause)
+
+/**
+ * A GraphQL call that never reached the backend is the same situation as an upload that timed out,
+ * so it earns the same message. Anything the backend did answer, including a rejection or an HTTP
+ * error, is not a connection problem however it failed.
+ */
+internal fun ApolloOperationError.toClaimChatErrorMessage(): ClaimChatErrorMessage {
+  return if (this is ApolloOperationError.OperationException && throwable is ApolloNetworkException) {
+    ClaimChatErrorMessage.ConnectionError
+  } else {
+    ClaimChatErrorMessage.GeneralError
+  }
+}
 
 internal fun ErrorMessage.toClaimChatErrorMessage(): ClaimChatErrorMessage {
   val throwable = throwable ?: return ClaimChatErrorMessage.GeneralError
