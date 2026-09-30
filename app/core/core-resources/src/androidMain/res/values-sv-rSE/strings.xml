@@ -728,6 +728,7 @@
   <string name="PAYMENTS_REFERRALS_INFO_DESCRIPTION">Bjud in dina vänner och få 10 kr rabatt i månaden för varje inbjuden vän som tecknar en försäkring hos Hedvig.</string>
   <string name="PAYMENTS_REFERRALS_INFO_TITLE">Hedvig Forever</string>
   <string name="PAYMENTS_REFERRAL_DISCOUNT">Rabatt via inbjudningar</string>
+  <string name="PAYMENTS_RETRY_INFO">Vi kunde inte dra betalningen och försöker igen automatiskt. Se till att det finns täckning på kontot inför nästa försök.</string>
   <string name="PAYMENTS_SUBTITLE_PAYMENT_METHOD">Betalningsmetod</string>
   <string name="PAYMENTS_SUBTOTAL">Delsumma</string>
   <string name="PAYMENTS_SWISH_NUMBER">Telefonnummer</string>
@@ -743,6 +744,7 @@
   <string name="PAYMENT_HISTORY_TITLE">Betalningshistorik</string>
   <string name="PAYMENT_METHODS_EMPTY">Ingen betalningsmetod tillagd. Lägg till en för att betala din försäkring.</string>
   <string name="PAYMENT_METHODS_TITLE">Betalningsmetoder</string>
+  <string name="PAYMENT_METHOD_PENDING">Det kan ta några dagar innan din nya betalningsmetod börjar gälla.</string>
   <string name="PAYMENT_METHOD_TITLE">Betalningsmetod</string>
   <string name="PAYMENT_OPEN_SWISH_BUTTON">Öppna Swish</string>
   <string name="PAYMENT_OPTION_CONNECTED_LABEL">Kopplad</string>
@@ -807,7 +809,7 @@
   <string name="PROFILE_NOTIFICATIONS_STATUS_ON">Aktiverad</string>
   <string name="PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT">Ändra bankkonto</string>
   <string name="PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON">Koppla autogiro</string>
-  <string name="PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE">Koppla autogiro</string>
+  <string name="PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE">Koppla betalningsmetod</string>
   <string name="PROFILE_ROW_TRAVEL_CERTIFICATE">Reseintyg</string>
   <string name="PROFILE_TITLE">Din profil</string>
   <string name="PUPPY_GUIDE_GO_BUTTON">Se guider</string>
@@ -1336,7 +1338,7 @@
   <string name="home_tab_welcome_title_without_name">Hej, hur kan vi hjälpa dig?</string>
   <string name="important_message_hide">Dölj</string>
   <string name="important_message_read_more">Läs mer</string>
-  <string name="info_card_missing_payment_body">För att din försäkring ska förbli aktiv måste du ansluta autogiro från din bank.</string>
+  <string name="info_card_missing_payment_body">För att din försäkring ska fortsätta gälla behöver du koppla en betalningsmetod.</string>
   <string name="info_card_missing_payment_missing_payments_body">Din försäkring kommer att avslutas på grund av flera misslyckade betalningsförsök. Skicka ett meddelande här i appen före %1$s för att undvika uppsägning.</string>
   <string name="insurance_card_title_rental_insurance">Rental insurance</string>
   <string name="insurance_details_address_update_body">Din försäkring uppdateras den %1$s till ditt nya hem på %2$s.</string>
