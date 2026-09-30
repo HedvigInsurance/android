@@ -61,7 +61,7 @@ internal data class SummaryKey(
 internal data class SuccessfulMoveKey(
   val moveDate: LocalDate,
 ) : HedvigNavKey, AnalyticsNamed {
-  override val analyticsName = ANALYTICS_NAME
+  override val analyticsName get() = ANALYTICS_NAME
 
   companion object {
     const val ANALYTICS_NAME = "com.hedvig.android.feature.movingflow.SuccessfulMoveKey"

@@ -26,8 +26,9 @@ internal class AnalyticsNamePredicateTest {
   }
 
   private data object PinnedKey : HedvigNavKey, AnalyticsNamed {
+    override val analyticsName get() = ANALYTICS_NAME
+
     const val ANALYTICS_NAME = "com.hedvig.android.feature.fake.navigation.PinnedKey"
-    override val analyticsName = ANALYTICS_NAME
   }
 
   private data object UnpinnedKey : HedvigNavKey

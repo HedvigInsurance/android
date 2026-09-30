@@ -24,7 +24,7 @@ data class ClaimChatKey(
   val messageId: String? = null,
   val resumeClaim: Boolean = false,
 ) : HedvigNavKey, AnalyticsNamed {
-  override val analyticsName = ANALYTICS_NAME
+  override val analyticsName get() = ANALYTICS_NAME
 
   companion object {
     const val ANALYTICS_NAME = "com.hedvig.android.feature.claim.chat.navigation.ClaimChatKey"
@@ -35,7 +35,7 @@ data class ClaimChatKey(
 internal data class ClaimOutcomeDeflectKey(
   val deflect: StepContent.Deflect,
 ) : HedvigNavKey, AnalyticsNamed {
-  override val analyticsName = ANALYTICS_NAME
+  override val analyticsName get() = ANALYTICS_NAME
 
   companion object {
     const val ANALYTICS_NAME = "com.hedvig.android.feature.claim.chat.navigation.ClaimOutcomeDeflectKey"
@@ -46,7 +46,7 @@ internal data class ClaimOutcomeDeflectKey(
 internal data class ClaimOutcomeNewClaimKey(
   val outcome: ClaimIntentOutcome.Claim,
 ) : HedvigNavKey, AnalyticsNamed {
-  override val analyticsName = ANALYTICS_NAME
+  override val analyticsName get() = ANALYTICS_NAME
 
   companion object {
     const val ANALYTICS_NAME = "com.hedvig.android.feature.claim.chat.navigation.ClaimOutcomeNewClaimKey"
@@ -55,14 +55,16 @@ internal data class ClaimOutcomeNewClaimKey(
 
 @Serializable
 internal data object UpdateAppKey : HedvigNavKey, AnalyticsNamed {
+  override val analyticsName get() = ANALYTICS_NAME
+
   const val ANALYTICS_NAME = "com.hedvig.android.feature.claim.chat.navigation.UpdateAppKey"
-  override val analyticsName = ANALYTICS_NAME
 }
 
 @Serializable
 internal data object StartClaimPledgeKey : HedvigNavKey, AnalyticsNamed {
+  override val analyticsName get() = ANALYTICS_NAME
+
   const val ANALYTICS_NAME = "com.hedvig.android.feature.claim.chat.navigation.StartClaimPledgeKey"
-  override val analyticsName = ANALYTICS_NAME
 }
 
 fun EntryProviderScope<HedvigNavKey>.claimChatEntries(

@@ -12,8 +12,9 @@ import org.junit.Test
  * the contract with Datadog, and changing a value here without changing the matching metric filter
  * makes that metric read zero with nothing else to show for it.
  *
- * Adding a key to the map is how you opt a new destination in. Do it in the same change that adds the
- * Datadog metric which needs it, and name that metric in the comment, the way the groups below do.
+ * Implementing `AnalyticsNamed` is how a destination opts in. The map is the net that catches it
+ * afterwards, so add the entry in the same change that adds the Datadog metric which needs it, and name
+ * that metric in the comment, the way the groups below do.
  */
 internal class AnalyticsNameTest {
   @Test
@@ -22,8 +23,8 @@ internal class AnalyticsNameTest {
   }
 
   private companion object {
-    /** Key class name to the name Datadog matches. Equal today because the names were pinned to what
-     * Datadog already saw; they are free to diverge from here on. */
+    /** Key class name to the name Datadog matches. The two are independent: the class can be renamed or
+     * moved while the pinned name stays put, and this map is the contract. */
     val EXPECTED_NAMES = mapOf(
       // android.chat.network.count, android.chat.network.failure
       "com.hedvig.android.feature.chat.navigation.ChatKey" to

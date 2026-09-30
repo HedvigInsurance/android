@@ -35,4 +35,4 @@ internal fun screenNameFor(keyClass: KClass<*>): String {
   return qualifiedName.removePrefix(FEATURE_PACKAGE_PREFIX)
 }
 
-private const val FEATURE_PACKAGE_PREFIX = "com.hedvig.android.feature."
+internal const val FEATURE_PACKAGE_PREFIX = "com.hedvig.android.feature."

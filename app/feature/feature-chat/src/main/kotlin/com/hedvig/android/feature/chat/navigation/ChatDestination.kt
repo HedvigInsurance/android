@@ -12,7 +12,7 @@ data object InboxKey : HedvigNavKey, SuppressesChatPushNotification
 data class ChatKey(
   val conversationId: String,
 ) : HedvigNavKey, SuppressesChatPushNotification, AnalyticsNamed {
-  override val analyticsName = ANALYTICS_NAME
+  override val analyticsName get() = ANALYTICS_NAME
 
   companion object {
     const val ANALYTICS_NAME = "com.hedvig.android.feature.chat.navigation.ChatKey"

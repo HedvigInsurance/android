@@ -101,7 +101,7 @@ internal class ScreenNameTest {
   private fun pinnedNameOrNull(keyClass: KClass<*>): String? = PinnedAnalyticsNames.byClassName[keyClass.java.name]
 
   private fun effectiveScreenName(keyClass: KClass<*>): String =
-    pinnedNameOrNull(keyClass)?.removePrefix("com.hedvig.android.feature.") ?: screenNameFor(keyClass)
+    pinnedNameOrNull(keyClass)?.removePrefix(FEATURE_PACKAGE_PREFIX) ?: screenNameFor(keyClass)
 
   private fun keyClass(qualifiedName: String): KClass<*> = Class.forName(qualifiedName).kotlin
 
@@ -125,8 +125,9 @@ internal class ScreenNameTest {
 }
 
 private data object PinnedFakeKey : HedvigNavKey, AnalyticsNamed {
+  override val analyticsName get() = ANALYTICS_NAME
+
   const val ANALYTICS_NAME = "com.hedvig.android.feature.fake.navigation.PinnedFakeKey"
-  override val analyticsName = ANALYTICS_NAME
 }
 
 private data object DerivedFakeKey : HedvigNavKey
