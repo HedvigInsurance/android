@@ -3,7 +3,9 @@ package com.hedvig.android.feature.payments.navigation
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.compose.ui.dropUnlessResumed
+import com.hedvig.android.data.paying.member.PayinAccount
 import com.hedvig.android.feature.forever.navigation.InviteFriendsKey
+import com.hedvig.android.feature.payin.account.navigation.PayinMethodId
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailExplanationContent
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailsDestination
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailsViewModel
@@ -14,9 +16,8 @@ import com.hedvig.android.feature.payments.ui.history.PaymentHistoryDestination
 import com.hedvig.android.feature.payments.ui.history.PaymentHistoryViewModel
 import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeDestination
 import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeSuccessDestination
+import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeUiState
 import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeViewModel
-import com.hedvig.android.feature.payments.ui.memberpaymentdetails.MemberPaymentDetailsDestination
-import com.hedvig.android.feature.payments.ui.memberpaymentdetails.MemberPaymentDetailsViewModel
 import com.hedvig.android.feature.payments.ui.payments.PaymentsDestination
 import com.hedvig.android.feature.payments.ui.payments.PaymentsViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
@@ -29,8 +30,10 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
   backstack: Backstack,
-  navigateToConnectPayment: () -> Unit,
+  navigateToPayinAccount: () -> Unit,
+  navigateToPayinMethodDetails: (PayinMethodId) -> Unit,
   navigateToPayoutAccount: () -> Unit,
+  navigateToSelectPrimaryPayinMethod: (currentMethods: List<PayinAccount>) -> Unit,
   openConversation: () -> Unit,
 ) {
   entry<PaymentsKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
@@ -41,15 +44,16 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
         backstack.add(PaymentHistoryKey)
       },
       onPayoutAccountClicked = dropUnlessResumed { navigateToPayoutAccount() },
-      onChangeBankAccount = dropUnlessResumed { navigateToConnectPayment() },
+      onChangeBankAccount = dropUnlessResumed { navigateToPayinAccount() },
       onDiscountClicked = dropUnlessResumed {
         backstack.add(DiscountsKey)
       },
       onPaymentClicked = dropUnlessResumed { id: String? ->
         backstack.add(PaymentDetailsKey(id))
       },
-      onMemberPaymentDetailsClicked = dropUnlessResumed {
-        backstack.add(MemberPaymentDetailsKey)
+      onPaymentMethodsClicked = dropUnlessResumed { navigateToPayinAccount() },
+      onPrimaryPayinMethodClicked = dropUnlessResumed { method: PayinMethodId ->
+        navigateToPayinMethodDetails(method)
       },
       onOpenManualCharge = {
         backstack.add(ManualChargeKey)
@@ -64,6 +68,10 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
       navigateUp = backstack::navigateUp,
       onNavigateToPaymentDetails = dropUnlessResumed { chargeId: String ->
         backstack.add(PaymentDetailsKey(chargeId))
+      },
+      onChoosePrimaryMethodClicked = dropUnlessResumed {
+        val info = (viewModel.uiState.value as? ManualChargeUiState.Success)?.manualChargeInfo
+        navigateToSelectPrimaryPayinMethod(info?.currentMethods ?: emptyList())
       },
       openConversation = openConversation,
     )
@@ -116,15 +124,6 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
       navigateToForever = dropUnlessResumed {
         backstack.add(InviteFriendsKey)
       },
-    )
-  }
-
-  entry<MemberPaymentDetailsKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
-    val viewModel: MemberPaymentDetailsViewModel = metroViewModel()
-    MemberPaymentDetailsDestination(
-      viewModel,
-      onChangeBankAccount = navigateToConnectPayment,
-      navigateUp = backstack::navigateUp,
     )
   }
 }

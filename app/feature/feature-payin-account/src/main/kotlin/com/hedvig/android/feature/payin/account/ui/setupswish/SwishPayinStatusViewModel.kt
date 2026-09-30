@@ -6,7 +6,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.autoSaver
+import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
+import androidx.lifecycle.viewmodel.compose.saveable
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.payin.account.data.GetSwishPayinSetupStatusUseCase
@@ -32,13 +37,16 @@ internal class SwishPayinStatusViewModel(
   @Assisted successUrl: String,
   @Assisted orderId: String,
   @Assisted phoneNumber: String,
+  @Assisted savedStateHandle: SavedStateHandle,
   getSwishPayinSetupStatusUseCase: GetSwishPayinSetupStatusUseCase,
   setupSwishPayinUseCase: SetupSwishPayinUseCase,
 ) : MoleculeViewModel<SwishPayinStatusEvent, SwishPayinStatusUiState>(
-    initialState = SwishPayinStatusUiState.PendingApproval(successUrl),
+    // The presenter decides whether to hand over, once it knows if this order already was.
+    initialState = SwishPayinStatusUiState.PendingApproval(successUrl, allowAutoOpen = false),
     presenter = SwishPayinStatusPresenter(
       initialOrder = SwishSetupOrder(successUrl, orderId),
       phoneNumber = phoneNumber,
+      savedStateHandle = savedStateHandle,
       getSwishPayinSetupStatusUseCase = getSwishPayinSetupStatusUseCase,
       setupSwishPayinUseCase = setupSwishPayinUseCase,
     ),
@@ -54,7 +62,7 @@ internal sealed interface SwishPayinStatusUiState {
   /**
    * @param allowAutoOpen whether the screen should still hand the member over to the Swish app
    *   without being asked. Each new order starts out allowing it; it is spent on the first handover
-   *   so that coming back from Swish, or a rotation, does not bounce the member out again.
+   *   so that coming back from Swish, a rotation, or process death does not bounce the member out again.
    */
   data class PendingApproval(val redirectUrl: String, val allowAutoOpen: Boolean = true) : SwishPayinStatusUiState
 
@@ -63,9 +71,11 @@ internal sealed interface SwishPayinStatusUiState {
   data class Failed(val message: String?, val isRetrying: Boolean = false) : SwishPayinStatusUiState
 }
 
+@OptIn(SavedStateHandleSaveableApi::class)
 internal class SwishPayinStatusPresenter(
   private val initialOrder: SwishSetupOrder,
   private val phoneNumber: String,
+  private val savedStateHandle: SavedStateHandle,
   private val getSwishPayinSetupStatusUseCase: GetSwishPayinSetupStatusUseCase,
   private val setupSwishPayinUseCase: SetupSwishPayinUseCase,
 ) : MoleculePresenter<SwishPayinStatusEvent, SwishPayinStatusUiState> {
@@ -73,13 +83,27 @@ internal class SwishPayinStatusPresenter(
   override fun MoleculePresenterScope<SwishPayinStatusEvent>.present(
     lastState: SwishPayinStatusUiState,
   ): SwishPayinStatusUiState {
-    var order by remember { mutableStateOf(initialOrder) }
+    // Saved because a retry replaces the order the screen was opened with, and the member may approve
+    // that newer one in Swish while this process is killed.
+    var order by remember(savedStateHandle) {
+      savedStateHandle.saveable(key = "order", stateSaver = SwishSetupOrderSaver) {
+        mutableStateOf(initialOrder)
+      }
+    }
+    var handedOverOrderId: String? by remember(savedStateHandle) {
+      savedStateHandle.saveable(key = "handedOverOrderId", stateSaver = autoSaver()) {
+        mutableStateOf(null)
+      }
+    }
     var uiState by remember { mutableStateOf(lastState) }
     var retryOnFailIteration by remember { mutableIntStateOf(0) }
 
     // Keyed on the order, so a retry's new order restarts the polling against it.
     LaunchedEffect(order) {
-      uiState = SwishPayinStatusUiState.PendingApproval(order.successUrl)
+      uiState = SwishPayinStatusUiState.PendingApproval(
+        redirectUrl = order.successUrl,
+        allowAutoOpen = order.orderId != handedOverOrderId,
+      )
       while (isActive) {
         when (val status = getSwishPayinSetupStatusUseCase.invoke(order.orderId).getOrNull()) {
           SwishPayinSetupStatus.Active -> {
@@ -123,6 +147,7 @@ internal class SwishPayinStatusPresenter(
     CollectEvents { event ->
       when (event) {
         SwishPayinStatusEvent.DidOpenSwishApp -> {
+          handedOverOrderId = order.orderId
           val state = uiState
           if (state is SwishPayinStatusUiState.PendingApproval) {
             uiState = state.copy(allowAutoOpen = false)
@@ -144,3 +169,8 @@ internal class SwishPayinStatusPresenter(
 
 private fun currentFailureMessage(state: SwishPayinStatusUiState): String? =
   (state as? SwishPayinStatusUiState.Failed)?.message
+
+internal val SwishSetupOrderSaver = listSaver<SwishSetupOrder, String>(
+  save = { listOf(it.successUrl, it.orderId) },
+  restore = { SwishSetupOrder(successUrl = it[0], orderId = it[1]) },
+)

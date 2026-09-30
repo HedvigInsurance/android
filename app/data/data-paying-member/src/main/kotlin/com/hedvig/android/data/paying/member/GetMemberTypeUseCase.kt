@@ -26,7 +26,6 @@ enum class MemberType {
   QASA_ONLY_MEMBER,
 
   // in Payments: hide discounts, payment history, member payment details,
-  // in Payments: always show payout account;
   // in Payments: show connect payout reminder if missing
   // HelpCenter: hide Payments section
   STANDARD_MEMBER,
@@ -36,7 +35,6 @@ enum class MemberType {
   // in Payments: if no upcoming payments: hide discounts and member payment details
   // in Payments: if upcoming payment and missing payin: show connect payin reminder,
   // else show connect payout reminder if missing
-  // in Payments: always show payout account;
 }
 
 @Inject

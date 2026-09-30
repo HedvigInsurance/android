@@ -6,6 +6,7 @@ import assertk.assertions.containsExactly
 import assertk.assertions.doesNotContain
 import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
+import com.hedvig.android.feature.onboarding.data.OnboardingPayinProvider
 import com.hedvig.android.feature.onboarding.data.OnboardingPayinStatus
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
 import org.junit.Test
@@ -47,6 +48,7 @@ class OnboardingPathTest {
     contracts = contracts,
     referralInformation = referralInformation,
     payinStatus = if (hasConnectedPayinMethod) OnboardingPayinStatus.Active else OnboardingPayinStatus.NeedsSetup,
+    availablePayinProviders = OnboardingPayinProvider.entries,
     crossSells = crossSells,
   )
 

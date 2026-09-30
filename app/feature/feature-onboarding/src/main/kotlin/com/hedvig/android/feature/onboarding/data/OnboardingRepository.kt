@@ -14,6 +14,8 @@ import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import octopus.OnboardingQuery
 import octopus.OnboardingUpdateContactInfoMutation
+import octopus.type.MemberPaymentMethodStatus
+import octopus.type.MemberPaymentProvider
 
 internal interface OnboardingRepository {
   suspend fun getOnboardingData(): Either<ErrorMessage, OnboardingData>
@@ -84,17 +86,20 @@ internal class OnboardingRepositoryImpl(
           currencyCode = referralInformation.monthlyDiscountPerReferral.currencyCode.rawValue,
         )
       },
-      payinStatus = member.paymentMethods.payinMethods.map { it.status.rawValue }.let { statuses ->
+      payinStatus = member.paymentMethods.payinMethods.let { methods ->
         when {
-          statuses.any { it == "ACTIVE" } -> OnboardingPayinStatus.Active
+          methods.any { it.status == MemberPaymentMethodStatus.ACTIVE && it.isDefault } -> OnboardingPayinStatus.Active
 
           // A PENDING method counts as "connected enough" to skip the step (bank activation takes
           // days), but the step UI still shows it as pending rather than claiming it is connected.
-          statuses.any { it == "PENDING" } -> OnboardingPayinStatus.Pending
+          methods.any { it.status == MemberPaymentMethodStatus.PENDING } -> OnboardingPayinStatus.Pending
 
           else -> OnboardingPayinStatus.NeedsSetup
         }
       },
+      availablePayinProviders = member.paymentMethods.availableMethods
+        .filter { it.supportsPayin }
+        .mapNotNull { it.provider.toOnboardingPayinProvider() },
       crossSells = member.crossSellV2.otherCrossSells.map { crossSell ->
         OnboardingCrossSell(
           id = crossSell.id,
@@ -116,4 +121,10 @@ internal class OnboardingRepositoryImpl(
     val userError = result.memberUpdateContactInfo.userError
     ensure(userError == null) { ErrorMessage(userError?.message) }
   }
+}
+
+private fun MemberPaymentProvider.toOnboardingPayinProvider(): OnboardingPayinProvider? = when (this) {
+  MemberPaymentProvider.TRUSTLY -> OnboardingPayinProvider.Trustly
+  MemberPaymentProvider.SWISH -> OnboardingPayinProvider.Swish
+  else -> null
 }

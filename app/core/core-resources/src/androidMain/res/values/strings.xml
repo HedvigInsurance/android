@@ -227,7 +227,7 @@
   <string name="CLAIMS_USE_TEXT_INSTEAD">Describe using text</string>
   <string name="CLAIMS_VOICE_RECORDING_SENDING">Sending...</string>
   <string name="CLAIMS_YOUR_CLAIM">Your claim</string>
-  <string name="CLAIM_CHAT_AI_INFO">We use AI to support the process of submitting and handling your claim.  A claims handler always reviews your claim before any decision is made.</string>
+  <string name="CLAIM_CHAT_AI_INFO">We use AI to support the process of submitting and handling your claim. Our team always reviews your claim before any decision is made.</string>
   <string name="CLAIM_CHAT_AUDIO_RECORDING_LABEL">Voice recording</string>
   <string name="CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE">Other item</string>
   <string name="CLAIM_CHAT_DATE_AND_LOCATION_HINT">If you don\'t know the exact date, enter an approximate date.</string>
@@ -567,6 +567,8 @@
   <string name="LEGAL_CATEGORY_LABEL">Legal</string>
   <string name="LEGAL_INFORMATION">Legal information</string>
   <string name="LEGAL_PRIVACY_POLICY">Privacy policy</string>
+  <string name="LEGAL_PRIVACY_POLICY_APP">Privacy notice (Hedvig app)</string>
+  <string name="LEGAL_PRIVACY_POLICY_APP_SHORT">Privacy notice</string>
   <string name="LETTER_TO_EIR_SUBJECT">Question regarding claim, Vehicle reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Preferences</string>
   <string name="LOGOUT_BUTTON">Logout</string>
@@ -726,6 +728,7 @@
   <string name="PAYMENTS_REFERRALS_INFO_DESCRIPTION">Invite your friends and get a 10 SEK discount per month for each friend who signs an insurance with Hedvig.</string>
   <string name="PAYMENTS_REFERRALS_INFO_TITLE">Hedvig Forever</string>
   <string name="PAYMENTS_REFERRAL_DISCOUNT">Referral discount</string>
+  <string name="PAYMENTS_RETRY_INFO">We couldn\'t collect your payment and will try again automatically. Make sure there\'s enough in your account before the next attempt.</string>
   <string name="PAYMENTS_SUBTITLE_PAYMENT_METHOD">Payment method</string>
   <string name="PAYMENTS_SUBTOTAL">Subtotal</string>
   <string name="PAYMENTS_SWISH_NUMBER">Phone number</string>
@@ -741,6 +744,7 @@
   <string name="PAYMENT_HISTORY_TITLE">Payment history</string>
   <string name="PAYMENT_METHODS_EMPTY">No payment method added. Add one to pay for your insurance.</string>
   <string name="PAYMENT_METHODS_TITLE">Payment methods</string>
+  <string name="PAYMENT_METHOD_PENDING">It can take a few days for your new payment method to take effect.</string>
   <string name="PAYMENT_METHOD_TITLE">Payment method</string>
   <string name="PAYMENT_OPEN_SWISH_BUTTON">Open Swish</string>
   <string name="PAYMENT_OPTION_CONNECTED_LABEL">Connected</string>
@@ -752,6 +756,8 @@
   <string name="PAYMENT_PRIMARY_LABEL">Primary</string>
   <string name="PAYMENT_PRIMARY_SUBTITLE">This method will be used for your monthly payments</string>
   <string name="PAYMENT_PRIMARY_TITLE">Choose payment method</string>
+  <string name="PAYMENT_REMOVE_PRIMARY_SUBTITLE">Choose another method before removing it.</string>
+  <string name="PAYMENT_REMOVE_PRIMARY_TITLE">Switch primary method first</string>
   <string name="PAYMENT_REMOVE_SUBTITLE">You can add it back any time</string>
   <string name="PAYMENT_REMOVE_TITLE">Remove payment method</string>
   <string name="PAYMENT_SWISH_APPROVE_TITLE">Approve the connection in Swish</string>
@@ -803,7 +809,7 @@
   <string name="PROFILE_NOTIFICATIONS_STATUS_ON">Turned on</string>
   <string name="PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT">Change bank account</string>
   <string name="PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON">Connect direct debit</string>
-  <string name="PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE">Connect payment</string>
+  <string name="PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE">Connect payment method</string>
   <string name="PROFILE_ROW_TRAVEL_CERTIFICATE">Travel certificates</string>
   <string name="PROFILE_TITLE">Your profile</string>
   <string name="PUPPY_GUIDE_GO_BUTTON">Go to guides</string>
@@ -1332,7 +1338,7 @@
   <string name="home_tab_welcome_title_without_name">Hi, how can we help you?</string>
   <string name="important_message_hide">Hide</string>
   <string name="important_message_read_more">Read more</string>
-  <string name="info_card_missing_payment_body">For your insurance to stay active, you need to connect a payment method</string>
+  <string name="info_card_missing_payment_body">For your insurance to stay active, you need to connect a payment method.</string>
   <string name="info_card_missing_payment_missing_payments_body">Your insurance will be terminated due to multiple failed payment attempts. Send a message through the app before %1$s to avoid termination.</string>
   <string name="insurance_card_title_rental_insurance">Rental insurance</string>
   <string name="insurance_details_address_update_body">Your insurance will be updated on %1$s to your new home at %2$s.</string>
