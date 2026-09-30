@@ -15,10 +15,13 @@ import octopus.type.MemberPaymentProvider
  * [descriptor] is the method's account in the member's own terms — the Swish number, the masked bank account, or
  * the invoice delivery channel. Invoice has nothing else worth showing, so the row uses it as the title there and
  * as the subtitle for the other providers.
+ *
+ * A [isPending] method is still being set up, so there is nothing to manage on it yet.
  */
 data class PrimaryPayinMethod(
   val id: PayinMethodId,
   val descriptor: String?,
+  val isPending: Boolean = false,
 )
 
 internal fun MemberPaymentMethodFragment.toPrimaryPayinMethod(): PrimaryPayinMethod? {
@@ -28,7 +31,12 @@ internal fun MemberPaymentMethodFragment.toPrimaryPayinMethod(): PrimaryPayinMet
     MemberPaymentProvider.INVOICE -> PayinMethodId.Invoice
     MemberPaymentProvider.NORDEA, MemberPaymentProvider.UNKNOWN__ -> return null
   }
-  return PrimaryPayinMethod(id = id, descriptor = toPayinAccount()?.descriptor())
+  val payinAccount = toPayinAccount()
+  return PrimaryPayinMethod(
+    id = id,
+    descriptor = payinAccount?.descriptor(),
+    isPending = payinAccount?.isPending == true,
+  )
 }
 
 private fun PayinAccount.descriptor(): String? = when (this) {

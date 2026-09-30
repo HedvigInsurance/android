@@ -35,7 +35,6 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.paying.member.PayinAccount.Invoice
 import com.hedvig.android.data.paying.member.PayinAccount.SwishPayin
 import com.hedvig.android.data.paying.member.PayinAccount.Trustly
-import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.data.paying.member.maskedAccountNumber
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle
@@ -82,7 +81,6 @@ import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_DETAILS_SINCE
 import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_DETAILS_VIEW_DETAILS
 import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_TITLE
 import hedvig.resources.PAYMENTS_SWISH_NUMBER
-import hedvig.resources.PAYMENT_ADD_METHOD_BUTTON
 import hedvig.resources.PAYMENT_CHOOSE_PRIMARY_BUTTON
 import hedvig.resources.Res
 import hedvig.resources.SELF_MANUAL_CHARGE_CHANGES_BEEN_MADE_TITLE
@@ -98,7 +96,6 @@ internal fun ManualChargeDestination(
   viewModel: ManualChargeViewModel,
   navigateUp: () -> Unit,
   onNavigateToPaymentDetails: (chargeId: String) -> Unit,
-  onConnectPayinMethodClicked: () -> Unit,
   onChoosePrimaryMethodClicked: () -> Unit,
   openConversation: () -> Unit,
 ) {
@@ -121,7 +118,6 @@ internal fun ManualChargeDestination(
     onTriggerPayment = {
       viewModel.emit(TriggerCharge)
     },
-    onConnectPayinMethodClicked = onConnectPayinMethodClicked,
     onChoosePrimaryMethodClicked = onChoosePrimaryMethodClicked,
     openConversation = openConversation,
   )
@@ -135,7 +131,6 @@ private fun ManualChargeScreen(
   openConversation: () -> Unit,
   onNavigateToPaymentDetails: (chargeId: String) -> Unit,
   onTriggerPayment: () -> Unit,
-  onConnectPayinMethodClicked: () -> Unit,
   onChoosePrimaryMethodClicked: () -> Unit,
 ) {
   HedvigScaffold(
@@ -195,7 +190,6 @@ private fun ManualChargeScreen(
           uiState,
           onNavigateToPaymentDetails = onNavigateToPaymentDetails,
           onTriggerPayment = onTriggerPayment,
-          onConnectPayinMethodClicked = onConnectPayinMethodClicked,
           onChoosePrimaryMethodClicked = onChoosePrimaryMethodClicked,
           modifier = Modifier.weight(1f),
         )
@@ -209,12 +203,10 @@ private fun ManualChargeSuccessScreen(
   uiState: Success,
   onNavigateToPaymentDetails: (chargeId: String) -> Unit,
   onTriggerPayment: () -> Unit,
-  onConnectPayinMethodClicked: () -> Unit,
   onChoosePrimaryMethodClicked: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val currentMethods = uiState.manualChargeInfo.currentMethods
-  val availablePayinMethods = uiState.manualChargeInfo.availablePayinMethods
   val dateTimeFormatter = rememberHedvigMonthDateTimeFormatter()
   val dateTimeFormatterWithYear = rememberHedvigDateTimeFormatter()
   Column(
@@ -388,23 +380,11 @@ private fun ManualChargeSuccessScreen(
       Spacer(Modifier.height(16.dp))
     }
     Spacer(Modifier.weight(1f))
-    Spacer(Modifier.height(16.dp))
-    if (availablePayinMethods.isNotEmpty()) {
-      HedvigButton(
-        text = stringResource(Res.string.PAYMENT_ADD_METHOD_BUTTON),
-        onClick = onConnectPayinMethodClicked,
-        enabled = true,
-        buttonStyle = ButtonStyle.Secondary,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      )
-    }
     if (currentMethods
         .filter { !it.isPending }
         .size > 1
     ) {
-      Spacer(Modifier.height(8.dp))
+      Spacer(Modifier.height(16.dp))
       HedvigTextButton(
         text = stringResource(Res.string.PAYMENT_CHOOSE_PRIMARY_BUTTON),
         onClick = onChoosePrimaryMethodClicked,
@@ -469,10 +449,6 @@ private fun ManualChargeScreenSuccessPreview(
                 isDefault = true,
               ),
             ),
-            availablePayinMethods = listOf(
-              PaymentProvider.Swish,
-              PaymentProvider.Trustly,
-            ),
             primaryPayinMethod = Trustly(
               clearingNumber = "8327",
               accountNumber = "91234124",
@@ -485,7 +461,6 @@ private fun ManualChargeScreenSuccessPreview(
         ),
         navigateUp = {},
         reload = {},
-        {},
         {},
         {},
         {},
@@ -505,7 +480,6 @@ private fun ManualChargeScreenLoadingPreview() {
         uiState = Loading,
         navigateUp = {},
         reload = {},
-        {},
         {},
         {},
         {},
@@ -538,7 +512,6 @@ private fun ManualChargeScreenFailurePreview(
         ),
         navigateUp = {},
         reload = {},
-        {},
         {},
         {},
         {},

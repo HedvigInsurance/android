@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.payin.account.navigation
 
 import androidx.lifecycle.compose.dropUnlessResumed
+import androidx.lifecycle.createSavedStateHandle
 import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
@@ -49,8 +50,8 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
         val content = viewModel.uiState.value as? PayinAccountOverviewUiState.Content
         backstack.add(
           SelectPayinMethodKey(
-            availableProviders = content?.availablePayinMethods?.map { it.rawValue } ?: emptyList(),
-            currentProviders = content?.currentMethods?.map { it.provider.rawValue } ?: emptyList(),
+            availableProviders = content?.availablePayinMethods ?: emptyList(),
+            currentProviders = content?.currentMethods?.map { it.provider } ?: emptyList(),
           ),
         )
       },
@@ -145,8 +146,8 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
 
   entry<SwishPayinStatusKey> { key ->
     val viewModel: SwishPayinStatusViewModel =
-      assistedMetroViewModel<SwishPayinStatusViewModel, SwishPayinStatusViewModelFactory> {
-        create(key.successUrl, key.orderId, key.phoneNumber)
+      assistedMetroViewModel<SwishPayinStatusViewModel, SwishPayinStatusViewModelFactory> { extras ->
+        create(key.successUrl, key.orderId, key.phoneNumber, extras.createSavedStateHandle())
       }
     SwishPayinStatusDestination(
       viewModel = viewModel,

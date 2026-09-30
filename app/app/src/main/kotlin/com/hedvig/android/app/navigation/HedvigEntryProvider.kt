@@ -54,7 +54,6 @@ import com.hedvig.android.feature.onboarding.data.ResetOnboardingSeenUseCase
 import com.hedvig.android.feature.onboarding.navigation.onboardingEntries
 import com.hedvig.android.feature.payin.account.navigation.PayinAccountKey
 import com.hedvig.android.feature.payin.account.navigation.PayinMethodDetailsKey
-import com.hedvig.android.feature.payin.account.navigation.SelectPayinMethodKey
 import com.hedvig.android.feature.payin.account.navigation.SelectPrimaryPayinMethodKey
 import com.hedvig.android.feature.payin.account.navigation.payinAccountEntries
 import com.hedvig.android.feature.payments.navigation.paymentsEntries
@@ -479,9 +478,6 @@ private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
     navigateToPayinAccount = navigateToPayinAccount,
     navigateToPayinMethodDetails = { method -> backstack.add(PayinMethodDetailsKey(method)) },
     navigateToPayoutAccount = navigateToPayoutAccount,
-    navigateToSelectPayinMethod = { availableProviders, currentProviders ->
-      backstack.add(SelectPayinMethodKey(availableProviders, currentProviders))
-    },
     navigateToSelectPrimaryPayinMethod = { currentMethods ->
       backstack.add(SelectPrimaryPayinMethodKey(currentMethods))
     },
