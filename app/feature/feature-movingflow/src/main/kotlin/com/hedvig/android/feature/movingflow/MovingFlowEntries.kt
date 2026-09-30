@@ -20,6 +20,7 @@ import com.hedvig.android.feature.movingflow.ui.successfulmove.SuccessfulMoveDes
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryDestination
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryViewModel
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryViewModelFactory
+import com.hedvig.android.navigation.common.AnalyticsNamed
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.popUpTo
@@ -59,7 +60,13 @@ internal data class SummaryKey(
 @Serializable
 internal data class SuccessfulMoveKey(
   val moveDate: LocalDate,
-) : HedvigNavKey
+) : HedvigNavKey, AnalyticsNamed {
+  override val analyticsName = ANALYTICS_NAME
+
+  companion object {
+    const val ANALYTICS_NAME = "com.hedvig.android.feature.movingflow.SuccessfulMoveKey"
+  }
+}
 
 fun EntryProviderScope<HedvigNavKey>.movingFlowEntries(backstack: Backstack, goToChat: () -> Unit) {
   entry<SelectContractForMovingKey> { key ->
