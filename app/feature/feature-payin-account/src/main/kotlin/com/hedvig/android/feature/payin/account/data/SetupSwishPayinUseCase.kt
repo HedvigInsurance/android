@@ -1,12 +1,12 @@
 package com.hedvig.android.feature.payin.account.data
 
 import arrow.core.Either
+import arrow.core.raise.context.bind
 import arrow.core.raise.context.either
-import arrow.core.raise.context.raise
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.NetworkCacheManager
-import com.hedvig.android.apollo.safeExecuteAllowingPartialResponses
+import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.LogPriority
@@ -30,47 +30,39 @@ internal class SetupSwishPayinUseCaseImpl(
   private val networkCacheManager: NetworkCacheManager,
 ) : SetupSwishPayinUseCase {
   override suspend fun invoke(phoneNumber: String): Either<ErrorMessage, SetupSwishResponse> = either {
-    apolloClient
+    val result = apolloClient
       .mutation(SetupSwishPayinMutation(PaymentMethodSetupSwishInput(phoneNumber)))
-      .safeExecuteAllowingPartialResponses()
-      .fold(
-        fa = { error ->
-          logcat(LogPriority.ERROR) { "SetupSwishPayinMutation error: $error" }
-          raise(ErrorMessage())
-        },
-        fb = { result ->
-          val output = result.paymentMethodSetupSwishPayin
-          when (output.status) {
-            PaymentMethodSetupStatus.ACTIVE -> {
-              logcat {
-                "SetupSwishPayinMutation ACTIVE, url present: ${output.url != null}"
-              }
-              networkCacheManager.clearCache()
-              SetupSwishResponse.Success(output.url, output.orderId)
-            }
+      .safeExecute()
+      .mapLeft { error ->
+        logcat(LogPriority.ERROR, error) { "SetupSwishPayinMutation error: $error" }
+        ErrorMessage()
+      }.bind()
+    val output = result.paymentMethodSetupSwishPayin
+    when (output.status) {
+      PaymentMethodSetupStatus.ACTIVE -> {
+        logcat {
+          "SetupSwishPayinMutation ACTIVE, url present: ${output.url != null}"
+        }
+        networkCacheManager.clearCache()
+        SetupSwishResponse.Success(output.url, output.orderId)
+      }
 
-            PaymentMethodSetupStatus.PENDING -> {
-              logcat {
-                "SetupSwishPayinMutation PENDING, url present: ${output.url != null}"
-              }
-              networkCacheManager.clearCache()
-              SetupSwishResponse.Pending(output.url, output.orderId)
-            }
+      PaymentMethodSetupStatus.PENDING -> {
+        logcat {
+          "SetupSwishPayinMutation PENDING, url present: ${output.url != null}"
+        }
+        networkCacheManager.clearCache()
+        SetupSwishResponse.Pending(output.url, output.orderId)
+      }
 
-            PaymentMethodSetupStatus.FAILED, PaymentMethodSetupStatus.UNKNOWN__ -> {
-              logcat(LogPriority.WARN) {
-                "SetupSwishPayinMutation FAILED: ${output.error?.message}"
-              }
-              val userMessage = output.error?.message
-              SetupSwishResponse.Failure(ErrorMessage(userMessage))
-            }
-          }
-        },
-        fab = { errors, _ ->
-          logcat(LogPriority.ERROR) { "SetupSwishPayinMutation data with errors: $errors" }
-          raise(ErrorMessage())
-        },
-      )
+      PaymentMethodSetupStatus.FAILED, PaymentMethodSetupStatus.UNKNOWN__ -> {
+        logcat(LogPriority.WARN) {
+          "SetupSwishPayinMutation FAILED: ${output.error?.message}"
+        }
+        val userMessage = output.error?.message
+        SetupSwishResponse.Failure(ErrorMessage(userMessage))
+      }
+    }
   }
 }
 
