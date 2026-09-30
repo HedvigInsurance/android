@@ -188,7 +188,7 @@ private fun ColumnScope.EnterPhoneNumberSection(
     if (input.isEmpty()) input = uiState.phoneNumber
   }
   val visualTransformation = SwishPhoneNumberVisualTransformation(
-    mask = "000-000-00-00",
+    mask = "000 000 00 00",
     maskColor = HedvigTheme.colorScheme.textTertiary,
   )
   HedvigTextField(
