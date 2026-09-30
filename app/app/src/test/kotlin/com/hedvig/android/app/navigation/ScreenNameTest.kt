@@ -21,6 +21,10 @@ import org.junit.Test
  * The keys live in different feature modules and never see each other, so a collision or an over-long name
  * is invisible at compile time. This scans the classpath rather than a hand-maintained list, so a newly
  * added key is covered automatically.
+ *
+ * A key that pins its own name through [AnalyticsNamed] is exempt from the round trip, since a pinned
+ * name is deliberately free of its class. Uniqueness and the length bound still apply to it, because
+ * both are properties of what analytics receives rather than of where the code lives.
  */
 internal class ScreenNameTest {
   @Test
@@ -29,7 +33,7 @@ internal class ScreenNameTest {
     assertThat(keys.size).isGreaterThan(50)
 
     val collisions = keys
-      .groupBy { screenNameFor(it) }
+      .groupBy { effectiveScreenName(it) }
       .filterValues { it.size > 1 }
       .mapValues { (_, colliding) -> colliding.mapNotNull { it.qualifiedName }.sorted() }
 
@@ -46,7 +50,7 @@ internal class ScreenNameTest {
 
   @Test
   fun `prepending the feature prefix recovers the declaring class`() {
-    val keys = concreteNavKeysOnClasspath()
+    val keys = concreteNavKeysOnClasspath().filter { pinnedNameOrNull(it) == null }
     assertThat(keys.size).isGreaterThan(50)
 
     val unrecoverable = keys.filter { keyClass ->
@@ -61,7 +65,7 @@ internal class ScreenNameTest {
   @Test
   fun `every screen name fits the analytics parameter limit`() {
     val tooLong = concreteNavKeysOnClasspath()
-      .map { screenNameFor(it) }
+      .map { effectiveScreenName(it) }
       .filter { it.length > ANALYTICS_PARAMETER_LIMIT }
 
     assertThat(tooLong).isEmpty()
@@ -76,6 +80,17 @@ internal class ScreenNameTest {
   fun `a key without a pinned name still derives one from its class`() {
     assertThat(DerivedFakeKey.screenName()).isEqualTo(screenNameFor(DerivedFakeKey::class))
   }
+
+  @Test
+  fun `a pinned key is exempt from the class name round trip`() {
+    val pinned = concreteNavKeysOnClasspath().filter { pinnedNameOrNull(it) != null }
+    assertThat(pinned.size).isEqualTo(PinnedAnalyticsNames.byClassName.size)
+  }
+
+  private fun pinnedNameOrNull(keyClass: KClass<*>): String? = PinnedAnalyticsNames.byClassName[keyClass.java.name]
+
+  private fun effectiveScreenName(keyClass: KClass<*>): String =
+    pinnedNameOrNull(keyClass)?.removePrefix("com.hedvig.android.feature.") ?: screenNameFor(keyClass)
 
   private fun keyClass(qualifiedName: String): KClass<*> = Class.forName(qualifiedName).kotlin
 

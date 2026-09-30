@@ -2,8 +2,6 @@ package com.hedvig.android.app.navigation
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.hedvig.android.navigation.common.AnalyticsNamed
-import io.github.classgraph.ClassGraph
 import org.junit.Test
 
 /**
@@ -20,30 +18,10 @@ import org.junit.Test
 internal class AnalyticsNameTest {
   @Test
   fun `pinned keys report exactly the names Datadog filters on`() {
-    assertThat(pinnedNamesOnClasspath()).isEqualTo(EXPECTED_NAMES)
+    assertThat(PinnedAnalyticsNames.byClassName).isEqualTo(EXPECTED_NAMES)
   }
 
-  private fun pinnedNamesOnClasspath(): Map<String, String> = ClassGraph()
-    .enableClassInfo()
-    .enableFieldInfo()
-    .enableStaticFinalFieldConstantInitializerValues()
-    .acceptPackages(FEATURE_PACKAGE)
-    .scan()
-    .use { scan ->
-      scan.getClassesImplementing(AnalyticsNamed::class.java.name)
-        .filter { !it.isInterface && !it.isAbstract }
-        .associate { classInfo ->
-          classInfo.name to (classInfo.getFieldInfo(CONSTANT_NAME)?.constantInitializerValue as? String).orEmpty()
-        }
-    }
-
   private companion object {
-    const val CONSTANT_NAME = "ANALYTICS_NAME"
-
-    /** Scoped to the feature packages so the fake keys in the other two test classes, which live in
-     * `com.hedvig.android.app.navigation`, are not picked up. */
-    const val FEATURE_PACKAGE = "com.hedvig.android.feature"
-
     /** Key class name to the name Datadog matches. Equal today because the names were pinned to what
      * Datadog already saw; they are free to diverge from here on. */
     val EXPECTED_NAMES = mapOf(
