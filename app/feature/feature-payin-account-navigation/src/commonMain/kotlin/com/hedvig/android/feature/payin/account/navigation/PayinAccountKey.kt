@@ -41,10 +41,3 @@ data class SetupSwishPayinKey(
   override val owningTab = TopLevelTab.Payments
   override val syntheticParents = listOf(PayinAccountKey)
 }
-
-/** The picker for connecting a new payin method, seeded with what the member can and already has. */
-@Serializable
-data class SelectPayinMethodKey(
-  val availableProviders: List<String>,
-  val currentProviders: List<String>,
-) : HedvigNavKey

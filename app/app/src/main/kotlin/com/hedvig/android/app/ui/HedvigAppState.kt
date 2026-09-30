@@ -90,10 +90,10 @@ internal class HedvigAppState(
   val paymentsBadge: StateFlow<PaymentsNotificationBadge?> = paymentsNotificationBadgeService
     .badge()
     .stateIn(
-    coroutineScope,
-    SharingStarted.WhileSubscribed(5_000),
-    null,
-  )
+      coroutineScope,
+      SharingStarted.WhileSubscribed(5_000),
+      null,
+    )
 
   val darkTheme: Boolean
     @Composable

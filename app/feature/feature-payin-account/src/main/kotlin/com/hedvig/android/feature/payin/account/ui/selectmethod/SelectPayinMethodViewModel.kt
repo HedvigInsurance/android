@@ -18,13 +18,13 @@ import dev.zacsweers.metro.AssistedInject
 @AssistedInject
 @HedvigViewModel(ActivityRetainedScope::class)
 internal class SelectPayinMethodViewModel(
-  @Assisted availableProviders: List<String>,
-  @Assisted currentProviders: List<String>,
+  @Assisted availableProviders: List<PaymentProvider>,
+  @Assisted currentProviders: List<PaymentProvider>,
 ) : MoleculeViewModel<SelectPayinMethodEvent, SelectPayinMethodUiState>(
     initialState = SelectPayinMethodUiState(
-      availableProviders = availableProviders.mapNotNull(PaymentProvider::fromRawValue),
+      availableProviders = availableProviders,
       selectedProvider = null,
-      currentProviders = currentProviders.mapNotNull(PaymentProvider::fromRawValue),
+      currentProviders = currentProviders,
     ),
     presenter = SelectPayinMethodPresenter(),
   )

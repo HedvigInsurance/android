@@ -1,6 +1,7 @@
 query UpcomingPayment {
   currentMember {
     missedChargeIdToChargeManually
+    showRetryChargeNotice
     pastCharges {
       ...on MemberCharge {
         id

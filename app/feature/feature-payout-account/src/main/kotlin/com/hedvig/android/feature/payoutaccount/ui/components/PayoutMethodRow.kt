@@ -28,7 +28,7 @@ import com.hedvig.android.design.system.hedvig.PaymentMethodPillow
 import com.hedvig.android.design.system.hedvig.PaymentMethodPillowMarkSize
 import com.hedvig.android.design.system.hedvig.PaymentMethodPlusMark
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.icon.Card
+import com.hedvig.android.design.system.hedvig.icon.Bank
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Lock
 import com.hedvig.android.design.system.hedvig.icon.Trustly
@@ -122,12 +122,8 @@ private fun LockedPayoutProviderPillow(provider: PaymentProvider, modifier: Modi
 internal fun PayoutProviderMark(provider: PaymentProvider?, modifier: Modifier = Modifier) {
   when (provider) {
     PaymentProvider.Trustly -> Icon(HedvigIcons.Trustly, EmptyContentDescription, modifier)
-
-    // todo: get icon from design!
-    PaymentProvider.Nordea -> Icon(HedvigIcons.Card, EmptyContentDescription, modifier)
-
+    PaymentProvider.Nordea -> Image(HedvigIcons.Bank, EmptyContentDescription, modifier)
     PaymentProvider.Swish -> Image(HedvigIcons.Swish, EmptyContentDescription, modifier)
-
     else -> PaymentMethodPlusMark(modifier)
   }
 }
