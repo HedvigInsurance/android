@@ -4,6 +4,7 @@ import assertk.assertThat
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isGreaterThan
+import assertk.assertions.isNotEmpty
 import com.hedvig.android.navigation.common.AnalyticsNamed
 import com.hedvig.android.navigation.common.HedvigNavKey
 import io.github.classgraph.ClassGraph
@@ -50,7 +51,7 @@ internal class ScreenNameTest {
 
   @Test
   fun `prepending the feature prefix recovers the declaring class`() {
-    val keys = concreteNavKeysOnClasspath().filter { pinnedNameOrNull(it) == null }
+    val keys = roundTripCheckedKeys()
     assertThat(keys.size).isGreaterThan(50)
 
     val unrecoverable = keys.filter { keyClass ->
@@ -78,14 +79,24 @@ internal class ScreenNameTest {
 
   @Test
   fun `a key without a pinned name still derives one from its class`() {
-    assertThat(DerivedFakeKey.screenName()).isEqualTo(screenNameFor(DerivedFakeKey::class))
+    assertThat(DerivedFakeKey.screenName()).isEqualTo("com.hedvig.android.app.navigation.DerivedFakeKey")
   }
 
   @Test
-  fun `a pinned key is exempt from the class name round trip`() {
-    val pinned = concreteNavKeysOnClasspath().filter { pinnedNameOrNull(it) != null }
-    assertThat(pinned.size).isEqualTo(PinnedAnalyticsNames.byClassName.size)
+  fun `the class name round trip covers derived keys and skips pinned ones`() {
+    val all = concreteNavKeysOnClasspath()
+    val pinned = all.filter { pinnedNameOrNull(it) != null }
+    val derived = all.filter { pinnedNameOrNull(it) == null }
+
+    assertThat(pinned).isNotEmpty()
+    assertThat(derived).isNotEmpty()
+    assertThat(roundTripCheckedKeys()).isEqualTo(derived.toSet())
+    assertThat(roundTripCheckedKeys().intersect(pinned.toSet())).isEmpty()
   }
+
+  /** The keys whose screen name must be recoverable from their class, which excludes every pinned key. */
+  private fun roundTripCheckedKeys(): Set<KClass<*>> =
+    concreteNavKeysOnClasspath().filter { pinnedNameOrNull(it) == null }.toSet()
 
   private fun pinnedNameOrNull(keyClass: KClass<*>): String? = PinnedAnalyticsNames.byClassName[keyClass.java.name]
 
