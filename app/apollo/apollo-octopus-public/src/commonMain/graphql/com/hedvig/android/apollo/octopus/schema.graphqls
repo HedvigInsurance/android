@@ -1385,6 +1385,10 @@ type ClaimIntentStepContentFormField {
 type ClaimIntentStepContentFormFieldOption {
   title: String!
   subtitle: String
+  """
+  Outside the picker, where the picked option stands alone, display this instead of `title`.
+  """
+  selectedTitle: String
   imageUrl: String
   isCustomSearchEntry: Boolean!
   value: ClaimIntentStepContentFormFieldValue!
@@ -1875,6 +1879,12 @@ type Conversation {
   messagePage(olderToken: String, newerToken: String): ChatMessagePage!
   statusMessage: String
   responseIsBeingGenerated: Boolean!
+  """
+  Whether to surface cross sales to the member in this conversation.
+  Show the prompt while this is `true`, and call `Mutation.conversationHideCrossSales`
+  when the member dismisses it.
+  """
+  showCrossSales: Boolean!
   """
   Return the claim for this conversation, if it has one.
   Conversations auto-created when a claim is opened will have this, others will not.
@@ -2861,6 +2871,16 @@ type Member {
   Id of the latest charge if it failed and self manual charge allowed.
   """
   missedChargeIdToChargeManually: UUID
+  """
+  Non null string if the app should show a notice about an upcoming charge. The returned string will be unique per
+  occasion.
+  """
+  showPreChargeNotice: String
+  """
+  Non null string if the app should show a notice about an upcoming charge retry. The returned string will be unique per
+  occasion.
+  """
+  showRetryChargeNotice: String
   """
   The member's payment methods: what they can be charged with, what they are paid out to,
   and which connection is still missing.
@@ -3987,6 +4007,10 @@ type Mutation {
   """
   conversationStart(input: ConversationStartInput!): Conversation!
   conversationSendMessage(input: ConversationSendMessageInput!): ChatMessageMutationOutput!
+  """
+  Stop showing cross sales in a conversation, for good. Idempotent.
+  """
+  conversationHideCrossSales(id: UUID!): Conversation!
   claimAcknowledgeClosedStatus(id: ID!): ClaimMutationOutput
   """
   Create or (reuse and existing) unsubmitted claim intent.
