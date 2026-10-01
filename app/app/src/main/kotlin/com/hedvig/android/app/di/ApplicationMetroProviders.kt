@@ -81,7 +81,6 @@ interface ApplicationMetroProviders {
         ),
       )
       .redactHeaders("Authorization")
-      .createShortcut(false)
       .build()
     return object : ExtraKtorClientConfiguration {
       override fun configure(config: HttpClientConfig<*>) {
