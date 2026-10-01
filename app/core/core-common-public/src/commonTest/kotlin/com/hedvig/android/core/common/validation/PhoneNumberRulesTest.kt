@@ -10,6 +10,9 @@ class PhoneNumberRulesTest {
   private val member = PhoneNumberRules.MemberPhoneNumber
   private val swish = PhoneNumberRules.SwishPhoneNumber
 
+  /** No built-in profile refuses a plus any more, so the behaviour is covered against its own. */
+  private val plusRefused = PhoneNumberRules(minDigits = 8, allowLeadingPlus = false)
+
   private fun PhoneNumberRules.edit(current: String, proposed: String): String =
     acceptEdit(current, proposed).toString()
 
@@ -26,8 +29,8 @@ class PhoneNumberRulesTest {
 
   @Test
   fun `a plus is refused where it is not allowed`() {
-    assertEquals("", swish.edit("", "+"))
-    assertEquals("070", swish.edit("070", "+070"))
+    assertEquals("", plusRefused.edit("", "+"))
+    assertEquals("070", plusRefused.edit("070", "+070"))
   }
 
   @Test
@@ -68,7 +71,7 @@ class PhoneNumberRulesTest {
   @Test
   fun `a plus that cannot be kept refuses the edit rather than being dropped`() {
     assertEquals("", member.edit("", "070 +46"))
-    assertEquals("", swish.edit("", "+46701234567"))
+    assertEquals("", plusRefused.edit("", "+46701234567"))
   }
 
   @Test
@@ -136,9 +139,16 @@ class PhoneNumberRulesTest {
 
   @Test
   fun `swish asks for more digits than the member number does`() {
-    assertFalse(swish.hasEnoughDigits("070123456"))
-    assertTrue(swish.hasEnoughDigits("0701234567"))
-    assertTrue(member.hasEnoughDigits("070123456"))
+    assertFalse(swish.hasEnoughDigits("0701234"))
+    assertTrue(swish.hasEnoughDigits("07012345"))
+    assertTrue(member.hasEnoughDigits("0701234"))
+  }
+
+  @Test
+  fun `swish takes the country-code forms the backend normalises`() {
+    assertEquals("+46701234567", swish.edit("", "+46 70 123 45 67"))
+    assertEquals("46701234567", swish.edit("", "46 70 123 45 67"))
+    assertEquals("+46701234567", swish.cleanedForSubmission("+46701234567").toString())
   }
 
   /**
@@ -163,7 +173,7 @@ class PhoneNumberRulesTest {
   @Test
   fun `a plus that cannot be kept makes a number unreadable on submission too`() {
     assertNull(member.cleanedForSubmission("++46701234567"))
-    assertNull(swish.cleanedForSubmission("+46701234567"))
+    assertNull(plusRefused.cleanedForSubmission("+46701234567"))
   }
 
   @Test

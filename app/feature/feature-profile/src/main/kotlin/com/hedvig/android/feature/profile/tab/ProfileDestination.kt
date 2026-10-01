@@ -73,7 +73,9 @@ import com.hedvig.android.design.system.hedvig.icon.Settings
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.memberreminders.ui.MemberReminderCards
+import com.hedvig.android.memberreminders.ui.MissingPayinMethodCard
 import com.hedvig.android.memberreminders.ui.cardReminders
+import com.hedvig.android.memberreminders.ui.missingPayinMethodReminder
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
 import com.hedvig.android.placeholder.PlaceholderHighlight
@@ -217,16 +219,22 @@ private fun ProfileScreen(
       NotificationPermissionDialog(notificationPermissionState, openAppSettings)
       val consumedWindowInsets = remember { MutableWindowInsets() }
       if (uiState is ProfileUiState.Success) {
-        val memberReminders = uiState.memberReminders
+        val applicableReminders = uiState.memberReminders
           .onlyApplicableReminders(notificationPermissionState.status.isGranted)
-          .cardReminders()
+        val memberReminders = applicableReminders.cardReminders()
         val padding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
           .exclude(consumedWindowInsets)
           .only(WindowInsetsSides.Horizontal)
           .asPaddingValues()
+        if (applicableReminders.missingPayinMethodReminder() != null) {
+          MissingPayinMethodCard(
+            onConnectPaymentClick = navigateToConnectPayment,
+            modifier = Modifier.padding(padding),
+          )
+          Spacer(Modifier.height(16.dp))
+        }
         MemberReminderCards(
           memberReminders = memberReminders,
-          navigateToConnectPayment = navigateToConnectPayment,
           navigateToConnectPayout = navigateToConnectPayout,
           navigateToAddMissingInfo = navigateToAddMissingInfo,
           openUrl = openUrl,
