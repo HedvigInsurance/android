@@ -21,8 +21,15 @@ import kotlinx.coroutines.isActive
 import octopus.MissedPaymentQuery
 
 internal interface GetPaymentsNotificationBadgeUseCase {
-  fun invoke(): Flow<PaymentsNotificationBadge?>
+  /** Emits null when the payments state could not be loaded. */
+  fun invoke(): Flow<PaymentsNotificationBadgeData?>
 }
+
+internal data class PaymentsNotificationBadgeData(
+  val hasMissedPayment: Boolean,
+  /** The backend returns a new id for each upcoming charge or retry occasion, so a seen id never needs a dot again. */
+  val chargeNoticeIds: Set<String>,
+)
 
 @ContributesBinding(AppScope::class)
 @SingleIn(AppScope::class)
@@ -30,10 +37,10 @@ internal interface GetPaymentsNotificationBadgeUseCase {
 internal class GetPaymentsNotificationBadgeUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetPaymentsNotificationBadgeUseCase {
-  override fun invoke(): Flow<PaymentsNotificationBadge?> {
+  override fun invoke(): Flow<PaymentsNotificationBadgeData?> {
     return flow {
       while (currentCoroutineContext().isActive) {
-        val badge = apolloClient
+        val badgeData = apolloClient
           .query(MissedPaymentQuery())
           .fetchPolicy(FetchPolicy.CacheAndNetwork)
           .safeFlow {
@@ -46,16 +53,16 @@ internal class GetPaymentsNotificationBadgeUseCaseImpl(
                 logcat { "GetPaymentsNotificationBadgeUseCaseImpl: error when loading payments badge: $it" }
                 null
               },
-              { data -> data.currentMember.toPaymentsNotificationBadge() },
+              { data -> data.currentMember.toPaymentsNotificationBadgeData() },
             )
           }
           .firstOrNull()
 
-        emit(badge)
+        emit(badgeData)
 
         // A missed payment is re-checked so the dot clears once the member pays it. The charge
         // notices change about once a day, so one read per session is enough.
-        if (badge != PaymentsNotificationBadge.MissedPayment) {
+        if (badgeData?.hasMissedPayment != true) {
           break
         }
 
@@ -65,10 +72,9 @@ internal class GetPaymentsNotificationBadgeUseCaseImpl(
   }
 }
 
-private fun MissedPaymentQuery.Data.CurrentMember.toPaymentsNotificationBadge(): PaymentsNotificationBadge? {
-  return when {
-    showPreChargeNotice || showRetryChargeNotice -> PaymentsNotificationBadge.ChargeNotice
-    missedChargeIdToChargeManually != null -> PaymentsNotificationBadge.MissedPayment
-    else -> null
-  }
+private fun MissedPaymentQuery.Data.CurrentMember.toPaymentsNotificationBadgeData(): PaymentsNotificationBadgeData {
+  return PaymentsNotificationBadgeData(
+    hasMissedPayment = missedChargeIdToChargeManually != null,
+    chargeNoticeIds = setOfNotNull(showPreChargeNotice, showRetryChargeNotice),
+  )
 }

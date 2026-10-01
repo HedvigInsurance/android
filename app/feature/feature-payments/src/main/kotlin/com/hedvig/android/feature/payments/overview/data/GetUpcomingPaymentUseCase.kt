@@ -142,7 +142,7 @@ internal data class GetUpcomingPaymentUseCaseImpl(
       },
       isManualChargeAllowed = isManualChargeAllowed,
       memberType = memberType,
-      showRetryChargeNotice = result.currentMember.showRetryChargeNotice,
+      showRetryChargeNotice = result.currentMember.showRetryChargeNotice != null,
       anyPayinMethodIsPending = result.currentMember.paymentMethods.payinMethods
         .mapNotNull { it.toPayinAccount() }
         .any { it.isPending },

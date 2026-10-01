@@ -8,6 +8,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.featureflags.FeatureManager
@@ -21,9 +22,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun rememberHedvigAppState(
@@ -94,6 +99,20 @@ internal class HedvigAppState(
       SharingStarted.WhileSubscribed(5_000),
       null,
     )
+
+  init {
+    coroutineScope.launch {
+      combine(
+        snapshotFlow { backstackController.currentTopLevel },
+        paymentsBadge,
+      ) { currentTopLevel, badge ->
+        currentTopLevel == TopLevelTab.Payments && badge == PaymentsNotificationBadge.ChargeNotice
+      }
+        .distinctUntilChanged()
+        .filter { isOnPaymentsWithChargeNotice -> isOnPaymentsWithChargeNotice }
+        .collect { paymentsNotificationBadgeService.markChargeNoticesAsSeen() }
+    }
+  }
 
   val darkTheme: Boolean
     @Composable
