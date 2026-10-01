@@ -62,6 +62,7 @@ import hedvig.resources.ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER
 import hedvig.resources.ONBOARDING_CONNECT_PAYMENT_TITLE
 import hedvig.resources.ONBOARDING_DO_THIS_LATER_BUTTON
 import hedvig.resources.PAYMENT_CONNECT_TITLE
+import hedvig.resources.PAYMENT_METHOD_REQUIRED_FOOTNOTE
 import hedvig.resources.PAYMENT_OPTION_SWISH_SUBTITLE
 import hedvig.resources.PAYMENT_OPTION_TRUSTLY_SUBTITLE
 import hedvig.resources.Res
@@ -91,8 +92,10 @@ internal class OnboardingPaymentPresenter(
   ): OnboardingPaymentUiState {
     var currentState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
-    var hasAttemptedToConnect by remember { mutableStateOf(false) }
-    var selectedProvider by remember { mutableStateOf<OnboardingPayinProvider?>(null) }
+    // Seeded from lastState so both survive the presenter restarting while the setup flow is on top.
+    val lastContent = lastState as? OnboardingPaymentUiState.Content
+    var hasAttemptedToConnect by remember { mutableStateOf(lastContent?.hasAttemptedToConnect ?: false) }
+    var selectedProvider by remember { mutableStateOf(lastContent?.selectedProvider) }
 
     LaunchedEffect(loadIteration) {
       if (currentState is OnboardingPaymentUiState.Content) return@LaunchedEffect
@@ -103,6 +106,7 @@ internal class OnboardingPaymentPresenter(
           currentState = OnboardingPaymentUiState.Content(
             progress = session.progressFor(OnboardingStepId.ConnectPayment),
             payinStatus = session.data.payinStatus,
+            connectedProvider = session.data.connectedPayinProvider,
             availableProviders = session.data.availablePayinProviders,
           )
         },
@@ -125,6 +129,7 @@ internal class OnboardingPaymentPresenter(
               currentState = OnboardingPaymentUiState.Content(
                 progress = refreshed.progressFor(OnboardingStepId.ConnectPayment),
                 payinStatus = refreshed.data.payinStatus,
+                connectedProvider = refreshed.data.connectedPayinProvider,
                 availableProviders = refreshed.data.availablePayinProviders,
               )
             }
@@ -168,6 +173,7 @@ internal sealed interface OnboardingPaymentUiState {
   data class Content(
     val progress: OnboardingProgress,
     val payinStatus: OnboardingPayinStatus,
+    val connectedProvider: OnboardingPayinProvider? = null,
     val availableProviders: List<OnboardingPayinProvider>,
     val selectedProvider: OnboardingPayinProvider? = null,
     // The skip is offered only once the member has entered the connect flow at least once, so a
@@ -261,16 +267,18 @@ private fun OnboardingPaymentScreen(
         )
         Spacer(Modifier.weight(1f))
         OnboardingConnectingPaymentSymbol(
-          provider = content.selectedProvider,
+          provider = if (isConnected) {
+            content.connectedProvider ?: content.selectedProvider
+          } else {
+            content.selectedProvider
+          },
           showCheck = isConnected,
           modifier = Modifier.align(Alignment.CenterHorizontally),
         )
         Spacer(Modifier.weight(1f))
         if (!isConnected) {
           HedvigText(
-            // TODO: Add "Required to keep your insurance active" /
-            //  "Krävs för att din försäkring ska vara aktiv" to Lokalise
-            text = "Required to keep your insurance active",
+            text = stringResource(Res.string.PAYMENT_METHOD_REQUIRED_FOOTNOTE),
             style = HedvigTheme.typography.label,
             color = HedvigTheme.colorScheme.textSecondaryTranslucent,
             textAlign = TextAlign.Center,
@@ -391,11 +399,13 @@ private class OnboardingPaymentUiStateProvider : CollectionPreviewParameterProvi
     OnboardingPaymentUiState.Content(
       progress = OnboardingProgress(totalSteps = 5, currentIndex = 3),
       payinStatus = OnboardingPayinStatus.Pending,
+      connectedProvider = OnboardingPayinProvider.Trustly,
       availableProviders = OnboardingPayinProvider.entries,
     ),
     OnboardingPaymentUiState.Content(
       progress = OnboardingProgress(totalSteps = 5, currentIndex = 3),
       payinStatus = OnboardingPayinStatus.Active,
+      connectedProvider = OnboardingPayinProvider.Swish,
       availableProviders = OnboardingPayinProvider.entries,
     ),
   ),

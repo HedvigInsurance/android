@@ -12,6 +12,8 @@ internal data class OnboardingData(
   val contracts: List<OnboardingContract>,
   val referralInformation: OnboardingReferralInformation?,
   val payinStatus: OnboardingPayinStatus,
+  /** The provider of the method behind [payinStatus], or null when none is connected or onboarding can't offer it. */
+  val connectedPayinProvider: OnboardingPayinProvider? = null,
   val availablePayinProviders: List<OnboardingPayinProvider>,
   val crossSells: List<OnboardingCrossSell>,
 ) {
