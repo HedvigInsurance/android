@@ -527,7 +527,7 @@ private fun InlineVoiceAnswerCard(
   Surface(
     modifier = modifier.fillMaxWidth(),
     shape = HedvigTheme.shapes.cornerXLarge,
-    color = HedvigTheme.colorScheme.surfacePrimary,
+    color = HedvigTheme.colorScheme.backgroundPrimary,
   ) {
     Box(Modifier.padding(16.dp)) {
       IconButton(
@@ -1500,7 +1500,7 @@ private fun AudioWaves(
   amplitudes: List<Int>? = null,
 ) {
   val playedColor = LocalContentColor.current
-  val notPlayedColor = LocalContentColor.current.copy(0.38f).compositeOver(HedvigTheme.colorScheme.surfacePrimary)
+  val notPlayedColor = LocalContentColor.current.copy(0.38f).compositeOver(HedvigTheme.colorScheme.backgroundPrimary)
   val fixedColor = fixedRestingColor
   val density = LocalDensity.current
   val strokeWidthPx = with(density) { WAVE_WIDTH.toPx() }

@@ -37,7 +37,6 @@ Generated from `./gradlew :generateProjectDependencyGraph`*\
 ## Renovate
 
 `renovate.json` is a file which Renovate looks at in order to be able to suggest upgrading private artifacts to their latest version.
-The `username` used in there is the result of passing our jitpack username (from 1Password) through Renovate's [website](https://app.renovatebot.com/encrypt) to get the hashed version of it.
 
 ## Removing unused resources
 
