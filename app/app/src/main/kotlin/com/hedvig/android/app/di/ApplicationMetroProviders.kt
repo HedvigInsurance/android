@@ -19,6 +19,9 @@ import coil3.memory.MemoryCache
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import coil3.svg.SvgDecoder
 import com.apollographql.apollo.ApolloClient
+import com.chuckerteam.chucker.api.ChuckerCollector
+import com.chuckerteam.chucker.api.ChuckerInterceptor
+import com.chuckerteam.chucker.api.RetentionManager
 import com.hedvig.android.app.apollo.LoggingInterceptor
 import com.hedvig.android.app.apollo.LogoutOnUnauthenticatedInterceptor
 import com.hedvig.android.auth.AuthTokenService
@@ -32,11 +35,14 @@ import com.hedvig.android.design.system.hedvig.pdfrenderer.PdfDecoder
 import com.hedvig.android.navigation.compose.DeepLinkMatcherProvider
 import com.hedvig.android.navigation.compose.HedvigDeepLinkMatcher
 import com.hedvig.android.network.clients.ExtraApolloClientConfiguration
+import com.hedvig.android.network.clients.ExtraKtorClientConfiguration
 import com.hedvig.app.BuildConfig
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
+import io.ktor.client.engine.okhttp.OkHttpConfig
 import java.io.File
 
 @ContributesTo(AppScope::class)
@@ -55,6 +61,35 @@ interface ApplicationMetroProviders {
       return builder
         .addInterceptor(LogoutOnUnauthenticatedInterceptor(authTokenService, demoManager))
         .addInterceptor(LoggingInterceptor())
+    }
+  }
+
+  /**
+   * Records every call into Chucker's database on the device, so it can be read over adb from
+   * `databases/chucker.db`. Only debug builds depend on the real library, release and staging get the
+   * no-op artifact with the same API.
+   */
+  @Provides
+  @SingleIn(AppScope::class)
+  fun provideExtraKtorClientConfiguration(applicationContext: Context): ExtraKtorClientConfiguration {
+    val chuckerInterceptor = ChuckerInterceptor.Builder(applicationContext)
+      .collector(
+        ChuckerCollector(
+          context = applicationContext,
+          showNotification = false,
+          retentionPeriod = RetentionManager.Period.ONE_DAY,
+        ),
+      )
+      .redactHeaders("Authorization")
+      .build()
+    return object : ExtraKtorClientConfiguration {
+      override fun configure(config: HttpClientConfig<*>) {
+        // The Android engine is always OkHttp, see httpClientEngineFactory()
+        @Suppress("UNCHECKED_CAST")
+        (config as HttpClientConfig<OkHttpConfig>).engine {
+          addInterceptor(chuckerInterceptor)
+        }
+      }
     }
   }
 

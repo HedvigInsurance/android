@@ -812,6 +812,14 @@ nothing validates, so re-check them whenever the metric changes.
 
 ## Debugging
 
+### Network traffic on a device
+
+Debug builds (`com.hedvig.dev.app`) record every call made through the main Ktor client, with full
+request and response bodies, in Chucker's on-device database. When debugging anything that involves
+backend data on a device or emulator (a screen showing wrong data, an unexpected error, whether a
+call happened at all), read what was actually sent and received with the `inspect-network-traffic`
+skill instead of inferring it from the code.
+
 ### Common Issues
 
 **Build fails with "Cannot find schema":**
