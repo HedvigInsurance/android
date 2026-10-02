@@ -278,7 +278,7 @@ private fun OnboardingPaymentScreen(
         Spacer(Modifier.weight(1f))
         if (!isConnected) {
           HedvigText(
-            text = stringResource(Res.string.PAYMENT_METHOD_REQUIRED_FOOTNOTE),
+            text = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_SUBTITLE),
             style = HedvigTheme.typography.label,
             color = HedvigTheme.colorScheme.textSecondaryTranslucent,
             textAlign = TextAlign.Center,
