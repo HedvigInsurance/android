@@ -112,9 +112,10 @@ private fun DefaultRequest.DefaultRequestBuilder.commonHeaders(
   languageService: LanguageService,
 ) {
   headers {
+    val languageTag = languageService.getLanguage().toBcp47Format()
     append("User-Agent", hedvigBuildConstants.userAgent)
-    append("Accept-Language", languageService.getLanguage().toBcp47Format())
-    append("hedvig-language", languageService.getLanguage().toBcp47Format())
+    append("Accept-Language", languageTag)
+    append("hedvig-language", languageTag)
     append("apollographql-client-name", hedvigBuildConstants.appPackageId)
     append("apollographql-client-version", hedvigBuildConstants.appVersionName)
     append("X-Build-Version", hedvigBuildConstants.appVersionCode)

@@ -3,7 +3,6 @@ package com.hedvig.android.app
 import android.app.UiModeManager
 import android.app.UiModeManager.MODE_NIGHT_CUSTOM
 import android.content.Intent
-import android.content.res.Resources
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -47,7 +46,6 @@ import com.hedvig.android.core.tracking.EventTrackingClient
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.onboarding.data.ResetOnboardingSeenUseCase
 import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.language.LanguageLaunchCheckUseCase
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -56,7 +54,6 @@ import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificat
 import com.hedvig.android.theme.Theme
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
-import java.util.Locale
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -90,9 +87,6 @@ class MainActivity : AppCompatActivity() {
 
   @Inject
   private lateinit var waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase
-
-  @Inject
-  private lateinit var languageLaunchCheckUseCase: LanguageLaunchCheckUseCase
 
   @Inject
   private lateinit var logoutUseCase: LogoutUseCase
@@ -201,8 +195,6 @@ class MainActivity : AppCompatActivity() {
       "MainActivity@${System.identityHashCode(this)} using " +
         "BackstackController@${System.identityHashCode(backstackController)}"
     }
-    val defaultLocale = getSystemLocale(resources.configuration)
-    languageLaunchCheckUseCase.invoke(defaultLocale)
     val uiModeManager = getSystemService<UiModeManager>()
     lifecycleScope.launch {
       lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
@@ -391,14 +383,5 @@ private fun applyTheme(theme: Theme?, uiModeManager: UiModeManager?) {
         uiModeManager?.setApplicationNightMode(MODE_NIGHT_CUSTOM)
       }
     }
-  }
-}
-
-private fun getSystemLocale(config: android.content.res.Configuration): Locale {
-  return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-    Resources.getSystem().configuration.locales[0]
-  } else {
-    @Suppress("DEPRECATION")
-    config.locale
   }
 }

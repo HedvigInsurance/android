@@ -31,7 +31,7 @@ internal class SettingsPresenter(
 ) : MoleculePresenter<SettingsEvent, SettingsUiState> {
   @Composable
   override fun MoleculePresenterScope<SettingsEvent>.present(lastState: SettingsUiState): SettingsUiState {
-    var selectedLanguage by remember { mutableStateOf(lastState.selectedLanguage) }
+    val selectedLanguage by languageService.language.collectAsState()
     var emailSubscriptionPreferenceError by remember { mutableStateOf(false) }
     val selectedTheme = settingsDataStore.observeTheme().collectAsState(lastState.selectedTheme).value
     val isSubscribedToEmails = settingsDataStore.observeEmailSubscriptionPreference().collectAsState(
@@ -47,7 +47,6 @@ internal class SettingsPresenter(
     CollectEvents { event ->
       when (event) {
         is SettingsEvent.ChangeLanguage -> {
-          selectedLanguage = event.language
           languageService.setLanguage(event.language)
           launch {
             cacheManager.clearCache()

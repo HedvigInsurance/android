@@ -1,57 +1,63 @@
 package com.hedvig.android.language
 
+import android.content.ComponentCallbacks
+import android.content.Context
+import android.content.res.Configuration
 import androidx.annotation.MainThread
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.os.LocaleListCompat
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.locale.CommonLocale
-import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import java.util.Locale
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 @ContributesBinding(AppScope::class)
 @SingleIn(AppScope::class)
 @Inject
-internal class AndroidLanguageService() : LanguageService {
-  /**
-   * Sets the language, and as a side effect, restarts all running activities.
-   * Only safe to call from the Main Thread.
-   */
+internal class AndroidLanguageService(
+  context: Context,
+  private val appLocaleStore: AppLocaleStore,
+) : LanguageService {
+  private val mutableLanguage = MutableStateFlow(currentLanguage())
+  override val language: StateFlow<Language> = mutableLanguage.asStateFlow()
+
+  init {
+    // A change made in the system per-app language settings, or to the phone's languages, arrives as a configuration
+    // change of the whole process.
+    context.registerComponentCallbacks(
+      object : ComponentCallbacks {
+        override fun onConfigurationChanged(newConfig: Configuration) {
+          refresh()
+        }
+
+        @Deprecated("Deprecated in Java")
+        override fun onLowMemory() {}
+      },
+    )
+  }
+
   @MainThread
   override fun setLanguage(language: Language) {
-    logcat { "LanguageService: setLanguage: $language" }
-    AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(language.toString()))
-  }
-
-  override fun getSelectedLanguage(): Language? {
-    val locale = getSelectedLocale() ?: return null
-    return Language.from(locale.toLanguageTag())
-  }
-
-  override fun getLanguage(): Language {
-    return getSelectedLanguage() ?: let {
-      logcat(LogPriority.WARN) { "LanguageService: getLocale: No locale set, defaulting to en_SE" }
-      Language.EN_SE
-    }
+    val localeTags = storedLocaleTagsForPick(language, appLocaleStore.phoneLocaleTags())
+    if (localeTags == appLocaleStore.storedLocaleTags()) return
+    logcat { "LanguageService: picked $language, storing [${localeTags.joinToString()}]" }
+    appLocaleStore.store(localeTags)
+    refresh()
   }
 
   override fun getLocale(): CommonLocale {
-    return getSelectedLocale() ?: Locale("en", "SE")
+    return Locale.forLanguageTag(language.value.toBcp47Format())
   }
 
-  private fun getSelectedLocale(): Locale? {
-    return getLocaleFromAppCompat()
+  private fun refresh() {
+    mutableLanguage.value = currentLanguage()
   }
 
-  private fun getLocaleFromAppCompat(): Locale? {
-    val localeList = AppCompatDelegate.getApplicationLocales()
-    return if (localeList.isEmpty) {
-      null
-    } else {
-      localeList[0]!!
-    }
+  private fun currentLanguage(): Language {
+    return resolveLanguage(appLocaleStore.storedLocaleTags(), appLocaleStore.phoneLocaleTags())
   }
 }
