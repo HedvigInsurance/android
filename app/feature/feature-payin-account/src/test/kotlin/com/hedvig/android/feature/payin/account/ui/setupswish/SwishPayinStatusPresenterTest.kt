@@ -172,7 +172,7 @@ private class FakeSetupSwishPayinUseCase : SetupSwishPayinUseCase {
   val responses = Channel<Either<ErrorMessage, SetupSwishResponse>>(Channel.UNLIMITED)
   var calls = 0
 
-  override suspend fun invoke(phoneNumber: String): Either<ErrorMessage, SetupSwishResponse> {
+  override suspend fun invoke(): Either<ErrorMessage, SetupSwishResponse> {
     calls++
     return responses.receive()
   }

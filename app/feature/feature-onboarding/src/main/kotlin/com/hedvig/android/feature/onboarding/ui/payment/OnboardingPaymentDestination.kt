@@ -1,6 +1,8 @@
 package com.hedvig.android.feature.onboarding.ui.payment
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,10 +29,12 @@ import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.PaymentMethodPillow
 import com.hedvig.android.design.system.hedvig.PaymentMethodPillowMarkSize
 import com.hedvig.android.design.system.hedvig.PaymentMethodPlusMark
@@ -66,6 +70,7 @@ import hedvig.resources.PAYMENT_METHOD_REQUIRED_FOOTNOTE
 import hedvig.resources.PAYMENT_OPTION_SWISH_SUBTITLE
 import hedvig.resources.PAYMENT_OPTION_TRUSTLY_SUBTITLE
 import hedvig.resources.Res
+import hedvig.resources.SWISH_INFO_BOX
 import hedvig.resources.general_continue_button
 import hedvig.resources.swish
 import kotlinx.coroutines.launch
@@ -299,6 +304,18 @@ private fun OnboardingPaymentScreen(
             },
             modifier = Modifier.padding(horizontal = 16.dp),
           )
+          AnimatedVisibility(visible = content.selectedProvider == OnboardingPayinProvider.Swish) {
+            Column {
+              Spacer(Modifier.height(8.dp))
+              HedvigNotificationCard(
+                message = stringResource(Res.string.SWISH_INFO_BOX),
+                priority = NotificationPriority.InfoInline,
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(horizontal = 16.dp),
+              )
+            }
+          }
         }
         OnboardingStepButtons(
           primaryText = if (isConnected) {

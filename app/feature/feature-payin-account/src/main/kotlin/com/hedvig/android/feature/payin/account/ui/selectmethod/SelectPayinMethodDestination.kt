@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.payin.account.ui.selectmethod
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,10 +15,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
@@ -33,6 +37,7 @@ import hedvig.resources.PAYMENT_OPTION_INVOICE_SUBTITLE
 import hedvig.resources.PAYMENT_OPTION_SWISH_SUBTITLE
 import hedvig.resources.PAYMENT_OPTION_TRUSTLY_SUBTITLE
 import hedvig.resources.Res
+import hedvig.resources.SWISH_INFO_BOX
 import hedvig.resources.general_cancel_button
 import hedvig.resources.swish
 import org.jetbrains.compose.resources.stringResource
@@ -104,6 +109,18 @@ private fun SelectPayinMethodScreen(
       optionIcon = { PayinProviderPillow(PaymentProvider.fromRawValue(it.id)) },
       modifier = Modifier.padding(horizontal = 16.dp),
     )
+    AnimatedVisibility(visible = uiState.selectedProvider == PaymentProvider.Swish) {
+      Column {
+        Spacer(Modifier.height(8.dp))
+        HedvigNotificationCard(
+          message = stringResource(Res.string.SWISH_INFO_BOX),
+          priority = NotificationPriority.InfoInline,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        )
+      }
+    }
     Spacer(Modifier.height(16.dp))
     HedvigButton(
       onClick = onSubmitSelected,
@@ -180,7 +197,7 @@ private fun PreviewSelectPayinMethodScreen() {
             PaymentProvider.Invoice,
             PaymentProvider.Trustly,
           ),
-          selectedProvider = PaymentProvider.Trustly,
+          selectedProvider = PaymentProvider.Swish,
           currentProviders = listOf(
             PaymentProvider.Swish,
           ),

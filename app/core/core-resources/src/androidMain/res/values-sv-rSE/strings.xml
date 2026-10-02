@@ -971,6 +971,7 @@
   <string name="SWISH_EXPLANATION_ITEM_2_TITLE">Utbetalningar direkt</string>
   <string name="SWISH_EXPLANATION_ITEM_3_TEXT">Du kan byta eller ta bort betalningsmetod i inställningar.</string>
   <string name="SWISH_EXPLANATION_ITEM_3_TITLE">Byt när du vill</string>
+  <string name="SWISH_INFO_BOX">Genom att välja Swish godkänner du att din premie dras automatiskt via Swish varje månad. Vi meddelar dig i Hedvig-appen innan varje betalning.</string>
   <string name="TAB_HOME_TITLE">Hem</string>
   <string name="TAB_INSURANCES_TITLE">Försäkringar</string>
   <string name="TAB_PAYMENTS_TITLE">Betalningar</string>
