@@ -10,7 +10,6 @@ import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.paying.member.PaymentProvider
-import com.hedvig.android.data.paying.member.provider
 import com.hedvig.android.feature.payin.account.data.GetPayinAccountUseCase
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -37,13 +36,8 @@ internal sealed interface SelectPayinMethodUiState {
 
   data object Error : SelectPayinMethodUiState
 
-  /**
-   * @param activeProviders the providers the member has a method for that is already in use. A method
-   *   still pending activation is left out, so its option is not labelled as connected.
-   */
   data class Content(
     val availableProviders: List<PaymentProvider>,
-    val activeProviders: List<PaymentProvider>,
     val selectedProvider: PaymentProvider? = null,
   ) : SelectPayinMethodUiState
 }
@@ -64,10 +58,7 @@ internal class SelectPayinMethodPresenter(
       getPayinAccountUseCase.invoke().fold(
         ifLeft = { uiState = SelectPayinMethodUiState.Error },
         ifRight = { data ->
-          uiState = SelectPayinMethodUiState.Content(
-            availableProviders = data.availablePayinMethods,
-            activeProviders = data.currentMethods.filterNot { it.isPending }.map { it.provider },
-          )
+          uiState = SelectPayinMethodUiState.Content(availableProviders = data.availablePayinMethods)
         },
       )
     }

@@ -35,7 +35,6 @@ import hedvig.resources.ONBOARDING_CONNECT_PAYMENT_BANK_LABEL
 import hedvig.resources.PAYMENTS_INVOICE
 import hedvig.resources.PAYMENT_CONNECT_SUBTITLE
 import hedvig.resources.PAYMENT_CONNECT_TITLE
-import hedvig.resources.PAYMENT_OPTION_CONNECTED_LABEL
 import hedvig.resources.PAYMENT_OPTION_INVOICE_SUBTITLE
 import hedvig.resources.PAYMENT_OPTION_SWISH_SUBTITLE
 import hedvig.resources.PAYMENT_OPTION_TRUSTLY_SUBTITLE
@@ -129,11 +128,7 @@ private fun ColumnScope.SelectPayinMethodContent(
   )
   Spacer(Modifier.weight(1f))
   RadioGroup(
-    options = uiState.availableProviders.mapNotNull {
-      it.toRadioOption(
-        uiState.activeProviders,
-      )
-    },
+    options = uiState.availableProviders.mapNotNull { it.toRadioOption() },
     selectedOption = uiState.selectedProvider?.let { RadioOptionId(it.rawValue) },
     onRadioOptionSelected = { option -> PaymentProvider.fromRawValue(option.id)?.let(onProviderSelected) },
     // Shown when the backend offers it, but there is nothing to hand the member over to: invoice
@@ -180,37 +175,25 @@ private fun ColumnScope.SelectPayinMethodContent(
  * of the group.
  */
 @Composable
-private fun PaymentProvider.toRadioOption(activeProviders: List<PaymentProvider>): RadioOption? {
+private fun PaymentProvider.toRadioOption(): RadioOption? {
   val id = RadioOptionId(rawValue)
   return when (this) {
     PaymentProvider.Trustly -> RadioOption(
       id = id,
       text = stringResource(Res.string.ONBOARDING_CONNECT_PAYMENT_BANK_LABEL),
-      label = if (activeProviders.contains(this)) {
-        stringResource(Res.string.PAYMENT_OPTION_CONNECTED_LABEL)
-      } else {
-        stringResource(Res.string.PAYMENT_OPTION_TRUSTLY_SUBTITLE)
-      },
+      label = stringResource(Res.string.PAYMENT_OPTION_TRUSTLY_SUBTITLE),
     )
 
     PaymentProvider.Swish -> RadioOption(
       id = id,
       text = stringResource(Res.string.swish),
-      label = if (activeProviders.contains(this)) {
-        stringResource(Res.string.PAYMENT_OPTION_CONNECTED_LABEL)
-      } else {
-        stringResource(Res.string.PAYMENT_OPTION_SWISH_SUBTITLE)
-      },
+      label = stringResource(Res.string.PAYMENT_OPTION_SWISH_SUBTITLE),
     )
 
     PaymentProvider.Invoice -> RadioOption(
       id = id,
       text = stringResource(Res.string.PAYMENTS_INVOICE),
-      label = if (activeProviders.contains(this)) {
-        stringResource(Res.string.PAYMENT_OPTION_CONNECTED_LABEL)
-      } else {
-        stringResource(Res.string.PAYMENT_OPTION_INVOICE_SUBTITLE)
-      },
+      label = stringResource(Res.string.PAYMENT_OPTION_INVOICE_SUBTITLE),
     )
 
     else -> null
@@ -228,9 +211,6 @@ private fun PreviewSelectPayinMethodScreen() {
             PaymentProvider.Trustly,
             PaymentProvider.Swish,
             PaymentProvider.Invoice,
-          ),
-          activeProviders = listOf(
-            PaymentProvider.Trustly,
           ),
           selectedProvider = PaymentProvider.Swish,
         ),
