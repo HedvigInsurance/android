@@ -62,6 +62,10 @@ kotlin {
       implementation(libs.kotlin.test)
       implementation(libs.turbine)
     }
+    jvmTest.dependencies {
+      implementation(libs.jetbrains.compose.ui.test)
+      implementation(org.jetbrains.compose.ComposePlugin.DesktopDependencies.currentOs)
+    }
     androidMain.dependencies {
       implementation(libs.accompanist.permissions)
       implementation(libs.androidx.activity.compose)
