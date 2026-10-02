@@ -105,7 +105,7 @@ android {
 }
 
 dependencies {
-  "stagingImplementation".invoke(libs.chucker.noop)
+  "stagingImplementation".invoke(libs.chucker)
   "stagingImplementation".invoke(projects.featureImpersonation)
 
   implementation(platform(libs.firebase.bom))

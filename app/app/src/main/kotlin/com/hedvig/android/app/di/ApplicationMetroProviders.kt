@@ -66,8 +66,8 @@ interface ApplicationMetroProviders {
 
   /**
    * Records every call into Chucker's database on the device, so it can be read over adb from
-   * `databases/chucker.db`. Only debug builds depend on the real library, release and staging get the
-   * no-op artifact with the same API.
+   * `databases/chucker.db`. Debug and staging depend on the real library, release gets the no-op
+   * artifact with the same API.
    */
   @Provides
   @SingleIn(AppScope::class)

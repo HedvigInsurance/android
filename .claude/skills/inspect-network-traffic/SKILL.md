@@ -5,14 +5,15 @@ description: Read the HTTP and GraphQL calls a debug build of the Android app ma
 
 # Inspecting network traffic
 
-Debug builds record every call made through the app's main Ktor client into
-[Chucker](https://github.com/ChuckerTeam/chucker)'s database on the device. Staging and
-release get Chucker's no-op artifact and record nothing. `chucker.sh` next to this file
+Debug and staging builds record every call made through the app's main Ktor client into
+[Chucker](https://github.com/ChuckerTeam/chucker)'s database on the device. Release gets
+Chucker's no-op artifact and records nothing. `chucker.sh` next to this file
 copies the database off the device and queries it with the host's `sqlite3`, so you never
 need the Chucker UI.
 
 Needs a **debug** build (`com.hedvig.dev.app`) on the device, because `run-as` only works on
-debuggable apps. Set `ANDROID_SERIAL` when more than one device is attached.
+debuggable apps. Staging records too, but is not debuggable, so read it through the Chucker UI
+instead. Set `ANDROID_SERIAL` when more than one device is attached.
 
 ## Workflow
 
