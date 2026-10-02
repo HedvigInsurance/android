@@ -119,7 +119,7 @@ internal class ScreenNameTest {
     }
 
   private companion object {
-    /** GA4 truncates event parameter values, and `screen_name` is one. */
+    /** Firebase truncates event parameter values, and `screen_name` is one. */
     const val ANALYTICS_PARAMETER_LIMIT = 100
   }
 }
