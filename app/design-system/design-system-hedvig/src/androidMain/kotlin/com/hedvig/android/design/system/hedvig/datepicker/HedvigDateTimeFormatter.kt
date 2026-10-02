@@ -22,6 +22,7 @@ fun formatInstantForTalkBack(context: Context, instant: Instant): String {
 @Composable
 @ReadOnlyComposable
 actual fun getLocale(): CommonLocale {
+  LocalAppLocale.current?.let { return it }
   val configuration = LocalConfiguration.current
   return ConfigurationCompat.getLocales(configuration).get(0) ?: LocaleListCompat.getAdjustedDefault()[0]!!
 }

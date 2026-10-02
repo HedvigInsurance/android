@@ -20,6 +20,7 @@ dependencies {
   implementation(projects.coreDatastorePublic)
   implementation(projects.datadogCore)
   implementation(projects.initializable)
+  implementation(projects.languageCore)
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
 

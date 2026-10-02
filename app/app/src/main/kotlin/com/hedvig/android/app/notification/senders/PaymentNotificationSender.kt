@@ -9,6 +9,8 @@ import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.app.notification.intentForNotification
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.language.LanguageService
+import com.hedvig.android.language.withAppLanguage
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
@@ -24,6 +26,7 @@ import hedvig.resources.R
 @Inject
 class PaymentNotificationSender(
   private val context: Context,
+  private val languageService: LanguageService,
   private val permissionManager: PermissionManager,
   private val buildConstants: HedvigBuildConstants,
   private val deepLinkContainer: HedvigDeepLinkContainer,
@@ -44,16 +47,16 @@ class PaymentNotificationSender(
 
   private fun sendConnectDirectDebitNotification() {
     sendNotificationInner(
-      context.getString(R.string.NOTIFICATION_CONNECT_DD_TITLE),
-      context.getString(R.string.NOTIFICATION_CONNECT_DD_BODY),
+      context.withAppLanguage(languageService.getLanguage()).getString(R.string.NOTIFICATION_CONNECT_DD_TITLE),
+      context.withAppLanguage(languageService.getLanguage()).getString(R.string.NOTIFICATION_CONNECT_DD_BODY),
       CONNECT_DIRECT_DEBIT_NOTIFICATION_ID,
     )
   }
 
   private fun sendPaymentFailedNotification() {
     sendNotificationInner(
-      context.getString(R.string.NOTIFICATION_PAYMENT_FAILED_TITLE),
-      context.getString(R.string.NOTIFICATION_PAYMENT_FAILED_BODY),
+      context.withAppLanguage(languageService.getLanguage()).getString(R.string.NOTIFICATION_PAYMENT_FAILED_TITLE),
+      context.withAppLanguage(languageService.getLanguage()).getString(R.string.NOTIFICATION_PAYMENT_FAILED_BODY),
       PAYMENT_FAILED_NOTIFICATION_ID,
     )
   }

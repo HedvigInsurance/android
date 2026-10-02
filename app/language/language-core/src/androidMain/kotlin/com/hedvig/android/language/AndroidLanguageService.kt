@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.res.Configuration
 import androidx.annotation.MainThread
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.locale.AppFormattingLocale
 import com.hedvig.android.core.locale.CommonLocale
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
@@ -26,6 +27,7 @@ internal class AndroidLanguageService(
   override val language: StateFlow<Language> = mutableLanguage.asStateFlow()
 
   init {
+    AppFormattingLocale.current = mutableLanguage.value.toLocale()
     // A change made in the system per-app language settings, or to the phone's languages, arrives as a configuration
     // change of the whole process.
     context.registerComponentCallbacks(
@@ -50,14 +52,18 @@ internal class AndroidLanguageService(
   }
 
   override fun getLocale(): CommonLocale {
-    return Locale.forLanguageTag(language.value.toBcp47Format())
+    return language.value.toLocale()
   }
 
   private fun refresh() {
-    mutableLanguage.value = currentLanguage()
+    val language = currentLanguage()
+    AppFormattingLocale.current = language.toLocale()
+    mutableLanguage.value = language
   }
 
   private fun currentLanguage(): Language {
     return resolveLanguage(appLocaleStore.storedLocaleTags(), appLocaleStore.phoneLocaleTags())
   }
 }
+
+private fun Language.toLocale(): Locale = Locale.forLanguageTag(toBcp47Format())
