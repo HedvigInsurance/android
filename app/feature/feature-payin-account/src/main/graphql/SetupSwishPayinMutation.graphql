@@ -1,5 +1,5 @@
-mutation SetupSwishPayin($input: PaymentMethodSetupSwishInput!) {
-  paymentMethodSetupSwishPayin(input: $input) {
+mutation SetupSwishPayin {
+  paymentMethodSetupSwishPayin {
     error {
       message
     }

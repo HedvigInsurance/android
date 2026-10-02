@@ -99,9 +99,7 @@ internal class SwishPayinStatusPresenter(
         is SwishPayinStatusUiState.Failed -> state.copy(isRetrying = true)
         else -> SwishPayinStatusUiState.Loading
       }
-      setupSwishPayinUseCase.invoke(
-        "0765915968", // TODO: remove mock!!!
-      ).fold(
+      setupSwishPayinUseCase.invoke().fold(
         ifLeft = { error ->
           uiState = SwishPayinStatusUiState.Failed(error.message)
         },
