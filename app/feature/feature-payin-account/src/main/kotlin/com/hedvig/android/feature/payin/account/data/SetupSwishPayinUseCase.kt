@@ -4,7 +4,6 @@ import arrow.core.Either
 import arrow.core.raise.context.bind
 import arrow.core.raise.context.either
 import com.apollographql.apollo.ApolloClient
-import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
@@ -16,10 +15,9 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import octopus.SetupSwishPayinMutation
 import octopus.type.PaymentMethodSetupStatus
-import octopus.type.PaymentMethodSetupSwishInput
 
 internal interface SetupSwishPayinUseCase {
-  suspend fun invoke(phoneNumber: String): Either<ErrorMessage, SetupSwishResponse>
+  suspend fun invoke(): Either<ErrorMessage, SetupSwishResponse>
 }
 
 @ContributesBinding(AppScope::class)
@@ -29,9 +27,9 @@ internal class SetupSwishPayinUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val networkCacheManager: NetworkCacheManager,
 ) : SetupSwishPayinUseCase {
-  override suspend fun invoke(phoneNumber: String): Either<ErrorMessage, SetupSwishResponse> = either {
+  override suspend fun invoke(): Either<ErrorMessage, SetupSwishResponse> = either {
     val result = apolloClient
-      .mutation(SetupSwishPayinMutation(PaymentMethodSetupSwishInput(phoneNumber)))
+      .mutation(SetupSwishPayinMutation())
       .safeExecute()
       .mapLeft { error ->
         logcat(LogPriority.ERROR, error) { "SetupSwishPayinMutation error: $error" }

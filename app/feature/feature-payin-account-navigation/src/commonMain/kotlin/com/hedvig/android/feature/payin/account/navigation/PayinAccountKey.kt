@@ -33,10 +33,13 @@ data class PayinMethodDetailsKey(
  * @param showSuccessScreen whether connecting ends on a confirmation the member dismisses. A caller
  *   that confirms the connection itself, as the onboarding step does, sets this false and gets the
  *   member handed straight back instead.
+ * @param openedFromPicker whether the screen below is a payment method picker. A failed setup's
+ *   "change method" then goes back to it; otherwise it replaces this screen with a picker.
  */
 @Serializable
 data class SetupSwishPayinKey(
   val showSuccessScreen: Boolean = true,
+  val openedFromPicker: Boolean = false,
 ) : HedvigNavKey, DeepLinkAncestry {
   override val owningTab = TopLevelTab.Payments
   override val syntheticParents = listOf(PayinAccountKey)

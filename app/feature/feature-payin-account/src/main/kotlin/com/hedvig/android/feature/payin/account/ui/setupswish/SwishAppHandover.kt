@@ -17,8 +17,8 @@ import com.hedvig.android.logger.logcat
  * Hands the member over to the Swish app to approve a payin setup, following
  * https://developer.swish.nu/documentation/guides/trigger-the-swish-app.
  *
- * [isSwishInstalled] is what the approval screen consults before handing over on its own. [open] is
- * safe to call either way: with no Swish app on the device it falls back to opening the url.
+ * [isSwishInstalled] decides whether the approval screen offers to open Swish at all. [open] is safe
+ * to call either way: with no Swish app on the device it falls back to opening the url.
  */
 @Stable
 internal interface SwishAppHandover {

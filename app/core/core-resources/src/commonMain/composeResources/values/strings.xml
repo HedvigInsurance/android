@@ -970,6 +970,7 @@
   <string name="SWISH_EXPLANATION_ITEM_2_TITLE">Payouts straight to Swish</string>
   <string name="SWISH_EXPLANATION_ITEM_3_TEXT">Switch or remove your payment method in settings.</string>
   <string name="SWISH_EXPLANATION_ITEM_3_TITLE">Change anytime</string>
+  <string name="SWISH_INFO_BOX">By choosing Swish, you agree that your premium will be charged automatically via Swish every month. We'll notify you in the Hedvig app before each payment.</string>
   <string name="TAB_HOME_TITLE">Home</string>
   <string name="TAB_INSURANCES_TITLE">Insurances</string>
   <string name="TAB_PAYMENTS_TITLE">Payments</string>
