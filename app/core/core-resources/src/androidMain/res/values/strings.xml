@@ -474,7 +474,7 @@
   <string name="HC_COVERAGE_Q_25">Is it possible to change my deductible?</string>
   <string name="HC_HOME_VIEW_ANSWER">There is a lot you can do directly here in the app. Select a topic to resolve your issue quickly. Still need help? Send us a message.</string>
   <string name="HC_HOME_VIEW_QUESTION">Need help?</string>
-  <string name="HC_INSURANCE_A_01">You can easily add more insurance policies and addons at hedvig.com. As soon as you sign a new policy with Hedvig, it will appear [here](https://link.hedvig.com/insurances) in the app. Read more about our insurances [here](https://www.hedvig.com/se-en/insurances).\n \nDo you prefer to sign by phone? Call us on +46 10-45 99 200 on weekdays between 9-16.</string>
+  <string name="HC_INSURANCE_A_01">You can easily add more insurance plans at hedvig.com. Once you’ve signed a new insurance with Hedvig, it will appear here in the app. Read more about our insurance plans [here](https://www.hedvig.com/se/forsakringar).\n\nWant to call us instead? You can reach us at +46 10-45 99 200 on weekdays from 8:30 AM to 4:30 PM.</string>
   <string name="HC_INSURANCE_A_02">You can easily change your address directly in the app. Click [here](https://link.hedvig.com/insurances), select the relevant insurance policy, then tap Move to new address.</string>
   <string name="HC_INSURANCE_Q_01">How do I add more insurances?</string>
   <string name="HC_INSURANCE_Q_02">How do I change my address?</string>
@@ -532,7 +532,7 @@
   <string name="HOME_TODO_MISSING_PAYMENT_METHOD_TITLE">Missing payment method</string>
   <string name="HOME_TODO_MISSING_PAYOUT_METHOD_TITLE">Missing payout method</string>
   <string name="HOME_TODO_PAYMENT_OVERDUE_TITLE">Your payment is overdue</string>
-  <string name="HOME_TODO_REQUIRES_ACTION_SUBTITLE">Requires action</string>
+  <string name="HOME_TODO_REQUIRES_ACTION_SUBTITLE">Action needed</string>
   <string name="HOME_TODO_SECTION_TITLE">To do</string>
   <string name="HOME_TODO_SELECT_USAGE_DATA_TITLE">Choose how we use your data</string>
   <string name="HOME_TODO_UPDATE_CONTACT_DETAILS_TITLE">Update contact details</string>
@@ -745,6 +745,7 @@
   <string name="PAYMENT_METHODS_EMPTY">No payment method added. Add one to pay for your insurance.</string>
   <string name="PAYMENT_METHODS_TITLE">Payment methods</string>
   <string name="PAYMENT_METHOD_PENDING">It can take a few days for your new payment method to take effect.</string>
+  <string name="PAYMENT_METHOD_REQUIRED_FOOTNOTE">Required to keep your insurance active</string>
   <string name="PAYMENT_METHOD_TITLE">Payment method</string>
   <string name="PAYMENT_OPEN_SWISH_BUTTON">Open Swish</string>
   <string name="PAYMENT_OPTION_CONNECTED_LABEL">Connected</string>
@@ -756,16 +757,16 @@
   <string name="PAYMENT_PRIMARY_LABEL">Primary</string>
   <string name="PAYMENT_PRIMARY_SUBTITLE">This method will be used for your monthly payments</string>
   <string name="PAYMENT_PRIMARY_TITLE">Choose payment method</string>
-  <string name="PAYMENT_REMOVE_PRIMARY_SUBTITLE">Choose another method before removing it.</string>
-  <string name="PAYMENT_REMOVE_PRIMARY_TITLE">Switch primary method first</string>
+  <string name="PAYMENT_REMOVE_PRIMARY_SUBTITLE">This is your primary payment method. Choose another one before removing it.</string>
+  <string name="PAYMENT_REMOVE_PRIMARY_TITLE">Can\'t be removed right now</string>
   <string name="PAYMENT_REMOVE_SUBTITLE">You can add it back any time</string>
   <string name="PAYMENT_REMOVE_TITLE">Remove payment method</string>
   <string name="PAYMENT_SWISH_APPROVE_TITLE">Approve the connection in Swish</string>
   <string name="PAYMENT_SWISH_CHANGE_NUMBER">Change phone number</string>
-  <string name="PAYMENT_SWISH_EXPLANATION_BUTTON">How recurring payments with Swish work</string>
+  <string name="PAYMENT_SWISH_EXPLANATION_BUTTON">About recurring payments</string>
   <string name="PAYMENT_SWISH_FAILURE_TITLE">We couldn\'t connect Swish</string>
-  <string name="PAYMENT_SWISH_SUBTITLE">We\'ll send the connection request to Swish on this number</string>
-  <string name="PAYMENT_SWISH_SUCCESS_SUBTITLE">Your insurance is paid via Swish each month</string>
+  <string name="PAYMENT_SWISH_SUBTITLE">Use the number linked to your Swish</string>
+  <string name="PAYMENT_SWISH_SUCCESS_SUBTITLE">Your account is charged automatically each month. We’ll notify you in the Hedvig app before each payment.</string>
   <string name="PAYMENT_SWISH_SUCCESS_TITLE">Swish is now connected</string>
   <string name="PAYMENT_SWISH_TITLE">Confirm your Swish number</string>
   <string name="PAYMENT_TRUSTLY_FAILURE_TITLE">Connection failed</string>
