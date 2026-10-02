@@ -1,10 +1,14 @@
 package com.hedvig.android.language
 
+import android.app.Activity
+import android.app.Application
 import android.app.LocaleManager
 import android.content.ComponentName
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.Bundle
 import androidx.appcompat.app.AppLocalesMetadataHolderService
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.initializable.Initializable
@@ -13,7 +17,7 @@ import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.Inject
 
 /**
- * Runs in `Application.onCreate`, before any Activity exists.
+ * Starts in `Application.onCreate`, before any Activity exists.
  */
 @ContributesIntoSet(AppScope::class)
 @Inject
@@ -23,7 +27,7 @@ internal class LanguageStartup(
 ) : Initializable {
   override fun initialize() {
     markAppCompatSyncDoneIfFrameworkHasLocales()
-    migrateStoredLanguageOnce()
+    migrateStoredLanguageOnceAnActivityIsResumed()
   }
 
   /**
@@ -53,9 +57,37 @@ internal class LanguageStartup(
     )
   }
 
-  private fun migrateStoredLanguageOnce() {
+  /**
+   * Android keeps applying a cleared app locale to a process that had no Activity yet when it was cleared, which then
+   * ignores changes to the phone's languages until it restarts. Clearing once an Activity is resumed avoids that.
+   */
+  private fun migrateStoredLanguageOnceAnActivityIsResumed() {
     val preferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
     if (preferences.getBoolean(KEY_STORED_LANGUAGE_MIGRATED, false)) return
+    val application = context.applicationContext as Application
+    application.registerActivityLifecycleCallbacks(
+      object : Application.ActivityLifecycleCallbacks {
+        override fun onActivityResumed(activity: Activity) {
+          application.unregisterActivityLifecycleCallbacks(this)
+          migrateStoredLanguage(preferences)
+        }
+
+        override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+
+        override fun onActivityStarted(activity: Activity) {}
+
+        override fun onActivityPaused(activity: Activity) {}
+
+        override fun onActivityStopped(activity: Activity) {}
+
+        override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+
+        override fun onActivityDestroyed(activity: Activity) {}
+      },
+    )
+  }
+
+  private fun migrateStoredLanguage(preferences: SharedPreferences) {
     val storedLocaleTags = appLocaleStore.storedLocaleTags()
     val phoneLocaleTags = appLocaleStore.phoneLocaleTags()
     val migration = storedLanguageMigration(storedLocaleTags, phoneLocaleTags)
