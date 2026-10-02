@@ -5,7 +5,6 @@ import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.data.paying.member.PayinAccount
-import com.hedvig.android.data.paying.member.provider
 import com.hedvig.android.feature.payin.account.data.id
 import com.hedvig.android.feature.payin.account.ui.methoddetails.PayinMethodDetailsDestination
 import com.hedvig.android.feature.payin.account.ui.methoddetails.PayinMethodDetailsViewModel
@@ -18,12 +17,12 @@ import com.hedvig.android.feature.payin.account.ui.primary.SelectPrimaryPayinMet
 import com.hedvig.android.feature.payin.account.ui.primary.SelectPrimaryPayinMethodViewModelFactory
 import com.hedvig.android.feature.payin.account.ui.selectmethod.SelectPayinMethodDestination
 import com.hedvig.android.feature.payin.account.ui.selectmethod.SelectPayinMethodViewModel
-import com.hedvig.android.feature.payin.account.ui.selectmethod.SelectPayinMethodViewModelFactory
 import com.hedvig.android.feature.payin.account.ui.setupswish.SwishPayinStatusDestination
 import com.hedvig.android.feature.payin.account.ui.setupswish.SwishPayinStatusViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
+import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.popUpTo
 import com.hedvig.android.navigation.compose.removeAllOf
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
@@ -39,15 +38,7 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
     val viewModel: PayinAccountOverviewViewModel = metroViewModel()
     PayinAccountOverviewDestination(
       viewModel = viewModel,
-      onConnectPayinMethodClicked = dropUnlessResumed {
-        val content = viewModel.uiState.value as? PayinAccountOverviewUiState.Content
-        backstack.add(
-          SelectPayinMethodKey(
-            availableProviders = content?.availablePayinMethods ?: emptyList(),
-            currentProviders = content?.currentMethods?.map { it.provider } ?: emptyList(),
-          ),
-        )
-      },
+      onConnectPayinMethodClicked = dropUnlessResumed { backstack.add(SelectPayinMethodKey) },
       onPayinMethodClicked = dropUnlessResumed { method: PayinAccount ->
         backstack.add(PayinMethodDetailsKey(method.id))
       },
@@ -76,7 +67,7 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
           }
 
           is PayinAccount.SwishPayin -> {
-            backstack.add(SetupSwishPayinKey())
+            backstack.navigateAndPopUpTo<PayinMethodDetailsKey>(SetupSwishPayinKey(), inclusive = true)
           }
 
           // Invoice has no setup flow of its own, so the details screen offers no change
@@ -99,18 +90,15 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
     )
   }
 
-  entry<SelectPayinMethodKey> { key ->
-    val viewModel: SelectPayinMethodViewModel =
-      assistedMetroViewModel<SelectPayinMethodViewModel, SelectPayinMethodViewModelFactory> {
-        create(key.availableProviders, key.currentProviders)
-      }
+  entry<SelectPayinMethodKey> {
+    val viewModel: SelectPayinMethodViewModel = metroViewModel()
     SelectPayinMethodDestination(
       viewModel = viewModel,
       onTrustlySelected = dropUnlessResumed {
         backstack.popUpTo<SelectPayinMethodKey>(inclusive = true)
         navigateToTrustly()
       },
-      onSwishSelected = dropUnlessResumed { backstack.add(SetupSwishPayinKey()) },
+      onSwishSelected = dropUnlessResumed { backstack.add(SetupSwishPayinKey(openedFromPicker = true)) },
       navigateUp = backstack::navigateUp,
     )
   }
@@ -132,7 +120,13 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
       navigateUp = backstack::navigateUp,
       navigateBack = backstack::popBackstack,
       finishSwishSetup = finishSwishSetup,
-      changePaymentMethod = { backstack.popUpTo<SetupSwishPayinKey>(inclusive = true) },
+      changePaymentMethod = {
+        if (key.openedFromPicker) {
+          backstack.popUpTo<SetupSwishPayinKey>(inclusive = true)
+        } else {
+          backstack.navigateAndPopUpTo<SetupSwishPayinKey>(SelectPayinMethodKey, inclusive = true)
+        }
+      },
       openUrl = openUrl,
     )
   }

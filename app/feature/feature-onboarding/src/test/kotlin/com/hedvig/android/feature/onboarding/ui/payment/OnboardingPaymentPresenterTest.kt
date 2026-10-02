@@ -78,7 +78,9 @@ internal class OnboardingPaymentPresenterTest {
       sendEvent(OnboardingPaymentEvent.ConnectPayment)
       awaitItem()
       runCurrent()
-      assertThat(backstack.entries.last()).isEqualTo(SetupSwishPayinKey(showSuccessScreen = false))
+      assertThat(
+        backstack.entries.last(),
+      ).isEqualTo(SetupSwishPayinKey(showSuccessScreen = false, openedFromPicker = true))
     }
   }
 
