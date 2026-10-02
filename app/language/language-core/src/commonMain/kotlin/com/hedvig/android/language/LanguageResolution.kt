@@ -7,8 +7,15 @@ package com.hedvig.android.language
  * choice or the phone's first language, so this always names the language the UI is rendered in.
  */
 fun resolveLanguage(storedLocaleTags: List<String>, phoneLocaleTags: List<String>): Language {
-  val decidingTag = storedLocaleTags.firstOrNull() ?: phoneLocaleTags.firstOrNull()
-  return if (decidingTag?.languageSubtag() == SWEDISH) Language.SV_SE else Language.EN_SE
+  val decidingTag = storedLocaleTags.firstOrNull() ?: phoneLocaleTags.firstOrNull() ?: return Language.EN_SE
+  return languageOf(decidingTag)
+}
+
+/**
+ * The language strings render in for [localeTag]: Swedish for any Swedish locale, English for everything else.
+ */
+fun languageOf(localeTag: String): Language {
+  return if (localeTag.languageSubtag() == SWEDISH) Language.SV_SE else Language.EN_SE
 }
 
 /**

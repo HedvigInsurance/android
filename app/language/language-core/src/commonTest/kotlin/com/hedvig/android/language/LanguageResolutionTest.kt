@@ -7,6 +7,15 @@ import kotlin.test.Test
 
 class LanguageResolutionTest {
   @Test
+  fun `a locale tag renders in Swedish only for a Swedish language`() {
+    assertThat(languageOf("sv-SE")).isEqualTo(Language.SV_SE)
+    assertThat(languageOf("sv-FI")).isEqualTo(Language.SV_SE)
+    assertThat(languageOf("sv")).isEqualTo(Language.SV_SE)
+    assertThat(languageOf("en-US")).isEqualTo(Language.EN_SE)
+    assertThat(languageOf("de-DE")).isEqualTo(Language.EN_SE)
+  }
+
+  @Test
   fun `with nothing stored the phone's first language decides`() {
     assertThat(
       resolveLanguage(storedLocaleTags = emptyList(), phoneLocaleTags = listOf("sv-SE")),
