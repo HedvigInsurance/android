@@ -232,8 +232,6 @@ private fun ColumnScope.SwishPayinStatusContent(
     is PendingApproval -> {
       RecurringSwishExplanationButton(onClick = onLearnMoreAboutRecurringSwish)
       Spacer(Modifier.height(16.dp))
-      ChangeMethodFootnote()
-      Spacer(Modifier.height(16.dp))
       if (uiState.isHandedOver) {
         // The order's token went to Swish with the member, so a fresh order is the only way to try again.
         HedvigButton(
@@ -329,39 +327,6 @@ private fun ChangeMethodFootnote() {
       .fillMaxWidth()
       .padding(horizontal = 16.dp),
   )
-}
-
-@Composable
-private fun SwishPendingIllustration() {
-  Column(
-    Modifier.fillMaxWidth(),
-    horizontalAlignment = Alignment.CenterHorizontally,
-  ) {
-    Box {
-      PaymentMethodTile(
-        mark = {
-          Image(
-            HedvigIcons.Swish,
-            EmptyContentDescription,
-            Modifier.size(PaymentMethodMarkSize),
-          )
-        },
-      )
-      Box(
-        Modifier
-          .align(Alignment.TopEnd)
-          .offset(8.dp, (-8).dp),
-      ) {
-        PaymentMethodTileBadge(
-          icon = HedvigIcons.ArrowNorthEast,
-          containerColor = HedvigTheme.colorScheme.signalBlueElement,
-          contentColor = HedvigTheme.colorScheme.fillWhite,
-        )
-      }
-    }
-    Spacer(Modifier.height(48.dp))
-    ThreeDotsLoading()
-  }
 }
 
 @Composable
