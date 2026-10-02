@@ -10,6 +10,7 @@ import com.hedvig.android.app.notification.DATA_MESSAGE_TITLE
 import com.hedvig.android.app.notification.intentForNotification
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.notification.core.HedvigNotificationChannel
@@ -28,6 +29,7 @@ class CrossSellNotificationSender(
   private val context: Context,
   private val permissionManager: PermissionManager,
   private val buildConstants: HedvigBuildConstants,
+  private val languageService: LanguageService,
 ) : NotificationSender {
   private val notificationChannel = HedvigNotificationChannel.CrossSell
 
@@ -67,6 +69,7 @@ class CrossSellNotificationSender(
       notification = notification,
       notificationChannel = notificationChannel,
       notificationSenderName = "CrossSellNotificationSender",
+      language = languageService.getLanguage(),
     )
   }
 

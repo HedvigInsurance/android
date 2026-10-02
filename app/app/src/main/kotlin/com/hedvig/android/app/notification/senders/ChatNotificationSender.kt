@@ -95,6 +95,7 @@ class ChatNotificationSender(
       notification = notification,
       notificationChannel = notificationChannel,
       notificationSenderName = "ChatNotificationSender",
+      language = languageService.getLanguage(),
     )
   }
 

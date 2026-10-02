@@ -68,6 +68,7 @@ class ReferralsNotificationSender(
       notification = notificationBuilder.build(),
       notificationChannel = notificationChannel,
       notificationSenderName = "ReferralsNotificationSender",
+      language = languageService.getLanguage(),
     )
   }
 

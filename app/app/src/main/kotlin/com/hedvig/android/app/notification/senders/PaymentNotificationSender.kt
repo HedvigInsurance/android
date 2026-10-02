@@ -86,6 +86,7 @@ class PaymentNotificationSender(
       notification = notification,
       notificationChannel = notificationChannel,
       notificationSenderName = "PaymentNotificationSender",
+      language = languageService.getLanguage(),
     )
   }
 

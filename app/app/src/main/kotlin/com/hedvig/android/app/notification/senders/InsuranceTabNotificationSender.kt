@@ -9,6 +9,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.app.notification.intentForNotification
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
@@ -29,6 +30,7 @@ internal class InsuranceTabNotificationSender(
   private val permissionManager: PermissionManager,
   private val buildConstants: HedvigBuildConstants,
   private val deepLinkContainer: HedvigDeepLinkContainer,
+  private val languageService: LanguageService,
 ) : NotificationSender {
   private val notificationChannel = HedvigNotificationChannel.Other
 
@@ -68,6 +70,7 @@ internal class InsuranceTabNotificationSender(
       notification = builder.build(),
       notificationChannel = notificationChannel,
       notificationSenderName = "InsuranceTabNotificationSender",
+      language = languageService.getLanguage(),
     )
   }
 
