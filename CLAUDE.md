@@ -784,12 +784,16 @@ The `android.*` RUM metrics are generated from RUM events at ingestion, and the 
 one by another. Three rules and two mechanical traps, each learned by breaking one of them.
 
 **A metric that filters on `@view.name` dies silently when navigation naming changes.** It keeps
-reporting, it just stops matching, so nothing alerts. Dropping `NavigationViewTrackingEffect` in the
-Nav3 migration left `ActivityViewTrackingStrategy` naming every view after the single Activity, which
-broke all 18 view-filtered metrics for ten weeks before anyone noticed. `Navigation3TrackingEffect`
-in `HedvigApp`, wired off `Backstack.entries`, is what keeps them working. Monitor 124820537 now
-watches for a recurrence. Prefer an action (`@action.name`) over a view name for anything important:
-actions survive navigation changes.
+reporting, it just stops matching, so nothing alerts. Dropping `NavigationViewTrackingEffect` in
+the Nav3 migration left `ActivityViewTrackingStrategy` naming every view after the single Activity,
+which broke all 18 view-filtered metrics for ten weeks before anyone noticed.
+`Navigation3TrackingEffect` in `HedvigApp`, wired off `Backstack.entries`, is what keeps them
+working. Monitor 124820537 now watches for a recurrence.
+
+A destination that an analytics query names should implement `AnalyticsNamed` and pin the exact
+string that query matches, so a rename is safe. `AnalyticsNameTest` fails when a pinned name
+changes, which is a prompt to check the matching Datadog filter. Use an action (`@action.name`)
+only to count an event rather than a screen, since a view is reported again on every resume.
 
 **An SLO's numerator and denominator must be the same RUM event type.** A `resource` event and an
 `error` event are different populations, so subtracting one from the other is not a failure rate.
