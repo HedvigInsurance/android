@@ -6,8 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.apollo.NetworkCacheManager
-import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
 import com.hedvig.android.data.settings.datastore.AnalyticsConsent
 import com.hedvig.android.data.settings.datastore.GetAnalyticsConsentUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
@@ -24,9 +22,7 @@ internal class SettingsPresenter(
   private val languageService: LanguageService,
   private val settingsDataStore: SettingsDataStore,
   private val enableNotificationsReminderSnoozeManager: EnableNotificationsReminderSnoozeManager,
-  private val cacheManager: NetworkCacheManager,
   private val changeEmailSubscriptionPreferencesUseCase: ChangeEmailSubscriptionPreferencesUseCase,
-  private val uploadLanguagePreferenceToBackendUseCase: UploadLanguagePreferenceToBackendUseCase,
   private val getAnalyticsConsentUseCase: GetAnalyticsConsentUseCase,
 ) : MoleculePresenter<SettingsEvent, SettingsUiState> {
   @Composable
@@ -48,10 +44,6 @@ internal class SettingsPresenter(
       when (event) {
         is SettingsEvent.ChangeLanguage -> {
           languageService.setLanguage(event.language)
-          launch {
-            cacheManager.clearCache()
-            uploadLanguagePreferenceToBackendUseCase.invoke()
-          }
         }
 
         is SettingsEvent.ChangeTheme -> {

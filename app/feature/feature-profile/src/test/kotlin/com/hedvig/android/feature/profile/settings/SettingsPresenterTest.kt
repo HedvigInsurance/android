@@ -4,13 +4,12 @@ import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.right
 import assertk.assertThat
+import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
-import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
 import com.hedvig.android.core.datastore.FakeGetAnalyticsConsentUseCase
 import com.hedvig.android.core.datastore.FakeSettingsDataStore
 import com.hedvig.android.data.settings.datastore.AnalyticsConsent
-import com.hedvig.android.feature.NoopNetworkCacheManager
 import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreferencesUseCase
 import com.hedvig.android.feature.profile.data.SubPrefError
 import com.hedvig.android.feature.profile.data.SubPrefSuccess
@@ -30,8 +29,6 @@ class SettingsPresenterTest {
       FakeLanguageService(),
       FakeSettingsDataStore(),
       enableNotificationsReminderManager,
-      NoopNetworkCacheManager,
-      uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
       changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
       getAnalyticsConsentUseCase = FakeGetAnalyticsConsentUseCase(),
     )
@@ -54,8 +51,6 @@ class SettingsPresenterTest {
       FakeLanguageService(),
       FakeSettingsDataStore(),
       enableNotificationsReminderManager,
-      NoopNetworkCacheManager,
-      uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
       changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
       getAnalyticsConsentUseCase = FakeGetAnalyticsConsentUseCase(),
     )
@@ -83,8 +78,6 @@ class SettingsPresenterTest {
       FakeLanguageService(),
       FakeSettingsDataStore(),
       enableNotificationsReminderManager,
-      NoopNetworkCacheManager,
-      uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
       changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
       getAnalyticsConsentUseCase = FakeGetAnalyticsConsentUseCase(),
     )
@@ -112,8 +105,6 @@ class SettingsPresenterTest {
       FakeLanguageService(),
       FakeSettingsDataStore(),
       enableNotificationsReminderManager,
-      NoopNetworkCacheManager,
-      uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
       changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
       getAnalyticsConsentUseCase = FakeGetAnalyticsConsentUseCase(),
     )
@@ -143,8 +134,6 @@ class SettingsPresenterTest {
       FakeLanguageService(),
       settingsDataStore,
       enableNotificationsReminderManager,
-      NoopNetworkCacheManager,
-      uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
       changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
       getAnalyticsConsentUseCase = FakeGetAnalyticsConsentUseCase(),
     )
@@ -165,10 +154,43 @@ class SettingsPresenterTest {
       sendEvent(SettingsEvent.ChangeTheme(Theme.DARK))
     }
   }
-}
 
-private class NoopUploadLanguagePreferenceToBackendUseCase : UploadLanguagePreferenceToBackendUseCase {
-  override suspend fun invoke() {}
+  @Test
+  fun `picking a language hands it to the language service`() = runTest {
+    val languageService = FakeLanguageService(initialLanguage = Language.EN_SE)
+    val settingsPresenter = SettingsPresenter(
+      languageService,
+      FakeSettingsDataStore(),
+      TestEnableNotificationsReminderSnoozeManager(),
+      changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
+      getAnalyticsConsentUseCase = FakeGetAnalyticsConsentUseCase(),
+    )
+
+    settingsPresenter.test(SettingsUiState.Loading(selectedLanguage = Language.EN_SE)) {
+      assertThat(awaitItem().selectedLanguage).isEqualTo(Language.EN_SE)
+      sendEvent(SettingsEvent.ChangeLanguage(Language.SV_SE))
+      assertThat(awaitItem().selectedLanguage).isEqualTo(Language.SV_SE)
+      assertThat(languageService.pickedLanguages).containsExactly(Language.SV_SE)
+    }
+  }
+
+  @Test
+  fun `the selection follows a language change made outside the app`() = runTest {
+    val languageService = FakeLanguageService(initialLanguage = Language.EN_SE)
+    val settingsPresenter = SettingsPresenter(
+      languageService,
+      FakeSettingsDataStore(),
+      TestEnableNotificationsReminderSnoozeManager(),
+      changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
+      getAnalyticsConsentUseCase = FakeGetAnalyticsConsentUseCase(),
+    )
+
+    settingsPresenter.test(SettingsUiState.Loading(selectedLanguage = Language.EN_SE)) {
+      assertThat(awaitItem().selectedLanguage).isEqualTo(Language.EN_SE)
+      languageService.changeLanguageExternally(Language.SV_SE)
+      assertThat(awaitItem().selectedLanguage).isEqualTo(Language.SV_SE)
+    }
+  }
 }
 
 private class NoopChangeEmailSubscriptionPreferencesUseCase : ChangeEmailSubscriptionPreferencesUseCase {
