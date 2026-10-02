@@ -5,7 +5,7 @@
   <application
     android:name="com.hedvig.android.app.HedvigApplication">
     <!--
-    DEBUG-ONLY test harness for push notifications and FCM token handling.
+    Debug and staging test harness for push notifications and FCM token handling.
 
     Firebase delivers pushes by binding this receiver from Google Play Services, so a real
     message never arrives through an Intent we can craft from the shell. Firebase also guards
@@ -14,11 +14,15 @@
     intents over ADB and exercise the real on-device code path (Metro-injected NotificationSenders,
     the WorkManager factory wiring, etc.) without a backend or a live FCM token.
 
-    This removes a security guard, so it MUST stay debug-only: it lives in src/debug and never
-    merges into staging/release builds. Do not move it to the main manifest.
+    This removes a security guard, so it MUST stay out of release builds. Staging merges this file
+    too (see sourceSets in app/app/build.gradle.kts), which is acceptable because staging only goes
+    to Hedvig employees. Do not move it to the main manifest.
 
     Note: an XML comment cannot contain a double-dash, so the adb string-extra flag (dash dash es)
     is written below as `- -es`. Remove the space between the dashes when you actually run them.
+
+    The commands target the debug package. On a staging build, use com.hedvig.app in the -n
+    component instead of com.hedvig.dev.app.
 
     Simulate an incoming notification (routes to PushNotificationService.onMessageReceived,
     which dispatches to the matching NotificationSender):
