@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.autoSaver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
@@ -47,12 +48,18 @@ internal class SwishPayinStatusViewModel(
 
 internal sealed interface SwishPayinStatusEvent {
   data object Retry : SwishPayinStatusEvent
+
+  data object DidOpenSwishApp : SwishPayinStatusEvent
 }
 
 internal sealed interface SwishPayinStatusUiState {
   data object Loading : SwishPayinStatusUiState
 
-  data class PendingApproval(val redirectUrl: String) : SwishPayinStatusUiState
+  /**
+   * @param isHandedOver whether the member has already been sent to the Swish app with this order. Its
+   *   token is spent by then, so the order can no longer be offered again, only replaced on retry.
+   */
+  data class PendingApproval(val redirectUrl: String, val isHandedOver: Boolean = false) : SwishPayinStatusUiState
 
   data object Connected : SwishPayinStatusUiState
 
@@ -74,6 +81,11 @@ internal class SwishPayinStatusPresenter(
     var order by remember(savedStateHandle) {
       savedStateHandle.saveable(key = "order", stateSaver = NullableSwishSetupOrderSaver) {
         mutableStateOf<SwishSetupOrder?>(null)
+      }
+    }
+    var handedOverOrderId: String? by remember(savedStateHandle) {
+      savedStateHandle.saveable(key = "handedOverOrderId", stateSaver = autoSaver()) {
+        mutableStateOf(null)
       }
     }
     var uiState by remember { mutableStateOf(lastState) }
@@ -117,7 +129,10 @@ internal class SwishPayinStatusPresenter(
     // Keyed on the order, so a retry's new order restarts the polling against it.
     LaunchedEffect(order) {
       val currentOrder = order ?: return@LaunchedEffect
-      uiState = SwishPayinStatusUiState.PendingApproval(currentOrder.successUrl)
+      uiState = SwishPayinStatusUiState.PendingApproval(
+        redirectUrl = currentOrder.successUrl,
+        isHandedOver = currentOrder.orderId == handedOverOrderId,
+      )
       while (isActive) {
         when (val status = getSwishPayinSetupStatusUseCase.invoke(currentOrder.orderId).getOrNull()) {
           SwishPayinSetupStatus.Active -> {
@@ -143,10 +158,29 @@ internal class SwishPayinStatusPresenter(
 
     CollectEvents { event ->
       when (event) {
-        SwishPayinStatusEvent.Retry -> {
+        SwishPayinStatusEvent.DidOpenSwishApp -> {
+          handedOverOrderId = order?.orderId
           val state = uiState
-          if (state is SwishPayinStatusUiState.Failed && !state.isRetrying) {
-            orderRequestIteration++
+          if (state is SwishPayinStatusUiState.PendingApproval) {
+            uiState = state.copy(isHandedOver = true)
+          }
+        }
+
+        SwishPayinStatusEvent.Retry -> {
+          when (val state = uiState) {
+            is SwishPayinStatusUiState.Failed -> {
+              if (!state.isRetrying) orderRequestIteration++
+            }
+
+            // The handed-over order is abandoned, which also stops polling it.
+            is SwishPayinStatusUiState.PendingApproval -> {
+              if (state.isHandedOver) {
+                order = null
+                orderRequestIteration++
+              }
+            }
+
+            else -> {}
           }
         }
       }

@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.EmptyContentDescription
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
@@ -104,7 +105,10 @@ internal fun SwishPayinStatusDestination(
       onContinue = finishSwishSetup,
       onRetry = { viewModel.emit(SwishPayinStatusEvent.Retry) },
       onChangePaymentMethod = changePaymentMethod,
-      openUrl = swishAppHandover::open,
+      openUrl = { url ->
+        viewModel.emit(SwishPayinStatusEvent.DidOpenSwishApp)
+        swishAppHandover.open(url)
+      },
     )
   }
 }
@@ -199,6 +203,14 @@ private fun ColumnScope.SwishPayinStatusContent(
       )
     }
 
+    is PendingApproval if uiState.isHandedOver -> {
+      PaymentMethodHandoverIllustration(
+        modifier = Modifier.align(Alignment.CenterHorizontally),
+        loadingState = LoadingState.PROCESSING,
+        mark = { Image(HedvigIcons.Swish, EmptyContentDescription, Modifier.size(PaymentMethodMarkSize)) },
+      )
+    }
+
     is PendingApproval -> {
       SwishApprovalQrCode(
         redirectUrl = uiState.redirectUrl,
@@ -222,7 +234,19 @@ private fun ColumnScope.SwishPayinStatusContent(
       Spacer(Modifier.height(16.dp))
       ChangeMethodFootnote()
       Spacer(Modifier.height(16.dp))
-      if (isSwishInstalled) {
+      if (uiState.isHandedOver) {
+        // The order's token went to Swish with the member, so a fresh order is the only way to try again.
+        HedvigButton(
+          text = stringResource(Res.string.GENERAL_RETRY),
+          onClick = onRetry,
+          enabled = true,
+          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        )
+        Spacer(Modifier.height(8.dp))
+      } else if (isSwishInstalled) {
         HedvigButton(
           text = stringResource(Res.string.PAYMENT_OPEN_SWISH_BUTTON),
           onClick = { openUrl(uiState.redirectUrl) },
@@ -417,6 +441,7 @@ private class SwishPayinStatusUiStateProvider : CollectionPreviewParameterProvid
   listOf(
     Loading,
     PendingApproval("https://swish"),
+    PendingApproval("https://swish", isHandedOver = true),
     Connected,
     Failed(null),
     Failed("The connection was declined in the Swish app", isRetrying = true),

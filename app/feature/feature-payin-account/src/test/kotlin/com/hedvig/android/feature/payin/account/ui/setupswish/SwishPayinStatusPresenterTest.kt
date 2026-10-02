@@ -106,6 +106,44 @@ class SwishPayinStatusPresenterTest {
   }
 
   @Test
+  fun `opening Swish spends the order, and retrying replaces it with a new one`() = runTest {
+    val setupUseCase = FakeSetupSwishPayinUseCase()
+    val statusUseCase = FakeGetSwishPayinSetupStatusUseCase()
+    presenter(setupUseCase, statusUseCase, SavedStateHandle()).test(SwishPayinStatusUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Loading)
+      setupUseCase.responses.send(pending(firstOrder).right())
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.PendingApproval(firstOrder.successUrl))
+      sendEvent(SwishPayinStatusEvent.DidOpenSwishApp)
+      assertThat(awaitItem())
+        .isEqualTo(SwishPayinStatusUiState.PendingApproval(firstOrder.successUrl, isHandedOver = true))
+      sendEvent(SwishPayinStatusEvent.Retry)
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Loading)
+      setupUseCase.responses.send(pending(retriedOrder).right())
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.PendingApproval(retriedOrder.successUrl))
+      assertThat(setupUseCase.calls).isEqualTo(2)
+    }
+  }
+
+  @Test
+  fun `after process death, a handed-over order stays handed over`() = runTest {
+    val setupUseCase = FakeSetupSwishPayinUseCase()
+    val statusUseCase = FakeGetSwishPayinSetupStatusUseCase()
+    val savedStateHandle = SavedStateHandle(
+      mapOf(
+        "order" to bundleOf("value" to mutableStateOf(listOf(firstOrder.successUrl, firstOrder.orderId))),
+        "handedOverOrderId" to bundleOf("value" to mutableStateOf(firstOrder.orderId)),
+      ),
+    )
+    presenter(setupUseCase, statusUseCase, savedStateHandle).test(SwishPayinStatusUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Loading)
+      assertThat(awaitItem())
+        .isEqualTo(SwishPayinStatusUiState.PendingApproval(firstOrder.successUrl, isHandedOver = true))
+      statusUseCase.responses.send(SwishPayinSetupStatus.Active)
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Connected)
+    }
+  }
+
+  @Test
   fun `a setup that needs no approving is connected straight away`() = runTest {
     val setupUseCase = FakeSetupSwishPayinUseCase()
     val statusUseCase = FakeGetSwishPayinSetupStatusUseCase()
