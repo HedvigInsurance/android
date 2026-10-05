@@ -32,6 +32,7 @@ import octopus.fragment.MemberChargeFragment
 import octopus.fragment.MemberPaymentMethodFragment
 import octopus.type.MemberChargeStatus
 import octopus.type.MemberPaymentMethodStatus
+import octopus.type.MissingPaymentConnection
 
 internal interface GetUpcomingPaymentUseCase {
   suspend fun invoke(): Either<ErrorMessage, PaymentOverview>
@@ -82,61 +83,31 @@ internal data class GetUpcomingPaymentUseCaseImpl(
         val paymentMethods = result.currentMember.paymentMethods
         val payinMethod = paymentMethods.defaultPayinMethod
           ?: paymentMethods.payinMethods.find { it.isDefault }
-        val payoutMethod = paymentMethods.defaultPayoutMethod
-          ?: paymentMethods.payoutMethods.find { it.isDefault }
-        if (payinMethod == null) {
-          val firstKnownTerminationDateForContractTerminatedDueToMissedPayments = result
-            .currentMember
-            .activeContracts
-            .filter { it.terminationDueToMissedPayments }
-            .mapNotNull { it.terminationDate }
-            .minOrNull()
-
-          when (memberType) {
-            MemberType.STANDARD_MEMBER -> {
-              return@run PaymentConnection.NeedsPayinSetup(
-                firstKnownTerminationDateForContractTerminatedDueToMissedPayments,
-              )
-            }
-
-            MemberType.QASA_ONLY_MEMBER -> {
-              if (payoutMethod == null) {
-                return@run PaymentConnection.NeedsPayoutSetup
-              } else {
-                return@run PaymentConnection.Active
-              }
-            }
-
-            MemberType.STANDARD_TO_QASA_MEMBER -> {
-              if (result.currentMember.futureCharge == null) {
-                if (payoutMethod == null) {
-                  return@run PaymentConnection.NeedsPayoutSetup
-                } else {
-                  return@run PaymentConnection.Active
-                }
-              } else {
-                return@run PaymentConnection.NeedsPayinSetup(
-                  firstKnownTerminationDateForContractTerminatedDueToMissedPayments,
-                )
-              }
-            }
-          }
+        // A method still being activated is shown as such rather than asked for again.
+        if (payinMethod?.status == MemberPaymentMethodStatus.PENDING) {
+          return@run PaymentConnection.Pending
         }
-        when (payinMethod.status) {
-          MemberPaymentMethodStatus.ACTIVE -> {
-            if (payoutMethod == null) {
-              return@run PaymentConnection.NeedsPayoutSetup
+        // The backend decides which connection is still missing, which covers members who are not charged at all.
+        when (paymentMethods.missingConnection) {
+          MissingPaymentConnection.PAYIN -> {
+            PaymentConnection.NeedsPayinSetup(
+              terminationDateIfNotConnected = result.currentMember.activeContracts
+                .filter { it.terminationDueToMissedPayments }
+                .mapNotNull { it.terminationDate }
+                .minOrNull(),
+            )
+          }
+
+          MissingPaymentConnection.PAYOUT -> {
+            PaymentConnection.NeedsPayoutSetup
+          }
+
+          MissingPaymentConnection.UNKNOWN__, null -> {
+            if (payinMethod?.status == MemberPaymentMethodStatus.UNKNOWN__) {
+              PaymentConnection.Unknown
             } else {
-              return@run PaymentConnection.Active
+              PaymentConnection.Active
             }
-          }
-
-          MemberPaymentMethodStatus.PENDING -> {
-            PaymentConnection.Pending
-          }
-
-          MemberPaymentMethodStatus.UNKNOWN__ -> {
-            PaymentConnection.Unknown
           }
         }
       },

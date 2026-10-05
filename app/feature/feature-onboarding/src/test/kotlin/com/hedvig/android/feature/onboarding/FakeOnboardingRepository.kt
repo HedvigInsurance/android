@@ -65,6 +65,7 @@ internal fun testOnboardingData(
     ),
   ),
   referralInformation: OnboardingReferralInformation? = OnboardingReferralInformation("CODE", 10.0, "SEK"),
+  isMissingPayinConnection: Boolean = true,
   payinStatus: OnboardingPayinStatus = OnboardingPayinStatus.NeedsSetup,
   connectedPayinProvider: OnboardingPayinProvider? = null,
   crossSells: List<OnboardingCrossSell> = listOf(
@@ -82,6 +83,7 @@ internal fun testOnboardingData(
   phoneNumber = phoneNumber,
   contracts = contracts,
   referralInformation = referralInformation,
+  isMissingPayinConnection = isMissingPayinConnection,
   payinStatus = payinStatus,
   connectedPayinProvider = connectedPayinProvider,
   availablePayinProviders = OnboardingPayinProvider.entries,

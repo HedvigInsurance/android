@@ -31,7 +31,8 @@ class OnboardingPathTest {
   private fun data(
     contracts: List<OnboardingContract> = listOf(contract()),
     referralInformation: OnboardingReferralInformation? = OnboardingReferralInformation("CODE", 10.0, "SEK"),
-    hasConnectedPayinMethod: Boolean = false,
+    isMissingPayinConnection: Boolean = true,
+    payinStatus: OnboardingPayinStatus = OnboardingPayinStatus.NeedsSetup,
     crossSells: List<OnboardingCrossSell> = listOf(
       OnboardingCrossSell(
         id = "cs",
@@ -47,7 +48,8 @@ class OnboardingPathTest {
     phoneNumber = "070 990 12 32",
     contracts = contracts,
     referralInformation = referralInformation,
-    payinStatus = if (hasConnectedPayinMethod) OnboardingPayinStatus.Active else OnboardingPayinStatus.NeedsSetup,
+    isMissingPayinConnection = isMissingPayinConnection,
+    payinStatus = payinStatus,
     availablePayinProviders = OnboardingPayinProvider.entries,
     crossSells = crossSells,
   )
@@ -119,8 +121,26 @@ class OnboardingPathTest {
   }
 
   @Test
+  fun `connect payment step is present when the backend reports a missing payin connection`() {
+    val path = path(data(isMissingPayinConnection = true, payinStatus = OnboardingPayinStatus.NeedsSetup))
+    assertThat(path).contains(OnboardingStepId.ConnectPayment)
+  }
+
+  @Test
+  fun `connect payment step is skipped for a member the backend does not charge, even with no method`() {
+    val path = path(data(isMissingPayinConnection = false, payinStatus = OnboardingPayinStatus.NeedsSetup))
+    assertThat(path).doesNotContain(OnboardingStepId.ConnectPayment)
+  }
+
+  @Test
   fun `connect payment step is skipped when a payin method is already connected`() {
-    val path = path(data(hasConnectedPayinMethod = true))
+    val path = path(data(isMissingPayinConnection = false, payinStatus = OnboardingPayinStatus.Active))
+    assertThat(path).doesNotContain(OnboardingStepId.ConnectPayment)
+  }
+
+  @Test
+  fun `connect payment step is skipped while a payin method is still activating`() {
+    val path = path(data(isMissingPayinConnection = true, payinStatus = OnboardingPayinStatus.Pending))
     assertThat(path).doesNotContain(OnboardingStepId.ConnectPayment)
   }
 
@@ -150,7 +170,8 @@ class OnboardingPathTest {
       data(
         contracts = listOf(contract()),
         referralInformation = null,
-        hasConnectedPayinMethod = true,
+        isMissingPayinConnection = false,
+        payinStatus = OnboardingPayinStatus.Active,
         crossSells = emptyList(),
       ),
     )

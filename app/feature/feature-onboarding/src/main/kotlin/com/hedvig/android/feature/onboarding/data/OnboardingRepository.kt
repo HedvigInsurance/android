@@ -16,6 +16,7 @@ import octopus.OnboardingQuery
 import octopus.OnboardingUpdateContactInfoMutation
 import octopus.type.MemberPaymentMethodStatus
 import octopus.type.MemberPaymentProvider
+import octopus.type.MissingPaymentConnection
 
 internal interface OnboardingRepository {
   suspend fun getOnboardingData(): Either<ErrorMessage, OnboardingData>
@@ -86,6 +87,7 @@ internal class OnboardingRepositoryImpl(
           currencyCode = referralInformation.monthlyDiscountPerReferral.currencyCode.rawValue,
         )
       },
+      isMissingPayinConnection = member.paymentMethods.missingConnection == MissingPaymentConnection.PAYIN,
       payinStatus = member.paymentMethods.payinMethods.let { methods ->
         when {
           methods.any { it.status == MemberPaymentMethodStatus.ACTIVE && it.isDefault } -> OnboardingPayinStatus.Active

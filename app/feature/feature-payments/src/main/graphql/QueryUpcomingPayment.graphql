@@ -26,6 +26,7 @@ query UpcomingPayment {
       }
     }
     paymentMethods(version: 2) {
+      missingConnection
       payinMethods {
         ...MemberPaymentMethodFragment
       }
