@@ -98,6 +98,8 @@ import com.hedvig.android.compose.pager.indicator.CardCarousel
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.common.image.storyblokResized
+import com.hedvig.android.core.tracking.ActionType
+import com.hedvig.android.core.tracking.logAction
 import com.hedvig.android.crosssells.AddonsSection
 import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellBottomSheet
@@ -1341,7 +1343,14 @@ private fun QuoteCard(
         Spacer(Modifier.height(12.dp))
         HedvigButton(
           text = stringResource(Res.string.general_continue_button),
-          onClick = { onResumeClick(session.resumeUrl) },
+          onClick = {
+            logAction(
+              type = ActionType.CLICK,
+              name = "homeQuoteClicked",
+              attributes = mapOf("quoteId" to session.id, "quoteTitle" to session.title),
+            )
+            onResumeClick(session.resumeUrl)
+          },
           buttonStyle = Secondary,
           buttonSize = ButtonSize.Medium,
           enabled = true,
