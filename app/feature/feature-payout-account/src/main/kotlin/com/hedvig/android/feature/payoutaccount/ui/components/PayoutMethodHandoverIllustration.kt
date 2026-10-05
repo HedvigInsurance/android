@@ -14,6 +14,7 @@ import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.LoadingState
+import com.hedvig.android.design.system.hedvig.PaymentHandoverDirection
 import com.hedvig.android.design.system.hedvig.PaymentMethodHandoverIllustration
 import com.hedvig.android.design.system.hedvig.PaymentMethodMarkSize
 import com.hedvig.android.design.system.hedvig.Surface
@@ -34,6 +35,7 @@ internal fun PayoutMethodHandoverIllustration(
     PaymentMethodHandoverIllustration(
       destinationBadge = destinationBadge,
       loadingState = loadingState,
+      direction = PaymentHandoverDirection.FromHedvig,
       mark = { PayoutProviderMark(provider, Modifier.size(PaymentMethodMarkSize)) },
     )
     Spacer(Modifier.height(48.dp))

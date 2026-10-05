@@ -13,6 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
@@ -126,14 +128,16 @@ fun PaymentMethodTileBadge(
 }
 
 /**
- * The method being connected, linked by pulsing dots to the Hedvig symbol. [destinationBadge] marks
- * the symbol once the hand-off has landed.
+ * The method being connected, linked by pulsing dots to the Hedvig symbol, laid out in the way money
+ * moves for [direction]. [destinationBadge] marks the tile on the receiving end once the hand-off has
+ * landed.
  */
 @Composable
 fun PaymentMethodHandoverIllustration(
   modifier: Modifier = Modifier,
   destinationBadge: @Composable (() -> Unit)? = null,
   loadingState: LoadingState = LoadingState.PROCESSING,
+  direction: PaymentHandoverDirection = PaymentHandoverDirection.ToHedvig,
   mark: @Composable () -> Unit = { PaymentMethodPlusMark(Modifier.size(PaymentMethodMarkSize)) },
 ) {
   Row(
@@ -141,7 +145,10 @@ fun PaymentMethodHandoverIllustration(
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(16.dp),
   ) {
-    PaymentMethodTile(mark = mark)
+    when (direction) {
+      PaymentHandoverDirection.ToHedvig -> PaymentMethodTile(mark = mark)
+      PaymentHandoverDirection.FromHedvig -> HedvigTile()
+    }
     when (loadingState) {
       LoadingState.PROCESSING -> ThreeDotsLoading()
 
@@ -152,26 +159,43 @@ fun PaymentMethodHandoverIllustration(
       )
     }
     Box {
-      Surface(
-        shape = HedvigTheme.shapes.cornerXXLarge,
-        color = HedvigTheme.colorScheme.fillBlack,
-        contentColor = HedvigTheme.colorScheme.fillWhite,
-        border = HedvigTheme.colorScheme.borderPrimary,
-        modifier = Modifier.size(TileSize),
-      ) {
-        Box(Modifier.size(TileSize), contentAlignment = Alignment.Center) {
-          Icon(
-            imageVector = HedvigIcons.HelipadOutline,
-            contentDescription = null,
-            modifier = Modifier.size(65.dp),
-          )
-        }
+      when (direction) {
+        PaymentHandoverDirection.ToHedvig -> HedvigTile()
+        PaymentHandoverDirection.FromHedvig -> PaymentMethodTile(mark = mark)
       }
       if (destinationBadge != null) {
         Box(Modifier.align(Alignment.TopEnd).offset(BadgeOffset, -BadgeOffset)) {
           destinationBadge()
         }
       }
+    }
+  }
+}
+
+/** Which way money moves between the member's method and Hedvig, which decides the tiles' order. */
+enum class PaymentHandoverDirection {
+  /** Payins: the method on the left, handing over to Hedvig on the right. */
+  ToHedvig,
+
+  /** Payouts: Hedvig on the left, handing over to the method on the right. */
+  FromHedvig,
+}
+
+@Composable
+private fun HedvigTile() {
+  Surface(
+    shape = HedvigTheme.shapes.cornerXXLarge,
+    color = HedvigTheme.colorScheme.fillBlack,
+    contentColor = HedvigTheme.colorScheme.fillWhite,
+    border = HedvigTheme.colorScheme.borderPrimary,
+    modifier = Modifier.size(TileSize),
+  ) {
+    Box(Modifier.size(TileSize), contentAlignment = Alignment.Center) {
+      Icon(
+        imageVector = HedvigIcons.HelipadOutline,
+        contentDescription = null,
+        modifier = Modifier.size(65.dp),
+      )
     }
   }
 }
@@ -184,10 +208,18 @@ enum class LoadingState {
 
 @HedvigPreview
 @Composable
-private fun PreviewPaymentMethodHandoverIllustration() {
+private fun PreviewPaymentMethodHandoverIllustration(
+  @PreviewParameter(PaymentHandoverDirectionProvider::class) direction: PaymentHandoverDirection,
+) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      PaymentMethodHandoverIllustration(modifier = Modifier.size(width = 210.dp, height = 74.dp))
+      PaymentMethodHandoverIllustration(
+        direction = direction,
+        modifier = Modifier.size(width = 210.dp, height = 74.dp),
+      )
     }
   }
 }
+
+private class PaymentHandoverDirectionProvider :
+  CollectionPreviewParameterProvider<PaymentHandoverDirection>(PaymentHandoverDirection.entries)
