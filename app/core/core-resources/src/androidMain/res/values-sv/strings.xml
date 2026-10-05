@@ -699,9 +699,9 @@
   <string name="PAYMENTS_NO_HISTORY_DATA">Du har ingen betalningshistorik</string>
   <string name="PAYMENTS_NO_PAYMENTS_IN_PROGRESS">Du har inga pågående betalningar</string>
   <string name="PAYMENTS_OUTSTANDING_PAYMENT">Utebliven betalning</string>
-  <string name="PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION">Vår månadsbetalning behandlas med digitalt autogiro genom vår betalningspartner Trustly. Ditt pris baseras på flera olika faktorer som bland annat har att göra med dig, dina saker, hur du lever och var du bor.</string>
+  <string name="PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION">Din månadsbetalning behandlas med digitalt autogiro genom vår betalningspartner Trustly. Ditt pris baseras på flera olika faktorer som bland annat har att göra med dig, dina saker, hur du lever och var du bor.</string>
   <string name="PAYMENTS_PAYMENT_DETAILS_INFO_TITLE">Betalningsinformation</string>
-  <string name="PAYMENTS_PAYMENT_DETAILS_SWISH_DESCRIPTION"></string>
+  <string name="PAYMENTS_PAYMENT_DETAILS_SWISH_DESCRIPTION">Din månadsbetalning dras automatiskt via Swish. Ditt pris baseras på flera olika faktorer som bland annat har att göra med dig, dina saker, hur du lever och var du bor.</string>
   <string name="PAYMENTS_PAYMENT_DUE">Förfallodag</string>
   <string name="PAYMENTS_PAYMENT_DUE_INFO">Om du uppdaterar ditt bankkonto nära den %1$s kan det ta några extra dagar innan pengarna dras.</string>
   <string name="PAYMENTS_PAYMENT_FAILED">Denna betalning misslyckades och lades till i din betalning den %1$s .</string>
