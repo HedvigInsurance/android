@@ -3984,7 +3984,7 @@ type Mutation {
   """
    Setup Swish payin method for the member. Requires member consent in Swish app. 
   """
-  paymentMethodSetupSwishPayin(input: PaymentMethodSetupSwishInput!): PaymentMethodSetupOutput!
+  paymentMethodSetupSwishPayin: PaymentMethodSetupOutput!
   """
    Revoke and disconnect an ACTIVE payment method 
   """

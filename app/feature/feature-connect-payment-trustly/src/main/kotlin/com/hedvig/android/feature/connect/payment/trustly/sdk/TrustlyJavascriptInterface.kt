@@ -15,7 +15,7 @@ class TrustlyJavascriptInterface(
   @JavascriptInterface
   fun handleTrustlyEvent(typeLabel: String?, url: String?, packageName: String?) {
     val eventType = TrustlyEventType.valueForEventTypeLabel(typeLabel)
-    logcat { "Trustly Webview handleTrustlyEvent:$typeLabel | $url" }
+    logcat { "Trustly Webview handleTrustlyEvent:$typeLabel | host:${url?.toUri()?.host}" }
     when (eventType) {
       TrustlyEventType.SUCCESS -> {
         webViewHandler.successHandler?.onTrustlyCheckoutSuccess()
@@ -48,7 +48,9 @@ class TrustlyJavascriptInterface(
       }
       activity.startActivityForResult(intent, 0)
     } catch (e: Error) {
-      logcat { "TrustlyAndroidSDK: handleRedirect: Could not redirect to URL $urlString | ${e.message}" }
+      logcat {
+        "TrustlyAndroidSDK: handleRedirect: Could not redirect to host ${urlString?.toUri()?.host} | ${e.message}"
+      }
     }
   }
 
