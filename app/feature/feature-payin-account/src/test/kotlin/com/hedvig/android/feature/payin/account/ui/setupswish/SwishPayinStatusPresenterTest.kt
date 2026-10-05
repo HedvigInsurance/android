@@ -155,6 +155,82 @@ class SwishPayinStatusPresenterTest {
     }
   }
 
+  @Test
+  fun `a restart after a failed setup waits for a retry instead of setting up a new order`() = runTest {
+    val setupUseCase = FakeSetupSwishPayinUseCase()
+    val statusUseCase = FakeGetSwishPayinSetupStatusUseCase()
+    val savedStateHandle = SavedStateHandle()
+    presenter(setupUseCase, statusUseCase, savedStateHandle).test(SwishPayinStatusUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Loading)
+      setupUseCase.responses.send(ErrorMessage("boom").left())
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Failed("boom"))
+    }
+    presenter(setupUseCase, statusUseCase, savedStateHandle).test(SwishPayinStatusUiState.Failed("boom")) {
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Failed("boom"))
+      this@runTest.testScheduler.advanceUntilIdle()
+      assertThat(setupUseCase.calls).isEqualTo(1)
+      sendEvent(SwishPayinStatusEvent.Retry)
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Failed("boom", isRetrying = true))
+      assertThat(setupUseCase.calls).isEqualTo(2)
+    }
+  }
+
+  @Test
+  fun `a restart after connecting without an order stays connected and sets up nothing`() = runTest {
+    val setupUseCase = FakeSetupSwishPayinUseCase()
+    val statusUseCase = FakeGetSwishPayinSetupStatusUseCase()
+    val savedStateHandle = SavedStateHandle()
+    presenter(setupUseCase, statusUseCase, savedStateHandle).test(SwishPayinStatusUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Loading)
+      setupUseCase.responses.send(SetupSwishResponse.Success(url = null, orderId = null).right())
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Connected)
+    }
+    presenter(setupUseCase, statusUseCase, savedStateHandle).test(SwishPayinStatusUiState.Connected) {
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Connected)
+      this@runTest.testScheduler.advanceUntilIdle()
+      assertThat(setupUseCase.calls).isEqualTo(1)
+      assertThat(statusUseCase.polledOrderIds).isEmpty()
+    }
+  }
+
+  @Test
+  fun `a restart after an order is approved stays connected and stops polling`() = runTest {
+    val setupUseCase = FakeSetupSwishPayinUseCase()
+    val statusUseCase = FakeGetSwishPayinSetupStatusUseCase()
+    val savedStateHandle = SavedStateHandle()
+    presenter(setupUseCase, statusUseCase, savedStateHandle).test(SwishPayinStatusUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Loading)
+      setupUseCase.responses.send(pending(firstOrder).right())
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.PendingApproval(firstOrder.successUrl))
+      statusUseCase.responses.send(SwishPayinSetupStatus.Active)
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Connected)
+    }
+    presenter(setupUseCase, statusUseCase, savedStateHandle).test(SwishPayinStatusUiState.Connected) {
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Connected)
+      this@runTest.testScheduler.advanceUntilIdle()
+      assertThat(setupUseCase.calls).isEqualTo(1)
+      assertThat(statusUseCase.polledOrderIds).containsExactly(firstOrder.orderId)
+    }
+  }
+
+  @Test
+  fun `a restart after a cut-off request offers a retry instead of setting up a new order`() = runTest {
+    val setupUseCase = FakeSetupSwishPayinUseCase()
+    val statusUseCase = FakeGetSwishPayinSetupStatusUseCase()
+    val savedStateHandle = SavedStateHandle()
+    presenter(setupUseCase, statusUseCase, savedStateHandle).test(SwishPayinStatusUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Loading)
+      this@runTest.testScheduler.advanceUntilIdle()
+      assertThat(setupUseCase.calls).isEqualTo(1)
+      cancelAndIgnoreRemainingEvents()
+    }
+    presenter(setupUseCase, statusUseCase, savedStateHandle).test(SwishPayinStatusUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Failed(null))
+      this@runTest.testScheduler.advanceUntilIdle()
+      assertThat(setupUseCase.calls).isEqualTo(1)
+    }
+  }
+
   private fun pending(order: SwishSetupOrder) = SetupSwishResponse.Pending(order.successUrl, order.orderId)
 
   private fun presenter(

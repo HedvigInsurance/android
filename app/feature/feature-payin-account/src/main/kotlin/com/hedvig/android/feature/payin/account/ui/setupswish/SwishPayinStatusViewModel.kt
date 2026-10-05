@@ -30,6 +30,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
 private val PollInterval = 2.seconds
+private const val SetupRequestedKey = "setupRequested"
+private const val IsConnectedKey = "isConnected"
 
 @AssistedInject
 @HedvigViewModel(ActivityRetainedScope::class)
@@ -88,13 +90,45 @@ internal class SwishPayinStatusPresenter(
         mutableStateOf(null)
       }
     }
-    var uiState by remember { mutableStateOf(lastState) }
+    // Written straight into the handle rather than through `saveable`, so they read back current after
+    // a presenter restart that had no save-state pass in between. Only the first order of a screen is
+    // requested without the member asking, and a connected member is never set up again.
+    var setupRequested by remember { mutableStateOf(savedStateHandle.get<Boolean>(SetupRequestedKey) == true) }
+    var isConnected by remember { mutableStateOf(savedStateHandle.get<Boolean>(IsConnectedKey) == true) }
+
+    fun markSetupRequested() {
+      setupRequested = true
+      savedStateHandle[SetupRequestedKey] = true
+    }
+
+    fun markConnected() {
+      isConnected = true
+      savedStateHandle[IsConnectedKey] = true
+    }
+
+    var uiState by remember {
+      mutableStateOf(
+        when {
+          isConnected -> SwishPayinStatusUiState.Connected
+
+          lastState is SwishPayinStatusUiState.Failed -> lastState.copy(isRetrying = false)
+
+          // A request that was cut off, or an order that was not kept, can not be resumed, so the
+          // member is offered a retry rather than sent a new order they did not ask for.
+          setupRequested && order == null -> SwishPayinStatusUiState.Failed(null)
+
+          else -> lastState
+        },
+      )
+    }
     // Bumped by a retry. Requesting an order is skipped while one is held, so a saved order is
     // polled rather than replaced.
     var orderRequestIteration by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(orderRequestIteration) {
-      if (order != null) return@LaunchedEffect
+      if (isConnected || order != null) return@LaunchedEffect
+      if (orderRequestIteration == 0 && setupRequested) return@LaunchedEffect
+      markSetupRequested()
       uiState = when (val state = uiState) {
         is SwishPayinStatusUiState.Failed -> state.copy(isRetrying = true)
         else -> SwishPayinStatusUiState.Loading
@@ -112,6 +146,7 @@ internal class SwishPayinStatusPresenter(
 
             // A setup that needs no approving is already done, so there is nothing to wait on.
             response is SetupSwishResponse.Success -> {
+              markConnected()
               uiState = SwishPayinStatusUiState.Connected
             }
 
@@ -126,6 +161,7 @@ internal class SwishPayinStatusPresenter(
 
     // Keyed on the order, so a retry's new order restarts the polling against it.
     LaunchedEffect(order) {
+      if (isConnected) return@LaunchedEffect
       val currentOrder = order ?: return@LaunchedEffect
       uiState = SwishPayinStatusUiState.PendingApproval(
         redirectUrl = currentOrder.successUrl,
@@ -134,6 +170,7 @@ internal class SwishPayinStatusPresenter(
       while (isActive) {
         when (val status = getSwishPayinSetupStatusUseCase.invoke(currentOrder.orderId).getOrNull()) {
           SwishPayinSetupStatus.Active -> {
+            markConnected()
             uiState = SwishPayinStatusUiState.Connected
             break
           }
