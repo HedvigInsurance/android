@@ -40,8 +40,8 @@ import com.hedvig.android.design.system.hedvig.icon.Trustly
 import com.hedvig.android.design.system.hedvig.icon.colored.Kivra
 import com.hedvig.android.design.system.hedvig.icon.colored.Swish
 import hedvig.resources.PAYMENTS_BANK_LABEL
+import hedvig.resources.PAYMENT_METHOD_PENDING_STATUS_LABEL
 import hedvig.resources.PAYMENT_PRIMARY_LABEL
-import hedvig.resources.REFERRAL_PENDING_STATUS_LABEL
 import hedvig.resources.Res
 import hedvig.resources.swish
 import org.jetbrains.compose.resources.stringResource
@@ -90,7 +90,7 @@ internal fun payinMethodTitle(method: PayinAccount): String = when (method) {
 
 @Composable
 internal fun payinMethodSubtitle(method: PayinAccount): String? {
-  val pendingLabel = stringResource(Res.string.REFERRAL_PENDING_STATUS_LABEL)
+  val pendingLabel = stringResource(Res.string.PAYMENT_METHOD_PENDING_STATUS_LABEL)
   return when (method) {
     is PayinAccount.Trustly -> {
       method.bankAndMaskedAccount() ?: pendingLabel.takeIf { method.isPending }

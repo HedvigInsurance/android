@@ -111,11 +111,11 @@ import hedvig.resources.PAYMENTS_RETRY_INFO
 import hedvig.resources.PAYMENTS_UPCOMING_PAYMENT
 import hedvig.resources.PAYMENT_METHODS_TITLE
 import hedvig.resources.PAYMENT_METHOD_PENDING
+import hedvig.resources.PAYMENT_METHOD_PENDING_STATUS_LABEL
 import hedvig.resources.PAYOUT_ADD_PAYOUT_METHOD
 import hedvig.resources.PAYOUT_MISSING_INFO
 import hedvig.resources.PAYOUT_PAGE_HEADING
 import hedvig.resources.R
-import hedvig.resources.REFERRAL_PENDING_STATUS_LABEL
 import hedvig.resources.Res
 import hedvig.resources.TAB_PAYMENTS_TITLE
 import hedvig.resources.swish
@@ -458,7 +458,7 @@ private fun PrimaryPayinMethodSection(method: PrimaryPayinMethod, onClick: () ->
             },
           )
           val subtitle = when {
-            method.isPending -> stringResource(Res.string.REFERRAL_PENDING_STATUS_LABEL)
+            method.isPending -> stringResource(Res.string.PAYMENT_METHOD_PENDING_STATUS_LABEL)
             method.id == PayinMethodId.Invoice -> null
             else -> method.descriptor
           }

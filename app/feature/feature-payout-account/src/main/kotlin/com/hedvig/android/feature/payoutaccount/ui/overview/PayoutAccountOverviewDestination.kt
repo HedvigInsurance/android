@@ -47,13 +47,13 @@ import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOvervie
 import hedvig.resources.CHANGE_PAYOUT_METHOD_BUTTON_LABEL
 import hedvig.resources.MY_PAYMENT_UPDATING_MESSAGE
 import hedvig.resources.PAYMENTS_ACCOUNT
+import hedvig.resources.PAYMENT_METHOD_PENDING_STATUS_LABEL
 import hedvig.resources.PAYOUT_MISSING_INFO
 import hedvig.resources.PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE
 import hedvig.resources.PAYOUT_NO_PAYOUT_OPTIONS_TITLE
 import hedvig.resources.PAYOUT_PAGE_HEADING
 import hedvig.resources.PAYOUT_SELECT_PAYOUT_METHOD
 import hedvig.resources.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON
-import hedvig.resources.REFERRAL_PENDING_STATUS_LABEL
 import hedvig.resources.Res
 import hedvig.resources.swish
 import hedvig.resources.trustly
@@ -167,7 +167,7 @@ private fun PayoutAccountContent(
           provider = PaymentProvider.Swish,
           title = stringResource(Res.string.swish),
           subtitle = if (currentMethod.isPending && phoneNumber.isBlank()) {
-            stringResource(Res.string.REFERRAL_PENDING_STATUS_LABEL)
+            stringResource(Res.string.PAYMENT_METHOD_PENDING_STATUS_LABEL)
           } else {
             phoneNumber
           },
@@ -180,7 +180,7 @@ private fun PayoutAccountContent(
         LockedPayoutMethodRow(
           title = formatBankAccountLabel(stringResource(Res.string.trustly), currentMethod.bankName),
           subtitle = if (currentMethod.isPending && accountNumber.isBlank()) {
-            stringResource(Res.string.REFERRAL_PENDING_STATUS_LABEL)
+            stringResource(Res.string.PAYMENT_METHOD_PENDING_STATUS_LABEL)
           } else {
             accountNumber
           },
@@ -194,7 +194,7 @@ private fun PayoutAccountContent(
         LockedPayoutMethodRow(
           title = formatBankAccountLabel(stringResource(Res.string.PAYMENTS_ACCOUNT), currentMethod.bankName),
           subtitle = if (currentMethod.isPending && accountNumber.isBlank()) {
-            stringResource(Res.string.REFERRAL_PENDING_STATUS_LABEL)
+            stringResource(Res.string.PAYMENT_METHOD_PENDING_STATUS_LABEL)
           } else {
             accountNumber
           },
