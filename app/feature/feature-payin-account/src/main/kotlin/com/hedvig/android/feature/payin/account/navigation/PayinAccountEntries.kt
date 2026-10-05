@@ -35,7 +35,6 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
    * A lone deep link has nothing under it, so this builds the overview's ancestry rather than popping.
    */
   returnToPayinOverview: () -> Unit,
-  openUrl: (String) -> Unit,
 ) {
   entry<PayinAccountKey> {
     val viewModel: PayinAccountOverviewViewModel = metroViewModel()
@@ -129,7 +128,6 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
           }
         }
       },
-      openUrl = openUrl,
     )
   }
 }

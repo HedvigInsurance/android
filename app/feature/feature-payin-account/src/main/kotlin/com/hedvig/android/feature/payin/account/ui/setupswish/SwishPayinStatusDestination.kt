@@ -77,10 +77,9 @@ internal fun SwishPayinStatusDestination(
   navigateBack: () -> Unit,
   finishSwishSetup: () -> Unit,
   changePaymentMethod: () -> Unit,
-  openUrl: (String) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  val swishAppHandover = rememberSwishAppHandover(allowSandboxSwishApp, openUrl)
+  val swishAppHandover = rememberSwishAppHandover(allowSandboxSwishApp)
 
   val leavesWithoutConfirming = !showSuccessScreen && uiState is Connected
   LaunchedEffect(leavesWithoutConfirming) {

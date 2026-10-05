@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -18,7 +19,7 @@ import com.hedvig.android.logger.logcat
  * https://developer.swish.nu/documentation/guides/trigger-the-swish-app.
  *
  * [isSwishInstalled] decides whether the approval screen offers to open Swish at all. [open] is safe
- * to call either way: with no Swish app on the device it falls back to opening the url.
+ * to call either way: with no Swish app on the device it falls back to viewing the url.
  */
 @Stable
 internal interface SwishAppHandover {
@@ -32,10 +33,10 @@ internal interface SwishAppHandover {
  *   orders the staging backend issues, so builds pointing there accept it in place of the real app.
  */
 @Composable
-internal fun rememberSwishAppHandover(allowSandboxApp: Boolean, openUrl: (String) -> Unit): SwishAppHandover {
+internal fun rememberSwishAppHandover(allowSandboxApp: Boolean): SwishAppHandover {
   val context = LocalContext.current
-  return remember(context, allowSandboxApp, openUrl) {
-    SwishAppHandoverImpl(context, allowSandboxApp, openUrl)
+  return remember(context, allowSandboxApp) {
+    SwishAppHandoverImpl(context, allowSandboxApp)
   }
 }
 
@@ -43,7 +44,6 @@ internal fun rememberSwishAppHandover(allowSandboxApp: Boolean, openUrl: (String
 private class SwishAppHandoverImpl(
   private val context: Context,
   allowSandboxApp: Boolean,
-  private val openUrl: (String) -> Unit,
 ) : SwishAppHandover {
   private val installedPackage: String? = listOfNotNull(
     SwishPackageName,
@@ -56,18 +56,29 @@ private class SwishAppHandoverImpl(
     get() = installedPackage != null
 
   override fun open(approvalUrl: String) {
-    val packageName = installedPackage
-    if (packageName == null) {
-      openUrl(approvalUrl)
+    val uri = approvalUrl.toUri()
+    // The url comes from the backend and carries the order's token, so only a Swish or https link is
+    // ever launched, and never through the app's own url handling, which may attach member credentials.
+    if (uri.scheme !in AllowedSchemes) {
+      logcat(LogPriority.WARN) { "Refusing Swish approval url with scheme ${uri.scheme}" }
       return
     }
     // Addressing the intent at Swish keeps the approval out of a browser or an app chooser.
-    val intent = Intent(Intent.ACTION_VIEW, approvalUrl.toUri()).setPackage(packageName)
-    try {
+    val packageName = installedPackage
+    if (packageName != null && startView(uri, packageName)) return
+    startView(uri, packageName = null)
+  }
+
+  private fun startView(uri: Uri, packageName: String?): Boolean {
+    val intent = Intent(Intent.ACTION_VIEW, uri)
+      .addCategory(Intent.CATEGORY_BROWSABLE)
+      .setPackage(packageName)
+    return try {
       context.startActivity(intent)
+      true
     } catch (e: ActivityNotFoundException) {
-      logcat(LogPriority.WARN, e) { "$packageName would not take the Swish approval url" }
-      openUrl(approvalUrl)
+      logcat(LogPriority.WARN, e) { "${packageName ?: "No app"} would not take the Swish approval url" }
+      false
     }
   }
 }
@@ -88,3 +99,4 @@ private fun Context.isPackageInstalled(packageName: String): Boolean {
 
 private const val SwishPackageName = "se.bankgirot.swish"
 private const val SwishSandboxPackageName = "se.bankgirot.swish.sandbox"
+private val AllowedSchemes = setOf("swish", "https")

@@ -163,7 +163,6 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   addPaymentsEntries(
     backstack = backstack,
     hedvigBuildConstants = hedvigBuildConstants,
-    openUrl = openUrl,
     navigateToTrustly = navigateToTrustly,
     navigateToPayinAccount = navigateToPayinAccount,
     navigateToPayoutAccount = navigateToPayoutAccount,
@@ -465,7 +464,6 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
 private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
   backstack: BackstackController,
   hedvigBuildConstants: HedvigBuildConstants,
-  openUrl: (String) -> Unit,
   navigateToTrustly: () -> Unit,
   navigateToPayinAccount: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
@@ -495,7 +493,6 @@ private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
     hedvigBuildConstants = hedvigBuildConstants,
     navigateToTrustly = navigateToTrustly,
     returnToPayinOverview = changePayinMethod,
-    openUrl = openUrl,
   )
   connectPaymentEntries(
     backstack = backstack,
