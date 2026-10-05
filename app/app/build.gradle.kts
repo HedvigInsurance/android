@@ -27,8 +27,10 @@ android {
 
     versionCode = 43
     versionName = "14.5.1"
+  }
 
-    resourceConfigurations.addAll(listOf("en", "sv-rSE"))
+  androidResources {
+    localeFilters += listOf("en", "sv")
   }
 
   packaging {

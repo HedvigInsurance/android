@@ -28,13 +28,14 @@
     android:icon="@mipmap/ic_launcher"
     android:label="@string/APP_NAME"
     android:largeHeap="true"
+    android:localeConfig="@xml/locale_config"
     android:roundIcon="@mipmap/ic_launcher_round"
     android:supportsRtl="true"
     android:theme="@style/Hedvig.Theme"
     tools:targetApi="33">
     <activity
       android:name="com.hedvig.android.app.MainActivity"
-      android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|layoutDirection"
+      android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|layoutDirection|locale"
       android:exported="true"
       android:theme="@style/Hedvig.Theme.Splash"
       android:windowSoftInputMode="adjustResize">

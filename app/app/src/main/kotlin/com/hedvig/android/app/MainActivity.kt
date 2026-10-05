@@ -14,10 +14,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.ComposeFoundationFlags
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.retain.retain
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
@@ -45,10 +50,12 @@ import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.rive.RiveInitializer
 import com.hedvig.android.core.tracking.EventTrackingClient
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
+import com.hedvig.android.design.system.hedvig.datepicker.LocalAppLocale
 import com.hedvig.android.feature.onboarding.data.ResetOnboardingSeenUseCase
 import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.language.LanguageLaunchCheckUseCase
+import com.hedvig.android.language.Language
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.language.withAppLanguage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.compose.HedvigDeepLinkMatcher
@@ -90,9 +97,6 @@ class MainActivity : AppCompatActivity() {
 
   @Inject
   private lateinit var waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase
-
-  @Inject
-  private lateinit var languageLaunchCheckUseCase: LanguageLaunchCheckUseCase
 
   @Inject
   private lateinit var logoutUseCase: LogoutUseCase
@@ -201,8 +205,6 @@ class MainActivity : AppCompatActivity() {
       "MainActivity@${System.identityHashCode(this)} using " +
         "BackstackController@${System.identityHashCode(backstackController)}"
     }
-    val defaultLocale = getSystemLocale(resources.configuration)
-    languageLaunchCheckUseCase.invoke(defaultLocale)
     val uiModeManager = getSystemService<UiModeManager>()
     lifecycleScope.launch {
       lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
@@ -235,7 +237,7 @@ class MainActivity : AppCompatActivity() {
     addOnNewIntentListener { newIntent -> handleDeepLinkIntent(newIntent) }
 
     attachBackstackTaskHooks()
-    val externalNavigator = ExternalNavigatorImpl(this, hedvigBuildConstants.appPackageId)
+    val externalNavigator = ExternalNavigatorImpl(this, hedvigBuildConstants.appPackageId, languageService)
     RiveInitializer.init(this)
     NavigationStateBridge.restoreAndPersist(
       backstackController = backstackController,
@@ -254,8 +256,11 @@ class MainActivity : AppCompatActivity() {
       }
     }
     setContent {
+      val appLanguage by languageService.language.collectAsState()
       CompositionLocalProvider(
         LocalMetroViewModelFactory provides navRetainedViewModel.viewModelFactory,
+        LocalAppLocale provides remember(appLanguage) { Locale.forLanguageTag(appLanguage.toBcp47Format()) },
+        LocalResources provides rememberAppLanguageResources(appLanguage),
       ) {
         // Compute the window size class from Configuration. Do not switch this to
         // calculateWindowSizeClass(activity) or LocalWindowInfo.containerSize: both route through
@@ -394,11 +399,14 @@ private fun applyTheme(theme: Theme?, uiModeManager: UiModeManager?) {
   }
 }
 
-private fun getSystemLocale(config: android.content.res.Configuration): Locale {
-  return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-    Resources.getSystem().configuration.locales[0]
-  } else {
-    @Suppress("DEPRECATION")
-    config.locale
-  }
+/**
+ * Android string resources otherwise resolve to Android's own pick from the phone's languages, which is another
+ * language than [appLanguage] when the phone's first language is one the app does not have, Swedish for
+ * [Deutsch, Svenska].
+ */
+@Composable
+private fun rememberAppLanguageResources(appLanguage: Language): Resources {
+  val context = LocalContext.current
+  val configuration = LocalConfiguration.current
+  return remember(context, configuration, appLanguage) { context.withAppLanguage(appLanguage).resources }
 }

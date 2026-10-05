@@ -22,6 +22,8 @@ import com.hedvig.android.app.navigation.CurrentDestinationHolder
 import com.hedvig.android.app.notification.intentForNotification
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.language.LanguageService
+import com.hedvig.android.language.withAppLanguage
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.common.SuppressesChatPushNotification
@@ -44,6 +46,7 @@ class ChatNotificationSender(
   private val buildConstants: HedvigBuildConstants,
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   private val currentDestinationHolder: CurrentDestinationHolder,
+  private val languageService: LanguageService,
 ) : NotificationSender {
   private val notificationChannel = HedvigNotificationChannel.Chat
 
@@ -92,6 +95,7 @@ class ChatNotificationSender(
       notification = notification,
       notificationChannel = notificationChannel,
       notificationSenderName = "ChatNotificationSender",
+      language = languageService.getLanguage(),
     )
   }
 
@@ -105,7 +109,7 @@ class ChatNotificationSender(
       }
       .build()
 
-    val messageText = context.getString(R.string.NOTIFICATION_CHAT_NEW_MESSAGE_BODY)
+    val messageText = appLanguageContext().getString(R.string.NOTIFICATION_CHAT_NEW_MESSAGE_BODY)
 
     val message = NotificationCompat.MessagingStyle.Message(
       messageText,
@@ -136,15 +140,17 @@ class ChatNotificationSender(
     message: NotificationCompat.MessagingStyle.Message,
   ): NotificationCompat.MessagingStyle = NotificationCompat.MessagingStyle(youPerson).addMessage(message)
 
-  private val hedvigPerson: Person = Person.Builder()
-    .setName(context.getString(R.string.NOTIFICATION_CHAT_TITLE))
+  private fun appLanguageContext(): Context = context.withAppLanguage(languageService.getLanguage())
+
+  private val hedvigPerson: Person get() = Person.Builder()
+    .setName(appLanguageContext().getString(R.string.NOTIFICATION_CHAT_TITLE))
     .setImportant(true)
     .setKey(HEDVIG_PERSON_KEY)
     .setIcon(IconCompat.createWithResource(context, R.drawable.ic_hedvig_h))
     .build()
 
-  private val youPerson: Person = Person.Builder()
-    .setName(context.getString(R.string.notifications_chat_you))
+  private val youPerson: Person get() = Person.Builder()
+    .setName(appLanguageContext().getString(R.string.notifications_chat_you))
     .setImportant(true)
     .setKey(YOU_PERSON_KEY)
     .build()
