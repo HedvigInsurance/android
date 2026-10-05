@@ -57,8 +57,10 @@ internal class SetupSwishPayoutPresenter(
   ): SetupSwishPayoutUiState {
     val phoneNumberState = remember { lastState.phoneNumberState }
     var isLoading by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<ErrorMessage?>(null) }
-    var isConnected by remember { mutableStateOf(false) }
+    // Seeded from the last state, so a restart after a backgrounded save keeps its outcome on screen
+    // rather than offering the form again, where saving would repeat the setup.
+    var errorMessage by remember { mutableStateOf(lastState.errorMessage) }
+    var isConnected by remember { mutableStateOf(lastState.isConnected) }
     var saveIteration by remember { mutableStateOf<String?>(null) }
 
     // Seeds the field with the number the backend already holds, so the usual case is a confirm

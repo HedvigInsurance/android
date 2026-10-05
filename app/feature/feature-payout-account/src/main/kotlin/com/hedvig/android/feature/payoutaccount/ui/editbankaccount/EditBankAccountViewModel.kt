@@ -73,8 +73,10 @@ internal class EditBankAccountPresenter(
     val accountNumberState = remember { lastState.accountNumberState }
     val bankName = bankNameForClearingNumber(accountNumberState.text.toString().take(4))
     var isLoading by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
-    var isConnected by remember { mutableStateOf(false) }
+    // Seeded from the last state, so a restart after a backgrounded save keeps its outcome on screen
+    // rather than offering the form again, where saving would repeat the setup.
+    var errorMessage by remember { mutableStateOf(lastState.errorMessage) }
+    var isConnected by remember { mutableStateOf(lastState.isConnected) }
     var saveIteration by remember { mutableStateOf<String?>(null) }
 
     val currentSave = saveIteration
