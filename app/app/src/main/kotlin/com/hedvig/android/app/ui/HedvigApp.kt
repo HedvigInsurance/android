@@ -47,6 +47,7 @@ import com.datadog.android.compose.Navigation3TrackingEffect
 import com.hedvig.android.app.AndroidAppHost
 import com.hedvig.android.app.GlobalHedvigSnackBar
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
+import com.hedvig.android.app.navigation.AnalyticsNamePredicate
 import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
 import com.hedvig.android.app.navigation.ScreenParameterExtractor
@@ -369,7 +370,10 @@ private fun TrackScreenViewEffect(
 @OptIn(ExperimentalTrackingApi::class)
 @Composable
 private fun DatadogViewTrackingEffect(backstackController: BackstackController) {
-  Navigation3TrackingEffect(backStack = backstackController.entries)
+  Navigation3TrackingEffect(
+    backStack = backstackController.entries,
+    keyPredicate = AnalyticsNamePredicate,
+  )
 }
 
 /**

@@ -10,6 +10,7 @@ import com.hedvig.android.feature.claim.chat.ui.ClaimChatDestination
 import com.hedvig.android.feature.claim.chat.ui.StartClaimPledgeDestination
 import com.hedvig.android.feature.claim.chat.ui.outcome.ClaimOutcomeDeflectDestination
 import com.hedvig.android.feature.claim.chat.ui.outcome.ClaimOutcomeNewClaimDestination
+import com.hedvig.android.navigation.common.AnalyticsNamed
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
@@ -22,23 +23,49 @@ data class ClaimChatKey(
   val isDevelopmentFlow: Boolean = false,
   val messageId: String? = null,
   val resumeClaim: Boolean = false,
-) : HedvigNavKey
+) : HedvigNavKey, AnalyticsNamed {
+  override val analyticsName get() = ANALYTICS_NAME
+
+  companion object {
+    const val ANALYTICS_NAME = "com.hedvig.android.feature.claim.chat.navigation.ClaimChatKey"
+  }
+}
 
 @Serializable
 internal data class ClaimOutcomeDeflectKey(
   val deflect: StepContent.Deflect,
-) : HedvigNavKey
+) : HedvigNavKey, AnalyticsNamed {
+  override val analyticsName get() = ANALYTICS_NAME
+
+  companion object {
+    const val ANALYTICS_NAME = "com.hedvig.android.feature.claim.chat.navigation.ClaimOutcomeDeflectKey"
+  }
+}
 
 @Serializable
 internal data class ClaimOutcomeNewClaimKey(
   val outcome: ClaimIntentOutcome.Claim,
-) : HedvigNavKey
+) : HedvigNavKey, AnalyticsNamed {
+  override val analyticsName get() = ANALYTICS_NAME
+
+  companion object {
+    const val ANALYTICS_NAME = "com.hedvig.android.feature.claim.chat.navigation.ClaimOutcomeNewClaimKey"
+  }
+}
 
 @Serializable
-internal data object UpdateAppKey : HedvigNavKey
+internal data object UpdateAppKey : HedvigNavKey, AnalyticsNamed {
+  override val analyticsName get() = ANALYTICS_NAME
+
+  const val ANALYTICS_NAME = "com.hedvig.android.feature.claim.chat.navigation.UpdateAppKey"
+}
 
 @Serializable
-internal data object StartClaimPledgeKey : HedvigNavKey
+internal data object StartClaimPledgeKey : HedvigNavKey, AnalyticsNamed {
+  override val analyticsName get() = ANALYTICS_NAME
+
+  const val ANALYTICS_NAME = "com.hedvig.android.feature.claim.chat.navigation.StartClaimPledgeKey"
+}
 
 fun EntryProviderScope<HedvigNavKey>.claimChatEntries(
   backstack: Backstack,
