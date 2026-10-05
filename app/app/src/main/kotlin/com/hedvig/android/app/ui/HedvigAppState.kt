@@ -3,6 +3,7 @@ package com.hedvig.android.app.ui
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -28,7 +29,6 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 
 @Composable
 internal fun rememberHedvigAppState(
@@ -56,6 +56,10 @@ internal fun rememberHedvigAppState(
       paymentsNotificationBadgeService = paymentsNotificationBadgeService,
     )
   }
+  // Keyed on the instance, so a state replaced by a window size change stops collecting along with it.
+  LaunchedEffect(appState) {
+    appState.markChargeNoticesAsSeenWhileOnPayments()
+  }
   return appState
 }
 
@@ -66,7 +70,7 @@ internal class HedvigAppState(
   coroutineScope: CoroutineScope,
   private val settingsDataStore: SettingsDataStore,
   featureManager: FeatureManager,
-  paymentsNotificationBadgeService: PaymentsNotificationBadgeService,
+  private val paymentsNotificationBadgeService: PaymentsNotificationBadgeService,
 ) {
   /**
    * App kill-switch. If this is enabled we must show nothing in the app but a button to try to update the app
@@ -100,18 +104,16 @@ internal class HedvigAppState(
       null,
     )
 
-  init {
-    coroutineScope.launch {
-      combine(
-        snapshotFlow { backstackController.currentTopLevel },
-        paymentsBadge,
-      ) { currentTopLevel, badge ->
-        currentTopLevel == TopLevelTab.Payments && badge == PaymentsNotificationBadge.ChargeNotice
-      }
-        .distinctUntilChanged()
-        .filter { isOnPaymentsWithChargeNotice -> isOnPaymentsWithChargeNotice }
-        .collect { paymentsNotificationBadgeService.markChargeNoticesAsSeen() }
+  suspend fun markChargeNoticesAsSeenWhileOnPayments() {
+    combine(
+      snapshotFlow { backstackController.currentTopLevel },
+      paymentsBadge,
+    ) { currentTopLevel, badge ->
+      currentTopLevel == TopLevelTab.Payments && badge == PaymentsNotificationBadge.ChargeNotice
     }
+      .distinctUntilChanged()
+      .filter { isOnPaymentsWithChargeNotice -> isOnPaymentsWithChargeNotice }
+      .collect { paymentsNotificationBadgeService.markChargeNoticesAsSeen() }
   }
 
   val darkTheme: Boolean
