@@ -22,6 +22,10 @@ enum class PayinMethodId {
   Invoice,
 }
 
+/** The picker for which connected method the member is charged on. */
+@Serializable
+data object SelectPrimaryPayinMethodKey : HedvigNavKey
+
 @Serializable
 data class PayinMethodDetailsKey(
   val method: PayinMethodId,

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,6 +27,8 @@ import com.hedvig.android.data.paying.member.provider
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
@@ -47,6 +50,7 @@ import com.hedvig.android.feature.payin.account.ui.components.PrimaryMethodLabel
 import com.hedvig.android.feature.payin.account.ui.components.payinMethodTitle
 import com.hedvig.android.feature.payin.account.ui.components.toRadioOption
 import com.hedvig.android.feature.payin.account.ui.primary.SelectPrimaryPayinMethodEvent.ConfirmSelectedMethod
+import com.hedvig.android.feature.payin.account.ui.primary.SelectPrimaryPayinMethodEvent.Retry
 import com.hedvig.android.feature.payin.account.ui.primary.SelectPrimaryPayinMethodEvent.SelectMethod
 import hedvig.resources.PAYMENT_CONFIRM_PRIMARY_WARNING
 import hedvig.resources.PAYMENT_PRIMARY_CONFIRM_TITLE
@@ -64,23 +68,59 @@ internal fun SelectPrimaryPayinMethodDestination(
   navigateBack: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  LaunchedEffect(uiState.hasSetPrimaryMethod) {
-    if (uiState.hasSetPrimaryMethod) {
+  val hasSetPrimaryMethod = (uiState as? SelectPrimaryPayinMethodUiState.Content)?.hasSetPrimaryMethod == true
+  LaunchedEffect(hasSetPrimaryMethod) {
+    if (hasSetPrimaryMethod) {
       navigateBack()
     }
   }
-  SelectPrimaryPayinMethodScreen(
-    uiState = uiState,
-    onMethodSelected = { viewModel.emit(SelectMethod(it)) },
-    onConfirm = { viewModel.emit(ConfirmSelectedMethod) },
-    navigateUp = navigateUp,
-    navigateBack = navigateBack,
-  )
+  when (val state = uiState) {
+    SelectPrimaryPayinMethodUiState.Loading -> {
+      HedvigScaffold(
+        topAppBarText = null,
+        navigateUp = navigateUp,
+        modifier = Modifier.fillMaxSize(),
+      ) {
+        HedvigFullScreenCenterAlignedProgressDebounced(
+          Modifier
+            .weight(1f)
+            .wrapContentHeight(),
+        )
+      }
+    }
+
+    SelectPrimaryPayinMethodUiState.Failed -> {
+      HedvigScaffold(
+        topAppBarText = null,
+        navigateUp = navigateUp,
+        modifier = Modifier.fillMaxSize(),
+      ) {
+        HedvigErrorSection(
+          onButtonClick = { viewModel.emit(Retry) },
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .weight(1f)
+            .wrapContentHeight(),
+        )
+      }
+    }
+
+    is SelectPrimaryPayinMethodUiState.Content -> {
+      SelectPrimaryPayinMethodScreen(
+        uiState = state,
+        onMethodSelected = { viewModel.emit(SelectMethod(it)) },
+        onConfirm = { viewModel.emit(ConfirmSelectedMethod) },
+        navigateUp = navigateUp,
+        navigateBack = navigateBack,
+      )
+    }
+  }
 }
 
 @Composable
 private fun SelectPrimaryPayinMethodScreen(
-  uiState: SelectPrimaryPayinMethodUiState,
+  uiState: SelectPrimaryPayinMethodUiState.Content,
   onMethodSelected: (PayinAccount) -> Unit,
   onConfirm: () -> Unit,
   navigateUp: () -> Unit,
@@ -291,7 +331,7 @@ private fun PreviewSelectPrimaryPayinMethodScreen(
         ),
       )
       SelectPrimaryPayinMethodScreen(
-        uiState = SelectPrimaryPayinMethodUiState(
+        uiState = SelectPrimaryPayinMethodUiState.Content(
           methods = methods,
           selectedMethod = selectedMethod?.let { methods[it] },
         ),

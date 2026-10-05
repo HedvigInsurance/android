@@ -16,8 +16,5 @@ kotlin {
       implementation(projects.coreCommonPublic)
       implementation(projects.navigationCommon)
     }
-    androidMain.dependencies {
-      implementation(projects.dataPayingMember)
-    }
   }
 }

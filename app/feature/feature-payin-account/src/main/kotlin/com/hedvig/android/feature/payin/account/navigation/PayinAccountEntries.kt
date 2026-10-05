@@ -10,11 +10,9 @@ import com.hedvig.android.feature.payin.account.ui.methoddetails.PayinMethodDeta
 import com.hedvig.android.feature.payin.account.ui.methoddetails.PayinMethodDetailsViewModel
 import com.hedvig.android.feature.payin.account.ui.methoddetails.PayinMethodDetailsViewModelFactory
 import com.hedvig.android.feature.payin.account.ui.overview.PayinAccountOverviewDestination
-import com.hedvig.android.feature.payin.account.ui.overview.PayinAccountOverviewUiState
 import com.hedvig.android.feature.payin.account.ui.overview.PayinAccountOverviewViewModel
 import com.hedvig.android.feature.payin.account.ui.primary.SelectPrimaryPayinMethodDestination
 import com.hedvig.android.feature.payin.account.ui.primary.SelectPrimaryPayinMethodViewModel
-import com.hedvig.android.feature.payin.account.ui.primary.SelectPrimaryPayinMethodViewModelFactory
 import com.hedvig.android.feature.payin.account.ui.selectmethod.SelectPayinMethodDestination
 import com.hedvig.android.feature.payin.account.ui.selectmethod.SelectPayinMethodViewModel
 import com.hedvig.android.feature.payin.account.ui.setupswish.SwishPayinStatusDestination
@@ -42,10 +40,7 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
       onPayinMethodClicked = dropUnlessResumed { method: PayinAccount ->
         backstack.add(PayinMethodDetailsKey(method.id))
       },
-      onChoosePrimaryMethodClicked = dropUnlessResumed {
-        val content = viewModel.uiState.value as? PayinAccountOverviewUiState.Content
-        backstack.add(SelectPrimaryPayinMethodKey(currentMethods = content?.currentMethods ?: emptyList()))
-      },
+      onChoosePrimaryMethodClicked = dropUnlessResumed { backstack.add(SelectPrimaryPayinMethodKey) },
       navigateUp = backstack::navigateUp,
     )
   }
@@ -78,11 +73,8 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
     )
   }
 
-  entry<SelectPrimaryPayinMethodKey> { key ->
-    val viewModel: SelectPrimaryPayinMethodViewModel =
-      assistedMetroViewModel<SelectPrimaryPayinMethodViewModel, SelectPrimaryPayinMethodViewModelFactory> {
-        create(key.currentMethods)
-      }
+  entry<SelectPrimaryPayinMethodKey> {
+    val viewModel: SelectPrimaryPayinMethodViewModel = metroViewModel()
     SelectPrimaryPayinMethodDestination(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,

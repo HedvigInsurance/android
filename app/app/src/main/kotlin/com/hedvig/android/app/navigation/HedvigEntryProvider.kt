@@ -476,9 +476,7 @@ private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
     navigateToPayinAccount = navigateToPayinAccount,
     navigateToPayinMethodDetails = { method -> backstack.add(PayinMethodDetailsKey(method)) },
     navigateToPayoutAccount = navigateToPayoutAccount,
-    navigateToSelectPrimaryPayinMethod = { currentMethods ->
-      backstack.add(SelectPrimaryPayinMethodKey(currentMethods))
-    },
+    navigateToSelectPrimaryPayinMethod = { backstack.add(SelectPrimaryPayinMethodKey) },
     openConversation = navigateToNewConversation,
   )
   payoutAccountEntries(

@@ -73,7 +73,6 @@ internal fun LockedPayoutMethodRow(
         HedvigIcons.Lock,
         EmptyContentDescription,
         tint = HedvigTheme.colorScheme.fillDisabledTransparent,
-        // todo: get icon from design!
         modifier = Modifier.size(28.dp),
       )
     }
