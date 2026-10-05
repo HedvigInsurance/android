@@ -40,9 +40,11 @@ internal class GetPaymentsNotificationBadgeUseCaseImpl(
   override fun invoke(): Flow<PaymentsNotificationBadgeData?> {
     return flow {
       while (currentCoroutineContext().isActive) {
+        // Nothing else fetches these fields, so a cached answer would never be refreshed. The cache
+        // only stands in when the network is unreachable.
         val badgeData = apolloClient
           .query(MissedPaymentQuery())
-          .fetchPolicy(FetchPolicy.CacheAndNetwork)
+          .fetchPolicy(FetchPolicy.NetworkFirst)
           .safeFlow {
             logcat { "GetPaymentsNotificationBadgeUseCaseImpl error: $it" }
             ErrorMessage()
@@ -61,7 +63,7 @@ internal class GetPaymentsNotificationBadgeUseCaseImpl(
         emit(badgeData)
 
         // A missed payment is re-checked so the dot clears once the member pays it. The charge
-        // notices change about once a day, so one read per session is enough.
+        // notices change about once a day, so they are read again only when the badge is next observed.
         if (badgeData?.hasMissedPayment != true) {
           break
         }
