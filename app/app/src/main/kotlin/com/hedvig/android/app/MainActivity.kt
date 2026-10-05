@@ -59,7 +59,7 @@ import com.hedvig.android.language.withAppLanguage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.compose.HedvigDeepLinkMatcher
-import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
+import com.hedvig.android.notification.badge.data.payment.PaymentsNotificationBadgeService
 import com.hedvig.android.theme.Theme
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
@@ -108,7 +108,7 @@ class MainActivity : AppCompatActivity() {
   private lateinit var memberIdService: MemberIdService
 
   @Inject
-  private lateinit var missedPaymentNotificationService: MissedPaymentNotificationService
+  private lateinit var paymentsNotificationBadgeService: PaymentsNotificationBadgeService
 
   @Inject
   private lateinit var currentDestinationHolder: CurrentDestinationHolder
@@ -289,7 +289,7 @@ class MainActivity : AppCompatActivity() {
           externalNavigator = externalNavigator,
           logoutUseCase = logoutUseCase,
           getMemberAuthorizationCodeUseCase = getMemberAuthorizationCodeUseCase,
-          missedPaymentNotificationService = missedPaymentNotificationService,
+          paymentsNotificationBadgeService = paymentsNotificationBadgeService,
           currentDestinationHolder = currentDestinationHolder,
           eventTrackingClient = eventTrackingClient,
           screenParameterExtractor = screenParameterExtractor,

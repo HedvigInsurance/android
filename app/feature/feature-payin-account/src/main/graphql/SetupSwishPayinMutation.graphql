@@ -1,0 +1,10 @@
+mutation SetupSwishPayin {
+  paymentMethodSetupSwishPayin {
+    error {
+      message
+    }
+    status
+    url
+    orderId
+  }
+}

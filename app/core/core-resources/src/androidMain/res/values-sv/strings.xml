@@ -701,6 +701,7 @@
   <string name="PAYMENTS_OUTSTANDING_PAYMENT">Utebliven betalning</string>
   <string name="PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION">Vår månadsbetalning behandlas med digitalt autogiro genom vår betalningspartner Trustly. Ditt pris baseras på flera olika faktorer som bland annat har att göra med dig, dina saker, hur du lever och var du bor.</string>
   <string name="PAYMENTS_PAYMENT_DETAILS_INFO_TITLE">Betalningsinformation</string>
+  <string name="PAYMENTS_PAYMENT_DETAILS_SWISH_DESCRIPTION"></string>
   <string name="PAYMENTS_PAYMENT_DUE">Förfallodag</string>
   <string name="PAYMENTS_PAYMENT_DUE_INFO">Om du uppdaterar ditt bankkonto nära den %1$s kan det ta några extra dagar innan pengarna dras.</string>
   <string name="PAYMENTS_PAYMENT_FAILED">Denna betalning misslyckades och lades till i din betalning den %1$s .</string>
@@ -745,6 +746,7 @@
   <string name="PAYMENT_METHODS_EMPTY">Ingen betalningsmetod tillagd. Lägg till en för att betala din försäkring.</string>
   <string name="PAYMENT_METHODS_TITLE">Betalningsmetoder</string>
   <string name="PAYMENT_METHOD_PENDING">Det kan ta några dagar innan din nya betalningsmetod börjar gälla.</string>
+  <string name="PAYMENT_METHOD_PENDING_STATUS_LABEL">Behandlas</string>
   <string name="PAYMENT_METHOD_REQUIRED_FOOTNOTE">Krävs för att din försäkring ska vara aktiv</string>
   <string name="PAYMENT_METHOD_TITLE">Betalningsmetod</string>
   <string name="PAYMENT_OPEN_SWISH_BUTTON">Öppna Swish</string>
@@ -757,20 +759,20 @@
   <string name="PAYMENT_PRIMARY_LABEL">Förvald</string>
   <string name="PAYMENT_PRIMARY_SUBTITLE">Den här metoden används för dina månadsbetalningar</string>
   <string name="PAYMENT_PRIMARY_TITLE">Välj betalningsmetod</string>
-  <string name="PAYMENT_REMOVE_PRIMARY_SUBTITLE">Det här är din förvalda betalningsmetod. Välj en annan innan du tar bort den.</string>
+  <string name="PAYMENT_REMOVE_PRIMARY_SUBTITLE">Det här är din förvalda betalningsmetod. Välj en annan eller lägg till en ny innan du tar bort denna.</string>
   <string name="PAYMENT_REMOVE_PRIMARY_TITLE">Kan inte tas bort just nu</string>
   <string name="PAYMENT_REMOVE_SUBTITLE">Du kan lägga till den igen när som helst</string>
   <string name="PAYMENT_REMOVE_TITLE">Ta bort betalningsmetod</string>
   <string name="PAYMENT_SWISH_APPROVE_TITLE">Godkänn kopplingen i Swish</string>
   <string name="PAYMENT_SWISH_CHANGE_NUMBER">Byt telefonnummer</string>
-  <string name="PAYMENT_SWISH_EXPLANATION_BUTTON">Mer om återkommande betalningar</string>
+  <string name="PAYMENT_SWISH_EXPLANATION_BUTTON">Läs mer om återkommande betalningar</string>
   <string name="PAYMENT_SWISH_FAILURE_TITLE">Vi kunde inte koppla Swish</string>
   <string name="PAYMENT_SWISH_SUBTITLE">Använd numret du har kopplat till Swish</string>
   <string name="PAYMENT_SWISH_SUCCESS_SUBTITLE">Betalningen dras automatiskt från ditt konto varje månad. Vi meddelar dig i Hedvig-appen före varje betalning.</string>
   <string name="PAYMENT_SWISH_SUCCESS_TITLE">Swish är nu kopplat</string>
   <string name="PAYMENT_SWISH_TITLE">Bekräfta ditt Swish-nummer</string>
   <string name="PAYMENT_TRUSTLY_FAILURE_TITLE">Kopplingen misslyckades</string>
-  <string name="PAYMENT_TRUSTLY_SUCCESS_SUBTITLE">Vi aviserar dig i appen varje månad</string>
+  <string name="PAYMENT_TRUSTLY_SUCCESS_SUBTITLE">Vi meddelar dig i appen varje månad</string>
   <string name="PAYOUT_ADD_PAYOUT_METHOD">Lägg till utbetalningsmetod</string>
   <string name="PAYOUT_METHOD_INVOICE_DESCRIPTION">Direktutbetalning via Faktura</string>
   <string name="PAYOUT_METHOD_SWISH_DESCRIPTION">Snabb utbetalning med Swish</string>
@@ -827,7 +829,7 @@
   <string name="REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION">Läs mer</string>
   <string name="REFERRALS_SHARE_SHEET_TITLE">Dela din länk</string>
   <string name="REFERRAL_ADDCOUPON_INPUTPLACEHOLDER">Rabattkod</string>
-  <string name="REFERRAL_PENDING_STATUS_LABEL">Avvaktar...</string>
+  <string name="REFERRAL_PENDING_STATUS_LABEL">Väntar</string>
   <string name="REFERRAL_SMS_MESSAGE">Hej! Skaffa Hedvig med min tipslänk så får vi båda %1$s rabatt på månadskostnaden. Följ länken: %2$s</string>
   <string name="REFERRAL_TERMINATED_STATUS_LABEL">Inaktiv</string>
   <string name="REMOVE_ADDONS_FLOW_NO_ELIGIBLE_INSURANCES">Inga av dina försäkringar har tillägg som kan tas bort.</string>
@@ -971,7 +973,7 @@
   <string name="SWISH_EXPLANATION_ITEM_2_TITLE">Utbetalningar direkt</string>
   <string name="SWISH_EXPLANATION_ITEM_3_TEXT">Du kan byta eller ta bort betalningsmetod i inställningar.</string>
   <string name="SWISH_EXPLANATION_ITEM_3_TITLE">Byt när du vill</string>
-  <string name="SWISH_INFO_BOX">Genom att välja Swish godkänner du att din premie dras automatiskt via Swish varje månad. Vi meddelar dig i Hedvig-appen innan varje betalning.</string>
+  <string name="SWISH_INFO_BOX">När du väljer Swish godkänner du att din premie dras automatiskt via Swish varje månad. Vi meddelar dig i Hedvig-appen innan varje betalning.</string>
   <string name="TAB_HOME_TITLE">Hem</string>
   <string name="TAB_INSURANCES_TITLE">Försäkringar</string>
   <string name="TAB_PAYMENTS_TITLE">Betalningar</string>
@@ -1468,7 +1470,7 @@
     <item quantity="other">Erbjudandet löper ut om %1$d minuter</item>
   </plurals>
   <string name="open_chat">Skriv meddelande</string>
-  <string name="pay_in_confirmation_direct_debit_headline">Autogiro är anslutet!</string>
+  <string name="pay_in_confirmation_direct_debit_headline">Bankkontot är kopplat</string>
   <string name="pay_in_error_body">Vi kunde inte ansluta ditt bankkonto. Vänligen försök igen eller skriv till oss direkt i appen.</string>
   <string name="pay_in_explainer_direct_debit_headline">Koppla autogiro</string>
   <string name="payment_details_discount_campaign_type">%1$s</string>

@@ -1,6 +1,7 @@
 query UpcomingPayment {
   currentMember {
     missedChargeIdToChargeManually
+    showRetryChargeNotice
     pastCharges {
       ...on MemberCharge {
         id
@@ -24,7 +25,8 @@ query UpcomingPayment {
         ...MoneyFragment
       }
     }
-    paymentMethods {
+    paymentMethods(version: 2) {
+      missingConnection
       payinMethods {
         ...MemberPaymentMethodFragment
       }
