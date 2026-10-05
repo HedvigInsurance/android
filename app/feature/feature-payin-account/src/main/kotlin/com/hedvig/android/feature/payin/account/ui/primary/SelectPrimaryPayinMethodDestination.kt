@@ -26,7 +26,6 @@ import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.data.paying.member.provider
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
-import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
@@ -39,6 +38,7 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.Notification
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioOptionId
+import com.hedvig.android.design.system.hedvig.StaticRadioOption
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
@@ -148,18 +148,12 @@ private fun SelectPrimaryPayinMethodScreen(
     Spacer(Modifier.weight(1f))
     val currentDefault = uiState.methods.firstOrNull { it.isDefault }
     if (currentDefault != null) {
-      HedvigCard(
-        shape = HedvigTheme.shapes.cornerLarge,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      ) {
-        PayinMethodRow(
-          method = currentDefault,
-          modifier = Modifier.fillMaxWidth(),
-          endSlot = { PrimaryMethodLabel() },
-        )
-      }
+      StaticRadioOption(
+        option = currentDefault.toRadioOption(),
+        trailingContent = { PrimaryMethodLabel() },
+        optionIcon = { PayinProviderPillow(currentDefault.provider) },
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
       Spacer(Modifier.height(4.dp))
     }
     RadioGroup(
@@ -316,12 +310,12 @@ private fun PreviewSelectPrimaryPayinMethodScreen(
           "91234124",
           "Swedbank",
           isPending = false,
-          isDefault = false,
+          isDefault = true,
         ),
         SwishPayin(
           "0709901232",
           isPending = false,
-          isDefault = true,
+          isDefault = false,
         ),
         Invoice(
           delivery = InvoiceDelivery.Kivra,

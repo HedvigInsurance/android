@@ -88,6 +88,37 @@ fun RadioGroup(
   )
 }
 
+/**
+ * One option drawn exactly like a [RadioGroup] row, but not selectable: [trailingContent] takes the
+ * indicator's place. For a fixed value shown in line with the options of a [RadioGroup] beside it.
+ */
+@Composable
+fun StaticRadioOption(
+  option: RadioOption,
+  trailingContent: @Composable () -> Unit,
+  modifier: Modifier = Modifier,
+  size: RadioGroupSize = RadioGroupSize.Medium,
+  colors: RadioGroupColors = RadioGroupDefaults.colors,
+  optionIcon: @Composable ((RadioOptionId) -> Unit)? = null,
+) {
+  val style = RadioGroupDefaults.style(size, RadioGroupStyle.Vertical)
+  RadioSurface(style, colors, modifier) {
+    RadioOption(
+      option = option,
+      selected = false,
+      enabled = true,
+      colors = colors,
+      style = style,
+      selectIndicator = { _, _, _, _ -> trailingContent() },
+      optionIcon = optionIcon,
+      modifier = Modifier
+        .fillMaxWidth()
+        .heightIn(min = style.minHeight)
+        .optionPaddings(style, option.hasLabel),
+    )
+  }
+}
+
 @Composable
 fun Checkbox(
   option: CheckboxOption,
