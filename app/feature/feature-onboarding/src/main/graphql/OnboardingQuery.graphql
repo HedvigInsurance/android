@@ -35,6 +35,7 @@ query Onboarding {
     }
     paymentMethods(version: 2) {
       payinMethods {
+        provider
         status
         isDefault
       }

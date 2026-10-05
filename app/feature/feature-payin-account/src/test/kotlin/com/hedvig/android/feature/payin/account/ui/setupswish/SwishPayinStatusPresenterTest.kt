@@ -5,9 +5,11 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import arrow.core.Either
+import arrow.core.left
 import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.payin.account.data.GetSwishPayinSetupStatusUseCase
@@ -28,56 +30,152 @@ class SwishPayinStatusPresenterTest {
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
 
-  private val initialOrder = SwishSetupOrder("https://swish/initial", "initialOrderId")
+  private val firstOrder = SwishSetupOrder("https://swish/first", "firstOrderId")
   private val retriedOrder = SwishSetupOrder("https://swish/retried", "retriedOrderId")
 
   @Test
-  fun `a fresh order is handed over once, and not again after the member opened Swish`() = runTest {
+  fun `a fresh screen sets up an order and polls it until it is approved`() = runTest {
+    val setupUseCase = FakeSetupSwishPayinUseCase()
     val statusUseCase = FakeGetSwishPayinSetupStatusUseCase()
-    presenter(statusUseCase, SavedStateHandle()).test(initialViewModelState()) {
-      assertThat(awaitItem()).isEqualTo(initialViewModelState())
-      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.PendingApproval(initialOrder.successUrl, true))
-      sendEvent(SwishPayinStatusEvent.DidOpenSwishApp)
-      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.PendingApproval(initialOrder.successUrl, false))
+    presenter(setupUseCase, statusUseCase, SavedStateHandle()).test(SwishPayinStatusUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Loading)
+      setupUseCase.responses.send(pending(firstOrder).right())
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.PendingApproval(firstOrder.successUrl))
       statusUseCase.responses.send(SwishPayinSetupStatus.Active)
       assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Connected)
-      assertThat(statusUseCase.polledOrderIds).containsExactly(initialOrder.orderId)
+      assertThat(setupUseCase.calls).isEqualTo(1)
+      assertThat(statusUseCase.polledOrderIds).containsExactly(firstOrder.orderId)
     }
   }
 
   @Test
-  fun `after process death, keeps polling the retried order without handing over again`() = runTest {
+  fun `after process death, keeps polling the saved order without setting up a new one`() = runTest {
+    val setupUseCase = FakeSetupSwishPayinUseCase()
     val statusUseCase = FakeGetSwishPayinSetupStatusUseCase()
     // The saveable APIs only write into the handle on a real save-state pass, so the handle is
-    // populated by hand with what a retry followed by a handover would have left behind.
+    // populated by hand with what an earlier setup would have left behind.
     val savedStateHandle = SavedStateHandle(
-      mapOf(
-        "order" to bundleOf("value" to mutableStateOf(listOf(retriedOrder.successUrl, retriedOrder.orderId))),
-        "handedOverOrderId" to bundleOf("value" to mutableStateOf(retriedOrder.orderId)),
-      ),
+      mapOf("order" to bundleOf("value" to mutableStateOf(listOf(firstOrder.successUrl, firstOrder.orderId)))),
     )
-    presenter(statusUseCase, savedStateHandle).test(initialViewModelState()) {
-      assertThat(awaitItem()).isEqualTo(initialViewModelState())
-      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.PendingApproval(retriedOrder.successUrl, false))
+    presenter(setupUseCase, statusUseCase, savedStateHandle).test(SwishPayinStatusUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Loading)
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.PendingApproval(firstOrder.successUrl))
+      statusUseCase.responses.send(SwishPayinSetupStatus.Active)
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Connected)
+      assertThat(setupUseCase.calls).isEqualTo(0)
+      assertThat(statusUseCase.polledOrderIds).containsExactly(firstOrder.orderId)
+    }
+  }
+
+  @Test
+  fun `a failed setup can be retried into a new order`() = runTest {
+    val setupUseCase = FakeSetupSwishPayinUseCase()
+    val statusUseCase = FakeGetSwishPayinSetupStatusUseCase()
+    presenter(setupUseCase, statusUseCase, SavedStateHandle()).test(SwishPayinStatusUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Loading)
+      setupUseCase.responses.send(ErrorMessage("boom").left())
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Failed("boom"))
+      sendEvent(SwishPayinStatusEvent.Retry)
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Failed("boom", isRetrying = true))
+      setupUseCase.responses.send(pending(retriedOrder).right())
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.PendingApproval(retriedOrder.successUrl))
       statusUseCase.responses.send(SwishPayinSetupStatus.Active)
       assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Connected)
       assertThat(statusUseCase.polledOrderIds).containsExactly(retriedOrder.orderId)
     }
   }
 
-  private fun initialViewModelState() = SwishPayinStatusUiState.PendingApproval(initialOrder.successUrl, false)
+  @Test
+  fun `an order rejected in Swish is replaced by a new one on retry`() = runTest {
+    val setupUseCase = FakeSetupSwishPayinUseCase()
+    val statusUseCase = FakeGetSwishPayinSetupStatusUseCase()
+    presenter(setupUseCase, statusUseCase, SavedStateHandle()).test(SwishPayinStatusUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Loading)
+      setupUseCase.responses.send(pending(firstOrder).right())
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.PendingApproval(firstOrder.successUrl))
+      statusUseCase.responses.send(SwishPayinSetupStatus.Failed("declined"))
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Failed("declined"))
+      sendEvent(SwishPayinStatusEvent.Retry)
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Failed("declined", isRetrying = true))
+      setupUseCase.responses.send(pending(retriedOrder).right())
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.PendingApproval(retriedOrder.successUrl))
+      statusUseCase.responses.send(SwishPayinSetupStatus.Active)
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Connected)
+      assertThat(statusUseCase.polledOrderIds).containsExactly(firstOrder.orderId, retriedOrder.orderId)
+    }
+  }
 
-  private fun presenter(statusUseCase: GetSwishPayinSetupStatusUseCase, savedStateHandle: SavedStateHandle) =
-    SwishPayinStatusPresenter(
-      initialOrder = initialOrder,
-      phoneNumber = "0701234567",
-      savedStateHandle = savedStateHandle,
-      getSwishPayinSetupStatusUseCase = statusUseCase,
-      setupSwishPayinUseCase = object : SetupSwishPayinUseCase {
-        override suspend fun invoke(phoneNumber: String): Either<ErrorMessage, SetupSwishResponse> =
-          error("Not expected to retry")
-      },
+  @Test
+  fun `opening Swish spends the order, and retrying replaces it with a new one`() = runTest {
+    val setupUseCase = FakeSetupSwishPayinUseCase()
+    val statusUseCase = FakeGetSwishPayinSetupStatusUseCase()
+    presenter(setupUseCase, statusUseCase, SavedStateHandle()).test(SwishPayinStatusUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Loading)
+      setupUseCase.responses.send(pending(firstOrder).right())
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.PendingApproval(firstOrder.successUrl))
+      sendEvent(SwishPayinStatusEvent.DidOpenSwishApp)
+      assertThat(awaitItem())
+        .isEqualTo(SwishPayinStatusUiState.PendingApproval(firstOrder.successUrl, isHandedOver = true))
+      sendEvent(SwishPayinStatusEvent.Retry)
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Loading)
+      setupUseCase.responses.send(pending(retriedOrder).right())
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.PendingApproval(retriedOrder.successUrl))
+      assertThat(setupUseCase.calls).isEqualTo(2)
+    }
+  }
+
+  @Test
+  fun `after process death, a handed-over order stays handed over`() = runTest {
+    val setupUseCase = FakeSetupSwishPayinUseCase()
+    val statusUseCase = FakeGetSwishPayinSetupStatusUseCase()
+    val savedStateHandle = SavedStateHandle(
+      mapOf(
+        "order" to bundleOf("value" to mutableStateOf(listOf(firstOrder.successUrl, firstOrder.orderId))),
+        "handedOverOrderId" to bundleOf("value" to mutableStateOf(firstOrder.orderId)),
+      ),
     )
+    presenter(setupUseCase, statusUseCase, savedStateHandle).test(SwishPayinStatusUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Loading)
+      assertThat(awaitItem())
+        .isEqualTo(SwishPayinStatusUiState.PendingApproval(firstOrder.successUrl, isHandedOver = true))
+      statusUseCase.responses.send(SwishPayinSetupStatus.Active)
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Connected)
+    }
+  }
+
+  @Test
+  fun `a setup that needs no approving is connected straight away`() = runTest {
+    val setupUseCase = FakeSetupSwishPayinUseCase()
+    val statusUseCase = FakeGetSwishPayinSetupStatusUseCase()
+    presenter(setupUseCase, statusUseCase, SavedStateHandle()).test(SwishPayinStatusUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Loading)
+      setupUseCase.responses.send(SetupSwishResponse.Success(url = null, orderId = null).right())
+      assertThat(awaitItem()).isEqualTo(SwishPayinStatusUiState.Connected)
+      assertThat(statusUseCase.polledOrderIds).isEmpty()
+    }
+  }
+
+  private fun pending(order: SwishSetupOrder) = SetupSwishResponse.Pending(order.successUrl, order.orderId)
+
+  private fun presenter(
+    setupUseCase: SetupSwishPayinUseCase,
+    statusUseCase: GetSwishPayinSetupStatusUseCase,
+    savedStateHandle: SavedStateHandle,
+  ) = SwishPayinStatusPresenter(
+    savedStateHandle = savedStateHandle,
+    getSwishPayinSetupStatusUseCase = statusUseCase,
+    setupSwishPayinUseCase = setupUseCase,
+  )
+}
+
+private class FakeSetupSwishPayinUseCase : SetupSwishPayinUseCase {
+  val responses = Channel<Either<ErrorMessage, SetupSwishResponse>>(Channel.UNLIMITED)
+  var calls = 0
+
+  override suspend fun invoke(): Either<ErrorMessage, SetupSwishResponse> {
+    calls++
+    return responses.receive()
+  }
 }
 
 private class FakeGetSwishPayinSetupStatusUseCase : GetSwishPayinSetupStatusUseCase {

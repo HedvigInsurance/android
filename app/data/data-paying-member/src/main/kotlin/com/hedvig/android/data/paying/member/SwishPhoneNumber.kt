@@ -30,14 +30,14 @@ fun swishPhoneNumberOrNull(storedNumber: String): String? {
   return if (hasCountryCodePlus) "+$digits" else digits
 }
 
-/** A Swish number grouped the way the member is used to reading it: `070-123-45-67`. */
+/** A Swish number grouped the way the member is used to reading it: `070 123 45 67`. */
 fun formatSwishPhoneNumber(phoneNumber: String): String {
   val digits = phoneNumber.take(15)
   val sb = StringBuilder()
   for (i in digits.indices) {
     sb.append(digits[i])
     if (i in setOf(2, 5, 7)) {
-      sb.append("-")
+      sb.append(" ")
     }
   }
   return sb.toString()

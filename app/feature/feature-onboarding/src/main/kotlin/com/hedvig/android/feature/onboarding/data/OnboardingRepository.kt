@@ -97,6 +97,11 @@ internal class OnboardingRepositoryImpl(
           else -> OnboardingPayinStatus.NeedsSetup
         }
       },
+      // Same precedence as payinStatus, so the provider always belongs to the method the status reports.
+      connectedPayinProvider = member.paymentMethods.payinMethods.let { methods ->
+        methods.firstOrNull { it.status == MemberPaymentMethodStatus.ACTIVE && it.isDefault }
+          ?: methods.firstOrNull { it.status == MemberPaymentMethodStatus.PENDING }
+      }?.provider?.toOnboardingPayinProvider(),
       availablePayinProviders = member.paymentMethods.availableMethods
         .filter { it.supportsPayin }
         .mapNotNull { it.provider.toOnboardingPayinProvider() },

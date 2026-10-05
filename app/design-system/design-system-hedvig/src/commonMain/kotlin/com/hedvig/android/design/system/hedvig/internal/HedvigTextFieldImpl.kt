@@ -31,7 +31,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
@@ -212,6 +215,12 @@ private fun AnimatedTextFieldContent(
   trailingContent: @Composable (() -> Unit)?,
   container: @Composable (Modifier, @Composable BoxScope.() -> Unit) -> Unit,
 ) {
+  // BasicTextField keeps its focus state inside innerTextField, starting from unfocused, so a fresh instance
+  // composed after the field gained focus never learns it is focused, and taps on it stop showing the keyboard.
+  // One movable instance, composed only by the phase being moved to, carries that state from phase to phase.
+  val targetPhase = inputPhase
+  val currentInnerTextField by rememberUpdatedState(innerTextField)
+  val movableInnerTextField = remember { movableContentOf { currentInnerTextField() } }
   SharedTransitionLayout {
     AnimatedContent(
       inputPhase,
@@ -226,7 +235,11 @@ private fun AnimatedTextFieldContent(
             animatedVisibilityScope = this,
             boundsTransform = BoundsTransform { _, _ -> LabelTransitionAnimationSpec },
           ),
-        ) { innerTextField() }
+        ) {
+          if (inputPhase == targetPhase) {
+            movableInnerTextField()
+          }
+        }
       }
       val sharedLabel: (@Composable (Modifier) -> Unit)? = if (label != null) {
         @Composable { modifier ->

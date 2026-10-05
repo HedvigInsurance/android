@@ -20,6 +20,7 @@ import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepKey
 import com.hedvig.android.feature.onboarding.testOnboardingData
 import com.hedvig.android.feature.onboarding.testSessionStore
+import com.hedvig.android.feature.onboarding.ui.OnboardingProgress
 import com.hedvig.android.feature.payin.account.navigation.SetupSwishPayinKey
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
@@ -77,7 +78,9 @@ internal class OnboardingPaymentPresenterTest {
       sendEvent(OnboardingPaymentEvent.ConnectPayment)
       awaitItem()
       runCurrent()
-      assertThat(backstack.entries.last()).isEqualTo(SetupSwishPayinKey(showSuccessScreen = false))
+      assertThat(
+        backstack.entries.last(),
+      ).isEqualTo(SetupSwishPayinKey(showSuccessScreen = false, openedFromPicker = true))
     }
   }
 
@@ -199,6 +202,50 @@ internal class OnboardingPaymentPresenterTest {
       sendEvent(OnboardingPaymentEvent.Continue)
       runCurrent()
       assertThat(backstack.entries.last()).isEqualTo(OnboardingStepKey(OnboardingStepId.BundleDiscount))
+    }
+  }
+
+  @Test
+  fun `the connected provider comes from the backend`() = runTest {
+    val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.ConnectPayment)) }
+    val repository = FakeOnboardingRepository()
+    val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
+    val presenter = OnboardingPaymentPresenter(sessionStore, navigator)
+
+    presenter.test(OnboardingPaymentUiState.Loading) {
+      skipItems(1)
+      repository.onboardingDataResponses.add(
+        testOnboardingData(
+          payinStatus = OnboardingPayinStatus.Active,
+          connectedPayinProvider = OnboardingPayinProvider.Swish,
+        ).right(),
+      )
+      val content = awaitItem() as OnboardingPaymentUiState.Content
+      assertThat(content.connectedProvider).isEqualTo(OnboardingPayinProvider.Swish)
+      assertThat(content.selectedProvider).isNull()
+    }
+  }
+
+  @Test
+  fun `a restarted presenter keeps the selection and connect attempt from the last state`() = runTest {
+    val backstack = TestBackstack().apply { entries.add(OnboardingStepKey(OnboardingStepId.ConnectPayment)) }
+    val repository = FakeOnboardingRepository()
+    val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
+    val presenter = OnboardingPaymentPresenter(sessionStore, navigator)
+    val lastState = OnboardingPaymentUiState.Content(
+      progress = OnboardingProgress(totalSteps = 5, currentIndex = 3),
+      payinStatus = OnboardingPayinStatus.NeedsSetup,
+      availableProviders = OnboardingPayinProvider.entries,
+      selectedProvider = OnboardingPayinProvider.Swish,
+      hasAttemptedToConnect = true,
+    )
+
+    presenter.test(lastState) {
+      val content = awaitItem() as OnboardingPaymentUiState.Content
+      assertThat(content.selectedProvider).isEqualTo(OnboardingPayinProvider.Swish)
+      assertThat(content.hasAttemptedToConnect).isTrue()
     }
   }
 }
