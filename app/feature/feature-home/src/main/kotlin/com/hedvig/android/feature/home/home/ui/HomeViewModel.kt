@@ -5,6 +5,7 @@ import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.claimintent.DeleteClaimIntentDraftUseCase
+import com.hedvig.android.data.paying.member.GetMemberTypeUseCase
 import com.hedvig.android.feature.home.home.data.DismissedShopSessionsStorage
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
@@ -24,6 +25,7 @@ internal class HomeViewModel(
   deleteClaimIntentDraftUseCase: DeleteClaimIntentDraftUseCase,
   getMemberQuickActionsUseCase: GetMemberQuickActionsUseCase,
   dismissedShopSessionsStorage: DismissedShopSessionsStorage,
+  getMemberTypeUseCase: GetMemberTypeUseCase,
 ) : MoleculeViewModel<HomeEvent, HomeUiState>(
     HomeUiState.Loading,
     HomePresenter(
@@ -35,5 +37,6 @@ internal class HomeViewModel(
       deleteClaimIntentDraftUseCase,
       getMemberQuickActionsUseCase,
       dismissedShopSessionsStorage,
+      getMemberTypeUseCase,
     ),
   )
