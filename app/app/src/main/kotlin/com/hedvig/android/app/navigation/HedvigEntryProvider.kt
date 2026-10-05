@@ -483,12 +483,6 @@ private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
     backstack = backstack,
     navigateToTrustly = navigateToTrustly,
   )
-  payinAccountEntries(
-    backstack = backstack,
-    hedvigBuildConstants = hedvigBuildConstants,
-    navigateToTrustly = navigateToTrustly,
-    openUrl = openUrl,
-  )
   val changePayinMethod: () -> Unit = {
     when (val target = changePayinMethodTarget(backstack.entries)) {
       is ChangePayinMethodTarget.PopTo -> backstack.popUpToIndex(target.index)
@@ -496,6 +490,13 @@ private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
       ChangePayinMethodTarget.PopOne -> backstack.popBackstack()
     }
   }
+  payinAccountEntries(
+    backstack = backstack,
+    hedvigBuildConstants = hedvigBuildConstants,
+    navigateToTrustly = navigateToTrustly,
+    returnToPayinOverview = changePayinMethod,
+    openUrl = openUrl,
+  )
   connectPaymentEntries(
     backstack = backstack,
     changePaymentMethod = changePayinMethod,

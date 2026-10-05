@@ -30,6 +30,11 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
   backstack: Backstack,
   hedvigBuildConstants: HedvigBuildConstants,
   navigateToTrustly: () -> Unit,
+  /**
+   * Leaves a payin setup that was not opened from the method picker, landing on the payin overview.
+   * A lone deep link has nothing under it, so this builds the overview's ancestry rather than popping.
+   */
+  returnToPayinOverview: () -> Unit,
   openUrl: (String) -> Unit,
 ) {
   entry<PayinAccountKey> {
@@ -95,13 +100,6 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
     )
   }
 
-  // Leaves the Swish setup behind, plus the method picker when the member came through one, so a
-  // connected member never lands back inside the flow they just finished.
-  val finishSwishSetup: () -> Unit = {
-    backstack.popUpTo<SetupSwishPayinKey>(inclusive = true)
-    backstack.removeAllOf<SelectPayinMethodKey>()
-  }
-
   entry<SetupSwishPayinKey> { key ->
     val viewModel: SwishPayinStatusViewModel = assistedMetroViewModel()
     SwishPayinStatusDestination(
@@ -111,12 +109,24 @@ fun EntryProviderScope<HedvigNavKey>.payinAccountEntries(
       showSuccessScreen = key.showSuccessScreen,
       navigateUp = backstack::navigateUp,
       navigateBack = backstack::popBackstack,
-      finishSwishSetup = finishSwishSetup,
+      // Leaves the Swish setup behind, plus the method picker when the member came through one, so a
+      // connected member never lands back inside the flow they just finished.
+      finishSwishSetup = {
+        if (key.openedFromPicker) {
+          backstack.popUpTo<SetupSwishPayinKey>(inclusive = true)
+          backstack.removeAllOf<SelectPayinMethodKey>()
+        } else {
+          returnToPayinOverview()
+        }
+      },
       changePaymentMethod = {
         if (key.openedFromPicker) {
           backstack.popUpTo<SetupSwishPayinKey>(inclusive = true)
         } else {
-          backstack.navigateAndPopUpTo<SetupSwishPayinKey>(SelectPayinMethodKey, inclusive = true)
+          returnToPayinOverview()
+          if (backstack.entries.lastOrNull() is PayinAccountKey) {
+            backstack.add(SelectPayinMethodKey)
+          }
         }
       },
       openUrl = openUrl,

@@ -7,6 +7,7 @@ import assertk.assertions.isInstanceOf
 import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyKey
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.payin.account.navigation.PayinAccountKey
+import com.hedvig.android.feature.payin.account.navigation.SetupSwishPayinKey
 import com.hedvig.android.feature.payments.navigation.PaymentsKey
 import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountKey
 import com.hedvig.android.feature.profile.navigation.ProfileKey
@@ -39,6 +40,26 @@ internal class ChangePayinMethodTargetTest {
   @Test
   fun `lone deep link re-roots onto the overview and its ancestry`() {
     val stack = listOf<HedvigNavKey>(TrustlyKey())
+
+    val target = changePayinMethodTarget(stack)
+
+    assertThat(target).isInstanceOf<ChangePayinMethodTarget.Reseed>()
+    assertThat((target as ChangePayinMethodTarget.Reseed).stack)
+      .containsExactly(HomeKey, PaymentsKey, PayinAccountKey)
+  }
+
+  @Test
+  fun `swish setup over the overview is popped back onto it`() {
+    val stack = listOf(HomeKey, PaymentsKey, PayinAccountKey, SetupSwishPayinKey())
+
+    val target = changePayinMethodTarget(stack)
+
+    assertThat(target).isEqualTo(ChangePayinMethodTarget.PopTo(2))
+  }
+
+  @Test
+  fun `lone swish deep link re-roots onto the overview and its ancestry`() {
+    val stack = listOf<HedvigNavKey>(SetupSwishPayinKey())
 
     val target = changePayinMethodTarget(stack)
 
