@@ -978,7 +978,14 @@ private fun HomeScreenSuccess(
             HomeSection.Quotes -> uiState.ongoingShopSessions.takeIf { it.isNotEmpty() }?.let { sessions ->
               QuotesSection(
                 sessions = sessions,
-                onResumeClick = openUrl,
+                onResumeClick = { url ->
+                  logAction(
+                    type = ActionType.CUSTOM,
+                    name = "homeQuoteClicked",
+                    attributes = emptyMap(),
+                  )
+                  openUrl(url)
+                },
                 onDismiss = dismissOngoingShopSession,
                 imageLoader = imageLoader,
                 horizontalInsets = horizontalInsets,
@@ -1344,11 +1351,6 @@ private fun QuoteCard(
         HedvigButton(
           text = stringResource(Res.string.general_continue_button),
           onClick = {
-            logAction(
-              type = ActionType.CUSTOM,
-              name = "homeQuoteClicked",
-              attributes = emptyMap(),
-            )
             onResumeClick(session.resumeUrl)
           },
           buttonStyle = Secondary,
