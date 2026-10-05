@@ -1061,5 +1061,18 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         anyPayinMethodIsPending = false,
       ),
     )
+    add(
+      Content(
+        isRetrying = false,
+        upcomingPayment = UpcomingPayment.NoUpcomingPayment,
+        upcomingPaymentInfo = UpcomingPaymentInfo.NoInfo,
+        ongoingCharges = emptyList(),
+        connectedPaymentInfo = ConnectedPaymentInfo.Active,
+        primaryPayinMethod = null,
+        memberType = MemberType.QASA_ONLY_MEMBER,
+        showRetryChargeNotice = false,
+        anyPayinMethodIsPending = false,
+      ),
+    )
   },
 )
