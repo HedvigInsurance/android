@@ -19,6 +19,7 @@ import com.datadog.android.rum.tracking.ActivityViewTrackingStrategy
 import com.datadog.android.trace.opentelemetry.DatadogOpenTelemetry
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.datadog.core.di.authHost
+import com.hedvig.android.datadog.core.network.REQUEST_CANCELLED_RUM_ATTRIBUTE
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import io.opentelemetry.api.GlobalOpenTelemetry
@@ -91,13 +92,16 @@ abstract class DatadogInitializer : Initializer<Unit> {
 }
 
 /**
- * Filters out errors that originate from a network request throwing an error when the exception is explicitly an
- * IOException with the message "cancelled". These "errors" are just part of the normal app behavior, where we may leave
- * a screen which was in the middle of a network request, and in the process of leaving we cancel the coroutineScope in
- * which that work was being done in.
+ * Filters out errors from network requests that were cancelled rather than failed. These are part of normal app
+ * behavior, where we may leave a screen which was in the middle of a network request, and in the process of leaving we
+ * cancel the coroutineScope in which that work was being done in.
+ *
+ * Ktor requests are recognised by [REQUEST_CANCELLED_RUM_ATTRIBUTE]. OkHttp requests, made by the auth client, surface
+ * their cancellation as an IOException with the message "Canceled".
  */
-private val cancellationFilteringErrorEventMapper = EventMapper<ErrorEvent> { errorEvent ->
-  val wasCancellationException = with(errorEvent.error) {
+internal val cancellationFilteringErrorEventMapper = EventMapper<ErrorEvent> { errorEvent ->
+  val wasCancelledKtorRequest = errorEvent.context?.additionalProperties?.get(REQUEST_CANCELLED_RUM_ATTRIBUTE) == true
+  val wasCancelledOkHttpRequest = with(errorEvent.error) {
     val hasCancellationText = stack?.startsWith("java.io.IOException: Canceled") == true ||
       stack?.startsWith("java.util.concurrent.CancellationException") == true
     category == EXCEPTION &&
@@ -105,7 +109,7 @@ private val cancellationFilteringErrorEventMapper = EventMapper<ErrorEvent> { er
       type == "java.io.IOException" &&
       hasCancellationText
   }
-  if (wasCancellationException) {
+  if (wasCancelledKtorRequest || wasCancelledOkHttpRequest) {
     null
   } else {
     errorEvent

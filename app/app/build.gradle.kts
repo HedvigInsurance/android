@@ -105,6 +105,7 @@ android {
 }
 
 dependencies {
+  "stagingImplementation".invoke(libs.chucker)
   "stagingImplementation".invoke(projects.featureImpersonation)
 
   implementation(platform(libs.firebase.bom))
@@ -145,6 +146,7 @@ dependencies {
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
+  implementation(libs.ktor.client.okhttp)
   implementation(libs.media3.exoplayer)
   implementation(libs.media3.exoplayer.dash)
   implementation(libs.playReview)
@@ -262,9 +264,12 @@ dependencies {
   testImplementation(projects.loggingTest)
 
   debugImplementation(libs.androidx.compose.uiTooling)
+  debugImplementation(libs.chucker)
   debugImplementation(projects.featureImpersonation)
 
   debugRuntimeOnly(libs.androidx.compose.uiTestManifest)
+
+  releaseImplementation(libs.chucker.noop)
 }
 
 datadog {

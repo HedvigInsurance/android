@@ -189,6 +189,7 @@ internal fun AudioRecordingStep(
   startRecording: () -> Unit,
   onEvent: (ClaimChatEvent) -> Unit,
   modifier: Modifier = Modifier,
+  canTakeFocus: Boolean = true,
 ) {
   Column(modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
     AudioRecorderBubble(
@@ -217,6 +218,7 @@ internal fun AudioRecordingStep(
       isCurrentStep = isCurrentStep,
       continueButtonLoading = continueButtonLoading,
       skipButtonLoading = skipButtonLoading,
+      canTakeFocus = canTakeFocus,
     )
     EditButton(
       canBeChanged = item.isRegrettable && !isCurrentStep,
@@ -278,14 +280,13 @@ internal fun AudioRecorderBubble(
   continueButtonLoading: Boolean,
   skipButtonLoading: Boolean,
   modifier: Modifier = Modifier,
+  canTakeFocus: Boolean = true,
 ) {
   val isSubmitting = continueButtonLoading || skipButtonLoading
   val focusManager = LocalFocusManager.current
   // A landscape keyboard leaves roughly 34dp of screen, too little for the inline card, so short windows
   // answer in the full screen editor instead, which the screen draws over this one.
   val isShortWindow = isShortWindow()
-  val hasRecording = recordingState is AudioRecordingStepState.AudioRecording &&
-    recordingState !is AudioRecordingStepState.AudioRecording.NotRecording
 
   Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
     if (!isCurrentStep) {
@@ -323,20 +324,7 @@ internal fun AudioRecorderBubble(
       }
     } else {
       AnimatedContent(
-        targetState = when {
-          recordingState is AudioRecordingStepState.FreeTextDescription -> {
-            InputMode.Text
-          }
-
-          // Open either because the member asked for the card or because a recording is already in flight.
-          isRecorderOpen || hasRecording -> {
-            InputMode.Voice
-          }
-
-          else -> {
-            InputMode.Resting
-          }
-        },
+        targetState = answerInputMode(recordingState, isRecorderOpen),
         modifier = Modifier.fillMaxWidth(),
       ) { mode ->
         // Both children are composed while the crossfade runs, and the entering one is laid out at the top
@@ -370,6 +358,7 @@ internal fun AudioRecorderBubble(
                     onSaveFreeText(text)
                     submitFreeText()
                   },
+                  canTakeFocus = canTakeFocus,
                 )
               }
             }
@@ -446,7 +435,23 @@ internal fun AudioRecorderBubble(
   }
 }
 
-private enum class InputMode { Resting, Text, Voice }
+/** Whether the step shows the row of ways to answer, or one of the two answer cards. */
+internal enum class InputMode { Resting, Text, Voice }
+
+internal fun answerInputMode(recordingState: AudioRecordingStepState, isRecorderOpen: Boolean): InputMode = when {
+  recordingState is AudioRecordingStepState.FreeTextDescription -> {
+    InputMode.Text
+  }
+
+  // Open either because the member asked for the card or because a recording is already in flight.
+  isRecorderOpen || recordingState !is AudioRecordingStepState.AudioRecording.NotRecording -> {
+    InputMode.Voice
+  }
+
+  else -> {
+    InputMode.Resting
+  }
+}
 
 /**
  * Swallows touches while [settled] is false.
@@ -456,7 +461,7 @@ private enum class InputMode { Resting, Text, Voice }
  * child therefore answers taps aimed at what the member can still see, so it only takes touches once its own
  * transition has finished.
  */
-private fun Modifier.touchesOnlyWhenSettled(settled: Boolean): Modifier = if (settled) {
+internal fun Modifier.touchesOnlyWhenSettled(settled: Boolean): Modifier = if (settled) {
   this
 } else {
   pointerInput(Unit) {
@@ -579,6 +584,7 @@ private fun TextAnswerContent(
   modifier: Modifier = Modifier,
   fillHeight: Boolean = false,
   showLabel: Boolean = true,
+  canTakeFocus: Boolean = true,
 ) {
   val text = draft.value.text
   // The draft holds the answer, so the step's `canSubmit` only catches up on save. The length rule has to be
@@ -586,8 +592,14 @@ private fun TextAnswerContent(
   val canSend = text.trim().length >= minLength
   val showsMinLengthHint = (hasError && errorType is FreeTextErrorType.TooShort) || (text.isNotBlank() && !canSend)
   val focusRequester = remember { FocusRequester() }
-  LaunchedEffect(Unit) {
-    runCatching { focusRequester.requestFocus() }
+  // Asked for once, as soon as the host can show the field. A card still sliding in cannot, and focusing the field
+  // then would open the keyboard under a card that is not on screen yet.
+  var hasRequestedFocus by remember { mutableStateOf(false) }
+  LaunchedEffect(canTakeFocus) {
+    if (canTakeFocus && !hasRequestedFocus) {
+      hasRequestedFocus = true
+      runCatching { focusRequester.requestFocus() }
+    }
   }
   val label = @Composable { labelModifier: Modifier ->
     HedvigText(
@@ -747,6 +759,7 @@ private fun InlineTextAnswerCard(
   isSubmitting: Boolean,
   onCancel: () -> Unit,
   onSave: (String) -> Unit,
+  canTakeFocus: Boolean,
   modifier: Modifier = Modifier,
 ) {
   Surface(
@@ -763,6 +776,7 @@ private fun InlineTextAnswerCard(
       isSubmitting = isSubmitting,
       onCancel = onCancel,
       onSave = onSave,
+      canTakeFocus = canTakeFocus,
     )
   }
 }

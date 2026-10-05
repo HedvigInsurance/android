@@ -13,6 +13,7 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.network.clients.AccessTokenFetcher
 import com.hedvig.android.network.clients.DeviceIdInterceptor
 import com.hedvig.android.network.clients.ExtraApolloClientConfiguration
+import com.hedvig.android.network.clients.ExtraKtorClientConfiguration
 import com.hedvig.android.network.clients.HedvigHttpLogger
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
@@ -45,7 +46,8 @@ interface NetworkMetroProviders {
     hedvigBuildConstants: HedvigBuildConstants,
     languageService: LanguageService,
     deviceIdFetcher: DeviceIdFetcher,
-  ): HttpClient = buildKtorClient(hedvigBuildConstants, languageService, deviceIdFetcher)
+    extraKtorClientConfiguration: ExtraKtorClientConfiguration,
+  ): HttpClient = buildKtorClient(hedvigBuildConstants, languageService, deviceIdFetcher, extraKtorClientConfiguration)
 
   @Provides
   @SingleIn(AppScope::class)
@@ -81,6 +83,7 @@ private fun buildKtorClient(
   hedvigBuildConstants: HedvigBuildConstants,
   languageService: LanguageService,
   deviceIdFetcher: DeviceIdFetcher,
+  extraKtorClientConfiguration: ExtraKtorClientConfiguration,
 ): HttpClient {
   return HttpClient(httpClientEngineFactory()) {
     installDatadogKtorPlugin(hedvigBuildConstants)
@@ -98,6 +101,7 @@ private fun buildKtorClient(
       }
     }
     install(HttpSend)
+    extraKtorClientConfiguration.configure(this)
   }.apply {
     plugin(HttpSend).intercept(DeviceIdInterceptor(deviceIdFetcher))
   }
