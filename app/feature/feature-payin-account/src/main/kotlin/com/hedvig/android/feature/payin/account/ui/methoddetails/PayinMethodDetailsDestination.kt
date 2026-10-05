@@ -59,7 +59,6 @@ import hedvig.resources.PAYMENTS_PAYMENT_DUE
 import hedvig.resources.PAYMENTS_PAYMENT_DUE_INFO
 import hedvig.resources.PAYMENTS_PAYMENT_METHOD
 import hedvig.resources.PAYMENTS_SWISH_NUMBER
-import hedvig.resources.PAYMENT_SWISH_CHANGE_NUMBER
 import hedvig.resources.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT
 import hedvig.resources.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION
 import hedvig.resources.Res
@@ -222,7 +221,7 @@ private fun PayinMethodDetailsScreen(
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
     val changeButtonText = when (method) {
-      is PayinAccount.SwishPayin -> stringResource(Res.string.PAYMENT_SWISH_CHANGE_NUMBER)
+      is PayinAccount.SwishPayin -> null
       is PayinAccount.Trustly -> stringResource(Res.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT)
       is PayinAccount.Invoice -> null
     }
