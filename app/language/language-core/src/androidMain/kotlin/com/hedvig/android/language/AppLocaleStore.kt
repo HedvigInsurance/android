@@ -26,6 +26,10 @@ interface AppLocaleStore {
    */
   fun localeTagsToFollowPhone(): List<String>
 
+  /**
+   * Below API 33 this goes through AppCompat, whose setApplicationLocales should be called after Activity.onCreate,
+   * so store only while an Activity exists, as the in-app pickers and the migration do.
+   */
   fun store(localeTags: List<String>)
 }
 
@@ -36,7 +40,8 @@ internal class AndroidAppLocaleStore(
   private val context: Context,
 ) : AppLocaleStore {
   /**
-   * Below API 33 the value lives in AppCompat's own storage, which only this app writes, so it is read from disk once.
+   * Below API 33 the value lives in AppCompat's own storage, which only this app writes, so it is read from disk once
+   * and kept here. Volatile since the first read happens on whichever thread creates the language service.
    */
   @Volatile
   private var storedLocaleTagsBelowApi33: List<String>? = null

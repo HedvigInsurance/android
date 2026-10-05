@@ -29,9 +29,9 @@ internal class AndroidLanguageService(
   override val language: StateFlow<Language> = mutableLanguage.asStateFlow()
 
   init {
-    AppFormattingLocale.current = mutableLanguage.value.toLocale()
+    refresh()
     // A change made in the system per-app language settings, or to the phone's languages, arrives as a configuration
-    // change of the whole process.
+    // change of the whole process. The service lives as long as the process, so the callback stays registered.
     context.registerComponentCallbacks(
       object : ComponentCallbacks {
         override fun onConfigurationChanged(newConfig: Configuration) {
@@ -65,6 +65,10 @@ internal class AndroidLanguageService(
     return language.value.toLocale()
   }
 
+  /**
+   * Updates [AppFormattingLocale] in the same step as the flow, so formatting outside composition never uses another
+   * language than the state reports.
+   */
   private fun refresh() {
     val language = currentLanguage()
     AppFormattingLocale.current = language.toLocale()

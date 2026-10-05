@@ -17,6 +17,11 @@ internal class NativeLanguageService(
   private val storage: LanguageStorage,
 ) : LanguageService {
   private val mutableLanguage = MutableStateFlow(Language.from(storage.getCurrentLanguageTag()))
+
+  /**
+   * Updated only when [setLanguage] or [getLanguage] runs, since the iOS app changes the language without going
+   * through Kotlin, so read [getLanguage] for the current value.
+   */
   override val language: StateFlow<Language> = mutableLanguage.asStateFlow()
 
   override fun setLanguage(language: Language) {

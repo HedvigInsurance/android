@@ -103,8 +103,9 @@ abstract class DownloadStringsTask @Inject constructor(
           add("sv_SE")
         },
       )
-      // Exported as language-only `values-sv`, which Compose Multiplatform resources need to match regional variants
-      // like sv-FI that Android's per-app language settings can hand the app.
+      // Lokalise names folders after the project's `sv_SE` locale, giving `values-sv-rSE`. Compose Multiplatform
+      // resources need language-only `values-sv` to match regional variants like sv-FI that Android's per-app language
+      // settings can hand the app.
       put(
         "language_mapping",
         buildJsonArray {

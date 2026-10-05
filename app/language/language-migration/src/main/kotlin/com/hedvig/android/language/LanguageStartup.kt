@@ -17,7 +17,9 @@ import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.Inject
 
 /**
- * Starts in `Application.onCreate`, before any Activity exists.
+ * Prepares the stored language once per process, starting in `Application.onCreate` before any Activity exists: it
+ * keeps AppCompat's one-time copy from wiping a language set in the system settings, and runs the one-time migration
+ * of the value that earlier app versions stored on every launch.
  */
 @ContributesIntoSet(AppScope::class)
 @Inject
@@ -32,9 +34,10 @@ internal class LanguageStartup(
 
   /**
    * On API 33+ AppCompat copies its own stored locales into the framework once, on a background thread started by the
-   * first Activity. Before any Activity is alive it reads the framework value as empty and can write its own (empty)
-   * value over a language set in the system settings or restored from a backup. When the framework already holds a
-   * value there is nothing to copy, so the copy is marked as done before AppCompat gets to it.
+   * first Activity, and records the copy as done by enabling its AppLocalesMetadataHolderService component. Before an
+   * Activity is alive it reads the framework value as empty, so it can write its own empty value over a language set
+   * in the system settings before the first launch, or restored from a backup. When the framework already holds a
+   * value there is nothing to copy, so the component is enabled here first and AppCompat skips the copy.
    */
   private fun markAppCompatSyncDoneIfFrameworkHasLocales() {
     if (Build.VERSION.SDK_INT < 33) return
@@ -62,6 +65,7 @@ internal class LanguageStartup(
    * ignores changes to the phone's languages until it restarts. Clearing once an Activity is resumed avoids that.
    */
   private fun migrateStoredLanguageOnceAnActivityIsResumed() {
+    // Read synchronously, still in Application.onCreate, to decide whether to wait for an Activity at all.
     val preferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
     if (preferences.getBoolean(KEY_STORED_LANGUAGE_MIGRATED, false)) return
     val application = context.applicationContext as Application

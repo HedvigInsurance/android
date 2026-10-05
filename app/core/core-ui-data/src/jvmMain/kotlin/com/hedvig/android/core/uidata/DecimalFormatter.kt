@@ -7,6 +7,8 @@ import java.util.Locale
 
 internal actual val decimalFormatter: DecimalFormatter = DecimalFormatter { number ->
   val locale = AppFormattingLocale.current ?: Locale.getDefault()
+  // DecimalFormat is not thread-safe and money is formatted from any thread, so the cached instances are only used
+  // under this lock.
   synchronized(decimalFormats) {
     decimalFormats.getOrPut(locale) { DecimalFormat("", DecimalFormatSymbols.getInstance(locale)) }.format(number)
   }
