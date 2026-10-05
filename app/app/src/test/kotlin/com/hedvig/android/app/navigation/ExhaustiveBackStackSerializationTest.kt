@@ -278,7 +278,7 @@ internal class ExhaustiveBackstackSerializationTest {
       HelpCenterKey,
       DeleteAccountKey,
       ClaimHistoryKey,
-      TrustlyKey,
+      TrustlyKey(),
       InsuranceEvidenceKey,
       PayoutAccountKey,
       TravelCertificateKey,

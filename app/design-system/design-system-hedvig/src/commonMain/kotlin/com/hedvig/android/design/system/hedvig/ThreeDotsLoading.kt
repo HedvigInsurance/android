@@ -67,6 +67,26 @@ fun ThreeDotsLoading(
   }
 }
 
+@Composable
+fun ThreeDotsLoaded(
+  modifier: Modifier = Modifier,
+  stableColor: Color = ColorSchemeKeyTokens.FillPrimary.value,
+  circleRadius: Dp = 6.dp,
+) {
+  Row(
+    horizontalArrangement = Arrangement.spacedBy(circleRadius),
+    modifier = modifier,
+  ) {
+    for (index in (0..<numberOfDots)) {
+      Box(
+        Modifier
+          .size(circleRadius)
+          .background(stableColor, CircleShape),
+      )
+    }
+  }
+}
+
 // One dot's travel from stable to temporary; RepeatMode.Reverse doubles this into a full breath.
 private const val dotBreathDurationMilliseconds = 600
 
@@ -81,6 +101,18 @@ private fun PreviewThreeDotsLoading() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       Box(Modifier.padding(6.dp)) {
         ThreeDotsLoading()
+      }
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewThreeDotsLoaded() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      Box(Modifier.padding(6.dp)) {
+        ThreeDotsLoaded()
       }
     }
   }

@@ -45,6 +45,10 @@ import com.hedvig.android.design.system.hedvig.tokens.RadioGroupStyleTokens
 import kotlin.jvm.JvmInline
 import org.jetbrains.compose.resources.painterResource
 
+/**
+ * [optionIcon] replaces [RadioOption.iconResource] for every option, for leading content an
+ * `ImageVector` cannot express — a brand mark on its own tile, say.
+ */
 @Composable
 fun RadioGroup(
   options: List<RadioOption>,
@@ -57,6 +61,7 @@ fun RadioGroup(
   disabledOptions: List<RadioOptionId> = emptyList(),
   enabled: Boolean = true,
   textEndContent: @Composable ((RadioOptionId) -> Unit)? = null,
+  optionIcon: @Composable ((RadioOptionId) -> Unit)? = null,
 ) {
   val spacings = RadioGroupDefaults.style(size, style)
   RadioGroup(
@@ -69,6 +74,7 @@ fun RadioGroup(
     enabled = enabled,
     role = Role.RadioButton,
     textEndContent = textEndContent,
+    optionIcon = optionIcon,
     selectIndicator = { selected, enabled, colors, interactionSource ->
       RadioSelectIndicator(
         selected = selected,
@@ -80,6 +86,37 @@ fun RadioGroup(
     },
     modifier = modifier,
   )
+}
+
+/**
+ * One option drawn exactly like a [RadioGroup] row, but not selectable: [trailingContent] takes the
+ * indicator's place. For a fixed value shown in line with the options of a [RadioGroup] beside it.
+ */
+@Composable
+fun StaticRadioOption(
+  option: RadioOption,
+  trailingContent: @Composable () -> Unit,
+  modifier: Modifier = Modifier,
+  size: RadioGroupSize = RadioGroupSize.Medium,
+  colors: RadioGroupColors = RadioGroupDefaults.colors,
+  optionIcon: @Composable ((RadioOptionId) -> Unit)? = null,
+) {
+  val style = RadioGroupDefaults.style(size, RadioGroupStyle.Vertical)
+  RadioSurface(style, colors, modifier) {
+    RadioOption(
+      option = option,
+      selected = false,
+      enabled = true,
+      colors = colors,
+      style = style,
+      selectIndicator = { _, _, _, _ -> trailingContent() },
+      optionIcon = optionIcon,
+      modifier = Modifier
+        .fillMaxWidth()
+        .heightIn(min = style.minHeight)
+        .optionPaddings(style, option.hasLabel),
+    )
+  }
 }
 
 @Composable
@@ -273,6 +310,7 @@ private fun RadioGroup(
   disabledOptions: List<RadioOptionId> = emptyList(),
   enabled: Boolean = true,
   textEndContent: @Composable ((RadioOptionId) -> Unit)? = null,
+  optionIcon: @Composable ((RadioOptionId) -> Unit)? = null,
 ) {
   Box(modifier) {
     if (style.style is RadioGroupStyle.Labeled) {
@@ -307,6 +345,7 @@ private fun RadioGroup(
                       interactionSource = interactionSource,
                       selectIndicator = selectIndicator,
                       textEndContent = textEndContent,
+                      optionIcon = optionIcon,
                       modifier = Modifier.optionSelectable(
                         onRadioOptionSelected = onRadioOptionSelected,
                         radioOptionId = option.id,
@@ -333,6 +372,7 @@ private fun RadioGroup(
                     style = style,
                     selectIndicator = selectIndicator,
                     textEndContent = textEndContent,
+                    optionIcon = optionIcon,
                     modifier = Modifier
                       .fillMaxWidth()
                       .optionSelectable(onRadioOptionSelected, option.id, selected, enabled, role)
@@ -363,6 +403,7 @@ private fun RadioGroup(
           style = style,
           selectIndicator = selectIndicator,
           textEndContent = textEndContent,
+          optionIcon = optionIcon,
           modifier = Modifier
             .fillMaxWidth()
             .optionSelectable(onRadioOptionSelected, option.id, selected, enabled, role)
@@ -457,6 +498,7 @@ private fun RadioOption(
   modifier: Modifier = Modifier,
   interactionSource: MutableInteractionSource? = null,
   textEndContent: @Composable ((RadioOptionId) -> Unit)? = null,
+  optionIcon: @Composable ((RadioOptionId) -> Unit)? = null,
 ) {
   Row(
     horizontalArrangement = Arrangement.SpaceBetween,
@@ -468,7 +510,9 @@ private fun RadioOption(
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier.weight(1f, false),
     ) {
-      if (option.iconResource != null) {
+      if (optionIcon != null) {
+        optionIcon(option.id)
+      } else if (option.iconResource != null) {
         RadioOptionIcon(option.iconResource)
       }
       if (style.style.leftAlignedIndicator) {

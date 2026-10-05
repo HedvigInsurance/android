@@ -700,6 +700,7 @@
   <string name="PAYMENTS_OUTSTANDING_PAYMENT">Outstanding payment</string>
   <string name="PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION">Our monthly payment is processed using digital direct debit (Autogiro) through our payment partner Trustly. Your price is based on several factors, including aspects related to you, your belongings, your lifestyle, and where you live.</string>
   <string name="PAYMENTS_PAYMENT_DETAILS_INFO_TITLE">Payment details</string>
+  <string name="PAYMENTS_PAYMENT_DETAILS_SWISH_DESCRIPTION"></string>
   <string name="PAYMENTS_PAYMENT_DUE">Payment due</string>
   <string name="PAYMENTS_PAYMENT_DUE_INFO">If you update your bank account close to the %1$s, the withdrawal might take a few extra days.</string>
   <string name="PAYMENTS_PAYMENT_FAILED">This payment failed and was added to your payment on %1$s.</string>
@@ -744,6 +745,7 @@
   <string name="PAYMENT_METHODS_EMPTY">No payment method added. Add one to pay for your insurance.</string>
   <string name="PAYMENT_METHODS_TITLE">Payment methods</string>
   <string name="PAYMENT_METHOD_PENDING">It can take a few days for your new payment method to take effect.</string>
+  <string name="PAYMENT_METHOD_PENDING_STATUS_LABEL">Pending</string>
   <string name="PAYMENT_METHOD_REQUIRED_FOOTNOTE">Required to keep your insurance active</string>
   <string name="PAYMENT_METHOD_TITLE">Payment method</string>
   <string name="PAYMENT_OPEN_SWISH_BUTTON">Open Swish</string>
@@ -756,13 +758,13 @@
   <string name="PAYMENT_PRIMARY_LABEL">Primary</string>
   <string name="PAYMENT_PRIMARY_SUBTITLE">This method will be used for your monthly payments</string>
   <string name="PAYMENT_PRIMARY_TITLE">Choose payment method</string>
-  <string name="PAYMENT_REMOVE_PRIMARY_SUBTITLE">This is your primary payment method. Choose another one before removing it.</string>
+  <string name="PAYMENT_REMOVE_PRIMARY_SUBTITLE">This is your primary payment method. Choose another one or add a new one before removing it.</string>
   <string name="PAYMENT_REMOVE_PRIMARY_TITLE">Can't be removed right now</string>
   <string name="PAYMENT_REMOVE_SUBTITLE">You can add it back any time</string>
   <string name="PAYMENT_REMOVE_TITLE">Remove payment method</string>
   <string name="PAYMENT_SWISH_APPROVE_TITLE">Approve the connection in Swish</string>
   <string name="PAYMENT_SWISH_CHANGE_NUMBER">Change phone number</string>
-  <string name="PAYMENT_SWISH_EXPLANATION_BUTTON">About recurring payments</string>
+  <string name="PAYMENT_SWISH_EXPLANATION_BUTTON">Read more about recurring payments</string>
   <string name="PAYMENT_SWISH_FAILURE_TITLE">We couldn't connect Swish</string>
   <string name="PAYMENT_SWISH_SUBTITLE">Use the number linked to your Swish</string>
   <string name="PAYMENT_SWISH_SUCCESS_SUBTITLE">Your account is charged automatically each month. We’ll notify you in the Hedvig app before each payment.</string>
@@ -826,7 +828,7 @@
   <string name="REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION">More info</string>
   <string name="REFERRALS_SHARE_SHEET_TITLE">Share your link</string>
   <string name="REFERRAL_ADDCOUPON_INPUTPLACEHOLDER">Discount code</string>
-  <string name="REFERRAL_PENDING_STATUS_LABEL">Pending...</string>
+  <string name="REFERRAL_PENDING_STATUS_LABEL">Pending</string>
   <string name="REFERRAL_SMS_MESSAGE">Hey! Get Hedvig using my link and we both get %1$s per month discount on the monthly cost. Follow the link: %2$s</string>
   <string name="REFERRAL_TERMINATED_STATUS_LABEL">Inactive</string>
   <string name="REMOVE_ADDONS_FLOW_NO_ELIGIBLE_INSURANCES">None of your insurances have addons you can remove.</string>
@@ -1467,7 +1469,7 @@
     <item quantity="other">The offer expires in %1$d minutes</item>
   </plurals>
   <string name="open_chat">Write message</string>
-  <string name="pay_in_confirmation_direct_debit_headline">Direct debit connected!</string>
+  <string name="pay_in_confirmation_direct_debit_headline">Bank account connected</string>
   <string name="pay_in_error_body">We were unable to add your payment method. Please try again or send us a message here in the app.</string>
   <string name="pay_in_explainer_direct_debit_headline">Connect direct debit</string>
   <string name="payment_details_discount_campaign_type">%1$s</string>

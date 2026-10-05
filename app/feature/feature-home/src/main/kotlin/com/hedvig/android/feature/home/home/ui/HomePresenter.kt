@@ -17,6 +17,8 @@ import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.claimintent.DeleteClaimIntentDraftUseCase
 import com.hedvig.android.data.contract.CrossSell
+import com.hedvig.android.data.paying.member.GetMemberTypeUseCase
+import com.hedvig.android.data.paying.member.MemberType
 import com.hedvig.android.feature.home.home.data.DismissedShopSessionsStorage
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
@@ -27,6 +29,7 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.memberquickactions.GetMemberQuickActionsUseCase
 import com.hedvig.android.memberquickactions.QuickAction
 import com.hedvig.android.memberquickactions.QuickActionsSource
+import com.hedvig.android.memberquickactions.QuickLinkDestination
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -49,6 +52,7 @@ internal class HomePresenter(
   private val deleteClaimIntentDraftUseCase: DeleteClaimIntentDraftUseCase,
   private val getMemberQuickActionsUseCase: GetMemberQuickActionsUseCase,
   private val dismissedShopSessionsStorage: DismissedShopSessionsStorage,
+  private val getMemberTypeUseCase: GetMemberTypeUseCase,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
   override fun MoleculePresenterScope<HomeEvent>.present(lastState: HomeUiState): HomeUiState {
@@ -134,8 +138,14 @@ internal class HomePresenter(
             }
           },
         ) { homeData: HomeData ->
+          val isQasaOnlyMember = getMemberTypeUseCase.invoke().getOrNull() == MemberType.QASA_ONLY_MEMBER
           val quickActions = getMemberQuickActionsUseCase.invoke(QuickActionsSource.HOME)
             .getOrElse { emptyList() }
+            .filterNot { quickAction ->
+              isQasaOnlyMember &&
+                quickAction is QuickAction.StandaloneQuickLink &&
+                quickAction.quickLinkDestination == QuickLinkDestination.OuterDestination.QuickLinkUpcomingPayment
+            }
           Snapshot.withMutableSnapshot {
             hasError = false
             isReloading = false
