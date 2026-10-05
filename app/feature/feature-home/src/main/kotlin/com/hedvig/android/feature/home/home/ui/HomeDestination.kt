@@ -1345,7 +1345,7 @@ private fun QuoteCard(
           text = stringResource(Res.string.general_continue_button),
           onClick = {
             logAction(
-              type = ActionType.CLICK,
+              type = ActionType.CUSTOM,
               name = "homeQuoteClicked",
               attributes = mapOf("quoteId" to session.id, "quoteTitle" to session.title),
             )
