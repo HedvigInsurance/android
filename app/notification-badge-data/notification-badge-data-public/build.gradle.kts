@@ -18,10 +18,12 @@ dependencies {
   implementation(projects.featureFlags)
   implementation(projects.languageCore)
 
+  testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
   testImplementation(libs.turbine)
+  testImplementation(projects.apolloOctopusTest)
   testImplementation(projects.coreDatastoreTest)
   testImplementation(projects.featureFlagsTest)
 }
