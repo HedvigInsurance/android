@@ -158,6 +158,7 @@ import hedvig.resources.general_error
 import hedvig.resources.something_went_wrong
 import kotlin.time.Clock
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import octopus.type.ClaimIntentStepContentInformationSeverity
 import org.jetbrains.compose.resources.stringResource
@@ -417,12 +418,21 @@ private fun ClaimChatScreenContent(
     spaceBetweenItems = SPACE_BETWEEN_STEPS,
     steps = uiState.steps,
   )
-  // Only in front of the first question, as on iOS. It leaves as soon as a second step lands, and a resumed claim that
-  // is already past the first step never shows it.
-  val showAiDisclaimer = uiState.steps.size <= 1
+  // Only in front of the first question, as on iOS, and a resumed claim that is already past the first step never
+  // shows it. It stays in the list until the re-pin to the second step has scrolled it out of view. Dropping it the
+  // moment that step lands would pull the whole conversation up by its height for the frames before the scroll.
+  val hasLeftFirstStep = uiState.steps.size > 1
+  var hasScrolledPastDisclaimer by remember { mutableStateOf(hasLeftFirstStep) }
+  val showAiDisclaimer = !hasLeftFirstStep || !hasScrolledPastDisclaimer
   // The disclaimer is an item of its own at the top of the list, so while it is there a step's list index is one
   // more than its index in the steps.
   val stepsListIndexOffset = if (showAiDisclaimer) 1 else 0
+  LaunchedEffect(hasLeftFirstStep, lazyListState) {
+    if (hasLeftFirstStep) {
+      snapshotFlow { lazyListState.firstVisibleItemIndex }.first { it > 0 }
+    }
+    hasScrolledPastDisclaimer = hasLeftFirstStep
+  }
   // The conversation is scrolled back off the current question. While that is true the list is left where the
   // member put it: the re-pin to the end stands down and the arrow back to the bottom appears.
   //
