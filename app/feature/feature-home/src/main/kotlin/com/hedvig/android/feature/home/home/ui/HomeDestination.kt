@@ -1347,7 +1347,7 @@ private fun QuoteCard(
             logAction(
               type = ActionType.CUSTOM,
               name = "homeQuoteClicked",
-              attributes = mapOf("quoteId" to session.id, "quoteTitle" to session.title),
+              attributes = emptyMap(),
             )
             onResumeClick(session.resumeUrl)
           },
