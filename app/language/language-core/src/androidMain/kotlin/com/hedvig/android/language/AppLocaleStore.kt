@@ -21,6 +21,11 @@ interface AppLocaleStore {
 
   fun phoneLocaleTags(): List<String>
 
+  /**
+   * What to [store] for the app to follow the phone's languages.
+   */
+  fun localeTagsToFollowPhone(): List<String>
+
   fun store(localeTags: List<String>)
 }
 
@@ -46,6 +51,14 @@ internal class AndroidAppLocaleStore(
 
   override fun phoneLocaleTags(): List<String> {
     return LocaleManagerCompat.getSystemLocales(context).toLanguageTagList()
+  }
+
+  override fun localeTagsToFollowPhone(): List<String> {
+    if (Build.VERSION.SDK_INT >= 33) return emptyList()
+    // Once AppCompat's value is set in a running process, an empty one makes it apply Android's own pick from the
+    // phone's languages, the locale the application's resources resolve to.
+    val androidPickedLocaleTag = context.resources.configuration.locales[0].toLanguageTag()
+    return localeTagsToFollowPhone(phoneLocaleTags(), androidPickedLocaleTag)
   }
 
   override fun store(localeTags: List<String>) {

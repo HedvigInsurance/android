@@ -27,6 +27,17 @@ fun storedLocaleTagsForPick(picked: Language, phoneLocaleTags: List<String>): Li
   return if (picked == phoneLanguage) emptyList() else listOf(picked.toBcp47Format())
 }
 
+/**
+ * What to store for the app to follow the phone on a platform that, with nothing stored, renders its own pick from the
+ * phone's languages, [platformPickedLocaleTag]. That pick can be another language than [resolveLanguage], Swedish for
+ * [Deutsch, Svenska], and then the phone's language is stored explicitly.
+ */
+fun localeTagsToFollowPhone(phoneLocaleTags: List<String>, platformPickedLocaleTag: String): List<String> {
+  val phoneLanguage = resolveLanguage(storedLocaleTags = emptyList(), phoneLocaleTags = phoneLocaleTags)
+  if (languageOf(platformPickedLocaleTag) == phoneLanguage) return emptyList()
+  return listOf(phoneLanguage.toBcp47Format())
+}
+
 enum class StoredLanguageMigration {
   Keep,
   Clear,

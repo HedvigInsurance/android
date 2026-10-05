@@ -54,6 +54,19 @@ class LanguageResolutionTest {
   }
 
   @Test
+  fun `following the phone stores nothing unless the platform's own pick is another language`() {
+    assertThat(localeTagsToFollowPhone(listOf("en-US"), platformPickedLocaleTag = "en-US")).isEmpty()
+    assertThat(localeTagsToFollowPhone(listOf("sv-FI", "de-DE"), platformPickedLocaleTag = "sv-FI")).isEmpty()
+    assertThat(localeTagsToFollowPhone(listOf("de-DE"), platformPickedLocaleTag = "de-DE")).isEmpty()
+    assertThat(
+      localeTagsToFollowPhone(listOf("de-DE", "en-US", "sv-SE"), platformPickedLocaleTag = "en-US"),
+    ).isEmpty()
+    assertThat(
+      localeTagsToFollowPhone(listOf("de-DE", "sv-SE"), platformPickedLocaleTag = "sv-SE"),
+    ).isEqualTo(listOf("en-SE"))
+  }
+
+  @Test
   fun `migration clears what matches the phone or is unsupported and keeps a real choice`() {
     assertThat(storedLanguageMigration(emptyList(), listOf("sv-SE"))).isEqualTo(StoredLanguageMigration.Keep)
     assertThat(storedLanguageMigration(listOf("en-SE"), listOf("en-US"))).isEqualTo(StoredLanguageMigration.Clear)

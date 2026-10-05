@@ -91,11 +91,16 @@ internal class LanguageStartup(
     val storedLocaleTags = appLocaleStore.storedLocaleTags()
     val phoneLocaleTags = appLocaleStore.phoneLocaleTags()
     val migration = storedLanguageMigration(storedLocaleTags, phoneLocaleTags)
-    logcat {
-      "LanguageStartup: stored [${storedLocaleTags.joinToString()}], phone [${phoneLocaleTags.joinToString()}], $migration"
+    val migratedLocaleTags = when (migration) {
+      StoredLanguageMigration.Keep -> storedLocaleTags
+      StoredLanguageMigration.Clear -> appLocaleStore.localeTagsToFollowPhone()
     }
-    if (migration == StoredLanguageMigration.Clear) {
-      appLocaleStore.store(emptyList())
+    logcat {
+      "LanguageStartup: stored [${storedLocaleTags.joinToString()}], phone [${phoneLocaleTags.joinToString()}], " +
+        "$migration to [${migratedLocaleTags.joinToString()}]"
+    }
+    if (migratedLocaleTags != storedLocaleTags) {
+      appLocaleStore.store(migratedLocaleTags)
     }
     preferences.edit().putBoolean(KEY_STORED_LANGUAGE_MIGRATED, true).apply()
   }

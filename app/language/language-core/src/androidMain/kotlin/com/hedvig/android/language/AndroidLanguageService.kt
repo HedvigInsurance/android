@@ -47,6 +47,7 @@ internal class AndroidLanguageService(
   @MainThread
   override fun setLanguage(language: Language) {
     val localeTags = storedLocaleTagsForPick(language, appLocaleStore.phoneLocaleTags())
+      .ifEmpty { appLocaleStore.localeTagsToFollowPhone() }
     if (localeTags == appLocaleStore.storedLocaleTags()) {
       if (language == this.language.value) return
       // The stored value already asks for this language but the process still renders another one, which happens when
