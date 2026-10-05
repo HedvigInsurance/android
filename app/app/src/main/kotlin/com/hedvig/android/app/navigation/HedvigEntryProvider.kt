@@ -115,12 +115,12 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   val navigateToNewConversation: () -> Unit = { backstack.add(ChatKey(Uuid.randomUUID().toString())) }
   val navigateToConversation: (String) -> Unit = { conversationId -> backstack.add(ChatKey(conversationId)) }
   val navigateToTravelCertificate: () -> Unit = { backstack.add(TravelCertificateKey) }
-  val navigateToAddonPurchaseFlow: (List<String>) -> Unit = { ids ->
+  val navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit = { ids, source ->
     backstack.add(
       AddonPurchaseKey(
         insuranceIds = ids,
         preselectedAddonDisplayName = null,
-        source = AddonBannerSource.INSURANCES_TAB,
+        source = source,
       ),
     )
   }
@@ -252,7 +252,7 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
   navigateToPayinAccount: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
   navigateToTravelCertificate: () -> Unit,
-  navigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
   navigateToMovingFlow: (MovingSource) -> Unit,
 ) {
   homeEntries(
@@ -436,12 +436,12 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
     startEditCoOwnersAddMissingInfo = { contractId: String ->
       backstack.add(CoInsuredAddInfoKey(contractId, CoInsuredFlowType.CoOwners))
     },
-    onNavigateToAddonPurchaseFlow = { insuranceIds, availableAddon ->
+    onNavigateToAddonPurchaseFlow = { insuranceIds, availableAddon, source ->
       backstack.add(
         AddonPurchaseKey(
           insuranceIds.map(ContractId::id),
           availableAddon?.displayName,
-          AddonBannerSource.INSURANCES_TAB,
+          source,
         ),
       )
     },
@@ -453,7 +453,7 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
         AddonPurchaseKey(
           listOfNotNull(contractId?.id),
           null,
-          AddonBannerSource.INSURANCES_TAB,
+          AddonBannerSource.CONTRACT_DETAIL,
         ),
       )
     },

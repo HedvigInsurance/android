@@ -107,6 +107,7 @@ import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.AddonBannerInfo
+import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.addons.data.FlowType
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.data.contract.CrossSell
@@ -278,7 +279,7 @@ internal fun HomeDestination(
   navigateToChipId: () -> Unit,
   navigateToUsageData: () -> Unit,
   imageLoader: ImageLoader,
-  navigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val notificationPermissionState = rememberNotificationPermissionState()
@@ -343,7 +344,7 @@ private fun HomeScreen(
   markCrossSellsNotificationAsSeen: () -> Unit,
   setEpochDayWhenLastToolTipShown: (Long) -> Unit,
   imageLoader: ImageLoader,
-  navigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
 ) {
   val systemBarInsetTopDp = with(LocalDensity.current) {
     WindowInsets.systemBars.getTop(this).toDp()
@@ -358,7 +359,7 @@ private fun HomeScreen(
     state = crossSellBottomSheetState,
     markCrossSellsNotificationAsSeen = markCrossSellsNotificationAsSeen,
     onCrossSellClick = openCrossSellUrl,
-    onAddonClick = navigateToAddonPurchaseFlow,
+    onAddonClick = { ids -> navigateToAddonPurchaseFlow(ids, AddonBannerSource.HOME_CROSS_SELL_SHEET) },
     imageLoader = imageLoader,
   )
 
@@ -661,7 +662,7 @@ private fun HomeScreenSuccess(
   navigateToUsageData: () -> Unit,
   openCrossSellUrl: (String) -> Unit,
   imageLoader: ImageLoader,
-  navigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
   onChatIconClick: () -> Unit,
   onCrossSellsIconClick: (crossSells: CrossSellSheetData) -> Unit,
   navigateToFirstVet: (sections: List<FirstVetSection>) -> Unit,
@@ -1550,13 +1551,13 @@ private fun MainActionCarouselSection(
 @Composable
 private fun HomeAddonsSection(
   addonBannerInfos: List<AddonBannerInfo>,
-  navigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
   horizontalInsets: PaddingValues,
   imageLoader: ImageLoader,
 ) {
   AddonsSection(
     addons = addonBannerInfos,
-    onAddonClick = navigateToAddonPurchaseFlow,
+    onAddonClick = { ids -> navigateToAddonPurchaseFlow(ids, AddonBannerSource.HOME_SCREEN) },
     imageLoader = imageLoader,
     headingStyle = HedvigTheme.typography.headlineSmall,
     modifier = Modifier
@@ -1788,7 +1789,7 @@ private fun PreviewHomeScreen(
         navigateToUsageData = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
-        navigateToAddonPurchaseFlow = {},
+        navigateToAddonPurchaseFlow = { _, _ -> },
       )
     }
   }
@@ -1825,7 +1826,7 @@ private fun PreviewHomeScreenWithError() {
         navigateToUsageData = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
-        navigateToAddonPurchaseFlow = {},
+        navigateToAddonPurchaseFlow = { _, _ -> },
       )
     }
   }
@@ -1895,7 +1896,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToUsageData = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
-        navigateToAddonPurchaseFlow = {},
+        navigateToAddonPurchaseFlow = { _, _ -> },
       )
     }
   }

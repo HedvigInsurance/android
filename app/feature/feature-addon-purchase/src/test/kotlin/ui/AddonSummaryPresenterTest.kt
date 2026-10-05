@@ -5,10 +5,13 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import assertk.assertThat
+import assertk.assertions.containsExactly
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.prop
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.tracking.EventTrackingClient
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
@@ -54,6 +57,7 @@ class AddonSummaryPresenterTest {
     val insuranceUseCase = FakeAddonSummaryGetInsuranceUseCase()
     val costBreakdownUseCase = FakeGetQuoteCostBreakdownUseCase()
     val backstack = TestBackstack(mutableListOf(AddonPurchaseKey()))
+    val eventTrackingClient = FakeEventTrackingClient()
     val presenter = AddonSummaryPresenter(
       summaryParameters = testSummaryParametersWithCurrentAddon,
       submitAddonPurchaseUseCase = submitUseCase,
@@ -61,6 +65,7 @@ class AddonSummaryPresenterTest {
       getQuoteCostBreakdownUseCase = costBreakdownUseCase,
       getInsuranceForTravelAddonUseCase = insuranceUseCase,
       backstack = backstack,
+      eventTrackingClient = eventTrackingClient,
     )
     presenter.test(AddonSummaryState.Loading) {
       skipItems(1)
@@ -71,6 +76,7 @@ class AddonSummaryPresenterTest {
       submitUseCase.turbine.add(ErrorMessage().left())
       scheduler.advanceUntilIdle()
       assertThat(backstack.entries.last()).isInstanceOf(SubmitFailureKey::class)
+      assertThat(eventTrackingClient.trackedEvents).isEmpty()
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -82,6 +88,7 @@ class AddonSummaryPresenterTest {
     val insuranceUseCase = FakeAddonSummaryGetInsuranceUseCase()
     val costBreakdownUseCase = FakeGetQuoteCostBreakdownUseCase()
     val backstack = TestBackstack(mutableListOf(AddonPurchaseKey()))
+    val eventTrackingClient = FakeEventTrackingClient()
     val presenter = AddonSummaryPresenter(
       summaryParameters = testSummaryParametersWithCurrentAddon,
       submitAddonPurchaseUseCase = submitUseCase,
@@ -89,6 +96,7 @@ class AddonSummaryPresenterTest {
       getQuoteCostBreakdownUseCase = costBreakdownUseCase,
       getInsuranceForTravelAddonUseCase = insuranceUseCase,
       backstack = backstack,
+      eventTrackingClient = eventTrackingClient,
     )
     presenter.test(AddonSummaryState.Loading) {
       skipItems(1)
@@ -101,6 +109,17 @@ class AddonSummaryPresenterTest {
       assertThat(backstack.entries.last()).isInstanceOf(SubmitSuccessKey::class)
         .prop(SubmitSuccessKey::activationDate)
         .isEqualTo(testSummaryParametersWithCurrentAddon.activationDate)
+      assertThat(eventTrackingClient.trackedEvents).containsExactly(
+        "addon_purchased" to mapOf(
+          "user_flow" to "insurance_screen",
+          "addon_type" to newQuote.addonVariant.product,
+          "contract_id" to "contractId",
+          "price" to 59.0,
+          "currency" to "SEK",
+          "transaction_id" to "quoteId",
+          "is_upgrade" to true,
+        ),
+      )
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -116,6 +135,7 @@ class AddonSummaryPresenterTest {
       getQuoteCostBreakdownUseCase = costBreakdownUseCase1,
       getInsuranceForTravelAddonUseCase = insuranceUseCase1,
       backstack = TestBackstack(),
+      eventTrackingClient = FakeEventTrackingClient(),
     )
     presenter1.test(AddonSummaryState.Loading) {
       skipItems(1)
@@ -136,6 +156,7 @@ class AddonSummaryPresenterTest {
       getQuoteCostBreakdownUseCase = costBreakdownUseCase2,
       getInsuranceForTravelAddonUseCase = insuranceUseCase2,
       backstack = TestBackstack(),
+      eventTrackingClient = FakeEventTrackingClient(),
     )
     presenter2.test(AddonSummaryState.Loading) {
       skipItems(1)
@@ -159,6 +180,7 @@ class AddonSummaryPresenterTest {
       getQuoteCostBreakdownUseCase = costBreakdownUseCase,
       getInsuranceForTravelAddonUseCase = insuranceUseCase,
       backstack = TestBackstack(),
+      eventTrackingClient = FakeEventTrackingClient(),
     )
     presenter.test(AddonSummaryState.Loading) {
       skipItems(1)
@@ -170,6 +192,22 @@ class AddonSummaryPresenterTest {
         .isEqualTo(newQuote.itemCost.monthlyNet)
     }
   }
+}
+
+private class FakeEventTrackingClient : EventTrackingClient {
+  val trackedEvents = mutableListOf<Pair<String, Map<String, Any?>>>()
+
+  override fun setCollectionEnabled(enabled: Boolean) {}
+
+  override fun trackEvent(name: String, parameters: Map<String, Any?>) {
+    trackedEvents += name to parameters
+  }
+
+  override fun trackScreen(name: String, screenClass: String?, parameters: Map<String, Any?>) {}
+
+  override fun setUserId(userId: String?) {}
+
+  override fun setUserProperty(name: String, value: String?) {}
 }
 
 private class FakeSubmitAddonPurchaseUseCase : SubmitAddonPurchaseUseCase {

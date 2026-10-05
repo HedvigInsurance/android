@@ -4,6 +4,7 @@ import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.EntryProviderScope
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.dropUnlessResumed
+import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.feature.insurances.data.AvailableAddon
@@ -36,7 +37,7 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEntries(
   startEditCoInsuredAddMissingInfo: (contractId: String) -> Unit,
   startEditCoOwnersAddMissingInfo: (contractId: String) -> Unit,
   imageLoader: ImageLoader,
-  onNavigateToAddonPurchaseFlow: (List<ContractId>, AvailableAddon?) -> Unit,
+  onNavigateToAddonPurchaseFlow: (List<ContractId>, AvailableAddon?, AddonBannerSource) -> Unit,
   onNavigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToChipIdScreen: (String) -> Unit,
@@ -55,7 +56,7 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEntries(
       },
       imageLoader = imageLoader,
       onNavigateToAddonPurchaseFlow = dropUnlessResumed { ids: List<ContractId> ->
-        onNavigateToAddonPurchaseFlow(ids, null)
+        onNavigateToAddonPurchaseFlow(ids, null, AddonBannerSource.INSURANCES_TAB)
       },
     )
   }
@@ -90,7 +91,11 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEntries(
       navigateToRemoveAddon = onNavigateToRemoveAddon,
       navigateToUpgradeAddon = navigateToUpgradeAddon,
       navigateToAddAddon = { availableAddon ->
-        onNavigateToAddonPurchaseFlow(listOf(availableAddon.relatedContractId), availableAddon)
+        onNavigateToAddonPurchaseFlow(
+          listOf(availableAddon.relatedContractId),
+          availableAddon,
+          AddonBannerSource.CONTRACT_DETAIL,
+        )
       },
       navigateToChipIdScreen = navigateToChipIdScreen,
     )
