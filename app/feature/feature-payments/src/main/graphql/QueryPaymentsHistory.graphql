@@ -12,14 +12,9 @@ query PaymentHistoryWithDetails {
     referralInformation {
       code
     }
-    paymentInformation {
-      status
-      chargeMethod {
-        displayName
-        descriptor
-        chargingDayInTheMonth
-        mandate
-        paymentMethod
+    paymentMethods(version: 2) {
+      payinMethods {
+        ...MemberPaymentMethodFragment
       }
     }
   }

@@ -35,6 +35,7 @@ data class MemberChargeShortInfo(
 
 enum class MemberPaymentChargeMethod {
   TRUSTLY,
+  SWISH,
   INVOICE,
   UNKNOWN,
 }

@@ -700,6 +700,7 @@
   <string name="PAYMENTS_OUTSTANDING_PAYMENT">Outstanding payment</string>
   <string name="PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION">Our monthly payment is processed using digital direct debit (Autogiro) through our payment partner Trustly. Your price is based on several factors, including aspects related to you, your belongings, your lifestyle, and where you live.</string>
   <string name="PAYMENTS_PAYMENT_DETAILS_INFO_TITLE">Payment details</string>
+  <string name="PAYMENTS_PAYMENT_DETAILS_SWISH_DESCRIPTION"></string>
   <string name="PAYMENTS_PAYMENT_DUE">Payment due</string>
   <string name="PAYMENTS_PAYMENT_DUE_INFO">If you update your bank account close to the %1$s, the withdrawal might take a few extra days.</string>
   <string name="PAYMENTS_PAYMENT_FAILED">This payment failed and was added to your payment on %1$s.</string>

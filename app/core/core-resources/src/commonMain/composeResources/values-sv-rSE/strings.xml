@@ -700,6 +700,7 @@
   <string name="PAYMENTS_OUTSTANDING_PAYMENT">Utebliven betalning</string>
   <string name="PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION">Vår månadsbetalning behandlas med digitalt autogiro genom vår betalningspartner Trustly. Ditt pris baseras på flera olika faktorer som bland annat har att göra med dig, dina saker, hur du lever och var du bor.</string>
   <string name="PAYMENTS_PAYMENT_DETAILS_INFO_TITLE">Betalningsinformation</string>
+  <string name="PAYMENTS_PAYMENT_DETAILS_SWISH_DESCRIPTION"></string>
   <string name="PAYMENTS_PAYMENT_DUE">Förfallodag</string>
   <string name="PAYMENTS_PAYMENT_DUE_INFO">Om du uppdaterar ditt bankkonto nära den %1$s kan det ta några extra dagar innan pengarna dras.</string>
   <string name="PAYMENTS_PAYMENT_FAILED">Denna betalning misslyckades och lades till i din betalning den %1$s .</string>
@@ -970,7 +971,7 @@
   <string name="SWISH_EXPLANATION_ITEM_2_TITLE">Utbetalningar direkt</string>
   <string name="SWISH_EXPLANATION_ITEM_3_TEXT">Du kan byta eller ta bort betalningsmetod i inställningar.</string>
   <string name="SWISH_EXPLANATION_ITEM_3_TITLE">Byt när du vill</string>
-  <string name="SWISH_INFO_BOX">Genom att välja Swish godkänner du att din premie dras automatiskt via Swish varje månad. Vi meddelar dig i Hedvig-appen innan varje betalning.</string>
+  <string name="SWISH_INFO_BOX">När du väljer Swish godkänner du att din premie dras automatiskt via Swish varje månad. Vi meddelar dig i Hedvig-appen innan varje betalning.</string>
   <string name="TAB_HOME_TITLE">Hem</string>
   <string name="TAB_INSURANCES_TITLE">Försäkringar</string>
   <string name="TAB_PAYMENTS_TITLE">Betalningar</string>
