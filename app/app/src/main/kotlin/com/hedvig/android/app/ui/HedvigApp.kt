@@ -70,7 +70,6 @@ import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.design.system.hedvig.DemoModeLabel
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.datepicker.LocalAppLocale
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.design.system.hedvig.rememberGlobalSnackBarState
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseKey
@@ -92,7 +91,6 @@ import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificat
 import com.hedvig.android.ui.force.upgrade.ForceUpgradeBlockingScreen
 import hedvig.resources.EXIT_DEMO_MODE_BUTTON
 import hedvig.resources.Res
-import java.util.Locale
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -192,11 +190,9 @@ internal fun HedvigApp(
         imageLoader,
       )
       SharedTransitionLayout(Modifier.fillMaxSize()) {
-        val appLanguage by languageService.language.collectAsState()
         CompositionLocalProvider(
           LocalUriHandler provides authorizationCodeUriHandler,
           LocalSharedTransitionScope provides this,
-          LocalAppLocale provides remember(appLanguage) { Locale.forLanguageTag(appLanguage.toBcp47Format()) },
         ) {
           val globalSnackBarState = rememberGlobalSnackBarState()
           val sceneDecoratorStrategies = rememberHedvigChromeStrategy(

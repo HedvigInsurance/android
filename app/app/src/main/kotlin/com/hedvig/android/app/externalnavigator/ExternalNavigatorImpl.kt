@@ -10,6 +10,9 @@ import android.content.pm.ResolveInfo
 import android.provider.Settings
 import android.widget.Toast
 import androidx.core.net.toUri
+import com.hedvig.android.language.Language
+import com.hedvig.android.language.LanguageService
+import com.hedvig.android.language.withAppLanguage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.activity.ExternalNavigator
@@ -23,6 +26,7 @@ import org.jetbrains.compose.resources.getString
 internal class ExternalNavigatorImpl(
   private val activity: Activity,
   private val buildConfigApplicationId: String,
+  private val languageService: LanguageService,
 ) : ExternalNavigator {
   override fun openAppSettings() {
     val permissionActivity = Intent(
@@ -37,7 +41,7 @@ internal class ExternalNavigatorImpl(
   }
 
   override fun tryOpenPlayStore() {
-    activity.tryOpenPlayStore()
+    activity.tryOpenPlayStore(languageService.getLanguage())
   }
 
   override fun tryToDialPhone(number: String) {
@@ -60,17 +64,19 @@ internal class ExternalNavigatorImpl(
    * Todo look for a way to just open the default email app without having to also start a draft email in the process
    */
   override fun openEmailApp() {
-    activity.openEmail(activity.getString(R.string.login_bottom_sheet_view_code))
+    activity.openEmail(
+      activity.withAppLanguage(languageService.getLanguage()).getString(R.string.login_bottom_sheet_view_code),
+    )
   }
 }
 
-private fun Context.tryOpenPlayStore() {
+private fun Context.tryOpenPlayStore(language: Language) {
   if (canOpenPlayStore()) {
     openPlayStore()
   } else {
     Toast.makeText(
       this,
-      getString(R.string.TOAST_PLAY_STORE_MISSING_ON_DEVICE),
+      withAppLanguage(language).getString(R.string.TOAST_PLAY_STORE_MISSING_ON_DEVICE),
       Toast.LENGTH_LONG,
     ).show()
   }
