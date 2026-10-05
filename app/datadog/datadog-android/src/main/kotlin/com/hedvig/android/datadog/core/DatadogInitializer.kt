@@ -1,6 +1,7 @@
 package com.hedvig.android.datadog.core
 
 import android.content.Context
+import android.provider.Settings
 import android.util.Log
 import androidx.startup.Initializer
 import com.datadog.android.Datadog
@@ -11,6 +12,7 @@ import com.datadog.android.log.Logger
 import com.datadog.android.log.Logs
 import com.datadog.android.log.LogsConfiguration
 import com.datadog.android.privacy.TrackingConsent
+import com.datadog.android.rum.GlobalRumMonitor
 import com.datadog.android.rum.Rum
 import com.datadog.android.rum.RumConfiguration
 import com.datadog.android.rum.model.ErrorEvent
@@ -66,6 +68,9 @@ abstract class DatadogInitializer : Initializer<Unit> {
       .build()
     Rum.enable(rumConfig, sdkCore)
     logcat(LogPriority.VERBOSE) { "Datadog RUM registering succeeded: true" }
+    if (isRunningInFirebaseTestLab(context)) {
+      GlobalRumMonitor.get(sdkCore).addAttribute(IS_FIREBASE_TEST_LAB_RUM_ATTRIBUTE, true)
+    }
 
     GlobalOpenTelemetry.set(DatadogOpenTelemetry(serviceName = "android"))
     logcat(LogPriority.VERBOSE) { "Datadog Android Global Open Telemetry registering succeeded: true" }
@@ -90,6 +95,18 @@ abstract class DatadogInitializer : Initializer<Unit> {
     Timber.plant(DatadogLoggingTree(logger))
   }
 }
+
+/**
+ * Google Play's pre-launch report runs each uploaded build on Firebase Test Lab devices, which RUM would otherwise
+ * count as member sessions. Tagging them lets metrics and SLOs exclude them. Set synchronously so that crashes during
+ * app launch carry it too.
+ * https://firebase.google.com/docs/test-lab/android/android-studio
+ */
+private fun isRunningInFirebaseTestLab(context: Context): Boolean {
+  return Settings.System.getString(context.contentResolver, "firebase.test.lab") == "true"
+}
+
+private const val IS_FIREBASE_TEST_LAB_RUM_ATTRIBUTE = "is_firebase_test_lab"
 
 /**
  * Filters out errors from network requests that were cancelled rather than failed. These are part of normal app
