@@ -8,7 +8,6 @@
   -->
   <queries>
     <package android:name="se.bankgirot.swish" />
-    <package android:name="se.bankgirot.swish.sandbox" />
   </queries>
 
 </manifest>
