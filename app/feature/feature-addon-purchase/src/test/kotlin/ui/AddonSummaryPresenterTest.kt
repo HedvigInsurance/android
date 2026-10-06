@@ -125,6 +125,54 @@ class AddonSummaryPresenterTest {
   }
 
   @Test
+  fun `buying several toggleable addons at once tracks one addon_purchased per addon`() = runTest {
+    val scheduler = testScheduler
+    val submitUseCase = FakeSubmitAddonPurchaseUseCase()
+    val insuranceUseCase = FakeAddonSummaryGetInsuranceUseCase()
+    val costBreakdownUseCase = FakeGetQuoteCostBreakdownUseCase()
+    val eventTrackingClient = FakeEventTrackingClient()
+    val presenter = AddonSummaryPresenter(
+      summaryParameters = testSummaryParametersToggleableCarAddons,
+      submitAddonPurchaseUseCase = submitUseCase,
+      addonPurchaseSource = AddonBannerSource.HOME_SCREEN,
+      getQuoteCostBreakdownUseCase = costBreakdownUseCase,
+      getInsuranceForTravelAddonUseCase = insuranceUseCase,
+      backstack = TestBackstack(mutableListOf(AddonPurchaseKey())),
+      eventTrackingClient = eventTrackingClient,
+    )
+    presenter.test(AddonSummaryState.Loading) {
+      skipItems(1)
+      insuranceUseCase.turbine.add(listOf(fakeInsuranceForAddon).right())
+      costBreakdownUseCase.turbine.add(fakeQuoteCostBreakdown.right())
+      skipItems(1)
+      sendEvent(AddonSummaryEvent.Submit)
+      submitUseCase.turbine.add(Unit.right())
+      scheduler.advanceUntilIdle()
+      assertThat(eventTrackingClient.trackedEvents).containsExactly(
+        "addon_purchased" to mapOf(
+          "user_flow" to "home_screen",
+          "addon_type" to "SE_CAR_ALLRISK_ADDON",
+          "contract_id" to "contractId",
+          "price" to 99.0,
+          "currency" to "SEK",
+          "transaction_id" to "carQuoteId",
+          "is_upgrade" to false,
+        ),
+        "addon_purchased" to mapOf(
+          "user_flow" to "home_screen",
+          "addon_type" to "SE_CAR_RENTAL_CAR_ADDON",
+          "contract_id" to "contractId",
+          "price" to 39.0,
+          "currency" to "SEK",
+          "transaction_id" to "carQuoteId",
+          "is_upgrade" to false,
+        ),
+      )
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
   fun `the difference between current addon price and new addon price is shown correctly`() = runTest {
     val insuranceUseCase1 = FakeAddonSummaryGetInsuranceUseCase()
     val costBreakdownUseCase1 = FakeGetQuoteCostBreakdownUseCase()
@@ -393,4 +441,44 @@ private val testSummaryParametersNoCurrentAddon = SummaryParameters(
   quoteId = "quoteId",
   notificationMessage = null,
   addonType = AddonType.SELECTABLE,
+)
+
+private fun carAddonQuote(addonId: String, product: String, monthlyPrice: Double) = AddonQuote(
+  displayTitle = product,
+  addonId = addonId,
+  displayDetails = emptyList(),
+  addonVariant = AddonVariant(
+    termsVersion = "terms",
+    displayName = product,
+    product = product,
+    perils = listOf(),
+    documents = listOf(),
+  ),
+  addonSubtype = null,
+  documents = listOf(),
+  displayDescription = product,
+  itemCost = ItemCost(
+    monthlyGross = UiMoney(monthlyPrice, UiCurrencyCode.SEK),
+    monthlyNet = UiMoney(monthlyPrice, UiCurrencyCode.SEK),
+    discounts = emptyList(),
+  ),
+)
+
+private val testSummaryParametersToggleableCarAddons = SummaryParameters(
+  productVariant = fakeProductVariant,
+  contractId = "contractId",
+  baseInsuranceCost = ItemCost(
+    monthlyGross = UiMoney(100.0, UiCurrencyCode.SEK),
+    monthlyNet = UiMoney(100.0, UiCurrencyCode.SEK),
+    discounts = emptyList(),
+  ),
+  chosenQuotes = listOf(
+    carAddonQuote("allRiskId", "SE_CAR_ALLRISK_ADDON", 99.0),
+    carAddonQuote("rentalCarId", "SE_CAR_RENTAL_CAR_ADDON", 39.0),
+  ),
+  activationDate = LocalDate(2024, 12, 30),
+  currentlyActiveAddons = emptyList(),
+  quoteId = "carQuoteId",
+  notificationMessage = null,
+  addonType = AddonType.TOGGLEABLE,
 )
