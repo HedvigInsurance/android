@@ -281,8 +281,8 @@ private val AddonBannerSource.datadogFlowName: String
   }
 
 /**
- * Fires `addon_purchased` once per add-on activated, as specified in the app tracking plan. An upgrade of an add-on the
- * member already had counts as a purchase too, marked by `is_upgrade`.
+ * Fires `addon_purchased` once per add-on activated, as specified in the app tracking plan. Upgrading an add-on the
+ * member already had counts as a purchase.
  */
 private fun trackAddonPurchased(
   eventTrackingClient: EventTrackingClient,
@@ -301,7 +301,6 @@ private fun trackAddonPurchased(
         "currency" to price.currencyCode.name,
         // addonActivateOffer returns no transaction id, so the accepted quote stands in for one
         "transaction_id" to summaryParameters.quoteId,
-        "is_upgrade" to summaryParameters.currentlyActiveAddons.isNotEmpty(),
       ),
     )
   }

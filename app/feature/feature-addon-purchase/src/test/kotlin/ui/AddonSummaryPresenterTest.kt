@@ -117,7 +117,6 @@ class AddonSummaryPresenterTest {
           "price" to 59.0,
           "currency" to "SEK",
           "transaction_id" to "quoteId",
-          "is_upgrade" to true,
         ),
       )
       cancelAndIgnoreRemainingEvents()
@@ -156,7 +155,6 @@ class AddonSummaryPresenterTest {
           "price" to 99.0,
           "currency" to "SEK",
           "transaction_id" to "carQuoteId",
-          "is_upgrade" to false,
         ),
         "addon_purchased" to mapOf(
           "user_flow" to "home_screen",
@@ -165,7 +163,6 @@ class AddonSummaryPresenterTest {
           "price" to 39.0,
           "currency" to "SEK",
           "transaction_id" to "carQuoteId",
-          "is_upgrade" to false,
         ),
       )
       cancelAndIgnoreRemainingEvents()
