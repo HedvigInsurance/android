@@ -258,27 +258,12 @@ private fun AddonLogInfo.asAddonAttributes(): Map<String, Map<String, String>> {
   return mapOf(
     "addon" to
       mapOf(
-        "flow" to this.flow.datadogFlowName,
+        "flow" to this.flow.name,
         "subType" to (this.subType ?: "null"),
         "type" to this.type,
       ),
   )
 }
-
-/**
- * Datadog dashboards were built while home, the insurances tab and contract detail all reported
- * [AddonBannerSource.INSURANCES_TAB]. Keep reporting that there so the series stays continuous; the split is only
- * visible in the `addon_purchased` event.
- */
-private val AddonBannerSource.datadogFlowName: String
-  get() = when (this) {
-    AddonBannerSource.HOME_SCREEN,
-    AddonBannerSource.HOME_CROSS_SELL_SHEET,
-    AddonBannerSource.CONTRACT_DETAIL,
-    -> AddonBannerSource.INSURANCES_TAB.name
-
-    else -> name
-  }
 
 /**
  * Fires `addon_purchased` once per add-on activated, as specified in the app tracking plan. Upgrading an add-on the
