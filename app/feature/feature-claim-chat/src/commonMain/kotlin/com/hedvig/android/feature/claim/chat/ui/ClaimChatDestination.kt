@@ -16,6 +16,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -58,6 +59,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -606,12 +608,39 @@ private fun ClaimChatScreenContent(
   LaunchedEffect(uiState.steps.lastIndex) {
     isScrolledBack = false
   }
-  // The minimum height is also a key, not just the step count. It is measured from the step above, whose answer
-  // only takes the shape it keeps once it stops being the step being answered, so it lands a layout pass after
-  // the new step does. Scrolling on the step count alone reaches the end of a list whose last item is about to
-  // grow, and the controls it grows by end up below the fold with nothing left to bring them back up.
+  // A new step slides up into place. The distance is read from the layout a frame after the step lands, once the
+  // list has measured it. Its minimum height can still change while the slide runs, so the slide ends on an
+  // instant re-pin to the true end, and the re-pin below holds off until then instead of cutting it short.
+  val previousLastIndex = remember { IntArray(1) { uiState.steps.lastIndex } }
+  val isSlidingToNewStep = remember { BooleanArray(1) }
+  LaunchedEffect(uiState.steps.lastIndex) {
+    val lastIndex = uiState.steps.lastIndex
+    val arrivedAtNewStep = lastIndex > previousLastIndex[0] && previousLastIndex[0] >= 0
+    previousLastIndex[0] = lastIndex
+    if (lastIndex < 0 || isScrolledBack) return@LaunchedEffect
+    if (arrivedAtNewStep) {
+      isSlidingToNewStep[0] = true
+      try {
+        withFrameNanos { }
+        val layoutInfo = lazyListState.layoutInfo
+        val lastItem = layoutInfo.visibleItemsInfo.lastOrNull()
+        if (lastItem != null && lastItem.index == lastIndex + stepsListIndexOffset) {
+          val bottomOfContent = lastItem.offset + lastItem.size
+          val distance = bottomOfContent - (layoutInfo.viewportEndOffset - layoutInfo.afterContentPadding)
+          if (distance > 0) lazyListState.animateScrollBy(distance.toFloat(), tween(NEW_STEP_SLIDE_MILLIS))
+        }
+      } finally {
+        isSlidingToNewStep[0] = false
+      }
+    }
+    lazyListState.scrollToItem(lastIndex + stepsListIndexOffset, scrollOffset = SCROLL_PAST_END_OF_LIST)
+  }
+  // The minimum height is measured from the step above, whose answer only takes the shape it keeps once it stops
+  // being the step being answered, so it lands a layout pass after the new step does. Pinning on the new step alone
+  // reaches the end of a list whose last item is about to grow, and the controls it grows by end up below the fold
+  // with nothing left to bring them back up.
   //
-  // The current step's own answer height is the third key. A field that grows as the member types, or a card
+  // The current step's own answer height is the other key. A field that grows as the member types, or a card
   // that opens, can outgrow the minimum height, and the list anchors its first visible item, so the controls
   // below would drift under the fold. This is a measurement of the answer area alone and nothing lays out
   // against it, so re-pinning on it cannot feed back into what it measures.
@@ -619,11 +648,10 @@ private fun ClaimChatScreenContent(
   // Instant, not animated: this fires on every keystroke that rewraps the input, and a 400ms animation on each
   // one is the flicker. Against the end of the list it moves nothing, so there is nothing to animate.
   LaunchedEffect(
-    uiState.steps.lastIndex,
     lastItemHeightAdjustingState.preferredMinHeightForFullScreenItem,
     lastItemHeightAdjustingState.lastItemBottomContentHeight,
   ) {
-    if (!isScrolledBack && uiState.steps.isNotEmpty()) {
+    if (!isScrolledBack && uiState.steps.isNotEmpty() && !isSlidingToNewStep[0]) {
       lazyListState.scrollToItem(uiState.steps.lastIndex + stepsListIndexOffset, scrollOffset = SCROLL_PAST_END_OF_LIST)
     }
   }
@@ -842,6 +870,8 @@ private val DRAG_BACK_BEFORE_REPIN_STANDS_DOWN = 24.dp
 
 // Any offset past the end of the last item; the list clamps it to the bottom.
 private const val SCROLL_PAST_END_OF_LIST = 100_000
+
+private const val NEW_STEP_SLIDE_MILLIS = 300
 
 @Composable
 private fun ScrollToBottomButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
