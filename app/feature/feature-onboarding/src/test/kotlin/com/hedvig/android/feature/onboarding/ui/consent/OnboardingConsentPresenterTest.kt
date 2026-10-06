@@ -198,7 +198,7 @@ internal class OnboardingConsentPresenterTest {
     val setup = TestSetup(storedConsent = AnalyticsConsent.DENIED)
     val restoredState = OnboardingConsentUiState.Content(
       progress = OnboardingProgress(totalSteps = 5, currentIndex = 1),
-      badge = null,
+      consent = AnalyticsConsent.NOT_DECIDED,
       buttonsEnabled = true,
     )
 
