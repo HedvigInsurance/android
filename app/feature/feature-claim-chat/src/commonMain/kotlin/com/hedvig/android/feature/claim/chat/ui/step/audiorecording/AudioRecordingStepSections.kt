@@ -515,7 +515,9 @@ private fun InlineVoiceAnswerCard(
   }
 
   val audioPlayer = (audioRecordingState as? AudioRecordingStepState.AudioRecording.Playback)?.let {
-    if (it.audioPath is AudioPath.FilePath) {
+    // An unprepared recording is one the recorder could not find or open once it stopped. The card shows its
+    // error state with the option to record again, so there is nothing for a player to load.
+    if (it.audioPath is AudioPath.FilePath && it.isPrepared) {
       rememberAudioPlayer(
         PlayableAudioSource.LocalFilePath(it.audioPath.filePath),
       )
