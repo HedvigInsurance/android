@@ -55,6 +55,8 @@ import com.hedvig.android.feature.onboarding.ui.withOnboardingHaptic
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.ui.analytics.consent.AnalyticsConsentCard
+import com.hedvig.android.ui.analytics.consent.ConsentBadge
 import dev.zacsweers.metro.Inject
 import hedvig.resources.LEGAL_PRIVACY_POLICY_APP_SHORT
 import hedvig.resources.ONBOARDING_ANALYTICS_ALLOW_BUTTON
@@ -101,7 +103,7 @@ internal class OnboardingConsentPresenter(
     LaunchedEffect(loadIteration) {
       // Read before the early return: a presenter that restarts while this screen is showing keeps
       // its state but loses the badge, which only the stored consent can tell us.
-      badge = settingsDataStore.observeAnalyticsConsent().first().toBadge()
+      badge = ConsentBadge.from(settingsDataStore.observeAnalyticsConsent().first())
       if (currentState is OnboardingConsentUiState.Content) return@LaunchedEffect
       currentState = OnboardingConsentUiState.Loading
       sessionStore.getOrFetchSession().fold(
@@ -127,7 +129,7 @@ internal class OnboardingConsentPresenter(
 
         is PendingNavigation.Decision -> {
           settingsDataStore.setAnalyticsConsent(pending.consent)
-          val answeredBadge = pending.consent.toBadge()
+          val answeredBadge = ConsentBadge.from(pending.consent)
           if (answeredBadge != badge) {
             badge = answeredBadge
             badgeSettleSignals.first { settledBadge -> settledBadge == answeredBadge }
@@ -183,12 +185,6 @@ internal class OnboardingConsentPresenter(
 
     data class Decision(val consent: AnalyticsConsent) : PendingNavigation
   }
-}
-
-private fun AnalyticsConsent.toBadge(): ConsentBadge? = when (this) {
-  AnalyticsConsent.GRANTED -> ConsentBadge.Accepted
-  AnalyticsConsent.DENIED -> ConsentBadge.Denied
-  AnalyticsConsent.NOT_DECIDED -> null
 }
 
 internal sealed interface OnboardingConsentUiState {
@@ -276,7 +272,7 @@ private fun OnboardingConsentScreen(
         )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(24.dp))
-        OnboardingConsentCard(
+        AnalyticsConsentCard(
           badge = uiState.badge,
           onBadgeSettled = onBadgeSettled,
           modifier = Modifier.align(Alignment.CenterHorizontally),

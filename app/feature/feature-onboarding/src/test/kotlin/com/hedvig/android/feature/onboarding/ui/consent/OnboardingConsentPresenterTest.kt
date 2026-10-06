@@ -25,6 +25,7 @@ import com.hedvig.android.molecule.test.MoleculePresenterTestContext
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.ui.analytics.consent.ConsentBadge
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule

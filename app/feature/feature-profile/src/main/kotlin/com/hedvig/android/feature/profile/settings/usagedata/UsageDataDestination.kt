@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +39,8 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.ui.analytics.consent.AnalyticsConsentCard
+import com.hedvig.android.ui.analytics.consent.ConsentBadge
 import dev.zacsweers.metro.Inject
 import hedvig.resources.LEGAL_PRIVACY_POLICY_APP_SHORT
 import hedvig.resources.ONBOARDING_ANALYTICS_ALLOW_BUTTON
@@ -46,7 +49,8 @@ import hedvig.resources.ONBOARDING_ANALYTICS_SUBTITLE
 import hedvig.resources.ONBOARDING_ANALYTICS_TITLE
 import hedvig.resources.Res
 import hedvig.resources.SETTINGS_USAGE_DATA_TITLE
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
 import org.jetbrains.compose.resources.stringResource
 
 @Inject
@@ -63,27 +67,47 @@ internal class UsageDataPresenter(
 ) : MoleculePresenter<UsageDataEvent, UsageDataUiState> {
   @Composable
   override fun MoleculePresenterScope<UsageDataEvent>.present(lastState: UsageDataUiState): UsageDataUiState {
+    val storedConsent by remember { settingsDataStore.observeAnalyticsConsent() }.collectAsState(lastState.consent)
+    var decision by remember { mutableStateOf<AnalyticsConsent?>(null) }
     var finished by remember { mutableStateOf(lastState.finished) }
+    val badgeSettleSignals = remember { MutableSharedFlow<ConsentBadge?>(replay = 1) }
+
+    // Leaves once the card has finished showing the answer, so the member sees it land before the pop.
+    LaunchedEffect(decision) {
+      val consent = decision ?: return@LaunchedEffect
+      settingsDataStore.setAnalyticsConsent(consent)
+      badgeSettleSignals.first { settledBadge -> settledBadge == ConsentBadge.from(consent) }
+      finished = true
+    }
+
     CollectEvents { event ->
-      val consent = when (event) {
-        UsageDataEvent.Allow -> AnalyticsConsent.GRANTED
-        UsageDataEvent.Deny -> AnalyticsConsent.DENIED
-      }
-      launch {
-        settingsDataStore.setAnalyticsConsent(consent)
-        finished = true
+      when (event) {
+        UsageDataEvent.Allow -> if (decision == null) decision = AnalyticsConsent.GRANTED
+        UsageDataEvent.Deny -> if (decision == null) decision = AnalyticsConsent.DENIED
+        is UsageDataEvent.BadgeSettled -> badgeSettleSignals.tryEmit(event.badge)
       }
     }
-    return UsageDataUiState(finished = finished)
+    return UsageDataUiState(
+      consent = storedConsent,
+      buttonsEnabled = decision == null,
+      finished = finished,
+    )
   }
 }
 
-internal data class UsageDataUiState(val finished: Boolean = false)
+internal data class UsageDataUiState(
+  /** `null` until the stored consent has been read. */
+  val consent: AnalyticsConsent? = null,
+  val buttonsEnabled: Boolean = true,
+  val finished: Boolean = false,
+)
 
 internal sealed interface UsageDataEvent {
   data object Allow : UsageDataEvent
 
   data object Deny : UsageDataEvent
+
+  data class BadgeSettled(val badge: ConsentBadge?) : UsageDataEvent
 }
 
 @Composable
@@ -98,7 +122,9 @@ internal fun UsageDataDestination(
     if (uiState.finished) popBackstack()
   }
   UsageDataScreen(
+    uiState = uiState,
     navigateUp = navigateUp,
+    onBadgeSettled = { badge -> viewModel.emit(UsageDataEvent.BadgeSettled(badge)) },
     onAllow = { viewModel.emit(UsageDataEvent.Allow) },
     onDeny = { viewModel.emit(UsageDataEvent.Deny) },
     onPrivacyPolicy = onPrivacyPolicy,
@@ -107,7 +133,9 @@ internal fun UsageDataDestination(
 
 @Composable
 private fun UsageDataScreen(
+  uiState: UsageDataUiState,
   navigateUp: () -> Unit,
+  onBadgeSettled: (ConsentBadge?) -> Unit,
   onAllow: () -> Unit,
   onDeny: () -> Unit,
   onPrivacyPolicy: () -> Unit,
@@ -126,6 +154,17 @@ private fun UsageDataScreen(
       )
     }
     Spacer(Modifier.weight(1f))
+    Spacer(Modifier.height(24.dp))
+    val consent = uiState.consent
+    if (consent != null) {
+      AnalyticsConsentCard(
+        badge = ConsentBadge.from(consent),
+        onBadgeSettled = onBadgeSettled,
+        modifier = Modifier.align(Alignment.CenterHorizontally),
+      )
+    }
+    Spacer(Modifier.weight(1f))
+    Spacer(Modifier.height(24.dp))
     Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier
@@ -149,7 +188,7 @@ private fun UsageDataScreen(
     HedvigButton(
       text = stringResource(Res.string.ONBOARDING_ANALYTICS_ALLOW_BUTTON),
       onClick = onAllow,
-      enabled = true,
+      enabled = uiState.buttonsEnabled,
       buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
       modifier = Modifier
         .fillMaxWidth()
@@ -159,7 +198,7 @@ private fun UsageDataScreen(
     HedvigButton(
       text = stringResource(Res.string.ONBOARDING_ANALYTICS_DENY_BUTTON),
       onClick = onDeny,
-      enabled = true,
+      enabled = uiState.buttonsEnabled,
       buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
       modifier = Modifier
         .fillMaxWidth()
@@ -174,7 +213,14 @@ private fun UsageDataScreen(
 private fun PreviewUsageDataScreen() {
   HedvigTheme {
     Surface {
-      UsageDataScreen(navigateUp = {}, onAllow = {}, onDeny = {}, onPrivacyPolicy = {})
+      UsageDataScreen(
+        uiState = UsageDataUiState(consent = AnalyticsConsent.GRANTED),
+        navigateUp = {},
+        onBadgeSettled = {},
+        onAllow = {},
+        onDeny = {},
+        onPrivacyPolicy = {},
+      )
     }
   }
 }
