@@ -266,8 +266,7 @@ private fun AddonLogInfo.asAddonAttributes(): Map<String, Map<String, String>> {
 }
 
 /**
- * Fires `addon_purchased` once per add-on activated, as specified in the app tracking plan. Upgrading an add-on the
- * member already had counts as a purchase.
+ * Fires `addon_purchased` once per add-on activated. Upgrading an add-on the member already had counts as a purchase.
  */
 private fun trackAddonPurchased(
   eventTrackingClient: EventTrackingClient,
