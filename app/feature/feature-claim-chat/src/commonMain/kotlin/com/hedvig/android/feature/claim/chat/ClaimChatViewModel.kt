@@ -50,6 +50,7 @@ import com.hedvig.android.feature.claim.chat.data.SubmitSummaryUseCase
 import com.hedvig.android.feature.claim.chat.data.SubmitTaskUseCase
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
+import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -129,6 +130,9 @@ internal sealed interface ClaimChatEvent {
 
   data class SubmitFile(val id: StepId) : ClaimChatEvent
 
+  /** Runs the submission that failed again, for the failures a plain retry can clear. */
+  data object RetryFailedSubmission : ClaimChatEvent
+
   data object DismissErrorDialog : ClaimChatEvent
 
   data class SubmitClaim(val id: StepId) : ClaimChatEvent
@@ -166,6 +170,11 @@ internal sealed interface ClaimChatUiState {
     val currentStep: ClaimIntentStep?,
     val outcome: ClaimIntentOutcome?,
     val errorSubmittingStep: ClaimChatErrorMessage?,
+    /**
+     * Whether the error dialog should offer to run the failed submission again, rather than only
+     * letting the member dismiss it.
+     */
+    val canRetryFailedSubmission: Boolean,
     val currentContinueButtonLoading: Boolean = false,
     val currentSkipButtonLoading: Boolean = false,
     val showConfirmEditDialogForStep: StepId?,
@@ -273,6 +282,7 @@ internal class ClaimChatPresenter(
     var submitTextJob by remember { mutableStateOf<Job?>(null) }
     var currentSkipButtonLoading by remember { mutableStateOf(false) }
     var errorSubmittingStep by remember { mutableStateOf<ClaimChatErrorMessage?>(null) }
+    var retryableFileSubmission by remember { mutableStateOf<StepId?>(null) }
     var showConfirmEditDialogForStep by remember { mutableStateOf<StepId?>(null) }
     var progress by remember {
       mutableStateOf<Float?>(
@@ -487,6 +497,15 @@ internal class ClaimChatPresenter(
               val recordedFile = audioRecordingManager.getRecordedFile()
               if (recordedFile == null) {
                 logcat { "No recorded file available" }
+                // The recording is gone from disk, so this answer can never be sent. Show the recorder's error
+                // state, which leaves recording again as the way forward, instead of a send button that does nothing.
+                steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
+                  val playback = content.recordingState as? AudioRecording.Playback
+                    ?: return@updateStepWithSuccess step
+                  step.copy(
+                    stepContent = content.copy(recordingState = playback.copy(isPrepared = false, hasError = true)),
+                  )
+                }
                 return@CollectEvents
               }
               val stepContent = steps.find { it.id == event.id }?.stepContent as? StepContent.AudioRecording
@@ -729,7 +748,7 @@ internal class ClaimChatPresenter(
             )
 
             steps.updateStepWithSuccess<StepContent.FileUpload>(event.id) { step, content ->
-              if (event.uri in content.localFiles.map { it.id }) return@updateStepWithSuccess step
+              if (content.allFiles.any { it.localPath == event.uri }) return@updateStepWithSuccess step
               step.copy(
                 stepContent = content.copy(
                   localFiles = content.localFiles + localFile,
@@ -933,9 +952,18 @@ internal class ClaimChatPresenter(
 
         ClaimChatEvent.DismissErrorDialog -> {
           errorSubmittingStep = null
+          retryableFileSubmission = null
         }
 
-        is ClaimChatEvent.SubmitFile -> {
+        is ClaimChatEvent.SubmitFile,
+        ClaimChatEvent.RetryFailedSubmission,
+        -> {
+          val stepId = when (event) {
+            is ClaimChatEvent.SubmitFile -> event.id
+            else -> retryableFileSubmission ?: return@CollectEvents
+          }
+          errorSubmittingStep = null
+          retryableFileSubmission = null
           val stepContent = currentStep?.stepContent as? StepContent.FileUpload ?: return@CollectEvents
           val fileUris = stepContent.localFiles.mapNotNull { file ->
             file.localPath?.let { Uri.parse(it) }
@@ -947,18 +975,24 @@ internal class ClaimChatPresenter(
           launch {
             submitFileUploadUseCase
               .invoke(
-                stepId = event.id,
+                stepId = stepId,
                 fileUris = fileUris,
                 uploadUrl = stepContent.uploadUri,
                 remoteFileIds = remoteFileIds.map {
                   CommonFileId(it)
                 },
+                onFileUploaded = { uri, fileId ->
+                  steps.markFileAsUploaded(stepId, uri.toString(), fileId)
+                },
               )
               .fold(
-                ifLeft = {
-                  errorSubmittingStep = it
+                ifLeft = { errorMessage ->
+                  errorSubmittingStep = errorMessage
+                  if (errorMessage == ClaimChatErrorMessage.ConnectionError) {
+                    retryableFileSubmission = stepId
+                  }
                   currentContinueButtonLoading = false
-                  logcat { "ClaimChatEvent.FileUpload $it" }
+                  logcat { "ClaimChatEvent.FileUpload $errorMessage" }
                 },
                 ifRight = { claimIntent ->
                   currentContinueButtonLoading = false
@@ -1092,6 +1126,7 @@ internal class ClaimChatPresenter(
         currentStep = currentStep,
         outcome = outcome,
         errorSubmittingStep = errorSubmittingStep,
+        canRetryFailedSubmission = retryableFileSubmission != null,
         currentContinueButtonLoading = currentContinueButtonLoading,
         currentSkipButtonLoading = currentSkipButtonLoading,
         showConfirmEditDialogForStep = showConfirmEditDialogForStep,
@@ -1222,6 +1257,30 @@ private fun SnapshotStateList<ClaimIntentStep>.updateStepWithSuccess(
       return@withMutableSnapshot true
     }
     return@withMutableSnapshot false
+  }
+}
+
+/**
+ * Moves a file the backend has accepted out of the pending list, so that a later failure in the
+ * same submission does not send it a second time when the member retries.
+ */
+internal fun SnapshotStateList<ClaimIntentStep>.markFileAsUploaded(
+  stepId: StepId,
+  localPath: String,
+  fileId: CommonFileId,
+) {
+  updateStepWithSuccess<StepContent.FileUpload>(stepId) { step, content ->
+    val uploaded = content.localFiles.find { it.localPath == localPath }
+    if (uploaded == null) {
+      logcat(LogPriority.WARN) { "markFileAsUploaded found no pending file for path:$localPath" }
+      return@updateStepWithSuccess step
+    }
+    step.copy(
+      stepContent = content.copy(
+        localFiles = content.localFiles - uploaded,
+        remoteFiles = content.remoteFiles + uploaded.copy(id = fileId.value),
+      ),
+    )
   }
 }
 

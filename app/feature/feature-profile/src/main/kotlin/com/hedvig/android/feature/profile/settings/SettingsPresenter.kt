@@ -6,8 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.apollo.NetworkCacheManager
-import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
 import com.hedvig.android.data.settings.datastore.AnalyticsConsent
 import com.hedvig.android.data.settings.datastore.GetAnalyticsConsentUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
@@ -24,14 +22,12 @@ internal class SettingsPresenter(
   private val languageService: LanguageService,
   private val settingsDataStore: SettingsDataStore,
   private val enableNotificationsReminderSnoozeManager: EnableNotificationsReminderSnoozeManager,
-  private val cacheManager: NetworkCacheManager,
   private val changeEmailSubscriptionPreferencesUseCase: ChangeEmailSubscriptionPreferencesUseCase,
-  private val uploadLanguagePreferenceToBackendUseCase: UploadLanguagePreferenceToBackendUseCase,
   private val getAnalyticsConsentUseCase: GetAnalyticsConsentUseCase,
 ) : MoleculePresenter<SettingsEvent, SettingsUiState> {
   @Composable
   override fun MoleculePresenterScope<SettingsEvent>.present(lastState: SettingsUiState): SettingsUiState {
-    var selectedLanguage by remember { mutableStateOf(lastState.selectedLanguage) }
+    val selectedLanguage by languageService.language.collectAsState()
     var emailSubscriptionPreferenceError by remember { mutableStateOf(false) }
     val selectedTheme = settingsDataStore.observeTheme().collectAsState(lastState.selectedTheme).value
     val isSubscribedToEmails = settingsDataStore.observeEmailSubscriptionPreference().collectAsState(
@@ -47,12 +43,7 @@ internal class SettingsPresenter(
     CollectEvents { event ->
       when (event) {
         is SettingsEvent.ChangeLanguage -> {
-          selectedLanguage = event.language
           languageService.setLanguage(event.language)
-          launch {
-            cacheManager.clearCache()
-            uploadLanguagePreferenceToBackendUseCase.invoke()
-          }
         }
 
         is SettingsEvent.ChangeTheme -> {

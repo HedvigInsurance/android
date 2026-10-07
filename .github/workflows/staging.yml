@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - develop
-      - feat/xsell-addon-rec
   workflow_dispatch:
 
 concurrency:

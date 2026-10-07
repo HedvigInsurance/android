@@ -103,6 +103,20 @@ abstract class DownloadStringsTask @Inject constructor(
           add("sv_SE")
         },
       )
+      // Lokalise names folders after the project's `sv_SE` locale, giving `values-sv-rSE`. Compose Multiplatform
+      // resources need language-only `values-sv` to match regional variants like sv-FI that Android's per-app language
+      // settings can hand the app.
+      put(
+        "language_mapping",
+        buildJsonArray {
+          add(
+            buildJsonObject {
+              put("original_language_iso", "sv_SE")
+              put("custom_language_iso", "sv")
+            },
+          )
+        },
+      )
     }
     logger.debug("{} asyncDownloadRequest body:{}", tag, requestBody)
     val request = HttpRequest.newBuilder()

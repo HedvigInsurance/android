@@ -48,15 +48,9 @@ private fun Project.configureKtlint(libs: LibrariesForLibs) {
 
   tasks.withType<org.jmailen.gradle.kotlinter.tasks.LintTask>().configureEach {
     exclude { it.file.path.contains("generated/") }
-    reports.set(
-      mapOf(
-        "checkstyle" to rootDir.resolve("build/reports/ktlint/${project.path}.xml"),
-      ),
-    )
   }
   tasks.withType<org.jmailen.gradle.kotlinter.tasks.FormatTask>().configureEach {
     exclude { it.file.path.contains("generated/") }
-    report.set(rootDir.resolve("build/reports/ktlint/${project.path}.xml"))
   }
 
   // Detach lint/format from codegen — see detachGeneratedSourceTaskDependencies. Run in

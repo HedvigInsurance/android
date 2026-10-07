@@ -13,6 +13,7 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.network.clients.AccessTokenFetcher
 import com.hedvig.android.network.clients.DeviceIdInterceptor
 import com.hedvig.android.network.clients.ExtraApolloClientConfiguration
+import com.hedvig.android.network.clients.ExtraKtorClientConfiguration
 import com.hedvig.android.network.clients.HedvigHttpLogger
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
@@ -23,6 +24,7 @@ import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpSend
 import io.ktor.client.plugins.HttpSendInterceptor
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
@@ -32,6 +34,7 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.plugin
 import io.ktor.client.request.header
 import io.ktor.client.request.headers
+import kotlin.time.Duration.Companion.seconds
 import octopus.cache.Cache
 
 @ContributesTo(AppScope::class)
@@ -43,7 +46,8 @@ interface NetworkMetroProviders {
     hedvigBuildConstants: HedvigBuildConstants,
     languageService: LanguageService,
     deviceIdFetcher: DeviceIdFetcher,
-  ): HttpClient = buildKtorClient(hedvigBuildConstants, languageService, deviceIdFetcher)
+    extraKtorClientConfiguration: ExtraKtorClientConfiguration,
+  ): HttpClient = buildKtorClient(hedvigBuildConstants, languageService, deviceIdFetcher, extraKtorClientConfiguration)
 
   @Provides
   @SingleIn(AppScope::class)
@@ -79,9 +83,14 @@ private fun buildKtorClient(
   hedvigBuildConstants: HedvigBuildConstants,
   languageService: LanguageService,
   deviceIdFetcher: DeviceIdFetcher,
+  extraKtorClientConfiguration: ExtraKtorClientConfiguration,
 ): HttpClient {
   return HttpClient(httpClientEngineFactory()) {
     installDatadogKtorPlugin(hedvigBuildConstants)
+    install(HttpTimeout) {
+      connectTimeoutMillis = CONNECT_TIMEOUT.inWholeMilliseconds
+      socketTimeoutMillis = SOCKET_TIMEOUT.inWholeMilliseconds
+    }
     defaultRequest {
       commonHeaders(hedvigBuildConstants, languageService)
     }
@@ -92,6 +101,7 @@ private fun buildKtorClient(
       }
     }
     install(HttpSend)
+    extraKtorClientConfiguration.configure(this)
   }.apply {
     plugin(HttpSend).intercept(DeviceIdInterceptor(deviceIdFetcher))
   }
@@ -102,9 +112,10 @@ private fun DefaultRequest.DefaultRequestBuilder.commonHeaders(
   languageService: LanguageService,
 ) {
   headers {
+    val languageTag = languageService.getLanguage().toBcp47Format()
     append("User-Agent", hedvigBuildConstants.userAgent)
-    append("Accept-Language", languageService.getLanguage().toBcp47Format())
-    append("hedvig-language", languageService.getLanguage().toBcp47Format())
+    append("Accept-Language", languageTag)
+    append("hedvig-language", languageTag)
     append("apollographql-client-name", hedvigBuildConstants.appPackageId)
     append("apollographql-client-version", hedvigBuildConstants.appVersionName)
     append("X-Build-Version", hedvigBuildConstants.appVersionCode)
@@ -135,3 +146,12 @@ private fun HttpClient.addAuthPlugin(accessTokenFetcher: AccessTokenFetcher) {
 internal expect fun HttpClientConfig<*>.installDatadogKtorPlugin(hedvigBuildConstants: HedvigBuildConstants)
 
 internal expect fun httpClientEngineFactory(): HttpClientEngineFactory<*>
+
+private val CONNECT_TIMEOUT = 15.seconds
+
+/**
+ * Budget for a single stall, not for the whole call, so a large upload or PDF download is free to
+ * take as long as it keeps making progress. Requests that need to tolerate longer stalls than a
+ * cellular handover raise this per call via [io.ktor.client.plugins.timeout].
+ */
+private val SOCKET_TIMEOUT = 30.seconds

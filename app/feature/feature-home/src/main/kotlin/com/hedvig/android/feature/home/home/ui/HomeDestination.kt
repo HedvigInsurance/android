@@ -98,6 +98,8 @@ import com.hedvig.android.compose.pager.indicator.CardCarousel
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.common.image.storyblokResized
+import com.hedvig.android.core.tracking.ActionType
+import com.hedvig.android.core.tracking.logAction
 import com.hedvig.android.crosssells.AddonsSection
 import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellBottomSheet
@@ -105,6 +107,7 @@ import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.AddonBannerInfo
+import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.addons.data.FlowType
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.data.contract.CrossSell
@@ -189,8 +192,10 @@ import com.hedvig.android.memberreminders.MemberReminder.PaymentReminder.Connect
 import com.hedvig.android.memberreminders.MemberReminder.UpcomingRenewal
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.memberreminders.ui.MemberReminderToDoList
+import com.hedvig.android.memberreminders.ui.MissingPayinMethodCard
 import com.hedvig.android.memberreminders.ui.homeActionRequiredReminders
 import com.hedvig.android.memberreminders.ui.homeInformationalReminders
+import com.hedvig.android.memberreminders.ui.missingPayinMethodReminder
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
@@ -274,7 +279,7 @@ internal fun HomeDestination(
   navigateToChipId: () -> Unit,
   navigateToUsageData: () -> Unit,
   imageLoader: ImageLoader,
-  navigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val notificationPermissionState = rememberNotificationPermissionState()
@@ -339,7 +344,7 @@ private fun HomeScreen(
   markCrossSellsNotificationAsSeen: () -> Unit,
   setEpochDayWhenLastToolTipShown: (Long) -> Unit,
   imageLoader: ImageLoader,
-  navigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
 ) {
   val systemBarInsetTopDp = with(LocalDensity.current) {
     WindowInsets.systemBars.getTop(this).toDp()
@@ -354,7 +359,7 @@ private fun HomeScreen(
     state = crossSellBottomSheetState,
     markCrossSellsNotificationAsSeen = markCrossSellsNotificationAsSeen,
     onCrossSellClick = openCrossSellUrl,
-    onAddonClick = navigateToAddonPurchaseFlow,
+    onAddonClick = { ids -> navigateToAddonPurchaseFlow(ids, AddonBannerSource.HOME_CROSS_SELL_SHEET) },
     imageLoader = imageLoader,
   )
 
@@ -657,7 +662,7 @@ private fun HomeScreenSuccess(
   navigateToUsageData: () -> Unit,
   openCrossSellUrl: (String) -> Unit,
   imageLoader: ImageLoader,
-  navigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
   onChatIconClick: () -> Unit,
   onCrossSellsIconClick: (crossSells: CrossSellSheetData) -> Unit,
   navigateToFirstVet: (sections: List<FirstVetSection>) -> Unit,
@@ -723,6 +728,10 @@ private fun HomeScreenSuccess(
             uiState.homeText != Active
         }
 
+        HomeSection.MissingPayinMethod -> {
+          applicableReminders.missingPayinMethodReminder() != null
+        }
+
         HomeSection.MemberReminders -> {
           applicableReminders.homeActionRequiredReminders().isNotEmpty()
         }
@@ -759,8 +768,9 @@ private fun HomeScreenSuccess(
     val heroCollapsePx = rememberSaveable { mutableFloatStateOf(0f) }
     val maxHeroCollapsePx = remember { mutableFloatStateOf(0f) }
     // The greeting's current fade, published from the hero's layout so the floating icons — which sit
-    // above the list, not inside it — can leave on exactly the same curve.
-    val heroContentAlpha = remember { mutableFloatStateOf(1f) }
+    // above the list, not inside it — can leave on exactly the same curve. Saved alongside the collapse, since
+    // coming back to a list scrolled past the hero never lays the hero out to republish it.
+    val heroContentAlpha = rememberSaveable { mutableFloatStateOf(1f) }
     val heroCollapseConnection = remember {
       object : NestedScrollConnection {
         override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
@@ -960,9 +970,15 @@ private fun HomeScreenSuccess(
               horizontalInsets = horizontalInsets,
             )
 
+            HomeSection.MissingPayinMethod -> MissingPayinMethodCard(
+              onConnectPaymentClick = navigateToConnectPayment,
+              modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(horizontalInsets),
+            )
+
             HomeSection.MemberReminders -> MemberRemindersSection(
               applicableReminders = applicableReminders,
-              navigateToConnectPayment = navigateToConnectPayment,
               navigateToConnectPayout = navigateToConnectPayout,
               navigateToMissingInfo = navigateToMissingInfo,
               onNavigateToNewConversation = onNavigateToNewConversation,
@@ -975,7 +991,14 @@ private fun HomeScreenSuccess(
             HomeSection.Quotes -> uiState.ongoingShopSessions.takeIf { it.isNotEmpty() }?.let { sessions ->
               QuotesSection(
                 sessions = sessions,
-                onResumeClick = openUrl,
+                onResumeClick = { url ->
+                  logAction(
+                    type = ActionType.CUSTOM,
+                    name = "homeQuoteClicked",
+                    attributes = emptyMap(),
+                  )
+                  openUrl(url)
+                },
                 onDismiss = dismissOngoingShopSession,
                 imageLoader = imageLoader,
                 horizontalInsets = horizontalInsets,
@@ -1100,6 +1123,7 @@ private enum class HomeSection {
   MainActionCarousel,
   ClaimStatusCards,
   VeryImportantMessages,
+  MissingPayinMethod,
   MemberReminders,
   Quotes,
   DiscoverInsurances,
@@ -1113,6 +1137,7 @@ private val homeSectionOrder: List<HomeSection> = listOf(
   HomeSection.MainActionCarousel,
   HomeSection.ClaimStatusCards,
   HomeSection.VeryImportantMessages,
+  HomeSection.MissingPayinMethod,
   HomeSection.MemberReminders,
   HomeSection.Quotes,
   HomeSection.QuickActionTiles,
@@ -1196,7 +1221,6 @@ private fun VeryImportantMessagesSection(
 @Composable
 private fun MemberRemindersSection(
   applicableReminders: List<MemberReminder>,
-  navigateToConnectPayment: () -> Unit,
   navigateToConnectPayout: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   onNavigateToNewConversation: () -> Unit,
@@ -1222,7 +1246,6 @@ private fun MemberRemindersSection(
         )
         MemberReminderToDoList(
           memberReminders = toDoReminders,
-          navigateToConnectPayment = navigateToConnectPayment,
           navigateToConnectPayout = navigateToConnectPayout,
           navigateToAddMissingInfo = navigateToMissingInfo,
           onNavigateToNewConversation = onNavigateToNewConversation,
@@ -1340,7 +1363,9 @@ private fun QuoteCard(
         Spacer(Modifier.height(12.dp))
         HedvigButton(
           text = stringResource(Res.string.general_continue_button),
-          onClick = { onResumeClick(session.resumeUrl) },
+          onClick = {
+            onResumeClick(session.resumeUrl)
+          },
           buttonStyle = Secondary,
           buttonSize = ButtonSize.Medium,
           enabled = true,
@@ -1526,13 +1551,13 @@ private fun MainActionCarouselSection(
 @Composable
 private fun HomeAddonsSection(
   addonBannerInfos: List<AddonBannerInfo>,
-  navigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
   horizontalInsets: PaddingValues,
   imageLoader: ImageLoader,
 ) {
   AddonsSection(
     addons = addonBannerInfos,
-    onAddonClick = navigateToAddonPurchaseFlow,
+    onAddonClick = { ids -> navigateToAddonPurchaseFlow(ids, AddonBannerSource.HOME_SCREEN) },
     imageLoader = imageLoader,
     headingStyle = HedvigTheme.typography.headlineSmall,
     modifier = Modifier
@@ -1764,7 +1789,7 @@ private fun PreviewHomeScreen(
         navigateToUsageData = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
-        navigateToAddonPurchaseFlow = {},
+        navigateToAddonPurchaseFlow = { _, _ -> },
       )
     }
   }
@@ -1801,7 +1826,7 @@ private fun PreviewHomeScreenWithError() {
         navigateToUsageData = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
-        navigateToAddonPurchaseFlow = {},
+        navigateToAddonPurchaseFlow = { _, _ -> },
       )
     }
   }
@@ -1871,7 +1896,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToUsageData = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
-        navigateToAddonPurchaseFlow = {},
+        navigateToAddonPurchaseFlow = { _, _ -> },
       )
     }
   }

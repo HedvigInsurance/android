@@ -26,9 +26,11 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "14.4.8"
+    versionName = "14.5.1"
+  }
 
-    resourceConfigurations.addAll(listOf("en", "sv-rSE"))
+  androidResources {
+    localeFilters += listOf("en", "sv")
   }
 
   packaging {
@@ -105,6 +107,7 @@ android {
 }
 
 dependencies {
+  "stagingImplementation".invoke(libs.chucker)
   "stagingImplementation".invoke(projects.featureImpersonation)
 
   implementation(platform(libs.firebase.bom))
@@ -145,6 +148,7 @@ dependencies {
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
+  implementation(libs.ktor.client.okhttp)
   implementation(libs.media3.exoplayer)
   implementation(libs.media3.exoplayer.dash)
   implementation(libs.playReview)
@@ -214,6 +218,8 @@ dependencies {
   implementation(projects.featureOnboarding)
 
   implementation(projects.featureRemoveAddons)
+  implementation(projects.featurePayinAccount)
+  implementation(projects.featurePayinAccountNavigation)
   implementation(projects.featurePayoutAccount)
   implementation(projects.featurePayments)
   implementation(projects.featurePaymentsNavigation)
@@ -260,9 +266,12 @@ dependencies {
   testImplementation(projects.loggingTest)
 
   debugImplementation(libs.androidx.compose.uiTooling)
+  debugImplementation(libs.chucker)
   debugImplementation(projects.featureImpersonation)
 
   debugRuntimeOnly(libs.androidx.compose.uiTestManifest)
+
+  releaseImplementation(libs.chucker.noop)
 }
 
 datadog {

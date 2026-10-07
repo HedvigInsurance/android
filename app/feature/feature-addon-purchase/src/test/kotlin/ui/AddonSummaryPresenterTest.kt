@@ -5,10 +5,13 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import assertk.assertThat
+import assertk.assertions.containsExactly
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.prop
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.tracking.EventTrackingClient
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
@@ -54,6 +57,7 @@ class AddonSummaryPresenterTest {
     val insuranceUseCase = FakeAddonSummaryGetInsuranceUseCase()
     val costBreakdownUseCase = FakeGetQuoteCostBreakdownUseCase()
     val backstack = TestBackstack(mutableListOf(AddonPurchaseKey()))
+    val eventTrackingClient = FakeEventTrackingClient()
     val presenter = AddonSummaryPresenter(
       summaryParameters = testSummaryParametersWithCurrentAddon,
       submitAddonPurchaseUseCase = submitUseCase,
@@ -61,6 +65,7 @@ class AddonSummaryPresenterTest {
       getQuoteCostBreakdownUseCase = costBreakdownUseCase,
       getInsuranceForTravelAddonUseCase = insuranceUseCase,
       backstack = backstack,
+      eventTrackingClient = eventTrackingClient,
     )
     presenter.test(AddonSummaryState.Loading) {
       skipItems(1)
@@ -71,6 +76,7 @@ class AddonSummaryPresenterTest {
       submitUseCase.turbine.add(ErrorMessage().left())
       scheduler.advanceUntilIdle()
       assertThat(backstack.entries.last()).isInstanceOf(SubmitFailureKey::class)
+      assertThat(eventTrackingClient.trackedEvents).isEmpty()
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -82,6 +88,7 @@ class AddonSummaryPresenterTest {
     val insuranceUseCase = FakeAddonSummaryGetInsuranceUseCase()
     val costBreakdownUseCase = FakeGetQuoteCostBreakdownUseCase()
     val backstack = TestBackstack(mutableListOf(AddonPurchaseKey()))
+    val eventTrackingClient = FakeEventTrackingClient()
     val presenter = AddonSummaryPresenter(
       summaryParameters = testSummaryParametersWithCurrentAddon,
       submitAddonPurchaseUseCase = submitUseCase,
@@ -89,6 +96,7 @@ class AddonSummaryPresenterTest {
       getQuoteCostBreakdownUseCase = costBreakdownUseCase,
       getInsuranceForTravelAddonUseCase = insuranceUseCase,
       backstack = backstack,
+      eventTrackingClient = eventTrackingClient,
     )
     presenter.test(AddonSummaryState.Loading) {
       skipItems(1)
@@ -101,6 +109,62 @@ class AddonSummaryPresenterTest {
       assertThat(backstack.entries.last()).isInstanceOf(SubmitSuccessKey::class)
         .prop(SubmitSuccessKey::activationDate)
         .isEqualTo(testSummaryParametersWithCurrentAddon.activationDate)
+      assertThat(eventTrackingClient.trackedEvents).containsExactly(
+        "addon_purchased" to mapOf(
+          "user_flow" to "insurance_screen",
+          "addon_type" to newQuote.addonVariant.product,
+          "contract_id" to "contractId",
+          "price" to 59.0,
+          "currency" to "SEK",
+          "transaction_id" to "quoteId",
+        ),
+      )
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `buying several toggleable addons at once tracks one addon_purchased per addon`() = runTest {
+    val scheduler = testScheduler
+    val submitUseCase = FakeSubmitAddonPurchaseUseCase()
+    val insuranceUseCase = FakeAddonSummaryGetInsuranceUseCase()
+    val costBreakdownUseCase = FakeGetQuoteCostBreakdownUseCase()
+    val eventTrackingClient = FakeEventTrackingClient()
+    val presenter = AddonSummaryPresenter(
+      summaryParameters = testSummaryParametersToggleableCarAddons,
+      submitAddonPurchaseUseCase = submitUseCase,
+      addonPurchaseSource = AddonBannerSource.HOME_SCREEN,
+      getQuoteCostBreakdownUseCase = costBreakdownUseCase,
+      getInsuranceForTravelAddonUseCase = insuranceUseCase,
+      backstack = TestBackstack(mutableListOf(AddonPurchaseKey())),
+      eventTrackingClient = eventTrackingClient,
+    )
+    presenter.test(AddonSummaryState.Loading) {
+      skipItems(1)
+      insuranceUseCase.turbine.add(listOf(fakeInsuranceForAddon).right())
+      costBreakdownUseCase.turbine.add(fakeQuoteCostBreakdown.right())
+      skipItems(1)
+      sendEvent(AddonSummaryEvent.Submit)
+      submitUseCase.turbine.add(Unit.right())
+      scheduler.advanceUntilIdle()
+      assertThat(eventTrackingClient.trackedEvents).containsExactly(
+        "addon_purchased" to mapOf(
+          "user_flow" to "home_screen",
+          "addon_type" to "SE_CAR_ALLRISK_ADDON",
+          "contract_id" to "contractId",
+          "price" to 99.0,
+          "currency" to "SEK",
+          "transaction_id" to "carQuoteId",
+        ),
+        "addon_purchased" to mapOf(
+          "user_flow" to "home_screen",
+          "addon_type" to "SE_CAR_RENTAL_CAR_ADDON",
+          "contract_id" to "contractId",
+          "price" to 39.0,
+          "currency" to "SEK",
+          "transaction_id" to "carQuoteId",
+        ),
+      )
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -116,6 +180,7 @@ class AddonSummaryPresenterTest {
       getQuoteCostBreakdownUseCase = costBreakdownUseCase1,
       getInsuranceForTravelAddonUseCase = insuranceUseCase1,
       backstack = TestBackstack(),
+      eventTrackingClient = FakeEventTrackingClient(),
     )
     presenter1.test(AddonSummaryState.Loading) {
       skipItems(1)
@@ -136,6 +201,7 @@ class AddonSummaryPresenterTest {
       getQuoteCostBreakdownUseCase = costBreakdownUseCase2,
       getInsuranceForTravelAddonUseCase = insuranceUseCase2,
       backstack = TestBackstack(),
+      eventTrackingClient = FakeEventTrackingClient(),
     )
     presenter2.test(AddonSummaryState.Loading) {
       skipItems(1)
@@ -159,6 +225,7 @@ class AddonSummaryPresenterTest {
       getQuoteCostBreakdownUseCase = costBreakdownUseCase,
       getInsuranceForTravelAddonUseCase = insuranceUseCase,
       backstack = TestBackstack(),
+      eventTrackingClient = FakeEventTrackingClient(),
     )
     presenter.test(AddonSummaryState.Loading) {
       skipItems(1)
@@ -170,6 +237,22 @@ class AddonSummaryPresenterTest {
         .isEqualTo(newQuote.itemCost.monthlyNet)
     }
   }
+}
+
+private class FakeEventTrackingClient : EventTrackingClient {
+  val trackedEvents = mutableListOf<Pair<String, Map<String, Any?>>>()
+
+  override fun setCollectionEnabled(enabled: Boolean) {}
+
+  override fun trackEvent(name: String, parameters: Map<String, Any?>) {
+    trackedEvents += name to parameters
+  }
+
+  override fun trackScreen(name: String, screenClass: String?, parameters: Map<String, Any?>) {}
+
+  override fun setUserId(userId: String?) {}
+
+  override fun setUserProperty(name: String, value: String?) {}
 }
 
 private class FakeSubmitAddonPurchaseUseCase : SubmitAddonPurchaseUseCase {
@@ -355,4 +438,44 @@ private val testSummaryParametersNoCurrentAddon = SummaryParameters(
   quoteId = "quoteId",
   notificationMessage = null,
   addonType = AddonType.SELECTABLE,
+)
+
+private fun carAddonQuote(addonId: String, product: String, monthlyPrice: Double) = AddonQuote(
+  displayTitle = product,
+  addonId = addonId,
+  displayDetails = emptyList(),
+  addonVariant = AddonVariant(
+    termsVersion = "terms",
+    displayName = product,
+    product = product,
+    perils = listOf(),
+    documents = listOf(),
+  ),
+  addonSubtype = null,
+  documents = listOf(),
+  displayDescription = product,
+  itemCost = ItemCost(
+    monthlyGross = UiMoney(monthlyPrice, UiCurrencyCode.SEK),
+    monthlyNet = UiMoney(monthlyPrice, UiCurrencyCode.SEK),
+    discounts = emptyList(),
+  ),
+)
+
+private val testSummaryParametersToggleableCarAddons = SummaryParameters(
+  productVariant = fakeProductVariant,
+  contractId = "contractId",
+  baseInsuranceCost = ItemCost(
+    monthlyGross = UiMoney(100.0, UiCurrencyCode.SEK),
+    monthlyNet = UiMoney(100.0, UiCurrencyCode.SEK),
+    discounts = emptyList(),
+  ),
+  chosenQuotes = listOf(
+    carAddonQuote("allRiskId", "SE_CAR_ALLRISK_ADDON", 99.0),
+    carAddonQuote("rentalCarId", "SE_CAR_RENTAL_CAR_ADDON", 39.0),
+  ),
+  activationDate = LocalDate(2024, 12, 30),
+  currentlyActiveAddons = emptyList(),
+  quoteId = "carQuoteId",
+  notificationMessage = null,
+  addonType = AddonType.TOGGLEABLE,
 )

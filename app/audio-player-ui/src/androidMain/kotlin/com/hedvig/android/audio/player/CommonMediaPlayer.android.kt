@@ -14,7 +14,12 @@ actual fun CommonMediaPlayer(dataSourceUrl: String): CommonMediaPlayer {
         .setUsage(AudioAttributes.USAGE_MEDIA)
         .build(),
     )
-    setDataSource(dataSourceUrl)
+  }
+  try {
+    mediaPlayer.setDataSource(dataSourceUrl)
+  } catch (e: Exception) {
+    mediaPlayer.release()
+    throw e
   }
   return AndroidMediaPlayer(mediaPlayer)
 }

@@ -160,6 +160,7 @@ internal sealed interface StepContent {
   data class Summary(
     val items: List<Item>,
     val audioRecordings: List<AudioRecording>,
+    val freeTexts: List<String>,
     val fileUploads: List<FileUpload>,
     val keyDetails: List<Item>,
     val answers: List<Answer>,

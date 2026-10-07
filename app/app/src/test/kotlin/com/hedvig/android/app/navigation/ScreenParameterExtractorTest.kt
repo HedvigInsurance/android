@@ -3,6 +3,7 @@ package com.hedvig.android.app.navigation
 import assertk.assertThat
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import com.hedvig.android.navigation.common.AnalyticsNamed
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.TrackedScreen
 import kotlinx.serialization.Serializable
@@ -21,6 +22,7 @@ internal class ScreenParameterExtractorTest {
           subclass(NullableKey::class)
           subclass(NestedKey::class)
           subclass(OverridingKey::class)
+          subclass(PinnedKey::class)
         }
       },
     ),
@@ -66,6 +68,13 @@ internal class ScreenParameterExtractorTest {
 
     assertThat(params).isEqualTo(mapOf<String, Any?>("custom" to "value"))
   }
+
+  @Test
+  fun `a pinned analytics name is not reported as a screen parameter`() {
+    val params = extractor.parametersFor(PinnedKey(id = "abc"))
+
+    assertThat(params).isEqualTo(mapOf<String, Any?>("id" to "abc"))
+  }
 }
 
 @Serializable
@@ -87,4 +96,13 @@ private data class Inner(val a: String)
 private data class OverridingKey(val secret: String) : HedvigNavKey, TrackedScreen {
   override val screenParameters: Map<String, Any?>
     get() = mapOf("custom" to "value")
+}
+
+@Serializable
+private data class PinnedKey(val id: String) : HedvigNavKey, AnalyticsNamed {
+  override val analyticsName get() = ANALYTICS_NAME
+
+  companion object {
+    const val ANALYTICS_NAME = "com.hedvig.android.feature.fake.navigation.PinnedKey"
+  }
 }

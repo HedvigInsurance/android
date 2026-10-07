@@ -36,7 +36,7 @@ jobs:
           lokalise-id: ${{ secrets.LOKALISE_ID }}
           lokalise-token: ${{ secrets.LOKALISE_TOKEN }}
       - run: ./gradlew lint
-      - uses: yutailang0119/action-android-lint@v5.0.0
+      - uses: yutailang0119/action-android-lint@v6.0.0
         with:
           report-path: app/build/reports/lint-results-debug.xml
         continue-on-error: true
@@ -56,9 +56,9 @@ jobs:
         run: ./gradlew ktlintCheck
       - name: Annotate ktlint errors in the PR
         continue-on-error: false
-        uses: yutailang0119/action-ktlint@v5
+        uses: yutailang0119/action-ktlint@v6
         with:
-          report-path: build/reports/ktlint/*.xml
+          report-path: "**/build/reports/ktlint/*.xml"
   build:
     runs-on: ubuntu-latest-8-vcpu
     steps:
@@ -75,15 +75,6 @@ jobs:
         with:
           gradlePath: app/app/build.gradle.kts
           versionCode: ${{ env.VERSION_CODE }}
-      - name: Run license release report
-        run: ./gradlew licenseReleaseReport --no-configuration-cache --continue
-        continue-on-error: true
-      - name: OSS license gate (warn-only)
-        # Reuses the report generated just above (no extra Gradle run). Warn-only for the
-        # pilot: continue-on-error + enforce=false. To enforce: pass `true` and drop
-        # continue-on-error so a forbidden license blocks the build.
-        run: bash .github/scripts/license-gate.sh app/app/build/reports/licenses/licenseReleaseReport.json false
-        continue-on-error: true
       - name: Build
         run: "./gradlew :app:bundleDebug"
       - name: Setup build tool version variable

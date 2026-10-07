@@ -112,6 +112,7 @@ fragment SummaryFragment on ClaimIntentStepContentSummary {
   audioRecordings {
     url
   }
+  freeTexts
   fileUploads {
     url
     contentType

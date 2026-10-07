@@ -12,6 +12,7 @@ import com.hedvig.android.audio.player.data.AudioPlayer
 import com.hedvig.android.audio.player.data.AudioPlayerState
 import com.hedvig.android.audio.player.data.PlayableAudioSource
 import com.hedvig.android.audio.player.data.ProgressPercentage
+import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -119,7 +120,16 @@ private class AudioPlayerImpl(
 
   private fun initializeMediaPlayer() {
     _audioPlayerState.update { AudioPlayerState.Preparing }
-    mediaPlayer = CommonMediaPlayer(dataSourceUrl).apply {
+    // Setting the data source throws right away when it can't be opened, for example a local recording that is
+    // no longer on disk, and that never reaches the error listener below.
+    val newMediaPlayer = try {
+      CommonMediaPlayer(dataSourceUrl)
+    } catch (e: Exception) {
+      logcat(LogPriority.WARN, e) { "AudioPlayer failed to open its data source" }
+      _audioPlayerState.update { AudioPlayerState.Failed }
+      return
+    }
+    mediaPlayer = newMediaPlayer.apply {
       setOnErrorListener { what, extra ->
         logcat { "AudioPlayer failed with code: $what and extras code: $extra" }
         _audioPlayerState.update { AudioPlayerState.Failed }

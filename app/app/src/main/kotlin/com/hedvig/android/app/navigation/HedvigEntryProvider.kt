@@ -52,6 +52,10 @@ import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
 import com.hedvig.android.feature.movingflow.movingFlowEntries
 import com.hedvig.android.feature.onboarding.data.ResetOnboardingSeenUseCase
 import com.hedvig.android.feature.onboarding.navigation.onboardingEntries
+import com.hedvig.android.feature.payin.account.navigation.PayinAccountKey
+import com.hedvig.android.feature.payin.account.navigation.PayinMethodDetailsKey
+import com.hedvig.android.feature.payin.account.navigation.SelectPrimaryPayinMethodKey
+import com.hedvig.android.feature.payin.account.navigation.payinAccountEntries
 import com.hedvig.android.feature.payments.navigation.paymentsEntries
 import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountKey
 import com.hedvig.android.feature.payoutaccount.navigation.payoutAccountEntries
@@ -104,18 +108,19 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   resetOnboardingSeenUseCase: ResetOnboardingSeenUseCase,
 ) {
   val shouldShowRequestPermissionRationale: (String) -> Boolean = androidAppHost::shouldShowPermissionRationale
-  val navigateToConnectPayment: () -> Unit = { backstack.add(TrustlyKey) }
+  val navigateToTrustly: () -> Unit = { backstack.add(TrustlyKey()) }
+  val navigateToPayinAccount: () -> Unit = { backstack.add(PayinAccountKey) }
   val navigateToPayoutAccount: () -> Unit = { backstack.add(PayoutAccountKey) }
   val navigateToInbox: () -> Unit = { backstack.add(InboxKey) }
   val navigateToNewConversation: () -> Unit = { backstack.add(ChatKey(Uuid.randomUUID().toString())) }
   val navigateToConversation: (String) -> Unit = { conversationId -> backstack.add(ChatKey(conversationId)) }
   val navigateToTravelCertificate: () -> Unit = { backstack.add(TravelCertificateKey) }
-  val navigateToAddonPurchaseFlow: (List<String>) -> Unit = { ids ->
+  val navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit = { ids, source ->
     backstack.add(
       AddonPurchaseKey(
         insuranceIds = ids,
         preselectedAddonDisplayName = null,
-        source = AddonBannerSource.INSURANCES_TAB,
+        source = source,
       ),
     )
   }
@@ -136,7 +141,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     navigateToNewConversation = navigateToNewConversation,
     navigateToConversation = navigateToConversation,
     navigateToInbox = navigateToInbox,
-    navigateToConnectPayment = navigateToConnectPayment,
+    navigateToPayinAccount = navigateToPayinAccount,
     navigateToPayoutAccount = navigateToPayoutAccount,
     navigateToTravelCertificate = navigateToTravelCertificate,
     navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
@@ -157,8 +162,9 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   foreverEntries()
   addPaymentsEntries(
     backstack = backstack,
-    globalSnackBarState = globalSnackBarState,
-    navigateToConnectPayment = navigateToConnectPayment,
+    hedvigBuildConstants = hedvigBuildConstants,
+    navigateToTrustly = navigateToTrustly,
+    navigateToPayinAccount = navigateToPayinAccount,
     navigateToPayoutAccount = navigateToPayoutAccount,
     navigateToNewConversation = navigateToNewConversation,
   )
@@ -169,7 +175,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     languageService = languageService,
     externalNavigator = externalNavigator,
     openUrl = openUrl,
-    navigateToConnectPayment = navigateToConnectPayment,
+    navigateToPayinAccount = navigateToPayinAccount,
     navigateToPayoutAccount = navigateToPayoutAccount,
     navigateToNewConversation = navigateToNewConversation,
     onResetOnboardingForDebug = {
@@ -196,17 +202,17 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     externalNavigator = externalNavigator,
     navigateToNewConversation = navigateToNewConversation,
     navigateToInbox = navigateToInbox,
-    openPrivacyPolicy = { openUrl(privacyPolicyUrl(languageService.getLanguage())) },
+    openPrivacyPolicy = { openUrl(privacyPolicyInAppUrl(languageService.getLanguage())) },
   )
 }
 
 /**
- * The public privacy-policy page, per language. Mirrors the links used by the profile "about app"
- * screen; kept here so `:app` owns the URL rather than `feature-onboarding`.
+ * The app-specific privacy notice, per language. Mirrors the "Privacy policy (Hedvig app)" link on the
+ * profile "about app" screen; used in `feature-onboarding` and UsageData destination in profile.
  */
-private fun privacyPolicyUrl(language: Language): String = when (language) {
-  Language.SV_SE -> "https://www.hedvig.com/se/hedvig/personuppgifter"
-  Language.EN_SE -> "https://www.hedvig.com/se-en/hedvig/privacy-policy"
+private fun privacyPolicyInAppUrl(language: Language): String = when (language) {
+  Language.SV_SE -> "https://www.hedvig.com/se/hedvig/integritetsnotis-appen"
+  Language.EN_SE -> "https://www.hedvig.com/se-en/hedvig/privacy-notice-app"
 }
 
 private fun EntryProviderScope<HedvigNavKey>.addLoginEntries(
@@ -243,10 +249,10 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
   navigateToNewConversation: () -> Unit,
   navigateToConversation: (String) -> Unit,
   navigateToInbox: () -> Unit,
-  navigateToConnectPayment: () -> Unit,
+  navigateToPayinAccount: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
   navigateToTravelCertificate: () -> Unit,
-  navigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
   navigateToMovingFlow: (MovingSource) -> Unit,
 ) {
   homeEntries(
@@ -267,7 +273,7 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
     onNavigateToInbox = navigateToInbox,
     onNavigateToNewConversation = navigateToNewConversation,
     navigateToClaimDetails = { claimId -> backstack.add(ClaimDetailsKey(claimId)) },
-    navigateToConnectPayment = navigateToConnectPayment,
+    navigateToConnectPayment = navigateToPayinAccount,
     navigateToConnectPayout = navigateToPayoutAccount,
     navigateToContactInfo = { backstack.add(ContactInfoKey) },
     navigateToMissingInfo = { contractId: String, type: CoInsuredFlowType ->
@@ -430,12 +436,12 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
     startEditCoOwnersAddMissingInfo = { contractId: String ->
       backstack.add(CoInsuredAddInfoKey(contractId, CoInsuredFlowType.CoOwners))
     },
-    onNavigateToAddonPurchaseFlow = { insuranceIds, availableAddon ->
+    onNavigateToAddonPurchaseFlow = { insuranceIds, availableAddon, source ->
       backstack.add(
         AddonPurchaseKey(
           insuranceIds.map(ContractId::id),
           availableAddon?.displayName,
-          AddonBannerSource.INSURANCES_TAB,
+          source,
         ),
       )
     },
@@ -447,7 +453,7 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
         AddonPurchaseKey(
           listOfNotNull(contractId?.id),
           null,
-          AddonBannerSource.INSURANCES_TAB,
+          AddonBannerSource.CONTRACT_DETAIL,
         ),
       )
     },
@@ -457,23 +463,41 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
 
 private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
   backstack: BackstackController,
-  globalSnackBarState: GlobalSnackBarState,
-  navigateToConnectPayment: () -> Unit,
+  hedvigBuildConstants: HedvigBuildConstants,
+  navigateToTrustly: () -> Unit,
+  navigateToPayinAccount: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
   navigateToNewConversation: () -> Unit,
 ) {
   paymentsEntries(
     backstack = backstack,
-    navigateToConnectPayment = navigateToConnectPayment,
+    navigateToPayinAccount = navigateToPayinAccount,
+    navigateToPayinMethodDetails = { method -> backstack.add(PayinMethodDetailsKey(method)) },
     navigateToPayoutAccount = navigateToPayoutAccount,
+    navigateToSelectPrimaryPayinMethod = { backstack.add(SelectPrimaryPayinMethodKey) },
     openConversation = navigateToNewConversation,
   )
   payoutAccountEntries(
     backstack = backstack,
-    globalSnackBarState = globalSnackBarState,
-    navigateToConnectPayment = navigateToConnectPayment,
+    navigateToTrustly = navigateToTrustly,
   )
-  connectPaymentEntries(backstack = backstack)
+  val changePayinMethod: () -> Unit = {
+    when (val target = changePayinMethodTarget(backstack.entries)) {
+      is ChangePayinMethodTarget.PopTo -> backstack.popUpToIndex(target.index)
+      is ChangePayinMethodTarget.Reseed -> backstack.reseed(target.stack)
+      ChangePayinMethodTarget.PopOne -> backstack.popBackstack()
+    }
+  }
+  payinAccountEntries(
+    backstack = backstack,
+    hedvigBuildConstants = hedvigBuildConstants,
+    navigateToTrustly = navigateToTrustly,
+    returnToPayinOverview = changePayinMethod,
+  )
+  connectPaymentEntries(
+    backstack = backstack,
+    changePaymentMethod = changePayinMethod,
+  )
 }
 
 private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
@@ -483,7 +507,7 @@ private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
   languageService: LanguageService,
   externalNavigator: ExternalNavigator,
   openUrl: (String) -> Unit,
-  navigateToConnectPayment: () -> Unit,
+  navigateToPayinAccount: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
   navigateToNewConversation: () -> Unit,
   onResetOnboardingForDebug: () -> Unit,
@@ -501,7 +525,7 @@ private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
     globalSnackBarState = globalSnackBarState,
     backstack = backstack,
     hedvigBuildConstants = hedvigBuildConstants,
-    navigateToConnectPayment = navigateToConnectPayment,
+    navigateToConnectPayment = navigateToPayinAccount,
     navigateToConnectPayout = navigateToPayoutAccount,
     navigateToAddMissingInfo = { contractId: String, type: CoInsuredFlowType ->
       backstack.add(CoInsuredAddInfoKey(contractId, type))
@@ -513,7 +537,7 @@ private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
     onNavigateToTravelCertificate = { backstack.add(TravelCertificateKey) },
     onNavigateToInsuranceEvidence = { backstack.add(InsuranceEvidenceKey) },
     openUrl = openUrl,
-    openPrivacyPolicy = { openUrl(privacyPolicyUrl(languageService.getLanguage())) },
+    openPrivacyPolicy = { openUrl(privacyPolicyInAppUrl(languageService.getLanguage())) },
     navigateToChipId = { backstack.add(ChipIdKey()) },
     languageService = languageService,
     onResetOnboardingForDebug = onResetOnboardingForDebug,

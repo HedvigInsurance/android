@@ -32,6 +32,22 @@ internal class LastItemHeightAdjustingStateTest {
     assertThat(state.preferredMinHeightForFullScreenItem).isEqualTo(692.dp)
   }
 
+  @Test
+  fun `the height reported for the current step is exposed as the last item bottom content height`() {
+    val state = stateWith(twoSteps)
+    state.onItemHeightChanged(secondStepId, IntSize(1080, 300))
+
+    assertThat(state.lastItemBottomContentHeight).isEqualTo(150.dp)
+  }
+
+  @Test
+  fun `a height reported for a previous step is not the last item bottom content height`() {
+    val state = stateWith(twoSteps)
+    state.onItemHeightChanged(firstStepId, IntSize(1080, 300))
+
+    assertThat(state.lastItemBottomContentHeight).isEqualTo(0.dp)
+  }
+
   private fun stateWith(steps: List<ClaimIntentStep>) = LastItemHeightAdjustingState(
     heightOfItemBottomContentMap = mutableStateMapOf(),
     density = Density(density = 2f, fontScale = 1f),
@@ -44,9 +60,11 @@ private const val viewportHeightPx = 1600
 
 private val firstStepId = StepId("first")
 
+private val secondStepId = StepId("second")
+
 private val twoSteps = listOf(
   stepWithId(firstStepId),
-  stepWithId(StepId("second")),
+  stepWithId(secondStepId),
 )
 
 private fun stepWithId(id: StepId) = ClaimIntentStep(

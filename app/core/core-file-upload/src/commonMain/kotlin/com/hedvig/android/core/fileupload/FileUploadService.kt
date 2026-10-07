@@ -11,6 +11,7 @@ import com.hedvig.android.network.clients.safePost
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.timeout
 import io.ktor.client.request.forms.FormBuilder
 import io.ktor.client.request.forms.InputProvider
 import io.ktor.client.request.forms.MultiPartFormDataContent
@@ -21,6 +22,8 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.isSuccess
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 @SingleIn(AppScope::class)
 @Inject
@@ -96,10 +99,17 @@ class FileUploadService(
 
     val response: HttpResponse = client
       .safePost(url) {
+        timeout {
+          socketTimeoutMillis = UPLOAD_SOCKET_TIMEOUT.inWholeMilliseconds
+          requestTimeoutMillis = UPLOAD_REQUEST_TIMEOUT.inWholeMilliseconds
+        }
         setBody(MultiPartFormDataContent(formData(formDataBuilder)))
       }
       .fold(
         ifLeft = { error ->
+          logcat(LogPriority.ERROR, error.throwable) {
+            "FileUploadService: Upload to $url failed: ${error.message}"
+          }
           raise(
             when (error) {
               is NetworkError.IOError -> ErrorMessage("Network error: ${error.message}", error.throwable)
@@ -123,3 +133,15 @@ class FileUploadService(
     }
   }
 }
+
+/**
+ * Uploading a photo over a degraded cellular link routinely stalls for longer than a plain API call
+ * ever should, so uploads buy more tolerance for a single stall than the shared client grants.
+ */
+private val UPLOAD_SOCKET_TIMEOUT = 60.seconds
+
+/**
+ * A backstop against a connection that trickles forever rather than a budget any real upload is
+ * expected to approach.
+ */
+private val UPLOAD_REQUEST_TIMEOUT = 5.minutes

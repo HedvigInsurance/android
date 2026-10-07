@@ -249,6 +249,7 @@ internal class DemoClaimIntentScript {
         stepContent = StepContent.Summary(
           items = emptyList(),
           audioRecordings = emptyList(),
+          freeTexts = emptyList(),
           fileUploads = emptyList(),
           keyDetails = listOf(
             StepContent.Summary.Item(title = "Type", value = "Theft"),
