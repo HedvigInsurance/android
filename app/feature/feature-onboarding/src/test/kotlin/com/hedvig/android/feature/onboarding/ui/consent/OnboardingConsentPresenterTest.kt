@@ -25,6 +25,7 @@ import com.hedvig.android.molecule.test.MoleculePresenterTestContext
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.ui.analytics.consent.ConsentBadge
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
@@ -197,7 +198,7 @@ internal class OnboardingConsentPresenterTest {
     val setup = TestSetup(storedConsent = AnalyticsConsent.DENIED)
     val restoredState = OnboardingConsentUiState.Content(
       progress = OnboardingProgress(totalSteps = 5, currentIndex = 1),
-      badge = null,
+      consent = AnalyticsConsent.NOT_DECIDED,
       buttonsEnabled = true,
     )
 

@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.onboarding.ui.consent
+package com.hedvig.android.ui.analytics.consent
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.data.settings.datastore.AnalyticsConsent
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
@@ -40,9 +41,18 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 
 /** Which answer the card's corner badge is reporting. `null` renders no badge at all. */
-internal enum class ConsentBadge {
+enum class ConsentBadge {
   Accepted,
   Denied,
+  ;
+
+  companion object {
+    fun from(consent: AnalyticsConsent): ConsentBadge? = when (consent) {
+      AnalyticsConsent.GRANTED -> Accepted
+      AnalyticsConsent.DENIED -> Denied
+      AnalyticsConsent.NOT_DECIDED -> null
+    }
+  }
 }
 
 private val CardSize = 120.dp
@@ -73,7 +83,7 @@ private val BadgeAlphaSpec = tween<Float>(
 )
 
 /**
- * The card illustration on the analytics-consent step, with a badge popping in to confirm the answer:
+ * The analytics-consent card illustration, with a badge popping in to confirm the answer:
  * a green checkmark for [ConsentBadge.Accepted], a red cross for [ConsentBadge.Denied]. It starts out
  * at whatever [badge] says, so an answer given on an earlier visit shows without animating.
  *
@@ -82,7 +92,7 @@ private val BadgeAlphaSpec = tween<Float>(
  * the colour, so it settles immediately.
  */
 @Composable
-internal fun OnboardingConsentCard(
+fun AnalyticsConsentCard(
   badge: ConsentBadge?,
   onBadgeSettled: (badge: ConsentBadge?) -> Unit,
   modifier: Modifier = Modifier,
@@ -153,10 +163,10 @@ internal fun OnboardingConsentCard(
 
 @HedvigPreview
 @Composable
-private fun PreviewOnboardingConsentCardAccepted() {
+private fun PreviewAnalyticsConsentCardAccepted() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      OnboardingConsentCard(
+      AnalyticsConsentCard(
         badge = ConsentBadge.Accepted,
         onBadgeSettled = {},
         modifier = Modifier.padding(24.dp),
@@ -167,10 +177,10 @@ private fun PreviewOnboardingConsentCardAccepted() {
 
 @HedvigPreview
 @Composable
-private fun PreviewOnboardingConsentCardDenied() {
+private fun PreviewAnalyticsConsentCardDenied() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      OnboardingConsentCard(
+      AnalyticsConsentCard(
         badge = ConsentBadge.Denied,
         onBadgeSettled = {},
         modifier = Modifier.padding(24.dp),
@@ -181,10 +191,10 @@ private fun PreviewOnboardingConsentCardDenied() {
 
 @HedvigPreview
 @Composable
-private fun PreviewOnboardingConsentCardUndecided() {
+private fun PreviewAnalyticsConsentCardUndecided() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      OnboardingConsentCard(
+      AnalyticsConsentCard(
         badge = null,
         onBadgeSettled = {},
         modifier = Modifier.padding(24.dp),
