@@ -24,9 +24,10 @@ import octopus.type.UserFlow
 
 /** The cross-sell the member is offered inside a conversation. */
 internal data class InChatCrossSell(
-  val id: String,
+  val title: String,
+  val description: String,
+  val buttonTitle: String,
   val storeUrl: String,
-  val discountPercent: Int?,
 )
 
 internal interface GetInChatCrossSellUseCase {
@@ -39,22 +40,20 @@ internal class GetInChatCrossSellUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetInChatCrossSellUseCase {
   override suspend fun invoke(): Either<ErrorMessage, InChatCrossSell?> = either {
+
+    // todo: use conversation.showCrossSales to even query it, if it's false return null immediately
+
     val data = apolloClient
       .query(InChatCrossSellQuery(inChatCrossSellInput))
       .fetchPolicy(FetchPolicy.NetworkOnly)
       .safeExecute(::ErrorMessage)
       .bind()
-    val contractGroups = data.currentMember.activeContracts.map {
-      it.currentAgreement.productVariant.typeOfContract.toContractGroup()
-    }
-    // Accident alone does not earn the bundle discount the card promises.
-    val onlyHasAccident = contractGroups.isNotEmpty() && contractGroups.all { it == ContractGroup.ACCIDENT }
-    if (onlyHasAccident) return@either null
     val recommendation = data.currentMember.crossSellV2.recommendedCrossSell ?: return@either null
     InChatCrossSell(
-      id = recommendation.crossSell.id,
+      title = recommendation.crossSell.title,
       storeUrl = recommendation.crossSell.storeUrl,
-      discountPercent = recommendation.discountPercent,
+      description = recommendation.crossSell.description,
+      buttonTitle = recommendation.crossSell.buttonTitle,
     )
   }
 }
@@ -76,9 +75,7 @@ internal class SwitchingGetInChatCrossSellUseCase(
 }
 
 private val inChatCrossSellInput = CrossSellInput(
-  // TODO: swap to UserFlow.IN_CHAT_X_SELL once the backend adds it. Quotes from this card are
-  //  specified to carry user_flow = in_chat_x_sell; until the enum exists they land under home_x_sell.
-  userFlow = UserFlow.HOME_X_SELL,
+  userFlow = UserFlow.IN_CHAT_X_SELL,
   flowSource = Optional.absent(),
   experiments = emptyList(),
   contractId = Optional.absent(),

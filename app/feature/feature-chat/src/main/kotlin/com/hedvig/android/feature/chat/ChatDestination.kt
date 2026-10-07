@@ -102,10 +102,10 @@ internal fun CbmChatDestination(
       viewModel.emit(CbmChatEvent.HideBanner)
     },
     onDismissCrossSellClick = { crossSell ->
-      viewModel.emit(CbmChatEvent.DismissCrossSell(crossSell.id))
+      viewModel.emit(CbmChatEvent.DismissCrossSell)
     },
     onCrossSellClick = { crossSell ->
-      viewModel.emit(CbmChatEvent.CrossSellClicked(crossSell.id))
+      viewModel.emit(CbmChatEvent.CrossSellClicked)
       openUrl(crossSell.storeUrl)
     },
   )

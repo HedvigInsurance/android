@@ -1385,6 +1385,10 @@ type ClaimIntentStepContentFormField {
 type ClaimIntentStepContentFormFieldOption {
   title: String!
   subtitle: String
+  """
+  Outside the picker, where the picked option stands alone, display this instead of `title`.
+  """
+  selectedTitle: String
   imageUrl: String
   isCustomSearchEntry: Boolean!
   value: ClaimIntentStepContentFormFieldValue!
@@ -1876,6 +1880,12 @@ type Conversation {
   statusMessage: String
   responseIsBeingGenerated: Boolean!
   """
+  Whether to surface cross sales to the member in this conversation.
+  Show the prompt while this is `true`, and call `Mutation.conversationHideCrossSales`
+  when the member dismisses it.
+  """
+  showCrossSales: Boolean!
+  """
   Return the claim for this conversation, if it has one.
   Conversations auto-created when a claim is opened will have this, others will not.
   The `legacyConversation` will not have any associated claim.
@@ -1980,11 +1990,10 @@ type CrossSellV2 {
   """
   otherCrossSells: [CrossSell!]!
   """
-  Whether otherCrossSells should be presented as promoted offers (the highlighted "save" treatment).
-  A flow can apply a discount without promoting it, so this may be false while items still carry discount
-  copy in their description. Independent of recommendedCrossSell, which carries its own discount fields.
+  Always false. No flow presents cross-sells as promoted offers; every listed cross-sell uses the plain
+  price button. Discount copy still appears in each cross-sell's description, independently of this field.
   """
-  discountAvailable: Boolean!
+  discountAvailable: Boolean! @deprecated(reason: "Always false. Read the description for discount copy. Android 14.4.7 and iOS 14.0.4 are the last releases that select this field; removable once both are below the supported version floor.")
 }
 enum CurrencyCode {
   """
@@ -2035,7 +2044,7 @@ type EmailMessage {
 }
 """
 Employment type for Payment Protection, mirroring underwriter's `SwedishPaymentProtection.EmploymentType`.
-`UNEMPLOYED` and `HOURLY_EMPLOYED` are ineligible and rejected by underwriter.
+`UNEMPLOYED` is ineligible and rejected by underwriter.
 """
 enum EmploymentType {
   PERMANENT_EMPLOYED_FULLTIME
@@ -2862,6 +2871,16 @@ type Member {
   """
   missedChargeIdToChargeManually: UUID
   """
+  Non null string if the app should show a notice about an upcoming charge. The returned string will be unique per
+  occasion.
+  """
+  showPreChargeNotice: String
+  """
+  Non null string if the app should show a notice about an upcoming charge retry. The returned string will be unique per
+  occasion.
+  """
+  showRetryChargeNotice: String
+  """
   The member's payment methods: what they can be charged with, what they are paid out to,
   and which connection is still missing.
   """
@@ -2937,12 +2956,13 @@ type Member {
   crossSell(source: CrossSellSource!): CrossSellV2! @deprecated(reason: "Use crossSellV2")
   """
   Returns cross-sells with optional smart recommendation.
-  - INSURANCES: All options in otherCrossSells, no recommendation
-  - HOME_X_SELL: Recommendation + other options
-  - SMART_X_SELL (requires flowSource): Focused recommendation OR all options
-  - ONBOARDING: All options in otherCrossSells led by the recommendation, no separate recommendation
-  - HOME: Like INSURANCES, but the discount is described without the promoted "save X%" button
-  otherCrossSells carry discount copy for every flow except SMART_X_SELL.
+  - INSURANCES: All options in otherCrossSells led by the recommendation, no separate recommendation
+  - HOME: Same response as INSURANCES; a distinct value so Home traffic is separable in attribution
+  - ONBOARDING: Same response as INSURANCES; a distinct value for onboarding attribution
+  - HOME_X_SELL: Recommendation returned separately, plus the remaining options
+  - SMART_X_SELL (requires flowSource): Focused recommendation OR the full list, never both
+  A listed cross-sell describes an available discount in its description for every flow except
+  SMART_X_SELL. Where no discount applies it falls back to the plain product description.
   """
   crossSellV2(input: CrossSellInput!): CrossSellV2!
   """
@@ -3964,7 +3984,7 @@ type Mutation {
   """
    Setup Swish payin method for the member. Requires member consent in Swish app. 
   """
-  paymentMethodSetupSwishPayin(input: PaymentMethodSetupSwishInput!): PaymentMethodSetupOutput!
+  paymentMethodSetupSwishPayin: PaymentMethodSetupOutput!
   """
    Revoke and disconnect an ACTIVE payment method 
   """
@@ -3987,6 +4007,10 @@ type Mutation {
   """
   conversationStart(input: ConversationStartInput!): Conversation!
   conversationSendMessage(input: ConversationSendMessageInput!): ChatMessageMutationOutput!
+  """
+  Stop showing cross sales in a conversation, for good. Idempotent.
+  """
+  conversationHideCrossSales(id: UUID!): Conversation!
   claimAcknowledgeClosedStatus(id: ID!): ClaimMutationOutput
   """
   Create or (reuse and existing) unsubmitted claim intent.
@@ -4140,8 +4164,7 @@ type Mutation {
   Patch the employment type onto the underwriter quote(s) backing the given Payment Protection
   `ProductOffer`s, and persist it onto each offer's `priceIntentData` snapshot so it round-trips to clients.
   Employment type is not a pricing input, so this patches the existing quote (no re-quote) and leaves cost
-  unchanged. Ineligible types (`UNEMPLOYED`, `HOURLY_EMPLOYED`) are rejected by underwriter and surface as a
-  `userError`.
+  unchanged. Ineligible type (`UNEMPLOYED`) is rejected by underwriter and surface as an `userError`.
   """
   productOffersEmploymentTypeUpdate(productOfferIds: [UUID!]!, employmentType: EmploymentType!): ProductOffersMutationOutput!
   """
@@ -5933,7 +5956,7 @@ type UserError {
 }
 enum UserFlow {
   """
-  Insurances screen - all options, no recommendation
+  Insurances screen - all options led by the recommendation, no separate recommendation
   """
   INSURANCES
   """
@@ -5941,7 +5964,7 @@ enum UserFlow {
   """
   HOME_X_SELL
   """
-  Smart cross-sell - focused recommendation OR all options
+  Smart cross-sell - focused recommendation OR the full list, never both
   """
   SMART_X_SELL
   """
@@ -5949,9 +5972,13 @@ enum UserFlow {
   """
   ONBOARDING
   """
-  Home screen - all options led by the recommendation, discount shown but not promoted
+  Home screen - all options led by the recommendation
   """
   HOME
+  """
+  Chat - a single generic recommendation linking to all insurances, no other options
+  """
+  IN_CHAT_X_SELL
 }
 scalar UUID
 type ValueArray {

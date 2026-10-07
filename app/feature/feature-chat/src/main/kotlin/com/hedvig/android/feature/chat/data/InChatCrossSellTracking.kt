@@ -8,14 +8,12 @@ import com.hedvig.android.core.tracking.logAction
  * Datadog RUM carries the in-chat cross-sell funnel: how many members the card reached, how many
  * turned it down and how many went on to the offer.
  */
-internal fun logInChatCrossSell(event: InChatCrossSellTrackingEvent, conversationId: Uuid, crossSellId: String) {
+internal fun logInChatCrossSell(event: InChatCrossSellTrackingEvent) {
   logAction(
     type = ActionType.CUSTOM,
     name = "inChatCrossSell",
     attributes = mapOf(
       "event" to event.attributeValue,
-      "conversationId" to conversationId.toString(),
-      "crossSellId" to crossSellId,
     ),
   )
 }

@@ -1,19 +1,13 @@
 query InChatCrossSell($input: CrossSellInput!) {
   currentMember {
-    activeContracts {
-      currentAgreement {
-        productVariant {
-          typeOfContract
-        }
-      }
-    }
     crossSellV2(input: $input) {
       recommendedCrossSell {
         crossSell {
-          id
+          title
+          description
+          buttonTitle
           storeUrl
         }
-        discountPercent
       }
     }
   }

@@ -285,7 +285,7 @@ internal class CbmChatPresenter(
         is CbmChatEvent.DismissCrossSell -> {
           hideCrossSell = true
           launch {
-            logInChatCrossSell(DISMISSED, conversationId, event.crossSellId)
+            logInChatCrossSell(DISMISSED)
             inChatCrossSellStore.dismiss(conversationId.toString())
           }
         }
@@ -293,7 +293,7 @@ internal class CbmChatPresenter(
         is CbmChatEvent.CrossSellClicked -> {
           hideCrossSell = true
           launch {
-            logInChatCrossSell(CLICKED, conversationId, event.crossSellId)
+            logInChatCrossSell(CLICKED)
             // Taking the offer ends it for this conversation, just as turning it down does.
             inChatCrossSellStore.dismiss(conversationId.toString())
           }
@@ -434,7 +434,7 @@ private fun presentInChatCrossSell(
   LaunchedEffect(offeredCrossSell) {
     val shown = offeredCrossSell ?: return@LaunchedEffect
     if (inChatCrossSellStore.markPrompted(conversationId.toString())) {
-      logInChatCrossSell(PROMPTED, conversationId, shown.id)
+      logInChatCrossSell(PROMPTED)
     }
   }
   return offeredCrossSell
@@ -448,13 +448,9 @@ internal sealed interface CbmChatEvent {
 
   data object HideBanner : CbmChatEvent
 
-  data class DismissCrossSell(
-    val crossSellId: String,
-  ) : CbmChatEvent
+  data object DismissCrossSell: CbmChatEvent
 
-  data class CrossSellClicked(
-    val crossSellId: String,
-  ) : CbmChatEvent
+  data object CrossSellClicked: CbmChatEvent
 
   data class SendTextMessage(
     val message: String,

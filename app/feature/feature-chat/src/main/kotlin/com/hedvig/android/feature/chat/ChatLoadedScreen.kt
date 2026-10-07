@@ -304,7 +304,7 @@ private fun ChatLoadedScreen(
         val crossSell = lastCrossSell
         if (crossSell != null) {
           InChatCrossSellCard(
-            discountPercent = crossSell.discountPercent,
+            crossSell = crossSell,
             onDismissClick = { onDismissCrossSellClick(crossSell) },
             onSeePriceClick = { onCrossSellClick(crossSell) },
             modifier = Modifier
@@ -1346,7 +1346,12 @@ private fun PreviewChatLoadedScreen() {
           showUploading = true,
           showFileTooBigErrorToast = false,
           showFileFailedToBeSentToast = false,
-          crossSell = InChatCrossSell(id = "1", storeUrl = "", discountPercent = 15),
+          crossSell =  InChatCrossSell(
+            title = "Få rabatt",
+            description = "Aktivera din rabatt genom att teckna en till försäkring för hem, djur eller bil.",
+            buttonTitle = "Se ditt pris",
+            storeUrl = "",
+          ),
         ),
         lazyListState = rememberLazyListState(),
         imageLoader = rememberPreviewImageLoader(),
