@@ -56,6 +56,7 @@ import com.hedvig.android.feature.payin.account.navigation.PayinAccountKey
 import com.hedvig.android.feature.payin.account.navigation.PayinMethodDetailsKey
 import com.hedvig.android.feature.payin.account.navigation.SelectPrimaryPayinMethodKey
 import com.hedvig.android.feature.payin.account.navigation.payinAccountEntries
+import com.hedvig.android.feature.payments.navigation.ManualChargeKey
 import com.hedvig.android.feature.payments.navigation.paymentsEntries
 import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountKey
 import com.hedvig.android.feature.payoutaccount.navigation.payoutAccountEntries
@@ -274,6 +275,7 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
     onNavigateToNewConversation = navigateToNewConversation,
     navigateToClaimDetails = { claimId -> backstack.add(ClaimDetailsKey(claimId)) },
     navigateToConnectPayment = navigateToPayinAccount,
+    navigateToManualCharge = { backstack.add(ManualChargeKey) },
     navigateToConnectPayout = navigateToPayoutAccount,
     navigateToContactInfo = { backstack.add(ContactInfoKey) },
     navigateToMissingInfo = { contractId: String, type: CoInsuredFlowType ->

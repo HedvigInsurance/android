@@ -43,7 +43,6 @@ import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.paying.member.MemberType
-import com.hedvig.android.design.system.hedvig.HedvigAttentionCard
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigInformationSection
@@ -89,6 +88,7 @@ import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.U
 import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.UpcomingPaymentInfo.PaymentFailed
 import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Error
 import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Loading
+import com.hedvig.android.memberreminders.ui.FailedPaymentCard
 import com.hedvig.android.memberreminders.ui.MissingPayinMethodCard
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
@@ -104,10 +104,6 @@ import hedvig.resources.PAYMENTS_MISSED_PAYMENT
 import hedvig.resources.PAYMENTS_NO_PAYMENTS_IN_PROGRESS
 import hedvig.resources.PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL
 import hedvig.resources.PAYMENTS_PAYMENT_METHOD
-import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE
-import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_BODY
-import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_BUTTON
-import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_TITLE
 import hedvig.resources.PAYMENTS_PROCESSING_PAYMENT
 import hedvig.resources.PAYMENTS_RETRY_INFO
 import hedvig.resources.PAYMENTS_UPCOMING_PAYMENT
@@ -324,7 +320,7 @@ private fun PaymentsCards(
   when (val upcomingPaymentInfo = (uiState as? Content)?.upcomingPaymentInfo) {
     is PaymentFailed -> {
       if (upcomingPaymentInfo.isManualChargeAllowed != null) {
-        FailedPaymentInfo(
+        FailedPaymentCard(
           amountDue = upcomingPaymentInfo.isManualChargeAllowed.sum.toString(),
           onReviewPaymentClick = onOpenManualCharge,
           modifier = Modifier.padding(horizontal = 16.dp),
@@ -770,18 +766,6 @@ private fun PaymentCard(
 }
 
 @Composable
-private fun FailedPaymentInfo(amountDue: String, onReviewPaymentClick: () -> Unit, modifier: Modifier = Modifier) {
-  HedvigAttentionCard(
-    title = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_TITLE),
-    subtitle = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE, amountDue),
-    body = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_BODY),
-    buttonText = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_BUTTON),
-    onButtonClick = onReviewPaymentClick,
-    modifier = modifier,
-  )
-}
-
-@Composable
 private fun PaymentsListItem(
   text: String,
   icon: @Composable () -> Unit,
@@ -809,7 +793,7 @@ private fun PaymentsListItem(
 private fun PreviewFailedPaymentInfo() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      FailedPaymentInfo(
+      FailedPaymentCard(
         amountDue = "233 kr",
         {},
       )

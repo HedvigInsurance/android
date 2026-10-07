@@ -10,9 +10,6 @@ internal data object PaymentHistoryKey : HedvigNavKey
 internal data object DiscountsKey : HedvigNavKey
 
 @Serializable
-internal data object ManualChargeKey : HedvigNavKey
-
-@Serializable
 internal data class ManualChargeSuccessKey(
   val showCancellationWarning: Boolean,
 ) : HedvigNavKey

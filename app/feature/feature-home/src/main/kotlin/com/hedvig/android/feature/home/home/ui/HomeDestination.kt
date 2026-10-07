@@ -100,6 +100,7 @@ import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterPr
 import com.hedvig.android.core.common.image.storyblokResized
 import com.hedvig.android.core.tracking.ActionType
 import com.hedvig.android.core.tracking.logAction
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.crosssells.AddonsSection
 import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellBottomSheet
@@ -191,6 +192,7 @@ import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminder.PaymentReminder.ConnectPayment
 import com.hedvig.android.memberreminders.MemberReminder.UpcomingRenewal
 import com.hedvig.android.memberreminders.MemberReminders
+import com.hedvig.android.memberreminders.ui.FailedPaymentCard
 import com.hedvig.android.memberreminders.ui.MemberReminderToDoList
 import com.hedvig.android.memberreminders.ui.MissingPayinMethodCard
 import com.hedvig.android.memberreminders.ui.homeActionRequiredReminders
@@ -267,6 +269,7 @@ internal fun HomeDestination(
   navigateToClaimChat: (resumeClaim: Boolean) -> Unit,
   onClaimDetailCardClicked: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
+  navigateToManualCharge: () -> Unit,
   navigateToConnectPayout: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   navigateToQuickLink: (QuickLinkDestination) -> Unit,
@@ -292,6 +295,7 @@ internal fun HomeDestination(
     navigateToClaimChat = navigateToClaimChat,
     onClaimDetailCardClicked = onClaimDetailCardClicked,
     navigateToConnectPayment = navigateToConnectPayment,
+    navigateToManualCharge = navigateToManualCharge,
     navigateToConnectPayout = navigateToConnectPayout,
     navigateToHelpCenter = navigateToHelpCenter,
     navigateToQuickLink = navigateToQuickLink,
@@ -327,6 +331,7 @@ private fun HomeScreen(
   navigateToClaimChat: (resumeClaim: Boolean) -> Unit,
   onClaimDetailCardClicked: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
+  navigateToManualCharge: () -> Unit,
   navigateToConnectPayout: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   navigateToQuickLink: (QuickLinkDestination) -> Unit,
@@ -452,6 +457,7 @@ private fun HomeScreen(
             notificationPermissionState = notificationPermissionState,
             onClaimDetailCardClicked = onClaimDetailCardClicked,
             navigateToConnectPayment = navigateToConnectPayment,
+            navigateToManualCharge = navigateToManualCharge,
             navigateToConnectPayout = navigateToConnectPayout,
             navigateToHelpCenter = navigateToHelpCenter,
             navigateToQuickLink = navigateToQuickLink,
@@ -643,6 +649,7 @@ private fun HomeScreenSuccess(
   notificationPermissionState: NotificationPermissionState,
   onClaimDetailCardClicked: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
+  navigateToManualCharge: () -> Unit,
   navigateToConnectPayout: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   navigateToQuickLink: (QuickLinkDestination) -> Unit,
@@ -728,8 +735,8 @@ private fun HomeScreenSuccess(
             uiState.homeText != Active
         }
 
-        HomeSection.MissingPayinMethod -> {
-          applicableReminders.missingPayinMethodReminder() != null
+        HomeSection.PaymentCards -> {
+          applicableReminders.missingPayinMethodReminder() != null || uiState.overdueManualCharge != null
         }
 
         HomeSection.MemberReminders -> {
@@ -970,11 +977,12 @@ private fun HomeScreenSuccess(
               horizontalInsets = horizontalInsets,
             )
 
-            HomeSection.MissingPayinMethod -> MissingPayinMethodCard(
-              onConnectPaymentClick = navigateToConnectPayment,
-              modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .padding(horizontalInsets),
+            HomeSection.PaymentCards -> PaymentCardsSection(
+              showMissingPayinMethod = applicableReminders.missingPayinMethodReminder() != null,
+              overdueManualCharge = uiState.overdueManualCharge,
+              navigateToConnectPayment = navigateToConnectPayment,
+              navigateToManualCharge = navigateToManualCharge,
+              horizontalInsets = horizontalInsets,
             )
 
             HomeSection.MemberReminders -> MemberRemindersSection(
@@ -1123,7 +1131,7 @@ private enum class HomeSection {
   MainActionCarousel,
   ClaimStatusCards,
   VeryImportantMessages,
-  MissingPayinMethod,
+  PaymentCards,
   MemberReminders,
   Quotes,
   DiscoverInsurances,
@@ -1137,7 +1145,7 @@ private val homeSectionOrder: List<HomeSection> = listOf(
   HomeSection.MainActionCarousel,
   HomeSection.ClaimStatusCards,
   HomeSection.VeryImportantMessages,
-  HomeSection.MissingPayinMethod,
+  HomeSection.PaymentCards,
   HomeSection.MemberReminders,
   HomeSection.Quotes,
   HomeSection.QuickActionTiles,
@@ -1216,6 +1224,43 @@ private fun VeryImportantMessagesSection(
     hideImportantMessage = markMessageAsSeen,
     contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
   )
+}
+
+private sealed interface PaymentCard {
+  data object MissingPayinMethod : PaymentCard
+
+  data class OverdueManualCharge(val amountDue: UiMoney) : PaymentCard
+}
+
+@Composable
+private fun PaymentCardsSection(
+  showMissingPayinMethod: Boolean,
+  overdueManualCharge: UiMoney?,
+  navigateToConnectPayment: () -> Unit,
+  navigateToManualCharge: () -> Unit,
+  horizontalInsets: PaddingValues,
+) {
+  val cards = buildList {
+    if (showMissingPayinMethod) add(PaymentCard.MissingPayinMethod)
+    if (overdueManualCharge != null) add(PaymentCard.OverdueManualCharge(overdueManualCharge))
+  }
+  CardCarousel(
+    items = cards,
+    contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
+  ) { card, cardModifier ->
+    when (card) {
+      PaymentCard.MissingPayinMethod -> MissingPayinMethodCard(
+        onConnectPaymentClick = navigateToConnectPayment,
+        modifier = cardModifier,
+      )
+
+      is PaymentCard.OverdueManualCharge -> FailedPaymentCard(
+        amountDue = card.amountDue.toString(),
+        onReviewPaymentClick = navigateToManualCharge,
+        modifier = cardModifier,
+      )
+    }
+  }
 }
 
 @Composable
@@ -1772,6 +1817,7 @@ private fun PreviewHomeScreen(
         navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
+        navigateToManualCharge = {},
         navigateToConnectPayout = {},
         navigateToHelpCenter = {},
         navigateToQuickLink = {},
@@ -1809,6 +1855,7 @@ private fun PreviewHomeScreenWithError() {
         navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
+        navigateToManualCharge = {},
         navigateToConnectPayout = {},
         navigateToHelpCenter = {},
         navigateToQuickLink = {},
@@ -1879,6 +1926,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
+        navigateToManualCharge = {},
         navigateToConnectPayout = {},
         navigateToHelpCenter = {},
         navigateToQuickLink = {},

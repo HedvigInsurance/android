@@ -57,6 +57,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import octopus.CbmNumberOfChatMessagesQuery
+import octopus.HomeOverdueChargeQuery
 import octopus.HomeQuery
 import octopus.UnreadMessageCountQuery
 import octopus.builder.Data
@@ -69,6 +70,9 @@ import octopus.builder.buildCrossSell
 import octopus.builder.buildCrossSellV2
 import octopus.builder.buildLinkInfo
 import octopus.builder.buildMember
+import octopus.builder.buildMemberCharge
+import octopus.builder.buildMemberChargeBreakdownItem
+import octopus.builder.buildMemberChargeBreakdownItemPeriod
 import octopus.builder.buildMemberImportantMessage
 import octopus.builder.buildMoney
 import octopus.builder.buildPendingContract
@@ -78,6 +82,7 @@ import octopus.builder.buildShopSessionDisplay
 import octopus.builder.buildStoryblokImageAsset
 import octopus.type.ChatMessageSender
 import octopus.type.CurrencyCode
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -102,6 +107,16 @@ internal class GetHomeUseCaseTest {
   val testApolloClientRule = TestApolloClientRule(TestNetworkTransportType.MAP)
   val apolloClient: ApolloClient
     get() = testApolloClientRule.apolloClient
+
+  @Before
+  fun registerNoOverdueCharge() {
+    apolloClient.registerTestResponse(
+      HomeOverdueChargeQuery(),
+      HomeOverdueChargeQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember { futureCharge = null }
+      },
+    )
+  }
 
   @Test
   fun `when reminders are present, return the MemberReminders`() = runTest {
@@ -1006,6 +1021,97 @@ internal class GetHomeUseCaseTest {
       .single()
       .prop(OngoingShopSession::id)
       .isEqualTo("kept-session")
+  }
+
+  @Test
+  fun `when there is no missed charge to pay manually, there is no overdue manual charge`() = runTest {
+    val getHomeDataUseCase = testUseCaseWithoutReminders()
+    registerHomeResponses(missedChargeIdToChargeManually = null)
+
+    val result = getHomeDataUseCase.invoke(true).first()
+
+    assertThat(result).isNotNull().isRight().prop(HomeData::overdueManualCharge).isNull()
+  }
+
+  @Test
+  fun `when the upcoming charge carries the missed charge, show its amount as the overdue manual charge`() = runTest {
+    val getHomeDataUseCase = testUseCaseWithoutReminders()
+    registerHomeResponses(missedChargeIdToChargeManually = "missed")
+    apolloClient.registerTestResponse(
+      HomeOverdueChargeQuery(),
+      HomeOverdueChargeQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          missedChargeIdToChargeManually = "missed"
+          pastCharges = listOf(
+            buildMemberCharge {
+              id = "missed"
+              net = buildMoney {
+                amount = 233.0
+                currencyCode = CurrencyCode.SEK
+              }
+            },
+          )
+          futureCharge = buildMemberCharge {
+            chargeBreakdown = listOf(
+              buildMemberChargeBreakdownItem {
+                periods = listOf(buildMemberChargeBreakdownItemPeriod { isPreviouslyFailedCharge = true })
+              },
+            )
+          }
+        }
+      },
+    )
+
+    val result = getHomeDataUseCase.invoke(true).first()
+
+    assertThat(result)
+      .isNotNull()
+      .isRight()
+      .prop(HomeData::overdueManualCharge)
+      .isEqualTo(UiMoney(233.0, UiCurrencyCode.SEK))
+  }
+
+  @Test
+  fun `when the upcoming charge carries no failed period, there is no overdue manual charge`() = runTest {
+    val getHomeDataUseCase = testUseCaseWithoutReminders()
+    registerHomeResponses(missedChargeIdToChargeManually = "missed")
+    apolloClient.registerTestResponse(
+      HomeOverdueChargeQuery(),
+      HomeOverdueChargeQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          missedChargeIdToChargeManually = "missed"
+          pastCharges = listOf(buildMemberCharge { id = "missed" })
+          futureCharge = buildMemberCharge {
+            chargeBreakdown = listOf(
+              buildMemberChargeBreakdownItem {
+                periods = listOf(buildMemberChargeBreakdownItemPeriod { isPreviouslyFailedCharge = false })
+              },
+            )
+          }
+        }
+      },
+    )
+
+    val result = getHomeDataUseCase.invoke(true).first()
+
+    assertThat(result).isNotNull().isRight().prop(HomeData::overdueManualCharge).isNull()
+  }
+
+  private fun registerHomeResponses(missedChargeIdToChargeManually: String?) {
+    apolloClient.registerTestResponse(
+      HomeQuery(true, true, true),
+      HomeQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember { this.missedChargeIdToChargeManually = missedChargeIdToChargeManually }
+      },
+    )
+    apolloClient.registerTestResponse(
+      UnreadMessageCountQuery(),
+      UnreadMessageCountQuery.Data(OctopusFakeResolver),
+    )
+    apolloClient.registerTestResponse(
+      CbmNumberOfChatMessagesQuery(),
+      CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+    )
   }
 
   // Used as a convenience to get a use case without any enqueued apollo responses, but some sane defaults for the
