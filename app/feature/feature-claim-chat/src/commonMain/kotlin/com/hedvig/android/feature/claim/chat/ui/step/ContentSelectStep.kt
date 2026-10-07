@@ -1,11 +1,5 @@
 package com.hedvig.android.feature.claim.chat.ui.step
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -55,88 +49,81 @@ internal fun ContentSelectStep(
   // Confirming and skipping both answer the same step, so either one being in flight has to lock the other out.
   val isSubmitting = currentContinueButtonLoading || skipButtonLoading
   Column(modifier) {
-    AnimatedContent(
-      isCurrentStep,
-      transitionSpec = {
-        (fadeIn() + scaleIn()).togetherWith(fadeOut(animationSpec = tween(0)))
-      },
-    ) { isCurrentStep ->
-      if (isCurrentStep) {
-        // An answer already on the step is something to confirm or change, so it keeps the confirm button,
-        // whether or not the step can also be skipped: without it a prefilled skippable step could be changed
-        // but never submitted. With nothing filled in there is nothing to confirm and a tap answers the step
-        // outright, so the only button left is skip, where the step offers it.
-        val hasPrefilledAnswer = rememberSaveable(itemId) { stepContent.selectedOptionId != null }
-        val answersOnClick = !hasPrefilledAnswer
-        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-          ContentSelectChips(
-            options = options,
-            onOptionClick = { option ->
-              if (!isSubmitting) {
-                onEvent(ClaimChatEvent.Select(itemId, option.id))
-                if (answersOnClick) {
-                  onEvent(ClaimChatEvent.SubmitSelect(itemId))
+    if (isCurrentStep) {
+      // An answer already on the step is something to confirm or change, so it keeps the confirm button,
+      // whether or not the step can also be skipped: without it a prefilled skippable step could be changed
+      // but never submitted. With nothing filled in there is nothing to confirm and a tap answers the step
+      // outright, so the only button left is skip, where the step offers it.
+      val hasPrefilledAnswer = rememberSaveable(itemId) { stepContent.selectedOptionId != null }
+      val answersOnClick = !hasPrefilledAnswer
+      Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        ContentSelectChips(
+          options = options,
+          onOptionClick = { option ->
+            if (!isSubmitting) {
+              onEvent(ClaimChatEvent.Select(itemId, option.id))
+              if (answersOnClick) {
+                onEvent(ClaimChatEvent.SubmitSelect(itemId))
+              }
+            }
+          },
+          selectedOptionId = stepContent.selectedOptionId,
+          style = stepContent.style,
+          answersOnClick = answersOnClick,
+        )
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+          if (hasPrefilledAnswer) {
+            HedvigButton(
+              text = stringResource(Res.string.GENERAL_CONFIRM),
+              onClick = {
+                if (selectedOptionId != null) {
+                  onEvent(
+                    ClaimChatEvent.SubmitSelect(
+                      itemId,
+                    ),
+                  )
                 }
-              }
-            },
-            selectedOptionId = stepContent.selectedOptionId,
-            style = stepContent.style,
-            answersOnClick = answersOnClick,
-          )
-          Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            if (hasPrefilledAnswer) {
-              HedvigButton(
-                text = stringResource(Res.string.GENERAL_CONFIRM),
-                onClick = {
-                  if (selectedOptionId != null) {
-                    onEvent(
-                      ClaimChatEvent.SubmitSelect(
-                        itemId,
-                      ),
-                    )
-                  }
-                },
-                isLoading = currentContinueButtonLoading,
-                enabled = !isSubmitting && selectedOptionId != null,
-                modifier = Modifier.fillMaxWidth(),
-              )
-            }
-            if (canSkip) {
-              HedvigButton(
-                stringResource(Res.string.claims_skip_button),
-                onClick = onSkip,
-                isLoading = skipButtonLoading,
-                enabled = !isSubmitting,
-                modifier = Modifier.fillMaxWidth(),
-                buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
-              )
-            }
+              },
+              isLoading = currentContinueButtonLoading,
+              enabled = !isSubmitting && selectedOptionId != null,
+              modifier = Modifier.fillMaxWidth(),
+            )
+          }
+          if (canSkip) {
+            HedvigButton(
+              stringResource(Res.string.claims_skip_button),
+              onClick = onSkip,
+              isLoading = skipButtonLoading,
+              enabled = !isSubmitting,
+              modifier = Modifier.fillMaxWidth(),
+              buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
+            )
           }
         }
-      } else {
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-          val selected = options.firstOrNull { it.id == selectedOptionId }
-          SentAnswerRow {
-            if (selected != null) {
-              val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + selected.title
-              RoundCornersPill(
-                modifier = Modifier.clearAndSetSemantics {
-                  contentDescription = description
-                },
-              ) {
-                HedvigText(selected.title)
-              }
-            } else {
-              SkippedLabel()
+      }
+    } else {
+      Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        val selected = options.firstOrNull { it.id == selectedOptionId }
+        SentAnswerRow {
+          if (selected != null) {
+            val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + selected.title
+            RoundCornersPill(
+              modifier = Modifier.clearAndSetSemantics {
+                contentDescription = description
+              },
+            ) {
+              HedvigText(selected.title)
             }
+          } else {
+            SkippedLabel()
           }
-          EditButton(
-            isRegrettable,
-            onRegret = {
-              onEvent(ClaimChatEvent.ShowConfirmEditDialog(itemId))
-            },
-          )
         }
+        EditButton(
+          isRegrettable,
+          onRegret = {
+            onEvent(ClaimChatEvent.ShowConfirmEditDialog(itemId))
+          },
+        )
       }
     }
   }
