@@ -6,6 +6,7 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
 import com.apollographql.cache.normalized.FetchPolicy
 import com.apollographql.cache.normalized.fetchPolicy
+import com.benasher44.uuid.Uuid
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
@@ -18,6 +19,7 @@ import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metro.binding
+import octopus.InChatCrossSellEligibilityQuery
 import octopus.InChatCrossSellQuery
 import octopus.type.CrossSellInput
 import octopus.type.UserFlow
@@ -32,17 +34,22 @@ internal data class InChatCrossSell(
 
 internal interface GetInChatCrossSellUseCase {
   /** Null when there is nothing worth offering this member in chat. */
-  suspend fun invoke(): Either<ErrorMessage, InChatCrossSell?>
+  suspend fun invoke(conversationId: Uuid): Either<ErrorMessage, InChatCrossSell?>
 }
 
 @Inject
 internal class GetInChatCrossSellUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetInChatCrossSellUseCase {
-  override suspend fun invoke(): Either<ErrorMessage, InChatCrossSell?> = either {
-
-    // todo: use conversation.showCrossSales to even query it, if it's false return null immediately
-
+  override suspend fun invoke(conversationId: Uuid): Either<ErrorMessage, InChatCrossSell?> = either {
+    val showCrossSales = apolloClient
+      .query(InChatCrossSellEligibilityQuery(conversationId.toString()))
+      .fetchPolicy(FetchPolicy.NetworkOnly)
+      .safeExecute(::ErrorMessage)
+      .bind()
+      .conversation
+      ?.showCrossSales
+    if (showCrossSales != true) return@either null
     val data = apolloClient
       .query(InChatCrossSellQuery(inChatCrossSellInput))
       .fetchPolicy(FetchPolicy.NetworkOnly)
@@ -60,7 +67,7 @@ internal class GetInChatCrossSellUseCaseImpl(
 
 @Inject
 internal class DemoGetInChatCrossSellUseCase : GetInChatCrossSellUseCase {
-  override suspend fun invoke(): Either<ErrorMessage, InChatCrossSell?> = Either.Right(null)
+  override suspend fun invoke(conversationId: Uuid): Either<ErrorMessage, InChatCrossSell?> = Either.Right(null)
 }
 
 @Inject
@@ -71,7 +78,7 @@ internal class SwitchingGetInChatCrossSellUseCase(
   override val prodImpl: GetInChatCrossSellUseCaseImpl,
   override val demoImpl: DemoGetInChatCrossSellUseCase,
 ) : GetInChatCrossSellUseCase, DemoSwitcher<GetInChatCrossSellUseCase>() {
-  override suspend fun invoke() = pick().invoke()
+  override suspend fun invoke(conversationId: Uuid) = pick().invoke(conversationId)
 }
 
 private val inChatCrossSellInput = CrossSellInput(

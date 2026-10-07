@@ -44,8 +44,8 @@ import com.hedvig.android.feature.chat.data.ConversationInfo
 import com.hedvig.android.feature.chat.data.ConversationInfo.Info
 import com.hedvig.android.feature.chat.data.ConversationInfo.NoConversation
 import com.hedvig.android.feature.chat.data.GetInChatCrossSellUseCase
+import com.hedvig.android.feature.chat.data.HideInChatCrossSellUseCase
 import com.hedvig.android.feature.chat.data.InChatCrossSell
-import com.hedvig.android.feature.chat.data.InChatCrossSellStore
 import com.hedvig.android.feature.chat.data.InChatCrossSellTrackingEvent.CLICKED
 import com.hedvig.android.feature.chat.data.InChatCrossSellTrackingEvent.DISMISSED
 import com.hedvig.android.feature.chat.data.InChatCrossSellTrackingEvent.PROMPTED
@@ -90,7 +90,7 @@ internal class CbmChatViewModel @AssistedInject constructor(
   clock: Clock,
   context: Context,
   getInChatCrossSellUseCase: GetInChatCrossSellUseCase,
-  inChatCrossSellStore: InChatCrossSellStore,
+  hideInChatCrossSellUseCase: HideInChatCrossSellUseCase,
   coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + AndroidUiDispatcher.Main),
 ) : MoleculeViewModel<CbmChatEvent, CbmChatUiState>(
     initialState = CbmChatUiState.Initializing,
@@ -108,7 +108,7 @@ internal class CbmChatViewModel @AssistedInject constructor(
       chatDao = chatDao,
       chatRepository = chatRepository,
       getInChatCrossSellUseCase = getInChatCrossSellUseCase,
-      inChatCrossSellStore = inChatCrossSellStore,
+      hideInChatCrossSellUseCase = hideInChatCrossSellUseCase,
       context,
     ),
     coroutineScope = coroutineScope,
@@ -151,7 +151,7 @@ internal class CbmChatPresenter(
   private val chatDao: ChatDao,
   private val chatRepository: CbmChatRepository,
   private val getInChatCrossSellUseCase: GetInChatCrossSellUseCase,
-  private val inChatCrossSellStore: InChatCrossSellStore,
+  private val hideInChatCrossSellUseCase: HideInChatCrossSellUseCase,
   private val context: Context,
 ) : MoleculePresenter<CbmChatEvent, CbmChatUiState> {
   @OptIn(ExperimentalPagingApi::class)
@@ -286,7 +286,7 @@ internal class CbmChatPresenter(
           hideCrossSell = true
           launch {
             logInChatCrossSell(DISMISSED)
-            inChatCrossSellStore.dismiss(conversationId.toString())
+            hideInChatCrossSell()
           }
         }
 
@@ -295,7 +295,7 @@ internal class CbmChatPresenter(
           launch {
             logInChatCrossSell(CLICKED)
             // Taking the offer ends it for this conversation, just as turning it down does.
-            inChatCrossSellStore.dismiss(conversationId.toString())
+            hideInChatCrossSell()
           }
         }
       }
@@ -319,7 +319,6 @@ internal class CbmChatPresenter(
           chatDao = chatDao,
           chatRepository = chatRepository,
           getInChatCrossSellUseCase = getInChatCrossSellUseCase,
-          inChatCrossSellStore = inChatCrossSellStore,
           showUploading = numberOfOngoingUploads.collectAsState().value > 0,
           showFileTooBigErrorToast = showFileTooBigErrorToast,
           hideBanner = hideBanner,
@@ -327,6 +326,12 @@ internal class CbmChatPresenter(
           showFileFailedToBeSendToast = showFileFailedToBeSendToast,
         )
       }
+    }
+  }
+
+  private suspend fun hideInChatCrossSell() {
+    hideInChatCrossSellUseCase.invoke(conversationId).onLeft {
+      logcat(LogPriority.WARN) { "Could not hide the in-chat cross sell for $conversationId: ${it.message}" }
     }
   }
 }
@@ -341,7 +346,6 @@ private fun presentLoadedChat(
   chatDao: ChatDao,
   chatRepository: CbmChatRepository,
   getInChatCrossSellUseCase: GetInChatCrossSellUseCase,
-  inChatCrossSellStore: InChatCrossSellStore,
   showUploading: Boolean,
   showFileTooBigErrorToast: Boolean,
   hideBanner: Boolean,
@@ -383,7 +387,6 @@ private fun presentLoadedChat(
     conversationId = conversationId,
     chatDao = chatDao,
     getInChatCrossSellUseCase = getInChatCrossSellUseCase,
-    inChatCrossSellStore = inChatCrossSellStore,
     hideCrossSell = hideCrossSell,
   )
   return CbmChatUiState.Loaded(
@@ -403,39 +406,31 @@ private fun presentLoadedChat(
 /**
  * The cross-sell offer this conversation should carry, if any. It is fetched only once Hedvig has
  * answered [MESSAGES_FROM_HEDVIG_BEFORE_CROSS_SELL] times, so that an offer never lands before the
- * member has been helped, and never for a conversation the offer was already settled in.
+ * member has been helped.
  */
 @Composable
 private fun presentInChatCrossSell(
   conversationId: Uuid,
   chatDao: ChatDao,
   getInChatCrossSellUseCase: GetInChatCrossSellUseCase,
-  inChatCrossSellStore: InChatCrossSellStore,
   hideCrossSell: Boolean,
 ): InChatCrossSell? {
-  // Assume it was settled until the stored answer arrives, so the card never flashes in and back out.
-  val wasSettledBefore by remember(conversationId, inChatCrossSellStore) {
-    inChatCrossSellStore.observeDismissedConversationIds().map { conversationId.toString() in it }
-  }.collectAsState(true)
   val hedvigHasAnswered by remember(conversationId, chatDao) {
     chatDao.countMessagesFromHedvig(conversationId).map { it >= MESSAGES_FROM_HEDVIG_BEFORE_CROSS_SELL }
   }.collectAsState(false)
 
   var crossSell by remember { mutableStateOf<InChatCrossSell?>(null) }
-  val shouldOffer = hedvigHasAnswered && !wasSettledBefore && !hideCrossSell
+  val shouldOffer = hedvigHasAnswered && !hideCrossSell
   LaunchedEffect(shouldOffer) {
     if (!shouldOffer || crossSell != null) return@LaunchedEffect
-    getInChatCrossSellUseCase.invoke().fold(
+    getInChatCrossSellUseCase.invoke(conversationId).fold(
       ifLeft = { logcat(LogPriority.WARN) { "Could not load the in-chat cross sell: ${it.message}" } },
       ifRight = { crossSell = it },
     )
   }
   val offeredCrossSell = crossSell.takeIf { shouldOffer }
   LaunchedEffect(offeredCrossSell) {
-    val shown = offeredCrossSell ?: return@LaunchedEffect
-    if (inChatCrossSellStore.markPrompted(conversationId.toString())) {
-      logInChatCrossSell(PROMPTED)
-    }
+    if (offeredCrossSell != null) logInChatCrossSell(PROMPTED)
   }
   return offeredCrossSell
 }

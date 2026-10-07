@@ -12,3 +12,10 @@ query InChatCrossSell($input: CrossSellInput!) {
     }
   }
 }
+
+query InChatCrossSellEligibility($conversationId: UUID!) {
+  conversation(id: $conversationId) {
+    id
+    showCrossSales
+  }
+}
