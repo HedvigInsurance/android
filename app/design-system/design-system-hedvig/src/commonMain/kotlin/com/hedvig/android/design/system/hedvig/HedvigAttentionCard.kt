@@ -91,7 +91,7 @@ fun HedvigAttentionCard(
         onClick = onButtonClick,
         enabled = true,
         buttonStyle = ButtonDefaults.ButtonStyle.Primary,
-        buttonSize = ButtonDefaults.ButtonSize.Small,
+        buttonSize = ButtonDefaults.ButtonSize.Medium,
         modifier = Modifier.fillMaxWidth(),
       )
     }
