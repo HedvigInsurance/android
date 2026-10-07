@@ -38,6 +38,9 @@ internal class GetAddonBannerInfoUseCaseImpl(
 
       AddonBannerSource.AFTER_FINISHING_SUCCESSFUL_FLOW,
       AddonBannerSource.INSURANCES_TAB,
+      AddonBannerSource.HOME_SCREEN,
+      AddonBannerSource.HOME_CROSS_SELL_SHEET,
+      AddonBannerSource.CONTRACT_DETAIL,
       -> listOf(
         AddonFlow.APP_CAR_PLUS,
         AddonFlow.APP_TRAVEL_PLUS_SELL_ONLY,
@@ -109,6 +112,9 @@ enum class FlowType {
 enum class AddonBannerSource {
   TRAVEL_CERTIFICATES,
   INSURANCES_TAB,
+  HOME_SCREEN,
+  HOME_CROSS_SELL_SHEET,
+  CONTRACT_DETAIL,
   AFTER_FINISHING_SUCCESSFUL_FLOW,
   TRAVEL_DEEPLINK,
   CAR_ADDON_DEEPLINK,
