@@ -7,7 +7,6 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -128,8 +127,6 @@ import com.hedvig.android.feature.claim.chat.ui.step.UploadFilesStep
 import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.AudioRecordingStep
 import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.FreeTextDraftState
 import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.FullScreenTextAnswer
-import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.InputMode
-import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.answerInputMode
 import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.isShortWindow
 import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.rememberFreeTextDraftState
 import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.touchesOnlyWhenSettled
@@ -578,6 +575,7 @@ private fun ClaimChatScreenContent(
           openAppSettings = openAppSettings,
           closeFlow = navigateBack,
           canTakeFocus = isSettled,
+          answerCardElevation = FLOATING_CARD_ELEVATION,
         )
       }
     }
@@ -842,16 +840,10 @@ private fun FloatingAnswerCard(
       WindowInsets.safeDrawing.getBottom(this) + 16.dp.toPx()
     }
     val isSettled = isCurrent && isShown && hiddenFraction == 0f
-    // Only the answer cards lift off the conversation; the row of ways to answer is not a card. A card fills the
-    // content exactly, so a shadow in the cards' shape falls where the card is.
-    val showsAnswerCard = (cardStep.stepContent as? StepContent.AudioRecording)
-      ?.let { answerInputMode(it.recordingState, it.isRecorderOpen) != InputMode.Resting } == true
-    val elevation by animateDpAsState(if (showsAnswerCard) FLOATING_CARD_ELEVATION else 0.dp)
     Box(
       Modifier
         .onSizeChanged { if (isCurrent) onHeightChanged(it.height) }
         .graphicsLayer { translationY = hiddenFraction * (size.height + distanceBelowCard) }
-        .shadow(elevation, HedvigTheme.shapes.cornerXLarge, clip = false)
         .touchesOnlyWhenSettled(isSettled)
         .then(if (isCurrent && isShown) Modifier else Modifier.clearAndSetSemantics {}),
     ) {
@@ -1133,6 +1125,7 @@ private fun StepBottomContent(
   modifier: Modifier = Modifier,
   floatingAnswerSlot: FloatingAnswerSlot? = null,
   canTakeFocus: Boolean = true,
+  answerCardElevation: Dp = 0.dp,
 ) {
   Column(modifier) {
     when (stepItem.stepContent) {
@@ -1181,6 +1174,7 @@ private fun StepBottomContent(
           continueButtonLoading = currentContinueButtonLoading,
           skipButtonLoading = currentSkipButtonLoading,
           canTakeFocus = canTakeFocus,
+          answerCardElevation = answerCardElevation,
         )
       }
 

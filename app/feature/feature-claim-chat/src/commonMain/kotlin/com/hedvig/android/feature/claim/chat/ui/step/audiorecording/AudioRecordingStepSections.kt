@@ -3,6 +3,7 @@ package com.hedvig.android.feature.claim.chat.ui.step.audiorecording
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.tween
@@ -190,6 +191,7 @@ internal fun AudioRecordingStep(
   onEvent: (ClaimChatEvent) -> Unit,
   modifier: Modifier = Modifier,
   canTakeFocus: Boolean = true,
+  answerCardElevation: Dp = 0.dp,
 ) {
   Column(modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
     AudioRecorderBubble(
@@ -219,6 +221,7 @@ internal fun AudioRecordingStep(
       continueButtonLoading = continueButtonLoading,
       skipButtonLoading = skipButtonLoading,
       canTakeFocus = canTakeFocus,
+      answerCardElevation = answerCardElevation,
     )
     EditButton(
       canBeChanged = item.isRegrettable && !isCurrentStep,
@@ -281,6 +284,73 @@ internal fun AudioRecorderBubble(
   skipButtonLoading: Boolean,
   modifier: Modifier = Modifier,
   canTakeFocus: Boolean = true,
+  answerCardElevation: Dp = 0.dp,
+) {
+  Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    if (!isCurrentStep) {
+      SentAnswer(recordingState)
+    } else {
+      AnswerInput(
+        recordingState = recordingState,
+        clock = clock,
+        onShouldShowRequestPermissionRationale = onShouldShowRequestPermissionRationale,
+        startRecording = startRecording,
+        stopRecording = stopRecording,
+        submitAudioFile = submitAudioFile,
+        openRecorder = openRecorder,
+        isRecorderOpen = isRecorderOpen,
+        redoRecording = redoRecording,
+        discardRecording = discardRecording,
+        openAppSettings = openAppSettings,
+        freeTextAvailable = freeTextAvailable,
+        submitFreeText = submitFreeText,
+        onSwitchToFreeText = onSwitchToFreeText,
+        onSwitchToAudioRecording = onSwitchToAudioRecording,
+        freeTextDraft = freeTextDraft,
+        onSaveFreeText = onSaveFreeText,
+        onCancelSubmission = onCancelSubmission,
+        freeTextMinLength = freeTextMinLength,
+        freeTextMaxLength = freeTextMaxLength,
+        canSkip = canSkip,
+        onSkip = onSkip,
+        continueButtonLoading = continueButtonLoading,
+        skipButtonLoading = skipButtonLoading,
+        canTakeFocus = canTakeFocus,
+        answerCardElevation = answerCardElevation,
+      )
+    }
+  }
+}
+
+/** The step being answered: the row of ways to answer, which grow into the card the member picks. */
+@Composable
+private fun AnswerInput(
+  recordingState: AudioRecordingStepState,
+  clock: Clock,
+  onShouldShowRequestPermissionRationale: (String) -> Boolean,
+  startRecording: () -> Unit,
+  stopRecording: () -> Unit,
+  submitAudioFile: () -> Unit,
+  openRecorder: () -> Unit,
+  isRecorderOpen: Boolean,
+  redoRecording: () -> Unit,
+  discardRecording: () -> Unit,
+  openAppSettings: () -> Unit,
+  freeTextAvailable: Boolean,
+  submitFreeText: () -> Unit,
+  onSwitchToFreeText: () -> Unit,
+  onSwitchToAudioRecording: () -> Unit,
+  freeTextDraft: FreeTextDraftState,
+  onSaveFreeText: (String) -> Unit,
+  onCancelSubmission: () -> Unit,
+  freeTextMinLength: Int,
+  freeTextMaxLength: Int,
+  canSkip: Boolean,
+  onSkip: () -> Unit,
+  continueButtonLoading: Boolean,
+  skipButtonLoading: Boolean,
+  canTakeFocus: Boolean,
+  answerCardElevation: Dp,
 ) {
   val isSubmitting = continueButtonLoading || skipButtonLoading
   val focusManager = LocalFocusManager.current
@@ -288,146 +358,87 @@ internal fun AudioRecorderBubble(
   // answer in the full screen editor instead, which the screen draws over this one.
   val isShortWindow = isShortWindow()
 
-  Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-    if (!isCurrentStep) {
-      SentAnswerRow {
-        val sentFreeText = recordingState.sentFreeTextAnswer()
-        when {
-          sentFreeText != null -> {
-            val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + sentFreeText
-            RoundCornersPill(
-              modifier = Modifier.clearAndSetSemantics { contentDescription = description },
-            ) {
-              HedvigText(sentFreeText, textAlign = TextAlign.End)
-            }
-          }
-
-          recordingState is AudioRecordingStepState.AudioRecording.Playback -> {
-            val audioPlayer = when (recordingState.audioPath) {
-              is AudioPath.FilePath -> rememberAudioPlayer(
-                PlayableAudioSource.LocalFilePath(recordingState.audioPath.filePath),
-              )
-
-              is AudioPath.RemoteUrl -> rememberAudioPlayer(
-                PlayableAudioSource.RemoteUrl(
-                  SignedAudioUrl.fromSignedAudioUrlString(recordingState.audioPath.remoteUrl),
-                ),
-              )
-            }
-            HedvigAudioPlayer(audioPlayer = audioPlayer)
-          }
-
-          else -> {
-            SkippedLabel()
-          }
-        }
-      }
-    } else {
-      AnimatedContent(
-        targetState = answerInputMode(recordingState, isRecorderOpen),
-        modifier = Modifier.fillMaxWidth(),
-      ) { mode ->
-        // Both children are composed while the crossfade runs, and the entering one is laid out at the top
-        // of the still shrinking container, right where the leaving card’s close button was. A second tap
-        // arriving mid transition would otherwise land on Write or Record and reopen the card it just
-        // closed, so only the settled child takes touches.
-        Box(Modifier.touchesOnlyWhenSettled(transition.currentState == transition.targetState)) {
-          when (mode) {
-            InputMode.Text -> {
-              // A short window answers full screen, and the screen is already drawing that editor over this
-              // card. Leaving the card composed underneath would put a second field on the same answer, and it
-              // would take the focus the member is typing into.
-              if (!isShortWindow) {
-                val freeText = recordingState as? AudioRecordingStepState.FreeTextDescription
-                InlineTextAnswerCard(
-                  draft = freeTextDraft,
-                  minLength = freeTextMinLength,
-                  maxLength = freeTextMaxLength,
-                  errorType = freeText?.errorType,
-                  hasError = freeText?.hasError == true,
-                  isSubmitting = isSubmitting,
-                  onCancel = {
-                    focusManager.clearFocus()
-                    // Calls off an answer still in flight before leaving, so Avbryt does what it says rather
-                    // than closing over a submission that lands anyway.
-                    onCancelSubmission()
-                    onSwitchToAudioRecording()
-                  },
-                  onSave = { text ->
-                    focusManager.clearFocus()
-                    onSaveFreeText(text)
-                    submitFreeText()
-                  },
-                  canTakeFocus = canTakeFocus,
-                )
-              }
-            }
-
-            InputMode.Voice -> {
-              InlineVoiceAnswerCard(
-                audioRecordingState = recordingState as? AudioRecordingStepState.AudioRecording
-                  ?: AudioRecordingStepState.AudioRecording.NotRecording,
-                clock = clock,
-                shouldShowRequestPermissionRationale = onShouldShowRequestPermissionRationale,
-                startRecording = startRecording,
-                stopRecording = stopRecording,
-                submitAudioFile = submitAudioFile,
-                redo = redoRecording,
-                openAppSettings = openAppSettings,
+  SharedTransitionLayout(Modifier.fillMaxWidth()) {
+    AnimatedContent(
+      targetState = answerInputMode(recordingState, isRecorderOpen),
+      transitionSpec = { answerInputTransform() },
+      modifier = Modifier.fillMaxWidth(),
+    ) { mode ->
+      val morph = answerCardMorph(visibility = this, cardElevation = answerCardElevation)
+      // Both children are composed while the crossfade runs, and the entering one is laid out at the top
+      // of the still shrinking container, right where the leaving card’s close button was. A second tap
+      // arriving mid transition would otherwise land on Write or Record and reopen the card it just
+      // closed, so only the settled child takes touches.
+      Box(Modifier.touchesOnlyWhenSettled(transition.currentState == transition.targetState)) {
+        when (mode) {
+          InputMode.Text -> {
+            // A short window answers full screen, and the screen is already drawing that editor over this
+            // card. Leaving the card composed underneath would put a second field on the same answer, and it
+            // would take the focus the member is typing into.
+            if (!isShortWindow) {
+              val freeText = recordingState as? AudioRecordingStepState.FreeTextDescription
+              InlineTextAnswerCard(
+                draft = freeTextDraft,
+                minLength = freeTextMinLength,
+                maxLength = freeTextMaxLength,
+                errorType = freeText?.errorType,
+                hasError = freeText?.hasError == true,
                 isSubmitting = isSubmitting,
-                onClose = discardRecording,
+                onCancel = {
+                  focusManager.clearFocus()
+                  // Calls off an answer still in flight before leaving, so Avbryt does what it says rather
+                  // than closing over a submission that lands anyway.
+                  onCancelSubmission()
+                  onSwitchToAudioRecording()
+                },
+                onSave = { text ->
+                  focusManager.clearFocus()
+                  onSaveFreeText(text)
+                  submitFreeText()
+                },
+                canTakeFocus = canTakeFocus,
+                modifier = morph.textCard,
+                contentModifier = morph.cardContent,
               )
             }
+          }
 
-            InputMode.Resting -> {
-              Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Row(
-                  modifier = Modifier.fillMaxWidth(),
-                  horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                  if (freeTextAvailable) {
-                    HedvigButton(
-                      onClick = {
-                        focusManager.clearFocus()
-                        onSwitchToFreeText()
-                      },
-                      enabled = true,
-                      buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-                      buttonSize = ButtonDefaults.ButtonSize.Large,
-                      modifier = Modifier.weight(1f),
-                    ) {
-                      Icon(HedvigIcons.PenEdit, null, Modifier.size(24.dp))
-                      Spacer(Modifier.width(8.dp))
-                      HedvigText(stringResource(Res.string.claims_write))
-                    }
-                  }
-                  HedvigButton(
-                    onClick = {
-                      focusManager.clearFocus()
-                      openRecorder()
-                    },
-                    enabled = true,
-                    buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-                    buttonSize = ButtonDefaults.ButtonSize.Large,
-                    modifier = Modifier.weight(1f),
-                  ) {
-                    Icon(HedvigIcons.Mic, null, Modifier.size(24.dp))
-                    Spacer(Modifier.width(8.dp))
-                    HedvigText(stringResource(Res.string.claims_record))
-                  }
-                }
-                if (canSkip) {
-                  HedvigButton(
-                    stringResource(Res.string.claims_skip_button),
-                    onClick = onSkip,
-                    isLoading = skipButtonLoading,
-                    enabled = !isSubmitting,
-                    modifier = Modifier.fillMaxWidth(),
-                    buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
-                  )
-                }
-              }
-            }
+          InputMode.Voice -> {
+            InlineVoiceAnswerCard(
+              audioRecordingState = recordingState as? AudioRecordingStepState.AudioRecording
+                ?: AudioRecordingStepState.AudioRecording.NotRecording,
+              clock = clock,
+              shouldShowRequestPermissionRationale = onShouldShowRequestPermissionRationale,
+              startRecording = startRecording,
+              stopRecording = stopRecording,
+              submitAudioFile = submitAudioFile,
+              redo = redoRecording,
+              openAppSettings = openAppSettings,
+              isSubmitting = isSubmitting,
+              onClose = discardRecording,
+              modifier = morph.voiceCard,
+              contentModifier = morph.cardContent,
+              micModifier = morph.mic,
+            )
+          }
+
+          InputMode.Resting -> {
+            WaysToAnswer(
+              morph = morph,
+              freeTextAvailable = freeTextAvailable,
+              canSkip = canSkip,
+              isSubmitting = isSubmitting,
+              skipButtonLoading = skipButtonLoading,
+              onWrite = {
+                focusManager.clearFocus()
+                onSwitchToFreeText()
+              },
+              onRecord = {
+                focusManager.clearFocus()
+                openRecorder()
+              },
+              onSkip = onSkip,
+            )
           }
         }
       }
@@ -435,10 +446,100 @@ internal fun AudioRecorderBubble(
   }
 }
 
+@Composable
+private fun SentAnswer(recordingState: AudioRecordingStepState) {
+  SentAnswerRow {
+    val sentFreeText = recordingState.sentFreeTextAnswer()
+    when {
+      sentFreeText != null -> {
+        val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + sentFreeText
+        RoundCornersPill(
+          modifier = Modifier.clearAndSetSemantics { contentDescription = description },
+        ) {
+          HedvigText(sentFreeText, textAlign = TextAlign.End)
+        }
+      }
+
+      recordingState is AudioRecordingStepState.AudioRecording.Playback -> {
+        val audioPlayer = when (recordingState.audioPath) {
+          is AudioPath.FilePath -> rememberAudioPlayer(
+            PlayableAudioSource.LocalFilePath(recordingState.audioPath.filePath),
+          )
+
+          is AudioPath.RemoteUrl -> rememberAudioPlayer(
+            PlayableAudioSource.RemoteUrl(
+              SignedAudioUrl.fromSignedAudioUrlString(recordingState.audioPath.remoteUrl),
+            ),
+          )
+        }
+        HedvigAudioPlayer(audioPlayer = audioPlayer)
+      }
+
+      else -> {
+        SkippedLabel()
+      }
+    }
+  }
+}
+
+@Composable
+private fun WaysToAnswer(
+  morph: AnswerCardMorph,
+  freeTextAvailable: Boolean,
+  canSkip: Boolean,
+  isSubmitting: Boolean,
+  skipButtonLoading: Boolean,
+  onWrite: () -> Unit,
+  onRecord: () -> Unit,
+  onSkip: () -> Unit,
+) {
+  Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+      if (freeTextAvailable) {
+        HedvigButton(
+          onClick = onWrite,
+          enabled = true,
+          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+          buttonSize = ButtonDefaults.ButtonSize.Large,
+          modifier = Modifier.weight(1f).then(morph.writeButton),
+        ) {
+          Icon(HedvigIcons.PenEdit, null, Modifier.size(24.dp))
+          Spacer(Modifier.width(8.dp))
+          HedvigText(stringResource(Res.string.claims_write))
+        }
+      }
+      HedvigButton(
+        onClick = onRecord,
+        enabled = true,
+        buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+        buttonSize = ButtonDefaults.ButtonSize.Large,
+        modifier = Modifier.weight(1f).then(morph.recordButton),
+      ) {
+        Icon(HedvigIcons.Mic, null, Modifier.size(24.dp).then(morph.mic))
+        Spacer(Modifier.width(8.dp))
+        HedvigText(stringResource(Res.string.claims_record))
+      }
+    }
+    if (canSkip) {
+      HedvigButton(
+        stringResource(Res.string.claims_skip_button),
+        onClick = onSkip,
+        isLoading = skipButtonLoading,
+        enabled = !isSubmitting,
+        modifier = Modifier.fillMaxWidth(),
+        buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
+      )
+    }
+  }
+}
+
 /** Whether the step shows the row of ways to answer, or one of the two answer cards. */
 internal enum class InputMode { Resting, Text, Voice }
 
-internal fun answerInputMode(recordingState: AudioRecordingStepState, isRecorderOpen: Boolean): InputMode = when {
+private fun answerInputMode(recordingState: AudioRecordingStepState, isRecorderOpen: Boolean): InputMode = when {
   recordingState is AudioRecordingStepState.FreeTextDescription -> {
     InputMode.Text
   }
@@ -486,6 +587,8 @@ private fun InlineVoiceAnswerCard(
   openAppSettings: () -> Unit,
   isSubmitting: Boolean,
   modifier: Modifier = Modifier,
+  contentModifier: Modifier = Modifier,
+  micModifier: Modifier = Modifier,
 ) {
   var showPermissionDialog by remember { mutableStateOf(false) }
   val recordAudioPermissionState = if (LocalInspectionMode.current) {
@@ -536,7 +639,7 @@ private fun InlineVoiceAnswerCard(
     shape = HedvigTheme.shapes.cornerXLarge,
     color = HedvigTheme.colorScheme.backgroundPrimary,
   ) {
-    Box(Modifier.padding(16.dp)) {
+    Box(contentModifier.padding(16.dp)) {
       IconButton(
         onClick = onClose,
         modifier = Modifier.align(Alignment.TopEnd).size(24.dp),
@@ -554,6 +657,7 @@ private fun InlineVoiceAnswerCard(
         recordAudioPermissionState = recordAudioPermissionState,
         startRecording = startRecording,
         isShortWindow = isShortWindow,
+        micModifier = micModifier,
         // The close button is drawn over the content, so the trailing controls have to end short of it.
         modifier = Modifier.padding(end = if (isShortWindow) CLOSE_BUTTON_CLEARANCE else 0.dp),
       )
@@ -763,6 +867,7 @@ private fun InlineTextAnswerCard(
   onSave: (String) -> Unit,
   canTakeFocus: Boolean,
   modifier: Modifier = Modifier,
+  contentModifier: Modifier = Modifier,
 ) {
   Surface(
     modifier = modifier.fillMaxWidth(),
@@ -779,6 +884,7 @@ private fun InlineTextAnswerCard(
       onCancel = onCancel,
       onSave = onSave,
       canTakeFocus = canTakeFocus,
+      modifier = contentModifier,
     )
   }
 }
@@ -796,6 +902,7 @@ private fun AudioRecordingSheetContent(
   recordAudioPermissionState: PermissionState,
   isShortWindow: Boolean,
   modifier: Modifier = Modifier,
+  micModifier: Modifier = Modifier,
 ) {
   if (isShortWindow) {
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
@@ -823,6 +930,7 @@ private fun AudioRecordingSheetContent(
           startRecording = startRecording,
           recordAudioPermissionState = recordAudioPermissionState,
           fillWidth = false,
+          micModifier = micModifier,
         )
       }
     }
@@ -848,6 +956,7 @@ private fun AudioRecordingSheetContent(
         recordAudioPermissionState = recordAudioPermissionState,
         fillWidth = true,
         modifier = Modifier.fillMaxWidth(),
+        micModifier = micModifier,
       )
     }
   }
@@ -967,6 +1076,7 @@ private fun AudioRecordingControls(
   recordAudioPermissionState: PermissionState,
   fillWidth: Boolean,
   modifier: Modifier = Modifier,
+  micModifier: Modifier = Modifier,
 ) {
   EqualWidthRow(
     horizontalSpacing = 4.dp,
@@ -988,6 +1098,7 @@ private fun AudioRecordingControls(
       onStopRecording = stopRecording,
       audioRecordingState = audioRecordingState,
       isEnabled = !isSubmitting,
+      micModifier = micModifier,
     )
     SendButton(
       onSend = submitAudioFile,
@@ -1192,6 +1303,7 @@ private fun ControlButton(
   audioRecordingState: AudioRecordingStepState.AudioRecording,
   isEnabled: Boolean,
   modifier: Modifier = Modifier,
+  micModifier: Modifier = Modifier,
 ) {
   val audioPlayerState by audioPlayer?.audioPlayerState?.collectAsStateWithLifecycle()
     ?: remember { mutableStateOf<AudioPlayerState?>(null) }
@@ -1280,7 +1392,7 @@ private fun ControlButton(
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Box(
-        modifier = Modifier
+        modifier = micModifier
           .graphicsLayer {
             scaleX = scale.value
             scaleY = scale.value
