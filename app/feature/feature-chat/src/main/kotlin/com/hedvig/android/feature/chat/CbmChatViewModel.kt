@@ -443,9 +443,9 @@ internal sealed interface CbmChatEvent {
 
   data object HideBanner : CbmChatEvent
 
-  data object DismissCrossSell: CbmChatEvent
+  data object DismissCrossSell : CbmChatEvent
 
-  data object CrossSellClicked: CbmChatEvent
+  data object CrossSellClicked : CbmChatEvent
 
   data class SendTextMessage(
     val message: String,

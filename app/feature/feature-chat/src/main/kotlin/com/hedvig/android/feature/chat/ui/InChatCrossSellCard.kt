@@ -31,9 +31,11 @@ internal fun InChatCrossSellCard(
       // a light theme on its buttons. Its text has to come from the light scheme for the same reason.
       HedvigTheme(darkTheme = false) {
         Column {
-          HedvigText(text = crossSell.title,
+          HedvigText(
+            text = crossSell.title,
             color = HedvigTheme.colorScheme.textBlackTranslucent,
-            style = HedvigTheme.typography.label)
+            style = HedvigTheme.typography.label,
+          )
           HedvigText(
             text = crossSell.description,
             style = HedvigTheme.typography.label,
