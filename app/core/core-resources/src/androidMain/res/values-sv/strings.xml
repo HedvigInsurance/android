@@ -437,6 +437,7 @@
   <string name="GENERAL_ENABLED">Aktiverad</string>
   <string name="GENERAL_INVALID_INPUT">Felaktig inmatning</string>
   <string name="GENERAL_NOT_SURE">Vet inte</string>
+  <string name="GENERAL_NO_THANKS">Nej tack</string>
   <string name="GENERAL_RETRY">Försök igen</string>
   <string name="GENERAL_SAVE_CHANGES_BUTTON">Spara ändringar</string>
   <string name="GENERAL_SHOW">Visa</string>

@@ -1,0 +1,21 @@
+query InChatCrossSell($input: CrossSellInput!) {
+  currentMember {
+    crossSellV2(input: $input) {
+      recommendedCrossSell {
+        crossSell {
+          title
+          description
+          buttonTitle
+          storeUrl
+        }
+      }
+    }
+  }
+}
+
+query InChatCrossSellEligibility($conversationId: UUID!) {
+  conversation(id: $conversationId) {
+    id
+    showCrossSales
+  }
+}

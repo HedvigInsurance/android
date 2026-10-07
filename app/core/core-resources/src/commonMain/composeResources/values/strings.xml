@@ -436,6 +436,7 @@
   <string name="GENERAL_ENABLED">Enabled</string>
   <string name="GENERAL_INVALID_INPUT">Invalid input</string>
   <string name="GENERAL_NOT_SURE">Not sure</string>
+  <string name="GENERAL_NO_THANKS">No thanks</string>
   <string name="GENERAL_RETRY">Try again</string>
   <string name="GENERAL_SAVE_CHANGES_BUTTON">Save changes</string>
   <string name="GENERAL_SHOW">Show</string>
