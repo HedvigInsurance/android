@@ -32,6 +32,7 @@ import arrow.core.Either
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.core.tracking.EventTrackingClient
 import com.hedvig.android.data.chat.database.ChatDao
 import com.hedvig.android.data.chat.database.ChatMessageEntity
 import com.hedvig.android.data.chat.database.RemoteKeyDao
@@ -91,6 +92,7 @@ internal class CbmChatViewModel @AssistedInject constructor(
   context: Context,
   getInChatCrossSellUseCase: GetInChatCrossSellUseCase,
   hideInChatCrossSellUseCase: HideInChatCrossSellUseCase,
+  eventTrackingClient: EventTrackingClient,
   coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + AndroidUiDispatcher.Main),
 ) : MoleculeViewModel<CbmChatEvent, CbmChatUiState>(
     initialState = CbmChatUiState.Initializing,
@@ -109,7 +111,8 @@ internal class CbmChatViewModel @AssistedInject constructor(
       chatRepository = chatRepository,
       getInChatCrossSellUseCase = getInChatCrossSellUseCase,
       hideInChatCrossSellUseCase = hideInChatCrossSellUseCase,
-      context,
+      eventTrackingClient = eventTrackingClient,
+      context = context,
     ),
     coroutineScope = coroutineScope,
   )
@@ -152,6 +155,7 @@ internal class CbmChatPresenter(
   private val chatRepository: CbmChatRepository,
   private val getInChatCrossSellUseCase: GetInChatCrossSellUseCase,
   private val hideInChatCrossSellUseCase: HideInChatCrossSellUseCase,
+  private val eventTrackingClient: EventTrackingClient,
   private val context: Context,
 ) : MoleculePresenter<CbmChatEvent, CbmChatUiState> {
   @OptIn(ExperimentalPagingApi::class)
@@ -285,7 +289,7 @@ internal class CbmChatPresenter(
         is CbmChatEvent.DismissCrossSell -> {
           hideCrossSell = true
           launch {
-            logInChatCrossSell(DISMISSED)
+            logInChatCrossSell(DISMISSED, eventTrackingClient)
             hideInChatCrossSell()
           }
         }
@@ -293,7 +297,7 @@ internal class CbmChatPresenter(
         is CbmChatEvent.CrossSellClicked -> {
           hideCrossSell = true
           launch {
-            logInChatCrossSell(CLICKED)
+            logInChatCrossSell(CLICKED, eventTrackingClient)
             // Taking the offer ends it for this conversation, just as turning it down does.
             hideInChatCrossSell()
           }
@@ -319,6 +323,7 @@ internal class CbmChatPresenter(
           chatDao = chatDao,
           chatRepository = chatRepository,
           getInChatCrossSellUseCase = getInChatCrossSellUseCase,
+          eventTrackingClient = eventTrackingClient,
           showUploading = numberOfOngoingUploads.collectAsState().value > 0,
           showFileTooBigErrorToast = showFileTooBigErrorToast,
           hideBanner = hideBanner,
@@ -346,6 +351,7 @@ private fun presentLoadedChat(
   chatDao: ChatDao,
   chatRepository: CbmChatRepository,
   getInChatCrossSellUseCase: GetInChatCrossSellUseCase,
+  eventTrackingClient: EventTrackingClient,
   showUploading: Boolean,
   showFileTooBigErrorToast: Boolean,
   hideBanner: Boolean,
@@ -387,6 +393,7 @@ private fun presentLoadedChat(
     conversationId = conversationId,
     chatDao = chatDao,
     getInChatCrossSellUseCase = getInChatCrossSellUseCase,
+    eventTrackingClient = eventTrackingClient,
     hideCrossSell = hideCrossSell,
   )
   return CbmChatUiState.Loaded(
@@ -413,6 +420,7 @@ private fun presentInChatCrossSell(
   conversationId: Uuid,
   chatDao: ChatDao,
   getInChatCrossSellUseCase: GetInChatCrossSellUseCase,
+  eventTrackingClient: EventTrackingClient,
   hideCrossSell: Boolean,
 ): InChatCrossSell? {
   val hedvigHasAnswered by remember(conversationId, chatDao) {
@@ -430,7 +438,7 @@ private fun presentInChatCrossSell(
   }
   val offeredCrossSell = crossSell.takeIf { shouldOffer }
   LaunchedEffect(offeredCrossSell) {
-    if (offeredCrossSell != null) logInChatCrossSell(PROMPTED)
+    if (offeredCrossSell != null) logInChatCrossSell(PROMPTED, eventTrackingClient)
   }
   return offeredCrossSell
 }
