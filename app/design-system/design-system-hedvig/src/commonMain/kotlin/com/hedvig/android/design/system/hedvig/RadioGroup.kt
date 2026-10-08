@@ -162,7 +162,7 @@ fun CheckboxGroup(
   textEndContent: @Composable ((RadioOptionId) -> Unit)? = null,
 ) {
   val spacings = RadioGroupDefaults.style(size, style).let { defaultStyle ->
-    if (textStyle != null) defaultStyle.copy(textStyle = textStyle) else defaultStyle
+    defaultStyle.copy(textStyle = defaultStyle.textStyle.merge(textStyle))
   }
   RadioGroup(
     options = options,
