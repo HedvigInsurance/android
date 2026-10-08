@@ -17,6 +17,7 @@ import androidx.compose.foundation.text.input.insert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
@@ -26,16 +27,22 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.common.validation.PhoneNumberRules
 import com.hedvig.android.data.paying.member.PaymentProvider
+import com.hedvig.android.design.system.hedvig.Checkbox
+import com.hedvig.android.design.system.hedvig.CheckboxOption
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.LoadingState
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.RadioGroupDefaults
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.feature.payoutaccount.ui.components.PayoutMethodHandoverIllustration
 import com.hedvig.android.feature.payoutaccount.ui.components.PayoutSetupSuccessContent
 import com.hedvig.android.ui.phonenumber.HedvigPhoneNumberField
 import hedvig.resources.ODYSSEY_PHONE_NUMBER_LABEL
+import hedvig.resources.PAYMENTS_ADD_SWISH_PAYOUT_INFO
 import hedvig.resources.PAYMENT_SWISH_SUCCESS_TITLE
 import hedvig.resources.Res
 import hedvig.resources.TIER_FLOW_COMMIT_PROCESSING_ERROR_DESCRIPTION
@@ -49,6 +56,7 @@ internal fun SetupSwishPayoutDestination(viewModel: SetupSwishPayoutViewModel, n
   SetupSwishPayoutScreen(
     uiState = uiState,
     onSave = { viewModel.emit(SetupSwishPayoutEvent.Save) },
+    onToggleOwnNumberConfirmed = { viewModel.emit(SetupSwishPayoutEvent.ToggleOwnNumberConfirmed) },
     onFinishSetup = { viewModel.emit(SetupSwishPayoutEvent.FinishSetup) },
     navigateUp = navigateUp,
   )
@@ -58,6 +66,7 @@ internal fun SetupSwishPayoutDestination(viewModel: SetupSwishPayoutViewModel, n
 private fun SetupSwishPayoutScreen(
   uiState: SetupSwishPayoutUiState,
   onSave: () -> Unit,
+  onToggleOwnNumberConfirmed: () -> Unit,
   onFinishSetup: () -> Unit,
   navigateUp: () -> Unit,
 ) {
@@ -73,13 +82,28 @@ private fun SetupSwishPayoutScreen(
         onContinue = onFinishSetup,
       )
     } else {
-      PhoneNumberContent(uiState = uiState, onSave = onSave)
+      PhoneNumberContent(
+        uiState = uiState,
+        onSave = onSave,
+        onToggleOwnNumberConfirmed = onToggleOwnNumberConfirmed,
+      )
     }
   }
 }
 
 @Composable
-private fun ColumnScope.PhoneNumberContent(uiState: SetupSwishPayoutUiState, onSave: () -> Unit) {
+private fun ColumnScope.PhoneNumberContent(
+  uiState: SetupSwishPayoutUiState,
+  onSave: () -> Unit,
+  onToggleOwnNumberConfirmed: () -> Unit,
+) {
+  Spacer(Modifier.weight(1f))
+  PayoutMethodHandoverIllustration(
+    PaymentProvider.Swish,
+    modifier = Modifier.align(Alignment.CenterHorizontally),
+    loadingState = LoadingState.PROCESSING,
+    destinationBadge = null,
+  )
   Spacer(Modifier.weight(1f))
   Column(Modifier.padding(horizontal = 16.dp)) {
     val maskColor = HedvigTheme.colorScheme.textTertiary
@@ -90,7 +114,20 @@ private fun ColumnScope.PhoneNumberContent(uiState: SetupSwishPayoutUiState, onS
       outputTransformation = remember(maskColor) { SwishPhoneNumberOutputTransformation(maskColor) },
       modifier = Modifier.fillMaxWidth(),
     )
+    Spacer(Modifier.height(4.dp))
+    Checkbox(
+      option = CheckboxOption(
+        text = stringResource(Res.string.PAYMENTS_ADD_SWISH_PAYOUT_INFO),
+      ),
+      selected = uiState.isOwnNumberConfirmed,
+      onCheckboxSelected = onToggleOwnNumberConfirmed,
+      colors = RadioGroupDefaults.colors.copy(textColor = HedvigTheme.colorScheme.textSecondary),
+      textStyle = HedvigTheme.typography.label,
+      enabled = !uiState.isLoading,
+      modifier = Modifier.fillMaxWidth(),
+    )
   }
+
   AnimatedVisibility(
     visible = uiState.errorMessage != null,
     enter = expandVertically(),
@@ -111,6 +148,7 @@ private fun ColumnScope.PhoneNumberContent(uiState: SetupSwishPayoutUiState, onS
     text = stringResource(Res.string.general_save_button),
     onClick = onSave,
     enabled = !uiState.isLoading &&
+      uiState.isOwnNumberConfirmed &&
       PhoneNumberRules.SwishPhoneNumber.hasEnoughDigits(uiState.phoneNumberState.text),
     isLoading = uiState.isLoading,
     modifier = Modifier
@@ -158,10 +196,12 @@ private fun PreviewSetupSwishPayoutScreenConnected(
         uiState = SetupSwishPayoutUiState(
           phoneNumberState = TextFieldState(),
           isLoading = false,
+          isOwnNumberConfirmed = false,
           errorMessage = null,
           isConnected = isConnected,
         ),
         onSave = {},
+        onToggleOwnNumberConfirmed = {},
         onFinishSetup = {},
         navigateUp = {},
       )

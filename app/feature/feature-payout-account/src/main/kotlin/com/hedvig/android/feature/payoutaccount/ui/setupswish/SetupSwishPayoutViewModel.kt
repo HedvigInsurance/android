@@ -29,12 +29,14 @@ internal class SetupSwishPayoutViewModel(
   getMemberPhoneNumberUseCase: GetMemberPhoneNumberUseCase,
   backstack: Backstack,
 ) : MoleculeViewModel<SetupSwishPayoutEvent, SetupSwishPayoutUiState>(
-    SetupSwishPayoutUiState(TextFieldState(), false, null, false),
+    SetupSwishPayoutUiState(TextFieldState(), false, false, null, false),
     SetupSwishPayoutPresenter(setupSwishPayoutUseCase, getMemberPhoneNumberUseCase, backstack),
   )
 
 internal sealed interface SetupSwishPayoutEvent {
   data object Save : SetupSwishPayoutEvent
+
+  data object ToggleOwnNumberConfirmed : SetupSwishPayoutEvent
 
   data object FinishSetup : SetupSwishPayoutEvent
 }
@@ -42,6 +44,7 @@ internal sealed interface SetupSwishPayoutEvent {
 internal data class SetupSwishPayoutUiState(
   val phoneNumberState: TextFieldState,
   val isLoading: Boolean,
+  val isOwnNumberConfirmed: Boolean,
   val errorMessage: ErrorMessage?,
   val isConnected: Boolean,
 )
@@ -57,6 +60,7 @@ internal class SetupSwishPayoutPresenter(
   ): SetupSwishPayoutUiState {
     val phoneNumberState = remember { lastState.phoneNumberState }
     var isLoading by remember { mutableStateOf(false) }
+    var isOwnNumberConfirmed by remember { mutableStateOf(lastState.isOwnNumberConfirmed) }
     // Seeded from the last state, so a restart after a backgrounded save keeps its outcome on screen
     // rather than offering the form again, where saving would repeat the setup.
     var errorMessage by remember { mutableStateOf(lastState.errorMessage) }
@@ -97,9 +101,13 @@ internal class SetupSwishPayoutPresenter(
     CollectEvents { event ->
       when (event) {
         SetupSwishPayoutEvent.Save -> {
-          if (!isLoading) {
+          if (!isLoading && isOwnNumberConfirmed) {
             saveIteration = phoneNumberState.text.toString()
           }
+        }
+
+        SetupSwishPayoutEvent.ToggleOwnNumberConfirmed -> {
+          isOwnNumberConfirmed = !isOwnNumberConfirmed
         }
 
         SetupSwishPayoutEvent.FinishSetup -> {
@@ -111,6 +119,7 @@ internal class SetupSwishPayoutPresenter(
     return SetupSwishPayoutUiState(
       phoneNumberState = phoneNumberState,
       isLoading = isLoading,
+      isOwnNumberConfirmed = isOwnNumberConfirmed,
       errorMessage = errorMessage,
       isConnected = isConnected,
     )
