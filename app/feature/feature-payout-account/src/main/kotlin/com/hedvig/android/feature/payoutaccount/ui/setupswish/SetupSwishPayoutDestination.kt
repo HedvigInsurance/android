@@ -121,7 +121,6 @@ private fun ColumnScope.PhoneNumberContent(
       ),
       selected = uiState.isOwnNumberConfirmed,
       onCheckboxSelected = onToggleOwnNumberConfirmed,
-      colors = RadioGroupDefaults.colors.copy(textColor = HedvigTheme.colorScheme.textSecondary),
       textStyle = HedvigTheme.typography.label,
       enabled = !uiState.isLoading,
       modifier = Modifier.fillMaxWidth(),
