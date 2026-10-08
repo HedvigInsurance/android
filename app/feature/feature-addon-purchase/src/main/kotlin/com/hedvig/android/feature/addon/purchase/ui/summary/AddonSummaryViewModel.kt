@@ -287,8 +287,7 @@ private fun trackAddonPurchased(
         "contract_id" to summaryParameters.contractId,
         "price" to price.amount,
         "currency" to price.currencyCode.name,
-        // addonActivateOffer returns no transaction id, so the accepted quote stands in for one
-        "transaction_id" to summaryParameters.quoteId,
+        "quote_id" to summaryParameters.quoteId,
         "purchase_type" to if (isUpgrade) "upgrade" else "new",
       ),
     )

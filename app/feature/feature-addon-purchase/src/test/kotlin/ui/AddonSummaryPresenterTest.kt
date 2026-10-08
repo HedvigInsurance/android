@@ -116,7 +116,7 @@ class AddonSummaryPresenterTest {
           "contract_id" to "contractId",
           "price" to 59.0,
           "currency" to "SEK",
-          "transaction_id" to "quoteId",
+          "quote_id" to "quoteId",
           "purchase_type" to "upgrade",
         ),
       )
@@ -155,7 +155,7 @@ class AddonSummaryPresenterTest {
           "contract_id" to "contractId",
           "price" to 99.0,
           "currency" to "SEK",
-          "transaction_id" to "carQuoteId",
+          "quote_id" to "carQuoteId",
           "purchase_type" to "new",
         ),
         "addon_purchased" to mapOf(
@@ -164,7 +164,7 @@ class AddonSummaryPresenterTest {
           "contract_id" to "contractId",
           "price" to 39.0,
           "currency" to "SEK",
-          "transaction_id" to "carQuoteId",
+          "quote_id" to "carQuoteId",
           "purchase_type" to "new",
         ),
       )
@@ -203,7 +203,7 @@ class AddonSummaryPresenterTest {
           "contract_id" to "contractId",
           "price" to 59.0,
           "currency" to "SEK",
-          "transaction_id" to "quoteId",
+          "quote_id" to "quoteId",
           "purchase_type" to "new",
         ),
       )
