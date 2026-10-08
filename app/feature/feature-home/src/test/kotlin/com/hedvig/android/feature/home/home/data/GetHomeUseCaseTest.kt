@@ -82,6 +82,7 @@ import octopus.builder.buildShopSessionDisplay
 import octopus.builder.buildStoryblokImageAsset
 import octopus.type.ChatMessageSender
 import octopus.type.CurrencyCode
+import octopus.type.MemberChargeStatus
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -1052,6 +1053,7 @@ internal class GetHomeUseCaseTest {
             },
           )
           futureCharge = buildMemberCharge {
+            status = MemberChargeStatus.UPCOMING
             chargeBreakdown = listOf(
               buildMemberChargeBreakdownItem {
                 periods = listOf(buildMemberChargeBreakdownItemPeriod { isPreviouslyFailedCharge = true })
@@ -1070,6 +1072,34 @@ internal class GetHomeUseCaseTest {
       .prop(HomeData::overdueManualCharge)
       .isEqualTo(UiMoney(233.0, UiCurrencyCode.SEK))
   }
+
+  @Test
+  fun `when the upcoming charge carrying the missed charge is already pending, there is no overdue manual charge`() =
+    runTest {
+      val getHomeDataUseCase = testUseCaseWithoutReminders()
+      registerHomeResponses(missedChargeIdToChargeManually = "missed")
+      apolloClient.registerTestResponse(
+        HomeOverdueChargeQuery(),
+        HomeOverdueChargeQuery.Data(OctopusFakeResolver) {
+          currentMember = buildMember {
+            missedChargeIdToChargeManually = "missed"
+            pastCharges = listOf(buildMemberCharge { id = "missed" })
+            futureCharge = buildMemberCharge {
+              status = MemberChargeStatus.PENDING
+              chargeBreakdown = listOf(
+                buildMemberChargeBreakdownItem {
+                  periods = listOf(buildMemberChargeBreakdownItemPeriod { isPreviouslyFailedCharge = true })
+                },
+              )
+            }
+          }
+        },
+      )
+
+      val result = getHomeDataUseCase.invoke(true).first()
+
+      assertThat(result).isNotNull().isRight().prop(HomeData::overdueManualCharge).isNull()
+    }
 
   @Test
   fun `when the upcoming charge carries no failed period, there is no overdue manual charge`() = runTest {
