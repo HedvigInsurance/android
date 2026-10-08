@@ -11,6 +11,7 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.cache.normalized.FetchPolicy
 import com.apollographql.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ApolloOperationError
+import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
@@ -47,13 +48,16 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.isActive
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
+import octopus.HomeOverdueChargeQuery
 import octopus.HomeQuery
 import octopus.UnreadMessageCountQuery
 import octopus.fragment.HomeCrossSellFragment
+import octopus.type.MemberChargeStatus
 
 internal interface GetHomeDataUseCase {
   fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>>
@@ -94,7 +98,11 @@ internal class GetHomeDataUseCaseImpl(
         combine(
           apolloClient.query(HomeQuery(true, resumeClaimEnabled, disableShopSessions))
             .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheAndNetwork)
-            .safeFlow(),
+            .safeFlow()
+            // Chained to the home query rather than the outer combine, which also re-runs on every unread-count poll.
+            .mapLatest { result ->
+              result.map { data -> data to overdueManualCharge(data.currentMember.missedChargeIdToChargeManually) }
+            },
           flow {
             while (currentCoroutineContext().isActive) {
               emitAll(
@@ -112,7 +120,7 @@ internal class GetHomeDataUseCaseImpl(
           featureManager.isFeatureEnabled(Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX),
           hasAnyActiveConversationUseCase.invoke(alwaysHitTheNetwork = true),
         ) {
-          homeQueryDataResult,
+          homeQueryResult,
           unreadMessageCountResult,
           memberReminders,
           travelBannerInfo,
@@ -120,7 +128,7 @@ internal class GetHomeDataUseCaseImpl(
           anyActiveConversations,
           ->
           either {
-            val homeQueryData: HomeQuery.Data = homeQueryDataResult.bind()
+            val (homeQueryData: HomeQuery.Data, overdueManualCharge: UiMoney?) = homeQueryResult.bind()
             val contractStatus = homeQueryData.currentMember.toContractStatus()
             val veryImportantMessages = homeQueryData.currentMember.importantMessages.map {
               HomeData.VeryImportantMessage(
@@ -233,6 +241,7 @@ internal class GetHomeDataUseCaseImpl(
               } ?: emptyList()
             HomeData(
               contractStatus = contractStatus,
+              overdueManualCharge = overdueManualCharge,
               claimStatusCardsData = homeQueryData.claimStatusCards(),
               veryImportantMessages = veryImportantMessages,
               memberReminders = memberReminders,
@@ -263,6 +272,21 @@ internal class GetHomeDataUseCaseImpl(
       // cancelling an in-flight query makes Ktor close the response body inline, tripping StrictMode's
       // NetworkOnMainThreadException.
       .flowOn(Dispatchers.IO)
+  }
+
+  /**
+   * Only queried when the member has a missed charge they may pay manually, as the upcoming charge is expensive
+   * to resolve. A failure hides the card rather than failing the screen.
+   */
+  private suspend fun overdueManualCharge(missedChargeIdToChargeManually: String?): UiMoney? {
+    if (missedChargeIdToChargeManually == null) return null
+    return apolloClient.query(HomeOverdueChargeQuery())
+      .fetchPolicy(FetchPolicy.NetworkFirst)
+      .safeExecute()
+      .onLeft { error -> logcat(operationError = error) { "HomeOverdueChargeQuery failed with $error" } }
+      .getOrNull()
+      ?.currentMember
+      ?.overdueManualCharge()
   }
 
   private fun shouldShowChatButton(isInboxEnabledFromKillSwitch: Boolean, hasActiveConversations: Boolean): Boolean {
@@ -346,6 +370,21 @@ internal class GetHomeDataUseCaseImpl(
   }
 }
 
+/**
+ * The amount of the failed charge the member may pay manually, when their upcoming charge carries a
+ * previously failed period. Same conditions as the failed payment card in the Payments tab, which shows
+ * "payment in progress" instead once that upcoming charge has been sent to the payment provider.
+ */
+private fun HomeOverdueChargeQuery.Data.CurrentMember.overdueManualCharge(): UiMoney? {
+  if (futureCharge?.status == MemberChargeStatus.PENDING) return null
+  val upcomingChargeCarriesFailedCharge = futureCharge?.chargeBreakdown.orEmpty()
+    .flatMap { it.periods }
+    .any { it.isPreviouslyFailedCharge }
+  if (!upcomingChargeCarriesFailedCharge) return null
+  val missedChargeId = missedChargeIdToChargeManually ?: return null
+  return pastCharges.firstOrNull { it.id == missedChargeId }?.let { UiMoney.fromMoneyFragment(it.net) }
+}
+
 private fun HomeQuery.Data.claimStatusCards(): HomeData.ClaimStatusCardsData? {
   val regularCards =
     this.currentMember.claims.orEmpty().map(ClaimStatusCardUiState::fromClaimStatusCardsQuery) +
@@ -372,6 +411,8 @@ data class OngoingShopSession(
 
 data class HomeData(
   val contractStatus: ContractStatus,
+  /** Non-null when the member can pay their latest failed charge manually. */
+  val overdueManualCharge: UiMoney? = null,
   val claimStatusCardsData: ClaimStatusCardsData?,
   val veryImportantMessages: List<VeryImportantMessage>,
   val memberReminders: MemberReminders,

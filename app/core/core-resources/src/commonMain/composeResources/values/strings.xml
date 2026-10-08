@@ -648,7 +648,7 @@
   <string name="ONBOARDING_CONNECT_PAYMENT_BANK_LABEL">Bank</string>
   <string name="ONBOARDING_CONNECT_PAYMENT_FOOTNOTE">You can change accounts later in settings</string>
   <string name="ONBOARDING_CONNECT_PAYMENT_SUBTITLE">You need to connect a payment method to keep your insurance active</string>
-  <string name="ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER">You can switch accounts later in settings</string>
+  <string name="ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER">You can change your payment method later in Payments</string>
   <string name="ONBOARDING_CONNECT_PAYMENT_TITLE">Connect payment method</string>
   <string name="ONBOARDING_CONTINUE_TO_APP_BUTTON">Go to the app</string>
   <string name="ONBOARDING_CROSS_SELL_SUBTITLE">You get a 15\u0025 bundle discount when you have two or more insurances with us</string>
@@ -684,6 +684,7 @@
   <string name="PAYMENTS_ACCOUNT">Account</string>
   <string name="PAYMENTS_ADD_CAMPAIGN_CODE">Add campaign code</string>
   <string name="PAYMENTS_ADD_CODE_BUTTON_LABEL">Add</string>
+  <string name="PAYMENTS_ADD_SWISH_PAYOUT_INFO">I confirm this is my own Swish number, connected to my personal identity number.</string>
   <string name="PAYMENTS_AMOUNT_TO_PAY">Amount to pay</string>
   <string name="PAYMENTS_AUTOGIRO_LABEL">Direct debit</string>
   <string name="PAYMENTS_BANK_LABEL">Bank</string>

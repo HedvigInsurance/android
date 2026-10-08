@@ -13,6 +13,7 @@ import arrow.core.Either
 import arrow.core.getOrElse
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.core.common.ApplicationScope
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.claimintent.DeleteClaimIntentDraftUseCase
@@ -168,6 +169,7 @@ internal class HomePresenter(
           homeText = successData.homeText,
           claimStatusCardsData = successData.claimStatusCardsData,
           memberReminders = successData.memberReminders,
+          overdueManualCharge = successData.overdueManualCharge,
           veryImportantMessages = successData.veryImportantMessages.filter {
             !alreadySeenImportantMessages.contains(it.id)
           },
@@ -216,6 +218,7 @@ internal sealed interface HomeUiState {
     val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
     val veryImportantMessages: List<HomeData.VeryImportantMessage>,
     val memberReminders: MemberReminders,
+    val overdueManualCharge: UiMoney? = null,
     val chatAction: HomeTopBarAction.ChatAction?,
     val firstVetAction: HomeTopBarAction.FirstVetAction?,
     val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
@@ -240,6 +243,7 @@ private data class SuccessData(
   val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
   val veryImportantMessages: List<HomeData.VeryImportantMessage>,
   val memberReminders: MemberReminders,
+  val overdueManualCharge: UiMoney?,
   val showHelpCenter: Boolean,
   val quickActions: List<QuickAction>,
   val chatAction: HomeTopBarAction.ChatAction?,
@@ -260,6 +264,7 @@ private data class SuccessData(
         claimStatusCardsData = lastState.claimStatusCardsData,
         veryImportantMessages = lastState.veryImportantMessages,
         memberReminders = lastState.memberReminders,
+        overdueManualCharge = lastState.overdueManualCharge,
         showHelpCenter = lastState.isHelpCenterEnabled,
         quickActions = lastState.quickActions,
         crossSellsAction = lastState.crossSellsAction,
@@ -311,6 +316,7 @@ private data class SuccessData(
         memberReminders = homeData.memberReminders.copy(
           enableNotifications = null,
         ),
+        overdueManualCharge = homeData.overdueManualCharge,
         showHelpCenter = homeData.showHelpCenter,
         quickActions = quickActions,
         firstVetAction = firstVetAction,

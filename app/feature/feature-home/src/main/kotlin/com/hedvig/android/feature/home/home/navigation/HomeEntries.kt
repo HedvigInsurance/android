@@ -25,6 +25,7 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
   onNavigateToNewConversation: () -> Unit,
   navigateToClaimDetails: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
+  navigateToManualCharge: () -> Unit,
   navigateToConnectPayout: () -> Unit,
   navigateToContactInfo: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
@@ -51,6 +52,7 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
         navigateToClaimDetails(claimId)
       },
       navigateToConnectPayment = dropUnlessResumed { navigateToConnectPayment() },
+      navigateToManualCharge = dropUnlessResumed { navigateToManualCharge() },
       navigateToConnectPayout = dropUnlessResumed { navigateToConnectPayout() },
       navigateToMissingInfo = dropUnlessResumed { contractId, type -> navigateToMissingInfo(contractId, type) },
       navigateToHelpCenter = dropUnlessResumed { navigateToHelpCenter() },

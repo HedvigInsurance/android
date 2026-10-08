@@ -31,6 +31,7 @@ fun HedvigAttentionCard(
   buttonText: String,
   onButtonClick: () -> Unit,
   modifier: Modifier = Modifier,
+  buttonStyle: ButtonDefaults.ButtonStyle = ButtonDefaults.ButtonStyle.Primary,
 ) {
   HedvigCard(
     color = HedvigTheme.colorScheme.fillNegative,
@@ -90,8 +91,8 @@ fun HedvigAttentionCard(
         text = buttonText,
         onClick = onButtonClick,
         enabled = true,
-        buttonStyle = ButtonDefaults.ButtonStyle.Primary,
-        buttonSize = ButtonDefaults.ButtonSize.Small,
+        buttonStyle = buttonStyle,
+        buttonSize = ButtonDefaults.ButtonSize.Medium,
         modifier = Modifier.fillMaxWidth(),
       )
     }

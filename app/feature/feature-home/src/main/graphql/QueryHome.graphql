@@ -110,6 +110,7 @@ query Home($claimsHistoryFlag: Boolean!, $resumeClaimEnabled: Boolean!, $disable
         }
       }
     }
+    missedChargeIdToChargeManually
     activeContracts {
       id
       masterInceptionDate

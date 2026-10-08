@@ -1,0 +1,20 @@
+query HomeOverdueCharge {
+  currentMember {
+    missedChargeIdToChargeManually
+    pastCharges {
+      id
+      net {
+        ...MoneyFragment
+      }
+    }
+    futureCharge {
+      id
+      status
+      chargeBreakdown {
+        periods {
+          isPreviouslyFailedCharge
+        }
+      }
+    }
+  }
+}

@@ -649,7 +649,7 @@
   <string name="ONBOARDING_CONNECT_PAYMENT_BANK_LABEL">Bank</string>
   <string name="ONBOARDING_CONNECT_PAYMENT_FOOTNOTE">Du behöver lägga till ett betalsätt för att din försäkring ska fortsätta gälla</string>
   <string name="ONBOARDING_CONNECT_PAYMENT_SUBTITLE">Du behöver lägga till en betalningsmetod för att din försäkring ska fortsätta gälla</string>
-  <string name="ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER">Du kan byta konto senare i inställningar</string>
+  <string name="ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER">Du kan byta betalningsmetod senare under Betalningar</string>
   <string name="ONBOARDING_CONNECT_PAYMENT_TITLE">Koppla betalning</string>
   <string name="ONBOARDING_CONTINUE_TO_APP_BUTTON">Till appen</string>
   <string name="ONBOARDING_CROSS_SELL_SUBTITLE">Du får 15\u0025 samlingsrabatt när du har två eller fler försäkringar</string>
@@ -685,6 +685,7 @@
   <string name="PAYMENTS_ACCOUNT">Konto</string>
   <string name="PAYMENTS_ADD_CAMPAIGN_CODE">Lägg till kampanjkod</string>
   <string name="PAYMENTS_ADD_CODE_BUTTON_LABEL">Lägg till</string>
+  <string name="PAYMENTS_ADD_SWISH_PAYOUT_INFO">Jag bekräftar att det här är mitt eget Swish-nummer, kopplat till mitt personnummer.</string>
   <string name="PAYMENTS_AMOUNT_TO_PAY">Att betala</string>
   <string name="PAYMENTS_AUTOGIRO_LABEL">Autogiro</string>
   <string name="PAYMENTS_BANK_LABEL">Bank</string>
