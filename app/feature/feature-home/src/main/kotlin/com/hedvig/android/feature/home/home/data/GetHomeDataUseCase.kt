@@ -57,6 +57,7 @@ import octopus.HomeOverdueChargeQuery
 import octopus.HomeQuery
 import octopus.UnreadMessageCountQuery
 import octopus.fragment.HomeCrossSellFragment
+import octopus.type.MemberChargeStatus
 
 internal interface GetHomeDataUseCase {
   fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>>
@@ -371,9 +372,11 @@ internal class GetHomeDataUseCaseImpl(
 
 /**
  * The amount of the failed charge the member may pay manually, when their upcoming charge carries a
- * previously failed period. Same conditions as the failed payment card in the Payments tab.
+ * previously failed period. Same conditions as the failed payment card in the Payments tab, which shows
+ * "payment in progress" instead once that upcoming charge has been sent to the payment provider.
  */
 private fun HomeOverdueChargeQuery.Data.CurrentMember.overdueManualCharge(): UiMoney? {
+  if (futureCharge?.status == MemberChargeStatus.PENDING) return null
   val upcomingChargeCarriesFailedCharge = futureCharge?.chargeBreakdown.orEmpty()
     .flatMap { it.periods }
     .any { it.isPreviouslyFailedCharge }
