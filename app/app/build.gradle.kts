@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "14.5.1"
+    versionName = "14.5.3"
   }
 
   androidResources {
