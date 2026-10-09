@@ -98,6 +98,9 @@ import com.hedvig.android.compose.pager.indicator.CardCarousel
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.common.image.storyblokResized
+import com.hedvig.android.core.tracking.ActionType
+import com.hedvig.android.core.tracking.logAction
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.crosssells.AddonsSection
 import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellBottomSheet
@@ -105,6 +108,7 @@ import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.AddonBannerInfo
+import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.addons.data.FlowType
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.data.contract.CrossSell
@@ -188,9 +192,12 @@ import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminder.PaymentReminder.ConnectPayment
 import com.hedvig.android.memberreminders.MemberReminder.UpcomingRenewal
 import com.hedvig.android.memberreminders.MemberReminders
+import com.hedvig.android.memberreminders.ui.FailedPaymentCard
 import com.hedvig.android.memberreminders.ui.MemberReminderToDoList
+import com.hedvig.android.memberreminders.ui.MissingPayinMethodCard
 import com.hedvig.android.memberreminders.ui.homeActionRequiredReminders
 import com.hedvig.android.memberreminders.ui.homeInformationalReminders
+import com.hedvig.android.memberreminders.ui.missingPayinMethodReminder
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
@@ -262,6 +269,7 @@ internal fun HomeDestination(
   navigateToClaimChat: (resumeClaim: Boolean) -> Unit,
   onClaimDetailCardClicked: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
+  navigateToManualCharge: () -> Unit,
   navigateToConnectPayout: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   navigateToQuickLink: (QuickLinkDestination) -> Unit,
@@ -274,7 +282,7 @@ internal fun HomeDestination(
   navigateToChipId: () -> Unit,
   navigateToUsageData: () -> Unit,
   imageLoader: ImageLoader,
-  navigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val notificationPermissionState = rememberNotificationPermissionState()
@@ -287,6 +295,7 @@ internal fun HomeDestination(
     navigateToClaimChat = navigateToClaimChat,
     onClaimDetailCardClicked = onClaimDetailCardClicked,
     navigateToConnectPayment = navigateToConnectPayment,
+    navigateToManualCharge = navigateToManualCharge,
     navigateToConnectPayout = navigateToConnectPayout,
     navigateToHelpCenter = navigateToHelpCenter,
     navigateToQuickLink = navigateToQuickLink,
@@ -322,6 +331,7 @@ private fun HomeScreen(
   navigateToClaimChat: (resumeClaim: Boolean) -> Unit,
   onClaimDetailCardClicked: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
+  navigateToManualCharge: () -> Unit,
   navigateToConnectPayout: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   navigateToQuickLink: (QuickLinkDestination) -> Unit,
@@ -339,7 +349,7 @@ private fun HomeScreen(
   markCrossSellsNotificationAsSeen: () -> Unit,
   setEpochDayWhenLastToolTipShown: (Long) -> Unit,
   imageLoader: ImageLoader,
-  navigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
 ) {
   val systemBarInsetTopDp = with(LocalDensity.current) {
     WindowInsets.systemBars.getTop(this).toDp()
@@ -354,7 +364,7 @@ private fun HomeScreen(
     state = crossSellBottomSheetState,
     markCrossSellsNotificationAsSeen = markCrossSellsNotificationAsSeen,
     onCrossSellClick = openCrossSellUrl,
-    onAddonClick = navigateToAddonPurchaseFlow,
+    onAddonClick = { ids -> navigateToAddonPurchaseFlow(ids, AddonBannerSource.HOME_CROSS_SELL_SHEET) },
     imageLoader = imageLoader,
   )
 
@@ -447,6 +457,7 @@ private fun HomeScreen(
             notificationPermissionState = notificationPermissionState,
             onClaimDetailCardClicked = onClaimDetailCardClicked,
             navigateToConnectPayment = navigateToConnectPayment,
+            navigateToManualCharge = navigateToManualCharge,
             navigateToConnectPayout = navigateToConnectPayout,
             navigateToHelpCenter = navigateToHelpCenter,
             navigateToQuickLink = navigateToQuickLink,
@@ -638,6 +649,7 @@ private fun HomeScreenSuccess(
   notificationPermissionState: NotificationPermissionState,
   onClaimDetailCardClicked: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
+  navigateToManualCharge: () -> Unit,
   navigateToConnectPayout: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   navigateToQuickLink: (QuickLinkDestination) -> Unit,
@@ -657,7 +669,7 @@ private fun HomeScreenSuccess(
   navigateToUsageData: () -> Unit,
   openCrossSellUrl: (String) -> Unit,
   imageLoader: ImageLoader,
-  navigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
   onChatIconClick: () -> Unit,
   onCrossSellsIconClick: (crossSells: CrossSellSheetData) -> Unit,
   navigateToFirstVet: (sections: List<FirstVetSection>) -> Unit,
@@ -721,6 +733,10 @@ private fun HomeScreenSuccess(
           uiState.veryImportantMessages.isNotEmpty() ||
             informationalReminders.isNotEmpty() ||
             uiState.homeText != Active
+        }
+
+        HomeSection.PaymentCards -> {
+          applicableReminders.missingPayinMethodReminder() != null || uiState.overdueManualCharge != null
         }
 
         HomeSection.MemberReminders -> {
@@ -961,9 +977,16 @@ private fun HomeScreenSuccess(
               horizontalInsets = horizontalInsets,
             )
 
+            HomeSection.PaymentCards -> PaymentCardsSection(
+              showMissingPayinMethod = applicableReminders.missingPayinMethodReminder() != null,
+              overdueManualCharge = uiState.overdueManualCharge,
+              navigateToConnectPayment = navigateToConnectPayment,
+              navigateToManualCharge = navigateToManualCharge,
+              horizontalInsets = horizontalInsets,
+            )
+
             HomeSection.MemberReminders -> MemberRemindersSection(
               applicableReminders = applicableReminders,
-              navigateToConnectPayment = navigateToConnectPayment,
               navigateToConnectPayout = navigateToConnectPayout,
               navigateToMissingInfo = navigateToMissingInfo,
               onNavigateToNewConversation = onNavigateToNewConversation,
@@ -976,7 +999,14 @@ private fun HomeScreenSuccess(
             HomeSection.Quotes -> uiState.ongoingShopSessions.takeIf { it.isNotEmpty() }?.let { sessions ->
               QuotesSection(
                 sessions = sessions,
-                onResumeClick = openUrl,
+                onResumeClick = { url ->
+                  logAction(
+                    type = ActionType.CUSTOM,
+                    name = "homeQuoteClicked",
+                    attributes = emptyMap(),
+                  )
+                  openUrl(url)
+                },
                 onDismiss = dismissOngoingShopSession,
                 imageLoader = imageLoader,
                 horizontalInsets = horizontalInsets,
@@ -1101,6 +1131,7 @@ private enum class HomeSection {
   MainActionCarousel,
   ClaimStatusCards,
   VeryImportantMessages,
+  PaymentCards,
   MemberReminders,
   Quotes,
   DiscoverInsurances,
@@ -1114,6 +1145,7 @@ private val homeSectionOrder: List<HomeSection> = listOf(
   HomeSection.MainActionCarousel,
   HomeSection.ClaimStatusCards,
   HomeSection.VeryImportantMessages,
+  HomeSection.PaymentCards,
   HomeSection.MemberReminders,
   HomeSection.Quotes,
   HomeSection.QuickActionTiles,
@@ -1194,10 +1226,46 @@ private fun VeryImportantMessagesSection(
   )
 }
 
+private sealed interface PaymentCard {
+  data object MissingPayinMethod : PaymentCard
+
+  data class OverdueManualCharge(val amountDue: UiMoney) : PaymentCard
+}
+
+@Composable
+private fun PaymentCardsSection(
+  showMissingPayinMethod: Boolean,
+  overdueManualCharge: UiMoney?,
+  navigateToConnectPayment: () -> Unit,
+  navigateToManualCharge: () -> Unit,
+  horizontalInsets: PaddingValues,
+) {
+  val cards = buildList {
+    if (showMissingPayinMethod) add(PaymentCard.MissingPayinMethod)
+    if (overdueManualCharge != null) add(PaymentCard.OverdueManualCharge(overdueManualCharge))
+  }
+  CardCarousel(
+    items = cards,
+    contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
+  ) { card, cardModifier ->
+    when (card) {
+      PaymentCard.MissingPayinMethod -> MissingPayinMethodCard(
+        onConnectPaymentClick = navigateToConnectPayment,
+        modifier = cardModifier,
+      )
+
+      is PaymentCard.OverdueManualCharge -> FailedPaymentCard(
+        amountDue = card.amountDue.toString(),
+        onReviewPaymentClick = navigateToManualCharge,
+        modifier = cardModifier,
+      )
+    }
+  }
+}
+
 @Composable
 private fun MemberRemindersSection(
   applicableReminders: List<MemberReminder>,
-  navigateToConnectPayment: () -> Unit,
   navigateToConnectPayout: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   onNavigateToNewConversation: () -> Unit,
@@ -1223,7 +1291,6 @@ private fun MemberRemindersSection(
         )
         MemberReminderToDoList(
           memberReminders = toDoReminders,
-          navigateToConnectPayment = navigateToConnectPayment,
           navigateToConnectPayout = navigateToConnectPayout,
           navigateToAddMissingInfo = navigateToMissingInfo,
           onNavigateToNewConversation = onNavigateToNewConversation,
@@ -1341,7 +1408,9 @@ private fun QuoteCard(
         Spacer(Modifier.height(12.dp))
         HedvigButton(
           text = stringResource(Res.string.general_continue_button),
-          onClick = { onResumeClick(session.resumeUrl) },
+          onClick = {
+            onResumeClick(session.resumeUrl)
+          },
           buttonStyle = Secondary,
           buttonSize = ButtonSize.Medium,
           enabled = true,
@@ -1527,13 +1596,13 @@ private fun MainActionCarouselSection(
 @Composable
 private fun HomeAddonsSection(
   addonBannerInfos: List<AddonBannerInfo>,
-  navigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
   horizontalInsets: PaddingValues,
   imageLoader: ImageLoader,
 ) {
   AddonsSection(
     addons = addonBannerInfos,
-    onAddonClick = navigateToAddonPurchaseFlow,
+    onAddonClick = { ids -> navigateToAddonPurchaseFlow(ids, AddonBannerSource.HOME_SCREEN) },
     imageLoader = imageLoader,
     headingStyle = HedvigTheme.typography.headlineSmall,
     modifier = Modifier
@@ -1748,6 +1817,7 @@ private fun PreviewHomeScreen(
         navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
+        navigateToManualCharge = {},
         navigateToConnectPayout = {},
         navigateToHelpCenter = {},
         navigateToQuickLink = {},
@@ -1765,7 +1835,7 @@ private fun PreviewHomeScreen(
         navigateToUsageData = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
-        navigateToAddonPurchaseFlow = {},
+        navigateToAddonPurchaseFlow = { _, _ -> },
       )
     }
   }
@@ -1785,6 +1855,7 @@ private fun PreviewHomeScreenWithError() {
         navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
+        navigateToManualCharge = {},
         navigateToConnectPayout = {},
         navigateToHelpCenter = {},
         navigateToQuickLink = {},
@@ -1802,7 +1873,7 @@ private fun PreviewHomeScreenWithError() {
         navigateToUsageData = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
-        navigateToAddonPurchaseFlow = {},
+        navigateToAddonPurchaseFlow = { _, _ -> },
       )
     }
   }
@@ -1855,6 +1926,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
+        navigateToManualCharge = {},
         navigateToConnectPayout = {},
         navigateToHelpCenter = {},
         navigateToQuickLink = {},
@@ -1872,7 +1944,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToUsageData = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
-        navigateToAddonPurchaseFlow = {},
+        navigateToAddonPurchaseFlow = { _, _ -> },
       )
     }
   }

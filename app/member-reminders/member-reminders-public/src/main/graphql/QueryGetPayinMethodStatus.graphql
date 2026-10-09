@@ -8,7 +8,7 @@ query GetPayinMethodStatus {
       terminationDueToMissedPayments
       id
     }
-    paymentMethods {
+    paymentMethods(version: 2) {
       missingConnection
       payoutMethods {
         status

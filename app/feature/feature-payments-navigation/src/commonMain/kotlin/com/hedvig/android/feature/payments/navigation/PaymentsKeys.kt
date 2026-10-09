@@ -15,3 +15,6 @@ data object PaymentsKey : HedvigNavKey, TopLevelTabRoot {
 data class PaymentDetailsKey(
   val memberChargeId: String?,
 ) : HedvigNavKey
+
+@Serializable
+data object ManualChargeKey : HedvigNavKey

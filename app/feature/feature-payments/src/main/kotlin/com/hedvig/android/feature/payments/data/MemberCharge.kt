@@ -173,6 +173,8 @@ internal fun String?.toChargeMethod(): MemberPaymentChargeMethod {
 
     this?.startsWith("trustly", ignoreCase = true) == true -> MemberPaymentChargeMethod.TRUSTLY
 
+    this?.startsWith("swish", ignoreCase = true) == true -> MemberPaymentChargeMethod.SWISH
+
     else -> MemberPaymentChargeMethod.UNKNOWN
   }
 }

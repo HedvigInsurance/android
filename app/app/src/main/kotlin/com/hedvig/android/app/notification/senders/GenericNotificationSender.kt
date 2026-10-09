@@ -11,6 +11,7 @@ import com.hedvig.android.app.notification.DATA_MESSAGE_TITLE
 import com.hedvig.android.app.notification.intentForNotification
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.HedvigNotificationChannel
@@ -31,6 +32,7 @@ class GenericNotificationSender(
   private val permissionManager: PermissionManager,
   private val buildConstants: HedvigBuildConstants,
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer,
+  private val languageService: LanguageService,
 ) : NotificationSender {
   private val notificationChannel = HedvigNotificationChannel.Other
   private val id = AtomicInteger(100)
@@ -69,6 +71,7 @@ class GenericNotificationSender(
       notification = notification,
       notificationChannel = notificationChannel,
       notificationSenderName = "GenericNotificationSender",
+      language = languageService.getLanguage(),
     )
   }
 

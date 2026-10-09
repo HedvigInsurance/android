@@ -31,10 +31,10 @@ internal class StartTrustlySessionUseCase(
         )
         .safeExecute(::ErrorMessage)
         .bind()
-      logcat { "StartTrustlySessionUseCase received: ${data.paymentMethodSetupTrustly}" }
-      val url = ensureNotNull(data.paymentMethodSetupTrustly.url) {
-        logcat { "StartTrustlySessionUseCase received: ${data.paymentMethodSetupTrustly}" }
-        ErrorMessage(data.paymentMethodSetupTrustly.error?.message)
+      val output = data.paymentMethodSetupTrustly
+      logcat { "StartTrustlySessionUseCase received status: ${output.status}, url present: ${output.url != null}" }
+      val url = ensureNotNull(output.url) {
+        ErrorMessage(output.error?.message)
       }
       TrustlyInitiateProcessUrl(url)
     }

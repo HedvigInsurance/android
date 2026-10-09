@@ -6,6 +6,6 @@ plugins {
 dependencies {
   implementation(libs.androidx.other.appCompat)
   implementation(projects.coreCommonPublic)
-  implementation(projects.coreResources)
+  implementation(projects.initializable)
   implementation(projects.languageCore)
 }

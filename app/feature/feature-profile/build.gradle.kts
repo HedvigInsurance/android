@@ -44,7 +44,6 @@ dependencies {
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlags)
   implementation(projects.languageCore)
-  implementation(projects.languageData)
   implementation(projects.memberRemindersPublic)
   implementation(projects.memberRemindersUi)
   implementation(projects.moleculePublic)
@@ -54,6 +53,7 @@ dependencies {
   implementation(projects.notificationPermission)
   implementation(projects.pullrefresh)
   implementation(projects.theme)
+  implementation(projects.uiAnalyticsConsent)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)

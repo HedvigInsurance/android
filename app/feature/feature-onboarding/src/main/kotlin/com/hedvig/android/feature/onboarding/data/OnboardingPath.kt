@@ -26,7 +26,7 @@ internal fun buildOnboardingPath(data: OnboardingData, showAnalyticsConsent: Boo
     if (data.referralInformation != null) {
       add(OnboardingStepId.InviteFriend)
     }
-    if (!data.hasConnectedPayinMethod) {
+    if (data.needsPayinConnection) {
       add(OnboardingStepId.ConnectPayment)
     }
     if (data.crossSells.isNotEmpty() && !data.hasOnlyAccidentContracts) {

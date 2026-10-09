@@ -25,6 +25,8 @@ import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.claimintent.DeleteClaimIntentDraftUseCase
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
+import com.hedvig.android.data.paying.member.GetMemberTypeUseCase
+import com.hedvig.android.data.paying.member.MemberType
 import com.hedvig.android.feature.home.home.data.FakeDismissedShopSessionsStorage
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
@@ -52,6 +54,7 @@ import hedvig.resources.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE
 import hedvig.resources.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE
+import hedvig.resources.HOME_QUICK_ACTIONS_UPCOMING_PAYMENT
 import hedvig.resources.Res
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.Flow
@@ -108,6 +111,7 @@ internal class HomePresenterTest {
       TestDeleteClaimIntentDraftUseCase(),
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
+      FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -138,6 +142,7 @@ internal class HomePresenterTest {
       TestDeleteClaimIntentDraftUseCase(),
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
+      FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -166,6 +171,7 @@ internal class HomePresenterTest {
       TestDeleteClaimIntentDraftUseCase(),
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
+      FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -247,6 +253,7 @@ internal class HomePresenterTest {
       TestDeleteClaimIntentDraftUseCase(),
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
+      FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
     )
     val addonOnlyCrossSells = CrossSellSheetData(null, listOf(), testAddon)
 
@@ -292,6 +299,7 @@ internal class HomePresenterTest {
       TestDeleteClaimIntentDraftUseCase(),
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
+      FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -349,6 +357,7 @@ internal class HomePresenterTest {
       TestDeleteClaimIntentDraftUseCase(),
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
+      FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -376,6 +385,7 @@ internal class HomePresenterTest {
       TestDeleteClaimIntentDraftUseCase(),
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
+      FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -417,6 +427,7 @@ internal class HomePresenterTest {
       TestDeleteClaimIntentDraftUseCase(),
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
+      FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -470,6 +481,7 @@ internal class HomePresenterTest {
       TestDeleteClaimIntentDraftUseCase(),
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
+      FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
     )
     val firstVet = FirstVetSection(
       buttonTitle = "ButtonTitle",
@@ -530,6 +542,7 @@ internal class HomePresenterTest {
       TestDeleteClaimIntentDraftUseCase(),
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
+      FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
     )
     val crossSell = CrossSell(
       id = "id",
@@ -597,6 +610,7 @@ internal class HomePresenterTest {
       TestDeleteClaimIntentDraftUseCase(),
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
+      FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -649,6 +663,7 @@ internal class HomePresenterTest {
       TestDeleteClaimIntentDraftUseCase(),
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
+      FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -701,6 +716,7 @@ internal class HomePresenterTest {
       TestDeleteClaimIntentDraftUseCase(),
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
+      FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
     )
     val otherCrossSell = CrossSell(
       id = "other",
@@ -740,6 +756,7 @@ internal class HomePresenterTest {
       deleteClaimIntentDraftUseCase,
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
+      FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -770,6 +787,7 @@ internal class HomePresenterTest {
       TestDeleteClaimIntentDraftUseCase(),
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
+      FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -799,6 +817,7 @@ internal class HomePresenterTest {
       deleteClaimIntentDraftUseCase,
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
+      FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -841,6 +860,7 @@ internal class HomePresenterTest {
       TestDeleteClaimIntentDraftUseCase(),
       getMemberQuickActionsUseCase,
       FakeDismissedShopSessionsStorage(),
+      FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Loading>()
@@ -853,6 +873,62 @@ internal class HomePresenterTest {
     }
   }
 
+  @Test
+  fun `qasa only members do not see the upcoming payment quick action`(
+    @TestParameter memberType: MemberType,
+  ) = runTest {
+    val getHomeDataUseCase = TestGetHomeDataUseCase()
+    val quickActions = listOf(changeAddressLink, upcomingPaymentLink)
+    val homePresenter = HomePresenter(
+      getHomeDataUseCase,
+      SeenImportantMessagesStorageImpl(),
+      FakeCrossSellHomeNotificationService(),
+      ApplicationScope(backgroundScope),
+      false,
+      TestDeleteClaimIntentDraftUseCase(),
+      FakeGetMemberQuickActionsUseCase(quickActions.right()),
+      FakeDismissedShopSessionsStorage(),
+      FakeGetMemberTypeUseCase(memberType.right()),
+    )
+    homePresenter.test(HomeUiState.Loading) {
+      assertThat(awaitItem()).isInstanceOf<HomeUiState.Loading>()
+      getHomeDataUseCase.responseTurbine.add(someIrrelevantHomeDataInstance.right())
+      val expected = if (memberType == MemberType.QASA_ONLY_MEMBER) listOf(changeAddressLink) else quickActions
+      assertThat(awaitItem()).isInstanceOf<HomeUiState.Success>()
+        .prop(HomeUiState.Success::quickActions)
+        .isEqualTo(expected)
+    }
+  }
+
+  @Test
+  fun `the upcoming payment quick action stays when the member type fails to load`() = runTest {
+    val getHomeDataUseCase = TestGetHomeDataUseCase()
+    val quickActions = listOf(changeAddressLink, upcomingPaymentLink)
+    val homePresenter = HomePresenter(
+      getHomeDataUseCase,
+      SeenImportantMessagesStorageImpl(),
+      FakeCrossSellHomeNotificationService(),
+      ApplicationScope(backgroundScope),
+      false,
+      TestDeleteClaimIntentDraftUseCase(),
+      FakeGetMemberQuickActionsUseCase(quickActions.right()),
+      FakeDismissedShopSessionsStorage(),
+      FakeGetMemberTypeUseCase(ErrorMessage().left()),
+    )
+    homePresenter.test(HomeUiState.Loading) {
+      assertThat(awaitItem()).isInstanceOf<HomeUiState.Loading>()
+      getHomeDataUseCase.responseTurbine.add(someIrrelevantHomeDataInstance.right())
+      assertThat(awaitItem()).isInstanceOf<HomeUiState.Success>()
+        .prop(HomeUiState.Success::quickActions)
+        .isEqualTo(quickActions)
+    }
+  }
+
+  private val upcomingPaymentLink = QuickAction.StandaloneQuickLink(
+    titleRes = Res.string.HOME_QUICK_ACTIONS_UPCOMING_PAYMENT,
+    hintTextRes = Res.string.HOME_QUICK_ACTIONS_UPCOMING_PAYMENT,
+    quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkUpcomingPayment,
+  )
   private val editInsuranceMultiSelect = QuickAction.MultiSelectExpandedLink(
     titleRes = Res.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE,
     hintTextRes = Res.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_SUBTITLE,
@@ -903,6 +979,7 @@ internal class HomePresenterTest {
       TestDeleteClaimIntentDraftUseCase(),
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
+      FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
     )
 
     val session = OngoingShopSession(
@@ -939,6 +1016,7 @@ internal class HomePresenterTest {
       TestDeleteClaimIntentDraftUseCase(),
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       dismissedShopSessionsStorage,
+      FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -980,6 +1058,12 @@ private class FakeCrossSellHomeNotificationService : CrossSellHomeNotificationSe
 
   override suspend fun setLastEpochDayNewRecommendationNotificationWasShown(epochDay: Long) {
   }
+}
+
+private class FakeGetMemberTypeUseCase(
+  private val result: Either<ErrorMessage, MemberType>,
+) : GetMemberTypeUseCase {
+  override suspend fun invoke(): Either<ErrorMessage, MemberType> = result
 }
 
 private class FakeGetMemberQuickActionsUseCase(

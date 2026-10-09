@@ -13,6 +13,7 @@ import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.paying.member.GetMemberTypeUseCase
 import com.hedvig.android.data.paying.member.MemberType
+import com.hedvig.android.data.paying.member.toPayinAccount
 import com.hedvig.android.feature.payments.data.ManualChargeToPrompt
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberChargeShortInfo
@@ -20,7 +21,7 @@ import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.data.toFailedCharge
-import com.hedvig.android.logger.logcat
+import com.hedvig.android.feature.payments.data.toPrimaryPayinMethod
 import dev.zacsweers.metro.Inject
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
@@ -28,8 +29,10 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import octopus.UpcomingPaymentQuery
 import octopus.fragment.MemberChargeFragment
+import octopus.fragment.MemberPaymentMethodFragment
 import octopus.type.MemberChargeStatus
 import octopus.type.MemberPaymentMethodStatus
+import octopus.type.MissingPaymentConnection
 
 internal interface GetUpcomingPaymentUseCase {
   suspend fun invoke(): Either<ErrorMessage, PaymentOverview>
@@ -72,63 +75,48 @@ internal data class GetUpcomingPaymentUseCaseImpl(
         val id = it.id ?: return@mapNotNull null
         OngoingCharge(id, it.date, UiMoney.fromMoneyFragment(it.net))
       },
+      primaryPayinMethod = result.currentMember.paymentMethods.let { paymentMethods ->
+        paymentMethods.defaultPayinMethod as MemberPaymentMethodFragment?
+          ?: paymentMethods.payinMethods.find { it.isDefault }
+      }?.toPrimaryPayinMethod(),
       paymentConnection = run {
         val paymentMethods = result.currentMember.paymentMethods
         val payinMethod = paymentMethods.defaultPayinMethod
           ?: paymentMethods.payinMethods.find { it.isDefault }
-        logcat { "Mariia: payinMethod $payinMethod" }
-        val payoutMethod = paymentMethods.defaultPayoutMethod
-          ?: paymentMethods.payoutMethods.find { it.isDefault }
-        if (payinMethod == null) {
-          val firstKnownTerminationDateForContractTerminatedDueToMissedPayments = result
-            .currentMember
-            .activeContracts
-            .filter { it.terminationDueToMissedPayments }
-            .mapNotNull { it.terminationDate }
-            .minOrNull()
-
-          when (memberType) {
-            MemberType.STANDARD_MEMBER -> {
-              return@run PaymentConnection.NeedsPayinSetup(
-                firstKnownTerminationDateForContractTerminatedDueToMissedPayments,
-              )
-            }
-
-            MemberType.QASA_ONLY_MEMBER -> {
-              if (payoutMethod == null) {
-                return@run PaymentConnection.NeedsPayoutSetup
-              } else {
-                return@run PaymentConnection.Active
-              }
-            }
-
-            MemberType.STANDARD_TO_QASA_MEMBER -> {
-              TODO()
-            }
-          }
+        // A method still being activated is shown as such rather than asked for again.
+        if (payinMethod?.status == MemberPaymentMethodStatus.PENDING) {
+          return@run PaymentConnection.Pending
         }
-        when (payinMethod.status) {
-          MemberPaymentMethodStatus.ACTIVE -> {
-            logcat { "Mariia: MemberPaymentMethodStatus.ACTIVE" }
-            logcat { "Mariia: payoutMethod $payoutMethod" }
-            if (payoutMethod == null) {
-              return@run PaymentConnection.NeedsPayoutSetup
+        // The backend decides which connection is still missing, which covers members who are not charged at all.
+        when (paymentMethods.missingConnection) {
+          MissingPaymentConnection.PAYIN -> {
+            PaymentConnection.NeedsPayinSetup(
+              terminationDateIfNotConnected = result.currentMember.activeContracts
+                .filter { it.terminationDueToMissedPayments }
+                .mapNotNull { it.terminationDate }
+                .minOrNull(),
+            )
+          }
+
+          MissingPaymentConnection.PAYOUT -> {
+            PaymentConnection.NeedsPayoutSetup
+          }
+
+          MissingPaymentConnection.UNKNOWN__, null -> {
+            if (payinMethod?.status == MemberPaymentMethodStatus.UNKNOWN__) {
+              PaymentConnection.Unknown
             } else {
-              return@run PaymentConnection.Active
+              PaymentConnection.Active
             }
-          }
-
-          MemberPaymentMethodStatus.PENDING -> {
-            PaymentConnection.Pending
-          }
-
-          MemberPaymentMethodStatus.UNKNOWN__ -> {
-            PaymentConnection.Unknown
           }
         }
       },
       isManualChargeAllowed = isManualChargeAllowed,
       memberType = memberType,
+      showRetryChargeNotice = result.currentMember.showRetryChargeNotice != null,
+      anyPayinMethodIsPending = result.currentMember.paymentMethods.payinMethods
+        .mapNotNull { it.toPayinAccount() }
+        .any { it.isPending },
     )
   }
 }
@@ -162,8 +150,11 @@ internal class GetUpcomingPaymentUseCaseDemo(
       ),
       emptyList(),
       PaymentConnection.Unknown,
+      primaryPayinMethod = null,
       isManualChargeAllowed = null,
       memberType = MemberType.STANDARD_MEMBER,
+      showRetryChargeNotice = false,
+      anyPayinMethodIsPending = false,
     ).right()
   }
 }

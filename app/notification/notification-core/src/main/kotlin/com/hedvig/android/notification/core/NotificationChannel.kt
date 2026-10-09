@@ -77,6 +77,14 @@ sealed interface HedvigNotificationChannel {
   }
 }
 
+internal val allHedvigNotificationChannels: List<HedvigNotificationChannel> = listOf(
+  HedvigNotificationChannel.Chat,
+  HedvigNotificationChannel.CrossSell,
+  HedvigNotificationChannel.Other,
+  HedvigNotificationChannel.Payments,
+  HedvigNotificationChannel.Referrals,
+)
+
 private fun setupNotificationChannel(
   context: Context,
   channelId: String,

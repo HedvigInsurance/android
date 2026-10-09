@@ -14,6 +14,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.KeyboardActionHandler
+import androidx.compose.foundation.text.input.OutputTransformation
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
@@ -368,6 +369,7 @@ fun HedvigTextField(
   enabled: Boolean = true,
   readOnly: Boolean = false,
   inputTransformation: InputTransformation? = null,
+  outputTransformation: OutputTransformation? = null,
   onTextLayout: (Density.(getResult: () -> TextLayoutResult?) -> Unit)? = null,
   keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
   keyboardActions: KeyboardActionHandler? = null,
@@ -415,6 +417,7 @@ fun HedvigTextField(
     },
     isError = errorState.isError,
     inputTransformation = inputTransformation,
+    outputTransformation = outputTransformation,
     onTextLayout = onTextLayout,
     lineLimits = lineLimits,
     keyboardOptions = keyboardOptions,
@@ -854,6 +857,7 @@ private fun HedvigTextField(
   enabled: Boolean = true,
   readOnly: Boolean = false,
   inputTransformation: InputTransformation? = null,
+  outputTransformation: OutputTransformation? = null,
   label: @Composable (() -> Unit)? = null,
   suffix: @Composable (() -> Unit)? = null,
   leadingContent: @Composable (() -> Unit)? = null,
@@ -873,6 +877,7 @@ private fun HedvigTextField(
       enabled = enabled,
       readOnly = readOnly,
       inputTransformation = inputTransformation,
+      outputTransformation = outputTransformation,
       textStyle = size.textStyle.merge(color = colors.textColor(state.text.toString(), enabled, isError).value),
       keyboardOptions = keyboardOptions,
       onKeyboardAction = keyboardActions,

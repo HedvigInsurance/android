@@ -38,7 +38,7 @@ internal class SubmitSelectUseCaseImpl(
         .safeExecute()
         .mapLeft {
           logcat { "SubmitSelectUseCase error: $it" }
-          ClaimChatErrorMessage.GeneralError
+          it.toClaimChatErrorMessage()
         }
         .bind()
         .claimIntentSubmitSelect

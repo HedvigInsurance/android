@@ -33,9 +33,16 @@ query Onboarding {
         currencyCode
       }
     }
-    paymentMethods {
+    paymentMethods(version: 2) {
+      missingConnection
       payinMethods {
+        provider
         status
+        isDefault
+      }
+      availableMethods {
+        provider
+        supportsPayin
       }
     }
     crossSellV2(input: { userFlow: ONBOARDING, flowSource: null, experiments: [] }) {

@@ -63,6 +63,10 @@ private data class TestContractDetailKey(
   @SerialName("contractId") val contractId: String,
 ) : HedvigNavKey
 
+/** A key whose only field is an in-app flag: no deep link can supply it, so it has to default. */
+@Serializable
+private data class TestDirectDebitKey(val showSuccessScreen: Boolean = true) : HedvigNavKey
+
 // --- Matcher under test, wired with the same pattern set the container produces ----------------
 
 private fun matcher(): HedvigDeepLinkMatcher = HedvigDeepLinkMatcher(
@@ -74,6 +78,7 @@ private fun matcher(): HedvigDeepLinkMatcher = HedvigDeepLinkMatcher(
     addAll(uriDeepLinkMatchers(listOf("$HOST/help-center"), TestHelpCenterHomeKey.serializer()))
     addAll(uriDeepLinkMatchers(listOf("$HOST/help-center/topic?id={id}"), TestHelpCenterTopicKey.serializer()))
     addAll(uriDeepLinkMatchers(listOf("$HOST/forever"), TestForeverKey.serializer()))
+    addAll(uriDeepLinkMatchers(listOf("$HOST/direct-debit"), TestDirectDebitKey.serializer()))
     addAll(uriDeepLinkMatchers(listOf("$HOST/claim-details?claimId={claimId}"), TestClaimDetailsKey.serializer()))
     // insurances + contract-without-id both resolve to insurances; contract-with-id is separate
     addAll(uriDeepLinkMatchers(listOf("$HOST/insurances", "$HOST/contract"), TestInsurancesKey.serializer()))
@@ -152,6 +157,10 @@ class HedvigDeepLinkMatcherTest {
       TestTerminateInsuranceKey(insuranceId = "c-9"),
       matcher().match("$HOST/terminate-contract?contractId=c-9"),
     )
+  }
+
+  @Test fun directDebit_matchesWithTheFlagLeftAtItsDefault() {
+    assertEquals(TestDirectDebitKey(showSuccessScreen = true), matcher().match("$HOST/direct-debit"))
   }
 
   @Test fun editCoinsured_withoutContractId_matchesTriageWithNullId() {

@@ -2,6 +2,9 @@ package com.hedvig.android.feature.claim.chat.data
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import com.apollographql.apollo.exception.ApolloHttpException
+import com.apollographql.apollo.exception.ApolloNetworkException
+import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.core.common.ErrorMessage
 import kotlin.test.Test
 import kotlinx.io.IOException
@@ -58,4 +61,35 @@ private class SelfCausingException : IOException("loops back on itself") {
 private fun errorMessage(throwable: Throwable?): ErrorMessage = object : ErrorMessage {
   override val message: String? = throwable?.message
   override val throwable: Throwable? = throwable
+}
+
+class ApolloToClaimChatErrorMessageTest {
+  @Test
+  fun `a request that never reached the backend is retryable`() {
+    val error = ApolloOperationError.OperationException(ApolloNetworkException("Failed to connect"))
+
+    assertThat(error.toClaimChatErrorMessage()).isEqualTo(ClaimChatErrorMessage.ConnectionError)
+  }
+
+  @Test
+  fun `an http error the backend answered with is not a connection problem`() {
+    val error = ApolloOperationError.OperationException(
+      ApolloHttpException(statusCode = 500, headers = emptyList(), body = null, message = "Server error"),
+    )
+
+    assertThat(error.toClaimChatErrorMessage()).isEqualTo(ClaimChatErrorMessage.GeneralError)
+  }
+
+  @Test
+  fun `a rejection carried in the response body is not a connection problem`() {
+    val error = ApolloOperationError.OperationError.Other("step already submitted")
+
+    assertThat(error.toClaimChatErrorMessage()).isEqualTo(ClaimChatErrorMessage.GeneralError)
+  }
+
+  @Test
+  fun `being logged out is not a connection problem`() {
+    assertThat(ApolloOperationError.OperationError.Unathenticated.toClaimChatErrorMessage())
+      .isEqualTo(ClaimChatErrorMessage.GeneralError)
+  }
 }

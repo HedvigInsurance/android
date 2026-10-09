@@ -32,7 +32,7 @@ internal class RegretStepUseCaseImpl(
       .safeExecute()
       .mapLeft {
         logcat { "SkipStepUseCase error: $it" }
-        ClaimChatErrorMessage.GeneralError
+        it.toClaimChatErrorMessage()
       }
       .bind()
       .claimIntentRegretStep

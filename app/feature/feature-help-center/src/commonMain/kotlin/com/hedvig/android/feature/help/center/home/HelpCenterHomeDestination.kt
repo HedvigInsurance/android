@@ -124,8 +124,10 @@ import hedvig.resources.general_continue_button
 import hedvig.resources.hundar_badar_pet
 import hedvig.resources.pillow_new_680
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.ResourceEnvironment
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.rememberResourceEnvironment
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -282,6 +284,7 @@ private fun HelpCenterHomeScreen(
         )
       } else {
         val coroutineScope = rememberCoroutineScope()
+        val resourceEnvironment = rememberResourceEnvironment()
         SearchField(
           searchQuery = searchQuery,
           focusRequester = focusRequester,
@@ -298,6 +301,7 @@ private fun HelpCenterHomeScreen(
               searchQuery = it
               coroutineScope.launch {
                 val results = searchForQuery(
+                  resourceEnvironment = resourceEnvironment,
                   query = it,
                   quickLinksForSearch = (
                     quickLinksUiState as?
@@ -768,6 +772,7 @@ private fun QuickLinkCard(
 }
 
 private suspend fun searchForQuery(
+  resourceEnvironment: ResourceEnvironment,
   query: String,
   quickLinksForSearch: List<HelpCenterUiState.QuickLink>,
   questionsForSearch: List<FAQItem>,
@@ -776,8 +781,8 @@ private suspend fun searchForQuery(
   val resultsInQuickLinks =
     buildList {
       for (link in quickLinksForSearch) {
-        val title = getString(link.quickAction.titleRes).lowercase()
-        val hint = getString(link.quickAction.hintTextRes).lowercase()
+        val title = getString(resourceEnvironment, link.quickAction.titleRes).lowercase()
+        val hint = getString(resourceEnvironment, link.quickAction.hintTextRes).lowercase()
         if (title.contains(lowercased) || hint.contains(lowercased)) {
           add(link)
         }

@@ -66,6 +66,7 @@ gradlePlugin {
     createPlugin("hedvig.android.library", "LibraryConventionPlugin")
     createPlugin("hedvig.jvm.library", "KotlinLibraryConventionPlugin")
     createPlugin("hedvig.multiplatform.library", "KotlinMultiplatformLibraryConventionPlugin")
+    createPlugin("hedvig.multiplatform.library.jvm", "KotlinMultiplatformJvmLibraryConventionPlugin")
     createPlugin("hedvig.multiplatform.library.android", "KotlinMultiplatformAndroidLibraryConventionPlugin")
     createPlugin("hedvig.gradle.plugin", "HedvigGradlePlugin")
   }

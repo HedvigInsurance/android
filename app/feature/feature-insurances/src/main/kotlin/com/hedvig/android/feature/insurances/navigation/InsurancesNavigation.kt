@@ -19,8 +19,8 @@ internal data class InsuranceContractDetailKey(
   @SerialName("contractId")
   val contractId: String,
 ) : HedvigNavKey, DeepLinkAncestry, CrossSellEligibleDestination {
-  override val owningTab = TopLevelTab.Insurances
-  override val syntheticParents = emptyList<HedvigNavKey>()
+  override val owningTab get() = TopLevelTab.Insurances
+  override val syntheticParents get() = emptyList<HedvigNavKey>()
 }
 
 @Serializable

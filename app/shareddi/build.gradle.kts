@@ -21,7 +21,6 @@ kotlin {
       implementation(projects.coreCommonPublic)
       implementation(projects.coreDatastorePublic)
       implementation(projects.designSystemHedvig)
-      implementation(projects.featureClaimChat)
       implementation(projects.featureFlags)
       implementation(projects.featureHelpCenter)
       implementation(projects.languageCore)

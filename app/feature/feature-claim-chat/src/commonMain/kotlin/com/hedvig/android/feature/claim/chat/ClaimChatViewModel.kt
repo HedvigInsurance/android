@@ -497,6 +497,15 @@ internal class ClaimChatPresenter(
               val recordedFile = audioRecordingManager.getRecordedFile()
               if (recordedFile == null) {
                 logcat { "No recorded file available" }
+                // The recording is gone from disk, so this answer can never be sent. Show the recorder's error
+                // state, which leaves recording again as the way forward, instead of a send button that does nothing.
+                steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
+                  val playback = content.recordingState as? AudioRecording.Playback
+                    ?: return@updateStepWithSuccess step
+                  step.copy(
+                    stepContent = content.copy(recordingState = playback.copy(isPrepared = false, hasError = true)),
+                  )
+                }
                 return@CollectEvents
               }
               val stepContent = steps.find { it.id == event.id }?.stepContent as? StepContent.AudioRecording

@@ -43,9 +43,10 @@ interface HedvigDeepLinkContainer {
 
   val profile: List<String> // The profile screen, which acts as a gateway to several app settings
 
-  // Screen where the member can connect their payment method to Hedvig to pay for insurance
+  // Payin account overview, where the member sees their current payin method and can change it
   val connectPayment: List<String>
-  val directDebit: List<String> // Same as connectPayment but to support an old link to it
+  val connectSwish: List<String> // Goes straight into the Swish payin setup flow
+  val directDebit: List<String> // Goes straight into the Trustly direct debit connection flow
   val eurobonus: List<String> // The destination allowing to edit your current Eurobonus (SAS) number
   val payments: List<String> // The payments screen, showing the payments history and the upcoming payment information
   val payout: List<String> // Payout connection overview screen, can see existing options and change/add payout options
@@ -151,6 +152,9 @@ internal class HedvigDeepLinkContainerImpl(
   override val profile: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain -> "$baseDeepLinkDomain/profile" }
   override val connectPayment: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/connect-payment"
+  }
+  override val connectSwish: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/connect-swish"
   }
   override val directDebit: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/direct-debit"

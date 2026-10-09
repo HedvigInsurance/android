@@ -29,7 +29,7 @@ internal class SubmitSummaryUseCaseImpl(
         .safeExecute()
         .mapLeft {
           logcat { "SubmitSummaryUseCase error: $it" }
-          ClaimChatErrorMessage.GeneralError
+          it.toClaimChatErrorMessage()
         }
         .bind()
         .claimIntentSubmitSummary

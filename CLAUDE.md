@@ -778,7 +778,51 @@ Text("This is some text for feature X")
 **disappears** was only added locally and would break the build once someone else syncs. Use this
 before relying on (or committing code that references) a key you didn't personally add to Lokalise.
 
+### Working with Datadog RUM metrics and SLOs
+
+The `android.*` RUM metrics are generated from RUM events at ingestion, and the Android SLOs divide
+one by another. Three rules and two mechanical traps, each learned by breaking one of them.
+
+**A metric that filters on `@view.name` dies silently when navigation naming changes.** It keeps
+reporting, it just stops matching, so nothing alerts. Dropping `NavigationViewTrackingEffect` in
+the Nav3 migration left `ActivityViewTrackingStrategy` naming every view after the single Activity,
+which broke all 18 view-filtered metrics for ten weeks before anyone noticed.
+`Navigation3TrackingEffect` in `HedvigApp`, wired off `Backstack.entries`, is what keeps them
+working. Monitor 124820537 now watches for a recurrence.
+
+A destination that an analytics query names should implement `AnalyticsNamed` and pin the exact
+string that query matches, so a rename is safe. `AnalyticsNameTest` fails when a pinned name
+changes, which is a prompt to check the matching Datadog filter. Use an action (`@action.name`)
+only to count an event rather than a screen, since a view is reported again on every resume.
+
+**An SLO's numerator and denominator must be the same RUM event type.** A `resource` event and an
+`error` event are different populations, so subtracting one from the other is not a failure rate.
+Write the numerator as the denominator's filter plus `@resource.status_code:[500 TO 599]` and nothing
+else, so failures are a subset of attempts by construction. `Claims flow (Android)` spent nineteen
+days alerting at 93% because it divided failed CDN image loads by successful claim-chat calls.
+
+**Never widen a `@view.name` filter to a package wildcard for chat or login.** The chat wildcard
+`com.hedvig.android.feature.chat.navigation.*` also matches `Inbox` and inflates the denominator by
+about 10%; login's would pull in `LoginKey`, `OtpInputKey` and `GenericAuthCredentialsInputKey`. Both
+need explicit single-name filters. Claim flow is the exception where the wildcard is intended.
+
+**Two mechanical traps.** `event_type` cannot be changed with `pup rum metrics update`: the PATCH
+returns 200, applies the filter and silently discards the event type. It needs a delete and recreate,
+and that does **not** purge the existing timeseries, so rebuilding under the same name leaves the SLO
+dividing two definitions for a whole window. Create the replacement under a new name instead: a new
+metric starts empty and is not retroactive, so the SLO reads correctly immediately. Separately, the
+RUM query links embedded in a monitor's notification message are frozen copies of a filter that
+nothing validates, so re-check them whenever the metric changes.
+
 ## Debugging
+
+### Network traffic on a device
+
+Debug builds (`com.hedvig.dev.app`) record every call made through the main Ktor client, with full
+request and response bodies, in Chucker's on-device database. When debugging anything that involves
+backend data on a device or emulator (a screen showing wrong data, an unexpected error, whether a
+call happened at all), read what was actually sent and received with the `inspect-network-traffic`
+skill instead of inferring it from the code.
 
 ### Common Issues
 

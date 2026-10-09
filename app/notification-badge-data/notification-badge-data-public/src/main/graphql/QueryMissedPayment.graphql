@@ -1,5 +1,7 @@
 query MissedPayment {
   currentMember {
     missedChargeIdToChargeManually
+    showPreChargeNotice
+    showRetryChargeNotice
   }
 }

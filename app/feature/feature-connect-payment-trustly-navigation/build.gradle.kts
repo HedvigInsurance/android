@@ -14,6 +14,7 @@ kotlin {
     commonMain.dependencies {
       implementation(libs.kotlinx.serialization.core)
       implementation(projects.coreCommonPublic)
+      implementation(projects.featurePayinAccountNavigation)
       implementation(projects.navigationCommon)
     }
   }

@@ -80,10 +80,11 @@ data class PhoneNumberRules(
     val MemberPhoneNumber = PhoneNumberRules(minDigits = 6, allowLeadingPlus = true)
 
     /**
-     * Swish pays out to a Swedish mobile number, so the country code is never part of the input and
-     * ten digits is the real length rather than a sanity floor.
+     * Swish takes a Swedish mobile number written `07…`, `467…` or `+467…`, and BE normalises between
+     * those itself, so a country code is neither required nor stripped here. Eight digits is Swish's
+     * own floor.
      */
-    val SwishPhoneNumber = PhoneNumberRules(minDigits = 10, allowLeadingPlus = false)
+    val SwishPhoneNumber = PhoneNumberRules(minDigits = 8, allowLeadingPlus = true)
   }
 }
 

@@ -14,6 +14,7 @@ kotlin {
       implementation(libs.jetbrains.compose.runtime)
       implementation(libs.kotlinx.serialization.core)
       implementation(projects.apolloOctopusPublic)
+      implementation(projects.coreLocale)
     }
   }
 }

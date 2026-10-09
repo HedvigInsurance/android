@@ -1,6 +1,7 @@
 package com.hedvig.android.datadog.core
 
 import android.content.Context
+import android.provider.Settings
 import android.util.Log
 import androidx.startup.Initializer
 import com.datadog.android.Datadog
@@ -11,6 +12,7 @@ import com.datadog.android.log.Logger
 import com.datadog.android.log.Logs
 import com.datadog.android.log.LogsConfiguration
 import com.datadog.android.privacy.TrackingConsent
+import com.datadog.android.rum.GlobalRumMonitor
 import com.datadog.android.rum.Rum
 import com.datadog.android.rum.RumConfiguration
 import com.datadog.android.rum.model.ErrorEvent
@@ -19,6 +21,7 @@ import com.datadog.android.rum.tracking.ActivityViewTrackingStrategy
 import com.datadog.android.trace.opentelemetry.DatadogOpenTelemetry
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.datadog.core.di.authHost
+import com.hedvig.android.datadog.core.network.REQUEST_CANCELLED_RUM_ATTRIBUTE
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import io.opentelemetry.api.GlobalOpenTelemetry
@@ -65,6 +68,9 @@ abstract class DatadogInitializer : Initializer<Unit> {
       .build()
     Rum.enable(rumConfig, sdkCore)
     logcat(LogPriority.VERBOSE) { "Datadog RUM registering succeeded: true" }
+    if (isRunningInFirebaseTestLab(context)) {
+      GlobalRumMonitor.get(sdkCore).addAttribute(IS_FIREBASE_TEST_LAB_RUM_ATTRIBUTE, true)
+    }
 
     GlobalOpenTelemetry.set(DatadogOpenTelemetry(serviceName = "android"))
     logcat(LogPriority.VERBOSE) { "Datadog Android Global Open Telemetry registering succeeded: true" }
@@ -91,13 +97,28 @@ abstract class DatadogInitializer : Initializer<Unit> {
 }
 
 /**
- * Filters out errors that originate from a network request throwing an error when the exception is explicitly an
- * IOException with the message "cancelled". These "errors" are just part of the normal app behavior, where we may leave
- * a screen which was in the middle of a network request, and in the process of leaving we cancel the coroutineScope in
- * which that work was being done in.
+ * Google Play's pre-launch report runs each uploaded build on Firebase Test Lab devices, which RUM would otherwise
+ * count as member sessions. Tagging them lets metrics and SLOs exclude them. Set synchronously so that crashes during
+ * app launch carry it too.
+ * https://firebase.google.com/docs/test-lab/android/android-studio
  */
-private val cancellationFilteringErrorEventMapper = EventMapper<ErrorEvent> { errorEvent ->
-  val wasCancellationException = with(errorEvent.error) {
+private fun isRunningInFirebaseTestLab(context: Context): Boolean {
+  return Settings.System.getString(context.contentResolver, "firebase.test.lab") == "true"
+}
+
+private const val IS_FIREBASE_TEST_LAB_RUM_ATTRIBUTE = "is_firebase_test_lab"
+
+/**
+ * Filters out errors from network requests that were cancelled rather than failed. These are part of normal app
+ * behavior, where we may leave a screen which was in the middle of a network request, and in the process of leaving we
+ * cancel the coroutineScope in which that work was being done in.
+ *
+ * Ktor requests are recognised by [REQUEST_CANCELLED_RUM_ATTRIBUTE]. OkHttp requests, made by the auth client, surface
+ * their cancellation as an IOException with the message "Canceled".
+ */
+internal val cancellationFilteringErrorEventMapper = EventMapper<ErrorEvent> { errorEvent ->
+  val wasCancelledKtorRequest = errorEvent.context?.additionalProperties?.get(REQUEST_CANCELLED_RUM_ATTRIBUTE) == true
+  val wasCancelledOkHttpRequest = with(errorEvent.error) {
     val hasCancellationText = stack?.startsWith("java.io.IOException: Canceled") == true ||
       stack?.startsWith("java.util.concurrent.CancellationException") == true
     category == EXCEPTION &&
@@ -105,7 +126,7 @@ private val cancellationFilteringErrorEventMapper = EventMapper<ErrorEvent> { er
       type == "java.io.IOException" &&
       hasCancellationText
   }
-  if (wasCancellationException) {
+  if (wasCancelledKtorRequest || wasCancelledOkHttpRequest) {
     null
   } else {
     errorEvent

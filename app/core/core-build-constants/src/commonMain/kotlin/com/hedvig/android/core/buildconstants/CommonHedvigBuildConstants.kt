@@ -13,8 +13,8 @@ import dev.zacsweers.metro.SingleIn
 @SingleIn(AppScope::class)
 @Inject
 internal class CommonHedvigBuildConstants(
-  appBuildConfig: AppBuildConfig,
-  languageService: LanguageService,
+  private val appBuildConfig: AppBuildConfig,
+  private val languageService: LanguageService,
 ) : HedvigBuildConstants {
   private val appConfigUrlHolder = AppConfigUrlHolder(appBuildConfig)
   override val urlGraphqlOctopus: String = appConfigUrlHolder.urlGraphqlOctopus(appBuildConfig.appFlavor)
@@ -35,7 +35,8 @@ internal class CommonHedvigBuildConstants(
     appBuildConfig.buildType == "release" && appBuildConfig.applicationId == "com.hedvig.app"
   override val buildApiVersion: Int = appBuildConfig.osSdkVersion
   override val platformName: String = com.hedvig.android.core.buildconstants.platformName
-  override val userAgent: String = makeUserAgent(languageService.getLanguage().toBcp47Format(), appBuildConfig)
+  override val userAgent: String
+    get() = makeUserAgent(languageService.getLanguage().toBcp47Format(), appBuildConfig)
   override val model: String = "${appBuildConfig.manufacturer} ${appBuildConfig.model}"
 }
 

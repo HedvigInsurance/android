@@ -1,0 +1,8 @@
+query PaymentMethodSetupStatus($orderId: ID!) {
+  paymentMethodSetupStatus(orderId: $orderId) {
+    status
+    error {
+      message
+    }
+  }
+}

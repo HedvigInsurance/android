@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.payoutaccount.ui.setupswish
 
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -10,6 +11,8 @@ import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.data.paying.member.GetMemberPhoneNumberUseCase
+import com.hedvig.android.data.paying.member.swishPhoneNumberOrNull
 import com.hedvig.android.feature.payoutaccount.data.SetupSwishPayoutUseCase
 import com.hedvig.android.feature.payoutaccount.navigation.SelectPayoutMethodKey
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -23,27 +26,32 @@ import dev.zacsweers.metro.Inject
 @HedvigViewModel(ActivityRetainedScope::class)
 internal class SetupSwishPayoutViewModel(
   setupSwishPayoutUseCase: SetupSwishPayoutUseCase,
+  getMemberPhoneNumberUseCase: GetMemberPhoneNumberUseCase,
   backstack: Backstack,
 ) : MoleculeViewModel<SetupSwishPayoutEvent, SetupSwishPayoutUiState>(
-    SetupSwishPayoutUiState(TextFieldState(), false, null, false),
-    SetupSwishPayoutPresenter(setupSwishPayoutUseCase, backstack),
+    SetupSwishPayoutUiState(TextFieldState(), false, false, null, false),
+    SetupSwishPayoutPresenter(setupSwishPayoutUseCase, getMemberPhoneNumberUseCase, backstack),
   )
 
 internal sealed interface SetupSwishPayoutEvent {
   data object Save : SetupSwishPayoutEvent
 
-  data object ShowedSnackBar : SetupSwishPayoutEvent
+  data object ToggleOwnNumberConfirmed : SetupSwishPayoutEvent
+
+  data object FinishSetup : SetupSwishPayoutEvent
 }
 
 internal data class SetupSwishPayoutUiState(
   val phoneNumberState: TextFieldState,
   val isLoading: Boolean,
+  val isOwnNumberConfirmed: Boolean,
   val errorMessage: ErrorMessage?,
-  val showSuccessSnackBar: Boolean,
+  val isConnected: Boolean,
 )
 
 internal class SetupSwishPayoutPresenter(
   private val setupSwishPayoutUseCase: SetupSwishPayoutUseCase,
+  private val getMemberPhoneNumberUseCase: GetMemberPhoneNumberUseCase,
   private val backstack: Backstack,
 ) : MoleculePresenter<SetupSwishPayoutEvent, SetupSwishPayoutUiState> {
   @Composable
@@ -52,9 +60,23 @@ internal class SetupSwishPayoutPresenter(
   ): SetupSwishPayoutUiState {
     val phoneNumberState = remember { lastState.phoneNumberState }
     var isLoading by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<ErrorMessage?>(null) }
-    var showSuccessSnackBar by remember { mutableStateOf(false) }
+    var isOwnNumberConfirmed by remember { mutableStateOf(lastState.isOwnNumberConfirmed) }
+    // Seeded from the last state, so a restart after a backgrounded save keeps its outcome on screen
+    // rather than offering the form again, where saving would repeat the setup.
+    var errorMessage by remember { mutableStateOf(lastState.errorMessage) }
+    var isConnected by remember { mutableStateOf(lastState.isConnected) }
     var saveIteration by remember { mutableStateOf<String?>(null) }
+
+    // Seeds the field with the number the backend already holds, so the usual case is a confirm
+    // rather than a re-type. Anything the member has typed themselves wins.
+    LaunchedEffect(Unit) {
+      if (phoneNumberState.text.isNotEmpty()) return@LaunchedEffect
+      val storedNumber = getMemberPhoneNumberUseCase.invoke().getOrNull() ?: return@LaunchedEffect
+      val usableNumber = swishPhoneNumberOrNull(storedNumber) ?: return@LaunchedEffect
+      if (phoneNumberState.text.isEmpty()) {
+        phoneNumberState.setTextAndPlaceCursorAtEnd(usableNumber)
+      }
+    }
 
     val currentSave = saveIteration
     if (currentSave != null) {
@@ -69,7 +91,7 @@ internal class SetupSwishPayoutPresenter(
           },
           ifRight = {
             isLoading = false
-            showSuccessSnackBar = true
+            isConnected = true
             saveIteration = null
           },
         )
@@ -79,12 +101,16 @@ internal class SetupSwishPayoutPresenter(
     CollectEvents { event ->
       when (event) {
         SetupSwishPayoutEvent.Save -> {
-          if (!isLoading) {
+          if (!isLoading && isOwnNumberConfirmed) {
             saveIteration = phoneNumberState.text.toString()
           }
         }
 
-        SetupSwishPayoutEvent.ShowedSnackBar -> {
+        SetupSwishPayoutEvent.ToggleOwnNumberConfirmed -> {
+          isOwnNumberConfirmed = !isOwnNumberConfirmed
+        }
+
+        SetupSwishPayoutEvent.FinishSetup -> {
           backstack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
         }
       }
@@ -93,8 +119,9 @@ internal class SetupSwishPayoutPresenter(
     return SetupSwishPayoutUiState(
       phoneNumberState = phoneNumberState,
       isLoading = isLoading,
+      isOwnNumberConfirmed = isOwnNumberConfirmed,
       errorMessage = errorMessage,
-      showSuccessSnackBar = showSuccessSnackBar,
+      isConnected = isConnected,
     )
   }
 }

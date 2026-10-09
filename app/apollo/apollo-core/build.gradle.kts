@@ -15,5 +15,9 @@ kotlin {
 
       implementation(libs.apollo.normalizedCache)
     }
+    commonTest.dependencies {
+      implementation(libs.assertK)
+      implementation(libs.kotlin.test)
+    }
   }
 }

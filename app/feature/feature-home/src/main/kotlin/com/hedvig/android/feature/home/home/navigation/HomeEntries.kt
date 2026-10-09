@@ -4,6 +4,7 @@ import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.EntryProviderScope
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.dropUnlessResumed
+import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.feature.home.home.ui.FirstVetDestination
 import com.hedvig.android.feature.home.home.ui.HomeDestination
@@ -24,6 +25,7 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
   onNavigateToNewConversation: () -> Unit,
   navigateToClaimDetails: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
+  navigateToManualCharge: () -> Unit,
   navigateToConnectPayout: () -> Unit,
   navigateToContactInfo: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
@@ -36,7 +38,7 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
   openUrl: (String) -> Unit,
   openCrossSellUrl: (String) -> Unit,
   imageLoader: ImageLoader,
-  navigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
 ) {
   entry<HomeKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
     val viewModel: HomeViewModel = metroViewModel()
@@ -50,6 +52,7 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
         navigateToClaimDetails(claimId)
       },
       navigateToConnectPayment = dropUnlessResumed { navigateToConnectPayment() },
+      navigateToManualCharge = dropUnlessResumed { navigateToManualCharge() },
       navigateToConnectPayout = dropUnlessResumed { navigateToConnectPayout() },
       navigateToMissingInfo = dropUnlessResumed { contractId, type -> navigateToMissingInfo(contractId, type) },
       navigateToHelpCenter = dropUnlessResumed { navigateToHelpCenter() },
@@ -71,7 +74,9 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
       imageLoader = imageLoader,
       navigateToChipId = navigateToChipIdScreen,
       navigateToUsageData = dropUnlessResumed { navigateToUsageData() },
-      navigateToAddonPurchaseFlow = dropUnlessResumed { ids -> navigateToAddonPurchaseFlow(ids) },
+      navigateToAddonPurchaseFlow = dropUnlessResumed { ids: List<String>, source: AddonBannerSource ->
+        navigateToAddonPurchaseFlow(ids, source)
+      },
     )
   }
   entry<FirstVetKey> { key ->

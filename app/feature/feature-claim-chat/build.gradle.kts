@@ -1,5 +1,5 @@
 plugins {
-  id("hedvig.multiplatform.library")
+  id("hedvig.multiplatform.library.jvm")
   id("hedvig.multiplatform.library.android")
   id("hedvig.gradle.plugin")
 }
@@ -56,10 +56,15 @@ kotlin {
       implementation(projects.partnersDeflect)
     }
     commonTest.dependencies {
+      implementation(libs.apollo.testingSupport)
       implementation(libs.assertK)
       implementation(libs.coroutines.test)
       implementation(libs.kotlin.test)
       implementation(libs.turbine)
+    }
+    jvmTest.dependencies {
+      implementation(libs.jetbrains.compose.ui.test)
+      implementation(org.jetbrains.compose.ComposePlugin.DesktopDependencies.currentOs)
     }
     androidMain.dependencies {
       implementation(libs.accompanist.permissions)

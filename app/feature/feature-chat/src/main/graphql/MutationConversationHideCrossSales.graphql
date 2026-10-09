@@ -1,0 +1,6 @@
+mutation ConversationHideCrossSales($id: UUID!) {
+  conversationHideCrossSales(id: $id) {
+    id
+    showCrossSales
+  }
+}

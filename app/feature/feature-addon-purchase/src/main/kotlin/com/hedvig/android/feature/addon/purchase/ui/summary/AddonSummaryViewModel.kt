@@ -10,6 +10,7 @@ import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.tracking.ActionType
+import com.hedvig.android.core.tracking.EventTrackingClient
 import com.hedvig.android.core.tracking.logAction
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.addons.data.AddonBannerSource
@@ -49,6 +50,7 @@ internal class AddonSummaryViewModel(
   getQuoteCostBreakdownUseCase: GetQuoteCostBreakdownUseCase,
   getInsuranceForTravelAddonUseCase: GetInsuranceForTravelAddonUseCase,
   backstack: Backstack,
+  eventTrackingClient: EventTrackingClient,
 ) : MoleculeViewModel<AddonSummaryEvent, AddonSummaryState>(
     initialState = Loading,
     presenter = AddonSummaryPresenter(
@@ -58,6 +60,7 @@ internal class AddonSummaryViewModel(
       getQuoteCostBreakdownUseCase,
       getInsuranceForTravelAddonUseCase,
       backstack,
+      eventTrackingClient,
     ),
   )
 
@@ -68,6 +71,7 @@ internal class AddonSummaryPresenter(
   private val getQuoteCostBreakdownUseCase: GetQuoteCostBreakdownUseCase,
   private val getInsuranceForTravelAddonUseCase: GetInsuranceForTravelAddonUseCase,
   private val backstack: Backstack,
+  private val eventTrackingClient: EventTrackingClient,
 ) : MoleculePresenter<AddonSummaryEvent, AddonSummaryState> {
   @Composable
   override fun MoleculePresenterScope<AddonSummaryEvent>.present(lastState: AddonSummaryState): AddonSummaryState {
@@ -152,6 +156,7 @@ internal class AddonSummaryPresenter(
           },
           ifRight = {
             logSuccessfulAddonPurchaseAction(summaryParameters, addonPurchaseSource)
+            trackAddonPurchased(eventTrackingClient, summaryParameters, addonPurchaseSource)
             backstack.navigateAndPopUpTo<AddonPurchaseKey>(
               SubmitSuccessKey(summaryParameters.activationDate),
               inclusive = true,
@@ -259,3 +264,47 @@ private fun AddonLogInfo.asAddonAttributes(): Map<String, Map<String, String>> {
       ),
   )
 }
+
+/**
+ * Fires `addon_purchased` once per add-on activated. Upgrading an add-on the member already had counts as a purchase.
+ */
+private fun trackAddonPurchased(
+  eventTrackingClient: EventTrackingClient,
+  summaryParameters: SummaryParameters,
+  addonPurchaseSource: AddonBannerSource,
+) {
+  summaryParameters.chosenQuotes.forEach { chosenQuote ->
+    val price = chosenQuote.itemCost.monthlyNet
+    eventTrackingClient.trackEvent(
+      name = "addon_purchased",
+      parameters = mapOf(
+        "user_flow" to addonPurchaseSource.analyticsUserFlow,
+        "addon_type" to chosenQuote.addonVariant.product,
+        "contract_id" to summaryParameters.contractId,
+        "price" to price.amount,
+        "currency" to price.currencyCode.name,
+        // addonActivateOffer returns no transaction id, so the accepted quote stands in for one
+        "transaction_id" to summaryParameters.quoteId,
+      ),
+    )
+  }
+}
+
+private val AddonBannerSource.analyticsUserFlow: String
+  get() = when (this) {
+    AddonBannerSource.AFTER_FINISHING_SUCCESSFUL_FLOW -> "smart_x_sell"
+
+    AddonBannerSource.HOME_CROSS_SELL_SHEET -> "insurance_card"
+
+    AddonBannerSource.HOME_SCREEN -> "home_screen"
+
+    AddonBannerSource.INSURANCES_TAB -> "insurance_screen"
+
+    AddonBannerSource.CONTRACT_DETAIL -> "contract_detail"
+
+    AddonBannerSource.TRAVEL_CERTIFICATES -> "travel_certificate"
+
+    AddonBannerSource.TRAVEL_DEEPLINK,
+    AddonBannerSource.CAR_ADDON_DEEPLINK,
+    -> "deeplink"
+  }

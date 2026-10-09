@@ -46,7 +46,6 @@ import com.hedvig.android.memberreminders.MemberReminder
 import hedvig.resources.HOME_TODO_ADD_COINSURED_TITLE
 import hedvig.resources.HOME_TODO_ADD_COOWNER_TITLE
 import hedvig.resources.HOME_TODO_MISSING_CHIP_ID_TITLE
-import hedvig.resources.HOME_TODO_MISSING_PAYMENT_METHOD_TITLE
 import hedvig.resources.HOME_TODO_MISSING_PAYOUT_METHOD_TITLE
 import hedvig.resources.HOME_TODO_PAYMENT_OVERDUE_TITLE
 import hedvig.resources.HOME_TODO_REQUIRES_ACTION_SUBTITLE
@@ -69,7 +68,6 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun MemberReminderToDoList(
   memberReminders: List<MemberReminder>,
-  navigateToConnectPayment: () -> Unit,
   navigateToConnectPayout: () -> Unit,
   navigateToAddMissingInfo: (String, CoInsuredFlowType) -> Unit,
   onNavigateToNewConversation: () -> Unit,
@@ -91,7 +89,6 @@ fun MemberReminderToDoList(
   }
   val rows = memberReminders.mapNotNull { reminder ->
     reminder.toToDoRowOrNull(
-      navigateToConnectPayment = navigateToConnectPayment,
       navigateToConnectPayout = navigateToConnectPayout,
       navigateToAddMissingInfo = navigateToAddMissingInfo,
       onShowMissedPaymentsDialog = { showMissedPaymentsDialog = true },
@@ -126,8 +123,9 @@ fun MemberReminderToDoList(
 
 /**
  * Filters to the action-required reminders shown in the home "To do" list and orders them to match
- * the design: payment overdue, then payin, then payout, then the remaining action items, with the
- * reminders not depicted in the design appended last.
+ * the design: payment overdue, then payout, then the remaining action items, with the reminders not
+ * depicted in the design appended last. A missing payin method is offered by [MissingPayinMethodCard]
+ * instead, so it is not among them.
  */
 fun List<MemberReminder>.homeActionRequiredReminders(): List<MemberReminder> {
   return filter { it.homeToDoOrder() != null }.sortedBy { it.homeToDoOrder() }
@@ -143,12 +141,12 @@ fun List<MemberReminder>.homeInformationalReminders(): List<MemberReminder.Upcom
 
 private fun MemberReminder.homeToDoOrder(): Int? = when (this) {
   is MemberReminder.PaymentReminder.TerminationDueToMissedPayments -> 0
-  is MemberReminder.PaymentReminder.ConnectPayment -> 1
-  is MemberReminder.PaymentReminder.ConnectPayout -> 2
-  is MemberReminder.MissingChipId -> 3
-  is MemberReminder.CoInsuredInfo -> 4
-  is MemberReminder.ContactInfoUpdateNeeded -> 5
-  is MemberReminder.DecideAnalyticsConsent -> 6
+  is MemberReminder.PaymentReminder.ConnectPayout -> 1
+  is MemberReminder.MissingChipId -> 2
+  is MemberReminder.CoInsuredInfo -> 3
+  is MemberReminder.ContactInfoUpdateNeeded -> 4
+  is MemberReminder.DecideAnalyticsConsent -> 5
+  is MemberReminder.PaymentReminder.ConnectPayment -> null
   is MemberReminder.UpcomingRenewal -> null
   is MemberReminder.EnableNotifications -> null
 }
@@ -178,7 +176,6 @@ private enum class ToDoRowIconTint {
 }
 
 private fun MemberReminder.toToDoRowOrNull(
-  navigateToConnectPayment: () -> Unit,
   navigateToConnectPayout: () -> Unit,
   navigateToAddMissingInfo: (String, CoInsuredFlowType) -> Unit,
   onShowMissedPaymentsDialog: () -> Unit,
@@ -191,13 +188,6 @@ private fun MemberReminder.toToDoRowOrNull(
     iconTint = ToDoRowIconTint.Attention,
     title = Res.string.HOME_TODO_PAYMENT_OVERDUE_TITLE,
     onClick = onShowMissedPaymentsDialog,
-  )
-
-  is MemberReminder.PaymentReminder.ConnectPayment -> ToDoRowData(
-    icon = HedvigIcons.Card,
-    iconTint = ToDoRowIconTint.Primary,
-    title = Res.string.HOME_TODO_MISSING_PAYMENT_METHOD_TITLE,
-    onClick = navigateToConnectPayment,
   )
 
   is MemberReminder.PaymentReminder.ConnectPayout -> ToDoRowData(
@@ -237,6 +227,8 @@ private fun MemberReminder.toToDoRowOrNull(
     title = Res.string.HOME_TODO_SELECT_USAGE_DATA_TITLE,
     onClick = navigateToUsageData,
   )
+
+  is MemberReminder.PaymentReminder.ConnectPayment -> null
 
   is MemberReminder.UpcomingRenewal -> null
 
@@ -331,7 +323,6 @@ private fun PreviewMemberReminderToDoList() {
       MemberReminderToDoList(
         memberReminders = listOf(
           MemberReminder.PaymentReminder.TerminationDueToMissedPayments(terminationDate = LocalDate(2029, 1, 1)),
-          MemberReminder.PaymentReminder.ConnectPayment(),
           MemberReminder.PaymentReminder.ConnectPayout(),
           MemberReminder.MissingChipId(),
           MemberReminder.CoInsuredInfo("contractId", CoInsuredFlowType.CoInsured),
@@ -339,7 +330,6 @@ private fun PreviewMemberReminderToDoList() {
           MemberReminder.ContactInfoUpdateNeeded,
           MemberReminder.DecideAnalyticsConsent(),
         ),
-        navigateToConnectPayment = {},
         navigateToConnectPayout = {},
         navigateToAddMissingInfo = { _, _ -> },
         onNavigateToNewConversation = {},

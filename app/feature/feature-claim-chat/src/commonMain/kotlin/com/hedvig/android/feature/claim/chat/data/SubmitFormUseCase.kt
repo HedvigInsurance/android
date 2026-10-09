@@ -43,7 +43,7 @@ internal class SubmitFormUseCaseImpl(
         .safeExecute()
         .mapLeft {
           logcat { "SubmitFormUseCase error: $it" }
-          ClaimChatErrorMessage.GeneralError
+          it.toClaimChatErrorMessage()
         }
         .bind()
         .claimIntentSubmitForm

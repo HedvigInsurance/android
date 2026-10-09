@@ -1,0 +1,15 @@
+query GetPayinMethods {
+  currentMember {
+    paymentMethods(version: 2) {
+      chargingDay
+      payinMethods {
+        ...MemberPaymentMethodFragment
+      }
+      availableMethods {
+        provider
+        supportsPayin
+        isActive
+      }
+    }
+  }
+}

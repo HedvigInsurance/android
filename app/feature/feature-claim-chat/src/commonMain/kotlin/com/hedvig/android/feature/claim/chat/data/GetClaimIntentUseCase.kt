@@ -43,7 +43,7 @@ internal class GetClaimIntentUseCaseImpl(
             .safeExecute()
             .mapLeft {
               logcat { "GetClaimIntentUseCase error: $it" }
-              ClaimChatErrorMessage.GeneralError
+              it.toClaimChatErrorMessage()
             }
             .bind()
             .claimIntent

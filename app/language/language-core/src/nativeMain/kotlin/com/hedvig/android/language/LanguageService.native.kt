@@ -5,6 +5,9 @@ import com.hedvig.android.core.locale.CommonLocale
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import platform.Foundation.NSLocale
 
 @ContributesBinding(AppScope::class)
@@ -13,17 +16,26 @@ import platform.Foundation.NSLocale
 internal class NativeLanguageService(
   private val storage: LanguageStorage,
 ) : LanguageService {
+  private val mutableLanguage = MutableStateFlow(Language.from(storage.getCurrentLanguageTag()))
+
+  /**
+   * Updated only when [setLanguage] or [getLanguage] runs, since the iOS app changes the language without going
+   * through Kotlin, so read [getLanguage] for the current value.
+   */
+  override val language: StateFlow<Language> = mutableLanguage.asStateFlow()
+
   override fun setLanguage(language: Language) {
     storage.setLanguageTag(language.toBcp47Format())
+    mutableLanguage.value = language
   }
 
-  override fun getSelectedLanguage(): Language? {
-    return storage.getSelectedLanguageTag()?.let(Language::from)
-  }
-
+  /**
+   * Read from the storage on every call, since the iOS app changes the language through its own layer without going
+   * through [setLanguage].
+   */
   override fun getLanguage(): Language {
     val languageTag = storage.getCurrentLanguageTag()
-    return Language.from(languageTag)
+    return Language.from(languageTag).also { mutableLanguage.value = it }
   }
 
   override fun getLocale(): CommonLocale {

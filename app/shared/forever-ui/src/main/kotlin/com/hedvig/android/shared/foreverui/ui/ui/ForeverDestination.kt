@@ -100,6 +100,7 @@ import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.rememberResourceEnvironment
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -108,6 +109,7 @@ fun ForeverDestination(viewModel: ForeverViewModel) {
   val context = LocalContext.current
   val shareSheetTitle = stringResource(Res.string.REFERRALS_SHARE_SHEET_TITLE)
   val coroutineScope = rememberCoroutineScope()
+  val resourceEnvironment = rememberResourceEnvironment()
   ForeverScreen(
     uiState = uiState,
     reload = { viewModel.emit(ForeverEvent.RetryLoadReferralData) },
@@ -119,6 +121,7 @@ fun ForeverDestination(viewModel: ForeverViewModel) {
     onShareCodeClick = { code: String, incentive: UiMoney ->
       coroutineScope.launch {
         val string = getString(
+          resourceEnvironment,
           Res.string.REFERRAL_SMS_MESSAGE,
           incentive.toString(),
           viewModel.referralShareUrl(code),

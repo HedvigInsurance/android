@@ -1,0 +1,5 @@
+query PayingMemberPhoneNumber {
+  currentMember {
+    phoneNumber
+  }
+}

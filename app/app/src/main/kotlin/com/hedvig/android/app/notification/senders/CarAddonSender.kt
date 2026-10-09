@@ -9,6 +9,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.app.notification.intentForNotification
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
@@ -27,6 +28,7 @@ class CarAddonSender(
   private val permissionManager: PermissionManager,
   private val buildConstants: HedvigBuildConstants,
   private val deepLinkContainer: HedvigDeepLinkContainer,
+  private val languageService: LanguageService,
 ) : NotificationSender {
   private val notificationChannel = HedvigNotificationChannel.CrossSell
 
@@ -57,6 +59,7 @@ class CarAddonSender(
       notification = notification,
       notificationChannel = notificationChannel,
       notificationSenderName = "CarAddonSender",
+      language = languageService.getLanguage(),
     )
   }
 

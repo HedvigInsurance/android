@@ -7,6 +7,8 @@ import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
+import com.hedvig.android.language.Language
+import com.hedvig.android.language.withAppLanguage
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.permission.Permission
 import com.hedvig.android.permission.PermissionManager
@@ -19,10 +21,11 @@ fun sendHedvigNotification(
   notification: Notification,
   notificationChannel: HedvigNotificationChannel,
   notificationSenderName: String?,
+  language: Language,
 ) {
   logcat { "$notificationSenderName is going to send a notification" }
   if (permissionManager.isPermissionGranted(Permission.PostNotifications)) {
-    notificationChannel.createChannel(context)
+    notificationChannel.createChannel(context.withAppLanguage(language))
     NotificationManagerCompat
       .from(context)
       .notify(notificationSenderName, notificationId, notification)

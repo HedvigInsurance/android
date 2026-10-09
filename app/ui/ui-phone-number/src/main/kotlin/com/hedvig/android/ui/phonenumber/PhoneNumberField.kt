@@ -4,6 +4,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.KeyboardActionHandler
+import androidx.compose.foundation.text.input.OutputTransformation
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.byValue
@@ -39,6 +40,7 @@ fun HedvigPhoneNumberField(
   textFieldSize: HedvigTextFieldDefaults.TextFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
   errorState: HedvigTextFieldDefaults.ErrorState = HedvigTextFieldDefaults.ErrorState.NoError,
   enabled: Boolean = true,
+  outputTransformation: OutputTransformation? = null,
   imeAction: ImeAction = ImeAction.Done,
   keyboardActions: KeyboardActionHandler? = null,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
@@ -50,6 +52,7 @@ fun HedvigPhoneNumberField(
     errorState = errorState,
     enabled = enabled,
     inputTransformation = remember(rules) { phoneNumberInputTransformation(rules) },
+    outputTransformation = outputTransformation,
     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone, imeAction = imeAction),
     keyboardActions = keyboardActions,
     lineLimits = TextFieldLineLimits.SingleLine,

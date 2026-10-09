@@ -11,12 +11,9 @@ query ManualChargeInfo {
         }
       }
     }
-    paymentInformation {
-      status
-      chargeMethod {
-        displayName
-        descriptor
-        paymentMethod
+    paymentMethods(version: 2) {
+      payinMethods {
+        ...MemberPaymentMethodFragment
       }
     }
     activeContracts {

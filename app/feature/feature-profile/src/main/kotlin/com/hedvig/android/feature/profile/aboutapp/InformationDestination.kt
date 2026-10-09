@@ -73,6 +73,8 @@ import hedvig.resources.app_info_submit_bug_prefilled_letter_subject
 import hedvig.resources.app_info_submit_bug_warning_with_chat_link_1
 import hedvig.resources.app_info_submit_bug_warning_with_chat_link_2
 import hedvig.resources.app_info_submit_bug_warning_with_chat_link_3
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -485,15 +487,9 @@ private fun PreviewInformationScreen() {
 }
 
 private val previewLanguageService = object : LanguageService {
+  override val language: StateFlow<Language> = MutableStateFlow(Language.EN_SE)
+
   override fun setLanguage(language: Language) {}
-
-  override fun getSelectedLanguage(): Language {
-    return Language.EN_SE
-  }
-
-  override fun getLanguage(): Language {
-    return Language.EN_SE
-  }
 
   override fun getLocale(): CommonLocale {
     return CommonLocale.getDefault()

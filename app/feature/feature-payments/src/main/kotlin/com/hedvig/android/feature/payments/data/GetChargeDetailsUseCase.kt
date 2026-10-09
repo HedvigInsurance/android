@@ -9,13 +9,14 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.data.paying.member.PayinAccount
+import com.hedvig.android.data.paying.member.toPayinAccount
 import com.hedvig.android.feature.payments.data.PaymentDetails.PaymentsInfo
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import octopus.PaymentHistoryWithDetailsQuery
-import octopus.type.MemberPaymentConnectionStatus
 
 internal interface GetChargeDetailsUseCase {
   suspend fun invoke(id: String?): Either<ErrorMessage, PaymentDetails>
@@ -44,30 +45,36 @@ internal class GetChargeDetailsUseCaseImpl(
       ?.toMemberCharge(currentMember.referralInformation)
     val futureMemberChargeWithThisId = futureMemberCharge.takeIf { it?.id == id }
     val pastMemberChargeWithThisId = pastCharges.firstOrNull { it.id == id }
-    val charge = futureMemberChargeWithThisId ?: pastMemberChargeWithThisId
-      ?: ongoingChargeWithThisId ?: raise(ErrorMessage())
+    val defaultPayinMethod = currentMember.paymentMethods.payinMethods
+      .mapNotNull { it.toPayinAccount() }
+      .firstOrNull { it.isDefault }
+    val charge = when {
+      // An upcoming charge goes out on whatever method is the default by then, so that is the one shown,
+      // rather than the provider the charge was drafted with.
+      futureMemberChargeWithThisId != null -> {
+        val defaultChargeMethod = defaultPayinMethod?.toChargeMethod()
+        if (defaultChargeMethod != null) {
+          futureMemberChargeWithThisId.copy(chargeMethod = defaultChargeMethod)
+        } else {
+          futureMemberChargeWithThisId
+        }
+      }
+
+      else -> {
+        pastMemberChargeWithThisId ?: ongoingChargeWithThisId ?: raise(ErrorMessage())
+      }
+    }
     val paymentsInfo = run {
       if (futureMemberChargeWithThisId == null && ongoingChargeWithThisId == null) {
         // Only show payment connection information if the charge is a future charge or ongoing charge.
         // Otherwise, the payment connection info we get is not reliably correct.
         return@run PaymentsInfo.NoPresentableInfo
       }
-      val paymentInformation = currentMember.paymentInformation
-      when (paymentInformation.status) {
-        MemberPaymentConnectionStatus.ACTIVE -> {
-          PaymentsInfo.Active(
-            displayName = paymentInformation.chargeMethod?.displayName,
-            displayValue = paymentInformation.chargeMethod?.descriptor,
-          )
-        }
-
-        MemberPaymentConnectionStatus.PENDING,
-        MemberPaymentConnectionStatus.NEEDS_SETUP,
-        MemberPaymentConnectionStatus.UNKNOWN__,
-        -> {
-          PaymentsInfo.NoPresentableInfo
-        }
+      // The connection describes the default method, so it is only shown for a charge made with that method.
+      if (defaultPayinMethod == null || defaultPayinMethod.toChargeMethod() != charge.chargeMethod) {
+        return@run PaymentsInfo.NoPresentableInfo
       }
+      PaymentsInfo.Active(defaultPayinMethod)
     }
     PaymentDetails(
       memberCharge = charge,
@@ -95,10 +102,15 @@ internal data class PaymentDetails(
 
   sealed interface PaymentsInfo {
     data class Active(
-      val displayName: String?,
-      val displayValue: String?,
+      val account: PayinAccount,
     ) : PaymentsInfo
 
     data object NoPresentableInfo : PaymentsInfo
   }
+}
+
+private fun PayinAccount.toChargeMethod(): MemberPaymentChargeMethod = when (this) {
+  is PayinAccount.Trustly -> MemberPaymentChargeMethod.TRUSTLY
+  is PayinAccount.SwishPayin -> MemberPaymentChargeMethod.SWISH
+  is PayinAccount.Invoice -> MemberPaymentChargeMethod.INVOICE
 }

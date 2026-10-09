@@ -10,6 +10,8 @@ import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.app.notification.intentForNotification
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.language.LanguageService
+import com.hedvig.android.language.withAppLanguage
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
@@ -25,6 +27,7 @@ import hedvig.resources.R
 @Inject
 class ReferralsNotificationSender(
   private val context: Context,
+  private val languageService: LanguageService,
   private val permissionManager: PermissionManager,
   private val buildConstants: HedvigBuildConstants,
   private val deepLinkContainer: HedvigDeepLinkContainer,
@@ -43,9 +46,13 @@ class ReferralsNotificationSender(
       false,
     )
     val title = remoteMessage.titleFromCustomerIoData()
-      ?: context.resources.getString(R.string.NOTIFICATION_REFERRAL_COMPLETED_TITLE)
+      ?: context.withAppLanguage(
+        languageService.getLanguage(),
+      ).getString(R.string.NOTIFICATION_REFERRAL_COMPLETED_TITLE)
     val body = remoteMessage.bodyFromCustomerIoData()
-      ?: context.resources.getString(R.string.NOTIFICATION_REFERRAL_COMPLETED_CONTENT)
+      ?: context.withAppLanguage(
+        languageService.getLanguage(),
+      ).getString(R.string.NOTIFICATION_REFERRAL_COMPLETED_CONTENT)
     val notificationBuilder = NotificationCompat
       .Builder(context, notificationChannel.channelId)
       .setSmallIcon(R.drawable.ic_hedvig_h)
@@ -61,6 +68,7 @@ class ReferralsNotificationSender(
       notification = notificationBuilder.build(),
       notificationChannel = notificationChannel,
       notificationSenderName = "ReferralsNotificationSender",
+      language = languageService.getLanguage(),
     )
   }
 

@@ -87,4 +87,18 @@ interface ChatDao {
     """,
   )
   suspend fun deleteAiGenerationIndicators(conversationId: Uuid)
+
+  /**
+   * Counts the replies the member has received, so that a caller can react to how far into the
+   * conversation Hedvig has answered. The "AI is writing" placeholders are not replies.
+   */
+  @Query(
+    """
+    SELECT COUNT(*) FROM chat_messages
+    WHERE conversationId LIKE :conversationId
+        AND sender != 'MEMBER'
+        AND isAiGenerationIndicator = 0
+    """,
+  )
+  fun countMessagesFromHedvig(conversationId: Uuid): Flow<Int>
 }

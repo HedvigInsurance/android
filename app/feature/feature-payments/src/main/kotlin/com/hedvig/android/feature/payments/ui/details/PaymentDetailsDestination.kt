@@ -30,6 +30,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.preview.TripleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.TripleCase
+import com.hedvig.android.data.paying.member.PayinAccount
+import com.hedvig.android.data.paying.member.formatSwishPhoneNumber
+import com.hedvig.android.data.paying.member.maskedAccountNumber
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
@@ -67,12 +70,14 @@ import hedvig.resources.PAYMENTS_IN_PROGRESS
 import hedvig.resources.PAYMENTS_IN_PROGRESS_KIVRA
 import hedvig.resources.PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION
 import hedvig.resources.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE
+import hedvig.resources.PAYMENTS_PAYMENT_DETAILS_SWISH_DESCRIPTION
 import hedvig.resources.PAYMENTS_PAYMENT_DUE
 import hedvig.resources.PAYMENTS_PAYMENT_FAILED
 import hedvig.resources.PAYMENTS_PAYMENT_METHOD
 import hedvig.resources.PAYMENTS_PAYMENT_SUCCESSFUL
 import hedvig.resources.PAYMENTS_PROCESSING_PAYMENT
 import hedvig.resources.PAYMENTS_REFERRALS_INFO_TITLE
+import hedvig.resources.PAYMENTS_SWISH_NUMBER
 import hedvig.resources.Res
 import hedvig.resources.general_close_button
 import hedvig.resources.payment_details_receipt_card_total
@@ -80,6 +85,7 @@ import hedvig.resources.payments_carried_adjustment
 import hedvig.resources.payments_carried_adjustment_info
 import hedvig.resources.payments_settlement_adjustment
 import hedvig.resources.payments_settlement_adjustment_info
+import hedvig.resources.swish
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -244,7 +250,7 @@ private fun MemberChargeDetailsScreen(
               val message = when (uiState.paymentDetails.memberCharge.chargeMethod) {
                 MemberPaymentChargeMethod.TRUSTLY -> stringResource(Res.string.PAYMENTS_IN_PROGRESS)
                 MemberPaymentChargeMethod.INVOICE -> stringResource(Res.string.PAYMENTS_IN_PROGRESS_KIVRA)
-                MemberPaymentChargeMethod.UNKNOWN -> null
+                MemberPaymentChargeMethod.SWISH, MemberPaymentChargeMethod.UNKNOWN -> null
               }
               if (message != null) {
                 HedvigNotificationCard(
@@ -284,30 +290,29 @@ private fun MemberChargeDetailsScreen(
               HedvigText(explanationTitle)
             },
             endSlot = {
-              when (uiState.paymentDetails.memberCharge.chargeMethod) {
-                MemberPaymentChargeMethod.TRUSTLY,
-                MemberPaymentChargeMethod.INVOICE,
-                -> {
-                  val textToShow: String =
-                    if (uiState.paymentDetails.memberCharge.chargeMethod == MemberPaymentChargeMethod.TRUSTLY) {
-                      stringResource(Res.string.PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION)
-                    } else {
-                      stringResource(Res.string.KIVRA_PAYMENT_INFO)
-                    }
-                  Icon(
-                    imageVector = HedvigIcons.InfoFilled,
-                    tint = HedvigTheme.colorScheme.fillSecondary,
-                    contentDescription = "Info icon",
-                    modifier = Modifier
-                      .wrapContentSize(Alignment.CenterEnd)
-                      .size(24.dp)
-                      .clip(HedvigTheme.shapes.cornerXLarge)
-                      .clickable { onShowExplanation(explanationTitle, textToShow) }
-                      .minimumInteractiveComponentSize(),
-                  )
-                }
+              val textToShow: String? = when (uiState.paymentDetails.memberCharge.chargeMethod) {
+                MemberPaymentChargeMethod.TRUSTLY -> stringResource(
+                  Res.string.PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION,
+                )
 
-                MemberPaymentChargeMethod.UNKNOWN -> {}
+                MemberPaymentChargeMethod.SWISH -> stringResource(Res.string.PAYMENTS_PAYMENT_DETAILS_SWISH_DESCRIPTION)
+
+                MemberPaymentChargeMethod.INVOICE -> stringResource(Res.string.KIVRA_PAYMENT_INFO)
+
+                MemberPaymentChargeMethod.UNKNOWN -> null
+              }
+              if (textToShow != null) {
+                Icon(
+                  imageVector = HedvigIcons.InfoFilled,
+                  tint = HedvigTheme.colorScheme.fillSecondary,
+                  contentDescription = "Info icon",
+                  modifier = Modifier
+                    .wrapContentSize(Alignment.CenterEnd)
+                    .size(24.dp)
+                    .clip(HedvigTheme.shapes.cornerXLarge)
+                    .clickable { onShowExplanation(explanationTitle, textToShow) }
+                    .minimumInteractiveComponentSize(),
+                )
               }
             },
             modifier = Modifier.padding(vertical = 16.dp),
@@ -361,6 +366,7 @@ private fun MemberChargeDetailsScreen(
 
           when (val chargeMethod = uiState.paymentDetails.memberCharge.chargeMethod) {
             MemberPaymentChargeMethod.TRUSTLY,
+            MemberPaymentChargeMethod.SWISH,
             MemberPaymentChargeMethod.INVOICE,
             -> {
               HorizontalItemsWithMaximumSpaceTaken(
@@ -370,8 +376,9 @@ private fun MemberChargeDetailsScreen(
                 endSlot = {
                   val text = when (chargeMethod) {
                     MemberPaymentChargeMethod.TRUSTLY -> stringResource(Res.string.PAYMENTS_AUTOGIRO_LABEL)
+                    MemberPaymentChargeMethod.SWISH -> stringResource(Res.string.swish)
                     MemberPaymentChargeMethod.INVOICE -> stringResource(Res.string.PAYMENTS_INVOICE)
-                    else -> ""
+                    MemberPaymentChargeMethod.UNKNOWN -> ""
                   }
                   HedvigText(
                     text = text,
@@ -393,46 +400,58 @@ private fun MemberChargeDetailsScreen(
             is PaymentDetails.PaymentsInfo.NoPresentableInfo -> {}
 
             is PaymentDetails.PaymentsInfo.Active -> {
-              if (paymentsInfo.displayValue != null) {
-                HorizontalItemsWithMaximumSpaceTaken(
-                  startSlot = {
-                    HedvigText(stringResource(Res.string.PAYMENTS_ACCOUNT))
-                  },
-                  endSlot = {
-                    HedvigText(
-                      text = paymentsInfo.displayValue,
-                      textAlign = TextAlign.End,
-                      modifier = Modifier.fillMaxWidth(),
-                      color = HedvigTheme.colorScheme.textSecondary,
-                    )
-                  },
-                  modifier = Modifier.padding(vertical = 16.dp),
-                  spaceBetween = 8.dp,
-                )
-                HorizontalDivider()
-              }
-
-              if (paymentsInfo.displayName != null) {
-                HorizontalItemsWithMaximumSpaceTaken(
-                  startSlot = { HedvigText(stringResource(Res.string.PAYMENTS_BANK_LABEL)) },
-                  endSlot = {
-                    HedvigText(
-                      text = paymentsInfo.displayName,
-                      textAlign = TextAlign.End,
-                      modifier = Modifier.fillMaxWidth(),
-                      color = HedvigTheme.colorScheme.textSecondary,
-                    )
-                  },
-                  spaceBetween = 8.dp,
-                  modifier = Modifier.padding(vertical = 16.dp),
-                )
-              }
+              PayinAccountRows(paymentsInfo.account)
             }
           }
         }
       }
     }
   }
+}
+
+/** The account behind the payment method row, in the terms its own method uses. */
+@Composable
+private fun PayinAccountRows(account: PayinAccount) {
+  when (account) {
+    is PayinAccount.Trustly -> {
+      val maskedAccountNumber = account.maskedAccountNumber()
+      if (maskedAccountNumber != null) {
+        PaymentDetailsInfoRow(stringResource(Res.string.PAYMENTS_ACCOUNT), maskedAccountNumber)
+        HorizontalDivider()
+      }
+      val bankName = account.bankName
+      if (!bankName.isNullOrBlank()) {
+        PaymentDetailsInfoRow(stringResource(Res.string.PAYMENTS_BANK_LABEL), bankName)
+      }
+    }
+
+    is PayinAccount.SwishPayin -> {
+      val phoneNumber = account.phoneNumber
+      if (!phoneNumber.isNullOrBlank()) {
+        PaymentDetailsInfoRow(stringResource(Res.string.PAYMENTS_SWISH_NUMBER), formatSwishPhoneNumber(phoneNumber))
+      }
+    }
+
+    // The payment method row already says it is an invoice, and there is no account behind one.
+    is PayinAccount.Invoice -> {}
+  }
+}
+
+@Composable
+private fun PaymentDetailsInfoRow(label: String, value: String) {
+  HorizontalItemsWithMaximumSpaceTaken(
+    startSlot = { HedvigText(label) },
+    endSlot = {
+      HedvigText(
+        text = value,
+        textAlign = TextAlign.End,
+        modifier = Modifier.fillMaxWidth(),
+        color = HedvigTheme.colorScheme.textSecondary,
+      )
+    },
+    spaceBetween = 8.dp,
+    modifier = Modifier.padding(vertical = 16.dp),
+  )
 }
 
 @Composable
@@ -478,19 +497,17 @@ private fun PaymentDetailsScreenPreview(
           PaymentDetails(
             memberCharge = when (withPaymentInfo) {
               TripleCase.FIRST -> paymentDetailsPreviewData
-              TripleCase.SECOND -> paymentDetailsINVOICEPreviewData
-              TripleCase.THIRD -> paymentDetailsPreviewData
+              TripleCase.SECOND -> paymentDetailsPreviewData.copy(chargeMethod = MemberPaymentChargeMethod.SWISH)
+              TripleCase.THIRD -> paymentDetailsINVOICEPreviewData
             },
             pastCharges = chargeHistoryPreviewData,
             paymentsInfo = when (withPaymentInfo) {
               TripleCase.FIRST -> PaymentDetails.PaymentsInfo.Active(
-                "displayName",
-                "displayValue",
+                PayinAccount.Trustly("8327", "91234124", "Swedbank", isPending = false, isDefault = true),
               )
 
               TripleCase.SECOND -> PaymentDetails.PaymentsInfo.Active(
-                "displayName",
-                "displayValue",
+                PayinAccount.SwishPayin("0701234567", isPending = false, isDefault = true),
               )
 
               TripleCase.THIRD -> PaymentDetails.PaymentsInfo.NoPresentableInfo

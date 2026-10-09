@@ -55,6 +55,9 @@ import com.hedvig.android.feature.onboarding.ui.withOnboardingHaptic
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.ui.analytics.consent.AnalyticsConsentContent
+import com.hedvig.android.ui.analytics.consent.ConsentBadge
+import com.hedvig.android.ui.analytics.consent.rememberAnalyticsConsentDecision
 import dev.zacsweers.metro.Inject
 import hedvig.resources.LEGAL_PRIVACY_POLICY_APP_SHORT
 import hedvig.resources.ONBOARDING_ANALYTICS_ALLOW_BUTTON
@@ -89,19 +92,14 @@ internal class OnboardingConsentPresenter(
   ): OnboardingConsentUiState {
     var currentState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
-    var badge by remember {
-      mutableStateOf((lastState as? OnboardingConsentUiState.Content)?.badge)
-    }
-    // Held while a decision is being applied so repeated taps cannot start a second one, and
-    // released once it has navigated, because this entry stays on the back stack and becomes
-    // interactive again when the member comes back to it.
-    var pendingNavigation by remember { mutableStateOf<PendingNavigation?>(null) }
-    val badgeSettleSignals = remember { MutableSharedFlow<ConsentBadge?>(replay = 1) }
+    var exiting by remember { mutableStateOf(false) }
+    val decision = rememberAnalyticsConsentDecision(
+      settingsDataStore = settingsDataStore,
+      lastConsent = (lastState as? OnboardingConsentUiState.Content)?.consent,
+      onDecided = { navigator.continueFrom(OnboardingStepId.AnalyticsConsent) },
+    )
 
     LaunchedEffect(loadIteration) {
-      // Read before the early return: a presenter that restarts while this screen is showing keeps
-      // its state but loses the badge, which only the stored consent can tell us.
-      badge = settingsDataStore.observeAnalyticsConsent().first().toBadge()
       if (currentState is OnboardingConsentUiState.Content) return@LaunchedEffect
       currentState = OnboardingConsentUiState.Loading
       sessionStore.getOrFetchSession().fold(
@@ -109,33 +107,17 @@ internal class OnboardingConsentPresenter(
         ifRight = { session ->
           currentState = OnboardingConsentUiState.Content(
             progress = session.progressFor(OnboardingStepId.AnalyticsConsent),
-            badge = badge,
+            consent = AnalyticsConsent.NOT_DECIDED,
             buttonsEnabled = true,
           )
         },
       )
     }
 
-    LaunchedEffect(pendingNavigation) {
-      when (val pending = pendingNavigation) {
-        null -> {}
-
-        PendingNavigation.Exit -> {
-          navigator.exitOnboarding()
-          pendingNavigation = null
-        }
-
-        is PendingNavigation.Decision -> {
-          settingsDataStore.setAnalyticsConsent(pending.consent)
-          val answeredBadge = pending.consent.toBadge()
-          if (answeredBadge != badge) {
-            badge = answeredBadge
-            badgeSettleSignals.first { settledBadge -> settledBadge == answeredBadge }
-          }
-          navigator.continueFrom(OnboardingStepId.AnalyticsConsent)
-          pendingNavigation = null
-        }
-      }
+    LaunchedEffect(exiting) {
+      if (!exiting) return@LaunchedEffect
+      navigator.exitOnboarding()
+      exiting = false
     }
 
     CollectEvents { event ->
@@ -145,50 +127,39 @@ internal class OnboardingConsentPresenter(
         }
 
         OnboardingConsentEvent.Close -> {
-          if (pendingNavigation == null) {
-            pendingNavigation = PendingNavigation.Exit
-          }
+          if (!decision.isDeciding) exiting = true
         }
 
         OnboardingConsentEvent.Allow -> {
-          if (pendingNavigation == null) {
-            pendingNavigation = PendingNavigation.Decision(AnalyticsConsent.GRANTED)
-          }
+          if (!exiting) decision.decide(AnalyticsConsent.GRANTED)
         }
 
         OnboardingConsentEvent.Deny -> {
-          if (pendingNavigation == null) {
-            pendingNavigation = PendingNavigation.Decision(AnalyticsConsent.DENIED)
-          }
+          if (!exiting) decision.decide(AnalyticsConsent.DENIED)
         }
 
         is OnboardingConsentEvent.BadgeSettled -> {
-          badgeSettleSignals.tryEmit(event.badge)
+          decision.onBadgeSettled(event.badge)
         }
       }
     }
 
     return when (val state = currentState) {
-      is OnboardingConsentUiState.Content -> state.copy(
-        badge = badge,
-        buttonsEnabled = pendingNavigation == null,
-      )
+      is OnboardingConsentUiState.Content -> {
+        // Held back until the stored answer is known, so the card does not animate in a badge that was
+        // already there.
+        val consent = decision.consent ?: return OnboardingConsentUiState.Loading
+        state.copy(
+          consent = consent,
+          buttonsEnabled = !decision.isDeciding && !exiting,
+        )
+      }
 
-      else -> state
+      else -> {
+        state
+      }
     }
   }
-
-  private sealed interface PendingNavigation {
-    data object Exit : PendingNavigation
-
-    data class Decision(val consent: AnalyticsConsent) : PendingNavigation
-  }
-}
-
-private fun AnalyticsConsent.toBadge(): ConsentBadge? = when (this) {
-  AnalyticsConsent.GRANTED -> ConsentBadge.Accepted
-  AnalyticsConsent.DENIED -> ConsentBadge.Denied
-  AnalyticsConsent.NOT_DECIDED -> null
 }
 
 internal sealed interface OnboardingConsentUiState {
@@ -198,9 +169,12 @@ internal sealed interface OnboardingConsentUiState {
 
   data class Content(
     val progress: OnboardingProgress,
-    val badge: ConsentBadge?,
+    val consent: AnalyticsConsent,
     val buttonsEnabled: Boolean,
-  ) : OnboardingConsentUiState
+  ) : OnboardingConsentUiState {
+    val badge: ConsentBadge?
+      get() = ConsentBadge.from(consent)
+  }
 }
 
 internal sealed interface OnboardingConsentEvent {
@@ -270,61 +244,14 @@ private fun OnboardingConsentScreen(
 
       is OnboardingConsentUiState.Content -> {
         Spacer(Modifier.height(16.dp))
-        OnboardingStepHeader(
-          title = stringResource(Res.string.ONBOARDING_ANALYTICS_TITLE),
-          description = stringResource(Res.string.ONBOARDING_ANALYTICS_SUBTITLE),
-        )
-        Spacer(Modifier.weight(1f))
-        Spacer(Modifier.height(24.dp))
-        OnboardingConsentCard(
+        AnalyticsConsentContent(
           badge = uiState.badge,
+          buttonsEnabled = uiState.buttonsEnabled,
           onBadgeSettled = onBadgeSettled,
-          modifier = Modifier.align(Alignment.CenterHorizontally),
+          onAllow = withOnboardingHaptic(onAllow),
+          onDeny = withOnboardingHaptic(onDeny),
+          onPrivacyPolicy = openPrivacyPolicy,
         )
-        Spacer(Modifier.weight(1f))
-        Spacer(Modifier.height(24.dp))
-        Row(
-          verticalAlignment = Alignment.CenterVertically,
-          modifier = Modifier
-            .align(Alignment.CenterHorizontally)
-            .clip(CircleShape)
-            .clickable(onClick = openPrivacyPolicy)
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-        ) {
-          HedvigText(
-            text = stringResource(Res.string.LEGAL_PRIVACY_POLICY_APP_SHORT),
-            style = HedvigTheme.typography.label,
-            textDecoration = TextDecoration.Underline,
-          )
-          Icon(
-            imageVector = HedvigIcons.ArrowNorthEast,
-            contentDescription = null,
-            modifier = Modifier.size(18.dp),
-          )
-        }
-        Spacer(Modifier.height(16.dp))
-        HedvigButton(
-          text = stringResource(Res.string.ONBOARDING_ANALYTICS_ALLOW_BUTTON),
-          onClick = withOnboardingHaptic(onAllow),
-          enabled = uiState.buttonsEnabled,
-          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .clip(CircleShape),
-        )
-        Spacer(Modifier.height(8.dp))
-        HedvigButton(
-          text = stringResource(Res.string.ONBOARDING_ANALYTICS_DENY_BUTTON),
-          onClick = withOnboardingHaptic(onDeny),
-          enabled = uiState.buttonsEnabled,
-          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .clip(CircleShape),
-        )
-        Spacer(Modifier.height(16.dp))
         Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
       }
     }
@@ -359,17 +286,17 @@ private class OnboardingConsentUiStateProvider : CollectionPreviewParameterProvi
     OnboardingConsentUiState.Error,
     OnboardingConsentUiState.Content(
       progress = OnboardingProgress(totalSteps = 5, currentIndex = 2),
-      badge = null,
+      consent = AnalyticsConsent.NOT_DECIDED,
       buttonsEnabled = true,
     ),
     OnboardingConsentUiState.Content(
       progress = OnboardingProgress(totalSteps = 5, currentIndex = 2),
-      badge = ConsentBadge.Accepted,
+      consent = AnalyticsConsent.GRANTED,
       buttonsEnabled = false,
     ),
     OnboardingConsentUiState.Content(
       progress = OnboardingProgress(totalSteps = 5, currentIndex = 2),
-      badge = ConsentBadge.Denied,
+      consent = AnalyticsConsent.DENIED,
       buttonsEnabled = false,
     ),
   ),

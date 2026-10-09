@@ -11,21 +11,31 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 class KotlinMultiplatformLibraryConventionPlugin : Plugin<Project> {
   override fun apply(target: Project) {
-    with(target) {
-      val libs = the<LibrariesForLibs>()
-      with(pluginManager) {
-        apply(libs.plugins.kotlinMultiplatform.get().pluginId)
-      }
-
-      configureKotlinMultiplatform()
-    }
+    target.applyKotlinMultiplatform(withIos = true)
   }
+}
+
+/**
+ * For a module that shares code between Android and JVM only, and is never part of the iOS umbrella.
+ */
+class KotlinMultiplatformJvmLibraryConventionPlugin : Plugin<Project> {
+  override fun apply(target: Project) {
+    target.applyKotlinMultiplatform(withIos = false)
+  }
+}
+
+private fun Project.applyKotlinMultiplatform(withIos: Boolean) {
+  val libs = the<LibrariesForLibs>()
+  with(pluginManager) {
+    apply(libs.plugins.kotlinMultiplatform.get().pluginId)
+  }
+  configureKotlinMultiplatform(withIos)
 }
 
 /**
  * Configure base Kotlin Multiplatform libraries for all the standard targets
  */
-private fun Project.configureKotlinMultiplatform() {
+private fun Project.configureKotlinMultiplatform(withIos: Boolean) {
   val project = this@configureKotlinMultiplatform
   val libs = the<LibrariesForLibs>()
 
@@ -36,10 +46,10 @@ private fun Project.configureKotlinMultiplatform() {
       }
     }
 
-    listOf(
-      iosArm64(),
-      iosSimulatorArm64(),
-    )
+    if (withIos) {
+      iosArm64()
+      iosSimulatorArm64()
+    }
     jvm {
       compilerOptions {
         jvmTarget.set(JvmTarget.JVM_21)

@@ -18,6 +18,7 @@ dependencies {
 
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.datastore.core)
+  implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
@@ -47,6 +48,7 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.dataChat)
   implementation(projects.dataClaimIntent)
+  implementation(projects.dataContract)
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlags)
   implementation(projects.languageCore)

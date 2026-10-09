@@ -28,6 +28,10 @@ internal sealed interface NotificationBadge {
   object CrossSellInsuranceFragmentCard : NotificationBadge {
     override val preferencesKey = stringSetPreferencesKey("SEEN_CROSS_SELLS_INSURANCE_FRAGMENT_CARD")
   }
+
+  object PaymentsChargeNotice : NotificationBadge {
+    override val preferencesKey = stringSetPreferencesKey("SEEN_PAYMENTS_CHARGE_NOTICES")
+  }
 }
 
 @ContributesBinding(AppScope::class)
