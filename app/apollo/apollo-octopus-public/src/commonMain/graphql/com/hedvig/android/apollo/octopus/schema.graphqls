@@ -4218,8 +4218,10 @@ type Mutation {
   also creating a new Member.
   Signing is an asynchronous process, where the client must poll using `Query.shopSessionSigning` and follow
   the state changes. Some signing requires external work for the user, such as Swedish BankID signing.
+  `useBankIdSandbox` defaults to false, and is only honoured where auth has the BankID sandbox enabled,
+  which is staging - asking for it anywhere else is not an error, you just get a real BankID.
   """
-  shopSessionStartSign(shopSessionId: UUID!): ShopSessionSigningMutationOutput!
+  shopSessionStartSign(shopSessionId: UUID!, useBankIdSandbox: Boolean! = false): ShopSessionSigningMutationOutput!
   """
   Send in the expiry date of current insurance from switcher company, so that we can activate our
   insurance the day after.
@@ -5976,7 +5978,9 @@ enum UserFlow {
   """
   HOME
   """
-  Chat - a single generic recommendation linking to all insurances, no other options
+  Chat - a single generic recommendation linking to all insurances, no other options.
+  Render it from recommendedCrossSell.crossSell (title, description, buttonTitle, storeUrl); the outer
+  RecommendedCrossSell banner and button fields carry generic copy and should be ignored.
   """
   IN_CHAT_X_SELL
 }
