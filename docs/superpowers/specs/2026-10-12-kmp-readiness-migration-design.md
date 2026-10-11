@@ -154,7 +154,6 @@ the iOS closure unchanged at 46 and the KMP-with-iOS count down from 63 to 46.
 
 | Module | Beyond the recipe |
 |---|---|
-| `core-icons` | swap `androidx.compose.material:material-icons-core` for the JetBrains artifact |
 | `feature-chip-id` | none |
 | `tier-comparison` | drop the `android { testOptions ... }` block |
 | `compose-pager-indicator` | none |
@@ -198,6 +197,12 @@ in `androidMain`.
 `feature-impersonation`, `feature-insurance-certificate`, `feature-travel-certificate`,
 `feature-terminate-insurance`, `logging-device-model`, `member-reminders-ui`,
 `notification-permission`. Also `navigation-compose` and anything in the iOS closure.
+
+Deferred, found during planning on 2026-10-12: `core-icons`. It builds its icons with
+`materialIcon` and `materialPath` from `material-icons-core` in 53 files, and the JetBrains
+multiplatform artifact for that library stops at Compose Multiplatform 1.7.3 while the project
+is on 1.12.1. Converting it means rewriting every icon onto `ImageVector.Builder`. Its only
+consumers are `:app` and `feature-profile`, so it blocks nothing.
 
 ## Part 4: verification, lint, logistics
 
