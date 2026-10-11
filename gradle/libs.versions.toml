@@ -174,7 +174,7 @@ datadog-sdk-okhttp = { module = "com.datadoghq:dd-sdk-android-okhttp", version.r
 datadog-sdk-rum = { module = "com.datadoghq:dd-sdk-android-rum", version.ref = "datadog" }
 datadog-sdk-trace-otel = { module = "com.datadoghq:dd-sdk-android-trace-otel", version.ref = "datadog" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
-firebase-bom = { module = "com.google.firebase:firebase-bom", version = "34.19.0" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version = "35.0.0" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
