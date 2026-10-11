@@ -137,5 +137,35 @@ task generateProjectDependencyGraph {
     if (dot.exitValue() != 0) throw new GradleException("dot failed: $dotErr")
 
     println("Module dependency graph written to ${svg}")
+
+    def kmpIds = kinds.findAll { it.label.startsWith('KMP') }*.id
+    def isKmp = { Project p -> kmpIds.contains(kindOf(p).id) }
+    def dependents = new LinkedHashMap<Project, List<Project>>()
+    included.each { from ->
+      mainDependencies(from).keySet().findAll(isIncluded).each { to ->
+        dependents.computeIfAbsent(to) { [] } << from
+      }
+    }
+    def blockers = included
+      .findAll { !isKmp(it) && kindOf(it).id != 'hedvig.android.application' && !(dependents[it] ?: []).isEmpty() }
+      .sort { a, b -> (dependents[b].size() <=> dependents[a].size()) ?: (a.path <=> b.path) }
+
+    def summary = rootProject.file('misc/images/modularization-summary.md')
+    summary.withWriter { w ->
+      w << '# Module summary\n\n'
+      w << 'Written by `./gradlew :generateProjectDependencyGraph`. Counts cover the modules the graph shows.\n\n'
+      w << '| Kind | Modules |\n|---|---|\n'
+      (kinds + [otherKind]).each { k ->
+        w << "| ${k.label} | ${included.count { kindOf(it).is(k) }} |\n"
+      }
+      w << "| In the iOS umbrella closure (all modules) | ${iosClosure.size()} |\n\n"
+      w << '## Non-KMP modules and what depends on them\n\n'
+      w << 'Converting a module near the top unblocks the most dependents.\n\n'
+      blockers.each { b ->
+        def names = dependents[b].sort { it.path }.collect { "`${it.path}`" }.join(', ')
+        w << "- `${b.path}` (${kindOf(b).label}) <- ${names}\n"
+      }
+    }
+    println(summary.text)
   }
 }
