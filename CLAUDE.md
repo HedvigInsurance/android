@@ -57,8 +57,8 @@ A full narrative of *why* these look the way they do — the engineering decisio
 # Clean build
 ./gradlew clean
 
-# Generate module dependency graph (requires graphviz: brew install graphviz)
-./gradlew :generateProjectDependencyGraph
+# Generate module dependency graph and summary (requires graphviz: brew install graphviz)
+./gradlew :generateProjectDependencyGraph --no-configuration-cache
 
 # Find unused resources
 ./gradlew :app:lint -Prur.lint.onlyUnusedResources
