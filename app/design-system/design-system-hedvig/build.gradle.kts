@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.KotlinHierarchyBuilder
 
 plugins {
-  id("hedvig.multiplatform.library")
+  id("hedvig.multiplatform.library.ios")
   id("hedvig.multiplatform.library.android")
   id("hedvig.gradle.plugin")
 }

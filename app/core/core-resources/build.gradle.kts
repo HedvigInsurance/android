@@ -4,7 +4,7 @@ import java.util.Properties
 plugins {
   id("org.jetbrains.kotlin.plugin.compose")
   id("org.jetbrains.compose")
-  id("hedvig.multiplatform.library")
+  id("hedvig.multiplatform.library.ios")
   id("hedvig.multiplatform.library.android")
   id("hedvig.android.lokalise")
   id("hedvig.gradle.plugin")
