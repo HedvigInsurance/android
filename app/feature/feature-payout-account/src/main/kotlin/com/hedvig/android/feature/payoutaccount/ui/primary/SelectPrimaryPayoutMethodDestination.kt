@@ -51,6 +51,9 @@ import com.hedvig.android.feature.payoutaccount.ui.components.toRadioOption
 import com.hedvig.android.feature.payoutaccount.ui.primary.SelectPrimaryPayoutMethodEvent.ConfirmSelectedMethod
 import com.hedvig.android.feature.payoutaccount.ui.primary.SelectPrimaryPayoutMethodEvent.Retry
 import com.hedvig.android.feature.payoutaccount.ui.primary.SelectPrimaryPayoutMethodEvent.SelectMethod
+import hedvig.resources.PAYOUT_CHOOSE_METHOD_SUBTITLE
+import hedvig.resources.PAYOUT_CONFIRMATION_INFO
+import hedvig.resources.PAYOUT_CONFIRMATION_TITLE
 import hedvig.resources.PAYOUT_SELECT_PAYOUT_METHOD
 import hedvig.resources.Res
 import hedvig.resources.general_cancel_button
@@ -131,8 +134,7 @@ private fun SelectPrimaryPayoutMethodScreen(
     Spacer(Modifier.height(8.dp))
     FlowHeading(
       title = stringResource(Res.string.PAYOUT_SELECT_PAYOUT_METHOD),
-      // TODO: Add "This method will be used for your payouts" / "Den här metoden används för dina utbetalningar" to Lokalise
-      description = "This method will be used for your payouts",
+      description = stringResource(Res.string.PAYOUT_CHOOSE_METHOD_SUBTITLE),
       baseStyle = HedvigTheme.typography.bodySmall,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
@@ -229,15 +231,13 @@ private fun ConfirmPrimaryPayoutMethodBottomSheetContent(
   onDismiss: () -> Unit,
 ) {
   HedvigText(
-    // TODO: Add "Confirm payout method" / "Bekräfta utbetalningsmetod" to Lokalise
-    text = "Confirm payout method",
+    text = stringResource(Res.string.PAYOUT_CONFIRMATION_TITLE),
     textAlign = TextAlign.Center,
     modifier = Modifier.fillMaxWidth(),
   )
   Spacer(Modifier.height(24.dp))
   HedvigNotificationCard(
-    // TODO: Add "Your next payout will be made via %1$s" / "Din nästa utbetalning görs via %1$s" to Lokalise
-    message = "Your next payout will be made via ${payoutMethodTitle(method)}",
+    message = stringResource(Res.string.PAYOUT_CONFIRMATION_INFO, payoutMethodTitle(method)),
     priority = Info,
     modifier = Modifier.fillMaxWidth(),
   )
