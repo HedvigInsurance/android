@@ -1440,7 +1440,7 @@
 <!-- :file&#45;upload&#45;ui -->
 <g id="node80" class="node">
 <title>:file&#45;upload&#45;ui</title>
-<ellipse fill="#baffc9" stroke="black" cx="1785.6" cy="-1503.68" rx="63.04" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="1785.6" cy="-1503.68" rx="63.04" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="1785.6" y="-1497.88" font-family="Helvetica,sans-Serif" font-size="14.00">:file&#45;upload&#45;ui</text>
 </g>
 <!-- :feature&#45;claim&#45;details&#45;&gt;:file&#45;upload&#45;ui -->

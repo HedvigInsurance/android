@@ -1,5 +1,6 @@
 plugins {
-  id("hedvig.android.library")
+  id("hedvig.multiplatform.library")
+  id("hedvig.multiplatform.library.android")
   id("hedvig.gradle.plugin")
 }
 
@@ -7,8 +8,12 @@ hedvig {
   compose()
 }
 
-dependencies {
-  implementation(projects.composeUi)
-  implementation(projects.coreResources)
-  implementation(projects.designSystemHedvig)
+kotlin {
+  sourceSets {
+    commonMain.dependencies {
+      implementation(projects.composeUi)
+      implementation(projects.coreResources)
+      implementation(projects.designSystemHedvig)
+    }
+  }
 }
