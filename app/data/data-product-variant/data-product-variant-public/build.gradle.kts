@@ -1,6 +1,7 @@
 plugins {
   id("hedvig.multiplatform.library")
   id("hedvig.gradle.plugin")
+  id("hedvig.multiplatform.library.android")
 }
 
 hedvig {
