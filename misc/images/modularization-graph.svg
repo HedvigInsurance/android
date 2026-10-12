@@ -1620,7 +1620,7 @@
 <!-- :feature&#45;edit&#45;coinsured -->
 <g id="node87" class="node">
 <title>:feature&#45;edit&#45;coinsured</title>
-<ellipse fill="#baffc9" stroke="black" cx="1785.6" cy="-2677.68" rx="98.14" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="1785.6" cy="-2677.68" rx="98.14" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="1785.6" y="-2671.88" font-family="Helvetica,sans-Serif" font-size="14.00">:feature&#45;edit&#45;coinsured</text>
 </g>
 <!-- :feature&#45;edit&#45;coinsured&#45;&gt;:apollo&#45;core -->

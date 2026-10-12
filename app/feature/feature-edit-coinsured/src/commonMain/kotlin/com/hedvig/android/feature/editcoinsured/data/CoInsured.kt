@@ -1,9 +1,9 @@
 package com.hedvig.android.feature.editcoinsured.data
 
+import com.benasher44.uuid.uuid4
 import com.hedvig.android.core.common.formatName
 import com.hedvig.android.core.common.formatSsn
 import com.hedvig.android.design.system.hedvig.DateFormatter
-import java.util.UUID
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 
@@ -15,7 +15,7 @@ internal data class CoInsured(
   val hasMissingInfo: Boolean,
   val activatesOn: LocalDate?,
   val terminatesOn: LocalDate?,
-  val internalId: String = UUID.randomUUID().toString(),
+  val internalId: String = uuid4().toString(),
 ) {
   val id = "$firstName-$lastName-$birthDate-$ssn"
 
