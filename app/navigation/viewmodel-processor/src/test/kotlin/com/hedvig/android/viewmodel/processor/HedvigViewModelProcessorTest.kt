@@ -204,6 +204,27 @@ class HedvigViewModelProcessorTest {
     assertThat(text).contains("EXPOSED_PARAMETER_TYPE")
   }
 
+  @Test
+  fun `view model whose constructor type never resolves fails with an error naming it`() {
+    // An unresolved constructor type stands in for the commonMain metadata pass, which cannot see types
+    // from modules without iOS targets. Such a VM is deferred every round and never generated, so the
+    // processor must report it rather than let the build pass with the VM missing from the graph.
+    // The message is matched on processor-specific wording, since the harness's kotlinc stage always
+    // adds unrelated errors of its own (see the class comment).
+    val result = compile(
+      vm(
+        """
+        @HedvigViewModel(ActivityRetainedScope::class)
+        class StrandedViewModel @Inject constructor(val repository: MissingRepository) : ViewModel()
+        """.trimIndent(),
+      ),
+    )
+
+    val processorErrors = result.messages.lines().filter { it.startsWith("e:") && "StrandedViewModel" in it }
+    assertThat(processorErrors.joinToString("\n")).contains("MissingRepository")
+    assertThat(result.generatedFile("StrandedViewModelModule.kt")).isNull()
+  }
+
   private fun vm(body: String): SourceFile = vmAt("ViewModels.kt", body)
 
   // [fileName] may include directory segments (e.g. "commonMain/X.kt"); the processor's leaf-dedupe
