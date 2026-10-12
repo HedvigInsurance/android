@@ -22,11 +22,16 @@ class HedvigLintConventionPlugin : Plugin<Project> {
         .resolve("lint-baseline-$moduleName.xml")
       val lintXmlPath: File = rootProject.projectDir.resolve("hedvig-lint").resolve("lint.xml")
       var didConfigureLint = false
-      // The KMP-android variant registers no runnable Android Lint task (only `lintKotlin*`, which is
-      // ktlint), so this lint configuration is inert: `./gradlew lint` does not lint these modules and
-      // nothing produces or consumes their baseline file. Any lint-baseline-<module>.xml for a KMP-android
-      // module is therefore not enforced and cannot be regenerated via `updateLintBaseline`.
+      // The KMP-android plugin only registers its Android Lint tasks (`lintAndroidMain`,
+      // `updateLintBaselineAndroidMain`, ...) when `com.android.lint` is also applied, so it is applied here.
+      // That androidMain pass analyses commonMain, jvmAndAndroidMain and androidMain, and is configured by
+      // the `lint {}` block below. The same plugin also adds a `lintJvm` pass, which only sees jvmMain and
+      // keeps lint's defaults. Running `updateLintBaseline` on a module without a baseline file left no
+      // `lint-baseline.xml` behind, in the module or in hedvig-lint/lint-baseline.
       pluginManager.withPlugin(libs.plugins.androidLibraryMultiplatform.get().pluginId) {
+        if (moduleName !in kmpModulesWithoutAndroidLint) {
+          pluginManager.apply(libs.plugins.lintGradlePlugin.get().pluginId)
+        }
         configure<KotlinMultiplatformAndroidComponentsExtension> {
           finalizeDsl {
             it.lint { configure(lintXmlPath, lintBaselineFile) }
@@ -55,6 +60,19 @@ class HedvigLintConventionPlugin : Plugin<Project> {
     }
   }
 }
+
+// These modules stay without Android Lint because applying it makes `generateAndroidMainLintModel` depend
+// on itself. core-common-public's androidMain depends on apollo-octopus-public, whose commonMain (jvm and
+// ios targets only) depends on core-build-constants and core-common-public. core-build-constants' and
+// language-core's commonMain depend on core-common-public, and core-build-constants' commonMain also
+// depends on language-core. The edges land on different variants when compiling, but the lint model
+// resolution reaches each module again and AGP wires it to its own task. Dropping language-core or
+// core-common-public from this set, or core-build-constants alone, reports a circular dependency.
+private val kmpModulesWithoutAndroidLint = setOf(
+  "core-build-constants",
+  "core-common-public",
+  "language-core",
+)
 
 private fun Lint.configure(lintXmlFile: File, lintBaselineFile: File) {
   // Lint aborts the build whenever it has to create a baseline, even when it found nothing to put in
