@@ -77,8 +77,10 @@ internal fun TaskStepTopContent(
           }
         }
         if (taskContent.descriptions.isNotEmpty() && isLastStep) {
-          AnimatedContent(showBlinkingAiDot && showPill) {
-            Spacer(Modifier.width(8.dp))
+          AnimatedContent(showBlinkingAiDot && showPill) { show ->
+            if (show) {
+              Spacer(Modifier.width(8.dp))
+            }
           }
           val pacedDescription = rememberPacedDescription(taskContent.descriptions)
           AnimatedContent(
