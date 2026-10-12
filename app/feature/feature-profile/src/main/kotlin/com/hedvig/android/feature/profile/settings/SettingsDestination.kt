@@ -56,6 +56,7 @@ import com.hedvig.android.notification.permission.rememberNotificationPermission
 import com.hedvig.android.theme.Theme
 import hedvig.resources.GENERAL_DISABLED
 import hedvig.resources.GENERAL_ENABLED
+import hedvig.resources.GENERAL_NOT_SELECTED
 import hedvig.resources.GENERAL_SUBSCRIBED
 import hedvig.resources.GENERAL_UNSUBSCRIBED
 import hedvig.resources.PROFILE_NOTIFICATIONS_STATUS_OFF
@@ -74,7 +75,6 @@ import hedvig.resources.SETTINGS_TITLE
 import hedvig.resources.SETTINGS_USAGE_DATA_TITLE
 import hedvig.resources.general_close_button
 import hedvig.resources.language_picker_modal_title
-import hedvig.resources.not_selected
 import hedvig.resources.something_went_wrong
 import org.jetbrains.compose.resources.stringResource
 
@@ -190,7 +190,7 @@ private fun SettingsScreen(
 
               // No explicit choice made yet: nothing is forwarded to Firebase, but this is shown
               // as distinct from an explicit "Disabled".
-              AnalyticsConsent.NOT_DECIDED -> stringResource(Res.string.not_selected)
+              AnalyticsConsent.NOT_DECIDED -> stringResource(Res.string.GENERAL_NOT_SELECTED)
             },
             labelText = stringResource(Res.string.SETTINGS_USAGE_DATA_TITLE),
             modifier = Modifier
@@ -375,7 +375,7 @@ fun Theme?.getLabel() = when (this) {
   Theme.LIGHT -> Res.string.SETTINGS_THEME_LIGHT
   Theme.DARK -> Res.string.SETTINGS_THEME_DARK
   Theme.SYSTEM_DEFAULT -> Res.string.SETTINGS_THEME_SYSTEM_DEFAULT
-  null -> Res.string.not_selected
+  null -> Res.string.GENERAL_NOT_SELECTED
 }
 
 private fun Theme.apply() = when (this) {
