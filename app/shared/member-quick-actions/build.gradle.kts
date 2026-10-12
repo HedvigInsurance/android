@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-
 plugins {
   id("hedvig.multiplatform.library.ios")
   id("hedvig.multiplatform.library.android")
@@ -13,15 +11,6 @@ hedvig {
 
 kotlin {
   sourceSets {
-    @OptIn(ExperimentalKotlinGradlePluginApi::class)
-    applyDefaultHierarchyTemplate {
-      common {
-        group("jvmAndAndroid") {
-          withAndroidLibraryTarget()
-          withJvm()
-        }
-      }
-    }
     commonMain.dependencies {
       implementation(libs.apollo.runtime)
       implementation(libs.arrow.core)

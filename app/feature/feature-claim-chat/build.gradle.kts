@@ -25,8 +25,6 @@ kotlin {
       implementation(libs.jetbrains.compose.ui)
       implementation(libs.jetbrains.compose.ui.tooling.preview)
       implementation(libs.jetbrains.navigationevent.compose)
-      implementation(libs.metro.viewmodel)
-      implementation(libs.metro.viewmodel.compose)
       implementation(libs.kotlinx.serialization.core)
       implementation(libs.kotlinx.serialization.json)
       implementation(libs.ktor.client.contentNegotiation)
@@ -69,7 +67,6 @@ kotlin {
     androidMain.dependencies {
       implementation(libs.accompanist.permissions)
       implementation(libs.androidx.activity.compose)
-      implementation(libs.bundles.kmpPreviewBugWorkaround)
       implementation(libs.rive.android)
       implementation(projects.composeUi)
       implementation(projects.coreDemoMode)

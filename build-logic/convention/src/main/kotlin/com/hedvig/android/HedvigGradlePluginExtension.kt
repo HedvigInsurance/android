@@ -247,6 +247,7 @@ private abstract class ComposeHandler {
         if (isAndroidMultiplatformLibrary) {
           add("androidMainImplementation", libs.androidx.compose.uiToolingPreview)
           add("androidMainImplementation", libs.androidx.compose.uiTooling)
+          add("androidMainImplementation", libs.bundles.kmpPreviewBugWorkaround)
         } else {
           add("androidTestImplementation", platform(bom))
           add("implementation", libs.androidx.compose.uiToolingPreview)
@@ -365,6 +366,10 @@ private abstract class ViewModelsHandler {
     project.dependencies {
       add("kspCommonMainMetadata", processor)
       add("kspAndroid", processor)
+      // Android-library modules get these from configureMetro through the AGP plugin; a KMP module's
+      // ViewModels live in commonMain, so the artifacts go there.
+      add("commonMainImplementation", libs.metro.viewmodel)
+      add("commonMainImplementation", libs.metro.viewmodel.compose)
     }
     project.extensions.configure<KotlinMultiplatformExtension> {
       sourceSets.getByName("commonMain").kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
