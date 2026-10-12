@@ -52,6 +52,23 @@ class SwedishLoginPresenterTest {
   }
 
   @Test
+  fun `start login attempt failing with a server error results in the service unavailable state`() = runTest {
+    val authRepository = FakeAuthRepository()
+    val presenter: SwedishLoginPresenter = testSwedishLoginPresenter(authRepository)
+
+    presenter.test(SwedishLoginUiState(BankIdUiState.Loading, false)) {
+      assertThat(awaitItem().bankIdUiState).isInstanceOf<BankIdUiState.Loading>()
+      authRepository.authAttemptResponse.add(AuthAttemptResult.Error.ServerError(503))
+      assertThat(awaitItem().bankIdUiState).isInstanceOf<BankIdUiState.LoginServiceUnavailable>()
+
+      sendEvent(SwedishLoginEvent.Retry)
+      assertThat(awaitItem().bankIdUiState).isInstanceOf<BankIdUiState.Loading>()
+      authRepository.authAttemptResponse.add(AuthAttemptResult.Error.UnknownError("test error"))
+      assertThat(awaitItem().bankIdUiState).isInstanceOf<BankIdUiState.StartLoginAttemptFailed>()
+    }
+  }
+
+  @Test
   fun `auth repository responding successfully to the exchange, results in a login`() = runTest {
     val authTokenService = TestAuthTokenService()
     val authRepository = FakeAuthRepository()
