@@ -4,8 +4,8 @@ Written by `./gradlew :generateProjectDependencyGraph`. Counts cover the modules
 
 | Kind | Modules |
 |---|---|
-| KMP, iOS targets | 62 |
-| KMP, no iOS | 1 |
+| KMP, iOS targets | 46 |
+| KMP, no iOS | 17 |
 | Android library | 46 |
 | JVM library | 22 |
 | Application | 1 |
