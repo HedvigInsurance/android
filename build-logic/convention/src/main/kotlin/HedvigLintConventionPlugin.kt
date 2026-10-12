@@ -26,8 +26,8 @@ class HedvigLintConventionPlugin : Plugin<Project> {
       // `updateLintBaselineAndroidMain`, ...) when `com.android.lint` is also applied, so it is applied here.
       // That androidMain pass analyses commonMain, jvmAndAndroidMain and androidMain, and is configured by
       // the `lint {}` block below. The same plugin also adds a `lintJvm` pass, which only sees jvmMain and
-      // keeps lint's defaults. Running `updateLintBaseline` on a module without a baseline file left no
-      // `lint-baseline.xml` behind, in the module or in hedvig-lint/lint-baseline.
+      // keeps lint's defaults. The `lint {}` block in `finalizeDsl`, and so `lint.xml` and the module's
+      // baseline, applies to the Android pass only.
       pluginManager.withPlugin(libs.plugins.androidLibraryMultiplatform.get().pluginId) {
         if (moduleName !in kmpModulesWithoutAndroidLint) {
           pluginManager.apply(libs.plugins.lintGradlePlugin.get().pluginId)
@@ -61,13 +61,10 @@ class HedvigLintConventionPlugin : Plugin<Project> {
   }
 }
 
-// These modules stay without Android Lint because applying it makes `generateAndroidMainLintModel` depend
-// on itself. core-common-public's androidMain depends on apollo-octopus-public, whose commonMain (jvm and
-// ios targets only) depends on core-build-constants and core-common-public. core-build-constants' and
-// language-core's commonMain depend on core-common-public, and core-build-constants' commonMain also
-// depends on language-core. The edges land on different variants when compiling, but the lint model
-// resolution reaches each module again and AGP wires it to its own task. Dropping language-core or
-// core-common-public from this set, or core-build-constants alone, reports a circular dependency.
+// These modules are left without Android lint because applying the plugin there creates a Gradle task
+// cycle. apollo-octopus-public's commonMain depends on core-build-constants and core-common-public,
+// core-common-public's androidMain depends on apollo-octopus-public, and core-build-constants' commonMain
+// depends on language-core and core-common-public.
 private val kmpModulesWithoutAndroidLint = setOf(
   "core-build-constants",
   "core-common-public",

@@ -204,7 +204,9 @@ multiplatform artifact for that library stops at Compose Multiplatform 1.7.3 whi
 is on 1.12.1. Converting it means rewriting every icon onto `ImageVector.Builder`. Its only
 consumers are `:app` and `feature-profile`, so it blocks nothing.
 
-Wave 2 (Tasks 16 to 18) was cancelled on 2026-10-12: plain JVM libraries are already consumable from `commonMain` of JVM-plus-Android KMP modules, verified by probe, while single-target KMP modules expose no `commonMain` metadata.
+Wave 2 (Tasks 16 to 18) was cancelled on 2026-10-12: plain JVM libraries are already
+consumable from `commonMain` of JVM-plus-Android KMP modules, verified by probe, while
+single-target KMP modules expose no `commonMain` metadata.
 
 ## Part 4: verification, lint, logistics
 
@@ -219,11 +221,12 @@ modules by itself. The convention plugin now applies `com.android.lint` on top o
 `updateLintBaselineAndroidMain` and friends. That pass lints `commonMain`, `jvmAndAndroidMain` and
 `androidMain` with the shared `lint.xml` and the per-module baseline, and root `./gradlew lint`
 runs it. `core-build-constants`, `core-common-public` and `language-core` are still excluded:
-applying the plugin there makes `generateAndroidMainLintModel` depend on itself, through
-`core-common-public`'s androidMain dependency on `apollo-octopus-public`, which in turn depends on
-all three. KMP modules without an Android target get JVM lint over `jvmMain` only, so their
-`commonMain` is not linted. CI annotates only `:app`'s lint results on the PR, so findings in other
-modules fail the job without inline annotations.
+applying the plugin there creates a Gradle task cycle. `apollo-octopus-public`'s `commonMain`
+depends on `core-build-constants` and `core-common-public`, `core-common-public`'s `androidMain`
+depends on `apollo-octopus-public`, and `core-build-constants`' `commonMain` depends on
+`language-core` and `core-common-public`. KMP modules without an Android target get JVM lint
+over `jvmMain` only, so their `commonMain` is not linted. CI annotates only `:app`'s lint results
+on the PR, so findings in other modules fail the job without inline annotations.
 
 **Logistics.** Work happens in `android_copy`, which was moved to `develop` on
 2026-10-12. One branch per PR, each off `develop`. All branches stay local: no pushes,
