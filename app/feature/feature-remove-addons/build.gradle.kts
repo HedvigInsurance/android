@@ -23,8 +23,6 @@ kotlin {
       implementation(libs.jetbrains.compose.foundation)
       implementation(libs.jetbrains.compose.ui)
       implementation(libs.jetbrains.compose.ui.tooling.preview)
-      implementation(libs.metro.viewmodel)
-      implementation(libs.metro.viewmodel.compose)
       implementation(libs.kotlinx.serialization.core)
       implementation(libs.kotlinx.serialization.json)
       implementation(projects.apolloCore)
@@ -43,7 +41,6 @@ kotlin {
       implementation(projects.navigationCompose)
     }
     androidMain.dependencies {
-      implementation(libs.bundles.kmpPreviewBugWorkaround)
       implementation(projects.composeUi)
       implementation(projects.navigationCore)
       implementation(projects.dataProductVariantPublic)

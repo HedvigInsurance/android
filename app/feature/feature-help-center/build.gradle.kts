@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-
 plugins {
   id("hedvig.multiplatform.library.ios")
   id("hedvig.multiplatform.library.android")
@@ -17,15 +15,6 @@ hedvig {
 
 kotlin {
   sourceSets {
-    @OptIn(ExperimentalKotlinGradlePluginApi::class)
-    applyDefaultHierarchyTemplate {
-      common {
-        group("jvmAndAndroid") {
-          withAndroidLibraryTarget()
-          withJvm()
-        }
-      }
-    }
     commonMain.dependencies {
       implementation(libs.apollo.runtime)
       implementation(libs.apollo.normalizedCache)
@@ -35,8 +24,6 @@ kotlin {
       implementation(libs.jetbrains.compose.ui.tooling.preview)
       implementation(libs.jetbrains.lifecycle.runtime.compose)
       implementation(libs.jetbrains.navigationevent.compose)
-      implementation(libs.metro.viewmodel)
-      implementation(libs.metro.viewmodel.compose)
       implementation(libs.kotlinx.serialization.core)
       implementation(libs.mikepenz.markdown)
       implementation(projects.apolloCore)
@@ -65,9 +52,6 @@ kotlin {
       implementation(projects.memberQuickActions)
       implementation(projects.partnersDeflect)
       implementation(projects.uiEmergency)
-    }
-    androidMain.dependencies {
-      implementation(libs.bundles.kmpPreviewBugWorkaround)
     }
     jvmMain.dependencies {
     }

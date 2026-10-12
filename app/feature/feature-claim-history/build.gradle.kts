@@ -25,8 +25,6 @@ kotlin {
       implementation(projects.coreCommonPublic)
     }
     androidMain.dependencies {
-      implementation(libs.bundles.kmpPreviewBugWorkaround)
-      implementation(libs.metro.viewmodel.compose)
       implementation(projects.coreResources)
       implementation(projects.designSystemHedvig)
       implementation(projects.moleculePublic)
