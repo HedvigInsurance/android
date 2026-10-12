@@ -19,15 +19,16 @@ kotlin {
       implementation(libs.apollo.runtime)
       implementation(libs.arrow.core)
       implementation(libs.jetbrains.compose.runtime)
+      implementation(libs.jetbrains.compose.ui.tooling.preview)
       implementation(libs.kotlinx.serialization.core)
       implementation(projects.apolloCore)
       implementation(projects.apolloOctopusPublic)
       implementation(projects.coreCommonPublic)
-    }
-    androidMain.dependencies {
       implementation(projects.coreResources)
       implementation(projects.designSystemHedvig)
       implementation(projects.moleculePublic)
+    }
+    androidMain.dependencies {
       implementation(projects.navigationCommon)
       implementation(projects.navigationCompose)
     }
