@@ -1,4 +1,4 @@
 plugins {
-  id("hedvig.multiplatform.library.ios")
+  id("hedvig.multiplatform.library")
   id("hedvig.gradle.plugin")
 }

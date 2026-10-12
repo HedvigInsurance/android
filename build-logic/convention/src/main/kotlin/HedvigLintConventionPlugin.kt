@@ -43,10 +43,8 @@ class HedvigLintConventionPlugin : Plugin<Project> {
       // comes first. The JVM pass has a baseline file of its own, so `updateLintBaselineJvm` does not
       // overwrite the Android pass's baseline.
       pluginManager.withPlugin(libs.plugins.kotlinMultiplatform.get().pluginId) {
-        if (moduleName !in kmpModulesWithoutAndroidLint) {
-          pluginManager.apply(lintPluginId)
-          configure<Lint> { configure(lintXmlPath, lintBaselineJvmFile) }
-        }
+        pluginManager.apply(lintPluginId)
+        configure<Lint> { configure(lintXmlPath, lintBaselineJvmFile) }
       }
 
       // The KMP-android pass analyses commonMain, jvmAndAndroidMain and androidMain, and is configured by
@@ -75,16 +73,6 @@ class HedvigLintConventionPlugin : Plugin<Project> {
     }
   }
 }
-
-// These modules are left without Android lint because applying the plugin there creates a Gradle task
-// cycle. apollo-octopus-public's commonMain depends on core-build-constants and core-common-public,
-// core-common-public's androidMain depends on apollo-octopus-public, and core-build-constants' commonMain
-// depends on language-core and core-common-public.
-private val kmpModulesWithoutAndroidLint = setOf(
-  "core-build-constants",
-  "core-common-public",
-  "language-core",
-)
 
 private fun Lint.configure(lintXmlFile: File, lintBaselineFile: File) {
   // Lint aborts the build whenever it has to create a baseline, even when it found nothing to put in
