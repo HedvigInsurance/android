@@ -2394,7 +2394,7 @@
 <!-- :ui&#45;phone&#45;number -->
 <g id="node109" class="node">
 <title>:ui&#45;phone&#45;number</title>
-<ellipse fill="#baffc9" stroke="black" cx="2202.58" cy="-227.68" rx="80.11" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="2202.58" cy="-227.68" rx="80.11" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="2202.58" y="-221.88" font-family="Helvetica,sans-Serif" font-size="14.00">:ui&#45;phone&#45;number</text>
 </g>
 <!-- :feature&#45;onboarding&#45;&gt;:ui&#45;phone&#45;number -->

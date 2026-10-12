@@ -5,8 +5,8 @@ Written by `./gradlew :generateProjectDependencyGraph`. Counts cover the modules
 | Kind | Modules |
 |---|---|
 | KMP, iOS targets | 46 |
-| KMP, no iOS | 18 |
-| Android library | 44 |
+| KMP, no iOS | 19 |
+| Android library | 43 |
 | JVM library | 22 |
 | Application | 1 |
 | Other | 0 |
@@ -31,7 +31,6 @@ Converting a module near the top unblocks the most dependents.
 - `:data-chat` (JVM library) <- `:data-changetier`, `:database-core`, `:feature-chat`
 - `:member-reminders-ui` (Android library) <- `:feature-home`, `:feature-payments`, `:feature-profile`
 - `:navigation-activity` (JVM library) <- `:feature-chat`, `:feature-home`, `:feature-travel-certificate`
-- `:ui-phone-number` (Android library) <- `:feature-onboarding`, `:feature-payout-account`, `:feature-profile`
 - `:claim-status` (Android library) <- `:feature-claim-details`, `:feature-home`
 - `:compose-webview` (Android library) <- `:feature-connect-payment-trustly`, `:feature-profile`
 - `:data-changetier` (JVM library) <- `:feature-choose-tier`, `:feature-terminate-insurance`
