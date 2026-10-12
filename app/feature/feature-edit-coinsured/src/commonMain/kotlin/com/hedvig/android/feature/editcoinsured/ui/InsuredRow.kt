@@ -36,7 +36,6 @@ import hedvig.resources.CONTRACT_EDIT_INFO
 import hedvig.resources.GENERAL_REMOVE
 import hedvig.resources.Res
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

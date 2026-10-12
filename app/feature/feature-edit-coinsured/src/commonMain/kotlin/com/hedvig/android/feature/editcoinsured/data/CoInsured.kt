@@ -5,7 +5,6 @@ import com.hedvig.android.core.common.formatName
 import com.hedvig.android.core.common.formatSsn
 import com.hedvig.android.design.system.hedvig.DateFormatter
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
 
 internal data class CoInsured(
   val firstName: String?,
