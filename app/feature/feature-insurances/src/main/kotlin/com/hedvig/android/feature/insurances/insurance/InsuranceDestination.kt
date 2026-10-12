@@ -113,7 +113,10 @@ internal fun InsuranceDestination(
     uiState = uiState,
     reload = { viewModel.emit(InsuranceScreenEvent.RetryLoading) },
     onInsuranceCardClick = onInsuranceCardClick,
-    onCrossSellClick = onCrossSellClick,
+    onCrossSellClick = { url ->
+      viewModel.emit(InsuranceScreenEvent.CrossSellClicked(url))
+      onCrossSellClick(url)
+    },
     navigateToCancelledInsurances = navigateToCancelledInsurances,
     imageLoader = imageLoader,
     onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,

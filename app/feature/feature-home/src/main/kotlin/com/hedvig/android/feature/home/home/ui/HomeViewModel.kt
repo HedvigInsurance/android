@@ -4,6 +4,7 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.core.tracking.EventTrackingClient
 import com.hedvig.android.data.claimintent.DeleteClaimIntentDraftUseCase
 import com.hedvig.android.data.paying.member.GetMemberTypeUseCase
 import com.hedvig.android.feature.home.home.data.DismissedShopSessionsStorage
@@ -26,6 +27,7 @@ internal class HomeViewModel(
   getMemberQuickActionsUseCase: GetMemberQuickActionsUseCase,
   dismissedShopSessionsStorage: DismissedShopSessionsStorage,
   getMemberTypeUseCase: GetMemberTypeUseCase,
+  eventTrackingClient: EventTrackingClient,
 ) : MoleculeViewModel<HomeEvent, HomeUiState>(
     HomeUiState.Loading,
     HomePresenter(
@@ -38,5 +40,6 @@ internal class HomeViewModel(
       getMemberQuickActionsUseCase,
       dismissedShopSessionsStorage,
       getMemberTypeUseCase,
+      eventTrackingClient,
     ),
   )

@@ -21,10 +21,13 @@ import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.DemoSwitcher
+import com.hedvig.android.core.tracking.EventTrackingClient
 import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellSheetData
+import com.hedvig.android.crosssells.CrossSellUserFlow
 import com.hedvig.android.crosssells.RecommendedAddon
 import com.hedvig.android.crosssells.RecommendedCrossSell
+import com.hedvig.android.crosssells.trackCrossSellClicked
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
@@ -57,13 +60,16 @@ import octopus.type.UserFlow
 internal class CrossSellSheetViewModel(
   getCrossSellSheetDataUseCase: GetCrossSellSheetDataUseCase,
   crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
+  eventTrackingClient: EventTrackingClient,
 ) : MoleculeViewModel<CrossSellSheetEvent, CrossSellSheetState>(
     CrossSellSheetState.Loading,
-    CrossSellSheetPresenter(getCrossSellSheetDataUseCase, crossSellAfterFlowRepository),
+    CrossSellSheetPresenter(getCrossSellSheetDataUseCase, crossSellAfterFlowRepository, eventTrackingClient),
   )
 
 internal sealed interface CrossSellSheetEvent {
   data object CrossSellSheetShown : CrossSellSheetEvent
+
+  data class CrossSellClicked(val offerUrl: String) : CrossSellSheetEvent
 }
 
 internal sealed interface CrossSellSheetState {
@@ -79,6 +85,7 @@ internal sealed interface CrossSellSheetState {
 internal class CrossSellSheetPresenter(
   private val getCrossSellSheetDataUseCase: GetCrossSellSheetDataUseCase,
   private val crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
+  private val eventTrackingClient: EventTrackingClient,
 ) : MoleculePresenter<CrossSellSheetEvent, CrossSellSheetState> {
   @Composable
   override fun MoleculePresenterScope<CrossSellSheetEvent>.present(
@@ -90,6 +97,10 @@ internal class CrossSellSheetPresenter(
       when (event) {
         is CrossSellSheetEvent.CrossSellSheetShown -> {
           crossSellAfterFlowRepository.showedCrossSellSheet((state as? CrossSellSheetState.Content)?.infoType)
+        }
+
+        is CrossSellSheetEvent.CrossSellClicked -> {
+          eventTrackingClient.trackCrossSellClicked(CrossSellUserFlow.SMART_X_SELL, event.offerUrl)
         }
       }
     }

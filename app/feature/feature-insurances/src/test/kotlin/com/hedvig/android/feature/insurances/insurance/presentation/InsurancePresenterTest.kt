@@ -16,6 +16,7 @@ import assertk.assertions.isTrue
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.tracking.test.FakeEventTrackingClient
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.addons.data.AddonBannerInfo
@@ -39,6 +40,7 @@ import com.hedvig.android.molecule.test.test
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import org.junit.Rule
@@ -271,6 +273,7 @@ internal class InsurancePresenterTest {
       getInsuranceContractsUseCase,
       getCrossSellsUseCase,
       getTravelAddonBannerInfoUseCase,
+      FakeEventTrackingClient(),
     )
     presenter.test(InsuranceUiState.initialState) {
       awaitItem().also { uiState ->
@@ -305,6 +308,7 @@ internal class InsurancePresenterTest {
       getInsuranceContractsUseCase,
       getCrossSellsUseCase,
       getTravelAddonBannerInfoUseCase,
+      FakeEventTrackingClient(),
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -330,6 +334,7 @@ internal class InsurancePresenterTest {
       getInsuranceContractsUseCase,
       getCrossSellsUseCase,
       getTravelAddonBannerInfoUseCase,
+      FakeEventTrackingClient(),
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -355,6 +360,7 @@ internal class InsurancePresenterTest {
       getInsuranceContractsUseCase,
       getCrossSellsUseCase,
       getTravelAddonBannerInfoUseCase,
+      FakeEventTrackingClient(),
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -399,6 +405,7 @@ internal class InsurancePresenterTest {
       getInsuranceContractsUseCase,
       getCrossSellsUseCase,
       getTravelAddonBannerInfoUseCase,
+      FakeEventTrackingClient(),
     )
     val allContracts = validContracts + terminatedContracts
     presenter.test(InsuranceUiState.initialState) {
@@ -429,6 +436,7 @@ internal class InsurancePresenterTest {
       getInsuranceContractsUseCase,
       getCrossSellsUseCase,
       getTravelAddonBannerInfoUseCase,
+      FakeEventTrackingClient(),
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -448,6 +456,7 @@ internal class InsurancePresenterTest {
       getInsuranceContractsUseCase,
       getCrossSellsUseCase,
       getTravelAddonBannerInfoUseCase,
+      FakeEventTrackingClient(),
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -467,6 +476,7 @@ internal class InsurancePresenterTest {
       getInsuranceContractsUseCase,
       getCrossSellsUseCase,
       getTravelAddonBannerInfoUseCase,
+      FakeEventTrackingClient(),
     )
     val initialState = InsuranceUiState(
       contracts = listOf(),
@@ -506,6 +516,35 @@ internal class InsurancePresenterTest {
           ),
         )
       }
+    }
+  }
+
+  @Test
+  fun `taking a cross-sell offer reports the insurances surface and the offer url`() = runTest {
+    val eventTrackingClient = FakeEventTrackingClient()
+    val presenter = InsurancePresenter(
+      FakeGetInsuranceContractsUseCase(),
+      FakeGetCrossSellsUseCase(),
+      FakeGetAddonBannerInfoUseCase(),
+      eventTrackingClient,
+    )
+    val offerUrl = "https://www.hedvig.com/se/forsakringar/olycksfallsforsakring?code=ACCIDENT20"
+
+    presenter.test(InsuranceUiState.initialState) {
+      skipItems(1)
+      sendEvent(InsuranceScreenEvent.CrossSellClicked(offerUrl))
+      runCurrent()
+      assertThat(eventTrackingClient.events).containsExactly(
+        FakeEventTrackingClient.TrackedEvent(
+          name = "cross_sell_clicked",
+          parameters = mapOf(
+            "user_flow" to "insurances",
+            "offer_type" to "new_promise",
+            "offer_url" to offerUrl,
+          ),
+        ),
+      )
+      cancelAndIgnoreRemainingEvents()
     }
   }
 

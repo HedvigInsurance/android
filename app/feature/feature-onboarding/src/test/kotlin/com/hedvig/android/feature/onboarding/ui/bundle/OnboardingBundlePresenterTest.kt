@@ -7,6 +7,7 @@ import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
+import com.hedvig.android.core.tracking.test.FakeEventTrackingClient
 import com.hedvig.android.feature.onboarding.FakeOnboardingMemberIdProvider
 import com.hedvig.android.feature.onboarding.FakeOnboardingRepository
 import com.hedvig.android.feature.onboarding.data.CompleteOnboardingUseCase
@@ -53,7 +54,7 @@ internal class OnboardingBundlePresenterTest {
     val repository = FakeOnboardingRepository()
     val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
-    val presenter = OnboardingBundlePresenter(sessionStore, navigator)
+    val presenter = OnboardingBundlePresenter(sessionStore, navigator, FakeEventTrackingClient())
 
     presenter.test(OnboardingBundleUiState.Loading) {
       skipItems(1)
@@ -62,6 +63,36 @@ internal class OnboardingBundlePresenterTest {
       assertThat(state).isInstanceOf<OnboardingBundleUiState.Content>()
       val content = state as OnboardingBundleUiState.Content
       assertThat(content.crossSells.single().title).isEqualTo("Pet")
+    }
+  }
+
+  @Test
+  fun `taking a cross-sell offer reports the onboarding surface and the offer url`() = runTest {
+    val backstack = TestBackstack().apply {
+      entries.add(OnboardingStepKey(OnboardingStepId.BundleDiscount))
+    }
+    val repository = FakeOnboardingRepository()
+    val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
+    val eventTrackingClient = FakeEventTrackingClient()
+    val presenter = OnboardingBundlePresenter(sessionStore, navigator, eventTrackingClient)
+    val offerUrl = "https://www.hedvig.com/se/forsakringar/olycksfallsforsakring?code=ACCIDENT20"
+
+    presenter.test(OnboardingBundleUiState.Loading) {
+      skipItems(1)
+      sendEvent(OnboardingBundleEvent.CrossSellClicked(offerUrl))
+      runCurrent()
+      assertThat(eventTrackingClient.events).containsExactly(
+        FakeEventTrackingClient.TrackedEvent(
+          name = "cross_sell_clicked",
+          parameters = mapOf(
+            "user_flow" to "onboarding",
+            "offer_type" to "new_promise",
+            "offer_url" to offerUrl,
+          ),
+        ),
+      )
+      cancelAndIgnoreRemainingEvents()
     }
   }
 
@@ -76,7 +107,7 @@ internal class OnboardingBundlePresenterTest {
     val repository = FakeOnboardingRepository()
     val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
     val navigator = OnboardingNavigator(backstack, sessionStore, completeOnboarding)
-    val presenter = OnboardingBundlePresenter(sessionStore, navigator)
+    val presenter = OnboardingBundlePresenter(sessionStore, navigator, FakeEventTrackingClient())
 
     presenter.test(OnboardingBundleUiState.Loading) {
       skipItems(1)

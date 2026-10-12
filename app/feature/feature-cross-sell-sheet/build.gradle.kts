@@ -35,4 +35,5 @@ dependencies {
   testImplementation(libs.junit)
   testImplementation(libs.turbine)
   testImplementation(projects.moleculeTest)
+  testImplementation(projects.trackingTest)
 }

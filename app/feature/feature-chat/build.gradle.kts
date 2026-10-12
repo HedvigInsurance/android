@@ -46,6 +46,7 @@ dependencies {
   implementation(projects.coreFileUpload)
   implementation(projects.coreMarkdown)
   implementation(projects.coreResources)
+  implementation(projects.crossSells)
   implementation(projects.dataChat)
   implementation(projects.dataClaimIntent)
   implementation(projects.dataContract)
