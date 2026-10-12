@@ -14,6 +14,21 @@ jobs:
     runs-on: ubuntu-latest-8-vcpu
     steps:
       - uses: actions/checkout@v7
+      # scripts/release.sh pushes release/X.Y.Z together with tag X.Y.Z on its master
+      # merge. A missing or misplaced tag means the release was cut by hand and master
+      # or develop are probably missing their merges, so stop before uploading.
+      - name: Require the release tag
+        if: startsWith(github.ref_name, 'release/')
+        run: |
+          version="${GITHUB_REF_NAME#release/}"
+          if ! git fetch --quiet --depth=1 origin "refs/tags/$version:refs/tags/$version"; then
+            echo "::error::Tag $version is not on origin. Cut releases with scripts/release.sh, which pushes release/$version, its tag and the master and develop merges together."
+            exit 1
+          fi
+          if ! git cat-file -p "$version^{commit}" | grep -qx "parent $GITHUB_SHA"; then
+            echo "::error::Tag $version is not the master merge of release/$version ($GITHUB_SHA). Cut releases with scripts/release.sh."
+            exit 1
+          fi
       - name: Setup CI
         uses: ./.github/actions/common-setup
         with:
