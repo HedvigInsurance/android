@@ -12,8 +12,8 @@ kotlin {
   sourceSets {
     commonMain.dependencies {
       api(projects.dataSettingsDatastorePublic)
-      implementation(libs.jetbrains.compose.foundation)
       implementation(libs.coroutines.core)
+      implementation(libs.jetbrains.compose.foundation)
       implementation(projects.coreResources)
       implementation(projects.designSystemHedvig)
     }
