@@ -37,6 +37,7 @@ dependencies {
   implementation(projects.dataDisplayItems)
   implementation(projects.dataProductVariantPublic)
   implementation(projects.designSystemHedvig)
+  implementation(projects.experimentsPublic)
   implementation(projects.featureFlags)
   implementation(projects.languageCore)
   implementation(projects.moleculePublic)
