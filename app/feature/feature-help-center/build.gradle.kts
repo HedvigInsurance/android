@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 plugins {
-  id("hedvig.multiplatform.library")
+  id("hedvig.multiplatform.library.ios")
   id("hedvig.multiplatform.library.android")
   id("hedvig.gradle.plugin")
 }
