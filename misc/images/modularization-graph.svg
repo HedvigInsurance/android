@@ -1092,7 +1092,7 @@
 <!-- :feature&#45;chip&#45;id -->
 <g id="node70" class="node">
 <title>:feature&#45;chip&#45;id</title>
-<ellipse fill="#baffc9" stroke="black" cx="1785.6" cy="-1154.68" rx="68.89" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="1785.6" cy="-1154.68" rx="68.89" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="1785.6" y="-1148.88" font-family="Helvetica,sans-Serif" font-size="14.00">:feature&#45;chip&#45;id</text>
 </g>
 <!-- :feature&#45;chip&#45;id&#45;&gt;:apollo&#45;core -->
