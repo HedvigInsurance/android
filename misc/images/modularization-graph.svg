@@ -1164,7 +1164,7 @@
 <!-- :tier&#45;comparison -->
 <g id="node73" class="node">
 <title>:tier&#45;comparison</title>
-<ellipse fill="#baffc9" stroke="black" cx="1785.6" cy="-2297.68" rx="73.77" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="1785.6" cy="-2297.68" rx="73.77" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="1785.6" y="-2291.88" font-family="Helvetica,sans-Serif" font-size="14.00">:tier&#45;comparison</text>
 </g>
 <!-- :feature&#45;choose&#45;tier&#45;&gt;:tier&#45;comparison -->
