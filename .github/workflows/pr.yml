@@ -35,10 +35,21 @@ jobs:
           datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
           lokalise-id: ${{ secrets.LOKALISE_ID }}
           lokalise-token: ${{ secrets.LOKALISE_TOKEN }}
-      - run: ./gradlew lint
-      - uses: yutailang0119/action-android-lint@v6.0.0
+      - name: Lint
+        # `--continue` keeps Gradle going past a failing module, so every module writes its report
+        # before the annotate step reads them.
+        run: ./gradlew lint --continue
+      - name: Annotate lint findings in the PR
+        # Runs after a failed Lint step too: that is when there are findings to annotate. The Lint
+        # step is what fails the job, so this step's own exit code is ignored.
+        if: ${{ !cancelled() }}
+        uses: yutailang0119/action-android-lint@v6.0.0
         with:
-          report-path: app/build/reports/lint-results-debug.xml
+          # Every module's lint report. The file name depends on the lint pass that wrote it:
+          # `lint-results-debug.xml` for `:app`, `lint-results-release.xml` for Android library modules,
+          # `lint-results-androidMain.xml` for the Android pass of a KMP module, and `lint-results.xml`
+          # for the JVM pass of a KMP module and for JVM modules.
+          report-path: "**/build/reports/lint-results*.xml"
         continue-on-error: true
   ktlint:
     runs-on: ubuntu-latest-8-vcpu
