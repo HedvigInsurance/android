@@ -2,28 +2,6 @@
 <issues format="6" by="lint 9.4.1" type="baseline" client="gradle" dependencies="false" name="AGP (9.4.1)" variant="all" version="9.4.1">
 
     <issue
-        id="PrivateResource"
-        message="Overriding `@string/not_selected` which is marked as private in androidx.compose.ui:ui-android:1.12.1. If deliberate, use tools:override=&quot;true&quot;, otherwise pick a different name."
-        errorLine1="  &lt;string name=&quot;not_selected&quot;>Ej valt&lt;/string>"
-        errorLine2="                ~~~~~~~~~~~~">
-        <location
-            file="src/androidMain/res/values-sv/strings.xml"
-            line="1434"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="PrivateResource"
-        message="Overriding `@string/not_selected` which is marked as private in androidx.compose.ui:ui-android:1.12.1. If deliberate, use tools:override=&quot;true&quot;, otherwise pick a different name."
-        errorLine1="  &lt;string name=&quot;not_selected&quot;>Not selected&lt;/string>"
-        errorLine2="                ~~~~~~~~~~~~">
-        <location
-            file="src/androidMain/res/values/strings.xml"
-            line="1434"
-            column="17"/>
-    </issue>
-
-    <issue
         id="PluralsCandidate"
         message="Formatting %d followed by words (&quot;characters&quot;): This should probably be a plural rather than a string"
         errorLine1="  &lt;string name=&quot;A11Y_CHARACTER_LIMIT&quot;>%1$d of %2$d characters entered&lt;/string>"
