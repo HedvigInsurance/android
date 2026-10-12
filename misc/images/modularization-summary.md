@@ -5,8 +5,8 @@ Written by `./gradlew :generateProjectDependencyGraph`. Counts cover the modules
 | Kind | Modules |
 |---|---|
 | KMP, iOS targets | 46 |
-| KMP, no iOS | 21 |
-| Android library | 41 |
+| KMP, no iOS | 22 |
+| Android library | 40 |
 | JVM library | 22 |
 | Application | 1 |
 | Other | 0 |
@@ -27,7 +27,6 @@ Converting a module near the top unblocks the most dependents.
 - `:member-reminders-public` (JVM library) <- `:feature-home`, `:feature-payments`, `:feature-profile`, `:member-reminders-ui`
 - `:notification-permission` (Android library) <- `:feature-home`, `:feature-payments`, `:feature-profile`, `:member-reminders-ui`
 - `:theme` (JVM library) <- `:data-settings-datastore-public`, `:feature-onboarding`, `:feature-payments`, `:feature-profile`
-- `:compose-pager-indicator` (Android library) <- `:claim-status`, `:feature-home`, `:member-reminders-ui`
 - `:data-chat` (JVM library) <- `:data-changetier`, `:database-core`, `:feature-chat`
 - `:member-reminders-ui` (Android library) <- `:feature-home`, `:feature-payments`, `:feature-profile`
 - `:navigation-activity` (JVM library) <- `:feature-chat`, `:feature-home`, `:feature-travel-certificate`

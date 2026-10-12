@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -71,7 +70,7 @@ fun <T> CardCarousel(
           },
           modifier = Modifier
             .fillMaxWidth()
-            .systemGestureExclusion(),
+            .excludeFromSystemGestures(),
         ) { page ->
           items.getOrNull(page)?.let { item ->
             itemContent(item, Modifier.fillMaxWidth())
