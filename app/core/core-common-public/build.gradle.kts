@@ -15,7 +15,6 @@ kotlin {
       dependencies {
         implementation(libs.androidx.other.core)
         implementation(libs.androidx.other.workManager)
-        implementation(projects.apolloOctopusPublic)
         implementation(projects.coreResources)
       }
     }

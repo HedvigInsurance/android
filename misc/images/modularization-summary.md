@@ -4,17 +4,17 @@ Written by `./gradlew :generateProjectDependencyGraph`. Counts cover the modules
 
 | Kind | Modules |
 |---|---|
-| KMP, iOS targets | 46 |
-| KMP, no iOS | 29 |
-| Android library | 33 |
+| KMP, iOS targets | 45 |
+| KMP, no iOS | 28 |
+| Android library | 35 |
 | JVM library | 22 |
 | Application | 1 |
 | Other | 0 |
-| In the iOS umbrella closure (all modules) | 48 |
+| In the iOS umbrella closure (all modules) | 47 |
 
 ## Non-KMP modules and what depends on them
 
-Converting a module near the top unblocks the most dependents.
+Non-KMP modules ordered by the number of drawn modules that depend on them directly.
 
 - `:core-demo-mode` (JVM library) <- `:data-addons`, `:data-paying-member`, `:datadog-demo-tracking`, `:feature-addon-purchase`, `:feature-chat`, `:feature-claim-chat`, `:feature-claim-details`, `:feature-cross-sell-sheet`, `:feature-edit-coinsured`, `:feature-home`, `:feature-insurances`, `:feature-login`, `:feature-payments`, `:feature-profile`, `:feature-travel-certificate`, `:forever-ui`, `:member-reminders-public`, `:notification-badge-data-public`, `:notification-firebase`, `:tracking-firebase`
 - `:auth-core-public` (JVM library) <- `:datadog-android`, `:feature-delete-account`, `:feature-flags`, `:feature-impersonation`, `:feature-login`, `:feature-onboarding`, `:feature-payments`, `:feature-profile`, `:language-data`, `:notification-firebase`, `:tracking-firebase`
