@@ -5,8 +5,8 @@ Written by `./gradlew :generateProjectDependencyGraph`. Counts cover the modules
 | Kind | Modules |
 |---|---|
 | KMP, iOS targets | 46 |
-| KMP, no iOS | 25 |
-| Android library | 37 |
+| KMP, no iOS | 27 |
+| Android library | 35 |
 | JVM library | 22 |
 | Application | 1 |
 | Other | 0 |
@@ -36,7 +36,6 @@ Converting a module near the top unblocks the most dependents.
 - `:forever-ui` (Android library) <- `:feature-forever`, `:feature-onboarding`
 - `:notification-badge-data-public` (JVM library) <- `:feature-home`, `:feature-insurances`
 - `:tracking-datadog` (Android library) <- `:datadog-android`, `:design-showcase`
-- `:ui-analytics-consent` (Android library) <- `:feature-onboarding`, `:feature-profile`
 - `:core-app-review` (JVM library) <- `:feature-edit-coinsured`
 - `:core-icons` (Android library) <- `:feature-profile`
 - `:core-rive` (Android library) <- `:feature-claim-chat`

@@ -2382,7 +2382,7 @@
 <!-- :ui&#45;analytics&#45;consent -->
 <g id="node108" class="node">
 <title>:ui&#45;analytics&#45;consent</title>
-<ellipse fill="#baffc9" stroke="black" cx="1785.6" cy="-620.68" rx="90.34" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="1785.6" cy="-620.68" rx="90.34" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="1785.6" y="-614.88" font-family="Helvetica,sans-Serif" font-size="14.00">:ui&#45;analytics&#45;consent</text>
 </g>
 <!-- :feature&#45;onboarding&#45;&gt;:ui&#45;analytics&#45;consent -->
@@ -2574,7 +2574,7 @@
 <!-- :feature&#45;payout&#45;account -->
 <g id="node114" class="node">
 <title>:feature&#45;payout&#45;account</title>
-<ellipse fill="#baffc9" stroke="black" cx="1785.6" cy="-1386.68" rx="103.02" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="1785.6" cy="-1386.68" rx="103.02" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="1785.6" y="-1380.88" font-family="Helvetica,sans-Serif" font-size="14.00">:feature&#45;payout&#45;account</text>
 </g>
 <!-- :feature&#45;payout&#45;account&#45;&gt;:apollo&#45;network&#45;cache&#45;manager -->
