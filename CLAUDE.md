@@ -844,8 +844,13 @@ skill instead of inferring it from the code.
 - Confirm `metro.generateContributionProviders=true` is present in `gradle.properties`.
 
 **Runtime crash `IllegalArgumentException: Unknown model class …ViewModel` (at `MetroViewModelFactory`):**
-- The VM's contribution wasn't merged into `:app`'s graph. The usual cause is an `internal` generated contribution producing an `internal` (cross-module-invisible) `metro/hints` marker — the `:viewmodel-processor` must generate it `public`. See `docs/architecture/navigation-and-di.md` §I.3.1.
-- To diagnose: `javap -p -c` on `app/app/build/tmp/kotlin-classes/debug/.../AppGraph$Impl$ActivityRetainedGraphImpl.class` and check the VM is in the `viewModelProviders` map. Note `:app:compileDebugKotlin` is cacheable — verify it actually executed (not `FROM-CACHE`) before trusting the output.
+- The VM's contribution wasn't merged into `:app`'s graph. The usual cause is an `internal` generated contribution producing an `internal` (cross-module-invisible) `metro/hints` marker. The `:viewmodel-processor` must generate it `public`. See `docs/architecture/navigation-and-di.md` §I.3.1.
+- To diagnose, compile `:app` and read the generated graph class. AGP compiles Kotlin itself, so the classes are under `build/intermediates/built_in_kotlinc/<variant>/compile<Variant>Kotlin/classes/`. Use the `release` variant: library modules are release-only, so it is the one variant every module has.
+  ```bash
+  JAVA_HOME=$(/usr/libexec/java_home) ./gradlew :app:compileReleaseKotlin
+  javap -p -c 'app/app/build/intermediates/built_in_kotlinc/release/compileReleaseKotlin/classes/com/hedvig/android/app/di/AppGraph$Impl$ActivityRetainedGraphImpl.class'
+  ```
+  Check the VM's class is a key of the map `getViewModelProviders()` builds. `:app:compileReleaseKotlin` is cacheable, so verify it actually executed (not `FROM-CACHE`) before trusting the output.
 
 **Dependency resolution failures:**
 - Check `~/.gradle/gradle.properties` has GitHub PAT with `read:packages`.
