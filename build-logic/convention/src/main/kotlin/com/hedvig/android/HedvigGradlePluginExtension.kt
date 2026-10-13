@@ -8,6 +8,7 @@ import com.android.build.api.dsl.Lint
 import com.android.build.api.variant.KotlinMultiplatformAndroidComponentsExtension
 import com.apollographql.apollo.gradle.api.ApolloExtension
 import com.apollographql.apollo.gradle.api.Service
+import com.google.devtools.ksp.gradle.KspAATask
 import java.io.File
 import javax.inject.Inject
 import org.gradle.accessors.dm.LibrariesForLibs
@@ -20,6 +21,7 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.findByType
+import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.project
 import org.gradle.kotlin.dsl.the
@@ -27,6 +29,10 @@ import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.resources.ResourcesExtension
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 abstract class HedvigGradlePluginExtension @Inject constructor(
   private val project: Project,
@@ -94,6 +100,12 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
    * every target, including iOS via IosGraph) and `kspAndroid` (androidMain-only VMs, e.g. a screen
    * iOS never renders) are wired, so a single module may freely mix the two. See [ViewModelsHandler]
    * for how the resulting double-emission of commonMain VMs is suppressed.
+   *
+   * The metadata pass resolves constructor parameter types from the module's dependencies. Kotlin
+   * produces metadata only for modules with native targets, so on a module with iOS targets every
+   * dependency a commonMain VM uses must have iOS targets too. A module without native targets (JVM
+   * plus Android) runs the pass against its JVM compile classpath instead, so its VMs may use types
+   * from JVM-plus-Android KMP modules and plain JVM libraries.
    */
   fun viewModels() {
     viewModelsHandler.configure(project, pluginManager, libs)
@@ -347,6 +359,9 @@ private abstract class NavKeysHandler {
   }
 }
 
+/** Must match `VIEW_MODEL_PASS_OPTION` in `HedvigViewModelProcessor`. */
+private const val VIEW_MODEL_PASS_OPTION = "hedvig.viewmodel.pass"
+
 private abstract class ViewModelsHandler {
   fun configure(project: Project, pluginManager: PluginManager, libs: LibrariesForLibs) {
     pluginManager.apply(libs.plugins.ksp.get().pluginId)
@@ -361,8 +376,8 @@ private abstract class ViewModelsHandler {
     // commonMain VMs must be visible to every target (notably iOS via IosGraph), so they are
     // generated into commonMain through kspCommonMainMetadata. androidMain-only VMs are invisible to
     // the metadata pass, so kspAndroid is ALSO wired to cover them. kspAndroid also re-sees commonMain
-    // VMs and would double-emit them, but the processor detects the single-target leaf pass and skips
-    // commonMain symbols there, so only the metadata pass emits them.
+    // VMs and would double-emit them, but kspAndroid runs with the `leaf` role below, in which the
+    // processor skips commonMain symbols, so only the metadata pass emits them.
     project.dependencies {
       add("kspCommonMainMetadata", processor)
       add("kspAndroid", processor)
@@ -373,6 +388,43 @@ private abstract class ViewModelsHandler {
     }
     project.extensions.configure<KotlinMultiplatformExtension> {
       sourceSets.getByName("commonMain").kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
+    }
+    // The processor reads its role from this option (VIEW_MODEL_PASS_OPTION in HedvigViewModelProcessor):
+    // the metadata pass emits commonMain VMs, a leaf pass skips them. These puts are additive, so KSP's
+    // own `putAll` of the `ksp {}` arguments keeps them.
+    project.tasks.withType(KspAATask::class.java).configureEach {
+      when (name) {
+        "kspCommonMainKotlinMetadata" -> kspConfig.processorOptions.put(VIEW_MODEL_PASS_OPTION, "metadata")
+        "kspAndroidMain" -> kspConfig.processorOptions.put(VIEW_MODEL_PASS_OPTION, "leaf")
+      }
+    }
+    // Kotlin produces metadata only for modules with native targets, so on a module without native
+    // targets the commonMain metadata pass cannot see JVM-plus-Android KMP modules or plain JVM
+    // libraries. There the pass runs as a JVM analysis over the JVM main compile classpath, which is
+    // what that module's commonMain code compiles against. KSP sets platformType and libraries in its
+    // own task configuration, which runs after `configureEach` actions, and registers the task after
+    // `afterEvaluate`, so these values are set from `projectsEvaluated`.
+    project.gradle.projectsEvaluated {
+      val kotlin = project.extensions.getByType<KotlinMultiplatformExtension>()
+      if (kotlin.targets.any { it.platformType == KotlinPlatformType.native }) return@projectsEvaluated
+      val jvmCompilation = kotlin.targets.withType(KotlinJvmTarget::class.java).single()
+        .compilations.getByName("main")
+      val jvmCompileOptions = jvmCompilation.compileTaskProvider.map { it.compilerOptions as KotlinJvmCompilerOptions }
+      project.tasks.named("kspCommonMainKotlinMetadata", KspAATask::class.java).configure {
+        kspConfig.platformType.set(KotlinPlatformType.jvm)
+        kspConfig.libraries.setFrom(jvmCompilation.compileDependencyFiles)
+        // Declares the classpath as a task input, since `libraries` is not one.
+        kspConfig.nonJvmLibraries.setFrom(jvmCompilation.compileDependencyFiles)
+        // KSP tracks classpath changes for incremental runs only on JVM compilations; this task has no
+        // such tracking, so a dependency change must re-run it from scratch.
+        kspConfig.incremental.set(false)
+        kspConfig.jdkHome.set(File(System.getProperty("java.home")))
+        kspConfig.jvmTarget.set(jvmCompileOptions.flatMap { it.jvmTarget }.map { it.target })
+        // An unset jvmDefault means the compiler's default, `enable`.
+        kspConfig.jvmDefaultMode.set(
+          jvmCompileOptions.flatMap { it.jvmDefault }.orElse(JvmDefaultMode.ENABLE).map { it.compilerArgument },
+        )
+      }
     }
     // The generated dir is a commonMain source root, so every per-target compile *and* every other
     // per-target KSP task (e.g. the nav-keys kspAndroidMain) reads it. Gradle won't infer that
