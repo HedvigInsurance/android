@@ -7,6 +7,7 @@ dependencies {
   implementation(platform(libs.firebase.bom))
   implementation(libs.coroutines.core)
   implementation(libs.firebase.config)
+  implementation(projects.authCorePublic)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.experimentsPublic)

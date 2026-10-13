@@ -17,8 +17,8 @@ internal interface ExperimentRemoteConfig {
   /** Fetches the latest values and makes them the active ones. Throws when the fetch fails. */
   suspend fun fetchAndActivate()
 
-  /** The active value for [key], or an empty string when nothing has ever been activated for it. */
-  fun getString(key: String): String
+  /** The active value for [key], or 0 when nothing has ever been activated for it. */
+  fun getLong(key: String): Long
 }
 
 @SingleIn(AppScope::class)
@@ -34,7 +34,7 @@ internal class FirebaseExperimentRemoteConfig(
         FirebaseRemoteConfigSettings.Builder().setMinimumFetchIntervalInSeconds(0).build(),
       )
     }
-    setDefaultsAsync(knownExperiments.associate { it.remoteConfigKey to "" })
+    setDefaultsAsync(knownExperiments.associate { it.remoteConfigKey to 0L })
   }
 
   override val hasFetchedBefore: Boolean
@@ -44,5 +44,5 @@ internal class FirebaseExperimentRemoteConfig(
     remoteConfig.fetchAndActivate().await()
   }
 
-  override fun getString(key: String): String = remoteConfig.getString(key)
+  override fun getLong(key: String): Long = remoteConfig.getLong(key)
 }
