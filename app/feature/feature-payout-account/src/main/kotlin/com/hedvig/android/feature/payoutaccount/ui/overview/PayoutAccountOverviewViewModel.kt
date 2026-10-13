@@ -41,7 +41,7 @@ internal sealed interface PayoutAccountOverviewUiState {
   data object NoPayoutOptions : PayoutAccountOverviewUiState
 
   data class Content(
-    val currentMethod: PayoutAccount?,
+    val currentMethods: List<PayoutAccount>,
     val availablePayoutMethods: List<PaymentProvider>,
   ) : PayoutAccountOverviewUiState
 }
@@ -65,9 +65,9 @@ internal class PayoutAccountOverviewPresenter(
       )
     }
 
-    // Picks up a method connected further down the flow, which lands back here on a screen that was
-    // never torn down. It refreshes in place and keeps what is on screen if the refetch fails, so
-    // returning here never flashes to loading or to an error over a method that is still valid.
+    // Picks up a method connected or made primary further down the flow, which lands back here on a
+    // screen that was never torn down. It refreshes in place and keeps what is on screen if the refetch
+    // fails, so returning here never flashes to loading or to an error over a list that is still valid.
     LaunchedEffect(refreshIteration) {
       if (refreshIteration == 0) return@LaunchedEffect
       getPayoutAccountUseCase.invoke().onRight { data -> uiState = data.toUiState() }
@@ -85,11 +85,11 @@ internal class PayoutAccountOverviewPresenter(
 }
 
 private fun PayoutAccountData.toUiState(): PayoutAccountOverviewUiState {
-  return if (currentMethod == null && availablePayoutMethods.isEmpty()) {
+  return if (currentMethods.isEmpty() && availablePayoutMethods.isEmpty()) {
     PayoutAccountOverviewUiState.NoPayoutOptions
   } else {
     PayoutAccountOverviewUiState.Content(
-      currentMethod = currentMethod,
+      currentMethods = currentMethods,
       availablePayoutMethods = availablePayoutMethods,
     )
   }

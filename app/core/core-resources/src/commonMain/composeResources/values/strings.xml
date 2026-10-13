@@ -775,6 +775,9 @@
   <string name="PAYMENT_TRUSTLY_FAILURE_TITLE">Connection failed</string>
   <string name="PAYMENT_TRUSTLY_SUCCESS_SUBTITLE">We'll notify you in the app each month</string>
   <string name="PAYOUT_ADD_PAYOUT_METHOD">Add payout method</string>
+  <string name="PAYOUT_CHOOSE_METHOD_SUBTITLE">This method will be used for your payouts</string>
+  <string name="PAYOUT_CONFIRMATION_INFO">Your next payout will be made via %1$s</string>
+  <string name="PAYOUT_CONFIRMATION_TITLE">Confirm payout method</string>
   <string name="PAYOUT_METHOD_INVOICE_DESCRIPTION">Direct payment via Invoice</string>
   <string name="PAYOUT_METHOD_SWISH_DESCRIPTION">Instant payout with Swish</string>
   <string name="PAYOUT_METHOD_TRUSTLY_DESCRIPTION">Payout via Trustly</string>

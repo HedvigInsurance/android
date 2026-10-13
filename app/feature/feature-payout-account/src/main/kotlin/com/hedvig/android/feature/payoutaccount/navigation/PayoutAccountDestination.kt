@@ -16,3 +16,7 @@ internal data object EditBankAccountKey : HedvigNavKey
 
 @Serializable
 internal data object SetupSwishPayoutKey : HedvigNavKey
+
+/** The picker for which connected method the member's payouts go to. */
+@Serializable
+internal data object SelectPrimaryPayoutMethodKey : HedvigNavKey
