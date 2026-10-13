@@ -37,8 +37,8 @@ kind and the non-KMP modules that other modules still depend on. Requires graphv
 Test modules, `:app`, and the modules the convention plugin attaches to everything are left out. Arrows implied by a longer path are omitted.
 
 Before the 2026 KMP-readiness migration the graph showed 62 KMP modules with iOS targets, 1 without,
-46 Android libraries and 22 JVM libraries; after it, 46 KMP modules with iOS targets, 27 without,
-35 Android libraries and 22 JVM libraries. The current counts are in the summary file.
+46 Android libraries and 22 JVM libraries; after it, 45 KMP modules with iOS targets, 33 without,
+30 Android libraries and 22 JVM libraries. The current counts are in the summary file.
 
 ## Renovate
 

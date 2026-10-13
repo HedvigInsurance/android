@@ -184,12 +184,10 @@ two or three modules per PR:
 | 3b | `ui-analytics-consent` | none |
 | 3e | `feature-edit-coinsured` | replace one `java.util.UUID` |
 
-**Stayed Android libraries.** `feature-choose-tier`, `feature-addon-purchase`,
-`feature-insurances`, `feature-movingflow`, `feature-payout-account` and
-`feature-cross-sell-sheet` stay on `hedvig.android.library`: the ViewModel KSP processor
-generates commonMain ViewModels in the metadata pass, which cannot resolve types from
-modules without iOS targets, and `feature-insurances` also uses
-`NavSuiteSceneDecoratorStrategy` from `navigation-compose`'s `androidMain`.
+**Stayed Android libraries.** Only `feature-insurances` stays on `hedvig.android.library`:
+it uses `NavSuiteSceneDecoratorStrategy` from `navigation-compose`'s `androidMain`. The
+ViewModel KSP processor's commonMain metadata pass now runs as a JVM analysis on modules
+without native targets, so JVM-library types resolve.
 
 **Wave 4, finish `feature-claim-history`.** Move `ClaimHistoryDestination.kt` and
 `ClaimHistoryViewModel.kt` from `androidMain` to `commonMain`; the nav entry file stays
