@@ -4,9 +4,12 @@
 #
 #   git flow release start X.Y.Z
 #   bump versionName, commit "Bump version"
-#   git push origin release/X.Y.Z           # triggers upload-to-play-store.yml
 #   git flow release finish X.Y.Z           # default merge messages, tag message "X.Y.Z"
-#   git push origin develop master X.Y.Z
+#   git push --atomic origin release/X.Y.Z develop master X.Y.Z
+#
+# Everything is done locally first and pushed in one atomic push, so the release
+# branch (which triggers upload-to-play-store.yml) never reaches origin without its
+# tag and the develop/master merges.
 #
 # Usage: scripts/release.sh <major|minor|patch|X.Y.Z> [--dry-run] [--yes]
 #
@@ -95,18 +98,17 @@ sed -i '' "s/^\( *versionName = \)\"$current\"$/\1\"$next\"/" "$GRADLE_FILE"
 [ "$(git diff --numstat -- "$GRADLE_FILE")" = "$(printf '1\t1\t%s' "$GRADLE_FILE")" ] || die "unexpected diff in $GRADLE_FILE, check it by hand"
 git commit --quiet -m "Bump version" -- "$GRADLE_FILE"
 
-step "Pushing release/$next (starts the Play Store upload)"
-git push "$REMOTE" "release/$next"
-
 step "git flow release finish $next"
 # GIT_MERGE_AUTOEDIT=no keeps the default merge messages without opening an editor.
 # -n skips git flow's own tagging: in git flow 0.4.1, `-m 14.5.0` produces the tag
 # message '14.5.0' with literal quotes, so the tag is created below instead.
-GIT_MERGE_AUTOEDIT=no git flow release finish -n "$next"
+# -k keeps release/$next so it can go out in the same push as the tag.
+GIT_MERGE_AUTOEDIT=no git flow release finish -k -n "$next"
 git tag -a -m "$next" "$next" master
 
-step "Pushing develop, master and tag $next"
-git push --atomic "$REMOTE" develop master "refs/tags/$next"
+step "Pushing release/$next, develop, master and tag $next (starts the Play Store upload)"
+git push --atomic "$REMOTE" "release/$next" develop master "refs/tags/$next"
+git branch --quiet -d "release/$next"
 
 echo
 echo "Released $next. Follow the upload with:"
