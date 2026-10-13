@@ -4,6 +4,7 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.containsOnly
 import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
 import com.hedvig.android.core.common.ApplicationScope
@@ -23,6 +24,7 @@ class FirebaseExperimentProviderTest {
 
   private class FakeRemoteConfig(
     val activeValues: MutableMap<String, String> = mutableMapOf(),
+    override var hasFetchedBefore: Boolean = false,
   ) : ExperimentRemoteConfig {
     /** What the fetch does once it is awaited. Left incomplete, the fetch never finishes. */
     val fetch = CompletableDeferred<Unit>()
@@ -129,5 +131,29 @@ class FirebaseExperimentProviderTest {
 
     assertThat(provider.activeExperiments()).containsExactly(Experiment("ACCIDENT_DISCOUNT", "DISCOUNT"))
     assertThat(remoteConfig.fetchCalled).isFalse()
+  }
+
+  @Test
+  fun `a variant that is not SCREAMING_SNAKE_CASE is ignored rather than sent`() = runTest {
+    val remoteConfig = FakeRemoteConfig(mutableMapOf("accident_discount_variant" to "Discount 20%"))
+    val provider = provider(remoteConfig, RecordingClient())
+    provider.initialize()
+    remoteConfig.fetch.complete(Unit)
+
+    assertThat(provider.activeExperiments()).isEmpty()
+  }
+
+  @Test
+  fun `once the install has fetched before, a slow startup fetch does not delay the answer`() = runTest {
+    val remoteConfig = FakeRemoteConfig(
+      mutableMapOf("accident_discount_variant" to "DISCOUNT"),
+      hasFetchedBefore = true,
+    )
+    val provider = provider(remoteConfig, RecordingClient())
+    provider.initialize()
+
+    assertThat(provider.activeExperiments()).containsExactly(Experiment("ACCIDENT_DISCOUNT", "DISCOUNT"))
+    assertThat(testScheduler.currentTime).isEqualTo(0)
+    assertThat(remoteConfig.fetch.isCompleted).isFalse()
   }
 }

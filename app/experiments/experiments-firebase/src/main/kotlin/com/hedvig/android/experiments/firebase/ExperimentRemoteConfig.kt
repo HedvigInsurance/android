@@ -11,6 +11,9 @@ import kotlinx.coroutines.tasks.await
 
 /** The Remote Config values behind [FirebaseExperimentProvider], kept behind an interface so the provider is testable. */
 internal interface ExperimentRemoteConfig {
+  /** Whether any launch of this install has fetched successfully, in which case activated values exist on disk. */
+  val hasFetchedBefore: Boolean
+
   /** Fetches the latest values and makes them the active ones. Throws when the fetch fails. */
   suspend fun fetchAndActivate()
 
@@ -33,6 +36,9 @@ internal class FirebaseExperimentRemoteConfig(
     }
     setDefaultsAsync(knownExperiments.associate { it.remoteConfigKey to "" })
   }
+
+  override val hasFetchedBefore: Boolean
+    get() = remoteConfig.info.fetchTimeMillis > 0
 
   override suspend fun fetchAndActivate() {
     remoteConfig.fetchAndActivate().await()
