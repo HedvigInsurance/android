@@ -105,7 +105,7 @@ internal class HomePresenter(
         }
 
         is HomeEvent.CrossSellClicked -> {
-          eventTrackingClient.trackCrossSellClicked(homeEvent.userFlow, homeEvent.offerUrl)
+          eventTrackingClient.trackCrossSellClicked(homeEvent.userFlow, homeEvent.offerId, homeEvent.offerUrl)
         }
       }
     }
@@ -213,7 +213,7 @@ internal sealed interface HomeEvent {
   data class DismissOngoingShopSession(val sessionId: String) : HomeEvent
 
   /** The member took a cross-sell offer. [userFlow] says which of home's two cross-sell surfaces it sat on. */
-  data class CrossSellClicked(val userFlow: CrossSellUserFlow, val offerUrl: String) : HomeEvent
+  data class CrossSellClicked(val userFlow: CrossSellUserFlow, val offerId: String, val offerUrl: String) : HomeEvent
 }
 
 internal sealed interface HomeUiState {

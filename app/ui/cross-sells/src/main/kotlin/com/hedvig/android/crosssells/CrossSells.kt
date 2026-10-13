@@ -137,7 +137,8 @@ data class BundleProgress(
 @Composable
 fun CrossSellBottomSheet(
   state: HedvigBottomSheetState<CrossSellSheetData>,
-  onCrossSellClick: (String) -> Unit,
+  onCrossSellClick: (CrossSell) -> Unit,
+  onRecommendedAddonClick: (deepLink: String) -> Unit,
   onAddonClick: (eligibleInsuranceIds: List<String>) -> Unit,
   imageLoader: ImageLoader,
 ) {
@@ -164,6 +165,7 @@ fun CrossSellBottomSheet(
         recommendedAddon = crossSellSheetData.recommendedAddon,
         addons = crossSellSheetData.addons,
         onCrossSellClick = onCrossSellClick,
+        onRecommendedAddonClick = onRecommendedAddonClick,
         onAddonClick = onAddonClick,
         dismissSheet = { state.dismiss() },
         imageLoader,
@@ -179,7 +181,8 @@ private fun CrossSellsSheetContent(
   otherCrossSells: List<CrossSell>,
   recommendedAddon: RecommendedAddon?,
   addons: List<AddonBannerInfo>,
-  onCrossSellClick: (String) -> Unit,
+  onCrossSellClick: (CrossSell) -> Unit,
+  onRecommendedAddonClick: (deepLink: String) -> Unit,
   onAddonClick: (eligibleInsuranceIds: List<String>) -> Unit,
   dismissSheet: () -> Unit,
   imageLoader: ImageLoader,
@@ -194,7 +197,7 @@ private fun CrossSellsSheetContent(
           Spacer(Modifier.height(48.dp))
           AddonRecommendationSection(
             recommendedAddon,
-            onButtonClick = onCrossSellClick,
+            onButtonClick = onRecommendedAddonClick,
             dismissSheet = dismissSheet,
             imageLoader = imageLoader,
           )
@@ -365,7 +368,7 @@ private fun AddonRecommendationSection(
 @Composable
 private fun RecommendationSection(
   recommendedCrossSell: RecommendedCrossSell,
-  onCrossSellClick: (String) -> Unit,
+  onCrossSellClick: (CrossSell) -> Unit,
   dismissSheet: () -> Unit,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
@@ -418,7 +421,7 @@ private fun RecommendationSection(
     HedvigButton(
       text = recommendedCrossSell.buttonText,
       onClick = {
-        onCrossSellClick(recommendedCrossSell.crossSell.storeUrl)
+        onCrossSellClick(recommendedCrossSell.crossSell)
         dismissSheet()
       },
       onClickLabel = stringResource(Res.string.TALKBACK_OPEN_EXTERNAL_LINK),
@@ -521,7 +524,7 @@ private fun getHedvigStepProgressData(bundleProgress: BundleProgress): List<Step
 @Composable
 fun CrossSellsSection(
   crossSells: List<CrossSell>,
-  onCrossSellClick: (String) -> Unit,
+  onCrossSellClick: (CrossSell) -> Unit,
   onSheetDismissed: () -> Unit,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
@@ -549,9 +552,8 @@ fun CrossSellItemPlaceholder(imageLoader: ImageLoader, modifier: Modifier = Modi
     CrossSellItem(
       crossSellTitle = "HHHH",
       crossSellSubtitle = "HHHHHHHH\nHHHHHHHHHHH",
-      storeUrl = "",
       crossSellImageAsset = ImageAsset("", "", ""),
-      onCrossSellClick = {},
+      onButtonClick = {},
       imageLoader = imageLoader,
       isLoading = true,
       modifier = Modifier,
@@ -565,7 +567,7 @@ fun CrossSellItemPlaceholder(imageLoader: ImageLoader, modifier: Modifier = Modi
 @Composable
 private fun CrossSellItem(
   crossSell: CrossSell,
-  onCrossSellClick: (String) -> Unit,
+  onCrossSellClick: (CrossSell) -> Unit,
   onSheetDismissed: () -> Unit,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
@@ -574,8 +576,7 @@ private fun CrossSellItem(
   CrossSellItem(
     crossSellTitle = crossSell.title,
     crossSellSubtitle = crossSell.subtitle,
-    storeUrl = crossSell.storeUrl,
-    onCrossSellClick = onCrossSellClick,
+    onButtonClick = { onCrossSellClick(crossSell) },
     modifier = modifier,
     isLoading = false,
     imageLoader = imageLoader,
@@ -590,9 +591,8 @@ private fun CrossSellItem(
 private fun CrossSellItem(
   crossSellTitle: String,
   crossSellSubtitle: String,
-  storeUrl: String,
   crossSellImageAsset: ImageAsset?,
-  onCrossSellClick: (String) -> Unit,
+  onButtonClick: () -> Unit,
   isLoading: Boolean,
   imageLoader: ImageLoader,
   onSheetDismissed: () -> Unit,
@@ -606,7 +606,7 @@ private fun CrossSellItem(
     pillowImage = crossSellImageAsset,
     buttonText = buttonText,
     onButtonClick = {
-      onCrossSellClick(storeUrl)
+      onButtonClick()
       onSheetDismissed()
     },
     imageLoader = imageLoader,
@@ -808,6 +808,7 @@ private fun PreviewCrossSellsSheetContent(
           ).takeIf { case != TripleCase.FIRST }.orEmpty(),
           onCrossSellClick = {},
           onAddonClick = {},
+          onRecommendedAddonClick = {},
           dismissSheet = {},
           imageLoader = rememberPreviewImageLoader(),
           recommendedAddon = null,
@@ -891,6 +892,7 @@ private fun PreviewRecommendedAddon(
         addons = emptyList(),
         onCrossSellClick = {},
         onAddonClick = {},
+        onRecommendedAddonClick = {},
         dismissSheet = {},
       )
     }

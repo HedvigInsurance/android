@@ -113,9 +113,9 @@ internal fun InsuranceDestination(
     uiState = uiState,
     reload = { viewModel.emit(InsuranceScreenEvent.RetryLoading) },
     onInsuranceCardClick = onInsuranceCardClick,
-    onCrossSellClick = { url ->
-      viewModel.emit(InsuranceScreenEvent.CrossSellClicked(url))
-      onCrossSellClick(url)
+    onCrossSellClick = { crossSell ->
+      viewModel.emit(InsuranceScreenEvent.CrossSellClicked(crossSell.id, crossSell.storeUrl))
+      onCrossSellClick(crossSell.storeUrl)
     },
     navigateToCancelledInsurances = navigateToCancelledInsurances,
     imageLoader = imageLoader,
@@ -128,7 +128,7 @@ private fun InsuranceScreen(
   uiState: InsuranceUiState,
   reload: () -> Unit,
   onInsuranceCardClick: (contractId: String) -> Unit,
-  onCrossSellClick: (String) -> Unit,
+  onCrossSellClick: (CrossSell) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
   imageLoader: ImageLoader,
   onNavigateToAddonPurchaseFlow: (List<ContractId>) -> Unit,
@@ -197,7 +197,7 @@ private fun InsuranceScreenContent(
   pullRefreshState: PullRefreshState,
   quantityOfCancelledInsurances: Int,
   onInsuranceCardClick: (contractId: String) -> Unit,
-  onCrossSellClick: (String) -> Unit,
+  onCrossSellClick: (CrossSell) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
   onNavigateToAddonPurchaseFlow: (List<ContractId>) -> Unit,
   modifier: Modifier = Modifier,

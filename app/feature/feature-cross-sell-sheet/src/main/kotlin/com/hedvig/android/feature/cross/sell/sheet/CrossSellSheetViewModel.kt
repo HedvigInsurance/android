@@ -69,7 +69,7 @@ internal class CrossSellSheetViewModel(
 internal sealed interface CrossSellSheetEvent {
   data object CrossSellSheetShown : CrossSellSheetEvent
 
-  data class CrossSellClicked(val offerUrl: String) : CrossSellSheetEvent
+  data class CrossSellClicked(val offerId: String, val offerUrl: String) : CrossSellSheetEvent
 }
 
 internal sealed interface CrossSellSheetState {
@@ -100,7 +100,7 @@ internal class CrossSellSheetPresenter(
         }
 
         is CrossSellSheetEvent.CrossSellClicked -> {
-          eventTrackingClient.trackCrossSellClicked(CrossSellUserFlow.SMART_X_SELL, event.offerUrl)
+          eventTrackingClient.trackCrossSellClicked(CrossSellUserFlow.SMART_X_SELL, event.offerId, event.offerUrl)
         }
       }
     }

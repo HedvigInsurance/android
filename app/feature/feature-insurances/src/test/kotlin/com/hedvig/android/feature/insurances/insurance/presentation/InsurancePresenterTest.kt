@@ -528,11 +528,12 @@ internal class InsurancePresenterTest {
       FakeGetAddonBannerInfoUseCase(),
       eventTrackingClient,
     )
-    val offerUrl = "https://www.hedvig.com/se/forsakringar/olycksfallsforsakring?code=ACCIDENT20"
+    val offerUrl =
+      "https://www.hedvig.com/api/redirect/recommend?attributed_to=HEDVIG&next=%2Fse-en%2Finsurances%2Faccident&code=accident50app&requiresAuthorization=true"
 
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
-      sendEvent(InsuranceScreenEvent.CrossSellClicked(offerUrl))
+      sendEvent(InsuranceScreenEvent.CrossSellClicked("crossSell:ACCIDENT", offerUrl))
       runCurrent()
       assertThat(eventTrackingClient.events).containsExactly(
         FakeEventTrackingClient.TrackedEvent(
@@ -540,7 +541,9 @@ internal class InsurancePresenterTest {
           parameters = mapOf(
             "user_flow" to "insurances",
             "offer_type" to "new_promise",
-            "offer_url" to offerUrl,
+            "offer_id" to "crossSell:ACCIDENT",
+            "offer_path" to "/se-en/insurances/accident",
+            "campaign_code" to "accident50app",
           ),
         ),
       )

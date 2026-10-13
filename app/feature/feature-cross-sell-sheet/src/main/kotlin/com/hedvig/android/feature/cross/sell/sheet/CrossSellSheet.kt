@@ -70,10 +70,11 @@ fun CrossSellSheet(
     }
     com.hedvig.android.crosssells.CrossSellBottomSheet(
       state = sheetState,
-      onCrossSellClick = { url ->
-        viewModel.emit(CrossSellSheetEvent.CrossSellClicked(url))
-        onCrossSellClick(url)
+      onCrossSellClick = { crossSell ->
+        viewModel.emit(CrossSellSheetEvent.CrossSellClicked(crossSell.id, crossSell.storeUrl))
+        onCrossSellClick(crossSell.storeUrl)
       },
+      onRecommendedAddonClick = onCrossSellClick,
       onAddonClick = onAddonClick,
       imageLoader = imageLoader,
     )

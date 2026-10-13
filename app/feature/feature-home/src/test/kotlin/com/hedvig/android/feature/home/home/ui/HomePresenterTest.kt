@@ -865,11 +865,12 @@ internal class HomePresenterTest {
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       eventTrackingClient,
     )
-    val offerUrl = "https://www.hedvig.com/se/forsakringar/olycksfallsforsakring?code=ACCIDENT20"
+    val offerUrl =
+      "https://www.hedvig.com/api/redirect/recommend?attributed_to=HEDVIG&next=%2Fse-en%2Finsurances%2Faccident&code=accident50app&requiresAuthorization=true"
 
     homePresenter.test(HomeUiState.Loading) {
       skipItems(1)
-      sendEvent(HomeEvent.CrossSellClicked(CrossSellUserFlow.HOME_X_SELL, offerUrl))
+      sendEvent(HomeEvent.CrossSellClicked(CrossSellUserFlow.HOME_X_SELL, "crossSell:ACCIDENT", offerUrl))
       runCurrent()
       assertThat(eventTrackingClient.events).containsExactly(
         FakeEventTrackingClient.TrackedEvent(
@@ -877,7 +878,9 @@ internal class HomePresenterTest {
           parameters = mapOf(
             "user_flow" to "home_x_sell",
             "offer_type" to "new_promise",
-            "offer_url" to offerUrl,
+            "offer_id" to "crossSell:ACCIDENT",
+            "offer_path" to "/se-en/insurances/accident",
+            "campaign_code" to "accident50app",
           ),
         ),
       )

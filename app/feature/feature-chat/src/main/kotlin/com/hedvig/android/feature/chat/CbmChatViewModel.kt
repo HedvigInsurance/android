@@ -298,7 +298,7 @@ internal class CbmChatPresenter(
 
         is CbmChatEvent.CrossSellClicked -> {
           hideCrossSell = true
-          eventTrackingClient.trackCrossSellClicked(CrossSellUserFlow.IN_CHAT_X_SELL, event.offerUrl)
+          eventTrackingClient.trackCrossSellClicked(CrossSellUserFlow.IN_CHAT_X_SELL, event.offerId, event.offerUrl)
           launch {
             logInChatCrossSell(CLICKED)
             // Taking the offer ends it for this conversation, just as turning it down does.
@@ -452,7 +452,7 @@ internal sealed interface CbmChatEvent {
 
   data object DismissCrossSell : CbmChatEvent
 
-  data class CrossSellClicked(val offerUrl: String) : CbmChatEvent
+  data class CrossSellClicked(val offerId: String, val offerUrl: String) : CbmChatEvent
 
   data class SendTextMessage(
     val message: String,

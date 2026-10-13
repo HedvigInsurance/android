@@ -34,7 +34,7 @@ import kotlinx.coroutines.flow.flow
 internal sealed interface InsuranceScreenEvent {
   data object RetryLoading : InsuranceScreenEvent
 
-  data class CrossSellClicked(val offerUrl: String) : InsuranceScreenEvent
+  data class CrossSellClicked(val offerId: String, val offerUrl: String) : InsuranceScreenEvent
 }
 
 internal data class InsuranceUiState(
@@ -86,7 +86,7 @@ internal class InsurancePresenter(
         }
 
         is InsuranceScreenEvent.CrossSellClicked -> {
-          eventTrackingClient.trackCrossSellClicked(CrossSellUserFlow.INSURANCES, event.offerUrl)
+          eventTrackingClient.trackCrossSellClicked(CrossSellUserFlow.INSURANCES, event.offerId, event.offerUrl)
         }
       }
     }

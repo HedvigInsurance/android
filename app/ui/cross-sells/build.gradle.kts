@@ -24,3 +24,9 @@ dependencies {
   //todo: or api?
   implementation(projects.placeholder)
 }
+
+dependencies {
+  testImplementation(libs.assertK)
+  testImplementation(libs.junit)
+  testImplementation(projects.trackingTest)
+}

@@ -1347,6 +1347,7 @@ private fun PreviewChatLoadedScreen() {
           showFileTooBigErrorToast = false,
           showFileFailedToBeSentToast = false,
           crossSell = InChatCrossSell(
+            id = "crossSell:ALL",
             title = "Få rabatt",
             description = "Aktivera din rabatt genom att teckna en till försäkring för hem, djur eller bil.",
             buttonTitle = "Se ditt pris",

@@ -110,7 +110,7 @@ internal class OnboardingBundlePresenter(
         }
 
         is OnboardingBundleEvent.CrossSellClicked -> {
-          eventTrackingClient.trackCrossSellClicked(CrossSellUserFlow.ONBOARDING, event.offerUrl)
+          eventTrackingClient.trackCrossSellClicked(CrossSellUserFlow.ONBOARDING, event.offerId, event.offerUrl)
         }
       }
     }
@@ -137,7 +137,7 @@ internal sealed interface OnboardingBundleEvent {
 
   data object ContinueToApp : OnboardingBundleEvent
 
-  data class CrossSellClicked(val offerUrl: String) : OnboardingBundleEvent
+  data class CrossSellClicked(val offerId: String, val offerUrl: String) : OnboardingBundleEvent
 }
 
 @Composable
@@ -156,9 +156,9 @@ internal fun OnboardingBundleDestination(
     onClose = { viewModel.emit(OnboardingBundleEvent.Close) },
     onRetry = { viewModel.emit(OnboardingBundleEvent.Retry) },
     onContinueToApp = { viewModel.emit(OnboardingBundleEvent.ContinueToApp) },
-    openUrl = { url ->
-      viewModel.emit(OnboardingBundleEvent.CrossSellClicked(url))
-      openUrl(url)
+    onCrossSellClick = { crossSell ->
+      viewModel.emit(OnboardingBundleEvent.CrossSellClicked(crossSell.id, crossSell.storeUrl))
+      openUrl(crossSell.storeUrl)
     },
   )
 }
@@ -172,7 +172,7 @@ private fun OnboardingBundleScreen(
   onClose: () -> Unit,
   onRetry: () -> Unit,
   onContinueToApp: () -> Unit,
-  openUrl: (String) -> Unit,
+  onCrossSellClick: (OnboardingCrossSell) -> Unit,
 ) {
   OnboardingStepScaffold(
     progress = (uiState as? OnboardingBundleUiState.Content)?.progress,
@@ -205,7 +205,7 @@ private fun OnboardingBundleScreen(
             OnboardingCrossSellRow(
               crossSell = crossSell,
               imageLoader = imageLoader,
-              openUrl = openUrl,
+              onCrossSellClick = onCrossSellClick,
             )
           }
         }
@@ -225,7 +225,7 @@ private fun OnboardingBundleScreen(
 private fun OnboardingCrossSellRow(
   crossSell: OnboardingCrossSell,
   imageLoader: ImageLoader,
-  openUrl: (String) -> Unit,
+  onCrossSellClick: (OnboardingCrossSell) -> Unit,
 ) {
   PillowRow(
     title = crossSell.title,
@@ -234,7 +234,7 @@ private fun OnboardingCrossSellRow(
       ImageAsset(id = crossSell.id, src = url, description = null)
     },
     buttonText = crossSell.buttonTitle,
-    onButtonClick = withOnboardingHaptic { openUrl(crossSell.storeUrl) },
+    onButtonClick = withOnboardingHaptic { onCrossSellClick(crossSell) },
     imageLoader = imageLoader,
     modifier = Modifier
       .fillMaxWidth()
@@ -280,7 +280,7 @@ private fun PreviewOnboardingBundleScreen(
         onClose = {},
         onRetry = {},
         onContinueToApp = {},
-        openUrl = {},
+        onCrossSellClick = {},
       )
     }
   }
