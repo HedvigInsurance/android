@@ -19,7 +19,8 @@ Facts established on 2026-10-09 to 2026-10-11, on `develop` at `457a5bab0e`:
   1 on `hedvig.multiplatform.library.jvm` (`feature-claim-chat`), 47 on
   `hedvig.android.library`, 35 on `hedvig.jvm.library`, 1 application.
 - `:umbrella` exports 10 modules; their transitive closure, the set compiled into
-  `HedvigShared` for iOS, is 46 modules. 17 iOS-capable modules sit outside that
+  `HedvigShared` for iOS, is 48 modules counting `:umbrella` and `:tracking-core`.
+  17 iOS-capable modules sit outside that
   closure and compile iOS targets for nothing.
 - Production Ugglan calls three things from `HedvigShared`: authlib for login and token
   refresh, the two puppy guide Compose screens, and the DI graph bootstrap.
@@ -106,7 +107,7 @@ One PR, landed before any conversion.
 
 - `hedvig.multiplatform.library` becomes JVM plus Android targets only.
 - New id `hedvig.multiplatform.library.ios` adds `iosArm64` and `iosSimulatorArm64`.
-- The 46 closure modules switch to `.ios`. `feature-claim-chat` switches from `.jvm` to
+- The 48 closure modules switch to `.ios`. `feature-claim-chat` switches from `.jvm` to
   the plain id. The `.jvm` id and its plugin class are deleted.
 - No guard is added: if a closure module forgets `.ios`, `:umbrella` fails to resolve
   its iOS compilation, which is the right failure.
@@ -132,7 +133,7 @@ Android-only dependencies.
 
 **Verification for this PR.** `:umbrella:assembleHedvigSharedReleaseXCFramework`,
 `:app:assembleRelease`, `jvmTest` across the repo, and the regenerated summary showing
-the iOS closure unchanged at 46 and the KMP-with-iOS count down from 63 to 46.
+the iOS closure unchanged at 48 and the KMP-with-iOS count down from 63 to 46.
 
 ## Part 3: migration waves
 
@@ -180,10 +181,15 @@ two or three modules per PR:
 | PR | Modules | Beyond the recipe |
 |---|---|---|
 | 3a | `claim-status`, `cross-sells`, `feature-delete-account` | none |
-| 3b | `ui-analytics-consent`, `feature-payout-account` | none |
-| 3c | `feature-choose-tier`, `feature-addon-purchase`, `feature-cross-sell-sheet` | none |
-| 3d | `feature-insurances` | none |
-| 3e | `feature-movingflow`, `feature-edit-coinsured` | replace one `isDigitsOnly` call; replace one `java.util.UUID` |
+| 3b | `ui-analytics-consent` | none |
+| 3e | `feature-edit-coinsured` | replace one `java.util.UUID` |
+
+**Stayed Android libraries.** `feature-choose-tier`, `feature-addon-purchase`,
+`feature-insurances`, `feature-movingflow`, `feature-payout-account` and
+`feature-cross-sell-sheet` stay on `hedvig.android.library`: the ViewModel KSP processor
+generates commonMain ViewModels in the metadata pass, which cannot resolve types from
+modules without iOS targets, and `feature-insurances` also uses
+`NavSuiteSceneDecoratorStrategy` from `navigation-compose`'s `androidMain`.
 
 **Wave 4, finish `feature-claim-history`.** Move `ClaimHistoryDestination.kt` and
 `ClaimHistoryViewModel.kt` from `androidMain` to `commonMain`; the nav entry file stays

@@ -166,7 +166,7 @@ task generateProjectDependencyGraph {
       }
       w << "| In the iOS umbrella closure (including modules not drawn) | ${iosClosure.size()} |\n\n"
       w << '## Non-KMP modules and what depends on them (from shared code for KMP modules)\n\n'
-      w << 'Converting a module near the top unblocks the most dependents.\n\n'
+      w << 'Non-KMP modules ordered by the number of drawn modules that depend on them directly.\n\n'
       blockers.each { b ->
         def names = dependents[b].sort(false) { it.path }.collect { "`${it.path}`" }.join(', ')
         w << "- `${b.path}` (${kindOf(b).label}) <- ${names}\n"
