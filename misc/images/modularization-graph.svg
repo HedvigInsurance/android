@@ -972,7 +972,7 @@
 <!-- :feature&#45;addon&#45;purchase -->
 <g id="node64" class="node">
 <title>:feature&#45;addon&#45;purchase</title>
-<ellipse fill="#baffc9" stroke="black" cx="1785.6" cy="-1621.69" rx="106.43" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="1785.6" cy="-1621.69" rx="106.43" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="1785.6" y="-1615.89" font-family="Helvetica,sans-Serif" font-size="14.00">:feature&#45;addon&#45;purchase</text>
 </g>
 <!-- :feature&#45;addon&#45;purchase&#45;&gt;:data&#45;addons -->
@@ -1164,7 +1164,7 @@
 <!-- :feature&#45;choose&#45;tier -->
 <g id="node71" class="node">
 <title>:feature&#45;choose&#45;tier</title>
-<ellipse fill="#baffc9" stroke="black" cx="1427.6" cy="-756.69" rx="86.44" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="1427.6" cy="-756.69" rx="86.44" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="1427.6" y="-750.89" font-family="Helvetica,sans-Serif" font-size="14.00">:feature&#45;choose&#45;tier</text>
 </g>
 <!-- :feature&#45;choose&#45;tier&#45;&gt;:data&#45;changetier -->
@@ -1596,7 +1596,7 @@
 <!-- :feature&#45;cross&#45;sell&#45;sheet -->
 <g id="node85" class="node">
 <title>:feature&#45;cross&#45;sell&#45;sheet</title>
-<ellipse fill="#baffc9" stroke="black" cx="1427.6" cy="-1560.69" rx="104.48" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="1427.6" cy="-1560.69" rx="104.48" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="1427.6" y="-1554.89" font-family="Helvetica,sans-Serif" font-size="14.00">:feature&#45;cross&#45;sell&#45;sheet</text>
 </g>
 <!-- :feature&#45;cross&#45;sell&#45;sheet&#45;&gt;:cross&#45;sells -->
@@ -2346,7 +2346,7 @@
 <!-- :feature&#45;movingflow -->
 <g id="node105" class="node">
 <title>:feature&#45;movingflow</title>
-<ellipse fill="#baffc9" stroke="black" cx="1427.6" cy="-1260.69" rx="87.42" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="1427.6" cy="-1260.69" rx="87.42" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="1427.6" y="-1254.89" font-family="Helvetica,sans-Serif" font-size="14.00">:feature&#45;movingflow</text>
 </g>
 <!-- :feature&#45;movingflow&#45;&gt;:data&#45;cross&#45;sell&#45;after&#45;flow -->
@@ -2634,7 +2634,7 @@
 <!-- :feature&#45;payout&#45;account -->
 <g id="node114" class="node">
 <title>:feature&#45;payout&#45;account</title>
-<ellipse fill="#baffc9" stroke="black" cx="1785.6" cy="-1574.69" rx="103.02" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="1785.6" cy="-1574.69" rx="103.02" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="1785.6" y="-1568.89" font-family="Helvetica,sans-Serif" font-size="14.00">:feature&#45;payout&#45;account</text>
 </g>
 <!-- :feature&#45;payout&#45;account&#45;&gt;:apollo&#45;network&#45;cache&#45;manager -->
