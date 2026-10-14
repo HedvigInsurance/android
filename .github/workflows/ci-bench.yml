@@ -14,9 +14,9 @@ jobs:
       fail-fast: false
       max-parallel: 14
       matrix:
-        config: [8c-current, 8c-uncapped, 4c-current, 4c-uncapped, 4c-uncapped-inc]
-        task: [unit_test, lint, build, ktlint, all]
-        rep: [1, 2, 3]
+        config: [4c-current]
+        task: [ktlint]
+        rep: [1]
         include:
           - { config: 8c-current, runner: ubuntu-latest-8-vcpu, props: current }
           - { config: 8c-uncapped, runner: ubuntu-latest-8-vcpu, props: uncapped }
@@ -72,8 +72,8 @@ jobs:
       # Free macOS runners are shared with the iOS team's CI, so keep the footprint small.
       max-parallel: 3
       matrix:
-        config: [xl-current, xl-uncapped, intel-current, intel-uncapped, arm3-lowheap]
-        rep: [1, 2]
+        config: [arm3-lowheap]
+        rep: [1]
         include:
           - { config: xl-current, runner: macos-26-xlarge, props: current }
           - { config: xl-uncapped, runner: macos-26-xlarge, props: uncapped }
