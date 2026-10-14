@@ -776,8 +776,8 @@
   <string name="PAYMENT_TRUSTLY_FAILURE_TITLE">Kopplingen misslyckades</string>
   <string name="PAYMENT_TRUSTLY_SUCCESS_SUBTITLE">Vi meddelar dig i appen varje månad</string>
   <string name="PAYOUT_ADD_PAYOUT_METHOD">Lägg till utbetalningsmetod</string>
-  <string name="PAYOUT_CHOOSE_METHOD_SUBTITLE">Den här metoden används för dina utbetalningar</string>
-  <string name="PAYOUT_CONFIRMATION_INFO">Din nästa utbetalning görs via %1$s</string>
+  <string name="PAYOUT_CHOOSE_METHOD_SUBTITLE">Används för dina utbetalningar</string>
+  <string name="PAYOUT_CONFIRMATION_INFO">Framöver betalar vi ut via %1$s</string>
   <string name="PAYOUT_CONFIRMATION_TITLE">Bekräfta utbetalningsmetod</string>
   <string name="PAYOUT_METHOD_INVOICE_DESCRIPTION">Direktutbetalning via Faktura</string>
   <string name="PAYOUT_METHOD_SWISH_DESCRIPTION">Snabb utbetalning med Swish</string>
