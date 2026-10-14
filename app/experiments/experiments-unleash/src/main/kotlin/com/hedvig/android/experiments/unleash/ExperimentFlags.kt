@@ -8,12 +8,16 @@ import kotlinx.coroutines.flow.Flow
 
 /** The Unleash calls [UnleashExperimentProvider] needs, kept behind an interface so the provider is testable. */
 internal interface ExperimentFlags {
-  /** Emits whenever the flag state may have changed, including when the member id in the Unleash context does. */
+  /** Emits whenever the toggles, or the member they must belong to, may have changed. */
   val updates: Flow<Unit>
 
-  /** Suspends until flag state exists, either restored from disk or fetched. Never completes while it can't. */
-  suspend fun awaitReady()
+  /** Whether the toggles in hand were fetched for the current member, or for nobody while logged out. */
+  fun hasStateForCurrentMember(): Boolean
 
+  /** Suspends until [hasStateForCurrentMember]. Never completes while that can't happen, e.g. offline. */
+  suspend fun awaitStateForCurrentMember()
+
+  /** The current member's variant of [flagName], or null when they have none or it isn't known yet. */
   fun variantOf(flagName: String): String?
 }
 
@@ -22,9 +26,11 @@ internal interface ExperimentFlags {
 internal class UnleashExperimentFlags(
   private val hedvigUnleashClient: HedvigUnleashClient,
 ) : ExperimentFlags {
-  override val updates: Flow<Unit> get() = hedvigUnleashClient.featureUpdatedFlow
+  override val updates: Flow<Unit> get() = hedvigUnleashClient.memberStateUpdatedFlow
 
-  override suspend fun awaitReady() = hedvigUnleashClient.awaitReady()
+  override fun hasStateForCurrentMember(): Boolean = hedvigUnleashClient.hasStateForCurrentMember()
+
+  override suspend fun awaitStateForCurrentMember() = hedvigUnleashClient.awaitReady()
 
   override fun variantOf(flagName: String): String? = hedvigUnleashClient.variantOf(flagName)
 }

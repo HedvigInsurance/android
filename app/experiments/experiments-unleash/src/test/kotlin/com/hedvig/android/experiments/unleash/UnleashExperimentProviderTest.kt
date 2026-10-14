@@ -24,13 +24,21 @@ class UnleashExperimentProviderTest {
   private class FakeExperimentFlags(
     val variants: MutableMap<String, String?> = mutableMapOf(),
   ) : ExperimentFlags {
-    /** Completes once flag state exists. Left incomplete, the client has never fetched. */
-    val ready = CompletableDeferred<Unit>()
+    /** Completes once the toggles in hand are the current member's own. Left incomplete, they aren't yet. */
+    val memberState = CompletableDeferred<Unit>()
     override val updates = MutableSharedFlow<Unit>(replay = 1)
 
-    override suspend fun awaitReady() = ready.await()
+    override fun hasStateForCurrentMember(): Boolean = memberState.isCompleted
 
-    override fun variantOf(flagName: String): String? = variants[flagName]
+    override suspend fun awaitStateForCurrentMember() = memberState.await()
+
+    override fun variantOf(flagName: String): String? = if (hasStateForCurrentMember()) variants[flagName] else null
+
+    /** The member's own toggles arriving, which in the real client is a state change and so also an update. */
+    suspend fun receiveMemberState() {
+      memberState.complete(Unit)
+      updates.emit(Unit)
+    }
   }
 
   private fun TestScope.provider(
@@ -46,7 +54,7 @@ class UnleashExperimentProviderTest {
   }
 
   private fun flagsWithVariant(variant: String?) =
-    FakeExperimentFlags(mutableMapOf("accident_discount_experiment" to variant)).apply { ready.complete(Unit) }
+    FakeExperimentFlags(mutableMapOf("accident_discount_experiment" to variant)).apply { memberState.complete(Unit) }
 
   @Test
   fun `the variant Unleash assigns is reported under the experiment name`() = runTest {
@@ -67,14 +75,14 @@ class UnleashExperimentProviderTest {
   }
 
   @Test
-  fun `an install that has never fetched stops waiting after the timeout and reports no experiment`() = runTest {
+  fun `without the member's own toggles it stops waiting after the timeout and reports no experiment`() = runTest {
     val flags = FakeExperimentFlags(mutableMapOf("accident_discount_experiment" to null))
 
     assertThat(provider(flags).activeExperiments()).isEmpty()
   }
 
   @Test
-  fun `user properties are left alone until Unleash has state`() = runTest {
+  fun `user properties are left alone until the member's own toggles are in hand`() = runTest {
     val flags = FakeExperimentFlags(mutableMapOf("accident_discount_experiment" to null))
     val client = FakeEventTrackingClient()
     provider(flags, client).initialize()
@@ -84,7 +92,7 @@ class UnleashExperimentProviderTest {
     assertThat(client.userProperties).isEmpty()
 
     flags.variants["accident_discount_experiment"] = "DISCOUNT"
-    flags.ready.complete(Unit)
+    flags.receiveMemberState()
     runCurrent()
     assertThat(client.userProperties).containsOnly(
       "experiment_name" to "ACCIDENT_DISCOUNT",

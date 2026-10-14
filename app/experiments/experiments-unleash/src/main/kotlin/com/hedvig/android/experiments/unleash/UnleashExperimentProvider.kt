@@ -17,6 +17,7 @@ import dev.zacsweers.metro.binding
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
@@ -24,9 +25,10 @@ import kotlinx.coroutines.withTimeoutOrNull
 /**
  * Reports the member's experiment variants as Unleash assigns them, see [ExperimentDefinition].
  *
- * Unleash keeps the last fetched flag state on disk, so after the first launch [activeExperiments] answers at
- * once. Only an install that has never fetched waits, for at most [FIRST_FETCH_TIMEOUT], after which it reports
- * no experiments and the member keeps today's behaviour.
+ * A variant is only reported from toggles fetched for the current member, since Unleash assigns it from the
+ * member id the fetch carried. Those toggles are usually in hand at once, persisted from the member's last
+ * session. Right after a login, or on a first launch, [activeExperiments] waits for the member's own fetch for
+ * at most [MEMBER_STATE_TIMEOUT], after which it reports no experiments and the member keeps today's behaviour.
  *
  * The variants are also set as Firebase user properties so every analytics event carries them, and they follow
  * every flag update, which includes the member id in the Unleash context changing on login and logout. User
@@ -45,10 +47,10 @@ internal class UnleashExperimentProvider(
 ) : ExperimentProvider, Initializable {
   override fun initialize() {
     applicationScope.launch(coroutineContext) {
-      // Before Unleash has state every flag reads as off, which would clear the properties Firebase kept from the
-      // last session and leave the events of the first moments of a launch without the member's group.
-      experimentFlags.awaitReady()
+      // Toggles that aren't the member's own say nothing about their group. Publishing from them would clear the
+      // properties Firebase kept from the last session, leaving events without the group until the fetch lands.
       experimentFlags.updates
+        .filter { experimentFlags.hasStateForCurrentMember() }
         .map { currentExperiments() }
         .distinctUntilChanged()
         .collect(::publishUserProperties)
@@ -56,7 +58,7 @@ internal class UnleashExperimentProvider(
   }
 
   override suspend fun activeExperiments(): List<Experiment> {
-    withTimeoutOrNull(FIRST_FETCH_TIMEOUT) { experimentFlags.awaitReady() }
+    withTimeoutOrNull(MEMBER_STATE_TIMEOUT) { experimentFlags.awaitStateForCurrentMember() }
     return currentExperiments()
   }
 
@@ -80,7 +82,7 @@ internal class UnleashExperimentProvider(
   }
 
   companion object {
-    private val FIRST_FETCH_TIMEOUT = 3.seconds
+    private val MEMBER_STATE_TIMEOUT = 3.seconds
     private val SCREAMING_SNAKE_CASE = Regex("[A-Z0-9_]+")
     internal const val USER_PROPERTY_EXPERIMENT_NAME = "experiment_name"
     internal const val USER_PROPERTY_EXPERIMENT_VARIANT = "experiment_variant"
