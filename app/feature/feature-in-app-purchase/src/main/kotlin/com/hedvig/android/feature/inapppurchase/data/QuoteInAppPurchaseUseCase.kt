@@ -5,6 +5,7 @@ import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.feature.inapppurchase.navigation.InAppProduct
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn

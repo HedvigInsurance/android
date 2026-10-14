@@ -6,12 +6,6 @@ import com.hedvig.android.ui.tiersandaddons.CostBreakdownEntry
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
-@Serializable
-enum class InAppProduct {
-  ACCIDENT,
-  PAYMENT_PROTECTION,
-}
-
 internal data class InAppPurchaseForm(
   val product: InAppPurchaseProduct,
   val eligibility: InAppPurchaseEligibility,

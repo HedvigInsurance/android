@@ -42,6 +42,9 @@ import com.hedvig.android.feature.help.center.navigation.HelpCenterKey
 import com.hedvig.android.feature.home.home.navigation.homeEntries
 import com.hedvig.android.feature.imageviewer.navigation.ImageViewerKey
 import com.hedvig.android.feature.imageviewer.navigation.imageViewerEntries
+import com.hedvig.android.feature.inapppurchase.navigation.InAppPurchaseKey
+import com.hedvig.android.feature.inapppurchase.navigation.inAppProductForCrossSellStoreUrl
+import com.hedvig.android.feature.inapppurchase.navigation.inAppPurchaseEntries
 import com.hedvig.android.feature.insurance.certificate.navigation.InsuranceEvidenceKey
 import com.hedvig.android.feature.insurance.certificate.navigation.insuranceEvidenceEntries
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
@@ -153,7 +156,15 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     windowSizeClass = windowSizeClass,
     imageLoader = imageLoader,
     openUrl = openUrl,
-    openCrossSellUrl = openCrossSellUrl,
+    openCrossSellUrl = { storeUrl ->
+      // The in-app purchase flow runs on mocked data, so production keeps opening the web store.
+      val inAppProduct = if (hedvigBuildConstants.isProduction) null else inAppProductForCrossSellStoreUrl(storeUrl)
+      if (inAppProduct != null) {
+        backstack.add(InAppPurchaseKey(inAppProduct))
+      } else {
+        openCrossSellUrl(storeUrl)
+      }
+    },
     externalNavigator = externalNavigator,
     navigateToNewConversation = navigateToNewConversation,
     navigateToMovingFlowFromInsurance = {
@@ -596,6 +607,7 @@ private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
     backstack = backstack,
     onNavigateToNewConversation = navigateToNewConversation,
   )
+  inAppPurchaseEntries(backstack = backstack)
   chipIdEntries(
     backstack = backstack,
     globalSnackBarState = globalSnackBarState,

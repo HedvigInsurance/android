@@ -9,6 +9,7 @@ import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument.InsuranceDocumentType
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.data.productvariant.ProductVariantPeril
+import com.hedvig.android.feature.inapppurchase.navigation.InAppProduct
 import kotlinx.datetime.LocalDate
 
 internal const val MockNetworkDelay = 600L

@@ -5,18 +5,27 @@ plugins {
 
 hedvig {
   serialization()
+  compose()
+  navKeys()
 }
 
 dependencies {
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
   implementation(libs.coroutines.core)
+  implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
+  implementation(projects.composeUi)
   implementation(projects.coreCommonPublic)
+  implementation(projects.coreResources)
   implementation(projects.coreUiData)
   implementation(projects.dataContract)
   implementation(projects.dataProductVariantPublic)
+  implementation(projects.designSystemHedvig)
+  implementation(projects.featureInAppPurchaseNavigation)
+  implementation(projects.navigationCommon)
+  implementation(projects.navigationCompose)
   implementation(projects.uiTiersAndAddons)
 }
