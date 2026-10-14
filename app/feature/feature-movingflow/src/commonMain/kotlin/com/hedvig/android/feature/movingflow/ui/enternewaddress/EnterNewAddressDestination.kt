@@ -30,7 +30,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -213,11 +212,11 @@ private fun EnterNewAddressScreen(
           onValueChange = onValueChange@{
             if (it.isEmpty()) {
               uiState.postalCode.updateValue(null)
-            } else if (it.isDigitsOnly()) {
+            } else if (it.all(Char::isDigit)) {
               uiState.postalCode.updateValue(it)
             } else {
-              val withoutWhitespaces = it.filterNot { it.isWhitespace() }
-              if (withoutWhitespaces.isDigitsOnly()) {
+              val withoutWhitespaces = it.filterNot(Char::isWhitespace)
+              if (withoutWhitespaces.all(Char::isDigit)) {
                 uiState.postalCode.updateValue(withoutWhitespaces)
               }
             }
