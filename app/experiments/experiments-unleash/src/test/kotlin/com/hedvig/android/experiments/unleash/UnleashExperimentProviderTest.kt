@@ -52,8 +52,8 @@ class UnleashExperimentProviderTest {
   fun `the variant Unleash assigns is reported under the experiment name`() = runTest {
     assertThat(provider(flagsWithVariant("NO_DISCOUNT")).activeExperiments())
       .containsExactly(Experiment("ACCIDENT_DISCOUNT", "NO_DISCOUNT"))
-    assertThat(provider(flagsWithVariant("CONTROL")).activeExperiments())
-      .containsExactly(Experiment("ACCIDENT_DISCOUNT", "CONTROL"))
+    assertThat(provider(flagsWithVariant("DISCOUNT")).activeExperiments())
+      .containsExactly(Experiment("ACCIDENT_DISCOUNT", "DISCOUNT"))
   }
 
   @Test

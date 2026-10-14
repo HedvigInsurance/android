@@ -14,6 +14,6 @@ internal data class ExperimentDefinition(
 )
 
 internal val knownExperiments: List<ExperimentDefinition> = listOf(
-  // Variants CONTROL (today's discount) and NO_DISCOUNT. The backend withholds the discount for NO_DISCOUNT.
+  // Variants DISCOUNT (today's behaviour) and NO_DISCOUNT. The backend withholds the discount for NO_DISCOUNT.
   ExperimentDefinition(name = "ACCIDENT_DISCOUNT", unleashFlag = "accident_discount_experiment"),
 )
