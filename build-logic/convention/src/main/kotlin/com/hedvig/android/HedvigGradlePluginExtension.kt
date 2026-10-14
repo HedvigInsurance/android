@@ -13,6 +13,7 @@ import java.io.File
 import javax.inject.Inject
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Action
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
 import org.gradle.api.plugins.PluginManager
@@ -407,8 +408,11 @@ private abstract class ViewModelsHandler {
     project.gradle.projectsEvaluated {
       val kotlin = project.extensions.getByType<KotlinMultiplatformExtension>()
       if (kotlin.targets.any { it.platformType == KotlinPlatformType.native }) return@projectsEvaluated
-      val jvmCompilation = kotlin.targets.withType(KotlinJvmTarget::class.java).single()
-        .compilations.getByName("main")
+      val jvmTarget = kotlin.targets.withType(KotlinJvmTarget::class.java).singleOrNull()
+        ?: throw GradleException(
+          "${project.path}: viewModels() on a KMP module without native targets needs exactly one JVM target.",
+        )
+      val jvmCompilation = jvmTarget.compilations.getByName("main")
       val jvmCompileOptions = jvmCompilation.compileTaskProvider.map { it.compilerOptions as KotlinJvmCompilerOptions }
       project.tasks.named("kspCommonMainKotlinMetadata", KspAATask::class.java).configure {
         kspConfig.platformType.set(KotlinPlatformType.jvm)
