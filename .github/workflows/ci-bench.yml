@@ -1,0 +1,116 @@
+name: CI bench
+
+on:
+  push:
+    branches:
+      - ci-bench/**
+
+jobs:
+  android:
+    name: ${{ matrix.config }} ${{ matrix.task }} r${{ matrix.rep }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      max-parallel: 14
+      matrix:
+        config: [8c-current, 8c-uncapped, 4c-current, 4c-uncapped, 4c-uncapped-inc]
+        task: [unit_test, lint, build, ktlint, all]
+        rep: [1, 2, 3]
+        include:
+          - { config: 8c-current, runner: ubuntu-latest-8-vcpu, props: current }
+          - { config: 8c-uncapped, runner: ubuntu-latest-8-vcpu, props: uncapped }
+          - { config: 4c-current, runner: ubuntu-latest, props: current }
+          - { config: 4c-uncapped, runner: ubuntu-latest, props: uncapped }
+          - { config: 4c-uncapped-inc, runner: ubuntu-latest, props: uncapped-inc }
+          - { task: unit_test, gradle: "test jvmTest" }
+          - { task: lint, gradle: "lint" }
+          - { task: build, gradle: ":app:bundleDebug" }
+          - { task: ktlint, gradle: "ktlintCheck" }
+          - { task: all, gradle: "test jvmTest lint ktlintCheck :app:bundleDebug" }
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6.0.1
+        with:
+          java-version: '21'
+          distribution: 'zulu'
+      - name: Gradle properties
+        run: ./scripts/ci-bench/props.sh ${{ matrix.props }}
+      - name: Prebuild
+        run: ./scripts/ci-prebuild.sh
+        env:
+          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+      - uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-disabled: true
+      - name: Bench
+        run: ./scripts/ci-bench/run.sh "${{ matrix.gradle }}"
+        env:
+          BENCH_OUT: ${{ runner.temp }}/bench
+          BENCH_CONFIG: ${{ matrix.config }}
+          BENCH_RUNNER: ${{ matrix.runner }}
+          BENCH_TASK: ${{ matrix.task }}
+          BENCH_REP: ${{ matrix.rep }}
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: bench-${{ matrix.config }}-${{ matrix.task }}-${{ matrix.rep }}
+          path: |
+            ${{ runner.temp }}/bench/results.jsonl
+            ${{ runner.temp }}/bench/*.mem
+            ${{ runner.temp }}/bench/*.log
+          retention-days: 14
+
+  umbrella:
+    name: ${{ matrix.config }} umbrella r${{ matrix.rep }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      # Free macOS runners are shared with the iOS team's CI, so keep the footprint small.
+      max-parallel: 3
+      matrix:
+        config: [xl-current, xl-uncapped, intel-current, intel-uncapped, arm3-lowheap]
+        rep: [1, 2]
+        include:
+          - { config: xl-current, runner: macos-26-xlarge, props: current }
+          - { config: xl-uncapped, runner: macos-26-xlarge, props: uncapped }
+          - { config: intel-current, runner: macos-26-intel, props: current }
+          - { config: intel-uncapped, runner: macos-26-intel, props: uncapped }
+          - { config: arm3-lowheap, runner: macos-26, props: uncapped-lowheap }
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6.0.1
+        with:
+          java-version: '21'
+          distribution: 'zulu'
+      - name: Gradle properties
+        run: ./scripts/ci-bench/props.sh ${{ matrix.props }}
+      - name: Prebuild
+        run: ./scripts/ci-prebuild.sh
+        env:
+          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+      - uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-disabled: true
+      - name: Bench
+        run: ./scripts/ci-bench/run.sh ":umbrella:assembleHedvigSharedReleaseXCFramework"
+        env:
+          BENCH_OUT: ${{ runner.temp }}/bench
+          BENCH_CONFIG: ${{ matrix.config }}
+          BENCH_RUNNER: ${{ matrix.runner }}
+          BENCH_TASK: umbrella
+          BENCH_REP: ${{ matrix.rep }}
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: bench-${{ matrix.config }}-umbrella-${{ matrix.rep }}
+          path: |
+            ${{ runner.temp }}/bench/results.jsonl
+            ${{ runner.temp }}/bench/*.mem
+            ${{ runner.temp }}/bench/*.log
+          retention-days: 14
