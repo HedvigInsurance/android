@@ -10,6 +10,9 @@ hedvig {
 }
 
 kotlin {
+  android {
+    withHostTest {}
+  }
   sourceSets {
     commonMain.dependencies {
       implementation(libs.coroutines.core)
@@ -21,5 +24,17 @@ kotlin {
       implementation(projects.coreBuildConstants)
       implementation(projects.coreCommonPublic)
     }
+    getByName("androidHostTest").dependencies {
+      implementation(libs.assertK)
+      implementation(libs.coroutines.test)
+      implementation(libs.junit)
+      implementation(libs.kotlin.test)
+      implementation(projects.loggingTest)
+    }
   }
+}
+
+// CI runs the root `test` task, which only reaches modules that have a task with that exact name.
+tasks.register("test") {
+  dependsOn("testAndroidHostTest")
 }
