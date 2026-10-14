@@ -225,8 +225,8 @@ applying the plugin there creates a Gradle task cycle. `apollo-octopus-public`'s
 depends on `core-build-constants` and `core-common-public`, `core-common-public`'s `androidMain`
 depends on `apollo-octopus-public`, and `core-build-constants`' `commonMain` depends on
 `language-core` and `core-common-public`. KMP modules without an Android target get JVM lint
-over `jvmMain` only, so their `commonMain` is not linted. CI annotates only `:app`'s lint results
-on the PR, so findings in other modules fail the job without inline annotations.
+over `jvmMain` only, so their `commonMain` is not linted. CI annotates lint findings from every
+module's report on the PR.
 
 **Logistics.** Work happens in `android_copy`, which was moved to `develop` on
 2026-10-12. One branch per PR, each off `develop`. All branches stay local: no pushes,
