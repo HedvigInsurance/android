@@ -58,6 +58,7 @@ jobs:
             ${{ runner.temp }}/bench/results.jsonl
             ${{ runner.temp }}/bench/*.mem
             ${{ runner.temp }}/bench/*.log
+            ${{ runner.temp }}/bench/*.txt
           retention-days: 14
 
   umbrella:
@@ -103,4 +104,5 @@ jobs:
             ${{ runner.temp }}/bench/results.jsonl
             ${{ runner.temp }}/bench/*.mem
             ${{ runner.temp }}/bench/*.log
+            ${{ runner.temp }}/bench/*.txt
           retention-days: 14

@@ -8,6 +8,8 @@
 set -eu
 mkdir -p ~/.gradle
 cp .github/ci-gradle.properties ~/.gradle/gradle.properties
+# The source file has no trailing newline, so anything appended would join its last line.
+echo >> ~/.gradle/gradle.properties
 case "$1" in
   current) ;;
   uncapped) sed -i.bak '/org.gradle.workers.max/d' ~/.gradle/gradle.properties ;;

@@ -10,6 +10,8 @@
 #   none        build cache holds the outputs of the base commit, nothing changed
 #   leaf-nonabi / leaf-abi / root-nonabi / root-abi
 #               build cache holds the base outputs, one module changed
+#   downloaded  nothing changed by hand, but the schema and strings are downloaded first, as the
+#               PR workflow's setup does. Shows what drift from the committed files costs.
 # Every phase starts from `git clean`, so build dirs and the project's configuration cache are gone,
 # which is what a fresh CI checkout looks like.
 set -u
@@ -60,6 +62,12 @@ apply_change() {
     leaf-abi) printf 'package com.hedvig.android.feature.help.center\n\nval benchAbiMarker: Int = 1\n' > "$LEAF_DIR/BenchAbiMarker.kt" ;;
     root-nonabi) printf '\nprivate fun benchNonAbi(): Int = 1\n' >> "$ROOT_FILE" ;;
     root-abi) printf 'package com.hedvig.android.core.common\n\nval benchAbiMarker: Int = 1\n' > "$ROOT_DIR/BenchAbiMarker.kt" ;;
+    downloaded)
+      # What the PR workflow's setup does on top of the committed schema and strings.
+      ./gradlew downloadOctopusApolloSchemaFromIntrospection downloadStrings > "$OUT/downloaded-setup.log" 2>&1
+      git status --porcelain > "$OUT/downloaded-changes.txt"
+      echo "downloads changed $(wc -l < "$OUT/downloaded-changes.txt") files"
+      ;;
   esac
 }
 
@@ -85,7 +93,10 @@ run_phase() {
     "$BENCH_CONFIG" "$BENCH_RUNNER" "$BENCH_TASK" "$BENCH_REP" "$phase" $((end - start)) "$status" "$stats" \
     "$NPROC" "$MEM_TOTAL_MB" "$peak" "$peak_swap" | tee -a "$OUT/results.jsonl"
   grep -E 'BUILD (SUCCESSFUL|FAILED)|OutOfMemory|daemon disappeared|Killed' "$log" | head -5
+  [ "$status" -eq 0 ] || FAILED_PHASES="$FAILED_PHASES $phase"
 }
+
+FAILED_PHASES=""
 
 # Download the wrapper distribution outside the timed phases.
 ./gradlew --version > /dev/null
@@ -96,9 +107,14 @@ clean_tree
 rm -rf ~/.gradle/caches/build-cache-1
 run_phase deps-warm
 
-for scenario in none leaf-nonabi leaf-abi root-nonabi root-abi; do
+for scenario in none downloaded leaf-nonabi leaf-abi root-nonabi root-abi; do
   clean_tree
   apply_change "$scenario"
   run_phase "$scenario"
 done
 clean_tree
+
+if [ -n "$FAILED_PHASES" ]; then
+  echo "::error::Gradle failed in:$FAILED_PHASES"
+  exit 1
+fi
