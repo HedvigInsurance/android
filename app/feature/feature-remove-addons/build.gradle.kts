@@ -33,17 +33,16 @@ kotlin {
       implementation(projects.coreResources)
       implementation(projects.coreUiData)
       implementation(projects.dataContract)
+      implementation(projects.dataProductVariantPublic)
       implementation(projects.designSystemHedvig)
       implementation(projects.moleculePublic)
       implementation(projects.uiTiersAndAddons)
-      implementation(projects.dataProductVariantPublic)
       implementation(projects.navigationCommon)
       implementation(projects.navigationCompose)
     }
     androidMain.dependencies {
       implementation(projects.composeUi)
       implementation(projects.navigationCore)
-      implementation(projects.dataProductVariantPublic)
     }
   }
 }
