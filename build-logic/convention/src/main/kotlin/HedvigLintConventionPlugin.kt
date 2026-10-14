@@ -25,7 +25,6 @@ class HedvigLintConventionPlugin : Plugin<Project> {
         .resolve("lint-baseline")
         .resolve("lint-baseline-$moduleName-jvm.xml")
       val lintXmlPath: File = rootProject.projectDir.resolve("hedvig-lint").resolve("lint.xml")
-      var didConfigureLint = false
       // The KMP-android plugin only registers its Android Lint tasks (`lintAndroidMain`,
       // `updateLintBaselineAndroidMain`, ...) when `com.android.lint` is also applied, so it is applied here.
       // That androidMain pass analyses commonMain, jvmAndAndroidMain and androidMain, and is configured by
@@ -43,25 +42,31 @@ class HedvigLintConventionPlugin : Plugin<Project> {
             it.lint { configure(lintXmlPath, lintBaselineFile) }
           }
         }
-        didConfigureLint = true
       }
 
       pluginManager.withPlugin(libs.plugins.androidApplication.get().pluginId) {
         configure<ApplicationExtension> { lint { configure(lintXmlPath, lintBaselineFile) } }
-        didConfigureLint = true
       }
 
       pluginManager.withPlugin(libs.plugins.androidLibrary.get().pluginId) {
         configure<LibraryExtension> { lint { configure(lintXmlPath, lintBaselineFile) } }
-        didConfigureLint = true
       }
 
-      if (!didConfigureLint) {
-        pluginManager.apply(libs.plugins.lintGradlePlugin.get().pluginId)
-        configure<Lint> { configure(lintXmlPath, lintBaselineFile) }
-      }
-      dependencies {
-        add("lintChecks", project(":hedvig-lint"))
+      // All of the module's plugins are applied by `afterEvaluate`, so a module with none of the Android
+      // plugins gets the standalone lint plugin regardless of the order its plugins are applied in.
+      afterEvaluate {
+        val hasAndroidPlugin = listOf(
+          libs.plugins.androidLibraryMultiplatform,
+          libs.plugins.androidApplication,
+          libs.plugins.androidLibrary,
+        ).any { pluginManager.hasPlugin(it.get().pluginId) }
+        if (!hasAndroidPlugin) {
+          pluginManager.apply(libs.plugins.lintGradlePlugin.get().pluginId)
+          configure<Lint> { configure(lintXmlPath, lintBaselineFile) }
+        }
+        dependencies {
+          add("lintChecks", project(":hedvig-lint"))
+        }
       }
     }
   }
