@@ -37,7 +37,8 @@ hasn't seen. As long as we never pass a `defaultValue`, we're not exposed to #14
 
 `UnleashFeatureFlagProvider` resolves every read through `HedvigUnleashClient.valueOf(feature)`:
 
-- once the client holds real toggle state (`isReady()`), it returns `client.isEnabled(key)`;
+- once the client holds real toggle state (fetched, or restored from the SDK's local backup), it
+  returns `client.isEnabled(key)`;
 - before that, it returns the flag's `neverFetchedDefaults` entry, or `false` if it has none.
 
 `isEnabled(name)` returns `false` for an absent toggle, and a `Feature`'s name mirrors its key's
@@ -57,12 +58,33 @@ default:
 
 Reads are exposed as a `Flow`. `featureUpdatedFlow` emits on any toggle-state change, which
 includes the local backup being restored and not only a network fetch, so a collector that starts
-before the backup lands still sees the value update. It also emits when the client becomes ready,
-which matters because the SDK sets `isReady()` from a coroutine independent of the one that
-notifies state listeners: the two race on the first cache write, and a collector that wins the race
-would read a `neverFetchedDefaults` value out of a cache that already holds real toggles. There is
-no second chance to correct that on its own, since an unchanged toggle set answers `304` and
-`doFetchToggles` writes the cache only on a successful fetch.
+before the backup lands still sees the value update. The client hands the SDK a `ToggleStateCache` as
+its `cacheImpl`, and both "is there real state" and the toggle values are read from that one
+`StateFlow`, so a collector can never observe new toggles while `valueOf` still reports the
+never-fetched default. The SDK's own `isReady()` is not consulted: it is set once per process, from a
+coroutine racing the cache write, and says nothing about which member the toggles were fetched for.
+
+## Toggles belong to the member they were fetched for
+
+Unleash evaluates strategies server-side against the context a fetch carried. A strategy with
+`memberId` stickiness or a `memberId` constraint resolves to off for a fetch without the member, even
+at a 100% rollout, so toggles fetched for nobody, or for another member, are wrong for this one.
+
+- The client starts only once the first member id value is in its context, so a logged-in launch's
+  first fetch already names the member. If the member id cannot be read within two seconds, or the
+  read fails, it starts without one rather than not at all, and applies the member when it arrives.
+- The context also carries `userId`, set to the member id. It is the field Unleash's `default`
+  stickiness resolves, without which a partial rollout using it is re-rolled on every fetch.
+- `hasStateForCurrentMember()` tells whether the state in hand was fetched for the member currently in
+  effect (or for nobody while logged out), by comparing the `memberId` of the context stored with the
+  state.
+- `awaitReady()` waits for exactly that, so a one-shot read after login, such as `OnboardingGate`'s,
+  sees the member's own values. It still never completes without such a state, so callers keep their
+  timeout.
+- `variantOf(flag)` only answers when the state is the member's own, returning null otherwise. Variant
+  flags drive A/B tests, where reporting a group fetched for someone else would corrupt the result.
+- `valueOf(feature)` does not wait or check the member: right after a login, the previous state is a
+  better answer for most flags than every flag falling back to its default.
 
 ## When the "never fetched" default actually matters
 
@@ -74,7 +96,12 @@ window:
 - Fresh install while fully offline.
 
 After any successful fetch, an offline launch uses the last-known remote state, not the
-never-fetched default.
+never-fetched default, with one known gap. The backup keeps a single slot keyed by the whole
+context's `hashCode()`, written only when the context changes, and restores it only for an identical
+context. Our context carries `appVersion`, so the first offline launch after an app update finds no
+backup, and neither does an offline launch whose last backup write was for the logged-out context.
+Those launches use the never-fetched defaults until a fetch succeeds. Closing the gap would mean
+persisting fetched state outside the SDK.
 
 This holds only because we leave `bootstrap` unset. Seeding it stops the backup from ever loading,
 which widens that narrow window to every cold start.
@@ -93,8 +120,8 @@ It isn't, because of how the SDK defines readiness (verified against `unleash-an
 
 The consequences are all silent:
 
-- `awaitReady()` returns immediately with only the bootstrapped toggles in cache, so it reports
-  "we have flag values" when we effectively don't. Every flag without a bootstrap entry reads
+- The bootstrapped toggles are written as a state for the current context, so `awaitReady()` returns
+  immediately with only them in cache and reports "we have flag values" when we effectively don't. Every flag without a bootstrap entry reads
   `false` until the first poll returns.
 - Offline launches lose last-known-good state entirely, since the backup can no longer load. The
   app has only the handful of values compiled into the bootstrap list.
@@ -106,8 +133,8 @@ and `OnboardingSessionStore` are the app's startup-time one-shot reads.
 ## Never-fetched defaults: when and why
 
 `neverFetchedDefaults` in `HedvigUnleashClient` supplies a flag's value for the window before the
-client holds real toggle state. It is consulted only while `!client.isReady()`; once a fetch or the
-local backup lands, the real value takes over. An entry is only needed when the **desired**
+client holds real toggle state. It is consulted only while the cache holds no state; once a fetch or
+the local backup lands, the real value takes over. An entry is only needed when the **desired**
 never-fetched default differs from the **natural** polarity default.
 
 Today:
