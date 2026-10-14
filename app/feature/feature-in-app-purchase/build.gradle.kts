@@ -7,6 +7,7 @@ hedvig {
   serialization()
   compose()
   navKeys()
+  viewModels()
 }
 
 dependencies {
@@ -25,6 +26,7 @@ dependencies {
   implementation(projects.dataProductVariantPublic)
   implementation(projects.designSystemHedvig)
   implementation(projects.featureInAppPurchaseNavigation)
+  implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
   implementation(projects.uiTiersAndAddons)

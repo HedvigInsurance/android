@@ -1,27 +1,41 @@
 package com.hedvig.android.feature.inapppurchase.navigation
 
 import androidx.navigation3.runtime.EntryProviderScope
-import com.hedvig.android.feature.inapppurchase.data.InAppPurchaseOffer
-import com.hedvig.android.feature.inapppurchase.data.InAppPurchaseQuote
 import com.hedvig.android.feature.inapppurchase.ui.form.InAppPurchaseFormDestination
+import com.hedvig.android.feature.inapppurchase.ui.form.InAppPurchaseFormViewModel
+import com.hedvig.android.feature.inapppurchase.ui.form.InAppPurchaseFormViewModelFactory
 import com.hedvig.android.feature.inapppurchase.ui.offers.InAppPurchaseOffersDestination
+import com.hedvig.android.feature.inapppurchase.ui.offers.InAppPurchaseOffersViewModel
+import com.hedvig.android.feature.inapppurchase.ui.offers.InAppPurchaseOffersViewModelFactory
 import com.hedvig.android.feature.inapppurchase.ui.productinfo.InAppPurchaseProductInfoDestination
 import com.hedvig.android.feature.inapppurchase.ui.success.InAppPurchaseSuccessScreen
 import com.hedvig.android.feature.inapppurchase.ui.summary.InAppPurchaseSummaryDestination
+import com.hedvig.android.feature.inapppurchase.ui.summary.InAppPurchaseSummaryViewModel
+import com.hedvig.android.feature.inapppurchase.ui.summary.InAppPurchaseSummaryViewModelFactory
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
-import com.hedvig.android.navigation.compose.navigateAndPopUpTo
+import com.hedvig.android.navigation.compose.popUpTo
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
-fun EntryProviderScope<HedvigNavKey>.inAppPurchaseEntries(backstack: Backstack) {
+fun EntryProviderScope<HedvigNavKey>.inAppPurchaseEntries(
+  backstack: Backstack,
+  navigateToContract: (contractId: String) -> Unit,
+) {
+  val exitFlow: () -> Unit = { backstack.popUpTo<InAppPurchaseKey>(inclusive = true) }
+
   entry<InAppPurchaseKey> { key ->
+    val product = key.product
+    val viewModel: InAppPurchaseFormViewModel =
+      assistedMetroViewModel<InAppPurchaseFormViewModel, InAppPurchaseFormViewModelFactory> {
+        create(product)
+      }
     InAppPurchaseFormDestination(
-      product = key.product,
+      viewModel = viewModel,
       navigateUp = backstack::navigateUp,
-      onLearnMore = { product -> backstack.add(InAppPurchaseProductInfoKey(product)) },
-      onQuoted = { productDisplayName, quote ->
-        backstack.navigateToOffers(productDisplayName, quote)
-      },
+      popBackstack = { backstack.popBackstack() },
+      onLearnMore = { productContent -> backstack.add(InAppPurchaseProductInfoKey(productContent)) },
+      navigateToContract = navigateToContract,
     )
   }
 
@@ -33,24 +47,25 @@ fun EntryProviderScope<HedvigNavKey>.inAppPurchaseEntries(backstack: Backstack) 
   }
 
   entry<InAppPurchaseOffersKey> { key ->
+    val viewModel: InAppPurchaseOffersViewModel =
+      assistedMetroViewModel<InAppPurchaseOffersViewModel, InAppPurchaseOffersViewModelFactory> {
+        create(key)
+      }
     InAppPurchaseOffersDestination(
-      productDisplayName = key.productDisplayName,
-      offers = key.offers,
+      viewModel = viewModel,
       navigateUp = backstack::navigateUp,
-      onOfferSelected = { offer ->
-        backstack.add(InAppPurchaseSummaryKey(key.productDisplayName, key.shopSessionId, offer))
-      },
     )
   }
 
   entry<InAppPurchaseSummaryKey> { key ->
+    val viewModel: InAppPurchaseSummaryViewModel =
+      assistedMetroViewModel<InAppPurchaseSummaryViewModel, InAppPurchaseSummaryViewModelFactory> {
+        create(key)
+      }
     InAppPurchaseSummaryDestination(
-      productDisplayName = key.productDisplayName,
-      offer = key.offer,
+      viewModel = viewModel,
       navigateUp = backstack::navigateUp,
-      onSigned = { offer: InAppPurchaseOffer ->
-        backstack.navigateAndPopUpTo<InAppPurchaseKey>(InAppPurchaseSuccessKey(offer.startDate), inclusive = true)
-      },
+      exitFlow = exitFlow,
     )
   }
 
@@ -59,17 +74,5 @@ fun EntryProviderScope<HedvigNavKey>.inAppPurchaseEntries(backstack: Backstack) 
       startDate = key.startDate,
       close = backstack::popBackstack,
     )
-  }
-}
-
-/**
- * With a single offer there is nothing to choose, so the offers step is skipped.
- */
-private fun Backstack.navigateToOffers(productDisplayName: String, quote: InAppPurchaseQuote.Quoted) {
-  val singleOffer = quote.offers.singleOrNull()
-  if (singleOffer != null) {
-    add(InAppPurchaseSummaryKey(productDisplayName, quote.shopSessionId, singleOffer))
-  } else {
-    add(InAppPurchaseOffersKey(productDisplayName, quote.shopSessionId, quote.offers))
   }
 }

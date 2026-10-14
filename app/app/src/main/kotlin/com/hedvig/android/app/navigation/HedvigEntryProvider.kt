@@ -48,6 +48,7 @@ import com.hedvig.android.feature.inapppurchase.navigation.inAppPurchaseEntries
 import com.hedvig.android.feature.insurance.certificate.navigation.InsuranceEvidenceKey
 import com.hedvig.android.feature.insurance.certificate.navigation.insuranceEvidenceEntries
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
+import com.hedvig.android.feature.insurances.navigation.InsuranceContractDetailKey
 import com.hedvig.android.feature.insurances.navigation.insuranceEntries
 import com.hedvig.android.feature.login.navigation.loginEntries
 import com.hedvig.android.feature.movingflow.MovingSource
@@ -607,7 +608,12 @@ private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
     backstack = backstack,
     onNavigateToNewConversation = navigateToNewConversation,
   )
-  inAppPurchaseEntries(backstack = backstack)
+  inAppPurchaseEntries(
+    backstack = backstack,
+    navigateToContract = { contractId ->
+      backstack.navigateAndPopUpTo<InAppPurchaseKey>(InsuranceContractDetailKey(contractId), inclusive = true)
+    },
+  )
   chipIdEntries(
     backstack = backstack,
     globalSnackBarState = globalSnackBarState,
