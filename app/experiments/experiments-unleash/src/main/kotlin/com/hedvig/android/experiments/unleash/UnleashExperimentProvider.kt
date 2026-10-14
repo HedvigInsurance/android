@@ -45,6 +45,9 @@ internal class UnleashExperimentProvider(
 ) : ExperimentProvider, Initializable {
   override fun initialize() {
     applicationScope.launch(coroutineContext) {
+      // Before Unleash has state every flag reads as off, which would clear the properties Firebase kept from the
+      // last session and leave the events of the first moments of a launch without the member's group.
+      experimentFlags.awaitReady()
       experimentFlags.updates
         .map { currentExperiments() }
         .distinctUntilChanged()

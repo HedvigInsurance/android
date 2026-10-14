@@ -74,6 +74,25 @@ class UnleashExperimentProviderTest {
   }
 
   @Test
+  fun `user properties are left alone until Unleash has state`() = runTest {
+    val flags = FakeExperimentFlags(mutableMapOf("accident_discount_experiment" to null))
+    val client = FakeEventTrackingClient()
+    provider(flags, client).initialize()
+
+    flags.updates.emit(Unit)
+    runCurrent()
+    assertThat(client.userProperties).isEmpty()
+
+    flags.variants["accident_discount_experiment"] = "DISCOUNT"
+    flags.ready.complete(Unit)
+    runCurrent()
+    assertThat(client.userProperties).containsOnly(
+      "experiment_name" to "ACCIDENT_DISCOUNT",
+      "experiment_variant" to "DISCOUNT",
+    )
+  }
+
+  @Test
   fun `user properties follow every flag update and clear when the member leaves the experiment`() = runTest {
     val flags = flagsWithVariant("NO_DISCOUNT")
     val client = FakeEventTrackingClient()
