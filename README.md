@@ -34,7 +34,7 @@ run `./gradlew ktlintFormat` to make ktlint to format all files according to the
 Generated from `./gradlew :generateProjectDependencyGraph --no-configuration-cache`, which also writes
 [`misc/images/modularization-summary.md`](misc/images/modularization-summary.md) with a count per module
 kind and the non-KMP modules that other modules still depend on. Requires graphviz: `brew install graphviz`.
-Test modules, `:app`, and the modules the convention plugin attaches to everything are left out.
+Test modules, `:app`, and the modules the convention plugin attaches to everything are left out. Arrows implied by a longer path are omitted.
 
 ## Renovate
 
