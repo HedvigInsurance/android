@@ -20,17 +20,23 @@ class HedvigLintConventionPlugin : Plugin<Project> {
         .resolve("hedvig-lint")
         .resolve("lint-baseline")
         .resolve("lint-baseline-$moduleName.xml")
+      val lintBaselineJvmFile: File = rootProject.projectDir
+        .resolve("hedvig-lint")
+        .resolve("lint-baseline")
+        .resolve("lint-baseline-$moduleName-jvm.xml")
       val lintXmlPath: File = rootProject.projectDir.resolve("hedvig-lint").resolve("lint.xml")
       var didConfigureLint = false
       // The KMP-android plugin only registers its Android Lint tasks (`lintAndroidMain`,
       // `updateLintBaselineAndroidMain`, ...) when `com.android.lint` is also applied, so it is applied here.
       // That androidMain pass analyses commonMain, jvmAndAndroidMain and androidMain, and is configured by
-      // the `lint {}` block below. The same plugin also adds a `lintJvm` pass, which only sees jvmMain and
-      // keeps lint's defaults. The `lint {}` block in `finalizeDsl`, and so `lint.xml` and the module's
-      // baseline, applies to the Android pass only.
+      // the `lint {}` block in `finalizeDsl`. The same plugin also adds a `lintJvm` pass, which only sees
+      // jvmMain and is configured by the standalone plugin's `lint` extension. Both passes use `lint.xml`.
+      // The JVM pass has a baseline file of its own, so `updateLintBaselineJvm` does not overwrite the
+      // Android pass's baseline.
       pluginManager.withPlugin(libs.plugins.androidLibraryMultiplatform.get().pluginId) {
         if (moduleName !in kmpModulesWithoutAndroidLint) {
           pluginManager.apply(libs.plugins.lintGradlePlugin.get().pluginId)
+          configure<Lint> { configure(lintXmlPath, lintBaselineJvmFile) }
         }
         configure<KotlinMultiplatformAndroidComponentsExtension> {
           finalizeDsl {
