@@ -189,7 +189,7 @@ dependencies {
   implementation(projects.datadogDemoTracking)
   implementation(projects.designSystemHedvig)
   implementation(projects.designSystemInternals)
-  implementation(projects.experimentsFirebase)
+  implementation(projects.experimentsUnleash)
   implementation(projects.featureAddonPurchase)
   implementation(projects.featureChat)
   implementation(projects.featureChipId)

@@ -4,17 +4,15 @@ plugins {
 }
 
 dependencies {
-  implementation(platform(libs.firebase.bom))
   implementation(libs.coroutines.core)
-  implementation(libs.firebase.config)
-  implementation(projects.authCorePublic)
-  implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.experimentsPublic)
+  implementation(projects.featureFlags)
   implementation(projects.initializable)
   implementation(projects.trackingCore)
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
   testImplementation(projects.loggingTest)
+  testImplementation(projects.trackingTest)
 }
