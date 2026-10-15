@@ -20,41 +20,67 @@ class HedvigLintConventionPlugin : Plugin<Project> {
         .resolve("hedvig-lint")
         .resolve("lint-baseline")
         .resolve("lint-baseline-$moduleName.xml")
+      val lintBaselineJvmFile: File = rootProject.projectDir
+        .resolve("hedvig-lint")
+        .resolve("lint-baseline")
+        .resolve("lint-baseline-$moduleName-jvm.xml")
       val lintXmlPath: File = rootProject.projectDir.resolve("hedvig-lint").resolve("lint.xml")
-      var didConfigureLint = false
-      // The KMP-android variant registers no runnable Android Lint task (only `lintKotlin*`, which is
-      // ktlint), so this lint configuration is inert: `./gradlew lint` does not lint these modules and
-      // nothing produces or consumes their baseline file. Any lint-baseline-<module>.xml for a KMP-android
-      // module is therefore not enforced and cannot be regenerated via `updateLintBaseline`.
+      // The KMP-android plugin only registers its Android Lint tasks (`lintAndroidMain`,
+      // `updateLintBaselineAndroidMain`, ...) when `com.android.lint` is also applied, so it is applied here.
+      // That androidMain pass analyses commonMain, jvmAndAndroidMain and androidMain, and is configured by
+      // the `lint {}` block in `finalizeDsl`. The same plugin also adds a `lintJvm` pass, which only sees
+      // jvmMain and is configured by the standalone plugin's `lint` extension. Both passes use `lint.xml`.
+      // The JVM pass has a baseline file of its own, so `updateLintBaselineJvm` does not overwrite the
+      // Android pass's baseline.
       pluginManager.withPlugin(libs.plugins.androidLibraryMultiplatform.get().pluginId) {
+        if (moduleName !in kmpModulesWithoutAndroidLint) {
+          pluginManager.apply(libs.plugins.lintGradlePlugin.get().pluginId)
+          configure<Lint> { configure(lintXmlPath, lintBaselineJvmFile) }
+        }
         configure<KotlinMultiplatformAndroidComponentsExtension> {
           finalizeDsl {
             it.lint { configure(lintXmlPath, lintBaselineFile) }
           }
         }
-        didConfigureLint = true
       }
 
       pluginManager.withPlugin(libs.plugins.androidApplication.get().pluginId) {
         configure<ApplicationExtension> { lint { configure(lintXmlPath, lintBaselineFile) } }
-        didConfigureLint = true
       }
 
       pluginManager.withPlugin(libs.plugins.androidLibrary.get().pluginId) {
         configure<LibraryExtension> { lint { configure(lintXmlPath, lintBaselineFile) } }
-        didConfigureLint = true
       }
 
-      if (!didConfigureLint) {
-        pluginManager.apply(libs.plugins.lintGradlePlugin.get().pluginId)
-        configure<Lint> { configure(lintXmlPath, lintBaselineFile) }
-      }
-      dependencies {
-        add("lintChecks", project(":hedvig-lint"))
+      // All of the module's plugins are applied by `afterEvaluate`, so a module with none of the Android
+      // plugins gets the standalone lint plugin regardless of the order its plugins are applied in.
+      afterEvaluate {
+        val hasAndroidPlugin = listOf(
+          libs.plugins.androidLibraryMultiplatform,
+          libs.plugins.androidApplication,
+          libs.plugins.androidLibrary,
+        ).any { pluginManager.hasPlugin(it.get().pluginId) }
+        if (!hasAndroidPlugin) {
+          pluginManager.apply(libs.plugins.lintGradlePlugin.get().pluginId)
+          configure<Lint> { configure(lintXmlPath, lintBaselineFile) }
+        }
+        dependencies {
+          add("lintChecks", project(":hedvig-lint"))
+        }
       }
     }
   }
 }
+
+// These modules are left without Android lint because applying the plugin there creates a Gradle task
+// cycle. apollo-octopus-public's commonMain depends on core-build-constants and core-common-public,
+// core-common-public's androidMain depends on apollo-octopus-public, and core-build-constants' commonMain
+// depends on language-core and core-common-public.
+private val kmpModulesWithoutAndroidLint = setOf(
+  "core-build-constants",
+  "core-common-public",
+  "language-core",
+)
 
 private fun Lint.configure(lintXmlFile: File, lintBaselineFile: File) {
   // Lint aborts the build whenever it has to create a baseline, even when it found nothing to put in

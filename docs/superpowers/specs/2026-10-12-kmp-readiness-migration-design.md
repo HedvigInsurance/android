@@ -204,6 +204,10 @@ multiplatform artifact for that library stops at Compose Multiplatform 1.7.3 whi
 is on 1.12.1. Converting it means rewriting every icon onto `ImageVector.Builder`. Its only
 consumers are `:app` and `feature-profile`, so it blocks nothing.
 
+Wave 2 (Tasks 16 to 18) was cancelled on 2026-10-12: plain JVM libraries are already
+consumable from `commonMain` of JVM-plus-Android KMP modules, verified by probe, while
+single-target KMP modules expose no `commonMain` metadata.
+
 ## Part 4: verification, lint, logistics
 
 **Per-PR gate.** For every module touched: its main compilation, `jvmTest`, and
@@ -211,16 +215,18 @@ consumers are `:app` and `feature-profile`, so it blocks nothing.
 Then `generateProjectDependencyGraph`; the committed summary diff must match what the PR
 claims to have changed.
 
-**Lint.** Before wave 1, a spike: list the lint tasks AGP registers on an existing
-KMP-android module (`feature-help-center`) and check whether the AGP version in use
-provides lint for `com.android.kotlin.multiplatform.library`. Two outcomes:
-
-- A task exists: the convention plugin wires it to the shared `lint.xml` and baseline
-  files, and the comment calling the configuration inert is corrected. Converted modules
-  keep lint coverage.
-- No task exists: this spec is amended with the list of checks that matter (the custom
-  `hedvig-lint` rules and the Compose rules) and a signed-off statement that converted
-  modules leave Android Lint coverage. The conversions start only after that sign-off.
+**Lint.** Measured outcome of the spike: AGP 9.4.1 registers no Android Lint on KMP-android
+modules by itself. The convention plugin now applies `com.android.lint` on top of
+`com.android.kotlin.multiplatform.library` for those modules, which registers `lintAndroidMain`,
+`updateLintBaselineAndroidMain` and friends. That pass lints `commonMain`, `jvmAndAndroidMain` and
+`androidMain` with the shared `lint.xml` and the per-module baseline, and root `./gradlew lint`
+runs it. `core-build-constants`, `core-common-public` and `language-core` are still excluded:
+applying the plugin there creates a Gradle task cycle. `apollo-octopus-public`'s `commonMain`
+depends on `core-build-constants` and `core-common-public`, `core-common-public`'s `androidMain`
+depends on `apollo-octopus-public`, and `core-build-constants`' `commonMain` depends on
+`language-core` and `core-common-public`. KMP modules without an Android target get JVM lint
+over `jvmMain` only, so their `commonMain` is not linted. CI annotates lint findings from every
+module's report on the PR.
 
 **Logistics.** Work happens in `android_copy`, which was moved to `develop` on
 2026-10-12. One branch per PR, each off `develop`. All branches stay local: no pushes,
