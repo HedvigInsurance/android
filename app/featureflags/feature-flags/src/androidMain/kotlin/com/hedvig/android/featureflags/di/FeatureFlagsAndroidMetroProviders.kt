@@ -5,10 +5,17 @@ import com.hedvig.android.auth.MemberIdService
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.featureflags.FileToggleStateStore
 import com.hedvig.android.featureflags.HedvigUnleashClient
+import com.hedvig.android.featureflags.ToggleStateCache
+import com.hedvig.android.featureflags.createUnleashConfig
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
+import io.getunleash.android.DefaultUnleash
+import java.io.File
+
+private const val STORED_STATE_FILE_NAME = "unleash_last_fetched_state.json"
 
 @ContributesTo(AppScope::class)
 interface FeatureFlagsAndroidMetroProviders {
@@ -19,11 +26,20 @@ interface FeatureFlagsAndroidMetroProviders {
     buildConstants: HedvigBuildConstants,
     applicationScope: ApplicationScope,
     memberIdService: MemberIdService,
-  ): HedvigUnleashClient = HedvigUnleashClient(
-    androidContext = applicationContext.applicationContext,
-    isProduction = buildConstants.isProduction,
-    appVersionName = buildConstants.appVersionName,
-    coroutineScope = applicationScope,
-    memberIdService = memberIdService,
-  )
+  ): HedvigUnleashClient {
+    val toggleStateCache = ToggleStateCache(
+      FileToggleStateStore(File(applicationContext.noBackupFilesDir, STORED_STATE_FILE_NAME)),
+    )
+    return HedvigUnleashClient(
+      client = DefaultUnleash(
+        androidContext = applicationContext.applicationContext,
+        unleashConfig = createUnleashConfig(buildConstants.isProduction),
+        cacheImpl = toggleStateCache,
+      ),
+      toggleStateCache = toggleStateCache,
+      appVersionName = buildConstants.appVersionName,
+      coroutineScope = applicationScope,
+      memberIds = memberIdService.getMemberId(),
+    )
+  }
 }
