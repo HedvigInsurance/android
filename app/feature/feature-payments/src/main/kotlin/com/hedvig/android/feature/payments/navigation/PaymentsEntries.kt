@@ -75,6 +75,7 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
   entry<ManualChargeSuccessKey> { key ->
     ManualChargeSuccessDestination(
       key.showCancellationWarning,
+      key.primaryPayinProvider,
       backstack::navigateUp,
     )
   }
