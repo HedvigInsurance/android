@@ -27,6 +27,7 @@ dependencies {
   implementation(projects.dataContract)
   implementation(projects.dataCrossSellAfterFlow)
   implementation(projects.designSystemHedvig)
+  implementation(projects.experimentsPublic)
   implementation(projects.moleculePublic)
 
   testImplementation(libs.assertK)
@@ -34,4 +35,5 @@ dependencies {
   testImplementation(libs.junit)
   testImplementation(libs.turbine)
   testImplementation(projects.moleculeTest)
+  testImplementation(projects.trackingTest)
 }

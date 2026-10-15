@@ -25,6 +25,8 @@ import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
+import com.hedvig.android.experiments.Experiment
+import com.hedvig.android.experiments.ExperimentProvider
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
@@ -57,6 +59,7 @@ import octopus.HomeOverdueChargeQuery
 import octopus.HomeQuery
 import octopus.UnreadMessageCountQuery
 import octopus.fragment.HomeCrossSellFragment
+import octopus.type.CrossSellExperimentInput
 import octopus.type.MemberChargeStatus
 
 internal interface GetHomeDataUseCase {
@@ -73,6 +76,7 @@ internal class GetHomeDataUseCaseImpl(
   private val getAddonBannerInfoUseCase: GetAddonBannerInfoUseCase,
   private val hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
   private val dismissedShopSessionsStorage: DismissedShopSessionsStorage,
+  private val experimentProvider: ExperimentProvider,
 ) : GetHomeDataUseCase {
   override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>> {
     return combine(
@@ -96,9 +100,14 @@ internal class GetHomeDataUseCaseImpl(
     )
       .flatMapLatest { (resumeClaimEnabled, disableShopSessions) ->
         combine(
-          apolloClient.query(HomeQuery(true, resumeClaimEnabled, disableShopSessions))
-            .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheAndNetwork)
-            .safeFlow()
+          flow {
+            val experiments = experimentProvider.activeExperiments().toCrossSellExperimentInputs()
+            emitAll(
+              apolloClient.query(HomeQuery(true, resumeClaimEnabled, disableShopSessions, experiments))
+                .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheAndNetwork)
+                .safeFlow(),
+            )
+          }
             // Chained to the home query rather than the outer combine, which also re-runs on every unread-count poll.
             .mapLatest { result ->
               result.map { data -> data to overdueManualCharge(data.currentMember.missedChargeIdToChargeManually) }
@@ -501,4 +510,8 @@ fun <T1, T2, T3, T4, T5, T6, R> combine(
     args[4] as T5,
     args[5] as T6,
   )
+}
+
+private fun List<Experiment>.toCrossSellExperimentInputs(): List<CrossSellExperimentInput> {
+  return map { CrossSellExperimentInput(name = it.name, variant = it.variant) }
 }

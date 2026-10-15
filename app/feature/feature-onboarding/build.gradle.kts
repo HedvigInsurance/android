@@ -38,6 +38,7 @@ dependencies {
   implementation(projects.dataContract)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.designSystemHedvig)
+  implementation(projects.experimentsPublic)
   implementation(projects.dataCoinsured)
   implementation(projects.featureConnectPaymentTrustlyNavigation)
   implementation(projects.featureEditCoinsuredNavigation)
@@ -59,4 +60,5 @@ dependencies {
   testImplementation(projects.featureFlagsTest)
   testImplementation(projects.loggingTest)
   testImplementation(projects.moleculeTest)
+  testImplementation(projects.trackingTest)
 }
