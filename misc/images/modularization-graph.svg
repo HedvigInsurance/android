@@ -270,7 +270,7 @@
 <!-- :claim&#45;status -->
 <g id="node17" class="node">
 <title>:claim&#45;status</title>
-<ellipse fill="#baffc9" stroke="black" cx="1785.6" cy="-504.68" rx="60.12" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="1785.6" cy="-504.68" rx="60.12" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="1785.6" y="-498.88" font-family="Helvetica,sans-Serif" font-size="14.00">:claim&#45;status</text>
 </g>
 <!-- :compose&#45;pager&#45;indicator -->
@@ -474,7 +474,7 @@
 <!-- :cross&#45;sells -->
 <g id="node34" class="node">
 <title>:cross&#45;sells</title>
-<ellipse fill="#baffc9" stroke="black" cx="1785.6" cy="-411.68" rx="54.27" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="1785.6" cy="-411.68" rx="54.27" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="1785.6" y="-405.88" font-family="Helvetica,sans-Serif" font-size="14.00">:cross&#45;sells</text>
 </g>
 <!-- :cross&#45;sells&#45;&gt;:design&#45;system&#45;hedvig -->
@@ -1560,7 +1560,7 @@
 <!-- :feature&#45;cross&#45;sell&#45;sheet -->
 <g id="node85" class="node">
 <title>:feature&#45;cross&#45;sell&#45;sheet</title>
-<ellipse fill="#baffc9" stroke="black" cx="1427.6" cy="-1465.68" rx="104.48" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="1427.6" cy="-1465.68" rx="104.48" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="1427.6" y="-1459.88" font-family="Helvetica,sans-Serif" font-size="14.00">:feature&#45;cross&#45;sell&#45;sheet</text>
 </g>
 <!-- :feature&#45;cross&#45;sell&#45;sheet&#45;&gt;:cross&#45;sells -->
@@ -1584,7 +1584,7 @@
 <!-- :feature&#45;delete&#45;account -->
 <g id="node86" class="node">
 <title>:feature&#45;delete&#45;account</title>
-<ellipse fill="#baffc9" stroke="black" cx="1785.6" cy="-2492.68" rx="100.58" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="1785.6" cy="-2492.68" rx="100.58" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="1785.6" y="-2486.88" font-family="Helvetica,sans-Serif" font-size="14.00">:feature&#45;delete&#45;account</text>
 </g>
 <!-- :feature&#45;delete&#45;account&#45;&gt;:apollo&#45;core -->
@@ -1620,7 +1620,7 @@
 <!-- :feature&#45;edit&#45;coinsured -->
 <g id="node87" class="node">
 <title>:feature&#45;edit&#45;coinsured</title>
-<ellipse fill="#baffc9" stroke="black" cx="1785.6" cy="-2677.68" rx="98.14" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="1785.6" cy="-2677.68" rx="98.14" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="1785.6" y="-2671.88" font-family="Helvetica,sans-Serif" font-size="14.00">:feature&#45;edit&#45;coinsured</text>
 </g>
 <!-- :feature&#45;edit&#45;coinsured&#45;&gt;:apollo&#45;core -->
@@ -2382,7 +2382,7 @@
 <!-- :ui&#45;analytics&#45;consent -->
 <g id="node108" class="node">
 <title>:ui&#45;analytics&#45;consent</title>
-<ellipse fill="#baffc9" stroke="black" cx="1785.6" cy="-620.68" rx="90.34" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="1785.6" cy="-620.68" rx="90.34" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="1785.6" y="-614.88" font-family="Helvetica,sans-Serif" font-size="14.00">:ui&#45;analytics&#45;consent</text>
 </g>
 <!-- :feature&#45;onboarding&#45;&gt;:ui&#45;analytics&#45;consent -->
@@ -2574,7 +2574,7 @@
 <!-- :feature&#45;payout&#45;account -->
 <g id="node114" class="node">
 <title>:feature&#45;payout&#45;account</title>
-<ellipse fill="#baffc9" stroke="black" cx="1785.6" cy="-1386.68" rx="103.02" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="1785.6" cy="-1386.68" rx="103.02" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="1785.6" y="-1380.88" font-family="Helvetica,sans-Serif" font-size="14.00">:feature&#45;payout&#45;account</text>
 </g>
 <!-- :feature&#45;payout&#45;account&#45;&gt;:apollo&#45;network&#45;cache&#45;manager -->

@@ -8,7 +8,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.core.text.isDigitsOnly
 import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
@@ -396,7 +395,7 @@ private fun MovingFlowState.toContent(): Content {
         either {
           ensureNotNull(postalCode) { Missing }
           ensure(postalCode.length == 5) { InvalidLength }
-          ensure(postalCode.isDigitsOnly()) { MustBeOnlyDigits }
+          ensure(postalCode.all { it.isDigit() }) { MustBeOnlyDigits }
           postalCode
         }
       },
