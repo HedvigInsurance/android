@@ -5,8 +5,8 @@ Written by `./gradlew :generateProjectDependencyGraph`. Counts cover the modules
 | Kind | Modules |
 |---|---|
 | KMP, iOS targets | 46 |
-| KMP, no iOS | 17 |
-| Android library | 45 |
+| KMP, no iOS | 22 |
+| Android library | 40 |
 | JVM library | 22 |
 | Application | 1 |
 | Other | 0 |
@@ -27,11 +27,9 @@ Converting a module near the top unblocks the most dependents.
 - `:member-reminders-public` (JVM library) <- `:feature-home`, `:feature-payments`, `:feature-profile`, `:member-reminders-ui`
 - `:notification-permission` (Android library) <- `:feature-home`, `:feature-payments`, `:feature-profile`, `:member-reminders-ui`
 - `:theme` (JVM library) <- `:data-settings-datastore-public`, `:feature-onboarding`, `:feature-payments`, `:feature-profile`
-- `:compose-pager-indicator` (Android library) <- `:claim-status`, `:feature-home`, `:member-reminders-ui`
 - `:data-chat` (JVM library) <- `:data-changetier`, `:database-core`, `:feature-chat`
 - `:member-reminders-ui` (Android library) <- `:feature-home`, `:feature-payments`, `:feature-profile`
 - `:navigation-activity` (JVM library) <- `:feature-chat`, `:feature-home`, `:feature-travel-certificate`
-- `:ui-phone-number` (Android library) <- `:feature-onboarding`, `:feature-payout-account`, `:feature-profile`
 - `:claim-status` (Android library) <- `:feature-claim-details`, `:feature-home`
 - `:compose-webview` (Android library) <- `:feature-connect-payment-trustly`, `:feature-profile`
 - `:data-changetier` (JVM library) <- `:feature-choose-tier`, `:feature-terminate-insurance`
@@ -39,12 +37,10 @@ Converting a module near the top unblocks the most dependents.
 - `:data-display-items` (JVM library) <- `:feature-claim-details`, `:feature-insurances`
 - `:forever-ui` (Android library) <- `:feature-forever`, `:feature-onboarding`
 - `:notification-badge-data-public` (JVM library) <- `:feature-home`, `:feature-insurances`
-- `:tier-comparison` (Android library) <- `:feature-choose-tier`, `:feature-movingflow`
 - `:tracking-datadog` (Android library) <- `:datadog-android`, `:design-showcase`
 - `:ui-analytics-consent` (Android library) <- `:feature-onboarding`, `:feature-profile`
 - `:core-app-review` (JVM library) <- `:feature-edit-coinsured`
 - `:core-icons` (Android library) <- `:feature-profile`
 - `:database-core` (JVM library) <- `:database-android`
-- `:file-upload-ui` (Android library) <- `:feature-claim-details`
 - `:language-data` (JVM library) <- `:feature-payments`
 - `:notification-core` (Android library) <- `:notification-firebase`

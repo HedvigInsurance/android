@@ -276,7 +276,7 @@
 <!-- :compose&#45;pager&#45;indicator -->
 <g id="node18" class="node">
 <title>:compose&#45;pager&#45;indicator</title>
-<ellipse fill="#baffc9" stroke="black" cx="2202.58" cy="-671.68" rx="110.33" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="2202.58" cy="-671.68" rx="110.33" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="2202.58" y="-665.88" font-family="Helvetica,sans-Serif" font-size="14.00">:compose&#45;pager&#45;indicator</text>
 </g>
 <!-- :claim&#45;status&#45;&gt;:compose&#45;pager&#45;indicator -->
@@ -1092,7 +1092,7 @@
 <!-- :feature&#45;chip&#45;id -->
 <g id="node70" class="node">
 <title>:feature&#45;chip&#45;id</title>
-<ellipse fill="#baffc9" stroke="black" cx="1785.6" cy="-1154.68" rx="68.89" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="1785.6" cy="-1154.68" rx="68.89" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="1785.6" y="-1148.88" font-family="Helvetica,sans-Serif" font-size="14.00">:feature&#45;chip&#45;id</text>
 </g>
 <!-- :feature&#45;chip&#45;id&#45;&gt;:apollo&#45;core -->
@@ -1164,7 +1164,7 @@
 <!-- :tier&#45;comparison -->
 <g id="node73" class="node">
 <title>:tier&#45;comparison</title>
-<ellipse fill="#baffc9" stroke="black" cx="1785.6" cy="-2297.68" rx="73.77" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="1785.6" cy="-2297.68" rx="73.77" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="1785.6" y="-2291.88" font-family="Helvetica,sans-Serif" font-size="14.00">:tier&#45;comparison</text>
 </g>
 <!-- :feature&#45;choose&#45;tier&#45;&gt;:tier&#45;comparison -->
@@ -1440,7 +1440,7 @@
 <!-- :file&#45;upload&#45;ui -->
 <g id="node80" class="node">
 <title>:file&#45;upload&#45;ui</title>
-<ellipse fill="#baffc9" stroke="black" cx="1785.6" cy="-1503.68" rx="63.04" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="1785.6" cy="-1503.68" rx="63.04" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="1785.6" y="-1497.88" font-family="Helvetica,sans-Serif" font-size="14.00">:file&#45;upload&#45;ui</text>
 </g>
 <!-- :feature&#45;claim&#45;details&#45;&gt;:file&#45;upload&#45;ui -->
@@ -2394,7 +2394,7 @@
 <!-- :ui&#45;phone&#45;number -->
 <g id="node109" class="node">
 <title>:ui&#45;phone&#45;number</title>
-<ellipse fill="#baffc9" stroke="black" cx="2202.58" cy="-227.68" rx="80.11" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="2202.58" cy="-227.68" rx="80.11" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="2202.58" y="-221.88" font-family="Helvetica,sans-Serif" font-size="14.00">:ui&#45;phone&#45;number</text>
 </g>
 <!-- :feature&#45;onboarding&#45;&gt;:ui&#45;phone&#45;number -->
