@@ -534,8 +534,8 @@ internal sealed interface EditCoInsuredState {
 
       fun canContinue() = (
         showManualInput &&
-          manualInfo.firstName != null &&
-          manualInfo.lastName != null &&
+          !manualInfo.firstName.isNullOrBlank() &&
+          !manualInfo.lastName.isNullOrBlank() &&
           manualInfo.birthDate != null
       ) ||
         (!showManualInput && infoFromSsn.ssn?.length == 12) ||

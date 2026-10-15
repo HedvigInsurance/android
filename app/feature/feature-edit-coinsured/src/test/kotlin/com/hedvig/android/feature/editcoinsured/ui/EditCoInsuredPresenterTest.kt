@@ -2,7 +2,9 @@ package com.hedvig.android.feature.editcoinsured.ui
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isTrue
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
@@ -173,5 +175,19 @@ internal class EditCoInsuredPresenterTest {
       assertThat(uiState.listState.coInsured[2].ssn).isEqualTo(null)
       assertThat(uiState.listState.coInsured[2].lastName).isEqualTo("New last name manual")
     }
+  }
+
+  @Test
+  fun `manual input with a blank first or last name cannot continue`() {
+    fun stateWith(firstName: String?, lastName: String?) = EditCoInsuredState.Loaded.AddBottomSheetContentState(
+      infoFromSsn = InfoFromSsn(),
+      manualInfo = ManualInfo(firstName = firstName, lastName = lastName, birthDate = LocalDate.fromEpochDays(400)),
+      showManualInput = true,
+    )
+
+    assertThat(stateWith("First", "Last").canContinue()).isTrue()
+    assertThat(stateWith("", "Last").canContinue()).isFalse()
+    assertThat(stateWith("First", "  ").canContinue()).isFalse()
+    assertThat(stateWith(null, "Last").canContinue()).isFalse()
   }
 }
