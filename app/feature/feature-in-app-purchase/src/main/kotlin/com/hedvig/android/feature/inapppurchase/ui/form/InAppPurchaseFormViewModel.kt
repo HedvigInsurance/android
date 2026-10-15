@@ -153,12 +153,12 @@ private sealed interface LoadedForm {
 }
 
 /**
- * The value as sent in [InAppPurchaseFieldInput.values].
+ * The value as sent in [InAppPurchaseFieldInput.values]. A single select without a default starts on its first option.
  */
 internal fun InAppPurchaseFormField.defaultValueOrNull(): String? = when (this) {
   is InAppPurchaseFormField.Number -> defaultValue?.toString()
   is InAppPurchaseFormField.Date -> defaultValue?.toString()
-  is InAppPurchaseFormField.SingleSelect -> defaultValue
+  is InAppPurchaseFormField.SingleSelect -> defaultValue ?: options.firstOrNull()?.value
 }
 
 internal sealed interface InAppPurchaseFormEvent {

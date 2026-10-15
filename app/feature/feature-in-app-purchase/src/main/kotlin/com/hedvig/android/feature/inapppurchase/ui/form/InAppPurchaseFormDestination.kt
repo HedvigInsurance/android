@@ -238,7 +238,7 @@ private class InAppPurchaseFormUiStateProvider : CollectionPreviewParameterProvi
     previewContent(InAppPurchaseMocks.paymentProtectionForm).let { content ->
       content.copy(
         fields = content.fields.map { field ->
-          if (field.field.id == "employmentType") field.copy(value = "UNEMPLOYED") else field
+          if (field.field.id == "employmentType") field.copy(value = "PERMANENT_EMPLOYED_FULLTIME") else field
         },
       )
     },

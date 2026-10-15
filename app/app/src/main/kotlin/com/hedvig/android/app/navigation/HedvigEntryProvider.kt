@@ -610,6 +610,8 @@ private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
   )
   inAppPurchaseEntries(
     backstack = backstack,
+    imageLoader = imageLoader,
+    openUrl = openUrl,
     navigateToContract = { contractId ->
       backstack.navigateAndPopUpTo<InAppPurchaseKey>(InsuranceContractDetailKey(contractId), inclusive = true)
     },

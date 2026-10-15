@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.inapppurchase.navigation
 
 import androidx.navigation3.runtime.EntryProviderScope
+import coil3.ImageLoader
 import com.hedvig.android.feature.inapppurchase.ui.form.InAppPurchaseFormDestination
 import com.hedvig.android.feature.inapppurchase.ui.form.InAppPurchaseFormViewModel
 import com.hedvig.android.feature.inapppurchase.ui.form.InAppPurchaseFormViewModelFactory
@@ -20,6 +21,8 @@ import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.inAppPurchaseEntries(
   backstack: Backstack,
+  imageLoader: ImageLoader,
+  openUrl: (String) -> Unit,
   navigateToContract: (contractId: String) -> Unit,
 ) {
   val exitFlow: () -> Unit = { backstack.popUpTo<InAppPurchaseKey>(inclusive = true) }
@@ -42,7 +45,9 @@ fun EntryProviderScope<HedvigNavKey>.inAppPurchaseEntries(
   entry<InAppPurchaseProductInfoKey> { key ->
     InAppPurchaseProductInfoDestination(
       product = key.product,
+      imageLoader = imageLoader,
       navigateUp = backstack::navigateUp,
+      openUrl = openUrl,
     )
   }
 

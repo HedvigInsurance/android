@@ -13,6 +13,7 @@ hedvig {
 dependencies {
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
+  implementation(libs.coil.coil)
   implementation(libs.coroutines.core)
   implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.kotlinx.datetime)
