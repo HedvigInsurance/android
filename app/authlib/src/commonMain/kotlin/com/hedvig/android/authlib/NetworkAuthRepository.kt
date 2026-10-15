@@ -1,6 +1,7 @@
 package com.hedvig.android.authlib
 
 import com.hedvig.android.authlib.authservice.AuthService
+import com.hedvig.android.authlib.authservice.ServerErrorException
 import com.hedvig.android.authlib.authservice.model.GrantTokenInput
 import com.hedvig.android.authlib.authservice.model.LoginOtpInput
 import com.hedvig.android.authlib.authservice.model.LoginOtpResponse
@@ -100,6 +101,8 @@ public class NetworkAuthRepository internal constructor(
         is CancellationException -> throw e
 
         is IOException -> AuthAttemptResult.Error.IOError("IO Error with message: ${e.message ?: "unknown message"}", e)
+
+        is ServerErrorException -> AuthAttemptResult.Error.ServerError(e.statusCode)
 
         is NoTransformationFoundException -> AuthAttemptResult.Error.BackendErrorResponse(
           e.message ?: "unknown error",

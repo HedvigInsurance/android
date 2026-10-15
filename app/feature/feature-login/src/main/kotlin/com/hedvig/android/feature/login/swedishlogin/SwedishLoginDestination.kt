@@ -147,6 +147,31 @@ private fun SwedishLoginScreen(
         }
       }
 
+      BankIdUiState.LoginServiceUnavailable -> {
+        Box(
+          contentAlignment = Alignment.Center,
+          modifier = Modifier
+            .weight(1f)
+            .fillMaxWidth(),
+        ) {
+          Column {
+            HedvigErrorSection(
+              onButtonClick = retry,
+              // TODO: Add "We can't log you in right now" / "Vi kan inte logga in dig just nu" to Lokalise
+              title = "We can't log you in right now",
+              // TODO: Add "Something went wrong on our end. Please try again in a few minutes." /
+              //  "Något gick fel hos oss. Försök igen om några minuter." to Lokalise
+              subTitle = "Something went wrong on our end. Please try again in a few minutes.",
+            )
+            Box(
+              Modifier
+                .size(48.dp)
+                .then(demoModeModifier),
+            )
+          }
+        }
+      }
+
       is BankIdUiState.BankIdError -> {
         Box(
           Modifier
@@ -311,6 +336,7 @@ private class BankIdUiStateProvider : CollectionPreviewParameterProvider<BankIdU
     BankIdUiState.HandlingBankId("", BankIdUiState.HandlingBankId.AutoStartToken(""), null, false, false),
     BankIdUiState.BankIdError("BankIdError"),
     BankIdUiState.StartLoginAttemptFailed,
+    BankIdUiState.LoginServiceUnavailable,
     BankIdUiState.Loading,
     BankIdUiState.LoggedIn,
   ),
