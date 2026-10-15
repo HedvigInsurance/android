@@ -35,7 +35,7 @@ private val INITIAL_MEMBER_ID_TIMEOUT = 2.seconds
 /**
  * Values used until the client holds real toggle state, for the flags whose natural absent-toggle
  * default is wrong. These are kill switches that must read as on, keeping their feature hidden,
- * until a fetch or the local backup says otherwise. An app-gating flag must never get an entry
+ * until a fetch or the stored state says otherwise. An app-gating flag must never get an entry
  * here: defaulting one into its blocking state locks out members who are offline on first launch.
  */
 private val neverFetchedDefaults: Map<Feature, Boolean> = mapOf(
@@ -60,8 +60,8 @@ class HedvigUnleashClient internal constructor(
   private val contextInEffect = MutableStateFlow<UnleashContext?>(null)
 
   /**
-   * Emits whenever the toggle state changes, whether from a network fetch or from the local backup being
-   * restored, so a flag read while offline still updates once the last-known-good state loads.
+   * Emits whenever the toggle state changes, whether from a network fetch or from restoring the state a
+   * previous process stored, so a flag read while offline still updates once it loads.
    */
   val featureUpdatedFlow: Flow<Unit> = toggleStateCache.state.map { }
 
@@ -97,7 +97,7 @@ class HedvigUnleashClient internal constructor(
 
   /**
    * Whether the toggles in hand were fetched for the member currently in effect, or for no member while
-   * logged out.
+   * logged out. A restored state counts when it names the same member, whichever app version stored it.
    */
   fun hasStateForCurrentMember(): Boolean {
     val state = toggleStateCache.state.value ?: return false
@@ -122,6 +122,8 @@ class HedvigUnleashClient internal constructor(
 
   init {
     coroutineScope.launch {
+      // Before start(), so nothing fetched in this process can be replaced by the older stored state.
+      toggleStateCache.restore()
       // Reading the member id must not be able to keep Unleash from starting: without a start there is no
       // fetch, and every flag would spend the session on its never-fetched default.
       val memberIdsOrNone = memberIds.catch { throwable ->
@@ -185,5 +187,8 @@ internal fun createUnleashConfig(isProduction: Boolean): UnleashConfig {
     // The SDK also fetches on every app foreground and context change, so this only bounds in-session staleness.
     .pollingStrategy.interval(30_000)
     .metricsStrategy.interval(120_000)
+    // ToggleStateCache stores every fetched state. The SDK's backup restores only for an identical
+    // context, and the context carries the app version.
+    .localStorageConfig.enabled(false)
     .build()
 }

@@ -25,6 +25,10 @@ internal class FakeUnleash(private val cache: ToggleCache) : Unleash {
   var started = false
     private set
 
+  /** The toggles the cache held when [start] was called. */
+  var togglesAtStart: Map<String, Toggle>? = null
+    private set
+
   fun deliver(context: UnleashContext, vararg enabledToggles: Toggle) {
     cache.write(UnleashState(context, enabledToggles.associateBy { it.name }))
   }
@@ -59,6 +63,7 @@ internal class FakeUnleash(private val cache: ToggleCache) : Unleash {
   override fun start(eventListeners: List<UnleashListener>, bootstrapFile: File?, bootstrap: List<Toggle>) {
     started = true
     contextAtStart = contexts.lastOrNull()
+    togglesAtStart = cache.read()
   }
 
   override fun refreshTogglesNow() = Unit

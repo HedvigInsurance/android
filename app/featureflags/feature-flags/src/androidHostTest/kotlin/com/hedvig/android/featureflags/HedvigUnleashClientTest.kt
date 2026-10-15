@@ -10,6 +10,7 @@ import com.hedvig.android.featureflags.flags.unleashKey
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import io.getunleash.android.data.Toggle
 import io.getunleash.android.data.UnleashContext
+import io.getunleash.android.data.UnleashState
 import io.getunleash.android.data.Variant
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.async
@@ -30,8 +31,8 @@ class HedvigUnleashClientTest {
 
   private class Setup(val client: HedvigUnleashClient, val unleash: FakeUnleash)
 
-  private fun TestScope.setup(memberIds: Flow<String?>): Setup {
-    val toggleStateCache = ToggleStateCache()
+  private fun TestScope.setup(memberIds: Flow<String?>, store: ToggleStateStore = FakeToggleStateStore()): Setup {
+    val toggleStateCache = ToggleStateCache(store)
     val unleash = FakeUnleash(toggleStateCache)
     val client = HedvigUnleashClient(
       client = unleash,
@@ -134,14 +135,37 @@ class HedvigUnleashClientTest {
   }
 
   @Test
-  fun `a state fetched for the same member under a different app version is still theirs`() = runTest {
-    val setup = setup(MutableStateFlow(MEMBER_A))
+  fun `a member's own state stored by an older app version answers at once`() = runTest {
+    val store = FakeToggleStateStore(
+      UnleashState(context(MEMBER_A, appVersion = "0.9.0"), mapOf(EXPERIMENT to toggle(EXPERIMENT, "DISCOUNT"))),
+    )
 
-    setup.unleash.deliver(context(MEMBER_A, appVersion = "0.9.0"), toggle(EXPERIMENT, "DISCOUNT"))
-    runCurrent()
+    val setup = setup(MutableStateFlow(MEMBER_A), store)
 
     assertThat(setup.client.hasStateForCurrentMember()).isTrue()
     assertThat(setup.client.variantOf(EXPERIMENT)).isEqualTo("DISCOUNT")
+  }
+
+  @Test
+  fun `the stored state is restored before Unleash starts`() = runTest {
+    val store = FakeToggleStateStore(
+      UnleashState(context(MEMBER_A), mapOf(EXPERIMENT to toggle(EXPERIMENT, "DISCOUNT"))),
+    )
+
+    val setup = setup(MutableStateFlow(MEMBER_A), store)
+
+    assertThat(setup.unleash.togglesAtStart?.keys).isEqualTo(setOf(EXPERIMENT))
+  }
+
+  @Test
+  fun `every fetched state is stored`() = runTest {
+    val store = FakeToggleStateStore()
+    val setup = setup(MutableStateFlow(MEMBER_A), store)
+
+    setup.unleash.deliver(context(MEMBER_A), toggle(EXPERIMENT, "NO_DISCOUNT"))
+    runCurrent()
+
+    assertThat(store.stored?.toggles?.get(EXPERIMENT)?.variant?.name).isEqualTo("NO_DISCOUNT")
   }
 
   @Test

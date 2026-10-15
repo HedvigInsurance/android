@@ -18,6 +18,7 @@ kotlin {
       implementation(libs.coroutines.core)
     }
     androidMain.dependencies {
+      implementation(libs.kotlinx.serialization.json)
       implementation(libs.unleash)
       implementation(projects.authCorePublic)
       implementation(projects.authEventCore)
