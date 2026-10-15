@@ -15,10 +15,10 @@ hedvig {
 kotlin {
   sourceSets {
     commonMain.dependencies {
-      implementation(libs.jetbrains.compose.foundation)
       implementation(libs.arrow.core)
       implementation(libs.arrow.fx)
       implementation(libs.coroutines.core)
+      implementation(libs.jetbrains.compose.foundation)
       implementation(libs.jetbrains.lifecycle.runtime.compose)
       implementation(libs.kotlinx.datetime)
       implementation(libs.kotlinx.serialization.core)

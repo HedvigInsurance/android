@@ -51,7 +51,6 @@ import hedvig.resources.claim_status_detail_closed
 import hedvig.resources.profile_claim_history_title
 import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 
