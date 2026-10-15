@@ -107,7 +107,7 @@
 <!-- :apollo&#45;network&#45;cache&#45;manager -->
 <g id="node7" class="node">
 <title>:apollo&#45;network&#45;cache&#45;manager</title>
-<ellipse fill="#ffd2b3" stroke="black" cx="2202.58" cy="-206.86" rx="134.21" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="2202.58" cy="-206.86" rx="134.21" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="2202.58" y="-201.06" font-family="Helvetica,sans-Serif" font-size="14.00">:apollo&#45;network&#45;cache&#45;manager</text>
 </g>
 <!-- :apollo&#45;network&#45;cache&#45;manager&#45;&gt;:core&#45;common&#45;public -->
@@ -131,7 +131,7 @@
 <!-- :audio&#45;player&#45;data -->
 <g id="node10" class="node">
 <title>:audio&#45;player&#45;data</title>
-<ellipse fill="#ffd2b3" stroke="black" cx="2596.17" cy="-3627.86" rx="81.08" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="2596.17" cy="-3627.86" rx="81.08" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="2596.17" y="-3622.06" font-family="Helvetica,sans-Serif" font-size="14.00">:audio&#45;player&#45;data</text>
 </g>
 <!-- :audio&#45;player&#45;data&#45;&gt;:core&#45;common&#45;public -->
@@ -143,7 +143,7 @@
 <!-- :audio&#45;player&#45;ui -->
 <g id="node11" class="node">
 <title>:audio&#45;player&#45;ui</title>
-<ellipse fill="#ffd2b3" stroke="black" cx="2202.58" cy="-3674.86" rx="70.84" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="2202.58" cy="-3674.86" rx="70.84" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="2202.58" y="-3669.06" font-family="Helvetica,sans-Serif" font-size="14.00">:audio&#45;player&#45;ui</text>
 </g>
 <!-- :audio&#45;player&#45;ui&#45;&gt;:audio&#45;player&#45;data -->
@@ -257,7 +257,7 @@
 <!-- :initializable -->
 <g id="node16" class="node">
 <title>:initializable</title>
-<ellipse fill="#ffd2b3" stroke="black" cx="3172.76" cy="-497.86" rx="55.73" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="3172.76" cy="-497.86" rx="55.73" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="3172.76" y="-492.06" font-family="Helvetica,sans-Serif" font-size="14.00">:initializable</text>
 </g>
 <!-- :auth&#45;core&#45;public&#45;&gt;:initializable -->
@@ -293,13 +293,13 @@
 <!-- :compose&#45;photo&#45;capture&#45;state -->
 <g id="node19" class="node">
 <title>:compose&#45;photo&#45;capture&#45;state</title>
-<ellipse fill="#ffd2b3" stroke="black" cx="2202.58" cy="-3299.86" rx="127.88" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="2202.58" cy="-3299.86" rx="127.88" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="2202.58" y="-3294.06" font-family="Helvetica,sans-Serif" font-size="14.00">:compose&#45;photo&#45;capture&#45;state</text>
 </g>
 <!-- :compose&#45;result&#45;launcher -->
 <g id="node20" class="node">
 <title>:compose&#45;result&#45;launcher</title>
-<ellipse fill="#ffd2b3" stroke="black" cx="2202.58" cy="-3252.86" rx="109.84" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="2202.58" cy="-3252.86" rx="109.84" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="2202.58" y="-3247.06" font-family="Helvetica,sans-Serif" font-size="14.00">:compose&#45;result&#45;launcher</text>
 </g>
 <!-- :compose&#45;ui -->
@@ -395,7 +395,7 @@
 <!-- :core&#45;file&#45;upload -->
 <g id="node27" class="node">
 <title>:core&#45;file&#45;upload</title>
-<ellipse fill="#ffd2b3" stroke="black" cx="2202.58" cy="-1889.86" rx="73.28" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="2202.58" cy="-1889.86" rx="73.28" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="2202.58" y="-1884.06" font-family="Helvetica,sans-Serif" font-size="14.00">:core&#45;file&#45;upload</text>
 </g>
 <!-- :core&#45;file&#45;upload&#45;&gt;:design&#45;system&#45;hedvig -->
@@ -587,7 +587,7 @@
 <!-- :ui&#45;tiers&#45;and&#45;addons -->
 <g id="node41" class="node">
 <title>:ui&#45;tiers&#45;and&#45;addons</title>
-<ellipse fill="#ffd2b3" stroke="black" cx="2202.58" cy="-2039.86" rx="88.39" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="2202.58" cy="-2039.86" rx="88.39" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="2202.58" y="-2034.06" font-family="Helvetica,sans-Serif" font-size="14.00">:ui&#45;tiers&#45;and&#45;addons</text>
 </g>
 <!-- :data&#45;changetier&#45;&gt;:ui&#45;tiers&#45;and&#45;addons -->
@@ -611,7 +611,7 @@
 <!-- :data&#45;product&#45;variant&#45;public -->
 <g id="node42" class="node">
 <title>:data&#45;product&#45;variant&#45;public</title>
-<ellipse fill="#ffd2b3" stroke="black" cx="2596.17" cy="-730.86" rx="117.15" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="2596.17" cy="-730.86" rx="117.15" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="2596.17" y="-725.06" font-family="Helvetica,sans-Serif" font-size="14.00">:data&#45;product&#45;variant&#45;public</text>
 </g>
 <!-- :data&#45;chat&#45;&gt;:data&#45;product&#45;variant&#45;public -->
@@ -653,7 +653,7 @@
 <!-- :data&#45;claim&#45;intent -->
 <g id="node43" class="node">
 <title>:data&#45;claim&#45;intent</title>
-<ellipse fill="#ffd2b3" stroke="black" cx="2202.58" cy="-2514.86" rx="78.16" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="2202.58" cy="-2514.86" rx="78.16" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="2202.58" y="-2509.06" font-family="Helvetica,sans-Serif" font-size="14.00">:data&#45;claim&#45;intent</text>
 </g>
 <!-- :data&#45;claim&#45;intent&#45;&gt;:apollo&#45;core -->
@@ -917,7 +917,7 @@
 <!-- :design&#45;showcase&#45;desktop -->
 <g id="node60" class="node">
 <title>:design&#45;showcase&#45;desktop</title>
-<ellipse fill="#ffd2b3" stroke="black" cx="372.38" cy="-1308.86" rx="114.23" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="372.38" cy="-1308.86" rx="114.23" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="372.38" y="-1303.06" font-family="Helvetica,sans-Serif" font-size="14.00">:design&#45;showcase&#45;desktop</text>
 </g>
 <!-- :design&#45;system&#45;api -->
@@ -1319,7 +1319,7 @@
 <!-- :ui&#45;claim&#45;flow -->
 <g id="node78" class="node">
 <title>:ui&#45;claim&#45;flow</title>
-<ellipse fill="#ffd2b3" stroke="black" cx="2202.58" cy="-3440.86" rx="62.07" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="2202.58" cy="-3440.86" rx="62.07" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="2202.58" y="-3435.06" font-family="Helvetica,sans-Serif" font-size="14.00">:ui&#45;claim&#45;flow</text>
 </g>
 <!-- :feature&#45;claim&#45;chat&#45;&gt;:ui&#45;claim&#45;flow -->
@@ -1331,7 +1331,7 @@
 <!-- :ui&#45;force&#45;upgrade -->
 <g id="node79" class="node">
 <title>:ui&#45;force&#45;upgrade</title>
-<ellipse fill="#ffd2b3" stroke="black" cx="2202.58" cy="-3393.86" rx="77.18" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="2202.58" cy="-3393.86" rx="77.18" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="2202.58" y="-3388.06" font-family="Helvetica,sans-Serif" font-size="14.00">:ui&#45;force&#45;upgrade</text>
 </g>
 <!-- :feature&#45;claim&#45;chat&#45;&gt;:ui&#45;force&#45;upgrade -->
@@ -1469,7 +1469,7 @@
 <!-- :feature&#45;claim&#45;history -->
 <g id="node82" class="node">
 <title>:feature&#45;claim&#45;history</title>
-<ellipse fill="#ffd2b3" stroke="black" cx="1785.6" cy="-2616.86" rx="92.78" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="1785.6" cy="-2616.86" rx="92.78" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="1785.6" y="-2611.06" font-family="Helvetica,sans-Serif" font-size="14.00">:feature&#45;claim&#45;history</text>
 </g>
 <!-- :feature&#45;claim&#45;history&#45;&gt;:apollo&#45;core -->
@@ -1781,7 +1781,7 @@
 <!-- :pullrefresh -->
 <g id="node99" class="node">
 <title>:pullrefresh</title>
-<ellipse fill="#ffd2b3" stroke="black" cx="2202.58" cy="-3159.86" rx="53.78" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="2202.58" cy="-3159.86" rx="53.78" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="2202.58" y="-3154.06" font-family="Helvetica,sans-Serif" font-size="14.00">:pullrefresh</text>
 </g>
 <!-- :forever&#45;ui&#45;&gt;:pullrefresh -->
@@ -2699,7 +2699,7 @@
 <!-- :feature&#45;remove&#45;addons -->
 <g id="node117" class="node">
 <title>:feature&#45;remove&#45;addons</title>
-<ellipse fill="#ffd2b3" stroke="black" cx="1785.6" cy="-1983.86" rx="104.48" ry="18"/>
+<ellipse fill="#fff3b3" stroke="black" cx="1785.6" cy="-1983.86" rx="104.48" ry="18"/>
 <text xml:space="preserve" text-anchor="middle" x="1785.6" y="-1978.06" font-family="Helvetica,sans-Serif" font-size="14.00">:feature&#45;remove&#45;addons</text>
 </g>
 <!-- :feature&#45;remove&#45;addons&#45;&gt;:apollo&#45;core -->

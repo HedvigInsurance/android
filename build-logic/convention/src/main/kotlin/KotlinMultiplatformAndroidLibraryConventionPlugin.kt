@@ -51,6 +51,17 @@ private fun Project.configureKotlinAndroidMultiplatform() {
   val libs = the<LibrariesForLibs>()
 
   project.configure<KotlinMultiplatformExtension> {
+    // `jvmAndAndroidMain` is available to every module with both targets, for code that is shared by
+    // the two JVM-backed platforms only (haptics, top app bars, anything with a native counterpart).
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    applyDefaultHierarchyTemplate {
+      common {
+        group("jvmAndAndroid") {
+          withAndroidLibraryTarget()
+          withJvm()
+        }
+      }
+    }
     targets.withType(KotlinMultiplatformAndroidLibraryTarget::class.java) {
       androidResources.enable = true
       compileSdk = libs.versions.compileSdkVersion.get().toInt()

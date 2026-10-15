@@ -19,8 +19,8 @@ def excludedProjects = [
 
 // Module kind by convention plugin. First match wins. The colour is the node background.
 def kinds = [
-  [id: 'hedvig.multiplatform.library',     label: 'KMP, iOS targets', color: '#ffd2b3'],
-  [id: 'hedvig.multiplatform.library.jvm', label: 'KMP, no iOS',      color: '#fff3b3'],
+  [id: 'hedvig.multiplatform.library.ios', label: 'KMP, iOS targets', color: '#ffd2b3'],
+  [id: 'hedvig.multiplatform.library',     label: 'KMP, no iOS',      color: '#fff3b3'],
   [id: 'hedvig.android.library',           label: 'Android library',  color: '#baffc9'],
   [id: 'hedvig.jvm.library',               label: 'JVM library',      color: '#ffb3ba'],
   [id: 'hedvig.android.application',       label: 'Application',      color: '#cfe0ff'],
