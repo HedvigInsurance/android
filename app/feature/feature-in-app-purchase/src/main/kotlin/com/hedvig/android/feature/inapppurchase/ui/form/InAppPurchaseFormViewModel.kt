@@ -70,7 +70,11 @@ internal class InAppPurchaseFormPresenter(
         }
 
         InAppPurchaseFormEvent.Submit -> {
-          if (!isQuoting) submitIteration++
+          val fields = (form as? LoadedForm.Loaded)?.form?.fields.orEmpty()
+          val blocked = fields.any { field ->
+            FormFieldUiState(field = field, value = values[field.id], errorMessage = null).blocksSubmission
+          }
+          if (!isQuoting && !blocked) submitIteration++
         }
 
         InAppPurchaseFormEvent.DismissQuoteError -> {
@@ -184,14 +188,24 @@ internal sealed interface InAppPurchaseFormUiState {
     val fields: List<FormFieldUiState>,
     val isQuoting: Boolean,
     val quoteError: QuoteError?,
-  ) : InAppPurchaseFormUiState
+  ) : InAppPurchaseFormUiState {
+    val canSubmit: Boolean = !isQuoting && fields.none { it.blocksSubmission }
+  }
 }
 
 internal data class FormFieldUiState(
   val field: InAppPurchaseFormField,
   val value: String?,
   val errorMessage: String?,
-)
+) {
+  val selectedOption: InAppPurchaseFormField.SingleSelect.Option? =
+    (field as? InAppPurchaseFormField.SingleSelect)?.options?.firstOrNull { it.value == value }
+
+  /**
+   * An option that isn't selectable can still be chosen, but the purchase can't continue with it.
+   */
+  val blocksSubmission: Boolean = selectedOption?.isSelectable == false
+}
 
 /**
  * [message] is the backend's user-facing explanation, null for a network failure.

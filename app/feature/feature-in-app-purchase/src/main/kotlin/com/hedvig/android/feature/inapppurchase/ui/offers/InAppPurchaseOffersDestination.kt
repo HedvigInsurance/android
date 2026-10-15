@@ -260,7 +260,7 @@ private fun PreviewInAppPurchaseOffersScreen() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       InAppPurchaseOffersScreen(
-        uiState = InAppPurchaseOffersUiState("Betalskydd", offers, offers.first()),
+        uiState = InAppPurchaseOffersUiState("Payment Protection", offers, offers.first()),
         navigateUp = {},
         onSelectOffer = {},
         onContinue = {},

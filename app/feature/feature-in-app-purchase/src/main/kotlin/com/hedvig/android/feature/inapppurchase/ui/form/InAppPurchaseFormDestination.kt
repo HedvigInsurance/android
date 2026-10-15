@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.inapppurchase.ui.form
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,7 +16,6 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
-import com.hedvig.android.data.contract.pillowResource
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.ErrorDialog
@@ -28,7 +25,6 @@ import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProg
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
-import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
@@ -44,10 +40,8 @@ import com.hedvig.android.feature.inapppurchase.ui.form.InAppPurchaseFormUiState
 import hedvig.resources.GENERAL_ERROR_BODY
 import hedvig.resources.GENERAL_RETRY
 import hedvig.resources.Res
-import hedvig.resources.cross_sell_info_learn_more_title
 import hedvig.resources.general_close_button
 import hedvig.resources.something_went_wrong
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -119,12 +113,6 @@ private fun FormScreen(
   }
   HedvigScaffold(navigateUp = navigateUp) {
     ProductHeader(content.product, Modifier.padding(horizontal = 16.dp))
-    HedvigTextButton(
-      text = stringResource(Res.string.cross_sell_info_learn_more_title),
-      onClick = onLearnMore,
-      buttonSize = Large,
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
     Column(
@@ -145,8 +133,20 @@ private fun FormScreen(
       // TODO: Add "Get price" / "Se pris" to Lokalise
       text = "Get price",
       onClick = onSubmit,
-      enabled = !content.isQuoting,
+      enabled = content.canSubmit,
       isLoading = content.isQuoting,
+      buttonSize = Large,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+    )
+    Spacer(Modifier.height(8.dp))
+    HedvigButton(
+      // TODO: Add "Read about details" / "Läs om detaljerna" to Lokalise
+      text = "Read about details",
+      onClick = onLearnMore,
+      enabled = true,
+      buttonStyle = Secondary,
       buttonSize = Large,
       modifier = Modifier
         .fillMaxWidth()
@@ -210,17 +210,7 @@ private fun NotEligibleScreen(
 
 @Composable
 private fun ProductHeader(product: InAppPurchaseProduct, modifier: Modifier = Modifier) {
-  Column(modifier) {
-    product.variants.firstOrNull()?.contractGroup?.let { contractGroup ->
-      Image(
-        painter = painterResource(contractGroup.pillowResource()),
-        contentDescription = null,
-        modifier = Modifier.size(64.dp),
-      )
-      Spacer(Modifier.height(16.dp))
-    }
-    FlowHeading(title = product.displayNameFull, description = product.tagline)
-  }
+  FlowHeading(title = product.displayNameFull, description = product.tagline, modifier = modifier)
 }
 
 @HedvigMultiScreenPreview
@@ -241,7 +231,14 @@ private class InAppPurchaseFormUiStateProvider : CollectionPreviewParameterProvi
     previewContent(InAppPurchaseMocks.paymentProtectionForm).let { content ->
       content.copy(
         fields = content.fields.map { field ->
-          if (field.field.id == "employmentType") field.copy(errorMessage = "Välj din anställningsform.") else field
+          if (field.field.id == "employmentType") field.copy(value = "UNEMPLOYED") else field
+        },
+      )
+    },
+    previewContent(InAppPurchaseMocks.paymentProtectionForm).let { content ->
+      content.copy(
+        fields = content.fields.map { field ->
+          if (field.field.id == "employmentType") field.copy(value = "UNEMPLOYED") else field
         },
       )
     },

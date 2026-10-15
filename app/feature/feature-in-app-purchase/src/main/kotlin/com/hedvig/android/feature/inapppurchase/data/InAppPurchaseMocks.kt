@@ -15,8 +15,8 @@ import kotlinx.datetime.LocalDate
 internal const val MockNetworkDelay = 600L
 
 /**
- * The backend's sample responses for the draft `inAppPurchase*` API, returned by the use cases until the API
- * exists. Also used as preview and test data.
+ * The backend's sample responses for the draft `inAppPurchase*` API with their texts in English, returned by the use
+ * cases until the API exists. Also used as preview and test data.
  */
 internal object InAppPurchaseMocks {
   private const val FIELD_CO_INSURED = "numberCoInsured"
@@ -32,7 +32,7 @@ internal object InAppPurchaseMocks {
 
   private val startDateField = InAppPurchaseFormField.Date(
     id = FIELD_START_DATE,
-    title = "Startdatum",
+    title = "Start date",
     defaultValue = today,
     minValue = today,
     maxValue = maxStartDate,
@@ -45,7 +45,7 @@ internal object InAppPurchaseMocks {
       fields = listOf(
         InAppPurchaseFormField.Number(
           id = FIELD_CO_INSURED,
-          title = "Hur många fler vill du försäkra?",
+          title = "How many more people do you want to insure?",
           defaultValue = 1,
           minValue = 0,
           maxValue = 5,
@@ -61,22 +61,23 @@ internal object InAppPurchaseMocks {
       fields = listOf(
         InAppPurchaseFormField.SingleSelect(
           id = FIELD_EMPLOYMENT_TYPE,
-          title = "Vad har du för anställning?",
+          title = "What is your employment?",
           options = listOf(
-            option("PERMANENT_EMPLOYED_FULLTIME", "Fast anställd, heltid"),
-            option("PERMANENT_EMPLOYED_PARTTIME", "Fast anställd, deltid"),
+            option("PERMANENT_EMPLOYED_FULLTIME", "Permanent, full-time"),
+            option("PERMANENT_EMPLOYED_PARTTIME", "Permanent, part-time"),
             option(
               value = "CONTRACT_EMPLOYED",
-              title = "Visstidsanställd",
-              additionalInfo = "Gäller vid sjukskrivning. Arbetslöshet täcks bara om du har varit anställd i minst " +
-                "12 månader.",
+              title = "Fixed-term contract",
+              additionalInfo =
+                "Covers sick leave. Unemployment is only covered if you have been employed for at least " +
+                  "12 months.",
             ),
-            option("SELF_EMPLOYED", "Egenföretagare"),
+            option("SELF_EMPLOYED", "Self-employed"),
             option(
               value = "UNEMPLOYED",
-              title = "Arbetslös",
+              title = "Unemployed",
               isSelectable = false,
-              additionalInfo = "Betalskyddet kräver att du arbetar när försäkringen börjar gälla.",
+              additionalInfo = "Payment Protection requires you to be working when the insurance starts.",
             ),
           ),
           defaultValue = null,
@@ -110,7 +111,7 @@ internal object InAppPurchaseMocks {
   // region quote
 
   const val NO_REGISTERED_ADDRESS_MESSAGE =
-    "Vi hittade ingen folkbokföringsadress för dig. Kontakta oss så hjälper vi dig."
+    "We couldn't find a registered address for you. Contact us and we'll help you."
 
   fun quote(product: InAppProduct, fields: List<InAppPurchaseFieldInput>): InAppPurchaseQuote {
     val values = fields.associate { it.fieldId to it.values.firstOrNull() }
@@ -118,12 +119,12 @@ internal object InAppPurchaseMocks {
     val coInsured = values[FIELD_CO_INSURED]?.toIntOrNull()
     val errors = buildList {
       if (startDate == null || startDate < today || startDate > maxStartDate) {
-        add(InAppPurchaseFieldError(FIELD_START_DATE, "Välj ett datum från och med idag."))
+        add(InAppPurchaseFieldError(FIELD_START_DATE, "Choose a date from today onwards."))
       }
       when (product) {
         InAppProduct.ACCIDENT -> {
           if (coInsured == null || coInsured !in 0..5) {
-            add(InAppPurchaseFieldError(FIELD_CO_INSURED, "Välj mellan 0 och 5 medförsäkrade."))
+            add(InAppPurchaseFieldError(FIELD_CO_INSURED, "Choose between 0 and 5 co-insured."))
           }
         }
 
@@ -138,7 +139,7 @@ internal object InAppPurchaseMocks {
             add(
               InAppPurchaseFieldError(
                 FIELD_EMPLOYMENT_TYPE,
-                "Betalskyddet kräver att du arbetar när försäkringen börjar gälla.",
+                "Payment Protection requires you to be working when the insurance starts.",
               ),
             )
           }
@@ -163,9 +164,9 @@ internal object InAppPurchaseMocks {
         offer(
           id = "c3e1a7b4-92d0-4f6a-b815-4e2f9c7d3a10",
           variant = accidentVariant,
-          exposureDisplayName = if (numberCoInsured == 0) "Du" else "Du + $numberCoInsured",
+          exposureDisplayName = if (numberCoInsured == 0) "You" else "You + $numberCoInsured",
           gross = gross,
-          discount = InAppPurchaseDiscount("50% rabatt", sek(-gross / 2)),
+          discount = InAppPurchaseDiscount("50% discount", sek(-gross / 2)),
           insuranceAmount = null,
           startDate = startDate,
         ),
@@ -180,10 +181,10 @@ internal object InAppPurchaseMocks {
         offer(
           id = "8d2f4b6a-1c3e-4a59-9e70-5b8c2d1f6a43",
           variant = paymentProtectionVariant.copy(displayTierName = "6 000 kr"),
-          exposureDisplayName = "6 000 kr/mån",
+          exposureDisplayName = "6 000 kr/mo",
           gross = 199.0,
-          discount = InAppPurchaseDiscount("Samlingsrabatt", sek(-30.0)),
-          insuranceAmount = InAppPurchaseInsuranceAmount("Ersättning per månad", 6000),
+          discount = InAppPurchaseDiscount("Bundle discount", sek(-30.0)),
+          insuranceAmount = InAppPurchaseInsuranceAmount("Monthly compensation", 6000),
           startDate = startDate,
         ),
         offer(
@@ -192,10 +193,10 @@ internal object InAppPurchaseMocks {
             displayTierName = "12 000 kr",
             termsVersion = "SE_PAYMENT_PROTECTION_HIGH_20260401",
           ),
-          exposureDisplayName = "12 000 kr/mån",
+          exposureDisplayName = "12 000 kr/mo",
           gross = 349.0,
-          discount = InAppPurchaseDiscount("Samlingsrabatt", sek(-52.0)),
-          insuranceAmount = InAppPurchaseInsuranceAmount("Ersättning per månad", 12000),
+          discount = InAppPurchaseDiscount("Bundle discount", sek(-52.0)),
+          insuranceAmount = InAppPurchaseInsuranceAmount("Monthly compensation", 12000),
           startDate = startDate,
         ),
       ),
@@ -235,10 +236,10 @@ internal object InAppPurchaseMocks {
 
   // region signing
 
-  const val ALREADY_SIGNING_MESSAGE = "Signering pågår redan. Öppna BankID-appen för att fortsätta."
+  const val ALREADY_SIGNING_MESSAGE = "Signing is already in progress. Open the BankID app to continue."
   const val QUOTE_NO_LONGER_VALID_MESSAGE =
-    "Något har ändrats sedan du fick ditt pris. Gå tillbaka och hämta ett nytt pris."
-  const val SIGNING_CANCELLED_MESSAGE = "Signeringen avbröts i BankID-appen."
+    "Something has changed since you got your price. Go back and get a new price."
+  const val SIGNING_CANCELLED_MESSAGE = "The signing was cancelled in the BankID app."
 
   private const val SIGNING_ID = "e2a7c4f9-8b1d-4e36-a5c0-6d9f3b2e7a18"
   private const val AUTO_START_TOKEN = "7c40b5c9-fa74-49cf-b98c-bfe651f9a7c6"
@@ -279,33 +280,33 @@ internal object InAppPurchaseMocks {
   // region product content
 
   private val accidentVariant = ProductVariant(
-    displayName = "Olycksfallsförsäkring",
+    displayName = "Accident Insurance",
     contractGroup = ContractGroup.ACCIDENT,
     contractType = ContractType.SE_ACCIDENT,
     partner = null,
     perils = listOf(
       ProductVariantPeril(
         id = "accident-medical-care",
-        title = "Vårdkostnader",
-        description = "Ersättning för läkarvård, behandling och resor i samband med olycksfallsskada.",
-        covered = listOf("Läkarvård", "Sjukgymnastik", "Resor till och från vård"),
+        title = "Medical costs",
+        description = "Compensation for medical care, treatment and travel in connection with an accident injury.",
+        covered = listOf("Medical care", "Physiotherapy", "Travel to and from care"),
         colorCode = "#C0E4F3",
       ),
       ProductVariantPeril(
         id = "accident-dental",
-        title = "Tandskador",
-        description = "Ersättning för behandling av tandskada som uppstått genom olycksfall.",
+        title = "Dental injuries",
+        description = "Compensation for treating a dental injury caused by an accident.",
         covered = listOf("Akut tandbehandling", "Permanent tandbehandling"),
         colorCode = "#C0E4F3",
       ),
     ),
     insurableLimits = listOf(
-      InsurableLimit("Medicinsk invaliditet", "1 000 000 kr", "Högsta ersättning vid bestående skada."),
-      InsurableLimit("Tandskador", "Skäliga kostnader", "Behandling av tandskada efter olycksfall."),
+      InsurableLimit("Medical disability", "1 000 000 kr", "Maximum compensation for a permanent injury."),
+      InsurableLimit("Dental injuries", "Reasonable costs", "Treatment of a dental injury after an accident."),
     ),
     documents = listOf(
-      document("Försäkringsvillkor", "se-accident-terms.pdf", InsuranceDocumentType.TERMS_AND_CONDITIONS),
-      document("Förköpsinformation", "se-accident-pre-sale.pdf", InsuranceDocumentType.PRE_SALE_INFO),
+      document("Terms and conditions", "se-accident-terms.pdf", InsuranceDocumentType.TERMS_AND_CONDITIONS),
+      document("Pre-sale information", "se-accident-pre-sale.pdf", InsuranceDocumentType.PRE_SALE_INFO),
     ),
     displayTierName = null,
     tierDescription = null,
@@ -314,54 +315,54 @@ internal object InAppPurchaseMocks {
 
   private val accidentProduct = InAppPurchaseProduct(
     name = "SE_ACCIDENT",
-    displayNameShort = "Olycksfall",
-    displayNameFull = "Olycksfallsförsäkring",
-    tagline = "Ersättning om du skadar dig, dygnet runt",
+    displayNameShort = "Accident",
+    displayNameFull = "Accident Insurance",
+    tagline = "Compensation if you get injured, around the clock",
     pillowImage = InAppPurchaseImage(
       src = "https://a.storyblok.com/f/165473/832x832/accident-pillow.png",
-      alt = "Olycksfall",
+      alt = "Accident",
     ),
     featuredImage = null,
     variants = listOf(accidentVariant),
     faq = listOf(
       InAppPurchaseFaqItem(
-        question = "Vem gäller försäkringen för?",
-        answerMarkdown = "Den gäller för dig och de **medförsäkrade** du lägger till.",
+        question = "Who does the insurance cover?",
+        answerMarkdown = "It covers you and the **co-insured** you add.",
       ),
       InAppPurchaseFaqItem(
-        question = "Gäller den utomlands?",
-        answerMarkdown = "Ja, i hela världen under de första 45 dagarna av en resa.",
+        question = "Does it cover me abroad?",
+        answerMarkdown = "Yes, worldwide during the first 45 days of a trip.",
       ),
     ),
   )
 
   private val paymentProtectionVariant = ProductVariant(
-    displayName = "Betalskydd",
+    displayName = "Payment Protection",
     contractGroup = ContractGroup.PAYMENT_PROTECTION,
     contractType = ContractType.UNKNOWN,
     partner = null,
     perils = listOf(
       ProductVariantPeril(
         id = "ppi-unemployment",
-        title = "Arbetslöshet",
-        description = "Månatlig ersättning om du blir ofrivilligt arbetslös.",
-        covered = listOf("Uppsägning på grund av arbetsbrist"),
+        title = "Unemployment",
+        description = "Monthly compensation if you become involuntarily unemployed.",
+        covered = listOf("Redundancy"),
         colorCode = "#E5E0F7",
       ),
       ProductVariantPeril(
         id = "ppi-sickness",
-        title = "Sjukskrivning",
-        description = "Månatlig ersättning om du blir helt sjukskriven.",
-        covered = listOf("Hel sjukskrivning längre än 30 dagar"),
+        title = "Sick leave",
+        description = "Monthly compensation if you go on full-time sick leave.",
+        covered = listOf("Full-time sick leave longer than 30 days"),
         colorCode = "#E5E0F7",
       ),
     ),
     insurableLimits = listOf(
-      InsurableLimit("Ersättning per månad", "Upp till 12 000 kr", "Beror på vilken nivå du väljer."),
+      InsurableLimit("Monthly compensation", "Up to 12 000 kr", "Depends on the level you choose."),
     ),
     documents = listOf(
-      document("Försäkringsvillkor", "se-payment-protection-terms.pdf", InsuranceDocumentType.TERMS_AND_CONDITIONS),
-      document("Förköpsinformation", "se-payment-protection-pre-sale.pdf", InsuranceDocumentType.PRE_SALE_INFO),
+      document("Terms and conditions", "se-payment-protection-terms.pdf", InsuranceDocumentType.TERMS_AND_CONDITIONS),
+      document("Pre-sale information", "se-payment-protection-pre-sale.pdf", InsuranceDocumentType.PRE_SALE_INFO),
     ),
     displayTierName = null,
     tierDescription = null,
@@ -370,23 +371,23 @@ internal object InAppPurchaseMocks {
 
   private val paymentProtectionProduct = InAppPurchaseProduct(
     name = "SE_PAYMENT_PROTECTION",
-    displayNameShort = "Betalskydd",
-    displayNameFull = "Betalskydd",
-    tagline = "Hjälp med räkningarna om du blir sjuk eller arbetslös",
+    displayNameShort = "Payment Protection",
+    displayNameFull = "Payment Protection",
+    tagline = "Help with your bills if you get sick or lose your job",
     pillowImage = InAppPurchaseImage(
       src = "https://a.storyblok.com/f/165473/832x832/payment-protection-pillow.png",
-      alt = "Betalskydd",
+      alt = "Payment Protection",
     ),
     featuredImage = null,
     variants = listOf(paymentProtectionVariant),
     faq = listOf(
       InAppPurchaseFaqItem(
-        question = "Hur länge får jag ersättning?",
-        answerMarkdown = "Upp till **12 månader** per skadetillfälle.",
+        question = "How long do I get compensation?",
+        answerMarkdown = "Up to **12 months** per claim.",
       ),
       InAppPurchaseFaqItem(
-        question = "Finns det en karenstid?",
-        answerMarkdown = "Ja, 30 dagar från att försäkringen börjar gälla.",
+        question = "Is there a qualifying period?",
+        answerMarkdown = "Yes, 30 days from when the insurance starts.",
       ),
     ),
   )

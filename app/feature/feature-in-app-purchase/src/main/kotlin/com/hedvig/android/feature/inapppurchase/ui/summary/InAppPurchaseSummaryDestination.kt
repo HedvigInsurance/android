@@ -331,7 +331,7 @@ private class SummaryUiStateProvider : CollectionPreviewParameterProvider<InAppP
     SigningState.Failed(InAppPurchaseMocks.QUOTE_NO_LONGER_VALID_MESSAGE),
   ).map { signingState ->
     InAppPurchaseSummaryUiState(
-      productDisplayName = "Olycksfallsförsäkring",
+      productDisplayName = "Accident Insurance",
       offer = InAppPurchaseMocks.accidentQuote().offers.first(),
       signingState = signingState,
     )

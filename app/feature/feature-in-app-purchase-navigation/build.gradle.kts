@@ -16,5 +16,9 @@ kotlin {
       implementation(projects.coreCommonPublic)
       implementation(projects.navigationCommon)
     }
+    commonTest.dependencies {
+      implementation(libs.assertK)
+      implementation(libs.kotlin.test)
+    }
   }
 }
