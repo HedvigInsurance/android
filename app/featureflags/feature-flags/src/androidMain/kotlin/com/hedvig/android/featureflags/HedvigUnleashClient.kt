@@ -144,8 +144,9 @@ class HedvigUnleashClient(
     return UnleashConfig.newBuilder(APP_NAME)
       .proxyUrl(UNLEASH_URL)
       .clientKey(clientKey)
-      .pollingStrategy.interval(2000)
-      .metricsStrategy.interval(2000)
+      // The SDK also fetches on every app foreground and context change, so this only bounds in-session staleness.
+      .pollingStrategy.interval(30_000)
+      .metricsStrategy.interval(120_000)
       .build()
   }
 
