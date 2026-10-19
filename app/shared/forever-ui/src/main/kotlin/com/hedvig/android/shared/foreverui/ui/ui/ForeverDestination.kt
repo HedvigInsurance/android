@@ -356,7 +356,7 @@ private fun ForeverScrollableContent(
       val discountUiMoneyDescription = discount.getDescription()
       Spacer(Modifier.height(16.dp))
       HedvigText(
-        text = discount.toString().let { "-$it" },
+        text = discount.toDiscountText(),
         textAlign = TextAlign.Center,
         color = HedvigTheme.colorScheme.textSecondary,
         modifier = Modifier
@@ -404,11 +404,10 @@ private fun ForeverScrollableContent(
       )
       val discountValue = uiState.foreverData?.currentDiscount
         ?: UiMoney(0.0, uiState.foreverData?.currentGrossCost?.currencyCode ?: SEK)
-      val discountText =
-        "-" + stringResource(
-          Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-          discountValue.toString(),
-        )
+      val discountText = stringResource(
+        Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+        discountValue.toDiscountText(),
+      )
       HedvigText(
         text = discountText,
         textAlign = TextAlign.Center,
