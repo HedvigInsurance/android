@@ -57,8 +57,8 @@ A full narrative of *why* these look the way they do — the engineering decisio
 # Clean build
 ./gradlew clean
 
-# Generate module dependency graph (requires graphviz: brew install graphviz)
-./gradlew :generateProjectDependencyGraph
+# Generate module dependency graph and summary (requires graphviz: brew install graphviz)
+./gradlew :generateProjectDependencyGraph --no-configuration-cache
 
 # Find unused resources
 ./gradlew :app:lint -Prur.lint.onlyUnusedResources
@@ -442,8 +442,9 @@ The project uses custom Gradle convention plugins for consistent configuration:
 - **hedvig.android.application** - Android app configuration
 - **hedvig.android.library** - Android library configuration
 - **hedvig.jvm.library** - Pure Kotlin (JVM) libraries
-- **hedvig.multiplatform.library** - KMP support
-- **hedvig.multiplatform.library.android** - adds an android target to a KMP module when it needs android-specific code
+- **hedvig.multiplatform.library** - KMP module with a JVM target. Not exported to iOS.
+- **hedvig.multiplatform.library.ios** - KMP module that `:umbrella` exports to iOS, directly or transitively. Adds the iOS targets; every `expect` needs a `nativeMain` actual.
+- **hedvig.multiplatform.library.android** - adds an android target to a KMP module when it needs android-specific code, Compose previews, resources, or the `navKeys()`/`viewModels()` processors.
 
 ### HedvigGradlePluginExtension DSL
 

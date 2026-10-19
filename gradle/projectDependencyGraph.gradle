@@ -1,124 +1,177 @@
-//Heavily inspired from https://github.com/chrisbanes/tivi/blob/main/gradle/dependencyGraph.gradle
+// Module dependency graph shown in README.md under "Module structure".
+// Run: ./gradlew :generateProjectDependencyGraph --no-configuration-cache
+// Needs graphviz on the PATH for `tred` and `dot`: brew install graphviz
+
+import org.gradle.api.artifacts.ProjectDependency
 
 def font = "Helvetica"
 
+// Projects left out of the picture, each with its reason.
+def excludedProjects = [
+  ':app',                // depends on every feature, so its edges carry no information
+  ':hedvig-lint',        // attached to every module by hedvig.gradle.plugin (lintChecks)
+  ':hedvig-ktlint',      // attached to every module by hedvig.gradle.plugin (ktlint)
+  ':logging-public',     // attached to every module by hedvig.gradle.plugin
+  ':tracking-core',      // attached to every module by hedvig.gradle.plugin
+  ':test-clock',         // test utility
+  ':accessibility-test', // test module
+]
+
+// Module kind by convention plugin. First match wins. The colour is the node background.
+def kinds = [
+  [id: 'hedvig.multiplatform.library.ios', label: 'KMP, iOS targets', color: '#ffd2b3'],
+  [id: 'hedvig.multiplatform.library',     label: 'KMP, no iOS',      color: '#fff3b3'],
+  [id: 'hedvig.android.library',           label: 'Android library',  color: '#baffc9'],
+  [id: 'hedvig.jvm.library',               label: 'JVM library',      color: '#ffb3ba'],
+  [id: 'hedvig.android.application',       label: 'Application',      color: '#cfe0ff'],
+]
+def otherKind = [id: '', label: 'Other', color: '#eeeeee']
+
 task generateProjectDependencyGraph {
-    notCompatibleWithConfigurationCache("Uses project inside `doLast`. Might look into this https://github.com/apollographql/apollo-kotlin/issues/4925 to fix it in a similar way")
-    doLast {
-        def dot = new File(rootProject.buildDir, 'reports/dependency-graph/project.dot')
-        dot.parentFile.mkdirs()
-        dot.delete()
-
-        dot << 'digraph {\n'
-        dot << "  graph [label=\"${rootProject.name}\\n \",labelloc=t,fontsize=30,ranksep=1.4,fontname=\"$font\"];\n"
-        dot << "  node [style=filled, fillcolor=\"#bbbbbb\", fontname=\"$font\"];\n"
-        dot << "  edge [fontname = \"$font\"];"
-        dot << '  rankdir=TB;\n'
-
-        def rootProjects = []
-        def queue = [rootProject]
-        while (!queue.isEmpty()) {
-            def project = queue.remove(0)
-            rootProjects.add(project)
-            queue.addAll(project.childProjects.values())
-        }
-
-        def projects = new LinkedHashSet<Project>()
-        def dependencies = new LinkedHashMap<Tuple2<Project, Project>, List<String>>()
-        def multiplatformProjects = []
-        def jsProjects = []
-        def androidProjects = []
-        def javaProjects = []
-
-        queue = [rootProject]
-        println "[DEBUG]: queue$queue"
-        while (!queue.isEmpty()) {
-            def project = queue.remove(0)
-            queue.addAll(project.childProjects.values())
-
-            if (project.plugins.hasPlugin('org.jetbrains.kotlin.multiplatform')) {
-                multiplatformProjects.add(project)
-            }
-            if (project.plugins.hasPlugin('org.jetbrains.kotlin.js')) {
-                jsProjects.add(project)
-            }
-            if (project.plugins.hasPlugin('com.android.library') || project.plugins.hasPlugin('com.android.application')) {
-                androidProjects.add(project)
-            }
-            if (project.plugins.hasPlugin('java-library') || project.plugins.hasPlugin('java')) {
-                javaProjects.add(project)
-            }
-
-            println "[DEBUG]: configurations: ${project.configurations}"
-            project.configurations.all { config ->
-                config.dependencies
-                        .withType(ProjectDependency)
-                        .collect { rootProject.findProject(it.path) }
-                        .findAll { it != null }
-                        .each { dependency ->
-                            projects.add(project)
-                            projects.add(dependency)
-                            rootProjects.remove(dependency)
-
-                            def graphKey = new Tuple2<Project, Project>(project, dependency)
-                            def traits = dependencies.computeIfAbsent(graphKey) { new ArrayList<String>() }
-
-
-                            def configLowerCaseName = config.name.toLowerCase()
-                            println "configLowerCaseName:${configLowerCaseName}"
-                            if (configLowerCaseName.endsWith('implementation') || configLowerCaseName.endsWith('lintchecks')) {
-                                traits.add('style=dotted')
-                            }
-                        }
-            }
-        }
-
-        projects = projects.sort { it.path }
-
-        dot << '\n  # Projects\n\n'
-        for (project in projects) {
-            def traits = []
-
-            if (rootProjects.contains(project)) {
-                continue
-            }
-
-            if (multiplatformProjects.contains(project)) {
-                traits.add('fillcolor="#ffd2b3"')
-            } else if (jsProjects.contains(project)) {
-                traits.add('fillcolor="#ffffba"')
-            } else if (androidProjects.contains(project)) {
-                traits.add('fillcolor="#baffc9"')
-            } else if (javaProjects.contains(project)) {
-                traits.add('fillcolor="#ffb3ba"')
-            } else {
-                traits.add('fillcolor="#eeeeee"')
-            }
-
-            dot << "  \"${project.path}\" [${traits.join(", ")}];\n"
-        }
-
-        dot << '\n  # Dependencies\n\n'
-        dependencies.forEach { key, traits ->
-            def isEmptyPath = key.first.path == ':'
-            def isPointingToSelf = key.first.path == key.second.path
-            if (!isEmptyPath && !isPointingToSelf) {
-                dot << "  \"${key.first.path}\" -> \"${key.second.path}\""
-                if (!traits.isEmpty()) {
-                    dot << " [${traits.join(", ")}]"
-                }
-                dot << '\n'
-            }
-        }
-
-        dot << '}\n'
-
-        def p = "dot -Tpng -o misc/images/modularization-graph.png ${dot}".execute()
-        p.waitFor()
-        if (p.exitValue() != 0) {
-            throw new RuntimeException(p.errorStream.text)
-        }
-
-        println("Project module dependency graph created at misc/images/modularization-graph.png")
+  notCompatibleWithConfigurationCache("Reads the project model inside doLast")
+  doLast {
+    ['tred', 'dot'].each { tool ->
+      def check = ['which', tool].execute()
+      check.waitFor()
+      if (check.exitValue() != 0) {
+        throw new GradleException("`$tool` not found on PATH. Install graphviz: brew install graphviz")
+      }
     }
+
+    // Test utilities and fakes are not product code.
+    def isTestProject = { Project p -> p.path.endsWith('-test') || p.path.endsWith('-fake') }
+    def isIncluded = { Project p ->
+      p != rootProject && !excludedProjects.contains(p.path) && !isTestProject(p)
+    }
+    // Test, lint, KSP and Apollo codegen configurations describe the build, not the product.
+    def isMainConfiguration = { Configuration c ->
+      def n = c.name.toLowerCase()
+      !(n.contains('test') || n.contains('lint') || n.contains('ktlint') || n.startsWith('ksp') || n.startsWith('apollo'))
+    }
+    def kindOf = { Project p -> kinds.find { p.plugins.hasPlugin(it.id) } ?: otherKind }
+    def kmpIds = kinds.findAll { it.label.startsWith('KMP') }*.id
+    def isKmp = { Project p -> kmpIds.contains(kindOf(p).id) }
+
+    // Project dependencies declared on main configurations: target -> declared through an api configuration.
+    // With iosOnly, android and jvm configurations are skipped: those source sets are not compiled into the iOS framework.
+    def mainDependencies = { Project p, boolean iosOnly = false ->
+      def result = new LinkedHashMap<Project, Boolean>()
+      p.configurations.findAll { isMainConfiguration(it) && !(iosOnly && (it.name.toLowerCase().startsWith('android') || it.name.toLowerCase().startsWith('jvm'))) }.each { config ->
+        def isApi = config.name.toLowerCase().endsWith('api')
+        config.dependencies.withType(ProjectDependency).each { dep ->
+          def target = rootProject.findProject(dep.path)
+          if (target == null || target == p) return
+          result[target] = (result[target] ?: false) || isApi
+        }
+      }
+      result
+    }
+
+    // Everything :umbrella reaches through main configurations is compiled into HedvigShared for iOS.
+    def iosClosure = new LinkedHashSet<Project>()
+    def closureQueue = [rootProject.project(':umbrella')]
+    while (!closureQueue.isEmpty()) {
+      def p = closureQueue.remove(0)
+      if (!iosClosure.add(p)) continue
+      closureQueue.addAll(mainDependencies(p, true).keySet())
+    }
+
+    def included = rootProject.allprojects.findAll(isIncluded).sort { it.path }
+
+    def dotDir = rootProject.layout.buildDirectory.dir('reports/dependency-graph').get().asFile
+    dotDir.mkdirs()
+    def rawDot = new File(dotDir, 'project.dot')
+    def reducedDot = new File(dotDir, 'project-reduced.dot')
+    def finalDot = new File(dotDir, 'project-final.dot')
+
+    rawDot.withWriter { w ->
+      w << 'digraph {\n'
+      w << "  graph [label=\"${rootProject.name} modules\\n \", labelloc=t, fontsize=30, fontname=\"$font\", rankdir=LR, ranksep=1.0, nodesep=0.15];\n"
+      w << "  node [style=filled, fontname=\"$font\"];\n"
+      w << "  edge [fontname=\"$font\"];\n\n"
+      included.each { p ->
+        def kind = kindOf(p)
+        def traits = ["fillcolor=\"${kind.color}\""]
+        if (iosClosure.contains(p)) traits << 'penwidth=3'
+        w << "  \"${p.path}\" [${traits.join(', ')}];\n"
+      }
+      w << '\n'
+      included.each { from ->
+        mainDependencies(from).each { to, isApi ->
+          if (!isIncluded(to)) return
+          w << "  \"${from.path}\" -> \"${to.path}\"${isApi ? '' : ' [style=dotted]'}\n"
+        }
+      }
+      w << '}\n'
+    }
+
+    def tred = ['tred', rawDot.absolutePath].execute()
+    def tredOut = new StringBuilder()
+    def tredErr = new StringBuilder()
+    tred.waitForProcessOutput(tredOut, tredErr)
+    if (tred.exitValue() != 0) throw new GradleException("tred failed: $tredErr")
+    tredErr.toString().readLines().findAll { !it.trim().isEmpty() }.each { println("warning, tred: $it") }
+    reducedDot.text = tredOut.toString()
+
+    def legend = new StringBuilder()
+    legend << '  subgraph cluster_legend {\n'
+    legend << "    label=\"Legend\"; fontsize=16; fontname=\"$font\"; style=dashed;\n"
+    legend << '    node [shape=box];\n'
+    (kinds + [otherKind]).each { k ->
+      legend << "    \"legend ${k.label}\" [label=\"${k.label}\", fillcolor=\"${k.color}\"];\n"
+    }
+    legend << '    "legend ios" [label="in the iOS umbrella closure", fillcolor="#ffffff", penwidth=3];\n'
+    legend << '    "legend reduced" [shape=plaintext, fillcolor="#ffffff", label="Arrows implied by a longer path are omitted"];\n'
+    legend << '    "legend api a" [label="a"]; "legend api b" [label="b"];\n'
+    legend << '    "legend api a" -> "legend api b" [label="api"];\n'
+    legend << '    "legend impl a" [label="a"]; "legend impl b" [label="b"];\n'
+    legend << '    "legend impl a" -> "legend impl b" [label="implementation", style=dotted];\n'
+    legend << "    \"legend excluded\" [shape=plaintext, fillcolor=\"#ffffff\", label=\"Not shown: ${excludedProjects.join(', ')}, *-test, *-fake\"];\n"
+    legend << '  }\n'
+    def reducedText = reducedDot.text
+    def closingBrace = reducedText.lastIndexOf('}')
+    finalDot.text = reducedText.substring(0, closingBrace) + legend.toString() + '}\n'
+
+    def svg = rootProject.file('misc/images/modularization-graph.svg')
+    def dot = ['dot', '-Tsvg', '-o', svg.absolutePath, finalDot.absolutePath].execute()
+    def dotOut = new StringBuilder()
+    def dotErr = new StringBuilder()
+    dot.waitForProcessOutput(dotOut, dotErr)
+    if (dot.exitValue() != 0) throw new GradleException("dot failed: $dotErr")
+
+    // graphviz stamps its version into the SVG, which makes every other version produce a diff.
+    svg.text = svg.readLines().findAll { !it.contains('Generated by graphviz version') }.join('\n') + '\n'
+
+    println("Module dependency graph written to ${svg}")
+
+    def dependents = new LinkedHashMap<Project, List<Project>>()
+    included.each { from ->
+      // A KMP module's android and jvm source sets are not shared code, so only its shared dependencies count.
+      def declared = isKmp(from) ? mainDependencies(from, true) : mainDependencies(from)
+      declared.keySet().findAll(isIncluded).each { to ->
+        dependents.computeIfAbsent(to) { [] } << from
+      }
+    }
+    def blockers = included
+      .findAll { !isKmp(it) && kindOf(it).id != 'hedvig.android.application' && !(dependents[it] ?: []).isEmpty() }
+      .sort { a, b -> (dependents[b].size() <=> dependents[a].size()) ?: (a.path <=> b.path) }
+
+    def summary = rootProject.file('misc/images/modularization-summary.md')
+    summary.withWriter { w ->
+      w << '# Module summary\n\n'
+      w << 'Written by `./gradlew :generateProjectDependencyGraph`. Counts cover the modules the graph shows.\n\n'
+      w << '| Kind | Modules |\n|---|---|\n'
+      (kinds + [otherKind]).each { k ->
+        w << "| ${k.label} | ${included.count { kindOf(it).is(k) }} |\n"
+      }
+      w << "| In the iOS umbrella closure (including modules not drawn) | ${iosClosure.size()} |\n\n"
+      w << '## Non-KMP modules and what depends on them (from shared code for KMP modules)\n\n'
+      w << 'Non-KMP modules ordered by the number of drawn modules that depend on them directly.\n\n'
+      blockers.each { b ->
+        def names = dependents[b].sort(false) { it.path }.collect { "`${it.path}`" }.join(', ')
+        w << "- `${b.path}` (${kindOf(b).label}) <- ${names}\n"
+      }
+    }
+    println(summary.text)
+  }
 }
