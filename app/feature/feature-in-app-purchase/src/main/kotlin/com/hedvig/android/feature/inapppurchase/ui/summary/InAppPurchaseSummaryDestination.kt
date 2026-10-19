@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
-import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Primary
 import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle.Buttons
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -46,6 +46,8 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.feature.inapppurchase.data.InAppPurchaseMocks
 import com.hedvig.android.feature.inapppurchase.data.InAppPurchaseOffer
+import com.hedvig.android.ui.bankid.BankIdQrCode
+import com.hedvig.android.ui.bankid.rememberBankIdState
 import com.hedvig.android.ui.tiersandaddons.DisplayDocument
 import com.hedvig.android.ui.tiersandaddons.QuoteCard
 import com.hedvig.android.ui.tiersandaddons.QuoteDisplayItem
@@ -57,6 +59,7 @@ import hedvig.resources.GENERAL_PROGRESS_WILL_BE_LOST_ALERT
 import hedvig.resources.GENERAL_YES
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
 import hedvig.resources.Res
+import hedvig.resources.TIER_FLOW_COVERAGE_LABEL
 import hedvig.resources.TIER_FLOW_SUMMARY_TITLE
 import hedvig.resources.TIER_FLOW_TOTAL
 import hedvig.resources.general_cancel_button
@@ -71,20 +74,11 @@ internal fun InAppPurchaseSummaryDestination(
   exitFlow: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  val bankIdLauncher = rememberBankIdLauncher()
-  val signingState = uiState.signingState
-  if (signingState is SigningState.AwaitingBankId && signingState.autoStartToken != null) {
-    LaunchedEffect(signingState.signingId) {
-      bankIdLauncher.open(signingState.autoStartToken)
-    }
-  }
   InAppPurchaseSummaryScreen(
     uiState = uiState,
-    canOpenBankId = bankIdLauncher.canOpenBankId,
     navigateUp = navigateUp,
     exitFlow = dropUnlessResumed { exitFlow() },
     onSign = { viewModel.emit(InAppPurchaseSummaryEvent.Sign) },
-    onOpenBankId = { token -> bankIdLauncher.open(token) },
     dismissFailure = { viewModel.emit(InAppPurchaseSummaryEvent.DismissFailure) },
   )
 }
@@ -92,30 +86,15 @@ internal fun InAppPurchaseSummaryDestination(
 @Composable
 private fun InAppPurchaseSummaryScreen(
   uiState: InAppPurchaseSummaryUiState,
-  canOpenBankId: Boolean,
   navigateUp: () -> Unit,
   exitFlow: () -> Unit,
   onSign: () -> Unit,
-  onOpenBankId: (autoStartToken: String) -> Unit,
   dismissFailure: () -> Unit,
 ) {
   when (val signingState = uiState.signingState) {
-    is SigningState.AwaitingBankId -> SigningInProgress(
-      // TODO: Add "Waiting for BankID" / "Väntar på BankID" to Lokalise
-      title = "Waiting for BankID",
-      // TODO: Add "Open the BankID app to sign." / "Öppna BankID-appen för att signera." to Lokalise
-      description = "Open the BankID app to sign.".takeIf { !signingState.bankIdAppOpened },
-      autoStartToken = signingState.autoStartToken?.takeIf { canOpenBankId },
-      onOpenBankId = onOpenBankId,
-    )
+    is SigningState.AwaitingBankId -> AwaitingBankIdSignature(signingState)
 
-    SigningState.Creating -> SigningInProgress(
-      // TODO: Add "Creating your insurance" / "Skapar din försäkring" to Lokalise
-      title = "Creating your insurance",
-      description = null,
-      autoStartToken = null,
-      onOpenBankId = onOpenBankId,
-    )
+    SigningState.Creating -> CreatingInsurance()
 
     SigningState.Idle,
     SigningState.Starting,
@@ -210,7 +189,12 @@ private fun OfferQuoteCard(productDisplayName: String, offer: InAppPurchaseOffer
     premium = cost.monthlyNet,
     previousPremium = cost.monthlyGross.takeIf { it != cost.monthlyNet },
     costBreakdown = offer.costBreakdown,
-    displayItems = offer.displayItems.map { QuoteDisplayItem(it.title, it.value, null) },
+    displayItems = buildList {
+      offer.insuranceAmount?.let {
+        add(QuoteDisplayItem(stringResource(Res.string.TIER_FLOW_COVERAGE_LABEL), it.displayName, null))
+      }
+      offer.displayItems.mapTo(this) { QuoteDisplayItem(it.title, it.value, null) }
+    },
     modifier = modifier,
   )
 }
@@ -255,35 +239,59 @@ private fun TotalPrice(offer: InAppPurchaseOffer) {
 }
 
 @Composable
-private fun SigningInProgress(
-  title: String,
-  description: String?,
-  autoStartToken: String?,
-  onOpenBankId: (autoStartToken: String) -> Unit,
-) {
+private fun AwaitingBankIdSignature(signingState: SigningState.AwaitingBankId) {
+  val bankIdState = signingState.autoStartToken?.let { rememberBankIdState(it) }
+  LaunchedEffect(signingState.signingId) {
+    bankIdState?.tryOpenBankId()
+  }
   Surface(color = HedvigTheme.colorScheme.backgroundPrimary, modifier = Modifier.fillMaxSize()) {
     Column(
       horizontalAlignment = Alignment.CenterHorizontally,
       modifier = Modifier.padding(16.dp),
     ) {
       Spacer(Modifier.weight(1f))
-      HedvigCircularProgressIndicator()
-      Spacer(Modifier.height(16.dp))
-      HedvigText(title, textAlign = TextAlign.Center)
-      if (description != null) {
-        HedvigText(description, textAlign = TextAlign.Center, color = HedvigTheme.colorScheme.textSecondary)
-      }
+      BankIdQrCode(liveQrCodeData = signingState.liveQrCodeData, modifier = Modifier.size(180.dp))
+      Spacer(Modifier.height(32.dp))
+      HedvigText(
+        // TODO: Add "Sign with BankID" / "Signera med BankID" to Lokalise
+        text = "Sign with BankID",
+        textAlign = TextAlign.Center,
+        modifier = Modifier.fillMaxWidth(),
+      )
+      HedvigText(
+        // TODO: Add "Open the BankID app on your phone or scan the QR code to sign" / "Öppna BankID-appen på din telefon eller skanna QR-koden för att signera" to Lokalise
+        text = "Open the BankID app on your phone or scan the QR code to sign",
+        textAlign = TextAlign.Center,
+        color = HedvigTheme.colorScheme.textSecondary,
+        modifier = Modifier.fillMaxWidth(),
+      )
       Spacer(Modifier.weight(1f))
-      if (autoStartToken != null) {
+      if (bankIdState?.canOpenBankId == true) {
         HedvigButton(
           text = stringResource(Res.string.AUTHENTICATION_BANKID_OPEN_BUTTON),
-          onClick = { onOpenBankId(autoStartToken) },
+          onClick = bankIdState::tryOpenBankId,
           enabled = true,
-          buttonStyle = Secondary,
+          buttonStyle = Primary,
           buttonSize = Large,
           modifier = Modifier.fillMaxWidth(),
         )
       }
+    }
+  }
+}
+
+@Composable
+private fun CreatingInsurance() {
+  Surface(color = HedvigTheme.colorScheme.backgroundPrimary, modifier = Modifier.fillMaxSize()) {
+    Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+      verticalArrangement = Arrangement.Center,
+      modifier = Modifier.padding(16.dp),
+    ) {
+      HedvigCircularProgressIndicator()
+      Spacer(Modifier.height(16.dp))
+      // TODO: Add "Creating your insurance" / "Skapar din försäkring" to Lokalise
+      HedvigText("Creating your insurance", textAlign = TextAlign.Center)
     }
   }
 }
@@ -317,7 +325,7 @@ private fun PreviewInAppPurchaseSummaryScreen(
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      InAppPurchaseSummaryScreen(uiState, true, {}, {}, {}, {}, {})
+      InAppPurchaseSummaryScreen(uiState, {}, {}, {}, {})
     }
   }
 }
@@ -326,7 +334,7 @@ private class SummaryUiStateProvider : CollectionPreviewParameterProvider<InAppP
   listOf(
     SigningState.Idle,
     SigningState.Starting,
-    SigningState.AwaitingBankId("signing", "token", bankIdAppOpened = false),
+    SigningState.AwaitingBankId("signing", "token", liveQrCodeData = "bankid.preview"),
     SigningState.Creating,
     SigningState.Failed(InAppPurchaseMocks.QUOTE_NO_LONGER_VALID_MESSAGE),
   ).map { signingState ->

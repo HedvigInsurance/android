@@ -143,7 +143,7 @@ private fun OfferCard(
         }
       }
       Spacer(Modifier.height(16.dp))
-      val label = selectedOffer.insuranceAmount?.displayName ?: stringResource(Res.string.TIER_FLOW_COVERAGE_LABEL)
+      val label = stringResource(Res.string.TIER_FLOW_COVERAGE_LABEL)
       val selectedIndex = offers.indexOf(selectedOffer).takeIf { it >= 0 }
       DropdownWithDialog(
         dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
@@ -251,7 +251,9 @@ private fun OfferDialogContent(
   }
 }
 
-private fun InAppPurchaseOffer.optionTitle(): String = variant.displayTierName ?: exposureDisplayName
+private fun InAppPurchaseOffer.optionTitle(): String {
+  return variant.displayTierName ?: insuranceAmount?.displayName ?: exposureDisplayName
+}
 
 @HedvigMultiScreenPreview
 @Composable

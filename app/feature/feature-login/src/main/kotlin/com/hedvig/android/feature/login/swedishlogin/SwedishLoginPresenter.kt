@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.login.swedishlogin
 
-import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -249,11 +248,7 @@ internal sealed interface BankIdUiState {
     val allowOpeningBankId: Boolean,
   ) : BankIdUiState {
     @JvmInline
-    value class AutoStartToken(val token: String) {
-      // The Uri which opens the BankId app while also passing in the right autoStartUrl
-      val bankIdUri: Uri
-        get() = Uri.parse("https://app.bankid.com/?autostarttoken=$token&redirect=null")
-    }
+    value class AutoStartToken(val token: String)
 
     @JvmInline
     value class BankIdLiveQrCodeData(val data: String)

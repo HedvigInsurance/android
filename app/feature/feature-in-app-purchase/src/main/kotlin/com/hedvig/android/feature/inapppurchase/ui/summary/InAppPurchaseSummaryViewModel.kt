@@ -77,7 +77,7 @@ internal class InAppPurchaseSummaryPresenter(
       while (true) {
         when (signing.status) {
           InAppPurchaseSigningStatus.PENDING -> {
-            signingState = SigningState.AwaitingBankId(signing.id, signing.autoStartToken, signing.bankIdAppOpened)
+            signingState = SigningState.AwaitingBankId(signing.id, signing.autoStartToken, signing.liveQrCodeData)
           }
 
           InAppPurchaseSigningStatus.CREATING -> {
@@ -132,7 +132,7 @@ internal sealed interface SigningState {
   data class AwaitingBankId(
     val signingId: String,
     val autoStartToken: String?,
-    val bankIdAppOpened: Boolean,
+    val liveQrCodeData: String?,
   ) : SigningState
 
   data object Creating : SigningState

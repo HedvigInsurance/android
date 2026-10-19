@@ -33,5 +33,6 @@ dependencies {
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
+  implementation(projects.uiBankid)
   implementation(projects.uiTiersAndAddons)
 }

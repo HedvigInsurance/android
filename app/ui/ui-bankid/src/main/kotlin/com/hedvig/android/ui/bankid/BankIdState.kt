@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.login.swedishlogin
+package com.hedvig.android.ui.bankid
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -13,21 +13,25 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.net.toUri
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 
 @Stable
-internal interface BankIdState {
+interface BankIdState {
   val canOpenBankId: Boolean
 
   fun tryOpenBankId()
 }
 
+/**
+ * Opens the BankID app on this device with [autoStartToken], when it is installed.
+ */
 @Composable
-internal fun rememberBankIdState(bankIdUri: Uri): BankIdState {
+fun rememberBankIdState(autoStartToken: String): BankIdState {
   val context = LocalContext.current
-  return remember(context, bankIdUri) {
-    BankIdStateImpl(bankIdUri, context).also {
+  return remember(context, autoStartToken) {
+    BankIdStateImpl("https://app.bankid.com/?autostarttoken=$autoStartToken&redirect=null".toUri(), context).also {
       it.initialize()
     }
   }
@@ -45,7 +49,7 @@ private class BankIdStateImpl(
       logcat(LogPriority.INFO) { "BankID not found, showing QR code instead" }
       return
     }
-    logcat(LogPriority.INFO) { "Opened BankID to handle login" }
+    logcat(LogPriority.INFO) { "Opened BankID" }
     context.startActivity(Intent(Intent.ACTION_VIEW, bankIdUri))
   }
 

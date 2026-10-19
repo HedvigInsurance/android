@@ -23,7 +23,6 @@ dependencies {
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.media3.exoplayer)
   implementation(libs.media3.ui)
-  implementation(libs.zXing)
   implementation(projects.apolloCore)
   implementation(projects.authCorePublic)
   implementation(projects.authCoreTest)
@@ -38,6 +37,7 @@ dependencies {
   implementation(projects.navigationCompose)
   implementation(projects.navigationCore)
   implementation(projects.networkClients)
+  implementation(projects.uiBankid)
 
   testImplementation(libs.androidx.datastore.core)
   testImplementation(libs.androidx.junit)
