@@ -35,7 +35,7 @@ internal class ManualChargeViewModel(
     presenter = ManualChargePresenter(getManualChargeInfoUseCase, triggerManualCharge, backstack),
   )
 
-private class ManualChargePresenter(
+internal class ManualChargePresenter(
   private val getManualChargeInfoUseCase: GetManualChargeInfoUseCase,
   private val triggerManualCharge: TriggerManualChargeUseCase,
   private val backstack: Backstack,
