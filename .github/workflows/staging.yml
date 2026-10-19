@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - develop
+      - feat/native-purchase-flow
   workflow_dispatch:
 
 concurrency:

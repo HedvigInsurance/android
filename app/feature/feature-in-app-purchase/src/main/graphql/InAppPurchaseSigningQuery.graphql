@@ -1,0 +1,18 @@
+query InAppPurchaseSigning($signingId: UUID!) {
+  shopSessionSigning(id: $signingId) {
+    ...InAppPurchaseSigningFragment
+  }
+}
+
+fragment InAppPurchaseSigningFragment on ShopSessionSigning {
+  id
+  status
+  seBankidProperties {
+    autoStartToken
+    liveQrCodeData
+    bankidAppOpened
+  }
+  userError {
+    message
+  }
+}

@@ -27,6 +27,7 @@ import com.hedvig.android.crosssells.RecommendedAddon
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
+import com.hedvig.android.data.contract.InAppProduct
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -230,6 +231,7 @@ internal fun CrossSellFragment.toCrossSell(): CrossSell {
         description = pillowImageLarge.alt,
       ),
       buttonText = this.buttonTitle,
+      inAppProduct = inAppProduct?.toInAppProduct(),
     )
   }
 }
@@ -239,4 +241,10 @@ internal class DemoGetCrossSellSheetDataUseCase : GetCrossSellSheetDataUseCase {
   override suspend fun invoke(source: CrossSellInput): Flow<Either<ErrorMessage, CrossSellSheetData>> {
     return flowOf(ErrorMessage("Ineligible for demo mode").left())
   }
+}
+
+private fun octopus.type.InAppProduct.toInAppProduct(): InAppProduct? = when (this) {
+  octopus.type.InAppProduct.ACCIDENT -> InAppProduct.ACCIDENT
+  octopus.type.InAppProduct.PAYMENT_PROTECTION -> InAppProduct.PAYMENT_PROTECTION
+  octopus.type.InAppProduct.UNKNOWN__ -> null
 }

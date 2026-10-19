@@ -10,6 +10,7 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.data.contract.ContractId
+import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseKey
 import com.hedvig.android.feature.addon.purchase.navigation.addonPurchaseEntries
@@ -42,9 +43,12 @@ import com.hedvig.android.feature.help.center.navigation.HelpCenterKey
 import com.hedvig.android.feature.home.home.navigation.homeEntries
 import com.hedvig.android.feature.imageviewer.navigation.ImageViewerKey
 import com.hedvig.android.feature.imageviewer.navigation.imageViewerEntries
+import com.hedvig.android.feature.inapppurchase.navigation.InAppPurchaseKey
+import com.hedvig.android.feature.inapppurchase.navigation.inAppPurchaseEntries
 import com.hedvig.android.feature.insurance.certificate.navigation.InsuranceEvidenceKey
 import com.hedvig.android.feature.insurance.certificate.navigation.insuranceEvidenceEntries
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
+import com.hedvig.android.feature.insurances.navigation.InsuranceContractDetailKey
 import com.hedvig.android.feature.insurances.navigation.insuranceEntries
 import com.hedvig.android.feature.login.navigation.loginEntries
 import com.hedvig.android.feature.movingflow.MovingSource
@@ -102,7 +106,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   externalNavigator: ExternalNavigator,
   androidAppHost: AndroidAppHost,
   openUrl: (String) -> Unit,
-  openCrossSellUrl: (String) -> Unit,
+  openCrossSell: (CrossSell) -> Unit,
   imageLoader: ImageLoader,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
@@ -137,7 +141,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     externalNavigator = externalNavigator,
     imageLoader = imageLoader,
     openUrl = openUrl,
-    openCrossSellUrl = openCrossSellUrl,
+    openCrossSell = openCrossSell,
     onNavigateToImageViewer = onNavigateToImageViewer,
     navigateToNewConversation = navigateToNewConversation,
     navigateToConversation = navigateToConversation,
@@ -153,7 +157,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     windowSizeClass = windowSizeClass,
     imageLoader = imageLoader,
     openUrl = openUrl,
-    openCrossSellUrl = openCrossSellUrl,
+    openCrossSell = openCrossSell,
     externalNavigator = externalNavigator,
     navigateToNewConversation = navigateToNewConversation,
     navigateToMovingFlowFromInsurance = {
@@ -245,7 +249,7 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
   externalNavigator: ExternalNavigator,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
-  openCrossSellUrl: (String) -> Unit,
+  openCrossSell: (CrossSell) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   navigateToNewConversation: () -> Unit,
   navigateToConversation: (String) -> Unit,
@@ -303,7 +307,7 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
     navigateToUsageData = { backstack.add(UsageDataKey) },
     openAppSettings = externalNavigator::openAppSettings,
     openUrl = openUrl,
-    openCrossSellUrl = openCrossSellUrl,
+    openCrossSell = openCrossSell,
     imageLoader = imageLoader,
     navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
   )
@@ -373,7 +377,7 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
   windowSizeClass: WindowSizeClass,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
-  openCrossSellUrl: (String) -> Unit,
+  openCrossSell: (CrossSell) -> Unit,
   externalNavigator: ExternalNavigator,
   navigateToNewConversation: () -> Unit,
   navigateToMovingFlowFromInsurance: () -> Unit,
@@ -416,7 +420,7 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
     },
     backstack = backstack,
     openUrl = openUrl,
-    openCrossSellUrl = openCrossSellUrl,
+    openCrossSell = openCrossSell,
     onNavigateToNewConversation = navigateToNewConversation,
     startMovingFlow = navigateToMovingFlowFromInsurance,
     startTerminationFlow = { data: CancelInsuranceData ->
@@ -595,6 +599,14 @@ private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
   changeTierEntries(
     backstack = backstack,
     onNavigateToNewConversation = navigateToNewConversation,
+  )
+  inAppPurchaseEntries(
+    backstack = backstack,
+    imageLoader = imageLoader,
+    openUrl = openUrl,
+    navigateToContract = { contractId ->
+      backstack.navigateAndPopUpTo<InAppPurchaseKey>(InsuranceContractDetailKey(contractId), inclusive = true)
+    },
   )
   chipIdEntries(
     backstack = backstack,

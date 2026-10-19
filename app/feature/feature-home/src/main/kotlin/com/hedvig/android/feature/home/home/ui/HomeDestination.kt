@@ -274,7 +274,7 @@ internal fun HomeDestination(
   navigateToHelpCenter: () -> Unit,
   navigateToQuickLink: (QuickLinkDestination) -> Unit,
   openUrl: (String) -> Unit,
-  openCrossSellUrl: (String) -> Unit,
+  openCrossSell: (CrossSell) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
@@ -300,7 +300,7 @@ internal fun HomeDestination(
     navigateToHelpCenter = navigateToHelpCenter,
     navigateToQuickLink = navigateToQuickLink,
     openUrl = openUrl,
-    openCrossSellUrl = openCrossSellUrl,
+    openCrossSell = openCrossSell,
     openAppSettings = openAppSettings,
     navigateToMissingInfo = navigateToMissingInfo,
     markMessageAsSeen = { viewModel.emit(MarkMessageAsSeen(it)) },
@@ -336,7 +336,7 @@ private fun HomeScreen(
   navigateToHelpCenter: () -> Unit,
   navigateToQuickLink: (QuickLinkDestination) -> Unit,
   openUrl: (String) -> Unit,
-  openCrossSellUrl: (String) -> Unit,
+  openCrossSell: (CrossSell) -> Unit,
   markMessageAsSeen: (String) -> Unit,
   deleteDraftClaim: (String) -> Unit,
   dismissOngoingShopSession: (String) -> Unit,
@@ -363,7 +363,8 @@ private fun HomeScreen(
   CrossSellBottomSheet(
     state = crossSellBottomSheetState,
     markCrossSellsNotificationAsSeen = markCrossSellsNotificationAsSeen,
-    onCrossSellClick = openCrossSellUrl,
+    onCrossSellClick = openCrossSell,
+    onRecommendedAddonClick = openUrl,
     onAddonClick = { ids -> navigateToAddonPurchaseFlow(ids, AddonBannerSource.HOME_CROSS_SELL_SHEET) },
     imageLoader = imageLoader,
   )
@@ -489,7 +490,7 @@ private fun HomeScreen(
             navigateToContactInfo = navigateToContactInfo,
             navigateToChipIdScreen = navigateToChipIdScreen,
             navigateToUsageData = navigateToUsageData,
-            openCrossSellUrl = openCrossSellUrl,
+            openCrossSell = openCrossSell,
             imageLoader = imageLoader,
             navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
             onChatIconClick = onNavigateToInbox,
@@ -667,7 +668,7 @@ private fun HomeScreenSuccess(
   navigateToContactInfo: () -> Unit,
   navigateToChipIdScreen: () -> Unit,
   navigateToUsageData: () -> Unit,
-  openCrossSellUrl: (String) -> Unit,
+  openCrossSell: (CrossSell) -> Unit,
   imageLoader: ImageLoader,
   navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
   onChatIconClick: () -> Unit,
@@ -1015,7 +1016,7 @@ private fun HomeScreenSuccess(
 
             HomeSection.DiscoverInsurances -> DiscoverInsurancesSection(
               crossSells = uiState.discoverCrossSells,
-              onCrossSellClick = openCrossSellUrl,
+              onCrossSellClick = openCrossSell,
               imageLoader = imageLoader,
             )
 
@@ -1615,7 +1616,7 @@ private fun HomeAddonsSection(
 @Composable
 private fun DiscoverInsurancesSection(
   crossSells: List<CrossSell>,
-  onCrossSellClick: (String) -> Unit,
+  onCrossSellClick: (CrossSell) -> Unit,
   imageLoader: ImageLoader,
 ) {
   CrossSellsSection(
@@ -1667,7 +1668,8 @@ private fun WelcomeMessage(firstName: String, modifier: Modifier = Modifier) {
 private fun CrossSellBottomSheet(
   state: HedvigBottomSheetState<CrossSellSheetData>,
   markCrossSellsNotificationAsSeen: () -> Unit,
-  onCrossSellClick: (String) -> Unit,
+  onCrossSellClick: (CrossSell) -> Unit,
+  onRecommendedAddonClick: (deepLink: String) -> Unit,
   onAddonClick: (eligibleInsuranceIds: List<String>) -> Unit,
   imageLoader: ImageLoader,
 ) {
@@ -1681,6 +1683,7 @@ private fun CrossSellBottomSheet(
   CrossSellBottomSheet(
     state = state,
     onCrossSellClick = onCrossSellClick,
+    onRecommendedAddonClick = onRecommendedAddonClick,
     onAddonClick = onAddonClick,
     imageLoader = imageLoader,
   )
@@ -1822,7 +1825,7 @@ private fun PreviewHomeScreen(
         navigateToHelpCenter = {},
         navigateToQuickLink = {},
         openUrl = {},
-        openCrossSellUrl = {},
+        openCrossSell = {},
         openAppSettings = {},
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
@@ -1860,7 +1863,7 @@ private fun PreviewHomeScreenWithError() {
         navigateToHelpCenter = {},
         navigateToQuickLink = {},
         openUrl = {},
-        openCrossSellUrl = {},
+        openCrossSell = {},
         openAppSettings = {},
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
@@ -1931,7 +1934,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToHelpCenter = {},
         navigateToQuickLink = {},
         openUrl = {},
-        openCrossSellUrl = {},
+        openCrossSell = {},
         openAppSettings = {},
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},

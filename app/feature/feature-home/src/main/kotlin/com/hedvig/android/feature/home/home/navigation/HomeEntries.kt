@@ -6,6 +6,7 @@ import coil3.ImageLoader
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
+import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.feature.home.home.ui.FirstVetDestination
 import com.hedvig.android.feature.home.home.ui.HomeDestination
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
@@ -36,7 +37,7 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
   navigateToUsageData: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
-  openCrossSellUrl: (String) -> Unit,
+  openCrossSell: (CrossSell) -> Unit,
   imageLoader: ImageLoader,
   navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
 ) {
@@ -65,7 +66,7 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
         }
       },
       openUrl = openUrl,
-      openCrossSellUrl = openCrossSellUrl,
+      openCrossSell = openCrossSell,
       openAppSettings = openAppSettings,
       navigateToFirstVet = dropUnlessResumed { sections -> navigateToFirstVet(sections) },
       navigateToContactInfo = dropUnlessResumed {

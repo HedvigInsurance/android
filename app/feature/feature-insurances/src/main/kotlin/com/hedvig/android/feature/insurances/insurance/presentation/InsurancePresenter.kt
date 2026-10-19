@@ -24,9 +24,12 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
 
 internal sealed interface InsuranceScreenEvent {
   data object RetryLoading : InsuranceScreenEvent
@@ -129,9 +132,13 @@ private fun loadInsuranceData(
   getCrossSellsUseCase: GetCrossSellsUseCase,
   getAddonBannerInfoUseCase: GetAddonBannerInfoUseCase,
 ): Flow<Either<ErrorMessage, InsuranceData>> {
+  val contractIds = MutableStateFlow<Set<String>?>(null)
   return combine(
-    getInsuranceContractsUseCase.invoke(),
-    flow { emit(getCrossSellsUseCase.invoke()) },
+    getInsuranceContractsUseCase.invoke().onEach { result ->
+      contractIds.value = result.getOrNull()?.mapTo(mutableSetOf()) { it.id } ?: contractIds.value ?: emptySet()
+    },
+    // A new contract changes what can be cross-sold, so the cross-sells are fetched again whenever the contracts do.
+    contractIds.filterNotNull().mapLatest { getCrossSellsUseCase.invoke() },
     getAddonBannerInfoUseCase.invoke(AddonBannerSource.INSURANCES_TAB),
   ) { contractsResult, crossSellsDataResult, travelAddonBannerInfoResult ->
     either {
