@@ -1,8 +1,6 @@
 package com.hedvig.android.feature.onboarding.ui.payment
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -65,12 +63,12 @@ import hedvig.resources.ONBOARDING_CONNECT_PAYMENT_SUBTITLE
 import hedvig.resources.ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER
 import hedvig.resources.ONBOARDING_CONNECT_PAYMENT_TITLE
 import hedvig.resources.ONBOARDING_DO_THIS_LATER_BUTTON
+import hedvig.resources.PAYIN_INFO_BOX
 import hedvig.resources.PAYMENT_CONNECT_TITLE
 import hedvig.resources.PAYMENT_METHOD_REQUIRED_FOOTNOTE
 import hedvig.resources.PAYMENT_OPTION_SWISH_SUBTITLE
 import hedvig.resources.PAYMENT_OPTION_TRUSTLY_SUBTITLE
 import hedvig.resources.Res
-import hedvig.resources.SWISH_INFO_BOX
 import hedvig.resources.general_continue_button
 import hedvig.resources.swish
 import kotlinx.coroutines.launch
@@ -292,6 +290,15 @@ private fun OnboardingPaymentScreen(
               .padding(horizontal = 16.dp),
           )
           Spacer(Modifier.height(16.dp))
+          HedvigNotificationCard(
+            message = stringResource(Res.string.PAYIN_INFO_BOX),
+            priority = NotificationPriority.InfoInline,
+            withIcon = false,
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
+          )
+          Spacer(Modifier.height(8.dp))
           RadioGroup(
             options = content.availableProviders.map { it.toRadioOption() },
             selectedOption = content.selectedProvider?.let { RadioOptionId(it.name) },
@@ -304,18 +311,6 @@ private fun OnboardingPaymentScreen(
             },
             modifier = Modifier.padding(horizontal = 16.dp),
           )
-          AnimatedVisibility(visible = content.selectedProvider == OnboardingPayinProvider.Swish) {
-            Column {
-              Spacer(Modifier.height(8.dp))
-              HedvigNotificationCard(
-                message = stringResource(Res.string.SWISH_INFO_BOX),
-                priority = NotificationPriority.InfoInline,
-                modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(horizontal = 16.dp),
-              )
-            }
-          }
         }
         OnboardingStepButtons(
           primaryText = if (isConnected) {

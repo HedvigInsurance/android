@@ -680,6 +680,7 @@
   <string name="ONBOARDING_WELCOME_TITLE">Välkommen till Hedvig</string>
   <string name="OPTOUT_FIELD_ENTER_HERE">Fyll i här</string>
   <string name="OPTOUT_FIELD_PLACEHOLDER">Minns inte</string>
+  <string name="PAYIN_INFO_BOX">Genom att koppla en betalmetod godkänner du att din premie dras automatiskt varje månad. Vi meddelar dig i Hedvig-appen inför varje betalning.</string>
   <string name="PAYMENTS__CAMPAIGNS">Kampanjer</string>
   <string name="PAYMENTS_ACCOUNT">Konto</string>
   <string name="PAYMENTS_ADD_CAMPAIGN_CODE">Lägg till kampanjkod</string>
