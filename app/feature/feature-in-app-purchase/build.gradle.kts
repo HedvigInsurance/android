@@ -4,6 +4,7 @@ plugins {
 }
 
 hedvig {
+  apollo("octopus")
   serialization()
   compose()
   navKeys()
@@ -11,6 +12,7 @@ hedvig {
 }
 
 dependencies {
+  implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
   implementation(libs.coil.coil)
@@ -19,6 +21,7 @@ dependencies {
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
+  implementation(projects.apolloOctopusPublic)
   implementation(projects.composeUi)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreResources)

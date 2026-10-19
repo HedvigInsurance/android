@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.data.contract.InAppProduct
 import com.hedvig.android.feature.inapppurchase.data.GetInAppPurchaseFormUseCase
 import com.hedvig.android.feature.inapppurchase.data.InAppPurchaseEligibility
 import com.hedvig.android.feature.inapppurchase.data.InAppPurchaseFieldInput
@@ -19,7 +20,6 @@ import com.hedvig.android.feature.inapppurchase.data.InAppPurchaseIneligibilityR
 import com.hedvig.android.feature.inapppurchase.data.InAppPurchaseProduct
 import com.hedvig.android.feature.inapppurchase.data.InAppPurchaseQuote
 import com.hedvig.android.feature.inapppurchase.data.QuoteInAppPurchaseUseCase
-import com.hedvig.android.feature.inapppurchase.navigation.InAppProduct
 import com.hedvig.android.feature.inapppurchase.navigation.navigateToOffers
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope

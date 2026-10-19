@@ -8,6 +8,7 @@ query CrossSells {
         description
         buttonTitle
         storeUrl
+        inAppProduct
         pillowImageSmall {
           src
           id

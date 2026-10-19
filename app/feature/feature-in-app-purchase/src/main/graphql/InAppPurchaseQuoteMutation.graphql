@@ -1,0 +1,54 @@
+mutation InAppPurchaseQuote($product: InAppProduct!, $fields: [InAppPurchaseFieldInput!]!) {
+  inAppPurchaseQuote(input: { product: $product, fields: $fields }) {
+    shopSessionId
+    offers {
+      id
+      variant {
+        ...ProductVariantFragment
+      }
+      exposure {
+        displayNameShort
+      }
+      cost {
+        baseInsuranceGross {
+          ...MoneyFragment
+        }
+        gross {
+          ...MoneyFragment
+        }
+        net {
+          ...MoneyFragment
+        }
+        discountsV2 {
+          itemDiscount {
+            displayName
+          }
+          amount {
+            ...MoneyFragment
+          }
+        }
+      }
+      displayItems {
+        displayTitle
+        displayValue
+      }
+      deductible {
+        displayName
+        tagline
+      }
+      insuranceAmount {
+        displayName
+        amount
+      }
+      usps
+      startDate
+    }
+    fieldErrors {
+      fieldId
+      message
+    }
+    userError {
+      message
+    }
+  }
+}

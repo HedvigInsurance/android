@@ -1,0 +1,44 @@
+query InAppPurchaseForm($product: InAppProduct!) {
+  inAppPurchaseForm(product: $product) {
+    product {
+      name
+      displayNameShort
+      displayNameFull
+      tagline
+      pillowImage {
+        src
+        alt
+      }
+      featuredImage {
+        src
+        alt
+      }
+      variants {
+        ...ProductVariantFragment
+      }
+      faq {
+        question
+        answer
+      }
+    }
+    eligibility {
+      isEligible
+      reason
+      existingContractId
+    }
+    fields {
+      id
+      type
+      title
+      options {
+        value
+        title
+        isSelectable
+        additionalInfo
+      }
+      defaultValues
+      minValue
+      maxValue
+    }
+  }
+}

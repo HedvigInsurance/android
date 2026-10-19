@@ -6,6 +6,7 @@ import coil3.ImageLoader
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.contract.ContractId
+import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.feature.insurances.data.AvailableAddon
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
@@ -28,7 +29,7 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEntries(
   backstack: Backstack,
   onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
-  openCrossSellUrl: (String) -> Unit,
+  openCrossSell: (CrossSell) -> Unit,
   startMovingFlow: () -> Unit,
   onNavigateToStartChangeTier: (contractId: String, isPaymentProtection: Boolean) -> Unit,
   startTerminationFlow: (cancelInsuranceData: CancelInsuranceData) -> Unit,
@@ -50,7 +51,7 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEntries(
       onInsuranceCardClick = dropUnlessResumed { contractId: String ->
         backstack.add(InsuranceContractDetailKey(contractId))
       },
-      onCrossSellClick = dropUnlessResumed { url: String -> openCrossSellUrl(url) },
+      onCrossSellClick = dropUnlessResumed { crossSell: CrossSell -> openCrossSell(crossSell) },
       navigateToCancelledInsurances = dropUnlessResumed {
         backstack.add(TerminatedInsurancesKey)
       },

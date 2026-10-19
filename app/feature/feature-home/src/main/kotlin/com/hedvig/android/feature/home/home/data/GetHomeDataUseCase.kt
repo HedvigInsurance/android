@@ -24,6 +24,7 @@ import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
+import com.hedvig.android.data.contract.InAppProduct
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
@@ -338,6 +339,7 @@ internal class GetHomeDataUseCaseImpl(
           description = pillowImageLarge.alt,
         ),
         buttonText = this.buttonTitle,
+        inAppProduct = inAppProduct?.toInAppProduct(),
       )
     }
   }
@@ -501,4 +503,10 @@ fun <T1, T2, T3, T4, T5, T6, R> combine(
     args[4] as T5,
     args[5] as T6,
   )
+}
+
+private fun octopus.type.InAppProduct.toInAppProduct(): InAppProduct? = when (this) {
+  octopus.type.InAppProduct.ACCIDENT -> InAppProduct.ACCIDENT
+  octopus.type.InAppProduct.PAYMENT_PROTECTION -> InAppProduct.PAYMENT_PROTECTION
+  octopus.type.InAppProduct.UNKNOWN__ -> null
 }

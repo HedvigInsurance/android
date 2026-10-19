@@ -4,12 +4,12 @@ import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.contract.InAppProduct
 import com.hedvig.android.data.productvariant.InsurableLimit
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument.InsuranceDocumentType
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.data.productvariant.ProductVariantPeril
-import com.hedvig.android.feature.inapppurchase.navigation.InAppProduct
 import kotlinx.datetime.LocalDate
 
 internal const val MockNetworkDelay = 600L

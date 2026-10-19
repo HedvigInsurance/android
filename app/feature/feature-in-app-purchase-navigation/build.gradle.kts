@@ -14,11 +14,8 @@ kotlin {
     commonMain.dependencies {
       implementation(libs.kotlinx.serialization.core)
       implementation(projects.coreCommonPublic)
+      implementation(projects.dataContract)
       implementation(projects.navigationCommon)
-    }
-    commonTest.dependencies {
-      implementation(libs.assertK)
-      implementation(libs.kotlin.test)
     }
   }
 }
