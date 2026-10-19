@@ -4,12 +4,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -94,7 +97,7 @@ private fun InAppPurchaseSummaryScreen(
   when (val signingState = uiState.signingState) {
     is SigningState.AwaitingBankId -> AwaitingBankIdSignature(signingState)
 
-    SigningState.Creating -> CreatingInsurance()
+    is SigningState.Creating -> CreatingInsurance()
 
     SigningState.Idle,
     SigningState.Starting,
@@ -247,7 +250,9 @@ private fun AwaitingBankIdSignature(signingState: SigningState.AwaitingBankId) {
   Surface(color = HedvigTheme.colorScheme.backgroundPrimary, modifier = Modifier.fillMaxSize()) {
     Column(
       horizontalAlignment = Alignment.CenterHorizontally,
-      modifier = Modifier.padding(16.dp),
+      modifier = Modifier
+        .windowInsetsPadding(WindowInsets.safeDrawing)
+        .padding(16.dp),
     ) {
       Spacer(Modifier.weight(1f))
       BankIdQrCode(liveQrCodeData = signingState.liveQrCodeData, modifier = Modifier.size(180.dp))
@@ -286,7 +291,9 @@ private fun CreatingInsurance() {
     Column(
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.Center,
-      modifier = Modifier.padding(16.dp),
+      modifier = Modifier
+        .windowInsetsPadding(WindowInsets.safeDrawing)
+        .padding(16.dp),
     ) {
       HedvigCircularProgressIndicator()
       Spacer(Modifier.height(16.dp))
@@ -335,7 +342,7 @@ private class SummaryUiStateProvider : CollectionPreviewParameterProvider<InAppP
     SigningState.Idle,
     SigningState.Starting,
     SigningState.AwaitingBankId("signing", "token", liveQrCodeData = "bankid.preview"),
-    SigningState.Creating,
+    SigningState.Creating("signing"),
     SigningState.Failed(InAppPurchaseMocks.QUOTE_NO_LONGER_VALID_MESSAGE),
   ).map { signingState ->
     InAppPurchaseSummaryUiState(

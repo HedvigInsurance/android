@@ -2806,6 +2806,13 @@ input InAppPurchaseQuoteInput {
   product: InAppProduct!
   fields: [InAppPurchaseFieldInput!]!
   attribution: PriceIntentConfirmAttributionInput
+  """
+  Discount code the member entered. Send it with every quote: each quote sets the discount from this input
+  alone, so leaving it out or sending an empty string removes a code sent earlier.
+  A valid code replaces the Accident discount the app's cross-sell banner promises, since only one discount
+  applies. An invalid code returns a field error with `fieldId: "campaignCode"` and no offers.
+  """
+  campaignCode: String
 }
 type InAppPurchaseQuoteOutput {
   """

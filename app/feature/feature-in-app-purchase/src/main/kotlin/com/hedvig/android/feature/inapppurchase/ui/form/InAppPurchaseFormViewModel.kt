@@ -50,11 +50,22 @@ internal class InAppPurchaseFormPresenter(
   override fun MoleculePresenterScope<InAppPurchaseFormEvent>.present(
     lastState: InAppPurchaseFormUiState,
   ): InAppPurchaseFormUiState {
+    val lastContent = lastState as? InAppPurchaseFormUiState.Content
     var loadIteration by remember { mutableIntStateOf(0) }
     var submitIteration by remember { mutableIntStateOf(0) }
-    var form: LoadedForm by remember { mutableStateOf(LoadedForm.Loading) }
-    var values: Map<String, String?> by remember { mutableStateOf(emptyMap()) }
-    var fieldErrors: Map<String, String> by remember { mutableStateOf(emptyMap()) }
+    var form: LoadedForm by remember { mutableStateOf(lastState.toLoadedForm()) }
+    var values: Map<String, String?> by remember {
+      mutableStateOf(lastContent?.fields?.associate { it.field.id to it.value }.orEmpty())
+    }
+    var fieldErrors: Map<String, String> by remember {
+      mutableStateOf(
+        lastContent?.fields?.mapNotNull { field ->
+          field.errorMessage?.let { field.field.id to it }
+        }?.toMap().orEmpty(),
+      )
+    }
+    var campaignCode by remember { mutableStateOf(lastContent?.campaignCode.orEmpty()) }
+    var campaignCodeError: String? by remember { mutableStateOf(lastContent?.campaignCodeError) }
     var isQuoting by remember { mutableStateOf(false) }
     var quoteError: QuoteError? by remember { mutableStateOf(null) }
 
@@ -67,6 +78,11 @@ internal class InAppPurchaseFormPresenter(
         is InAppPurchaseFormEvent.UpdateField -> {
           values = values + (event.fieldId to event.value)
           fieldErrors = fieldErrors - event.fieldId
+        }
+
+        is InAppPurchaseFormEvent.UpdateCampaignCode -> {
+          campaignCode = event.code
+          campaignCodeError = null
         }
 
         InAppPurchaseFormEvent.Submit -> {
@@ -84,6 +100,8 @@ internal class InAppPurchaseFormPresenter(
     }
 
     LaunchedEffect(loadIteration) {
+      // A restarted presenter keeps the form it already showed, with the member's input.
+      if (loadIteration == 0 && form is LoadedForm.Loaded) return@LaunchedEffect
       form = LoadedForm.Loading
       getInAppPurchaseFormUseCase.invoke(product).fold(
         ifLeft = { form = LoadedForm.Failure },
@@ -102,12 +120,19 @@ internal class InAppPurchaseFormPresenter(
       val fieldInputs = loadedForm.fields.map { field ->
         InAppPurchaseFieldInput(fieldId = field.id, values = listOfNotNull(values[field.id]))
       }
-      quoteInAppPurchaseUseCase.invoke(product, fieldInputs).fold(
+      quoteInAppPurchaseUseCase.invoke(product, fieldInputs, campaignCode).fold(
         ifLeft = { quoteError = QuoteError(it.message) },
         ifRight = { quote ->
           when (quote) {
             is InAppPurchaseQuote.InvalidFields -> {
-              fieldErrors = quote.errors.associate { it.fieldId to it.message }
+              val formFieldIds = loadedForm.fields.map { it.id }.toSet()
+              val (formFieldErrors, otherErrors) = quote.errors.partition { it.fieldId in formFieldIds }
+              fieldErrors = formFieldErrors.associate { it.fieldId to it.message }
+              campaignCodeError = quote.campaignCodeError
+              // An error for a field this form doesn't show still has to reach the member.
+              if (otherErrors.isNotEmpty()) {
+                quoteError = QuoteError(otherErrors.joinToString("\n") { it.message })
+              }
             }
 
             is InAppPurchaseQuote.Quoted -> {
@@ -136,6 +161,8 @@ internal class InAppPurchaseFormPresenter(
           fields = currentForm.form.fields.map { field ->
             FormFieldUiState(field = field, value = values[field.id], errorMessage = fieldErrors[field.id])
           },
+          campaignCode = campaignCode,
+          campaignCodeError = campaignCodeError,
           isQuoting = isQuoting,
           quoteError = quoteError,
         )
@@ -152,6 +179,20 @@ private sealed interface LoadedForm {
   data class Loaded(val form: InAppPurchaseForm) : LoadedForm
 }
 
+private fun InAppPurchaseFormUiState.toLoadedForm(): LoadedForm = when (this) {
+  is InAppPurchaseFormUiState.Content -> LoadedForm.Loaded(
+    InAppPurchaseForm(product, InAppPurchaseEligibility.Eligible, fields.map { it.field }),
+  )
+
+  is InAppPurchaseFormUiState.NotEligible -> LoadedForm.Loaded(
+    InAppPurchaseForm(product, InAppPurchaseEligibility.NotEligible(reason, existingContractId), emptyList()),
+  )
+
+  InAppPurchaseFormUiState.Loading,
+  InAppPurchaseFormUiState.Failure,
+  -> LoadedForm.Loading
+}
+
 /**
  * The value as sent in [InAppPurchaseFieldInput.values]. A single select without a default starts on its first option.
  */
@@ -165,6 +206,8 @@ internal sealed interface InAppPurchaseFormEvent {
   data object Reload : InAppPurchaseFormEvent
 
   data class UpdateField(val fieldId: String, val value: String?) : InAppPurchaseFormEvent
+
+  data class UpdateCampaignCode(val code: String) : InAppPurchaseFormEvent
 
   data object Submit : InAppPurchaseFormEvent
 
@@ -186,6 +229,8 @@ internal sealed interface InAppPurchaseFormUiState {
   data class Content(
     val product: InAppPurchaseProduct,
     val fields: List<FormFieldUiState>,
+    val campaignCode: String,
+    val campaignCodeError: String?,
     val isQuoting: Boolean,
     val quoteError: QuoteError?,
   ) : InAppPurchaseFormUiState {

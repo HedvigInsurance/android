@@ -1,5 +1,9 @@
-mutation InAppPurchaseQuote($product: InAppProduct!, $fields: [InAppPurchaseFieldInput!]!) {
-  inAppPurchaseQuote(input: { product: $product, fields: $fields }) {
+mutation InAppPurchaseQuote(
+  $product: InAppProduct!
+  $fields: [InAppPurchaseFieldInput!]!
+  $campaignCode: String
+) {
+  inAppPurchaseQuote(input: { product: $product, fields: $fields, campaignCode: $campaignCode }) {
     shopSessionId
     offers {
       id

@@ -108,8 +108,13 @@ internal sealed interface InAppPurchaseQuote {
     val offers: List<InAppPurchaseOffer>,
   ) : InAppPurchaseQuote
 
+  /**
+   * [errors] are about the form's fields and [campaignCodeError] about the discount code. The code is only checked
+   * once the fields are valid.
+   */
   data class InvalidFields(
     val errors: List<InAppPurchaseFieldError>,
+    val campaignCodeError: String?,
   ) : InAppPurchaseQuote
 }
 

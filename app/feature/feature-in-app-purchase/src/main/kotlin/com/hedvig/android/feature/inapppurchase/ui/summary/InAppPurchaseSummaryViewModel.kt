@@ -55,7 +55,12 @@ internal class InAppPurchaseSummaryPresenter(
     lastState: InAppPurchaseSummaryUiState,
   ): InAppPurchaseSummaryUiState {
     var signIteration by remember { mutableIntStateOf(0) }
-    var signingState: SigningState by remember { mutableStateOf(lastState.signingState) }
+    // A restart in the middle of starting a signing can't tell whether it started, so it goes back to the summary.
+    var signingState: SigningState by remember {
+      mutableStateOf(lastState.signingState.takeUnless { it == SigningState.Starting } ?: SigningState.Idle)
+    }
+    // Polling is keyed on the signing rather than on the Sign tap, so it resumes when the presenter restarts.
+    var ongoingSigningId: String? by remember { mutableStateOf(lastState.signingState.ongoingSigningId) }
 
     CollectEvents { event ->
       when (event) {
@@ -64,46 +69,52 @@ internal class InAppPurchaseSummaryPresenter(
       }
     }
 
+    val onSigning: (InAppPurchaseSigning) -> Unit = { signing ->
+      when (signing.status) {
+        InAppPurchaseSigningStatus.PENDING -> {
+          signingState = SigningState.AwaitingBankId(signing.id, signing.autoStartToken, signing.liveQrCodeData)
+          ongoingSigningId = signing.id
+        }
+
+        InAppPurchaseSigningStatus.CREATING -> {
+          signingState = SigningState.Creating(signing.id)
+          ongoingSigningId = signing.id
+        }
+
+        InAppPurchaseSigningStatus.SIGNED -> {
+          ongoingSigningId = null
+          backstack.navigateAndPopUpTo<InAppPurchaseKey>(
+            InAppPurchaseSuccessKey(params.offer.startDate),
+            inclusive = true,
+          )
+        }
+
+        InAppPurchaseSigningStatus.FAILED -> {
+          ongoingSigningId = null
+          signingState = SigningState.Failed(signing.failureMessage)
+        }
+      }
+    }
+
     LaunchedEffect(signIteration) {
       if (signIteration == 0) return@LaunchedEffect
       signingState = SigningState.Starting
-      var signing: InAppPurchaseSigning = signInAppPurchaseUseCase.invoke(params.shopSessionId, params.offer.id).fold(
-        ifLeft = {
-          signingState = SigningState.Failed(it.message)
-          return@LaunchedEffect
-        },
-        ifRight = { it },
+      signInAppPurchaseUseCase.invoke(params.shopSessionId, params.offer.id).fold(
+        ifLeft = { signingState = SigningState.Failed(it.message) },
+        ifRight = onSigning,
       )
+    }
+
+    LaunchedEffect(ongoingSigningId) {
+      val signingId = ongoingSigningId ?: return@LaunchedEffect
       while (true) {
-        when (signing.status) {
-          InAppPurchaseSigningStatus.PENDING -> {
-            signingState = SigningState.AwaitingBankId(signing.id, signing.autoStartToken, signing.liveQrCodeData)
-          }
-
-          InAppPurchaseSigningStatus.CREATING -> {
-            signingState = SigningState.Creating
-          }
-
-          InAppPurchaseSigningStatus.SIGNED -> {
-            backstack.navigateAndPopUpTo<InAppPurchaseKey>(
-              InAppPurchaseSuccessKey(params.offer.startDate),
-              inclusive = true,
-            )
-            return@LaunchedEffect
-          }
-
-          InAppPurchaseSigningStatus.FAILED -> {
-            signingState = SigningState.Failed(signing.failureMessage)
-            return@LaunchedEffect
-          }
-        }
         delay(1.seconds)
-        signing = getInAppPurchaseSigningUseCase.invoke(signing.id).fold(
+        getInAppPurchaseSigningUseCase.invoke(signingId).fold(
           ifLeft = {
+            ongoingSigningId = null
             signingState = SigningState.Failed(it.message)
-            return@LaunchedEffect
           },
-          ifRight = { it },
+          ifRight = onSigning,
         )
       }
     }
@@ -135,7 +146,7 @@ internal sealed interface SigningState {
     val liveQrCodeData: String?,
   ) : SigningState
 
-  data object Creating : SigningState
+  data class Creating(val signingId: String) : SigningState
 
   /**
    * [message] is the backend's user-facing explanation, null for a network failure.
@@ -144,3 +155,15 @@ internal sealed interface SigningState {
 
   val canStartSigning: Boolean get() = this is Idle || this is Failed
 }
+
+private val SigningState.ongoingSigningId: String?
+  get() = when (this) {
+    is SigningState.AwaitingBankId -> signingId
+
+    is SigningState.Creating -> signingId
+
+    SigningState.Idle,
+    SigningState.Starting,
+    is SigningState.Failed,
+    -> null
+  }

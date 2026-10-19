@@ -146,7 +146,11 @@ internal object InAppPurchaseMocks {
         }
       }
     }
-    if (errors.isNotEmpty() || startDate == null) return InAppPurchaseQuote.InvalidFields(errors)
+    if (errors.isNotEmpty() ||
+      startDate == null
+    ) {
+      return InAppPurchaseQuote.InvalidFields(errors, campaignCodeError = null)
+    }
     return when (product) {
       InAppProduct.ACCIDENT -> accidentQuote(numberCoInsured = coInsured ?: 0, startDate = startDate)
       InAppProduct.PAYMENT_PROTECTION -> paymentProtectionQuote(startDate)

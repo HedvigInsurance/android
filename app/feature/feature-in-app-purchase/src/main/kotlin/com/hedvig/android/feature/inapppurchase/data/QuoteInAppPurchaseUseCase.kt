@@ -5,6 +5,7 @@ import arrow.core.raise.either
 import arrow.core.raise.ensure
 import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
@@ -19,12 +20,14 @@ import dev.zacsweers.metro.SingleIn
 import octopus.InAppPurchaseQuoteMutation
 
 /**
- * Prices the filled-in form. Call again after any value changes, it opens a new set of offers each time.
+ * Prices the filled-in form. Call again after any value changes, it opens a new set of offers each time. Pass
+ * [campaignCode] on every call, a quote without it drops a code applied by an earlier one.
  */
 internal interface QuoteInAppPurchaseUseCase {
   suspend fun invoke(
     product: InAppProduct,
     fields: List<InAppPurchaseFieldInput>,
+    campaignCode: String?,
   ): Either<ErrorMessage, InAppPurchaseQuote>
 }
 
@@ -37,6 +40,7 @@ internal class QuoteInAppPurchaseUseCaseImpl(
   override suspend fun invoke(
     product: InAppProduct,
     fields: List<InAppPurchaseFieldInput>,
+    campaignCode: String?,
   ): Either<ErrorMessage, InAppPurchaseQuote> {
     return either {
       val output = apolloClient
@@ -44,6 +48,7 @@ internal class QuoteInAppPurchaseUseCaseImpl(
           InAppPurchaseQuoteMutation(
             product = product.toOctopus(),
             fields = fields.map { octopus.type.InAppPurchaseFieldInput(fieldId = it.fieldId, values = it.values) },
+            campaignCode = Optional.presentIfNotNull(campaignCode?.trim()?.takeIf { it.isNotEmpty() }),
           ),
         )
         .safeExecute()
@@ -53,8 +58,10 @@ internal class QuoteInAppPurchaseUseCaseImpl(
         .inAppPurchaseQuote
       output.userError?.let { raise(ErrorMessage(it.message)) }
       if (output.fieldErrors.isNotEmpty()) {
+        val (campaignCodeErrors, fieldErrors) = output.fieldErrors.partition { it.fieldId == CampaignCodeFieldId }
         return@either InAppPurchaseQuote.InvalidFields(
-          output.fieldErrors.map { InAppPurchaseFieldError(it.fieldId, it.message) },
+          errors = fieldErrors.map { InAppPurchaseFieldError(it.fieldId, it.message) },
+          campaignCodeError = campaignCodeErrors.firstOrNull()?.message,
         )
       }
       val shopSessionId = ensureNotNull(output.shopSessionId) {
@@ -94,3 +101,5 @@ internal class QuoteInAppPurchaseUseCaseImpl(
     }
   }
 }
+
+private const val CampaignCodeFieldId = "campaignCode"

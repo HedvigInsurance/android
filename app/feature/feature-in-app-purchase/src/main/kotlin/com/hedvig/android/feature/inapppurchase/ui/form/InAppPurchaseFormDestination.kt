@@ -8,9 +8,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -25,6 +32,8 @@ import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProg
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigTextField
+import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
@@ -39,9 +48,11 @@ import com.hedvig.android.feature.inapppurchase.ui.form.InAppPurchaseFormUiState
 import com.hedvig.android.feature.inapppurchase.ui.form.InAppPurchaseFormUiState.NotEligible
 import hedvig.resources.GENERAL_ERROR_BODY
 import hedvig.resources.GENERAL_RETRY
+import hedvig.resources.REFERRAL_ADDCOUPON_INPUTPLACEHOLDER
 import hedvig.resources.Res
 import hedvig.resources.general_close_button
 import hedvig.resources.something_went_wrong
+import kotlinx.coroutines.flow.drop
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -61,6 +72,7 @@ internal fun InAppPurchaseFormDestination(
     navigateToContract = { contractId -> navigateToContract(contractId) },
     onReload = { viewModel.emit(InAppPurchaseFormEvent.Reload) },
     onValueChange = { fieldId, value -> viewModel.emit(InAppPurchaseFormEvent.UpdateField(fieldId, value)) },
+    onCampaignCodeChange = { code -> viewModel.emit(InAppPurchaseFormEvent.UpdateCampaignCode(code)) },
     onSubmit = { viewModel.emit(InAppPurchaseFormEvent.Submit) },
     dismissQuoteError = { viewModel.emit(InAppPurchaseFormEvent.DismissQuoteError) },
   )
@@ -75,6 +87,7 @@ private fun InAppPurchaseFormScreen(
   navigateToContract: (contractId: String) -> Unit,
   onReload: () -> Unit,
   onValueChange: (fieldId: String, value: String?) -> Unit,
+  onCampaignCodeChange: (String) -> Unit,
   onSubmit: () -> Unit,
   dismissQuoteError: () -> Unit,
 ) {
@@ -89,7 +102,15 @@ private fun InAppPurchaseFormScreen(
 
     is NotEligible -> NotEligibleScreen(uiState, navigateUp, popBackstack, navigateToContract)
 
-    is Content -> FormScreen(uiState, navigateUp, onLearnMore, onValueChange, onSubmit, dismissQuoteError)
+    is Content -> FormScreen(
+      uiState,
+      navigateUp,
+      onLearnMore,
+      onValueChange,
+      onCampaignCodeChange,
+      onSubmit,
+      dismissQuoteError,
+    )
   }
 }
 
@@ -99,6 +120,7 @@ private fun FormScreen(
   navigateUp: () -> Unit,
   onLearnMore: () -> Unit,
   onValueChange: (fieldId: String, value: String?) -> Unit,
+  onCampaignCodeChange: (String) -> Unit,
   onSubmit: () -> Unit,
   dismissQuoteError: () -> Unit,
 ) {
@@ -127,6 +149,29 @@ private fun FormScreen(
           modifier = Modifier.fillMaxWidth(),
         )
       }
+      val campaignCodeState = rememberTextFieldState(content.campaignCode)
+      LaunchedEffect(campaignCodeState) {
+        snapshotFlow { campaignCodeState.text.toString() }
+          .drop(1)
+          .collect { onCampaignCodeChange(it) }
+      }
+      HedvigTextField(
+        state = campaignCodeState,
+        labelText = stringResource(Res.string.REFERRAL_ADDCOUPON_INPUTPLACEHOLDER),
+        textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
+        enabled = !content.isQuoting,
+        errorState = if (content.campaignCodeError != null) {
+          HedvigTextFieldDefaults.ErrorState.Error.WithMessage(content.campaignCodeError)
+        } else {
+          HedvigTextFieldDefaults.ErrorState.NoError
+        },
+        keyboardOptions = KeyboardOptions(
+          capitalization = KeyboardCapitalization.Characters,
+          imeAction = ImeAction.Done,
+        ),
+        lineLimits = TextFieldLineLimits.SingleLine,
+        modifier = Modifier.fillMaxWidth(),
+      )
     }
     Spacer(Modifier.height(16.dp))
     HedvigButton(
@@ -220,7 +265,7 @@ private fun PreviewInAppPurchaseFormScreen(
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      InAppPurchaseFormScreen(uiState, {}, {}, {}, {}, {}, { _, _ -> }, {}, {})
+      InAppPurchaseFormScreen(uiState, {}, {}, {}, {}, {}, { _, _ -> }, {}, {}, {})
     }
   }
 }
@@ -259,6 +304,8 @@ private class InAppPurchaseFormUiStateProvider : CollectionPreviewParameterProvi
 private fun previewContent(form: InAppPurchaseForm) = Content(
   product = form.product,
   fields = form.fields.map { FormFieldUiState(field = it, value = it.defaultValueOrNull(), errorMessage = null) },
+  campaignCode = "",
+  campaignCodeError = null,
   isQuoting = false,
   quoteError = null,
 )
