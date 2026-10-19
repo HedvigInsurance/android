@@ -42,9 +42,11 @@ Current list of convention plugins:
 - [`hedvig.kotlin.library`](convention/src/main/kotlin/KotlinLibraryConventionPlugin.kt),
   Configures pure Kotlin options without any Android references.
 - [`hedvig.multiplatform.library`](convention/src/main/kotlin/KotlinMultiplatformLibraryConventionPlugin.kt),
-  Configures Kotlin multiplatform options without with android + TODO TARGETS configured.
+  KMP module with a JVM target. Not exported to iOS.
+- `hedvig.multiplatform.library.ios` (declared in [`KotlinMultiplatformLibraryConventionPlugin.kt`](convention/src/main/kotlin/KotlinMultiplatformLibraryConventionPlugin.kt)),
+  KMP module that `:umbrella` exports to iOS, directly or transitively. Adds the iOS targets.
 - [`hedvig.multiplatform.library.android`](convention/src/main/kotlin/KotlinMultiplatformAndroidLibraryConventionPlugin.kt),
-  Add the android target to a module already configured with `hedvig.multiplatform.library`
+  Adds the Android target to a module already configured with `hedvig.multiplatform.library`.
 - [`hedvig.android.application.compose`](convention/src/main/kotlin/ApplicationComposeConventionPlugin.kt),
   [`hedvig.android.library.compose`](convention/src/main/kotlin/LibraryComposeConventionPlugin.kt):
   Configures Jetpack Compose options
