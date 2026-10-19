@@ -1,7 +1,5 @@
 package com.hedvig.android.feature.payin.account.ui.selectmethod
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,6 +30,7 @@ import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.payin.account.ui.components.PayinMethodHandoverIllustration
 import com.hedvig.android.feature.payin.account.ui.components.PayinProviderPillow
 import hedvig.resources.ONBOARDING_CONNECT_PAYMENT_BANK_LABEL
+import hedvig.resources.PAYIN_INFO_BOX
 import hedvig.resources.PAYMENTS_INVOICE
 import hedvig.resources.PAYMENT_CONNECT_SUBTITLE
 import hedvig.resources.PAYMENT_CONNECT_TITLE
@@ -39,7 +38,6 @@ import hedvig.resources.PAYMENT_OPTION_INVOICE_SUBTITLE
 import hedvig.resources.PAYMENT_OPTION_SWISH_SUBTITLE
 import hedvig.resources.PAYMENT_OPTION_TRUSTLY_SUBTITLE
 import hedvig.resources.Res
-import hedvig.resources.SWISH_INFO_BOX
 import hedvig.resources.general_cancel_button
 import hedvig.resources.swish
 import org.jetbrains.compose.resources.stringResource
@@ -127,6 +125,15 @@ private fun ColumnScope.SelectPayinMethodContent(
     modifier = Modifier.align(Alignment.CenterHorizontally),
   )
   Spacer(Modifier.weight(1f))
+  HedvigNotificationCard(
+    message = stringResource(Res.string.PAYIN_INFO_BOX),
+    priority = NotificationPriority.InfoInline,
+    withIcon = false,
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp),
+  )
+  Spacer(Modifier.height(8.dp))
   RadioGroup(
     options = uiState.availableProviders.mapNotNull { it.toRadioOption() },
     selectedOption = uiState.selectedProvider?.let { RadioOptionId(it.rawValue) },
@@ -137,18 +144,6 @@ private fun ColumnScope.SelectPayinMethodContent(
     optionIcon = { PayinProviderPillow(PaymentProvider.fromRawValue(it.id)) },
     modifier = Modifier.padding(horizontal = 16.dp),
   )
-  AnimatedVisibility(visible = uiState.selectedProvider == PaymentProvider.Swish) {
-    Column {
-      Spacer(Modifier.height(8.dp))
-      HedvigNotificationCard(
-        message = stringResource(Res.string.SWISH_INFO_BOX),
-        priority = NotificationPriority.InfoInline,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      )
-    }
-  }
   Spacer(Modifier.height(16.dp))
   HedvigButton(
     onClick = onSubmitSelected,

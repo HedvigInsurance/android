@@ -681,6 +681,7 @@
   <string name="ONBOARDING_WELCOME_TITLE">Welcome to Hedvig</string>
   <string name="OPTOUT_FIELD_ENTER_HERE">Enter here</string>
   <string name="OPTOUT_FIELD_PLACEHOLDER">Don\'t remember</string>
+  <string name="PAYIN_INFO_BOX">By connecting a payment method, you agree that your premium will be charged automatically each month. We\'ll notify you in the Hedvig app before each payment.</string>
   <string name="PAYMENTS__CAMPAIGNS">Campaigns</string>
   <string name="PAYMENTS_ACCOUNT">Account</string>
   <string name="PAYMENTS_ADD_CAMPAIGN_CODE">Add campaign code</string>
