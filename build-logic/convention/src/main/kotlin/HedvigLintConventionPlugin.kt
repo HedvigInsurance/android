@@ -7,7 +7,7 @@ import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.project
 import org.gradle.kotlin.dsl.the
 
 class HedvigLintConventionPlugin : Plugin<Project> {
@@ -25,18 +25,33 @@ class HedvigLintConventionPlugin : Plugin<Project> {
         .resolve("lint-baseline")
         .resolve("lint-baseline-$moduleName-jvm.xml")
       val lintXmlPath: File = rootProject.projectDir.resolve("hedvig-lint").resolve("lint.xml")
-      // The KMP-android plugin only registers its Android Lint tasks (`lintAndroidMain`,
-      // `updateLintBaselineAndroidMain`, ...) when `com.android.lint` is also applied, so it is applied here.
-      // That androidMain pass analyses commonMain, jvmAndAndroidMain and androidMain, and is configured by
-      // the `lint {}` block in `finalizeDsl`. The same plugin also adds a `lintJvm` pass, which only sees
-      // jvmMain and is configured by the standalone plugin's `lint` extension. Both passes use `lint.xml`.
-      // The JVM pass has a baseline file of its own, so `updateLintBaselineJvm` does not overwrite the
-      // Android pass's baseline.
-      pluginManager.withPlugin(libs.plugins.androidLibraryMultiplatform.get().pluginId) {
+      val lintPluginId = libs.plugins.lintGradlePlugin.get().pluginId
+
+      // Every setup below reacts to a plugin being present, never to one being absent, so it does not
+      // depend on the order a module applies its plugins in.
+      //
+      // A plain JVM module gets the standalone `com.android.lint` plugin, which runs on its main source set.
+      pluginManager.withPlugin(libs.plugins.kotlinJvm.get().pluginId) {
+        pluginManager.apply(lintPluginId)
+        configure<Lint> { configure(lintXmlPath, lintBaselineFile) }
+      }
+
+      // A KMP module also gets the standalone plugin. It adds a `lintJvm` pass, which only sees jvmMain and
+      // is configured by the standalone plugin's `lint` extension. When the module also has the KMP-android
+      // plugin, that plugin only registers its Android Lint tasks (`lintAndroidMain`,
+      // `updateLintBaselineAndroidMain`, ...) because `com.android.lint` is applied, whichever of the two
+      // comes first. The JVM pass has a baseline file of its own, so `updateLintBaselineJvm` does not
+      // overwrite the Android pass's baseline.
+      pluginManager.withPlugin(libs.plugins.kotlinMultiplatform.get().pluginId) {
         if (moduleName !in kmpModulesWithoutAndroidLint) {
-          pluginManager.apply(libs.plugins.lintGradlePlugin.get().pluginId)
+          pluginManager.apply(lintPluginId)
           configure<Lint> { configure(lintXmlPath, lintBaselineJvmFile) }
         }
+      }
+
+      // The KMP-android pass analyses commonMain, jvmAndAndroidMain and androidMain, and is configured by
+      // the `lint {}` block in `finalizeDsl`.
+      pluginManager.withPlugin(libs.plugins.androidLibraryMultiplatform.get().pluginId) {
         configure<KotlinMultiplatformAndroidComponentsExtension> {
           finalizeDsl {
             it.lint { configure(lintXmlPath, lintBaselineFile) }
@@ -52,21 +67,10 @@ class HedvigLintConventionPlugin : Plugin<Project> {
         configure<LibraryExtension> { lint { configure(lintXmlPath, lintBaselineFile) } }
       }
 
-      // All of the module's plugins are applied by `afterEvaluate`, so a module with none of the Android
-      // plugins gets the standalone lint plugin regardless of the order its plugins are applied in.
-      afterEvaluate {
-        val hasAndroidPlugin = listOf(
-          libs.plugins.androidLibraryMultiplatform,
-          libs.plugins.androidApplication,
-          libs.plugins.androidLibrary,
-        ).any { pluginManager.hasPlugin(it.get().pluginId) }
-        if (!hasAndroidPlugin) {
-          pluginManager.apply(libs.plugins.lintGradlePlugin.get().pluginId)
-          configure<Lint> { configure(lintXmlPath, lintBaselineFile) }
-        }
-        dependencies {
-          add("lintChecks", project(":hedvig-lint"))
-        }
+      // `lintChecks` is created by whichever of the plugins above sets up lint, so the custom checks are
+      // added as soon as it exists.
+      configurations.matching { it.name == "lintChecks" }.configureEach {
+        target.dependencies.add(name, target.dependencies.project(":hedvig-lint"))
       }
     }
   }
