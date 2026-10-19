@@ -681,6 +681,7 @@
   <string name="ONBOARDING_WELCOME_TITLE">Välkommen till Hedvig</string>
   <string name="OPTOUT_FIELD_ENTER_HERE">Fyll i här</string>
   <string name="OPTOUT_FIELD_PLACEHOLDER">Minns inte</string>
+  <string name="PAYIN_INFO_BOX">Genom att koppla en betalmetod godkänner du att din premie dras automatiskt varje månad. Vi meddelar dig i Hedvig-appen inför varje betalning.</string>
   <string name="PAYMENTS__CAMPAIGNS">Kampanjer</string>
   <string name="PAYMENTS_ACCOUNT">Konto</string>
   <string name="PAYMENTS_ADD_CAMPAIGN_CODE">Lägg till kampanjkod</string>
@@ -710,6 +711,8 @@
   <string name="PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL">Betalningshistorik</string>
   <string name="PAYMENTS_PAYMENT_IN_PROGRESS">Betalning pågår</string>
   <string name="PAYMENTS_PAYMENT_IN_PROGRESS_DESCRIPTION">Det kan ta upp till 5 bankdagar innan betalningen registreras</string>
+  <string name="PAYMENTS_PAYMENT_IN_PROGRESS_SWISH_DESCRIPTION">Swish går oftast igenom direkt, det kan ta några minuter innan betalningen syns i appen</string>
+  <string name="PAYMENTS_PAYMENT_IN_PROGRESS_TRUSTLY_DESCRIPTION">Det kan ta upp till 5 bankdagar innan din betalning behandlas</string>
   <string name="PAYMENTS_PAYMENT_METHOD">Betalningsmetod</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE">Att betala: %1$s</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_BODY">Vi kunde inte dra betalningen från ditt bankkonto. Betala för att undvika avbrott i ditt skydd.</string>
@@ -776,6 +779,9 @@
   <string name="PAYMENT_TRUSTLY_FAILURE_TITLE">Kopplingen misslyckades</string>
   <string name="PAYMENT_TRUSTLY_SUCCESS_SUBTITLE">Vi meddelar dig i appen varje månad</string>
   <string name="PAYOUT_ADD_PAYOUT_METHOD">Lägg till utbetalningsmetod</string>
+  <string name="PAYOUT_CHOOSE_METHOD_SUBTITLE">Används för dina utbetalningar</string>
+  <string name="PAYOUT_CONFIRMATION_INFO">Framöver betalar vi ut via %1$s</string>
+  <string name="PAYOUT_CONFIRMATION_TITLE">Bekräfta utbetalningsmetod</string>
   <string name="PAYOUT_METHOD_INVOICE_DESCRIPTION">Direktutbetalning via Faktura</string>
   <string name="PAYOUT_METHOD_SWISH_DESCRIPTION">Snabb utbetalning med Swish</string>
   <string name="PAYOUT_METHOD_TRUSTLY_DESCRIPTION">Utbetalning via Trustly</string>

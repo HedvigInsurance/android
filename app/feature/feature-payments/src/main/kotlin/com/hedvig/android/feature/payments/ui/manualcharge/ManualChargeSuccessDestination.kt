@@ -14,9 +14,11 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.EmptyState
@@ -33,12 +35,18 @@ import com.hedvig.android.design.system.hedvig.Surface
 import hedvig.resources.MANUAL_CHARGE_CANCELLATION_WARNING
 import hedvig.resources.PAYMENTS_PAYMENT_IN_PROGRESS
 import hedvig.resources.PAYMENTS_PAYMENT_IN_PROGRESS_DESCRIPTION
+import hedvig.resources.PAYMENTS_PAYMENT_IN_PROGRESS_SWISH_DESCRIPTION
+import hedvig.resources.PAYMENTS_PAYMENT_IN_PROGRESS_TRUSTLY_DESCRIPTION
 import hedvig.resources.Res
 import hedvig.resources.general_close_button
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun ManualChargeSuccessDestination(showCancellationWarning: Boolean, popBackstack: () -> Unit) {
+internal fun ManualChargeSuccessDestination(
+  showCancellationWarning: Boolean,
+  primaryPayinProvider: PaymentProvider?,
+  popBackstack: () -> Unit,
+) {
   Column(
     modifier = Modifier
       .fillMaxSize()
@@ -55,7 +63,11 @@ internal fun ManualChargeSuccessDestination(showCancellationWarning: Boolean, po
       modifier = Modifier.fillMaxWidth(),
       text = stringResource(Res.string.PAYMENTS_PAYMENT_IN_PROGRESS),
       description = stringResource(
-        Res.string.PAYMENTS_PAYMENT_IN_PROGRESS_DESCRIPTION,
+        when (primaryPayinProvider) {
+          PaymentProvider.Swish -> Res.string.PAYMENTS_PAYMENT_IN_PROGRESS_SWISH_DESCRIPTION
+          PaymentProvider.Trustly -> Res.string.PAYMENTS_PAYMENT_IN_PROGRESS_TRUSTLY_DESCRIPTION
+          else -> Res.string.PAYMENTS_PAYMENT_IN_PROGRESS_DESCRIPTION
+        },
       ),
       iconStyle = if (showCancellationWarning) {
         EmptyStateDefaults.EmptyStateIconStyle.SUCCESS_WITH_WARNING
@@ -98,8 +110,29 @@ private fun ManualChargeSuccessDestinationPreview(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ManualChargeSuccessDestination(
         showCancellationWarning,
+        PaymentProvider.Trustly,
         {},
       )
     }
   }
 }
+
+@HedvigPreview
+@Composable
+private fun ManualChargeSuccessDestinationProviderPreview(
+  @PreviewParameter(PaymentProviderParameterProvider::class) primaryPayinProvider: PaymentProvider?,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ManualChargeSuccessDestination(
+        false,
+        primaryPayinProvider,
+        {},
+      )
+    }
+  }
+}
+
+private class PaymentProviderParameterProvider : CollectionPreviewParameterProvider<PaymentProvider?>(
+  listOf(PaymentProvider.Swish, PaymentProvider.Trustly, PaymentProvider.Invoice, null),
+)

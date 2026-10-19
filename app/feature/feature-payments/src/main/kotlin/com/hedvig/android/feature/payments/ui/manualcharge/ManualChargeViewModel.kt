@@ -10,6 +10,7 @@ import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.data.paying.member.provider
 import com.hedvig.android.feature.payments.data.GetManualChargeInfoUseCase
 import com.hedvig.android.feature.payments.data.ManualChargeInfo
 import com.hedvig.android.feature.payments.data.ManualChargeInfoResult
@@ -34,7 +35,7 @@ internal class ManualChargeViewModel(
     presenter = ManualChargePresenter(getManualChargeInfoUseCase, triggerManualCharge, backstack),
   )
 
-private class ManualChargePresenter(
+internal class ManualChargePresenter(
   private val getManualChargeInfoUseCase: GetManualChargeInfoUseCase,
   private val triggerManualCharge: TriggerManualChargeUseCase,
   private val backstack: Backstack,
@@ -74,6 +75,7 @@ private class ManualChargePresenter(
             backstack.navigateAndPopUpTo<ManualChargeKey>(
               ManualChargeSuccessKey(
                 showCancellationWarning = currentState.manualChargeInfo.showCancellationWarning,
+                primaryPayinProvider = currentState.manualChargeInfo.primaryPayinMethod?.provider,
               ),
               inclusive = true,
             )

@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.payments.navigation
 
+import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.navigation.common.HedvigNavKey
 import kotlinx.serialization.Serializable
 
@@ -12,6 +13,7 @@ internal data object DiscountsKey : HedvigNavKey
 @Serializable
 internal data class ManualChargeSuccessKey(
   val showCancellationWarning: Boolean,
+  val primaryPayinProvider: PaymentProvider?,
 ) : HedvigNavKey
 
 @Serializable

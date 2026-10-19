@@ -31,7 +31,8 @@ user in the loop, because it pushes to `master`, `develop` and a `release/` bran
 - **The Play Store build fails:** the release is still finished and tagged, as it is
   when done by hand. Fix it on `develop` through a normal PR, then cut the next
   version with `patch`.
-- **The script stops partway through:** do not rerun it. Check which of
-  `release/X.Y.Z`, the tag and the `develop`/`master` merges exist locally and on
-  `origin`, then show the user and finish the remaining steps by hand. The header of
-  `scripts/release.sh` lists them.
+- **The script stops partway through:** do not rerun it. It pushes `release/X.Y.Z`,
+  `develop`, `master` and the tag in one atomic push at the very end, so either all
+  four are on `origin` or none are. Check which of them exist locally, then show the
+  user and finish the remaining steps by hand. The header of `scripts/release.sh`
+  lists them.

@@ -11,6 +11,10 @@ hedvig {
   viewModels()
 }
 
+android {
+  testOptions.unitTests.isReturnDefaultValues = true
+}
+
 dependencies {
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
@@ -33,12 +37,15 @@ dependencies {
   implementation(projects.navigationCore)
   implementation(libs.zXing)
   testImplementation(libs.androidx.junit)
+  testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
   testImplementation(libs.kotlinx.serialization.json)
   testImplementation(libs.robolectric)
   testImplementation(libs.turbine)
+  testImplementation(projects.apolloOctopusTest)
+  testImplementation(projects.apolloTest)
   testImplementation(projects.loggingTest)
   testImplementation(projects.moleculeTest)
 }

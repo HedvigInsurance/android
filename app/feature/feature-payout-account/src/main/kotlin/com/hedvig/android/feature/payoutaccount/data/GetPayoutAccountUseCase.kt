@@ -19,7 +19,7 @@ import octopus.type.MemberPaymentMethodStatus
 import octopus.type.MemberPaymentProvider
 
 internal data class PayoutAccountData(
-  val currentMethod: PayoutAccount?,
+  val currentMethods: List<PayoutAccount>,
   val availablePayoutMethods: List<PaymentProvider>,
 )
 
@@ -36,14 +36,15 @@ internal class GetPayoutAccountUseCase(
       .bind()
 
     val paymentMethods = result.currentMember.paymentMethods
-    val defaultPayoutMethod = paymentMethods.payoutMethods.firstOrNull { it.isDefault }
-    // todo payout feature. Return the other, non-default payout methods when we can switch to them
-    val currentMethod = defaultPayoutMethod?.let { method ->
+    val currentMethods = paymentMethods.payoutMethods.mapNotNull { method ->
       val isPending = method.status == MemberPaymentMethodStatus.PENDING
+      // The backend also marks a pending method default once the member picks it during setup, but
+      // nothing is paid out to it until it activates, so it is not the default the app shows.
+      val isDefault = !isPending && method.isDefault
       when (method.provider) {
         MemberPaymentProvider.SWISH -> {
           val phoneNumber = method.details?.asPaymentMethodSwishDetails()?.phoneNumber
-          PayoutAccount.SwishPayout(phoneNumber = phoneNumber, isPending = isPending)
+          PayoutAccount.SwishPayout(phoneNumber = phoneNumber, isPending = isPending, isDefault = isDefault)
         }
 
         MemberPaymentProvider.TRUSTLY -> {
@@ -53,6 +54,7 @@ internal class GetPayoutAccountUseCase(
             accountNumber = accountNumber,
             bankName = bankName,
             isPending = isPending,
+            isDefault = isDefault,
           )
         }
 
@@ -63,6 +65,7 @@ internal class GetPayoutAccountUseCase(
             accountNumber = accountNumber,
             bankName = bankName,
             isPending = isPending,
+            isDefault = isDefault,
           )
         }
 
@@ -70,14 +73,14 @@ internal class GetPayoutAccountUseCase(
           null
         }
       }
-    }
+    }.sortedForDisplay()
 
     val availablePayoutMethods = paymentMethods.availableMethods
       .filter { it.supportsPayout }
       .mapNotNull { PaymentProvider.fromRawValue(it.provider.rawValue) }
 
     PayoutAccountData(
-      currentMethod = currentMethod,
+      currentMethods = currentMethods,
       availablePayoutMethods = availablePayoutMethods,
     )
   }

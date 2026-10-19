@@ -680,6 +680,7 @@
   <string name="ONBOARDING_WELCOME_TITLE">Welcome to Hedvig</string>
   <string name="OPTOUT_FIELD_ENTER_HERE">Enter here</string>
   <string name="OPTOUT_FIELD_PLACEHOLDER">Don't remember</string>
+  <string name="PAYIN_INFO_BOX">By connecting a payment method, you agree that your premium will be charged automatically each month. We'll notify you in the Hedvig app before each payment.</string>
   <string name="PAYMENTS__CAMPAIGNS">Campaigns</string>
   <string name="PAYMENTS_ACCOUNT">Account</string>
   <string name="PAYMENTS_ADD_CAMPAIGN_CODE">Add campaign code</string>
@@ -709,6 +710,8 @@
   <string name="PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL">Payment history</string>
   <string name="PAYMENTS_PAYMENT_IN_PROGRESS">Payment in progress</string>
   <string name="PAYMENTS_PAYMENT_IN_PROGRESS_DESCRIPTION">It may take up to 5 business days for the charge to process</string>
+  <string name="PAYMENTS_PAYMENT_IN_PROGRESS_SWISH_DESCRIPTION">Swish payments usually go through right away, it can take a few minutes before it shows up in the app</string>
+  <string name="PAYMENTS_PAYMENT_IN_PROGRESS_TRUSTLY_DESCRIPTION">It can take up to 5 business days for your bank to process it</string>
   <string name="PAYMENTS_PAYMENT_METHOD">Payment method</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE">Amount due: %1$s</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_BODY">We couldn't collect this payment from your bank account. Pay now to keep your coverage active.</string>
@@ -775,6 +778,9 @@
   <string name="PAYMENT_TRUSTLY_FAILURE_TITLE">Connection failed</string>
   <string name="PAYMENT_TRUSTLY_SUCCESS_SUBTITLE">We'll notify you in the app each month</string>
   <string name="PAYOUT_ADD_PAYOUT_METHOD">Add payout method</string>
+  <string name="PAYOUT_CHOOSE_METHOD_SUBTITLE">Will be used for your payouts</string>
+  <string name="PAYOUT_CONFIRMATION_INFO">Going forward, we’ll pay out via %1$s</string>
+  <string name="PAYOUT_CONFIRMATION_TITLE">Confirm payout method</string>
   <string name="PAYOUT_METHOD_INVOICE_DESCRIPTION">Direct payment via Invoice</string>
   <string name="PAYOUT_METHOD_SWISH_DESCRIPTION">Instant payout with Swish</string>
   <string name="PAYOUT_METHOD_TRUSTLY_DESCRIPTION">Payout via Trustly</string>

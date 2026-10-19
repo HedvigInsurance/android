@@ -8,6 +8,8 @@ import com.hedvig.android.feature.payoutaccount.ui.editbankaccount.EditBankAccou
 import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewDestination
 import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewUiState
 import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewViewModel
+import com.hedvig.android.feature.payoutaccount.ui.primary.SelectPrimaryPayoutMethodDestination
+import com.hedvig.android.feature.payoutaccount.ui.primary.SelectPrimaryPayoutMethodViewModel
 import com.hedvig.android.feature.payoutaccount.ui.selectmethod.SelectPayoutMethodDestination
 import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutDestination
 import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutViewModel
@@ -30,11 +32,21 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountEntries(backstack: Backstack, 
           ),
         )
       },
+      onChoosePrimaryMethodClicked = dropUnlessResumed { backstack.add(SelectPrimaryPayoutMethodKey) },
       navigateToTrustly = dropUnlessResumed {
         backstack.popUpTo<PayoutAccountKey>(inclusive = true)
         navigateToTrustly()
       },
       navigateUp = backstack::navigateUp,
+    )
+  }
+
+  entry<SelectPrimaryPayoutMethodKey> {
+    val viewModel: SelectPrimaryPayoutMethodViewModel = metroViewModel()
+    SelectPrimaryPayoutMethodDestination(
+      viewModel = viewModel,
+      navigateUp = backstack::navigateUp,
+      navigateBack = backstack::popBackstack,
     )
   }
 
