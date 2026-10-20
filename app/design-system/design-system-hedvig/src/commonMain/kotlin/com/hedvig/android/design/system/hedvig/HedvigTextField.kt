@@ -18,6 +18,7 @@ import androidx.compose.foundation.text.input.OutputTransformation
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.toTextFieldBuffer
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.runtime.Composable
@@ -38,13 +39,9 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.input.TransformedText
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -90,7 +87,6 @@ fun HedvigTextField(
   singleLine: Boolean = true,
   maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
   minLines: Int = 1,
-  visualTransformation: VisualTransformation = VisualTransformation.None,
   onTextLayout: (TextLayoutResult) -> Unit = {},
   interactionSource: MutableInteractionSource? = null,
   /**
@@ -167,7 +163,6 @@ fun HedvigTextField(
       null
     },
     isError = errorState.isError,
-    visualTransformation = visualTransformation,
     onTextLayout = onTextLayout,
     keyboardOptions = keyboardOptions,
     keyboardActions = keyboardActions,
@@ -237,7 +232,6 @@ fun HedvigTextField(
   singleLine: Boolean = true,
   maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
   minLines: Int = 1,
-  visualTransformation: VisualTransformation = VisualTransformation.None,
   onTextLayout: (TextLayoutResult) -> Unit = {},
   interactionSource: MutableInteractionSource? = null,
   /** As on the [HedvigTextField] taking a `text: String`. */
@@ -295,7 +289,6 @@ fun HedvigTextField(
       null
     },
     isError = errorState.isError,
-    visualTransformation = visualTransformation,
     onTextLayout = onTextLayout,
     keyboardOptions = keyboardOptions,
     keyboardActions = keyboardActions,
@@ -326,7 +319,6 @@ fun HedvigTextField(
   singleLine: Boolean = true,
   maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
   minLines: Int = 1,
-  visualTransformation: VisualTransformation = VisualTransformation.None,
   onTextLayout: (TextLayoutResult) -> Unit = {},
   interactionSource: MutableInteractionSource? = null,
 ) {
@@ -348,7 +340,6 @@ fun HedvigTextField(
     leadingContent = leadingContent,
     supportingText = supportingText,
     isError = false,
-    visualTransformation = visualTransformation,
     onTextLayout = onTextLayout,
     keyboardOptions = keyboardOptions,
     keyboardActions = keyboardActions,
@@ -801,7 +792,6 @@ private fun HedvigTextField(
   trailingContent: @Composable (() -> Unit)? = null,
   supportingText: @Composable (() -> Unit)? = null,
   isError: Boolean = false,
-  visualTransformation: VisualTransformation = VisualTransformation.None,
   onTextLayout: (TextLayoutResult) -> Unit = {},
   keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
   keyboardActions: KeyboardActions = KeyboardActions.Default,
@@ -823,7 +813,6 @@ private fun HedvigTextField(
       singleLine = singleLine,
       maxLines = maxLines,
       minLines = minLines,
-      visualTransformation = visualTransformation,
       onTextLayout = onTextLayout,
       interactionSource = interactionSource,
       cursorBrush = SolidColor(colors.cursorColor),
@@ -833,7 +822,7 @@ private fun HedvigTextField(
           colors = colors,
           configuration = configuration,
           size = size,
-          visualTransformation = visualTransformation,
+          displayedText = value,
           innerTextField = innerTextField,
           label = label,
           suffix = suffix,
@@ -894,7 +883,7 @@ private fun HedvigTextField(
           colors = colors,
           configuration = configuration,
           size = size,
-          visualTransformation = remember(outputTransformation) { outputTransformation.asVisualTransformation() },
+          displayedText = displayedText(state, outputTransformation),
           innerTextField = innerTextField,
           label = label,
           suffix = suffix,
@@ -927,7 +916,6 @@ private fun HedvigTextField(
   trailingContent: @Composable (() -> Unit)? = null,
   supportingText: @Composable (() -> Unit)? = null,
   isError: Boolean = false,
-  visualTransformation: VisualTransformation = VisualTransformation.None,
   onTextLayout: (TextLayoutResult) -> Unit = {},
   keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
   keyboardActions: KeyboardActions = KeyboardActions.Default,
@@ -949,7 +937,6 @@ private fun HedvigTextField(
       singleLine = singleLine,
       maxLines = maxLines,
       minLines = minLines,
-      visualTransformation = visualTransformation,
       onTextLayout = onTextLayout,
       interactionSource = interactionSource,
       cursorBrush = SolidColor(colors.cursorColor),
@@ -959,7 +946,7 @@ private fun HedvigTextField(
           colors = colors,
           configuration = configuration,
           size = size,
-          visualTransformation = visualTransformation,
+          displayedText = value.text,
           innerTextField = innerTextField,
           label = label,
           suffix = suffix,
@@ -977,18 +964,14 @@ private fun HedvigTextField(
 }
 
 /**
- * The decoration box decides whether the field is empty from the transformed text, so that a placeholder the
- * transformation draws (a mask, say) moves the label out of the text's way. It reads nothing but the text, which is
- * why the offset mapping can stay [OffsetMapping.Identity].
+ * The text the field shows, which is what decides whether it reads as empty: a placeholder drawn by
+ * [outputTransformation] (a mask, say) counts as text and moves the label out of its way.
  */
-private fun OutputTransformation?.asVisualTransformation(): VisualTransformation {
-  val outputTransformation = this ?: return VisualTransformation.None
-  return VisualTransformation { text ->
-    val displayedText = TextFieldState(text.text).apply {
-      edit { with(outputTransformation) { transformOutput() } }
-    }.text
-    TransformedText(AnnotatedString(displayedText.toString()), OffsetMapping.Identity)
-  }
+private fun displayedText(state: TextFieldState, outputTransformation: OutputTransformation?): CharSequence {
+  if (outputTransformation == null) return state.text
+  val buffer = state.toTextFieldBuffer()
+  with(outputTransformation) { buffer.transformOutput() }
+  return buffer.asCharSequence()
 }
 
 @Composable
@@ -996,7 +979,7 @@ private fun HedvigTextFieldDecorationBox(
   value: String,
   innerTextField: @Composable () -> Unit,
   enabled: Boolean,
-  visualTransformation: VisualTransformation,
+  displayedText: CharSequence,
   interactionSource: InteractionSource,
   colors: HedvigTextFieldColors,
   configuration: HedvigTextFieldConfiguration,
@@ -1015,7 +998,7 @@ private fun HedvigTextFieldDecorationBox(
     colors = colors,
     size = size,
     innerTextField = innerTextField,
-    visualTransformation = visualTransformation,
+    displayedText = displayedText,
     label = label,
     suffix = suffix,
     leadingContent = leadingContent,
