@@ -8,6 +8,7 @@ import assertk.assertions.isTrue
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
+import com.hedvig.android.feature.editcoinsured.data.CoInsuredError
 import com.hedvig.android.feature.editcoinsured.data.CoInsuredResult
 import com.hedvig.android.feature.editcoinsured.data.MonthlyCost
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
@@ -59,6 +60,39 @@ internal class EditCoInsuredPresenterTest {
         assertThat(uiState.listState.coInsured).isEqualTo(coInsuredTestList)
         assertThat(uiState.listState.member).isEqualTo(testMember)
       }
+    }
+  }
+
+  @Test
+  fun `a failed initial fetch shows a load error that a retry recovers from`() = runTest {
+    val testGetCoInsuredUseCase = TestGetCoInsuredUseCase()
+    val presenter = EditCoInsuredPresenter(
+      contractId = testContractId,
+      type = CoInsuredFlowType.CoInsured,
+      getCoInsuredUseCase = testGetCoInsuredUseCase,
+      fetchCoInsuredPersonalInformationUseCase = TestFetchCoInsuredPersonalInformationUseCase(),
+      createMidtermChangeUseCase = TestCreateMidTermChangeUseCase(),
+      commitMidtermChangeUseCase = TestCommitMidtermChangeUseCase(),
+      backstack = TestBackstack(),
+    )
+
+    presenter.test(EditCoInsuredState.Loading) {
+      skipItems(1)
+
+      testGetCoInsuredUseCase.errorMessages.add(CoInsuredError.GenericError("network"))
+      assertThat(awaitItem()).isEqualTo(EditCoInsuredState.LoadError)
+
+      sendEvent(EditCoInsuredEvent.RetryLoading)
+      assertThat(awaitItem()).isEqualTo(EditCoInsuredState.Loading)
+
+      testGetCoInsuredUseCase.coInsured.add(
+        CoInsuredResult(
+          member = testMember,
+          coInsuredOnContract = coInsuredTestList,
+          allCoInsured = listOf(),
+        ),
+      )
+      assertThat(awaitItem()).isInstanceOf<EditCoInsuredState.Loaded>()
     }
   }
 

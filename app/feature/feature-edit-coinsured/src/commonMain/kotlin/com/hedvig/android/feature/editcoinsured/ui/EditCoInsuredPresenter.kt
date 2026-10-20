@@ -12,7 +12,6 @@ import arrow.core.raise.either
 import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
-import com.hedvig.android.feature.editcoinsured.data.CoInsuredError
 import com.hedvig.android.feature.editcoinsured.data.CoInsuredPersonalInformation
 import com.hedvig.android.feature.editcoinsured.data.CommitMidtermChangeUseCase
 import com.hedvig.android.feature.editcoinsured.data.CreateMidtermChangeUseCase
@@ -29,6 +28,7 @@ import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredEvent.RemoveCoIn
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredEvent.ResetAddBottomSheetState
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredEvent.ResetRemoveBottomSheetState
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Error
+import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.LoadError
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.ManualInfo
@@ -72,13 +72,14 @@ internal class EditCoInsuredPresenter(
 
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(true) }
+    var loadIteration by remember { mutableIntStateOf(0) }
     var fetchInfoFromSsn by remember { mutableIntStateOf(0) }
     var intentId by remember { mutableStateOf<String?>(null) }
     var selectedCoInsuredId by remember { mutableStateOf<String?>(null) }
     var commit by remember { mutableStateOf(false) }
     var editedCoInsuredList by remember { mutableStateOf<List<CoInsured>?>(null) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(loadIteration) {
       if (listState.member != null) {
         return@LaunchedEffect
       }
@@ -95,13 +96,7 @@ internal class EditCoInsuredPresenter(
           )
         }
       }.onLeft {
-        Snapshot.withMutableSnapshot {
-          isLoading = false
-          errorMessage = when (it) {
-            CoInsuredError.ContractNotFound -> "Could not find contract"
-            is CoInsuredError.GenericError -> it.message
-          }
-        }
+        isLoading = false
       }
     }
 
@@ -232,6 +227,11 @@ internal class EditCoInsuredPresenter(
 
         OnDismissError -> {
           errorMessage = null
+        }
+
+        EditCoInsuredEvent.RetryLoading -> {
+          isLoading = true
+          loadIteration++
         }
 
         EditCoInsuredEvent.OnCommitChanges -> {
@@ -368,7 +368,7 @@ internal class EditCoInsuredPresenter(
     } else if (isLoading) {
       Loading
     } else {
-      Error("Could not fetch member")
+      LoadError
     }
   }
 
@@ -443,6 +443,8 @@ internal sealed interface EditCoInsuredEvent {
 
   data object OnDismissError : EditCoInsuredEvent
 
+  data object RetryLoading : EditCoInsuredEvent
+
   data object OnAddCoInsuredClicked : EditCoInsuredEvent
 
   data object ResetAddBottomSheetState : EditCoInsuredEvent
@@ -472,6 +474,8 @@ internal sealed interface EditCoInsuredState {
   data object Loading : EditCoInsuredState
 
   data class Error(val message: String?) : EditCoInsuredState
+
+  data object LoadError : EditCoInsuredState
 
   data class Loaded(
     val type: CoInsuredFlowType,
