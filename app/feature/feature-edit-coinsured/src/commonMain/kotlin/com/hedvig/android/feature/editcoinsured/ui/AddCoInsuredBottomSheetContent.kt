@@ -36,7 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -244,14 +243,13 @@ private fun FetchFromSsnFields(
   LaunchedEffect(ssnState) {
     snapshotFlow { ssnState.text.toString() }.filter { it != currentSsn }.collect { currentOnSsnChanged(it) }
   }
-  val mask = stringResource(Res.string.edit_coinsured_ssn_placeholder)
-  val maskColor = HedvigTheme.colorScheme.textSecondary
   Column {
     HedvigTextField(
       state = ssnState,
       labelText = stringResource(Res.string.CONTRACT_PERSONAL_IDENTITY),
       inputTransformation = InputTransformation.maxLength(PersonalNumberLength),
-      outputTransformation = remember(mask, maskColor) { PersonalNumberOutputTransformation(mask, maskColor) },
+      outputTransformation = PersonalNumberOutputTransformation,
+      mask = stringResource(Res.string.edit_coinsured_ssn_placeholder),
       lineLimits = TextFieldLineLimits.SingleLine,
       textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
       errorState = if (errorMessage != null) {
@@ -285,23 +283,11 @@ private fun FetchFromSsnFields(
 private const val PersonalNumberLength = 12
 
 /**
- * Shows a personal number as `YYYYMMDD-XXXX`, with the part still to type shown as the [mask] in [maskColor].
+ * Shows a personal number as `YYYYMMDD-XXXX`.
  */
-private class PersonalNumberOutputTransformation(
-  private val mask: String,
-  private val maskColor: Color,
-) : OutputTransformation {
+private object PersonalNumberOutputTransformation : OutputTransformation {
   override fun TextFieldBuffer.transformOutput() {
-    if (length >= DashIndex) insert(DashIndex, "-")
-    val typedLength = length
-    if (typedLength < mask.length) {
-      append(mask.substring(typedLength))
-      addStyle(SpanStyle(color = maskColor), typedLength, mask.length)
-    }
-  }
-
-  private companion object {
-    const val DashIndex = 8
+    if (length > 8) insert(8, "-")
   }
 }
 

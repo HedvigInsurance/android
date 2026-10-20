@@ -7,8 +7,10 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -37,11 +39,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -364,6 +370,12 @@ fun HedvigTextField(
   readOnly: Boolean = false,
   inputTransformation: InputTransformation? = null,
   outputTransformation: OutputTransformation? = null,
+  /**
+   * Shown in place of the text still to type, its leading characters covered by whatever the field displays, so a
+   * number can be typed into its own shape (`000-000`, `YYYYMMDD-XXXX`). It is drawn behind the text and is not part
+   * of it, so the cursor never lands inside it.
+   */
+  mask: String? = null,
   onTextLayout: (Density.(getResult: () -> TextLayoutResult?) -> Unit)? = null,
   keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
   keyboardActions: KeyboardActionHandler? = null,
@@ -412,6 +424,7 @@ fun HedvigTextField(
     isError = errorState.isError,
     inputTransformation = inputTransformation,
     outputTransformation = outputTransformation,
+    mask = mask,
     onTextLayout = onTextLayout,
     lineLimits = lineLimits,
     keyboardOptions = keyboardOptions,
@@ -850,6 +863,7 @@ private fun HedvigTextField(
   readOnly: Boolean = false,
   inputTransformation: InputTransformation? = null,
   outputTransformation: OutputTransformation? = null,
+  mask: String? = null,
   label: @Composable (() -> Unit)? = null,
   suffix: @Composable (() -> Unit)? = null,
   leadingContent: @Composable (() -> Unit)? = null,
@@ -878,13 +892,18 @@ private fun HedvigTextField(
       interactionSource = interactionSource,
       cursorBrush = SolidColor(colors.cursorColor),
       decorator = @Composable { innerTextField ->
+        val displayedText = displayedText(state, outputTransformation)
         HedvigTextFieldDecorationBox(
           value = state.text.toString(),
           colors = colors,
           configuration = configuration,
           size = size,
-          displayedText = displayedText(state, outputTransformation),
-          innerTextField = innerTextField,
+          displayedText = displayedText.ifEmpty { mask.orEmpty() },
+          innerTextField = if (mask != null && displayedText.length < mask.length) {
+            { MaskedInnerTextField(displayedText, mask, size.textStyle, innerTextField) }
+          } else {
+            innerTextField
+          },
           label = label,
           suffix = suffix,
           leadingContent = leadingContent,
@@ -964,14 +983,40 @@ private fun HedvigTextField(
 }
 
 /**
- * The text the field shows, which is what decides whether it reads as empty: a placeholder drawn by
- * [outputTransformation] (a mask, say) counts as text and moves the label out of its way.
+ * The text the field shows, which is what decides whether it reads as empty.
  */
 private fun displayedText(state: TextFieldState, outputTransformation: OutputTransformation?): CharSequence {
   if (outputTransformation == null) return state.text
   val buffer = state.toTextFieldBuffer()
   with(outputTransformation) { buffer.transformOutput() }
   return buffer.asCharSequence()
+}
+
+/**
+ * Draws the untyped rest of [mask] behind [innerTextField], with the part the field already displays laid out
+ * invisibly in front of it so the two line up.
+ */
+@Composable
+private fun MaskedInnerTextField(
+  displayedText: CharSequence,
+  mask: String,
+  textStyle: TextStyle,
+  innerTextField: @Composable () -> Unit,
+) {
+  val maskColor = HedvigTheme.colorScheme.textTertiary
+  Box {
+    BasicText(
+      text = buildAnnotatedString {
+        withStyle(SpanStyle(color = Color.Transparent)) { append(displayedText) }
+        withStyle(SpanStyle(color = maskColor)) { append(mask.substring(displayedText.length)) }
+      },
+      style = textStyle,
+      softWrap = false,
+      maxLines = 1,
+      modifier = Modifier.clearAndSetSemantics {},
+    )
+    innerTextField()
+  }
 }
 
 @Composable

@@ -30,14 +30,11 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -229,13 +226,13 @@ private fun ChipIdTextField(text: String, labelText: String, updateText: (String
   LaunchedEffect(state) {
     snapshotFlow { state.text.toString() }.filter { it != currentText }.collect { currentUpdateText(it) }
   }
-  val maskColor = HedvigTheme.colorScheme.textTertiary
   HedvigTextField(
     state = state,
     labelText = labelText,
     errorState = HedvigTextFieldDefaults.ErrorState.NoError,
     inputTransformation = InputTransformation.maxLength(ChipIdLength),
-    outputTransformation = remember(maskColor) { ChipIdOutputTransformation(maskColor) },
+    outputTransformation = ChipIdOutputTransformation,
+    mask = "000-000-000-000-000",
     keyboardOptions = KeyboardOptions(
       keyboardType = KeyboardType.Number,
       imeAction = ImeAction.Done,
@@ -251,25 +248,14 @@ private fun ChipIdTextField(text: String, labelText: String, updateText: (String
 private const val ChipIdLength = 15
 
 /**
- * Groups the chip id as `000-000-000-000-000`, with the digits still to type shown as a placeholder in [maskColor].
+ * Groups the chip id as `000-000-000-000-000`.
  */
-private class ChipIdOutputTransformation(private val maskColor: Color) : OutputTransformation {
+private object ChipIdOutputTransformation : OutputTransformation {
   override fun TextFieldBuffer.transformOutput() {
-    for (dashIndex in DashIndices) {
-      if (length >= dashIndex) insert(dashIndex, "-")
-    }
-    val typedLength = length
-    if (typedLength < Mask.length) {
-      append(Mask.substring(typedLength))
-      addStyle(SpanStyle(color = maskColor), typedLength, Mask.length)
-    }
-  }
-
-  private companion object {
-    const val Mask = "000-000-000-000-000"
-
     // Descending, so each insertion leaves the earlier indices pointing at the same digits.
-    val DashIndices = listOf(12, 9, 6, 3)
+    for (dashIndex in listOf(12, 9, 6, 3)) {
+      if (length > dashIndex) insert(dashIndex, "-")
+    }
   }
 }
 
