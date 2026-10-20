@@ -28,6 +28,7 @@ import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
@@ -77,6 +78,9 @@ internal fun EditCoInsuredAddMissingInfoDestination(viewModel: EditCoInsuredView
     onDismissError = {
       viewModel.emit(EditCoInsuredEvent.OnDismissError)
     },
+    onRetry = {
+      viewModel.emit(EditCoInsuredEvent.RetryLoading)
+    },
     onResetAddBottomSheetState = {
       viewModel.emit(EditCoInsuredEvent.ResetAddBottomSheetState)
     },
@@ -110,6 +114,7 @@ private fun EditCoInsuredScreen(
   onBottomSheetContinue: () -> Unit,
   onCommitChanges: () -> Unit,
   onDismissError: () -> Unit,
+  onRetry: () -> Unit,
   onResetAddBottomSheetState: () -> Unit,
   onFirstNameChanged: (String) -> Unit,
   onLastNameChanged: (String) -> Unit,
@@ -131,6 +136,13 @@ private fun EditCoInsuredScreen(
           title = stringResource(Res.string.general_error),
           message = uiState.message,
           onDismiss = onDismissError,
+        )
+      }
+
+      EditCoInsuredState.LoadError -> {
+        HedvigErrorSection(
+          onButtonClick = onRetry,
+          modifier = Modifier.weight(1f),
         )
       }
 
@@ -309,6 +321,7 @@ private fun EditCoInsuredScreenErrorPreview() {
         onBottomSheetContinue = {},
         onCommitChanges = {},
         onDismissError = {},
+        onRetry = {},
         onResetAddBottomSheetState = {},
         onFirstNameChanged = {},
         onLastNameChanged = {},
@@ -411,6 +424,7 @@ private fun EditCoInsuredScreenEditablePreview() {
         onBottomSheetContinue = {},
         onCommitChanges = {},
         onDismissError = {},
+        onRetry = {},
         onResetAddBottomSheetState = {},
         onFirstNameChanged = {},
         onLastNameChanged = {},
@@ -472,6 +486,7 @@ private fun EditCoInsuredScreenNonEditablePreview() {
         onBottomSheetContinue = {},
         onCommitChanges = {},
         onDismissError = {},
+        onRetry = {},
         onResetAddBottomSheetState = {},
         onFirstNameChanged = {},
         onLastNameChanged = {},
