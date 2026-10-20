@@ -88,7 +88,7 @@ import hedvig.resources.general_cancel_button
 import hedvig.resources.something_went_wrong
 import kotlin.time.Clock
 import kotlin.time.Instant
-import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
@@ -239,9 +239,10 @@ private fun FetchFromSsnFields(
   onContinue: () -> Unit,
 ) {
   val ssnState = rememberTextFieldState(ssn ?: "")
+  val currentSsn by rememberUpdatedState(ssn.orEmpty())
   val currentOnSsnChanged by rememberUpdatedState(onSsnChanged)
   LaunchedEffect(ssnState) {
-    snapshotFlow { ssnState.text.toString() }.drop(1).collect { currentOnSsnChanged(it) }
+    snapshotFlow { ssnState.text.toString() }.filter { it != currentSsn }.collect { currentOnSsnChanged(it) }
   }
   val mask = stringResource(Res.string.edit_coinsured_ssn_placeholder)
   val maskColor = HedvigTheme.colorScheme.textSecondary

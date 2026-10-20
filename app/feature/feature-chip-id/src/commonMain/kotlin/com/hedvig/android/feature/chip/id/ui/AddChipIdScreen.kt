@@ -72,7 +72,7 @@ import hedvig.resources.CONTACT_INFO_CHANGES_SAVED
 import hedvig.resources.Res
 import hedvig.resources.general_save_button
 import hedvig.resources.something_went_wrong
-import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -224,9 +224,10 @@ private fun ColumnScope.AddChipIdContent(
 @Composable
 private fun ChipIdTextField(text: String, labelText: String, updateText: (String) -> Unit) {
   val state = rememberTextFieldState(text)
+  val currentText by rememberUpdatedState(text)
   val currentUpdateText by rememberUpdatedState(updateText)
   LaunchedEffect(state) {
-    snapshotFlow { state.text.toString() }.drop(1).collect { currentUpdateText(it) }
+    snapshotFlow { state.text.toString() }.filter { it != currentText }.collect { currentUpdateText(it) }
   }
   val maskColor = HedvigTheme.colorScheme.textTertiary
   HedvigTextField(
