@@ -4,7 +4,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import arrow.core.identity
-import arrow.fx.coroutines.raceN
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.MemberIdService
@@ -92,15 +91,17 @@ internal class SessionReconciler(
   }
 
   /**
-   * Holds until the auth state resolves, then makes the back stack root match it. On process-death
+   * Holds until both the auth state and the demo mode flag resolve, then makes the back stack root match
+   * them. Demo mode holds no tokens, so judging by whichever resolves first would let a warm process's
+   * already-known LoggedOut drop a demo session onto Login. On process-death
    * restore the back stack already reflects the previous session, so a matching root is left untouched
    * and any deeper stack is preserved.
    */
   private suspend fun determineStartScene() {
-    val showLoggedInScene = raceN(
-      { authTokenService.authStatus.filterNotNull().first() is AuthStatus.LoggedIn },
-      { demoManager.isDemoMode().first { it } },
-    ).fold({ it }, { it })
+    val showLoggedInScene = combine(
+      authTokenService.authStatus.filterNotNull(),
+      demoManager.isDemoMode(),
+    ) { authStatus, isDemoMode -> authStatus is AuthStatus.LoggedIn || isDemoMode }.first()
     when {
       showLoggedInScene && !backstackController.isLoggedIn -> {
         // Token is present now (authStatus is LoggedIn); read the member id straight from the JWT.
