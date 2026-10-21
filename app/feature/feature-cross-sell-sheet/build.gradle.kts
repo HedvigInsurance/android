@@ -26,13 +26,20 @@ kotlin {
       implementation(projects.dataContract)
       implementation(projects.dataCrossSellAfterFlow)
       implementation(projects.designSystemHedvig)
+      implementation(projects.experimentsPublic)
       implementation(projects.moleculePublic)
     }
     jvmTest.dependencies {
+      implementation(libs.apollo.testingSupport)
       implementation(libs.assertK)
       implementation(libs.coroutines.test)
       implementation(libs.junit)
       implementation(libs.turbine)
+      implementation(projects.apolloOctopusTest)
+      implementation(projects.apolloTest)
+      implementation(projects.coreCommonTest)
+      implementation(projects.experimentsTest)
+      implementation(projects.loggingTest)
       implementation(projects.moleculeTest)
     }
   }

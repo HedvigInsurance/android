@@ -50,6 +50,7 @@ dependencies {
   implementation(projects.dataClaimIntent)
   implementation(projects.dataContract)
   implementation(projects.designSystemHedvig)
+  implementation(projects.experimentsPublic)
   implementation(projects.featureFlags)
   implementation(projects.languageCore)
   implementation(projects.moleculePublic)
@@ -57,4 +58,14 @@ dependencies {
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
   implementation(projects.navigationCore)
+
+  testImplementation(libs.apollo.testingSupport)
+  testImplementation(libs.assertK)
+  testImplementation(libs.coroutines.test)
+  testImplementation(libs.junit)
+  testImplementation(projects.apolloOctopusTest)
+  testImplementation(projects.apolloTest)
+  testImplementation(projects.coreCommonTest)
+  testImplementation(projects.experimentsTest)
+  testImplementation(projects.loggingTest)
 }

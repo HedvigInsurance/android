@@ -29,6 +29,8 @@ import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
+import com.hedvig.android.experiments.Experiment
+import com.hedvig.android.experiments.ExperimentProvider
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -45,6 +47,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.transformLatest
 import octopus.BottomSheetCrossSellsQuery
 import octopus.fragment.CrossSellFragment
+import octopus.type.CrossSellExperimentInput
 import octopus.type.CrossSellInput
 import octopus.type.FlowSource
 import octopus.type.UserFlow
@@ -157,10 +160,12 @@ internal interface GetCrossSellSheetDataUseCase {
 @Inject
 internal class GetCrossSellSheetDataUseCaseImpl(
   private val apolloClient: ApolloClient,
+  private val experimentProvider: ExperimentProvider,
 ) : GetCrossSellSheetDataUseCase {
   override suspend fun invoke(source: CrossSellInput): Flow<Either<ErrorMessage, CrossSellSheetData>> {
+    val experiments = experimentProvider.activeExperiments().toCrossSellExperimentInputs()
     return apolloClient
-      .query(BottomSheetCrossSellsQuery(source))
+      .query(BottomSheetCrossSellsQuery(source.copy(experiments = experiments)))
       .fetchPolicy(FetchPolicy.NetworkOnly)
       .safeFlow(::ErrorMessage)
       .map { response ->
@@ -239,4 +244,8 @@ internal class DemoGetCrossSellSheetDataUseCase : GetCrossSellSheetDataUseCase {
   override suspend fun invoke(source: CrossSellInput): Flow<Either<ErrorMessage, CrossSellSheetData>> {
     return flowOf(ErrorMessage("Ineligible for demo mode").left())
   }
+}
+
+private fun List<Experiment>.toCrossSellExperimentInputs(): List<CrossSellExperimentInput> {
+  return map { CrossSellExperimentInput(name = it.name, variant = it.variant) }
 }
