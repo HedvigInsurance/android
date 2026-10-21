@@ -47,12 +47,15 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.isActive
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
+import octopus.HomeOngoingShopSessionsQuery
 import octopus.HomeOverdueChargeQuery
 import octopus.HomeQuery
 import octopus.UnreadMessageCountQuery
@@ -95,14 +98,22 @@ internal class GetHomeDataUseCaseImpl(
       ::Pair,
     )
       .flatMapLatest { (resumeClaimEnabled, disableShopSessions) ->
+        val fetchPolicy = if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheAndNetwork
         combine(
-          apolloClient.query(HomeQuery(true, resumeClaimEnabled, disableShopSessions))
-            .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheAndNetwork)
-            .safeFlow()
-            // Chained to the home query rather than the outer combine, which also re-runs on every unread-count poll.
-            .mapLatest { result ->
-              result.map { data -> data to overdueManualCharge(data.currentMember.missedChargeIdToChargeManually) }
-            },
+          combine(
+            apolloClient.query(HomeQuery(true, resumeClaimEnabled))
+              .fetchPolicy(fetchPolicy)
+              .safeFlow()
+              // Chained to the home query rather than the outer combine, which also re-runs on every unread-count poll.
+              .mapLatest { result ->
+                result.map { data -> data to overdueManualCharge(data.currentMember.missedChargeIdToChargeManually) }
+              },
+            ongoingShopSessions(disableShopSessions, fetchPolicy),
+          ) { homeQueryResult, ongoingShopSessions ->
+            homeQueryResult.map { (data, overdueManualCharge) ->
+              Triple(data, overdueManualCharge, ongoingShopSessions)
+            }
+          },
           flow {
             while (currentCoroutineContext().isActive) {
               emitAll(
@@ -128,7 +139,11 @@ internal class GetHomeDataUseCaseImpl(
           anyActiveConversations,
           ->
           either {
-            val (homeQueryData: HomeQuery.Data, overdueManualCharge: UiMoney?) = homeQueryResult.bind()
+            val (
+              homeQueryData: HomeQuery.Data,
+              overdueManualCharge: UiMoney?,
+              ongoingShopSessions: List<OngoingShopSession>,
+            ) = homeQueryResult.bind()
             val contractStatus = homeQueryData.currentMember.toContractStatus()
             val veryImportantMessages = homeQueryData.currentMember.importantMessages.map {
               HomeData.VeryImportantMessage(
@@ -177,18 +192,6 @@ internal class GetHomeDataUseCaseImpl(
             }
             val otherCrossSellsData = crossSellsData.otherCrossSells.map {
               it.toCrossSell()
-            }
-            val ongoingShopSessions = homeQueryData.currentMember.ongoingShopSessions.orEmpty().map { session ->
-              OngoingShopSession(
-                id = session.id,
-                title = session.display.title,
-                subtitle = session.display.subtitle,
-                monthlyNet = session.display.monthlyNet?.let {
-                  UiMoney(it.amount, UiCurrencyCode.fromCurrencyCode(it.currencyCode))
-                },
-                resumeUrl = session.display.resumeUrl,
-                pillowImageUrl = session.display.pillowImage?.src,
-              )
             }
             val recommendedAddon = crossSellsData.recommendedAddon?.let {
               RecommendedAddon(
@@ -272,6 +275,39 @@ internal class GetHomeDataUseCaseImpl(
       // cancelling an in-flight query makes Ktor close the response body inline, tripping StrictMode's
       // NetworkOnMainThreadException.
       .flowOn(Dispatchers.IO)
+  }
+
+  /**
+   * Fetched apart from [HomeQuery] because the field is non-null in the schema, so a failure to resolve it nulls the
+   * whole member. A failure here hides the section rather than failing the screen.
+   */
+  private fun ongoingShopSessions(disabled: Boolean, fetchPolicy: FetchPolicy): Flow<List<OngoingShopSession>> {
+    if (disabled) return flowOf(emptyList())
+    return apolloClient.query(HomeOngoingShopSessionsQuery())
+      .fetchPolicy(fetchPolicy)
+      .safeFlow()
+      .map { result ->
+        result.fold(
+          ifLeft = { error ->
+            logcat(operationError = error) { "HomeOngoingShopSessionsQuery failed with $error" }
+            emptyList()
+          },
+          ifRight = { data ->
+            data.currentMember.ongoingShopSessions.map { session ->
+              OngoingShopSession(
+                id = session.id,
+                title = session.display.title,
+                subtitle = session.display.subtitle,
+                monthlyNet = session.display.monthlyNet?.let {
+                  UiMoney(it.amount, UiCurrencyCode.fromCurrencyCode(it.currencyCode))
+                },
+                resumeUrl = session.display.resumeUrl,
+                pillowImageUrl = session.display.pillowImage?.src,
+              )
+            }
+          },
+        )
+      }
   }
 
   /**
