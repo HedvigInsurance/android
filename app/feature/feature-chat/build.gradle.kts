@@ -69,4 +69,5 @@ dependencies {
   testImplementation(projects.coreCommonTest)
   testImplementation(projects.experimentsTest)
   testImplementation(projects.loggingTest)
+  testImplementation(projects.trackingTest)
 }
