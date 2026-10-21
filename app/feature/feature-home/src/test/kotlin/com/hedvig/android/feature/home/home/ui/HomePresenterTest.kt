@@ -877,9 +877,7 @@ internal class HomePresenterTest {
           name = "cross_sell_clicked",
           parameters = mapOf(
             "user_flow" to "home_x_sell",
-            "offer_type" to "new_promise",
             "offer_id" to "crossSell:ACCIDENT",
-            "offer_path" to "/se-en/insurances/accident",
             "campaign_code" to "accident50app",
           ),
         ),
