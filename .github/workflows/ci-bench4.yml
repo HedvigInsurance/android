@@ -1,0 +1,27 @@
+name: Verify release builds
+
+on:
+  push:
+    branches:
+      - ci-bench4/**
+
+jobs:
+  staging_and_release:
+    runs-on: ubuntu-latest-8-vcpu
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7
+      - name: Setup CI
+        uses: ./.github/actions/common-setup
+        with:
+          gradle-cache-read-only: 'true'
+          datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
+          lokalise-id: ${{ secrets.LOKALISE_ID }}
+          lokalise-token: ${{ secrets.LOKALISE_TOKEN }}
+      - run: cat ~/.gradle/gradle.properties | grep -v DATADOG
+      - name: Run license release report
+        run: ./gradlew licenseReleaseReport --no-configuration-cache --continue
+      - name: Build staging (Firebase App Tester)
+        run: ./gradlew :app:bundleStaging
+      - name: Build release (Play Store)
+        run: ./gradlew :app:bundleRelease
