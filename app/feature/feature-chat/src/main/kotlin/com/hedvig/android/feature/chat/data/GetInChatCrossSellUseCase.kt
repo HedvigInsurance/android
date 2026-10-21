@@ -29,6 +29,7 @@ import octopus.type.UserFlow
 
 /** The cross-sell the member is offered inside a conversation. */
 internal data class InChatCrossSell(
+  val id: String,
   val title: String,
   val description: String,
   val buttonTitle: String,
@@ -62,6 +63,7 @@ internal class GetInChatCrossSellUseCaseImpl(
       .bind()
     val recommendation = data.currentMember.crossSellV2.recommendedCrossSell ?: return@either null
     InChatCrossSell(
+      id = recommendation.crossSell.id,
       title = recommendation.crossSell.title,
       storeUrl = recommendation.crossSell.storeUrl,
       description = recommendation.crossSell.description,

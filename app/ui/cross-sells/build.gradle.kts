@@ -28,5 +28,10 @@ kotlin {
       //todo: or api?
       implementation(projects.placeholder)
     }
+    jvmTest.dependencies {
+      implementation(libs.assertK)
+      implementation(libs.junit)
+      implementation(projects.trackingTest)
+    }
   }
 }
