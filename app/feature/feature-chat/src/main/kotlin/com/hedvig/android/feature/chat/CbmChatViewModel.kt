@@ -51,6 +51,7 @@ import com.hedvig.android.feature.chat.data.ConversationInfo.NoConversation
 import com.hedvig.android.feature.chat.data.GetInChatCrossSellUseCase
 import com.hedvig.android.feature.chat.data.HideInChatCrossSellUseCase
 import com.hedvig.android.feature.chat.data.InChatCrossSell
+import com.hedvig.android.feature.chat.data.InChatCrossSellEvents
 import com.hedvig.android.feature.chat.data.InChatCrossSellTrackingEvent.CLICKED
 import com.hedvig.android.feature.chat.data.InChatCrossSellTrackingEvent.DISMISSED
 import com.hedvig.android.feature.chat.data.InChatCrossSellTrackingEvent.PROMPTED
@@ -114,8 +115,11 @@ internal class CbmChatViewModel @AssistedInject constructor(
       chatDao = chatDao,
       chatRepository = chatRepository,
       getInChatCrossSellUseCase = getInChatCrossSellUseCase,
-      hideInChatCrossSellUseCase = hideInChatCrossSellUseCase,
-      eventTrackingClient = eventTrackingClient,
+      crossSellEvents = InChatCrossSellEvents(
+        conversationId = Uuid.fromString(conversationId),
+        eventTrackingClient = eventTrackingClient,
+        hideInChatCrossSellUseCase = hideInChatCrossSellUseCase,
+      ),
       context = context,
     ),
     coroutineScope = coroutineScope,
@@ -158,8 +162,7 @@ internal class CbmChatPresenter(
   private val chatDao: ChatDao,
   private val chatRepository: CbmChatRepository,
   private val getInChatCrossSellUseCase: GetInChatCrossSellUseCase,
-  private val hideInChatCrossSellUseCase: HideInChatCrossSellUseCase,
-  private val eventTrackingClient: EventTrackingClient,
+  private val crossSellEvents: InChatCrossSellEvents,
   private val context: Context,
 ) : MoleculePresenter<CbmChatEvent, CbmChatUiState> {
   @OptIn(ExperimentalPagingApi::class)
@@ -291,26 +294,17 @@ internal class CbmChatPresenter(
         }
 
         is CbmChatEvent.CrossSellShown -> {
-          eventTrackingClient.trackCrossSellShown(CrossSellUserFlow.IN_CHAT_X_SELL, event.offerId, event.offerUrl)
+          crossSellEvents.shown(event.offerId, event.offerUrl)
         }
 
         is CbmChatEvent.DismissCrossSell -> {
           hideCrossSell = true
-          eventTrackingClient.trackCrossSellDismissed(CrossSellUserFlow.IN_CHAT_X_SELL, event.offerId, event.offerUrl)
-          launch {
-            logInChatCrossSell(DISMISSED)
-            hideInChatCrossSell()
-          }
+          launch { crossSellEvents.dismissed(event.offerId, event.offerUrl) }
         }
 
         is CbmChatEvent.CrossSellClicked -> {
           hideCrossSell = true
-          eventTrackingClient.trackCrossSellClicked(CrossSellUserFlow.IN_CHAT_X_SELL, event.offerId, event.offerUrl)
-          launch {
-            logInChatCrossSell(CLICKED)
-            // Taking the offer ends it for this conversation, just as turning it down does.
-            hideInChatCrossSell()
-          }
+          launch { crossSellEvents.clicked(event.offerId, event.offerUrl) }
         }
       }
     }
@@ -340,12 +334,6 @@ internal class CbmChatPresenter(
           showFileFailedToBeSendToast = showFileFailedToBeSendToast,
         )
       }
-    }
-  }
-
-  private suspend fun hideInChatCrossSell() {
-    hideInChatCrossSellUseCase.invoke(conversationId).onLeft {
-      logcat(LogPriority.WARN) { "Could not hide the in-chat cross sell for $conversationId: ${it.message}" }
     }
   }
 }
