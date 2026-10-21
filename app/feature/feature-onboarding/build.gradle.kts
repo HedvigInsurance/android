@@ -65,4 +65,5 @@ dependencies {
   testImplementation(projects.featureFlagsTest)
   testImplementation(projects.loggingTest)
   testImplementation(projects.moleculeTest)
+  testImplementation(projects.trackingTest)
 }

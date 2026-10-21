@@ -41,6 +41,7 @@ kotlin {
       implementation(projects.experimentsTest)
       implementation(projects.loggingTest)
       implementation(projects.moleculeTest)
+      implementation(projects.trackingTest)
     }
   }
 }
