@@ -19,6 +19,7 @@ import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 
@@ -29,6 +30,8 @@ import kotlinx.coroutines.withTimeoutOrNull
  * member id the fetch carried. Those toggles are usually in hand at once, persisted from the member's last
  * session. Right after a login, or on a first launch, [activeExperiments] waits for the member's own fetch for
  * at most [MEMBER_STATE_TIMEOUT], after which it reports no experiments and the member keeps today's behaviour.
+ * Once a wait has timed out, later calls answer at once until the toggles or the member change, so an unreachable
+ * Unleash delays one request rather than every one.
  *
  * The variants are also set as Firebase user properties so every analytics event carries them, and they follow
  * every flag update, which includes the member id in the Unleash context changing on login and logout. User
@@ -45,11 +48,19 @@ internal class UnleashExperimentProvider(
   private val applicationScope: ApplicationScope,
   @IoDispatcher private val coroutineContext: CoroutineContext,
 ) : ExperimentProvider, Initializable {
+  /** Counts [ExperimentFlags.updates], so a timed-out wait is only skipped while nothing has changed since. */
+  @Volatile
+  private var updateGeneration = 0L
+
+  @Volatile
+  private var timedOutAtGeneration: Long? = null
+
   override fun initialize() {
     applicationScope.launch(coroutineContext) {
       // Toggles that aren't the member's own say nothing about their group. Publishing from them would clear the
       // properties Firebase kept from the last session, leaving events without the group until the fetch lands.
       experimentFlags.updates
+        .onEach { updateGeneration++ }
         .filter { experimentFlags.hasStateForCurrentMember() }
         .map { currentExperiments() }
         .distinctUntilChanged()
@@ -58,7 +69,11 @@ internal class UnleashExperimentProvider(
   }
 
   override suspend fun activeExperiments(): List<Experiment> {
-    withTimeoutOrNull(MEMBER_STATE_TIMEOUT) { experimentFlags.awaitStateForCurrentMember() }
+    val generation = updateGeneration
+    if (timedOutAtGeneration != generation) {
+      val arrived = withTimeoutOrNull(MEMBER_STATE_TIMEOUT) { experimentFlags.awaitStateForCurrentMember() } != null
+      if (!arrived) timedOutAtGeneration = generation
+    }
     return currentExperiments()
   }
 

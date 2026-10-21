@@ -56,6 +56,7 @@ dependencies {
   testImplementation(projects.apolloOctopusTest)
   testImplementation(projects.apolloTest)
   testImplementation(projects.coreCommonTest)
+  testImplementation(projects.experimentsTest)
   testImplementation(projects.featureFlagsTest)
   testImplementation(projects.languageTest)
   testImplementation(projects.loggingTest)

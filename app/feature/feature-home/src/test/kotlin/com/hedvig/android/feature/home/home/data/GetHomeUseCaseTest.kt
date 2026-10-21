@@ -39,6 +39,8 @@ import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
+import com.hedvig.android.experiments.Experiment
+import com.hedvig.android.experiments.ExperimentProvider
 import com.hedvig.android.experiments.test.FakeExperimentProvider
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage.LinkInfo
 import com.hedvig.android.featureflags.FeatureManager
@@ -84,6 +86,7 @@ import octopus.builder.buildShopSession
 import octopus.builder.buildShopSessionDisplay
 import octopus.builder.buildStoryblokImageAsset
 import octopus.type.ChatMessageSender
+import octopus.type.CrossSellExperimentInput
 import octopus.type.CurrencyCode
 import octopus.type.MemberChargeStatus
 import org.junit.Before
@@ -219,6 +222,28 @@ internal class GetHomeUseCaseTest {
       .isRight()
       .prop(HomeData::memberReminders)
       .isEqualTo(MemberReminders(null, null, null))
+  }
+
+  @Test
+  fun `the member's experiments are sent with the home query`() = runTest {
+    val getHomeDataUseCase = testUseCaseWithoutReminders(
+      experimentProvider = FakeExperimentProvider(listOf(Experiment("ACCIDENT_DISCOUNT", "NO_DISCOUNT"))),
+    )
+    // Registered only for these variables, so a query sent without the member's experiments finds no response.
+    apolloClient.registerTestResponse(
+      HomeQuery(true, true, listOf(CrossSellExperimentInput(name = "ACCIDENT_DISCOUNT", variant = "NO_DISCOUNT"))),
+      HomeQuery.Data(OctopusFakeResolver),
+    )
+    apolloClient.registerTestResponse(
+      UnreadMessageCountQuery(),
+      UnreadMessageCountQuery.Data(OctopusFakeResolver),
+    )
+    apolloClient.registerTestResponse(
+      CbmNumberOfChatMessagesQuery(),
+      CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+    )
+
+    assertThat(getHomeDataUseCase.invoke(true).first()).isRight()
   }
 
   @Test
@@ -1203,6 +1228,7 @@ internal class GetHomeUseCaseTest {
     testClock: TestClock = TestClock(),
     timeZone: TimeZone = TimeZone.UTC,
     dismissedShopSessionsStorage: DismissedShopSessionsStorage = FakeDismissedShopSessionsStorage(),
+    experimentProvider: ExperimentProvider = FakeExperimentProvider(),
   ): GetHomeDataUseCase {
     return GetHomeDataUseCaseImpl(
       apolloClient,
@@ -1213,7 +1239,7 @@ internal class GetHomeUseCaseTest {
       travelBannerUseCase,
       HasAnyActiveConversationUseCase(apolloClient),
       dismissedShopSessionsStorage,
-      FakeExperimentProvider(),
+      experimentProvider,
     )
   }
 }

@@ -12,8 +12,9 @@ data class Experiment(
 interface ExperimentProvider {
   /**
    * The experiments this member is currently in, to attach to cross-sell queries so the backend can decide what to
-   * offer. Waits briefly for the startup fetch to finish and then answers from whatever is active, so a query is
-   * delayed a little at most and never blocked. Empty when the member is in no experiment.
+   * offer. When the current member's own flag values aren't in hand yet, for example right after a login, it waits
+   * up to a few seconds for them and then answers from whatever is known, so a query is delayed a little at most and
+   * never blocked. Empty when the member is in no experiment.
    */
   suspend fun activeExperiments(): List<Experiment>
 }
