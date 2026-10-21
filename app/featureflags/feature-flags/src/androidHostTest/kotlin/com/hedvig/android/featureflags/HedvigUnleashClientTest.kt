@@ -4,6 +4,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isNull
+import assertk.assertions.isSameInstanceAs
 import assertk.assertions.isTrue
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.featureflags.flags.unleashKey
@@ -132,6 +133,53 @@ class HedvigUnleashClientTest {
 
     assertThat(setup.client.hasStateForCurrentMember()).isFalse()
     assertThat(setup.client.variantOf(EXPERIMENT)).isNull()
+  }
+
+  @Test
+  fun `a 304 for the member's context adopts the toggles in hand as theirs`() = runTest {
+    val store = FakeToggleStateStore()
+    val memberIds = MutableStateFlow<String?>(null)
+    val setup = setup(memberIds, store)
+    setup.unleash.deliver(context(memberId = null), toggle(EXPERIMENT, "DISCOUNT"))
+    runCurrent()
+
+    memberIds.value = MEMBER_A
+    runCurrent()
+    val ready = backgroundScope.async { setup.client.awaitReady() }
+    runCurrent()
+    assertThat(ready.isCompleted).isFalse()
+
+    setup.unleash.deliverNotModified()
+    runCurrent()
+
+    assertThat(ready.isCompleted).isTrue()
+    assertThat(setup.client.variantOf(EXPERIMENT)).isEqualTo("DISCOUNT")
+    assertThat(store.stored?.context?.properties?.get("memberId")).isEqualTo(MEMBER_A)
+  }
+
+  @Test
+  fun `a 304 while the toggles are already the member's own changes nothing`() = runTest {
+    val store = FakeToggleStateStore()
+    val setup = setup(MutableStateFlow(MEMBER_A), store)
+    setup.unleash.deliver(context(MEMBER_A), toggle(EXPERIMENT, "NO_DISCOUNT"))
+    runCurrent()
+    val stored = store.stored
+
+    setup.unleash.deliverNotModified()
+    runCurrent()
+
+    assertThat(store.stored).isSameInstanceAs(stored)
+    assertThat(setup.client.variantOf(EXPERIMENT)).isEqualTo("NO_DISCOUNT")
+  }
+
+  @Test
+  fun `a 304 before any toggles are in hand leaves the member without state`() = runTest {
+    val setup = setup(MutableStateFlow(MEMBER_A))
+
+    setup.unleash.deliverNotModified()
+    runCurrent()
+
+    assertThat(setup.client.hasStateForCurrentMember()).isFalse()
   }
 
   @Test

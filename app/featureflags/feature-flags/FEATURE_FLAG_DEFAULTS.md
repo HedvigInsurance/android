@@ -78,6 +78,11 @@ at a 100% rollout, so toggles fetched for nobody, or for another member, are wro
 - `hasStateForCurrentMember()` tells whether the state in hand was fetched for the member currently in
   effect (or for nobody while logged out), by comparing the `memberId` of the context stored with the
   state. A restored state counts when it names the same member, whatever app version stored it.
+- The SDK keeps one `ETag` across context changes and writes nothing to the cache on a `304`. The hosted
+  frontend API derives the `ETag` from the response body, so a member whose toggles evaluate exactly like
+  the previous context's gets a `304` on the first fetch after login. The client listens for that answer:
+  it means the server's toggles for the context in effect are the ones in hand, so it tags the state with
+  that context and stores it, and the member counts as ready.
 - `awaitReady()` waits for exactly that, so a one-shot read after login, such as `OnboardingGate`'s,
   sees the member's own values. It still never completes without such a state, so callers keep their
   timeout.

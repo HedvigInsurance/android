@@ -7,6 +7,7 @@ import io.getunleash.android.data.UnleashContext
 import io.getunleash.android.data.UnleashState
 import io.getunleash.android.data.Variant
 import io.getunleash.android.disabledVariant
+import io.getunleash.android.events.UnleashFetcherHeartbeatListener
 import io.getunleash.android.events.UnleashListener
 import java.io.File
 
@@ -29,8 +30,15 @@ internal class FakeUnleash(private val cache: ToggleCache) : Unleash {
   var togglesAtStart: Map<String, Toggle>? = null
     private set
 
+  private val listeners = mutableListOf<UnleashListener>()
+
   fun deliver(context: UnleashContext, vararg enabledToggles: Toggle) {
     cache.write(UnleashState(context, enabledToggles.associateBy { it.name }))
+  }
+
+  /** A fetch answering 304: the SDK writes nothing to the cache and only reports the check. */
+  fun deliverNotModified() {
+    listeners.filterIsInstance<UnleashFetcherHeartbeatListener>().forEach { it.togglesChecked() }
   }
 
   override fun isEnabled(toggleName: String): Boolean = cache.get(toggleName)?.enabled ?: false
@@ -56,9 +64,13 @@ internal class FakeUnleash(private val cache: ToggleCache) : Unleash {
 
   override fun setContextWithTimeout(context: UnleashContext, timeout: Long) = setContextAsync(context)
 
-  override fun addUnleashEventListener(listener: UnleashListener) = Unit
+  override fun addUnleashEventListener(listener: UnleashListener) {
+    listeners.add(listener)
+  }
 
-  override fun removeUnleashEventListener(listener: UnleashListener) = Unit
+  override fun removeUnleashEventListener(listener: UnleashListener) {
+    listeners.remove(listener)
+  }
 
   override fun start(eventListeners: List<UnleashListener>, bootstrapFile: File?, bootstrap: List<Toggle>) {
     started = true

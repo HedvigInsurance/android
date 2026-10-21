@@ -51,8 +51,8 @@ internal class OnboardingGateImpl(
 ) : OnboardingGate {
   override suspend fun shouldShowOnboarding(): Boolean {
     // Fail closed when no flag value can be obtained: show nothing without marking onboarding seen, so a
-    // later launch that does get a value decides properly. awaitReady() never completes while the app
-    // has never reached the flag backend, so the timeout is what bounds that case.
+    // later launch that does get a value decides properly. awaitReady() never completes while no toggle
+    // state fetched for this member is in hand, so the timeout is what bounds that case.
     val flagsAvailable = withTimeoutOrNull(FLAG_READY_TIMEOUT) {
       featureManager.awaitReady()
       true
@@ -85,7 +85,7 @@ internal class OnboardingGateImpl(
   }
 }
 
-// Comfortably covers a local backup restore (near-instant) and a first successful Unleash poll (poll
-// interval is 2s) plus network latency. When no value can be obtained this whole window is spent before
-// failing closed, but it runs behind an already-rendered Home, so it is not user visible.
+// Comfortably covers restoring the stored state (near-instant) and, after a login on this device, the first
+// fetch for the member plus network latency. When no value can be obtained this whole window is spent
+// before failing closed, but it runs behind an already-rendered Home, so it is not user visible.
 private val FLAG_READY_TIMEOUT = 5.seconds

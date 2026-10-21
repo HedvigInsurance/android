@@ -8,6 +8,8 @@ import io.getunleash.android.Unleash
 import io.getunleash.android.UnleashConfig
 import io.getunleash.android.data.UnleashContext
 import io.getunleash.android.data.UnleashState
+import io.getunleash.android.events.HeartbeatEvent
+import io.getunleash.android.events.UnleashFetcherHeartbeatListener
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -131,11 +133,32 @@ class HedvigUnleashClient internal constructor(
         emit(null)
       }
       // The member goes into the context before the first fetch, so that fetch already resolves member-sticky
-      // strategies for them instead of returning the logged out toggles first.
+      // strategies for them.
       applyContext(withTimeoutOrNull(INITIAL_MEMBER_ID_TIMEOUT) { memberIdsOrNone.first() })
+      client.addUnleashEventListener(fetchListener)
       client.start()
       memberIdsOrNone.collect(::applyContext)
     }
+  }
+
+  private val fetchListener = object : UnleashFetcherHeartbeatListener {
+    override fun togglesChecked() = adoptStateForContextInEffect()
+
+    override fun togglesUpdated() = Unit
+
+    override fun onError(event: HeartbeatEvent) = Unit
+  }
+
+  /**
+   * A fetch answered 304, so the server's toggles for the context in effect equal the last ones it sent, which
+   * are the toggles in hand. The SDK keeps one ETag across context changes and writes nothing on a 304, so a
+   * state fetched for another member is tagged with the context in effect here, and stored that way.
+   */
+  private fun adoptStateForContextInEffect() {
+    val state = toggleStateCache.state.value ?: return
+    val context = contextInEffect.value ?: return
+    if (state.wasFetchedForMemberOf(context)) return
+    toggleStateCache.write(state.copy(context = context))
   }
 
   private fun applyContext(memberId: String?) {
