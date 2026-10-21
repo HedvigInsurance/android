@@ -1,7 +1,5 @@
 package com.hedvig.android.feature.login.swedishlogin
 
-import android.annotation.SuppressLint
-import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -17,19 +15,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.graphics.painter.ColorPainter
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -38,20 +29,15 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.createBitmap
-import androidx.core.graphics.set
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.zxing.BarcodeFormat
-import com.google.zxing.common.BitMatrix
-import com.google.zxing.qrcode.QRCodeWriter
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigQrCode
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
@@ -66,8 +52,6 @@ import hedvig.resources.SETTINGS_LOGIN_ROW
 import hedvig.resources.TALKBACK_QR_CODE_DESCRIPTION
 import hedvig.resources.bankid_missing_login_email_button
 import hedvig.resources.general_error
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -192,16 +176,19 @@ private fun SwedishLoginScreen(
           modifier = Modifier.padding(horizontal = 16.dp),
         ) {
           val qrCodeDescription = stringResource(Res.string.TALKBACK_QR_CODE_DESCRIPTION)
-          QRCode(
-            autoStartToken = uiState.bankIdLiveQrCodeData,
-            modifier = Modifier
-              .size(180.dp)
-              .semantics {
-                role = Role.Image
-                contentDescription = qrCodeDescription
-              }
-              .then(demoModeModifier),
-          )
+          val qrCodeModifier = Modifier
+            .size(180.dp)
+            .semantics {
+              role = Role.Image
+              contentDescription = qrCodeDescription
+            }
+            .then(demoModeModifier)
+          val liveQrCodeData = uiState.bankIdLiveQrCodeData
+          if (liveQrCodeData != null) {
+            HedvigQrCode(content = liveQrCodeData.data, modifier = qrCodeModifier)
+          } else {
+            Spacer(qrCodeModifier)
+          }
           Spacer(Modifier.height(32.dp))
           HedvigText(
             text = stringResource(Res.string.AUTHENTICATION_BANKID_LOGIN_TITLE),
@@ -246,45 +233,6 @@ private fun SwedishLoginScreen(
       }
     }
   }
-}
-
-// Supressing lint due to https://issuetracker.google.com/issues/379337777
-@SuppressLint("ProduceStateDoesNotAssignValue")
-@Composable
-internal fun QRCode(
-  autoStartToken: BankIdUiState.HandlingBankId.BankIdLiveQrCodeData?,
-  modifier: Modifier = Modifier,
-) {
-  var intSize: IntSize? by remember { mutableStateOf(null) }
-  val painter by produceState<Painter>(ColorPainter(Color.Transparent), intSize, autoStartToken) {
-    val size = intSize
-    if (size == null || autoStartToken == null) {
-      value = ColorPainter(Color.Transparent)
-      return@produceState
-    }
-    val bitmapPainter: BitmapPainter = withContext(Dispatchers.Default) {
-      val bitMatrix: BitMatrix = QRCodeWriter().encode(
-        autoStartToken.data,
-        BarcodeFormat.QR_CODE,
-        size.width,
-        size.height,
-      )
-      val bitmap = createBitmap(size.width, size.height, Bitmap.Config.RGB_565)
-      for (x in 0 until size.width) {
-        for (y in 0 until size.height) {
-          val color = if (bitMatrix.get(x, y)) android.graphics.Color.BLACK else android.graphics.Color.WHITE
-          bitmap[x, y] = color
-        }
-      }
-      BitmapPainter(bitmap.asImageBitmap())
-    }
-    value = bitmapPainter
-  }
-  Image(
-    painter,
-    null,
-    modifier.onSizeChanged { intSize = it },
-  )
 }
 
 @HedvigPreview

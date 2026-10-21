@@ -42,6 +42,9 @@ kotlin {
       implementation(projects.designSystemInternals)
       implementation(projects.navigationCommon)
     }
+    getByName("jvmAndAndroidMain").dependencies {
+      implementation(libs.zXing)
+    }
     androidMain.dependencies {
       implementation(libs.androidx.other.core)
       implementation(libs.media3.exoplayer)
