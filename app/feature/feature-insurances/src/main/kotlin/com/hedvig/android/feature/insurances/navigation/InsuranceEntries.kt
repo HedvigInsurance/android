@@ -50,7 +50,7 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEntries(
       onInsuranceCardClick = dropUnlessResumed { contractId: String ->
         backstack.add(InsuranceContractDetailKey(contractId))
       },
-      onCrossSellClick = dropUnlessResumed { url: String -> openCrossSellUrl(url) },
+      onCrossSellClick = openCrossSellUrl,
       navigateToCancelledInsurances = dropUnlessResumed {
         backstack.add(TerminatedInsurancesKey)
       },
