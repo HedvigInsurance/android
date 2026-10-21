@@ -26,6 +26,7 @@ kotlin {
       implementation(projects.dataContract)
       implementation(projects.dataCrossSellAfterFlow)
       implementation(projects.designSystemHedvig)
+      implementation(projects.experimentsPublic)
       implementation(projects.moleculePublic)
     }
     jvmTest.dependencies {

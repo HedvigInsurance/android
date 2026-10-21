@@ -15,12 +15,15 @@ import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.DemoSwitcher
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.toContractGroup
+import com.hedvig.android.experiments.Experiment
+import com.hedvig.android.experiments.ExperimentProvider
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metro.binding
 import octopus.InChatCrossSellEligibilityQuery
 import octopus.InChatCrossSellQuery
+import octopus.type.CrossSellExperimentInput
 import octopus.type.CrossSellInput
 import octopus.type.UserFlow
 
@@ -40,6 +43,7 @@ internal interface GetInChatCrossSellUseCase {
 @Inject
 internal class GetInChatCrossSellUseCaseImpl(
   private val apolloClient: ApolloClient,
+  private val experimentProvider: ExperimentProvider,
 ) : GetInChatCrossSellUseCase {
   override suspend fun invoke(conversationId: Uuid): Either<ErrorMessage, InChatCrossSell?> = either {
     val showCrossSales = apolloClient
@@ -50,8 +54,9 @@ internal class GetInChatCrossSellUseCaseImpl(
       .conversation
       ?.showCrossSales
     if (showCrossSales != true) return@either null
+    val experiments = experimentProvider.activeExperiments().toCrossSellExperimentInputs()
     val data = apolloClient
-      .query(InChatCrossSellQuery(inChatCrossSellInput))
+      .query(InChatCrossSellQuery(inChatCrossSellInput(experiments)))
       .fetchPolicy(FetchPolicy.NetworkOnly)
       .safeExecute(::ErrorMessage)
       .bind()
@@ -81,10 +86,14 @@ internal class SwitchingGetInChatCrossSellUseCase(
   override suspend fun invoke(conversationId: Uuid) = pick().invoke(conversationId)
 }
 
-private val inChatCrossSellInput = CrossSellInput(
+private fun inChatCrossSellInput(experiments: List<CrossSellExperimentInput>) = CrossSellInput(
   userFlow = UserFlow.IN_CHAT_X_SELL,
   flowSource = Optional.absent(),
-  experiments = emptyList(),
+  experiments = experiments,
   contractId = Optional.absent(),
   claimId = Optional.absent(),
 )
+
+private fun List<Experiment>.toCrossSellExperimentInputs(): List<CrossSellExperimentInput> {
+  return map { CrossSellExperimentInput(name = it.name, variant = it.variant) }
+}
