@@ -53,6 +53,12 @@ public sealed interface AuthAttemptResult {
 
     public data class IOError(val message: String, val throwable: Throwable? = null) : Error
 
+    /**
+     * The auth service answered with a 5xx. Its body is the framework's default error page rather than a typed
+     * response, so [statusCode] is all the caller gets to act on.
+     */
+    public data class ServerError(val statusCode: Int) : Error
+
     public data class UnknownError(val message: String) : Error
   }
 
