@@ -1,4 +1,4 @@
-query Home($claimsHistoryFlag: Boolean!, $resumeClaimEnabled: Boolean!, $disableShopSessions: Boolean!) {
+query Home($claimsHistoryFlag: Boolean!, $resumeClaimEnabled: Boolean!) {
   currentMember {
     firstName
     resumableClaimIntent @include(if: $resumeClaimEnabled) {
@@ -83,21 +83,6 @@ query Home($claimsHistoryFlag: Boolean!, $resumeClaimEnabled: Boolean!, $disable
     discoverCrossSells: crossSellV2(input: { userFlow: HOME, flowSource: null, experiments: [] }) {
       otherCrossSells {
         ...HomeCrossSellFragment
-      }
-    }
-    ongoingShopSessions @skip(if: $disableShopSessions) {
-      id
-      display {
-        title
-        subtitle
-        monthlyNet {
-          amount
-          currencyCode
-        }
-        resumeUrl
-        pillowImage {
-          src
-        }
       }
     }
     memberActions {
