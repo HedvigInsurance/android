@@ -14,7 +14,7 @@ class CrossSellClickTrackingTest {
       "&next=%2Fse-en%2Finsurances%2Faccident&code=accident50app&requiresAuthorization=true"
 
   @Test
-  fun `the event carries the offer id, the store page and the campaign code instead of the url`() {
+  fun `the event carries the offer id and the campaign code instead of the url`() {
     val client = FakeEventTrackingClient()
 
     client.trackCrossSellClicked(CrossSellUserFlow.HOME, "crossSell:ACCIDENT", redirectUrl)
@@ -24,9 +24,7 @@ class CrossSellClickTrackingTest {
         name = "cross_sell_clicked",
         parameters = mapOf(
           "user_flow" to "home",
-          "offer_type" to "new_promise",
           "offer_id" to "crossSell:ACCIDENT",
-          "offer_path" to "/se-en/insurances/accident",
           "campaign_code" to "accident50app",
         ),
       ),
@@ -44,19 +42,13 @@ class CrossSellClickTrackingTest {
     assertThat(client.events.single().parameters).isEqualTo(
       mapOf(
         "user_flow" to "insurances",
-        "offer_type" to "new_promise",
         "offer_id" to "crossSell:CAR",
-        "offer_path" to "/se/forsakringar/bilforsakring",
       ),
     )
   }
 
   @Test
-  fun `a plain product link reports its own path`() {
-    assertThat(
-      offerPath("https://www.hedvig.com/se/forsakringar/djurforsakring"),
-    ).isEqualTo("/se/forsakringar/djurforsakring")
+  fun `a plain product link has no campaign code`() {
     assertThat(campaignCode("https://www.hedvig.com/se/forsakringar/djurforsakring")).isNull()
-    assertThat(offerPath("https://www.hedvig.com")).isNull()
   }
 }
