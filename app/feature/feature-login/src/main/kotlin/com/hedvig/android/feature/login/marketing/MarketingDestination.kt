@@ -37,6 +37,7 @@ import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HedvigToggle
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.IconResource
 import com.hedvig.android.design.system.hedvig.RadioGroup
@@ -44,6 +45,8 @@ import com.hedvig.android.design.system.hedvig.RadioGroupSize
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDefaultStyleSize
+import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HedvigLogotype
 import com.hedvig.android.design.system.hedvig.icon.flag.FlagSweden
@@ -75,6 +78,7 @@ internal fun MarketingDestination(
     uiState = uiState,
     appVersionName = appVersionName,
     selectLanguage = { language -> viewModel.emit(MarketingEvent.SelectLanguage(language)) },
+    setBankIdSandboxEnabled = { enabled -> viewModel.emit(MarketingEvent.SetBankIdSandboxEnabled(enabled)) },
     openWebOnboarding = openWebOnboarding,
     navigateToLoginScreen = navigateToLoginScreen,
   )
@@ -85,6 +89,7 @@ private fun MarketingScreen(
   uiState: MarketingUiState,
   appVersionName: String,
   selectLanguage: (Language) -> Unit,
+  setBankIdSandboxEnabled: (Boolean) -> Unit,
   openWebOnboarding: () -> Unit,
   navigateToLoginScreen: () -> Unit,
 ) {
@@ -148,6 +153,16 @@ private fun MarketingScreen(
               WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
             ),
         ) {
+          if (uiState is MarketingUiState.Success && uiState.isBankIdSandboxAvailable) {
+            HedvigToggle(
+              labelText = "BankID sandbox",
+              turnedOn = uiState.isBankIdSandboxEnabled,
+              onClick = setBankIdSandboxEnabled,
+              enabled = true,
+              toggleStyle = ToggleStyle.Default(ToggleDefaultStyleSize.Small),
+              modifier = Modifier.fillMaxWidth(),
+            )
+          }
           HedvigButton(
             text = stringResource(Res.string.SETTINGS_LOGIN_ROW),
             enabled = uiState is MarketingUiState.Success,
@@ -258,7 +273,14 @@ private fun Language.flag(): ImageVector {
 private fun PreviewMarketingScreen() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      MarketingScreen(MarketingUiState.Success(Language.EN_SE), "X.Y.Z", {}, {}, {})
+      MarketingScreen(
+        MarketingUiState.Success(Language.EN_SE, isBankIdSandboxAvailable = true, isBankIdSandboxEnabled = false),
+        "X.Y.Z",
+        {},
+        {},
+        {},
+        {},
+      )
     }
   }
 }

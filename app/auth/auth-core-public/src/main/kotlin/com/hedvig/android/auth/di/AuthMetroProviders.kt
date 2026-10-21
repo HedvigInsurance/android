@@ -1,5 +1,6 @@
 package com.hedvig.android.auth.di
 
+import com.hedvig.android.auth.BankIdSandboxState
 import com.hedvig.android.authlib.AuthEnvironment
 import com.hedvig.android.authlib.AuthRepository
 import com.hedvig.android.authlib.networkAuthRepositoryWithEngine
@@ -18,13 +19,14 @@ interface AuthMetroProviders {
   fun provideAuthRepository(
     hedvigBuildConstants: HedvigBuildConstants,
     @AuthHttpClientEngine engine: HttpClientEngine,
+    bankIdSandboxState: BankIdSandboxState,
   ): AuthRepository = networkAuthRepositoryWithEngine(
     environment = if (hedvigBuildConstants.isProduction) {
       AuthEnvironment.PRODUCTION
     } else {
       AuthEnvironment.STAGING
     },
-    additionalHttpHeadersProvider = { emptyMap() },
+    additionalHttpHeadersProvider = bankIdSandboxState::headers,
     engine = engine,
   )
 }
