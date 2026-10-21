@@ -1,4 +1,4 @@
-query Onboarding {
+query Onboarding($experiments: [CrossSellExperimentInput!]!) {
   currentMember {
     id
     email
@@ -45,7 +45,7 @@ query Onboarding {
         supportsPayin
       }
     }
-    crossSellV2(input: { userFlow: ONBOARDING, flowSource: null, experiments: [] }) {
+    crossSellV2(input: { userFlow: ONBOARDING, flowSource: null, experiments: $experiments }) {
       otherCrossSells {
         id
         title

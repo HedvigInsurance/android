@@ -50,6 +50,7 @@ dependencies {
   implementation(projects.dataClaimIntent)
   implementation(projects.dataContract)
   implementation(projects.designSystemHedvig)
+  implementation(projects.experimentsPublic)
   implementation(projects.featureFlags)
   implementation(projects.languageCore)
   implementation(projects.moleculePublic)
