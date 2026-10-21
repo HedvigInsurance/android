@@ -549,6 +549,36 @@ internal class InsurancePresenterTest {
     }
   }
 
+  @Test
+  fun `an offer on screen reports the insurances surface and the offer url`() = runTest {
+    val eventTrackingClient = FakeEventTrackingClient()
+    val presenter = InsurancePresenter(
+      FakeGetInsuranceContractsUseCase(),
+      FakeGetCrossSellsUseCase(),
+      FakeGetAddonBannerInfoUseCase(),
+      eventTrackingClient,
+    )
+    val offerUrl =
+      "https://www.hedvig.com/api/redirect/recommend?attributed_to=HEDVIG&next=%2Fse-en%2Finsurances%2Faccident&code=accident50app&requiresAuthorization=true"
+
+    presenter.test(InsuranceUiState.initialState) {
+      skipItems(1)
+      sendEvent(InsuranceScreenEvent.CrossSellShown("crossSell:ACCIDENT", offerUrl))
+      runCurrent()
+      assertThat(eventTrackingClient.events).containsExactly(
+        FakeEventTrackingClient.TrackedEvent(
+          name = "cross_sell_shown",
+          parameters = mapOf(
+            "user_flow" to "insurances",
+            "offer_id" to "crossSell:ACCIDENT",
+            "campaign_code" to "accident50app",
+          ),
+        ),
+      )
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
   private class FakeGetCrossSellsUseCase : GetCrossSellsUseCase {
     val errorMessages = Turbine<ErrorMessage>()
     val crossSells = Turbine<List<CrossSell>>()

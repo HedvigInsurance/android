@@ -106,9 +106,11 @@ import com.hedvig.android.crosssells.AddonsSection
 import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellBottomSheet
 import com.hedvig.android.crosssells.CrossSellSheetData
+import com.hedvig.android.crosssells.CrossSellShownReporter
 import com.hedvig.android.crosssells.CrossSellUserFlow
 import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.crosssells.RecommendedCrossSell
+import com.hedvig.android.crosssells.rememberCrossSellShownReporter
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.addons.data.FlowType
@@ -302,6 +304,9 @@ internal fun HomeDestination(
     navigateToHelpCenter = navigateToHelpCenter,
     navigateToQuickLink = navigateToQuickLink,
     openUrl = openUrl,
+    onCrossSellShown = { userFlow, offerId, offerUrl ->
+      viewModel.emit(HomeEvent.CrossSellShown(userFlow, offerId, offerUrl))
+    },
     onCrossSellClick = dropUnlessResumed { userFlow: CrossSellUserFlow, crossSell: CrossSell ->
       if (openCrossSellUrl(crossSell.storeUrl)) {
         viewModel.emit(HomeEvent.CrossSellClicked(userFlow, crossSell.id, crossSell.storeUrl))
@@ -342,6 +347,7 @@ private fun HomeScreen(
   navigateToHelpCenter: () -> Unit,
   navigateToQuickLink: (QuickLinkDestination) -> Unit,
   openUrl: (String) -> Unit,
+  onCrossSellShown: (CrossSellUserFlow, offerId: String, offerUrl: String) -> Unit,
   onCrossSellClick: (CrossSellUserFlow, CrossSell) -> Unit,
   markMessageAsSeen: (String) -> Unit,
   deleteDraftClaim: (String) -> Unit,
@@ -366,9 +372,13 @@ private fun HomeScreen(
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
   val crossSellBottomSheetState = rememberHedvigBottomSheetState<CrossSellSheetData>()
+  val discoverCrossSellShownReporter = rememberCrossSellShownReporter { offerId, offerUrl ->
+    onCrossSellShown(CrossSellUserFlow.HOME, offerId, offerUrl)
+  }
   CrossSellBottomSheet(
     state = crossSellBottomSheetState,
     markCrossSellsNotificationAsSeen = markCrossSellsNotificationAsSeen,
+    onCrossSellShown = { offerId, offerUrl -> onCrossSellShown(CrossSellUserFlow.HOME_X_SELL, offerId, offerUrl) },
     onCrossSellClick = { crossSell -> onCrossSellClick(CrossSellUserFlow.HOME_X_SELL, crossSell) },
     onRecommendedAddonClick = openUrl,
     onAddonClick = { ids -> navigateToAddonPurchaseFlow(ids, AddonBannerSource.HOME_CROSS_SELL_SHEET) },
@@ -497,6 +507,7 @@ private fun HomeScreen(
             navigateToChipIdScreen = navigateToChipIdScreen,
             navigateToUsageData = navigateToUsageData,
             onCrossSellClick = onCrossSellClick,
+            discoverCrossSellShownReporter = discoverCrossSellShownReporter,
             imageLoader = imageLoader,
             navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
             onChatIconClick = onNavigateToInbox,
@@ -675,6 +686,7 @@ private fun HomeScreenSuccess(
   navigateToChipIdScreen: () -> Unit,
   navigateToUsageData: () -> Unit,
   onCrossSellClick: (CrossSellUserFlow, CrossSell) -> Unit,
+  discoverCrossSellShownReporter: CrossSellShownReporter,
   imageLoader: ImageLoader,
   navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
   onChatIconClick: () -> Unit,
@@ -1022,6 +1034,7 @@ private fun HomeScreenSuccess(
 
             HomeSection.DiscoverInsurances -> DiscoverInsurancesSection(
               crossSells = uiState.discoverCrossSells,
+              shownReporter = discoverCrossSellShownReporter,
               onCrossSellClick = { crossSell -> onCrossSellClick(CrossSellUserFlow.HOME, crossSell) },
               imageLoader = imageLoader,
             )
@@ -1622,11 +1635,13 @@ private fun HomeAddonsSection(
 @Composable
 private fun DiscoverInsurancesSection(
   crossSells: List<CrossSell>,
+  shownReporter: CrossSellShownReporter,
   onCrossSellClick: (CrossSell) -> Unit,
   imageLoader: ImageLoader,
 ) {
   CrossSellsSection(
     crossSells = crossSells,
+    shownReporter = shownReporter,
     onCrossSellClick = onCrossSellClick,
     modifier = Modifier.padding(horizontal = 16.dp),
     onSheetDismissed = {},
@@ -1674,6 +1689,7 @@ private fun WelcomeMessage(firstName: String, modifier: Modifier = Modifier) {
 private fun CrossSellBottomSheet(
   state: HedvigBottomSheetState<CrossSellSheetData>,
   markCrossSellsNotificationAsSeen: () -> Unit,
+  onCrossSellShown: (offerId: String, offerUrl: String) -> Unit,
   onCrossSellClick: (CrossSell) -> Unit,
   onRecommendedAddonClick: (deepLink: String) -> Unit,
   onAddonClick: (eligibleInsuranceIds: List<String>) -> Unit,
@@ -1688,6 +1704,7 @@ private fun CrossSellBottomSheet(
   }
   CrossSellBottomSheet(
     state = state,
+    onCrossSellShown = onCrossSellShown,
     onCrossSellClick = onCrossSellClick,
     onRecommendedAddonClick = onRecommendedAddonClick,
     onAddonClick = onAddonClick,
@@ -1831,6 +1848,7 @@ private fun PreviewHomeScreen(
         navigateToHelpCenter = {},
         navigateToQuickLink = {},
         openUrl = {},
+        onCrossSellShown = { _, _, _ -> },
         onCrossSellClick = { _, _ -> },
         openAppSettings = {},
         navigateToMissingInfo = { _, _ -> },
@@ -1869,6 +1887,7 @@ private fun PreviewHomeScreenWithError() {
         navigateToHelpCenter = {},
         navigateToQuickLink = {},
         openUrl = {},
+        onCrossSellShown = { _, _, _ -> },
         onCrossSellClick = { _, _ -> },
         openAppSettings = {},
         navigateToMissingInfo = { _, _ -> },
@@ -1940,6 +1959,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToHelpCenter = {},
         navigateToQuickLink = {},
         openUrl = {},
+        onCrossSellShown = { _, _, _ -> },
         onCrossSellClick = { _, _ -> },
         openAppSettings = {},
         navigateToMissingInfo = { _, _ -> },

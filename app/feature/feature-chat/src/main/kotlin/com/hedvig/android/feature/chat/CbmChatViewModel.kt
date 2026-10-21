@@ -35,6 +35,8 @@ import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.tracking.EventTrackingClient
 import com.hedvig.android.crosssells.CrossSellUserFlow
 import com.hedvig.android.crosssells.trackCrossSellClicked
+import com.hedvig.android.crosssells.trackCrossSellDismissed
+import com.hedvig.android.crosssells.trackCrossSellShown
 import com.hedvig.android.data.chat.database.ChatDao
 import com.hedvig.android.data.chat.database.ChatMessageEntity
 import com.hedvig.android.data.chat.database.RemoteKeyDao
@@ -288,8 +290,13 @@ internal class CbmChatPresenter(
           hideBanner = true
         }
 
+        is CbmChatEvent.CrossSellShown -> {
+          eventTrackingClient.trackCrossSellShown(CrossSellUserFlow.IN_CHAT_X_SELL, event.offerId, event.offerUrl)
+        }
+
         is CbmChatEvent.DismissCrossSell -> {
           hideCrossSell = true
+          eventTrackingClient.trackCrossSellDismissed(CrossSellUserFlow.IN_CHAT_X_SELL, event.offerId, event.offerUrl)
           launch {
             logInChatCrossSell(DISMISSED)
             hideInChatCrossSell()
@@ -450,7 +457,9 @@ internal sealed interface CbmChatEvent {
 
   data object HideBanner : CbmChatEvent
 
-  data object DismissCrossSell : CbmChatEvent
+  data class CrossSellShown(val offerId: String, val offerUrl: String) : CbmChatEvent
+
+  data class DismissCrossSell(val offerId: String, val offerUrl: String) : CbmChatEvent
 
   data class CrossSellClicked(val offerId: String, val offerUrl: String) : CbmChatEvent
 

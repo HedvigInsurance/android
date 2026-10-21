@@ -28,6 +28,7 @@ import com.hedvig.android.crosssells.CrossSellUserFlow
 import com.hedvig.android.crosssells.RecommendedAddon
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.crosssells.trackCrossSellClicked
+import com.hedvig.android.crosssells.trackCrossSellShown
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
@@ -69,6 +70,8 @@ internal class CrossSellSheetViewModel(
 internal sealed interface CrossSellSheetEvent {
   data object CrossSellSheetShown : CrossSellSheetEvent
 
+  data class CrossSellShown(val offerId: String, val offerUrl: String) : CrossSellSheetEvent
+
   data class CrossSellClicked(val offerId: String, val offerUrl: String) : CrossSellSheetEvent
 }
 
@@ -97,6 +100,10 @@ internal class CrossSellSheetPresenter(
       when (event) {
         is CrossSellSheetEvent.CrossSellSheetShown -> {
           crossSellAfterFlowRepository.showedCrossSellSheet((state as? CrossSellSheetState.Content)?.infoType)
+        }
+
+        is CrossSellSheetEvent.CrossSellShown -> {
+          eventTrackingClient.trackCrossSellShown(CrossSellUserFlow.SMART_X_SELL, event.offerId, event.offerUrl)
         }
 
         is CrossSellSheetEvent.CrossSellClicked -> {

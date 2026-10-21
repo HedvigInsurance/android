@@ -103,8 +103,9 @@ internal fun CbmChatDestination(
     onCloseBannerClick = {
       viewModel.emit(CbmChatEvent.HideBanner)
     },
+    onCrossSellShown = { offerId, offerUrl -> viewModel.emit(CbmChatEvent.CrossSellShown(offerId, offerUrl)) },
     onDismissCrossSellClick = { crossSell ->
-      viewModel.emit(CbmChatEvent.DismissCrossSell)
+      viewModel.emit(CbmChatEvent.DismissCrossSell(crossSell.id, crossSell.storeUrl))
     },
     onCrossSellClick = dropUnlessResumed { crossSell: InChatCrossSell ->
       if (openCrossSellUrl(crossSell.storeUrl)) {
@@ -132,6 +133,7 @@ private fun ChatScreen(
   onRetryLoadingChat: () -> Unit,
   showedFileTooBigError: () -> Unit,
   onCloseBannerClick: () -> Unit,
+  onCrossSellShown: (offerId: String, offerUrl: String) -> Unit,
   onDismissCrossSellClick: (InChatCrossSell) -> Unit,
   onCrossSellClick: (InChatCrossSell) -> Unit,
   showedFileFailedToBeSentToast: () -> Unit,
@@ -195,6 +197,7 @@ private fun ChatScreen(
                 null
               },
               onCloseBannerClick = onCloseBannerClick,
+              onCrossSellShown = onCrossSellShown,
               onDismissCrossSellClick = onDismissCrossSellClick,
               onCrossSellClick = onCrossSellClick,
             )
@@ -319,6 +322,7 @@ private fun PreviewChatScreen(
         showedFileTooBigError = {},
         showedFileFailedToBeSentToast = {},
         onCloseBannerClick = {},
+        onCrossSellShown = { _, _ -> },
         onDismissCrossSellClick = {},
         onCrossSellClick = {},
       )

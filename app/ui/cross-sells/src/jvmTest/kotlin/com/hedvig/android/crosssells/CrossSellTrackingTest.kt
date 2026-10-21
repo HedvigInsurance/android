@@ -7,7 +7,7 @@ import assertk.assertions.isNull
 import com.hedvig.android.core.tracking.test.FakeEventTrackingClient
 import org.junit.Test
 
-class CrossSellClickTrackingTest {
+class CrossSellTrackingTest {
   private val redirectUrl =
     "https://www.hedvig.com/api/redirect/recommend?attributed_to=HEDVIG&initiated_from=APP" +
       "&attribution.userFlow=HOME&attribution.experiments.ACCIDENT_DISCOUNT=CONTROL" +
@@ -29,6 +29,38 @@ class CrossSellClickTrackingTest {
         ),
       ),
     )
+  }
+
+  @Test
+  fun `shown, clicked and dismissed describe the offer the same way`() {
+    val client = FakeEventTrackingClient()
+
+    client.trackCrossSellShown(CrossSellUserFlow.IN_CHAT_X_SELL, "crossSell:ALL", redirectUrl)
+    client.trackCrossSellClicked(CrossSellUserFlow.IN_CHAT_X_SELL, "crossSell:ALL", redirectUrl)
+    client.trackCrossSellDismissed(CrossSellUserFlow.IN_CHAT_X_SELL, "crossSell:ALL", redirectUrl)
+
+    val parameters = mapOf(
+      "user_flow" to "in_chat_x_sell",
+      "offer_id" to "crossSell:ALL",
+      "campaign_code" to "accident50app",
+    )
+    assertThat(client.events).containsExactly(
+      FakeEventTrackingClient.TrackedEvent(name = "cross_sell_shown", parameters = parameters),
+      FakeEventTrackingClient.TrackedEvent(name = "cross_sell_clicked", parameters = parameters),
+      FakeEventTrackingClient.TrackedEvent(name = "cross_sell_dismissed", parameters = parameters),
+    )
+  }
+
+  @Test
+  fun `the shown reporter reports each offer once`() {
+    val reported = mutableListOf<String>()
+    val reporter = CrossSellShownReporter { offerId, _ -> reported += offerId }
+
+    reporter.report("crossSell:CAR", "url")
+    reporter.report("crossSell:HOME", "url")
+    reporter.report("crossSell:CAR", "url")
+
+    assertThat(reported).containsExactly("crossSell:CAR", "crossSell:HOME")
   }
 
   @Test

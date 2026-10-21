@@ -72,6 +72,9 @@ fun CrossSellSheet(
     }
     com.hedvig.android.crosssells.CrossSellBottomSheet(
       state = sheetState,
+      onCrossSellShown = { offerId, offerUrl ->
+        viewModel.emit(CrossSellSheetEvent.CrossSellShown(offerId, offerUrl))
+      },
       onCrossSellClick = dropUnlessResumed { crossSell: CrossSell ->
         if (onCrossSellClick(crossSell.storeUrl)) {
           viewModel.emit(CrossSellSheetEvent.CrossSellClicked(crossSell.id, crossSell.storeUrl))
