@@ -4,9 +4,7 @@ import android.content.Context
 import android.text.format.DateUtils
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.core.os.ConfigurationCompat
-import androidx.core.os.LocaleListCompat
+import androidx.compose.ui.platform.LocalLocale
 import com.hedvig.android.core.locale.CommonLocale
 import kotlin.time.Instant
 
@@ -22,7 +20,5 @@ fun formatInstantForTalkBack(context: Context, instant: Instant): String {
 @Composable
 @ReadOnlyComposable
 actual fun getLocale(): CommonLocale {
-  LocalAppLocale.current?.let { return it }
-  val configuration = LocalConfiguration.current
-  return ConfigurationCompat.getLocales(configuration).get(0) ?: LocaleListCompat.getAdjustedDefault()[0]!!
+  return LocalAppLocale.current ?: LocalLocale.current.platformLocale
 }
