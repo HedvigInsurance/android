@@ -31,6 +31,7 @@ import com.google.zxing.qrcode.encoder.Encoder
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.colored.Swish
+import com.hedvig.android.design.system.hedvig.tokens.PaletteTokens
 
 /**
  * A QR code drawn black on a white card in every theme, since scanners need the contrast. Modules are drawn as
@@ -44,9 +45,8 @@ fun HedvigQrCode(content: String, modifier: Modifier = Modifier, centerSymbol: I
   val hasCenterSymbol = centerSymbol != null
   val modules = remember(content, hasCenterSymbol) { encodeQrModules(content, hasCenterSymbol) }
   Surface(
-    color = Color.White,
+    color = PaletteTokens.White,
     shape = HedvigTheme.shapes.cornerMedium,
-    border = HedvigTheme.colorScheme.borderPrimary,
     modifier = modifier.aspectRatio(1f),
   ) {
     Box(
@@ -61,7 +61,7 @@ fun HedvigQrCode(content: String, modifier: Modifier = Modifier, centerSymbol: I
           contentAlignment = Alignment.Center,
           modifier = Modifier
             .fillMaxSize(SymbolBackgroundFraction)
-            .background(Color.White, CircleShape),
+            .background(PaletteTokens.White, CircleShape),
         ) {
           Image(
             imageVector = centerSymbol,
