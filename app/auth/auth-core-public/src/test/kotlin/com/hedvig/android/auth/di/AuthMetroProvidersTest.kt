@@ -3,17 +3,28 @@ package com.hedvig.android.auth.di
 import assertk.assertThat
 import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
+import com.hedvig.android.auth.BankIdSandboxState
 import com.hedvig.android.authlib.LoginMethod
 import com.hedvig.android.authlib.OtpMarket
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.common.ApplicationScope
+import com.hedvig.android.core.datastore.TestPreferencesDataStore
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 
 class AuthMetroProvidersTest {
+  @get:Rule
+  val testFolder = TemporaryFolder()
+
   private val providers = object : AuthMetroProviders {}
 
   /**
@@ -25,7 +36,7 @@ class AuthMetroProvidersTest {
   fun `the provided repository sends its requests through the supplied engine`() = runTest {
     val engine = MockEngine { respond(content = "", status = HttpStatusCode.InternalServerError) }
 
-    val repository = providers.provideAuthRepository(buildConstants(isProduction = false), engine)
+    val repository = providers.provideAuthRepository(buildConstants(isProduction = false), engine, sandboxState())
     repository.startLoginAttempt(LoginMethod.SE_BANKID, OtpMarket.SE)
 
     assertThat(engine.requestHistory).hasSize(1)
@@ -35,7 +46,7 @@ class AuthMetroProvidersTest {
   fun `a production build reaches the production auth host`() = runTest {
     val engine = MockEngine { respond(content = "", status = HttpStatusCode.InternalServerError) }
 
-    val repository = providers.provideAuthRepository(buildConstants(isProduction = true), engine)
+    val repository = providers.provideAuthRepository(buildConstants(isProduction = true), engine, sandboxState())
     repository.startLoginAttempt(LoginMethod.SE_BANKID, OtpMarket.SE)
 
     assertThat(engine.requestHistory.single().url.host).isEqualTo("auth.prod.hedvigit.com")
@@ -65,7 +76,7 @@ class AuthMetroProvidersTest {
       val buildConstants = buildConstants(flavour.isProduction, flavour.urlAuthService)
 
       providers
-        .provideAuthRepository(buildConstants, engine)
+        .provideAuthRepository(buildConstants, engine, sandboxState())
         .startLoginAttempt(LoginMethod.SE_BANKID, OtpMarket.SE)
 
       assertThat(engine.requestHistory.single().url.host, name = flavour.name)
@@ -77,14 +88,35 @@ class AuthMetroProvidersTest {
   fun `a non-production build reaches the staging auth host`() = runTest {
     val engine = MockEngine { respond(content = "", status = HttpStatusCode.InternalServerError) }
 
-    val repository = providers.provideAuthRepository(buildConstants(isProduction = false), engine)
+    val repository = providers.provideAuthRepository(buildConstants(isProduction = false), engine, sandboxState())
     repository.startLoginAttempt(LoginMethod.SE_BANKID, OtpMarket.SE)
 
     assertThat(engine.requestHistory.single().url.host).isEqualTo("auth.dev.hedvigit.com")
   }
+
+  @Test
+  fun `the BankID sandbox header is sent once the sandbox is turned on`() = runTest {
+    val engine = MockEngine { respond(content = "", status = HttpStatusCode.InternalServerError) }
+    val sandboxState = sandboxState()
+    val repository = providers.provideAuthRepository(buildConstants(isProduction = false), engine, sandboxState)
+
+    repository.startLoginAttempt(LoginMethod.SE_BANKID, OtpMarket.SE)
+    sandboxState.setEnabled(true)
+    runCurrent()
+    repository.startLoginAttempt(LoginMethod.SE_BANKID, OtpMarket.SE)
+
+    assertThat(engine.requestHistory[0].headers["Hedvig-Bankid-Sandbox"]).isNull()
+    assertThat(engine.requestHistory[1].headers["Hedvig-Bankid-Sandbox"]).isEqualTo("true")
+  }
+
+  private fun TestScope.sandboxState() = BankIdSandboxState(
+    TestPreferencesDataStore(testFolder.newFolder(), backgroundScope),
+    buildConstants(isProduction = false),
+    ApplicationScope(backgroundScope),
+  )
 }
 
-private fun buildConstants(isProduction: Boolean, urlAuthService: String = "") = object : HedvigBuildConstants {
+internal fun buildConstants(isProduction: Boolean, urlAuthService: String = "") = object : HedvigBuildConstants {
   override val urlGraphqlOctopus: String = ""
   override val urlBaseWeb: String = ""
   override val urlOdyssey: String = ""

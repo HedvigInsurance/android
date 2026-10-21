@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.login.marketing
 
+import com.hedvig.android.auth.BankIdSandboxState
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.language.LanguageService
@@ -10,7 +11,8 @@ import dev.zacsweers.metro.Inject
 @HedvigViewModel(ActivityRetainedScope::class)
 internal class MarketingViewModel(
   languageService: LanguageService,
+  bankIdSandboxState: BankIdSandboxState,
 ) : MoleculeViewModel<MarketingEvent, MarketingUiState>(
     MarketingUiState.Loading,
-    MarketingPresenter(languageService),
+    MarketingPresenter(languageService, bankIdSandboxState),
   )
