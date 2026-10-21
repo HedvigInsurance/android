@@ -14,6 +14,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.tracking.EventTrackingClient
 import com.hedvig.android.crosssells.CrossSellUserFlow
 import com.hedvig.android.crosssells.trackCrossSellClicked
+import com.hedvig.android.crosssells.trackCrossSellShown
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
@@ -33,6 +34,8 @@ import kotlinx.coroutines.flow.flow
 
 internal sealed interface InsuranceScreenEvent {
   data object RetryLoading : InsuranceScreenEvent
+
+  data class CrossSellShown(val offerId: String, val offerUrl: String) : InsuranceScreenEvent
 
   data class CrossSellClicked(val offerId: String, val offerUrl: String) : InsuranceScreenEvent
 }
@@ -83,6 +86,10 @@ internal class InsurancePresenter(
       when (event) {
         InsuranceScreenEvent.RetryLoading -> {
           loadIteration++
+        }
+
+        is InsuranceScreenEvent.CrossSellShown -> {
+          eventTrackingClient.trackCrossSellShown(CrossSellUserFlow.INSURANCES, event.offerId, event.offerUrl)
         }
 
         is InsuranceScreenEvent.CrossSellClicked -> {

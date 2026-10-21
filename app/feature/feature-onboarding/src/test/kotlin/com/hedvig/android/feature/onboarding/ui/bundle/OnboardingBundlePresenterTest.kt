@@ -98,6 +98,37 @@ internal class OnboardingBundlePresenterTest {
   }
 
   @Test
+  fun `an offer on screen reports the onboarding surface and the offer url`() = runTest {
+    val backstack = TestBackstack().apply {
+      entries.add(OnboardingStepKey(OnboardingStepId.BundleDiscount))
+    }
+    val repository = FakeOnboardingRepository()
+    val sessionStore = testSessionStore(repository, FakeOnboardingMemberIdProvider())
+    val navigator = OnboardingNavigator(backstack, sessionStore, NoopCompleteOnboardingUseCase())
+    val eventTrackingClient = FakeEventTrackingClient()
+    val presenter = OnboardingBundlePresenter(sessionStore, navigator, eventTrackingClient)
+    val offerUrl =
+      "https://www.hedvig.com/api/redirect/recommend?attributed_to=HEDVIG&next=%2Fse-en%2Finsurances%2Faccident&code=accident50app&requiresAuthorization=true"
+
+    presenter.test(OnboardingBundleUiState.Loading) {
+      skipItems(1)
+      sendEvent(OnboardingBundleEvent.CrossSellShown("crossSell:ACCIDENT", offerUrl))
+      runCurrent()
+      assertThat(eventTrackingClient.events).containsExactly(
+        FakeEventTrackingClient.TrackedEvent(
+          name = "cross_sell_shown",
+          parameters = mapOf(
+            "user_flow" to "onboarding",
+            "offer_id" to "crossSell:ACCIDENT",
+            "campaign_code" to "accident50app",
+          ),
+        ),
+      )
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
   fun `continue to app completes onboarding`() = runTest {
     val completeOnboarding = FakeCompleteOnboardingUseCase()
     val backstack = TestBackstack().apply {

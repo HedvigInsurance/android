@@ -18,6 +18,7 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.CrossSellUserFlow
 import com.hedvig.android.crosssells.trackCrossSellClicked
+import com.hedvig.android.crosssells.trackCrossSellShown
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.claimintent.DeleteClaimIntentDraftUseCase
 import com.hedvig.android.data.contract.CrossSell
@@ -102,6 +103,10 @@ internal class HomePresenter(
               ifRight = { loadIteration++ },
             )
           }
+        }
+
+        is HomeEvent.CrossSellShown -> {
+          eventTrackingClient.trackCrossSellShown(homeEvent.userFlow, homeEvent.offerId, homeEvent.offerUrl)
         }
 
         is HomeEvent.CrossSellClicked -> {
@@ -211,6 +216,9 @@ internal sealed interface HomeEvent {
   data class DeleteDraftClaim(val draftId: String) : HomeEvent
 
   data class DismissOngoingShopSession(val sessionId: String) : HomeEvent
+
+  /** A cross-sell offer was on screen. [userFlow] says which of home's two cross-sell surfaces it sat on. */
+  data class CrossSellShown(val userFlow: CrossSellUserFlow, val offerId: String, val offerUrl: String) : HomeEvent
 
   /** The member took a cross-sell offer. [userFlow] says which of home's two cross-sell surfaces it sat on. */
   data class CrossSellClicked(val userFlow: CrossSellUserFlow, val offerId: String, val offerUrl: String) : HomeEvent
