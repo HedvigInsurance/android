@@ -1,20 +1,32 @@
 name: PR
 
-on: pull_request
+# Pushes to develop run the same jobs, on the free runner, so each job leaves a Gradle cache entry
+# behind that the next PR's job of the same name restores. PR runs only read the cache.
+#
+# The jobs build against the committed GraphQL schema and strings, so a PR passes or fails on its
+# own content. The graphql-schema and strings workflows keep those files current, and the staging
+# and Play Store workflows download the latest of both before building.
+on:
+  pull_request:
+  push:
+    branches:
+      - develop
 
 concurrency:
-  group: ref-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   unit_test:
-    runs-on: ubuntu-latest-8-vcpu
+    runs-on: ${{ github.event_name == 'push' && 'ubuntu-latest' || 'ubuntu-latest-8-vcpu' }}
     steps:
       - uses: actions/checkout@v7
       - name: Setup CI
         uses: ./.github/actions/common-setup
         with:
-          gradle-cache-read-only: 'false'
+          gradle-cache-read-only: ${{ github.event_name == 'pull_request' }}
+          download-schema: 'false'
+          download-strings: 'false'
           datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
           lokalise-id: ${{ secrets.LOKALISE_ID }}
           lokalise-token: ${{ secrets.LOKALISE_TOKEN }}
@@ -25,13 +37,15 @@ jobs:
         # can't run on the Linux runner.
         run: ./gradlew test jvmTest
   lint:
-    runs-on: ubuntu-latest-8-vcpu
+    runs-on: ${{ github.event_name == 'push' && 'ubuntu-latest' || 'ubuntu-latest-8-vcpu' }}
     steps:
       - uses: actions/checkout@v7
       - name: Setup CI
         uses: ./.github/actions/common-setup
         with:
-          gradle-cache-read-only: 'false'
+          gradle-cache-read-only: ${{ github.event_name == 'pull_request' }}
+          download-schema: 'false'
+          download-strings: 'false'
           datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
           lokalise-id: ${{ secrets.LOKALISE_ID }}
           lokalise-token: ${{ secrets.LOKALISE_TOKEN }}
@@ -52,13 +66,15 @@ jobs:
           report-path: "**/build/reports/lint-results*.xml"
         continue-on-error: true
   ktlint:
-    runs-on: ubuntu-latest-8-vcpu
+    runs-on: ${{ github.event_name == 'push' && 'ubuntu-latest' || 'ubuntu-latest-8-vcpu' }}
     steps:
       - uses: actions/checkout@v7
       - name: Setup CI
         uses: ./.github/actions/common-setup
         with:
-          gradle-cache-read-only: 'false'
+          gradle-cache-read-only: ${{ github.event_name == 'pull_request' }}
+          download-schema: 'false'
+          download-strings: 'false'
           datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
           lokalise-id: ${{ secrets.LOKALISE_ID }}
           lokalise-token: ${{ secrets.LOKALISE_TOKEN }}
@@ -71,41 +87,46 @@ jobs:
         with:
           report-path: "**/build/reports/ktlint/*.xml"
   build:
-    runs-on: ubuntu-latest-8-vcpu
+    runs-on: ${{ github.event_name == 'push' && 'ubuntu-latest' || 'ubuntu-latest-8-vcpu' }}
     steps:
       - uses: actions/checkout@v7
       - name: Setup CI
         uses: ./.github/actions/common-setup
         with:
-          gradle-cache-read-only: 'false'
+          gradle-cache-read-only: ${{ github.event_name == 'pull_request' }}
+          download-schema: 'false'
+          download-strings: 'false'
           datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
           lokalise-id: ${{ secrets.LOKALISE_ID }}
           lokalise-token: ${{ secrets.LOKALISE_TOKEN }}
-      - run: echo VERSION_CODE=$(expr 4700 + ${{ github.run_number }} + ${{ github.run_attempt }} - 1) >> $GITHUB_ENV
-      - uses: chkfung/android-version-actions@v1.2
-        with:
-          gradlePath: app/app/build.gradle.kts
-          versionCode: ${{ env.VERSION_CODE }}
       - name: Build
         run: "./gradlew :app:bundleDebug"
-      - name: Setup build tool version variable
-        shell: bash
-        run: |
-          BUILD_TOOL_VERSION=$(ls /usr/local/lib/android/sdk/build-tools/ | tail -n 1)
-          echo "BUILD_TOOL_VERSION=$BUILD_TOOL_VERSION" >> $GITHUB_ENV
-          echo Last build tool version is: $BUILD_TOOL_VERSION
-      - uses: r0adkll/sign-android-release@v1
-        name: Sign app AAB
-        id: sign_app
-        with:
-          releaseDirectory: app/app/build/outputs/bundle/debug
-          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
-          alias: ${{ secrets.ALIAS }}
-          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
-          keyPassword: ${{ secrets.KEY_PASSWORD }}
-        env:
-          BUILD_TOOLS_VERSION: ${{ env.BUILD_TOOL_VERSION }}
-      - uses: actions/upload-artifact@v7
-        with:
-          name: Pull Request-Build
-          path: ${{ steps.sign_app.outputs.signedReleaseFile }}
+      # Uncomment these steps together to sign the debug AAB and attach it to each run as an
+      # artifact. The version code step stays off otherwise: it rewrites app/app/build.gradle.kts,
+      # which gives the app module new cache keys on every run.
+      # - run: echo VERSION_CODE=$(expr 4700 + ${{ github.run_number }} + ${{ github.run_attempt }} - 1) >> $GITHUB_ENV
+      # - uses: chkfung/android-version-actions@v1.2
+      #   with:
+      #     gradlePath: app/app/build.gradle.kts
+      #     versionCode: ${{ env.VERSION_CODE }}
+      # - name: Setup build tool version variable
+      #   shell: bash
+      #   run: |
+      #     BUILD_TOOL_VERSION=$(ls /usr/local/lib/android/sdk/build-tools/ | tail -n 1)
+      #     echo "BUILD_TOOL_VERSION=$BUILD_TOOL_VERSION" >> $GITHUB_ENV
+      #     echo Last build tool version is: $BUILD_TOOL_VERSION
+      # - uses: r0adkll/sign-android-release@v1
+      #   name: Sign app AAB
+      #   id: sign_app
+      #   with:
+      #     releaseDirectory: app/app/build/outputs/bundle/debug
+      #     signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+      #     alias: ${{ secrets.ALIAS }}
+      #     keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+      #     keyPassword: ${{ secrets.KEY_PASSWORD }}
+      #   env:
+      #     BUILD_TOOLS_VERSION: ${{ env.BUILD_TOOL_VERSION }}
+      # - uses: actions/upload-artifact@v7
+      #   with:
+      #     name: Pull Request-Build
+      #     path: ${{ steps.sign_app.outputs.signedReleaseFile }}
