@@ -48,6 +48,11 @@ class CrossSellClickTrackingTest {
   }
 
   @Test
+  fun `a malformed escape in the campaign code is reported as written instead of throwing`() {
+    assertThat(campaignCode("https://www.hedvig.com/api/redirect/recommend?code=50%25off%")).isEqualTo("50%25off%")
+  }
+
+  @Test
   fun `a plain product link has no campaign code`() {
     assertThat(campaignCode("https://www.hedvig.com/se/forsakringar/djurforsakring")).isNull()
   }

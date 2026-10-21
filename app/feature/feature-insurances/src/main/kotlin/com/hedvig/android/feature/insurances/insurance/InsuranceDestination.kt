@@ -46,6 +46,7 @@ import androidx.compose.ui.util.lerp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
 import coil3.ImageLoader
+import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.core.uidata.UiCurrencyCode
@@ -113,7 +114,7 @@ internal fun InsuranceDestination(
     uiState = uiState,
     reload = { viewModel.emit(InsuranceScreenEvent.RetryLoading) },
     onInsuranceCardClick = onInsuranceCardClick,
-    onCrossSellClick = { crossSell ->
+    onCrossSellClick = dropUnlessResumed { crossSell: CrossSell ->
       viewModel.emit(InsuranceScreenEvent.CrossSellClicked(crossSell.id, crossSell.storeUrl))
       onCrossSellClick(crossSell.storeUrl)
     },

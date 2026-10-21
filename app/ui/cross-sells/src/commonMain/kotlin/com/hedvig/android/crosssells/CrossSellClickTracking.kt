@@ -16,10 +16,9 @@ enum class CrossSellUserFlow(val analyticsValue: String) {
 /**
  * Fires `cross_sell_clicked` when a member takes a cross-sell offer and the app sends them to the web store.
  *
- * The offer is described by [offerId] as the backend names it (`crossSell:ACCIDENT`) and the campaign code its
- * store URL applies, if any, rather than by the URL itself. Firebase Analytics drops any event parameter value
- * longer than 100 characters, and the store URL is a ~300 character redirect link. The store page the link lands
- * on is left out because the backend derives it from the same offer as [offerId].
+ * The offer is described by [offerId] as the backend names it (`crossSell:ACCIDENT`) and by the campaign code its
+ * store URL applies, if any. Both stay well under Firebase Analytics' 100 character limit for event parameter
+ * values, above which a value is dropped.
  */
 fun EventTrackingClient.trackCrossSellClicked(userFlow: CrossSellUserFlow, offerId: String, offerUrl: String) {
   trackEvent(
@@ -39,6 +38,13 @@ private fun queryParameter(url: String, name: String): String? {
   if (query.isEmpty()) return null
   return query.split('&').firstNotNullOfOrNull { pair ->
     if (pair.substringBefore('=') != name) return@firstNotNullOfOrNull null
-    URLDecoder.decode(pair.substringAfter('=', ""), "UTF-8").takeIf { it.isNotEmpty() }
+    val value = pair.substringAfter('=', "")
+    // A malformed escape must not crash the click that opens the store.
+    val decoded = try {
+      URLDecoder.decode(value, "UTF-8")
+    } catch (_: IllegalArgumentException) {
+      value
+    }
+    decoded.takeIf { it.isNotEmpty() }
   }
 }
