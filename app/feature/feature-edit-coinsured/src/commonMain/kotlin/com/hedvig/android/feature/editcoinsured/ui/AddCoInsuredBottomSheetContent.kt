@@ -15,29 +15,31 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.OutputTransformation
+import androidx.compose.foundation.text.input.TextFieldBuffer
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.insert
+import androidx.compose.foundation.text.input.maxLength
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.OffsetMapping
-import androidx.compose.ui.text.input.TransformedText
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
@@ -85,6 +87,7 @@ import hedvig.resources.general_cancel_button
 import hedvig.resources.something_went_wrong
 import kotlin.time.Clock
 import kotlin.time.Instant
+import kotlinx.coroutines.flow.filter
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
@@ -234,35 +237,31 @@ private fun FetchFromSsnFields(
   onSsnChanged: (String) -> Unit,
   onContinue: () -> Unit,
 ) {
-  var ssnInput by remember { mutableStateOf(ssn ?: "") }
-  val mask = stringResource(Res.string.edit_coinsured_ssn_placeholder)
-  val maskColor = HedvigTheme.colorScheme.textSecondary
+  val ssnState = rememberTextFieldState(ssn ?: "")
+  val currentSsn by rememberUpdatedState(ssn.orEmpty())
+  val currentOnSsnChanged by rememberUpdatedState(onSsnChanged)
+  LaunchedEffect(ssnState) {
+    snapshotFlow { ssnState.text.toString() }.filter { it != currentSsn }.collect { currentOnSsnChanged(it) }
+  }
   Column {
     HedvigTextField(
-      text = ssnInput,
+      state = ssnState,
       labelText = stringResource(Res.string.CONTRACT_PERSONAL_IDENTITY),
-      onValueChange = { value ->
-        if (value.length <= 12) {
-          onSsnChanged(value)
-          ssnInput = value
-        }
-      },
+      inputTransformation = InputTransformation.maxLength(PersonalNumberLength),
+      outputTransformation = PersonalNumberOutputTransformation,
+      mask = stringResource(Res.string.edit_coinsured_ssn_placeholder),
+      lineLimits = TextFieldLineLimits.SingleLine,
       textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
       errorState = if (errorMessage != null) {
         HedvigTextFieldDefaults.ErrorState.Error.WithMessage(stringResource(Res.string.something_went_wrong))
       } else {
         HedvigTextFieldDefaults.ErrorState.NoError
       },
-      visualTransformation = PersonalNumberVisualTransformation(mask, maskColor),
       keyboardOptions = KeyboardOptions(
         keyboardType = KeyboardType.Number,
         imeAction = ImeAction.Done,
       ),
-      keyboardActions = KeyboardActions(
-        onDone = {
-          onContinue()
-        },
-      ),
+      keyboardActions = { onContinue() },
       modifier = Modifier.fillMaxWidth(),
     )
     AnimatedVisibility(
@@ -281,42 +280,14 @@ private fun FetchFromSsnFields(
   }
 }
 
-private class PersonalNumberVisualTransformation(
-  private val mask: String,
-  private val maskColor: Color,
-) : VisualTransformation {
-  override fun filter(text: AnnotatedString): TransformedText {
-    val trimmed = if (text.text.length >= 12) text.text.substring(0..11) else text.text
+private const val PersonalNumberLength = 12
 
-    val annotatedString = buildAnnotatedString {
-      for (i in trimmed.indices) {
-        append(trimmed[i])
-        if (i == 7) {
-          append("-")
-        }
-      }
-      withStyle(SpanStyle(color = maskColor)) {
-        append(mask.takeLast(mask.length - length))
-      }
-    }
-
-    val personalNumberOffsetTranslator = object : OffsetMapping {
-      override fun originalToTransformed(offset: Int): Int {
-        return when {
-          offset < 8 -> offset
-          offset <= 12 -> offset + 1
-          else -> 13
-        }
-      }
-
-      override fun transformedToOriginal(offset: Int): Int {
-        return when {
-          offset <= 8 -> offset
-          else -> offset - 1
-        }.coerceAtMost(text.length)
-      }
-    }
-    return TransformedText(annotatedString, personalNumberOffsetTranslator)
+/**
+ * Shows a personal number as `YYYYMMDD-XXXX`.
+ */
+private object PersonalNumberOutputTransformation : OutputTransformation {
+  override fun TextFieldBuffer.transformOutput() {
+    if (length > 8) insert(8, "-")
   }
 }
 
