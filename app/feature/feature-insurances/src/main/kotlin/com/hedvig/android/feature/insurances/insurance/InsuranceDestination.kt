@@ -46,6 +46,7 @@ import androidx.compose.ui.util.lerp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
 import coil3.ImageLoader
+import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.core.uidata.UiCurrencyCode
@@ -103,7 +104,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun InsuranceDestination(
   viewModel: InsuranceViewModel,
   onInsuranceCardClick: (contractId: String) -> Unit,
-  onCrossSellClick: (String) -> Unit,
+  onCrossSellClick: (String) -> Boolean,
   navigateToCancelledInsurances: () -> Unit,
   imageLoader: ImageLoader,
   onNavigateToAddonPurchaseFlow: (List<ContractId>) -> Unit,
@@ -113,7 +114,11 @@ internal fun InsuranceDestination(
     uiState = uiState,
     reload = { viewModel.emit(InsuranceScreenEvent.RetryLoading) },
     onInsuranceCardClick = onInsuranceCardClick,
-    onCrossSellClick = onCrossSellClick,
+    onCrossSellClick = dropUnlessResumed { crossSell: CrossSell ->
+      if (onCrossSellClick(crossSell.storeUrl)) {
+        viewModel.emit(InsuranceScreenEvent.CrossSellClicked(crossSell.id, crossSell.storeUrl))
+      }
+    },
     navigateToCancelledInsurances = navigateToCancelledInsurances,
     imageLoader = imageLoader,
     onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
@@ -125,7 +130,7 @@ private fun InsuranceScreen(
   uiState: InsuranceUiState,
   reload: () -> Unit,
   onInsuranceCardClick: (contractId: String) -> Unit,
-  onCrossSellClick: (String) -> Unit,
+  onCrossSellClick: (CrossSell) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
   imageLoader: ImageLoader,
   onNavigateToAddonPurchaseFlow: (List<ContractId>) -> Unit,
@@ -194,7 +199,7 @@ private fun InsuranceScreenContent(
   pullRefreshState: PullRefreshState,
   quantityOfCancelledInsurances: Int,
   onInsuranceCardClick: (contractId: String) -> Unit,
-  onCrossSellClick: (String) -> Unit,
+  onCrossSellClick: (CrossSell) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
   onNavigateToAddonPurchaseFlow: (List<ContractId>) -> Unit,
   modifier: Modifier = Modifier,

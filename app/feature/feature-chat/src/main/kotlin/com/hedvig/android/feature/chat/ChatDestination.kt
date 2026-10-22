@@ -27,6 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.media3.datasource.cache.Cache
 import coil3.ImageLoader
+import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
 import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
@@ -71,6 +72,7 @@ internal fun CbmChatDestination(
   imageLoader: ImageLoader,
   appPackageId: String,
   openUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Boolean,
   onNavigateToClaimDetails: (String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onNavigateUp: () -> Unit,
@@ -104,9 +106,10 @@ internal fun CbmChatDestination(
     onDismissCrossSellClick = { crossSell ->
       viewModel.emit(CbmChatEvent.DismissCrossSell)
     },
-    onCrossSellClick = { crossSell ->
-      viewModel.emit(CbmChatEvent.CrossSellClicked)
-      openUrl(crossSell.storeUrl)
+    onCrossSellClick = dropUnlessResumed { crossSell: InChatCrossSell ->
+      if (openCrossSellUrl(crossSell.storeUrl)) {
+        viewModel.emit(CbmChatEvent.CrossSellClicked(crossSell.id, crossSell.storeUrl))
+      }
     },
   )
 }

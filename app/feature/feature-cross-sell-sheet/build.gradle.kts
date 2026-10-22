@@ -21,6 +21,7 @@ kotlin {
       implementation(projects.apolloOctopusPublic)
       implementation(projects.coreCommonPublic)
       implementation(projects.coreDemoMode)
+      implementation(projects.composeUi)
       implementation(projects.crossSells)
       implementation(projects.dataAddons)
       implementation(projects.dataContract)
@@ -41,6 +42,7 @@ kotlin {
       implementation(projects.experimentsTest)
       implementation(projects.loggingTest)
       implementation(projects.moleculeTest)
+      implementation(projects.trackingTest)
     }
   }
 }

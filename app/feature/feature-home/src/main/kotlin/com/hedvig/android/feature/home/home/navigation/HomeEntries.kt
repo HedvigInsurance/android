@@ -36,7 +36,7 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
   navigateToUsageData: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
-  openCrossSellUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Boolean,
   imageLoader: ImageLoader,
   navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
 ) {

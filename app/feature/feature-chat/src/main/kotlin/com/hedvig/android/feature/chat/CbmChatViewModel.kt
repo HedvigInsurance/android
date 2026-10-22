@@ -32,6 +32,9 @@ import arrow.core.Either
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.core.tracking.EventTrackingClient
+import com.hedvig.android.crosssells.CrossSellUserFlow
+import com.hedvig.android.crosssells.trackCrossSellClicked
 import com.hedvig.android.data.chat.database.ChatDao
 import com.hedvig.android.data.chat.database.ChatMessageEntity
 import com.hedvig.android.data.chat.database.RemoteKeyDao
@@ -91,6 +94,7 @@ internal class CbmChatViewModel @AssistedInject constructor(
   context: Context,
   getInChatCrossSellUseCase: GetInChatCrossSellUseCase,
   hideInChatCrossSellUseCase: HideInChatCrossSellUseCase,
+  eventTrackingClient: EventTrackingClient,
   coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + AndroidUiDispatcher.Main),
 ) : MoleculeViewModel<CbmChatEvent, CbmChatUiState>(
     initialState = CbmChatUiState.Initializing,
@@ -109,7 +113,8 @@ internal class CbmChatViewModel @AssistedInject constructor(
       chatRepository = chatRepository,
       getInChatCrossSellUseCase = getInChatCrossSellUseCase,
       hideInChatCrossSellUseCase = hideInChatCrossSellUseCase,
-      context,
+      eventTrackingClient = eventTrackingClient,
+      context = context,
     ),
     coroutineScope = coroutineScope,
   )
@@ -152,6 +157,7 @@ internal class CbmChatPresenter(
   private val chatRepository: CbmChatRepository,
   private val getInChatCrossSellUseCase: GetInChatCrossSellUseCase,
   private val hideInChatCrossSellUseCase: HideInChatCrossSellUseCase,
+  private val eventTrackingClient: EventTrackingClient,
   private val context: Context,
 ) : MoleculePresenter<CbmChatEvent, CbmChatUiState> {
   @OptIn(ExperimentalPagingApi::class)
@@ -292,6 +298,7 @@ internal class CbmChatPresenter(
 
         is CbmChatEvent.CrossSellClicked -> {
           hideCrossSell = true
+          eventTrackingClient.trackCrossSellClicked(CrossSellUserFlow.IN_CHAT_X_SELL, event.offerId, event.offerUrl)
           launch {
             logInChatCrossSell(CLICKED)
             // Taking the offer ends it for this conversation, just as turning it down does.
@@ -445,7 +452,7 @@ internal sealed interface CbmChatEvent {
 
   data object DismissCrossSell : CbmChatEvent
 
-  data object CrossSellClicked : CbmChatEvent
+  data class CrossSellClicked(val offerId: String, val offerUrl: String) : CbmChatEvent
 
   data class SendTextMessage(
     val message: String,

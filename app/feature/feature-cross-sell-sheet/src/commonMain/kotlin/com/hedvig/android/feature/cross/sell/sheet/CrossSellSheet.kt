@@ -9,7 +9,9 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.withStateAtLeast
 import coil3.ImageLoader
+import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.crosssells.CrossSellSheetData
+import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.cross.sell.sheet.CrossSellSheetState.Content
 import com.hedvig.android.feature.cross.sell.sheet.CrossSellSheetState.DontShow
@@ -22,7 +24,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @Composable
 fun CrossSellSheet(
   isInScreenEligibleForCrossSells: Boolean,
-  onCrossSellClick: (String) -> Unit,
+  onCrossSellClick: (String) -> Boolean,
   onAddonClick: (eligibleInsuranceIds: List<String>) -> Unit,
   imageLoader: ImageLoader,
 ) {
@@ -70,7 +72,12 @@ fun CrossSellSheet(
     }
     com.hedvig.android.crosssells.CrossSellBottomSheet(
       state = sheetState,
-      onCrossSellClick = onCrossSellClick,
+      onCrossSellClick = dropUnlessResumed { crossSell: CrossSell ->
+        if (onCrossSellClick(crossSell.storeUrl)) {
+          viewModel.emit(CrossSellSheetEvent.CrossSellClicked(crossSell.id, crossSell.storeUrl))
+        }
+      },
+      onRecommendedAddonClick = { deepLink -> onCrossSellClick(deepLink) },
       onAddonClick = onAddonClick,
       imageLoader = imageLoader,
     )

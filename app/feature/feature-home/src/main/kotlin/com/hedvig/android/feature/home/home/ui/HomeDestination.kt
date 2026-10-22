@@ -95,6 +95,7 @@ import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.pager.indicator.CardCarousel
+import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.common.image.storyblokResized
@@ -105,6 +106,7 @@ import com.hedvig.android.crosssells.AddonsSection
 import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellBottomSheet
 import com.hedvig.android.crosssells.CrossSellSheetData
+import com.hedvig.android.crosssells.CrossSellUserFlow
 import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.AddonBannerInfo
@@ -274,7 +276,7 @@ internal fun HomeDestination(
   navigateToHelpCenter: () -> Unit,
   navigateToQuickLink: (QuickLinkDestination) -> Unit,
   openUrl: (String) -> Unit,
-  openCrossSellUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Boolean,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
@@ -300,7 +302,11 @@ internal fun HomeDestination(
     navigateToHelpCenter = navigateToHelpCenter,
     navigateToQuickLink = navigateToQuickLink,
     openUrl = openUrl,
-    openCrossSellUrl = openCrossSellUrl,
+    onCrossSellClick = dropUnlessResumed { userFlow: CrossSellUserFlow, crossSell: CrossSell ->
+      if (openCrossSellUrl(crossSell.storeUrl)) {
+        viewModel.emit(HomeEvent.CrossSellClicked(userFlow, crossSell.id, crossSell.storeUrl))
+      }
+    },
     openAppSettings = openAppSettings,
     navigateToMissingInfo = navigateToMissingInfo,
     markMessageAsSeen = { viewModel.emit(MarkMessageAsSeen(it)) },
@@ -336,7 +342,7 @@ private fun HomeScreen(
   navigateToHelpCenter: () -> Unit,
   navigateToQuickLink: (QuickLinkDestination) -> Unit,
   openUrl: (String) -> Unit,
-  openCrossSellUrl: (String) -> Unit,
+  onCrossSellClick: (CrossSellUserFlow, CrossSell) -> Unit,
   markMessageAsSeen: (String) -> Unit,
   deleteDraftClaim: (String) -> Unit,
   dismissOngoingShopSession: (String) -> Unit,
@@ -363,7 +369,8 @@ private fun HomeScreen(
   CrossSellBottomSheet(
     state = crossSellBottomSheetState,
     markCrossSellsNotificationAsSeen = markCrossSellsNotificationAsSeen,
-    onCrossSellClick = openCrossSellUrl,
+    onCrossSellClick = { crossSell -> onCrossSellClick(CrossSellUserFlow.HOME_X_SELL, crossSell) },
+    onRecommendedAddonClick = openUrl,
     onAddonClick = { ids -> navigateToAddonPurchaseFlow(ids, AddonBannerSource.HOME_CROSS_SELL_SHEET) },
     imageLoader = imageLoader,
   )
@@ -489,7 +496,7 @@ private fun HomeScreen(
             navigateToContactInfo = navigateToContactInfo,
             navigateToChipIdScreen = navigateToChipIdScreen,
             navigateToUsageData = navigateToUsageData,
-            openCrossSellUrl = openCrossSellUrl,
+            onCrossSellClick = onCrossSellClick,
             imageLoader = imageLoader,
             navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
             onChatIconClick = onNavigateToInbox,
@@ -667,7 +674,7 @@ private fun HomeScreenSuccess(
   navigateToContactInfo: () -> Unit,
   navigateToChipIdScreen: () -> Unit,
   navigateToUsageData: () -> Unit,
-  openCrossSellUrl: (String) -> Unit,
+  onCrossSellClick: (CrossSellUserFlow, CrossSell) -> Unit,
   imageLoader: ImageLoader,
   navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
   onChatIconClick: () -> Unit,
@@ -1015,7 +1022,7 @@ private fun HomeScreenSuccess(
 
             HomeSection.DiscoverInsurances -> DiscoverInsurancesSection(
               crossSells = uiState.discoverCrossSells,
-              onCrossSellClick = openCrossSellUrl,
+              onCrossSellClick = { crossSell -> onCrossSellClick(CrossSellUserFlow.HOME, crossSell) },
               imageLoader = imageLoader,
             )
 
@@ -1615,7 +1622,7 @@ private fun HomeAddonsSection(
 @Composable
 private fun DiscoverInsurancesSection(
   crossSells: List<CrossSell>,
-  onCrossSellClick: (String) -> Unit,
+  onCrossSellClick: (CrossSell) -> Unit,
   imageLoader: ImageLoader,
 ) {
   CrossSellsSection(
@@ -1667,7 +1674,8 @@ private fun WelcomeMessage(firstName: String, modifier: Modifier = Modifier) {
 private fun CrossSellBottomSheet(
   state: HedvigBottomSheetState<CrossSellSheetData>,
   markCrossSellsNotificationAsSeen: () -> Unit,
-  onCrossSellClick: (String) -> Unit,
+  onCrossSellClick: (CrossSell) -> Unit,
+  onRecommendedAddonClick: (deepLink: String) -> Unit,
   onAddonClick: (eligibleInsuranceIds: List<String>) -> Unit,
   imageLoader: ImageLoader,
 ) {
@@ -1681,6 +1689,7 @@ private fun CrossSellBottomSheet(
   CrossSellBottomSheet(
     state = state,
     onCrossSellClick = onCrossSellClick,
+    onRecommendedAddonClick = onRecommendedAddonClick,
     onAddonClick = onAddonClick,
     imageLoader = imageLoader,
   )
@@ -1822,7 +1831,7 @@ private fun PreviewHomeScreen(
         navigateToHelpCenter = {},
         navigateToQuickLink = {},
         openUrl = {},
-        openCrossSellUrl = {},
+        onCrossSellClick = { _, _ -> },
         openAppSettings = {},
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
@@ -1860,7 +1869,7 @@ private fun PreviewHomeScreenWithError() {
         navigateToHelpCenter = {},
         navigateToQuickLink = {},
         openUrl = {},
-        openCrossSellUrl = {},
+        onCrossSellClick = { _, _ -> },
         openAppSettings = {},
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
@@ -1931,7 +1940,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToHelpCenter = {},
         navigateToQuickLink = {},
         openUrl = {},
-        openCrossSellUrl = {},
+        onCrossSellClick = { _, _ -> },
         openAppSettings = {},
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
