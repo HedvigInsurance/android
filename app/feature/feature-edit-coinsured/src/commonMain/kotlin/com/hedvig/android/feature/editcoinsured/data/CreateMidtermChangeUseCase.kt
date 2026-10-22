@@ -39,38 +39,7 @@ internal class CreateMidtermChangeUseCaseImpl(
     coInsured: List<CoInsured>,
     type: CoInsuredFlowType,
   ): Either<ErrorMessage, CreateMidtermChangeResult> = either {
-    val mutation = CreateMidtermChangeMutation(
-      contractId,
-      when (type) {
-        CoInsuredFlowType.CoInsured -> MidtermChangeIntentCreateInput(
-          coInsuredInputs = presentIfNotNull(
-            coInsured.map {
-              CoInsuredInput(
-                firstName = presentIfNotNull(it.firstName),
-                lastName = presentIfNotNull(it.lastName),
-                ssn = presentIfNotNull(it.ssn),
-                birthdate = presentIfNotNull(it.birthDate),
-              )
-            },
-          ),
-          coOwnersInputs = absent(),
-        )
-
-        CoInsuredFlowType.CoOwners -> MidtermChangeIntentCreateInput(
-          coInsuredInputs = absent(),
-          coOwnersInputs = presentIfNotNull(
-            coInsured.map {
-              CoOwnersInput(
-                firstName = presentIfNotNull(it.firstName),
-                lastName = presentIfNotNull(it.lastName),
-                ssn = presentIfNotNull(it.ssn),
-                birthdate = presentIfNotNull(it.birthDate),
-              )
-            },
-          ),
-        )
-      },
-    )
+    val mutation = CreateMidtermChangeMutation(contractId, coInsured.toMidtermChangeIntentCreateInput(type))
 
     val result = apolloClient.mutation(mutation)
       .safeExecute(::ErrorMessage)
@@ -101,6 +70,41 @@ internal class CreateMidtermChangeUseCaseImpl(
     } ?: raise(ErrorMessage("No intent"))
   }
 }
+
+/**
+ * The whole list is sent, including co-insured whose names are still missing. The backend rejects a blank name,
+ * so a blank one is sent as absent, the same as a missing one.
+ */
+internal fun List<CoInsured>.toMidtermChangeIntentCreateInput(type: CoInsuredFlowType): MidtermChangeIntentCreateInput =
+  when (type) {
+    CoInsuredFlowType.CoInsured -> MidtermChangeIntentCreateInput(
+      coInsuredInputs = presentIfNotNull(
+        map {
+          CoInsuredInput(
+            firstName = presentIfNotNull(it.firstName?.takeIf(String::isNotBlank)),
+            lastName = presentIfNotNull(it.lastName?.takeIf(String::isNotBlank)),
+            ssn = presentIfNotNull(it.ssn),
+            birthdate = presentIfNotNull(it.birthDate),
+          )
+        },
+      ),
+      coOwnersInputs = absent(),
+    )
+
+    CoInsuredFlowType.CoOwners -> MidtermChangeIntentCreateInput(
+      coInsuredInputs = absent(),
+      coOwnersInputs = presentIfNotNull(
+        map {
+          CoOwnersInput(
+            firstName = presentIfNotNull(it.firstName?.takeIf(String::isNotBlank)),
+            lastName = presentIfNotNull(it.lastName?.takeIf(String::isNotBlank)),
+            ssn = presentIfNotNull(it.ssn),
+            birthdate = presentIfNotNull(it.birthDate),
+          )
+        },
+      ),
+    )
+  }
 
 internal data class CreateMidtermChangeResult(
   val id: String,
