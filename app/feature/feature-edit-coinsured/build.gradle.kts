@@ -42,6 +42,7 @@ kotlin {
       implementation(projects.navigationCore)
     }
     jvmTest.dependencies {
+      implementation(libs.apollo.testingSupport)
       implementation(libs.assertK)
       implementation(libs.coroutines.test)
       implementation(libs.junit)

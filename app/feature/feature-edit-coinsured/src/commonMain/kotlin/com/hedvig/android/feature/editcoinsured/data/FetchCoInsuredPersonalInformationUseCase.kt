@@ -28,13 +28,17 @@ internal class FetchCoInsuredPersonalInformationUseCaseImpl(
     val result = apolloClient.query(PersonalInformationQuery(ssn))
       .safeExecute(::ErrorMessage)
       .bind()
-    if (result.personalInformation == null) {
+    val personalInformation = result.personalInformation
+    if (personalInformation == null ||
+      personalInformation.firstName.isBlank() ||
+      personalInformation.lastName.isBlank()
+    ) {
       val birthdate = if (ssn.length >= 8) convertSsnToBirthDateOrNull(ssn) else null
       CoInsuredPersonalInformation.EmptyInfo(birthdate)
     } else {
       CoInsuredPersonalInformation.FullInfo(
-        firstName = result.personalInformation.firstName,
-        lastName = result.personalInformation.lastName,
+        firstName = personalInformation.firstName,
+        lastName = personalInformation.lastName,
       )
     }
   }
