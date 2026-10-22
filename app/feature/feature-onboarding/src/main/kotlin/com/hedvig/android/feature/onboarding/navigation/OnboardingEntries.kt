@@ -29,7 +29,7 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 fun EntryProviderScope<HedvigNavKey>.onboardingEntries(
   backstack: Backstack,
   imageLoader: ImageLoader,
-  openUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Boolean,
   openPrivacyPolicy: () -> Unit,
   navigateToChipId: (contractId: String) -> Unit,
 ) {
@@ -82,7 +82,7 @@ fun EntryProviderScope<HedvigNavKey>.onboardingEntries(
 
       OnboardingStepId.BundleDiscount -> {
         val viewModel: OnboardingBundleViewModel = metroViewModel()
-        OnboardingBundleDestination(viewModel, imageLoader, backstack::navigateUp, openUrl)
+        OnboardingBundleDestination(viewModel, imageLoader, backstack::navigateUp, openCrossSellUrl)
       }
     }
   }

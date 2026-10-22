@@ -1,7 +1,6 @@
 package com.hedvig.android.crosssells
 
 import com.hedvig.android.core.tracking.EventTrackingClient
-import java.net.URLDecoder
 
 /** The surface a cross-sell was offered on, named after the backend `UserFlow` the offer was requested with. */
 enum class CrossSellUserFlow(val analyticsValue: String) {
@@ -38,13 +37,37 @@ private fun queryParameter(url: String, name: String): String? {
   if (query.isEmpty()) return null
   return query.split('&').firstNotNullOfOrNull { pair ->
     if (pair.substringBefore('=') != name) return@firstNotNullOfOrNull null
-    val value = pair.substringAfter('=', "")
-    // A malformed escape must not crash the click that opens the store.
-    val decoded = try {
-      URLDecoder.decode(value, "UTF-8")
-    } catch (_: IllegalArgumentException) {
-      value
-    }
-    decoded.takeIf { it.isNotEmpty() }
+    percentDecode(pair.substringAfter('=', "")).takeIf { it.isNotEmpty() }
   }
+}
+
+/**
+ * Decodes `%XX` escapes as UTF-8 and leaves every other character as written, a `+` and a malformed escape
+ * included, so it can never fail on a store link the backend built.
+ */
+internal fun percentDecode(value: String): String {
+  if ('%' !in value) return value
+  val decoded = StringBuilder(value.length)
+  val escapedBytes = ArrayList<Byte>()
+
+  fun flushEscapedBytes() {
+    if (escapedBytes.isEmpty()) return
+    decoded.append(escapedBytes.toByteArray().decodeToString())
+    escapedBytes.clear()
+  }
+  var index = 0
+  while (index < value.length) {
+    val high = if (value[index] == '%') value.getOrNull(index + 1)?.digitToIntOrNull(16) else null
+    val low = if (high != null) value.getOrNull(index + 2)?.digitToIntOrNull(16) else null
+    if (high != null && low != null) {
+      escapedBytes.add((high * 16 + low).toByte())
+      index += 3
+    } else {
+      flushEscapedBytes()
+      decoded.append(value[index])
+      index++
+    }
+  }
+  flushEscapedBytes()
+  return decoded.toString()
 }

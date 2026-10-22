@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.ImageLoader
+import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.tracking.EventTrackingClient
@@ -145,7 +146,7 @@ internal fun OnboardingBundleDestination(
   viewModel: OnboardingBundleViewModel,
   imageLoader: ImageLoader,
   navigateUp: () -> Unit,
-  openUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Boolean,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   OnboardingBundleScreen(
@@ -156,9 +157,10 @@ internal fun OnboardingBundleDestination(
     onClose = { viewModel.emit(OnboardingBundleEvent.Close) },
     onRetry = { viewModel.emit(OnboardingBundleEvent.Retry) },
     onContinueToApp = { viewModel.emit(OnboardingBundleEvent.ContinueToApp) },
-    onCrossSellClick = { crossSell ->
-      viewModel.emit(OnboardingBundleEvent.CrossSellClicked(crossSell.id, crossSell.storeUrl))
-      openUrl(crossSell.storeUrl)
+    onCrossSellClick = dropUnlessResumed { crossSell: OnboardingCrossSell ->
+      if (openCrossSellUrl(crossSell.storeUrl)) {
+        viewModel.emit(OnboardingBundleEvent.CrossSellClicked(crossSell.id, crossSell.storeUrl))
+      }
     },
   )
 }
