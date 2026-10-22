@@ -259,10 +259,12 @@ dependencies {
   runtimeOnly(platform(libs.okhttp.bom))
   runtimeOnly(libs.okhttp.core)
 
+  testImplementation(libs.androidx.junit)
   testImplementation(libs.assertK)
   testImplementation(libs.classgraph)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
+  testImplementation(libs.robolectric)
   testImplementation(projects.coreDatastoreTest)
   testImplementation(projects.loggingTest)
 

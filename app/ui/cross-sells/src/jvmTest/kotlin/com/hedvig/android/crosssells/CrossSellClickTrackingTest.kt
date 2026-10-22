@@ -48,8 +48,18 @@ class CrossSellClickTrackingTest {
   }
 
   @Test
-  fun `a malformed escape in the campaign code is reported as written instead of throwing`() {
-    assertThat(campaignCode("https://www.hedvig.com/api/redirect/recommend?code=50%25off%")).isEqualTo("50%25off%")
+  fun `a malformed escape in the campaign code is kept as written while valid ones decode`() {
+    assertThat(campaignCode("https://www.hedvig.com/api/redirect/recommend?code=50%25off%")).isEqualTo("50%off%")
+  }
+
+  @Test
+  fun `a plus in the campaign code stays a plus`() {
+    assertThat(campaignCode("https://www.hedvig.com/api/redirect/recommend?code=summer+10")).isEqualTo("summer+10")
+  }
+
+  @Test
+  fun `escapes decode as UTF-8, including multi-byte characters`() {
+    assertThat(percentDecode("r%C3%A4tt%2B50%20off")).isEqualTo("rätt+50 off")
   }
 
   @Test

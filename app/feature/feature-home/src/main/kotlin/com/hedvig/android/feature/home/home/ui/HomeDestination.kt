@@ -95,6 +95,7 @@ import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.pager.indicator.CardCarousel
+import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.common.image.storyblokResized
@@ -275,7 +276,7 @@ internal fun HomeDestination(
   navigateToHelpCenter: () -> Unit,
   navigateToQuickLink: (QuickLinkDestination) -> Unit,
   openUrl: (String) -> Unit,
-  openCrossSellUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Boolean,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
@@ -301,9 +302,10 @@ internal fun HomeDestination(
     navigateToHelpCenter = navigateToHelpCenter,
     navigateToQuickLink = navigateToQuickLink,
     openUrl = openUrl,
-    onCrossSellClick = { userFlow, crossSell ->
-      viewModel.emit(HomeEvent.CrossSellClicked(userFlow, crossSell.id, crossSell.storeUrl))
-      openCrossSellUrl(crossSell.storeUrl)
+    onCrossSellClick = dropUnlessResumed { userFlow: CrossSellUserFlow, crossSell: CrossSell ->
+      if (openCrossSellUrl(crossSell.storeUrl)) {
+        viewModel.emit(HomeEvent.CrossSellClicked(userFlow, crossSell.id, crossSell.storeUrl))
+      }
     },
     openAppSettings = openAppSettings,
     navigateToMissingInfo = navigateToMissingInfo,

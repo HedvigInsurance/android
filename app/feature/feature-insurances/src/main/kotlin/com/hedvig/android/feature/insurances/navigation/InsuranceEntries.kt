@@ -28,7 +28,7 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEntries(
   backstack: Backstack,
   onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
-  openCrossSellUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Boolean,
   startMovingFlow: () -> Unit,
   onNavigateToStartChangeTier: (contractId: String, isPaymentProtection: Boolean) -> Unit,
   startTerminationFlow: (cancelInsuranceData: CancelInsuranceData) -> Unit,
