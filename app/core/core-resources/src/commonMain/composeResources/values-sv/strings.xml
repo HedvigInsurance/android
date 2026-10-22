@@ -269,7 +269,7 @@
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_TWO_TO_EIGHT_HOURS">2-8 timmar</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_UNDER_TWO_HOURS">Under 2 timmar</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LOCK_DESCRIPTION">Berätta mer</string>
-  <string name="CLAIM_CHAT_STROLLER_THEFT_LOCK_DESCRIPTION_MESSAGE">Var barnvagnen låst? Berätta gärna med egna ord, t.ex. vilket lås du använde.</string>
+  <string name="CLAIM_CHAT_STROLLER_THEFT_LOCK_DESCRIPTION_MESSAGE">Var barnvagnen låst eller skyddad på något annat sätt?</string>
   <string name="CLAIM_CHAT_SUBMIT_CLAIM">Skicka in skadeanmälan</string>
   <string name="CLAIM_CHAT_SUCCESS_GO_TO_CLAIM">Gå till ärende</string>
   <string name="CLAIM_CHAT_SUCCESS_MESSAGE">Ditt ärende har skickats in</string>
@@ -1437,7 +1437,6 @@
   <string name="moving_uw_failure_paragraph">Skriv till oss i appen så hjälper vi dig så fort vi kan.</string>
   <string name="moving_uw_failure_title">Din adressändring kommer att hanteras manuellt av vårt service team</string>
   <string name="next_payment_card_details_button">Details</string>
-  <string name="not_selected">Ej valt</string>
   <string name="notifications_chat_you">Du</string>
   <string name="offer_discount_error_alert_title">Tyvärr finns inte den koden</string>
   <string name="offer_faq_title">Vanliga frågor</string>
