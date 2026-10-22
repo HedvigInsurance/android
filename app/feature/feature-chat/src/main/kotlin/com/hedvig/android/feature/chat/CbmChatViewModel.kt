@@ -35,6 +35,8 @@ import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.tracking.EventTrackingClient
 import com.hedvig.android.crosssells.CrossSellUserFlow
 import com.hedvig.android.crosssells.trackCrossSellClicked
+import com.hedvig.android.crosssells.trackCrossSellDismissed
+import com.hedvig.android.crosssells.trackCrossSellShown
 import com.hedvig.android.data.chat.database.ChatDao
 import com.hedvig.android.data.chat.database.ChatMessageEntity
 import com.hedvig.android.data.chat.database.RemoteKeyDao
@@ -49,6 +51,7 @@ import com.hedvig.android.feature.chat.data.ConversationInfo.NoConversation
 import com.hedvig.android.feature.chat.data.GetInChatCrossSellUseCase
 import com.hedvig.android.feature.chat.data.HideInChatCrossSellUseCase
 import com.hedvig.android.feature.chat.data.InChatCrossSell
+import com.hedvig.android.feature.chat.data.InChatCrossSellEvents
 import com.hedvig.android.feature.chat.data.InChatCrossSellTrackingEvent.CLICKED
 import com.hedvig.android.feature.chat.data.InChatCrossSellTrackingEvent.DISMISSED
 import com.hedvig.android.feature.chat.data.InChatCrossSellTrackingEvent.PROMPTED
@@ -112,8 +115,11 @@ internal class CbmChatViewModel @AssistedInject constructor(
       chatDao = chatDao,
       chatRepository = chatRepository,
       getInChatCrossSellUseCase = getInChatCrossSellUseCase,
-      hideInChatCrossSellUseCase = hideInChatCrossSellUseCase,
-      eventTrackingClient = eventTrackingClient,
+      crossSellEvents = InChatCrossSellEvents(
+        conversationId = Uuid.fromString(conversationId),
+        eventTrackingClient = eventTrackingClient,
+        hideInChatCrossSellUseCase = hideInChatCrossSellUseCase,
+      ),
       context = context,
     ),
     coroutineScope = coroutineScope,
@@ -156,8 +162,7 @@ internal class CbmChatPresenter(
   private val chatDao: ChatDao,
   private val chatRepository: CbmChatRepository,
   private val getInChatCrossSellUseCase: GetInChatCrossSellUseCase,
-  private val hideInChatCrossSellUseCase: HideInChatCrossSellUseCase,
-  private val eventTrackingClient: EventTrackingClient,
+  private val crossSellEvents: InChatCrossSellEvents,
   private val context: Context,
 ) : MoleculePresenter<CbmChatEvent, CbmChatUiState> {
   @OptIn(ExperimentalPagingApi::class)
@@ -288,22 +293,18 @@ internal class CbmChatPresenter(
           hideBanner = true
         }
 
+        is CbmChatEvent.CrossSellShown -> {
+          crossSellEvents.shown(event.offerId, event.offerUrl)
+        }
+
         is CbmChatEvent.DismissCrossSell -> {
           hideCrossSell = true
-          launch {
-            logInChatCrossSell(DISMISSED)
-            hideInChatCrossSell()
-          }
+          launch { crossSellEvents.dismissed(event.offerId, event.offerUrl) }
         }
 
         is CbmChatEvent.CrossSellClicked -> {
           hideCrossSell = true
-          eventTrackingClient.trackCrossSellClicked(CrossSellUserFlow.IN_CHAT_X_SELL, event.offerId, event.offerUrl)
-          launch {
-            logInChatCrossSell(CLICKED)
-            // Taking the offer ends it for this conversation, just as turning it down does.
-            hideInChatCrossSell()
-          }
+          launch { crossSellEvents.clicked(event.offerId, event.offerUrl) }
         }
       }
     }
@@ -333,12 +334,6 @@ internal class CbmChatPresenter(
           showFileFailedToBeSendToast = showFileFailedToBeSendToast,
         )
       }
-    }
-  }
-
-  private suspend fun hideInChatCrossSell() {
-    hideInChatCrossSellUseCase.invoke(conversationId).onLeft {
-      logcat(LogPriority.WARN) { "Could not hide the in-chat cross sell for $conversationId: ${it.message}" }
     }
   }
 }
@@ -450,7 +445,9 @@ internal sealed interface CbmChatEvent {
 
   data object HideBanner : CbmChatEvent
 
-  data object DismissCrossSell : CbmChatEvent
+  data class CrossSellShown(val offerId: String, val offerUrl: String) : CbmChatEvent
+
+  data class DismissCrossSell(val offerId: String, val offerUrl: String) : CbmChatEvent
 
   data class CrossSellClicked(val offerId: String, val offerUrl: String) : CbmChatEvent
 

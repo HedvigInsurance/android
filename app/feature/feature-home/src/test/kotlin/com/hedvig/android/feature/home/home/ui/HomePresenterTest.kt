@@ -886,6 +886,42 @@ internal class HomePresenterTest {
     }
   }
 
+  @Test
+  fun `an offer on screen reports the surface it was offered on and the offer url`() = runTest {
+    val eventTrackingClient = FakeEventTrackingClient()
+    val homePresenter = HomePresenter(
+      TestGetHomeDataUseCase(),
+      SeenImportantMessagesStorageImpl(),
+      FakeCrossSellHomeNotificationService(),
+      ApplicationScope(backgroundScope),
+      false,
+      TestDeleteClaimIntentDraftUseCase(),
+      FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
+      FakeDismissedShopSessionsStorage(),
+      FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
+      eventTrackingClient,
+    )
+    val offerUrl =
+      "https://www.hedvig.com/api/redirect/recommend?attributed_to=HEDVIG&next=%2Fse-en%2Finsurances%2Faccident&code=accident50app&requiresAuthorization=true"
+
+    homePresenter.test(HomeUiState.Loading) {
+      skipItems(1)
+      sendEvent(HomeEvent.CrossSellShown(CrossSellUserFlow.HOME_X_SELL, "crossSell:ACCIDENT", offerUrl))
+      runCurrent()
+      assertThat(eventTrackingClient.events).containsExactly(
+        FakeEventTrackingClient.TrackedEvent(
+          name = "cross_sell_shown",
+          parameters = mapOf(
+            "user_flow" to "home_x_sell",
+            "offer_id" to "crossSell:ACCIDENT",
+            "campaign_code" to "accident50app",
+          ),
+        ),
+      )
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
   private class TestGetHomeDataUseCase : GetHomeDataUseCase {
     val forceNetworkFetchTurbine = Turbine<Boolean>()
     val responseTurbine = Turbine<Either<ApolloOperationError, HomeData>>()

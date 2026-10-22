@@ -137,6 +137,7 @@ data class BundleProgress(
 @Composable
 fun CrossSellBottomSheet(
   state: HedvigBottomSheetState<CrossSellSheetData>,
+  onCrossSellShown: (offerId: String, offerUrl: String) -> Unit,
   onCrossSellClick: (CrossSell) -> Unit,
   onRecommendedAddonClick: (deepLink: String) -> Unit,
   onAddonClick: (eligibleInsuranceIds: List<String>) -> Unit,
@@ -164,6 +165,7 @@ fun CrossSellBottomSheet(
         otherCrossSells = crossSellSheetData.otherCrossSells,
         recommendedAddon = crossSellSheetData.recommendedAddon,
         addons = crossSellSheetData.addons,
+        shownReporter = rememberCrossSellShownReporter(onCrossSellShown),
         onCrossSellClick = onCrossSellClick,
         onRecommendedAddonClick = onRecommendedAddonClick,
         onAddonClick = onAddonClick,
@@ -181,6 +183,7 @@ private fun CrossSellsSheetContent(
   otherCrossSells: List<CrossSell>,
   recommendedAddon: RecommendedAddon?,
   addons: List<AddonBannerInfo>,
+  shownReporter: CrossSellShownReporter,
   onCrossSellClick: (CrossSell) -> Unit,
   onRecommendedAddonClick: (deepLink: String) -> Unit,
   onAddonClick: (eligibleInsuranceIds: List<String>) -> Unit,
@@ -210,6 +213,11 @@ private fun CrossSellsSheetContent(
             onCrossSellClick,
             dismissSheet = dismissSheet,
             imageLoader = imageLoader,
+            modifier = Modifier.reportCrossSellShown(
+              reporter = shownReporter,
+              offerId = recommendedCrossSell.crossSell.id,
+              offerUrl = recommendedCrossSell.crossSell.storeUrl,
+            ),
           )
         }
       }
@@ -227,6 +235,7 @@ private fun CrossSellsSheetContent(
           }
           CrossSellsSection(
             crossSells = otherCrossSells,
+            shownReporter = shownReporter,
             onCrossSellClick = onCrossSellClick,
             onSheetDismissed = dismissSheet,
             imageLoader = imageLoader,
@@ -524,6 +533,7 @@ private fun getHedvigStepProgressData(bundleProgress: BundleProgress): List<Step
 @Composable
 fun CrossSellsSection(
   crossSells: List<CrossSell>,
+  shownReporter: CrossSellShownReporter,
   onCrossSellClick: (CrossSell) -> Unit,
   onSheetDismissed: () -> Unit,
   imageLoader: ImageLoader,
@@ -538,6 +548,7 @@ fun CrossSellsSection(
         onSheetDismissed = onSheetDismissed,
         imageLoader = imageLoader,
         buttonSize = buttonSize,
+        modifier = Modifier.reportCrossSellShown(shownReporter, crossSell.id, crossSell.storeUrl),
       )
       if (index != crossSells.lastIndex) {
         Spacer(Modifier.height(16.dp))
@@ -769,6 +780,7 @@ private fun PreviewCrossSellsSheetContent(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       Column {
         CrossSellsSheetContent(
+          shownReporter = rememberCrossSellShownReporter { _, _ -> },
           recommendedCrossSell = RecommendedCrossSell(
             crossSell = CrossSell(
               "rh",
@@ -835,6 +847,7 @@ private fun PreviewCrossSellsSection() {
             buttonText = "button",
           )
         },
+        rememberCrossSellShownReporter { _, _ -> },
         {},
         {},
         rememberPreviewImageLoader(),
@@ -872,6 +885,7 @@ private fun PreviewRecommendedAddon(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       CrossSellsSheetContent(
         imageLoader = rememberPreviewImageLoader(),
+        shownReporter = rememberCrossSellShownReporter { _, _ -> },
         recommendedCrossSell = null,
         otherCrossSells = emptyList(),
         recommendedAddon = RecommendedAddon(

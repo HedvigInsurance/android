@@ -93,6 +93,35 @@ internal class CrossSellSheetPresenterTest {
       cancelAndIgnoreRemainingEvents()
     }
   }
+
+  @Test
+  fun `an offer on screen reports the smart cross-sell surface and the offer url`() = runTest {
+    val eventTrackingClient = FakeEventTrackingClient()
+    val presenter = CrossSellSheetPresenter(
+      FakeGetCrossSellSheetDataUseCase(CrossSellSheetData(null, emptyList(), recommendedAddon)),
+      FakeCrossSellAfterFlowRepository(CrossSellInfoType.EditCoInsured),
+      eventTrackingClient,
+    )
+    val offerUrl =
+      "https://www.hedvig.com/api/redirect/recommend?attributed_to=HEDVIG&next=%2Fse-en%2Finsurances%2Faccident&code=accident50app&requiresAuthorization=true"
+
+    presenter.test(CrossSellSheetState.Loading) {
+      skipItems(2)
+      sendEvent(CrossSellSheetEvent.CrossSellShown("crossSell:ACCIDENT", offerUrl))
+      runCurrent()
+      assertThat(eventTrackingClient.events).containsExactly(
+        FakeEventTrackingClient.TrackedEvent(
+          name = "cross_sell_shown",
+          parameters = mapOf(
+            "user_flow" to "smart_x_sell",
+            "offer_id" to "crossSell:ACCIDENT",
+            "campaign_code" to "accident50app",
+          ),
+        ),
+      )
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
 }
 
 private class FakeGetCrossSellSheetDataUseCase(

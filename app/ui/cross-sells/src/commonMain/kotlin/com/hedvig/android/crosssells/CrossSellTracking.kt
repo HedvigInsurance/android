@@ -12,16 +12,34 @@ enum class CrossSellUserFlow(val analyticsValue: String) {
   IN_CHAT_X_SELL("in_chat_x_sell"),
 }
 
+/** Fires `cross_sell_shown` when a cross-sell offer has been on screen, once per offer per visit to its surface. */
+fun EventTrackingClient.trackCrossSellShown(userFlow: CrossSellUserFlow, offerId: String, offerUrl: String) {
+  trackCrossSellEvent("cross_sell_shown", userFlow, offerId, offerUrl)
+}
+
+/** Fires `cross_sell_clicked` when a member takes a cross-sell offer and the app sends them to the web store. */
+fun EventTrackingClient.trackCrossSellClicked(userFlow: CrossSellUserFlow, offerId: String, offerUrl: String) {
+  trackCrossSellEvent("cross_sell_clicked", userFlow, offerId, offerUrl)
+}
+
+/** Fires `cross_sell_dismissed` when a member turns a cross-sell offer down. */
+fun EventTrackingClient.trackCrossSellDismissed(userFlow: CrossSellUserFlow, offerId: String, offerUrl: String) {
+  trackCrossSellEvent("cross_sell_dismissed", userFlow, offerId, offerUrl)
+}
+
 /**
- * Fires `cross_sell_clicked` when a member takes a cross-sell offer and the app sends them to the web store.
- *
  * The offer is described by [offerId] as the backend names it (`crossSell:ACCIDENT`) and by the campaign code its
  * store URL applies, if any. Both stay well under Firebase Analytics' 100 character limit for event parameter
  * values, above which a value is dropped.
  */
-fun EventTrackingClient.trackCrossSellClicked(userFlow: CrossSellUserFlow, offerId: String, offerUrl: String) {
+private fun EventTrackingClient.trackCrossSellEvent(
+  name: String,
+  userFlow: CrossSellUserFlow,
+  offerId: String,
+  offerUrl: String,
+) {
   trackEvent(
-    name = "cross_sell_clicked",
+    name = name,
     parameters = buildMap {
       put("user_flow", userFlow.analyticsValue)
       put("offer_id", offerId)
