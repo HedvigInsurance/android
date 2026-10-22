@@ -1942,10 +1942,9 @@ type CrossSell {
   pillowImageSmall: StoryblokImageAsset!
   pillowImageLarge: StoryblokImageAsset!
   """
-  Set when this cross-sell can be bought natively in the app: pass it to `Query.inAppPurchaseForm`.
-  Null means open `storeUrl`, as for every cross-sell before the native flow.
+  Products to choose between, e.g. dog or cat for pet. Empty for a single product.
   """
-  inAppProduct: InAppProduct
+  options: [CrossSell!]!
 }
 """
 A/B testing experiment (name and variant must be SCREAMING_SNAKE_CASE)
@@ -2713,127 +2712,6 @@ type IconVariants {
   light: IconVariant!
   dark: IconVariant!
 }
-enum InAppProduct {
-  ACCIDENT
-  PAYMENT_PROTECTION
-}
-type InAppPurchaseEligibility {
-  isEligible: Boolean!
-  """
-  Set when `isEligible` is false.
-  """
-  reason: InAppPurchaseIneligibilityReason
-  """
-  Set when `reason` is ALREADY_INSURED.
-  """
-  existingContractId: UUID
-}
-type InAppPurchaseFieldError {
-  fieldId: ID!
-  """
-  Localized message.
-  """
-  message: String!
-}
-input InAppPurchaseFieldInput {
-  fieldId: ID!
-  """
-  Every field takes a single value today; see `InAppPurchaseFormFieldType` for the format.
-  """
-  values: [String!]!
-}
-"""
-A single field to render in the form. Send its value back with `InAppPurchaseFieldInput.fieldId = id`.
-"""
-type InAppPurchaseFormField {
-  """
-  Echo back when submitting. Clients shouldn't branch on it.
-  """
-  id: ID!
-  type: InAppPurchaseFormFieldType!
-  """
-  Localized label.
-  """
-  title: String!
-  """
-  Present for SINGLE_SELECT.
-  """
-  options: [InAppPurchaseFormFieldOption!]
-  """
-  Values to prefill the field with. Empty means no default.
-  """
-  defaultValues: [String!]!
-  """
-  Present for NUMBER and DATE, in the same format as the value.
-  """
-  minValue: String
-  maxValue: String
-}
-type InAppPurchaseFormFieldOption {
-  value: String!
-  """
-  Localized label.
-  """
-  title: String!
-  """
-  False: show the option, but it can't be selected.
-  """
-  isSelectable: Boolean!
-  """
-  Localized explanation, e.g. why the option can't be selected.
-  """
-  additionalInfo: String
-}
-"""
-Value format per type: NUMBER is an integer like "2", DATE is ISO "2026-11-01", SINGLE_SELECT is the
-option's `value`.
-"""
-enum InAppPurchaseFormFieldType {
-  NUMBER
-  DATE
-  SINGLE_SELECT
-}
-type InAppPurchaseFormOutput {
-  product: Product!
-  eligibility: InAppPurchaseEligibility!
-  fields: [InAppPurchaseFormField!]!
-}
-enum InAppPurchaseIneligibilityReason {
-  ALREADY_INSURED
-  NOT_AVAILABLE
-}
-input InAppPurchaseQuoteInput {
-  product: InAppProduct!
-  fields: [InAppPurchaseFieldInput!]!
-  attribution: PriceIntentConfirmAttributionInput
-  """
-  Discount code the member entered. Send it with every quote: each quote sets the discount from this input
-  alone, so leaving it out or sending an empty string removes a code sent earlier.
-  A valid code replaces the Accident discount the app's cross-sell banner promises, since only one discount
-  applies. An invalid code returns a field error with `fieldId: "campaignCode"` and no offers.
-  """
-  campaignCode: String
-}
-type InAppPurchaseQuoteOutput {
-  """
-  Null unless `offers` is non-empty.
-  """
-  shopSessionId: UUID
-  offers: [ProductOffer!]!
-  """
-  Problems with specific fields, to show next to them. Nothing was quoted when this is non-empty.
-  """
-  fieldErrors: [InAppPurchaseFieldError!]!
-  """
-  A problem that isn't about one field.
-  """
-  userError: UserError
-}
-input InAppPurchaseSignInput {
-  shopSessionId: UUID!
-  offerId: UUID!
-  useBankIdSandbox: Boolean! = false
-}
 scalar Instant
 type InsurableLimit {
   label: String!
@@ -3082,10 +2960,10 @@ type Member {
   crossSell(source: CrossSellSource!): CrossSellV2! @deprecated(reason: "Use crossSellV2")
   """
   Returns cross-sells with optional smart recommendation.
-  - INSURANCES: All options in otherCrossSells led by the recommendation, no separate recommendation
+  - INSURANCES: All cross-sells in otherCrossSells led by the recommendation, no separate recommendation
   - HOME: Same response as INSURANCES; a distinct value so Home traffic is separable in attribution
   - ONBOARDING: Same response as INSURANCES; a distinct value for onboarding attribution
-  - HOME_X_SELL: Recommendation returned separately, plus the remaining options
+  - HOME_X_SELL: Recommendation returned separately, plus the remaining cross-sells
   - SMART_X_SELL (requires flowSource): Focused recommendation OR the full list, never both
   A listed cross-sell describes an available discount in its description for every flow except
   SMART_X_SELL. Where no discount applies it falls back to the plain product description.
@@ -4256,17 +4134,6 @@ type Mutation {
   """
   productOffersCancellationRequestedUpdate(productOfferIds: [UUID!]!, requested: Boolean!): ProductOffersMutationOutput!
   """
-  Submit the form from `inAppPurchaseForm` and get priced offers.
-  Call again after the member changes any value. Every call returns new offer ids, and only offers from the
-  latest response can be signed.
-  """
-  inAppPurchaseQuote(input: InAppPurchaseQuoteInput!): InAppPurchaseQuoteOutput!
-  """
-  Sign the chosen offer with Swedish BankID. Poll `Query.shopSessionSigning` with the returned signing id.
-  `useBankIdSandbox` behaves as in `Mutation.shopSessionStartSign`.
-  """
-  inAppPurchaseSign(input: InAppPurchaseSignInput!): ShopSessionSigningMutationOutput!
-  """
   Called to save insurance recommendation form and save recommendation email.
   """
   insuranceGuide(input: InsuranceGuideInput!): InsuranceGuideOutput!
@@ -4828,22 +4695,9 @@ type Product {
   """
   multiple: Boolean
   """
-  Questions and answers from the FAQ on the product's page on the website, in the member's language.
-  Empty when the page has none. Only filled for products sold in the app.
-  """
-  faq: [ProductFaqItem!]!
-  """
   A list of the external insurers valid for this specific product.
   """
   externalInsurers: [ExternalInsurer!]!
-}
-type ProductFaqItem {
-  question: String!
-  """
-  Storyblok rich text document (`"type": "doc"`), rendered by the client. Links to other website pages are
-  absolute URLs.
-  """
-  answer: JSON!
 }
 type ProductOffer {
   """
@@ -5230,11 +5084,6 @@ type Query {
   entrypointSearch(input: EntrypointSearchInput): [Entrypoint!]!
   shopSession(id: UUID!): ShopSession!
   carTrial(contractId: UUID!): TrialExtension
-  """
-  Screen 1 of the in-app purchase: product content, whether the member can buy it, and the form to fill in.
-  Has no side effects. When the member isn't eligible, `fields` is empty.
-  """
-  inAppPurchaseForm(product: InAppProduct!): InAppPurchaseFormOutput!
   """
   Outcome of shopSession.  Requires authentication
   Available forever, unlike shopSession which becomes hidden some time after creation
@@ -6113,11 +5962,11 @@ type UserError {
 }
 enum UserFlow {
   """
-  Insurances screen - all options led by the recommendation, no separate recommendation
+  Insurances screen - all cross-sells led by the recommendation, no separate recommendation
   """
   INSURANCES
   """
-  Home screen - recommendation + other options
+  Home screen - recommendation + other cross-sells
   """
   HOME_X_SELL
   """
@@ -6125,15 +5974,15 @@ enum UserFlow {
   """
   SMART_X_SELL
   """
-  End of onboarding - all options led by the recommendation
+  End of onboarding - all cross-sells led by the recommendation
   """
   ONBOARDING
   """
-  Home screen - all options led by the recommendation
+  Home screen - all cross-sells led by the recommendation
   """
   HOME
   """
-  Chat - a single generic recommendation linking to all insurances, no other options.
+  Chat - a single generic recommendation linking to all insurances, no other cross-sells.
   Render it from recommendedCrossSell.crossSell (title, description, buttonTitle, storeUrl); the outer
   RecommendedCrossSell banner and button fields carry generic copy and should be ignored.
   """
