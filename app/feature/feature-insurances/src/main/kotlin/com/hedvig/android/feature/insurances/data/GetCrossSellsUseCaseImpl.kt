@@ -3,6 +3,8 @@ package com.hedvig.android.feature.insurances.data
 import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.cache.normalized.FetchPolicy
+import com.apollographql.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
@@ -24,6 +26,7 @@ internal class GetCrossSellsUseCaseImpl(
     return either {
       val result = apolloClient
         .query(CrossSellsQuery())
+        .fetchPolicy(FetchPolicy.NetworkFirst)
         .safeExecute(::ErrorMessage)
         .bind()
       val crossSells = result.currentMember.crossSellV2.otherCrossSells.map { crossSell ->
