@@ -26,7 +26,6 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
 
 internal sealed interface InsuranceScreenEvent {
   data object RetryLoading : InsuranceScreenEvent
@@ -131,7 +130,7 @@ private fun loadInsuranceData(
 ): Flow<Either<ErrorMessage, InsuranceData>> {
   return combine(
     getInsuranceContractsUseCase.invoke(),
-    flow { emit(getCrossSellsUseCase.invoke()) },
+    getCrossSellsUseCase.invoke(),
     getAddonBannerInfoUseCase.invoke(AddonBannerSource.INSURANCES_TAB),
   ) { contractsResult, crossSellsDataResult, travelAddonBannerInfoResult ->
     either {

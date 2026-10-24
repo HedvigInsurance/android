@@ -513,11 +513,15 @@ internal class InsurancePresenterTest {
     val errorMessages = Turbine<ErrorMessage>()
     val crossSells = Turbine<List<CrossSell>>()
 
-    override suspend fun invoke(): Either<ErrorMessage, List<CrossSell>> {
-      return raceN(
-        { errorMessages.awaitItem() },
-        { crossSells.awaitItem() },
-      )
+    override fun invoke(): Flow<Either<ErrorMessage, List<CrossSell>>> {
+      return flow {
+        emit(
+          raceN(
+            { errorMessages.awaitItem() },
+            { crossSells.awaitItem() },
+          ),
+        )
+      }
     }
   }
 

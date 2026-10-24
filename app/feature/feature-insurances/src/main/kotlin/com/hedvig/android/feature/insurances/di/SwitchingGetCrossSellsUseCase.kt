@@ -19,5 +19,5 @@ internal class SwitchingGetCrossSellsUseCase(
   override val prodImpl: GetCrossSellsUseCaseImpl,
   override val demoImpl: GetCrossSellsUseCaseDemo,
 ) : GetCrossSellsUseCase, DemoSwitcher<GetCrossSellsUseCase>() {
-  override suspend fun invoke() = pick().invoke()
+  override fun invoke() = pickFlow { it.invoke() }
 }
