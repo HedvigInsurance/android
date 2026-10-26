@@ -11,12 +11,14 @@ import com.apollographql.apollo.exception.ApolloNetworkException
 import com.apollographql.apollo.network.NetworkTransport
 import com.apollographql.apollo.testing.MapTestNetworkTransport
 import com.apollographql.apollo.testing.QueueTestNetworkTransport
+import com.apollographql.cache.normalized.memory.MemoryCacheFactory
 import com.benasher44.uuid.uuid4
 import kotlin.concurrent.withLock
 import kotlinx.atomicfu.locks.reentrantLock
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.yield
+import octopus.cache.Cache
 import org.junit.rules.ExternalResource
 
 /**
@@ -35,6 +37,9 @@ import org.junit.rules.ExternalResource
  *   apolloClient.enqueueTestResponse()
  * }
  * ```
+ *
+ * The client has the app's in-memory normalized cache with the octopus type policies, so fetch policies behave as they
+ * do in the app.
  */
 class TestApolloClientRule(
   private val testNetworkTransportType: TestNetworkTransportType = TestNetworkTransportType.QUEUE,
@@ -44,15 +49,18 @@ class TestApolloClientRule(
 
   @OptIn(ApolloExperimental::class)
   override fun before() {
-    apolloClient = ApolloClient.Builder()
-      .networkTransport(
-        when (testNetworkTransportType) {
-          TestNetworkTransportType.QUEUE -> QueueTestNetworkTransport()
-          TestNetworkTransportType.MAP -> MapTestNetworkTransport()
-          TestNetworkTransportType.TURBINE_MAP -> TurbineMapTestNetworkTransport()
-        },
-      )
-      .build()
+    apolloClient = with(Cache) {
+      ApolloClient.Builder()
+        .networkTransport(
+          when (testNetworkTransportType) {
+            TestNetworkTransportType.QUEUE -> QueueTestNetworkTransport()
+            TestNetworkTransportType.MAP -> MapTestNetworkTransport()
+            TestNetworkTransportType.TURBINE_MAP -> TurbineMapTestNetworkTransport()
+          },
+        )
+        .cache(MemoryCacheFactory())
+        .build()
+    }
   }
 
   override fun after() {
