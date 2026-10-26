@@ -21,14 +21,20 @@ import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.DemoSwitcher
+import com.hedvig.android.core.tracking.EventTrackingClient
 import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellSheetData
+import com.hedvig.android.crosssells.CrossSellUserFlow
 import com.hedvig.android.crosssells.RecommendedAddon
 import com.hedvig.android.crosssells.RecommendedCrossSell
+import com.hedvig.android.crosssells.trackCrossSellClicked
+import com.hedvig.android.crosssells.trackCrossSellShown
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
+import com.hedvig.android.experiments.Experiment
+import com.hedvig.android.experiments.ExperimentProvider
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -45,6 +51,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.transformLatest
 import octopus.BottomSheetCrossSellsQuery
 import octopus.fragment.CrossSellFragment
+import octopus.type.CrossSellExperimentInput
 import octopus.type.CrossSellInput
 import octopus.type.FlowSource
 import octopus.type.UserFlow
@@ -54,13 +61,18 @@ import octopus.type.UserFlow
 internal class CrossSellSheetViewModel(
   getCrossSellSheetDataUseCase: GetCrossSellSheetDataUseCase,
   crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
+  eventTrackingClient: EventTrackingClient,
 ) : MoleculeViewModel<CrossSellSheetEvent, CrossSellSheetState>(
     CrossSellSheetState.Loading,
-    CrossSellSheetPresenter(getCrossSellSheetDataUseCase, crossSellAfterFlowRepository),
+    CrossSellSheetPresenter(getCrossSellSheetDataUseCase, crossSellAfterFlowRepository, eventTrackingClient),
   )
 
 internal sealed interface CrossSellSheetEvent {
   data object CrossSellSheetShown : CrossSellSheetEvent
+
+  data class CrossSellShown(val offerId: String, val offerUrl: String) : CrossSellSheetEvent
+
+  data class CrossSellClicked(val offerId: String, val offerUrl: String) : CrossSellSheetEvent
 }
 
 internal sealed interface CrossSellSheetState {
@@ -76,6 +88,7 @@ internal sealed interface CrossSellSheetState {
 internal class CrossSellSheetPresenter(
   private val getCrossSellSheetDataUseCase: GetCrossSellSheetDataUseCase,
   private val crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
+  private val eventTrackingClient: EventTrackingClient,
 ) : MoleculePresenter<CrossSellSheetEvent, CrossSellSheetState> {
   @Composable
   override fun MoleculePresenterScope<CrossSellSheetEvent>.present(
@@ -87,6 +100,14 @@ internal class CrossSellSheetPresenter(
       when (event) {
         is CrossSellSheetEvent.CrossSellSheetShown -> {
           crossSellAfterFlowRepository.showedCrossSellSheet((state as? CrossSellSheetState.Content)?.infoType)
+        }
+
+        is CrossSellSheetEvent.CrossSellShown -> {
+          eventTrackingClient.trackCrossSellShown(CrossSellUserFlow.SMART_X_SELL, event.offerId, event.offerUrl)
+        }
+
+        is CrossSellSheetEvent.CrossSellClicked -> {
+          eventTrackingClient.trackCrossSellClicked(CrossSellUserFlow.SMART_X_SELL, event.offerId, event.offerUrl)
         }
       }
     }
@@ -157,10 +178,12 @@ internal interface GetCrossSellSheetDataUseCase {
 @Inject
 internal class GetCrossSellSheetDataUseCaseImpl(
   private val apolloClient: ApolloClient,
+  private val experimentProvider: ExperimentProvider,
 ) : GetCrossSellSheetDataUseCase {
   override suspend fun invoke(source: CrossSellInput): Flow<Either<ErrorMessage, CrossSellSheetData>> {
+    val experiments = experimentProvider.activeExperiments().toCrossSellExperimentInputs()
     return apolloClient
-      .query(BottomSheetCrossSellsQuery(source))
+      .query(BottomSheetCrossSellsQuery(source.copy(experiments = experiments)))
       .fetchPolicy(FetchPolicy.NetworkOnly)
       .safeFlow(::ErrorMessage)
       .map { response ->
@@ -239,4 +262,8 @@ internal class DemoGetCrossSellSheetDataUseCase : GetCrossSellSheetDataUseCase {
   override suspend fun invoke(source: CrossSellInput): Flow<Either<ErrorMessage, CrossSellSheetData>> {
     return flowOf(ErrorMessage("Ineligible for demo mode").left())
   }
+}
+
+private fun List<Experiment>.toCrossSellExperimentInputs(): List<CrossSellExperimentInput> {
+  return map { CrossSellExperimentInput(name = it.name, variant = it.variant) }
 }

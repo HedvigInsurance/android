@@ -1,4 +1,8 @@
-query Home($claimsHistoryFlag: Boolean!, $resumeClaimEnabled: Boolean!) {
+query Home(
+  $claimsHistoryFlag: Boolean!
+  $resumeClaimEnabled: Boolean!
+  $experiments: [CrossSellExperimentInput!]!
+) {
   currentMember {
     firstName
     resumableClaimIntent @include(if: $resumeClaimEnabled) {
@@ -41,7 +45,7 @@ query Home($claimsHistoryFlag: Boolean!, $resumeClaimEnabled: Boolean!) {
         buttonText
       }
     }
-    crossSellV2(input: { userFlow: HOME_X_SELL, flowSource: null, experiments: [] }) {
+    crossSellV2(input: { userFlow: HOME_X_SELL, flowSource: null, experiments: $experiments }) {
       recommendedCrossSell {
         crossSell {
           ...HomeCrossSellFragment
@@ -80,7 +84,7 @@ query Home($claimsHistoryFlag: Boolean!, $resumeClaimEnabled: Boolean!) {
         }
       }
     }
-    discoverCrossSells: crossSellV2(input: { userFlow: HOME, flowSource: null, experiments: [] }) {
+    discoverCrossSells: crossSellV2(input: { userFlow: HOME, flowSource: null, experiments: $experiments }) {
       otherCrossSells {
         ...HomeCrossSellFragment
       }

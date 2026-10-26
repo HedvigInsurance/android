@@ -93,6 +93,8 @@ import coil3.compose.AsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.NullRequestDataException
 import com.hedvig.android.compose.ui.withoutPlacement
+import com.hedvig.android.crosssells.rememberCrossSellShownReporter
+import com.hedvig.android.crosssells.reportCrossSellShown
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ErrorSnackbar
 import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
@@ -208,6 +210,7 @@ internal fun CbmChatLoadedScreen(
   onSendPhoto: (List<Uri>) -> Unit,
   onSendMedia: (List<Uri>) -> Unit,
   onCloseBannerClick: () -> Unit,
+  onCrossSellShown: (offerId: String, offerUrl: String) -> Unit,
   onDismissCrossSellClick: (InChatCrossSell) -> Unit,
   onCrossSellClick: (InChatCrossSell) -> Unit,
   errorSnackbarState: ErrorSnackbarState?,
@@ -239,6 +242,7 @@ internal fun CbmChatLoadedScreen(
     },
     errorSnackbarState = errorSnackbarState,
     onCloseBannerClick = onCloseBannerClick,
+    onCrossSellShown = onCrossSellShown,
     onDismissCrossSellClick = onDismissCrossSellClick,
     onCrossSellClick = onCrossSellClick,
   )
@@ -253,6 +257,7 @@ private fun ChatLoadedScreen(
   simpleVideoCache: Cache,
   openUrl: (String) -> Unit,
   onCloseBannerClick: () -> Unit,
+  onCrossSellShown: (offerId: String, offerUrl: String) -> Unit,
   onDismissCrossSellClick: (InChatCrossSell) -> Unit,
   onCrossSellClick: (InChatCrossSell) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
@@ -260,6 +265,7 @@ private fun ChatLoadedScreen(
   chatInput: @Composable () -> Unit,
   errorSnackbarState: ErrorSnackbarState?,
 ) {
+  val crossSellShownReporter = rememberCrossSellShownReporter(onCrossSellShown)
   val dividerColor = HedvigTheme.colorScheme.borderSecondary
   val dividerThickness = 1.dp
   Box {
@@ -308,6 +314,7 @@ private fun ChatLoadedScreen(
             onDismissClick = { onDismissCrossSellClick(crossSell) },
             onSeePriceClick = { onCrossSellClick(crossSell) },
             modifier = Modifier
+              .reportCrossSellShown(crossSellShownReporter, crossSell.id, crossSell.storeUrl)
               .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
               .padding(horizontal = 16.dp)
               .padding(bottom = 16.dp),
@@ -1347,6 +1354,7 @@ private fun PreviewChatLoadedScreen() {
           showFileTooBigErrorToast = false,
           showFileFailedToBeSentToast = false,
           crossSell = InChatCrossSell(
+            id = "crossSell:ALL",
             title = "Få rabatt",
             description = "Aktivera din rabatt genom att teckna en till försäkring för hem, djur eller bil.",
             buttonTitle = "Se ditt pris",
@@ -1362,6 +1370,7 @@ private fun PreviewChatLoadedScreen() {
         simpleVideoCache = rememberPreviewSimpleCache(),
         errorSnackbarState = null,
         onCloseBannerClick = {},
+        onCrossSellShown = { _, _ -> },
         onDismissCrossSellClick = {},
         onCrossSellClick = {},
       )

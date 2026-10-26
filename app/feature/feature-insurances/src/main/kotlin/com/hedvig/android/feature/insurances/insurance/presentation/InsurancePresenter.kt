@@ -11,6 +11,10 @@ import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.Either
 import arrow.core.raise.either
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.tracking.EventTrackingClient
+import com.hedvig.android.crosssells.CrossSellUserFlow
+import com.hedvig.android.crosssells.trackCrossSellClicked
+import com.hedvig.android.crosssells.trackCrossSellShown
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
@@ -30,6 +34,10 @@ import kotlinx.coroutines.flow.flow
 
 internal sealed interface InsuranceScreenEvent {
   data object RetryLoading : InsuranceScreenEvent
+
+  data class CrossSellShown(val offerId: String, val offerUrl: String) : InsuranceScreenEvent
+
+  data class CrossSellClicked(val offerId: String, val offerUrl: String) : InsuranceScreenEvent
 }
 
 internal data class InsuranceUiState(
@@ -60,6 +68,7 @@ internal class InsurancePresenter(
   private val getInsuranceContractsUseCase: GetInsuranceContractsUseCase,
   private val getCrossSellsUseCase: GetCrossSellsUseCase,
   private val getAddonBannerInfoUseCase: GetAddonBannerInfoUseCase,
+  private val eventTrackingClient: EventTrackingClient,
 ) : MoleculePresenter<InsuranceScreenEvent, InsuranceUiState> {
   @Composable
   override fun MoleculePresenterScope<InsuranceScreenEvent>.present(lastState: InsuranceUiState): InsuranceUiState {
@@ -75,7 +84,17 @@ internal class InsurancePresenter(
 
     CollectEvents { event ->
       when (event) {
-        InsuranceScreenEvent.RetryLoading -> loadIteration++
+        InsuranceScreenEvent.RetryLoading -> {
+          loadIteration++
+        }
+
+        is InsuranceScreenEvent.CrossSellShown -> {
+          eventTrackingClient.trackCrossSellShown(CrossSellUserFlow.INSURANCES, event.offerId, event.offerUrl)
+        }
+
+        is InsuranceScreenEvent.CrossSellClicked -> {
+          eventTrackingClient.trackCrossSellClicked(CrossSellUserFlow.INSURANCES, event.offerId, event.offerUrl)
+        }
       }
     }
 

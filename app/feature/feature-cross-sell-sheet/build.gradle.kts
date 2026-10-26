@@ -21,19 +21,28 @@ kotlin {
       implementation(projects.apolloOctopusPublic)
       implementation(projects.coreCommonPublic)
       implementation(projects.coreDemoMode)
+      implementation(projects.composeUi)
       implementation(projects.crossSells)
       implementation(projects.dataAddons)
       implementation(projects.dataContract)
       implementation(projects.dataCrossSellAfterFlow)
       implementation(projects.designSystemHedvig)
+      implementation(projects.experimentsPublic)
       implementation(projects.moleculePublic)
     }
     jvmTest.dependencies {
+      implementation(libs.apollo.testingSupport)
       implementation(libs.assertK)
       implementation(libs.coroutines.test)
       implementation(libs.junit)
       implementation(libs.turbine)
+      implementation(projects.apolloOctopusTest)
+      implementation(projects.apolloTest)
+      implementation(projects.coreCommonTest)
+      implementation(projects.experimentsTest)
+      implementation(projects.loggingTest)
       implementation(projects.moleculeTest)
+      implementation(projects.trackingTest)
     }
   }
 }

@@ -46,13 +46,16 @@ import androidx.compose.ui.util.lerp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
 import coil3.ImageLoader
+import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.crosssells.AddonsSection
 import com.hedvig.android.crosssells.CrossSellItemPlaceholder
+import com.hedvig.android.crosssells.CrossSellShownReporter
 import com.hedvig.android.crosssells.CrossSellsSection
+import com.hedvig.android.crosssells.rememberCrossSellShownReporter
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.FlowType
 import com.hedvig.android.data.contract.ChipIdState
@@ -103,7 +106,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun InsuranceDestination(
   viewModel: InsuranceViewModel,
   onInsuranceCardClick: (contractId: String) -> Unit,
-  onCrossSellClick: (String) -> Unit,
+  onCrossSellClick: (String) -> Boolean,
   navigateToCancelledInsurances: () -> Unit,
   imageLoader: ImageLoader,
   onNavigateToAddonPurchaseFlow: (List<ContractId>) -> Unit,
@@ -113,7 +116,12 @@ internal fun InsuranceDestination(
     uiState = uiState,
     reload = { viewModel.emit(InsuranceScreenEvent.RetryLoading) },
     onInsuranceCardClick = onInsuranceCardClick,
-    onCrossSellClick = onCrossSellClick,
+    onCrossSellShown = { offerId, offerUrl -> viewModel.emit(InsuranceScreenEvent.CrossSellShown(offerId, offerUrl)) },
+    onCrossSellClick = dropUnlessResumed { crossSell: CrossSell ->
+      if (onCrossSellClick(crossSell.storeUrl)) {
+        viewModel.emit(InsuranceScreenEvent.CrossSellClicked(crossSell.id, crossSell.storeUrl))
+      }
+    },
     navigateToCancelledInsurances = navigateToCancelledInsurances,
     imageLoader = imageLoader,
     onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
@@ -125,11 +133,13 @@ private fun InsuranceScreen(
   uiState: InsuranceUiState,
   reload: () -> Unit,
   onInsuranceCardClick: (contractId: String) -> Unit,
-  onCrossSellClick: (String) -> Unit,
+  onCrossSellShown: (offerId: String, offerUrl: String) -> Unit,
+  onCrossSellClick: (CrossSell) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
   imageLoader: ImageLoader,
   onNavigateToAddonPurchaseFlow: (List<ContractId>) -> Unit,
 ) {
+  val crossSellShownReporter = rememberCrossSellShownReporter(onCrossSellShown)
   val isRetrying = uiState.isRetrying
   val systemBarInsetTopDp = with(LocalDensity.current) {
     WindowInsets.systemBars.getTop(this).toDp()
@@ -169,6 +179,7 @@ private fun InsuranceScreen(
             imageLoader = imageLoader,
             quantityOfCancelledInsurances = state.quantityOfCancelledInsurances,
             onInsuranceCardClick = onInsuranceCardClick,
+            crossSellShownReporter = crossSellShownReporter,
             onCrossSellClick = onCrossSellClick,
             navigateToCancelledInsurances = navigateToCancelledInsurances,
             modifier = Modifier.fillMaxSize(),
@@ -194,7 +205,8 @@ private fun InsuranceScreenContent(
   pullRefreshState: PullRefreshState,
   quantityOfCancelledInsurances: Int,
   onInsuranceCardClick: (contractId: String) -> Unit,
-  onCrossSellClick: (String) -> Unit,
+  crossSellShownReporter: CrossSellShownReporter,
+  onCrossSellClick: (CrossSell) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
   onNavigateToAddonPurchaseFlow: (List<ContractId>) -> Unit,
   modifier: Modifier = Modifier,
@@ -244,6 +256,7 @@ private fun InsuranceScreenContent(
             Spacer(Modifier.height(24.dp))
             CrossSellsSection(
               crossSells = uiState.crossSells,
+              shownReporter = crossSellShownReporter,
               onCrossSellClick = onCrossSellClick,
               modifier = Modifier.padding(horizontal = 16.dp),
               onSheetDismissed = {},
@@ -480,6 +493,7 @@ private fun PreviewInsuranceScreen(
         ),
         {},
         {},
+        { _, _ -> },
         {},
         {},
         rememberPreviewImageLoader(),
@@ -503,6 +517,7 @@ private fun PreviewInsuranceDestinationAnimation() {
             imageLoader = rememberPreviewImageLoader(),
             reload = {},
             onInsuranceCardClick = {},
+            onCrossSellShown = { _, _ -> },
             onCrossSellClick = {},
             navigateToCancelledInsurances = {},
             onNavigateToAddonPurchaseFlow = {},

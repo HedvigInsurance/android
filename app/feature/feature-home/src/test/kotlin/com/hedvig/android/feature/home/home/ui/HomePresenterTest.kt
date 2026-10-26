@@ -17,9 +17,11 @@ import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.tracking.test.FakeEventTrackingClient
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.crosssells.CrossSellSheetData
+import com.hedvig.android.crosssells.CrossSellUserFlow
 import com.hedvig.android.crosssells.RecommendedAddon
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.claimintent.DeleteClaimIntentDraftUseCase
@@ -60,6 +62,7 @@ import kotlin.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
@@ -112,6 +115,7 @@ internal class HomePresenterTest {
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
+      FakeEventTrackingClient(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -143,6 +147,7 @@ internal class HomePresenterTest {
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
+      FakeEventTrackingClient(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -172,6 +177,7 @@ internal class HomePresenterTest {
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
+      FakeEventTrackingClient(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -254,6 +260,7 @@ internal class HomePresenterTest {
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
+      FakeEventTrackingClient(),
     )
     val addonOnlyCrossSells = CrossSellSheetData(null, listOf(), testAddon)
 
@@ -300,6 +307,7 @@ internal class HomePresenterTest {
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
+      FakeEventTrackingClient(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -358,6 +366,7 @@ internal class HomePresenterTest {
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
+      FakeEventTrackingClient(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -386,6 +395,7 @@ internal class HomePresenterTest {
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
+      FakeEventTrackingClient(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -428,6 +438,7 @@ internal class HomePresenterTest {
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
+      FakeEventTrackingClient(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -482,6 +493,7 @@ internal class HomePresenterTest {
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
+      FakeEventTrackingClient(),
     )
     val firstVet = FirstVetSection(
       buttonTitle = "ButtonTitle",
@@ -543,6 +555,7 @@ internal class HomePresenterTest {
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
+      FakeEventTrackingClient(),
     )
     val crossSell = CrossSell(
       id = "id",
@@ -611,6 +624,7 @@ internal class HomePresenterTest {
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
+      FakeEventTrackingClient(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -664,6 +678,7 @@ internal class HomePresenterTest {
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
+      FakeEventTrackingClient(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -717,6 +732,7 @@ internal class HomePresenterTest {
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
+      FakeEventTrackingClient(),
     )
     val otherCrossSell = CrossSell(
       id = "other",
@@ -757,6 +773,7 @@ internal class HomePresenterTest {
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
+      FakeEventTrackingClient(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -788,6 +805,7 @@ internal class HomePresenterTest {
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
+      FakeEventTrackingClient(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -818,6 +836,7 @@ internal class HomePresenterTest {
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
+      FakeEventTrackingClient(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -828,6 +847,78 @@ internal class HomePresenterTest {
       sendEvent(HomeEvent.DeleteDraftClaim("draft-id"))
       assertThat(deleteClaimIntentDraftUseCase.deletedIdsTurbine.awaitItem()).isEqualTo("draft-id")
       getHomeDataUseCase.forceNetworkFetchTurbine.expectNoEvents()
+    }
+  }
+
+  @Test
+  fun `taking a cross-sell offer reports the surface it was offered on and the offer url`() = runTest {
+    val eventTrackingClient = FakeEventTrackingClient()
+    val homePresenter = HomePresenter(
+      TestGetHomeDataUseCase(),
+      SeenImportantMessagesStorageImpl(),
+      FakeCrossSellHomeNotificationService(),
+      ApplicationScope(backgroundScope),
+      false,
+      TestDeleteClaimIntentDraftUseCase(),
+      FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
+      FakeDismissedShopSessionsStorage(),
+      FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
+      eventTrackingClient,
+    )
+    val offerUrl =
+      "https://www.hedvig.com/api/redirect/recommend?attributed_to=HEDVIG&next=%2Fse-en%2Finsurances%2Faccident&code=accident50app&requiresAuthorization=true"
+
+    homePresenter.test(HomeUiState.Loading) {
+      skipItems(1)
+      sendEvent(HomeEvent.CrossSellClicked(CrossSellUserFlow.HOME_X_SELL, "crossSell:ACCIDENT", offerUrl))
+      runCurrent()
+      assertThat(eventTrackingClient.events).containsExactly(
+        FakeEventTrackingClient.TrackedEvent(
+          name = "cross_sell_clicked",
+          parameters = mapOf(
+            "user_flow" to "home_x_sell",
+            "offer_id" to "crossSell:ACCIDENT",
+            "campaign_code" to "accident50app",
+          ),
+        ),
+      )
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `an offer on screen reports the surface it was offered on and the offer url`() = runTest {
+    val eventTrackingClient = FakeEventTrackingClient()
+    val homePresenter = HomePresenter(
+      TestGetHomeDataUseCase(),
+      SeenImportantMessagesStorageImpl(),
+      FakeCrossSellHomeNotificationService(),
+      ApplicationScope(backgroundScope),
+      false,
+      TestDeleteClaimIntentDraftUseCase(),
+      FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
+      FakeDismissedShopSessionsStorage(),
+      FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
+      eventTrackingClient,
+    )
+    val offerUrl =
+      "https://www.hedvig.com/api/redirect/recommend?attributed_to=HEDVIG&next=%2Fse-en%2Finsurances%2Faccident&code=accident50app&requiresAuthorization=true"
+
+    homePresenter.test(HomeUiState.Loading) {
+      skipItems(1)
+      sendEvent(HomeEvent.CrossSellShown(CrossSellUserFlow.HOME_X_SELL, "crossSell:ACCIDENT", offerUrl))
+      runCurrent()
+      assertThat(eventTrackingClient.events).containsExactly(
+        FakeEventTrackingClient.TrackedEvent(
+          name = "cross_sell_shown",
+          parameters = mapOf(
+            "user_flow" to "home_x_sell",
+            "offer_id" to "crossSell:ACCIDENT",
+            "campaign_code" to "accident50app",
+          ),
+        ),
+      )
+      cancelAndIgnoreRemainingEvents()
     }
   }
 
@@ -861,6 +952,7 @@ internal class HomePresenterTest {
       getMemberQuickActionsUseCase,
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
+      FakeEventTrackingClient(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Loading>()
@@ -889,6 +981,7 @@ internal class HomePresenterTest {
       FakeGetMemberQuickActionsUseCase(quickActions.right()),
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(memberType.right()),
+      FakeEventTrackingClient(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Loading>()
@@ -914,6 +1007,7 @@ internal class HomePresenterTest {
       FakeGetMemberQuickActionsUseCase(quickActions.right()),
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(ErrorMessage().left()),
+      FakeEventTrackingClient(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Loading>()
@@ -980,6 +1074,7 @@ internal class HomePresenterTest {
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
+      FakeEventTrackingClient(),
     )
 
     val session = OngoingShopSession(
@@ -1017,6 +1112,7 @@ internal class HomePresenterTest {
       FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
       dismissedShopSessionsStorage,
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
+      FakeEventTrackingClient(),
     )
 
     homePresenter.test(HomeUiState.Loading) {

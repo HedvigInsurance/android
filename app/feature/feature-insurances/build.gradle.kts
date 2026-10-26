@@ -37,6 +37,7 @@ dependencies {
   implementation(projects.dataDisplayItems)
   implementation(projects.dataProductVariantPublic)
   implementation(projects.designSystemHedvig)
+  implementation(projects.experimentsPublic)
   implementation(projects.featureFlags)
   implementation(projects.languageCore)
   implementation(projects.moleculePublic)
@@ -55,8 +56,10 @@ dependencies {
   testImplementation(projects.apolloOctopusTest)
   testImplementation(projects.apolloTest)
   testImplementation(projects.coreCommonTest)
+  testImplementation(projects.experimentsTest)
   testImplementation(projects.featureFlagsTest)
   testImplementation(projects.languageTest)
   testImplementation(projects.loggingTest)
   testImplementation(projects.moleculeTest)
+  testImplementation(projects.trackingTest)
 }

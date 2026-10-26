@@ -9,21 +9,26 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
+import com.hedvig.android.experiments.Experiment
+import com.hedvig.android.experiments.ExperimentProvider
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlinx.serialization.Serializable
 import octopus.CrossSellsQuery
+import octopus.type.CrossSellExperimentInput
 
 @Inject
 @SingleIn(AppScope::class)
 internal class GetCrossSellsUseCaseImpl(
   private val apolloClient: ApolloClient,
+  private val experimentProvider: ExperimentProvider,
 ) : GetCrossSellsUseCase {
   override suspend fun invoke(): Either<ErrorMessage, List<CrossSell>> {
     return either {
+      val experiments = experimentProvider.activeExperiments().toCrossSellExperimentInputs()
       val result = apolloClient
-        .query(CrossSellsQuery())
+        .query(CrossSellsQuery(experiments))
         .safeExecute(::ErrorMessage)
         .bind()
       val crossSells = result.currentMember.crossSellV2.otherCrossSells.map { crossSell ->
@@ -48,4 +53,8 @@ internal class GetCrossSellsUseCaseImpl(
       crossSells
     }
   }
+}
+
+private fun List<Experiment>.toCrossSellExperimentInputs(): List<CrossSellExperimentInput> {
+  return map { CrossSellExperimentInput(name = it.name, variant = it.variant) }
 }
