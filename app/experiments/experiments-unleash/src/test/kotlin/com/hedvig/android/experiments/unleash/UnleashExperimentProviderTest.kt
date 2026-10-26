@@ -62,8 +62,8 @@ class UnleashExperimentProviderTest {
   fun `the variant Unleash assigns is reported under the experiment name`() = runTest {
     assertThat(provider(flagsWithVariant("NO_DISCOUNT")).activeExperiments())
       .containsExactly(Experiment("ACCIDENT_DISCOUNT", "NO_DISCOUNT"))
-    assertThat(provider(flagsWithVariant("DISCOUNT")).activeExperiments())
-      .containsExactly(Experiment("ACCIDENT_DISCOUNT", "DISCOUNT"))
+    assertThat(provider(flagsWithVariant("DISCOUNT_50")).activeExperiments())
+      .containsExactly(Experiment("ACCIDENT_DISCOUNT", "DISCOUNT_50"))
   }
 
   @Test
@@ -114,12 +114,12 @@ class UnleashExperimentProviderTest {
     runCurrent()
     assertThat(client.userProperties).isEmpty()
 
-    flags.variants["accident_discount_experiment"] = "DISCOUNT"
+    flags.variants["accident_discount_experiment"] = "DISCOUNT_50"
     flags.receiveMemberState()
     runCurrent()
     assertThat(client.userProperties).containsOnly(
       "experiment_name" to "ACCIDENT_DISCOUNT",
-      "experiment_variant" to "DISCOUNT",
+      "experiment_variant" to "DISCOUNT_50",
     )
   }
 
