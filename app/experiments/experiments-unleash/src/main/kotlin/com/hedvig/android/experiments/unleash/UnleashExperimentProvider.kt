@@ -82,7 +82,7 @@ internal class UnleashExperimentProvider(
       val variant = experimentFlags.variantOf(definition.unleashFlag) ?: return@mapNotNull null
       if (!variant.matches(SCREAMING_SNAKE_CASE)) {
         // The backend expects this shape, and a mistyped variant in the Unleash admin must not reach it.
-        logcat(LogPriority.WARN) { "Ignoring ${definition.name} variant '$variant': not SCREAMING_SNAKE_CASE" }
+        logcat(LogPriority.ERROR) { "Ignoring ${definition.name} variant '$variant': not SCREAMING_SNAKE_CASE" }
         return@mapNotNull null
       }
       Experiment(name = definition.name, variant = variant)
