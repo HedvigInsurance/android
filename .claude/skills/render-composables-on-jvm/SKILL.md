@@ -1,6 +1,6 @@
 ---
 name: render-composables-on-jvm
-description: Use when you need to see what a composable looks like, or compare several layout, alignment, wrapping or styling variants of one as images, in a KMP module with a JVM target, without an emulator, a device, Android Studio or an app build. Also use when a Compose preview would do but you need the pictures from a script.
+description: Use when you need to see what a composable looks like, or compare several layout, alignment or styling variants of one as images, in a KMP module with a JVM target, without an emulator, a device, Android Studio or an app build. Not for questions about how text breaks into lines, font fallback, androidMain content, or anything that must be shown as it is on a phone.
 ---
 
 # Rendering composables on the JVM
@@ -13,6 +13,21 @@ later runs are incremental and take seconds.
 
 The test is a tool, not a test. It lives in the module's own `jvmTest` source set, which can
 reach the module's `internal` composables, and it is deleted before committing.
+
+## Decide first: is the answer the same on a device?
+
+Layout is: measurement, modifiers, intrinsics, design-system components and the theme run the
+same Kotlin here as on a phone. Text shaping and painting are not; they go through Skia here
+and the Android framework there. So:
+
+- **Use it** for sizes, alignment, spacing, what grows when content grows, which of several
+  arrangements reads better, light against dark theme.
+- **Do not use it** when the question is where text breaks into lines, hyphenates or falls
+  back to another font; when the composable depends on `androidMain` (ripples, `AndroidView`,
+  Rive, network images); or when the output is going to a designer or a ticket as "this is
+  what the phone shows". For those, build to a device or an emulator.
+- **A mix** is fine as long as the image is labelled: render the layout here, mark the text
+  breaking as unconfirmed, and check the one variant you pick on a device before deciding.
 
 ## Workflow
 
