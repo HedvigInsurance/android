@@ -6,11 +6,10 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.annotations.ApolloExperimental
-import com.apollographql.apollo.testing.QueueTestNetworkTransport
 import com.apollographql.apollo.testing.enqueueTestNetworkError
 import com.apollographql.apollo.testing.enqueueTestResponse
-import com.apollographql.cache.normalized.memory.MemoryCacheFactory
 import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver
+import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.CrossSell
 import kotlinx.coroutines.flow.toList
@@ -20,23 +19,15 @@ import octopus.builder.Data
 import octopus.builder.buildCrossSell
 import octopus.builder.buildCrossSellV2
 import octopus.builder.buildMember
-import octopus.cache.Cache
-import org.junit.After
+import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ApolloExperimental::class)
 class GetCrossSellsUseCaseImplTest {
-  private val apolloClient = with(Cache) {
-    ApolloClient.Builder()
-      .networkTransport(QueueTestNetworkTransport())
-      .cache(MemoryCacheFactory())
-      .build()
-  }
-
-  @After
-  fun tearDown() {
-    apolloClient.close()
-  }
+  @get:Rule
+  val testApolloClientRule = TestApolloClientRule()
+  private val apolloClient: ApolloClient
+    get() = testApolloClientRule.apolloClient
 
   @Test
   fun `a cached answer is emitted first and then replaced by the network answer`() = runTest {
