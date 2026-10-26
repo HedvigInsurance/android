@@ -80,7 +80,7 @@ class HedvigUnleashClientTest {
     val setup = setup(MutableStateFlow(MEMBER_A))
     val ready = backgroundScope.async { setup.client.awaitReady() }
 
-    setup.unleash.deliver(context(memberId = null), toggle(EXPERIMENT, "DISCOUNT"))
+    setup.unleash.deliver(context(memberId = null), toggle(EXPERIMENT, "DISCOUNT_50"))
     runCurrent()
     assertThat(ready.isCompleted).isFalse()
     assertThat(setup.client.variantOf(EXPERIMENT)).isNull()
@@ -104,9 +104,9 @@ class HedvigUnleashClientTest {
     assertThat(setup.client.hasStateForCurrentMember()).isFalse()
     assertThat(setup.client.variantOf(EXPERIMENT)).isNull()
 
-    setup.unleash.deliver(context(MEMBER_A), toggle(EXPERIMENT, "DISCOUNT"))
+    setup.unleash.deliver(context(MEMBER_A), toggle(EXPERIMENT, "DISCOUNT_50"))
     runCurrent()
-    assertThat(setup.client.variantOf(EXPERIMENT)).isEqualTo("DISCOUNT")
+    assertThat(setup.client.variantOf(EXPERIMENT)).isEqualTo("DISCOUNT_50")
   }
 
   @Test
@@ -140,7 +140,7 @@ class HedvigUnleashClientTest {
     val store = FakeToggleStateStore()
     val memberIds = MutableStateFlow<String?>(null)
     val setup = setup(memberIds, store)
-    setup.unleash.deliver(context(memberId = null), toggle(EXPERIMENT, "DISCOUNT"))
+    setup.unleash.deliver(context(memberId = null), toggle(EXPERIMENT, "DISCOUNT_50"))
     runCurrent()
 
     memberIds.value = MEMBER_A
@@ -153,7 +153,7 @@ class HedvigUnleashClientTest {
     runCurrent()
 
     assertThat(ready.isCompleted).isTrue()
-    assertThat(setup.client.variantOf(EXPERIMENT)).isEqualTo("DISCOUNT")
+    assertThat(setup.client.variantOf(EXPERIMENT)).isEqualTo("DISCOUNT_50")
     assertThat(store.stored?.context?.properties?.get("memberId")).isEqualTo(MEMBER_A)
   }
 
@@ -185,19 +185,19 @@ class HedvigUnleashClientTest {
   @Test
   fun `a member's own state stored by an older app version answers at once`() = runTest {
     val store = FakeToggleStateStore(
-      UnleashState(context(MEMBER_A, appVersion = "0.9.0"), mapOf(EXPERIMENT to toggle(EXPERIMENT, "DISCOUNT"))),
+      UnleashState(context(MEMBER_A, appVersion = "0.9.0"), mapOf(EXPERIMENT to toggle(EXPERIMENT, "DISCOUNT_50"))),
     )
 
     val setup = setup(MutableStateFlow(MEMBER_A), store)
 
     assertThat(setup.client.hasStateForCurrentMember()).isTrue()
-    assertThat(setup.client.variantOf(EXPERIMENT)).isEqualTo("DISCOUNT")
+    assertThat(setup.client.variantOf(EXPERIMENT)).isEqualTo("DISCOUNT_50")
   }
 
   @Test
   fun `the stored state is restored before Unleash starts`() = runTest {
     val store = FakeToggleStateStore(
-      UnleashState(context(MEMBER_A), mapOf(EXPERIMENT to toggle(EXPERIMENT, "DISCOUNT"))),
+      UnleashState(context(MEMBER_A), mapOf(EXPERIMENT to toggle(EXPERIMENT, "DISCOUNT_50"))),
     )
 
     val setup = setup(MutableStateFlow(MEMBER_A), store)
