@@ -43,8 +43,13 @@ Skia is not Android's text stack. Everything layout-related matches, these do no
 
 - `LineBreak.Heading` and other balanced or high-quality break strategies are ignored; lines
   break greedily. Simulate with explicit `\n` and say so, then confirm on a device.
-- Hyphenation, `includeFontPadding` and emoji fonts differ.
+- Hyphenation and `includeFontPadding` differ, by a pixel or a break, never by a layout.
+- Glyphs the Hedvig fonts lack, emoji above all, fall back to macOS fonts here and to Noto on
+  a device, so such text can measure a few pixels differently.
 - Ripples, `AndroidView` content and anything from `androidMain` are unavailable.
+- Font scale, screen zoom, dark mode and right-to-left only apply if the test sets them:
+  `Density(2.5f, fontScale = 1.3f)`, `HedvigTheme(darkTheme = true)`,
+  `LocalLayoutDirection provides LayoutDirection.Rtl`.
 
 ## Things that will trip you up
 
