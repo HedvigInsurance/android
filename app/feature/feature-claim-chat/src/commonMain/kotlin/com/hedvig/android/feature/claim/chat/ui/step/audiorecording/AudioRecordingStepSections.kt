@@ -132,6 +132,7 @@ import com.hedvig.android.feature.claim.chat.data.StepContent
 import com.hedvig.android.feature.claim.chat.ui.common.EditButton
 import com.hedvig.android.feature.claim.chat.ui.common.RoundCornersPill
 import com.hedvig.android.feature.claim.chat.ui.common.SentAnswerRow
+import com.hedvig.android.feature.claim.chat.ui.common.SentAnswerText
 import com.hedvig.android.feature.claim.chat.ui.common.SkippedLabel
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -456,7 +457,7 @@ private fun SentAnswer(recordingState: AudioRecordingStepState) {
         RoundCornersPill(
           modifier = Modifier.clearAndSetSemantics { contentDescription = description },
         ) {
-          HedvigText(sentFreeText, textAlign = TextAlign.End)
+          SentAnswerText(sentFreeText)
         }
       }
 

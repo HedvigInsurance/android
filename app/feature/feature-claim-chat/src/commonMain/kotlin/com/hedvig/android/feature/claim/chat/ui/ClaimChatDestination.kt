@@ -116,6 +116,7 @@ import com.hedvig.android.feature.claim.chat.data.StepId
 import com.hedvig.android.feature.claim.chat.ui.common.HelipadRiveAnimation
 import com.hedvig.android.feature.claim.chat.ui.common.RoundCornersPill
 import com.hedvig.android.feature.claim.chat.ui.common.SentAnswerRow
+import com.hedvig.android.feature.claim.chat.ui.common.SentAnswerText
 import com.hedvig.android.feature.claim.chat.ui.step.ChatClaimSummaryBottomContent
 import com.hedvig.android.feature.claim.chat.ui.step.ChatClaimSummaryTopContent
 import com.hedvig.android.feature.claim.chat.ui.step.ContentSelectStep
@@ -1295,7 +1296,7 @@ private fun StepBottomContent(
                 contentDescription = description
               },
             ) {
-              HedvigText(buttonTitle)
+              SentAnswerText(buttonTitle)
             }
           }
         }
