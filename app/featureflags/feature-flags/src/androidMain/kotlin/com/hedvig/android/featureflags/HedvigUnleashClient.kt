@@ -12,12 +12,13 @@ import io.getunleash.android.events.HeartbeatEvent
 import io.getunleash.android.events.UnleashFetcherHeartbeatListener
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 
@@ -33,6 +34,8 @@ private const val MEMBER_ID_PROPERTY = "memberId"
  * spends this waiting. It only stops a read that never completes from keeping Unleash unstarted.
  */
 private val INITIAL_MEMBER_ID_TIMEOUT = 2.seconds
+
+private val MEMBER_ID_RETRY_DELAY = 30.seconds
 
 /**
  * Values used until the client holds real toggle state, for the flags whose natural absent-toggle
@@ -127,10 +130,13 @@ class HedvigUnleashClient internal constructor(
       // Before start(), so nothing fetched in this process can be replaced by the older stored state.
       toggleStateCache.restore()
       // Reading the member id must not be able to keep Unleash from starting: without a start there is no
-      // fetch, and every flag would spend the session on its never-fetched default.
-      val memberIdsOrNone = memberIds.catch { throwable ->
-        logcat(LogPriority.ERROR, throwable) { "Failed to read the member id for the Unleash context" }
+      // fetch, and every flag would spend the session on its never-fetched default. A failed read is retried, so
+      // the member still reaches the context once the token store reads again.
+      val memberIdsOrNone = memberIds.retryWhen { throwable, _ ->
+        logcat(LogPriority.WARN, throwable) { "Failed to read the member id for the Unleash context" }
         emit(null)
+        delay(MEMBER_ID_RETRY_DELAY)
+        true
       }
       // The member goes into the context before the first fetch, so that fetch already resolves member-sticky
       // strategies for them.

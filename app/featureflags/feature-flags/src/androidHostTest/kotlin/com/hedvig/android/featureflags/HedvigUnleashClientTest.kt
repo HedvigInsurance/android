@@ -18,6 +18,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
@@ -73,6 +74,26 @@ class HedvigUnleashClientTest {
 
     assertThat(setup.unleash.started).isTrue()
     assertThat(setup.unleash.contextAtStart?.properties?.get("memberId")).isNull()
+  }
+
+  @Test
+  fun `a member id read that fails is retried, so a later login still reaches the context`() = runTest {
+    val memberIds = MutableStateFlow<String?>(null)
+    var reads = 0
+    val setup = setup(
+      flow {
+        // The first read only decides the context Unleash starts with, so fail the next one too.
+        if (reads++ < 2) throw IllegalStateException("token store unreadable")
+        emitAll(memberIds)
+      },
+    )
+    assertThat(setup.unleash.started).isTrue()
+
+    advanceTimeBy(31.seconds)
+    memberIds.value = MEMBER_A
+    runCurrent()
+
+    assertThat(setup.unleash.contexts.last().userId).isEqualTo(MEMBER_A)
   }
 
   @Test
