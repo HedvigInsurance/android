@@ -1836,7 +1836,7 @@ private val WAVE_BAND_ROW_INSET = 8.dp
 private val WAVE_BAND_VERTICAL_INSET = 24.dp
 
 // The field grows with the answer to this many lines and then scrolls inside itself.
-private const val TEXT_ANSWER_MAX_LINES = 6
+internal const val TEXT_ANSWER_MAX_LINES = 6
 
 // Below this the full screen answer drops its label so the field keeps a few lines of the member's text.
 // Measured inside the safe drawing insets, which carry the keyboard, so in practice it is a landscape phone
