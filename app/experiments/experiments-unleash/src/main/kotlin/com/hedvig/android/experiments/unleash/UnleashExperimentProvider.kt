@@ -72,7 +72,13 @@ internal class UnleashExperimentProvider(
     val generation = updateGeneration
     if (timedOutAtGeneration != generation) {
       val arrived = withTimeoutOrNull(MEMBER_STATE_TIMEOUT) { experimentFlags.awaitStateForCurrentMember() } != null
-      if (!arrived) timedOutAtGeneration = generation
+      if (!arrived) {
+        timedOutAtGeneration = generation
+        // Logged once per timed-out wait, so Datadog can count how often a member's group goes unreported.
+        logcat(LogPriority.INFO) {
+          "Unleash toggles for the current member did not arrive within $MEMBER_STATE_TIMEOUT, reporting no experiments"
+        }
+      }
     }
     return currentExperiments()
   }
