@@ -6,7 +6,9 @@ plugins {
 dependencies {
   api(libs.junit)
 
+  implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.testingSupport)
   implementation(libs.atomicfu)
   implementation(libs.turbine)
+  implementation(projects.apolloOctopusPublic)
 }
