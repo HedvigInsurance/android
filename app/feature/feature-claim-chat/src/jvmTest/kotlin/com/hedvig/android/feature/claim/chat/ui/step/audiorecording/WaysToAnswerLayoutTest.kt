@@ -33,20 +33,17 @@ import hedvig.resources.Res
 import hedvig.resources.claims_record
 import hedvig.resources.claims_write
 import kotlin.test.Test
-import kotlinx.coroutines.runBlocking
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 
 @OptIn(ExperimentalTestApi::class)
 class WaysToAnswerLayoutTest {
-  private val write = runBlocking { getString(Res.string.claims_write) }
-  private val record = runBlocking { getString(Res.string.claims_record) }
-
   @Test
   fun `Write and Record sit side by side when both fit on one line`() = runComposeUiTest {
     showWaysToAnswer(width = 411.dp, fontScale = 1f)
 
-    val writeBounds = boundsOf(write)
-    val recordBounds = boundsOf(record)
+    val writeBounds = boundsOf(Res.string.claims_write)
+    val recordBounds = boundsOf(Res.string.claims_record)
     assertThat(recordBounds.top).isEqualTo(writeBounds.top)
     assertThat(recordBounds.left).isGreaterThan(writeBounds.right)
   }
@@ -55,15 +52,16 @@ class WaysToAnswerLayoutTest {
   fun `Write and Record stack at full width when a label would not fit beside the other`() = runComposeUiTest {
     showWaysToAnswer(width = 320.dp, fontScale = 1.5f)
 
-    val writeBounds = boundsOf(write)
-    val recordBounds = boundsOf(record)
+    val writeBounds = boundsOf(Res.string.claims_write)
+    val recordBounds = boundsOf(Res.string.claims_record)
     assertThat(recordBounds.top).isGreaterThanOrEqualTo(writeBounds.bottom)
     assertThat(recordBounds.left).isEqualTo(writeBounds.left)
     assertThat(recordBounds.width).isEqualTo(writeBounds.width)
     assertThat(writeBounds.width).isGreaterThan(320.dp / 2)
   }
 
-  private fun ComposeUiTest.boundsOf(text: String): DpRect = onNodeWithText(text).getUnclippedBoundsInRoot()
+  private suspend fun ComposeUiTest.boundsOf(resource: StringResource): DpRect =
+    onNodeWithText(getString(resource)).getUnclippedBoundsInRoot()
 
   private fun ComposeUiTest.showWaysToAnswer(width: Dp, fontScale: Float) {
     val step = ClaimIntentStep(
