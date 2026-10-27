@@ -8,50 +8,54 @@ import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 @Inject
 @SingleIn(AppScope::class)
 internal class GetCrossSellsUseCaseDemo : GetCrossSellsUseCase {
-  override suspend fun invoke(): Either<ErrorMessage, List<CrossSell>> {
-    return either {
-      listOf(
-        CrossSell(
-          "1",
-          "Home Insurance",
-          "For you, your family and your home",
-          "",
-          ImageAsset("", "", ""),
-          ImageAsset("", "", ""),
-          buttonText = "button",
-        ),
-        CrossSell(
-          "2",
-          "Pet Insurance",
-          "For your dog or cat",
-          "",
-          ImageAsset("", "", ""),
-          ImageAsset("", "", ""),
-          buttonText = "button",
-        ),
-        CrossSell(
-          "3",
-          "Car Insurance",
-          "For your and your car",
-          "",
-          ImageAsset("", "", ""),
-          ImageAsset("", "", ""),
-          buttonText = "button",
-        ),
-        CrossSell(
-          "4",
-          "Accident Insurance",
-          "No loopholes on our part. No worries on your part.",
-          "",
-          ImageAsset("", "", ""),
-          ImageAsset("", "", ""),
-          buttonText = "button",
-        ),
-      )
-    }
+  override fun invoke(): Flow<Either<ErrorMessage, List<CrossSell>>> {
+    return flowOf(
+      either {
+        listOf(
+          CrossSell(
+            "1",
+            "Home Insurance",
+            "For you, your family and your home",
+            "",
+            ImageAsset("", "", ""),
+            ImageAsset("", "", ""),
+            buttonText = "button",
+          ),
+          CrossSell(
+            "2",
+            "Pet Insurance",
+            "For your dog or cat",
+            "",
+            ImageAsset("", "", ""),
+            ImageAsset("", "", ""),
+            buttonText = "button",
+          ),
+          CrossSell(
+            "3",
+            "Car Insurance",
+            "For your and your car",
+            "",
+            ImageAsset("", "", ""),
+            ImageAsset("", "", ""),
+            buttonText = "button",
+          ),
+          CrossSell(
+            "4",
+            "Accident Insurance",
+            "No loopholes on our part. No worries on your part.",
+            "",
+            ImageAsset("", "", ""),
+            ImageAsset("", "", ""),
+            buttonText = "button",
+          ),
+        )
+      },
+    )
   }
 }
