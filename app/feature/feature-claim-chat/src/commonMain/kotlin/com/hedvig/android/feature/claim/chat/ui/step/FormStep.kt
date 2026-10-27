@@ -91,6 +91,7 @@ import com.hedvig.android.feature.claim.chat.data.StepId
 import com.hedvig.android.feature.claim.chat.ui.common.EditButton
 import com.hedvig.android.feature.claim.chat.ui.common.RoundCornersPill
 import com.hedvig.android.feature.claim.chat.ui.common.SentAnswerRow
+import com.hedvig.android.feature.claim.chat.ui.common.SentAnswerText
 import com.hedvig.android.feature.claim.chat.ui.common.SkippedLabel
 import com.hedvig.android.feature.claim.chat.ui.common.YesNoBubble
 import hedvig.resources.CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE
@@ -401,7 +402,7 @@ private fun FormContent(
                         contentDescription = description
                       },
                     ) {
-                      HedvigText(textValue, textAlign = TextAlign.End)
+                      SentAnswerText(textValue)
                     }
                   } else {
                     SkippedLabel()
