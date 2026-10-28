@@ -1,9 +1,8 @@
 import com.android.build.api.dsl.KotlinMultiplatformAndroidCompilation
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.KotlinHierarchyBuilder
 
 plugins {
-  id("hedvig.multiplatform.library")
+  id("hedvig.multiplatform.library.ios")
   id("hedvig.multiplatform.library.android")
   id("hedvig.gradle.plugin")
 }
@@ -14,15 +13,6 @@ hedvig {
 
 kotlin {
   sourceSets {
-    @OptIn(ExperimentalKotlinGradlePluginApi::class)
-    applyDefaultHierarchyTemplate {
-      common {
-        group("jvmAndAndroid") {
-          withAndroidLibraryTarget()
-          withJvm()
-        }
-      }
-    }
     commonMain.dependencies {
       api(libs.coil.coil)
       api(libs.coil.compose)
@@ -51,6 +41,9 @@ kotlin {
       implementation(projects.coreUiData)
       implementation(projects.designSystemInternals)
       implementation(projects.navigationCommon)
+    }
+    getByName("jvmAndAndroidMain").dependencies {
+      implementation(libs.zXing)
     }
     androidMain.dependencies {
       implementation(libs.androidx.other.core)

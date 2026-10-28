@@ -9,18 +9,23 @@ import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
+/**
+ * A Kotlin Multiplatform library with a JVM target, plus an Android target when
+ * `hedvig.multiplatform.library.android` is also applied. Never part of the iOS umbrella.
+ */
 class KotlinMultiplatformLibraryConventionPlugin : Plugin<Project> {
   override fun apply(target: Project) {
-    target.applyKotlinMultiplatform(withIos = true)
+    target.applyKotlinMultiplatform(withIos = false)
   }
 }
 
 /**
- * For a module that shares code between Android and JVM only, and is never part of the iOS umbrella.
+ * A Kotlin Multiplatform library that `:umbrella` exports to iOS, directly or transitively. Adds the
+ * iOS targets on top of the JVM and Android ones, so every `expect` in the module needs a native actual.
  */
-class KotlinMultiplatformJvmLibraryConventionPlugin : Plugin<Project> {
+class KotlinMultiplatformIosLibraryConventionPlugin : Plugin<Project> {
   override fun apply(target: Project) {
-    target.applyKotlinMultiplatform(withIos = false)
+    target.applyKotlinMultiplatform(withIos = true)
   }
 }
 

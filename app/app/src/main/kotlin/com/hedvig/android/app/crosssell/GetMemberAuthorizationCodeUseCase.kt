@@ -5,6 +5,7 @@ import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.network.clients.safePost
+import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import io.ktor.client.HttpClient
@@ -14,13 +15,19 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
+internal interface GetMemberAuthorizationCodeUseCase {
+  /** A one-time code the web store exchanges for the member's session, or null when none could be fetched. */
+  suspend fun invoke(): String?
+}
+
 @SingleIn(AppScope::class)
+@ContributesBinding(AppScope::class)
 @Inject
-internal class GetMemberAuthorizationCodeUseCase(
+internal class GetMemberAuthorizationCodeUseCaseImpl(
   private val httpClient: HttpClient,
   private val hedvigBuildConstants: HedvigBuildConstants,
-) {
-  suspend fun invoke(): String? {
+) : GetMemberAuthorizationCodeUseCase {
+  override suspend fun invoke(): String? {
     return try {
       httpClient
         .safePost("${hedvigBuildConstants.urlAuthService}/member-authorization-codes")

@@ -24,6 +24,7 @@ import com.hedvig.android.feature.claim.chat.ui.common.ContentSelectChips
 import com.hedvig.android.feature.claim.chat.ui.common.EditButton
 import com.hedvig.android.feature.claim.chat.ui.common.RoundCornersPill
 import com.hedvig.android.feature.claim.chat.ui.common.SentAnswerRow
+import com.hedvig.android.feature.claim.chat.ui.common.SentAnswerText
 import com.hedvig.android.feature.claim.chat.ui.common.SkippedLabel
 import hedvig.resources.GENERAL_CONFIRM
 import hedvig.resources.Res
@@ -112,7 +113,7 @@ internal fun ContentSelectStep(
                 contentDescription = description
               },
             ) {
-              HedvigText(selected.title)
+              SentAnswerText(selected.title)
             }
           } else {
             SkippedLabel()

@@ -29,10 +29,16 @@ run `./gradlew ktlintFormat` to make ktlint to format all files according to the
 
 ## Module structure
 
-![Module graph](misc/images/modularization-graph.png "Image showing the module dependencies graph")
+![Module graph](misc/images/modularization-graph.svg "Module dependency graph")
 
-Generated from `./gradlew :generateProjectDependencyGraph`*\
-*Note that this requires `dot` from graphviz to be on your path. Run `brew install graphviz`
+Generated from `./gradlew :generateProjectDependencyGraph --no-configuration-cache`, which also writes
+[`misc/images/modularization-summary.md`](misc/images/modularization-summary.md) with a count per module
+kind and the non-KMP modules that other modules still depend on. Requires graphviz: `brew install graphviz`.
+Test modules, `:app`, and the modules the convention plugin attaches to everything are left out. Arrows implied by a longer path are omitted.
+
+Before the 2026 KMP-readiness migration the graph showed 62 KMP modules with iOS targets, 1 without,
+46 Android libraries and 22 JVM libraries; after it, 45 KMP modules with iOS targets, 33 without,
+30 Android libraries and 22 JVM libraries. The current counts are in the summary file.
 
 ## Renovate
 

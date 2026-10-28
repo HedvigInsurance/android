@@ -1,0 +1,591 @@
+package com.hedvig.android.feature.editcoinsured.ui
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.uidata.UiCurrencyCode
+import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
+import com.hedvig.android.design.system.hedvig.DividerPosition
+import com.hedvig.android.design.system.hedvig.ErrorDialog
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheetPriceBreakdown
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.IconButton
+import com.hedvig.android.design.system.hedvig.PriceInfoForBottomSheet
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
+import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.horizontalDivider
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.InfoFilled
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
+import com.hedvig.android.feature.editcoinsured.data.CoInsured
+import com.hedvig.android.feature.editcoinsured.data.Member
+import com.hedvig.android.feature.editcoinsured.data.MonthlyCost
+import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
+import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.ManualInfo
+import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.RemoveBottomSheetContentState
+import hedvig.resources.ADDON_FLOW_LEARN_MORE_BUTTON
+import hedvig.resources.COINSURED_EDIT_TITLE
+import hedvig.resources.CONTRACT_ADD_ADDITIONAL_COOWNER
+import hedvig.resources.CONTRACT_ADD_COINSURED
+import hedvig.resources.CONTRACT_ADD_COINSURED_CONFIRM_CHANGES
+import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
+import hedvig.resources.PRICE_NEW_PRICE
+import hedvig.resources.PRICE_PREVIOUS_PRICE
+import hedvig.resources.Res
+import hedvig.resources.SUMMARY_TOTAL_PRICE_SUBTITLE
+import hedvig.resources.general_cancel_button
+import hedvig.resources.general_error
+import kotlinx.datetime.LocalDate
+import org.jetbrains.compose.resources.stringResource
+
+@Composable
+internal fun EditCoInsuredAddOrRemoveDestination(viewModel: EditCoInsuredViewModel, navigateUp: () -> Unit) {
+  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+  EditCoInsuredScreen(
+    navigateUp = navigateUp,
+    uiState = uiState,
+    onSave = {
+      viewModel.emit(EditCoInsuredEvent.OnBottomSheetContinue)
+    },
+    onSsnChanged = {
+      viewModel.emit(EditCoInsuredEvent.OnSsnChanged(it))
+    },
+    onRemoveCoInsured = {
+      viewModel.emit(EditCoInsuredEvent.RemoveCoInsured(it))
+    },
+    onRemoveCoInsuredClicked = {
+      viewModel.emit(EditCoInsuredEvent.OnRemoveCoInsuredClicked(it))
+    },
+    onAddCoInsuredClicked = {
+      viewModel.emit(EditCoInsuredEvent.OnAddCoInsuredClicked)
+    },
+    onCommitChanges = {
+      viewModel.emit(EditCoInsuredEvent.OnCommitChanges)
+    },
+    onDismissError = {
+      viewModel.emit(EditCoInsuredEvent.OnDismissError)
+    },
+    onRetry = {
+      viewModel.emit(EditCoInsuredEvent.RetryLoading)
+    },
+    onResetAddBottomSheetState = {
+      viewModel.emit(EditCoInsuredEvent.ResetAddBottomSheetState)
+    },
+    onResetRemoveBottomSheetState = {
+      viewModel.emit(EditCoInsuredEvent.ResetRemoveBottomSheetState)
+    },
+    onFirstNameChanged = {
+      viewModel.emit(EditCoInsuredEvent.OnFirstNameChanged(it))
+    },
+    onLastNameChanged = {
+      viewModel.emit(EditCoInsuredEvent.OnLastNameChanged(it))
+    },
+    onBirthDateChanged = {
+      viewModel.emit(EditCoInsuredEvent.OnBirthDateChanged(it))
+    },
+    onManualInputSwitchChanged = {
+      viewModel.emit(EditCoInsuredEvent.OnManualInputSwitchChanged(it))
+    },
+    onAddNewCoInsured = {
+      viewModel.emit(EditCoInsuredEvent.OnAddNewCoInsured)
+    },
+    onCoInsuredSelected = {
+      viewModel.emit(EditCoInsuredEvent.OnCoInsuredSelected(it))
+    },
+  )
+}
+
+@Composable
+private fun EditCoInsuredScreen(
+  navigateUp: () -> Unit,
+  uiState: EditCoInsuredState,
+  onSave: () -> Unit,
+  onSsnChanged: (String) -> Unit,
+  onRemoveCoInsured: (CoInsured) -> Unit,
+  onRemoveCoInsuredClicked: (CoInsured) -> Unit,
+  onAddCoInsuredClicked: () -> Unit,
+  onCommitChanges: () -> Unit,
+  onDismissError: () -> Unit,
+  onRetry: () -> Unit,
+  onResetAddBottomSheetState: () -> Unit,
+  onResetRemoveBottomSheetState: () -> Unit,
+  onFirstNameChanged: (String) -> Unit,
+  onLastNameChanged: (String) -> Unit,
+  onBirthDateChanged: (LocalDate) -> Unit,
+  onManualInputSwitchChanged: (Boolean) -> Unit,
+  onAddNewCoInsured: () -> Unit,
+  onCoInsuredSelected: (CoInsured) -> Unit,
+) {
+  Column(Modifier.fillMaxSize()) {
+    TopAppBarWithBack(
+      title = stringResource(Res.string.COINSURED_EDIT_TITLE),
+      onClick = navigateUp,
+    )
+
+    when (uiState) {
+      is EditCoInsuredState.Error -> {
+        ErrorDialog(
+          title = stringResource(Res.string.general_error),
+          message = uiState.message,
+          onDismiss = onDismissError,
+          modifier = Modifier.fillMaxWidth(),
+        )
+      }
+
+      EditCoInsuredState.LoadError -> {
+        HedvigErrorSection(
+          onButtonClick = onRetry,
+          modifier = Modifier.weight(1f),
+        )
+      }
+
+      is EditCoInsuredState.Loaded -> {
+        Column(
+          Modifier
+            .fillMaxSize()
+            .padding(
+              WindowInsets
+                .safeDrawing
+                .only(WindowInsetsSides.Horizontal)
+                .asPaddingValues(),
+            )
+            .nestedScroll(remember { object : NestedScrollConnection {} })
+            .verticalScroll(state = rememberScrollState()),
+        ) {
+          val addHedvigBottomSheetState =
+            rememberHedvigBottomSheetState<EditCoInsuredState.Loaded.AddBottomSheetContentState>()
+          DismissSheetOnSuccessfulInfoChangeEffect(
+            sheetState = addHedvigBottomSheetState,
+            infoSuccessfullyChanged = uiState.finishedAdding,
+          )
+          ClearBottomSheetContentStateOnSheetDismissedEffect(
+            sheetState = addHedvigBottomSheetState,
+            clearBottomSheetState = onResetAddBottomSheetState,
+          )
+          HedvigBottomSheet(
+            hedvigBottomSheetState = addHedvigBottomSheetState,
+          ) {
+            AddCoInsuredBottomSheetContent(
+              bottomSheetState = uiState.addBottomSheetContentState,
+              type = uiState.type,
+              onContinue = onSave,
+              onDismiss = {
+                addHedvigBottomSheetState.dismiss()
+                onResetAddBottomSheetState()
+              },
+              onSsnChanged = onSsnChanged,
+              onFirstNameChanged = onFirstNameChanged,
+              onLastNameChanged = onLastNameChanged,
+              onBirthDateChanged = onBirthDateChanged,
+              onManualInputSwitchChanged = onManualInputSwitchChanged,
+              onAddNewCoInsured = onAddNewCoInsured,
+              onCoInsuredSelected = onCoInsuredSelected,
+            )
+          }
+          val removeHedvigBottomSheetState = rememberHedvigBottomSheetState<RemoveBottomSheetContentState>()
+          DismissRemoveCoinsuredSheetOnSuccessfulRemoveEffect(removeHedvigBottomSheetState, uiState.finishedRemoving)
+          ClearRemoveBottomSheetContentStateOnSheetDismissedEffect(
+            removeHedvigBottomSheetState,
+            onResetRemoveBottomSheetState,
+          )
+          HedvigBottomSheet(
+            removeHedvigBottomSheetState,
+          ) {
+            if (uiState.removeBottomSheetContentState.coInsured != null) {
+              RemoveCoInsuredBottomSheetContent(
+                type = uiState.type,
+                onDismiss = {
+                  removeHedvigBottomSheetState.dismiss()
+                  onResetRemoveBottomSheetState()
+                },
+                onRemove = { onRemoveCoInsured(it) },
+                isLoading = uiState.removeBottomSheetContentState.isLoading,
+                coInsured = uiState.removeBottomSheetContentState.coInsured,
+                errorMessage = uiState.removeBottomSheetContentState.errorMessage,
+              )
+            }
+          }
+          val costBreakdownBottomSheetState = rememberHedvigBottomSheetState<PriceInfoForBottomSheet>()
+          HedvigBottomSheetPriceBreakdown(
+            costBreakdownBottomSheetState,
+          )
+          CoInsuredList(
+            uiState = uiState.listState,
+            type = uiState.type,
+            onRemove = { insured ->
+              onRemoveCoInsuredClicked(insured)
+              removeHedvigBottomSheetState.show(uiState.removeBottomSheetContentState)
+            },
+            onEdit = {},
+            allowEdit = false,
+          )
+
+          Spacer(Modifier.height(8.dp))
+          if (uiState.listState.noCoInsuredHaveMissingInfo()) {
+            HedvigButton(
+              text = when (uiState.type) {
+                CoInsuredFlowType.CoInsured -> stringResource(Res.string.CONTRACT_ADD_COINSURED)
+                CoInsuredFlowType.CoOwners -> stringResource(Res.string.CONTRACT_ADD_ADDITIONAL_COOWNER)
+              },
+              onClick = {
+                addHedvigBottomSheetState.show(uiState.addBottomSheetContentState)
+                onAddCoInsuredClicked()
+              },
+              enabled = true,
+              buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+              modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth(),
+            )
+          }
+
+          Spacer(Modifier.weight(1f))
+          Column {
+            if (uiState.listState.priceInfo != null && uiState.listState.hasMadeChanges()) {
+              Spacer(Modifier.height(16.dp))
+              PriceInfo(uiState.listState.priceInfo, costBreakdownBottomSheetState)
+              HedvigButton(
+                text = when (uiState.type) {
+                  CoInsuredFlowType.CoInsured -> stringResource(Res.string.CONTRACT_ADD_COINSURED_CONFIRM_CHANGES)
+                  CoInsuredFlowType.CoOwners -> stringResource(Res.string.CONTRACT_ADD_ADDITIONAL_COOWNER)
+                },
+                onClick = onCommitChanges,
+                enabled = true,
+                isLoading = uiState.listState.isCommittingUpdate,
+                modifier = Modifier
+                  .padding(horizontal = 16.dp)
+                  .fillMaxWidth(),
+              )
+            }
+
+            Spacer(Modifier.height(8.dp))
+            HedvigTextButton(
+              onClick = navigateUp,
+              text = stringResource(Res.string.general_cancel_button),
+              modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            )
+            Spacer(Modifier.height(16.dp))
+            Spacer(
+              Modifier.padding(
+                WindowInsets.safeDrawing
+                  .only(WindowInsetsSides.Bottom).asPaddingValues(),
+              ),
+            )
+          }
+        }
+      }
+
+      EditCoInsuredState.Loading -> {
+        HedvigFullScreenCenterAlignedProgressDebounced()
+      }
+    }
+  }
+}
+
+@Composable
+private fun PriceInfo(
+  priceInfo: EditCoInsuredState.Loaded.PriceInfo,
+  costBreakdownBottomSheetState: HedvigBottomSheetState<PriceInfoForBottomSheet>,
+) {
+  val dateTimeFormatter = rememberHedvigDateTimeFormatter()
+
+  Column(
+    modifier = Modifier
+      .padding(16.dp)
+      .fillMaxWidth(),
+  ) {
+    HorizontalItemsWithMaximumSpaceTaken(
+      startSlot = {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          HedvigText(text = stringResource(Res.string.PRICE_PREVIOUS_PRICE))
+        }
+      },
+      endSlot = {
+        Row(horizontalArrangement = Arrangement.End) {
+          HedvigText(
+            modifier = Modifier
+              .padding(vertical = 16.dp),
+            text = stringResource(
+              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+              priceInfo.currentCost.monthlyNet.toString(),
+            ),
+          )
+        }
+      },
+      spaceBetween = 8.dp,
+      modifier = Modifier
+        .horizontalDivider(DividerPosition.Bottom),
+    )
+
+    HorizontalItemsWithMaximumSpaceTaken(
+      startSlot = {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          HedvigText(text = stringResource(Res.string.PRICE_NEW_PRICE))
+          IconButton(
+            onClick = {
+              val priceInfoForBottomSheet = PriceInfoForBottomSheet(
+                displayItems = priceInfo.newCostBreakDown,
+                totalGross = priceInfo.newCost.monthlyGross,
+                totalNet = priceInfo.newCost.monthlyNet,
+              )
+              costBreakdownBottomSheetState.show(priceInfoForBottomSheet)
+            },
+          ) {
+            Icon(
+              HedvigIcons.InfoFilled,
+              contentDescription = stringResource(Res.string.ADDON_FLOW_LEARN_MORE_BUTTON),
+              tint = HedvigTheme.colorScheme.fillSecondary,
+            )
+          }
+        }
+      },
+      endSlot = {
+        Column(horizontalAlignment = Alignment.End) {
+          HedvigText(
+            modifier = Modifier
+              .padding(top = 16.dp),
+            text = stringResource(
+              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+              priceInfo.newCost.monthlyNet.toString(),
+            ),
+          )
+          HedvigText(
+            text = stringResource(
+              Res.string.SUMMARY_TOTAL_PRICE_SUBTITLE,
+              dateTimeFormatter.format(priceInfo.validFrom),
+            ),
+            style = HedvigTheme.typography.label,
+            color = HedvigTheme.colorScheme.textSecondary,
+            textAlign = TextAlign.End,
+            modifier = Modifier.fillMaxWidth(),
+          )
+        }
+      },
+      spaceBetween = 8.dp,
+    )
+  }
+}
+
+@Composable
+@HedvigPreview
+private fun EditCoInsuredScreenErrorPreview() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      EditCoInsuredScreen(
+        navigateUp = { },
+        uiState = EditCoInsuredState.Error("Something happened"),
+        onSave = {},
+        onSsnChanged = {},
+        onRemoveCoInsured = {},
+        onRemoveCoInsuredClicked = {},
+        onAddCoInsuredClicked = {},
+        onCommitChanges = {},
+        onDismissError = {},
+        onRetry = {},
+        onResetAddBottomSheetState = {},
+        onResetRemoveBottomSheetState = {},
+        onFirstNameChanged = {},
+        onLastNameChanged = {},
+        onBirthDateChanged = {},
+        onManualInputSwitchChanged = {},
+        onCoInsuredSelected = {},
+        onAddNewCoInsured = {},
+      )
+    }
+  }
+}
+
+@Composable
+@HedvigPreview
+private fun EditCoInsuredScreenEditablePreview() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      EditCoInsuredScreen(
+        navigateUp = { },
+        uiState = EditCoInsuredState.Loaded(
+          type = CoInsuredFlowType.CoInsured,
+          listState = EditCoInsuredState.Loaded.CoInsuredListState(
+            originalCoInsured = listOf(
+              CoInsured(
+                "Test",
+                "Testersson",
+                LocalDate.fromEpochDays(300),
+                "19910113-1093",
+                hasMissingInfo = false,
+                activatesOn = LocalDate(2025, 10, 1),
+                terminatesOn = null,
+              ),
+              CoInsured(
+                null,
+                null,
+                null,
+                null,
+                hasMissingInfo = true,
+                activatesOn = null,
+                terminatesOn = LocalDate(2025, 10, 1),
+              ),
+            ),
+            updatedCoInsured = listOf(
+              CoInsured(
+                "Test",
+                "Testersson",
+                LocalDate.fromEpochDays(300),
+                "19910113-1093",
+                hasMissingInfo = false,
+                activatesOn = null,
+                terminatesOn = null,
+              ),
+            ),
+            member = Member(
+              firstName = "Member",
+              lastName = "Membersson",
+              ssn = "197312331093",
+            ),
+            priceInfo = EditCoInsuredState.Loaded.PriceInfo(
+              currentCost =
+                MonthlyCost(
+                  monthlyGross = UiMoney(179.0, UiCurrencyCode.SEK),
+                  monthlyNet = UiMoney(110.0, UiCurrencyCode.SEK),
+                ),
+              newCost = MonthlyCost(
+                monthlyGross = UiMoney(200.0, UiCurrencyCode.SEK),
+                monthlyNet = UiMoney(121.0, UiCurrencyCode.SEK),
+              ),
+              validFrom = LocalDate.fromEpochDays(400),
+              newCostBreakDown = listOf(
+                "Bundle discount 20%" to "-79 kr/mo",
+              ),
+            ),
+            allCoInsured = listOf(),
+          ),
+          addBottomSheetContentState = EditCoInsuredState.Loaded.AddBottomSheetContentState(
+            isLoading = false,
+            manualInfo = ManualInfo(),
+            infoFromSsn = InfoFromSsn(),
+          ),
+          removeBottomSheetContentState = RemoveBottomSheetContentState(),
+        ),
+        onSave = {},
+        onSsnChanged = {},
+        onRemoveCoInsured = {},
+        onRemoveCoInsuredClicked = {},
+        onAddCoInsuredClicked = {},
+        onCommitChanges = {},
+        onDismissError = {},
+        onRetry = {},
+        onResetAddBottomSheetState = {},
+        onResetRemoveBottomSheetState = {},
+        onFirstNameChanged = {},
+        onLastNameChanged = {},
+        onBirthDateChanged = {},
+        onManualInputSwitchChanged = {},
+        onCoInsuredSelected = {},
+        onAddNewCoInsured = {},
+      )
+    }
+  }
+}
+
+@Composable
+@HedvigMultiScreenPreview
+private fun EditCoInsuredScreenNonEditablePreview() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      EditCoInsuredScreen(
+        navigateUp = { },
+        uiState = EditCoInsuredState.Loaded(
+          type = CoInsuredFlowType.CoInsured,
+          listState = EditCoInsuredState.Loaded.CoInsuredListState(
+            originalCoInsured = listOf(
+              CoInsured(
+                "Test",
+                "Testersson",
+                LocalDate.fromEpochDays(300),
+                "19910113-1093",
+                hasMissingInfo = false,
+                activatesOn = LocalDate(2025, 10, 1),
+                terminatesOn = null,
+              ),
+              CoInsured(
+                null,
+                null,
+                null,
+                null,
+                hasMissingInfo = true,
+                activatesOn = LocalDate(2025, 10, 1),
+                terminatesOn = null,
+              ),
+            ),
+            member = Member(
+              firstName = "Member",
+              lastName = "Membersson",
+              ssn = "197312331093",
+            ),
+            allCoInsured = listOf(),
+          ),
+          addBottomSheetContentState = EditCoInsuredState.Loaded.AddBottomSheetContentState(
+            isLoading = false,
+            manualInfo = ManualInfo(),
+            infoFromSsn = InfoFromSsn(),
+          ),
+          removeBottomSheetContentState = RemoveBottomSheetContentState(),
+        ),
+        onSave = {},
+        onSsnChanged = {},
+        onRemoveCoInsured = {},
+        onRemoveCoInsuredClicked = {},
+        onAddCoInsuredClicked = {},
+        onCommitChanges = {},
+        onDismissError = {},
+        onRetry = {},
+        onResetAddBottomSheetState = {},
+        onResetRemoveBottomSheetState = {},
+        onFirstNameChanged = {},
+        onLastNameChanged = {},
+        onBirthDateChanged = {},
+        onManualInputSwitchChanged = {},
+        onCoInsuredSelected = {},
+        onAddNewCoInsured = {},
+      )
+    }
+  }
+}

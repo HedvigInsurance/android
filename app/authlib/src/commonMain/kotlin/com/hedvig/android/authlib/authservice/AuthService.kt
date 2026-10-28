@@ -25,6 +25,9 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
+import io.ktor.http.isSuccess
+
+internal class UnexpectedHttpStatusException(status: HttpStatusCode) : Exception("Unexpected HTTP status $status")
 
 /**
  * Service mapping the API of `HedvigInsurance/auth`
@@ -70,6 +73,10 @@ internal class AuthService(
   @Throws(NoTransformationFoundException::class, Throwable::class)
   suspend fun loginStatus(loginStatusUrl: LoginStatusUrl): LoginStatusResponse {
     val response = ktorClient.get("${environment.baseUrl}${loginStatusUrl.url}")
+    // An error response can carry a numeric `status` field, which would otherwise fail to decode as a LoginStatus
+    if (!response.status.isSuccess()) {
+      throw UnexpectedHttpStatusException(response.status)
+    }
     return response.body<LoginStatusResponse>()
   }
 

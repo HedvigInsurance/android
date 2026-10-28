@@ -1,0 +1,227 @@
+package com.hedvig.android.feature.editcoinsured.ui
+
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isInstanceOf
+import assertk.assertions.isTrue
+import com.hedvig.android.core.uidata.UiCurrencyCode
+import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
+import com.hedvig.android.feature.editcoinsured.data.CoInsuredError
+import com.hedvig.android.feature.editcoinsured.data.CoInsuredResult
+import com.hedvig.android.feature.editcoinsured.data.MonthlyCost
+import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
+import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.ManualInfo
+import com.hedvig.android.feature.editcoinsured.ui.data.TestCommitMidtermChangeUseCase
+import com.hedvig.android.feature.editcoinsured.ui.data.TestCreateMidTermChangeUseCase
+import com.hedvig.android.feature.editcoinsured.ui.data.TestFetchCoInsuredPersonalInformationUseCase
+import com.hedvig.android.feature.editcoinsured.ui.data.TestGetCoInsuredUseCase
+import com.hedvig.android.feature.editcoinsured.ui.data.coInsuredTestList
+import com.hedvig.android.feature.editcoinsured.ui.data.testContractId
+import com.hedvig.android.feature.editcoinsured.ui.data.testMember
+import com.hedvig.android.molecule.test.test
+import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.LocalDate
+import org.junit.Test
+
+internal class EditCoInsuredPresenterTest {
+  @Test
+  fun `when fetching initial co-insured, should show list and member`() = runTest {
+    val testGetCoInsuredUseCase = TestGetCoInsuredUseCase()
+    val testFetchCoInsuredPersonalInformationUseCase = TestFetchCoInsuredPersonalInformationUseCase()
+    val testCreateMidTermChangeUseCase = TestCreateMidTermChangeUseCase()
+    val testCommitMidtermChangeUseCase = TestCommitMidtermChangeUseCase()
+
+    val presenter = EditCoInsuredPresenter(
+      contractId = testContractId,
+      type = CoInsuredFlowType.CoInsured,
+      getCoInsuredUseCase = testGetCoInsuredUseCase,
+      fetchCoInsuredPersonalInformationUseCase = testFetchCoInsuredPersonalInformationUseCase,
+      createMidtermChangeUseCase = testCreateMidTermChangeUseCase,
+      commitMidtermChangeUseCase = testCommitMidtermChangeUseCase,
+      backstack = TestBackstack(),
+    )
+
+    presenter.test(EditCoInsuredState.Loading) {
+      skipItems(1)
+
+      testGetCoInsuredUseCase.coInsured.add(
+        CoInsuredResult(
+          member = testMember,
+          coInsuredOnContract = coInsuredTestList,
+          allCoInsured = listOf(),
+        ),
+      )
+
+      awaitItem().let {
+        assertThat(it).isInstanceOf<EditCoInsuredState.Loaded>()
+        val uiState = it as EditCoInsuredState.Loaded
+        assertThat(uiState.listState.coInsured).isEqualTo(coInsuredTestList)
+        assertThat(uiState.listState.member).isEqualTo(testMember)
+      }
+    }
+  }
+
+  @Test
+  fun `a failed initial fetch shows a load error that a retry recovers from`() = runTest {
+    val testGetCoInsuredUseCase = TestGetCoInsuredUseCase()
+    val presenter = EditCoInsuredPresenter(
+      contractId = testContractId,
+      type = CoInsuredFlowType.CoInsured,
+      getCoInsuredUseCase = testGetCoInsuredUseCase,
+      fetchCoInsuredPersonalInformationUseCase = TestFetchCoInsuredPersonalInformationUseCase(),
+      createMidtermChangeUseCase = TestCreateMidTermChangeUseCase(),
+      commitMidtermChangeUseCase = TestCommitMidtermChangeUseCase(),
+      backstack = TestBackstack(),
+    )
+
+    presenter.test(EditCoInsuredState.Loading) {
+      skipItems(1)
+
+      testGetCoInsuredUseCase.errorMessages.add(CoInsuredError.GenericError("network"))
+      assertThat(awaitItem()).isEqualTo(EditCoInsuredState.LoadError)
+
+      sendEvent(EditCoInsuredEvent.RetryLoading)
+      assertThat(awaitItem()).isEqualTo(EditCoInsuredState.Loading)
+
+      testGetCoInsuredUseCase.coInsured.add(
+        CoInsuredResult(
+          member = testMember,
+          coInsuredOnContract = coInsuredTestList,
+          allCoInsured = listOf(),
+        ),
+      )
+      assertThat(awaitItem()).isInstanceOf<EditCoInsuredState.Loaded>()
+    }
+  }
+
+  @Test
+  fun `should open bottom sheet with info from selected co-insured`() = runTest {
+    val testGetCoInsuredUseCase = TestGetCoInsuredUseCase()
+    val testFetchCoInsuredPersonalInformationUseCase = TestFetchCoInsuredPersonalInformationUseCase()
+    val testCreateMidTermChangeUseCase = TestCreateMidTermChangeUseCase()
+    val testCommitMidtermChangeUseCase = TestCommitMidtermChangeUseCase()
+
+    val presenter = EditCoInsuredPresenter(
+      contractId = testContractId,
+      type = CoInsuredFlowType.CoInsured,
+      getCoInsuredUseCase = testGetCoInsuredUseCase,
+      fetchCoInsuredPersonalInformationUseCase = testFetchCoInsuredPersonalInformationUseCase,
+      createMidtermChangeUseCase = testCreateMidTermChangeUseCase,
+      commitMidtermChangeUseCase = testCommitMidtermChangeUseCase,
+      backstack = TestBackstack(),
+    )
+
+    presenter.test(
+      EditCoInsuredState.Loaded(
+        type = CoInsuredFlowType.CoInsured,
+        listState = EditCoInsuredState.Loaded.CoInsuredListState(
+          originalCoInsured = coInsuredTestList,
+          member = testMember,
+          allCoInsured = listOf(),
+        ),
+        addBottomSheetContentState = EditCoInsuredState.Loaded.AddBottomSheetContentState(
+          infoFromSsn = InfoFromSsn(),
+          manualInfo = ManualInfo(),
+        ),
+        removeBottomSheetContentState = EditCoInsuredState.Loaded.RemoveBottomSheetContentState(),
+      ),
+    ) {
+      skipItems(1)
+
+      sendEvent(EditCoInsuredEvent.OnEditCoInsuredClicked(coInsuredTestList[0]))
+
+      val item = awaitItem()
+      assertThat(item).isInstanceOf<EditCoInsuredState.Loaded>()
+      val uiState = item as EditCoInsuredState.Loaded
+
+      assertThat(uiState.addBottomSheetContentState.manualInfo.firstName).isEqualTo(coInsuredTestList[0].firstName)
+      assertThat(uiState.addBottomSheetContentState.manualInfo.lastName).isEqualTo(coInsuredTestList[0].lastName)
+      assertThat(uiState.addBottomSheetContentState.infoFromSsn.ssn).isEqualTo(coInsuredTestList[0].ssn)
+      assertThat(uiState.addBottomSheetContentState.manualInfo.birthDate).isEqualTo(coInsuredTestList[0].birthDate)
+    }
+  }
+
+  @Test
+  fun `should update co-insured from the right mode, manual or ssn fetch, when saving from bottom sheet`() = runTest {
+    val testGetCoInsuredUseCase = TestGetCoInsuredUseCase()
+    val testFetchCoInsuredPersonalInformationUseCase = TestFetchCoInsuredPersonalInformationUseCase()
+    val testCreateMidTermChangeUseCase = TestCreateMidTermChangeUseCase()
+    val testCommitMidtermChangeUseCase = TestCommitMidtermChangeUseCase()
+
+    val presenter = EditCoInsuredPresenter(
+      contractId = testContractId,
+      type = CoInsuredFlowType.CoInsured,
+      getCoInsuredUseCase = testGetCoInsuredUseCase,
+      fetchCoInsuredPersonalInformationUseCase = testFetchCoInsuredPersonalInformationUseCase,
+      createMidtermChangeUseCase = testCreateMidTermChangeUseCase,
+      commitMidtermChangeUseCase = testCommitMidtermChangeUseCase,
+      backstack = TestBackstack(),
+    )
+
+    presenter.test(
+      initialState = EditCoInsuredState.Loaded(
+        type = CoInsuredFlowType.CoInsured,
+        listState = EditCoInsuredState.Loaded.CoInsuredListState(
+          originalCoInsured = coInsuredTestList,
+          member = testMember,
+          allCoInsured = listOf(),
+        ),
+        addBottomSheetContentState = EditCoInsuredState.Loaded.AddBottomSheetContentState(
+          showManualInput = false,
+          infoFromSsn = InfoFromSsn(),
+          manualInfo = ManualInfo(),
+        ),
+        removeBottomSheetContentState = EditCoInsuredState.Loaded.RemoveBottomSheetContentState(),
+      ),
+    ) {
+      skipItems(1)
+      sendEvent(EditCoInsuredEvent.OnEditCoInsuredClicked(coInsuredTestList[2]))
+      skipItems(1)
+      sendEvent(EditCoInsuredEvent.OnSsnChanged("5555"))
+      skipItems(1)
+      sendEvent(EditCoInsuredEvent.OnManualInputSwitchChanged(show = true))
+      skipItems(1)
+      sendEvent(EditCoInsuredEvent.OnLastNameChanged("New last name manual"))
+      val state2 = awaitItem()
+      assertThat(
+        (state2 as EditCoInsuredState.Loaded).addBottomSheetContentState.manualInfo.lastName,
+      ).isEqualTo("New last name manual")
+      sendEvent(EditCoInsuredEvent.OnBottomSheetContinue)
+      skipItems(1)
+      testCreateMidTermChangeUseCase.addCreateMidtermChangeResult(
+        "test",
+        currentCost = MonthlyCost(
+          UiMoney(100.0, UiCurrencyCode.SEK),
+          UiMoney(90.0, UiCurrencyCode.SEK),
+        ),
+        newCost = MonthlyCost(
+          UiMoney(120.0, UiCurrencyCode.SEK),
+          UiMoney(100.0, UiCurrencyCode.SEK),
+        ),
+        activatedDate = LocalDate.fromEpochDays(400),
+      )
+      val item = awaitItem()
+      assertThat(item).isInstanceOf<EditCoInsuredState.Loaded>()
+      val uiState = item as EditCoInsuredState.Loaded
+      assertThat(uiState.addBottomSheetContentState.manualInfo).isEqualTo(ManualInfo())
+      assertThat(uiState.listState.coInsured[2].ssn).isEqualTo(null)
+      assertThat(uiState.listState.coInsured[2].lastName).isEqualTo("New last name manual")
+    }
+  }
+
+  @Test
+  fun `manual input with a blank first or last name cannot continue`() {
+    fun stateWith(firstName: String?, lastName: String?) = EditCoInsuredState.Loaded.AddBottomSheetContentState(
+      infoFromSsn = InfoFromSsn(),
+      manualInfo = ManualInfo(firstName = firstName, lastName = lastName, birthDate = LocalDate.fromEpochDays(400)),
+      showManualInput = true,
+    )
+
+    assertThat(stateWith("First", "Last").canContinue()).isTrue()
+    assertThat(stateWith("", "Last").canContinue()).isFalse()
+    assertThat(stateWith("First", "  ").canContinue()).isFalse()
+    assertThat(stateWith(null, "Last").canContinue()).isFalse()
+  }
+}

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 9.4.1" type="baseline" client="gradle" dependencies="false" name="AGP (9.4.1)" variant="all" version="9.4.1">
+
+    <issue
+        id="ComposableNaming"
+        message="Composable functions with a return type should start with a lowercase letter"
+        errorLine1="private fun TrailingContent("
+        errorLine2="            ~~~~~~~~~~~~~~~">
+        <location
+            file="src/commonMain/kotlin/com/hedvig/android/design/system/hedvig/HedvigTextField.kt"
+            line="179"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="AutoboxingStateCreation"
+        message="Prefer `mutableIntStateOf` instead of `mutableStateOf`"
+        errorLine1="  override var mediaItemIndex: Int by mutableStateOf(player.currentMediaItemIndex)"
+        errorLine2="                                      ~~~~~~~~~~~~~~">
+        <location
+            file="src/androidMain/kotlin/com/hedvig/android/design/system/hedvig/videoplayer/PlayerState.kt"
+            line="99"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="AutoboxingStateCreation"
+        message="Prefer `mutableIntStateOf` instead of `mutableStateOf`"
+        errorLine1="  override var playbackState: Int by mutableStateOf(player.playbackState)"
+        errorLine2="                                     ~~~~~~~~~~~~~~">
+        <location
+            file="src/androidMain/kotlin/com/hedvig/android/design/system/hedvig/videoplayer/PlayerState.kt"
+            line="121"
+            column="38"/>
+    </issue>
+
+    <issue
+        id="AutoboxingStateCreation"
+        message="Prefer `mutableIntStateOf` instead of `mutableStateOf`"
+        errorLine1="  override var playbackSuppressionReason: Int by mutableStateOf(player.playbackSuppressionReason)"
+        errorLine2="                                                 ~~~~~~~~~~~~~~">
+        <location
+            file="src/androidMain/kotlin/com/hedvig/android/design/system/hedvig/videoplayer/PlayerState.kt"
+            line="128"
+            column="50"/>
+    </issue>
+
+    <issue
+        id="AutoboxingStateCreation"
+        message="Prefer `mutableIntStateOf` instead of `mutableStateOf`"
+        errorLine1="  override var repeatMode: Int by mutableStateOf(player.repeatMode)"
+        errorLine2="                                  ~~~~~~~~~~~~~~">
+        <location
+            file="src/androidMain/kotlin/com/hedvig/android/design/system/hedvig/videoplayer/PlayerState.kt"
+            line="135"
+            column="35"/>
+    </issue>
+
+    <issue
+        id="AutoboxingStateCreation"
+        message="Prefer `mutableLongStateOf` instead of `mutableStateOf`"
+        errorLine1="  override var seekBackIncrement: Long by mutableStateOf(player.seekBackIncrement)"
+        errorLine2="                                          ~~~~~~~~~~~~~~">
+        <location
+            file="src/androidMain/kotlin/com/hedvig/android/design/system/hedvig/videoplayer/PlayerState.kt"
+            line="147"
+            column="43"/>
+    </issue>
+
+    <issue
+        id="AutoboxingStateCreation"
+        message="Prefer `mutableLongStateOf` instead of `mutableStateOf`"
+        errorLine1="  override var seekForwardIncrement: Long by mutableStateOf(player.seekForwardIncrement)"
+        errorLine2="                                             ~~~~~~~~~~~~~~">
+        <location
+            file="src/androidMain/kotlin/com/hedvig/android/design/system/hedvig/videoplayer/PlayerState.kt"
+            line="150"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="AutoboxingStateCreation"
+        message="Prefer `mutableLongStateOf` instead of `mutableStateOf`"
+        errorLine1="  override var maxSeekToPreviousPosition: Long by mutableStateOf(player.maxSeekToPreviousPosition)"
+        errorLine2="                                                  ~~~~~~~~~~~~~~">
+        <location
+            file="src/androidMain/kotlin/com/hedvig/android/design/system/hedvig/videoplayer/PlayerState.kt"
+            line="153"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="AutoboxingStateCreation"
+        message="Prefer `mutableFloatStateOf` instead of `mutableStateOf`"
+        errorLine1="  override var volume: Float by mutableStateOf(player.volume)"
+        errorLine2="                                ~~~~~~~~~~~~~~">
+        <location
+            file="src/androidMain/kotlin/com/hedvig/android/design/system/hedvig/videoplayer/PlayerState.kt"
+            line="159"
+            column="33"/>
+    </issue>
+
+    <issue
+        id="AutoboxingStateCreation"
+        message="Prefer `mutableIntStateOf` instead of `mutableStateOf`"
+        errorLine1="  override var deviceVolume: Int by mutableStateOf(player.deviceVolume)"
+        errorLine2="                                    ~~~~~~~~~~~~~~">
+        <location
+            file="src/androidMain/kotlin/com/hedvig/android/design/system/hedvig/videoplayer/PlayerState.kt"
+            line="165"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="ModifierNodeInspectableProperties"
+        message="HorizontalDividerElement does not override inspectableProperties(). The layout inspector will use the default implementation of this function, which will attempt to read HorizontalDividerElement&apos;s properties reflectively. Override inspectableProperties() if you&apos;d like to customize this modifier&apos;s presentation in the layout inspector."
+        errorLine1="private data class HorizontalDividerElement("
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/commonMain/kotlin/com/hedvig/android/design/system/hedvig/DividerModifier.kt"
+            line="28"
+            column="20"/>
+    </issue>
+
+</issues>

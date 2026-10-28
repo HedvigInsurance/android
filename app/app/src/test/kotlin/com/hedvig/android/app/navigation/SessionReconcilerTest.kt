@@ -76,6 +76,16 @@ internal class SessionReconcilerTest {
     assertThat(secondController.entries.toList()).containsExactly(HomeKey)
   }
 
+  @Test
+  fun `reconcile flips a freshly seeded Login root to Home in demo mode`() = runTest {
+    val controller = controllerWith(LoginKey)
+    val reconciler = sessionReconciler(authStatus = AuthStatus.LoggedOut, controller = controller, isDemoMode = true)
+
+    reconciler.reconcile()
+
+    assertThat(controller.entries.toList()).containsExactly(HomeKey)
+  }
+
   private fun controllerWith(vararg keys: HedvigNavKey) = BackstackController(
     mutableStateListOf(*keys),
     mutableStateMapOf(),
@@ -83,7 +93,11 @@ internal class SessionReconcilerTest {
     mutableStateOf(null), // stashedSession
   )
 
-  private fun TestScope.sessionReconciler(authStatus: AuthStatus, controller: BackstackController): SessionReconciler {
+  private fun TestScope.sessionReconciler(
+    authStatus: AuthStatus,
+    controller: BackstackController,
+    isDemoMode: Boolean = false,
+  ): SessionReconciler {
     val authTokenStorage = AuthTokenStorage(
       TestPreferencesDataStore(
         datastoreTestFileDirectory = testFolder.newFolder(),
@@ -93,7 +107,7 @@ internal class SessionReconcilerTest {
     return SessionReconciler(
       backstackController = controller,
       authTokenService = FakeAuthTokenService(authStatus),
-      demoManager = FakeDemoManager(),
+      demoManager = FakeDemoManager(isDemoMode),
       memberIdService = MemberIdService(authTokenStorage),
     )
   }
@@ -121,8 +135,8 @@ private class FakeAuthTokenService(authStatus: AuthStatus) : AuthTokenService {
   override suspend fun logoutAndInvalidateTokens() = error("Not used in these tests")
 }
 
-private class FakeDemoManager : DemoManager {
-  private val demoMode = MutableStateFlow(false)
+private class FakeDemoManager(isDemoMode: Boolean) : DemoManager {
+  private val demoMode = MutableStateFlow(isDemoMode)
 
   override fun isDemoMode(): Flow<Boolean> = demoMode.asStateFlow()
 

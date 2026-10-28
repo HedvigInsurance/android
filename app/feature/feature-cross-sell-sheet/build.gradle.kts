@@ -1,5 +1,6 @@
 plugins {
-  id("hedvig.android.library")
+  id("hedvig.multiplatform.library")
+  id("hedvig.multiplatform.library.android")
   id("hedvig.gradle.plugin")
 }
 
@@ -9,29 +10,39 @@ hedvig {
   viewModels()
 }
 
-android {
-  testOptions.unitTests.isReturnDefaultValues = true
-}
-
-dependencies {
-  implementation(libs.apollo.runtime)
-  implementation(libs.apollo.normalizedCache)
-  implementation(libs.arrow.core)
-  implementation(libs.arrow.fx)
-  implementation(projects.apolloCore)
-  implementation(projects.apolloOctopusPublic)
-  implementation(projects.coreCommonPublic)
-  implementation(projects.coreDemoMode)
-  implementation(projects.crossSells)
-  implementation(projects.dataAddons)
-  implementation(projects.dataContract)
-  implementation(projects.dataCrossSellAfterFlow)
-  implementation(projects.designSystemHedvig)
-  implementation(projects.moleculePublic)
-
-  testImplementation(libs.assertK)
-  testImplementation(libs.coroutines.test)
-  testImplementation(libs.junit)
-  testImplementation(libs.turbine)
-  testImplementation(projects.moleculeTest)
+kotlin {
+  sourceSets {
+    commonMain.dependencies {
+      implementation(libs.apollo.runtime)
+      implementation(libs.apollo.normalizedCache)
+      implementation(libs.arrow.core)
+      implementation(libs.arrow.fx)
+      implementation(projects.apolloCore)
+      implementation(projects.apolloOctopusPublic)
+      implementation(projects.coreCommonPublic)
+      implementation(projects.coreDemoMode)
+      implementation(projects.composeUi)
+      implementation(projects.crossSells)
+      implementation(projects.dataAddons)
+      implementation(projects.dataContract)
+      implementation(projects.dataCrossSellAfterFlow)
+      implementation(projects.designSystemHedvig)
+      implementation(projects.experimentsPublic)
+      implementation(projects.moleculePublic)
+    }
+    jvmTest.dependencies {
+      implementation(libs.apollo.testingSupport)
+      implementation(libs.assertK)
+      implementation(libs.coroutines.test)
+      implementation(libs.junit)
+      implementation(libs.turbine)
+      implementation(projects.apolloOctopusTest)
+      implementation(projects.apolloTest)
+      implementation(projects.coreCommonTest)
+      implementation(projects.experimentsTest)
+      implementation(projects.loggingTest)
+      implementation(projects.moleculeTest)
+      implementation(projects.trackingTest)
+    }
+  }
 }

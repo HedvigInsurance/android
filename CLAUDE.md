@@ -57,8 +57,8 @@ A full narrative of *why* these look the way they do — the engineering decisio
 # Clean build
 ./gradlew clean
 
-# Generate module dependency graph (requires graphviz: brew install graphviz)
-./gradlew :generateProjectDependencyGraph
+# Generate module dependency graph and summary (requires graphviz: brew install graphviz)
+./gradlew :generateProjectDependencyGraph --no-configuration-cache
 
 # Find unused resources
 ./gradlew :app:lint -Prur.lint.onlyUnusedResources
@@ -442,8 +442,9 @@ The project uses custom Gradle convention plugins for consistent configuration:
 - **hedvig.android.application** - Android app configuration
 - **hedvig.android.library** - Android library configuration
 - **hedvig.jvm.library** - Pure Kotlin (JVM) libraries
-- **hedvig.multiplatform.library** - KMP support
-- **hedvig.multiplatform.library.android** - adds an android target to a KMP module when it needs android-specific code
+- **hedvig.multiplatform.library** - KMP module with a JVM target. Not exported to iOS.
+- **hedvig.multiplatform.library.ios** - KMP module that `:umbrella` exports to iOS, directly or transitively. Adds the iOS targets; every `expect` needs a `nativeMain` actual.
+- **hedvig.multiplatform.library.android** - adds an android target to a KMP module when it needs android-specific code, Compose previews, resources, or the `navKeys()`/`viewModels()` processors.
 
 ### HedvigGradlePluginExtension DSL
 
@@ -667,7 +668,7 @@ GitHub Actions workflows (in `.github/workflows/`):
 - **graphql-schema.yml** - Schema updates
 - **strings.yml** - Translation updates
 - **unused-resources.yml** - Resource cleanup checks
-- **umbrella.yml** - Comprehensive checks
+- **umbrella.yml** - Publishes the iOS umbrella framework on weeknights, or on manual trigger
 
 ## Important Files
 
@@ -770,6 +771,11 @@ Example:
 // TODO: Add "This is some text for feature X" / "Detta är lite text för feature X" to Lokalise
 Text("This is some text for feature X")
 ```
+
+**PR CI builds against the committed `strings.xml` files** and never downloads from Lokalise. A PR
+that uses a key added to Lokalise since the last strings update must run `./gradlew downloadStrings`
+and commit the regenerated files, or wait for the daily strings workflow to bring the key in.
+Staging and Play Store builds still download the latest strings before building.
 
 **Verifying whether a string key is "real" (already in Lokalise):** if you find a key in a
 `strings.xml` and are unsure whether it actually exists in Lokalise or was hand-added, run

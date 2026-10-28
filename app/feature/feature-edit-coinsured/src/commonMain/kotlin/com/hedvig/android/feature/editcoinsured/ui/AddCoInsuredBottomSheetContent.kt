@@ -1,0 +1,527 @@
+package com.hedvig.android.feature.editcoinsured.ui
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.OutputTransformation
+import androidx.compose.foundation.text.input.TextFieldBuffer
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.insert
+import androidx.compose.foundation.text.input.maxLength
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTextField
+import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HedvigToggle
+import com.hedvig.android.design.system.hedvig.NotificationDefaults
+import com.hedvig.android.design.system.hedvig.RadioGroup
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDefaultStyleSize.Small
+import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle
+import com.hedvig.android.design.system.hedvig.api.HedvigSelectableDates
+import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
+import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
+import com.hedvig.android.design.system.hedvig.datepicker.getLocale
+import com.hedvig.android.feature.editcoinsured.data.CoInsured
+import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.AddBottomSheetContentState
+import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
+import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.ManualInfo
+import hedvig.resources.COINSURED_WITHOUT_SSN_INFO
+import hedvig.resources.CONTRACT_ADD_ADDITIONAL_COOWNER
+import hedvig.resources.CONTRACT_ADD_COINSURED
+import hedvig.resources.CONTRACT_ADD_COINSURED_NO_SSN
+import hedvig.resources.CONTRACT_BIRTH_DATE
+import hedvig.resources.CONTRACT_FIRST_NAME
+import hedvig.resources.CONTRACT_LAST_NAME
+import hedvig.resources.CONTRACT_PERSONAL_IDENTITY
+import hedvig.resources.CONTRACT_SSN_FETCH_INFO
+import hedvig.resources.FULL_NAME_TEXT
+import hedvig.resources.GENERAL_ADD_NEW
+import hedvig.resources.Res
+import hedvig.resources.edit_coinsured_ssn_placeholder
+import hedvig.resources.general_cancel_button
+import hedvig.resources.something_went_wrong
+import kotlin.time.Clock
+import kotlin.time.Instant
+import kotlinx.coroutines.flow.filter
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.stringResource
+
+@Composable
+internal fun AddCoInsuredBottomSheetContent(
+  bottomSheetState: AddBottomSheetContentState,
+  type: CoInsuredFlowType,
+  onSsnChanged: (String) -> Unit,
+  onContinue: () -> Unit,
+  onDismiss: () -> Unit,
+  onManualInputSwitchChanged: (Boolean) -> Unit,
+  onBirthDateChanged: (LocalDate) -> Unit,
+  onFirstNameChanged: (String) -> Unit,
+  onLastNameChanged: (String) -> Unit,
+  onAddNewCoInsured: () -> Unit,
+  onCoInsuredSelected: (CoInsured) -> Unit,
+) {
+  Column(
+    modifier = Modifier,
+  ) {
+    Spacer(Modifier.height(16.dp))
+    HedvigText(
+      text = when (type) {
+        CoInsuredFlowType.CoInsured -> stringResource(Res.string.CONTRACT_ADD_COINSURED)
+        CoInsuredFlowType.CoOwners -> stringResource(Res.string.CONTRACT_ADD_ADDITIONAL_COOWNER)
+      },
+      textAlign = TextAlign.Center,
+      modifier = Modifier
+        .fillMaxWidth()
+        .semantics { heading() },
+    )
+    Spacer(Modifier.height(24.dp))
+    if (bottomSheetState.canPickExistingCoInsured() && bottomSheetState.selectableCoInsured != null) {
+      SelectableCoInsuredList(
+        bottomSheetState.selectableCoInsured,
+        bottomSheetState.selectedCoInsured,
+        bottomSheetState.errorMessage,
+        onAddNewCoInsured,
+        onCoInsuredSelected,
+      )
+    } else {
+      AnimatedVisibility(visible = bottomSheetState.showManualInput) {
+        ManualInputFields(
+          birthDate = bottomSheetState.manualInfo.birthDate,
+          firstName = bottomSheetState.manualInfo.firstName,
+          lastName = bottomSheetState.manualInfo.lastName,
+          errorMessage = bottomSheetState.errorMessage,
+          onBirthDateChanged = onBirthDateChanged,
+          onFirstNameChanged = onFirstNameChanged,
+          onLastNameChanged = onLastNameChanged,
+        )
+      }
+      AnimatedVisibility(visible = !bottomSheetState.showManualInput) {
+        FetchFromSsnFields(
+          displayName = bottomSheetState.displayName,
+          ssn = bottomSheetState.infoFromSsn.ssn,
+          errorMessage = bottomSheetState.errorMessage,
+          onSsnChanged = onSsnChanged,
+          onContinue = onContinue,
+        )
+      }
+      Spacer(Modifier.height(4.dp))
+      HedvigToggle(
+        turnedOn = bottomSheetState.showManualInput,
+        onClick = {
+          onManualInputSwitchChanged(it)
+        },
+        modifier = Modifier.fillMaxWidth(),
+        toggleStyle = ToggleStyle.Default(Small),
+        labelText = stringResource(Res.string.CONTRACT_ADD_COINSURED_NO_SSN),
+        enabled = true,
+      )
+      AnimatedVisibility(bottomSheetState.showUnderAgedInfo) {
+        Column {
+          Spacer(Modifier.height(4.dp))
+          HedvigNotificationCard(
+            message = stringResource(Res.string.COINSURED_WITHOUT_SSN_INFO),
+            priority = NotificationDefaults.NotificationPriority.Attention,
+          )
+        }
+      }
+    }
+    Spacer(Modifier.height(16.dp))
+    HedvigButton(
+      text = stringResource(bottomSheetState.getSaveLabel().stringRes()),
+      enabled = bottomSheetState.canContinue(),
+      onClick = onContinue,
+      isLoading = bottomSheetState.isLoading,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    HedvigButton(
+      onClick = onDismiss,
+      text = stringResource(Res.string.general_cancel_button),
+      enabled = true,
+      buttonStyle = Ghost,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+  }
+}
+
+@Composable
+internal fun SelectableCoInsuredList(
+  selectableCoInsured: List<CoInsured>,
+  selectedCoInsured: CoInsured?,
+  errorMessage: String?,
+  onAddNewCoInsured: () -> Unit,
+  onCoInsuredSelected: (CoInsured) -> Unit,
+) {
+  RadioGroup(
+    options = selectableCoInsured.map { coInsured ->
+      RadioOption(
+        id = RadioOptionId(coInsured.id),
+        text = coInsured.displayName,
+      )
+    },
+    selectedOption = selectedCoInsured?.id?.let { RadioOptionId(it) },
+    onRadioOptionSelected = { id ->
+      onCoInsuredSelected(selectableCoInsured.first { it.id == id.id })
+    },
+  )
+  Spacer(Modifier.height(4.dp))
+  AnimatedVisibility(visible = errorMessage != null) {
+    HedvigNotificationCard(
+      message = errorMessage ?: "",
+      modifier = Modifier.fillMaxWidth(),
+      priority = NotificationDefaults.NotificationPriority.Attention,
+    )
+  }
+  HedvigTextButton(
+    text = stringResource(Res.string.GENERAL_ADD_NEW),
+    onClick = { onAddNewCoInsured() },
+    modifier = Modifier.fillMaxWidth(),
+  )
+}
+
+@Composable
+private fun FetchFromSsnFields(
+  ssn: String?,
+  displayName: String,
+  errorMessage: String?,
+  onSsnChanged: (String) -> Unit,
+  onContinue: () -> Unit,
+) {
+  val ssnState = rememberTextFieldState(ssn ?: "")
+  val currentSsn by rememberUpdatedState(ssn.orEmpty())
+  val currentOnSsnChanged by rememberUpdatedState(onSsnChanged)
+  LaunchedEffect(ssnState) {
+    snapshotFlow { ssnState.text.toString() }.filter { it != currentSsn }.collect { currentOnSsnChanged(it) }
+  }
+  Column {
+    HedvigTextField(
+      state = ssnState,
+      labelText = stringResource(Res.string.CONTRACT_PERSONAL_IDENTITY),
+      inputTransformation = InputTransformation.maxLength(PersonalNumberLength),
+      outputTransformation = PersonalNumberOutputTransformation,
+      mask = stringResource(Res.string.edit_coinsured_ssn_placeholder),
+      lineLimits = TextFieldLineLimits.SingleLine,
+      textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
+      errorState = if (errorMessage != null) {
+        HedvigTextFieldDefaults.ErrorState.Error.WithMessage(stringResource(Res.string.something_went_wrong))
+      } else {
+        HedvigTextFieldDefaults.ErrorState.NoError
+      },
+      keyboardOptions = KeyboardOptions(
+        keyboardType = KeyboardType.Number,
+        imeAction = ImeAction.Done,
+      ),
+      keyboardActions = { onContinue() },
+      modifier = Modifier.fillMaxWidth(),
+    )
+    AnimatedVisibility(
+      visible = displayName.isNotBlank(),
+      modifier = Modifier.padding(top = 4.dp),
+    ) {
+      HedvigTextField(
+        text = displayName,
+        onValueChange = {},
+        labelText = stringResource(Res.string.FULL_NAME_TEXT),
+        textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
+        enabled = false,
+        modifier = Modifier.fillMaxWidth(),
+      )
+    }
+  }
+}
+
+private const val PersonalNumberLength = 12
+
+/**
+ * Shows a personal number as `YYYYMMDD-XXXX`.
+ */
+private object PersonalNumberOutputTransformation : OutputTransformation {
+  override fun TextFieldBuffer.transformOutput() {
+    if (length > 8) insert(8, "-")
+  }
+}
+
+@Composable
+private fun ManualInputFields(
+  birthDate: LocalDate?,
+  firstName: String?,
+  lastName: String?,
+  onBirthDateChanged: (LocalDate) -> Unit,
+  onFirstNameChanged: (String) -> Unit,
+  onLastNameChanged: (String) -> Unit,
+  errorMessage: String?,
+) {
+  var firstNameInput by remember { mutableStateOf(firstName ?: "") }
+  var lastNameInput by remember { mutableStateOf(lastName ?: "") }
+
+  Column {
+    DatePickerWithDialog(
+      onSave = onBirthDateChanged,
+      birthDate = birthDate,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(4.dp))
+    Row {
+      HedvigTextField(
+        text = firstNameInput,
+        labelText = stringResource(Res.string.CONTRACT_FIRST_NAME),
+        textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
+        onValueChange = {
+          onFirstNameChanged(it)
+          firstNameInput = it
+        },
+        keyboardOptions = KeyboardOptions(
+          capitalization = KeyboardCapitalization.Words,
+          keyboardType = KeyboardType.Text,
+        ),
+        modifier = Modifier
+          .weight(1f)
+          .defaultMinSize(minHeight = 64.dp),
+      )
+      Spacer(Modifier.width(4.dp))
+      HedvigTextField(
+        text = lastNameInput,
+        textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
+        labelText = stringResource(Res.string.CONTRACT_LAST_NAME),
+        onValueChange = {
+          onLastNameChanged(it)
+          lastNameInput = it
+        },
+        keyboardOptions = KeyboardOptions(
+          capitalization = KeyboardCapitalization.Words,
+          keyboardType = KeyboardType.Text,
+        ),
+        modifier = Modifier
+          .weight(1f)
+          .defaultMinSize(minHeight = 64.dp),
+      )
+    }
+    AnimatedVisibility(
+      visible = errorMessage != null,
+      enter = fadeIn(),
+      exit = fadeOut(),
+    ) {
+      Column {
+        Spacer(Modifier.height(4.dp))
+        HedvigNotificationCard(
+          message = stringResource(Res.string.something_went_wrong),
+          priority = NotificationDefaults.NotificationPriority.Attention,
+          modifier = Modifier.fillMaxWidth(),
+        )
+      }
+    }
+  }
+}
+
+@Composable
+internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> Unit, modifier: Modifier = Modifier) {
+  val selectedDateMillis = birthDate?.atStartOfDayIn(TimeZone.UTC)?.toEpochMilliseconds()
+    ?: Clock.System.now().toEpochMilliseconds()
+  val locale = getLocale()
+  var showDatePicker by rememberSaveable { mutableStateOf(false) }
+  val rememberHedvigDateTimeFormatter = remember(locale) {
+    HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale)
+  }
+  val datePickerState by remember {
+    mutableStateOf(
+      HedvigDatePickerState(
+        locale = locale,
+        initialSelectedDateMillis = selectedDateMillis,
+        initialDisplayedMonthMillis = selectedDateMillis,
+        selectableDates = object : HedvigSelectableDates {
+          override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+            return utcTimeMillis <= Clock.System.now().toEpochMilliseconds()
+          }
+
+          override fun isSelectableYear(year: Int): Boolean =
+            year <= Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year
+        },
+      ),
+    )
+  }
+  if (showDatePicker) {
+    HedvigDatePicker(
+      datePickerState = datePickerState,
+      onDismissRequest = { showDatePicker = false },
+      onConfirmRequest = {
+        val selected = datePickerState.selectedDateMillis
+        if (selected != null) {
+          val date = Instant.fromEpochMilliseconds(selected)
+            .toLocalDateTime(TimeZone.currentSystemDefault()).date
+          onSave(date)
+        }
+        showDatePicker = false
+      },
+    )
+  }
+  HedvigCard(
+    onClick = { showDatePicker = true },
+    modifier = modifier,
+    shape = HedvigTheme.shapes.cornerLarge,
+  ) {
+    Column(Modifier.padding(top = 4.dp, bottom = 8.dp)) {
+      val paddingForBirthDate = if (birthDate == null) {
+        PaddingValues(start = 16.dp, end = 16.dp, top = 15.dp, bottom = 13.dp)
+      } else {
+        PaddingValues(horizontal = 16.dp)
+      }
+      if (birthDate != null) {
+        HedvigText(
+          text = stringResource(Res.string.CONTRACT_BIRTH_DATE),
+          color = HedvigTheme.colorScheme.textSecondary,
+          fontSize = HedvigTheme.typography.label.fontSize,
+          modifier = Modifier.padding(
+            horizontal = 16.dp,
+          ),
+        )
+      }
+      HedvigText(
+        text = if (birthDate != null) {
+          rememberHedvigDateTimeFormatter.format(birthDate)
+        } else {
+          stringResource(Res.string.CONTRACT_BIRTH_DATE)
+        },
+        color = if (birthDate != null) {
+          Color.Unspecified
+        } else {
+          HedvigTheme.colorScheme.textSecondaryTranslucent
+        },
+        modifier = Modifier.padding(
+          paddingForBirthDate,
+        ),
+      )
+    }
+  }
+}
+
+private fun AddBottomSheetContentState.SaveButtonLabel.stringRes() = when (this) {
+  AddBottomSheetContentState.SaveButtonLabel.FETCH_INFO -> Res.string.CONTRACT_SSN_FETCH_INFO
+  AddBottomSheetContentState.SaveButtonLabel.ADD -> Res.string.CONTRACT_ADD_COINSURED
+}
+
+@Composable
+@HedvigShortMultiScreenPreview
+private fun AddCoInsuredBottomSheetContentPreview() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      AddCoInsuredBottomSheetContent(
+        bottomSheetState = AddBottomSheetContentState(
+          errorMessage = "Error",
+          manualInfo = ManualInfo(),
+          infoFromSsn = InfoFromSsn(),
+          selectableCoInsured = listOf(
+            CoInsured(
+              "Test",
+              "Testersson",
+              LocalDate.fromEpochDays(300),
+              "1234",
+              false,
+              activatesOn = LocalDate(2025, 10, 1),
+              terminatesOn = null,
+            ),
+            CoInsured(
+              "Test",
+              "Testersson",
+              LocalDate.fromEpochDays(300),
+              "1234",
+              false,
+              activatesOn = null,
+              terminatesOn = LocalDate(2025, 10, 1),
+            ),
+          ),
+        ),
+        type = CoInsuredFlowType.CoInsured,
+        onSsnChanged = {},
+        onContinue = {},
+        onDismiss = {},
+        onManualInputSwitchChanged = {},
+        onBirthDateChanged = {},
+        onFirstNameChanged = {},
+        onLastNameChanged = {},
+        onAddNewCoInsured = {},
+        onCoInsuredSelected = {},
+      )
+    }
+  }
+}
+
+@Composable
+@HedvigPreview
+private fun AddCoInsuredBottomSheetContentWithCoInsuredPreview() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      AddCoInsuredBottomSheetContent(
+        bottomSheetState = AddBottomSheetContentState(
+          errorMessage = "errorMessage",
+          showUnderAgedInfo = true,
+          showManualInput = true,
+          infoFromSsn = InfoFromSsn(),
+          manualInfo = ManualInfo(
+            birthDate = null,
+            // birthDate = LocalDate(2016, 7, 28),
+          ),
+        ),
+        type = CoInsuredFlowType.CoInsured,
+        onSsnChanged = {},
+        onContinue = {},
+        onDismiss = {},
+        onManualInputSwitchChanged = {},
+        onBirthDateChanged = {},
+        onFirstNameChanged = {},
+        onLastNameChanged = {},
+        onAddNewCoInsured = {},
+        onCoInsuredSelected = {},
+      )
+    }
+  }
+}

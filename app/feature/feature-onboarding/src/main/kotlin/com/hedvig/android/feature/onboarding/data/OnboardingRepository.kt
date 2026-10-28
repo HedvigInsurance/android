@@ -10,10 +10,13 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.experiments.Experiment
+import com.hedvig.android.experiments.ExperimentProvider
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import octopus.OnboardingQuery
 import octopus.OnboardingUpdateContactInfoMutation
+import octopus.type.CrossSellExperimentInput
 import octopus.type.MemberPaymentMethodStatus
 import octopus.type.MemberPaymentProvider
 import octopus.type.MissingPaymentConnection
@@ -28,10 +31,12 @@ internal interface OnboardingRepository {
 @Inject
 internal class OnboardingRepositoryImpl(
   private val apolloClient: ApolloClient,
+  private val experimentProvider: ExperimentProvider,
 ) : OnboardingRepository {
   override suspend fun getOnboardingData(): Either<ErrorMessage, OnboardingData> = either {
+    val experiments = experimentProvider.activeExperiments().toCrossSellExperimentInputs()
     val member = apolloClient
-      .query(OnboardingQuery())
+      .query(OnboardingQuery(experiments))
       .fetchPolicy(FetchPolicy.NetworkOnly)
       .safeExecute(::ErrorMessage)
       .bind()
@@ -134,4 +139,8 @@ private fun MemberPaymentProvider.toOnboardingPayinProvider(): OnboardingPayinPr
   MemberPaymentProvider.TRUSTLY -> OnboardingPayinProvider.Trustly
   MemberPaymentProvider.SWISH -> OnboardingPayinProvider.Swish
   else -> null
+}
+
+private fun List<Experiment>.toCrossSellExperimentInputs(): List<CrossSellExperimentInput> {
+  return map { CrossSellExperimentInput(name = it.name, variant = it.variant) }
 }

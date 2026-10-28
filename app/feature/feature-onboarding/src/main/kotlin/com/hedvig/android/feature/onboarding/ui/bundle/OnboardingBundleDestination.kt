@@ -21,9 +21,17 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.ImageLoader
+import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.core.tracking.EventTrackingClient
+import com.hedvig.android.crosssells.CrossSellShownReporter
+import com.hedvig.android.crosssells.CrossSellUserFlow
 import com.hedvig.android.crosssells.PillowRow
+import com.hedvig.android.crosssells.rememberCrossSellShownReporter
+import com.hedvig.android.crosssells.reportCrossSellShown
+import com.hedvig.android.crosssells.trackCrossSellClicked
+import com.hedvig.android.crosssells.trackCrossSellShown
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -59,15 +67,17 @@ import org.jetbrains.compose.resources.stringResource
 internal class OnboardingBundleViewModel(
   sessionStore: OnboardingSessionStore,
   navigator: OnboardingNavigator,
+  eventTrackingClient: EventTrackingClient,
   val progressBarAnimation: OnboardingProgressBarAnimation,
 ) : MoleculeViewModel<OnboardingBundleEvent, OnboardingBundleUiState>(
     initialState = OnboardingBundleUiState.Loading,
-    presenter = OnboardingBundlePresenter(sessionStore, navigator),
+    presenter = OnboardingBundlePresenter(sessionStore, navigator, eventTrackingClient),
   )
 
 internal class OnboardingBundlePresenter(
   private val sessionStore: OnboardingSessionStore,
   private val navigator: OnboardingNavigator,
+  private val eventTrackingClient: EventTrackingClient,
 ) : MoleculePresenter<OnboardingBundleEvent, OnboardingBundleUiState> {
   @Composable
   override fun MoleculePresenterScope<OnboardingBundleEvent>.present(
@@ -92,9 +102,25 @@ internal class OnboardingBundlePresenter(
 
     CollectEvents { event ->
       when (event) {
-        OnboardingBundleEvent.Retry -> loadIteration++
-        OnboardingBundleEvent.Close -> launch { navigator.exitOnboarding() }
-        OnboardingBundleEvent.ContinueToApp -> launch { navigator.continueFrom(OnboardingStepId.BundleDiscount) }
+        OnboardingBundleEvent.Retry -> {
+          loadIteration++
+        }
+
+        OnboardingBundleEvent.Close -> {
+          launch { navigator.exitOnboarding() }
+        }
+
+        OnboardingBundleEvent.ContinueToApp -> {
+          launch { navigator.continueFrom(OnboardingStepId.BundleDiscount) }
+        }
+
+        is OnboardingBundleEvent.CrossSellShown -> {
+          eventTrackingClient.trackCrossSellShown(CrossSellUserFlow.ONBOARDING, event.offerId, event.offerUrl)
+        }
+
+        is OnboardingBundleEvent.CrossSellClicked -> {
+          eventTrackingClient.trackCrossSellClicked(CrossSellUserFlow.ONBOARDING, event.offerId, event.offerUrl)
+        }
       }
     }
 
@@ -119,6 +145,10 @@ internal sealed interface OnboardingBundleEvent {
   data object Close : OnboardingBundleEvent
 
   data object ContinueToApp : OnboardingBundleEvent
+
+  data class CrossSellShown(val offerId: String, val offerUrl: String) : OnboardingBundleEvent
+
+  data class CrossSellClicked(val offerId: String, val offerUrl: String) : OnboardingBundleEvent
 }
 
 @Composable
@@ -126,7 +156,7 @@ internal fun OnboardingBundleDestination(
   viewModel: OnboardingBundleViewModel,
   imageLoader: ImageLoader,
   navigateUp: () -> Unit,
-  openUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Boolean,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   OnboardingBundleScreen(
@@ -137,7 +167,12 @@ internal fun OnboardingBundleDestination(
     onClose = { viewModel.emit(OnboardingBundleEvent.Close) },
     onRetry = { viewModel.emit(OnboardingBundleEvent.Retry) },
     onContinueToApp = { viewModel.emit(OnboardingBundleEvent.ContinueToApp) },
-    openUrl = openUrl,
+    onCrossSellShown = { offerId, offerUrl -> viewModel.emit(OnboardingBundleEvent.CrossSellShown(offerId, offerUrl)) },
+    onCrossSellClick = dropUnlessResumed { crossSell: OnboardingCrossSell ->
+      if (openCrossSellUrl(crossSell.storeUrl)) {
+        viewModel.emit(OnboardingBundleEvent.CrossSellClicked(crossSell.id, crossSell.storeUrl))
+      }
+    },
   )
 }
 
@@ -150,8 +185,10 @@ private fun OnboardingBundleScreen(
   onClose: () -> Unit,
   onRetry: () -> Unit,
   onContinueToApp: () -> Unit,
-  openUrl: (String) -> Unit,
+  onCrossSellShown: (offerId: String, offerUrl: String) -> Unit,
+  onCrossSellClick: (OnboardingCrossSell) -> Unit,
 ) {
+  val crossSellShownReporter = rememberCrossSellShownReporter(onCrossSellShown)
   OnboardingStepScaffold(
     progress = (uiState as? OnboardingBundleUiState.Content)?.progress,
     showBackButton = true,
@@ -182,8 +219,9 @@ private fun OnboardingBundleScreen(
           for (crossSell in state.crossSells) {
             OnboardingCrossSellRow(
               crossSell = crossSell,
+              shownReporter = crossSellShownReporter,
               imageLoader = imageLoader,
-              openUrl = openUrl,
+              onCrossSellClick = onCrossSellClick,
             )
           }
         }
@@ -202,8 +240,9 @@ private fun OnboardingBundleScreen(
 @Composable
 private fun OnboardingCrossSellRow(
   crossSell: OnboardingCrossSell,
+  shownReporter: CrossSellShownReporter,
   imageLoader: ImageLoader,
-  openUrl: (String) -> Unit,
+  onCrossSellClick: (OnboardingCrossSell) -> Unit,
 ) {
   PillowRow(
     title = crossSell.title,
@@ -212,9 +251,10 @@ private fun OnboardingCrossSellRow(
       ImageAsset(id = crossSell.id, src = url, description = null)
     },
     buttonText = crossSell.buttonTitle,
-    onButtonClick = withOnboardingHaptic { openUrl(crossSell.storeUrl) },
+    onButtonClick = withOnboardingHaptic { onCrossSellClick(crossSell) },
     imageLoader = imageLoader,
     modifier = Modifier
+      .reportCrossSellShown(shownReporter, crossSell.id, crossSell.storeUrl)
       .fillMaxWidth()
       .padding(horizontal = 16.dp, vertical = 8.dp),
     buttonSize = ButtonDefaults.ButtonSize.Small,
@@ -258,7 +298,8 @@ private fun PreviewOnboardingBundleScreen(
         onClose = {},
         onRetry = {},
         onContinueToApp = {},
-        openUrl = {},
+        onCrossSellShown = { _, _ -> },
+        onCrossSellClick = {},
       )
     }
   }

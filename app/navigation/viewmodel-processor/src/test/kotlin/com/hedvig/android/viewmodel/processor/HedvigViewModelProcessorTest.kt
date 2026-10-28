@@ -160,9 +160,7 @@ class HedvigViewModelProcessorTest {
   fun `commonMain view model is skipped in a single-target leaf pass while non-common VMs are emitted`() {
     // A single-target (e.g. kspAndroid) pass re-sees a commonMain VM that the multi-target metadata
     // pass already generated; it must NOT re-emit it, or the VM's Metro contribution is declared twice.
-    // A VM outside commonMain (here under androidMain) in the same pass is still generated. The
-    // metadata-pass side — where commonMain VMs ARE emitted — needs a multiplatform compilation the
-    // kctfork harness can't produce, so it's covered by the real app build (feature-claim-history).
+    // A VM outside commonMain (here under androidMain) in the same pass is still generated.
     val result = compile(
       vmAt(
         "commonMain/CommonViewModels.kt",
@@ -178,10 +176,64 @@ class HedvigViewModelProcessorTest {
         class AndroidOnlyViewModel @Inject constructor(val dep: String) : ViewModel()
         """.trimIndent(),
       ),
+      options = mapOf(PASS_OPTION to "leaf"),
     )
 
     assertThat(result.generatedFile("SharedViewModelModule.kt")).isNull()
     assertThat(result.generatedFile("AndroidOnlyViewModelModule.kt")).isNotNull()
+  }
+
+  @Test
+  fun `commonMain view model is emitted in a single-platform pass with the metadata role`() {
+    // KMP modules without native targets run their metadata pass as a single JVM platform, so the
+    // platform count cannot identify it and the build sets the role instead.
+    val result = compile(
+      vmAt(
+        "commonMain/CommonViewModels.kt",
+        """
+        @HedvigViewModel(ActivityRetainedScope::class)
+        class SharedViewModel @Inject constructor(val dep: String) : ViewModel()
+        """.trimIndent(),
+      ),
+      options = mapOf(PASS_OPTION to "metadata"),
+    )
+
+    assertThat(result.generatedFile("SharedViewModelModule.kt")).isNotNull()
+  }
+
+  @Test
+  fun `commonMain view model in a single-platform pass without a role fails the build`() {
+    // Without the role, a single-platform pass would skip the VM as a leaf pass and the build would pass
+    // with the VM missing from the graph, so the processor reports it instead.
+    val result = compile(
+      vmAt(
+        "commonMain/CommonViewModels.kt",
+        """
+        @HedvigViewModel(ActivityRetainedScope::class)
+        class SharedViewModel @Inject constructor(val dep: String) : ViewModel()
+        """.trimIndent(),
+      ),
+    )
+
+    val processorErrors = result.messages.lines().filter { it.startsWith("e:") && "SharedViewModel" in it }
+    assertThat(processorErrors.joinToString("\n")).contains(PASS_OPTION)
+    assertThat(result.generatedFile("SharedViewModelModule.kt")).isNull()
+  }
+
+  @Test
+  fun `an unknown pass role fails the build`() {
+    val result = compile(
+      vm(
+        """
+        @HedvigViewModel(ActivityRetainedScope::class)
+        class PlainViewModel @Inject constructor(val dep: String) : ViewModel()
+        """.trimIndent(),
+      ),
+      options = mapOf(PASS_OPTION to "metdata"),
+    )
+
+    val processorErrors = result.messages.lines().filter { it.startsWith("e:") && PASS_OPTION in it }
+    assertThat(processorErrors.joinToString("\n")).contains("metdata")
   }
 
   @Test
@@ -202,6 +254,27 @@ class HedvigViewModelProcessorTest {
 
     assertThat(text).contains("public interface SecretViewModelModule")
     assertThat(text).contains("EXPOSED_PARAMETER_TYPE")
+  }
+
+  @Test
+  fun `view model whose constructor type never resolves fails with an error naming it`() {
+    // An unresolved constructor type stands in for a dependency missing from the commonMain metadata
+    // pass's classpath. Such a VM is deferred every round and never generated, so the
+    // processor must report it rather than let the build pass with the VM missing from the graph.
+    // The message is matched on processor-specific wording, since the harness's kotlinc stage always
+    // adds unrelated errors of its own (see the class comment).
+    val result = compile(
+      vm(
+        """
+        @HedvigViewModel(ActivityRetainedScope::class)
+        class StrandedViewModel @Inject constructor(val repository: MissingRepository) : ViewModel()
+        """.trimIndent(),
+      ),
+    )
+
+    val processorErrors = result.messages.lines().filter { it.startsWith("e:") && "StrandedViewModel" in it }
+    assertThat(processorErrors.joinToString("\n")).contains("MissingRepository")
+    assertThat(result.generatedFile("StrandedViewModelModule.kt")).isNull()
   }
 
   private fun vm(body: String): SourceFile = vmAt("ViewModels.kt", body)
@@ -226,7 +299,7 @@ class HedvigViewModelProcessorTest {
     """.trimIndent(),
   )
 
-  private fun compile(vararg sources: SourceFile): JvmCompilationResult {
+  private fun compile(vararg sources: SourceFile, options: Map<String, String> = emptyMap()): JvmCompilationResult {
     val compilation = KotlinCompilation().apply {
       workingDir = temporaryFolder.root
       this.sources = stubs + sources.toList()
@@ -234,6 +307,7 @@ class HedvigViewModelProcessorTest {
       messageOutputStream = System.out
       configureKsp {
         symbolProcessorProviders.add(HedvigViewModelProcessorProvider())
+        processorOptions.putAll(options)
       }
     }
     return compilation.compile()
@@ -289,4 +363,10 @@ class HedvigViewModelProcessorTest {
       """.trimIndent(),
     ),
   )
+
+  private companion object {
+    // Spelled out rather than taken from the processor, so renaming the option on one side fails this
+    // test. ViewModelsHandler in build-logic sets the same name.
+    const val PASS_OPTION = "hedvig.viewmodel.pass"
+  }
 }

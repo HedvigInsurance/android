@@ -1,5 +1,5 @@
 plugins {
-  id("hedvig.multiplatform.library")
+  id("hedvig.multiplatform.library.ios")
   id("hedvig.multiplatform.library.android")
   id("hedvig.gradle.plugin")
 }
@@ -15,7 +15,6 @@ kotlin {
       dependencies {
         implementation(libs.androidx.other.core)
         implementation(libs.androidx.other.workManager)
-        implementation(projects.apolloOctopusPublic)
         implementation(projects.coreResources)
       }
     }

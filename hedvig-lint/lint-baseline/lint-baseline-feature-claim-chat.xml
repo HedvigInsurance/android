@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 9.4.1" type="baseline" client="gradle" dependencies="false" name="AGP (9.4.1)" variant="all" version="9.4.1">
+
+    <issue
+        id="EmptySuperCall"
+        message="No need to call `super.onCleared`; the super method is defined to be empty"
+        errorLine1="    super.onCleared()"
+        errorLine2="          ~~~~~~~~~">
+        <location
+            file="src/commonMain/kotlin/com/hedvig/android/feature/claim/chat/ClaimChatViewModel.kt"
+            line="235"
+            column="11"/>
+    </issue>
+
+    <issue
+        id="LocalContextResourcesRead"
+        message="Reading Resources using LocalContext.current.resources is not configuration-aware and may return stale values if the Configuration changes"
+        errorLine1="  val resourceId = context.resources.getIdentifier(resourceName, &quot;raw&quot;, context.packageName)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/androidMain/kotlin/com/hedvig/android/feature/claim/chat/ui/common/HelipadRiveAnimation.kt"
+            line="28"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="ModifierFactoryExtensionFunction"
+        message="Modifier factory functions should be extensions on Modifier"
+        errorLine1="private fun SharedTransitionScope.buttonBounds("
+        errorLine2="                                  ~~~~~~~~~~~~">
+        <location
+            file="src/commonMain/kotlin/com/hedvig/android/feature/claim/chat/ui/step/audiorecording/AnswerCardMorph.kt"
+            line="104"
+            column="35"/>
+    </issue>
+
+    <issue
+        id="ModifierFactoryExtensionFunction"
+        message="Modifier factory functions should be extensions on Modifier"
+        errorLine1="private fun SharedTransitionScope.cardBounds("
+        errorLine2="                                  ~~~~~~~~~~">
+        <location
+            file="src/commonMain/kotlin/com/hedvig/android/feature/claim/chat/ui/step/audiorecording/AnswerCardMorph.kt"
+            line="115"
+            column="35"/>
+    </issue>
+
+    <issue
+        id="ModifierParameter"
+        message="Modifier parameter should be the first optional parameter"
+        errorLine1="  modifier: Modifier = Modifier,"
+        errorLine2="  ~~~~~~~~">
+        <location
+            file="src/commonMain/kotlin/com/hedvig/android/feature/claim/chat/ui/common/FilesRow.kt"
+            line="25"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="OpaqueUnitKey"
+        message="Implicitly passing `Unit` as argument to key1"
+        errorLine1="  LaunchedEffect(key) {"
+        errorLine2="                 ~~~">
+        <location
+            file="src/androidMain/kotlin/com/hedvig/android/feature/claim/chat/ui/outcome/ClaimOutcomeNewClaimDestination.android.kt"
+            line="45"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="DiscouragedApi"
+        message="Use of this function is discouraged because resource reflection makes it harder to perform build optimizations and compile-time verification of code. It is much more efficient to retrieve resources by identifier (e.g. `R.foo.bar`) than by name (e.g. `getIdentifier(&quot;bar&quot;, &quot;foo&quot;, null)`)."
+        errorLine1="  val resourceId = context.resources.getIdentifier(resourceName, &quot;raw&quot;, context.packageName)"
+        errorLine2="                                     ~~~~~~~~~~~~~">
+        <location
+            file="src/androidMain/kotlin/com/hedvig/android/feature/claim/chat/ui/common/HelipadRiveAnimation.kt"
+            line="28"
+            column="38"/>
+    </issue>
+
+    <issue
+        id="AutoboxingStateCreation"
+        message="Prefer `mutableIntStateOf` instead of `mutableStateOf`"
+        errorLine1="  var visibleChars by remember { mutableStateOf(0) }"
+        errorLine2="                                 ~~~~~~~~~~~~~~">
+        <location
+            file="src/commonMain/kotlin/com/hedvig/android/feature/claim/chat/ui/AnimatedRevealText.kt"
+            line="36"
+            column="34"/>
+    </issue>
+
+    <issue
+        id="AutoboxingStateCreation"
+        message="Prefer `mutableIntStateOf` instead of `mutableStateOf`"
+        errorLine1="  var numberOfWaves by remember { mutableStateOf(0) }"
+        errorLine2="                                  ~~~~~~~~~~~~~~">
+        <location
+            file="src/commonMain/kotlin/com/hedvig/android/feature/claim/chat/ui/step/audiorecording/AudioRecordingStepSections.kt"
+            line="1637"
+            column="35"/>
+    </issue>
+
+</issues>

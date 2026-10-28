@@ -3,6 +3,7 @@ query InChatCrossSell($input: CrossSellInput!) {
     crossSellV2(input: $input) {
       recommendedCrossSell {
         crossSell {
+          id
           title
           description
           buttonTitle

@@ -178,7 +178,7 @@ internal fun HedvigApp(
       }
       CrossSellSheet(
         isInScreenEligibleForCrossSells = hedvigAppState.isInScreenEligibleForCrossSells,
-        onCrossSellClick = authorizationCodeUriHandler::openUri,
+        onCrossSellClick = authorizationCodeUriHandler::tryOpenUri,
         onAddonClick = { eligibleInsuranceIds ->
           backstackController.add(
             AddonPurchaseKey(
@@ -243,7 +243,7 @@ internal fun HedvigApp(
                           externalNavigator = externalNavigator,
                           androidAppHost = androidAppHost,
                           openUrl = authorizationCodeUriHandler::openUri,
-                          openCrossSellUrl = authorizationCodeUriHandler::openUri,
+                          openCrossSellUrl = authorizationCodeUriHandler::tryOpenUri,
                           imageLoader = imageLoader,
                           languageService = languageService,
                           hedvigBuildConstants = hedvigBuildConstants,

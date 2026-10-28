@@ -80,8 +80,7 @@ class PayinAccountOverviewPresenterTest {
 
       sendEvent(PayinAccountOverviewEvent.Refresh)
       apolloClient.registerSuspendingTestNetworkError(GetPayinMethodsQuery())
-      this@runTest.testScheduler.advanceUntilIdle()
-      assertThat(expectMostRecentItem()).isEqualTo(content)
+      awaitUnchanged()
     }
   }
 

@@ -1,5 +1,5 @@
 plugins {
-  id("hedvig.multiplatform.library")
+  id("hedvig.multiplatform.library.ios")
   id("hedvig.gradle.plugin")
 }
 
@@ -53,9 +53,6 @@ kotlin {
       api(libs.apollo.api)
       api(libs.apollo.normalizedCache)
       api(libs.kotlinx.datetime)
-      implementation(projects.coreBuildConstants)
-      implementation(projects.coreCommonPublic)
-      implementation(projects.coreMarkdown)
     }
   }
 }

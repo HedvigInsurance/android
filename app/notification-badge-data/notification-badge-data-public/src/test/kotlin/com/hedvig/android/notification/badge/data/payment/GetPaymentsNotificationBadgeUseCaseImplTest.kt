@@ -4,33 +4,24 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.annotations.ApolloExperimental
-import com.apollographql.apollo.testing.QueueTestNetworkTransport
 import com.apollographql.apollo.testing.enqueueTestNetworkError
 import com.apollographql.apollo.testing.enqueueTestResponse
-import com.apollographql.cache.normalized.memory.MemoryCacheFactory
 import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver
+import com.hedvig.android.apollo.test.TestApolloClientRule
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import octopus.MissedPaymentQuery
 import octopus.builder.Data
 import octopus.builder.buildMember
-import octopus.cache.Cache
-import org.junit.After
+import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ApolloExperimental::class)
 class GetPaymentsNotificationBadgeUseCaseImplTest {
-  private val apolloClient = with(Cache) {
-    ApolloClient.Builder()
-      .networkTransport(QueueTestNetworkTransport())
-      .cache(MemoryCacheFactory())
-      .build()
-  }
-
-  @After
-  fun tearDown() {
-    apolloClient.close()
-  }
+  @get:Rule
+  val testApolloClientRule = TestApolloClientRule()
+  private val apolloClient: ApolloClient
+    get() = testApolloClientRule.apolloClient
 
   @Test
   fun `every read reaches the network even when an earlier answer is cached`() = runTest {
