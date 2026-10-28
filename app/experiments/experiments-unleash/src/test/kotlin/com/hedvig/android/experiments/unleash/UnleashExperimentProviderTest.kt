@@ -2,12 +2,9 @@ package com.hedvig.android.experiments.unleash
 
 import assertk.assertThat
 import assertk.assertions.containsExactly
-import assertk.assertions.containsOnly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
-import assertk.assertions.matches
 import com.hedvig.android.core.common.ApplicationScope
-import com.hedvig.android.core.tracking.test.FakeEventTrackingClient
 import com.hedvig.android.experiments.Experiment
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.CompletableDeferred
@@ -44,13 +41,9 @@ class UnleashExperimentProviderTest {
     }
   }
 
-  private fun TestScope.provider(
-    flags: FakeExperimentFlags,
-    client: FakeEventTrackingClient = FakeEventTrackingClient(),
-  ): UnleashExperimentProvider {
+  private fun TestScope.provider(flags: FakeExperimentFlags): UnleashExperimentProvider {
     return UnleashExperimentProvider(
       experimentFlags = flags,
-      eventTrackingClient = client,
       applicationScope = ApplicationScope(backgroundScope),
       coroutineContext = StandardTestDispatcher(testScheduler),
     )
@@ -103,44 +96,5 @@ class UnleashExperimentProviderTest {
     val thirdStart = currentTime
     provider.activeExperiments()
     assertThat(currentTime - thirdStart).isEqualTo(3_000L)
-  }
-
-  @Test
-  fun `user properties are left alone until the member's own toggles are in hand`() = runTest {
-    val flags = FakeExperimentFlags(mutableMapOf("accident_discount_experiment" to null))
-    val client = FakeEventTrackingClient()
-    provider(flags, client).initialize()
-
-    flags.updates.emit(Unit)
-    runCurrent()
-    assertThat(client.userProperties).isEmpty()
-
-    flags.variants["accident_discount_experiment"] = "DISCOUNT_50"
-    flags.receiveMemberState()
-    runCurrent()
-    assertThat(client.userProperties).containsOnly("ACCIDENT_DISCOUNT" to "DISCOUNT_50")
-  }
-
-  @Test
-  fun `user properties follow every flag update and clear when the member leaves the experiment`() = runTest {
-    val flags = flagsWithVariant("NO_DISCOUNT")
-    val client = FakeEventTrackingClient()
-    provider(flags, client).initialize()
-
-    flags.updates.emit(Unit)
-    runCurrent()
-    assertThat(client.userProperties).containsOnly("ACCIDENT_DISCOUNT" to "NO_DISCOUNT")
-
-    flags.variants["accident_discount_experiment"] = null
-    flags.updates.emit(Unit)
-    runCurrent()
-    assertThat(client.userProperties).containsOnly("ACCIDENT_DISCOUNT" to null)
-  }
-
-  @Test
-  fun `every experiment name is a valid Firebase user property name`() {
-    for (definition in knownExperiments) {
-      assertThat(definition.name).matches(Regex("[A-Za-z][A-Za-z0-9_]{0,23}"))
-    }
   }
 }
