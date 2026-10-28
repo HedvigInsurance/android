@@ -2750,6 +2750,7 @@ enum InsuranceDocumentType {
   GENERAL_TERMS
   PRIVACY_POLICY
   SCAR_TABLE
+  TERMS_CHANGES
 }
 type InsuranceEvidenceInformation {
   signedUrl: String!
@@ -4948,12 +4949,12 @@ type ProductVariant {
   insurableLimits: [InsurableLimit!]!
   documents: [InsuranceDocument!]!
   displayName: String!
+  displayNameShort: String
   displayNameSubtype: String!
   displayNameTier: String
   displayNameTierLong: String @deprecated(reason: "Use tierDescription instead")
   tierDescription: String
   commonClaimDescriptions: [CommonClaimDescription!]! @deprecated(reason: "Should be implemented in clients or owned by another sub-graph")
-  displayNameShort: String
 }
 """
 Root of coverage comparison result
