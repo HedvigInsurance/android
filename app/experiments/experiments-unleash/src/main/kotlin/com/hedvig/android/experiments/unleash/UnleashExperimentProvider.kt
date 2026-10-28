@@ -3,7 +3,6 @@ package com.hedvig.android.experiments.unleash
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.common.di.IoDispatcher
-import com.hedvig.android.core.tracking.EventTrackingClient
 import com.hedvig.android.experiments.Experiment
 import com.hedvig.android.experiments.ExperimentProvider
 import com.hedvig.android.initializable.Initializable
@@ -16,10 +15,6 @@ import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metro.binding
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration.Companion.seconds
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 
@@ -33,10 +28,8 @@ import kotlinx.coroutines.withTimeoutOrNull
  * Once a wait has timed out, later calls answer at once until the toggles or the member change, so an unreachable
  * Unleash delays one request rather than every one.
  *
- * The variants are also set as Firebase user properties so every analytics event carries them, and they follow
- * every flag update, which includes the member id in the Unleash context changing on login and logout. User
- * properties bypass the analytics consent buffer by design, and Firebase uploads nothing while collection is
- * disabled, so no extra gating is needed here. Firebase drops user property values longer than 36 characters.
+ * Analytics learn the group from the backend instead: it lists every experiment it applied in the offer's store
+ * link, and the cross-sell events read it from there.
  */
 @SingleIn(AppScope::class)
 @ContributesBinding(AppScope::class, binding = binding<ExperimentProvider>())
@@ -44,7 +37,6 @@ import kotlinx.coroutines.withTimeoutOrNull
 @Inject
 internal class UnleashExperimentProvider(
   private val experimentFlags: ExperimentFlags,
-  private val eventTrackingClient: EventTrackingClient,
   private val applicationScope: ApplicationScope,
   @IoDispatcher private val coroutineContext: CoroutineContext,
 ) : ExperimentProvider, Initializable {
@@ -57,14 +49,7 @@ internal class UnleashExperimentProvider(
 
   override fun initialize() {
     applicationScope.launch(coroutineContext) {
-      // Toggles that aren't the member's own say nothing about their group. Publishing from them would clear the
-      // properties Firebase kept from the last session, leaving events without the group until the fetch lands.
-      experimentFlags.updates
-        .onEach { updateGeneration++ }
-        .filter { experimentFlags.hasStateForCurrentMember() }
-        .map { currentExperiments() }
-        .distinctUntilChanged()
-        .collect(::publishUserProperties)
+      experimentFlags.updates.collect { updateGeneration++ }
     }
   }
 
@@ -95,17 +80,8 @@ internal class UnleashExperimentProvider(
     }
   }
 
-  // Two properties hold one experiment at a time, which is all that is running. Cleared when the member is in none.
-  private fun publishUserProperties(experiments: List<Experiment>) {
-    val experiment = experiments.firstOrNull()
-    eventTrackingClient.setUserProperty(USER_PROPERTY_EXPERIMENT_NAME, experiment?.name)
-    eventTrackingClient.setUserProperty(USER_PROPERTY_EXPERIMENT_VARIANT, experiment?.variant)
-  }
-
   companion object {
     private val MEMBER_STATE_TIMEOUT = 3.seconds
     private val SCREAMING_SNAKE_CASE = Regex("[A-Z0-9_]+")
-    internal const val USER_PROPERTY_EXPERIMENT_NAME = "experiment_name"
-    internal const val USER_PROPERTY_EXPERIMENT_VARIANT = "experiment_variant"
   }
 }
