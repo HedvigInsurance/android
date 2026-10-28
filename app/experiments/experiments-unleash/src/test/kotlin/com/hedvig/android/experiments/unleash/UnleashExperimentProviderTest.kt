@@ -5,6 +5,7 @@ import assertk.assertions.containsExactly
 import assertk.assertions.containsOnly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.matches
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.tracking.test.FakeEventTrackingClient
 import com.hedvig.android.experiments.Experiment
@@ -117,10 +118,7 @@ class UnleashExperimentProviderTest {
     flags.variants["accident_discount_experiment"] = "DISCOUNT_50"
     flags.receiveMemberState()
     runCurrent()
-    assertThat(client.userProperties).containsOnly(
-      "experiment_name" to "ACCIDENT_DISCOUNT",
-      "experiment_variant" to "DISCOUNT_50",
-    )
+    assertThat(client.userProperties).containsOnly("ACCIDENT_DISCOUNT" to "DISCOUNT_50")
   }
 
   @Test
@@ -131,17 +129,18 @@ class UnleashExperimentProviderTest {
 
     flags.updates.emit(Unit)
     runCurrent()
-    assertThat(client.userProperties).containsOnly(
-      "experiment_name" to "ACCIDENT_DISCOUNT",
-      "experiment_variant" to "NO_DISCOUNT",
-    )
+    assertThat(client.userProperties).containsOnly("ACCIDENT_DISCOUNT" to "NO_DISCOUNT")
 
     flags.variants["accident_discount_experiment"] = null
     flags.updates.emit(Unit)
     runCurrent()
-    assertThat(client.userProperties).containsOnly(
-      "experiment_name" to null,
-      "experiment_variant" to null,
-    )
+    assertThat(client.userProperties).containsOnly("ACCIDENT_DISCOUNT" to null)
+  }
+
+  @Test
+  fun `every experiment name is a valid Firebase user property name`() {
+    for (definition in knownExperiments) {
+      assertThat(definition.name).matches(Regex("[A-Za-z][A-Za-z0-9_]{0,23}"))
+    }
   }
 }

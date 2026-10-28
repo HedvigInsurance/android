@@ -33,10 +33,10 @@ import kotlinx.coroutines.withTimeoutOrNull
  * Once a wait has timed out, later calls answer at once until the toggles or the member change, so an unreachable
  * Unleash delays one request rather than every one.
  *
- * The variants are also set as Firebase user properties so every analytics event carries them, and they follow
- * every flag update, which includes the member id in the Unleash context changing on login and logout. User
- * properties bypass the analytics consent buffer by design, and Firebase uploads nothing while collection is
- * disabled, so no extra gating is needed here. Firebase drops user property values longer than 36 characters.
+ * Each experiment is also set as a Firebase user property named after it, holding the variant, so every analytics
+ * event carries it. They follow every flag update, which includes the member id in the Unleash context changing on
+ * login and logout. User properties bypass the analytics consent buffer by design, and Firebase uploads nothing while
+ * collection is disabled, so no extra gating is needed here.
  */
 @SingleIn(AppScope::class)
 @ContributesBinding(AppScope::class, binding = binding<ExperimentProvider>())
@@ -95,17 +95,16 @@ internal class UnleashExperimentProvider(
     }
   }
 
-  // Two properties hold one experiment at a time, which is all that is running. Cleared when the member is in none.
+  // Every known experiment is written, so one the member is not in is cleared rather than kept from an earlier session.
   private fun publishUserProperties(experiments: List<Experiment>) {
-    val experiment = experiments.firstOrNull()
-    eventTrackingClient.setUserProperty(USER_PROPERTY_EXPERIMENT_NAME, experiment?.name)
-    eventTrackingClient.setUserProperty(USER_PROPERTY_EXPERIMENT_VARIANT, experiment?.variant)
+    for (definition in knownExperiments) {
+      val variant = experiments.firstOrNull { it.name == definition.name }?.variant
+      eventTrackingClient.setUserProperty(definition.name, variant)
+    }
   }
 
   companion object {
     private val MEMBER_STATE_TIMEOUT = 3.seconds
     private val SCREAMING_SNAKE_CASE = Regex("[A-Z0-9_]+")
-    internal const val USER_PROPERTY_EXPERIMENT_NAME = "experiment_name"
-    internal const val USER_PROPERTY_EXPERIMENT_VARIANT = "experiment_variant"
   }
 }

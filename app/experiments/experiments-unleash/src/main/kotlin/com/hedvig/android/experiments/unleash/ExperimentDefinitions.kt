@@ -7,6 +7,9 @@ package com.hedvig.android.experiments.unleash
  * field, so a member gets the same variant on every device and on iOS. The app only reads the variant and reports
  * it under [name], the name the backend's `experiments` input expects. The flag being off, or the member not being
  * in its rollout, means the member is in no experiment and nothing is sent.
+ *
+ * [name] is also the Firebase user property holding the variant, so it must be a valid property name: at most 24
+ * characters, and a letter first. Firebase drops variant values longer than 36 characters.
  */
 internal data class ExperimentDefinition(
   val name: String,
