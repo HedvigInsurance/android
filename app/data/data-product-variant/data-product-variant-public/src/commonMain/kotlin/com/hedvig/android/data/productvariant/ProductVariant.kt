@@ -98,5 +98,6 @@ fun InsuranceDocumentType.toDocumentType(): InsuranceVariantDocument.InsuranceDo
     InsuranceDocumentType.PRIVACY_POLICY -> InsuranceVariantDocument.InsuranceDocumentType.PRIVACY_POLICY
     InsuranceDocumentType.UNKNOWN__ -> InsuranceVariantDocument.InsuranceDocumentType.UNKNOWN__
     InsuranceDocumentType.SCAR_TABLE -> InsuranceVariantDocument.InsuranceDocumentType.UNKNOWN__
+    InsuranceDocumentType.TERMS_CHANGES -> InsuranceVariantDocument.InsuranceDocumentType.UNKNOWN__
   }
 }
