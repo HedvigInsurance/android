@@ -28,9 +28,11 @@ fun EventTrackingClient.trackCrossSellDismissed(userFlow: CrossSellUserFlow, off
 }
 
 /**
- * The offer is described by [offerId] as the backend names it (`crossSell:ACCIDENT`) and by the campaign code its
- * store URL applies, if any. Both stay well under Firebase Analytics' 100 character limit for event parameter
- * values, above which a value is dropped.
+ * The offer is described by [offerId] as the backend names it (`crossSell:ACCIDENT`), by the campaign code its
+ * store URL applies, if any, and by the experiment groups the backend made it for. The store URL lists those as
+ * `attribution.experiments.ACCIDENT_DISCOUNT=NO_DISCOUNT`, and each becomes a parameter named after the experiment.
+ * All stay well under Firebase Analytics' 100 character limit for event parameter values, above which a value is
+ * dropped.
  */
 private fun EventTrackingClient.trackCrossSellEvent(
   name: String,
@@ -44,20 +46,41 @@ private fun EventTrackingClient.trackCrossSellEvent(
       put("user_flow", userFlow.analyticsValue)
       put("offer_id", offerId)
       campaignCode(offerUrl)?.let { put("campaign_code", it) }
+      for ((experiment, variant) in experiments(offerUrl)) {
+        if (experiment !in this) put(experiment, variant)
+      }
     },
   )
 }
 
-internal fun campaignCode(offerUrl: String): String? = queryParameter(offerUrl, "code")
+internal fun campaignCode(offerUrl: String): String? = queryParameters(offerUrl)["code"]
 
-private fun queryParameter(url: String, name: String): String? {
+/** The experiment groups in [offerUrl], keyed by experiment, leaving out names Firebase would reject as parameters. */
+internal fun experiments(offerUrl: String): Map<String, String> {
+  return queryParameters(offerUrl)
+    .mapNotNull { (name, value) ->
+      val experiment = name.removePrefix(EXPERIMENT_PARAMETER_PREFIX)
+      if (experiment == name || !experiment.matches(FIREBASE_PARAMETER_NAME)) return@mapNotNull null
+      experiment to value
+    }
+    .toMap()
+}
+
+/** Each named parameter's first non-empty value, decoded. */
+private fun queryParameters(url: String): Map<String, String> {
   val query = url.substringAfter('?', "").substringBefore('#')
-  if (query.isEmpty()) return null
-  return query.split('&').firstNotNullOfOrNull { pair ->
-    if (pair.substringBefore('=') != name) return@firstNotNullOfOrNull null
-    percentDecode(pair.substringAfter('=', "")).takeIf { it.isNotEmpty() }
+  if (query.isEmpty()) return emptyMap()
+  return buildMap {
+    for (pair in query.split('&')) {
+      val name = percentDecode(pair.substringBefore('='))
+      val value = percentDecode(pair.substringAfter('=', ""))
+      if (value.isNotEmpty() && name !in this) put(name, value)
+    }
   }
 }
+
+private const val EXPERIMENT_PARAMETER_PREFIX = "attribution.experiments."
+private val FIREBASE_PARAMETER_NAME = Regex("[A-Za-z][A-Za-z0-9_]{0,39}")
 
 /**
  * Decodes `%XX` escapes as UTF-8 and leaves every other character as written, a `+` and a malformed escape
