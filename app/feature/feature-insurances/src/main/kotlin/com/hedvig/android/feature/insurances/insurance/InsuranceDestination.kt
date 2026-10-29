@@ -347,7 +347,7 @@ private fun InsuranceCardsPile(
 
     val peekHeights = contracts.indices.drop(1).map { idx ->
       val contract = contracts[idx]
-      subcompose("peek_$idx") {
+      subcompose("peek_${contract.id}") {
         Column(Modifier.padding(horizontal = 32.dp)) {
           Spacer(Modifier.height(peekTopPadding))
           HedvigText(contract.topText())
@@ -359,7 +359,7 @@ private fun InsuranceCardsPile(
     }
 
     val cardPlaceables = contracts.mapIndexed { idx, contract ->
-      subcompose("card_$idx") {
+      subcompose("card_${contract.id}") {
         InsuranceCardWrapper(
           contract = contract,
           imageLoader = imageLoader,
