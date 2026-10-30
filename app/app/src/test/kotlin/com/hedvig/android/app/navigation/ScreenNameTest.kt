@@ -106,15 +106,16 @@ internal class ScreenNameTest {
   private fun keyClass(qualifiedName: String): KClass<*> = Class.forName(qualifiedName).kotlin
 
   private fun concreteNavKeysOnClasspath(): Set<KClass<*>> = ClassGraph()
+    .enableClasspath()
     .enableClassInfo()
     .enableAnnotationInfo()
     .acceptPackages("com.hedvig")
     .scan()
     .use { scan ->
-      scan.getClassesImplementing(HedvigNavKey::class.java.name)
+      scan.getAllClassesImplementing(HedvigNavKey::class.java.name)
         .filter { !it.isInterface && !it.isAbstract }
         .filter { it.hasAnnotation("kotlinx.serialization.Serializable") }
-        .map { it.loadClass().kotlin }
+        .map { Class.forName(it.name, false, javaClass.classLoader).kotlin }
         .toSet()
     }
 
