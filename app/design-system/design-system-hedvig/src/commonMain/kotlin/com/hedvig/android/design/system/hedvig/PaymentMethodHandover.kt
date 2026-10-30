@@ -12,6 +12,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,7 +57,7 @@ fun PaymentMethodTile(
   badge: @Composable (() -> Unit)? = null,
   mark: @Composable () -> Unit = PlusMark,
 ) {
-  Box(modifier) {
+  BadgedTile(badge, modifier) {
     Surface(
       shape = HedvigTheme.shapes.cornerXXLarge,
       color = HedvigTheme.colorScheme.backgroundPrimary,
@@ -69,11 +72,6 @@ fun PaymentMethodTile(
     ) {
       Box(Modifier.size(TileSize), contentAlignment = Alignment.Center) {
         mark()
-      }
-    }
-    if (badge != null) {
-      Box(Modifier.align(Alignment.TopEnd).offset(BadgeOffset, -BadgeOffset)) {
-        badge()
       }
     }
   }
@@ -163,10 +161,33 @@ fun PaymentMethodHandoverIllustration(
     horizontalArrangement = Arrangement.Center,
   ) {
     when (direction) {
-      PaymentHandoverDirection.ToHedvig -> PaymentMethodTile(mark = mark ?: PlusMark, modifier = methodSide)
-      PaymentHandoverDirection.FromHedvig -> HedvigTile()
+      PaymentHandoverDirection.ToHedvig -> {
+        PaymentMethodTile(mark = mark ?: PlusMark, modifier = methodSide)
+        HandoverDots(loadingState, methodFraction, methodSide)
+        HedvigTile(badge = destinationBadge)
+      }
+
+      PaymentHandoverDirection.FromHedvig -> {
+        HedvigTile()
+        HandoverDots(loadingState, methodFraction, methodSide)
+        PaymentMethodTile(mark = mark ?: PlusMark, badge = destinationBadge, modifier = methodSide)
+      }
     }
-    Box(methodSide.padding(horizontal = 16.dp)) {
+  }
+}
+
+private val PlusMark: @Composable () -> Unit = { PaymentMethodPlusMark(Modifier.size(PaymentMethodMarkSize)) }
+
+/**
+ * The dots between the tiles. They breathe on an infinite transition, so while the method side is
+ * fully collapsed they leave the composition rather than animating unseen; their collapsed width is
+ * zero, so the row does not move when they do.
+ */
+@Composable
+private fun HandoverDots(loadingState: LoadingState, methodFraction: State<Float>, modifier: Modifier) {
+  val shown by remember(methodFraction) { derivedStateOf { methodFraction.value > 0f } }
+  if (shown) {
+    Box(modifier.padding(horizontal = 16.dp)) {
       when (loadingState) {
         LoadingState.PROCESSING -> ThreeDotsLoading()
 
@@ -177,21 +198,8 @@ fun PaymentMethodHandoverIllustration(
         )
       }
     }
-    Box(if (direction == PaymentHandoverDirection.FromHedvig) methodSide else Modifier) {
-      when (direction) {
-        PaymentHandoverDirection.ToHedvig -> HedvigTile()
-        PaymentHandoverDirection.FromHedvig -> PaymentMethodTile(mark = mark ?: PlusMark)
-      }
-      if (destinationBadge != null) {
-        Box(Modifier.align(Alignment.TopEnd).offset(BadgeOffset, -BadgeOffset)) {
-          destinationBadge()
-        }
-      }
-    }
   }
 }
-
-private val PlusMark: @Composable () -> Unit = { PaymentMethodPlusMark(Modifier.size(PaymentMethodMarkSize)) }
 
 /**
  * Lays the content out in [fraction] of its own width, centred in that space, fading and shrinking it
@@ -199,12 +207,12 @@ private val PlusMark: @Composable () -> Unit = { PaymentMethodPlusMark(Modifier.
  * wrap-content width animate to and from zero.
  *
  * Fading renders the content into an offscreen layer of its own bounds, which would clip a drop
- * shadow drawn outside them, so the layer is padded out by [LayerBleed] and the padding is taken
- * back out of the reported size.
+ * shadow drawn outside them, so the layer is padded out by [HedvigDropShadowExtent] and the padding
+ * is taken back out of the reported size.
  */
 private fun Modifier.collapsedHorizontally(fraction: State<Float>): Modifier = this
   .layout { measurable, constraints ->
-    val bleed = LayerBleed.roundToPx()
+    val bleed = HedvigDropShadowExtent.roundToPx()
     val placeable = measurable.measure(constraints.copy(minWidth = 0).offset(2 * bleed, 2 * bleed))
     val width = ((placeable.width - 2 * bleed) * fraction.value).roundToInt()
     layout(width, placeable.height - 2 * bleed) {
@@ -217,9 +225,7 @@ private fun Modifier.collapsedHorizontally(fraction: State<Float>): Modifier = t
     scaleX = 0.5f + 0.5f * shown
     scaleY = scaleX
   }
-  .padding(LayerBleed)
-
-private val LayerBleed = 16.dp
+  .padding(HedvigDropShadowExtent)
 
 /** Which way money moves between the member's method and Hedvig, which decides the tiles' order. */
 enum class PaymentHandoverDirection {
@@ -231,20 +237,35 @@ enum class PaymentHandoverDirection {
 }
 
 @Composable
-private fun HedvigTile() {
-  Surface(
-    shape = HedvigTheme.shapes.cornerXXLarge,
-    color = HedvigTheme.colorScheme.fillBlack,
-    contentColor = HedvigTheme.colorScheme.fillWhite,
-    border = HedvigTheme.colorScheme.borderPrimary,
-    modifier = Modifier.size(TileSize),
-  ) {
-    Box(Modifier.size(TileSize), contentAlignment = Alignment.Center) {
-      Icon(
-        imageVector = HedvigIcons.HelipadOutline,
-        contentDescription = null,
-        modifier = Modifier.size(65.dp),
-      )
+private fun HedvigTile(badge: (@Composable () -> Unit)? = null, modifier: Modifier = Modifier) {
+  BadgedTile(badge, modifier) {
+    Surface(
+      shape = HedvigTheme.shapes.cornerXXLarge,
+      color = HedvigTheme.colorScheme.fillBlack,
+      contentColor = HedvigTheme.colorScheme.fillWhite,
+      border = HedvigTheme.colorScheme.borderPrimary,
+      modifier = Modifier.size(TileSize),
+    ) {
+      Box(Modifier.size(TileSize), contentAlignment = Alignment.Center) {
+        Icon(
+          imageVector = HedvigIcons.HelipadOutline,
+          contentDescription = null,
+          modifier = Modifier.size(65.dp),
+        )
+      }
+    }
+  }
+}
+
+/** [tile] with [badge], when there is one, overlapping its top-right corner. */
+@Composable
+private fun BadgedTile(badge: (@Composable () -> Unit)?, modifier: Modifier = Modifier, tile: @Composable () -> Unit) {
+  Box(modifier) {
+    tile()
+    if (badge != null) {
+      Box(Modifier.align(Alignment.TopEnd).offset(BadgeOffset, -BadgeOffset)) {
+        badge()
+      }
     }
   }
 }
