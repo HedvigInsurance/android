@@ -22,7 +22,7 @@ internal fun PayinMethodHandoverIllustration(provider: PaymentProvider?, modifie
   Column(modifier) {
     Spacer(Modifier.height(48.dp))
     PaymentMethodHandoverIllustration(
-      mark = { PayinProviderMark(provider, Modifier.size(PaymentMethodMarkSize)) },
+      mark = provider?.let { picked -> { PayinProviderMark(picked, Modifier.size(PaymentMethodMarkSize)) } },
     )
     Spacer(Modifier.height(48.dp))
   }

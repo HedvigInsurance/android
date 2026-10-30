@@ -1,25 +1,34 @@
 package com.hedvig.android.design.system.hedvig
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
 import com.hedvig.android.design.system.hedvig.icon.Plus
+import com.hedvig.android.design.system.hedvig.icon.Trustly
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens
+import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
+import kotlin.math.roundToInt
 
 /** The size a [PaymentMethodTile]'s mark is drawn at. */
 val PaymentMethodMarkSize = 39.dp
@@ -42,7 +51,7 @@ private val BadgeOffset = 8.dp
 fun PaymentMethodTile(
   modifier: Modifier = Modifier,
   badge: @Composable (() -> Unit)? = null,
-  mark: @Composable () -> Unit = { PaymentMethodPlusMark(Modifier.size(PaymentMethodMarkSize)) },
+  mark: @Composable () -> Unit = PlusMark,
 ) {
   Box(modifier) {
     Surface(
@@ -130,38 +139,47 @@ fun PaymentMethodTileBadge(
 /**
  * The method being connected, linked by pulsing dots to the Hedvig symbol, laid out in the way money
  * moves for [direction]. [destinationBadge] marks the tile on the receiving end once the hand-off has
- * landed.
+ * landed. [mark] is the picked method's brand mark; while it is null nothing is picked yet, so the
+ * Hedvig symbol stands alone and the method tile and dots grow out from it once a method is picked.
  */
 @Composable
 fun PaymentMethodHandoverIllustration(
+  mark: (@Composable () -> Unit)?,
   modifier: Modifier = Modifier,
   destinationBadge: @Composable (() -> Unit)? = null,
   loadingState: LoadingState = LoadingState.PROCESSING,
   direction: PaymentHandoverDirection = PaymentHandoverDirection.ToHedvig,
-  mark: @Composable () -> Unit = { PaymentMethodPlusMark(Modifier.size(PaymentMethodMarkSize)) },
 ) {
+  val methodFraction = animateFloatAsState(
+    targetValue = if (mark != null) 1f else 0f,
+    animationSpec = tween(MotionTokens.DurationMedium2.toInt(), easing = MotionTokens.EasingStandardCubicBezier),
+    label = "method side",
+  )
+  val methodSide = Modifier.collapsedHorizontally(methodFraction)
   Row(
     modifier = modifier,
     verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(16.dp),
+    horizontalArrangement = Arrangement.Center,
   ) {
     when (direction) {
-      PaymentHandoverDirection.ToHedvig -> PaymentMethodTile(mark = mark)
+      PaymentHandoverDirection.ToHedvig -> PaymentMethodTile(mark = mark ?: PlusMark, modifier = methodSide)
       PaymentHandoverDirection.FromHedvig -> HedvigTile()
     }
-    when (loadingState) {
-      LoadingState.PROCESSING -> ThreeDotsLoading()
+    Box(methodSide.padding(horizontal = 16.dp)) {
+      when (loadingState) {
+        LoadingState.PROCESSING -> ThreeDotsLoading()
 
-      LoadingState.ACTIVE -> ThreeDotsLoaded()
+        LoadingState.ACTIVE -> ThreeDotsLoaded()
 
-      LoadingState.INACTIVE -> ThreeDotsLoaded(
-        stableColor = ColorSchemeKeyTokens.SurfaceSecondaryTransparent.value,
-      )
+        LoadingState.INACTIVE -> ThreeDotsLoaded(
+          stableColor = ColorSchemeKeyTokens.SurfaceSecondaryTransparent.value,
+        )
+      }
     }
-    Box {
+    Box(if (direction == PaymentHandoverDirection.FromHedvig) methodSide else Modifier) {
       when (direction) {
         PaymentHandoverDirection.ToHedvig -> HedvigTile()
-        PaymentHandoverDirection.FromHedvig -> PaymentMethodTile(mark = mark)
+        PaymentHandoverDirection.FromHedvig -> PaymentMethodTile(mark = mark ?: PlusMark)
       }
       if (destinationBadge != null) {
         Box(Modifier.align(Alignment.TopEnd).offset(BadgeOffset, -BadgeOffset)) {
@@ -171,6 +189,28 @@ fun PaymentMethodHandoverIllustration(
     }
   }
 }
+
+private val PlusMark: @Composable () -> Unit = { PaymentMethodPlusMark(Modifier.size(PaymentMethodMarkSize)) }
+
+/**
+ * Lays the content out in [fraction] of its own width, centred in that space, fading and shrinking it
+ * in step. Measuring the content in full and scaling only the space it claims is what lets a
+ * wrap-content width animate to and from zero.
+ */
+private fun Modifier.collapsedHorizontally(fraction: State<Float>): Modifier = this
+  .layout { measurable, constraints ->
+    val placeable = measurable.measure(constraints.copy(minWidth = 0))
+    val width = (placeable.width * fraction.value).roundToInt()
+    layout(width, placeable.height) {
+      placeable.placeRelative((width - placeable.width) / 2, 0)
+    }
+  }
+  .graphicsLayer {
+    val shown = fraction.value
+    alpha = shown
+    scaleX = 0.5f + 0.5f * shown
+    scaleY = scaleX
+  }
 
 /** Which way money moves between the member's method and Hedvig, which decides the tiles' order. */
 enum class PaymentHandoverDirection {
@@ -209,17 +249,28 @@ enum class LoadingState {
 @HedvigPreview
 @Composable
 private fun PreviewPaymentMethodHandoverIllustration(
-  @PreviewParameter(PaymentHandoverDirectionProvider::class) direction: PaymentHandoverDirection,
+  @PreviewParameter(HandoverPreviewStateProvider::class) state: HandoverPreviewState,
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       PaymentMethodHandoverIllustration(
-        direction = direction,
+        mark = if (state.picked) {
+          { Icon(HedvigIcons.Trustly, null, Modifier.size(PaymentMethodMarkSize)) }
+        } else {
+          null
+        },
+        direction = state.direction,
         modifier = Modifier.size(width = 210.dp, height = 74.dp),
       )
     }
   }
 }
 
-private class PaymentHandoverDirectionProvider :
-  CollectionPreviewParameterProvider<PaymentHandoverDirection>(PaymentHandoverDirection.entries)
+private data class HandoverPreviewState(val direction: PaymentHandoverDirection, val picked: Boolean)
+
+private class HandoverPreviewStateProvider :
+  CollectionPreviewParameterProvider<HandoverPreviewState>(
+    PaymentHandoverDirection.entries.flatMap { direction ->
+      listOf(false, true).map { picked -> HandoverPreviewState(direction, picked) }
+    },
+  )

@@ -90,7 +90,7 @@ private fun ConnectingGraphic(
         },
       )
     },
-    mark = { OnboardingPayinProviderMark(provider, Modifier.size(PaymentMethodMarkSize)) },
+    mark = provider?.let { picked -> { OnboardingPayinProviderMark(picked, Modifier.size(PaymentMethodMarkSize)) } },
   )
 }
 

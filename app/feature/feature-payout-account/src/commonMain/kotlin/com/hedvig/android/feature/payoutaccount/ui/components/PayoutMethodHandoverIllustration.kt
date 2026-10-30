@@ -36,7 +36,7 @@ internal fun PayoutMethodHandoverIllustration(
       destinationBadge = destinationBadge,
       loadingState = loadingState,
       direction = PaymentHandoverDirection.FromHedvig,
-      mark = { PayoutProviderMark(provider, Modifier.size(PaymentMethodMarkSize)) },
+      mark = provider?.let { picked -> { PayoutProviderMark(picked, Modifier.size(PaymentMethodMarkSize)) } },
     )
     Spacer(Modifier.height(48.dp))
   }
