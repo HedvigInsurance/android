@@ -121,6 +121,15 @@ fun InsuranceCard(
         contentDescription = EmptyContentDescription,
         contentScale = imageContentScale,
       )
+    } else if (backgroundImageUrl == null) {
+      // Draw the fallback directly: with a null model Coil keeps the painter it resolved first, so a
+      // changed fallbackPainter would not show up.
+      Image(
+        painter = fallbackPainter,
+        contentDescription = EmptyContentDescription,
+        contentScale = imageContentScale,
+        modifier = Modifier.matchParentSize().blur(8.dp),
+      )
     } else {
       AsyncImage(
         model = backgroundImageUrl,
