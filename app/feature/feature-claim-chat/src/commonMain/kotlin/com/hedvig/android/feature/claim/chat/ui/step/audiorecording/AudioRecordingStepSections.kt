@@ -132,6 +132,7 @@ import com.hedvig.android.feature.claim.chat.data.StepContent
 import com.hedvig.android.feature.claim.chat.ui.common.EditButton
 import com.hedvig.android.feature.claim.chat.ui.common.RoundCornersPill
 import com.hedvig.android.feature.claim.chat.ui.common.SentAnswerRow
+import com.hedvig.android.feature.claim.chat.ui.common.SentAnswerText
 import com.hedvig.android.feature.claim.chat.ui.common.SkippedLabel
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -456,7 +457,7 @@ private fun SentAnswer(recordingState: AudioRecordingStepState) {
         RoundCornersPill(
           modifier = Modifier.clearAndSetSemantics { contentDescription = description },
         ) {
-          HedvigText(sentFreeText, textAlign = TextAlign.End)
+          SentAnswerText(sentFreeText)
         }
       }
 
@@ -494,17 +495,14 @@ private fun WaysToAnswer(
   onSkip: () -> Unit,
 ) {
   Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-    Row(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
+    SideBySideOrStacked(spacing = 8.dp, modifier = Modifier.fillMaxWidth()) {
       if (freeTextAvailable) {
         HedvigButton(
           onClick = onWrite,
           enabled = true,
           buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
           buttonSize = ButtonDefaults.ButtonSize.Large,
-          modifier = Modifier.weight(1f).then(morph.writeButton),
+          modifier = morph.writeButton,
         ) {
           Icon(HedvigIcons.PenEdit, null, Modifier.size(24.dp))
           Spacer(Modifier.width(8.dp))
@@ -516,7 +514,7 @@ private fun WaysToAnswer(
         enabled = true,
         buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
         buttonSize = ButtonDefaults.ButtonSize.Large,
-        modifier = Modifier.weight(1f).then(morph.recordButton),
+        modifier = morph.recordButton,
       ) {
         Icon(HedvigIcons.Mic, null, Modifier.size(24.dp).then(morph.mic))
         Spacer(Modifier.width(8.dp))
@@ -532,6 +530,48 @@ private fun WaysToAnswer(
         modifier = Modifier.fillMaxWidth(),
         buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
       )
+    }
+  }
+}
+
+/**
+ * The buttons in equal shares of one row when every one of them fits its share on a single line, and stacked at
+ * full width when any would not. A button's max intrinsic width is its one-line width with its own padding, icon
+ * and label style, so the choice follows the font scale and the translation rather than a fixed breakpoint.
+ */
+@Composable
+private fun SideBySideOrStacked(spacing: Dp, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+  Layout(content = content, modifier = modifier) { measurables, constraints ->
+    if (measurables.isEmpty()) return@Layout layout(0, 0) {}
+    val gap = spacing.roundToPx()
+    val rowWidth = constraints.maxWidth
+    val share = (rowWidth - gap * (measurables.size - 1)) / measurables.size
+    val sideBySide = measurables.all { it.maxIntrinsicWidth(constraints.maxHeight) <= share }
+    if (sideBySide) {
+      // The pixels that do not divide evenly go to the first buttons, so the row still ends on the content edge.
+      val remainder = rowWidth - gap * (measurables.size - 1) - share * measurables.size
+      val placeables = measurables.mapIndexed { index, measurable ->
+        val width = share + if (index < remainder) 1 else 0
+        measurable.measure(constraints.copy(minWidth = width, maxWidth = width, minHeight = 0))
+      }
+      layout(rowWidth, placeables.maxOf { it.height }) {
+        var x = 0
+        placeables.forEach {
+          it.placeRelative(x, 0)
+          x += it.width + gap
+        }
+      }
+    } else {
+      val placeables = measurables.map {
+        it.measure(constraints.copy(minWidth = rowWidth, maxWidth = rowWidth, minHeight = 0))
+      }
+      layout(rowWidth, placeables.sumOf { it.height } + gap * (placeables.size - 1)) {
+        var y = 0
+        placeables.forEach {
+          it.placeRelative(0, y)
+          y += it.height + gap
+        }
+      }
     }
   }
 }
@@ -1796,7 +1836,7 @@ private val WAVE_BAND_ROW_INSET = 8.dp
 private val WAVE_BAND_VERTICAL_INSET = 24.dp
 
 // The field grows with the answer to this many lines and then scrolls inside itself.
-private const val TEXT_ANSWER_MAX_LINES = 6
+internal const val TEXT_ANSWER_MAX_LINES = 6
 
 // Below this the full screen answer drops its label so the field keeps a few lines of the member's text.
 // Measured inside the safe drawing insets, which carry the keyboard, so in practice it is a landscape phone

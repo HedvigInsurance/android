@@ -35,7 +35,6 @@ dependencies {
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
   implementation(projects.navigationCore)
-  implementation(libs.zXing)
   testImplementation(libs.androidx.junit)
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)

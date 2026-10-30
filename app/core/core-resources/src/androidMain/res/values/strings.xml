@@ -270,7 +270,7 @@
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_TWO_TO_EIGHT_HOURS">2-8 hours</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_UNDER_TWO_HOURS">Under 2 hours</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LOCK_DESCRIPTION">Tell us more</string>
-  <string name="CLAIM_CHAT_STROLLER_THEFT_LOCK_DESCRIPTION_MESSAGE">Was the stroller locked? Tell us in your own words, e.g. what kind of lock you used.</string>
+  <string name="CLAIM_CHAT_STROLLER_THEFT_LOCK_DESCRIPTION_MESSAGE">Was the stroller locked or secured some other way?</string>
   <string name="CLAIM_CHAT_SUBMIT_CLAIM">Submit your claim</string>
   <string name="CLAIM_CHAT_SUCCESS_GO_TO_CLAIM">Go to claim</string>
   <string name="CLAIM_CHAT_SUCCESS_MESSAGE">Your claim was submitted successfully</string>
@@ -436,6 +436,7 @@
   <string name="GENERAL_DOWNLOAD">Download</string>
   <string name="GENERAL_ENABLED">Enabled</string>
   <string name="GENERAL_INVALID_INPUT">Invalid input</string>
+  <string name="GENERAL_NOT_SELECTED">Not selected</string>
   <string name="GENERAL_NOT_SURE">Not sure</string>
   <string name="GENERAL_NO_THANKS">No thanks</string>
   <string name="GENERAL_RETRY">Try again</string>
@@ -1437,7 +1438,6 @@
   <string name="moving_uw_failure_paragraph">Please write to us in the app, and we’ll help you as fast as we can.</string>
   <string name="moving_uw_failure_title">Your move will be handled by one of our service agents</string>
   <string name="next_payment_card_details_button">Details</string>
-  <string name="not_selected">Not selected</string>
   <string name="notifications_chat_you">You</string>
   <string name="offer_discount_error_alert_title">Sorry, that code doesn’t exist</string>
   <string name="offer_faq_title">Common questions</string>

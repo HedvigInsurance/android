@@ -3,8 +3,10 @@ package com.hedvig.android.feature.cross.sell.sheet
 import arrow.core.Either
 import arrow.core.right
 import assertk.assertThat
+import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.tracking.test.FakeEventTrackingClient
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedAddon
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
@@ -13,6 +15,7 @@ import com.hedvig.android.molecule.test.test
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import octopus.type.CrossSellInput
 import org.junit.Test
@@ -36,6 +39,7 @@ internal class CrossSellSheetPresenterTest {
     val presenter = CrossSellSheetPresenter(
       FakeGetCrossSellSheetDataUseCase(emptyData),
       FakeCrossSellAfterFlowRepository(CrossSellInfoType.EditCoInsured),
+      FakeEventTrackingClient(),
     )
 
     presenter.test(CrossSellSheetState.Loading) {
@@ -50,6 +54,7 @@ internal class CrossSellSheetPresenterTest {
     val presenter = CrossSellSheetPresenter(
       FakeGetCrossSellSheetDataUseCase(addonData),
       FakeCrossSellAfterFlowRepository(CrossSellInfoType.EditCoInsured),
+      FakeEventTrackingClient(),
     )
 
     presenter.test(CrossSellSheetState.Loading) {
@@ -57,6 +62,64 @@ internal class CrossSellSheetPresenterTest {
       assertThat(awaitItem()).isEqualTo(
         CrossSellSheetState.Content(addonData, CrossSellInfoType.EditCoInsured),
       )
+    }
+  }
+
+  @Test
+  fun `taking a cross-sell offer reports the smart cross-sell surface and the offer url`() = runTest {
+    val eventTrackingClient = FakeEventTrackingClient()
+    val presenter = CrossSellSheetPresenter(
+      FakeGetCrossSellSheetDataUseCase(CrossSellSheetData(null, emptyList(), recommendedAddon)),
+      FakeCrossSellAfterFlowRepository(CrossSellInfoType.EditCoInsured),
+      eventTrackingClient,
+    )
+    val offerUrl =
+      "https://www.hedvig.com/api/redirect/recommend?attributed_to=HEDVIG&next=%2Fse-en%2Finsurances%2Faccident&code=accident50app&requiresAuthorization=true"
+
+    presenter.test(CrossSellSheetState.Loading) {
+      skipItems(2)
+      sendEvent(CrossSellSheetEvent.CrossSellClicked("crossSell:ACCIDENT", offerUrl))
+      runCurrent()
+      assertThat(eventTrackingClient.events).containsExactly(
+        FakeEventTrackingClient.TrackedEvent(
+          name = "cross_sell_clicked",
+          parameters = mapOf(
+            "user_flow" to "smart_x_sell",
+            "offer_id" to "crossSell:ACCIDENT",
+            "campaign_code" to "accident50app",
+          ),
+        ),
+      )
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `an offer on screen reports the smart cross-sell surface and the offer url`() = runTest {
+    val eventTrackingClient = FakeEventTrackingClient()
+    val presenter = CrossSellSheetPresenter(
+      FakeGetCrossSellSheetDataUseCase(CrossSellSheetData(null, emptyList(), recommendedAddon)),
+      FakeCrossSellAfterFlowRepository(CrossSellInfoType.EditCoInsured),
+      eventTrackingClient,
+    )
+    val offerUrl =
+      "https://www.hedvig.com/api/redirect/recommend?attributed_to=HEDVIG&next=%2Fse-en%2Finsurances%2Faccident&code=accident50app&requiresAuthorization=true"
+
+    presenter.test(CrossSellSheetState.Loading) {
+      skipItems(2)
+      sendEvent(CrossSellSheetEvent.CrossSellShown("crossSell:ACCIDENT", offerUrl))
+      runCurrent()
+      assertThat(eventTrackingClient.events).containsExactly(
+        FakeEventTrackingClient.TrackedEvent(
+          name = "cross_sell_shown",
+          parameters = mapOf(
+            "user_flow" to "smart_x_sell",
+            "offer_id" to "crossSell:ACCIDENT",
+            "campaign_code" to "accident50app",
+          ),
+        ),
+      )
+      cancelAndIgnoreRemainingEvents()
     }
   }
 }

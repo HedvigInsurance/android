@@ -23,7 +23,6 @@ dependencies {
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.media3.exoplayer)
   implementation(libs.media3.ui)
-  implementation(libs.zXing)
   implementation(projects.apolloCore)
   implementation(projects.authCorePublic)
   implementation(projects.authCoreTest)

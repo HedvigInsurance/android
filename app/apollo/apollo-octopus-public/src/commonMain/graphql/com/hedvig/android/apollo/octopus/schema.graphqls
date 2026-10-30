@@ -1941,6 +1941,10 @@ type CrossSell {
   storeUrl: String!
   pillowImageSmall: StoryblokImageAsset!
   pillowImageLarge: StoryblokImageAsset!
+  """
+  Products to choose between, e.g. dog or cat for pet. Empty for a single product.
+  """
+  options: [CrossSell!]!
 }
 """
 A/B testing experiment (name and variant must be SCREAMING_SNAKE_CASE)
@@ -2746,6 +2750,7 @@ enum InsuranceDocumentType {
   GENERAL_TERMS
   PRIVACY_POLICY
   SCAR_TABLE
+  TERMS_CHANGES
 }
 type InsuranceEvidenceInformation {
   signedUrl: String!
@@ -2956,10 +2961,10 @@ type Member {
   crossSell(source: CrossSellSource!): CrossSellV2! @deprecated(reason: "Use crossSellV2")
   """
   Returns cross-sells with optional smart recommendation.
-  - INSURANCES: All options in otherCrossSells led by the recommendation, no separate recommendation
+  - INSURANCES: All cross-sells in otherCrossSells led by the recommendation, no separate recommendation
   - HOME: Same response as INSURANCES; a distinct value so Home traffic is separable in attribution
   - ONBOARDING: Same response as INSURANCES; a distinct value for onboarding attribution
-  - HOME_X_SELL: Recommendation returned separately, plus the remaining options
+  - HOME_X_SELL: Recommendation returned separately, plus the remaining cross-sells
   - SMART_X_SELL (requires flowSource): Focused recommendation OR the full list, never both
   A listed cross-sell describes an available discount in its description for every flow except
   SMART_X_SELL. Where no discount applies it falls back to the plain product description.
@@ -4944,12 +4949,12 @@ type ProductVariant {
   insurableLimits: [InsurableLimit!]!
   documents: [InsuranceDocument!]!
   displayName: String!
+  displayNameShort: String
   displayNameSubtype: String!
   displayNameTier: String
   displayNameTierLong: String @deprecated(reason: "Use tierDescription instead")
   tierDescription: String
   commonClaimDescriptions: [CommonClaimDescription!]! @deprecated(reason: "Should be implemented in clients or owned by another sub-graph")
-  displayNameShort: String
 }
 """
 Root of coverage comparison result
@@ -5958,11 +5963,11 @@ type UserError {
 }
 enum UserFlow {
   """
-  Insurances screen - all options led by the recommendation, no separate recommendation
+  Insurances screen - all cross-sells led by the recommendation, no separate recommendation
   """
   INSURANCES
   """
-  Home screen - recommendation + other options
+  Home screen - recommendation + other cross-sells
   """
   HOME_X_SELL
   """
@@ -5970,15 +5975,15 @@ enum UserFlow {
   """
   SMART_X_SELL
   """
-  End of onboarding - all options led by the recommendation
+  End of onboarding - all cross-sells led by the recommendation
   """
   ONBOARDING
   """
-  Home screen - all options led by the recommendation
+  Home screen - all cross-sells led by the recommendation
   """
   HOME
   """
-  Chat - a single generic recommendation linking to all insurances, no other options.
+  Chat - a single generic recommendation linking to all insurances, no other cross-sells.
   Render it from recommendedCrossSell.crossSell (title, description, buttonTitle, storeUrl); the outer
   RecommendedCrossSell banner and button fields carry generic copy and should be ignored.
   """

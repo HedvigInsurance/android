@@ -18,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -29,6 +28,7 @@ import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigQrCode
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -211,9 +211,12 @@ private fun ColumnScope.SwishPayinStatusContent(
     }
 
     is PendingApproval -> {
-      SwishApprovalQrCode(
-        redirectUrl = uiState.redirectUrl,
-        modifier = Modifier.align(Alignment.CenterHorizontally),
+      HedvigQrCode(
+        content = uiState.redirectUrl,
+        centerSymbol = HedvigIcons.Swish,
+        modifier = Modifier
+          .align(Alignment.CenterHorizontally)
+          .size(180.dp),
       )
       if (isSwishInstalled) {
         Spacer(Modifier.height(18.dp))
@@ -326,23 +329,6 @@ private fun ChangeMethodFootnote() {
       .fillMaxWidth()
       .padding(horizontal = 16.dp),
   )
-}
-
-@Composable
-private fun SwishApprovalQrCode(redirectUrl: String, modifier: Modifier = Modifier) {
-  Surface(
-    color = Color.White,
-    shape = HedvigTheme.shapes.cornerMedium,
-    border = HedvigTheme.colorScheme.borderPrimary,
-    modifier = modifier,
-  ) {
-    SwishQrCode(
-      content = redirectUrl,
-      modifier = Modifier
-        .size(180.dp)
-        .padding(16.dp),
-    )
-  }
 }
 
 /** Marks the Hedvig symbol with where the setup has got to: landed, or rejected. */

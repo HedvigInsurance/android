@@ -138,7 +138,7 @@ private fun ReferralRow(
     }
     when (state) {
       ACTIVE -> {
-        HedvigText(discount?.toString()?.let { "-$it" } ?: "-")
+        HedvigText(discount?.toDiscountText() ?: "-")
       }
 
       IN_PROGRESS -> {

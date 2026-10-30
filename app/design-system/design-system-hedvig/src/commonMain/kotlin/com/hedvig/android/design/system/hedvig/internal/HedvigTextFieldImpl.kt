@@ -40,8 +40,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -71,7 +69,7 @@ internal fun HedvigDecorationBox(
   configuration: HedvigTextFieldConfiguration,
   size: HedvigTextFieldSize,
   innerTextField: @Composable () -> Unit,
-  visualTransformation: VisualTransformation,
+  displayedText: CharSequence,
   label: @Composable (() -> Unit)?,
   suffix: @Composable (() -> Unit)? = null,
   leadingContent: @Composable (() -> Unit)? = null,
@@ -82,10 +80,6 @@ internal fun HedvigDecorationBox(
   readOnly: Boolean = false,
   interactionSource: InteractionSource,
 ) {
-  val transformedText = remember(value, visualTransformation) {
-    visualTransformation.filter(AnnotatedString(value))
-  }.text.text
-
   val isFocused = interactionSource.collectIsFocusedAsState().value
   val inputPhase = when {
     isFocused -> InputPhase.Focused
@@ -93,7 +87,7 @@ internal fun HedvigDecorationBox(
     // The empty phase exists to let the label take the text's place and its type scale. Without a label there is
     // nothing to put there, and the phase would lay the text out at zero height and collapse the field instead, so
     // a field with no label keeps one layout throughout.
-    transformedText.isEmpty() && label != null -> InputPhase.UnfocusedEmpty
+    displayedText.isEmpty() && label != null -> InputPhase.UnfocusedEmpty
 
     else -> InputPhase.UnfocusedNotEmpty
   }
@@ -497,7 +491,7 @@ private fun PreviewHedvigDecorationBox(
         configuration = HedvigTextFieldDefaults.configuration(),
         size = HedvigTextFieldSize.Large,
         innerTextField = { BasicTextField(value = value, onValueChange = {}) },
-        visualTransformation = VisualTransformation.None,
+        displayedText = value,
         label = { HedvigText(text = "Label") },
         leadingContent = { Icon(HedvigIcons.Image, null) },
         trailingContent = { Icon(HedvigIcons.Image, null) },

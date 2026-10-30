@@ -1,9 +1,10 @@
 name: Trigger new umbrella release
 
+# Weeknights, plus a manual trigger for when iOS needs shared code sooner. iOS pins the umbrella
+# version it builds against and bumps it by hand, so it never needs a release per develop push.
 on:
-  push:
-    branches:
-      - develop
+  schedule:
+    - cron: '0 2 * * 1-5'
   workflow_dispatch:
 
 concurrency:

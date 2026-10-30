@@ -102,7 +102,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   externalNavigator: ExternalNavigator,
   androidAppHost: AndroidAppHost,
   openUrl: (String) -> Unit,
-  openCrossSellUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Boolean,
   imageLoader: ImageLoader,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
@@ -192,6 +192,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     hedvigBuildConstants = hedvigBuildConstants,
     imageLoader = imageLoader,
     openUrl = openUrl,
+    openCrossSellUrl = openCrossSellUrl,
     onNavigateToImageViewer = onNavigateToImageViewer,
     navigateToNewConversation = navigateToNewConversation,
   )
@@ -200,6 +201,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     globalSnackBarState = globalSnackBarState,
     imageLoader = imageLoader,
     openUrl = openUrl,
+    openCrossSellUrl = openCrossSellUrl,
     externalNavigator = externalNavigator,
     navigateToNewConversation = navigateToNewConversation,
     navigateToInbox = navigateToInbox,
@@ -245,7 +247,7 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
   externalNavigator: ExternalNavigator,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
-  openCrossSellUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Boolean,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   navigateToNewConversation: () -> Unit,
   navigateToConversation: (String) -> Unit,
@@ -373,7 +375,7 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
   windowSizeClass: WindowSizeClass,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
-  openCrossSellUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Boolean,
   externalNavigator: ExternalNavigator,
   navigateToNewConversation: () -> Unit,
   navigateToMovingFlowFromInsurance: () -> Unit,
@@ -551,6 +553,7 @@ private fun EntryProviderScope<HedvigNavKey>.addChatEntries(
   hedvigBuildConstants: HedvigBuildConstants,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Boolean,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   navigateToNewConversation: () -> Unit,
 ) {
@@ -558,6 +561,7 @@ private fun EntryProviderScope<HedvigNavKey>.addChatEntries(
     hedvigBuildConstants = hedvigBuildConstants,
     imageLoader = imageLoader,
     openUrl = openUrl,
+    openCrossSellUrl = openCrossSellUrl,
     onNavigateToClaimDetails = { claimId ->
       logcat { "Navigating to claim details from chat" }
       backstack.add(ClaimDetailsKey(claimId))
@@ -580,6 +584,7 @@ private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
   globalSnackBarState: GlobalSnackBarState,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Boolean,
   externalNavigator: ExternalNavigator,
   navigateToNewConversation: () -> Unit,
   navigateToInbox: () -> Unit,
@@ -622,7 +627,7 @@ private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
   onboardingEntries(
     backstack = backstack,
     imageLoader = imageLoader,
-    openUrl = openUrl,
+    openCrossSellUrl = openCrossSellUrl,
     openPrivacyPolicy = openPrivacyPolicy,
     navigateToChipId = { contractId -> backstack.add(ChipIdKey(contractId)) },
   )

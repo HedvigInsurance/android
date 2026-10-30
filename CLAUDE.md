@@ -668,7 +668,7 @@ GitHub Actions workflows (in `.github/workflows/`):
 - **graphql-schema.yml** - Schema updates
 - **strings.yml** - Translation updates
 - **unused-resources.yml** - Resource cleanup checks
-- **umbrella.yml** - Comprehensive checks
+- **umbrella.yml** - Publishes the iOS umbrella framework on weeknights, or on manual trigger
 
 ## Important Files
 
@@ -771,6 +771,11 @@ Example:
 // TODO: Add "This is some text for feature X" / "Detta är lite text för feature X" to Lokalise
 Text("This is some text for feature X")
 ```
+
+**PR CI builds against the committed `strings.xml` files** and never downloads from Lokalise. A PR
+that uses a key added to Lokalise since the last strings update must run `./gradlew downloadStrings`
+and commit the regenerated files, or wait for the daily strings workflow to bring the key in.
+Staging and Play Store builds still download the latest strings before building.
 
 **Verifying whether a string key is "real" (already in Lokalise):** if you find a key in a
 `strings.xml` and are unsure whether it actually exists in Lokalise or was hand-added, run

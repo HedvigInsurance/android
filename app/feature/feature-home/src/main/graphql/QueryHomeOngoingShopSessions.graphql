@@ -1,0 +1,19 @@
+query HomeOngoingShopSessions {
+  currentMember {
+    ongoingShopSessions {
+      id
+      display {
+        title
+        subtitle
+        monthlyNet {
+          amount
+          currencyCode
+        }
+        resumeUrl
+        pillowImage {
+          src
+        }
+      }
+    }
+  }
+}

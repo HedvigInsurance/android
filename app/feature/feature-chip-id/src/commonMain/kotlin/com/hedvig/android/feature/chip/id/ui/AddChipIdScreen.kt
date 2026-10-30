@@ -8,7 +8,6 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -21,25 +20,23 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.OutputTransformation
+import androidx.compose.foundation.text.input.TextFieldBuffer
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.insert
+import androidx.compose.foundation.text.input.maxLength
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.OffsetMapping
-import androidx.compose.ui.text.input.TransformedText
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -72,6 +69,7 @@ import hedvig.resources.CONTACT_INFO_CHANGES_SAVED
 import hedvig.resources.Res
 import hedvig.resources.general_save_button
 import hedvig.resources.something_went_wrong
+import kotlinx.coroutines.flow.filter
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -222,76 +220,42 @@ private fun ColumnScope.AddChipIdContent(
 
 @Composable
 private fun ChipIdTextField(text: String, labelText: String, updateText: (String) -> Unit) {
-  val interactionSource = remember { MutableInteractionSource() }
-  var input by remember { mutableStateOf(text) }
-  val mask = "000-000-000-000-000"
-  val maskColor = HedvigTheme.colorScheme.textTertiary
-  val visualTransformation = ChipIdVisualTransformation(mask, maskColor)
+  val state = rememberTextFieldState(text)
+  val currentText by rememberUpdatedState(text)
+  val currentUpdateText by rememberUpdatedState(updateText)
+  LaunchedEffect(state) {
+    snapshotFlow { state.text.toString() }.filter { it != currentText }.collect { currentUpdateText(it) }
+  }
   HedvigTextField(
-    text = input,
+    state = state,
     labelText = labelText,
     errorState = HedvigTextFieldDefaults.ErrorState.NoError,
-    onValueChange = {
-      if (it.length <= 15) {
-        updateText(it)
-        input = it
-      }
-    },
+    inputTransformation = InputTransformation.maxLength(ChipIdLength),
+    outputTransformation = ChipIdOutputTransformation,
+    mask = "000-000-000-000-000",
     keyboardOptions = KeyboardOptions(
       keyboardType = KeyboardType.Number,
       imeAction = ImeAction.Done,
     ),
-    visualTransformation = visualTransformation,
+    lineLimits = TextFieldLineLimits.SingleLine,
     textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
-    interactionSource = interactionSource,
     modifier = Modifier
       .fillMaxWidth()
       .padding(horizontal = 16.dp),
   )
 }
 
-private class ChipIdVisualTransformation(
-  private val mask: String,
-  private val maskColor: Color,
-) : VisualTransformation {
-  override fun filter(text: AnnotatedString): TransformedText {
-    val trimmed = if (text.text.length >= 15) text.text.substring(0..14) else text.text
+private const val ChipIdLength = 15
 
-    val annotatedString = buildAnnotatedString {
-      for (i in trimmed.indices) {
-        append(trimmed[i])
-        if (i in listOf(2, 5, 8, 11)) {
-          append("-")
-        }
-      }
-      withStyle(SpanStyle(color = maskColor)) {
-        append(mask.takeLast(mask.length - length))
-      }
+/**
+ * Groups the chip id as `000-000-000-000-000`.
+ */
+private object ChipIdOutputTransformation : OutputTransformation {
+  override fun TextFieldBuffer.transformOutput() {
+    // Descending, so each insertion leaves the earlier indices pointing at the same digits.
+    for (dashIndex in listOf(12, 9, 6, 3)) {
+      if (length > dashIndex) insert(dashIndex, "-")
     }
-
-    val personalNumberOffsetTranslator = object : OffsetMapping {
-      override fun originalToTransformed(offset: Int): Int {
-        return when {
-          offset <= 2 -> offset
-          offset <= 5 -> offset + 1
-          offset <= 8 -> offset + 2
-          offset <= 11 -> offset + 3
-          offset <= 15 -> offset + 4
-          else -> 19
-        }
-      }
-
-      override fun transformedToOriginal(offset: Int): Int {
-        return when {
-          offset <= 3 -> offset
-          offset <= 7 -> offset - 1
-          offset <= 11 -> offset - 2
-          offset <= 15 -> offset - 3
-          else -> offset - 4
-        }.coerceAtMost(text.length)
-      }
-    }
-    return TransformedText(annotatedString, personalNumberOffsetTranslator)
   }
 }
 
