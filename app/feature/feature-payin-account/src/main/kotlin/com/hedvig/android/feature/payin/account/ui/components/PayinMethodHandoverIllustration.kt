@@ -21,9 +21,9 @@ import com.hedvig.android.design.system.hedvig.Surface
 internal fun PayinMethodHandoverIllustration(provider: PaymentProvider?, modifier: Modifier = Modifier) {
   Column(modifier) {
     Spacer(Modifier.height(48.dp))
-    PaymentMethodHandoverIllustration(
-      mark = provider?.let { picked -> { PayinProviderMark(picked, Modifier.size(PaymentMethodMarkSize)) } },
-    )
+    PaymentMethodHandoverIllustration(method = provider) { picked ->
+      PayinProviderMark(picked, Modifier.size(PaymentMethodMarkSize))
+    }
     Spacer(Modifier.height(48.dp))
   }
 }

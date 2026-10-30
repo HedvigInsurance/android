@@ -77,6 +77,7 @@ private fun ConnectingGraphic(
     label = "connected check alpha",
   )
   PaymentMethodHandoverIllustration(
+    method = provider,
     modifier = modifier,
     destinationBadge = {
       PaymentMethodTileBadge(
@@ -90,8 +91,9 @@ private fun ConnectingGraphic(
         },
       )
     },
-    mark = provider?.let { picked -> { OnboardingPayinProviderMark(picked, Modifier.size(PaymentMethodMarkSize)) } },
-  )
+  ) { picked ->
+    OnboardingPayinProviderMark(picked, Modifier.size(PaymentMethodMarkSize))
+  }
 }
 
 @HedvigPreview

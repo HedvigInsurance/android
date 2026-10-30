@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.EmptyContentDescription
+import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -186,28 +187,34 @@ private fun ColumnScope.SwishPayinStatusContent(
 
     Connected -> {
       PaymentMethodHandoverIllustration(
+        method = PaymentProvider.Swish,
         modifier = Modifier.align(Alignment.CenterHorizontally),
         destinationBadge = { SetupStatusBadge(uiState) },
         loadingState = LoadingState.ACTIVE,
-        mark = { Image(HedvigIcons.Swish, EmptyContentDescription, Modifier.size(PaymentMethodMarkSize)) },
-      )
+      ) {
+        Image(HedvigIcons.Swish, EmptyContentDescription, Modifier.size(PaymentMethodMarkSize))
+      }
     }
 
     is Failed -> {
       PaymentMethodHandoverIllustration(
+        method = PaymentProvider.Swish,
         modifier = Modifier.align(Alignment.CenterHorizontally),
         destinationBadge = { SetupStatusBadge(uiState) },
         loadingState = LoadingState.INACTIVE,
-        mark = { Image(HedvigIcons.Swish, EmptyContentDescription, Modifier.size(PaymentMethodMarkSize)) },
-      )
+      ) {
+        Image(HedvigIcons.Swish, EmptyContentDescription, Modifier.size(PaymentMethodMarkSize))
+      }
     }
 
     is PendingApproval if uiState.isHandedOver -> {
       PaymentMethodHandoverIllustration(
+        method = PaymentProvider.Swish,
         modifier = Modifier.align(Alignment.CenterHorizontally),
         loadingState = LoadingState.PROCESSING,
-        mark = { Image(HedvigIcons.Swish, EmptyContentDescription, Modifier.size(PaymentMethodMarkSize)) },
-      )
+      ) {
+        Image(HedvigIcons.Swish, EmptyContentDescription, Modifier.size(PaymentMethodMarkSize))
+      }
     }
 
     is PendingApproval -> {

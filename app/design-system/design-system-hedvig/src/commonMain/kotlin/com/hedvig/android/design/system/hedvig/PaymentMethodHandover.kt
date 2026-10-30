@@ -1,7 +1,13 @@
 package com.hedvig.android.design.system.hedvig
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -138,19 +144,22 @@ fun PaymentMethodTileBadge(
 /**
  * The method being connected, linked by pulsing dots to the Hedvig symbol, laid out in the way money
  * moves for [direction]. [destinationBadge] marks the tile on the receiving end once the hand-off has
- * landed. [mark] is the picked method's brand mark; while it is null nothing is picked yet, so the
- * Hedvig symbol stands alone and the method tile and dots grow out from it once a method is picked.
+ * landed. [method] is the picked method and [mark] draws its brand mark; while [method] is null
+ * nothing is picked yet, so the Hedvig symbol stands alone and the method tile and dots grow out from
+ * it once a method is picked. Picking another method cross-fades the mark, so a screen whose method
+ * never changes can pass anything, such as [Unit].
  */
 @Composable
-fun PaymentMethodHandoverIllustration(
-  mark: (@Composable () -> Unit)?,
+fun <T : Any> PaymentMethodHandoverIllustration(
+  method: T?,
   modifier: Modifier = Modifier,
   destinationBadge: @Composable (() -> Unit)? = null,
   loadingState: LoadingState = LoadingState.PROCESSING,
   direction: PaymentHandoverDirection = PaymentHandoverDirection.ToHedvig,
+  mark: @Composable (method: T) -> Unit,
 ) {
   val methodFraction = animateFloatAsState(
-    targetValue = if (mark != null) 1f else 0f,
+    targetValue = if (method != null) 1f else 0f,
     animationSpec = tween(MotionTokens.DurationMedium2.toInt(), easing = MotionTokens.EasingStandardCubicBezier),
     label = "method side",
   )
@@ -162,7 +171,7 @@ fun PaymentMethodHandoverIllustration(
   ) {
     when (direction) {
       PaymentHandoverDirection.ToHedvig -> {
-        PaymentMethodTile(mark = mark ?: PlusMark, modifier = methodSide)
+        PaymentMethodTile(mark = { SwappingMark(method, mark) }, modifier = methodSide)
         HandoverDots(loadingState, methodFraction, methodSide)
         HedvigTile(badge = destinationBadge)
       }
@@ -170,13 +179,33 @@ fun PaymentMethodHandoverIllustration(
       PaymentHandoverDirection.FromHedvig -> {
         HedvigTile()
         HandoverDots(loadingState, methodFraction, methodSide)
-        PaymentMethodTile(mark = mark ?: PlusMark, badge = destinationBadge, modifier = methodSide)
+        PaymentMethodTile(mark = { SwappingMark(method, mark) }, badge = destinationBadge, modifier = methodSide)
       }
     }
   }
 }
 
 private val PlusMark: @Composable () -> Unit = { PaymentMethodPlusMark(Modifier.size(PaymentMethodMarkSize)) }
+
+/**
+ * The [mark] of [method], or the plus while there is none, with a change of method cross-faded: the
+ * old mark shrinks away as the new one grows in.
+ */
+@Composable
+private fun <T : Any> SwappingMark(method: T?, mark: @Composable (method: T) -> Unit) {
+  AnimatedContent(
+    targetState = method,
+    transitionSpec = {
+      val spec = tween<Float>(MotionTokens.DurationMedium2.toInt(), easing = MotionTokens.EasingStandardCubicBezier)
+      (fadeIn(spec) + scaleIn(spec, initialScale = 0.5f)) togetherWith
+        (fadeOut(spec) + scaleOut(spec, targetScale = 0.5f))
+    },
+    contentAlignment = Alignment.Center,
+    label = "method mark",
+  ) { shownMethod ->
+    if (shownMethod != null) mark(shownMethod) else PlusMark()
+  }
+}
 
 /**
  * The dots between the tiles. They breathe on an infinite transition, so while the method side is
@@ -284,14 +313,12 @@ private fun PreviewPaymentMethodHandoverIllustration(
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       PaymentMethodHandoverIllustration(
-        mark = if (state.picked) {
-          { Icon(HedvigIcons.Trustly, null, Modifier.size(PaymentMethodMarkSize)) }
-        } else {
-          null
-        },
+        method = if (state.picked) Unit else null,
         direction = state.direction,
         modifier = Modifier.size(width = 210.dp, height = 74.dp),
-      )
+      ) {
+        Icon(HedvigIcons.Trustly, null, Modifier.size(PaymentMethodMarkSize))
+      }
     }
   }
 }
