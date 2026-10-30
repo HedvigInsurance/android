@@ -54,6 +54,11 @@
         "/^dev\\.zacsweers\\.metro([.:]|$)/"
       ],
       "groupName": "kotlin"
+    },
+    {
+      "description": "classgraph 6 needs JDK 25 while the build runs on JDK 21. 5.x is the same API for JDK 17 to 24",
+      "matchPackageNames": ["io.github.classgraph:classgraph"],
+      "allowedVersions": "<6.0.0"
     }
   ]
 }
