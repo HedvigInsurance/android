@@ -56,8 +56,8 @@ fun HedvigMarkdownText(
     override val inlineCodeBackground: Color = colors.surfaceSecondary
     override val dividerColor: Color = colors.borderPrimary
     override val tableBackground: Color = colors.surfaceSecondary
-    override val highlightText: Color = colors.signalAmberText
-    override val highlightBackground: Color = colors.signalAmberHighlight
+    override val highlightText: Color = colors.textBlack
+    override val highlightBackground: Color = colors.highlightYellowFill1
     override val alert: MarkdownAlertColors = markdownAlertColors(
       note = colors.signalBlueElement,
       tip = colors.signalGreenElement,
