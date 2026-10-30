@@ -24,6 +24,7 @@ dependencies {
   testImplementation(libs.junit)
   testImplementation(libs.turbine)
   testImplementation(projects.apolloOctopusTest)
+  testImplementation(projects.apolloTest)
   testImplementation(projects.coreDatastoreTest)
   testImplementation(projects.featureFlagsTest)
 }

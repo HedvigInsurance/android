@@ -9,10 +9,8 @@ dependencies {
   implementation(projects.experimentsPublic)
   implementation(projects.featureFlags)
   implementation(projects.initializable)
-  implementation(projects.trackingCore)
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
   testImplementation(projects.loggingTest)
-  testImplementation(projects.trackingTest)
 }

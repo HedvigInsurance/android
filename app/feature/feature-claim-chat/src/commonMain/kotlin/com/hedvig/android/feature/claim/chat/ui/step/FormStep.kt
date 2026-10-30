@@ -91,8 +91,10 @@ import com.hedvig.android.feature.claim.chat.data.StepId
 import com.hedvig.android.feature.claim.chat.ui.common.EditButton
 import com.hedvig.android.feature.claim.chat.ui.common.RoundCornersPill
 import com.hedvig.android.feature.claim.chat.ui.common.SentAnswerRow
+import com.hedvig.android.feature.claim.chat.ui.common.SentAnswerText
 import com.hedvig.android.feature.claim.chat.ui.common.SkippedLabel
 import com.hedvig.android.feature.claim.chat.ui.common.YesNoBubble
+import com.hedvig.android.feature.claim.chat.ui.step.audiorecording.TEXT_ANSWER_MAX_LINES
 import hedvig.resources.CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE
 import hedvig.resources.CLAIM_CHAT_FIELD_SEARCH_NOTHING_FOUND
 import hedvig.resources.CLAIM_CHAT_FIELD_SEARCH_SUGGESTION
@@ -192,6 +194,7 @@ private fun FormContent(
             FieldType.TEXT -> {
               TextInputBubble(
                 questionLabel = field.title,
+                singleLine = false,
                 text = field.selectedOptions.getOrNull(0)?.text
                   ?: field.defaultValues.getOrNull(0)?.text,
                 suffix = field.suffix,
@@ -401,7 +404,7 @@ private fun FormContent(
                         contentDescription = description
                       },
                     ) {
-                      HedvigText(textValue, textAlign = TextAlign.End)
+                      SentAnswerText(textValue)
                     }
                   } else {
                     SkippedLabel()
@@ -840,6 +843,7 @@ internal fun TextInputBubble(
   modifier: Modifier = Modifier,
   keyboardType: KeyboardType = KeyboardType.Unspecified,
   errorText: String? = null,
+  singleLine: Boolean = true,
 ) {
   var textValue by rememberSaveable {
     mutableStateOf(
@@ -855,6 +859,8 @@ internal fun TextInputBubble(
       onInput(newValue.ifBlank { null })
     },
     textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
+    singleLine = singleLine,
+    maxLines = if (singleLine) 1 else TEXT_ANSWER_MAX_LINES,
     labelText = questionLabel,
     modifier = modifier,
     enabled = true,
