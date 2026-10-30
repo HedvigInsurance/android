@@ -22,6 +22,7 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.offset
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
 import com.hedvig.android.design.system.hedvig.icon.Plus
@@ -196,13 +197,18 @@ private val PlusMark: @Composable () -> Unit = { PaymentMethodPlusMark(Modifier.
  * Lays the content out in [fraction] of its own width, centred in that space, fading and shrinking it
  * in step. Measuring the content in full and scaling only the space it claims is what lets a
  * wrap-content width animate to and from zero.
+ *
+ * Fading renders the content into an offscreen layer of its own bounds, which would clip a drop
+ * shadow drawn outside them, so the layer is padded out by [LayerBleed] and the padding is taken
+ * back out of the reported size.
  */
 private fun Modifier.collapsedHorizontally(fraction: State<Float>): Modifier = this
   .layout { measurable, constraints ->
-    val placeable = measurable.measure(constraints.copy(minWidth = 0))
-    val width = (placeable.width * fraction.value).roundToInt()
-    layout(width, placeable.height) {
-      placeable.placeRelative((width - placeable.width) / 2, 0)
+    val bleed = LayerBleed.roundToPx()
+    val placeable = measurable.measure(constraints.copy(minWidth = 0).offset(2 * bleed, 2 * bleed))
+    val width = ((placeable.width - 2 * bleed) * fraction.value).roundToInt()
+    layout(width, placeable.height - 2 * bleed) {
+      placeable.placeRelative((width - placeable.width) / 2, -bleed)
     }
   }
   .graphicsLayer {
@@ -211,6 +217,9 @@ private fun Modifier.collapsedHorizontally(fraction: State<Float>): Modifier = t
     scaleX = 0.5f + 0.5f * shown
     scaleY = scaleX
   }
+  .padding(LayerBleed)
+
+private val LayerBleed = 16.dp
 
 /** Which way money moves between the member's method and Hedvig, which decides the tiles' order. */
 enum class PaymentHandoverDirection {
