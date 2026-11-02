@@ -822,6 +822,13 @@ nothing validates, so re-check them whenever the metric changes.
 
 ## Debugging
 
+### Seeing a composable without a device
+
+To see what a composable looks like, or to compare a few layout, alignment or wrapping variants
+of it as images, do not build the app or reach for Android Studio previews. Any KMP module with
+a JVM target can render through Skia from a `jvmTest` and write PNGs; use the
+`render-composables-on-jvm` skill, which carries a template test for it.
+
 ### Network traffic on a device
 
 Debug builds (`com.hedvig.dev.app`) record every call made through the main Ktor client, with full
