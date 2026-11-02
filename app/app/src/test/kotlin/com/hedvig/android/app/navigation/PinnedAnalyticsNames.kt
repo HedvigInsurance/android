@@ -19,6 +19,7 @@ internal object PinnedAnalyticsNames {
   /** Key class name to its pinned name. A key that implements [AnalyticsNamed] without the constant maps to "". */
   val byClassName: Map<String, String> by lazy {
     ClassGraph()
+      .enableClasspath()
       .enableClassInfo()
       .enableFieldInfo()
       .enableStaticFinalFieldConstantInitializerValues()
@@ -26,7 +27,7 @@ internal object PinnedAnalyticsNames {
       .rejectPackages(TEST_FAKES_PACKAGE)
       .scan()
       .use { scan ->
-        scan.getClassesImplementing(AnalyticsNamed::class.java.name)
+        scan.getAllClassesImplementing(AnalyticsNamed::class.java.name)
           .filter { !it.isInterface && !it.isAbstract }
           .associate { classInfo ->
             classInfo.name to (classInfo.getFieldInfo(CONSTANT_NAME)?.constantInitializerValue as? String).orEmpty()
