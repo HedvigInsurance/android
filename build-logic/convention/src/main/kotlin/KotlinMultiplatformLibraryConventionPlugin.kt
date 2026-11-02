@@ -20,8 +20,10 @@ class KotlinMultiplatformLibraryConventionPlugin : Plugin<Project> {
 }
 
 /**
- * A Kotlin Multiplatform library that `:umbrella` exports to iOS, directly or transitively. Adds the
- * iOS targets on top of the JVM and Android ones, so every `expect` in the module needs a native actual.
+ * A Kotlin Multiplatform library that compiles for iOS so `:umbrella` can export it, directly or
+ * transitively. Adds the iOS targets on top of the JVM and Android ones, so every `expect` in the
+ * module needs a native actual. A module keeps this plugin even while `:umbrella` does not currently
+ * reach it, so it stays exportable without a porting effort.
  */
 class KotlinMultiplatformIosLibraryConventionPlugin : Plugin<Project> {
   override fun apply(target: Project) {
