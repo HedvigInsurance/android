@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 
@@ -20,10 +21,10 @@ fun Modifier.hedvigDropShadow(shape: Shape = HedvigTheme.shapes.cornerLarge): Mo
         .dropShadow(
           shape,
           Shadow(
-            radius = 10.dp,
-            offset = DpOffset(0.dp, 4.dp),
+            radius = SoftShadowRadius,
+            offset = DpOffset(0.dp, SoftShadowOffsetY),
             color = HedvigTheme.colorScheme.shadowSoftLightOnly,
-            spread = (-2).dp,
+            spread = SoftShadowSpread,
           ),
         ).dropShadow(
           shape,
@@ -37,3 +38,13 @@ fun Modifier.hedvigDropShadow(shape: Shape = HedvigTheme.shapes.cornerLarge): Mo
     },
   )
 }
+
+private val SoftShadowRadius = 10.dp
+private val SoftShadowOffsetY = 4.dp
+private val SoftShadowSpread = (-2).dp
+
+/**
+ * How far [hedvigDropShadow] reaches outside the shape it is drawn under, at most: the soft shadow's
+ * blur plus its downward offset, less its negative spread. The crisp shadow sits well inside that.
+ */
+val HedvigDropShadowExtent: Dp = SoftShadowRadius + SoftShadowOffsetY + SoftShadowSpread

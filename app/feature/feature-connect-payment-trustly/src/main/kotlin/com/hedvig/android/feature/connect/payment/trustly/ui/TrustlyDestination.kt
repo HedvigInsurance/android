@@ -254,11 +254,13 @@ private fun TrustlyStatusScreen(
     )
     Spacer(Modifier.weight(1f))
     PaymentMethodHandoverIllustration(
+      method = Unit,
       modifier = Modifier.align(Alignment.CenterHorizontally),
       destinationBadge = badge,
       loadingState = if (active) HandoverLoadingState.ACTIVE else HandoverLoadingState.INACTIVE,
-      mark = { Icon(HedvigIcons.Trustly, null, Modifier.size(PaymentMethodMarkSize)) },
-    )
+    ) {
+      Icon(HedvigIcons.Trustly, null, Modifier.size(PaymentMethodMarkSize))
+    }
     Spacer(Modifier.weight(1f))
     actions()
     Spacer(Modifier.height(16.dp))
