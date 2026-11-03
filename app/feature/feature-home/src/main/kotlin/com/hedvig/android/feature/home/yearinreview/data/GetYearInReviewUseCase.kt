@@ -42,14 +42,17 @@ private fun membershipStory(duration: MembershipDuration): YearInReviewStory {
   val durationText = duration.toSwedishText()
   return YearInReviewStory(
     id = "membership",
-    // TODO: Add "You and Hedvig" / "Du och Hedvig" to Lokalise
+    // TODO: Add "You have been with us" / "Du har varit med oss" to Lokalise
     title = " Du har varit med oss",
     // TODO: Add "You have been a member with us for {duration}." / "Du har varit medlem hos oss i {duration}."
     //  and "You became a member today." / "Du blev medlem hos oss idag." to Lokalise
-    leadText = if (durationText == null) "Du blev medlem hos oss" else "Du har varit medlem hos oss i",
-    text = if (durationText == null) "idag." else "$durationText.",
+    leadText = if (durationText == null) {
+      "Du blev medlem hos oss idag."
+    } else {
+      "Du har varit medlem hos oss i $durationText."
+    },
     // TODO: Add "Thank you!" / "Tack!" to Lokalise
-    closingText = "Tack!",
+    text = "Tack!",
     imageUrl = "https://a.storyblok.com/f/165473/1200x1200/1b3ca72d1a/student-dator-1200.jpg",
     backgroundPillow = PillowType.HOME,
   )

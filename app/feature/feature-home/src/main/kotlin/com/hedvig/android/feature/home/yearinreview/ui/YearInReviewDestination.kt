@@ -31,6 +31,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
@@ -200,7 +201,7 @@ private fun PillowBackground(pillow: PillowType, modifier: Modifier = Modifier) 
       modifier = Modifier
         .fillMaxSize()
         .blur(40.dp)
-       .alpha(0.2f),
+        .alpha(0.2f),
     )
   }
 }
@@ -259,25 +260,32 @@ private fun StoriesContent(
         },
     ) {
       val story = uiState.currentStory
-      StoryPage(
-        story = story,
-        imageLoader = imageLoader,
-        isLastStory = uiState.isLastStory,
-        close = close,
-        modifier = Modifier.fillMaxSize(),
-      )
+      // A fresh page per story, so the previous story's revealed parts are not animated out showing the next
+      // story's content.
+      key(story.id) {
+        StoryPage(
+          story = story,
+          imageLoader = imageLoader,
+          isLastStory = uiState.isLastStory,
+          close = close,
+          modifier = Modifier.fillMaxSize(),
+        )
+      }
     }
   }
 }
 
 @Composable
 private fun StoryProgressBar(storyCount: Int, currentIndex: Int, progress: Float, modifier: Modifier = Modifier) {
-  // The presenter ticks in steps; easing linearly across each step keeps the bar moving smoothly.
-  val animatedProgress by animateFloatAsState(
-    targetValue = progress,
-    animationSpec = if (progress == 0f) tween(0) else tween(durationMillis = 100, easing = LinearEasing),
-    label = "storyProgress",
-  )
+  // The presenter ticks in steps; easing linearly across each step keeps the bar moving smoothly. Each story
+  // gets its own animation, so a new segment starts from empty instead of the previous story's progress.
+  val animatedProgress by key(currentIndex) {
+    animateFloatAsState(
+      targetValue = progress,
+      animationSpec = if (progress == 0f) tween(0) else tween(durationMillis = 100, easing = LinearEasing),
+      label = "storyProgress",
+    )
+  }
   Row(
     horizontalArrangement = Arrangement.spacedBy(4.dp),
     modifier = modifier,
@@ -341,7 +349,7 @@ private fun StoryPage(
     story.title?.let {
       HedvigText(
         text = story.title,
-         textAlign = TextAlign.Center,
+        textAlign = TextAlign.Center,
         color = HedvigTheme.colorScheme.textPrimary,
         style = HedvigTheme.typography.bodyMedium,
         modifier = Modifier
@@ -419,10 +427,6 @@ private fun StoryText(story: YearInReviewStory, modifier: Modifier = Modifier) {
       withStyle(SpanStyle(color = textPrimary)) { append(story.leadText) }
       append(" ")
       append(story.text)
-      if (story.closingText != null) {
-        append(" ")
-        withStyle(SpanStyle(color = textPrimary)) { append(story.closingText) }
-      }
     }
   }
   HedvigText(
