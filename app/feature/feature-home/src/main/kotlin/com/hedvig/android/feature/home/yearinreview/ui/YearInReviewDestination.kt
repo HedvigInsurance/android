@@ -199,8 +199,8 @@ private fun PillowBackground(pillow: PillowType, modifier: Modifier = Modifier) 
       contentScale = ContentScale.Crop,
       modifier = Modifier
         .fillMaxSize()
-        .blur(40.dp),
-      // .alpha(0.2f),
+        .blur(40.dp)
+       .alpha(0.2f),
     )
   }
 }
@@ -341,7 +341,7 @@ private fun StoryPage(
     story.title?.let {
       HedvigText(
         text = story.title,
-        // textAlign = TextAlign.Center,
+         textAlign = TextAlign.Center,
         color = HedvigTheme.colorScheme.textPrimary,
         style = HedvigTheme.typography.bodyMedium,
         modifier = Modifier
@@ -427,7 +427,7 @@ private fun StoryText(story: YearInReviewStory, modifier: Modifier = Modifier) {
   }
   HedvigText(
     text = text,
-    color = HedvigTheme.colorScheme.textWhite,
+    color = HedvigTheme.colorScheme.textSecondary,
     style = HedvigTheme.typography.bodyMedium,
     modifier = modifier,
   )
