@@ -46,6 +46,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -55,7 +56,6 @@ import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
-import coil3.request.SuccessResult
 import com.hedvig.android.data.contract.PillowType
 import com.hedvig.android.data.contract.pillowResource
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
@@ -80,8 +80,6 @@ import hedvig.resources.Res
 import hedvig.resources.general_close_button
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -124,21 +122,19 @@ private fun YearInReviewScreen(
       }
 
       is YearInReviewUiState.Content -> {
-        val imageAspectRatios = if (LocalInspectionMode.current) {
-          // Previews cannot load images, so they lay every image out as a square.
-          uiState.stories.associate { it.imageUrl to 1f }
-        } else {
-          rememberImageAspectRatios(uiState.stories.map { it.imageUrl }, imageLoader)
-        }
-        if (imageAspectRatios == null) {
+        // Previews cannot load images, so they skip the preload.
+        val imagesLoaded = LocalInspectionMode.current ||
+          rememberImagesLoaded(uiState.stories.mapNotNull { it.imageUrl }, imageLoader)
+        if (!imagesLoaded) {
           StoriesLoading()
         } else {
           LaunchedEffect(Unit) { onEvent(YearInReviewEvent.Resume) }
           PillowBackground(
-            pillow = storyPillows[uiState.currentIndex % storyPillows.size],
+            pillow = uiState.currentStory.backgroundPillow
+              ?: storyPillows[uiState.currentIndex % storyPillows.size],
             modifier = Modifier.fillMaxSize(),
           )
-          StoriesContent(uiState, imageAspectRatios, imageLoader, close, onEvent)
+          StoriesContent(uiState, imageLoader, close, onEvent)
         }
       }
     }
@@ -156,33 +152,26 @@ private fun StoriesLoading() {
 }
 
 /**
- * Loads every image up front and returns each one's width-to-height ratio, or null until all of them are
- * done. Each image then has its final size the moment its story opens, and is shown from cache without a
- * loading gap.
+ * Loads every image up front and returns whether all of them are done, so each one is shown from cache
+ * the moment its story opens, without a loading gap.
  */
 @Composable
-private fun rememberImageAspectRatios(imageUrls: List<String>, imageLoader: ImageLoader): Map<String, Float>? {
+private fun rememberImagesLoaded(imageUrls: List<String>, imageLoader: ImageLoader): Boolean {
   val context = LocalPlatformContext.current
-  val aspectRatios by produceState<Map<String, Float>?>(null, imageUrls, imageLoader) {
-    value = coroutineScope {
+  val loaded by produceState(false, imageUrls, imageLoader) {
+    coroutineScope {
       // Keeps the loading indicator up long enough to read as loading rather than a flash.
-      val minimumLoadingTime = async { delay(800.milliseconds) }
-      val aspectRatios = imageUrls.distinct().map { url ->
-        async {
-          val result = imageLoader.execute(ImageRequest.Builder(context).data(url).build())
-          val image = (result as? SuccessResult)?.image
-          val aspectRatio = if (image != null && image.height > 0) image.width.toFloat() / image.height else 1f
-          url to aspectRatio
-        }
-      }.awaitAll().toMap()
-      minimumLoadingTime.await()
-      aspectRatios
+      launch { delay(800.milliseconds) }
+      imageUrls.distinct().forEach { url ->
+        launch { imageLoader.execute(ImageRequest.Builder(context).data(url).build()) }
+      }
     }
+    value = true
   }
-  return aspectRatios
+  return loaded
 }
 
-/** Cycled through as the background, one per story. */
+/** Cycled through as the background of stories that do not name their own pillow. */
 private val storyPillows = listOf(
   PillowType.HOME,
   PillowType.RENTAL,
@@ -210,8 +199,8 @@ private fun PillowBackground(pillow: PillowType, modifier: Modifier = Modifier) 
       contentScale = ContentScale.Crop,
       modifier = Modifier
         .fillMaxSize()
-        .blur(40.dp)
-        .alpha(0.2f),
+        .blur(40.dp),
+      // .alpha(0.2f),
     )
   }
 }
@@ -219,7 +208,6 @@ private fun PillowBackground(pillow: PillowType, modifier: Modifier = Modifier) 
 @Composable
 private fun StoriesContent(
   uiState: YearInReviewUiState.Content,
-  imageAspectRatios: Map<String, Float>,
   imageLoader: ImageLoader,
   close: () -> Unit,
   onEvent: (YearInReviewEvent) -> Unit,
@@ -273,7 +261,6 @@ private fun StoriesContent(
       val story = uiState.currentStory
       StoryPage(
         story = story,
-        imageAspectRatio = if (story.showImageOnCard) 1f else imageAspectRatios.getValue(story.imageUrl),
         imageLoader = imageLoader,
         isLastStory = uiState.isLastStory,
         close = close,
@@ -323,7 +310,6 @@ private fun StoryProgressBar(storyCount: Int, currentIndex: Int, progress: Float
 @Composable
 private fun StoryPage(
   story: YearInReviewStory,
-  imageAspectRatio: Float,
   imageLoader: ImageLoader,
   isLastStory: Boolean,
   close: () -> Unit,
@@ -332,17 +318,15 @@ private fun StoryPage(
   // Previews render a single frame, so they start where the animations end.
   val isPreview = LocalInspectionMode.current
   val initialAlpha = if (isPreview) 1f else 0f
-  val titleAlpha = remember(story.id) { Animatable(initialAlpha) }
-  val imageAlpha = remember(story.id) { Animatable(initialAlpha) }
-  val textAlpha = remember(story.id) { Animatable(initialAlpha) }
+  val titleAndImageAlpha = remember(story.id) { Animatable(initialAlpha) }
+  var showText by remember(story.id) { mutableStateOf(isPreview) }
   LaunchedEffect(story.id) {
     delay(500.milliseconds)
-    // The image fades in right away, then each part a second after the previous one.
-    launch { imageAlpha.animateTo(1f, tween(durationMillis = 500)) }
+    // The title and image fade in together, centered on the screen. After a pause the text opens up
+    // beneath them, lifting them so the three stay centered as a group.
+    titleAndImageAlpha.animateTo(1f, tween(durationMillis = 500))
     delay(1.seconds)
-    launch { titleAlpha.animateTo(1f, tween(durationMillis = 500)) }
-    delay(1.seconds)
-    textAlpha.animateTo(1f, tween(durationMillis = 500))
+    showText = true
   }
   // Added only after the delay, so the image keeps its place until the button pushes it up.
   var showThanksButton by remember(isLastStory) { mutableStateOf(isPreview && isLastStory) }
@@ -353,29 +337,39 @@ private fun StoryPage(
     }
   }
   Column(modifier.padding(16.dp)) {
+    Spacer(Modifier.weight(1f))
     story.title?.let {
-      HighlightLabel(
-        story.title,
-        size = HighlightLabelDefaults.HighLightSize.Medium,
-        color = HighlightLabelDefaults.HighlightColor.Outline (
-          HighlightLabelDefaults.HighlightShade.LIGHT,
-        ),
-        modifier = Modifier.alpha(titleAlpha.value)
+      HedvigText(
+        text = story.title,
+        // textAlign = TextAlign.Center,
+        color = HedvigTheme.colorScheme.textPrimary,
+        style = HedvigTheme.typography.bodyMedium,
+        modifier = Modifier
+          .fillMaxWidth()
+          .alpha(titleAndImageAlpha.value),
       )
     }
-    Spacer(Modifier.height(16.dp))
-    StoryText(story, Modifier.alpha(textAlpha.value))
+    if (story.imageUrl != null) {
+      Spacer(Modifier.height(16.dp))
+      StoryImage(
+        story = story,
+        imageLoader = imageLoader,
+        modifier = Modifier
+          .fillMaxWidth()
+          // Every image is shown as a square, cropped to fill it.
+          .aspectRatio(1f)
+          .clip(RoundedCornerShape(16.dp))
+          .alpha(titleAndImageAlpha.value),
+      )
+    }
+    AnimatedVisibility(
+      visible = showText,
+      enter = expandVertically(tween(durationMillis = 600), expandFrom = Alignment.Top) +
+        fadeIn(tween(durationMillis = 500, delayMillis = 300)),
+    ) {
+      StoryText(story, Modifier.padding(top = 16.dp))
+    }
     Spacer(Modifier.weight(1f))
-    Spacer(Modifier.height(16.dp))
-    StoryImage(
-      story = story,
-      imageLoader = imageLoader,
-      modifier = Modifier
-        .fillMaxWidth()
-        .aspectRatio(imageAspectRatio)
-        .clip(RoundedCornerShape(16.dp))
-        .alpha(imageAlpha.value),
-    )
     AnimatedVisibility(
       visible = showThanksButton,
       enter = expandVertically() + fadeIn(),
@@ -410,7 +404,7 @@ private fun StoryImage(story: YearInReviewStory, imageLoader: ImageLoader, modif
       model = story.imageUrl,
       contentDescription = null,
       imageLoader = imageLoader,
-      contentScale = ContentScale.Fit,
+      contentScale = ContentScale.Crop,
       modifier = modifier,
     )
   }
@@ -425,11 +419,15 @@ private fun StoryText(story: YearInReviewStory, modifier: Modifier = Modifier) {
       withStyle(SpanStyle(color = textPrimary)) { append(story.leadText) }
       append(" ")
       append(story.text)
+      if (story.closingText != null) {
+        append(" ")
+        withStyle(SpanStyle(color = textPrimary)) { append(story.closingText) }
+      }
     }
   }
   HedvigText(
     text = text,
-    color = HedvigTheme.colorScheme.textSecondary,
+    color = HedvigTheme.colorScheme.textWhite,
     style = HedvigTheme.typography.bodyMedium,
     modifier = modifier,
   )
@@ -442,7 +440,7 @@ private fun ThanksButton(onClick: () -> Unit) {
     text = "Tack!",
     onClick = onClick,
     enabled = true,
-    buttonStyle =  ButtonDefaults.ButtonStyle.Secondary,
+    buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
     modifier = Modifier
       .fillMaxWidth()
       .padding(top = 16.dp),
