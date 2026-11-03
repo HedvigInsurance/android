@@ -18,7 +18,7 @@ returns, etc.). Read this before adding a new flag.
      a `disable_x` flag reports "is the kill switch on"; the consumer inverts at the read site.
   2. **`neverFetchedDefaults`**, a map in `HedvigUnleashClient`, for the flags where polarity
      alone gives the wrong default.
-- `neverFetchedDefaults` holds four entries today. Adding others is usually noise and, for
+- `neverFetchedDefaults` holds five entries today. Adding others is usually noise and, for
   app-gating flags like `UPDATE_NECESSARY`, actively dangerous.
 
 ## The bug: Unleash Android SDK issue #141
@@ -160,10 +160,11 @@ private val neverFetchedDefaults: Map<Feature, Boolean> = mapOf(
   Feature.DISABLE_PUPPY_GUIDE to true,
   Feature.DISABLE_TERMINATION_REDIRECTION to true,
   Feature.DISABLE_RESUMING_ONGOING_SHOP_SESSIONS to true,
+  Feature.HIDE_CANCEL_INSURANCE_FROM_HOME_SCREEN to true,
 )
 ```
 
-All four are kill switches, so their natural absent default is "feature on". Each instead needs to
+All five are kill switches, so their natural absent default is "feature on". Each instead needs to
 stay **hidden** until a fetch confirms it should show, which is what a rollout wants. Polarity gives
 the wrong default, so each gets an entry of `true` (kill switch on → feature hidden).
 
