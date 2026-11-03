@@ -10,4 +10,5 @@ internal val Feature.unleashKey: String
     Feature.ENABLE_CLAIM_INTENT_RESUME -> "enable_claim_intent_resume"
     Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX -> "enable_new_conversation_from_inbox"
     Feature.UPDATE_NECESSARY -> "update_necessary"
+    Feature.YEAR_IN_REVIEW -> "year_in_review"
   }

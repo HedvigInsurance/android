@@ -14,4 +14,7 @@ data object HomeKey : HedvigNavKey, CrossSellEligibleDestination, SuppressesChat
 }
 
 @Serializable
+internal data object YearInReviewKey : HedvigNavKey
+
+@Serializable
 internal data class FirstVetKey(val sections: List<FirstVetSection>) : HedvigNavKey

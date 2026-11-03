@@ -34,6 +34,7 @@ import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.OngoingShopSession
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorageImpl
+import com.hedvig.android.feature.home.yearinreview.data.IsYearInReviewAvailableUseCase
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.memberquickactions.GetMemberQuickActionsUseCase
 import com.hedvig.android.memberquickactions.QuickAction
@@ -116,6 +117,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -148,6 +150,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -178,6 +181,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -261,6 +265,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
     )
     val addonOnlyCrossSells = CrossSellSheetData(null, listOf(), testAddon)
 
@@ -308,6 +313,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -367,6 +373,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -396,6 +403,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -439,6 +447,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -494,6 +503,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
     )
     val firstVet = FirstVetSection(
       buttonTitle = "ButtonTitle",
@@ -556,6 +566,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
     )
     val crossSell = CrossSell(
       id = "id",
@@ -625,6 +636,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -679,6 +691,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -733,6 +746,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
     )
     val otherCrossSell = CrossSell(
       id = "other",
@@ -774,6 +788,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -806,6 +821,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -837,6 +853,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -864,6 +881,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       eventTrackingClient,
+      FakeIsYearInReviewAvailableUseCase(),
     )
     val offerUrl =
       "https://www.hedvig.com/api/redirect/recommend?attributed_to=HEDVIG&next=%2Fse-en%2Finsurances%2Faccident&code=accident50app&requiresAuthorization=true"
@@ -900,6 +918,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       eventTrackingClient,
+      FakeIsYearInReviewAvailableUseCase(),
     )
     val offerUrl =
       "https://www.hedvig.com/api/redirect/recommend?attributed_to=HEDVIG&next=%2Fse-en%2Finsurances%2Faccident&code=accident50app&requiresAuthorization=true"
@@ -953,6 +972,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Loading>()
@@ -982,6 +1002,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(memberType.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Loading>()
@@ -1008,6 +1029,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(ErrorMessage().left()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Loading>()
@@ -1075,6 +1097,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
     )
 
     val session = OngoingShopSession(
@@ -1113,6 +1136,7 @@ internal class HomePresenterTest {
       dismissedShopSessionsStorage,
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -1181,4 +1205,10 @@ private class TestDeleteClaimIntentDraftUseCase : DeleteClaimIntentDraftUseCase 
     deletedIdsTurbine.add(id)
     return result
   }
+}
+
+private class FakeIsYearInReviewAvailableUseCase(
+  private val isAvailable: Boolean = false,
+) : IsYearInReviewAvailableUseCase {
+  override fun invoke(): Flow<Boolean> = flowOf(isAvailable)
 }

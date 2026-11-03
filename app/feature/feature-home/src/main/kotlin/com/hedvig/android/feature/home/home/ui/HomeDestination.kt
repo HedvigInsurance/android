@@ -178,6 +178,7 @@ import com.hedvig.android.feature.home.home.ui.HomeText.Terminated
 import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.ChatAction
 import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.CrossSellsAction
 import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.FirstVetAction
+import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.YearInReviewAction
 import com.hedvig.android.feature.home.home.ui.HomeUiState.Error
 import com.hedvig.android.feature.home.home.ui.HomeUiState.Loading
 import com.hedvig.android.feature.home.home.ui.HomeUiState.Success
@@ -282,6 +283,7 @@ internal fun HomeDestination(
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
+  navigateToYearInReview: () -> Unit,
   navigateToContactInfo: () -> Unit,
   navigateToChipId: () -> Unit,
   navigateToUsageData: () -> Unit,
@@ -320,6 +322,7 @@ internal fun HomeDestination(
       viewModel.emit(HomeEvent.DismissOngoingShopSession(sessionId))
     },
     navigateToFirstVet = navigateToFirstVet,
+    navigateToYearInReview = navigateToYearInReview,
     markCrossSellsNotificationAsSeen = { viewModel.emit(MarkCardCrossSellsAsSeen) },
     navigateToContactInfo = navigateToContactInfo,
     navigateToChipIdScreen = navigateToChipId,
@@ -355,6 +358,7 @@ private fun HomeScreen(
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
+  navigateToYearInReview: () -> Unit,
   navigateToContactInfo: () -> Unit,
   navigateToChipIdScreen: () -> Unit,
   navigateToUsageData: () -> Unit,
@@ -517,6 +521,7 @@ private fun HomeScreen(
               )
             },
             navigateToFirstVet = { sections -> navigateToFirstVet(sections) },
+            navigateToYearInReview = navigateToYearInReview,
             setEpochDayWhenLastToolTipShown = setEpochDayWhenLastToolTipShown,
           )
         }
@@ -538,6 +543,7 @@ private fun HomeScreenTopBar(
   onChatIconClick: () -> Unit,
   onCrossSellsIconClick: (crossSells: CrossSellSheetData) -> Unit,
   navigateToFirstVet: (sections: List<FirstVetSection>) -> Unit,
+  onYearInReviewIconClick: () -> Unit,
   setEpochDayWhenLastToolTipShown: (Long) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -546,6 +552,7 @@ private fun HomeScreenTopBar(
       val currentState = uiState as? Success
       if (currentState != null) {
         val actionsList = buildList {
+          if (currentState.yearInReviewAction != null) add(currentState.yearInReviewAction)
           if (currentState.crossSellsAction != null) add(currentState.crossSellsAction)
           if (currentState.firstVetAction != null) add(currentState.firstVetAction)
           if (currentState.chatAction != null) add(currentState.chatAction)
@@ -577,6 +584,10 @@ private fun HomeScreenTopBar(
               ToolbarFirstVetIcon(
                 onClick = { navigateToFirstVet(sections) },
               )
+            }
+
+            YearInReviewAction -> {
+              ToolbarYearInReviewIcon(onClick = onYearInReviewIconClick)
             }
           }
         }
@@ -692,6 +703,7 @@ private fun HomeScreenSuccess(
   onChatIconClick: () -> Unit,
   onCrossSellsIconClick: (crossSells: CrossSellSheetData) -> Unit,
   navigateToFirstVet: (sections: List<FirstVetSection>) -> Unit,
+  navigateToYearInReview: () -> Unit,
   setEpochDayWhenLastToolTipShown: (Long) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -1069,6 +1081,7 @@ private fun HomeScreenSuccess(
       onChatIconClick = onChatIconClick,
       onCrossSellsIconClick = onCrossSellsIconClick,
       navigateToFirstVet = navigateToFirstVet,
+      onYearInReviewIconClick = navigateToYearInReview,
       setEpochDayWhenLastToolTipShown = setEpochDayWhenLastToolTipShown,
       modifier = Modifier
         .align(Alignment.TopStart)
@@ -1856,6 +1869,7 @@ private fun PreviewHomeScreen(
         deleteDraftClaim = {},
         dismissOngoingShopSession = {},
         navigateToFirstVet = {},
+        navigateToYearInReview = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
         navigateToChipIdScreen = {},
@@ -1895,6 +1909,7 @@ private fun PreviewHomeScreenWithError() {
         deleteDraftClaim = {},
         dismissOngoingShopSession = {},
         navigateToFirstVet = {},
+        navigateToYearInReview = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
         navigateToChipIdScreen = {},
@@ -1967,6 +1982,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         deleteDraftClaim = {},
         dismissOngoingShopSession = {},
         navigateToFirstVet = {},
+        navigateToYearInReview = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
         navigateToChipIdScreen = {},

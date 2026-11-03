@@ -30,6 +30,7 @@ import com.hedvig.android.design.system.hedvig.icon.Campaign
 import com.hedvig.android.design.system.hedvig.icon.ChatNoCircle
 import com.hedvig.android.design.system.hedvig.icon.Clock
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.Star
 import com.hedvig.android.design.system.hedvig.icon.colored.ColoredChat
 import com.hedvig.android.design.system.hedvig.icon.colored.ColoredFirstVetNoCircle
 import com.hedvig.android.design.system.hedvig.liquidGlass
@@ -106,12 +107,27 @@ fun ToolbarCrossSellsIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
   }
 }
 
+@Composable
+fun ToolbarYearInReviewIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
+  ToolbarIconButton(onClick = onClick, modifier = modifier) {
+    Icon(
+      imageVector = HedvigIcons.Star,
+      // TODO: Add "Year in review" / "Året som gått" to Lokalise
+      contentDescription = "Year in review",
+      tint = HedvigTheme.colorScheme.signalAmberElement,
+      modifier = Modifier.size(toolbarGlyphSize),
+    )
+  }
+}
+
 @HedvigPreview
 @Composable
 private fun PreviewToolbarChatIcon() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       Row {
+        ToolbarYearInReviewIcon(onClick = {})
+        Spacer(modifier = Modifier.width(8.dp))
         ToolbarFirstVetIcon(onClick = {})
         Spacer(modifier = Modifier.width(8.dp))
         ToolbarCrossSellsIcon({})

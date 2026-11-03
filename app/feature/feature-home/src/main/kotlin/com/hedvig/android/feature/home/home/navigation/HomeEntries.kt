@@ -9,6 +9,8 @@ import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.feature.home.home.ui.FirstVetDestination
 import com.hedvig.android.feature.home.home.ui.HomeDestination
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
+import com.hedvig.android.feature.home.yearinreview.ui.YearInReviewDestination
+import com.hedvig.android.feature.home.yearinreview.ui.YearInReviewViewModel
 import com.hedvig.android.memberquickactions.InnerHelpCenterDestination
 import com.hedvig.android.memberquickactions.QuickLinkDestination
 import com.hedvig.android.navigation.common.HedvigNavKey
@@ -68,6 +70,7 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
       openCrossSellUrl = openCrossSellUrl,
       openAppSettings = openAppSettings,
       navigateToFirstVet = dropUnlessResumed { sections -> navigateToFirstVet(sections) },
+      navigateToYearInReview = dropUnlessResumed { backstack.add(YearInReviewKey) },
       navigateToContactInfo = dropUnlessResumed {
         navigateToContactInfo()
       },
@@ -77,6 +80,14 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
       navigateToAddonPurchaseFlow = dropUnlessResumed { ids: List<String>, source: AddonBannerSource ->
         navigateToAddonPurchaseFlow(ids, source)
       },
+    )
+  }
+  entry<YearInReviewKey> {
+    val viewModel: YearInReviewViewModel = metroViewModel()
+    YearInReviewDestination(
+      viewModel = viewModel,
+      imageLoader = imageLoader,
+      close = backstack::popBackstack,
     )
   }
   entry<FirstVetKey> { key ->
