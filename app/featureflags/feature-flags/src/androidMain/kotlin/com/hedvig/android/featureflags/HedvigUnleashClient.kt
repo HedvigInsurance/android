@@ -35,6 +35,7 @@ private val neverFetchedDefaults: Map<Feature, Boolean> = mapOf(
   Feature.DISABLE_PUPPY_GUIDE to true,
   Feature.DISABLE_TERMINATION_REDIRECTION to true,
   Feature.DISABLE_RESUMING_ONGOING_SHOP_SESSIONS to true,
+  Feature.HIDE_CANCEL_INSURANCE_FROM_HOME_SCREEN to true,
 )
 
 class HedvigUnleashClient(
