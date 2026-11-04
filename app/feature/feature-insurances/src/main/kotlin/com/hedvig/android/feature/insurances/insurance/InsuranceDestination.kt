@@ -28,13 +28,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
@@ -340,34 +341,41 @@ private fun InsuranceCardsPile(
     label = "insuranceCardsPileExpandProgress",
   )
 
-  SubcomposeLayout(
-    modifier = Modifier.fillMaxWidth(),
-  ) { constraints ->
-    val expandedSpacingPx = expandedSpacing.roundToPx()
-
-    val peekHeights = contracts.drop(1).map { contract ->
-      subcompose("peek_${contract.id}") {
-        Column(Modifier.padding(horizontal = 32.dp)) {
-          Spacer(Modifier.height(peekTopPadding))
-          HedvigText(contract.topText())
-          Spacer(Modifier.height(textSpacer))
-          HedvigText(contract.exposureDisplayName)
-          Spacer(Modifier.height(peekBottomPadding))
+  Layout(
+    contents = listOf(
+      {
+        for (contract in contracts) {
+          key(contract.id) {
+            InsuranceCardWrapper(
+              contract = contract,
+              imageLoader = imageLoader,
+              onClick = {
+                if (expanded) onInsuranceCardClick(contract.id) else expanded = true
+              },
+            )
+          }
         }
-      }.first().measure(constraints).height
-    }
-
-    val cardPlaceables = contracts.map { contract ->
-      subcompose("card_${contract.id}") {
-        InsuranceCardWrapper(
-          contract = contract,
-          imageLoader = imageLoader,
-          onClick = {
-            if (expanded) onInsuranceCardClick(contract.id) else expanded = true
-          },
-        )
-      }.first().measure(constraints)
-    }
+      },
+      {
+        // Measured only, to know how far each collapsed card peeks out below the one above it. Never placed.
+        for (contract in contracts.drop(1)) {
+          key(contract.id) {
+            Column(Modifier.padding(horizontal = 32.dp)) {
+              Spacer(Modifier.height(peekTopPadding))
+              HedvigText(contract.topText())
+              Spacer(Modifier.height(textSpacer))
+              HedvigText(contract.exposureDisplayName)
+              Spacer(Modifier.height(peekBottomPadding))
+            }
+          }
+        }
+      },
+    ),
+    modifier = Modifier.fillMaxWidth(),
+  ) { (cardMeasurables, peekMeasurables), constraints ->
+    val expandedSpacingPx = expandedSpacing.roundToPx()
+    val cardPlaceables = cardMeasurables.map { it.measure(constraints) }
+    val peekHeights = peekMeasurables.map { it.measure(constraints).height }
 
     val firstCardHeight = cardPlaceables[0].height
 
