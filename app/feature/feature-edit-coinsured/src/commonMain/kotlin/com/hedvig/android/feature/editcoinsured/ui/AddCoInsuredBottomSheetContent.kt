@@ -41,6 +41,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.compose.ui.LocalClock
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -85,7 +86,6 @@ import hedvig.resources.Res
 import hedvig.resources.edit_coinsured_ssn_placeholder
 import hedvig.resources.general_cancel_button
 import hedvig.resources.something_went_wrong
-import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.filter
 import kotlinx.datetime.LocalDate
@@ -365,8 +365,9 @@ private fun ManualInputFields(
 
 @Composable
 internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> Unit, modifier: Modifier = Modifier) {
+  val clock = LocalClock.current
   val selectedDateMillis = birthDate?.atStartOfDayIn(TimeZone.UTC)?.toEpochMilliseconds()
-    ?: Clock.System.now().toEpochMilliseconds()
+    ?: clock.now().toEpochMilliseconds()
   val locale = getLocale()
   var showDatePicker by rememberSaveable { mutableStateOf(false) }
   val rememberHedvigDateTimeFormatter = remember(locale) {
@@ -380,11 +381,11 @@ internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> 
         initialDisplayedMonthMillis = selectedDateMillis,
         selectableDates = object : HedvigSelectableDates {
           override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-            return utcTimeMillis <= Clock.System.now().toEpochMilliseconds()
+            return utcTimeMillis <= clock.now().toEpochMilliseconds()
           }
 
           override fun isSelectableYear(year: Int): Boolean =
-            year <= Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year
+            year <= clock.now().toLocalDateTime(TimeZone.currentSystemDefault()).year
         },
       ),
     )

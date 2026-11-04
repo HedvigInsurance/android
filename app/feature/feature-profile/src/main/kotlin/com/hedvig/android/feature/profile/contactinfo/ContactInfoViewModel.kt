@@ -97,13 +97,15 @@ internal sealed interface ContactInfoUiState {
 @HedvigViewModel(ActivityRetainedScope::class)
 internal class ContactInfoViewModel(
   repository: ContactInfoRepository,
+  clock: Clock,
 ) : MoleculeViewModel<ContactInfoEvent, ContactInfoUiState>(
     Loading,
-    ContactInfoPresenter(repository),
+    ContactInfoPresenter(repository, clock),
   )
 
 internal class ContactInfoPresenter(
   private val repository: ContactInfoRepository,
+  private val clock: Clock,
 ) : MoleculePresenter<ContactInfoEvent, ContactInfoUiState> {
   @Composable
   override fun MoleculePresenterScope<ContactInfoEvent>.present(lastState: ContactInfoUiState): ContactInfoUiState {
@@ -165,7 +167,7 @@ internal class ContactInfoPresenter(
       LaunchedEffect(submittingData) {
         val (submittingPhoneNumber, submittingEmail) = submittingData!!
         val retrySubmissionStart = if (errorSnackBarText != null) {
-          Clock.System.now()
+          clock.now()
         } else {
           null
         }
@@ -253,7 +255,7 @@ internal class ContactInfoPresenter(
   }
 
   private suspend fun delayAtLeastOneSecondToShowThatTheNewRequestFailedAgain(submissionStart: Instant) {
-    val retrySubmissionEnd = Clock.System.now()
+    val retrySubmissionEnd = clock.now()
     delay(1.seconds - (retrySubmissionEnd - submissionStart))
   }
 }

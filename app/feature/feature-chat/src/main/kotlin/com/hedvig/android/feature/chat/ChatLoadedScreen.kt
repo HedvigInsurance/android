@@ -92,6 +92,7 @@ import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.NullRequestDataException
+import com.hedvig.android.compose.ui.LocalClock
 import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.crosssells.rememberCrossSellShownReporter
 import com.hedvig.android.crosssells.reportCrossSellShown
@@ -1256,7 +1257,7 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
                 MEMBER -> {}
               }
             }
-            append(chatMessage.formattedDateTime(getLocale()))
+            append(chatMessage.formattedDateTime(getLocale(), LocalClock.current.now()))
             if (uiChatMessage.isLastDeliveredMessage) {
               append(" • ")
               append(stringResource(Res.string.CHAT_DELIVERED_MESSAGE))

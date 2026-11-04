@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
+import com.hedvig.android.compose.ui.LocalClock
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.common.daysUntil
@@ -259,8 +260,13 @@ internal fun YourInfoTab(
       if (upcomingChangesInsuranceAgreement.creationCause == InsuranceAgreement.CreationCause.RENEWAL &&
         upcomingChangesInsuranceAgreement.certificateUrl != null
       ) {
-        val daysUntilRenewal = remember(TimeZone.currentSystemDefault(), upcomingChangesInsuranceAgreement.activeFrom) {
-          daysUntil(upcomingChangesInsuranceAgreement.activeFrom)
+        val clock = LocalClock.current
+        val daysUntilRenewal = remember(
+          TimeZone.currentSystemDefault(),
+          clock,
+          upcomingChangesInsuranceAgreement.activeFrom,
+        ) {
+          daysUntil(upcomingChangesInsuranceAgreement.activeFrom, clock)
         }
         HedvigNotificationCard(
           modifier = Modifier.padding(horizontal = 16.dp),

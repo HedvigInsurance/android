@@ -48,6 +48,7 @@ internal class TravelCertificateDateInputViewModel(
   createTravelCertificateUseCase: CreateTravelCertificateUseCase,
   languageService: LanguageService,
   backstack: Backstack,
+  clock: Clock,
 ) : MoleculeViewModel<TravelCertificateDateInputEvent, TravelCertificateDateInputUiState>(
     initialState = TravelCertificateDateInputUiState.Loading,
     presenter = TravelCertificateDateInputPresenter(
@@ -56,6 +57,7 @@ internal class TravelCertificateDateInputViewModel(
       createTravelCertificateUseCase,
       languageService,
       backstack,
+      clock,
     ),
     sharingStarted = SharingStarted.WhileSubscribed(5.seconds),
   )
@@ -66,6 +68,7 @@ internal class TravelCertificateDateInputPresenter(
   private val createTravelCertificateUseCase: CreateTravelCertificateUseCase,
   private val languageService: LanguageService,
   private val backstack: Backstack,
+  private val clock: Clock,
 ) : MoleculePresenter<TravelCertificateDateInputEvent, TravelCertificateDateInputUiState> {
   @Composable
   override fun MoleculePresenterScope<TravelCertificateDateInputEvent>.present(
@@ -117,7 +120,7 @@ internal class TravelCertificateDateInputPresenter(
               TravelCertificateTravellersInputKey(
                 TravelCertificateTravellersInputKey.TravelCertificatePrimaryInput(
                   successScreenContent.details.email,
-                  successScreenContent.details.travelDate,
+                  successScreenContent.details.travelDate(clock),
                   successScreenContent.details.contractId,
                 ),
               ),
@@ -125,7 +128,7 @@ internal class TravelCertificateDateInputPresenter(
           } else {
             createTravelCertificateData = CreateTravelCertificateData(
               successScreenContent.details.contractId,
-              successScreenContent.details.travelDate,
+              successScreenContent.details.travelDate(clock),
               successScreenContent.details.email,
             )
           }
@@ -233,7 +236,7 @@ internal class TravelCertificateDateInputPresenter(
       is DateInputScreenContent.Success -> {
         TravelCertificateDateInputUiState.Success(
           email = currentContent.details.email,
-          travelDate = currentContent.details.travelDate,
+          travelDate = currentContent.details.travelDate(clock),
           contractId = currentContent.details.contractId,
           hasCoInsured = currentContent.details.hasCoInsured,
           datePickerState = currentContent.details.datePickerState,
@@ -258,12 +261,11 @@ private sealed interface DateInputScreenContent {
       val daysValid: Int,
       val hasCoInsured: Boolean,
     ) {
-      val travelDate: LocalDate
-        get() = datePickerState.selectedDateMillis?.let {
-          Instant.fromEpochMilliseconds(it)
-            .toLocalDateTime(TimeZone.UTC)
-            .date
-        } ?: Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+      fun travelDate(clock: Clock): LocalDate = datePickerState.selectedDateMillis?.let {
+        Instant.fromEpochMilliseconds(it)
+          .toLocalDateTime(TimeZone.UTC)
+          .date
+      } ?: clock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
     }
   }
 }

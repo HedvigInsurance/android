@@ -9,7 +9,6 @@ import com.hedvig.android.feature.chat.model.CbmChatMessage
 import com.hedvig.android.feature.chat.model.Sender
 import java.time.temporal.TemporalAdjusters
 import java.util.Locale
-import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
 import kotlinx.datetime.LocalDateTime
@@ -41,8 +40,7 @@ internal fun CbmChatMessage?.messageHorizontalAlignment(index: Int): Alignment.H
   Sender.MEMBER -> Alignment.End
 }
 
-internal fun CbmChatMessage.formattedDateTime(locale: Locale): String {
-  val now = Clock.System.now()
+internal fun CbmChatMessage.formattedDateTime(locale: Locale, now: Instant): String {
   val timeZone = TimeZone.currentSystemDefault()
   val nowLocalDateTime: LocalDateTime = now.toLocalDateTime(timeZone)
   val todayAtStartOfDay = nowLocalDateTime.date.atStartOfDayIn(timeZone)
@@ -72,9 +70,8 @@ private fun getStartOfThisYear(nowLocalDateTime: LocalDateTime, timeZone: TimeZo
     .atStartOfDayIn(timeZone)
 }
 
-internal fun Instant.formattedChatDateTime(locale: Locale, todayLabel: String): String {
+internal fun Instant.formattedChatDateTime(locale: Locale, todayLabel: String, now: Instant): String {
   val sentAt = this
-  val now = Clock.System.now()
   val timeZone = TimeZone.currentSystemDefault()
   val nowLocalDateTime: LocalDateTime = now.toLocalDateTime(timeZone)
   val todayAtStartOfDay = nowLocalDateTime.date.atStartOfDayIn(timeZone)

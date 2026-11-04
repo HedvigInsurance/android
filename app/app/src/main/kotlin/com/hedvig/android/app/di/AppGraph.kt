@@ -10,6 +10,7 @@ import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Multibinds
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metrox.viewmodel.ViewModelGraph
+import kotlin.time.Clock
 import kotlinx.serialization.modules.SerializersModule
 
 @DependencyGraph(AppScope::class)
@@ -17,6 +18,8 @@ internal interface AppGraph : ViewModelGraph {
   val workerFactory: MetroWorkerFactory
 
   val hedvigBuildConstants: HedvigBuildConstants
+
+  val clock: Clock
 
   /**
    * Per-feature [SerializersModule]s registering each module's [com.hedvig.android.navigation.common.HedvigNavKey]

@@ -33,6 +33,7 @@ internal class NavRetainedViewModel(appGraph: AppGraph, isOwnTask: Boolean) : Vi
     pendingDeepLinkStashedAtState = mutableStateOf(null),
     stashedSessionState = mutableStateOf(null),
     initialIsOwnTask = isOwnTask,
+    clock = appGraph.clock,
   )
 
   private val activityGraph: ActivityRetainedGraph =

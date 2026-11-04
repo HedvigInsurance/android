@@ -20,6 +20,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import com.hedvig.android.compose.pager.indicator.CardCarousel
+import com.hedvig.android.compose.ui.LocalClock
 import com.hedvig.android.core.common.daysUntil
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
@@ -80,8 +81,9 @@ fun getMemberReminderMessage(reminder: MemberReminder): String {
     }
 
     is UpcomingRenewal -> {
-      val daysUntilRenewal = remember(TimeZone.currentSystemDefault(), reminder.renewalDate) {
-        daysUntil(reminder.renewalDate)
+      val clock = LocalClock.current
+      val daysUntilRenewal = remember(TimeZone.currentSystemDefault(), clock, reminder.renewalDate) {
+        daysUntil(reminder.renewalDate, clock)
       }
       stringResource(Res.string.DASHBOARD_RENEWAL_PROMPTER_BODY, daysUntilRenewal)
     }

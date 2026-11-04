@@ -44,6 +44,7 @@ import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.notification.badge.data.crosssell.home.CrossSellHomeNotificationService
 import com.hedvig.android.shared.partners.deflect.DeflectData
+import com.hedvig.android.test.clock.TestClock
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
 import hedvig.resources.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE
@@ -116,6 +117,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      TestClock(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -148,6 +150,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      TestClock(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -178,6 +181,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      TestClock(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -233,8 +237,10 @@ internal class HomePresenterTest {
           firstVetAction = null,
           crossSellsAction = HomeTopBarAction.CrossSellsAction(
             CrossSellSheetData(testCrossSell, listOf(), null),
-            crossSellRecommendationNotification = CrossSellRecommendationNotification
-              (true, 1L),
+            crossSellRecommendationNotification = CrossSellRecommendationNotification(
+              hasUnreadRecommendation = true,
+              showToolTip = true,
+            ),
           ),
           chatAction = HomeTopBarAction.ChatAction,
           hasUnseenChatMessages = false,
@@ -261,6 +267,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      TestClock(),
     )
     val addonOnlyCrossSells = CrossSellSheetData(null, listOf(), testAddon)
 
@@ -288,7 +295,7 @@ internal class HomePresenterTest {
         .isEqualTo(
           HomeTopBarAction.CrossSellsAction(
             addonOnlyCrossSells,
-            CrossSellRecommendationNotification(true, 1L),
+            CrossSellRecommendationNotification(hasUnreadRecommendation = true, showToolTip = true),
           ),
         )
     }
@@ -308,6 +315,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      TestClock(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -367,6 +375,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      TestClock(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -396,6 +405,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      TestClock(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -439,6 +449,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      TestClock(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -494,6 +505,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      TestClock(),
     )
     val firstVet = FirstVetSection(
       buttonTitle = "ButtonTitle",
@@ -556,6 +568,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      TestClock(),
     )
     val crossSell = CrossSell(
       id = "id",
@@ -599,8 +612,10 @@ internal class HomePresenterTest {
           firstVetAction = null,
           crossSellsAction = HomeTopBarAction.CrossSellsAction(
             CrossSellSheetData(testCrossSell, listOf(crossSell), null),
-            crossSellRecommendationNotification = CrossSellRecommendationNotification
-              (true, 1L),
+            crossSellRecommendationNotification = CrossSellRecommendationNotification(
+              hasUnreadRecommendation = true,
+              showToolTip = true,
+            ),
           ),
           addonBannerInfos = emptyList(),
           isProduction = false,
@@ -625,6 +640,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      TestClock(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -679,6 +695,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      TestClock(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -733,6 +750,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      TestClock(),
     )
     val otherCrossSell = CrossSell(
       id = "other",
@@ -774,6 +792,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      TestClock(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -806,6 +825,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      TestClock(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -837,6 +857,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      TestClock(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -864,6 +885,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       eventTrackingClient,
+      TestClock(),
     )
     val offerUrl =
       "https://www.hedvig.com/api/redirect/recommend?attributed_to=HEDVIG&next=%2Fse-en%2Finsurances%2Faccident&code=accident50app&requiresAuthorization=true"
@@ -900,6 +922,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       eventTrackingClient,
+      TestClock(),
     )
     val offerUrl =
       "https://www.hedvig.com/api/redirect/recommend?attributed_to=HEDVIG&next=%2Fse-en%2Finsurances%2Faccident&code=accident50app&requiresAuthorization=true"
@@ -953,6 +976,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      TestClock(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Loading>()
@@ -982,6 +1006,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(memberType.right()),
       FakeEventTrackingClient(),
+      TestClock(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Loading>()
@@ -1008,6 +1033,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(ErrorMessage().left()),
       FakeEventTrackingClient(),
+      TestClock(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Loading>()
@@ -1075,6 +1101,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      TestClock(),
     )
 
     val session = OngoingShopSession(
@@ -1113,6 +1140,7 @@ internal class HomePresenterTest {
       dismissedShopSessionsStorage,
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      TestClock(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
