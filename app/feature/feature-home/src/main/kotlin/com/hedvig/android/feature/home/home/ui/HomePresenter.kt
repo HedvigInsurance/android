@@ -59,6 +59,7 @@ internal class HomePresenter(
   private val dismissedShopSessionsStorage: DismissedShopSessionsStorage,
   private val getMemberTypeUseCase: GetMemberTypeUseCase,
   private val eventTrackingClient: EventTrackingClient,
+  private val clock: Clock,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
   override fun MoleculePresenterScope<HomeEvent>.present(lastState: HomeUiState): HomeUiState {
@@ -133,9 +134,10 @@ internal class HomePresenter(
         crossSellHomeNotificationService.showRedDotNotification(),
         crossSellHomeNotificationService.getLastEpochDayNewRecommendationNotificationWasShown(),
       ) { homeResult: Either<ApolloOperationError, HomeData>, showRedDot: Boolean, epochDay: Long? ->
+        val today = clock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date.toEpochDays()
         homeResult to CrossSellRecommendationNotification(
-          showRedDot,
-          epochDay,
+          hasUnreadRecommendation = showRedDot,
+          showToolTip = showRedDot && epochDay != today,
         )
       }.collectLatest {
         (
@@ -379,11 +381,5 @@ sealed interface HomeTopBarAction {
 
 data class CrossSellRecommendationNotification(
   val hasUnreadRecommendation: Boolean, // show red dot
-  private val epochDayWhenLastToolTipShown: Long?,
-) {
-  val showToolTip: Boolean =
-    hasUnreadRecommendation &&
-      epochDayWhenLastToolTipShown != Clock.System.now().toLocalDateTime(
-        TimeZone.currentSystemDefault(),
-      ).date.toEpochDays().toLong()
-}
+  val showToolTip: Boolean,
+)

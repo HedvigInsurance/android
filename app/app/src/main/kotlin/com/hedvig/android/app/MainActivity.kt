@@ -44,6 +44,7 @@ import com.hedvig.android.app.urihandler.ExternalDeepLinkHandler
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.auth.MemberIdService
+import com.hedvig.android.compose.ui.LocalClock
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
@@ -64,6 +65,7 @@ import com.hedvig.android.theme.Theme
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import java.util.Locale
+import kotlin.time.Clock
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -124,6 +126,9 @@ class MainActivity : AppCompatActivity() {
 
   @Inject
   private lateinit var resetOnboardingSeenUseCase: ResetOnboardingSeenUseCase
+
+  @Inject
+  private lateinit var clock: Clock
 
   /**
    * Per-Activity host for the navigation state. A retained `ViewModel`, so it (and the
@@ -245,6 +250,7 @@ class MainActivity : AppCompatActivity() {
       intent = intent,
       isColdStart = savedInstanceState == null,
       serializersModules = serializersModules,
+      clock = clock,
     )
     lifecycleScope.launch {
       sessionReconciler.reconcile()
@@ -261,6 +267,7 @@ class MainActivity : AppCompatActivity() {
         LocalMetroViewModelFactory provides navRetainedViewModel.viewModelFactory,
         LocalAppLocale provides remember(appLanguage) { Locale.forLanguageTag(appLanguage.toBcp47Format()) },
         LocalResources provides rememberAppLanguageResources(appLanguage),
+        LocalClock provides clock,
       ) {
         // Compute the window size class from Configuration. Do not switch this to
         // calculateWindowSizeClass(activity) or LocalWindowInfo.containerSize: both route through

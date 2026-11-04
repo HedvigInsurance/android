@@ -383,7 +383,7 @@ internal class CbmChatRepositoryImpl(
       val messages = messagePage.messages.mapNotNull { it.toChatMessage() }
       val messagesWithIndicator = if (isBeingGenerated) {
         messages +
-          CbmChatMessage.aiGeneratingIndicator(Clock.System.now())
+          CbmChatMessage.aiGeneratingIndicator(clock.now())
       } else {
         messages
       }

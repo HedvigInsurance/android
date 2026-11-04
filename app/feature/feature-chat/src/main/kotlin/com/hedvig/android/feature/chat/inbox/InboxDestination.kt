@@ -42,6 +42,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.EmptyContentDescription
+import com.hedvig.android.compose.ui.LocalClock
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.TripleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.TripleCase
@@ -440,6 +441,7 @@ private fun ConversationCard(
               val formattedLastMessageSent = conversation.lastMessageTimestamp.formattedChatDateTime(
                 getLocale(),
                 stringResource(Res.string.TERMINATION_FLOW_TODAY),
+                LocalClock.current.now(),
               )
               HedvigText(
                 text = formattedLastMessageSent,
