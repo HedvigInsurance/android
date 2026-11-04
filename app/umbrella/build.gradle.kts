@@ -2,8 +2,6 @@ import org.gradle.api.internal.catalog.DelegatingProjectDependency
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
-  id("org.jetbrains.kotlin.plugin.compose")
-  id("org.jetbrains.compose")
   id("hedvig.multiplatform.library.ios")
   id("hedvig.multiplatform.library.android")
   id("hedvig.gradle.plugin")
@@ -16,17 +14,17 @@ kotlin {
   }
   val frameworkName = "HedvigShared"
   val xcf = XCFramework(frameworkName)
+  // Keep this list free of Compose. Every module here is linked whole (DCE is off for native
+  // targets, see KotlinMultiplatformIosLibraryConventionPlugin), so one Compose UI export drags
+  // Skiko and the whole Compose stack into the framework. iOS builds its UI natively.
   val projectsToExport: List<DelegatingProjectDependency> = listOf(
     projects.authlib,
     projects.coreBuildConstants,
     projects.coreDatastorePublic,
-    projects.designSystemApi,
     projects.featureFlags,
-    projects.featureHelpCenter,
     projects.languageCore,
     projects.loggingPublic,
     projects.networkClients,
-    projects.shareddi,
   )
   listOf(
     iosArm64(),
@@ -45,7 +43,6 @@ kotlin {
 
   sourceSets {
     commonMain.dependencies {
-      implementation(libs.jetbrains.compose.runtime)
       for (projectToExport in projectsToExport) {
         api(projectToExport)
       }
