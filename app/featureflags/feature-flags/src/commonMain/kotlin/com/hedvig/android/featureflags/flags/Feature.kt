@@ -39,4 +39,7 @@ enum class Feature(
   UPDATE_NECESSARY(
     "Defines the lowest supported app version. Should prompt a user to update if it uses an outdated version.",
   ),
+  YEAR_IN_REVIEW(
+    "Shows the 'Year in review' button in the home top app bar, which opens the year's highlights as stories.",
+  ),
 }

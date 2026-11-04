@@ -1,0 +1,10 @@
+query YearInReviewMembership {
+  currentMember {
+    activeContracts {
+      masterInceptionDate
+    }
+    terminatedContracts {
+      masterInceptionDate
+    }
+  }
+}
