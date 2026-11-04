@@ -65,6 +65,8 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -296,6 +298,56 @@ internal class HomePresenterTest {
           HomeTopBarAction.CrossSellsAction(
             addonOnlyCrossSells,
             CrossSellRecommendationNotification(hasUnreadRecommendation = true, showToolTip = true),
+          ),
+        )
+    }
+  }
+
+  @Test
+  fun `the cross sells tooltip is hidden when it was already shown today`() = runTest {
+    val clock = TestClock()
+    val today = clock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date.toEpochDays()
+    val getHomeDataUseCase = TestGetHomeDataUseCase()
+    val homePresenter = HomePresenter(
+      getHomeDataUseCase,
+      SeenImportantMessagesStorageImpl(),
+      FakeCrossSellHomeNotificationService(lastEpochDayShown = today),
+      ApplicationScope(backgroundScope),
+      false,
+      TestDeleteClaimIntentDraftUseCase(),
+      FakeGetMemberQuickActionsUseCase(emptyList<QuickAction>().right()),
+      FakeDismissedShopSessionsStorage(),
+      FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
+      FakeEventTrackingClient(),
+      clock,
+    )
+    val addonOnlyCrossSells = CrossSellSheetData(null, listOf(), testAddon)
+
+    homePresenter.test(HomeUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
+
+      getHomeDataUseCase.responseTurbine.add(
+        HomeData(
+          contractStatus = HomeData.ContractStatus.Active,
+          claimStatusCardsData = null,
+          veryImportantMessages = listOf(),
+          memberReminders = MemberReminders(),
+          showChatIcon = false,
+          hasUnseenChatMessages = false,
+          crossSells = addonOnlyCrossSells,
+          firstVetSections = listOf(),
+          showHelpCenter = false,
+          addonBannerInfos = listOf(),
+          draftClaim = null,
+        ).right(),
+      )
+      assertThat(awaitItem())
+        .isInstanceOf<HomeUiState.Success>()
+        .prop(HomeUiState.Success::crossSellsAction)
+        .isEqualTo(
+          HomeTopBarAction.CrossSellsAction(
+            addonOnlyCrossSells,
+            CrossSellRecommendationNotification(hasUnreadRecommendation = true, showToolTip = false),
           ),
         )
     }
@@ -1168,13 +1220,15 @@ internal class HomePresenterTest {
   )
 }
 
-private class FakeCrossSellHomeNotificationService : CrossSellHomeNotificationService {
+private class FakeCrossSellHomeNotificationService(
+  private val lastEpochDayShown: Long? = 1L,
+) : CrossSellHomeNotificationService {
   override fun showRedDotNotification(): Flow<Boolean> {
     return flowOf(true)
   }
 
   override fun getLastEpochDayNewRecommendationNotificationWasShown(): Flow<Long?> {
-    return flowOf(1L)
+    return flowOf(lastEpochDayShown)
   }
 
   override suspend fun markAsSeen() {
