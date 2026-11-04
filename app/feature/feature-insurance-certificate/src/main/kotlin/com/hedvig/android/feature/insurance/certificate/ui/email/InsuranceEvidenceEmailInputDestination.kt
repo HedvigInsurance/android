@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -133,6 +134,7 @@ private fun InsuranceEvidenceEmailSuccessScreen(
 ) {
   val explanationBottomSheetState = rememberHedvigBottomSheetState<Unit>()
   ExplanationBottomSheet(explanationBottomSheetState)
+  var showReadMoreTooltip by rememberSaveable { mutableStateOf(true) }
   HedvigScaffold(
     navigateUp = navigateUp,
     topAppBarText = "",
@@ -140,6 +142,7 @@ private fun InsuranceEvidenceEmailSuccessScreen(
       IconButton(
         modifier = Modifier.size(24.dp),
         onClick = {
+          showReadMoreTooltip = false
           explanationBottomSheetState.show(Unit)
         },
         content = {
@@ -161,15 +164,17 @@ private fun InsuranceEvidenceEmailSuccessScreen(
       Column(
         Modifier.fillMaxSize(),
       ) {
-        HedvigTooltip(
-          message = stringResource(Res.string.TOAST_READ_MORE),
-          showTooltip = true,
-          beakDirection = TopEnd,
-          tooltipShown = {},
-          modifier = Modifier
-            .padding(horizontal = 8.dp)
-            .align(Alignment.End),
-        )
+        if (showReadMoreTooltip) {
+          HedvigTooltip(
+            message = stringResource(Res.string.TOAST_READ_MORE),
+            showTooltip = true,
+            beakDirection = TopEnd,
+            tooltipShown = {},
+            modifier = Modifier
+              .padding(horizontal = 8.dp)
+              .align(Alignment.End),
+          )
+        }
       }
       if (uiState.generatingErrorMessage != null) {
         HedvigSnackbar(
