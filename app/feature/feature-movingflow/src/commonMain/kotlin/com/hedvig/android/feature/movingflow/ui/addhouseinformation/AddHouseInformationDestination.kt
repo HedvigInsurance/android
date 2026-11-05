@@ -30,6 +30,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
@@ -181,6 +182,7 @@ private fun AddHouseInformationScreen(
   onSubmit: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val focusManager = LocalFocusManager.current
   if (content.submittingInfoFailure != null) {
     ErrorDialog(
       title = stringResource(Res.string.something_went_wrong),
@@ -236,9 +238,11 @@ private fun AddHouseInformationScreen(
           stepperSize = Medium,
           stepperStyle = Labeled(stringResource(Res.string.CHANGE_ADDRESS_BATHROOMS_LABEL)),
           onMinusClick = {
+            focusManager.clearFocus()
             content.addressInput.numberOfBathrooms.updateValue(content.addressInput.numberOfBathrooms.value - 1)
           },
           onPlusClick = {
+            focusManager.clearFocus()
             content.addressInput.numberOfBathrooms.updateValue(content.addressInput.numberOfBathrooms.value + 1)
           },
           isPlusEnabled = !content.isLoadingNextStep && content.addressInput.numberOfBathrooms.canIncrement,
@@ -248,7 +252,10 @@ private fun AddHouseInformationScreen(
           labelText = stringResource(Res.string.CHANGE_ADDRESS_SUBLET_LABEL),
           toggleStyle = ToggleStyle.Default(Small),
           turnedOn = content.addressInput.isSublet.value,
-          onClick = { content.addressInput.isSublet.updateValue(it) },
+          onClick = {
+            focusManager.clearFocus()
+            content.addressInput.isSublet.updateValue(it)
+          },
           enabled = !content.shouldDisableInput,
           modifier = Modifier.fillMaxWidth(),
         )
@@ -374,6 +381,7 @@ private fun ExtraBuildingsDialogContent(
   var size: Int? by remember { mutableStateOf(null) }
   var isConnectedToWater: Boolean by remember { mutableStateOf(false) }
   var isSizeMissing by remember { mutableStateOf(false) }
+  val focusManager = LocalFocusManager.current
   Column(modifier) {
     Spacer(Modifier.height(16.dp))
     HedvigText(
@@ -426,7 +434,10 @@ private fun ExtraBuildingsDialogContent(
         HedvigToggle(
           labelText = stringResource(Res.string.CHANGE_ADDRESS_EXTRA_BUILDINGS_WATER_INPUT_LABEL),
           turnedOn = isConnectedToWater,
-          onClick = { isConnectedToWater = it },
+          onClick = {
+            focusManager.clearFocus()
+            isConnectedToWater = it
+          },
           enabled = true,
           toggleStyle = ToggleStyle.Default(ToggleDefaultStyleSize.Medium),
         )
