@@ -30,7 +30,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
@@ -72,6 +71,7 @@ import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDefaultStyle
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDefaultStyleSize.Small
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
+import com.hedvig.android.design.system.hedvig.clearFocusOnControlTap
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.movingflow.compose.BooleanInput
@@ -182,7 +182,6 @@ private fun AddHouseInformationScreen(
   onSubmit: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val focusManager = LocalFocusManager.current
   if (content.submittingInfoFailure != null) {
     ErrorDialog(
       title = stringResource(Res.string.something_went_wrong),
@@ -238,26 +237,22 @@ private fun AddHouseInformationScreen(
           stepperSize = Medium,
           stepperStyle = Labeled(stringResource(Res.string.CHANGE_ADDRESS_BATHROOMS_LABEL)),
           onMinusClick = {
-            focusManager.clearFocus()
             content.addressInput.numberOfBathrooms.updateValue(content.addressInput.numberOfBathrooms.value - 1)
           },
           onPlusClick = {
-            focusManager.clearFocus()
             content.addressInput.numberOfBathrooms.updateValue(content.addressInput.numberOfBathrooms.value + 1)
           },
           isPlusEnabled = !content.isLoadingNextStep && content.addressInput.numberOfBathrooms.canIncrement,
           isMinusEnabled = !content.isLoadingNextStep && content.addressInput.numberOfBathrooms.canDecrement,
+          modifier = Modifier.clearFocusOnControlTap(),
         )
         HedvigToggle(
           labelText = stringResource(Res.string.CHANGE_ADDRESS_SUBLET_LABEL),
           toggleStyle = ToggleStyle.Default(Small),
           turnedOn = content.addressInput.isSublet.value,
-          onClick = {
-            focusManager.clearFocus()
-            content.addressInput.isSublet.updateValue(it)
-          },
+          onClick = { content.addressInput.isSublet.updateValue(it) },
           enabled = !content.shouldDisableInput,
-          modifier = Modifier.fillMaxWidth(),
+          modifier = Modifier.fillMaxWidth().clearFocusOnControlTap(),
         )
         ExtraBuildingsCard(
           extraBuildings = content.addressInput.extraBuildings,
@@ -381,7 +376,6 @@ private fun ExtraBuildingsDialogContent(
   var size: Int? by remember { mutableStateOf(null) }
   var isConnectedToWater: Boolean by remember { mutableStateOf(false) }
   var isSizeMissing by remember { mutableStateOf(false) }
-  val focusManager = LocalFocusManager.current
   Column(modifier) {
     Spacer(Modifier.height(16.dp))
     HedvigText(
@@ -434,10 +428,8 @@ private fun ExtraBuildingsDialogContent(
         HedvigToggle(
           labelText = stringResource(Res.string.CHANGE_ADDRESS_EXTRA_BUILDINGS_WATER_INPUT_LABEL),
           turnedOn = isConnectedToWater,
-          onClick = {
-            focusManager.clearFocus()
-            isConnectedToWater = it
-          },
+          onClick = { isConnectedToWater = it },
+          modifier = Modifier.clearFocusOnControlTap(),
           enabled = true,
           toggleStyle = ToggleStyle.Default(ToggleDefaultStyleSize.Medium),
         )

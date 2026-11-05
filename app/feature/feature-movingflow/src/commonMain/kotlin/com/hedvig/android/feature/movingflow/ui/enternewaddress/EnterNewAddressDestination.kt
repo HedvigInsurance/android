@@ -26,7 +26,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -51,6 +50,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDefaultStyleSize
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
+import com.hedvig.android.design.system.hedvig.clearFocusOnControlTap
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerImmutableState
@@ -165,7 +165,6 @@ private fun EnterNewAddressScreen(
   dismissSubmissionError: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val focusManager = LocalFocusManager.current
   if (uiState.submittingInfoFailure != null) {
     ErrorDialog(
       title = stringResource(Res.string.something_went_wrong),
@@ -272,28 +271,21 @@ private fun EnterNewAddressScreen(
           },
           stepperSize = Medium,
           stepperStyle = Labeled(stringResource(Res.string.CHANGE_ADDRESS_CO_INSURED_LABEL)),
-          onMinusClick = {
-            focusManager.clearFocus()
-            uiState.numberCoInsured.updateValue(uiState.numberCoInsured.value - 1)
-          },
-          onPlusClick = {
-            focusManager.clearFocus()
-            uiState.numberCoInsured.updateValue(uiState.numberCoInsured.value + 1)
-          },
+          onMinusClick = { uiState.numberCoInsured.updateValue(uiState.numberCoInsured.value - 1) },
+          onPlusClick = { uiState.numberCoInsured.updateValue(uiState.numberCoInsured.value + 1) },
           isPlusEnabled = !uiState.isLoadingNextStep && uiState.numberCoInsured.canIncrement,
           isMinusEnabled = !uiState.isLoadingNextStep && uiState.numberCoInsured.canDecrement,
+          modifier = Modifier.clearFocusOnControlTap(),
         )
         DatePickerField(uiState.movingDate, uiState.allowedMovingDateRange, uiState.shouldDisableInput)
         if (uiState.propertyType is WithStudentOption) {
           HedvigToggle(
             labelText = stringResource(Res.string.CHANGE_ADDRESS_STUDENT_LABEL),
             turnedOn = uiState.propertyType.isStudentSelected,
-            onClick = {
-              focusManager.clearFocus()
-              uiState.propertyType.selectedIsStudent.updateValue(it)
-            },
+            onClick = { uiState.propertyType.selectedIsStudent.updateValue(it) },
             enabled = !uiState.shouldDisableInput,
             toggleStyle = ToggleStyle.Default(ToggleDefaultStyleSize.Medium),
+            modifier = Modifier.clearFocusOnControlTap(),
           )
         }
       }
@@ -319,7 +311,6 @@ private fun DatePickerField(
   modifier: Modifier = Modifier,
 ) {
   var showDatePicker by rememberSaveable { mutableStateOf(false) }
-  val focusManager = LocalFocusManager.current
   val selectedDateMillis = input.value?.atStartOfDayIn(TimeZone.UTC)?.toEpochMilliseconds()
   HedvigDatePicker(
     isVisible = showDatePicker,
@@ -374,8 +365,8 @@ private fun DatePickerField(
       Modifier
         .matchParentSize()
         .clip(HedvigTheme.shapes.cornerLarge)
+        .clearFocusOnControlTap()
         .clickable(enabled = !shouldDisableInput) {
-          focusManager.clearFocus()
           showDatePicker = true
         },
     )
