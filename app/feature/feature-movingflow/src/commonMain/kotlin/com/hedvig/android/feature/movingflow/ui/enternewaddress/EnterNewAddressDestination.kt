@@ -50,6 +50,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDefaultStyleSize
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
+import com.hedvig.android.design.system.hedvig.clearFocusOnControlTap
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerImmutableState
@@ -274,6 +275,7 @@ private fun EnterNewAddressScreen(
           onPlusClick = { uiState.numberCoInsured.updateValue(uiState.numberCoInsured.value + 1) },
           isPlusEnabled = !uiState.isLoadingNextStep && uiState.numberCoInsured.canIncrement,
           isMinusEnabled = !uiState.isLoadingNextStep && uiState.numberCoInsured.canDecrement,
+          modifier = Modifier.clearFocusOnControlTap(),
         )
         DatePickerField(uiState.movingDate, uiState.allowedMovingDateRange, uiState.shouldDisableInput)
         if (uiState.propertyType is WithStudentOption) {
@@ -283,6 +285,7 @@ private fun EnterNewAddressScreen(
             onClick = { uiState.propertyType.selectedIsStudent.updateValue(it) },
             enabled = !uiState.shouldDisableInput,
             toggleStyle = ToggleStyle.Default(ToggleDefaultStyleSize.Medium),
+            modifier = Modifier.clearFocusOnControlTap(),
           )
         }
       }
@@ -362,6 +365,7 @@ private fun DatePickerField(
       Modifier
         .matchParentSize()
         .clip(HedvigTheme.shapes.cornerLarge)
+        .clearFocusOnControlTap()
         .clickable(enabled = !shouldDisableInput) {
           showDatePicker = true
         },
