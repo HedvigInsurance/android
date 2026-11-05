@@ -46,6 +46,8 @@ import com.hedvig.android.design.system.hedvig.Surface
 import hedvig.resources.AUTHENTICATION_BANKID_LOGIN_LABEL
 import hedvig.resources.AUTHENTICATION_BANKID_LOGIN_TITLE
 import hedvig.resources.AUTHENTICATION_BANKID_OPEN_BUTTON
+import hedvig.resources.AUTHENTICATION_LOGIN_UNAVAILABLE_BODY
+import hedvig.resources.AUTHENTICATION_LOGIN_UNAVAILABLE_TITLE
 import hedvig.resources.DEMO_MODE_START
 import hedvig.resources.Res
 import hedvig.resources.SETTINGS_LOGIN_ROW
@@ -141,11 +143,8 @@ private fun SwedishLoginScreen(
           Column {
             HedvigErrorSection(
               onButtonClick = retry,
-              // TODO: Add "We can't log you in right now" / "Vi kan inte logga in dig just nu" to Lokalise
-              title = "We can't log you in right now",
-              // TODO: Add "Something went wrong on our end. Please try again in a few minutes." /
-              //  "Något gick fel hos oss. Försök igen om några minuter." to Lokalise
-              subTitle = "Something went wrong on our end. Please try again in a few minutes.",
+              title = stringResource(Res.string.AUTHENTICATION_LOGIN_UNAVAILABLE_TITLE),
+              subTitle = stringResource(Res.string.AUTHENTICATION_LOGIN_UNAVAILABLE_BODY),
             )
             Box(
               Modifier
