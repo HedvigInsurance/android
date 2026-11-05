@@ -398,7 +398,7 @@ internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> 
         val selected = datePickerState.selectedDateMillis
         if (selected != null) {
           val date = Instant.fromEpochMilliseconds(selected)
-            .toLocalDateTime(TimeZone.currentSystemDefault()).date
+            .toLocalDateTime(TimeZone.UTC).date
           onSave(date)
         }
         showDatePicker = false
