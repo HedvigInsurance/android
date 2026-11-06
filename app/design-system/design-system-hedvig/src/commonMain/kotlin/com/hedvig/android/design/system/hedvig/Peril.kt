@@ -35,7 +35,12 @@ import com.hedvig.android.logger.logcat
 import kotlinx.serialization.Serializable
 
 @Composable
-fun PerilList(perilItems: List<PerilData>, size: PerilSize, modifier: Modifier = Modifier) {
+fun PerilList(
+  perilItems: List<PerilData>,
+  size: PerilSize,
+  modifier: Modifier = Modifier,
+  disclaimer: String? = null,
+) {
   Column(
     modifier,
     verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -55,6 +60,7 @@ fun PerilList(perilItems: List<PerilData>, size: PerilSize, modifier: Modifier =
         title = perilItem.title,
         description = perilItem.description,
         expandedDescriptionList = perilItem.covered,
+        disclaimer = disclaimer,
         size = size,
         isEnabled = perilItem.isEnabled,
       )
@@ -72,6 +78,7 @@ private fun ExpandablePerilCard(
   description: String?,
   size: PerilSize,
   expandedDescriptionList: List<String>,
+  disclaimer: String?,
   modifier: Modifier = Modifier,
 ) {
   ExpandablePlusCard(
@@ -128,6 +135,16 @@ private fun ExpandablePerilCard(
               Spacer(Modifier.height(12.dp))
             }
           }
+        }
+        if (disclaimer != null) {
+          Spacer(Modifier.height(24.dp))
+          HorizontalDivider(color = perilColors.disclaimerDividerColor)
+          Spacer(Modifier.height(16.dp))
+          HedvigText(
+            text = disclaimer,
+            style = size.descriptionTextStyle,
+            color = perilColors.disclaimerTextColor,
+          )
         }
       }
     },
@@ -246,6 +263,8 @@ private data class PerilColors(
   val enabledIconColor: Color,
   val disabledTextColor: Color,
   val disabledIconColor: Color,
+  val disclaimerTextColor: Color,
+  val disclaimerDividerColor: Color,
 ) {
   fun textColor(isEnabled: Boolean): Color {
     return if (isEnabled) enabledTextColor else disabledTextColor
@@ -262,6 +281,8 @@ private val perilColors: PerilColors
         enabledTextColor = fromToken(PerilCommonTokens.TextColor),
         disabledIconColor = fromToken(PerilCommonTokens.DisabledIconColor),
         disabledTextColor = fromToken(PerilCommonTokens.DisabledTextColor),
+        disclaimerTextColor = fromToken(PerilCommonTokens.DisclaimerTextColor),
+        disclaimerDividerColor = fromToken(PerilCommonTokens.DisclaimerDividerColor),
       )
     }
   }

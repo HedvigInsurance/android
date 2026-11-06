@@ -52,6 +52,8 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.insurances.data.Addon
+import hedvig.resources.INSURANCE_PERILS_INFO
+import hedvig.resources.Res
 import hedvig.resources.general_close_button
 import org.jetbrains.compose.resources.stringResource
 
@@ -92,6 +94,7 @@ internal fun CoverageTab(
     if (insurableLimits.isNotEmpty()) {
       Spacer(Modifier.height(16.dp))
     }
+    val perilsDisclaimer = stringResource(Res.string.INSURANCE_PERILS_INFO)
     if (perils.isNotEmpty()) {
       PerilList(
         perilItems = perils.map {
@@ -104,6 +107,7 @@ internal fun CoverageTab(
         },
         size = Small,
         modifier = Modifier.padding(horizontal = 16.dp),
+        disclaimer = perilsDisclaimer,
       )
       Spacer(Modifier.height(16.dp))
     }
@@ -133,6 +137,7 @@ internal fun CoverageTab(
             },
             size = Small,
             modifier = Modifier.padding(horizontal = 16.dp),
+            disclaimer = perilsDisclaimer,
           )
           Spacer(Modifier.height(16.dp))
         }
