@@ -2,5 +2,8 @@
 # `Either` class needs to exist after minification for Retrofit to know how to adapt the response to it
 -keep,allowobfuscation,allowshrinking class arrow.core.Either
 
+# Nav key class names are the Firebase screen names (ScreenName.kt), so they must survive minification
+-keepnames class * implements com.hedvig.android.navigation.common.HedvigNavKey
+
 # Crashlytics https://firebase.google.com/docs/crashlytics/get-deobfuscated-reports?platform=android#config-r8-proguard-dexguard
 -keepattributes SourceFile,LineNumberTable        # Keep file names and line numbers.
