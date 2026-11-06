@@ -77,6 +77,8 @@
   <string name="AUTHENTICATION_BANKID_LOGIN_LABEL">Open the BankID app on your phone or scan the QR-code to login</string>
   <string name="AUTHENTICATION_BANKID_LOGIN_TITLE">Login with BankID</string>
   <string name="AUTHENTICATION_BANKID_OPEN_BUTTON">Open BankID</string>
+  <string name="AUTHENTICATION_LOGIN_UNAVAILABLE_BODY">Something went wrong on our side. Try again in a few minutes.</string>
+  <string name="AUTHENTICATION_LOGIN_UNAVAILABLE_TITLE">We can’t log you in right now</string>
   <string name="AUTOMATED_MESSAGE_ESCALATION_BANNER_TEXT">We will get back to you as soon as possible. In the meantime you can close the app.</string>
   <string name="AUTOMATED_MESSAGE_ESCALATION_BANNER_TITLE">Conversation sent to our service team</string>
   <string name="AUTOMATED_MESSAGE_INFO_CARD_BUTTON">Read more</string>
