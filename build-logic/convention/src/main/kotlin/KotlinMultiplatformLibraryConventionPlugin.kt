@@ -47,12 +47,6 @@ private fun Project.configureKotlinMultiplatform(withIos: Boolean) {
   val libs = the<LibrariesForLibs>()
 
   project.configure<KotlinMultiplatformExtension> {
-    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
-      binaries.all {
-        freeCompilerArgs += "-Xdisable-phases=DevirtualizationAnalysis,DCEPhase,RemoveRedundantCallsToStaticInitializersPhase"
-      }
-    }
-
     if (withIos) {
       iosArm64()
       iosSimulatorArm64()
