@@ -336,7 +336,7 @@ private fun TravelCertificatesList(
   }
   Spacer(Modifier.height(16.dp))
   val dateTimeFormatter = rememberHedvigMonthDateTimeFormatter()
-  val groupedHistory = list.groupBy { it.expiryDate.year }
+  val groupedHistory = list.groupBy { it.startDate.year }
   groupedHistory.forEach {
     val year = it.key
     val travelCertificates = it.value
