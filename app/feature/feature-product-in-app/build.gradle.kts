@@ -21,6 +21,7 @@ kotlin {
       implementation(libs.coil.coil)
       implementation(libs.coil.compose)
       implementation(libs.coroutines.core)
+      implementation(libs.jetbrains.compose.ui.tooling.preview)
       implementation(libs.jetbrains.lifecycle.runtime.compose)
       implementation(libs.kotlinx.serialization.core)
       implementation(projects.apolloCore)
@@ -33,6 +34,10 @@ kotlin {
       implementation(projects.moleculePublic)
       implementation(projects.navigationCommon)
       implementation(projects.navigationCompose)
+    }
+    androidMain.dependencies {
+      implementation(libs.media3.exoplayer)
+      implementation(libs.media3.ui)
     }
     jvmTest.dependencies {
       implementation(libs.assertK)
