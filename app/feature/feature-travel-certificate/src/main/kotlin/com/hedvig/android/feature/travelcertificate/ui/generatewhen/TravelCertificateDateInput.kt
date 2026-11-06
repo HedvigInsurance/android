@@ -15,8 +15,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.semantics.hideFromAccessibility
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -34,6 +32,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.TextField
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
+import com.hedvig.android.design.system.hedvig.a11y.accessibilityForDatePickerField
 import com.hedvig.android.design.system.hedvig.api.HedvigDatePickerState
 import com.hedvig.android.design.system.hedvig.api.HedvigDisplayMode
 import com.hedvig.android.design.system.hedvig.clearFocusOnControlTap
@@ -177,28 +176,35 @@ private fun MovingDateButton(
 
   // Workaround to get the layout of the hedvigTextField, without the functionality of it. Perhaps room for another
   //  component here
-  Box(modifier) {
-    val onClick = {
-      focusManager.clearFocus()
-      showDatePicker = true
-    }
+  val label = stringResource(Res.string.travel_certificate_start_date_title)
+  val text = dateFormatter.format(travelDate)
+  val onClick = {
+    focusManager.clearFocus()
+    showDatePicker = true
+  }
+  Box(
+    modifier.accessibilityForDatePickerField(
+      labelText = label,
+      selectedDate = text,
+      isEnabled = true,
+      onClick = onClick,
+    ),
+  ) {
     HedvigTextField(
-      text = dateFormatter.format(travelDate),
+      text = text,
       onValueChange = {},
       readOnly = true,
       enabled = true,
-      labelText = stringResource(Res.string.travel_certificate_start_date_title),
+      labelText = label,
       textFieldSize = Medium,
       trailingContent = {},
-      modifier = Modifier.clickable(onClick = onClick),
     )
     Box(
       Modifier
         .matchParentSize()
         .clip(HedvigTheme.shapes.cornerLarge)
         .clearFocusOnControlTap()
-        .clickable(onClick = onClick)
-        .semantics { hideFromAccessibility() },
+        .clickable(onClick = onClick),
     )
   }
 }

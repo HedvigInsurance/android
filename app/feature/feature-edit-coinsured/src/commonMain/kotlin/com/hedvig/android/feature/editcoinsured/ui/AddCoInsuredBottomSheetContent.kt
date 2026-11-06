@@ -64,6 +64,7 @@ import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDefaultStyleSize.Small
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle
+import com.hedvig.android.design.system.hedvig.a11y.accessibilityForDatePickerField
 import com.hedvig.android.design.system.hedvig.api.HedvigSelectableDates
 import com.hedvig.android.design.system.hedvig.clearFocusOnControlTap
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
@@ -411,12 +412,20 @@ internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> 
       },
     )
   }
+  val onClick = {
+    focusManager.clearFocus()
+    showDatePicker = true
+  }
   HedvigCard(
-    onClick = {
-      focusManager.clearFocus()
-      showDatePicker = true
-    },
-    modifier = modifier.clearFocusOnControlTap(),
+    onClick = onClick,
+    modifier = modifier
+      .clearFocusOnControlTap()
+      .accessibilityForDatePickerField(
+        labelText = stringResource(Res.string.CONTRACT_BIRTH_DATE),
+        selectedDate = birthDate?.let { rememberHedvigDateTimeFormatter.format(it) },
+        isEnabled = true,
+        onClick = onClick,
+      ),
     shape = HedvigTheme.shapes.cornerLarge,
   ) {
     Column(Modifier.padding(top = 4.dp, bottom = 8.dp)) {
