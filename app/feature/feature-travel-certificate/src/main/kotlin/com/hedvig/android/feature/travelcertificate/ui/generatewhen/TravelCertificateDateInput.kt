@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -38,6 +39,7 @@ import com.hedvig.android.design.system.hedvig.api.HedvigDisplayMode
 import com.hedvig.android.design.system.hedvig.clearFocusOnControlTap
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
+import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputUiState.Success
 import hedvig.resources.PROFILE_MY_INFO_EMAIL_LABEL
 import hedvig.resources.Res
@@ -163,6 +165,8 @@ private fun MovingDateButton(
 ) {
   var showDatePicker by rememberSaveable { mutableStateOf(false) }
   val focusManager = LocalFocusManager.current
+  val locale = getLocale()
+  val dateFormatter = remember(locale) { HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale) }
   if (showDatePicker) {
     HedvigDatePicker(
       datePickerState = datePickerState,
@@ -179,7 +183,7 @@ private fun MovingDateButton(
       showDatePicker = true
     }
     HedvigTextField(
-      text = travelDate.toString(),
+      text = dateFormatter.format(travelDate),
       onValueChange = {},
       readOnly = true,
       enabled = true,
