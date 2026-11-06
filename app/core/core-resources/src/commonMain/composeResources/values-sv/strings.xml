@@ -76,6 +76,8 @@
   <string name="AUTHENTICATION_BANKID_LOGIN_LABEL">Öppna BankID-appen på din telefon eller skanna QR-koden för att logga in</string>
   <string name="AUTHENTICATION_BANKID_LOGIN_TITLE">Logga in med BankID</string>
   <string name="AUTHENTICATION_BANKID_OPEN_BUTTON">Öppna BankID</string>
+  <string name="AUTHENTICATION_LOGIN_UNAVAILABLE_BODY">Något gick fel hos oss. Försök igen om några minuter.</string>
+  <string name="AUTHENTICATION_LOGIN_UNAVAILABLE_TITLE">Vi kan inte logga in dig just nu</string>
   <string name="AUTOMATED_MESSAGE_ESCALATION_BANNER_TEXT">Vi återkommer till dig så fort som möjligt. Under tiden kan du stänga ner appen.</string>
   <string name="AUTOMATED_MESSAGE_ESCALATION_BANNER_TITLE">Ditt ärende har skickats till vårt serviceteam</string>
   <string name="AUTOMATED_MESSAGE_INFO_CARD_BUTTON">Läs mer</string>

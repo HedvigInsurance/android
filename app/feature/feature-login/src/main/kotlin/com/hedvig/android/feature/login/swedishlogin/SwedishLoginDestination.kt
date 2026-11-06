@@ -46,6 +46,8 @@ import com.hedvig.android.design.system.hedvig.Surface
 import hedvig.resources.AUTHENTICATION_BANKID_LOGIN_LABEL
 import hedvig.resources.AUTHENTICATION_BANKID_LOGIN_TITLE
 import hedvig.resources.AUTHENTICATION_BANKID_OPEN_BUTTON
+import hedvig.resources.AUTHENTICATION_LOGIN_UNAVAILABLE_BODY
+import hedvig.resources.AUTHENTICATION_LOGIN_UNAVAILABLE_TITLE
 import hedvig.resources.DEMO_MODE_START
 import hedvig.resources.Res
 import hedvig.resources.SETTINGS_LOGIN_ROW
@@ -122,6 +124,28 @@ private fun SwedishLoginScreen(
         ) {
           Column {
             HedvigErrorSection(onButtonClick = retry, subTitle = null)
+            Box(
+              Modifier
+                .size(48.dp)
+                .then(demoModeModifier),
+            )
+          }
+        }
+      }
+
+      BankIdUiState.LoginServiceUnavailable -> {
+        Box(
+          contentAlignment = Alignment.Center,
+          modifier = Modifier
+            .weight(1f)
+            .fillMaxWidth(),
+        ) {
+          Column {
+            HedvigErrorSection(
+              onButtonClick = retry,
+              title = stringResource(Res.string.AUTHENTICATION_LOGIN_UNAVAILABLE_TITLE),
+              subTitle = stringResource(Res.string.AUTHENTICATION_LOGIN_UNAVAILABLE_BODY),
+            )
             Box(
               Modifier
                 .size(48.dp)
@@ -259,6 +283,7 @@ private class BankIdUiStateProvider : CollectionPreviewParameterProvider<BankIdU
     BankIdUiState.HandlingBankId("", BankIdUiState.HandlingBankId.AutoStartToken(""), null, false, false),
     BankIdUiState.BankIdError("BankIdError"),
     BankIdUiState.StartLoginAttemptFailed,
+    BankIdUiState.LoginServiceUnavailable,
     BankIdUiState.Loading,
     BankIdUiState.LoggedIn,
   ),
