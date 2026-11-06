@@ -5,6 +5,8 @@ package com.hedvig.android.data.contract
  * Pick the one matching the box it is drawn into: the same instance is shown both as a 48.dp list row and as
  * a 140.dp hero, and reusing one URL across both sizes makes Coil serve the larger cached bitmap to the
  * smaller box, which visibly softens its edges.
+ *
+ * A generic cross-sell, such as pet, has the products to choose between in [options]; a single product has none.
  */
 data class CrossSell(
   val id: String,
@@ -14,6 +16,7 @@ data class CrossSell(
   val pillowImageSmall: ImageAsset,
   val pillowImageLarge: ImageAsset,
   val buttonText: String,
+  val options: List<CrossSell> = emptyList(),
 )
 
 data class ImageAsset(

@@ -6,6 +6,8 @@ import assertk.assertions.containsExactly
 import assertk.assertions.doesNotContain
 import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
+import com.hedvig.android.data.contract.CrossSell
+import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.feature.onboarding.data.OnboardingPayinProvider
 import com.hedvig.android.feature.onboarding.data.OnboardingPayinStatus
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
@@ -33,14 +35,15 @@ class OnboardingPathTest {
     referralInformation: OnboardingReferralInformation? = OnboardingReferralInformation("CODE", 10.0, "SEK"),
     isMissingPayinConnection: Boolean = true,
     payinStatus: OnboardingPayinStatus = OnboardingPayinStatus.NeedsSetup,
-    crossSells: List<OnboardingCrossSell> = listOf(
-      OnboardingCrossSell(
+    crossSells: List<CrossSell> = listOf(
+      CrossSell(
         id = "cs",
         title = "Pet",
-        description = "For your pet",
+        subtitle = "For your pet",
         storeUrl = "https://x",
-        pillowImageUrl = "https://x",
-        buttonTitle = "See price",
+        pillowImageSmall = ImageAsset(id = "cs", src = "https://x", description = null),
+        pillowImageLarge = ImageAsset(id = "cs", src = "https://x", description = null),
+        buttonText = "See price",
       ),
     ),
   ) = OnboardingData(

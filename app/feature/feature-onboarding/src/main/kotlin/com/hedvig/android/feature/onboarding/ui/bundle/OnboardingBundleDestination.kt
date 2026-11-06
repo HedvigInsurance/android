@@ -32,6 +32,7 @@ import com.hedvig.android.crosssells.rememberCrossSellShownReporter
 import com.hedvig.android.crosssells.reportCrossSellShown
 import com.hedvig.android.crosssells.trackCrossSellClicked
 import com.hedvig.android.crosssells.trackCrossSellShown
+import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -40,7 +41,6 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
-import com.hedvig.android.feature.onboarding.data.OnboardingCrossSell
 import com.hedvig.android.feature.onboarding.data.OnboardingSessionStore
 import com.hedvig.android.feature.onboarding.navigation.OnboardingNavigator
 import com.hedvig.android.feature.onboarding.navigation.OnboardingStepId
@@ -135,7 +135,7 @@ internal sealed interface OnboardingBundleUiState {
 
   data class Content(
     val progress: OnboardingProgress,
-    val crossSells: List<OnboardingCrossSell>,
+    val crossSells: List<CrossSell>,
   ) : OnboardingBundleUiState
 }
 
@@ -156,7 +156,7 @@ internal fun OnboardingBundleDestination(
   viewModel: OnboardingBundleViewModel,
   imageLoader: ImageLoader,
   navigateUp: () -> Unit,
-  openCrossSellUrl: (String) -> Boolean,
+  openCrossSell: (CrossSell) -> Boolean,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   OnboardingBundleScreen(
@@ -168,8 +168,8 @@ internal fun OnboardingBundleDestination(
     onRetry = { viewModel.emit(OnboardingBundleEvent.Retry) },
     onContinueToApp = { viewModel.emit(OnboardingBundleEvent.ContinueToApp) },
     onCrossSellShown = { offerId, offerUrl -> viewModel.emit(OnboardingBundleEvent.CrossSellShown(offerId, offerUrl)) },
-    onCrossSellClick = dropUnlessResumed { crossSell: OnboardingCrossSell ->
-      if (openCrossSellUrl(crossSell.storeUrl)) {
+    onCrossSellClick = dropUnlessResumed { crossSell: CrossSell ->
+      if (openCrossSell(crossSell)) {
         viewModel.emit(OnboardingBundleEvent.CrossSellClicked(crossSell.id, crossSell.storeUrl))
       }
     },
@@ -186,7 +186,7 @@ private fun OnboardingBundleScreen(
   onRetry: () -> Unit,
   onContinueToApp: () -> Unit,
   onCrossSellShown: (offerId: String, offerUrl: String) -> Unit,
-  onCrossSellClick: (OnboardingCrossSell) -> Unit,
+  onCrossSellClick: (CrossSell) -> Unit,
 ) {
   val crossSellShownReporter = rememberCrossSellShownReporter(onCrossSellShown)
   OnboardingStepScaffold(
@@ -239,18 +239,16 @@ private fun OnboardingBundleScreen(
 
 @Composable
 private fun OnboardingCrossSellRow(
-  crossSell: OnboardingCrossSell,
+  crossSell: CrossSell,
   shownReporter: CrossSellShownReporter,
   imageLoader: ImageLoader,
-  onCrossSellClick: (OnboardingCrossSell) -> Unit,
+  onCrossSellClick: (CrossSell) -> Unit,
 ) {
   PillowRow(
     title = crossSell.title,
-    subtitle = crossSell.description,
-    pillowImage = crossSell.pillowImageUrl?.let { url ->
-      ImageAsset(id = crossSell.id, src = url, description = null)
-    },
-    buttonText = crossSell.buttonTitle,
+    subtitle = crossSell.subtitle,
+    pillowImage = crossSell.pillowImageSmall,
+    buttonText = crossSell.buttonText,
     onButtonClick = withOnboardingHaptic { onCrossSellClick(crossSell) },
     imageLoader = imageLoader,
     modifier = Modifier
@@ -312,45 +310,50 @@ private class OnboardingBundleUiStateProvider : CollectionPreviewParameterProvid
     OnboardingBundleUiState.Content(
       progress = OnboardingProgress(totalSteps = 5, currentIndex = 1),
       crossSells = listOf(
-        OnboardingCrossSell(
+        CrossSell(
           id = "home",
           title = "Home Insurance",
-          description = "For you, your family and your home",
+          subtitle = "For you, your family and your home",
           storeUrl = "https://www.hedvig.com/se/forsakringar/hemforsakring",
-          pillowImageUrl = null,
-          buttonTitle = "button",
+          pillowImageSmall = ImageAsset(id = "home", src = "", description = null),
+          pillowImageLarge = ImageAsset(id = "home", src = "", description = null),
+          buttonText = "button",
         ),
-        OnboardingCrossSell(
+        CrossSell(
           id = "pet",
           title = "Pet Insurance",
-          description = "For your dog or cat",
+          subtitle = "For your dog or cat",
           storeUrl = "https://www.hedvig.com/se/forsakringar/djurforsakring",
-          pillowImageUrl = null,
-          buttonTitle = "button",
+          pillowImageSmall = ImageAsset(id = "pet", src = "", description = null),
+          pillowImageLarge = ImageAsset(id = "pet", src = "", description = null),
+          buttonText = "button",
         ),
-        OnboardingCrossSell(
+        CrossSell(
           id = "car",
           title = "Car insurance",
-          description = "For you and your car",
+          subtitle = "For you and your car",
           storeUrl = "https://www.hedvig.com/se/forsakringar/bilforsakring",
-          pillowImageUrl = null,
-          buttonTitle = "button",
+          pillowImageSmall = ImageAsset(id = "car", src = "", description = null),
+          pillowImageLarge = ImageAsset(id = "car", src = "", description = null),
+          buttonText = "button",
         ),
-        OnboardingCrossSell(
+        CrossSell(
           id = "vacation",
           title = "Vacation Home Insurance",
-          description = "For your cottage or cabin",
+          subtitle = "For your cottage or cabin",
           storeUrl = "https://www.hedvig.com/se/forsakringar/fritidshusforsakring",
-          pillowImageUrl = null,
-          buttonTitle = "button",
+          pillowImageSmall = ImageAsset(id = "vacation", src = "", description = null),
+          pillowImageLarge = ImageAsset(id = "vacation", src = "", description = null),
+          buttonText = "button",
         ),
-        OnboardingCrossSell(
+        CrossSell(
           id = "ppi",
           title = "Payment Protection Insurance",
-          description = "For you if you get unemployed",
+          subtitle = "For you if you get unemployed",
           storeUrl = "https://www.hedvig.com/se/forsakringar/inkomstforsakring",
-          pillowImageUrl = null,
-          buttonTitle = "button",
+          pillowImageSmall = ImageAsset(id = "ppi", src = "", description = null),
+          pillowImageLarge = ImageAsset(id = "ppi", src = "", description = null),
+          buttonText = "button",
         ),
       ),
     ),

@@ -107,7 +107,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun InsuranceDestination(
   viewModel: InsuranceViewModel,
   onInsuranceCardClick: (contractId: String) -> Unit,
-  onCrossSellClick: (String) -> Boolean,
+  onCrossSellClick: (CrossSell) -> Boolean,
   navigateToCancelledInsurances: () -> Unit,
   imageLoader: ImageLoader,
   onNavigateToAddonPurchaseFlow: (List<ContractId>) -> Unit,
@@ -119,7 +119,7 @@ internal fun InsuranceDestination(
     onInsuranceCardClick = onInsuranceCardClick,
     onCrossSellShown = { offerId, offerUrl -> viewModel.emit(InsuranceScreenEvent.CrossSellShown(offerId, offerUrl)) },
     onCrossSellClick = dropUnlessResumed { crossSell: CrossSell ->
-      if (onCrossSellClick(crossSell.storeUrl)) {
+      if (onCrossSellClick(crossSell)) {
         viewModel.emit(InsuranceScreenEvent.CrossSellClicked(crossSell.id, crossSell.storeUrl))
       }
     },

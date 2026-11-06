@@ -36,6 +36,10 @@ enum class Feature(
       "on the home screen, so the home screen does not prompt cancellation. The option stays available " +
       "everywhere else, such as the help center quick actions and insurance details.",
   ),
+  SHOW_PRODUCT_PAGES(
+    "Opens the in-app product page when a cross-sell is tapped, instead of its store URL. Off until " +
+      "flags are first fetched, so a cross-sell keeps opening its store URL.",
+  ),
   UPDATE_NECESSARY(
     "Defines the lowest supported app version. Should prompt a user to update if it uses an outdated version.",
   ),
