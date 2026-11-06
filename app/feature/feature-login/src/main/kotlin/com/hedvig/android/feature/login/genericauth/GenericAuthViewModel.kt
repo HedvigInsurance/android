@@ -73,6 +73,7 @@ internal class GenericAuthViewModel(
 
           is AuthAttemptResult.Error.BackendErrorResponse,
           is AuthAttemptResult.Error.IOError,
+          is AuthAttemptResult.Error.ServerError,
           is AuthAttemptResult.Error.UnknownError,
           -> {
             GenericAuthViewState.TextFieldError.Other.NetworkError
