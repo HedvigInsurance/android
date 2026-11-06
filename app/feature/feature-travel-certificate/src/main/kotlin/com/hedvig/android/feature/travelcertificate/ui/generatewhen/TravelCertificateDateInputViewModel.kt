@@ -205,7 +205,7 @@ internal class TravelCertificateDateInputPresenter(
               selectableDates = object : HedvigSelectableDates {
                 override fun isSelectableDate(utcTimeMillis: Long): Boolean {
                   val selectedDate =
-                    Instant.fromEpochMilliseconds(utcTimeMillis).toLocalDateTime(TimeZone.currentSystemDefault()).date
+                    Instant.fromEpochMilliseconds(utcTimeMillis).toLocalDateTime(TimeZone.UTC).date
                   return selectedDate in travelSpecification.dateRange
                 }
 

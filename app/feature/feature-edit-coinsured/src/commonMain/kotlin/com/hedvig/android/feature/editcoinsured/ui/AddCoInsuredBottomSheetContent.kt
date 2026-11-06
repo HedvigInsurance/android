@@ -34,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
@@ -63,7 +64,9 @@ import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDefaultStyleSize.Small
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle
+import com.hedvig.android.design.system.hedvig.a11y.accessibilityForDatePickerField
 import com.hedvig.android.design.system.hedvig.api.HedvigSelectableDates
+import com.hedvig.android.design.system.hedvig.clearFocusOnControlTap
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
@@ -158,7 +161,7 @@ internal fun AddCoInsuredBottomSheetContent(
         onClick = {
           onManualInputSwitchChanged(it)
         },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clearFocusOnControlTap(),
         toggleStyle = ToggleStyle.Default(Small),
         labelText = stringResource(Res.string.CONTRACT_ADD_COINSURED_NO_SSN),
         enabled = true,
@@ -214,14 +217,17 @@ internal fun SelectableCoInsuredList(
       onCoInsuredSelected(selectableCoInsured.first { it.id == id.id })
     },
   )
-  Spacer(Modifier.height(4.dp))
   AnimatedVisibility(visible = errorMessage != null) {
-    HedvigNotificationCard(
-      message = errorMessage ?: "",
-      modifier = Modifier.fillMaxWidth(),
-      priority = NotificationDefaults.NotificationPriority.Attention,
-    )
+    Column {
+      Spacer(Modifier.height(4.dp))
+      HedvigNotificationCard(
+        message = errorMessage ?: "",
+        modifier = Modifier.fillMaxWidth(),
+        priority = NotificationDefaults.NotificationPriority.Attention,
+      )
+    }
   }
+  Spacer(Modifier.height(16.dp))
   HedvigTextButton(
     text = stringResource(Res.string.GENERAL_ADD_NEW),
     onClick = { onAddNewCoInsured() },
@@ -370,6 +376,7 @@ internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> 
     ?: clock.now().toEpochMilliseconds()
   val locale = getLocale()
   var showDatePicker by rememberSaveable { mutableStateOf(false) }
+  val focusManager = LocalFocusManager.current
   val rememberHedvigDateTimeFormatter = remember(locale) {
     HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale)
   }
@@ -398,16 +405,27 @@ internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> 
         val selected = datePickerState.selectedDateMillis
         if (selected != null) {
           val date = Instant.fromEpochMilliseconds(selected)
-            .toLocalDateTime(TimeZone.currentSystemDefault()).date
+            .toLocalDateTime(TimeZone.UTC).date
           onSave(date)
         }
         showDatePicker = false
       },
     )
   }
+  val onClick = {
+    focusManager.clearFocus()
+    showDatePicker = true
+  }
   HedvigCard(
-    onClick = { showDatePicker = true },
-    modifier = modifier,
+    onClick = onClick,
+    modifier = modifier
+      .clearFocusOnControlTap()
+      .accessibilityForDatePickerField(
+        labelText = stringResource(Res.string.CONTRACT_BIRTH_DATE),
+        selectedDate = birthDate?.let { rememberHedvigDateTimeFormatter.format(it) },
+        isEnabled = true,
+        onClick = onClick,
+      ),
     shape = HedvigTheme.shapes.cornerLarge,
   ) {
     Column(Modifier.padding(top = 4.dp, bottom = 8.dp)) {

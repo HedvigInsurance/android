@@ -1004,7 +1004,7 @@
   <string name="TALKBACK_CONVERSATION_DESCRIPTION" formatted="false">Conversation about %1$s. Last message at %2$s.</string>
   <string name="TALKBACK_COVERED">Covered</string>
   <string name="TALKBACK_DOCUMENT">Document %1$s, double tap to open.</string>
-  <string name="TALKBACK_DOUBLE_TAP_TO_CHOOSE">Double tap to choose</string>
+  <string name="TALKBACK_DOUBLE_TAP_TO_CHOOSE">Choose</string>
   <string name="TALKBACK_DOUBLE_TAP_TO_READ_DETAILS">Double tap to read details</string>
   <string name="TALKBACK_DOUBLE_TAP_TO_SEE_ALL_OPTIONS">Double tap to see all options</string>
   <string name="TALKBACK_DOUBLE_TAP_TO_TURN_OFF">Turn off</string>

@@ -1005,7 +1005,7 @@
   <string name="TALKBACK_CONVERSATION_DESCRIPTION" formatted="false">Konversation om %s. Senaste meddelandet den %s.</string>
   <string name="TALKBACK_COVERED">Ingår</string>
   <string name="TALKBACK_DOCUMENT">Dokument %s, dubbeltryck för att öppna.</string>
-  <string name="TALKBACK_DOUBLE_TAP_TO_CHOOSE">Dubbeltryck för att välja</string>
+  <string name="TALKBACK_DOUBLE_TAP_TO_CHOOSE">Välja</string>
   <string name="TALKBACK_DOUBLE_TAP_TO_READ_DETAILS">Dubbeltryck för att läsa detaljer</string>
   <string name="TALKBACK_DOUBLE_TAP_TO_SEE_ALL_OPTIONS">Dubbeltryck för att se alla alternativ</string>
   <string name="TALKBACK_DOUBLE_TAP_TO_TURN_OFF">Slå av</string>
