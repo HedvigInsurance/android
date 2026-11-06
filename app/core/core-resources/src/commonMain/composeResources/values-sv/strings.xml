@@ -560,6 +560,7 @@
   <string name="INSURANCE_EVIDENCE_READ_MORE_DESCRIPTION">Ett giltighetsintyg styrker under vilka perioder du haft en giltig och betald hemförsäkring hos Hedvig, samt dess detaljer - till exempel vilken adress som varit försäkrad och vad du har betalat.\n\nGiltighetsintyget kan exempelvis användas för att styrka din försäkringsperiod vid ansökan om rättsskydd hos ett annat försäkringsbolag, eller i ärenden hos bank och myndigheter.</string>
   <string name="INSURANCE_EVIDENCE_READ_MORE_TITLE">Vad är ett giltighetsintyg?</string>
   <string name="INSURANCE_OFFERS_SUBHEADING">Erbjudanden</string>
+  <string name="INSURANCE_PERILS_INFO">Beskrivningarna nedan är förenklade. Det är alltid dina villkor som avgör vad som täcks.</string>
   <string name="INVALID_NATIONAL_IDENTITY_NUMBER">Invalid National Identity Number</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_BODY">Vi försöker reparera i första hand, men om din %1$s skulle behöva ersättas helt (ex. om den blivit stulen) ersätts du med **%2$d\u0025** av inköpspriset **%3$d kr**, alltså **%4$d kr**.</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE">Värdering</string>

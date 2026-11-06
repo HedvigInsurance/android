@@ -36,6 +36,7 @@ import com.hedvig.android.data.productvariant.InsurableLimit
 import com.hedvig.android.data.productvariant.ProductVariantPeril
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
@@ -44,6 +45,7 @@ import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.InfoInline
 import com.hedvig.android.design.system.hedvig.PerilData
 import com.hedvig.android.design.system.hedvig.PerilDefaults.PerilSize.Small
 import com.hedvig.android.design.system.hedvig.PerilList
@@ -52,6 +54,8 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.insurances.data.Addon
+import hedvig.resources.INSURANCE_PERILS_INFO
+import hedvig.resources.Res
 import hedvig.resources.general_close_button
 import org.jetbrains.compose.resources.stringResource
 
@@ -93,6 +97,14 @@ internal fun CoverageTab(
       Spacer(Modifier.height(16.dp))
     }
     if (perils.isNotEmpty()) {
+      HedvigNotificationCard(
+        message = stringResource(Res.string.INSURANCE_PERILS_INFO),
+        priority = InfoInline,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      )
+      Spacer(Modifier.height(16.dp))
       PerilList(
         perilItems = perils.map {
           PerilData(
