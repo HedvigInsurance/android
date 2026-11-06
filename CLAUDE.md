@@ -353,6 +353,15 @@ internal class SetArticleRatingUseCaseImpl(...) : SetArticleRatingUseCase {
 }
 ```
 
+### Dates from the date picker
+
+`HedvigDatePickerState`, `HedvigDatePickerImmutableState` and `HedvigSelectableDates.isSelectableDate` carry a
+calendar day as epoch millis at **UTC midnight** (Material 3's convention, not configurable). Always convert with
+`TimeZone.UTC`, both ways. Reading them with `TimeZone.currentSystemDefault()` returns the right day in Sweden and
+the previous day on any phone set to a zone behind UTC, so the bug never shows in local testing. Use the device zone
+only for "what is today" (`clock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date`). The plan to replace
+the millis with a `LocalDate` API is in `docs/plans/2026-11-06-date-picker-localdate-api.md`.
+
 ### Logging
 
 All logging in the app goes through a single KMP entrypoint: the `logcat` function in `:logging-public`. **Never call Timber, `android.util.Log`, or `println` directly** — Timber is installed only as a set of trees (Crashlytics, Datadog breadcrumbs, debug `DebugTree`) at startup; `logcat` fans out to them on Android and to `NSLog` on iOS.
