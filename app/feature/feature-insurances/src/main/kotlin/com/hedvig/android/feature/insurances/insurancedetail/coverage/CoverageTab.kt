@@ -36,7 +36,6 @@ import com.hedvig.android.data.productvariant.InsurableLimit
 import com.hedvig.android.data.productvariant.ProductVariantPeril
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
-import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
@@ -45,7 +44,6 @@ import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
-import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.InfoInline
 import com.hedvig.android.design.system.hedvig.PerilData
 import com.hedvig.android.design.system.hedvig.PerilDefaults.PerilSize.Small
 import com.hedvig.android.design.system.hedvig.PerilList
@@ -96,15 +94,8 @@ internal fun CoverageTab(
     if (insurableLimits.isNotEmpty()) {
       Spacer(Modifier.height(16.dp))
     }
+    val perilsDisclaimer = stringResource(Res.string.INSURANCE_PERILS_INFO)
     if (perils.isNotEmpty()) {
-      HedvigNotificationCard(
-        message = stringResource(Res.string.INSURANCE_PERILS_INFO),
-        priority = InfoInline,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(16.dp))
       PerilList(
         perilItems = perils.map {
           PerilData(
@@ -116,6 +107,7 @@ internal fun CoverageTab(
         },
         size = Small,
         modifier = Modifier.padding(horizontal = 16.dp),
+        disclaimer = perilsDisclaimer,
       )
       Spacer(Modifier.height(16.dp))
     }
@@ -145,6 +137,7 @@ internal fun CoverageTab(
             },
             size = Small,
             modifier = Modifier.padding(horizontal = 16.dp),
+            disclaimer = perilsDisclaimer,
           )
           Spacer(Modifier.height(16.dp))
         }
