@@ -29,6 +29,7 @@ fun EntryProviderScope<HedvigNavKey>.productInAppEntries(
         title = key.title,
         subtitle = key.subtitle,
         pillowImageSrc = key.pillowImageSrc,
+        discountText = key.discountText,
       ),
       close = backstack::popBackstack,
       openStoreUrl = { openCrossSellUrl(key.storeUrl) },

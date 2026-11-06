@@ -30,4 +30,5 @@ private fun CrossSell.toCrossSellProductKey(): CrossSellProductKey = CrossSellPr
   subtitle = subtitle,
   pillowImageSrc = pillowImageSmall.src,
   storeUrl = storeUrl,
+  discountText = null,
 )

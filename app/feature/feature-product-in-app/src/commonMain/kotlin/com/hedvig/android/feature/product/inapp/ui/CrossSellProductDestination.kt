@@ -24,6 +24,7 @@ internal data class CrossSellProductHeader(
   val title: String,
   val subtitle: String,
   val pillowImageSrc: String,
+  val discountText: String?,
 )
 
 @Composable
@@ -75,6 +76,7 @@ private fun CrossSellProductScreen(
             .padding(horizontal = 16.dp),
         ) {
           HedvigText(header.subtitle, color = HedvigTheme.colorScheme.textSecondary)
+          header.discountText?.let { HedvigText(it) }
           uiState.productInfo.heroIntro?.let { intro ->
             Column {
               HedvigText(intro.title)

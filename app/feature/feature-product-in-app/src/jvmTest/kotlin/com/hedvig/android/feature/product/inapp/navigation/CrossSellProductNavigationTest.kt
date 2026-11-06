@@ -63,6 +63,7 @@ private fun productKey(id: String) = CrossSellProductKey(
   subtitle = "$id subtitle",
   pillowImageSrc = "https://$id-small",
   storeUrl = "https://$id",
+  discountText = null,
 )
 
 @Serializable

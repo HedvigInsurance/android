@@ -5,7 +5,8 @@ import kotlinx.serialization.Serializable
 
 /**
  * The header fields and [storeUrl] come from the tapped cross-sell, so the page can show its header
- * before the product info has loaded. [storeUrl] is where the purchase continues.
+ * before the product info has loaded. [storeUrl] is where the purchase continues. [discountText] is the
+ * badge on the hero image, or null for no badge.
  */
 @androidx.annotation.Keep
 @Serializable
@@ -15,6 +16,7 @@ data class CrossSellProductKey(
   val subtitle: String,
   val pillowImageSrc: String,
   val storeUrl: String,
+  val discountText: String?,
 ) : HedvigNavKey
 
 /**
