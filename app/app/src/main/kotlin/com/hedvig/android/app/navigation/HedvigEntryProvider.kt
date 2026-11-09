@@ -488,7 +488,6 @@ private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
   val changePayinMethod: () -> Unit = {
     when (val target = changePayinMethodTarget(backstack.entries)) {
       is ChangePayinMethodTarget.PopTo -> backstack.popUpToIndex(target.index)
-      is ChangePayinMethodTarget.Reseed -> backstack.reseed(target.stack)
       ChangePayinMethodTarget.PopOne -> backstack.popBackstack()
     }
   }

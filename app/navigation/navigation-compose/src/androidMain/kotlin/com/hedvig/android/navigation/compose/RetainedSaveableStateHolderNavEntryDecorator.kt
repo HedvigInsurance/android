@@ -60,7 +60,7 @@ internal fun rememberRetainedSaveableStateHolderNavEntryDecorator(
       },
       // NavDisplay must never hand two live entries the same contentKey here, or SaveableStateProvider
       // throws "Key <X> was used multiple times". Our custom Scenes therefore compare by contentKey,
-      // not NavEntry identity (see BottomSheetScene and NavSuiteScene/NavUpBarScene).
+      // not NavEntry identity (see BottomSheetScene and NavSuiteScene).
       decorate = { entry ->
         if (entry.contentKey !in decoratedKeys) {
           decoratedKeys.add(entry.contentKey)

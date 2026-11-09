@@ -27,8 +27,8 @@ import kotlinx.coroutines.flow.first
  *     to resolve the start scene before routing, so the link reads a settled auth state and lands
  *     deterministically — rather than racing the splash-gated reconciliation.
  *
- * A matched key (or the Home fallback) lands *alone* (see [BackstackController.navigateToExternalDeepLink]);
- * the ancestry is rebuilt on demand by Up.
+ * A matched key (or the Home fallback) replaces the stack with its synthetic ancestry (see
+ * [BackstackController.navigateToExternalDeepLink]).
  */
 internal class ExternalDeepLinkHandler(
   private val matcher: HedvigDeepLinkMatcher,
