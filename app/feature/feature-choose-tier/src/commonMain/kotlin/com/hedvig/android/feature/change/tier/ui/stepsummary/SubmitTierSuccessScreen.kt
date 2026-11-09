@@ -21,6 +21,8 @@ import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButt
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.SUCCESS
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
 import hedvig.resources.Res
 import hedvig.resources.TIER_FLOW_COMMIT_PROCESSING_DESCRIPTION
 import hedvig.resources.TIER_FLOW_COMMIT_PROCESSING_TITLE
@@ -66,5 +68,9 @@ internal fun SubmitTierSuccessScreen(activationDate: LocalDate, popBackstack: ()
 @HedvigPreview
 @Composable
 private fun SubmitTierSuccessScreenPreview() {
-  SubmitTierSuccessScreen(LocalDate(2024, 9, 23), {})
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      SubmitTierSuccessScreen(LocalDate(2024, 9, 23), {})
+    }
+  }
 }
