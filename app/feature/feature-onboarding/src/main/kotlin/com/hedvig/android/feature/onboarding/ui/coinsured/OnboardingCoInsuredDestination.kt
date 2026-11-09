@@ -94,6 +94,7 @@ private fun OnboardingCoInsuredScreen(
       OnboardingCoInsuredUiState.Error -> {
         HedvigErrorSection(
           onButtonClick = onRetry,
+          modifier = Modifier.weight(1f),
         )
       }
 

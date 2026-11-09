@@ -88,6 +88,7 @@ private fun OnboardingPetIdScreen(
       OnboardingPetIdUiState.Error -> {
         HedvigErrorSection(
           onButtonClick = onRetry,
+          modifier = Modifier.weight(1f),
         )
       }
 

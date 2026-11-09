@@ -94,6 +94,7 @@ private fun OnboardingThemeScreen(
       OnboardingThemeUiState.Error -> {
         HedvigErrorSection(
           onButtonClick = onRetry,
+          modifier = Modifier.weight(1f),
         )
       }
 

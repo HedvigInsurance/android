@@ -204,6 +204,7 @@ private fun OnboardingBundleScreen(
       OnboardingBundleUiState.Error -> {
         HedvigErrorSection(
           onButtonClick = onRetry,
+          modifier = Modifier.weight(1f),
         )
       }
 

@@ -251,6 +251,7 @@ private fun OnboardingPaymentScreen(
       OnboardingPaymentUiState.Error -> {
         HedvigErrorSection(
           onButtonClick = onRetry,
+          modifier = Modifier.weight(1f),
         )
       }
 
