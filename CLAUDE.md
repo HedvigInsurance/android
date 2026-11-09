@@ -833,10 +833,14 @@ nothing validates, so re-check them whenever the metric changes.
 
 ### Seeing a composable without a device
 
-To see what a composable looks like, or to compare a few layout, alignment or wrapping variants
-of it as images, do not build the app or reach for Android Studio previews. Any KMP module with
-a JVM target can render through Skia from a `jvmTest` and write PNGs; use the
-`render-composables-on-jvm` skill, which carries a template test for it.
+Neither path needs an emulator, a device, Android Studio or an app install. Pick by the question:
+
+- **"Does what I built look right?"** Render its `@Preview` with the `render-previews` skill, in
+  any module, Android-only ones included. This is the check to run before calling a UI change done.
+- **"Which of these candidates?"** In a KMP module with a JVM target, the
+  `render-composables-on-jvm` skill composes throwaway variants side by side without touching
+  committed code; its text shaping is Skia's, so the winner is confirmed through its preview. In an
+  Android-only module, `render-previews` with one edit per candidate.
 
 ### Network traffic on a device
 
