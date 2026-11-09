@@ -337,7 +337,7 @@ private fun List<FormFragment.Field>.toFields(locale: CommonLocale): List<StepCo
         }
 
         ClaimIntentStepContentFormFieldType.PHONE_NUMBER -> {
-          StepContent.Form.FieldType.NUMBER
+          StepContent.Form.FieldType.PHONE_NUMBER
         }
 
         ClaimIntentStepContentFormFieldType.SEARCH -> {

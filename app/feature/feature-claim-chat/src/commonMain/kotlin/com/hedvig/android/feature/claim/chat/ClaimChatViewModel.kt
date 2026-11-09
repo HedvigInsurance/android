@@ -48,6 +48,7 @@ import com.hedvig.android.feature.claim.chat.data.SubmitInformationUseCase
 import com.hedvig.android.feature.claim.chat.data.SubmitSelectUseCase
 import com.hedvig.android.feature.claim.chat.data.SubmitSummaryUseCase
 import com.hedvig.android.feature.claim.chat.data.SubmitTaskUseCase
+import com.hedvig.android.feature.claim.chat.data.isValidNumberFieldInput
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
@@ -891,8 +892,22 @@ internal class ClaimChatPresenter(
             val newFields = content.fields.map { field ->
               if (field.id == event.fieldId) {
                 when (field.type) {
+                  FieldType.NUMBER -> {
+                    val answerValue = event.answer?.value
+                    field.copy(
+                      selectedOptions = event.answer?.let {
+                        listOf(it)
+                      } ?: emptyList(),
+                      hasError = if (answerValue != null && !isValidNumberFieldInput(answerValue)) {
+                        FieldError.NotANumber
+                      } else {
+                        null
+                      },
+                    )
+                  }
+
                   FieldType.TEXT,
-                  FieldType.NUMBER,
+                  FieldType.PHONE_NUMBER,
                   FieldType.BINARY,
                   FieldType.SINGLE_SELECT,
                   null,
@@ -1337,9 +1352,12 @@ private fun validateField(field: Field): Field {
     }
   }
 
-  if (field.type == FieldType.NUMBER && field.selectedOptions.isNotEmpty()) {
+  if ((field.type == FieldType.NUMBER || field.type == FieldType.PHONE_NUMBER) && field.selectedOptions.isNotEmpty()) {
     val selectedValue = field.selectedOptions.firstOrNull()?.value
     if (!selectedValue.isNullOrEmpty()) {
+      if (field.type == FieldType.NUMBER && !isValidNumberFieldInput(selectedValue)) {
+        return field.copy(hasError = FieldError.NotANumber)
+      }
       val numericValue = selectedValue.toDoubleOrNull()
       if (numericValue != null) {
         field.maxValue?.toDoubleOrNull()?.let { maxValue ->
