@@ -15,6 +15,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -198,13 +201,17 @@ private fun TravelCertificateSuccessScreen(
   addonBannerInfo: AddonBannerInfo?,
   launchAddonPurchaseFlow: (ids: List<String>) -> Unit,
 ) {
+  var showReadMoreTooltip by rememberSaveable { mutableStateOf(true) }
   HedvigScaffold(
     navigateUp = navigateUp,
     modifier = Modifier.clearFocusOnTap(),
     topAppBarText = stringResource(Res.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
     topAppBarActions = {
       IconButton(
-        onClick = { onIconClick() },
+        onClick = {
+          showReadMoreTooltip = false
+          onIconClick()
+        },
         modifier = Modifier.size(40.dp),
       ) {
         Icon(
@@ -262,15 +269,17 @@ private fun TravelCertificateSuccessScreen(
       Column(
         Modifier.fillMaxWidth(),
       ) {
-        HedvigTooltip(
-          message = stringResource(Res.string.TOAST_READ_MORE),
-          showTooltip = true,
-          beakDirection = TopEnd,
-          tooltipShown = {},
-          modifier = Modifier
-            .padding(horizontal = 14.dp)
-            .align(Alignment.End),
-        )
+        if (showReadMoreTooltip) {
+          HedvigTooltip(
+            message = stringResource(Res.string.TOAST_READ_MORE),
+            showTooltip = true,
+            beakDirection = TopEnd,
+            tooltipShown = {},
+            modifier = Modifier
+              .padding(horizontal = 14.dp)
+              .align(Alignment.End),
+          )
+        }
       }
     }
   }
@@ -327,7 +336,7 @@ private fun TravelCertificatesList(
   }
   Spacer(Modifier.height(16.dp))
   val dateTimeFormatter = rememberHedvigMonthDateTimeFormatter()
-  val groupedHistory = list.groupBy { it.expiryDate.year }
+  val groupedHistory = list.groupBy { it.startDate.year }
   groupedHistory.forEach {
     val year = it.key
     val travelCertificates = it.value

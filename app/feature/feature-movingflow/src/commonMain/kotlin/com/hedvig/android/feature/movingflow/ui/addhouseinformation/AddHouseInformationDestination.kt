@@ -71,6 +71,7 @@ import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDefaultStyle
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDefaultStyleSize.Small
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
+import com.hedvig.android.design.system.hedvig.clearFocusOnControlTap
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.movingflow.compose.BooleanInput
@@ -243,6 +244,7 @@ private fun AddHouseInformationScreen(
           },
           isPlusEnabled = !content.isLoadingNextStep && content.addressInput.numberOfBathrooms.canIncrement,
           isMinusEnabled = !content.isLoadingNextStep && content.addressInput.numberOfBathrooms.canDecrement,
+          modifier = Modifier.clearFocusOnControlTap(),
         )
         HedvigToggle(
           labelText = stringResource(Res.string.CHANGE_ADDRESS_SUBLET_LABEL),
@@ -250,7 +252,7 @@ private fun AddHouseInformationScreen(
           turnedOn = content.addressInput.isSublet.value,
           onClick = { content.addressInput.isSublet.updateValue(it) },
           enabled = !content.shouldDisableInput,
-          modifier = Modifier.fillMaxWidth(),
+          modifier = Modifier.fillMaxWidth().clearFocusOnControlTap(),
         )
         ExtraBuildingsCard(
           extraBuildings = content.addressInput.extraBuildings,
@@ -427,6 +429,7 @@ private fun ExtraBuildingsDialogContent(
           labelText = stringResource(Res.string.CHANGE_ADDRESS_EXTRA_BUILDINGS_WATER_INPUT_LABEL),
           turnedOn = isConnectedToWater,
           onClick = { isConnectedToWater = it },
+          modifier = Modifier.clearFocusOnControlTap(),
           enabled = true,
           toggleStyle = ToggleStyle.Default(ToggleDefaultStyleSize.Medium),
         )

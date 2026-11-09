@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.compose.ui.LocalClock
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -76,7 +77,10 @@ private fun SubmittedAndClosedColumn(topText: String, bottomText: String, modifi
 }
 
 @Composable
-private fun currentTimeAsState(updateInterval: Duration = 1.seconds, clock: Clock = Clock.System): State<Instant> {
+private fun currentTimeAsState(
+  updateInterval: Duration = 1.seconds,
+  clock: Clock = LocalClock.current,
+): State<Instant> {
   return produceState(initialValue = clock.now()) {
     while (isActive) {
       delay(updateInterval)

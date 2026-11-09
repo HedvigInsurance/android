@@ -19,6 +19,7 @@ import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.common.contentKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.LoneDeepLinkChrome
+import kotlin.time.Clock
 
 /**
  * The per-Activity source of truth for all navigation state and the one [Backstack] every caller in
@@ -59,6 +60,7 @@ internal class BackstackController(
    * pre-attach use never try to finish.
    */
   var finishApp: () -> Unit = {},
+  private val clock: Clock = Clock.System,
 ) : Backstack {
   /**
    * Whether this Activity is the root of its own task. `false` means we were launched into the
@@ -85,7 +87,7 @@ internal class BackstackController(
   internal var pendingDeepLink: HedvigNavKey? by pendingDeepLinkState
 
   /**
-   * Wall-clock time ([System.currentTimeMillis]) when [pendingDeepLink] was last stashed, or `null`
+   * Epoch milliseconds, read from [clock], when [pendingDeepLink] was last stashed, or `null`
    * when there is none. Persisted alongside [pendingDeepLink] so a process-death restore can discard a
    * link that is too old to still belong to the in-flight login (see `NavigationStateBridge`), which
    * stops a long-abandoned pending link from bleeding into an unrelated later login.
@@ -95,7 +97,7 @@ internal class BackstackController(
   /** Stashes [key] as the [pendingDeepLink], stamping [pendingDeepLinkStashedAtEpochMs] with now. */
   private fun stashPendingDeepLink(key: HedvigNavKey) {
     pendingDeepLink = key
-    pendingDeepLinkStashedAtEpochMs = System.currentTimeMillis()
+    pendingDeepLinkStashedAtEpochMs = clock.now().toEpochMilliseconds()
   }
 
   /** Clears [pendingDeepLink] and its companion timestamp together. */

@@ -95,6 +95,7 @@ import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.pager.indicator.CardCarousel
+import com.hedvig.android.compose.ui.LocalClock
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
@@ -131,10 +132,14 @@ import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProg
 import com.hedvig.android.design.system.hedvig.HedvigLiquidGlassButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigTooltip
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
+import com.hedvig.android.design.system.hedvig.RadioGroup
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.StartClaimBottomSheet
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.TopEnd
@@ -251,7 +256,6 @@ import hedvig.resources.home_tab_get_help
 import hedvig.resources.home_tab_welcome_title_without_name
 import hedvig.resources.ongoing_shop_session_dismiss_offer
 import kotlin.math.roundToInt
-import kotlin.time.Clock
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -363,6 +367,7 @@ private fun HomeScreen(
   imageLoader: ImageLoader,
   navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
 ) {
+  val clock = LocalClock.current
   val systemBarInsetTopDp = with(LocalDensity.current) {
     WindowInsets.systemBars.getTop(this).toDp()
   }
@@ -489,7 +494,7 @@ private fun HomeScreen(
             },
             onContinueDraftClaim = {
               if (draftClaim != null) {
-                if (draftClaim.isExpired(Clock.System.now())) {
+                if (draftClaim.isExpired(clock.now())) {
                   showDraftExpiredDialog = true
                 } else {
                   navigateToClaimChat(true)
@@ -618,9 +623,10 @@ private fun ColumnScope.CrossSellsTooltip(uiState: Success, setEpochDayWhenLastT
   if (uiState.crossSellsAction != null) {
     val shouldShowCrossSellsTooltip = uiState.crossSellsAction.crossSellRecommendationNotification.showToolTip
     var shouldSetEpochDayWhenLastToolTipShown by remember { mutableStateOf(false) }
+    val clock = LocalClock.current
     LaunchedEffect(shouldSetEpochDayWhenLastToolTipShown) {
       if (shouldSetEpochDayWhenLastToolTipShown) {
-        val today = Clock.System.now().toLocalDateTime(
+        val today = clock.now().toLocalDateTime(
           TimeZone.currentSystemDefault(),
         ).date.toEpochDays()
         delay(5000.milliseconds)
@@ -1506,41 +1512,44 @@ private fun EditInsuranceQuickActionSheet(
   onQuickLink: (QuickLinkDestination) -> Unit,
 ) {
   HedvigBottomSheet(state) { editInsurance ->
+    var selectedIndex by remember { mutableStateOf<Int?>(null) }
     HedvigText(
       text = stringResource(editInsurance.titleRes),
       style = HedvigTheme.typography.headlineSmall,
       modifier = Modifier.semantics { heading() },
     )
     Spacer(Modifier.height(16.dp))
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      editInsurance.links.forEach { link ->
-        HedvigCard(
-          onClick = {
-            state.dismiss()
-            onQuickLink(link.quickLinkDestination)
-          },
-          color = HedvigTheme.colorScheme.fillNegative,
-          borderColor = HedvigTheme.colorScheme.borderPrimary,
-          modifier = Modifier.fillMaxWidth()
-            .hedvigDropShadow(HedvigTheme.shapes.cornerXLarge),
-        ) {
-          Column(
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(vertical = 14.dp, horizontal = 12.dp),
-          ) {
-            HedvigText(text = stringResource(link.titleRes))
-            Spacer(Modifier.height(6.dp))
-            HedvigText(
-              text = stringResource(link.hintTextRes),
-              style = HedvigTheme.typography.label,
-              color = HedvigTheme.colorScheme.textSecondary,
-            )
-          }
-        }
-      }
-    }
+    RadioGroup(
+      options = editInsurance.links.mapIndexed { index, link ->
+        RadioOption(
+          id = RadioOptionId(index.toString()),
+          text = stringResource(link.titleRes),
+          label = stringResource(link.hintTextRes),
+        )
+      },
+      selectedOption = selectedIndex?.let { RadioOptionId(it.toString()) },
+      onRadioOptionSelected = { selectedIndex = it.id.toInt() },
+    )
     Spacer(Modifier.height(16.dp))
+    HedvigButton(
+      text = stringResource(Res.string.general_continue_button),
+      enabled = selectedIndex != null,
+      onClick = {
+        selectedIndex?.let { index ->
+          state.dismiss()
+          onQuickLink(editInsurance.links[index].quickLinkDestination)
+        }
+      },
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    HedvigTextButton(
+      text = stringResource(Res.string.general_cancel_button),
+      buttonSize = ButtonSize.Large,
+      onClick = { state.dismiss() },
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
     Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
@@ -1809,8 +1818,8 @@ private fun PreviewHomeScreen(
               recommendedAddon = null,
             ),
             crossSellRecommendationNotification = CrossSellRecommendationNotification(
-              true,
-              java.time.LocalDate.now().toEpochDay(),
+              hasUnreadRecommendation = true,
+              showToolTip = false,
             ),
           ),
           firstVetAction = FirstVetAction(

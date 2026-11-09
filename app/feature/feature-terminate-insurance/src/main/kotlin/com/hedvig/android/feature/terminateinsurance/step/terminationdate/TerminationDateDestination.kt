@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.terminateinsurance.step.terminationdate
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -19,6 +21,7 @@ import com.hedvig.android.design.system.hedvig.Checkbox
 import com.hedvig.android.design.system.hedvig.CheckboxGroup
 import com.hedvig.android.design.system.hedvig.CheckboxOption
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -29,13 +32,16 @@ import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
+import com.hedvig.android.design.system.hedvig.a11y.accessibilityForDatePickerField
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerImmutableState
+import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoCardDate
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoCardInsurance
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
 import hedvig.resources.Res
 import hedvig.resources.TERMINATION_DATE_TEXT
+import hedvig.resources.TERMINATION_FLOW_DATE_FIELD_TEXT
 import hedvig.resources.TERMINATION_FLOW_IMPORTANT_INFORMATION_TEXT
 import hedvig.resources.TERMINATION_FLOW_IMPORTANT_INFORMATION_TITLE
 import hedvig.resources.TERMINATION_FLOW_I_UNDERSTAND_TEXT
@@ -185,14 +191,26 @@ private fun DateButton(
     onConfirmRequest = { showDatePicker = false },
     onSelectedDateChanged = onSelectedDateChange,
   )
-  TerminationInfoCardDate(
-    dateValue = datePickerState.selectedDateMillis?.let {
-      Instant.fromEpochMilliseconds(it).toLocalDateTime(TimeZone.UTC).date
-    }?.toString(),
-    onClick = { showDatePicker = true },
-    isLocked = false,
-    modifier = modifier,
-  )
+  val locale = getLocale()
+  val dateFormatter = remember(locale) { HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale) }
+  val dateText = datePickerState.selectedDateMillis?.let {
+    dateFormatter.format(Instant.fromEpochMilliseconds(it).toLocalDateTime(TimeZone.UTC).date)
+  }
+  val onClick = { showDatePicker = true }
+  Box(
+    modifier.accessibilityForDatePickerField(
+      labelText = stringResource(Res.string.TERMINATION_FLOW_DATE_FIELD_TEXT),
+      selectedDate = dateText,
+      isEnabled = true,
+      onClick = onClick,
+    ),
+  ) {
+    TerminationInfoCardDate(
+      dateValue = dateText,
+      onClick = onClick,
+      isLocked = false,
+    )
+  }
 }
 
 @HedvigMultiScreenPreview

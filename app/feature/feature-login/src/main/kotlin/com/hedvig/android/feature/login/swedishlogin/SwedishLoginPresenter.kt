@@ -47,7 +47,7 @@ internal class SwedishLoginPresenter(
 ) : MoleculePresenter<SwedishLoginEvent, SwedishLoginUiState> {
   @Composable
   override fun MoleculePresenterScope<SwedishLoginEvent>.present(lastState: SwedishLoginUiState): SwedishLoginUiState {
-    var startLoginAttemptFailed: Boolean by remember { mutableStateOf(false) }
+    var startLoginAttemptFailure: BankIdUiState? by remember { mutableStateOf(null) }
     var bankIdProperties: AuthAttemptResult.BankIdProperties? by remember(savedStateHandle) {
       savedStateHandle.saveable(
         key = BankIdPropertiesSaver.ID,
@@ -135,12 +135,16 @@ internal class SwedishLoginPresenter(
           } else {
             logcat(LogPriority.ERROR) { "Got Error when signing in with BankId: $result" }
           }
-          startLoginAttemptFailed = true
+          startLoginAttemptFailure = if (result is AuthAttemptResult.Error.ServerError) {
+            BankIdUiState.LoginServiceUnavailable
+          } else {
+            BankIdUiState.StartLoginAttemptFailed
+          }
         }
 
         is AuthAttemptResult.OtpProperties -> {
           logcat(LogPriority.ERROR) { "Got Otp properties when signing in with BankId" }
-          startLoginAttemptFailed = true
+          startLoginAttemptFailure = BankIdUiState.StartLoginAttemptFailed
         }
       }
     }
@@ -149,7 +153,7 @@ internal class SwedishLoginPresenter(
       when (event) {
         SwedishLoginEvent.Retry -> {
           Snapshot.withMutableSnapshot {
-            startLoginAttemptFailed = false
+            startLoginAttemptFailure = null
             bankIdProperties = null
             retryIndex++
           }
@@ -167,9 +171,9 @@ internal class SwedishLoginPresenter(
       }
     }
 
-    if (startLoginAttemptFailed) {
+    startLoginAttemptFailure?.let { failure ->
       return SwedishLoginUiState(
-        BankIdUiState.StartLoginAttemptFailed,
+        failure,
         navigateToLoginScreen,
       )
     }
@@ -266,6 +270,12 @@ internal sealed interface BankIdUiState {
   data class BankIdError(val message: String) : BankIdUiState
 
   data object StartLoginAttemptFailed : BankIdUiState
+
+  /**
+   * The auth service answered the login attempt with a 5xx. Nothing on the member's side changes that, so the
+   * screen asks them to wait a few minutes before trying again.
+   */
+  data object LoginServiceUnavailable : BankIdUiState
 }
 
 internal class BankIdPropertiesSaver : Saver<AuthAttemptResult.BankIdProperties?, Any> by bankIdPropertiesListSaver {

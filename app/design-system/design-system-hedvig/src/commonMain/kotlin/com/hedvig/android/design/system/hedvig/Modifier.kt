@@ -6,7 +6,10 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,6 +30,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.Dp
@@ -51,6 +55,27 @@ fun Modifier.clearFocusOnTap(): Modifier = this.composed {
     detectTapGestures(
       onTap = { focusManager.clearFocus() },
     )
+  }
+}
+
+/**
+ * Clears focus when a control that handles its own taps is tapped, such as a button, stepper or toggle, which
+ * [clearFocusOnTap] never sees because the control consumes the tap first. The tap is observed in the
+ * [PointerEventPass.Initial] pass and left unconsumed, so the control still receives it.
+ *
+ * Apply it to the control itself, not to a container that also holds the TextField, or tapping the TextField
+ * clears its own focus.
+ */
+fun Modifier.clearFocusOnControlTap(): Modifier = this.composed {
+  val focusManager = LocalFocusManager.current
+  Modifier.pointerInput(Unit) {
+    awaitEachGesture {
+      awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
+      val up = waitForUpOrCancellation(pass = PointerEventPass.Initial)
+      if (up != null) {
+        focusManager.clearFocus()
+      }
+    }
   }
 }
 

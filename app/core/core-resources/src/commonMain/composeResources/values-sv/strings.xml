@@ -76,6 +76,8 @@
   <string name="AUTHENTICATION_BANKID_LOGIN_LABEL">Öppna BankID-appen på din telefon eller skanna QR-koden för att logga in</string>
   <string name="AUTHENTICATION_BANKID_LOGIN_TITLE">Logga in med BankID</string>
   <string name="AUTHENTICATION_BANKID_OPEN_BUTTON">Öppna BankID</string>
+  <string name="AUTHENTICATION_LOGIN_UNAVAILABLE_BODY">Något gick fel hos oss. Försök igen om några minuter.</string>
+  <string name="AUTHENTICATION_LOGIN_UNAVAILABLE_TITLE">Vi kan inte logga in dig just nu</string>
   <string name="AUTOMATED_MESSAGE_ESCALATION_BANNER_TEXT">Vi återkommer till dig så fort som möjligt. Under tiden kan du stänga ner appen.</string>
   <string name="AUTOMATED_MESSAGE_ESCALATION_BANNER_TITLE">Ditt ärende har skickats till vårt serviceteam</string>
   <string name="AUTOMATED_MESSAGE_INFO_CARD_BUTTON">Läs mer</string>
@@ -269,7 +271,6 @@
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_TWO_TO_EIGHT_HOURS">2-8 timmar</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LEFT_UNDER_TWO_HOURS">Under 2 timmar</string>
   <string name="CLAIM_CHAT_STROLLER_THEFT_LOCK_DESCRIPTION">Berätta mer</string>
-  <string name="CLAIM_CHAT_STROLLER_THEFT_LOCK_DESCRIPTION_MESSAGE">Var barnvagnen låst eller skyddad på något annat sätt?</string>
   <string name="CLAIM_CHAT_SUBMIT_CLAIM">Skicka in skadeanmälan</string>
   <string name="CLAIM_CHAT_SUCCESS_GO_TO_CLAIM">Gå till ärende</string>
   <string name="CLAIM_CHAT_SUCCESS_MESSAGE">Ditt ärende har skickats in</string>
@@ -559,6 +560,7 @@
   <string name="INSURANCE_EVIDENCE_READ_MORE_DESCRIPTION">Ett giltighetsintyg styrker under vilka perioder du haft en giltig och betald hemförsäkring hos Hedvig, samt dess detaljer - till exempel vilken adress som varit försäkrad och vad du har betalat.\n\nGiltighetsintyget kan exempelvis användas för att styrka din försäkringsperiod vid ansökan om rättsskydd hos ett annat försäkringsbolag, eller i ärenden hos bank och myndigheter.</string>
   <string name="INSURANCE_EVIDENCE_READ_MORE_TITLE">Vad är ett giltighetsintyg?</string>
   <string name="INSURANCE_OFFERS_SUBHEADING">Erbjudanden</string>
+  <string name="INSURANCE_PERILS_INFO">Beskrivningarna nedan är förenklade. Det är alltid dina villkor som avgör vad som täcks.</string>
   <string name="INVALID_NATIONAL_IDENTITY_NUMBER">Invalid National Identity Number</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_BODY">Vi försöker reparera i första hand, men om din %1$s skulle behöva ersättas helt (ex. om den blivit stulen) ersätts du med **%2$d\u0025** av inköpspriset **%3$d kr**, alltså **%4$d kr**.</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE">Värdering</string>
@@ -1003,7 +1005,7 @@
   <string name="TALKBACK_CONVERSATION_DESCRIPTION" formatted="false">Konversation om %1$s. Senaste meddelandet den %2$s.</string>
   <string name="TALKBACK_COVERED">Ingår</string>
   <string name="TALKBACK_DOCUMENT">Dokument %1$s, dubbeltryck för att öppna.</string>
-  <string name="TALKBACK_DOUBLE_TAP_TO_CHOOSE">Dubbeltryck för att välja</string>
+  <string name="TALKBACK_DOUBLE_TAP_TO_CHOOSE">Välja</string>
   <string name="TALKBACK_DOUBLE_TAP_TO_READ_DETAILS">Dubbeltryck för att läsa detaljer</string>
   <string name="TALKBACK_DOUBLE_TAP_TO_SEE_ALL_OPTIONS">Dubbeltryck för att se alla alternativ</string>
   <string name="TALKBACK_DOUBLE_TAP_TO_TURN_OFF">Slå av</string>

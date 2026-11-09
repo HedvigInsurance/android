@@ -14,6 +14,7 @@ import com.hedvig.android.memberquickactions.GetMemberQuickActionsUseCase
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.notification.badge.data.crosssell.home.CrossSellHomeNotificationService
 import dev.zacsweers.metro.Inject
+import kotlin.time.Clock
 
 @Inject
 @HedvigViewModel(ActivityRetainedScope::class)
@@ -28,6 +29,7 @@ internal class HomeViewModel(
   dismissedShopSessionsStorage: DismissedShopSessionsStorage,
   getMemberTypeUseCase: GetMemberTypeUseCase,
   eventTrackingClient: EventTrackingClient,
+  clock: Clock,
 ) : MoleculeViewModel<HomeEvent, HomeUiState>(
     HomeUiState.Loading,
     HomePresenter(
@@ -41,5 +43,6 @@ internal class HomeViewModel(
       dismissedShopSessionsStorage,
       getMemberTypeUseCase,
       eventTrackingClient,
+      clock,
     ),
   )

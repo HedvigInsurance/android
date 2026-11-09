@@ -41,6 +41,7 @@ import octopus.type.InsuranceDocumentType
 internal class GetClaimDetailUiStateUseCase(
   private val apolloClient: ApolloClient,
   private val crossSellAfterClaimClosedRepository: CrossSellAfterClaimClosedRepository,
+  private val clock: Clock,
 ) {
   fun invoke(claimId: String): Flow<Either<Error, ClaimDetailUiState.Content>> = flow {
     // First iteration: try the regular endpoint. A NoClaimFound here means this
@@ -100,7 +101,7 @@ internal class GetClaimDetailUiStateUseCase(
     val submittedAt = claim.submittedAt
       ?.atStartOfDayIn(TimeZone.UTC)
       ?.toLocalDateTime(TimeZone.UTC)
-      ?: Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+      ?: clock.now().toLocalDateTime(TimeZone.currentSystemDefault())
 
     return ClaimDetailUiState.Content(
       claimId = claim.id,

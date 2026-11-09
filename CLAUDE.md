@@ -353,6 +353,15 @@ internal class SetArticleRatingUseCaseImpl(...) : SetArticleRatingUseCase {
 }
 ```
 
+### Dates from the date picker
+
+`HedvigDatePickerState`, `HedvigDatePickerImmutableState` and `HedvigSelectableDates.isSelectableDate` carry a
+calendar day as epoch millis at **UTC midnight** (Material 3's convention, not configurable). Always convert with
+`TimeZone.UTC`, both ways. Reading them with `TimeZone.currentSystemDefault()` returns the right day in Sweden and
+the previous day on any phone set to a zone behind UTC, so the bug never shows in local testing. Use the device zone
+only for "what is today" (`clock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date`). The plan to replace
+the millis with a `LocalDate` API is in `docs/plans/2026-11-06-date-picker-localdate-api.md`.
+
 ### Logging
 
 All logging in the app goes through a single KMP entrypoint: the `logcat` function in `:logging-public`. **Never call Timber, `android.util.Log`, or `println` directly** — Timber is installed only as a set of trees (Crashlytics, Datadog breadcrumbs, debug `DebugTree`) at startup; `logcat` fans out to them on Android and to `NSLog` on iOS.
@@ -443,7 +452,7 @@ The project uses custom Gradle convention plugins for consistent configuration:
 - **hedvig.android.library** - Android library configuration
 - **hedvig.jvm.library** - Pure Kotlin (JVM) libraries
 - **hedvig.multiplatform.library** - KMP module with a JVM target. Not exported to iOS.
-- **hedvig.multiplatform.library.ios** - KMP module that `:umbrella` exports to iOS, directly or transitively. Adds the iOS targets; every `expect` needs a `nativeMain` actual.
+- **hedvig.multiplatform.library.ios** - KMP module that compiles for iOS so `:umbrella` can export it, directly or transitively. Adds the iOS targets; every `expect` needs a `nativeMain` actual. A module keeps the plugin even while `:umbrella` does not currently reach it, so it stays exportable without a porting effort.
 - **hedvig.multiplatform.library.android** - adds an android target to a KMP module when it needs android-specific code, Compose previews, resources, or the `navKeys()`/`viewModels()` processors.
 
 ### HedvigGradlePluginExtension DSL
@@ -821,6 +830,13 @@ RUM query links embedded in a monitor's notification message are frozen copies o
 nothing validates, so re-check them whenever the metric changes.
 
 ## Debugging
+
+### Seeing a composable without a device
+
+To see what a composable looks like, or to compare a few layout, alignment or wrapping variants
+of it as images, do not build the app or reach for Android Studio previews. Any KMP module with
+a JVM target can render through Skia from a `jvmTest` and write PNGs; use the
+`render-composables-on-jvm` skill, which carries a template test for it.
 
 ### Network traffic on a device
 

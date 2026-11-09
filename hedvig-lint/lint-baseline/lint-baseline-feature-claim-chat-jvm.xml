@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 9.5.0" type="baseline" client="gradle" dependencies="false" name="AGP (9.5.0)" variant="all" version="9.5.0">
+
+    <issue
+        id="EmptySuperCall"
+        message="No need to call `super.onCleared`; the super method is defined to be empty"
+        errorLine1="    super.onCleared()"
+        errorLine2="          ~~~~~~~~~">
+        <location
+            file="src/commonMain/kotlin/com/hedvig/android/feature/claim/chat/ClaimChatViewModel.kt"
+            line="235"
+            column="11"/>
+    </issue>
+
+    <issue
+        id="RestrictedApi"
+        message="FontScalingLinear.toDp-GaN1DYA can only be called from within the same library group (referenced groupId=`org.jetbrains.compose.ui` from groupId=`hedvigandroid`)"
+        errorLine1="            animationSize.toDp()"
+        errorLine2="                          ~~~~">
+        <location
+            file="src/commonMain/kotlin/com/hedvig/android/feature/claim/chat/ui/ClaimChatDestination.kt"
+            line="1026"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="RestrictedApi"
+        message="FontScalingLinear.toDp-GaN1DYA can only be called from within the same library group (referenced groupId=`org.jetbrains.compose.ui` from groupId=`hedvigandroid`)"
+        errorLine1="            animationSize.toDp() + 12.dp"
+        errorLine2="                          ~~~~">
+        <location
+            file="src/commonMain/kotlin/com/hedvig/android/feature/claim/chat/ui/LastItemHeightAdjustingState.kt"
+            line="73"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="RestrictedApi"
+        message="FontScalingLinear.toDp-GaN1DYA can only be called from within the same library group (referenced groupId=`org.jetbrains.compose.ui` from groupId=`hedvigandroid`)"
+        errorLine1="                  animationSize.toDp()"
+        errorLine2="                                ~~~~">
+        <location
+            file="src/commonMain/kotlin/com/hedvig/android/feature/claim/chat/ui/step/TaskStep.kt"
+            line="72"
+            column="33"/>
+    </issue>
+
+</issues>

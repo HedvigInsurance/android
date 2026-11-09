@@ -94,6 +94,7 @@ internal class ExhaustiveBackstackSerializationTest {
    */
   private fun discoverContributedSerializersModules(): List<SerializersModule> {
     val candidateInterfaces = ClassGraph()
+      .enableClasspath()
       .enableClassInfo()
       .enableMethodInfo()
       .acceptPackages("com.hedvig")
@@ -106,7 +107,7 @@ internal class ExhaustiveBackstackSerializationTest {
                 method.typeSignatureOrTypeDescriptor.resultType.toString() == SERIALIZERS_MODULE_FQ_NAME
             }
           }
-          .map { it.loadClass() }
+          .map { Class.forName(it.name, false, javaClass.classLoader) }
       }
     return candidateInterfaces
       // Exclude Metro-generated nested contribution interfaces (`X$MetroContributionToAppScope`),
@@ -148,15 +149,16 @@ internal class ExhaustiveBackstackSerializationTest {
    * new key (or a whole new feature) appears here automatically and must be registered to pass.
    */
   private fun concreteSerializableNavKeysOnClasspath(): Set<KClass<*>> = ClassGraph()
+    .enableClasspath()
     .enableClassInfo()
     .enableAnnotationInfo()
     .acceptPackages("com.hedvig")
     .scan()
     .use { scan ->
-      scan.getClassesImplementing(HedvigNavKey::class.java.name)
+      scan.getAllClassesImplementing(HedvigNavKey::class.java.name)
         .filter { !it.isInterface && !it.isAbstract }
         .filter { it.hasAnnotation("kotlinx.serialization.Serializable") }
-        .map { it.loadClass().kotlin }
+        .map { Class.forName(it.name, false, javaClass.classLoader).kotlin }
         .toSet()
     }
 

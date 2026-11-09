@@ -1,10 +1,12 @@
 package com.hedvig.android.feature.insurances.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import com.hedvig.android.compose.ui.LocalClock
 import com.hedvig.android.data.contract.gradientResource
 import com.hedvig.android.data.contract.isTrialContract
 import com.hedvig.android.design.system.hedvig.ChipType.GENERAL
@@ -22,7 +24,6 @@ import hedvig.resources.CONTRACT_STATUS_TO_BE_TERMINATED
 import hedvig.resources.DASHBOARD_INSURANCE_STATUS_ACTIVE
 import hedvig.resources.DASHBOARD_INSURANCE_STATUS_ACTIVE_UPDATE_DATE
 import hedvig.resources.Res
-import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 import org.jetbrains.compose.resources.painterResource
@@ -30,7 +31,8 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun InsuranceContract.createChips(): List<ChipUiData> {
-  val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+  val clock = LocalClock.current
+  val today = remember(clock) { clock.todayIn(TimeZone.currentSystemDefault()) }
   val listOfChips =
     when (this) {
       is InsuranceContract.PendingInsuranceContract -> {

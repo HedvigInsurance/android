@@ -31,6 +31,11 @@ enum class Feature(
     "Enables inbox icon always available on the Home screen " +
       "and New conversation button inside the inbox",
   ),
+  HIDE_CANCEL_INSURANCE_FROM_HOME_SCREEN(
+    "When the toggle is on, the cancel insurance option is left out of the 'Change insurance' quick action " +
+      "on the home screen, so the home screen does not prompt cancellation. The option stays available " +
+      "everywhere else, such as the help center quick actions and insurance details.",
+  ),
   UPDATE_NECESSARY(
     "Defines the lowest supported app version. Should prompt a user to update if it uses an outdated version.",
   ),

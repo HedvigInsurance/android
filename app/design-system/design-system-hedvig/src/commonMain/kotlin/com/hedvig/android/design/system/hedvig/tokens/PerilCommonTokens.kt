@@ -14,6 +14,8 @@ internal object PerilCommonTokens {
   val DefaultIconColor = ColorSchemeKeyTokens.FillPrimary
   val DisabledTextColor = ColorSchemeKeyTokens.TextDisabled
   val DisabledIconColor = ColorSchemeKeyTokens.FillDisabled
+  val DisclaimerTextColor = ColorSchemeKeyTokens.TextSecondaryTranslucent
+  val DisclaimerDividerColor = ColorSchemeKeyTokens.BorderPrimary
   val PlusIconSize = 24.dp
 }
 
