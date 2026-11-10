@@ -159,13 +159,13 @@ internal class BackstackController(
   }
 
   /**
-   * Whether the stack is inside the runs model: rooted at [HomeKey] (or [LoginKey]). The only stack
-   * that is not is a deep link that landed alone because another app's task hosts us (see
-   * [navigateToExternalDeepLink]), plus whatever was pushed on top of it. The stack shape is the
-   * record of that, so no separate task state is kept.
+   * Whether this stack is a deep link that landed alone because another app's task hosts us (see
+   * [navigateToExternalDeepLink]), plus whatever was pushed on top of it. Every other stack starts at
+   * [HomeKey] (or [LoginKey]), so a different first entry is the record of that landing and no
+   * separate task state is kept.
    */
-  private val isRootedInRunsModel: Boolean
-    get() = entries.firstOrNull().let { it is HomeKey || it is LoginKey }
+  private val isDeepLinkHostedInForeignTask: Boolean
+    get() = entries.firstOrNull().let { it !is HomeKey && it !is LoginKey }
 
   /**
    * Drives the scene decorator. The navigation suite (tab bar/rail) may render only inside the runs
@@ -176,7 +176,7 @@ internal class BackstackController(
    */
   val loneDeepLinkChrome: LoneDeepLinkChrome
     get() = when {
-      isRootedInRunsModel -> LoneDeepLinkChrome.ShowSuite
+      !isDeepLinkHostedInForeignTask -> LoneDeepLinkChrome.ShowSuite
       entries.lastOrNull()?.topLevelTabOrNull() != null -> LoneDeepLinkChrome.ShowUpBar
       else -> LoneDeepLinkChrome.ShowNothing
     }
@@ -248,7 +248,7 @@ internal class BackstackController(
    * instead of falling back into the app that linked here.
    */
   override fun navigateUp(): Boolean {
-    val loneDeepLink = entries.singleOrNull()?.takeIf { !isRootedInRunsModel }
+    val loneDeepLink = entries.singleOrNull()?.takeIf { isDeepLinkHostedInForeignTask }
     if (loneDeepLink != null) {
       escapeToOwnTask(syntheticStackFor(loneDeepLink).dropLast(1))
       return true

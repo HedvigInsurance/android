@@ -562,7 +562,7 @@ A deep link hosted in another app's task is a special case (V.3): it lands alone
 enum class LoneDeepLinkChrome { ShowSuite, ShowUpBar, ShowNothing }
 
 val loneDeepLinkChrome: LoneDeepLinkChrome get() = when {
-  isRootedInRunsModel -> LoneDeepLinkChrome.ShowSuite                                // normal: rail
+  !isDeepLinkHostedInForeignTask -> LoneDeepLinkChrome.ShowSuite                     // normal: rail
   entries.lastOrNull()?.topLevelTabOrNull() != null -> LoneDeepLinkChrome.ShowUpBar  // tab root on top: decorator supplies Up
   else -> LoneDeepLinkChrome.ShowNothing                                             // deep screen renders its own Up
 }
@@ -775,7 +775,7 @@ The task is consulted exactly once, when the link lands. After that **the stack 
 
 ```kotlin
 override fun navigateUp(): Boolean {
-  val loneDeepLink = entries.singleOrNull()?.takeIf { !isRootedInRunsModel }
+  val loneDeepLink = entries.singleOrNull()?.takeIf { isDeepLinkHostedInForeignTask }
   if (loneDeepLink != null) {                              // foreign-hosted deep link, nothing above it
     escapeToOwnTask(syntheticStackFor(loneDeepLink).dropLast(1))
     return true
