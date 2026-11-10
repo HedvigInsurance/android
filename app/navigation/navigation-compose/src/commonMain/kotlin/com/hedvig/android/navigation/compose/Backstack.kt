@@ -15,8 +15,8 @@ interface Backstack {
   val entries: MutableList<HedvigNavKey>
 
   /**
-   * Up navigation: a plain temporal pop that is a no-op at the root. Unlike [popBackstack] in `:app`'s
-   * controller, it never finishes the app.
+   * Up navigation. Defaults to a plain temporal pop that is a no-op at the root; `:app`'s controller
+   * overrides it to re-root a deep link hosted in another app's task (see BackstackController).
    */
   fun navigateUp(): Boolean = popBackstack()
 
@@ -37,8 +37,8 @@ interface Backstack {
 
   /**
    * Pops every entry above [index] so the entry at [index] becomes the new top. The stack is never
-   * emptied: an [index] below 0 asks to clear the base too (e.g. an inclusive pop of the root
-   * entry). `:app`'s controller overrides the `index < 0` case to
+   * emptied: an [index] below 0 asks to clear the base too (e.g. an inclusive pop of a lone deep-link
+   * entry with no app ancestry below it). `:app`'s controller overrides the `index < 0` case to
    * finish the App instead — same finish-at-root contract as [popBackstack].
    */
   fun popUpToIndex(index: Int) = Snapshot.withMutableSnapshot {

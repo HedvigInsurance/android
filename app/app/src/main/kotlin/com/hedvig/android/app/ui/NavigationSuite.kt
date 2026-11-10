@@ -19,6 +19,7 @@ import com.hedvig.android.design.system.hedvig.NavigationBar
 import com.hedvig.android.design.system.hedvig.NavigationRail
 import com.hedvig.android.design.system.hedvig.NotificationCircleDefaultColor
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.NavigationSuiteType
@@ -68,6 +69,14 @@ internal fun rememberHedvigChromeStrategy(
           },
         )
       },
+      upBarContent = {
+        // Bare Up-bar shown only when a tab root is deep-linked alone; a back arrow with no title
+        // is the intended minimal affordance.
+        TopAppBarWithBack(
+          onClick = { hedvigAppState.backstackController.navigateUp() },
+        )
+      },
+      loneDeepLinkChrome = { hedvigAppState.backstackController.loneDeepLinkChrome },
     ),
   )
 }

@@ -1,5 +1,6 @@
 package com.hedvig.android.navigation.compose
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -39,6 +40,22 @@ import androidx.navigation3.scene.SceneDecoratorStrategyScope
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 
 /**
+ * Which chrome the scene decorator should render for a chrome-bearing scene. Driven by a single
+ * runtime probe supplied by `:app`. A lone deep link must never show the rail (it would expose the
+ * broken index-0 runs invariant — see spec D7), yet a bare tab root has no Up affordance of its own.
+ */
+enum class LoneDeepLinkChrome {
+  /** Normal: render the rail/bar. */
+  ShowSuite,
+
+  /** Lone tab root (no own Up): the decorator supplies a top-app-bar Up. */
+  ShowUpBar,
+
+  /** Lone deep "bar-keeper" that already renders its own Up: render nothing extra. */
+  ShowNothing,
+}
+
+/**
  * Renders the global navigation bar/rail as part of the scene itself, via a
  * [SceneDecoratorStrategy], rather than wrapping `NavDisplay` in an outer
  * `Row/Column { chrome ; content }`. This is the purpose-built Navigation 3 way to add persistent
@@ -68,15 +85,29 @@ class NavSuiteSceneDecoratorStrategy<T : Any> internal constructor(
   private val sharedTransitionScope: SharedTransitionScope,
   private val navigationSuiteType: () -> NavigationSuiteType,
   private val chromeContent: @Composable () -> Unit,
+  private val upBarContent: @Composable () -> Unit,
+  private val loneDeepLinkChrome: () -> LoneDeepLinkChrome,
 ) : SceneDecoratorStrategy<T> {
   override fun SceneDecoratorStrategyScope<T>.decorateScene(scene: Scene<T>): Scene<T> {
     if (!scene.metadata.showsNavBar()) return scene
-    return NavSuiteScene(
-      scene = scene,
-      sharedTransitionScope = sharedTransitionScope,
-      navigationSuiteType = navigationSuiteType,
-      chromeContent = chromeContent,
-    )
+    return when (loneDeepLinkChrome()) {
+      LoneDeepLinkChrome.ShowSuite -> {
+        NavSuiteScene(
+          scene = scene,
+          sharedTransitionScope = sharedTransitionScope,
+          navigationSuiteType = navigationSuiteType,
+          chromeContent = chromeContent,
+        )
+      }
+
+      LoneDeepLinkChrome.ShowUpBar -> {
+        NavUpBarScene(scene = scene, upBarContent = upBarContent)
+      }
+
+      LoneDeepLinkChrome.ShowNothing -> {
+        scene
+      }
+    }
   }
 
   companion object {
@@ -95,17 +126,24 @@ fun <T : Any> rememberNavSuiteSceneDecoratorStrategy(
   sharedTransitionScope: SharedTransitionScope,
   navigationSuiteType: () -> NavigationSuiteType,
   chromeContent: @Composable () -> Unit,
+  upBarContent: @Composable () -> Unit,
+  loneDeepLinkChrome: () -> LoneDeepLinkChrome,
 ): NavSuiteSceneDecoratorStrategy<T> {
   // movableContentOf wants a single stable lambda; rememberUpdatedState lets the captured chrome
   // composable change (new callbacks each recomposition) without rebuilding the movable wrapper.
   val currentChrome by rememberUpdatedState(chromeContent)
+  val currentUpBar by rememberUpdatedState(upBarContent)
   val currentType by rememberUpdatedState(navigationSuiteType)
+  val currentLoneChrome by rememberUpdatedState(loneDeepLinkChrome)
   val movableChrome = remember { movableContentOf { currentChrome() } }
+  val movableUpBar = remember { movableContentOf { currentUpBar() } }
   return remember(sharedTransitionScope) {
     NavSuiteSceneDecoratorStrategy(
       sharedTransitionScope = sharedTransitionScope,
       navigationSuiteType = { currentType() },
       chromeContent = movableChrome,
+      upBarContent = movableUpBar,
+      loneDeepLinkChrome = { currentLoneChrome() },
     )
   }
 }
@@ -115,7 +153,8 @@ fun <T : Any> rememberNavSuiteSceneDecoratorStrategy(
 // same class and the same key, regardless of NavEntry.content lambda identity. A data class default
 // would delegate to the wrapped scene's equals, which in turn compares NavEntry references. Because
 // NavEntry.content is a lambda created fresh each recomposition, two logically-identical entries can
-// differ by identity, making the wrapping scene look "new" mid-transition.
+// differ by identity, making the wrapping scene look "new" mid-transition. NavUpBarScene below uses
+// the same equals/hashCode logic.
 internal class NavSuiteScene<T : Any>(
   val scene: Scene<T>,
   val sharedTransitionScope: SharedTransitionScope,
@@ -179,6 +218,54 @@ internal class NavSuiteScene<T : Any>(
 
   override fun hashCode(): Int = key.hashCode()
 }
+
+// Key-based equality: two NavUpBarScene wrappers are the same scene if they wrap a scene of the
+// same class and the same key, regardless of NavEntry.content lambda identity. See the comment on
+// NavSuiteScene above for the full rationale. NavSuiteScene uses identical equals/hashCode logic; it
+// is not tested directly because its constructor requires a SharedTransitionScope that is hard to
+// build outside a Compose host, so it relies on that identical-logic argument while direct test
+// coverage lives in NavUpBarSceneEqualityTest.
+internal class NavUpBarScene<T : Any>(
+  val scene: Scene<T>,
+  val upBarContent: @Composable () -> Unit,
+) : Scene<T> by scene {
+  override val key: Any = scene::class to scene.key
+
+  override val content: @Composable () -> Unit = {
+    Column(Modifier.fillMaxSize()) {
+      upBarContent()
+      Box(
+        Modifier
+          .weight(1f)
+          .fillMaxWidth()
+          .consumeWindowInsets(WindowInsets.systemBars.only(WindowInsetsSides.Top)),
+      ) {
+        scene.content()
+      }
+    }
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is NavUpBarScene<*>) return false
+    return key == other.key
+  }
+
+  override fun hashCode(): Int = key.hashCode()
+}
+
+/**
+ * Test seam. Exposes the [LoneDeepLinkChrome.ShowUpBar] decoration path (wrapping a nav-bar scene in
+ * a [NavUpBarScene]) so [NavUpBarScene]'s key-based equality can be unit tested from `:app`. It
+ * cannot be tested inside `:navigation-compose`: that KMP android-library target has no host
+ * unit-test source set, and [NavUpBarScene] is `internal`. There is no production caller. The full
+ * suite chrome path is exercised through [rememberNavSuiteSceneDecoratorStrategy] in the app.
+ */
+@VisibleForTesting
+fun <T : Any> navUpBarSceneDecoratorStrategy(upBarContent: @Composable () -> Unit = {}): SceneDecoratorStrategy<T> =
+  SceneDecoratorStrategy { scene ->
+    if (!scene.metadata.showsNavBar()) scene else NavUpBarScene(scene = scene, upBarContent = upBarContent)
+  }
 
 private const val NavSuiteSharedKey = "nav-suite-chrome"
 

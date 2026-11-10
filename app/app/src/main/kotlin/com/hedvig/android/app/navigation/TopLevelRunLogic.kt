@@ -52,8 +52,8 @@ internal fun popTopRunToStart(stack: List<HedvigNavKey>): List<HedvigNavKey> {
 }
 
 /**
- * Builds the synthetic back stack a deep link to [key] lands on: the path the member would have taken
- * to reach it by hand. Reuses the existing [startDestination] tab→root map. `HomeKey` is always the
+ * Builds the synthetic back stack for a deep-linked [key]: the path the member would have taken to
+ * reach it by hand. Reuses the existing [startDestination] tab→root map. `HomeKey` is always the
  * pinned base so the result satisfies the runs-model invariant (index 0 == HomeKey).
  */
 internal fun syntheticStackFor(key: HedvigNavKey): List<HedvigNavKey> {
@@ -70,13 +70,16 @@ internal fun syntheticStackFor(key: HedvigNavKey): List<HedvigNavKey> {
 /**
  * What the "change payment method" affordance does from inside a payin setup flow, given the [stack]
  * it runs on. The payin overview is where methods are changed, so the flow returns to it whenever the
- * stack holds one (a deep-linked setup flow lands on its synthetic ancestry, which includes it). Any
- * other host offers its own way to change the method (onboarding's payin step, the payout account
- * screen) and just gets its screen back.
+ * stack holds one. A lone deep link has nothing under it — popping would finish the app — so the
+ * overview's own ancestry is built instead. Any other host offers its own way to change the method
+ * (onboarding's payin step, the payout account screen) and just gets its screen back.
  */
 internal sealed interface ChangePayinMethodTarget {
   /** The overview already in the stack, at [index]. */
   data class PopTo(val index: Int) : ChangePayinMethodTarget
+
+  /** Re-root onto [stack], the overview plus the ancestry it would have been reached through. */
+  data class Reseed(val stack: List<HedvigNavKey>) : ChangePayinMethodTarget
 
   data object PopOne : ChangePayinMethodTarget
 }
@@ -85,6 +88,7 @@ internal fun changePayinMethodTarget(stack: List<HedvigNavKey>): ChangePayinMeth
   val overviewIndex = stack.indexOfLast { it is PayinAccountKey }
   return when {
     overviewIndex != -1 -> ChangePayinMethodTarget.PopTo(overviewIndex)
+    stack.size == 1 -> ChangePayinMethodTarget.Reseed(syntheticStackFor(PayinAccountKey))
     else -> ChangePayinMethodTarget.PopOne
   }
 }

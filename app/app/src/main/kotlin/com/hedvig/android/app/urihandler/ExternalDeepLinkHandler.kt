@@ -27,8 +27,8 @@ import kotlinx.coroutines.flow.first
  *     to resolve the start scene before routing, so the link reads a settled auth state and lands
  *     deterministically — rather than racing the splash-gated reconciliation.
  *
- * A matched key (or the Home fallback) replaces the stack with its synthetic ancestry (see
- * [BackstackController.navigateToExternalDeepLink]).
+ * A matched key (or the Home fallback) replaces the stack; whether with its synthetic ancestry or the
+ * key alone depends on the hosting task (see [BackstackController.navigateToExternalDeepLink]).
  */
 internal class ExternalDeepLinkHandler(
   private val matcher: HedvigDeepLinkMatcher,
@@ -36,19 +36,23 @@ internal class ExternalDeepLinkHandler(
   private val readySignal: StateFlow<Boolean>,
   private val deepLinkHosts: List<String>,
 ) {
-  suspend fun handle(uri: String) {
+  /**
+   * [hostedInForeignTask] is read only once [readySignal] has fired, so it sees the Activity's settled
+   * task position rather than an early-launch one.
+   */
+  suspend fun handle(uri: String, hostedInForeignTask: () -> Boolean) {
     readySignal.first { it }
     val destination = matcher.match(uri)
     if (destination != null) {
       logcat { "ExternalDeepLinkHandler landing external deep link $destination for uri:$uri" }
-      backstackController.navigateToExternalDeepLink(destination)
+      backstackController.navigateToExternalDeepLink(destination, hostedInForeignTask())
       return
     }
     if (targetsOwnDeepLink(uri)) {
       logcat(LogPriority.WARN) {
         "ExternalDeepLinkHandler no specific match for own-host uri:$uri — falling back to Home"
       }
-      backstackController.navigateToExternalDeepLink(HomeKey)
+      backstackController.navigateToExternalDeepLink(HomeKey, hostedInForeignTask())
       return
     }
     logcat(LogPriority.ERROR) { "ExternalDeepLinkHandler ignoring unmatched foreign-host external deep link uri:$uri" }

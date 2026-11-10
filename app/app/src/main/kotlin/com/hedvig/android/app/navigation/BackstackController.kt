@@ -18,6 +18,7 @@ import com.hedvig.android.navigation.common.SuppressesAppStoreReviewRequest
 import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.common.contentKey
 import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.LoneDeepLinkChrome
 import kotlin.time.Clock
 
 /**
@@ -45,6 +46,12 @@ internal class BackstackController(
   // Defaulted (and placed after the required states) so the many positional test constructions need no
   // change; the real construction in NavRetainedViewModel passes it explicitly by name.
   pendingDeepLinkStashedAtState: MutableState<Long?> = mutableStateOf(null),
+  /**
+   * Re-roots the app in its own task seeded with the given stack (see [navigateUp]). The Activity
+   * owns the mechanics (relaunch with NEW_TASK|CLEAR_TASK + finish); the controller only supplies
+   * the target stack. Attached by the Activity in `onCreate`; no-op by default.
+   */
+  var escapeToOwnTask: (List<HedvigNavKey>) -> Unit = {},
   /**
    * Finishes the host Activity, used by [popBackstack] when a Back/close lands on the root (nothing
    * left to pop) so the app exits instead of stranding the user on a dead screen. Attached by the
@@ -143,6 +150,29 @@ internal class BackstackController(
   }
 
   /**
+   * Whether the stack is inside the runs model: rooted at [HomeKey] (or [LoginKey]). The only stack
+   * that is not is a deep link that landed alone because another app's task hosts us (see
+   * [navigateToExternalDeepLink]), plus whatever was pushed on top of it. The stack shape is the
+   * record of that, so no separate task state is kept.
+   */
+  private val isRootedInRunsModel: Boolean
+    get() = entries.firstOrNull().let { it is HomeKey || it is LoginKey }
+
+  /**
+   * Drives the scene decorator. The navigation suite (tab bar/rail) may render only inside the runs
+   * model: the runs helpers in `TopLevelRunLogic` assume `HomeKey` at index 0 and silently no-op
+   * otherwise, so rendering the suite on a lone deep link strands the user (a dead Home tap). Outside
+   * the model the decision keys off the top entry: a bare top-level root gets a decorator-supplied
+   * Up-bar (it has no back affordance of its own), a deeper screen gets nothing (it draws its own Up).
+   */
+  val loneDeepLinkChrome: LoneDeepLinkChrome
+    get() = when {
+      isRootedInRunsModel -> LoneDeepLinkChrome.ShowSuite
+      entries.lastOrNull()?.topLevelTabOrNull() != null -> LoneDeepLinkChrome.ShowUpBar
+      else -> LoneDeepLinkChrome.ShowNothing
+    }
+
+  /**
    * Rail/bar tap. Re-tapping the current tab pops its run to the root. Switching tabs stashes the
    * leaving side-tab's run into [parkedRuns] (Home is never parked — it stays in the rendered stack)
    * and restores the target tab's parked run, or starts a fresh one.
@@ -187,23 +217,34 @@ internal class BackstackController(
   /**
    * Routes an external or notification deep link: an entry into the app from outside, not navigation
    * within a live session, so it replaces whatever was there. Logged out, stash it as
-   * [pendingDeepLink] for [setLoggedIn]; logged in, [reseed] onto the synthetic ancestry from
-   * [syntheticStackFor], so Back and Up walk the path the member would have taken by hand (Home, the
-   * owning tab root, the key's own parents) before leaving the app.
+   * [pendingDeepLink] for [setLoggedIn]. Logged in, what it lands on depends on which task hosts us:
+   *  - our own task: the synthetic ancestry from [syntheticStackFor], so Back and Up both walk the
+   *    path the member would have taken by hand before leaving the app;
+   *  - another app's task ([hostedInForeignTask]): the key alone, so Back returns straight to that
+   *    app, and Up re-roots us in our own task (see [navigateUp]).
    */
-  fun navigateToExternalDeepLink(key: HedvigNavKey) {
+  fun navigateToExternalDeepLink(key: HedvigNavKey, hostedInForeignTask: Boolean) {
     if (!isLoggedIn) {
       stashPendingDeepLink(key)
       return
     }
-    reseed(syntheticStackFor(key))
+    reseed(if (hostedInForeignTask) listOf(key) else syntheticStackFor(key))
   }
 
   /**
-   * Up is a plain temporal pop, identical to Back except at the root, where it is a no-op: Up must
-   * never exit the app the way Back does.
+   * Up is a plain temporal pop, identical to Back except in two places. At the root it is a no-op: Up
+   * must never exit the app the way Back does. And on a deep link standing alone in another app's task
+   * it hands the key's parent ancestry to [escapeToOwnTask], so the member continues in our own task
+   * instead of falling back into the app that linked here.
    */
-  override fun navigateUp(): Boolean = super.popBackstack()
+  override fun navigateUp(): Boolean {
+    val loneDeepLink = entries.singleOrNull()?.takeIf { !isRootedInRunsModel }
+    if (loneDeepLink != null) {
+      escapeToOwnTask(syntheticStackFor(loneDeepLink).dropLast(1))
+      return true
+    }
+    return super.popBackstack()
+  }
 
   /**
    * Back/close pop. Pops the top entry; if there is nothing to pop (we are at the root) the Activity

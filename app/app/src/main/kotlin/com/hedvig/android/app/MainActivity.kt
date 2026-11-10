@@ -149,10 +149,11 @@ class MainActivity : AppCompatActivity() {
   private val sessionReconciler get() = navRetainedViewModel.sessionReconciler
 
   /**
-   * External/notification VIEW intents are forwarded here as raw URI strings. The per-Activity collector in
-   * [onCreate] routes each through [externalDeepLinkHandler] once the start scene is resolved.
+   * External/notification VIEW intents are forwarded here as raw URI strings, with the flags of the
+   * intent that delivered them. The per-Activity collector in [onCreate] routes each through
+   * [externalDeepLinkHandler] once the start scene is resolved.
    */
-  private val deepLinkChannel = Channel<String>(Channel.UNLIMITED)
+  private val deepLinkChannel = Channel<ExternalDeepLink>(Channel.UNLIMITED)
 
   /**
    * Per-Activity router for external/notification deep links. Lives outside composition because it is
@@ -235,12 +236,17 @@ class MainActivity : AppCompatActivity() {
     // never silently dropped.
     addOnNewIntentListener { newIntent -> handleDeepLinkIntent(newIntent) }
 
+    backstackController.escapeToOwnTask = { parentStack ->
+      NavigationStateBridge.escapeToOwnTask(this@MainActivity, parentStack, serializersModules)
+    }
     backstackController.finishApp = androidAppHost::finishApp
     val externalNavigator = ExternalNavigatorImpl(this, hedvigBuildConstants.appPackageId, languageService)
     RiveInitializer.init(this)
     NavigationStateBridge.restoreAndPersist(
       backstackController = backstackController,
       savedStateRegistry = savedStateRegistry,
+      intent = intent,
+      isColdStart = savedInstanceState == null,
       serializersModules = serializersModules,
       clock = clock,
     )
@@ -249,8 +255,8 @@ class MainActivity : AppCompatActivity() {
       sessionReconciler.observeForcedLogout(lifecycle)
     }
     lifecycleScope.launch {
-      deepLinkChannel.receiveAsFlow().collect { uri ->
-        externalDeepLinkHandler.handle(uri)
+      deepLinkChannel.receiveAsFlow().collect { deepLink ->
+        externalDeepLinkHandler.handle(deepLink.uri) { isHostedInForeignTask(isTaskRoot, deepLink.launchFlags) }
       }
     }
     setContent {
@@ -302,7 +308,7 @@ class MainActivity : AppCompatActivity() {
   private fun handleDeepLinkIntent(intent: Intent) {
     if (intent.action != Intent.ACTION_VIEW) return
     val uri = intent.data?.toString() ?: return
-    deepLinkChannel.trySend(uri)
+    deepLinkChannel.trySend(ExternalDeepLink(uri, intent.flags))
   }
 }
 
@@ -311,6 +317,25 @@ class MainActivity : AppCompatActivity() {
  * see how each launch arrived (action/flags/isTaskRoot) when diagnosing task/back-stack oddities.
  */
 internal const val DEEP_LINK_STACK_DEBUG_TAG = "DeepLinkStackDebug"
+
+private data class ExternalDeepLink(val uri: String, val launchFlags: Int)
+
+/**
+ * Whether a deep link reached this Activity inside another app's task, given the task-root position
+ * and the [launchFlags] of the intent that delivered it. Such a link lands alone, so Back returns
+ * straight to that app; everything else is our own task and lands on its synthetic ancestry.
+ *
+ * Both conditions must hold to be foreign-hosted:
+ *  - **not the task root** (`!isTaskRoot`): some other activity sits below us in the task; and
+ *  - **launched without [Intent.FLAG_ACTIVITY_NEW_TASK]**: Android's default for that is to place us in
+ *    the *caller's* task rather than one of our own, so we joined whoever started us.
+ *
+ * `NEW_TASK` being set means the system gave us our own task (a fresh one, or an existing one brought
+ * forward), so we are not foreign-hosted even when not its root, as with a notification tap that
+ * fronted our task.
+ */
+internal fun isHostedInForeignTask(isTaskRoot: Boolean, launchFlags: Int): Boolean =
+  !isTaskRoot && (launchFlags and Intent.FLAG_ACTIVITY_NEW_TASK) == 0
 
 /**
  * Applies the theme in two ways:

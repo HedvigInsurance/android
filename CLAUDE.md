@@ -244,7 +244,7 @@ backstack.add(ChatKey(id))                              // push
 backstack.popBackstack()                                 // pop one; at the root it finishes the app (Back/close exits)
 backstack.popUpTo<TerminateInsuranceKey>(inclusive = true)
 backstack.navigateAndPopUpTo<FooKey>(BarKey, inclusive = true)
-backstack.navigateUp()                                   // pop one; at the root it is a no-op (Up never exits)
+backstack.navigateUp()                                   // pop one; no-op at the root; re-roots a foreign-hosted deep link
 backstack.removeAllOf<InboxKey>()
 ```
 
@@ -254,7 +254,7 @@ Never hold a long-lived reference to `entries` snapshot contents; mutate through
 
 `backstack.navigateUp()` may **only** be wired to the back arrow in a screen's top app bar. In every other case — "done"/"close"/"continue" buttons, success screens, dismissing a flow, programmatic pops after an action — call `backstack.popBackstack()` instead.
 
-**Why:** the two differ at the root: `popBackstack` finishes the app (Back/close exits), `navigateUp` is a no-op (Up never exits the app). That is right for the top app bar's "up" affordance and wrong for an in-content button, which must behave like the system back gesture, including at the root. Keeping the split by role also keeps the door open for Up and Back to diverge further later without auditing every button.
+**Why:** the two differ where the stack runs out. At the root `popBackstack` finishes the app (Back/close exits) while `navigateUp` is a no-op (Up never exits the app). On a deep link standing alone in another app's task, `popBackstack` returns to that app while `navigateUp` relaunches us in our own task on the key's parent stack. Both are right for the top app bar's "up" affordance and wrong for an in-content button, which must behave like the system back gesture.
 
 **How to apply:** When arranging the backstack for a flow, do it *at navigation time* (when navigating to a screen), so that a later plain `popBackstack()` and the system back gesture always land in the same place — never special-case the pop inside a button handler.
 
@@ -276,8 +276,8 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEntries(backstack: Backstack, /* n
 **Multiple back stacks (tabs)** are handled by the "runs model" in `BackstackController`/`TopLevelRunLogic`: Home's run is always at the base of `entries`; side tabs are parked in `parkedRuns` when you switch away and restored when you switch back. Tab state (saveable state + ViewModels) of parked runs is kept alive by the retained `NavEntryDecorator`s, which consult `allLiveContentKeys`.
 
 **Where the heavy logic lives** (read these, don't reinvent):
-- `BackstackController.kt` — per-Activity controller (owned by `NavRetainedViewModel`, a retained `ViewModel`; survives config changes, dies with its Activity), owns all nav state, tab switching, login/logout stash, deep-link landing.
-- `NavigationStateBridge.kt` — the single seam between Activity lifecycle and the controller (seed/restore/persist).
+- `BackstackController.kt` — per-Activity controller (owned by `NavRetainedViewModel`, a retained `ViewModel`; survives config changes, dies with its Activity), owns all nav state, tab switching, login/logout stash, deep-link landing, Up.
+- `NavigationStateBridge.kt` — the single seam between Activity lifecycle and the controller (seed/restore/persist + escape-to-own-task handoff).
 - `SessionReconciler.kt` — auth↔back-stack reconciliation; gates the splash via `isReady`; forced logout.
 - `HedvigEntryProvider.kt` — all destination registration and cross-feature lambda wiring.
 
@@ -291,7 +291,7 @@ If an interface needs a different implementation per platform, bind it **per-pla
 
 ### Deep Links
 
-Each feature builds `DeepLinkMatcher`s from its `HedvigDeepLinkContainer` patterns and contributes a `DeepLinkMatcherProvider` (`@ContributesIntoSet`). `:app` aggregates them into one `HedvigDeepLinkMatcher`. `MainActivity` forwards `ACTION_VIEW` intents as raw URI strings down a `deepLinkChannel`; `ExternalDeepLinkHandler` matches each to a key once the start scene is resolved and lands it through the controller. An external deep link replaces the stack with the key's synthetic ancestry (`syntheticStackFor`: Home, the owning tab root, the key's `DeepLinkAncestry` parents, the key), so Back and Up walk the path the member would have taken by hand. A link arriving while logged out is held as `pendingDeepLink` and landed the same way after login. In-app link taps (`DeepLinkFirstUriHandler`) instead append onto the live stack.
+Each feature builds `DeepLinkMatcher`s from its `HedvigDeepLinkContainer` patterns and contributes a `DeepLinkMatcherProvider` (`@ContributesIntoSet`). `:app` aggregates them into one `HedvigDeepLinkMatcher`. `MainActivity` forwards `ACTION_VIEW` intents as raw URI strings down a `deepLinkChannel`; `ExternalDeepLinkHandler` matches each to a key once the start scene is resolved and lands it through the controller. An external deep link replaces the stack. In our own task it lands on the key's synthetic ancestry (`syntheticStackFor`: Home, the owning tab root, the key's `DeepLinkAncestry` parents, the key), so Back and Up walk the path the member would have taken by hand. In another app's task (`isHostedInForeignTask`) it lands alone, so Back returns to that app and Up re-roots us in our own task. The task is checked once at landing; afterwards a stack not rooted at Home *is* the foreign-hosted case, and Up and the nav-bar chrome key off that shape. A link arriving while logged out is held as `pendingDeepLink` and landed on its ancestry after login. In-app link taps (`DeepLinkFirstUriHandler`) instead append onto the live stack.
 
 ### Data Layer
 
