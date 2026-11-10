@@ -709,7 +709,8 @@ fun setLoggedIn(memberId: String?) = Snapshot.withMutableSnapshot {
   val stash = stashedSession?.takeIf { memberId != null && it.memberId == memberId }; stashedSession = null
   parkedRuns.clear()
   when {
-    pending != null -> entries.replaceWith(syntheticStackFor(pending)) // deep link lands on its ancestry
+    pending != null -> entries.replaceWith(                           // lands as it would have logged in
+      if (pendingHostedInForeignTask) listOf(pending) else syntheticStackFor(pending))
     stash != null   -> { parkedRuns.putAll(stash.parkedRuns); entries.replaceWith(stash.entries) }
     else            -> entries.replaceWith(listOf(HomeKey))           // fresh Home
   }
@@ -722,7 +723,7 @@ Rules encoded here:
 - `memberId == null` (demo / unknown identity) stashes nothing — that session can never be safely restored.
 - A `DeliberateLogoutOrigin` top screen (e.g. Profile → Log out) means "log me out now"; we don't stash even with a known member.
 - `StashedSession` is **excluded from `allLiveContentKeys`**, so the retained decorators dispose every per-entry state (ViewModels, saved state) while it waits. On restore, history comes back but state is freshly recreated.
-- A `pendingDeepLink` takes precedence over a stash and lands on its synthetic ancestry (V.3).
+- A `pendingDeepLink` takes precedence over a stash and lands the way it would have logged in: alone in another app's task, on its synthetic ancestry in ours (V.3).
 
 ---
 
@@ -743,7 +744,7 @@ fun navigateToExternalDeepLink(key: HedvigNavKey, hostedInForeignTask: Boolean) 
 }
 ```
 
-An external deep link is an entry into the app from outside, not navigation within a live session, so it **replaces** the stack. Logged out, it's held as `pendingDeepLink` (persisted across rotation / process death — e.g. mid-OTP — and dropped after 30 minutes) and landed on its synthetic ancestry after login.
+An external deep link is an entry into the app from outside, not navigation within a live session, so it **replaces** the stack. Logged out, it's held as `pendingDeepLink` (persisted across rotation / process death — e.g. mid-OTP — and dropped after 30 minutes) together with whether another app's task hosted it, and landed after login by the same two-task rule.
 
 In-app link taps go through `DeepLinkFirstUriHandler` (the Compose `LocalUriHandler`) and `navigateToInAppLink` instead: the member is navigating within a live session, so the key is deduped and appended onto the live stack, and a link we can't match opens in the browser.
 

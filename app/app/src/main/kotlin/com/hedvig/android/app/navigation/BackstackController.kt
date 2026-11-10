@@ -76,16 +76,25 @@ internal class BackstackController(
    */
   internal var pendingDeepLinkStashedAtEpochMs: Long? by pendingDeepLinkStashedAtState
 
+  /**
+   * Whether [pendingDeepLink] arrived while another app's task hosted us. Login happens in that same
+   * task, so [setLoggedIn] must land the link alone there, exactly as [navigateToExternalDeepLink]
+   * would have had the member been logged in. Persisted with the link: the task outlives the process.
+   */
+  internal var pendingDeepLinkHostedInForeignTask: Boolean by mutableStateOf(false)
+
   /** Stashes [key] as the [pendingDeepLink], stamping [pendingDeepLinkStashedAtEpochMs] with now. */
-  private fun stashPendingDeepLink(key: HedvigNavKey) {
+  private fun stashPendingDeepLink(key: HedvigNavKey, hostedInForeignTask: Boolean) {
     pendingDeepLink = key
     pendingDeepLinkStashedAtEpochMs = clock.now().toEpochMilliseconds()
+    pendingDeepLinkHostedInForeignTask = hostedInForeignTask
   }
 
-  /** Clears [pendingDeepLink] and its companion timestamp together. */
+  /** Clears [pendingDeepLink] and its companion state together. */
   private fun clearPendingDeepLink() {
     pendingDeepLink = null
     pendingDeepLinkStashedAtEpochMs = null
+    pendingDeepLinkHostedInForeignTask = false
   }
 
   /**
@@ -205,7 +214,7 @@ internal class BackstackController(
    */
   fun navigateToInAppLink(key: HedvigNavKey) {
     if (!isLoggedIn) {
-      stashPendingDeepLink(key)
+      stashPendingDeepLink(key, hostedInForeignTask = false)
       return
     }
     Snapshot.withMutableSnapshot {
@@ -217,7 +226,8 @@ internal class BackstackController(
   /**
    * Routes an external or notification deep link: an entry into the app from outside, not navigation
    * within a live session, so it replaces whatever was there. Logged out, stash it as
-   * [pendingDeepLink] for [setLoggedIn]. Logged in, what it lands on depends on which task hosts us:
+   * [pendingDeepLink] for [setLoggedIn], which applies the same rule once the member is in. What it
+   * lands on depends on which task hosts us:
    *  - our own task: the synthetic ancestry from [syntheticStackFor], so Back and Up both walk the
    *    path the member would have taken by hand before leaving the app;
    *  - another app's task ([hostedInForeignTask]): the key alone, so Back returns straight to that
@@ -225,7 +235,7 @@ internal class BackstackController(
    */
   fun navigateToExternalDeepLink(key: HedvigNavKey, hostedInForeignTask: Boolean) {
     if (!isLoggedIn) {
-      stashPendingDeepLink(key)
+      stashPendingDeepLink(key, hostedInForeignTask)
       return
     }
     reseed(if (hostedInForeignTask) listOf(key) else syntheticStackFor(key))
@@ -267,21 +277,22 @@ internal class BackstackController(
   }
 
   /**
-   * Enter the logged-in app. Precedence: a pending deep link lands alone (re-enabling the runs model
-   * on the next Up); otherwise a stash tagged with this same [memberId] is restored (history comes
+   * Enter the logged-in app. Precedence: a pending deep link lands as [navigateToExternalDeepLink]
+   * would have landed it (alone in another app's task, on its synthetic ancestry in ours); otherwise a stash tagged with this same [memberId] is restored (history comes
    * back, per-entry state having been disposed while stashed); otherwise a fresh Home. Any stash is
    * always consumed/dropped so it can never bleed into a later session.
    */
   fun setLoggedIn(memberId: String?) {
     Snapshot.withMutableSnapshot {
       val pending = pendingDeepLink
+      val pendingHostedInForeignTask = pendingDeepLinkHostedInForeignTask
       clearPendingDeepLink()
       val stash = stashedSession?.takeIf { memberId != null && it.memberId == memberId }
       stashedSession = null
       parkedRuns.clear()
       when {
         pending != null -> {
-          entries.replaceWith(syntheticStackFor(pending))
+          entries.replaceWith(if (pendingHostedInForeignTask) listOf(pending) else syntheticStackFor(pending))
         }
 
         stash != null -> {
@@ -354,6 +365,7 @@ internal class BackstackController(
     pendingDeepLink: HedvigNavKey?,
     pendingDeepLinkStashedAtEpochMs: Long?,
     stashedSession: StashedSession?,
+    pendingDeepLinkHostedInForeignTask: Boolean = false,
   ) {
     if (this.entries.isNotEmpty()) return
     Snapshot.withMutableSnapshot {
@@ -361,6 +373,7 @@ internal class BackstackController(
       this.parkedRuns.putAll(parkedRuns)
       this.pendingDeepLink = pendingDeepLink
       this.pendingDeepLinkStashedAtEpochMs = pendingDeepLinkStashedAtEpochMs
+      this.pendingDeepLinkHostedInForeignTask = pendingDeepLink != null && pendingDeepLinkHostedInForeignTask
       this.stashedSession = stashedSession
     }
   }

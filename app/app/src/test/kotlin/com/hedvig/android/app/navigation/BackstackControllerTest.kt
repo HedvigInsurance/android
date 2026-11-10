@@ -453,6 +453,42 @@ internal class BackstackControllerTest {
   }
 
   @Test
+  fun `a deep link stashed logged out in a foreign task lands alone after login`() {
+    var escaped: List<HedvigNavKey>? = null
+    val controller = controllerWith(LoginKey).apply { escapeToOwnTask = { escaped = it } }
+    controller.navigateToExternalDeepLink(HelpCenterKey, hostedInForeignTask = true)
+    controller.setLoggedIn("member")
+    assertThat(controller.entries.toList()).containsExactly(HelpCenterKey)
+    assertThat(controller.pendingDeepLinkHostedInForeignTask).isFalse()
+    assertThat(controller.navigateUp()).isTrue()
+    assertThat(escaped).isEqualTo(listOf(HomeKey))
+  }
+
+  @Test
+  fun `the foreign-task flag of a stashed deep link survives a saved state restore`() {
+    val controller = controllerWith()
+    controller.restoreFromSavedState(
+      entries = listOf(LoginKey),
+      parkedRuns = emptyMap(),
+      pendingDeepLink = HelpCenterKey,
+      pendingDeepLinkStashedAtEpochMs = 123_456L,
+      stashedSession = null,
+      pendingDeepLinkHostedInForeignTask = true,
+    )
+    controller.setLoggedIn("member")
+    assertThat(controller.entries.toList()).containsExactly(HelpCenterKey)
+  }
+
+  @Test
+  fun `a later own-task stash does not inherit an earlier foreign-task flag`() {
+    val controller = controllerWith(LoginKey)
+    controller.navigateToExternalDeepLink(HelpCenterKey, hostedInForeignTask = true)
+    controller.navigateToExternalDeepLink(HelpCenterKey, hostedInForeignTask = false)
+    controller.setLoggedIn("member")
+    assertThat(controller.entries.toList()).containsExactly(HomeKey, HelpCenterKey)
+  }
+
+  @Test
   fun `navigateUp on a lone foreign-hosted deep link escapes to own task with the parent stack`() {
     var escaped: List<HedvigNavKey>? = null
     val controller = controllerWith(HomeKey).apply { escapeToOwnTask = { escaped = it } }
