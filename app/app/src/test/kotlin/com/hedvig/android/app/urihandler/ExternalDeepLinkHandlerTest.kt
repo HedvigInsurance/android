@@ -41,28 +41,28 @@ internal class ExternalDeepLinkHandlerTest {
   @Test
   fun `unmatched link on the path-prefixed own host falls back to Home alone`() = runTest {
     val controller = loggedInController(HomeKey, InsurancesKey)
-    handlerWith(controller).handle("https://www.hedvig.com/deeplink/something-new")
+    handlerWith(controller).handle("https://www.hedvig.com/deeplink/something-new") { false }
     assertThat(controller.entries.toList()).containsExactly(HomeKey)
   }
 
   @Test
   fun `unmatched link on a bare own host falls back to Home alone`() = runTest {
     val controller = loggedInController(HomeKey, InsurancesKey)
-    handlerWith(controller).handle("https://link.hedvig.com/something-new")
+    handlerWith(controller).handle("https://link.hedvig.com/something-new") { false }
     assertThat(controller.entries.toList()).containsExactly(HomeKey)
   }
 
   @Test
   fun `own host but outside the path prefix is ignored`() = runTest {
     val controller = loggedInController(HomeKey, InsurancesKey)
-    handlerWith(controller).handle("https://www.hedvig.com/not-a-deeplink")
+    handlerWith(controller).handle("https://www.hedvig.com/not-a-deeplink") { false }
     assertThat(controller.entries.toList()).containsExactly(HomeKey, InsurancesKey)
   }
 
   @Test
   fun `foreign host is ignored`() = runTest {
     val controller = loggedInController(HomeKey, InsurancesKey)
-    handlerWith(controller).handle("https://evil.example.com/whatever")
+    handlerWith(controller).handle("https://evil.example.com/whatever") { false }
     assertThat(controller.entries.toList()).containsExactly(HomeKey, InsurancesKey)
   }
 }

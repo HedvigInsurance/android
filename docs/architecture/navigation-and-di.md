@@ -358,7 +358,7 @@ The solution: keys *declare their own capabilities* by implementing small marker
 | Marker | Exposes | Meaning |
 |---|---|---|
 | `TopLevelTabRoot` | `topLevelTab: TopLevelTab` | This key is the root of a bottom-nav tab. Lets the runs model map any tab root back to its tab without naming the feature. |
-| `DeepLinkAncestry` | `owningTab`, `syntheticParents: List<HedvigNavKey>` | How to rebuild a synthetic back stack when this key is entered alone (e.g. from a notification). |
+| `DeepLinkAncestry` | `owningTab`, `syntheticParents: List<HedvigNavKey>` | The synthetic back stack a deep link to this key lands on (e.g. from a notification). |
 | `CrossSellEligibleDestination` | — | The cross-sell bottom sheet may appear when this screen is on top. |
 | `SuppressesChatPushNotification` | — | A chat push must be suppressed while this screen is shown (the screen already shows the message). |
 | `DeliberateLogoutOrigin` | — | Reaching the logged-out state from here is an intentional sign-out — don't stash the session for restore. |
@@ -425,7 +425,6 @@ internal class BackstackController(
   internal val parkedRuns: SnapshotStateMap<TopLevelTab, List<HedvigNavKey>>,
   pendingDeepLinkState: MutableState<HedvigNavKey?>,
   stashedSessionState: MutableState<StashedSession?>,
-  var isOwnTask: () -> Boolean = { true },
   var escapeToOwnTask: (List<HedvigNavKey>) -> Unit = {},
   var finishApp: () -> Unit = {},
 ) : Backstack { … }
@@ -435,7 +434,7 @@ internal class BackstackController(
 
 **Why per-Activity and not an app singleton.** An earlier iteration made the controller a `@SingleIn(AppScope::class)` singleton. That outlives the Activity too *much*: two `MainActivity` instances (e.g. a relaunch into a warm process) would share one controller and one back stack. Tying it to a retained `ViewModel` gives the precise lifetime we want — it outlives every screen ViewModel and config changes, yet each Activity gets its own. Process death is handled separately, at the Activity seam (Part III), because a retained `ViewModel` is wiped when the process dies.
 
-**The `isOwnTask` / `escapeToOwnTask` / `finishApp` hooks are Activity-bound and attached in `onCreate` (via `attachBackstackTaskHooks`), never in the constructor.** The controller is 1:1 with its Activity, so there is no shared, process-wide controller a backgrounded Activity could steal — the hooks are wired once at creation, no resume re-attachment needed. They default to in-process behaviour (and `finishApp` to a no-op) so unit tests need no Activity.
+**The `escapeToOwnTask` / `finishApp` hooks are Activity-bound and attached in `onCreate`, never in the constructor.** The controller is 1:1 with its Activity, so there is no shared, process-wide controller a backgrounded Activity could steal — the hooks are wired once at creation, no resume re-attachment needed. They default to in-process behaviour (and `finishApp` to a no-op) so unit tests need no Activity.
 
 ## II.5 Registering destinations: `hedvigEntryProvider` and cross-feature lambdas
 
@@ -557,19 +556,15 @@ The persistent bottom bar / side rail is rendered *inside* the scene via a `Scen
 
 Chrome is opt-in per destination: only scenes whose metadata carries `NavSuiteSceneDecoratorStrategy.showNavBar()` (the tab roots plus the handful of deeper screens that keep the bar) get wrapped; everything else is full-screen.
 
-A lone deep link is a special case. The runs-model invariant (`entries[0] == HomeKey`) is briefly broken when a deep link stands alone, so showing the rail would expose that. The controller classifies the situation and the decorator obeys:
+A deep link hosted in another app's task is a special case (V.3): it lands alone, so the runs-model invariant (`entries[0] == HomeKey`) does not hold and showing the rail would expose that. The controller classifies the situation from the stack shape and the decorator obeys:
 
 ```kotlin
 enum class LoneDeepLinkChrome { ShowSuite, ShowUpBar, ShowNothing }
 
-val loneDeepLinkChrome: LoneDeepLinkChrome get() {
-  val first = entries.firstOrNull()
-  val isAlone = entries.size == 1 && first !is HomeKey && first !is LoginKey
-  return when {
-    !isAlone -> LoneDeepLinkChrome.ShowSuite                         // normal: rail
-    first?.topLevelTabOrNull() != null -> LoneDeepLinkChrome.ShowUpBar // lone tab root: decorator supplies Up
-    else -> LoneDeepLinkChrome.ShowNothing                           // deep screen renders its own Up
-  }
+val loneDeepLinkChrome: LoneDeepLinkChrome get() = when {
+  !isDeepLinkHostedInForeignTask -> LoneDeepLinkChrome.ShowSuite                     // normal: rail
+  entries.lastOrNull()?.topLevelTabOrNull() != null -> LoneDeepLinkChrome.ShowUpBar  // tab root on top: decorator supplies Up
+  else -> LoneDeepLinkChrome.ShowNothing                                             // deep screen renders its own Up
 }
 ```
 
@@ -714,7 +709,8 @@ fun setLoggedIn(memberId: String?) = Snapshot.withMutableSnapshot {
   val stash = stashedSession?.takeIf { memberId != null && it.memberId == memberId }; stashedSession = null
   parkedRuns.clear()
   when {
-    pending != null -> entries.replaceWith(listOf(pending))           // deep link lands alone
+    pending != null -> entries.replaceWith(                           // lands as it would have logged in
+      if (pendingHostedInForeignTask) listOf(pending) else syntheticStackFor(pending))
     stash != null   -> { parkedRuns.putAll(stash.parkedRuns); entries.replaceWith(stash.entries) }
     else            -> entries.replaceWith(listOf(HomeKey))           // fresh Home
   }
@@ -727,7 +723,7 @@ Rules encoded here:
 - `memberId == null` (demo / unknown identity) stashes nothing — that session can never be safely restored.
 - A `DeliberateLogoutOrigin` top screen (e.g. Profile → Log out) means "log me out now"; we don't stash even with a known member.
 - `StashedSession` is **excluded from `allLiveContentKeys`**, so the retained decorators dispose every per-entry state (ViewModels, saved state) while it waits. On restore, history comes back but state is freshly recreated.
-- A `pendingDeepLink` takes precedence over a stash and lands **alone** (re-enabling the runs model on the next Up via the synthetic stack).
+- A `pendingDeepLink` takes precedence over a stash and lands the way it would have logged in: alone in another app's task, on its synthetic ancestry in ours (V.3).
 
 ---
 
@@ -739,20 +735,24 @@ Each feature builds `DeepLinkMatcher`s from its `HedvigDeepLinkContainer` URI pa
 
 ## V.2 From Intent to navigation
 
-`MainActivity` forwards `ACTION_VIEW` intents as raw URI strings down an unlimited `deepLinkChannel`. `HedvigApp` collects them and routes each through the matcher once the member is logged in. This replaces Nav2's automatic launch-intent deep-link handling on the (now removed) `NavController`.
+`MainActivity` forwards `ACTION_VIEW` intents (external App Links and notification taps alike) down an unlimited `deepLinkChannel` as the raw URI string plus the flags of the delivering intent, from `onCreate` on a cold start and from `addOnNewIntentListener` when an existing instance is reused. A per-Activity `ExternalDeepLinkHandler` collects them, waits for the `SessionReconciler` to resolve the start scene, matches each to a key (an unmatched path on one of our own hosts lands on Home; a foreign host is ignored, never bounced to a browser) and hands it to the controller together with whether another app's task hosts us:
 
 ```kotlin
-fun navigateToDeepLink(key: HedvigNavKey) {
-  if (!isLoggedIn) { pendingDeepLink = key; return }   // held; landed by setLoggedIn
-  Snapshot.withMutableSnapshot { entries.remove(key); entries.add(key) }  // dedup + append (Nav2 parity)
+fun navigateToExternalDeepLink(key: HedvigNavKey, hostedInForeignTask: Boolean) {
+  if (!isLoggedIn) { stashPendingDeepLink(key); return }   // held; landed by setLoggedIn
+  reseed(if (hostedInForeignTask) listOf(key) else syntheticStackFor(key))
 }
 ```
 
-Logged in, a deep link **joins the current task** (dedup then append). Logged out, it's held as `pendingDeepLink` (persisted across rotation / process death — e.g. mid-OTP) and landed alone after login.
+An external deep link is an entry into the app from outside, not navigation within a live session, so it **replaces** the stack. Logged out, it's held as `pendingDeepLink` (persisted across rotation / process death — e.g. mid-OTP — and dropped after 30 minutes) together with whether another app's task hosted it, and landed after login by the same two-task rule.
 
-## V.3 Synthetic back stacks and task-aware Up
+In-app link taps go through `DeepLinkFirstUriHandler` (the Compose `LocalUriHandler`) and `navigateToInAppLink` instead: the member is navigating within a live session, so the key is deduped and appended onto the live stack, and a link we can't match opens in the browser.
 
-When a deep link is entered alone, Back/Up must behave as if the user had navigated there inside the app. `syntheticStackFor` rebuilds the ancestry, reusing the abstract `DeepLinkAncestry` markers so no feature names another's key:
+## V.3 Synthetic back stacks, and the two tasks a link can arrive in
+
+This follows the [principles of navigation](https://developer.android.com/guide/navigation/principles): within our own task Up and Back are identical and a deep link brings a realistic back stack with it; on another app's task Back returns to that app while Up moves the member into our own task.
+
+`syntheticStackFor` builds the path the member would have taken by hand, reusing the abstract `DeepLinkAncestry` markers so no feature names another's key:
 
 ```kotlin
 internal fun syntheticStackFor(key: HedvigNavKey): List<HedvigNavKey> {
@@ -767,33 +767,34 @@ internal fun syntheticStackFor(key: HedvigNavKey): List<HedvigNavKey> {
 }
 ```
 
-`navigateUp` is task-aware:
+**In our own task** (a notification tap, a link opened with `FLAG_ACTIVITY_NEW_TASK`) the link lands on that whole stack. `HomeKey` is at index 0, so the runs model, the nav bar and tab switching work from the first frame, and Back and Up both walk the ancestry.
+
+**In another app's task** (`isHostedInForeignTask`: not the task root, and delivered without `NEW_TASK`) the link lands as the key alone. Back pops to nothing and finishes the Activity, returning straight to the app that linked here. Up hands the key's parent ancestry to `escapeToOwnTask` (V.4).
+
+The task is consulted exactly once, when the link lands. After that **the stack shape is the record**: a stack not rooted at `HomeKey`/`LoginKey` can only be a foreign-hosted deep link (plus whatever was pushed on top of it), so Up and the chrome (II.9) ask that one question instead of tracking task identity as state. It also survives process death for free, since the stack is what is persisted.
 
 ```kotlin
 override fun navigateUp(): Boolean {
-  val top = entries.lastOrNull() ?: return false
-  val synthetic = syntheticStackFor(top)
-  if (entries.size == 1 && synthetic.size > 1) {        // lone deep link with real ancestry
-    val parentStack = synthetic.dropLast(1)
-    if (isOwnTask()) entries.replaceWith(parentStack)   // materialize in place
-    else escapeToOwnTask(parentStack)                   // re-root into our own task
+  val loneDeepLink = entries.singleOrNull()?.takeIf { isDeepLinkHostedInForeignTask }
+  if (loneDeepLink != null) {                              // foreign-hosted deep link, nothing above it
+    escapeToOwnTask(syntheticStackFor(loneDeepLink).dropLast(1))
     return true
   }
-  return super.popBackstack()                            // everywhere else: PURE pop (no app-finish)
+  return super.popBackstack()                              // everywhere else: pure pop, no-op at the root
 }
 
-override fun popBackstack(): Boolean {                   // Back / close
+override fun popBackstack(): Boolean {                     // Back / close
   val popped = super.popBackstack()
-  if (!popped) finishApp()                               // at the root → exit the app
+  if (!popped) finishApp()                                 // at the root → exit the app
   return popped
 }
 ```
 
-`navigateUp` falls through to `super.popBackstack()` (the pure interface default) on purpose: an Up press that can't go up is a no-op, whereas a Back press at the root exits the app. The `finishApp` lambda is an Activity-bound hook attached in `onCreate` alongside `isOwnTask` / `escapeToOwnTask` (same stale-reference reasoning), and is a no-op by default so unit tests never try to finish.
+A Home link in another app's task is just `[HomeKey]`: an ordinary Home with its nav bar, where Back returns to the caller. `finishApp` and `escapeToOwnTask` are Activity-bound hooks attached in `onCreate`, no-ops by default so unit tests never try to finish or relaunch.
 
 ## V.4 Escaping a foreign task
 
-If we were launched into the *caller's* task by an external deep link (`isTaskRoot == false`, so `isOwnTask()` is false), pressing Up shouldn't rebuild our ancestry hosted under the foreign app. Instead we relaunch in our own task:
+When a deep link stands alone in the *caller's* task, pressing Up shouldn't rebuild our ancestry hosted under the foreign app. Instead we relaunch in our own task:
 
 ```kotlin
 fun escapeToOwnTask(activity, parentStack, serializersModules) {
@@ -814,7 +815,7 @@ The fresh instance reads the ancestry back in `restoreAndPersist` via the **same
 ## VI.1 Invariants you must not break
 
 1. **`entries` is never empty.** There is always at least a root (`LoginKey` or `HomeKey`). The pure pop refuses to remove the last entry; `BackstackController.popBackstack` finishes the Activity in that case instead, so Back/close from the root exits the app rather than emptying the stack.
-2. **`entries[0]` is `HomeKey` (logged in) or `LoginKey` (logged out)** — except the transient lone-deep-link state, which is exactly why `loneDeepLinkChrome` exists.
+2. **`entries[0]` is `HomeKey` (logged in) or `LoginKey` (logged out)** — except a deep link hosted in another app's task (V.3), which is exactly why `loneDeepLinkChrome` exists. Nothing else may produce a stack rooted elsewhere: Up and the chrome read that shape as "foreign-hosted deep link".
 3. **Home is never parked.** Only side tabs go into `parkedRuns`.
 4. **Every `@Serializable HedvigNavKey` must be registered for polymorphic serialization** → its module needs `navKeys()`.
 5. **A `DeepLinkAncestry.syntheticParents` list contains only the key's own feature's keys.** Cross-tab jumps go through `owningTab`.
@@ -857,7 +858,7 @@ The fresh instance reads the ancestry back in `restoreAndPersist` via the **same
 
 **Navigate to it from another feature.** Put `FooKey` in `feature-foo-navigation`; in `:app`, derive a `navigateToFoo` lambda and thread it to the calling feature's entries function. The calling feature exposes a callback, never imports `FooKey`.
 
-**Make it deep-linkable.** Add patterns to the feature's `HedvigDeepLinkContainer`, build matchers via `uriDeepLinkMatchers`, contribute a `DeepLinkMatcherProvider` (`@ContributesIntoSet`). If it can be entered alone, implement `DeepLinkAncestry`.
+**Make it deep-linkable.** Add patterns to the feature's `HedvigDeepLinkContainer`, build matchers via `uriDeepLinkMatchers`, contribute a `DeepLinkMatcherProvider` (`@ContributesIntoSet`). If the natural path to it is more than just Home (it belongs under a side tab, or has parents of its own), implement `DeepLinkAncestry`.
 
 **Make it a tab root.** Implement `TopLevelTabRoot`; add the tab to `TopLevelTab`; map its start destination in `startDestination`.
 

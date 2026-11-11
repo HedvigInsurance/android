@@ -143,6 +143,7 @@ private fun OnboardingWelcomeScreen(
       OnboardingWelcomeUiState.Error -> {
         HedvigErrorSection(
           onButtonClick = onRetry,
+          modifier = Modifier.weight(1f),
         )
       }
 

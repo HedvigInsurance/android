@@ -52,8 +52,8 @@ internal fun popTopRunToStart(stack: List<HedvigNavKey>): List<HedvigNavKey> {
 }
 
 /**
- * Builds the synthetic back stack for a deep-linked [key], used by [navigateUp] when the key is
- * standing alone. Reuses the existing [startDestination] tab→root map. `HomeKey` is always the
+ * Builds the synthetic back stack for a deep-linked [key]: the path the member would have taken to
+ * reach it by hand. Reuses the existing [startDestination] tab→root map. `HomeKey` is always the
  * pinned base so the result satisfies the runs-model invariant (index 0 == HomeKey).
  */
 internal fun syntheticStackFor(key: HedvigNavKey): List<HedvigNavKey> {

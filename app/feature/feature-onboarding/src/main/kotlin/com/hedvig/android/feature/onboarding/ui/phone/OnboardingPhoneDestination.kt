@@ -87,6 +87,7 @@ private fun OnboardingPhoneScreen(
       OnboardingPhoneUiState.Error -> {
         HedvigErrorSection(
           onButtonClick = onRetry,
+          modifier = Modifier.weight(1f),
         )
       }
 

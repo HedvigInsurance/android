@@ -21,6 +21,8 @@ import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButt
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.ERROR
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
 import hedvig.resources.GENERAL_RETRY
 import hedvig.resources.Res
 import hedvig.resources.TIER_FLOW_COMMIT_PROCESSING_ERROR_DESCRIPTION
@@ -67,5 +69,9 @@ internal fun SubmitTierFailureScreen(popBackstack: () -> Unit) {
 @HedvigPreview
 @Composable
 private fun SubmitTierFailureScreenPreview() {
-  SubmitTierFailureScreen({})
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      SubmitTierFailureScreen({})
+    }
+  }
 }

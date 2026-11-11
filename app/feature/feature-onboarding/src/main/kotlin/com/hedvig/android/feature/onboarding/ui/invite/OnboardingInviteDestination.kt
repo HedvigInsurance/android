@@ -94,6 +94,7 @@ private fun OnboardingInviteScreen(
       OnboardingInviteUiState.Error -> {
         HedvigErrorSection(
           onButtonClick = onRetry,
+          modifier = Modifier.weight(1f),
         )
       }
 

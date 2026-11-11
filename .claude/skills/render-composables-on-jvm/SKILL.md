@@ -1,6 +1,6 @@
 ---
 name: render-composables-on-jvm
-description: Use when you need to see what a composable looks like, or compare several layout, alignment or styling variants of one as images, in a KMP module with a JVM target, without an emulator, a device, Android Studio or an app build. Not for questions about how text breaks into lines, font fallback, androidMain content, or anything that must be shown as it is on a phone.
+description: Use when comparing several throwaway layout, alignment or spacing variants of a composable as images, in a KMP module with a JVM target, without an emulator, a device, Android Studio or an app build. Not for showing a composable that has or will have a `@Preview`, for Android-only `src/main` modules, for how text breaks into lines or falls back to another font, or for anything that must be shown as it is on a phone; those are render-previews.
 ---
 
 # Rendering composables on the JVM
@@ -14,20 +14,27 @@ later runs are incremental and take seconds.
 The test is a tool, not a test. It lives in the module's own `jvmTest` source set, which can
 reach the module's `internal` composables, and it is deleted before committing.
 
-## Decide first: is the answer the same on a device?
+## Decide first: exploring, or verifying?
 
-Layout is: measurement, modifiers, intrinsics, design-system components and the theme run the
-same Kotlin here as on a phone. Text shaping and painting are not; they go through Skia here
-and the Android framework there. So:
+Exploring is choosing between candidates that exist only in the throwaway test; that is what this
+renders. Verifying is showing the code as it is, through its `@Preview`; that is the render-previews
+skill, which goes through Studio's renderer and covers Android-only modules too. Use it, not
+this, to prove a change before calling it done, and to confirm the candidate you pick here once
+it is implemented.
+
+Then: is the answer the same on a device? Layout is: measurement, modifiers, intrinsics,
+design-system components and the theme run the same Kotlin here as on a phone. Text shaping and
+painting are not; they go through Skia here and the Android framework there. So:
 
 - **Use it** for sizes, alignment, spacing, what grows when content grows, which of several
   arrangements reads better, light against dark theme.
 - **Do not use it** when the question is where text breaks into lines, hyphenates or falls
   back to another font; when the composable depends on `androidMain` (ripples, `AndroidView`,
   Rive, network images); or when the output is going to a designer or a ticket as "this is
-  what the phone shows". For those, build to a device or an emulator.
+  what the phone shows". Give the composable a preview and use render-previews; a device only
+  for runtime behaviour.
 - **A mix** is fine as long as the image is labelled: render the layout here, mark the text
-  breaking as unconfirmed, and check the one variant you pick on a device before deciding.
+  breaking as unconfirmed, and confirm the variant you pick through its preview once implemented.
 
 ## Workflow
 

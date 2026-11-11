@@ -17,22 +17,18 @@ import dev.zacsweers.metrox.viewmodel.MetroViewModelFactory
  * really finished — exactly the lifetime we want for one Activity's back stack.
  *
  * It owns this Activity's [BackstackController] (built here, outside composition, so onCreate wiring —
- * splash keep-condition, restore/seed/persist, task hooks — can touch it before the first frame) and
+ * splash keep-condition, restore/seed/persist, the finish hook — can touch it before the first frame) and
  * spins up a per-Activity [ActivityRetainedGraph] seeded with that controller. Everything that must
  * talk to this Activity's stack — the [sessionReconciler] and every back-stack ViewModel resolved by
  * [viewModelFactory] — comes from that extension, so two `MainActivity` instances never share state.
- *
- * [isOwnTask] seeds [BackstackController.isOwnTask] with the Activity's `isTaskRoot` at first creation
- * (so it never starts from a guessed default); `MainActivity` refreshes it authoritatively on resume.
  */
-internal class NavRetainedViewModel(appGraph: AppGraph, isOwnTask: Boolean) : ViewModel() {
+internal class NavRetainedViewModel(appGraph: AppGraph) : ViewModel() {
   val backstackController: BackstackController = BackstackController(
     entries = mutableStateListOf(),
     parkedRuns = mutableStateMapOf(),
     pendingDeepLinkState = mutableStateOf(null),
     pendingDeepLinkStashedAtState = mutableStateOf(null),
     stashedSessionState = mutableStateOf(null),
-    initialIsOwnTask = isOwnTask,
     clock = appGraph.clock,
   )
 

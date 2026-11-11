@@ -239,6 +239,7 @@ private fun OnboardingConsentScreen(
       OnboardingConsentUiState.Error -> {
         HedvigErrorSection(
           onButtonClick = onRetry,
+          modifier = Modifier.weight(1f),
         )
       }
 
