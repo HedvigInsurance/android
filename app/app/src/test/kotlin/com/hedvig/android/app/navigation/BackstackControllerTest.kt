@@ -267,46 +267,6 @@ internal class BackstackControllerTest {
   }
 
   @Test
-  fun `navigateUp on a lone side-tab root rebuilds to Home`() {
-    val controller = controllerWith(InsurancesKey)
-    assertThat(controller.navigateUp()).isTrue()
-    assertThat(controller.entries.toList()).containsExactly(HomeKey)
-  }
-
-  @Test
-  fun `navigateUp from a foreign-hosted lone deep link escapes to own task with the parent stack`() {
-    var escaped: List<HedvigNavKey>? = null
-    val controller = BackstackController(
-      mutableStateListOf(InsurancesKey),
-      mutableStateMapOf(),
-      mutableStateOf(null), // pendingDeepLink
-      mutableStateOf(null), // stashedSession
-      initialIsOwnTask = false,
-      escapeToOwnTask = { escaped = it },
-    )
-    assertThat(controller.navigateUp()).isTrue()
-    assertThat(escaped).isEqualTo(listOf(HomeKey))
-    // The foreign-hosted stack is left untouched; the relaunched task owns the rebuilt ancestry.
-    assertThat(controller.entries.toList()).containsExactly(InsurancesKey)
-  }
-
-  @Test
-  fun `navigateUp in our own task rebuilds the parent ancestry in place`() {
-    var escaped: List<HedvigNavKey>? = null
-    val controller = BackstackController(
-      mutableStateListOf(InsurancesKey),
-      mutableStateMapOf(),
-      mutableStateOf(null), // pendingDeepLink
-      mutableStateOf(null), // stashedSession
-      initialIsOwnTask = true,
-      escapeToOwnTask = { escaped = it },
-    )
-    assertThat(controller.navigateUp()).isTrue()
-    assertThat(escaped).isEqualTo(null)
-    assertThat(controller.entries.toList()).containsExactly(HomeKey)
-  }
-
-  @Test
   fun `navigateUp on a normal stack pops one entry like back`() {
     val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
     assertThat(controller.navigateUp()).isTrue()
@@ -318,6 +278,16 @@ internal class BackstackControllerTest {
     val controller = controllerWith(HomeKey)
     assertThat(controller.navigateUp()).isFalse()
     assertThat(controller.entries.toList()).containsExactly(HomeKey)
+  }
+
+  @Test
+  fun `navigateUp at the root never finishes the app, unlike back`() {
+    var finished = false
+    val controller = controllerWith(HomeKey).apply { finishApp = { finished = true } }
+    assertThat(controller.navigateUp()).isFalse()
+    assertThat(finished).isFalse()
+    assertThat(controller.popBackstack()).isFalse()
+    assertThat(finished).isTrue()
   }
 
   @Test
@@ -343,11 +313,11 @@ internal class BackstackControllerTest {
   }
 
   @Test
-  fun `setLoggedIn consumes the stash and lands the target alone`() {
+  fun `setLoggedIn consumes the stash and lands the target on its synthetic ancestry`() {
     val controller = controllerWith(LoginKey)
     controller.navigateToInAppLink(InsurancesKey)
     controller.setLoggedIn("mem-1")
-    assertThat(controller.entries.toList()).containsExactly(InsurancesKey)
+    assertThat(controller.entries.toList()).containsExactly(HomeKey, InsurancesKey)
     assertThat(controller.pendingDeepLink).isEqualTo(null)
     assertThat(controller.parkedRuns).isEmpty()
   }
@@ -391,12 +361,12 @@ internal class BackstackControllerTest {
   }
 
   @Test
-  fun `setLoggedIn lands a pending deep link alone even when a same-member stash exists`() {
+  fun `setLoggedIn lands a pending deep link over the stash even for the same member`() {
     val controller = controllerWith(HomeKey, ProfileKey)
     controller.setLoggedOut("mem-1")
     controller.navigateToInAppLink(HelpCenterKey) // logged out → stashed as pendingDeepLink
     controller.setLoggedIn("mem-1")
-    assertThat(controller.entries.toList()).containsExactly(HelpCenterKey)
+    assertThat(controller.entries.toList()).containsExactly(HomeKey, HelpCenterKey)
     assertThat(controller.parkedRuns).isEmpty()
     assertThat(controller.stashedSession).isEqualTo(null)
   }
@@ -411,18 +381,28 @@ internal class BackstackControllerTest {
   }
 
   @Test
-  fun `navigateToExternalDeepLink while logged in lands the target alone`() {
+  fun `navigateToExternalDeepLink while logged in re-roots onto the synthetic ancestry`() {
     val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
-    controller.navigateToExternalDeepLink(HelpCenterKey)
-    assertThat(controller.entries.toList()).containsExactly(HelpCenterKey)
+    controller.selectTopLevel(TopLevelTab.Profile) // park the Insurances run
+    controller.navigateToExternalDeepLink(HelpCenterKey, hostedInForeignTask = false)
+    assertThat(controller.entries.toList()).containsExactly(HomeKey, HelpCenterKey)
     assertThat(controller.pendingDeepLink).isEqualTo(null)
     assertThat(controller.parkedRuns).isEmpty()
   }
 
   @Test
+  fun `navigateToExternalDeepLink to a tab root lands it over Home so back reaches Home`() {
+    val controller = controllerWith(HomeKey, HelpCenterKey)
+    controller.navigateToExternalDeepLink(InsurancesKey, hostedInForeignTask = false)
+    assertThat(controller.entries.toList()).containsExactly(HomeKey, InsurancesKey)
+    assertThat(controller.popBackstack()).isTrue()
+    assertThat(controller.entries.toList()).containsExactly(HomeKey)
+  }
+
+  @Test
   fun `navigateToExternalDeepLink while logged out stashes and leaves the stack untouched`() {
     val controller = controllerWith(LoginKey)
-    controller.navigateToExternalDeepLink(HelpCenterKey)
+    controller.navigateToExternalDeepLink(HelpCenterKey, hostedInForeignTask = false)
     assertThat(controller.entries.toList()).containsExactly(LoginKey)
     assertThat(controller.pendingDeepLink).isEqualTo(HelpCenterKey)
   }
@@ -430,7 +410,7 @@ internal class BackstackControllerTest {
   @Test
   fun `stashing a pending deep link records a timestamp, and consuming it at login clears both`() {
     val controller = controllerWith(LoginKey)
-    controller.navigateToExternalDeepLink(HelpCenterKey)
+    controller.navigateToExternalDeepLink(HelpCenterKey, hostedInForeignTask = false)
     assertThat(controller.pendingDeepLink).isEqualTo(HelpCenterKey)
     assertThat(controller.pendingDeepLinkStashedAtEpochMs).isNotNull()
     controller.setLoggedIn("mem-1")
@@ -463,6 +443,99 @@ internal class BackstackControllerTest {
   }
 
   @Test
+  fun `a deep link hosted in a foreign task lands alone so back returns to the caller`() {
+    var finished = false
+    val controller = controllerWith(HomeKey, InsurancesKey).apply { finishApp = { finished = true } }
+    controller.navigateToExternalDeepLink(HelpCenterKey, hostedInForeignTask = true)
+    assertThat(controller.entries.toList()).containsExactly(HelpCenterKey)
+    assertThat(controller.popBackstack()).isFalse()
+    assertThat(finished).isTrue()
+  }
+
+  @Test
+  fun `a deep link stashed logged out in a foreign task lands alone after login`() {
+    var escaped: List<HedvigNavKey>? = null
+    val controller = controllerWith(LoginKey).apply { escapeToOwnTask = { escaped = it } }
+    controller.navigateToExternalDeepLink(HelpCenterKey, hostedInForeignTask = true)
+    controller.setLoggedIn("member")
+    assertThat(controller.entries.toList()).containsExactly(HelpCenterKey)
+    assertThat(controller.pendingDeepLinkHostedInForeignTask).isFalse()
+    assertThat(controller.navigateUp()).isTrue()
+    assertThat(escaped).isEqualTo(listOf(HomeKey))
+  }
+
+  @Test
+  fun `the foreign-task flag of a stashed deep link survives a saved state restore`() {
+    val controller = controllerWith()
+    controller.restoreFromSavedState(
+      entries = listOf(LoginKey),
+      parkedRuns = emptyMap(),
+      pendingDeepLink = HelpCenterKey,
+      pendingDeepLinkStashedAtEpochMs = 123_456L,
+      stashedSession = null,
+      pendingDeepLinkHostedInForeignTask = true,
+    )
+    controller.setLoggedIn("member")
+    assertThat(controller.entries.toList()).containsExactly(HelpCenterKey)
+  }
+
+  @Test
+  fun `a later own-task stash does not inherit an earlier foreign-task flag`() {
+    val controller = controllerWith(LoginKey)
+    controller.navigateToExternalDeepLink(HelpCenterKey, hostedInForeignTask = true)
+    controller.navigateToExternalDeepLink(HelpCenterKey, hostedInForeignTask = false)
+    controller.setLoggedIn("member")
+    assertThat(controller.entries.toList()).containsExactly(HomeKey, HelpCenterKey)
+  }
+
+  @Test
+  fun `navigateUp on a lone foreign-hosted deep link escapes to own task with the parent stack`() {
+    var escaped: List<HedvigNavKey>? = null
+    val controller = controllerWith(HomeKey).apply { escapeToOwnTask = { escaped = it } }
+    controller.navigateToExternalDeepLink(InsurancesKey, hostedInForeignTask = true)
+    assertThat(controller.navigateUp()).isTrue()
+    assertThat(escaped).isEqualTo(listOf(HomeKey))
+    // The foreign-hosted stack is left untouched; the relaunched task owns the rebuilt ancestry.
+    assertThat(controller.entries.toList()).containsExactly(InsurancesKey)
+  }
+
+  @Test
+  fun `navigateUp above a lone foreign-hosted deep link pops before it escapes`() {
+    var escaped: List<HedvigNavKey>? = null
+    val controller = controllerWith(InsurancesKey, HelpCenterKey).apply { escapeToOwnTask = { escaped = it } }
+    assertThat(controller.navigateUp()).isTrue()
+    assertThat(escaped).isNull()
+    assertThat(controller.entries.toList()).containsExactly(InsurancesKey)
+  }
+
+  @Test
+  fun `navigateUp never escapes from a stack rooted at Home`() {
+    var escaped: List<HedvigNavKey>? = null
+    val controller = controllerWith(HomeKey).apply { escapeToOwnTask = { escaped = it } }
+    controller.navigateToExternalDeepLink(InsurancesKey, hostedInForeignTask = false)
+    assertThat(controller.navigateUp()).isTrue()
+    assertThat(controller.navigateUp()).isFalse()
+    assertThat(escaped).isNull()
+    assertThat(controller.entries.toList()).containsExactly(HomeKey)
+  }
+
+  @Test
+  fun `a Home link hosted in a foreign task is an ordinary Home`() {
+    val controller = controllerWith(HomeKey, InsurancesKey)
+    controller.navigateToExternalDeepLink(HomeKey, hostedInForeignTask = true)
+    assertThat(controller.entries.toList()).containsExactly(HomeKey)
+    assertThat(controller.loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowSuite)
+  }
+
+  @Test
+  fun `loneDeepLinkChrome is ShowSuite for stacks rooted at Home or login`() {
+    assertThat(controllerWith(HomeKey).loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowSuite)
+    assertThat(controllerWith(LoginKey).loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowSuite)
+    assertThat(controllerWith(HomeKey, InsurancesKey).loneDeepLinkChrome)
+      .isEqualTo(LoneDeepLinkChrome.ShowSuite)
+  }
+
+  @Test
   fun `loneDeepLinkChrome is ShowUpBar for a lone tab root`() {
     assertThat(controllerWith(InsurancesKey).loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowUpBar)
   }
@@ -474,17 +547,9 @@ internal class BackstackControllerTest {
   }
 
   @Test
-  fun `loneDeepLinkChrome is ShowSuite for lone Home, login, and multi-entry stacks`() {
-    assertThat(controllerWith(HomeKey).loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowSuite)
-    assertThat(controllerWith(LoginKey).loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowSuite)
-    assertThat(controllerWith(HomeKey, InsurancesKey).loneDeepLinkChrome)
-      .isEqualTo(LoneDeepLinkChrome.ShowSuite)
-  }
-
-  @Test
   fun `loneDeepLinkChrome stays suppressed when a lone tab root drills into a child`() {
-    // Bug repro: a deep-linked tab root that pushes a child must NOT resurrect the suite — Home is
-    // not at the base, so the runs model (and the Home tab) would silently no-op.
+    // A deep-linked tab root that pushes a child must not resurrect the suite: Home is not at the
+    // base, so the runs model (and the Home tab) would silently no-op.
     val controller = controllerWith(InsurancesKey, HelpCenterKey)
     assertThat(controller.loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowNothing)
   }
@@ -492,70 +557,7 @@ internal class BackstackControllerTest {
   @Test
   fun `loneDeepLinkChrome shows up bar when a lone deep screen drills into a tab-root child`() {
     val controller = controllerWith(HelpCenterKey, InsurancesKey)
-    // Top is a tab root with no own back affordance, but we are still outside the runs model.
     assertThat(controller.loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowUpBar)
-  }
-
-  @Test
-  fun `loneDeepLinkChrome is ShowUpBar for a foreign-hosted lone Home`() {
-    val controller = BackstackController(
-      mutableStateListOf(HomeKey),
-      mutableStateMapOf(),
-      mutableStateOf(null), // pendingDeepLink
-      mutableStateOf(null), // stashedSession
-      initialIsOwnTask = false,
-    )
-    assertThat(controller.loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowUpBar)
-  }
-
-  @Test
-  fun `loneDeepLinkChrome is ShowSuite for a lone Home in our own task`() {
-    val controller = BackstackController(
-      mutableStateListOf(HomeKey),
-      mutableStateMapOf(),
-      mutableStateOf(null), // pendingDeepLink
-      mutableStateOf(null), // stashedSession
-      initialIsOwnTask = true,
-    )
-    assertThat(controller.loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowSuite)
-  }
-
-  @Test
-  fun `toggling isOwnTask flips a lone Home between suite and up bar`() {
-    // Guards the no-deep-link path: a normal lone Home renders as a deep-link stack (up bar) whenever
-    // isTaskRoot is false, and must self-correct once isOwnTask is refreshed back to true (the onResume
-    // fix). Also proves isOwnTask is read live, not frozen at construction.
-    val controller = controllerWith(HomeKey)
-    assertThat(controller.loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowSuite)
-    controller.isOwnTask = false
-    assertThat(controller.loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowUpBar)
-    controller.isOwnTask = true
-    assertThat(controller.loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowSuite)
-  }
-
-  @Test
-  fun `navigateUp from a lone deep link drops the leaf and exposes the rebuilt ancestry`() {
-    val controller = controllerWith(InsurancesKey)
-    controller.navigateUp()
-    assertThat(controller.entries.toList()).containsExactly(HomeKey)
-    assertThat(controller.allLiveContentKeys).containsExactlyInAnyOrder(HomeKey.contentKey())
-  }
-
-  @Test
-  fun `navigateUp at a foreign-hosted lone Home escapes to own task seeded with Home`() {
-    var escaped: List<HedvigNavKey>? = null
-    val controller = BackstackController(
-      mutableStateListOf(HomeKey),
-      mutableStateMapOf(),
-      mutableStateOf(null), // pendingDeepLink
-      mutableStateOf(null), // stashedSession
-      initialIsOwnTask = false,
-      escapeToOwnTask = { escaped = it },
-    )
-    assertThat(controller.navigateUp()).isTrue()
-    assertThat(escaped).isEqualTo(listOf(HomeKey))
-    // The foreign-hosted stack is left untouched; the relaunched task owns the rebuilt root.
-    assertThat(controller.entries.toList()).containsExactly(HomeKey)
   }
 
   @Test

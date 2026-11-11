@@ -46,43 +46,25 @@ internal class BackstackController(
   // Defaulted (and placed after the required states) so the many positional test constructions need no
   // change; the real construction in NavRetainedViewModel passes it explicitly by name.
   pendingDeepLinkStashedAtState: MutableState<Long?> = mutableStateOf(null),
-  initialIsOwnTask: Boolean = true,
   /**
    * Re-roots the app in its own task seeded with the given stack (see [navigateUp]). The Activity
    * owns the mechanics (relaunch with NEW_TASK|CLEAR_TASK + finish); the controller only supplies
-   * the target stack. Attached/replaced by the Activity like [isOwnTask]; no-op by default.
+   * the target stack. Attached by the Activity in `onCreate`; no-op by default.
    */
   var escapeToOwnTask: (List<HedvigNavKey>) -> Unit = {},
   /**
    * Finishes the host Activity, used by [popBackstack] when a Back/close lands on the root (nothing
-   * left to pop) so the app exits instead of stranding the user on a dead screen. Attached/replaced
-   * by the Activity like [isOwnTask] and [escapeToOwnTask]; no-op by default so unit tests and any
-   * pre-attach use never try to finish.
+   * left to pop) so the app exits instead of stranding the user on a dead screen. Attached by the
+   * Activity in `onCreate`; no-op by default so unit tests and any pre-attach use never try to finish.
    */
   var finishApp: () -> Unit = {},
   private val clock: Clock = Clock.System,
 ) : Backstack {
   /**
-   * Whether this Activity is the root of its own task. `false` means we were launched into the
-   * caller's task by an external deep link, so an Up press must escape into our own task rather than
-   * rebuilding the ancestry in place (which would leave our screens hosted under the foreign app).
-   *
-   * Snapshot-backed on purpose, rather than a live lambda: [loneDeepLinkChrome] derives the whole
-   * back-arrow-vs-nav-bar decision partly from this, so it must (a) be observable so Compose recomposes
-   * the chrome when it changes, and (b) never sample a stale value. `MainActivity` pushes the computed
-   * own-task value here (see `isHostedInForeignTask`, which is *not* just `isTaskRoot`) in `onCreate` (see
-   * `attachBackstackTaskHooks`) AND on every `onResume` — onResume because the value can settle or
-   * change after creation (an Activity below us finishing, or an early-launch read returning a
-   * not-yet-settled value). Defaults to `true` so unit tests and any pre-attach use stay fully
-   * in-process.
-   */
-  var isOwnTask: Boolean by mutableStateOf(initialIsOwnTask)
-
-  /**
-   * A deep link resolved while logged out, held until [setLoggedIn] consumes it (so it can land
-   * alone). Persisted across rotation / process death (e.g. mid-OTP) — see the class KDoc. Always set
-   * via [stashPendingDeepLink] so its companion timestamp [pendingDeepLinkStashedAtEpochMs] stays in
-   * sync; cleared (with the timestamp) when consumed by [setLoggedIn] or wiped by [reseed].
+   * A deep link resolved while logged out, held until [setLoggedIn] lands it. Persisted across rotation
+   * and process death (e.g. mid-OTP) — see the class KDoc. Always set via [stashPendingDeepLink] so its
+   * companion timestamp [pendingDeepLinkStashedAtEpochMs] stays in sync; cleared (with the timestamp)
+   * when consumed by [setLoggedIn] or wiped by [reseed].
    */
   internal var pendingDeepLink: HedvigNavKey? by pendingDeepLinkState
 
@@ -94,16 +76,25 @@ internal class BackstackController(
    */
   internal var pendingDeepLinkStashedAtEpochMs: Long? by pendingDeepLinkStashedAtState
 
+  /**
+   * Whether [pendingDeepLink] arrived while another app's task hosted us. Login happens in that same
+   * task, so [setLoggedIn] must land the link alone there, exactly as [navigateToExternalDeepLink]
+   * would have had the member been logged in. Persisted with the link: the task outlives the process.
+   */
+  internal var pendingDeepLinkHostedInForeignTask: Boolean by mutableStateOf(false)
+
   /** Stashes [key] as the [pendingDeepLink], stamping [pendingDeepLinkStashedAtEpochMs] with now. */
-  private fun stashPendingDeepLink(key: HedvigNavKey) {
+  private fun stashPendingDeepLink(key: HedvigNavKey, hostedInForeignTask: Boolean) {
     pendingDeepLink = key
     pendingDeepLinkStashedAtEpochMs = clock.now().toEpochMilliseconds()
+    pendingDeepLinkHostedInForeignTask = hostedInForeignTask
   }
 
-  /** Clears [pendingDeepLink] and its companion timestamp together. */
+  /** Clears [pendingDeepLink] and its companion state together. */
   private fun clearPendingDeepLink() {
     pendingDeepLink = null
     pendingDeepLinkStashedAtEpochMs = null
+    pendingDeepLinkHostedInForeignTask = false
   }
 
   /**
@@ -168,26 +159,26 @@ internal class BackstackController(
   }
 
   /**
-   * Drives the scene decorator (D11). The navigation suite (tab bar/rail) may render only while the
-   * stack is inside our runs model: our own task AND rooted at [HomeKey] (or [LoginKey], which never
-   * shows a suite anyway). A lone deep link — or any stack that grew from one before [navigateUp]
-   * re-rooted it at Home — is *outside* that model. The runs helpers in `TopLevelRunLogic` assume
-   * `HomeKey` at index 0 and silently no-op otherwise, so rendering the suite there strands the user
-   * (a dead Home tap). Outside the model we suppress the suite and instead key off the *top* (rendered)
-   * entry: a bare top-level root gets a decorator-supplied Up-bar (it has no back affordance of its
-   * own), a deeper screen gets nothing (it draws its own Up). A lone Home hosted in a foreign task is
-   * itself a top-level root, so it gets the Up-bar — letting the user escape back via Up (see
-   * [navigateUp]).
+   * Whether this stack is a deep link that landed alone because another app's task hosts us (see
+   * [navigateToExternalDeepLink]), plus whatever was pushed on top of it. Every other stack starts at
+   * [HomeKey] (or [LoginKey]), so a different first entry is the record of that landing and no
+   * separate task state is kept.
+   */
+  private val isDeepLinkHostedInForeignTask: Boolean
+    get() = entries.firstOrNull().let { it !is HomeKey && it !is LoginKey }
+
+  /**
+   * Drives the scene decorator. The navigation suite (tab bar/rail) may render only inside the runs
+   * model: the runs helpers in `TopLevelRunLogic` assume `HomeKey` at index 0 and silently no-op
+   * otherwise, so rendering the suite on a lone deep link strands the user (a dead Home tap). Outside
+   * the model the decision keys off the top entry: a bare top-level root gets a decorator-supplied
+   * Up-bar (it has no back affordance of its own), a deeper screen gets nothing (it draws its own Up).
    */
   val loneDeepLinkChrome: LoneDeepLinkChrome
-    get() {
-      val first = entries.firstOrNull()
-      val insideRunsModel = isOwnTask && (first is HomeKey || first is LoginKey)
-      return when {
-        insideRunsModel -> LoneDeepLinkChrome.ShowSuite
-        entries.lastOrNull()?.topLevelTabOrNull() != null -> LoneDeepLinkChrome.ShowUpBar
-        else -> LoneDeepLinkChrome.ShowNothing
-      }
+    get() = when {
+      !isDeepLinkHostedInForeignTask -> LoneDeepLinkChrome.ShowSuite
+      entries.lastOrNull()?.topLevelTabOrNull() != null -> LoneDeepLinkChrome.ShowUpBar
+      else -> LoneDeepLinkChrome.ShowNothing
     }
 
   /**
@@ -217,13 +208,13 @@ internal class BackstackController(
 
   /**
    * Routes an in-app link tap (Compose `LocalUriHandler`). The member is navigating *within* a live
-   * session, so we join the current task: logged out, stash it (consumed by [setLoggedIn] to land
-   * alone); logged in, dedup and append onto the live stack. External / notification
-   * deep links use [navigateToExternalDeepLink] instead — they must land alone.
+   * session, so it joins the live stack: logged out, stash it (landed by [setLoggedIn]); logged in,
+   * dedup and append. External / notification deep links use [navigateToExternalDeepLink] instead,
+   * which re-roots the stack.
    */
   fun navigateToInAppLink(key: HedvigNavKey) {
     if (!isLoggedIn) {
-      stashPendingDeepLink(key)
+      stashPendingDeepLink(key, hostedInForeignTask = false)
       return
     }
     Snapshot.withMutableSnapshot {
@@ -233,48 +224,35 @@ internal class BackstackController(
   }
 
   /**
-   * Routes an external or notification deep link, which must land *alone* — it is an entry into the
-   * app from outside, not navigation within a live session. Logged out, stash it as [pendingDeepLink]
-   * so [setLoggedIn] still lands it alone after authentication; logged in, [reseed] to just this key.
-   * The ancestry is rebuilt on demand by [navigateUp] (the runs model and nav bar come back with it),
-   * so a lone deep link never sits on top of Home.
+   * Routes an external or notification deep link: an entry into the app from outside, not navigation
+   * within a live session, so it replaces whatever was there. Logged out, stash it as
+   * [pendingDeepLink] for [setLoggedIn], which applies the same rule once the member is in. What it
+   * lands on depends on which task hosts us:
+   *  - our own task: the synthetic ancestry from [syntheticStackFor], so Back and Up both walk the
+   *    path the member would have taken by hand before leaving the app;
+   *  - another app's task ([hostedInForeignTask]): the key alone, so Back returns straight to that
+   *    app, and Up re-roots us in our own task (see [navigateUp]).
    */
-  fun navigateToExternalDeepLink(key: HedvigNavKey) {
+  fun navigateToExternalDeepLink(key: HedvigNavKey, hostedInForeignTask: Boolean) {
     if (!isLoggedIn) {
-      stashPendingDeepLink(key)
+      stashPendingDeepLink(key, hostedInForeignTask)
       return
     }
-    reseed(listOf(key))
+    reseed(if (hostedInForeignTask) listOf(key) else syntheticStackFor(key))
   }
 
   /**
-   * Task-aware Up. For a lone deep link it materializes the parent ancestry — `[Home]` for a lone
-   * tab root, `[Home, Insurances]` for a lone contract detail — so Up behaves exactly like Back would
-   * have inside the app. When we were launched into a foreign task ([isOwnTask] is false) that parent
-   * stack is handed to [escapeToOwnTask], which re-roots the app in its own task; otherwise it is
-   * materialized in place. A lone leaf with no ancestry (e.g. Home) hosted in a foreign task has no
-   * parent to rebuild, but must still escape so the runs model — and its nav bar — come alive; the
-   * escape is seeded with the leaf itself. Everywhere else Up is a plain temporal pop, identical to
-   * Back (a no-op at the root — it must not exit the app the way Back does).
+   * Up is a plain temporal pop, identical to Back except in two places. At the root it is a no-op: Up
+   * must never exit the app the way Back does. And on a deep link standing alone in another app's task
+   * it hands the key's parent ancestry to [escapeToOwnTask], so the member continues in our own task
+   * instead of falling back into the app that linked here.
    */
   override fun navigateUp(): Boolean {
-    val top = entries.lastOrNull() ?: return false
-    if (entries.size == 1) {
-      val synthetic = syntheticStackFor(top)
-      val parentStack = synthetic.dropLast(1)
-      when {
-        parentStack.isNotEmpty() -> {
-          if (isOwnTask) entries.replaceWith(parentStack) else escapeToOwnTask(parentStack)
-          return true
-        }
-
-        !isOwnTask -> {
-          escapeToOwnTask(synthetic)
-          return true
-        }
-      }
+    val loneDeepLink = entries.singleOrNull()?.takeIf { isDeepLinkHostedInForeignTask }
+    if (loneDeepLink != null) {
+      escapeToOwnTask(syntheticStackFor(loneDeepLink).dropLast(1))
+      return true
     }
-    // No escape needed (own-task lone root, or a normal multi-entry stack): a pure pop, a no-op at the root.
     return super.popBackstack()
   }
 
@@ -299,21 +277,22 @@ internal class BackstackController(
   }
 
   /**
-   * Enter the logged-in app. Precedence: a pending deep link lands alone (re-enabling the runs model
-   * on the next Up); otherwise a stash tagged with this same [memberId] is restored (history comes
+   * Enter the logged-in app. Precedence: a pending deep link lands as [navigateToExternalDeepLink]
+   * would have landed it (alone in another app's task, on its synthetic ancestry in ours); otherwise a stash tagged with this same [memberId] is restored (history comes
    * back, per-entry state having been disposed while stashed); otherwise a fresh Home. Any stash is
    * always consumed/dropped so it can never bleed into a later session.
    */
   fun setLoggedIn(memberId: String?) {
     Snapshot.withMutableSnapshot {
       val pending = pendingDeepLink
+      val pendingHostedInForeignTask = pendingDeepLinkHostedInForeignTask
       clearPendingDeepLink()
       val stash = stashedSession?.takeIf { memberId != null && it.memberId == memberId }
       stashedSession = null
       parkedRuns.clear()
       when {
         pending != null -> {
-          entries.replaceWith(listOf(pending))
+          entries.replaceWith(if (pendingHostedInForeignTask) listOf(pending) else syntheticStackFor(pending))
         }
 
         stash != null -> {
@@ -386,6 +365,7 @@ internal class BackstackController(
     pendingDeepLink: HedvigNavKey?,
     pendingDeepLinkStashedAtEpochMs: Long?,
     stashedSession: StashedSession?,
+    pendingDeepLinkHostedInForeignTask: Boolean = false,
   ) {
     if (this.entries.isNotEmpty()) return
     Snapshot.withMutableSnapshot {
@@ -393,6 +373,7 @@ internal class BackstackController(
       this.parkedRuns.putAll(parkedRuns)
       this.pendingDeepLink = pendingDeepLink
       this.pendingDeepLinkStashedAtEpochMs = pendingDeepLinkStashedAtEpochMs
+      this.pendingDeepLinkHostedInForeignTask = pendingDeepLink != null && pendingDeepLinkHostedInForeignTask
       this.stashedSession = stashedSession
     }
   }

@@ -15,8 +15,8 @@ interface Backstack {
   val entries: MutableList<HedvigNavKey>
 
   /**
-   * Up navigation. Defaults to a plain temporal pop; `:app`'s controller overrides it with
-   * task-aware synthetic-stack rebuilding for lone deep links (see BackstackController).
+   * Up navigation. Defaults to a plain temporal pop that is a no-op at the root; `:app`'s controller
+   * overrides it to re-root a deep link hosted in another app's task (see BackstackController).
    */
   fun navigateUp(): Boolean = popBackstack()
 

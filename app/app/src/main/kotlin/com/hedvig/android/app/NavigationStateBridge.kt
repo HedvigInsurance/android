@@ -91,6 +91,7 @@ internal object NavigationStateBridge {
           pendingDeepLink = snapshot.pendingDeepLink.takeIf { pendingStillValid },
           pendingDeepLinkStashedAtEpochMs = stashedAt.takeIf { pendingStillValid },
           stashedSession = snapshot.stashedSession,
+          pendingDeepLinkHostedInForeignTask = snapshot.pendingDeepLinkHostedInForeignTask,
         )
       }
       backstackController.seedIfEmpty(listOf(LoginKey))
@@ -107,6 +108,7 @@ internal object NavigationStateBridge {
           pendingDeepLink = backstackController.pendingDeepLink,
           pendingDeepLinkStashedAtEpochMs = backstackController.pendingDeepLinkStashedAtEpochMs,
           stashedSession = backstackController.stashedSession,
+          pendingDeepLinkHostedInForeignTask = backstackController.pendingDeepLinkHostedInForeignTask,
         ),
         savedStateConfiguration,
       )
@@ -173,4 +175,5 @@ private data class NavStateSnapshot(
   val pendingDeepLink: (@Polymorphic HedvigNavKey)?,
   val stashedSession: StashedSession?,
   val pendingDeepLinkStashedAtEpochMs: Long? = null,
+  val pendingDeepLinkHostedInForeignTask: Boolean = false,
 )
