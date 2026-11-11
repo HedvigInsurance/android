@@ -47,6 +47,14 @@ private fun Project.configureKotlinMultiplatform(withIos: Boolean) {
   val libs = the<LibrariesForLibs>()
 
   project.configure<KotlinMultiplatformExtension> {
+    // Until Nov 2026 every native binary carried
+    //   freeCompilerArgs += "-Xdisable-phases=DevirtualizationAnalysis,DCEPhase,RemoveRedundantCallsToStaticInitializersPhase"
+    // as a workaround for the release XCFramework link running out of memory on CI (KT-76047, KT-78518).
+    // Kotlin 2.4 cut the devirtualization memory use (KT-80367) and the umbrella stopped exporting
+    // Compose, so the link fits again. If the umbrella grows and CI OOMs on the link once more, put the
+    // flag back here, starting with DevirtualizationAnalysis alone since that is the phase that blows up.
+    // The size cost of the flag was measured at ~24 KB, so it is a safe lever. Check with the umbrella
+    // workflow's dry_run input before merging an export change.
     if (withIos) {
       iosArm64()
       iosSimulatorArm64()
