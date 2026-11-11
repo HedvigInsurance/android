@@ -1946,12 +1946,36 @@ type CrossSell {
   """
   options: [CrossSell!]!
 }
+type CrossSellCarouselItem {
+  title: String!
+  subtitle: String
+  """
+  The slide image, or the poster when the slide is a video
+  """
+  image: StoryblokImageAsset!
+  """
+  HEVC mp4 for iOS, set when the slide is a video; play it over the image
+  """
+  videoUrlMp4: String
+  """
+  VP9 webm for Android, same clip as videoUrlMp4
+  """
+  videoUrlWebm: String
+  """
+  Replay the video while the slide is shown; otherwise play once and hold the last frame
+  """
+  loop: Boolean!
+}
 """
 A/B testing experiment (name and variant must be SCREAMING_SNAKE_CASE)
 """
 input CrossSellExperimentInput {
   name: String!
   variant: String!
+}
+type CrossSellHeroIntro {
+  title: String!
+  description: String!
 }
 input CrossSellInput {
   userFlow: UserFlow!
@@ -1960,7 +1984,8 @@ input CrossSellInput {
   """
   flowSource: FlowSource
   """
-  A/B test experiments for attribution tracking
+  A/B test experiments for attribution tracking. ACCIDENT_DISCOUNT with variant NO_DISCOUNT withholds the accident
+  cross-sell's discount.
   """
   experiments: [CrossSellExperimentInput!]!
   """
@@ -1972,6 +1997,21 @@ input CrossSellInput {
   """
   claimId: UUID
 }
+type CrossSellProductInfo {
+  heroImage: StoryblokImageAsset!
+  """
+  The intro text under the hero on the product's web page; null when the page has none
+  """
+  heroIntro: CrossSellHeroIntro
+  """
+  Selling points from the product's web page's image-text sections, in page order
+  """
+  usps: [CrossSellUsp!]!
+  """
+  Story-style slides from the product's web page, in page order
+  """
+  carousel: [CrossSellCarouselItem!]!
+}
 enum CrossSellSource {
   HOME
   CLOSED_CLAIM
@@ -1979,6 +2019,10 @@ enum CrossSellSource {
   ADDON
   EDIT_COINSURED
   MOVING_FLOW
+}
+type CrossSellUsp {
+  title: String!
+  description: String!
 }
 type CrossSellV2 {
   """
@@ -2970,6 +3014,10 @@ type Member {
   SMART_X_SELL. Where no discount applies it falls back to the plain product description.
   """
   crossSellV2(input: CrossSellInput!): CrossSellV2!
+  """
+  Product details for a tapped cross-sell, in the Hedvig-Language of the request. Errors for an unknown id and for the generic HOME, PET and ALL cross-sells.
+  """
+  crossSellProductInfo(crossSellId: ID!): CrossSellProductInfo!
   """
   Shop sessions started by this member that have not yet been signed and are not expired.
   Ordered by most recent activity first.

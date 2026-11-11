@@ -68,6 +68,7 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.tracking.EventTrackingClient
 import com.hedvig.android.data.addons.data.AddonBannerSource
+import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.design.system.hedvig.DemoModeLabel
 import com.hedvig.android.design.system.hedvig.Surface
@@ -79,7 +80,9 @@ import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.onboarding.data.ResetOnboardingSeenUseCase
 import com.hedvig.android.feature.onboarding.gate.OnboardingGate
 import com.hedvig.android.feature.onboarding.navigation.OnboardingKey
+import com.hedvig.android.feature.product.inapp.navigation.navigateToCrossSellProduct
 import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.activity.ExternalNavigator
@@ -176,9 +179,21 @@ internal fun HedvigApp(
           scope = scope,
         )
       }
+      val showProductPages by remember(featureManager) {
+        featureManager.isFeatureEnabled(Feature.SHOW_PRODUCT_PAGES)
+      }.collectAsStateWithLifecycle(initialValue = false)
+      val openCrossSell: (CrossSell) -> Boolean = { crossSell ->
+        if (showProductPages) {
+          backstackController.navigateToCrossSellProduct(crossSell)
+          true
+        } else {
+          authorizationCodeUriHandler.tryOpenUri(crossSell.storeUrl)
+        }
+      }
       CrossSellSheet(
         isInScreenEligibleForCrossSells = hedvigAppState.isInScreenEligibleForCrossSells,
-        onCrossSellClick = authorizationCodeUriHandler::tryOpenUri,
+        onCrossSellClick = openCrossSell,
+        onRecommendedAddonClick = { deepLink -> authorizationCodeUriHandler.tryOpenUri(deepLink) },
         onAddonClick = { eligibleInsuranceIds ->
           backstackController.add(
             AddonPurchaseKey(
@@ -244,6 +259,7 @@ internal fun HedvigApp(
                           androidAppHost = androidAppHost,
                           openUrl = authorizationCodeUriHandler::openUri,
                           openCrossSellUrl = authorizationCodeUriHandler::tryOpenUri,
+                          openCrossSell = openCrossSell,
                           imageLoader = imageLoader,
                           languageService = languageService,
                           hedvigBuildConstants = hedvigBuildConstants,

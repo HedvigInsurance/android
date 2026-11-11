@@ -1,0 +1,30 @@
+query CrossSellProductInfo($crossSellId: ID!) {
+  currentMember {
+    crossSellProductInfo(crossSellId: $crossSellId) {
+      heroImage {
+        id
+        src
+        alt
+      }
+      heroIntro {
+        title
+        description
+      }
+      usps {
+        title
+        description
+      }
+      carousel {
+        title
+        subtitle
+        image {
+          id
+          src
+          alt
+        }
+        videoUrlWebm
+        loop
+      }
+    }
+  }
+}
