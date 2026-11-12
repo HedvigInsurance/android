@@ -57,6 +57,7 @@ kotlin {
       implementation(projects.featureEditCoinsured)
       implementation(projects.featureEditCoinsuredNavigation)
       implementation(projects.featureFlags)
+      implementation(projects.featureForever)
       implementation(projects.featureForeverNavigation)
       implementation(projects.featureHelpCenter)
       implementation(projects.featureHomeNavigation)
