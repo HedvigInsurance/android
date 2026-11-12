@@ -173,8 +173,8 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
 
 /**
  * What [hedvigEntryProvider] hands to the host's own entries: the dependencies those entries need and the
- * cross-feature closures derived once in [hedvigEntryProvider]. Host entries take these closures from here
- * instead of building their own; closures to any other destination are built in the host block. A field is
+ * cross-feature closures derived once in [hedvigEntryProvider]. A closure this context provides is taken from
+ * it and never rebuilt by a host; closures it does not provide are built in the host's entries. A field is
  * removed when its last host-side consumer moves into the shared provider.
  */
 class HostEntryContext internal constructor(

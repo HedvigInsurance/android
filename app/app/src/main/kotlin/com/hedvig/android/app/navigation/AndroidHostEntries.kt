@@ -57,7 +57,8 @@ import kotlinx.coroutines.launch
 
 /**
  * Registers the destinations of the features only Android can render, the host half of
- * [hedvigEntryProvider]. Every cross-feature closure comes from [context].
+ * [hedvigEntryProvider]. A closure that [context] provides is taken from it and never rebuilt here; closures
+ * it does not provide are built here.
  */
 internal fun EntryProviderScope<HedvigNavKey>.androidHostEntries(context: HostEntryContext) {
   addLoginEntries(
@@ -89,6 +90,7 @@ internal fun EntryProviderScope<HedvigNavKey>.androidHostEntries(context: HostEn
     openUrl = context.openUrl,
     openCrossSellUrl = context.openCrossSellUrl,
     navigateToNewConversation = context.navigateToNewConversation,
+    navigateToAddonPurchaseFlow = context.navigateToAddonPurchaseFlow,
     navigateToMovingFlowFromInsurance = {
       context.navigateToMovingFlow(MovingSource.INSURANCE)
     },
@@ -182,6 +184,7 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
         openUrl = openUrl,
         onNavigateToImageViewer = onNavigateToImageViewer,
         navigateToConversation = navigateToConversation,
+        navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
       )
     },
     backstack = backstack,
@@ -230,6 +233,7 @@ private fun EntryProviderScope<HedvigNavKey>.addNestedHomeEntries(
   openUrl: (String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   navigateToConversation: (String) -> Unit,
+  navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
 ) {
   claimDetailsEntries(
     imageLoader = imageLoader,
@@ -247,13 +251,7 @@ private fun EntryProviderScope<HedvigNavKey>.addNestedHomeEntries(
       backstack.add(CoInsuredAddInfoKey(contractId, CoInsuredFlowType.CoInsured))
     },
     onNavigateToAddonPurchaseFlow = { ids ->
-      backstack.add(
-        AddonPurchaseKey(
-          insuranceIds = ids,
-          preselectedAddonDisplayName = null,
-          source = AddonBannerSource.TRAVEL_CERTIFICATES,
-        ),
-      )
+      navigateToAddonPurchaseFlow(ids, AddonBannerSource.TRAVEL_CERTIFICATES)
     },
   )
   insuranceEvidenceEntries(
@@ -268,6 +266,7 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
   openUrl: (String) -> Unit,
   openCrossSellUrl: (String) -> Boolean,
   navigateToNewConversation: () -> Unit,
+  navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
   navigateToMovingFlowFromInsurance: () -> Unit,
 ) {
   insuranceEntries(
@@ -309,13 +308,7 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
       backstack.add(RemoveAddonsKey(contractId, addonVariant))
     },
     navigateToUpgradeAddon = { contractId, _ ->
-      backstack.add(
-        AddonPurchaseKey(
-          listOfNotNull(contractId?.id),
-          null,
-          AddonBannerSource.CONTRACT_DETAIL,
-        ),
-      )
+      navigateToAddonPurchaseFlow(listOfNotNull(contractId?.id), AddonBannerSource.CONTRACT_DETAIL)
     },
     navigateToChipIdScreen = { contractId -> backstack.add(ChipIdKey(contractId)) },
   )
