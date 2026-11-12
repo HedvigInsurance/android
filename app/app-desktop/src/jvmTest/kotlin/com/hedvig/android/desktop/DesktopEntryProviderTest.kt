@@ -56,7 +56,8 @@ class DesktopEntryProviderTest {
 
   /**
    * Every concrete `@Serializable` [HedvigNavKey] on the desktop classpath is a key the back stack can hold, so the
-   * shared provider must register an entry for its class, and the desktop fallback is never needed for it. The
+   * shared provider must register an entry for its class, and the desktop fallback is never needed for it. The scan
+   * sees only the keys on this test's runtime classpath, which holds `:app-desktop`'s dependencies. The
    * registered classes are read from the [EntryProviderScope] after registration, since most keys are `internal` to
    * their feature and cannot be constructed here.
    */
