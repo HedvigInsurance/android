@@ -27,5 +27,12 @@ kotlin {
       implementation(projects.coreResources)
       implementation(projects.designSystemHedvig)
     }
+
+    jvmTest.dependencies {
+      implementation(libs.coroutines.test)
+      implementation(libs.junit)
+      implementation(libs.ktor.client.mock)
+      implementation(projects.loggingTest)
+    }
   }
 }
