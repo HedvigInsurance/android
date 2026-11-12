@@ -280,9 +280,9 @@ the seam table above.
 `database-android`, `core-rive`, `feature-impersonation`, `accessibility-test`,
 `micro-apps/design-showcase`.
 
-`notification-permission` and `compose-webview` are Android implementations of a seam; whether
-each becomes a KMP module with actuals or stays Android behind an interface is the builder's
-choice per module.
+`compose-webview` also stays Android. Its API is Android-typed throughout and Trustly depends on
+that, so each caller wraps its own web view step in a seam whose desktop side is "Not available
+on desktop". `notification-permission` became a KMP module with actuals.
 
 ## Phases
 

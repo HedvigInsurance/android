@@ -189,12 +189,12 @@ Tasks 3 to 10 each apply the Conversion Recipe. Only module specifics are listed
 - `jvmMain` actual: permission reads as not granted, requesting does nothing, no dialog is shown.
 - `nativeMain` is not added (the module does not compile for iOS today).
 
-### Task 5: `compose-webview`
+### Task 5: `NotAvailableOnDesktop`
 
-- `M` = `compose-webview`, `D` = `app/ui/compose-webview`. One file wrapping `android.webkit.WebView`.
-- **Produces:** the existing public composable, same name and parameters, as `expect` in `commonMain` with today's code as the `androidMain` actual. If a parameter type is `WebViewClient` or another Android type, replace it in the `expect` signature with the minimal platform-free callbacks its two callers (`feature-connect-payment-trustly`, `feature-profile`) actually use, and adapt those two call sites.
-- **Produces:** `@Composable fun NotAvailableOnDesktop(modifier: Modifier = Modifier)` in `app/design-system/design-system-hedvig/src/jvmMain/kotlin/com/hedvig/android/design/system/hedvig/NotAvailableOnDesktop.kt`, public, showing the text `Not available on desktop` with existing design system components. Later tasks use it for every skip.
-- `jvmMain` actual of the web view: `NotAvailableOnDesktop()`. Report it as a skip.
+`compose-webview` is not converted. Its public API is a copy of Accompanist WebView with Android types throughout (`WebViewClient`, `WebChromeClient`, a `(Context) -> WebView` factory, `Bitmap`/`Bundle` in its state), and Trustly relies on the factory and on `onCreateWindow`. Splitting that for `commonMain` would reshape shared code only for desktop, which the skip rule forbids. The module stays Android-only, and each caller owns its seam: the licenses screen in Task 20 and the Trustly web step in Task 23 each get an `expect` composable whose `androidMain` actual calls `WebView(...)` as today and whose `jvmMain` actual is `NotAvailableOnDesktop()`.
+
+- **Produces:** `@Composable fun NotAvailableOnDesktop(modifier: Modifier = Modifier)` in `app/design-system/design-system-hedvig/src/jvmMain/kotlin/com/hedvig/android/design/system/hedvig/NotAvailableOnDesktop.kt`, public, showing the text `Not available on desktop` centred, with existing design system components. No other parameters. Later tasks use it for every skip.
+- Verify: `./gradlew :design-system-hedvig:compileKotlinJvm :design-system-hedvig:jvmTest`, and a `jvmTest` using the Compose UI test already set up for JVM in this repo that asserts a node with text `Not available on desktop` is displayed.
 
 ### Task 6: `forever-ui`
 
@@ -337,7 +337,7 @@ fun EntryProviderScope<HedvigNavKey>.hedvigEntries(
 Conversion Recipe for each, plus removing that feature's entries from both hosts' `hostEntries` and adding them to the shared provider.
 
 ### Task 20: `feature-profile`
-- After Tasks 3, 4, 5, 11. Platform code: Accompanist permissions (use Task 4's API), `Build`/`Intent`/`Context` for app settings and language (seam; `jvmMain` shows `NotAvailableOnDesktop()` for open-app-settings, language switching works in-app), `androidx.appcompat` per-app locale (stays in `androidMain`).
+- After Tasks 3, 4, 5, 11. The licenses screen's web view becomes a module-local `expect` composable (`androidMain`: today's `rememberWebViewState` + `WebView`; `jvmMain`: `NotAvailableOnDesktop()`, reported as a skip). Platform code: Accompanist permissions (use Task 4's API), `Build`/`Intent`/`Context` for app settings and language (seam; `jvmMain` shows `NotAvailableOnDesktop()` for open-app-settings, language switching works in-app), `androidx.appcompat` per-app locale (stays in `androidMain`).
 
 ### Task 21: `feature-home`, `feature-insurances`, `feature-onboarding`
 - Held modules, one PR each, each on Stylianos's go-ahead. `feature-home` and `feature-onboarding`: DataStore usage moves to the `commonMain` DataStore API. `feature-onboarding` uses `androidx.navigation3.ui` directly: use Task 14's result.
@@ -349,7 +349,7 @@ Conversion Recipe for each, plus removing that feature's entries from both hosts
 
 ### Task 23: `feature-chat`, `feature-connect-payment-trustly`
 - `feature-chat`: Room and paging from `commonMain` (paging-compose 3.5.3 publishes desktop and iOS variants); `database-android`'s builder gets a `jvmMain` sibling using the bundled SQLite driver; media3 playback behind a seam with `NotAvailableOnDesktop()` on JVM; attachments through the file picker seam. If the message list cannot be shared without restructuring the presenter, stop and bring it to Stylianos as a skip-rule decision.
-- `feature-connect-payment-trustly`: screens and presenters to `commonMain`; the web view step renders Task 5's seam, so desktop shows the placeholder. Report as a skip.
+- `feature-connect-payment-trustly`: screens and presenters to `commonMain`; the web view step becomes a module-local `expect` composable whose `androidMain` actual is today's `WebView(...)` call with `TrustlyWebView` and its clients, and whose `jvmMain` actual is `NotAvailableOnDesktop()`. Report as a skip.
 
 ### Task 24: Entries sweep
 - Every file the ledger lists under "Left in `androidMain`" because of `:navigation-compose` moves to `commonMain`. One commit per module. Recipe steps 4, 6, 7, 8.
