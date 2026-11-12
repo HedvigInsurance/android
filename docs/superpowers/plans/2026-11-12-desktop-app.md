@@ -105,7 +105,7 @@ Expected: tests pass; the file is non-empty. Confirm `:app:compileReleaseKotlin`
 
 - [ ] **Step 5: Run the module's tests.** `./gradlew :M:jvmTest`. Expected: the same tests as step 1, all passing.
 
-- [ ] **Step 6: Run the navigation and analytics guards.** `./gradlew :app:test --tests "*BackStackSerialization*" --tests "*AnalyticsNameTest*"`. Expected: PASS.
+- [ ] **Step 6: Run the navigation and analytics guards.** `./gradlew :app:test --tests "*SerializationTest*" --tests "*AnalyticsNameTest*"`. Expected: PASS.
 
 - [ ] **Step 7: Compare the ViewModel graph.** Re-run step 1's `:app:compileReleaseKotlin` and `javap` into `/tmp/vm-after.txt`, then `diff /tmp/vm-before.txt /tmp/vm-after.txt`. Expected: no output.
 
@@ -253,7 +253,7 @@ Sequential unless marked parallel: these tasks edit `:app` and `:navigation-comp
 - Consumes: Task 1 step 1 (artifact variants) and step 3 (required changes).
 - Produces: the same public API, same package, reachable from `commonMain` of dependent modules. Destination is `commonMain` if iOS variants exist, else `jvmAndAndroidMain` with an entry in the spec's iOS debt register.
 
-- [ ] Step 1: Move the files and dependencies. Step 2: `./gradlew :navigation-compose:compileKotlinJvm :navigation-compose:compileAndroidMain` and, if `commonMain`, `:navigation-compose:compileKotlinIosSimulatorArm64`. Step 3: `./gradlew :app:assembleDebug :navigation-compose:jvmTest :app:test --tests "*BackStackSerialization*"`. Step 4: Commit.
+- [ ] Step 1: Move the files and dependencies. Step 2: `./gradlew :navigation-compose:compileKotlinJvm :navigation-compose:compileAndroidMain` and, if `commonMain`, `:navigation-compose:compileKotlinIosSimulatorArm64`. Step 3: `./gradlew :app:assembleDebug :navigation-compose:jvmTest :app:test --tests "*SerializationTest*"`. Step 4: Commit.
 
 ### Task 15: Shell keys into `-navigation` modules
 
