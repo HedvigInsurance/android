@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.terminateinsurance.ui
 
-import android.R.attr.text
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -46,7 +45,6 @@ import hedvig.resources.TERMINATION_Q_03
 import hedvig.resources.TOAST_READ_MORE
 import hedvig.resources.general_close_button
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

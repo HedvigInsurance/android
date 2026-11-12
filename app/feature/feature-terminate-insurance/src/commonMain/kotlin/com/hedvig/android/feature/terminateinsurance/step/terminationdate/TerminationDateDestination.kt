@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.locale.previewCommonLocale
 import com.hedvig.android.design.system.hedvig.Checkbox
 import com.hedvig.android.design.system.hedvig.CheckboxGroup
 import com.hedvig.android.design.system.hedvig.CheckboxOption
@@ -46,7 +47,6 @@ import hedvig.resources.TERMINATION_FLOW_IMPORTANT_INFORMATION_TEXT
 import hedvig.resources.TERMINATION_FLOW_IMPORTANT_INFORMATION_TITLE
 import hedvig.resources.TERMINATION_FLOW_I_UNDERSTAND_TEXT
 import hedvig.resources.general_continue_button
-import java.util.Locale
 import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -224,7 +224,7 @@ private fun PreviewTerminationDateScreen() {
             null,
             null,
             2015..2023,
-            locale = Locale.ROOT,
+            locale = previewCommonLocale,
             maxDateInMillis = 2222L,
             minDateInMillis = 1111L,
           ),

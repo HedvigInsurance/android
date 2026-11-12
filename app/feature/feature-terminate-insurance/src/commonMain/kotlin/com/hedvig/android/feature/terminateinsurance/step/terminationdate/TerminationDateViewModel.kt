@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.core.locale.CommonLocale
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerImmutableState
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationDateParameters
 import com.hedvig.android.language.LanguageService
@@ -15,7 +16,6 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
-import java.util.Locale
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
@@ -74,7 +74,7 @@ private class TerminationDatePresenter : MoleculePresenter<TerminationDateEvent,
   }
 }
 
-private class DatePickerConfiguration(locale: Locale, minDate: LocalDate, maxDate: LocalDate) {
+private class DatePickerConfiguration(locale: CommonLocale, minDate: LocalDate, maxDate: LocalDate) {
   private val minDateInMillis = minDate.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
   private val maxDateInMillis = maxDate.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
   private val yearRange = minDate.year..maxDate.year
