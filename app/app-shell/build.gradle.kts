@@ -50,6 +50,7 @@ kotlin {
       implementation(projects.dataSettingsDatastorePublic)
       implementation(projects.designSystemHedvig)
       implementation(projects.featureAddonPurchase)
+      implementation(projects.featureChat)
       implementation(projects.featureChatNavigation)
       implementation(projects.featureChipId)
       implementation(projects.featureChooseTier)

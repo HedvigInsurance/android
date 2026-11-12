@@ -5,13 +5,13 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.EntryProviderScope
-import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.entryProvider
 import assertk.assertThat
+import assertk.assertions.containsAtLeast
 import assertk.assertions.containsExactly
+import assertk.assertions.isEmpty
 import assertk.assertions.isTrue
 import assertk.assertions.startsWith
-import com.hedvig.android.app.navigation.HostEntryContext
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.feature.chat.navigation.ChatKey
 import com.hedvig.android.feature.chat.navigation.InboxKey
@@ -28,22 +28,24 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
+import io.github.classgraph.ClassGraph
 import java.io.File
 import java.lang.reflect.InvocationTargetException
 import kotlin.io.path.createTempDirectory
+import kotlin.reflect.KClass
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 
-class DesktopHostEntriesTest {
+class DesktopEntryProviderTest {
   private val recordingLogger = RecordingLogcatLogger()
 
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule(recordingLogger)
 
-  private val dataDirectory: File = createTempDirectory("desktop-host-entries-test").toFile()
+  private val dataDirectory: File = createTempDirectory("desktop-entry-provider-test").toFile()
 
   private val backstack = newBackstackController()
 
@@ -53,29 +55,34 @@ class DesktopHostEntriesTest {
   }
 
   /**
-   * Builds the entry provider the way the running desktop app does: the shared provider's registrations followed by
-   * [desktopHostEntries], with no fallback. Navigation 3 throws on a second registration of a key class, so a key
-   * registered both by the shared provider and as a desktop placeholder fails this test, where the app would throw
-   * on its first frame. Every known key must then resolve through that provider.
+   * Every concrete `@Serializable` [HedvigNavKey] on the desktop classpath is a key the back stack can hold, so the
+   * shared provider must register an entry for its class, and the desktop fallback is never needed for it. The scan
+   * sees only the keys on this test's runtime classpath, which holds `:app-desktop`'s dependencies. The
+   * registered classes are read from the [EntryProviderScope] after registration, since most keys are `internal` to
+   * their feature and cannot be constructed here.
    */
   @Test
-  fun `the shared provider and the desktop host register every known key exactly once`() {
-    val provider = entryProvider<HedvigNavKey> {
-      registerSharedEntries(this, createTestDesktopGraph(dataDirectory)) { desktopHostEntries(it.backstack) }
-    }
+  fun `the shared provider registers an entry for every navigation key on the classpath`() {
+    val scope = EntryProviderScope<HedvigNavKey> { key -> error("No entry is registered for $key") }
+    registerSharedEntries(scope, createTestDesktopGraph(dataDirectory))
+    val registeredKeyClasses = scope.registeredKeyClasses()
+    val navigationKeyClasses = concreteSerializableNavKeysOnClasspath()
 
-    (keysLeftToTheHost + keysTheSharedProviderRegisters).forEach { key ->
-      assertThat(provider(key).contentKey.toString()).startsWith(key.toString())
-    }
+    assertThat(navigationKeyClasses).containsAtLeast(ChatKey::class, InboxKey::class, HomeKey::class, LoginKey::class)
+    assertThat((navigationKeyClasses - registeredKeyClasses).map { it.qualifiedName }).isEmpty()
   }
 
+  /**
+   * Resolves keys through a provider built the way the running desktop app builds it, but with Navigation 3's
+   * default fallback, which throws. Navigation 3 also throws on a second registration of a key class.
+   */
   @Test
-  fun `the shared provider registers its keys without the desktop host`() {
+  fun `the keys the app opens resolve through the shared provider without a fallback`() {
     val provider = entryProvider<HedvigNavKey> {
-      registerSharedEntries(this, createTestDesktopGraph(dataDirectory)) {}
+      registerSharedEntries(this, createTestDesktopGraph(dataDirectory))
     }
 
-    keysTheSharedProviderRegisters.forEach { key ->
+    publicKeys.forEach { key ->
       assertThat(provider(key).contentKey.toString()).startsWith(key.toString())
     }
   }
@@ -83,7 +90,7 @@ class DesktopHostEntriesTest {
   @Test
   fun `the shared tab roots keep the navigation bar`() {
     val provider = entryProvider<HedvigNavKey> {
-      registerSharedEntries(this, createTestDesktopGraph(dataDirectory)) { desktopHostEntries(it.backstack) }
+      registerSharedEntries(this, createTestDesktopGraph(dataDirectory))
     }
     val showNavBar = NavSuiteSceneDecoratorStrategy.showNavBar()
 
@@ -94,9 +101,7 @@ class DesktopHostEntriesTest {
 
   @Test
   fun `a key without an entry is rendered by the fallback and logged once`() {
-    val provider = entryProvider(fallback = desktopFallbackEntry(backstack)) {
-      desktopHostEntries(backstack)
-    }
+    val provider = entryProvider(fallback = desktopFallbackEntry(backstack)) {}
 
     repeat(3) { assertThat(provider(UnregisteredKey).contentKey.toString()).startsWith(UnregisteredKey.toString()) }
 
@@ -106,14 +111,8 @@ class DesktopHostEntriesTest {
   }
 
   private companion object {
-    /** The keys the shared provider can put on the back stack and leaves to the host to register. */
-    val keysLeftToTheHost = listOf<HedvigNavKey>(
-      ChatKey("conversation-id"),
-      InboxKey,
-    )
-
-    /** Keys the shared provider registers itself, which the desktop host must not register again. */
-    val keysTheSharedProviderRegisters = listOf(
+    /** Keys this test can construct, one or more per feature the desktop app opens. */
+    val publicKeys = listOf(
       LoginKey,
       HomeKey,
       InsurancesKey,
@@ -123,24 +122,47 @@ class DesktopHostEntriesTest {
       ClaimDetailsKey("claim-id"),
       ImageViewerKey("https://example.com/image.png", "cache-key"),
       TrustlyKey(),
+      ChatKey("conversation-id"),
+      InboxKey,
     )
   }
 }
 
+/** The key classes registered on this scope, read from Navigation 3's private registration maps. */
+private fun EntryProviderScope<HedvigNavKey>.registeredKeyClasses(): Set<KClass<*>> {
+  fun declaredMap(name: String): Map<*, *> = EntryProviderScope::class.java.getDeclaredField(name)
+    .apply { isAccessible = true }
+    .get(this) as Map<*, *>
+  val byClass = declaredMap("clazzProviders").keys.map { it as KClass<*> }
+  val byInstance = declaredMap("providers").keys.map { it!!::class }
+  return (byClass + byInstance).toSet()
+}
+
+private fun concreteSerializableNavKeysOnClasspath(): Set<KClass<*>> = ClassGraph()
+  .enableClasspath()
+  .enableClassInfo()
+  .enableAnnotationInfo()
+  .acceptPackages("com.hedvig")
+  .scan()
+  .use { scan ->
+    scan.getAllClassesImplementing(HedvigNavKey::class.java.name)
+      .filter { !it.isInterface && !it.isAbstract }
+      .filter { it.hasAnnotation("kotlinx.serialization.Serializable") }
+      .map { Class.forName(it.name, false, HedvigNavKey::class.java.classLoader).kotlin }
+      .toSet()
+  }
+
 /**
  * Calls the shared `hedvigEntryProvider`, which is `internal` to `:app-shell`, through reflection, with the desktop
- * graph's dependencies and [hostEntries] as the host block. Its JVM signature is the Kotlin one with the receiver
- * first, so a change to its parameters fails here with a message rather than silently.
+ * graph's dependencies. Its JVM signature is the Kotlin one with the receiver first, so a rename or a change to its
+ * parameters fails here with a message rather than silently.
  */
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
-private fun registerSharedEntries(
-  scope: EntryProviderScope<HedvigNavKey>,
-  graph: DesktopGraph,
-  hostEntries: EntryProviderScope<HedvigNavKey>.(HostEntryContext) -> Unit,
-) {
+private fun registerSharedEntries(scope: EntryProviderScope<HedvigNavKey>, graph: DesktopGraph) {
   val method = Class.forName("com.hedvig.android.app.navigation.HedvigEntryProviderKt")
     .declaredMethods
-    .single { it.name == "hedvigEntryProvider" }
+    .singleOrNull { it.name == "hedvigEntryProvider" }
+    ?: error("HedvigEntryProviderKt has no single hedvigEntryProvider function, update this call")
   method.isAccessible = true
   val arguments = arrayOf<Any>(
     scope,
@@ -157,7 +179,6 @@ private fun registerSharedEntries(
     graph.languageService,
     graph.hedvigBuildConstants,
     graph.resetOnboardingSeenUseCase,
-    hostEntries,
   )
   check(method.parameterTypes.size == arguments.size) {
     "hedvigEntryProvider takes ${method.parameterTypes.toList()}, update this call"
