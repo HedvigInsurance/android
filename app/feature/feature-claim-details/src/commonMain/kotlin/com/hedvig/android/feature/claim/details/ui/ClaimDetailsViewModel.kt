@@ -28,7 +28,6 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
-import java.io.File
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
