@@ -1,6 +1,5 @@
 package com.hedvig.android.shared.foreverui.ui.ui
 
-import android.content.Intent
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -35,7 +34,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
@@ -86,7 +84,6 @@ import com.hedvig.android.shared.foreverui.ui.ui.ForeverUiState.Success
 import hedvig.resources.FOREVER_TAB_MONTHLY_DISCOUNT
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
 import hedvig.resources.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION
-import hedvig.resources.REFERRALS_SHARE_SHEET_TITLE
 import hedvig.resources.REFERRAL_SMS_MESSAGE
 import hedvig.resources.Res
 import hedvig.resources.TAB_REFERRALS_TITLE
@@ -106,8 +103,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun ForeverDestination(viewModel: ForeverViewModel) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  val context = LocalContext.current
-  val shareSheetTitle = stringResource(Res.string.REFERRALS_SHARE_SHEET_TITLE)
+  val shareText = rememberShareHandler()
   val coroutineScope = rememberCoroutineScope()
   val resourceEnvironment = rememberResourceEnvironment()
   ForeverScreen(
@@ -126,13 +122,7 @@ fun ForeverDestination(viewModel: ForeverViewModel) {
           incentive.toString(),
           viewModel.referralShareUrl(code),
         )
-        context.showShareSheet(shareSheetTitle) { intent ->
-          intent.putExtra(
-            Intent.EXTRA_TEXT,
-            string,
-          )
-          intent.type = "text/plain"
-        }
+        shareText(string)
       }
     },
   )
@@ -465,10 +455,10 @@ private fun ForeverScrollableContent(
 
 @Composable
 internal fun ReferralCodeCard(campaignCode: String, modifier: Modifier = Modifier) {
-  val context = LocalContext.current
+  val copyToClipboard = rememberCopyToClipboard()
   HedvigBigCard(
     onClick = {
-      context.copyToClipboard(campaignCode)
+      copyToClipboard(campaignCode)
     },
     enabled = true,
     modifier = modifier.fillMaxWidth(),
