@@ -32,10 +32,7 @@ import com.hedvig.android.feature.insurances.navigation.insuranceEntries
 import com.hedvig.android.feature.login.navigation.loginEntries
 import com.hedvig.android.feature.movingflow.MovingSource
 import com.hedvig.android.feature.onboarding.navigation.onboardingEntries
-import com.hedvig.android.feature.payin.account.navigation.PayinMethodDetailsKey
-import com.hedvig.android.feature.payin.account.navigation.SelectPrimaryPayinMethodKey
 import com.hedvig.android.feature.payments.navigation.ManualChargeKey
-import com.hedvig.android.feature.payments.navigation.paymentsEntries
 import com.hedvig.android.feature.profile.navigation.ContactInfoKey
 import com.hedvig.android.feature.profile.navigation.UsageDataKey
 import com.hedvig.android.feature.profile.tab.profileEntries
@@ -97,9 +94,6 @@ internal fun EntryProviderScope<HedvigNavKey>.androidHostEntries(context: HostEn
   foreverEntries()
   addPaymentsEntries(
     backstack = context.backstack,
-    navigateToPayinAccount = context.navigateToPayinAccount,
-    navigateToPayoutAccount = context.navigateToPayoutAccount,
-    navigateToNewConversation = context.navigateToNewConversation,
     changePayinMethod = context.changePayinMethod,
   )
   addProfileEntries(
@@ -313,19 +307,8 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
 
 private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
   backstack: BackstackController,
-  navigateToPayinAccount: () -> Unit,
-  navigateToPayoutAccount: () -> Unit,
-  navigateToNewConversation: () -> Unit,
   changePayinMethod: () -> Unit,
 ) {
-  paymentsEntries(
-    backstack = backstack,
-    navigateToPayinAccount = navigateToPayinAccount,
-    navigateToPayinMethodDetails = { method -> backstack.add(PayinMethodDetailsKey(method)) },
-    navigateToPayoutAccount = navigateToPayoutAccount,
-    navigateToSelectPrimaryPayinMethod = { backstack.add(SelectPrimaryPayinMethodKey) },
-    openConversation = navigateToNewConversation,
-  )
   connectPaymentEntries(
     backstack = backstack,
     changePaymentMethod = changePayinMethod,
