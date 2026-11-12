@@ -71,7 +71,8 @@ A full narrative of *why* these look the way they do — the engineering decisio
 
 The codebase is organized under `/app` with 80+ modules following a strict modularization pattern:
 
-- **app/** - Main application module. Owns the single Metro `AppGraph`, the single `NavDisplay`, the back stack controller, and all cross-feature navigation wiring.
+- **app/** - Android application module, a thin host of `:app-shell`. Owns the Android Metro `AppGraph` and the per-Activity `ActivityRetainedGraph`, `MainActivity`, back stack persistence, external deep links, the Datadog view tracking effect, and the entries of features that are still Android-only (`androidHostEntries`).
+- **app-shell/** - KMP module (JVM and Android) with the platform-neutral app shell: `HedvigApp` and its single `NavDisplay`, the back stack controller, session reconciliation, and the shared cross-feature navigation wiring (`hedvigEntryProvider`). A host implements `AppHost` and passes a block registering the features the shell cannot depend on.
 - **feature/** - Feature modules (feature-home, feature-chat, feature-login, etc.)
 - **feature/feature-{name}-navigation/** - Tiny modules holding *only* the public `@Serializable HedvigNavKey`s of a feature that other features may navigate to. These are the one carve-out to the "features can't depend on features" rule.
 - **data/** - Data layer modules (data-contract, data-chat, data-addons, etc.)
@@ -230,14 +231,14 @@ internal data class InsuranceContractDetailKey(val contractId: String) : HedvigN
 
 Keys reachable cross-feature live in the feature's `-navigation` module and are public. Keys internal to a feature stay `internal` in the feature module.
 
-**Marker interfaces** (in `navigation-common`) let `:app` reason about a key without depending on the feature:
+**Marker interfaces** (in `navigation-common`) let the app shell reason about a key without depending on the feature:
 - `TopLevelTabRoot` — this key is the root of a bottom-nav tab (exposes `topLevelTab`).
 - `DeepLinkAncestry` — the synthetic back stack a deep link to this key lands on (exposes `owningTab` + `syntheticParents`).
 - `CrossSellEligibleDestination` — the cross-sell sheet may appear here.
 - `SuppressesChatPushNotification` — suppress chat push while this screen is shown.
 - `DeliberateLogoutOrigin` — reaching logout from here is intentional; don't stash the session for restore.
 
-**The back stack API.** Presenters and entries receive the `Backstack` interface (the `:app` `BackstackController` is bound to it). `entries` is the source of truth; helpers are extensions:
+**The back stack API.** Presenters and entries receive the `Backstack` interface (the app shell's `BackstackController` is bound to it). `entries` is the source of truth; helpers are extensions:
 
 ```kotlin
 backstack.add(ChatKey(id))                              // push
@@ -260,7 +261,7 @@ Never hold a long-lived reference to `entries` snapshot contents; mutate through
 
 ### Dependency Injection
 
-**Registering destinations.** Each feature exposes a `fun EntryProviderScope<HedvigNavKey>.featureEntries(...)` that calls `entry<Key> { }` for each of its screens. `:app` calls all of them from `hedvigEntryProvider`. Cross-feature navigation is done by `:app` passing `navigateToX` lambdas into each feature's entries function — features never import each other's keys.
+**Registering destinations.** Each feature exposes a `fun EntryProviderScope<HedvigNavKey>.featureEntries(...)` that calls `entry<Key> { }` for each of its screens. `hedvigEntryProvider` in `:app-shell` calls those of features every host can render and takes the rest from the host's block (`androidHostEntries` in `:app`). Cross-feature navigation is done with `navigateToX` lambdas passed into each feature's entries function by `hedvigEntryProvider` or by the host's entries (`androidHostEntries`). A closure that `HostEntryContext` provides is taken from it and never rebuilt by a host; closures the context does not provide are built in the host's entries. Features never import each other's keys.
 
 ```kotlin
 fun EntryProviderScope<HedvigNavKey>.insuranceEntries(backstack: Backstack, /* navigateToX lambdas */) {
@@ -276,10 +277,10 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEntries(backstack: Backstack, /* n
 **Multiple back stacks (tabs)** are handled by the "runs model" in `BackstackController`/`TopLevelRunLogic`: Home's run is always at the base of `entries`; side tabs are parked in `parkedRuns` when you switch away and restored when you switch back. Tab state (saveable state + ViewModels) of parked runs is kept alive by the retained `NavEntryDecorator`s, which consult `allLiveContentKeys`.
 
 **Where the heavy logic lives** (read these, don't reinvent):
-- `BackstackController.kt` — per-Activity controller (owned by `NavRetainedViewModel`, a retained `ViewModel`; survives config changes, dies with its Activity), owns all nav state, tab switching, login/logout stash, deep-link landing, Up.
-- `NavigationStateBridge.kt` — the single seam between Activity lifecycle and the controller (seed/restore/persist + escape-to-own-task handoff).
-- `SessionReconciler.kt` — auth↔back-stack reconciliation; gates the splash via `isReady`; forced logout.
-- `HedvigEntryProvider.kt` — all destination registration and cross-feature lambda wiring.
+- `BackstackController.kt` (`:app-shell`): per-Activity controller (owned by `NavRetainedViewModel`, a retained `ViewModel`; survives config changes, dies with its Activity), owns all nav state, tab switching, login/logout stash, deep-link landing, Up.
+- `NavigationStateBridge.kt` (`:app`): the single seam between Activity lifecycle and the controller (seed/restore/persist + escape-to-own-task handoff).
+- `SessionReconciler.kt` (`:app-shell`): auth↔back-stack reconciliation; gates the splash via `isReady`; forced logout.
+- `HedvigEntryProvider.kt` (`:app-shell`): destination registration for every host and the shared cross-feature lambda wiring; `AndroidHostEntries.kt` (`:app`) registers the Android-only rest, taking every closure `HostEntryContext` provides from it and building only the ones it does not provide.
 
 **Critical Metro KMP rule — never put a platform-overridable `@ContributesBinding` default in `commonMain`:**
 
@@ -683,7 +684,7 @@ GitHub Actions workflows (in `.github/workflows/`):
 
 - **build-logic/convention/** - Gradle convention plugins (Metro wiring, feature isolation, the `hedvig {}` DSL)
 - **app/app/.../di/AppGraph.kt** - the global Metro graph; **app/app/.../di/ActivityRetainedGraph.kt** - the per-Activity graph extension (built by **app/app/.../navigation/NavRetainedViewModel.kt**)
-- **app/app/.../navigation/BackstackController.kt** - the per-Activity source of navigation truth
+- **app/app-shell/.../navigation/BackstackController.kt** - the per-Activity source of navigation truth
 - **app/navigation/** - navigation infrastructure + KSP processor
 - **docs/architecture/navigation-and-di.md** - the deep design spec for navigation + DI
 - **settings.gradle.kts** - Module discovery and configuration
@@ -716,7 +717,7 @@ dependencies {
 ```
 3. Create standard structure: `ui/`, `navigation/`, `di/` (contributions live next to the classes they bind via Metro annotations, not in a central `di` module).
 4. Define `@Serializable` `HedvigNavKey`s. Put any cross-feature-reachable keys in a `feature-{name}-navigation` module.
-5. Expose a `fun EntryProviderScope<HedvigNavKey>.{name}Entries(...)` and call it from `HedvigEntryProvider` in `:app`.
+5. Expose a `fun EntryProviderScope<HedvigNavKey>.{name}Entries(...)` and call it from `hedvigEntryProvider` in `:app-shell` (from `androidHostEntries` in `:app` while the module is Android-only).
 6. Module will be auto-discovered by `settings.gradle.kts`.
 
 ### Adding a New Screen/Destination
@@ -725,7 +726,7 @@ dependencies {
 2. Register it: `entry<{Name}Key> { key -> ... }` in the feature's entries function.
 3. Resolve the ViewModel with `metroViewModel()` / `assistedMetroViewModel(...)`.
 4. Ensure the module has `navKeys()` so the key survives process death.
-5. For cross-feature entry, thread a `navigateToX` lambda from `:app` rather than importing the key.
+5. For cross-feature entry, pass a `navigateToX` lambda in from where the entries function is called (`hedvigEntryProvider`, or the host's entries, which take it from `HostEntryContext` when the context provides it) rather than importing the key.
 
 ### Adding a New GraphQL Query
 
@@ -802,7 +803,7 @@ one by another. Three rules and two mechanical traps, each learned by breaking o
 reporting, it just stops matching, so nothing alerts. Dropping `NavigationViewTrackingEffect` in
 the Nav3 migration left `ActivityViewTrackingStrategy` naming every view after the single Activity,
 which broke all 18 view-filtered metrics for ten weeks before anyone noticed.
-`Navigation3TrackingEffect` in `HedvigApp`, wired off `Backstack.entries`, is what keeps them
+`Navigation3TrackingEffect` in `MainActivity`, composed right before `HedvigApp` and wired off `Backstack.entries`, is what keeps them
 working. Monitor 124820537 now watches for a recurrence.
 
 A destination that an analytics query names should implement `AnalyticsNamed` and pin the exact

@@ -52,6 +52,7 @@ dependencies {
   implementation(projects.dataContract)
   implementation(projects.designSystemHedvig)
   implementation(projects.experimentsPublic)
+  implementation(projects.featureChatNavigation)
   implementation(projects.featureFlags)
   implementation(projects.languageCore)
   implementation(projects.moleculePublic)

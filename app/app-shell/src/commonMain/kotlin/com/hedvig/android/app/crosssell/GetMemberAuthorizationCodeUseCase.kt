@@ -15,7 +15,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
-internal interface GetMemberAuthorizationCodeUseCase {
+interface GetMemberAuthorizationCodeUseCase {
   /** A one-time code the web store exchanges for the member's session, or null when none could be fetched. */
   suspend fun invoke(): String?
 }
@@ -23,7 +23,7 @@ internal interface GetMemberAuthorizationCodeUseCase {
 @SingleIn(AppScope::class)
 @ContributesBinding(AppScope::class)
 @Inject
-internal class GetMemberAuthorizationCodeUseCaseImpl(
+class GetMemberAuthorizationCodeUseCaseImpl(
   private val httpClient: HttpClient,
   private val hedvigBuildConstants: HedvigBuildConstants,
 ) : GetMemberAuthorizationCodeUseCase {

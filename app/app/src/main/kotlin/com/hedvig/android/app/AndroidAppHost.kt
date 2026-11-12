@@ -1,43 +1,58 @@
 package com.hedvig.android.app
 
 import android.app.Activity
+import android.graphics.Color
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
+import androidx.compose.ui.platform.UriHandler
 import com.google.android.play.core.review.ReviewException
 import com.google.android.play.core.review.ReviewManagerFactory
+import com.hedvig.android.app.urihandler.SafeAndroidUriHandler
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.receiveAsFlow
 
 /**
- * The Activity-bound capabilities the Compose app shell needs from its host. Implemented by
- * [MainActivity] and handed to the shell as a single dependency instead of four loose callbacks.
- * Mirrors the [com.hedvig.android.navigation.activity.ExternalNavigator] pattern.
+ * The [AppHost] of [MainActivity]. [splashIsRemovedSignal] fires when the splash screen is gone, so the
+ * system bars are styled again against the app's own background rather than the splash's.
  */
-internal interface AndroidAppHost {
-  fun finishApp()
+internal class AndroidAppHostImpl(
+  private val activity: ComponentActivity,
+  private val splashIsRemovedSignal: Channel<Unit>,
+) : AppHost {
+  override val uriHandler: UriHandler = SafeAndroidUriHandler(activity)
 
-  fun applyEdgeToEdgeStyle(systemBarStyle: SystemBarStyle)
-
-  fun shouldShowPermissionRationale(permission: String): Boolean
-
-  fun tryShowAppStoreReviewDialog()
-}
-
-internal class AndroidAppHostImpl(private val activity: ComponentActivity) : AndroidAppHost {
-  override fun finishApp() = activity.finish()
-
-  override fun applyEdgeToEdgeStyle(systemBarStyle: SystemBarStyle) {
-    activity.enableEdgeToEdge(
-      statusBarStyle = systemBarStyle,
-      navigationBarStyle = systemBarStyle,
-    )
-  }
+  fun finishApp() = activity.finish()
 
   override fun shouldShowPermissionRationale(permission: String): Boolean =
     activity.shouldShowRequestPermissionRationale(permission)
 
   override fun tryShowAppStoreReviewDialog() = activity.tryShowPlayStoreReviewDialog()
+
+  @Composable
+  override fun SystemBarsEffect(darkTheme: Boolean) {
+    val splashIsRemovedIndex by produceState(0) {
+      splashIsRemovedSignal.receiveAsFlow().collectLatest { value = value + 1 }
+    }
+    DisposableEffect(darkTheme, splashIsRemovedIndex) {
+      val systemBarStyle = when (darkTheme) {
+        true -> SystemBarStyle.dark(Color.TRANSPARENT)
+        false -> SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+      }
+      activity.enableEdgeToEdge(
+        statusBarStyle = systemBarStyle,
+        navigationBarStyle = systemBarStyle,
+      )
+      onDispose {}
+    }
+  }
 }
 
 private fun Activity.tryShowPlayStoreReviewDialog() {
