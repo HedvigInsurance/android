@@ -18,23 +18,17 @@ import coil3.gif.GifDecoder
 import coil3.memory.MemoryCache
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import coil3.svg.SvgDecoder
-import com.apollographql.apollo.ApolloClient
 import com.chuckerteam.chucker.api.ChuckerCollector
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.chuckerteam.chucker.api.RetentionManager
-import com.hedvig.android.app.apollo.LoggingInterceptor
-import com.hedvig.android.app.apollo.LogoutOnUnauthenticatedInterceptor
-import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.buildconstants.AppBuildConfig
 import com.hedvig.android.core.buildconstants.Flavor
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.common.di.BaseHttpClient
 import com.hedvig.android.core.common.di.DatabaseFile
-import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.design.system.hedvig.pdfrenderer.PdfDecoder
 import com.hedvig.android.navigation.compose.DeepLinkMatcherProvider
 import com.hedvig.android.navigation.compose.HedvigDeepLinkMatcher
-import com.hedvig.android.network.clients.ExtraApolloClientConfiguration
 import com.hedvig.android.network.clients.ExtraKtorClientConfiguration
 import com.hedvig.app.BuildConfig
 import dev.zacsweers.metro.ContributesTo
@@ -50,19 +44,6 @@ interface ApplicationMetroProviders {
   @Provides
   @SingleIn(AppScope::class)
   fun provideAppBuildConfig(): AppBuildConfig = AndroidBuildConfig()
-
-  @Provides
-  @SingleIn(AppScope::class)
-  fun provideExtraApolloClientConfiguration(
-    authTokenService: AuthTokenService,
-    demoManager: DemoManager,
-  ): ExtraApolloClientConfiguration = object : ExtraApolloClientConfiguration {
-    override fun configure(builder: ApolloClient.Builder): ApolloClient.Builder {
-      return builder
-        .addInterceptor(LogoutOnUnauthenticatedInterceptor(authTokenService, demoManager))
-        .addInterceptor(LoggingInterceptor())
-    }
-  }
 
   /**
    * Records every call into Chucker's database on the device, so it can be read over adb from

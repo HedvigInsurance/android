@@ -17,6 +17,8 @@ kotlin {
       api(projects.navigationCommon)
       api(projects.navigationCompose)
 
+      implementation(libs.apollo.api)
+      implementation(libs.apollo.runtime)
       implementation(libs.arrow.core)
       implementation(libs.coil.coil)
       implementation(libs.coroutines.core)
@@ -33,6 +35,7 @@ kotlin {
       implementation(libs.ktor.client.core)
       implementation(libs.uri.kmp)
       implementation(libs.uuid)
+      implementation(projects.apolloCore)
       implementation(projects.composeUi)
       implementation(projects.coreAppReview)
       implementation(projects.coreBuildConstants)
