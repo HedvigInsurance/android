@@ -38,9 +38,9 @@ import kotlin.time.Clock
  * retained instance untouched (the restore is a no-op once populated).
  */
 @Stable
-internal class BackstackController(
+class BackstackController(
   override val entries: SnapshotStateList<HedvigNavKey>,
-  internal val parkedRuns: SnapshotStateMap<TopLevelTab, List<HedvigNavKey>>,
+  val parkedRuns: SnapshotStateMap<TopLevelTab, List<HedvigNavKey>>,
   pendingDeepLinkState: MutableState<HedvigNavKey?>,
   stashedSessionState: MutableState<StashedSession?>,
   // Defaulted (and placed after the required states) so the many positional test constructions need no
@@ -66,7 +66,8 @@ internal class BackstackController(
    * companion timestamp [pendingDeepLinkStashedAtEpochMs] stays in sync; cleared (with the timestamp)
    * when consumed by [setLoggedIn] or wiped by [reseed].
    */
-  internal var pendingDeepLink: HedvigNavKey? by pendingDeepLinkState
+  var pendingDeepLink: HedvigNavKey? by pendingDeepLinkState
+    internal set
 
   /**
    * Epoch milliseconds, read from [clock], when [pendingDeepLink] was last stashed, or `null`
@@ -74,14 +75,16 @@ internal class BackstackController(
    * link that is too old to still belong to the in-flight login (see `NavigationStateBridge`), which
    * stops a long-abandoned pending link from bleeding into an unrelated later login.
    */
-  internal var pendingDeepLinkStashedAtEpochMs: Long? by pendingDeepLinkStashedAtState
+  var pendingDeepLinkStashedAtEpochMs: Long? by pendingDeepLinkStashedAtState
+    internal set
 
   /**
    * Whether [pendingDeepLink] arrived while another app's task hosted us. Login happens in that same
    * task, so [setLoggedIn] must land the link alone there, exactly as [navigateToExternalDeepLink]
    * would have had the member been logged in. Persisted with the link: the task outlives the process.
    */
-  internal var pendingDeepLinkHostedInForeignTask: Boolean by mutableStateOf(false)
+  var pendingDeepLinkHostedInForeignTask: Boolean by mutableStateOf(false)
+    internal set
 
   /** Stashes [key] as the [pendingDeepLink], stamping [pendingDeepLinkStashedAtEpochMs] with now. */
   private fun stashPendingDeepLink(key: HedvigNavKey, hostedInForeignTask: Boolean) {
@@ -101,7 +104,8 @@ internal class BackstackController(
    * The previous logged-in session, held between logout and the next login. Excluded from
    * [allLiveContentKeys] on purpose — see [StashedSession]. Persisted across process death.
    */
-  internal var stashedSession: StashedSession? by stashedSessionState
+  var stashedSession: StashedSession? by stashedSessionState
+    internal set
 
   val isLoggedIn: Boolean
     get() = entries.firstOrNull() !is LoginKey

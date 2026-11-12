@@ -94,7 +94,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun HedvigApp(
+fun HedvigApp(
   backstackController: BackstackController,
   deepLinkReadySignal: StateFlow<Boolean>,
   windowSizeClass: WindowSizeClass,

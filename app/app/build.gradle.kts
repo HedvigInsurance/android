@@ -154,6 +154,7 @@ dependencies {
   implementation(libs.playReview)
   implementation(libs.playServicesBase)
   implementation(libs.timber)
+  implementation(libs.uri.kmp)
   implementation(projects.apolloAuthListeners)
   implementation(projects.apolloCore)
   implementation(projects.apolloNetworkCacheManager)

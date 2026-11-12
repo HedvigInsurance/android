@@ -178,7 +178,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
  * closure from here and never derive their own, so each one exists exactly once. A field is removed when
  * its last host-side consumer moves into the shared provider.
  */
-internal class HostEntryContext internal constructor(
+class HostEntryContext internal constructor(
   val backstack: BackstackController,
   val scope: CoroutineScope,
   val memberIdService: MemberIdService,
