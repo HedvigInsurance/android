@@ -86,6 +86,9 @@ jobs:
         uses: yutailang0119/action-ktlint@v6
         with:
           report-path: "**/build/reports/ktlint/*.xml"
+      - name: check commonMain imports
+        if: ${{ !cancelled() }}
+        run: ./gradlew checkCommonMainImports
   build:
     runs-on: ${{ github.event_name == 'push' && 'ubuntu-latest' || 'ubuntu-latest-8-vcpu' }}
     steps:
