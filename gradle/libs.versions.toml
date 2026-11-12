@@ -66,6 +66,7 @@ jetbrains-navigationevent = "1.1.0"
 jetbrains-graphics = "1.0.0-alpha09"
 jetbrains-lifecycle = "2.11.0"
 jetbrains-material = "1.12.2"
+jetbrains-material-icons = "1.7.3"
 jetbrains-material3 = "1.12.0-alpha03"
 jetbrainsMarkdown = "0.7.18"
 arrow = "2.3.0"
@@ -117,7 +118,6 @@ androidx-compose-foundation = { module = "androidx.compose.foundation:foundation
 androidx-compose-foundationLayout = { module = "androidx.compose.foundation:foundation-layout" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
 androidx-compose-material3-windowSizeClass = { module = "androidx.compose.material3:material3-window-size-class" }
-androidx-compose-materialIconsCore = { module = "androidx.compose.material:material-icons-core" }
 androidx-compose-materialRipple = { module = "androidx.compose.material:material-ripple" }
 androidx-compose-uiTestJunit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "androidx-ui-alpha" }
 androidx-compose-uiTestJunit4Accessibility = { module = "androidx.compose.ui:ui-test-junit4-accessibility", version.ref = "androidx-ui-alpha" }
@@ -183,6 +183,7 @@ jetbrains-compose-animation = { module = "org.jetbrains.compose.animation:animat
 jetbrains-compose-animation-core = { module = "org.jetbrains.compose.animation:animation-core", version.ref = "jetbrains-animation" }
 jetbrains-compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "jetbrains-compose" }
 jetbrains-compose-foundation-layout = { module = "org.jetbrains.compose.foundation:foundation-layout", version.ref = "jetbrains-compose" }
+jetbrains-compose-material-iconsCore = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "jetbrains-material-icons" }
 jetbrains-compose-material-ripple = { module = "org.jetbrains.compose.material:material-ripple", version.ref = "jetbrains-material" }
 jetbrains-compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "jetbrains-material3" }
 jetbrains-compose-material3-windowSizeClass = { module = "org.jetbrains.compose.material3:material3-window-size-class", version.ref = "jetbrains-material3" }
