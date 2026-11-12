@@ -72,7 +72,7 @@ A full narrative of *why* these look the way they do — the engineering decisio
 The codebase is organized under `/app` with 80+ modules following a strict modularization pattern:
 
 - **app/** - Android application module, a thin host of `:app-shell`. Owns the Android Metro `AppGraph` and the per-Activity `ActivityRetainedGraph`, `MainActivity`, back stack persistence, external deep links, the Datadog view tracking effect, and the entries of features that are still Android-only (`androidHostEntries`).
-- **app-shell/** - KMP module (JVM and Android) with the platform-neutral app shell: `HedvigApp` and its single `NavDisplay`, the back stack controller, session reconciliation, and the shared cross-feature navigation wiring (`hedvigEntryProvider`). A host implements `AppHost` and passes a block registering the features the shell cannot depend on.
+- **app-shell/** - KMP module (JVM and Android) with the platform-neutral app shell: `HedvigApp` and its single `NavDisplay`, the back stack controller, session reconciliation, and the shared cross-feature navigation wiring (`hedvigEntryProvider`). A host implements `AppHost` and passes a block registering the features whose entries are still Android-only.
 - **feature/** - Feature modules (feature-home, feature-chat, feature-login, etc.)
 - **feature/feature-{name}-navigation/** - Tiny modules holding *only* the public `@Serializable HedvigNavKey`s of a feature that other features may navigate to. These are the one carve-out to the "features can't depend on features" rule.
 - **data/** - Data layer modules (data-contract, data-chat, data-addons, etc.)
