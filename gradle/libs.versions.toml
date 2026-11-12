@@ -166,6 +166,7 @@ coil-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coil" }
 coreLibraryDesugaring = { module = "com.android.tools:desugar_jdk_libs", version.ref = "coreLibraryDesugaring" }
 mikepenz-markdown = { module = "com.mikepenz:multiplatform-markdown-renderer", version.ref = "mikepenzMarkdown" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 datadog-sdk-compose = { module = "com.datadoghq:dd-sdk-android-compose", version.ref = "datadog" }
 datadog-sdk-core = { module = "com.datadoghq:dd-sdk-android-core", version.ref = "datadog" }
