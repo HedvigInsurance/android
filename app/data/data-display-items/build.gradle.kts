@@ -1,8 +1,12 @@
 plugins {
-  id("hedvig.jvm.library")
+  id("hedvig.multiplatform.library.ios")
   id("hedvig.gradle.plugin")
 }
 
-dependencies {
-  implementation(libs.kotlinx.datetime)
+kotlin {
+  sourceSets {
+    commonMain.dependencies {
+      implementation(libs.kotlinx.datetime)
+    }
+  }
 }
