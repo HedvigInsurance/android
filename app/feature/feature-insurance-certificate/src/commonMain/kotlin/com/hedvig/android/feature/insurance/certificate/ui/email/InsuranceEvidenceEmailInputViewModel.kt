@@ -19,7 +19,7 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
-import com.hedvig.core.common.android.validation.validateEmail
+import com.hedvig.core.common.android.validation.isValidEmail
 import dev.zacsweers.metro.Inject
 import hedvig.resources.PROFILE_MY_INFO_INVALID_EMAIL
 import hedvig.resources.Res
@@ -61,7 +61,7 @@ internal class InsuranceEvidenceEmailInputPresenter(
         val successScreenState = currentState as? InsuranceEvidenceEmailInputState.Success ?: return
         val email = successScreenState.email
         if (email != null &&
-          validateEmail(email).isSuccessful
+          isValidEmail(email)
         ) {
           generateCertificateInputData = email
           generateIteration++

@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.fileupload.DownloadedFile
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.SUCCESS
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -29,7 +30,6 @@ import hedvig.resources.CERTIFICATES_EMAIL_SENT
 import hedvig.resources.INSURANCE_EVIDENCE_EMAIL_SENT_DESCRIPTION
 import hedvig.resources.Res
 import hedvig.resources.general_close_button
-import java.io.File
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -37,7 +37,7 @@ internal fun InsuranceEvidenceOverviewDestination(
   insuranceEvidenceUrl: String,
   viewModel: InsuranceEvidenceOverviewViewModel,
   navigateUp: () -> Unit,
-  onShareInsuranceEvidence: (File) -> Unit,
+  onShareInsuranceEvidence: (DownloadedFile) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   InsuranceEvidenceOverview(
@@ -58,7 +58,7 @@ internal fun InsuranceEvidenceOverview(
   insuranceEvidenceUrl: String,
   onDownloadCertificate: (String) -> Unit,
   navigateUp: () -> Unit,
-  onShareInsuranceEvidence: (File) -> Unit,
+  onShareInsuranceEvidence: (DownloadedFile) -> Unit,
   onRetry: () -> Unit,
 ) {
   when (uiState) {
@@ -81,7 +81,7 @@ internal fun InsuranceEvidenceOverview(
     is Success -> {
       LaunchedEffect(uiState.insuranceEvidenceUri) {
         uiState.insuranceEvidenceUri?.let {
-          onShareInsuranceEvidence(File(it.path))
+          onShareInsuranceEvidence(it)
         }
       }
       HedvigScaffold(
@@ -101,7 +101,7 @@ internal fun InsuranceEvidenceOverview(
           text = stringResource(Res.string.CERTIFICATES_DOWNLOAD),
           onClick = {
             if (uiState.insuranceEvidenceUri != null) {
-              onShareInsuranceEvidence(File(uiState.insuranceEvidenceUri.path))
+              onShareInsuranceEvidence(uiState.insuranceEvidenceUri)
             } else {
               onDownloadCertificate(insuranceEvidenceUrl)
             }
