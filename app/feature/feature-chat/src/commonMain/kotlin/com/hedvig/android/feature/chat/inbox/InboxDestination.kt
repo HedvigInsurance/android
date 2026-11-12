@@ -30,7 +30,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.hideFromAccessibility
@@ -69,7 +68,6 @@ import com.hedvig.android.design.system.hedvig.StartClaimBottomSheet
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
-import com.hedvig.android.design.system.hedvig.datepicker.formatInstantForTalkBack
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -82,6 +80,7 @@ import com.hedvig.android.feature.chat.model.InboxConversation.LatestMessage.Tex
 import com.hedvig.android.feature.chat.model.InboxConversation.LatestMessage.Unknown
 import com.hedvig.android.feature.chat.model.Sender
 import com.hedvig.android.feature.chat.ui.formattedChatDateTime
+import com.hedvig.android.feature.chat.ui.talkBackDateTime
 import hedvig.resources.CHAT_CONVERSATION_HISTORY_TITLE
 import hedvig.resources.CHAT_CONVERSATION_INBOX
 import hedvig.resources.CHAT_CONVERSATION_QUESTION_TITLE
@@ -387,7 +386,7 @@ private fun ConversationCard(
     is Header.ClaimConversation -> header.claimType
     Header.ServiceConversation -> null
   }
-  val formattedVoiceDescription = formatInstantForTalkBack(LocalContext.current, conversation.lastMessageTimestamp)
+  val formattedVoiceDescription = talkBackDateTime(conversation.lastMessageTimestamp)
   val cardVoiceDescription = stringResource(
     Res.string.TALKBACK_CONVERSATION_DESCRIPTION,
     "$title, ${subtitle ?: ""}",

@@ -5,7 +5,6 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.RoomDatabase
-import androidx.room.withTransaction
 import arrow.core.getOrElse
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.data.chat.database.ChatDao
@@ -14,6 +13,7 @@ import com.hedvig.android.data.chat.database.RemoteKeyDao
 import com.hedvig.android.data.chat.database.RemoteKeyEntity
 import com.hedvig.android.feature.chat.data.CbmChatRepository
 import com.hedvig.android.feature.chat.data.PagingToken
+import com.hedvig.android.feature.chat.data.chatTransaction
 import com.hedvig.android.feature.chat.model.toChatMessageEntity
 import com.hedvig.android.logger.LogPriority.VERBOSE
 import com.hedvig.android.logger.logcat
@@ -59,13 +59,13 @@ internal class ChatRemoteMediator(
     val isRefreshingDueToJumping = loadType == LoadType.REFRESH && state.pages.isNotEmpty()
     if (isRefreshingDueToJumping) {
       logcat { "ChatRemoteMediator: Refreshing due to jumping" }
-      database.withTransaction {
+      database.chatTransaction {
         val existingOlderToken = remoteKeyDao.remoteKeyForConversation(conversationId)?.olderToken
         remoteKeyDao.insert(RemoteKeyEntity(conversationId, existingOlderToken, response.newerToken))
         chatDao.insertAll(response.messages.map { it.toChatMessageEntity(conversationId) })
       }
     } else {
-      database.withTransaction {
+      database.chatTransaction {
         if (loadType == LoadType.REFRESH) {
           chatDao.clearRemoteMessagesAndOldUnsentMessages(conversationId, clock.now().minus(12.hours))
           remoteKeyDao.deleteAllForConversation(conversationId)

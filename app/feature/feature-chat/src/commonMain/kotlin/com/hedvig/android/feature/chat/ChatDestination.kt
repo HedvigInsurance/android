@@ -24,7 +24,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
-import androidx.media3.datasource.cache.Cache
 import coil3.ImageLoader
 import com.eygraber.uri.Uri
 import com.hedvig.android.compose.ui.dropUnlessResumed
@@ -41,7 +40,6 @@ import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
-import com.hedvig.android.design.system.hedvig.rememberPreviewSimpleCache
 import com.hedvig.android.feature.chat.CbmChatUiState.Error
 import com.hedvig.android.feature.chat.CbmChatUiState.Initializing
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded
@@ -50,6 +48,8 @@ import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.TopAppBarText.Legac
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.TopAppBarText.NewConversation
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.TopAppBarText.ServiceConversation
 import com.hedvig.android.feature.chat.data.InChatCrossSell
+import com.hedvig.android.feature.chat.ui.ChatVideoCache
+import com.hedvig.android.feature.chat.ui.rememberPreviewChatVideoCache
 import com.hedvig.android.logger.logcat
 import hedvig.resources.CHAT_CONVERSATION_HISTORY_TITLE
 import hedvig.resources.CHAT_CONVERSATION_QUESTION_TITLE
@@ -120,7 +120,7 @@ internal fun CbmChatDestination(
 private fun ChatScreen(
   uiState: CbmChatUiState,
   imageLoader: ImageLoader,
-  simpleVideoCache: Cache,
+  simpleVideoCache: ChatVideoCache,
   appPackageId: String,
   openUrl: (String) -> Unit,
   onNavigateUp: () -> Unit,
@@ -318,7 +318,7 @@ private fun PreviewChatScreen(
         onSendMedia = {},
         onRetrySendChatMessage = {},
         onRetryLoadingChat = {},
-        simpleVideoCache = rememberPreviewSimpleCache(),
+        simpleVideoCache = rememberPreviewChatVideoCache(),
         showedFileTooBigError = {},
         showedFileFailedToBeSentToast = {},
         onCloseBannerClick = {},
