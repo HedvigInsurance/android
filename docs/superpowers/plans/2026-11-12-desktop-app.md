@@ -253,7 +253,7 @@ Sequential unless marked parallel: these tasks edit `:app` and `:navigation-comp
 - Consumes: Task 1 step 1 (artifact variants) and step 3 (required changes).
 - Produces: the same public API, same package, reachable from `commonMain` of dependent modules. Destination is `commonMain` if iOS variants exist, else `jvmAndAndroidMain` with an entry in the spec's iOS debt register.
 
-- [ ] Step 1: Move the files and dependencies. Step 2: `./gradlew :navigation-compose:compileKotlinJvm :navigation-compose:compileAndroidMain` and, if `commonMain`, `:navigation-compose:compileKotlinIosSimulatorArm64`. Step 3: `./gradlew :app:assembleDebug :app:test --tests "*Backstack*"`. Step 4: Commit.
+- [ ] Step 1: Move the files and dependencies. Step 2: `./gradlew :navigation-compose:compileKotlinJvm :navigation-compose:compileAndroidMain` and, if `commonMain`, `:navigation-compose:compileKotlinIosSimulatorArm64`. Step 3: `./gradlew :app:assembleDebug :navigation-compose:jvmTest :app:test --tests "*BackStackSerialization*"`. Step 4: Commit.
 
 ### Task 15: Shell keys into `-navigation` modules
 
@@ -310,7 +310,7 @@ fun EntryProviderScope<HedvigNavKey>.hedvigEntries(
 
 - `:app`'s `AndroidAppHost` implements `AppHost`: `ViewTrackingEffect` calls Datadog's `Navigation3TrackingEffect` with the same arguments `HedvigApp` passes today; `SystemBarsEffect` holds today's `SystemBarStyle` code.
 - `:app` passes as `hostEntries` the `entry<>` registrations of every feature that is still Android-only at that point, cut from `HedvigEntryProvider` verbatim.
-- `ExhaustiveBackStackSerializationTest`, `BackStackSerializationTest` and `BackstackTest` stay in `:app`.
+- `ExhaustiveBackStackSerializationTest`, `BackStackSerializationTest` and `AnalyticsNameTest` stay in `:app`. `BackstackTest` already lives in `:navigation-compose` and is untouched.
 
 - [ ] Step 1: Baseline: recipe step 1, plus `./gradlew :app:test`.
 - [ ] Step 2: Create the module, move the files (move-only commit).
