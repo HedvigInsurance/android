@@ -7,16 +7,6 @@ import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.first
 
-/**
- * Debug affordance: clears the current member's onboarding-seen flag so the flow can be triggered
- * again (on the next resume of an idle Home screen). Exposed publicly so `:app` can wire it to the
- * non-production "Reset onboarding" row in the profile About app screen. Not reachable in
- * production UI.
- */
-interface ResetOnboardingSeenUseCase {
-  suspend fun invoke()
-}
-
 @ContributesBinding(AppScope::class)
 @Inject
 internal class ResetOnboardingSeenUseCaseImpl(
