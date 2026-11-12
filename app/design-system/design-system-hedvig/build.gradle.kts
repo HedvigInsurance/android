@@ -51,6 +51,11 @@ kotlin {
       implementation(libs.media3.exoplayer.dash)
       implementation(libs.media3.ui)
     }
+    jvmTest.dependencies {
+      implementation(libs.jetbrains.compose.ui.test)
+      implementation(libs.kotlin.test)
+      implementation(org.jetbrains.compose.ComposePlugin.DesktopDependencies.currentOs)
+    }
     nativeMain.dependencies {
       implementation(libs.metro.viewmodel)
       implementation(libs.metro.viewmodel.compose)
