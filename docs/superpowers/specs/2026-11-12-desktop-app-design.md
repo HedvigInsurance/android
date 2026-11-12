@@ -180,7 +180,8 @@ Desktop side of each seam:
 | HTTP, GraphQL, auth | Real. The code is already `commonMain` + `jvmMain`; the JVM bindings are new. |
 | BankID app launch | Never available, so login shows the QR code. |
 | Open URL, email, phone | `java.awt.Desktop` where it applies, otherwise "Not available". |
-| Share sheet, app settings, Play Store, in-app review | Not available. |
+| Share sheet | Copies the shared text to the system clipboard. |
+| App settings, Play Store, in-app review | Not available. |
 | File picking and saving (claims, certificates, chat attachments) | Real, native file dialog. |
 | Camera capture, audio recording | Not available (stubs exist today). |
 | Push notifications and the notification permission prompt | Not applicable. Permission reads as not granted, prompts do not appear. |
