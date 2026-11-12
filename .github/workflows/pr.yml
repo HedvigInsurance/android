@@ -104,6 +104,8 @@ jobs:
           lokalise-token: ${{ secrets.LOKALISE_TOKEN }}
       - name: Build
         run: "./gradlew :app:bundleDebug"
+      - name: Compile the desktop app
+        run: "./gradlew :app-desktop:compileKotlinJvm"
       # Uncomment these steps together to sign the debug AAB and attach it to each run as an
       # artifact. The version code step stays off otherwise: it rewrites app/app/build.gradle.kts,
       # which gives the app module new cache keys on every run.
