@@ -1,7 +1,5 @@
 package com.hedvig.android.app.ui
 
-import android.graphics.Color
-import androidx.activity.SystemBarStyle
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -17,17 +15,14 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.Density
@@ -42,12 +37,9 @@ import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SinglePaneSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import coil3.ImageLoader
-import com.datadog.android.compose.ExperimentalTrackingApi
-import com.datadog.android.compose.Navigation3TrackingEffect
-import com.hedvig.android.app.AndroidAppHost
+import com.hedvig.android.app.AppHost
 import com.hedvig.android.app.GlobalHedvigSnackBar
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
-import com.hedvig.android.app.navigation.AnalyticsNamePredicate
 import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
 import com.hedvig.android.app.navigation.ScreenParameterExtractor
@@ -57,7 +49,6 @@ import com.hedvig.android.app.navigation.shouldFadeThrough
 import com.hedvig.android.app.navigation.withHedvigContentKeys
 import com.hedvig.android.app.urihandler.AuthorizationCodeUriHandler
 import com.hedvig.android.app.urihandler.DeepLinkFirstUriHandler
-import com.hedvig.android.app.urihandler.SafeAndroidUriHandler
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.LogoutUseCase
@@ -93,13 +84,10 @@ import com.hedvig.android.ui.force.upgrade.ForceUpgradeBlockingScreen
 import hedvig.resources.EXIT_DEMO_MODE_BUTTON
 import hedvig.resources.Res
 import kotlin.time.Duration.Companion.seconds
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.receiveAsFlow
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -110,7 +98,6 @@ internal fun HedvigApp(
   windowSizeClass: WindowSizeClass,
   settingsDataStore: SettingsDataStore,
   featureManager: FeatureManager,
-  splashIsRemovedSignal: Channel<Unit>,
   authTokenService: AuthTokenService,
   demoManager: DemoManager,
   memberIdService: MemberIdService,
@@ -119,7 +106,7 @@ internal fun HedvigApp(
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
   waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase,
-  androidAppHost: AndroidAppHost,
+  appHost: AppHost,
   externalNavigator: ExternalNavigator,
   logoutUseCase: LogoutUseCase,
   getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase,
@@ -132,7 +119,6 @@ internal fun HedvigApp(
 ) {
   ReportCurrentDestinationEffect(backstackController, currentDestinationHolder)
   TrackScreenViewEffect(backstackController, eventTrackingClient, screenParameterExtractor)
-  DatadogViewTrackingEffect(backstackController)
   val hedvigAppState = rememberHedvigAppState(
     backstackController = backstackController,
     windowSizeClass = windowSizeClass,
@@ -142,7 +128,7 @@ internal fun HedvigApp(
   )
   val darkTheme = hedvigAppState.darkTheme
   HedvigTheme(darkTheme = darkTheme) {
-    EnableEdgeToEdgeSideEffect(darkTheme, splashIsRemovedSignal, androidAppHost::applyEdgeToEdgeStyle)
+    SystemBarsEffect(appHost, darkTheme)
     val mustForceUpdate by hedvigAppState.mustForceUpdate.collectAsStateWithLifecycle()
     if (mustForceUpdate) {
       ForceUpgradeBlockingScreen(
@@ -153,7 +139,7 @@ internal fun HedvigApp(
         authTokenService,
         waitUntilAppReviewDialogShouldBeOpenedUseCase,
         backstackController,
-        androidAppHost::tryShowAppStoreReviewDialog,
+        appHost::tryShowAppStoreReviewDialog,
       )
       TryShowOnboardingEffect(
         authTokenService = authTokenService,
@@ -161,12 +147,11 @@ internal fun HedvigApp(
         backstackController = backstackController,
       )
       val scope = rememberCoroutineScope()
-      val context = LocalContext.current
-      val deepLinkFirstUriHandler = remember(deepLinkMatcher, backstackController, context) {
+      val deepLinkFirstUriHandler = remember(deepLinkMatcher, backstackController, appHost) {
         DeepLinkFirstUriHandler(
           matcher = deepLinkMatcher,
           backstackController = backstackController,
-          delegate = SafeAndroidUriHandler(context),
+          delegate = appHost.uriHandler,
         )
       }
       val authorizationCodeUriHandler = remember(getMemberAuthorizationCodeUseCase, deepLinkFirstUriHandler, scope) {
@@ -241,7 +226,7 @@ internal fun HedvigApp(
                           memberIdService = memberIdService,
                           globalSnackBarState = globalSnackBarState,
                           externalNavigator = externalNavigator,
-                          androidAppHost = androidAppHost,
+                          appHost = appHost,
                           openUrl = authorizationCodeUriHandler::openUri,
                           openCrossSellUrl = authorizationCodeUriHandler::tryOpenUri,
                           imageLoader = imageLoader,
@@ -360,23 +345,6 @@ private fun TrackScreenViewEffect(
 }
 
 /**
- * Reports the top of the back stack as a Datadog RUM view, so RUM attributes errors, resources and
- * view durations to a screen rather than to the hosting Activity.
- *
- * The wrapper is what keeps the back stack read inside its own restart scope: [Navigation3TrackingEffect]
- * is non-restartable, so calling it straight from [HedvigApp] would attribute the read there and
- * recompose the whole app shell on every navigation.
- */
-@OptIn(ExperimentalTrackingApi::class)
-@Composable
-private fun DatadogViewTrackingEffect(backstackController: BackstackController) {
-  Navigation3TrackingEffect(
-    backStack = backstackController.entries,
-    keyPredicate = AnalyticsNamePredicate,
-  )
-}
-
-/**
  * Temporary measure as both design systems need to live side-by-side.
  * When everything can come from com.hedvig.android.design.system.hedvig, then this can potentially be removed.
  */
@@ -387,24 +355,13 @@ private fun HedvigTheme(darkTheme: Boolean, content: @Composable () -> Unit) {
   }
 }
 
+/**
+ * Calls [AppHost.SystemBarsEffect] from a restart scope of its own, so the reads inside it never recompose
+ * [HedvigApp].
+ */
 @Composable
-private fun EnableEdgeToEdgeSideEffect(
-  darkTheme: Boolean,
-  splashIsRemovedSignal: Channel<Unit>,
-  enableEdgeToEdge: (SystemBarStyle) -> Unit,
-) {
-  val splashIsRemovedIndex by produceState(0) {
-    splashIsRemovedSignal.receiveAsFlow().collectLatest { value = value + 1 }
-  }
-  DisposableEffect(darkTheme, splashIsRemovedIndex) {
-    enableEdgeToEdge(
-      when (darkTheme) {
-        true -> SystemBarStyle.dark(Color.TRANSPARENT)
-        false -> SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
-      },
-    )
-    onDispose {}
-  }
+private fun SystemBarsEffect(appHost: AppHost, darkTheme: Boolean) {
+  appHost.SystemBarsEffect(darkTheme)
 }
 
 @Composable
