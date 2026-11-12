@@ -6,9 +6,6 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.feature.chat.navigation.cbmChatEntries
 import com.hedvig.android.feature.claim.chat.navigation.ClaimChatKey
 import com.hedvig.android.feature.claim.details.navigation.ClaimDetailsKey
-import com.hedvig.android.feature.claim.details.navigation.claimDetailsEntries
-import com.hedvig.android.feature.connect.payment.connectPaymentEntries
-import com.hedvig.android.feature.imageviewer.navigation.imageViewerEntries
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.add
@@ -19,19 +16,6 @@ import com.hedvig.android.navigation.compose.add
  * it does not provide are built here.
  */
 internal fun EntryProviderScope<HedvigNavKey>.androidHostEntries(context: HostEntryContext) {
-  claimDetailsEntries(
-    imageLoader = context.imageLoader,
-    openUrl = context.openUrl,
-    onNavigateToImageViewer = context.onNavigateToImageViewer,
-    appPackageId = context.hedvigBuildConstants.appPackageId,
-    navigateToConversation = { conversationId -> context.navigateToConversation(conversationId) },
-    backstack = context.backstack,
-    applicationId = context.hedvigBuildConstants.appPackageId,
-  )
-  addPaymentsEntries(
-    backstack = context.backstack,
-    changePayinMethod = context.changePayinMethod,
-  )
   addChatEntries(
     backstack = context.backstack,
     hedvigBuildConstants = context.hedvigBuildConstants,
@@ -40,17 +24,6 @@ internal fun EntryProviderScope<HedvigNavKey>.androidHostEntries(context: HostEn
     openCrossSellUrl = context.openCrossSellUrl,
     onNavigateToImageViewer = context.onNavigateToImageViewer,
     navigateToNewConversation = context.navigateToNewConversation,
-  )
-  imageViewerEntries(context.backstack, context.imageLoader)
-}
-
-private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
-  backstack: BackstackController,
-  changePayinMethod: () -> Unit,
-) {
-  connectPaymentEntries(
-    backstack = backstack,
-    changePaymentMethod = changePayinMethod,
   )
 }
 

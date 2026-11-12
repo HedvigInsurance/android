@@ -107,12 +107,9 @@ class DesktopHostEntriesTest {
 
   private companion object {
     /** The keys the shared provider can put on the back stack and leaves to the host to register. */
-    val keysLeftToTheHost = listOf(
+    val keysLeftToTheHost = listOf<HedvigNavKey>(
       ChatKey("conversation-id"),
       InboxKey,
-      TrustlyKey(),
-      ImageViewerKey("https://example.com/image.png", "cache-key"),
-      ClaimDetailsKey("claim-id"),
     )
 
     /** Keys the shared provider registers itself, which the desktop host must not register again. */
@@ -123,6 +120,9 @@ class DesktopHostEntriesTest {
       OnboardingKey,
       TravelCertificateKey,
       InsuranceEvidenceKey,
+      ClaimDetailsKey("claim-id"),
+      ImageViewerKey("https://example.com/image.png", "cache-key"),
+      TrustlyKey(),
     )
   }
 }
