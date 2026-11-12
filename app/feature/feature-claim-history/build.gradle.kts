@@ -27,8 +27,6 @@ kotlin {
       implementation(projects.coreResources)
       implementation(projects.designSystemHedvig)
       implementation(projects.moleculePublic)
-    }
-    androidMain.dependencies {
       implementation(projects.navigationCommon)
       implementation(projects.navigationCompose)
     }
