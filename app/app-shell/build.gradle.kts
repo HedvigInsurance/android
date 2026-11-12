@@ -101,9 +101,11 @@ kotlin {
     jvmTest.dependencies {
       implementation(libs.androidx.datastore.core)
       implementation(libs.androidx.datastore.preferencesCore)
+      implementation(libs.apollo.testingSupport)
       implementation(libs.assertK)
       implementation(libs.coroutines.test)
       implementation(libs.junit)
+      implementation(projects.authCoreTest)
       implementation(projects.authlib)
       implementation(projects.coreDatastoreTest)
       implementation(projects.loggingTest)
