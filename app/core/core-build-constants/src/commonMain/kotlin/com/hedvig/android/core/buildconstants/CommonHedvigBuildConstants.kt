@@ -34,13 +34,13 @@ internal class CommonHedvigBuildConstants(
   override val isProduction: Boolean =
     appBuildConfig.buildType == "release" && appBuildConfig.applicationId == "com.hedvig.app"
   override val buildApiVersion: Int = appBuildConfig.osSdkVersion
-  override val platformName: String = com.hedvig.android.core.buildconstants.platformName
+  override val platformName: String = appBuildConfig.platformName
   override val userAgent: String
     get() = makeUserAgent(languageService.getLanguage().toBcp47Format(), appBuildConfig)
   override val model: String = "${appBuildConfig.manufacturer} ${appBuildConfig.model}"
 }
 
-internal expect val platformName: String
+internal expect val defaultPlatformName: String
 
 private fun makeUserAgent(languageBCP47: String, appBuildConfig: AppBuildConfig): String = buildString {
   append(appBuildConfig.applicationId)

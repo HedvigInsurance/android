@@ -13,6 +13,10 @@ interface AppBuildConfig {
   val model: String
   val device: String
   val manufacturer: String
+
+  /** The platform this build reports to the backend, in the `X-Platform` and `Hedvig-App-Version` headers. */
+  val platformName: String
+    get() = defaultPlatformName
 }
 
 enum class Flavor {
