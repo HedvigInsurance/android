@@ -1,7 +1,7 @@
 package com.hedvig.android.app.urihandler
 
 import androidx.compose.ui.platform.UriHandler
-import androidx.core.net.toUri
+import com.eygraber.uri.Uri
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -45,7 +45,7 @@ internal class AuthorizationCodeUriHandler(
       try {
         val code = getMemberAuthorizationCodeUseCase.invoke()
         val finalUrl = if (code != null) {
-          uri.toUri().buildUpon().appendQueryParameter("authorization_code", code).build().toString()
+          Uri.parse(uri).buildUpon().appendQueryParameter("authorization_code", code).build().toString()
         } else {
           uri
         }
@@ -58,4 +58,5 @@ internal class AuthorizationCodeUriHandler(
   }
 }
 
-private fun String.requiresAuthorization(): Boolean = toUri().getQueryParameter("requiresAuthorization") == "true"
+private fun String.requiresAuthorization(): Boolean =
+  Uri.parse(this).getQueryParameter("requiresAuthorization") == "true"

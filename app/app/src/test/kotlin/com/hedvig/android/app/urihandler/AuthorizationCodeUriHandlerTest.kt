@@ -1,7 +1,6 @@
 package com.hedvig.android.app.urihandler
 
 import androidx.compose.ui.platform.UriHandler
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
@@ -12,9 +11,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 internal class AuthorizationCodeUriHandlerTest {
   private class FakeGetMemberAuthorizationCodeUseCase : GetMemberAuthorizationCodeUseCase {
     /** The pending fetch; the test completes it to let the launch proceed. */
@@ -49,6 +46,19 @@ internal class AuthorizationCodeUriHandlerTest {
     runCurrent()
 
     assertThat(delegate.opened).containsExactly("$storeUrl&authorization_code=code-1")
+  }
+
+  @Test
+  fun `the appended code is percent-encoded`() = runTest {
+    val useCase = FakeGetMemberAuthorizationCodeUseCase()
+    val delegate = RecordingUriHandler()
+    val handler = AuthorizationCodeUriHandler(useCase, delegate, backgroundScope)
+
+    handler.tryOpenUri(storeUrl)
+    useCase.fetch.complete("a+b/c=d e")
+    runCurrent()
+
+    assertThat(delegate.opened).containsExactly("$storeUrl&authorization_code=a%2Bb%2Fc%3Dd%20e")
   }
 
   @Test
