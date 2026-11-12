@@ -198,6 +198,7 @@ dependencies {
   implementation(projects.featureChooseTierNavigation)
   implementation(projects.featureClaimChat)
   implementation(projects.featureClaimDetails)
+  implementation(projects.featureClaimDetailsNavigation)
   implementation(projects.featureClaimHistory)
   implementation(projects.featureConnectPaymentTrustly)
   implementation(projects.featureConnectPaymentTrustlyNavigation)
