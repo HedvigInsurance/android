@@ -46,6 +46,8 @@ private val VerticalGap = 9.dp
 private val GlyphFontSize = 20.sp
 private const val HighlightScale = 1.12f
 
+internal expect val KeypadGlyphPlatformTextStyle: PlatformTextStyle?
+
 private val KeypadRows = listOf(
   listOf("1", "2", "3"),
   listOf("4", "5", "6"),
@@ -139,7 +141,7 @@ private fun KeypadKey(label: String, highlighted: Boolean, onKeypadClick: (Strin
           alignment = LineHeightStyle.Alignment.Center,
           trim = LineHeightStyle.Trim.Both,
         ),
-        platformStyle = PlatformTextStyle(includeFontPadding = false),
+        platformStyle = KeypadGlyphPlatformTextStyle,
       ),
     )
   }
