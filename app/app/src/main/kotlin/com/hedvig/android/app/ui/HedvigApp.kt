@@ -31,6 +31,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.scene.Scene
@@ -42,6 +43,7 @@ import com.hedvig.android.app.GlobalHedvigSnackBar
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
+import com.hedvig.android.app.navigation.HostEntryContext
 import com.hedvig.android.app.navigation.ScreenParameterExtractor
 import com.hedvig.android.app.navigation.hedvigEntryProvider
 import com.hedvig.android.app.navigation.screenName
@@ -116,6 +118,7 @@ internal fun HedvigApp(
   screenParameterExtractor: ScreenParameterExtractor,
   onboardingGate: OnboardingGate,
   resetOnboardingSeenUseCase: ResetOnboardingSeenUseCase,
+  hostEntries: EntryProviderScope<HedvigNavKey>.(HostEntryContext) -> Unit,
 ) {
   ReportCurrentDestinationEffect(backstackController, currentDestinationHolder)
   TrackScreenViewEffect(backstackController, eventTrackingClient, screenParameterExtractor)
@@ -233,6 +236,7 @@ internal fun HedvigApp(
                           languageService = languageService,
                           hedvigBuildConstants = hedvigBuildConstants,
                           resetOnboardingSeenUseCase = resetOnboardingSeenUseCase,
+                          hostEntries = hostEntries,
                         )
                       },
                     ),
