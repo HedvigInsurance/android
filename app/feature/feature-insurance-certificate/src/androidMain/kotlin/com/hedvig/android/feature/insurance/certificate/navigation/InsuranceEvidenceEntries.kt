@@ -10,6 +10,7 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.core.common.android.sharePDF
 import dev.zacsweers.metrox.viewmodel.metroViewModel
+import java.io.File
 
 fun EntryProviderScope<HedvigNavKey>.insuranceEvidenceEntries(backstack: Backstack, applicationId: String) {
   entry<InsuranceEvidenceKey> {
@@ -27,7 +28,7 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEvidenceEntries(backstack: Backsta
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
       onShareInsuranceEvidence = {
-        context.sharePDF(it, applicationId)
+        context.sharePDF(File(it.path), applicationId)
       },
     )
   }
