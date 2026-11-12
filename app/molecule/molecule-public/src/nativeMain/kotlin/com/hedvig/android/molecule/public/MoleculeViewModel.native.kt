@@ -4,4 +4,4 @@ import app.cash.molecule.DisplayLinkClock
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.Dispatchers
 
-internal actual val mainDispatcher: CoroutineContext = Dispatchers.Main + DisplayLinkClock
+actual val mainDispatcher: CoroutineContext = Dispatchers.Main + DisplayLinkClock
