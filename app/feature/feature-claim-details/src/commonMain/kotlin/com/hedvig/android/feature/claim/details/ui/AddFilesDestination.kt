@@ -1,9 +1,5 @@
 package com.hedvig.android.feature.claim.details.ui
 
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -25,8 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.ImageLoader
-import com.eygraber.uri.toKmpUri
+import com.eygraber.uri.Uri
+import com.hedvig.android.compose.photo.capture.state.rememberGetMultipleContentsResultLauncher
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
+import com.hedvig.android.compose.photo.capture.state.rememberPickMultipleVisualMediaResultLauncher
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
@@ -75,18 +73,14 @@ internal fun AddFilesDestination(
     logcat { "ChatFileState sending uri:$uri" }
     addLocalFile(uri)
   }
-  val photoPicker = rememberLauncherForActivityResult(
-    contract = ActivityResultContracts.PickMultipleVisualMedia(),
-  ) { resultingUriList: List<Uri> ->
+  val photoPicker = rememberPickMultipleVisualMediaResultLauncher { resultingUriList: List<Uri> ->
     for (resultingUri in resultingUriList) {
-      addLocalFile(resultingUri.toKmpUri())
+      addLocalFile(resultingUri)
     }
   }
-  val filePicker = rememberLauncherForActivityResult(
-    contract = ActivityResultContracts.GetMultipleContents(),
-  ) { resultingUriList: List<Uri> ->
+  val filePicker = rememberGetMultipleContentsResultLauncher { resultingUriList: List<Uri> ->
     for (resultingUri in resultingUriList) {
-      addLocalFile(resultingUri.toKmpUri())
+      addLocalFile(resultingUri)
     }
   }
 
@@ -98,8 +92,8 @@ internal fun AddFilesDestination(
     onRemove = viewModel::onRemoveFile,
     onDismissError = viewModel::dismissError,
     launchTakePhotoRequest = photoCaptureState::launchTakePhotoRequest,
-    onPickPhoto = { photoPicker.launch(PickVisualMediaRequest()) },
-    onPickFile = { filePicker.launch("*/*") },
+    onPickPhoto = { photoPicker.launch() },
+    onPickFile = { filePicker.launch() },
     onNavigateToImageViewer = onNavigateToImageViewer,
   )
 }
