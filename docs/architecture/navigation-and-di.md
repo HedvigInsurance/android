@@ -420,13 +420,15 @@ internal class NavRetainedViewModel(appGraph: AppGraph) : ViewModel() {
 
 ```kotlin
 @Stable
-internal class BackstackController(
+class BackstackController(
   override val entries: SnapshotStateList<HedvigNavKey>,
-  internal val parkedRuns: SnapshotStateMap<TopLevelTab, List<HedvigNavKey>>,
+  val parkedRuns: SnapshotStateMap<TopLevelTab, List<HedvigNavKey>>,
   pendingDeepLinkState: MutableState<HedvigNavKey?>,
   stashedSessionState: MutableState<StashedSession?>,
+  pendingDeepLinkStashedAtState: MutableState<Long?> = mutableStateOf(null),
   var escapeToOwnTask: (List<HedvigNavKey>) -> Unit = {},
   var finishApp: () -> Unit = {},
+  private val clock: Clock = Clock.System,
 ) : Backstack { … }
 ```
 
@@ -454,7 +456,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
 }
 ```
 
-**Why all wiring lives in the shell.** A feature's `*Key`s live in the feature *impl* module, and the build rule blocks one feature from referencing another's key. So the only place that can legally know "Insurances → start a chat conversation" is a module that is not a feature: `:app-shell`. The pattern: `hedvigEntryProvider` derives a `navigateToX` lambda once and threads it down to whichever feature entries need it, including the host's entries through `HostEntryContext`. Features expose *callbacks*, never imports of sibling keys.
+**Why the wiring lives outside the features.** A feature's `*Key`s live in the feature *impl* module, and the build rule blocks one feature from referencing another's key. So the only places that can legally know "Insurances → start a chat conversation" are modules that are not features: `:app-shell` and its host. The pattern: closures shared by the shell are derived once in `hedvigEntryProvider` and threaded down to whichever feature entries need them, reaching the host's entries through `HostEntryContext`; closures to destinations that only the host block's features navigate to are built in `androidHostEntries`. Features expose *callbacks*, never imports of sibling keys.
 
 ### II.5.1 The shell and its hosts
 
@@ -463,7 +465,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
 A host gives the shell two things:
 
 - **An `AppHost`**: the URI handler for links that are not ours, the permission rationale check, the store review prompt and a system bars effect. On Android, `AndroidAppHostImpl` implements it over the Activity.
-- **A host entries block**, `hostEntries: EntryProviderScope<HedvigNavKey>.(HostEntryContext) -> Unit`, registering the features the shell cannot depend on because they are still Android-only (`androidHostEntries` in `:app`). `HostEntryContext` carries the dependencies and the cross-feature closures those entries need; host entries take every closure from it and never derive their own, so each still exists once. When a feature becomes multiplatform its registration moves from the host block into `hedvigEntryProvider`, and a context field goes when its last host-side consumer does.
+- **A host entries block**, `hostEntries: EntryProviderScope<HedvigNavKey>.(HostEntryContext) -> Unit`, registering the features the shell cannot depend on because they are still Android-only (`androidHostEntries` in `:app`). `HostEntryContext` carries the dependencies those entries need and the closures derived once in `hedvigEntryProvider`; host entries take those closures from it instead of building their own, and build only the closures to destinations no shared closure covers. When a feature becomes multiplatform its registration moves from the host block into `hedvigEntryProvider`, and a context field goes when its last host-side consumer does.
 
 Keys the shell's closures construct must be reachable from the shell, so they live in KMP modules: a converted feature, or its `-navigation` module.
 
@@ -830,7 +832,7 @@ The fresh instance reads the ancestry back in `restoreAndPersist` via the **same
 3. **Home is never parked.** Only side tabs go into `parkedRuns`.
 4. **Every `@Serializable HedvigNavKey` must be registered for polymorphic serialization** → its module needs `navKeys()`.
 5. **A `DeepLinkAncestry.syntheticParents` list contains only the key's own feature's keys.** Cross-tab jumps go through `owningTab`.
-6. **Features never import another feature's keys.** Cross-feature navigation is a `navigateToX` lambda from `hedvigEntryProvider`, or a dependency on a `-navigation` module.
+6. **Features never import another feature's keys.** Cross-feature navigation is a `navigateToX` lambda passed in by `hedvigEntryProvider` (closures shared by the shell, derived once) or by `androidHostEntries` (closures to destinations only host-registered features navigate to), or a dependency on a `-navigation` module.
 7. **No Activity-bound reference is captured in the `BackstackController` constructor.** Activity hooks are attached in `onCreate`; each Activity owns its own controller, so a recreated Activity gets a fresh controller (or reuses the retained one across a config change) without ever sharing hooks with another Activity.
 8. **GraphQL `octopus.*` types never appear in public APIs** (see CLAUDE.md data-layer rule).
 9. **A destination's `contentKey` comes from `HedvigNavKey.contentKey()` on both sides** — stamped onto entries by `withHedvigContentKeys`, derived directly by the controller for parked and restored keys. Never hand-roll one at an `entry<>` call site, and never reintroduce a bare `toString()` on the controller side (II.8).
@@ -867,7 +869,7 @@ The fresh instance reads the ancestry back in `restoreAndPersist` via the **same
 
 **Navigate to it from the same feature.** `backstack.add(FooKey(...))` (or `popUpTo`, `navigateAndPopUpTo`, …).
 
-**Navigate to it from another feature.** Put `FooKey` in `feature-foo-navigation`; in `hedvigEntryProvider`, derive a `navigateToFoo` lambda and thread it to the calling feature's entries function (through `HostEntryContext` if that feature registers in the host block). The calling feature exposes a callback, never imports `FooKey`.
+**Navigate to it from another feature.** Put `FooKey` in `feature-foo-navigation`; derive a `navigateToFoo` lambda in `hedvigEntryProvider` and thread it to the calling feature's entries function (through `HostEntryContext` if that feature registers in the host block), or, when only features registered in the host block navigate to it, build it in `androidHostEntries`. The calling feature exposes a callback, never imports `FooKey`.
 
 **Make it deep-linkable.** Add patterns to the feature's `HedvigDeepLinkContainer`, build matchers via `uriDeepLinkMatchers`, contribute a `DeepLinkMatcherProvider` (`@ContributesIntoSet`). If the natural path to it is more than just Home (it belongs under a side tab, or has parents of its own), implement `DeepLinkAncestry`.
 
