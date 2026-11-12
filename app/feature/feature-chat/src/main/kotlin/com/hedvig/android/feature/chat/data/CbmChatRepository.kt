@@ -2,10 +2,7 @@ package com.hedvig.android.feature.chat.data
 
 import android.content.ContentResolver
 import android.content.Intent
-import android.net.Uri
 import android.util.Patterns
-import androidx.core.net.toFile
-import androidx.core.net.toUri
 import androidx.room.RoomDatabase
 import androidx.room.withTransaction
 import arrow.core.Either
@@ -20,7 +17,8 @@ import com.apollographql.cache.normalized.FetchPolicy
 import com.apollographql.cache.normalized.doNotStore
 import com.apollographql.cache.normalized.fetchPolicy
 import com.benasher44.uuid.Uuid
-import com.eygraber.uri.toKmpUri
+import com.eygraber.uri.Uri
+import com.eygraber.uri.toAndroidUri
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
@@ -212,11 +210,11 @@ internal class CbmChatRepositoryImpl(
           }
 
           failedToSend == PHOTO && url != null -> {
-            sendOnePhoto(conversationId, messageToRetry.id, url!!.toUri())
+            sendOnePhoto(conversationId, messageToRetry.id, Uri.parse(url!!))
           }
 
           failedToSend == MEDIA && url != null -> {
-            sendOneMedia(conversationId, messageToRetry.id, url!!.toUri())
+            sendOneMedia(conversationId, messageToRetry.id, Uri.parse(url!!))
           }
 
           else -> {
@@ -228,7 +226,7 @@ internal class CbmChatRepositoryImpl(
             PHOTO,
             MEDIA,
             -> {
-              url!!.toUri().tryReleasePersistableUriPermission()
+              Uri.parse(url!!).tryReleasePersistableUriPermission()
             }
 
             else -> {}
@@ -396,21 +394,21 @@ internal class CbmChatRepositoryImpl(
   }
 
   private suspend fun Raise<MessageSendError>.uploadPhotoToBotService(uri: Uri): String {
-    val file = uri.toFile()
+    val filePath = uri.path
     val uploadToken = either {
-      botServiceService.uploadFile(uri.toKmpUri())
+      botServiceService.uploadFile(uri)
     }.mapLeft {
-      logcat(LogPriority.ERROR) { "Failed to upload file with path:${file.absolutePath}. Error:$it" }
+      logcat(LogPriority.ERROR) { "Failed to upload file with path:$filePath. Error:$it" }
       it.toMessageSendError()
     }.bind().firstOrNull()?.uploadToken
     ensureNotNull(uploadToken) { ErrorMessage("No upload token").toMessageSendError() }
-    logcat { "Uploaded file with path:${file.absolutePath}. UploadToken:$uploadToken" }
+    logcat { "Uploaded file with path:$filePath. UploadToken:$uploadToken" }
     return uploadToken
   }
 
   private suspend fun Raise<MessageSendError>.uploadMediaToBotService(uri: Uri): String {
     val uploadToken = either {
-      botServiceService.uploadFile(uri.toKmpUri())
+      botServiceService.uploadFile(uri)
     }.mapLeft {
       logcat(LogPriority.ERROR) { "Failed to upload media with uri:$uri. Error:$it" }
       it.toMessageSendError()
@@ -421,12 +419,12 @@ internal class CbmChatRepositoryImpl(
   }
 
   private fun Uri.takePersistableUriPermission() {
-    contentResolver.takePersistableUriPermission(this, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    contentResolver.takePersistableUriPermission(toAndroidUri(), Intent.FLAG_GRANT_READ_URI_PERMISSION)
   }
 
   private fun Uri.tryReleasePersistableUriPermission() {
     try {
-      contentResolver.releasePersistableUriPermission(this, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+      contentResolver.releasePersistableUriPermission(toAndroidUri(), Intent.FLAG_GRANT_READ_URI_PERMISSION)
     } catch (e: SecurityException) {
       logcat(LogPriority.ERROR, e) {
         "PersistableUriPermission: Failed to release persistable uri permission for uri:$this"

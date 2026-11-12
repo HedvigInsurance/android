@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.chat
 
-import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +26,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.media3.datasource.cache.Cache
 import coil3.ImageLoader
+import com.eygraber.uri.Uri
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
