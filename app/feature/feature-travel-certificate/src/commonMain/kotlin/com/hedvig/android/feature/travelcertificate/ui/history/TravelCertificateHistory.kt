@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import arrow.core.nonEmptyListOf
+import com.hedvig.android.core.fileupload.DownloadedFile
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.FlowType
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
@@ -72,9 +73,11 @@ import hedvig.resources.travel_certificate_downloading_error
 import hedvig.resources.travel_certificate_empty_list_message
 import hedvig.resources.travel_certificate_expired
 import hedvig.resources.travel_certificate_get_travel_certificate_button
-import java.io.File
 import kotlin.String
+import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -84,7 +87,7 @@ internal fun TravelCertificateHistoryDestination(
   onNavigateToChooseContract: () -> Unit,
   onNavigateToAddonPurchaseFlow: (ids: List<String>) -> Unit,
   navigateUp: () -> Unit,
-  onShareTravelCertificate: (File) -> Unit,
+  onShareTravelCertificate: (DownloadedFile) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   TravelCertificateHistoryScreen(
@@ -120,7 +123,7 @@ private fun TravelCertificateHistoryScreen(
   onGoToChooseContract: () -> Unit,
   navigateUp: () -> Unit,
   onDismissDownloadCertificateError: () -> Unit,
-  onShareTravelCertificate: (File) -> Unit,
+  onShareTravelCertificate: (DownloadedFile) -> Unit,
   uiState: CertificateHistoryUiState,
 ) {
   val explanationSheetState = rememberHedvigBottomSheetState<Unit>()
@@ -156,7 +159,7 @@ private fun TravelCertificateHistoryScreen(
     is SuccessDownloadingHistory -> {
       if (uiState.travelCertificateUri != null) {
         LaunchedEffect(uiState.travelCertificateUri) {
-          onShareTravelCertificate(File(uiState.travelCertificateUri.path))
+          onShareTravelCertificate(uiState.travelCertificateUri)
         }
       }
       if (uiState.idsToNavigateToAddonPurchase != null) {
@@ -509,11 +512,7 @@ private class TravelCertificateHistoryUiStatePreviewProvider :
           ),
           TravelCertificate(
             startDate = LocalDate(2023, 11, 25),
-            expiryDate = LocalDate(
-              java.time.LocalDate.now().year,
-              java.time.LocalDate.now().month,
-              java.time.LocalDate.now().dayOfMonth,
-            ),
+            expiryDate = Clock.System.todayIn(TimeZone.currentSystemDefault()),
             id = "13213",
             signedUrl = "wkehdkwed",
             isExpiredNow = true,
@@ -537,11 +536,7 @@ private class TravelCertificateHistoryUiStatePreviewProvider :
           ),
           TravelCertificate(
             startDate = LocalDate(2023, 11, 25),
-            expiryDate = LocalDate(
-              java.time.LocalDate.now().year,
-              java.time.LocalDate.now().month,
-              java.time.LocalDate.now().dayOfMonth,
-            ),
+            expiryDate = Clock.System.todayIn(TimeZone.currentSystemDefault()),
             id = "13213",
             signedUrl = "wkehdkwed",
             isExpiredNow = true,

@@ -21,6 +21,7 @@ import com.hedvig.android.navigation.compose.add
 import com.hedvig.core.common.android.sharePDF
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
+import java.io.File
 
 fun EntryProviderScope<HedvigNavKey>.travelCertificateEntries(
   backstack: Backstack,
@@ -42,7 +43,7 @@ fun EntryProviderScope<HedvigNavKey>.travelCertificateEntries(
       },
       onShareTravelCertificate = {
         viewModel.emit(CertificateHistoryEvent.HaveProcessedCertificateUri)
-        localContext.sharePDF(it, applicationId)
+        localContext.sharePDF(File(it.path), applicationId)
       },
       onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
     )
@@ -95,7 +96,7 @@ fun EntryProviderScope<HedvigNavKey>.travelCertificateEntries(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
       onShareTravelCertificate = {
-        context.sharePDF(it, applicationId)
+        context.sharePDF(File(it.path), applicationId)
       },
     )
   }
