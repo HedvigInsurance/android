@@ -17,7 +17,11 @@ kotlin {
       implementation(libs.assertK)
       implementation(libs.kotlin.test)
     }
+    jvmMain.dependencies {
+      implementation(projects.coreDatastorePublic)
+    }
     jvmTest.dependencies {
+      implementation(libs.coroutines.test)
       implementation(libs.junit)
       implementation(projects.loggingTest)
     }
