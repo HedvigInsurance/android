@@ -7,20 +7,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.hedvig.android.composewebview.WebView
-import com.hedvig.android.composewebview.rememberWebViewState
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import hedvig.resources.PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS
 import hedvig.resources.Res
 import org.jetbrains.compose.resources.stringResource
-
-private const val licensesUrl = "file:///android_asset/open_source_licenses.html"
 
 @Composable
 internal fun LicensesDestination(onBackPressed: () -> Unit) {
@@ -36,21 +30,13 @@ internal fun LicensesDestination(onBackPressed: () -> Unit) {
         onClick = onBackPressed,
         title = stringResource(Res.string.PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS),
       )
-      Column(
-        Modifier
-          .fillMaxSize()
-          .verticalScroll(rememberScrollState()),
-      ) {
-        val webViewState = rememberWebViewState(licensesUrl)
-        WebView(
-          state = webViewState,
-          modifier = Modifier
-            .fillMaxSize()
-            .windowInsetsPadding(
-              WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom),
-            ),
-        )
-      }
+      OpenSourceLicenses()
     }
   }
 }
+
+/**
+ * The open source licenses of the app's dependencies, filling the space below the top app bar.
+ */
+@Composable
+internal expect fun OpenSourceLicenses(modifier: Modifier = Modifier)
