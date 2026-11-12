@@ -210,6 +210,7 @@ dependencies {
   implementation(projects.featureHelpCenter)
   implementation(projects.featureHelpCenterNavigation)
   implementation(projects.featureHome)
+  implementation(projects.featureHomeNavigation)
   implementation(projects.featureImageViewer)
   implementation(projects.featureInsuranceCertificate)
   implementation(projects.featureInsurances)
