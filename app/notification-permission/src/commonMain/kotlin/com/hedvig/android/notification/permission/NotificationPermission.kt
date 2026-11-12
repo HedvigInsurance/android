@@ -1,91 +1,43 @@
-@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
-
 package com.hedvig.android.notification.permission
 
-import android.Manifest
-import android.annotation.SuppressLint
-import android.os.Build
-import androidx.activity.compose.LocalActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalInspectionMode
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.MutablePermissionState
-import com.google.accompanist.permissions.PermissionLifecycleCheckerEffect
-import com.google.accompanist.permissions.PermissionState
-import com.google.accompanist.permissions.PermissionStatus
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.permissions.shouldShowRationale
 import com.hedvig.android.design.system.hedvig.PermissionDialog
 import hedvig.resources.CLAIMS_ACTIVATE_NOTIFICATIONS_BODY
 import hedvig.resources.Res
 import org.jetbrains.compose.resources.stringResource
 
-interface NotificationPermissionState : PermissionState {
+interface NotificationPermissionState {
+  val permission: String
+  val status: PermissionStatus
   val showDialog: Boolean
+
+  fun launchPermissionRequest()
 
   fun dismissDialog()
 }
 
-private class NotificationPermissionStateImpl(
-  private val permissionState: PermissionState,
-) : NotificationPermissionState, PermissionState by permissionState {
-  private var _showDialog by mutableStateOf(false)
+sealed interface PermissionStatus {
+  data object Granted : PermissionStatus
 
-  override val showDialog: Boolean
-    get() = _showDialog
-
-  override fun dismissDialog() {
-    _showDialog = false
-  }
-
-  fun showDialog() {
-    _showDialog = true
-  }
+  data class Denied(val shouldShowRationale: Boolean) : PermissionStatus
 }
+
+val PermissionStatus.isGranted: Boolean
+  get() = this == PermissionStatus.Granted
+
+val PermissionStatus.shouldShowRationale: Boolean
+  get() = when (this) {
+    PermissionStatus.Granted -> false
+    is PermissionStatus.Denied -> shouldShowRationale
+  }
 
 /**
- * Convenience function over [com.google.accompanist.permissions.rememberPermissionState] specifically for the
- * notification. Use in conjuction with [NotificationPermissionDialog] to get an easy to use notification permission
- * handling.
+ * Notification permission state for the current screen. [onNotificationGranted] runs when a permission request is
+ * granted; a denied request makes [NotificationPermissionState.showDialog] true. Use in conjunction with
+ * [NotificationPermissionDialog].
  */
-@SuppressLint("InlinedApi")
 @Composable
-fun rememberNotificationPermissionState(onNotificationGranted: () -> Unit = {}): NotificationPermissionState {
-  val context = LocalContext.current
-  val activity = LocalActivity.current
-  val permissionState = remember {
-    MutablePermissionState(Manifest.permission.POST_NOTIFICATIONS, context, activity)
-  }
-  val notificationPermissionState = remember {
-    NotificationPermissionStateImpl(permissionState)
-  }
-  PermissionLifecycleCheckerEffect(permissionState)
-  val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-    permissionState.refreshPermissionStatus()
-    if (isGranted) {
-      onNotificationGranted()
-    } else {
-      notificationPermissionState.showDialog()
-    }
-  }
-  DisposableEffect(permissionState, launcher) {
-    permissionState.launcher = launcher
-    onDispose {
-      permissionState.launcher = null
-    }
-  }
-
-  return notificationPermissionState
-}
+expect fun rememberNotificationPermissionState(onNotificationGranted: () -> Unit = {}): NotificationPermissionState
 
 @Composable
 fun NotificationPermissionDialog(
@@ -103,16 +55,8 @@ fun NotificationPermissionDialog(
   }
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun rememberNotificationPermissionStatus(): Boolean {
-  val isPreview = LocalInspectionMode.current
-  return if (!isPreview && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-    rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS).status.isGranted
-  } else {
-    true
-  }
-}
+expect fun rememberNotificationPermissionStatus(): Boolean
 
 fun rememberPreviewNotificationPermissionState(
   permissionStatus: PermissionStatus = PermissionStatus.Granted,

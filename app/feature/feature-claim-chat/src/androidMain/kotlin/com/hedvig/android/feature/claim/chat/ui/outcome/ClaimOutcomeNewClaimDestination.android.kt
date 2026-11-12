@@ -18,8 +18,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.shouldShowRationale
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -29,7 +27,9 @@ import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.notification.permission.NotificationPermissionState
+import com.hedvig.android.notification.permission.isGranted
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
+import com.hedvig.android.notification.permission.shouldShowRationale
 import hedvig.resources.CLAIMS_ACTIVATE_NOTIFICATIONS_BODY
 import hedvig.resources.CLAIMS_ACTIVATE_NOTIFICATIONS_CTA
 import hedvig.resources.CLAIM_CHAT_GET_NOTIFIED
