@@ -66,6 +66,7 @@ kotlin {
       implementation(projects.featureOnboarding)
       implementation(projects.featurePayinAccount)
       implementation(projects.featurePayinAccountNavigation)
+      implementation(projects.featurePayments)
       implementation(projects.featurePaymentsNavigation)
       implementation(projects.featurePayoutAccount)
       implementation(projects.featureProfile)
