@@ -15,8 +15,6 @@ import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
-import androidx.compose.ui.unit.DpSize
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
@@ -74,7 +72,7 @@ fun main() {
     Window(
       onCloseRequest = ::exitApplication,
       title = "Hedvig",
-      state = rememberWindowState(size = DpSize(412.dp, 915.dp)),
+      state = rememberWindowState(size = initialWindowSize(usableScreenHeight())),
       onKeyEvent = escapeAsBack::handle,
     ) {
       val navigationEventDispatcher = LocalNavigationEventDispatcherOwner.current?.navigationEventDispatcher
@@ -133,7 +131,7 @@ private fun DesktopApp(
         onboardingGate = graph.onboardingGate,
         resetOnboardingSeenUseCase = graph.resetOnboardingSeenUseCase,
         hostEntries = { context -> desktopHostEntries(context.backstack) },
-        fallbackEntry = desktopFallbackEntry(backstackController),
+        fallbackEntry = remember(backstackController) { desktopFallbackEntry(backstackController) },
       )
     }
   }

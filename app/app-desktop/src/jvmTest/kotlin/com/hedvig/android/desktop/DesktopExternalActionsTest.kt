@@ -7,6 +7,7 @@ import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
 import assertk.assertions.isFalse
 import assertk.assertions.single
+import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import java.io.IOException
 import java.net.URI
@@ -14,8 +15,10 @@ import org.junit.Rule
 import org.junit.Test
 
 class DesktopExternalActionsTest {
+  private val recordingLogger = RecordingLogcatLogger()
+
   @get:Rule
-  val testLogcatLogger = TestLogcatLoggingRule()
+  val testLogcatLogger = TestLogcatLoggingRule(recordingLogger)
 
   private val notices = mutableListOf<String>()
 
@@ -105,8 +108,10 @@ class DesktopExternalActionsTest {
   }
 
   @Test
-  fun `a notice without a screen only logs`() {
+  fun `a notice without a screen is logged at WARN`() {
     showDesktopNotice("Not available on desktop")
+
+    assertThat(recordingLogger.lines).containsExactly(LogPriority.WARN to "Desktop notice: Not available on desktop")
   }
 }
 

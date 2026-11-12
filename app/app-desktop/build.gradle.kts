@@ -62,7 +62,6 @@ kotlin {
       implementation(projects.dataTermination)
       implementation(projects.databaseCore)
       implementation(projects.datadogCore)
-      implementation(projects.datadogDemoTracking)
       implementation(projects.designSystemHedvig)
       implementation(projects.designSystemInternals)
       implementation(projects.experimentsPublic)
@@ -132,39 +131,46 @@ kotlin {
   }
 }
 
-/**
- * The Android app's version, read from its build script the way `scripts/release.sh` reads it. The backend and
- * Unleash judge the desktop app by this version, so a value that cannot be read fails the build instead of
- * falling back to a stale one.
- */
-val androidAppBuildScript = providers
-  .fileContents(isolated.rootProject.projectDirectory.file("app/app/build.gradle.kts"))
-  .asText
-
-fun androidAppVersionValue(name: String, pattern: String): String {
-  val buildScript = androidAppBuildScript.get()
-  return Regex(pattern, RegexOption.MULTILINE).find(buildScript)?.groupValues?.get(1)
-    ?: throw GradleException(
-      "Could not read $name from app/app/build.gradle.kts with the pattern $pattern. " +
-        "The desktop app reports the Android app's version to the backend, so it cannot be built without it.",
-    )
-}
-
-val isProductionBackend = providers.gradleProperty("hedvig.desktop.production")
-  .map { it.toBooleanStrict() }
-  .orElse(false)
-
 extensions.configure<ComposeExtension> {
   extensions.configure<DesktopExtension> {
     application {
       mainClass = "com.hedvig.android.desktop.MainKt"
-      jvmArgs += listOf(
-        "-Dhedvig.desktop.production=${isProductionBackend.get()}",
-        "-Dhedvig.desktop.versionName=${androidAppVersionValue("versionName", """^ *versionName = "([0-9]+\.[0-9]+\.[0-9]+)"$""")}",
-        "-Dhedvig.desktop.versionCode=${androidAppVersionValue("versionCode", """^ *versionCode = ([0-9]+)$""")}",
-      )
     }
   }
+}
+
+/**
+ * The JVM arguments of `run`: the backend from `-Phedvig.desktop.production`, and the Android app's version, read
+ * from its build script the way `scripts/release.sh` reads it. The backend and Unleash judge the desktop app by
+ * that version, so `run` fails when it cannot be read unambiguously instead of falling back to a stale one. Nothing
+ * is read until `run` executes, so no other build depends on it.
+ */
+val desktopRunJvmArguments: Provider<List<String>> = providers
+  .fileContents(isolated.rootProject.projectDirectory.file("app/app/build.gradle.kts"))
+  .asText
+  .zip(providers.gradleProperty("hedvig.desktop.production").orElse("false")) { androidAppBuildScript, production ->
+    fun singleValue(name: String, pattern: String): String {
+      val matches = Regex(pattern, RegexOption.MULTILINE).findAll(androidAppBuildScript).toList()
+      if (matches.size != 1) {
+        throw GradleException(
+          "Expected exactly one $name in app/app/build.gradle.kts matching $pattern, found ${matches.size}. " +
+            "The desktop app reports the Android app's version to the backend, so it cannot run without it.",
+        )
+      }
+      return matches.single().groupValues[1]
+    }
+    val isProduction = production.toBooleanStrictOrNull()
+      ?: throw GradleException("hedvig.desktop.production must be true or false, but was '$production'.")
+    listOf(
+      "-Dhedvig.desktop.production=$isProduction",
+      "-Dhedvig.desktop.versionName=${singleValue("versionName", """^ *versionName = "([0-9]+\.[0-9]+\.[0-9]+)"$""")}",
+      "-Dhedvig.desktop.versionCode=${singleValue("versionCode", """^ *versionCode = ([0-9]+)$""")}",
+    )
+  }
+
+tasks.withType<JavaExec>().matching { it.name == "run" }.configureEach {
+  val arguments = desktopRunJvmArguments
+  jvmArgumentProviders.add(CommandLineArgumentProvider { arguments.get() })
 }
 
 tasks.withType<Test>().configureEach {

@@ -45,10 +45,18 @@ internal fun EntryProviderScope<HedvigNavKey>.desktopHostEntries(backstack: Back
   entry<InsuranceEvidenceKey> { DesktopPlaceholder(backstack) }
 }
 
-/** Shows a key that has no registered entry as not available, and logs it at WARN. */
-internal fun desktopFallbackEntry(backstack: Backstack): (HedvigNavKey) -> NavEntry<HedvigNavKey> = { key ->
-  logcat(LogPriority.WARN) { "No entry is registered for $key, showing it as not available on desktop" }
-  NavEntry(key) { DesktopPlaceholder(backstack) }
+/**
+ * Shows a key that has no registered entry as not available. Logs each such key at WARN the first time it is shown,
+ * since the entry provider runs again on every recomposition.
+ */
+internal fun desktopFallbackEntry(backstack: Backstack): (HedvigNavKey) -> NavEntry<HedvigNavKey> {
+  val loggedKeys = mutableSetOf<HedvigNavKey>()
+  return { key ->
+    if (loggedKeys.add(key)) {
+      logcat(LogPriority.WARN) { "No entry is registered for $key, showing it as not available on desktop" }
+    }
+    NavEntry(key) { DesktopPlaceholder(backstack) }
+  }
 }
 
 @Composable
