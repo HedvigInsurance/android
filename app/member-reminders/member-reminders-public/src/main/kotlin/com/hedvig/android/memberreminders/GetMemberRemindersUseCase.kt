@@ -3,6 +3,7 @@ package com.hedvig.android.memberreminders
 import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.merge
+import com.benasher44.uuid.uuid4
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
@@ -12,7 +13,6 @@ import com.hedvig.android.memberreminders.MemberReminder.ContactInfoUpdateNeeded
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
-import java.util.UUID
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
@@ -143,16 +143,16 @@ sealed interface MemberReminder {
 
   sealed interface PaymentReminder : MemberReminder {
     data class TerminationDueToMissedPayments(
-      override val id: String = UUID.randomUUID().toString(),
+      override val id: String = uuid4().toString(),
       val terminationDate: LocalDate,
     ) : PaymentReminder
 
     data class ConnectPayment(
-      override val id: String = UUID.randomUUID().toString(),
+      override val id: String = uuid4().toString(),
     ) : PaymentReminder
 
     data class ConnectPayout(
-      override val id: String = UUID.randomUUID().toString(),
+      override val id: String = uuid4().toString(),
     ) : PaymentReminder
   }
 
@@ -160,25 +160,25 @@ sealed interface MemberReminder {
     val contractDisplayName: String,
     val renewalDate: LocalDate,
     val draftCertificateUrl: String?,
-    override val id: String = UUID.randomUUID().toString(),
+    override val id: String = uuid4().toString(),
   ) : MemberReminder
 
   data class EnableNotifications(
-    override val id: String = UUID.randomUUID().toString(),
+    override val id: String = uuid4().toString(),
   ) : MemberReminder
 
   data class CoInsuredInfo(
     val contractId: String,
     val coInsuredType: CoInsuredFlowType,
-    override val id: String = UUID.randomUUID().toString(),
+    override val id: String = uuid4().toString(),
   ) : MemberReminder
 
   data object ContactInfoUpdateNeeded : MemberReminder {
-    override val id: String = UUID.randomUUID().toString()
+    override val id: String = uuid4().toString()
   }
 
   data class MissingChipId(
-    override val id: String = UUID.randomUUID().toString(),
+    override val id: String = uuid4().toString(),
   ) : MemberReminder
 
   /**
@@ -186,6 +186,6 @@ sealed interface MemberReminder {
    * home "To do" list, so it has no reminder card.
    */
   data class DecideAnalyticsConsent(
-    override val id: String = UUID.randomUUID().toString(),
+    override val id: String = uuid4().toString(),
   ) : MemberReminder
 }
