@@ -36,12 +36,15 @@ import hedvig.resources.file_upload_photo_library
 import hedvig.resources.file_upload_take_photo
 import org.jetbrains.compose.resources.stringResource
 
+/**
+ * @param onTakePhoto null leaves the take photo option out.
+ */
 @Composable
 fun FilePickerBottomSheet(
   sheetState: HedvigBottomSheetState<Unit>,
   onPickPhoto: () -> Unit,
   onPickFile: () -> Unit,
-  onTakePhoto: () -> Unit,
+  onTakePhoto: (() -> Unit)?,
 ) {
   HedvigBottomSheet(
     sheetState,
@@ -58,7 +61,7 @@ fun FilePickerBottomSheet(
 @Composable
 private fun FilePickerBottomSheetContent(
   onPickPhoto: () -> Unit,
-  onTakePhoto: () -> Unit,
+  onTakePhoto: (() -> Unit)?,
   onPickFile: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -73,11 +76,13 @@ private fun FilePickerBottomSheetContent(
         icon = HedvigIcons.Image,
         onClick = onPickPhoto,
       )
-      ClickableOption(
-        text = stringResource(Res.string.file_upload_take_photo),
-        icon = HedvigIcons.Camera,
-        onClick = onTakePhoto,
-      )
+      if (onTakePhoto != null) {
+        ClickableOption(
+          text = stringResource(Res.string.file_upload_take_photo),
+          icon = HedvigIcons.Camera,
+          onClick = onTakePhoto,
+        )
+      }
       ClickableOption(
         text = stringResource(Res.string.file_upload_choose_files),
         icon = HedvigIcons.Document,

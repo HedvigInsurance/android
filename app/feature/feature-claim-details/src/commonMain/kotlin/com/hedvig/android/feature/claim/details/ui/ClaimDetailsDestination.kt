@@ -215,7 +215,11 @@ private fun ClaimDetailScreen(
             onDismissDownloadError = onDismissDownloadError,
             onLaunchMediaRequest = { photoPicker.launch() },
             onPickFile = { filePicker.launch() },
-            onTakePhoto = { photoCaptureState.launchTakePhotoRequest() },
+            onTakePhoto = if (photoCaptureState.isAvailable) {
+              { photoCaptureState.launchTakePhotoRequest() }
+            } else {
+              null
+            },
             hasUnreadMessages = uiState.safeCast<ClaimDetailUiState.Content>()?.hasUnreadMessages == true,
             navigateToConversation = uiState.safeCast<ClaimDetailUiState.Content>()?.conversationId?.let {
               { navigateToConversation(it) }
@@ -249,7 +253,7 @@ private fun ClaimDetailContentScreen(
   sharePdf: (DownloadedFile) -> Unit,
   onLaunchMediaRequest: () -> Unit,
   onPickFile: () -> Unit,
-  onTakePhoto: () -> Unit,
+  onTakePhoto: (() -> Unit)?,
   hasUnreadMessages: Boolean,
   navigateToConversation: (() -> Unit)?,
 ) {
@@ -279,9 +283,11 @@ private fun ClaimDetailContentScreen(
       onPickFile()
       fileTypeSelectBottomSheetState.dismiss()
     },
-    onTakePhoto = {
-      onTakePhoto()
-      fileTypeSelectBottomSheetState.dismiss()
+    onTakePhoto = onTakePhoto?.let {
+      {
+        onTakePhoto()
+        fileTypeSelectBottomSheetState.dismiss()
+      }
     },
   )
   NonDynamicGrid(
