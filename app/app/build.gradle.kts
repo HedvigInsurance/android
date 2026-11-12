@@ -192,6 +192,7 @@ dependencies {
   implementation(projects.experimentsUnleash)
   implementation(projects.featureAddonPurchase)
   implementation(projects.featureChat)
+  implementation(projects.featureChatNavigation)
   implementation(projects.featureChipId)
   implementation(projects.featureChooseTier)
   implementation(projects.featureChooseTierNavigation)
