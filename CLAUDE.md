@@ -13,6 +13,8 @@ Two foundations are newer than most of the codebase and are easy to get wrong if
 
 A full narrative of *why* these look the way they do — the engineering decisions, the alternatives rejected, the invariants — lives in `docs/architecture/navigation-and-di.md`. Read it before making structural changes to navigation or DI. This file is the day-to-day quick reference.
 
+The same app also runs as a desktop (JVM) application. If a feature fails to compile for JVM, `checkCommonMainImports` fails, you need something Android-only from `commonMain`, or you want to see a change on desktop, read "Desktop app" below.
+
 ## Essential Setup Commands
 
 ### Initial Setup
@@ -73,6 +75,7 @@ The codebase is organized under `/app` with 80+ modules following a strict modul
 
 - **app/** - Android application module, a thin host of `:app-shell`. Owns the Android Metro `AppGraph` and the per-Activity `ActivityRetainedGraph`, `MainActivity`, back stack persistence, external deep links, and the Datadog view tracking effect.
 - **app-shell/** - KMP module (JVM and Android) with the platform-neutral app shell: `HedvigApp` and its single `NavDisplay`, the back stack controller, session reconciliation, and the shared cross-feature navigation wiring (`hedvigEntryProvider`). A host implements `AppHost` and may pass a fallback entry for keys without one.
+- **app-desktop/** - The desktop (JVM) host of `:app-shell`: `main()`, `DesktopGraph` and the desktop-only bindings. See "Desktop app".
 - **feature/** - Feature modules (feature-home, feature-chat, feature-login, etc.)
 - **feature/feature-{name}-navigation/** - Tiny modules holding *only* the public `@Serializable HedvigNavKey`s of a feature that other features may navigate to. These are the one carve-out to the "features can't depend on features" rule.
 - **data/** - Data layer modules (data-contract, data-chat, data-addons, etc.)
@@ -829,6 +832,32 @@ dividing two definitions for a whole window. Create the replacement under a new 
 metric starts empty and is not retroactive, so the SLO reads correctly immediately. Separately, the
 RUM query links embedded in a monitor's notification message are frozen copies of a filter that
 nothing validates, so re-check them whenever the metric changes.
+
+## Desktop app
+
+Every feature module except `feature-impersonation` is KMP (JVM and Android) with its screens, presenters, ViewModels and entries in `commonMain`, and `:app-desktop` renders the shared `HedvigApp` in a Compose Desktop window. It is a proof that the app does not need Android and the step before iOS; nobody ships it. Its seams, skips and iOS debt are listed in `docs/superpowers/specs/2026-11-12-desktop-app-design.md` ("As built").
+
+```bash
+./gradlew :app-desktop:run                                   # staging backend
+./gradlew :app-desktop:run -Phedvig.desktop.production=true  # production backend
+```
+
+It identifies itself to the backend as the Android app (`X-Platform: ANDROID`, the `versionName` read from `app/app/build.gradle.kts`, model "Desktop"). Login is BankID by QR code (scanned with a phone), or email and a one-time code. Tokens, settings and the chat database live in `~/.hedvig-desktop/<staging|production>/`, so a login survives restarts.
+
+**The commonMain rule.** A module with only JVM and Android targets compiles `commonMain` against the JDK, so nothing stops it reaching code iOS cannot compile. `commonMain` may not use `java.*`, `javax.*`, `android.*` or Android-only `androidx` artifacts, and a library used there must publish iOS artifacts; anything else goes behind a seam. `./gradlew checkCommonMainImports` (CI runs it) fails on such imports and on fully qualified references. `config/commonMain-import-allowlist.txt` exists for exceptions, each with a `#` reason; it is empty, keep it that way for feature code. **Blind spot:** members of a JDK type reached through a typealias pass the check, for example `Uuid.randomUUID()` on benasher's `Uuid` (`java.util.UUID` on the JVM) or `toLanguageTag()` on `CommonLocale` (`java.util.Locale`). Only an iOS compile catches them, so do not write them; use a module-local `expect`.
+
+**Converting an Android-only module:**
+1. A commit of pure `git mv`: `src/main/kotlin` to `src/commonMain/kotlin`, `src/main/graphql` to `src/commonMain/graphql`, `src/test/kotlin` to `src/jvmTest/kotlin`, and files that need Android API to `src/androidMain/kotlin` as `X.android.kt`. `git show -M --summary HEAD` must list only 100% renames.
+2. A second commit with the build file (`hedvig.multiplatform.library` + `hedvig.multiplatform.library.android`, plus `.ios` only when every dependency compiles for iOS; dependencies in `kotlin { sourceSets { commonMain.dependencies { } } }`, the `libs.jetbrains.*` Compose artifacts) and the seams. Robolectric tests go to `androidHostTest`, as in `feature-flags`.
+3. Verify: the module's `jvmTest` runs the same number of tests as `test` did before (a test left in `src/test` silently runs nothing), `checkCommonMainImports`, `:app:assembleDebug`, `:app-desktop:jvmTest`, and the compiled `:app` graph has the same ViewModels and deep link matchers (the `javap` recipe under Common Issues). Library modules are release-only, so compile with `compileAndroidMain`, not `compileDebugKotlin`.
+
+**Adding a seam.** Declare a module-local `expect` next to its caller. The Android `actual` is the code that was there before, moved unchanged; the JVM `actual` is the simplest honest thing (`java.awt.Desktop`, the clipboard, an AWT file dialog). Add a `nativeMain` actual if the module compiles for iOS. For an injected type, put the interface in `commonMain` and a `@ContributesBinding` in `androidMain` and in `jvmMain`; never a platform-overridable default in `commonMain` (see the Metro KMP rule above), so a missing desktop binding fails to compile. A JVM binding that needs a file location takes `@DesktopDataDirectory`.
+
+**Skipping.** Skip a piece of functionality on desktop when supporting it would complicate `commonMain` and make the Android code worse. A skipped screen renders `NotAvailableOnDesktop()` (`design-system-hedvig` `jvmMain`) under its usual top bar, never a crash and never a silent no-op; record it in the spec's skip register.
+
+**JVM graph tests** in `:app-desktop` `jvmTest` catch what the Android build cannot: `DesktopGraphTest` builds every ViewModel and factory from the real desktop graph, so a missing JVM binding fails there, and `DesktopEntryProviderTest` checks that `hedvigEntryProvider` registers every serializable key exactly once without the desktop fallback. Modules with their own JVM bindings have a `Jvm*BindingsTest`.
+
+**Build rule.** A `feature-*` module must not depend on `:app-shell`; `hedvig.gradle.plugin` fails the build. Take a `navigateToX` lambda in the entries function instead. A new feature's entries are registered in `hedvigEntryProvider`, and the module is added to the dependencies of `:app-shell`, `:app` and `:app-desktop`.
 
 ## Debugging
 
