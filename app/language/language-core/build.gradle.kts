@@ -16,6 +16,10 @@ kotlin {
       implementation(libs.assertK)
       implementation(libs.kotlin.test)
     }
+    jvmTest.dependencies {
+      implementation(libs.junit)
+      implementation(projects.loggingTest)
+    }
     androidMain.dependencies {
       implementation(libs.androidx.other.appCompat)
       implementation(projects.coreResources)
