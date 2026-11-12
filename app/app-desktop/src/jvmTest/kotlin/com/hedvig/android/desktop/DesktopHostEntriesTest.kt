@@ -56,7 +56,7 @@ class DesktopHostEntriesTest {
    * Builds the entry provider the way the running desktop app does: the shared provider's registrations followed by
    * [desktopHostEntries], with no fallback. Navigation 3 throws on a second registration of a key class, so a key
    * registered both by the shared provider and as a desktop placeholder fails this test, where the app would throw
-   * on its first frame. Every key the desktop host knows must then resolve through that provider.
+   * on its first frame. Every known key must then resolve through that provider.
    */
   @Test
   fun `the shared provider and the desktop host register every known key exactly once`() {
@@ -64,12 +64,27 @@ class DesktopHostEntriesTest {
       registerSharedEntries(this, createTestDesktopGraph(dataDirectory)) { desktopHostEntries(it.backstack) }
     }
 
-    keysLeftToTheHost.forEach { key -> assertThat(provider(key).contentKey.toString()).startsWith(key.toString()) }
+    (keysLeftToTheHost + keysTheSharedProviderRegisters).forEach { key ->
+      assertThat(provider(key).contentKey.toString()).startsWith(key.toString())
+    }
   }
 
   @Test
-  fun `the tab root placeholders keep the navigation bar`() {
-    val provider = entryProvider { desktopHostEntries(backstack) }
+  fun `the shared provider registers its keys without the desktop host`() {
+    val provider = entryProvider<HedvigNavKey> {
+      registerSharedEntries(this, createTestDesktopGraph(dataDirectory)) {}
+    }
+
+    keysTheSharedProviderRegisters.forEach { key ->
+      assertThat(provider(key).contentKey.toString()).startsWith(key.toString())
+    }
+  }
+
+  @Test
+  fun `the shared tab roots keep the navigation bar`() {
+    val provider = entryProvider<HedvigNavKey> {
+      registerSharedEntries(this, createTestDesktopGraph(dataDirectory)) { desktopHostEntries(it.backstack) }
+    }
     val showNavBar = NavSuiteSceneDecoratorStrategy.showNavBar()
 
     listOf(HomeKey, InsurancesKey).forEach { key ->
@@ -93,15 +108,19 @@ class DesktopHostEntriesTest {
   private companion object {
     /** The keys the shared provider can put on the back stack and leaves to the host to register. */
     val keysLeftToTheHost = listOf(
-      LoginKey,
-      HomeKey,
-      InsurancesKey,
-      OnboardingKey,
       ChatKey("conversation-id"),
       InboxKey,
       TrustlyKey(),
       ImageViewerKey("https://example.com/image.png", "cache-key"),
       ClaimDetailsKey("claim-id"),
+    )
+
+    /** Keys the shared provider registers itself, which the desktop host must not register again. */
+    val keysTheSharedProviderRegisters = listOf(
+      LoginKey,
+      HomeKey,
+      InsurancesKey,
+      OnboardingKey,
       TravelCertificateKey,
       InsuranceEvidenceKey,
     )

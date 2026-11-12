@@ -5,8 +5,6 @@ import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.tracking.EventTrackingClient
 import com.hedvig.android.experiments.Experiment
 import com.hedvig.android.experiments.ExperimentProvider
-import com.hedvig.android.feature.onboarding.data.ResetOnboardingSeenUseCase
-import com.hedvig.android.feature.onboarding.gate.OnboardingGate
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
@@ -62,31 +60,5 @@ internal class NoActiveExperimentsProvider : ExperimentProvider {
   override suspend fun activeExperiments(): List<Experiment> {
     logcat(LogPriority.DEBUG) { "Experiments are off on desktop, reporting none" }
     return emptyList()
-  }
-}
-
-/**
- * Never requires onboarding, so the onboarding flow is never pushed and there is never a flow to mark seen.
- */
-@ContributesBinding(AppScope::class)
-@Inject
-internal class DesktopOnboardingGate : OnboardingGate {
-  override suspend fun shouldShowOnboarding(): Boolean {
-    logcat(LogPriority.INFO) { "Onboarding is not available on desktop, not showing it" }
-    return false
-  }
-
-  override suspend fun markSeenWhenOnboardingDismissed() {}
-}
-
-/**
- * Resets nothing, since onboarding is never shown on desktop, and logs at WARN. The caller still reports the reset
- * as done.
- */
-@ContributesBinding(AppScope::class)
-@Inject
-internal class DesktopResetOnboardingSeenUseCase : ResetOnboardingSeenUseCase {
-  override suspend fun invoke() {
-    logcat(LogPriority.WARN) { "Reset onboarding requested, but onboarding is not available on desktop" }
   }
 }
