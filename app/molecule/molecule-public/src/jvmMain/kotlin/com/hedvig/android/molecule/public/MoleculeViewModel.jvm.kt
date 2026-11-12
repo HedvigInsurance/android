@@ -9,7 +9,7 @@ import kotlinx.coroutines.delay
  * [Dispatchers.Main] on the JVM carries no [MonotonicFrameClock], which `RecompositionMode.ContextClock` requires, so
  * one is added here.
  */
-internal actual val mainDispatcher: CoroutineContext = Dispatchers.Main + DelayFrameClock
+actual val mainDispatcher: CoroutineContext = Dispatchers.Main + DelayFrameClock
 
 /**
  * Completes each frame request 16 ms after it is made, and produces no frames while nobody asks for one. Every

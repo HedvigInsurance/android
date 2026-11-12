@@ -1,0 +1,1278 @@
+package com.hedvig.android.feature.chat
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawOutline
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.RenderVectorGroup
+import androidx.compose.ui.graphics.vector.VectorConfig
+import androidx.compose.ui.graphics.vector.VectorProperty
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.hideFromAccessibility
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
+import coil3.ImageLoader
+import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
+import coil3.compose.LocalPlatformContext
+import coil3.request.ImageRequest
+import coil3.request.NullRequestDataException
+import com.eygraber.uri.Uri
+import com.hedvig.android.compose.ui.LocalClock
+import com.hedvig.android.compose.ui.withoutPlacement
+import com.hedvig.android.crosssells.rememberCrossSellShownReporter
+import com.hedvig.android.crosssells.reportCrossSellShown
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
+import com.hedvig.android.design.system.hedvig.ErrorSnackbar
+import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HedvigThreeDotsProgressIndicator
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.LocalContentColor
+import com.hedvig.android.design.system.hedvig.LocalTextStyle
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.ThreeDotsLoading
+import com.hedvig.android.design.system.hedvig.clearFocusOnTap
+import com.hedvig.android.design.system.hedvig.datepicker.getLocale
+import com.hedvig.android.design.system.hedvig.icon.CheckFilled
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.InfoFilled
+import com.hedvig.android.design.system.hedvig.icon.MultipleDocuments
+import com.hedvig.android.design.system.hedvig.icon.Refresh
+import com.hedvig.android.design.system.hedvig.placeholder.fade
+import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
+import com.hedvig.android.design.system.hedvig.placeholder.shimmer
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
+import com.hedvig.android.design.system.hedvig.rememberShapedColorPainter
+import com.hedvig.android.feature.chat.CbmChatUiState.Loaded
+import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.LatestChatMessage
+import com.hedvig.android.feature.chat.data.BannerText
+import com.hedvig.android.feature.chat.data.BannerText.ClosedConversation
+import com.hedvig.android.feature.chat.data.ConversationInfo.Info
+import com.hedvig.android.feature.chat.data.ConversationInfo.Info.ClaimInfo
+import com.hedvig.android.feature.chat.data.InChatCrossSell
+import com.hedvig.android.feature.chat.model.CbmChatMessage
+import com.hedvig.android.feature.chat.model.CbmChatMessage.Banner.Style
+import com.hedvig.android.feature.chat.model.CbmChatMessage.ChatMessageFile
+import com.hedvig.android.feature.chat.model.CbmChatMessage.ChatMessageFile.MimeType.IMAGE
+import com.hedvig.android.feature.chat.model.CbmChatMessage.ChatMessageGif
+import com.hedvig.android.feature.chat.model.CbmChatMessage.FailedToBeSent
+import com.hedvig.android.feature.chat.model.CbmChatMessage.FailedToBeSent.ChatMessageMedia
+import com.hedvig.android.feature.chat.model.CbmChatMessage.FailedToBeSent.ChatMessagePhoto
+import com.hedvig.android.feature.chat.model.CbmChatMessage.FailedToBeSent.ChatMessageText
+import com.hedvig.android.feature.chat.model.Sender
+import com.hedvig.android.feature.chat.model.Sender.AUTOMATION
+import com.hedvig.android.feature.chat.model.Sender.HEDVIG
+import com.hedvig.android.feature.chat.model.Sender.MEMBER
+import com.hedvig.android.feature.chat.ui.ChatBanner
+import com.hedvig.android.feature.chat.ui.ChatInput
+import com.hedvig.android.feature.chat.ui.ChatVideoCache
+import com.hedvig.android.feature.chat.ui.ChatVideoMessage
+import com.hedvig.android.feature.chat.ui.ChatVideoPlayers
+import com.hedvig.android.feature.chat.ui.InChatCrossSellCard
+import com.hedvig.android.feature.chat.ui.TextWithClickableUrls
+import com.hedvig.android.feature.chat.ui.adjustSizeToImageRatio
+import com.hedvig.android.feature.chat.ui.backgroundColor
+import com.hedvig.android.feature.chat.ui.chatImeAnimationTarget
+import com.hedvig.android.feature.chat.ui.formattedDateTime
+import com.hedvig.android.feature.chat.ui.messageHorizontalAlignment
+import com.hedvig.android.feature.chat.ui.onBackgroundColor
+import com.hedvig.android.feature.chat.ui.rememberChatVideoPlayers
+import com.hedvig.android.feature.chat.ui.rememberPreviewChatVideoCache
+import com.hedvig.android.feature.chat.ui.talkBackDateTime
+import com.hedvig.android.placeholder.PlaceholderHighlight
+import hedvig.resources.AUTOMATED_MESSAGE_INFO_CARD_BUTTON
+import hedvig.resources.CHAT_CONVERSATION_CLOSED_INFO
+import hedvig.resources.CHAT_DELIVERED_MESSAGE
+import hedvig.resources.CHAT_FAILED_TO_SEND
+import hedvig.resources.CHAT_FILE_DOWNLOAD
+import hedvig.resources.CHAT_SENDER_AUTOMATION
+import hedvig.resources.CHAT_SENDER_HEDVIG
+import hedvig.resources.CHAT_SENDER_MEMBER
+import hedvig.resources.Res
+import hedvig.resources.TALKBACK_CHAT_FAILED_MEDIA
+import hedvig.resources.TALKBACK_CHAT_FAILED_PHOTO
+import hedvig.resources.TALKBACK_CHAT_FAILED_TEXT
+import hedvig.resources.TALKBACK_CHAT_MESSAGE_FILE
+import hedvig.resources.TALKBACK_CHAT_MESSAGE_GIF
+import hedvig.resources.TALKBACK_CHAT_MESSAGE_TEXT
+import hedvig.resources.general_close_button
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withTimeout
+import org.jetbrains.compose.resources.stringResource
+
+@Composable
+internal fun CbmChatLoadedScreen(
+  uiState: Loaded,
+  imageLoader: ImageLoader,
+  simpleVideoCache: ChatVideoCache,
+  appPackageId: String,
+  openUrl: (String) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  onRetrySendChatMessage: (messageId: String) -> Unit,
+  onSendMessage: (String) -> Unit,
+  onSendPhoto: (List<Uri>) -> Unit,
+  onSendMedia: (List<Uri>) -> Unit,
+  onCloseBannerClick: () -> Unit,
+  onCrossSellShown: (offerId: String, offerUrl: String) -> Unit,
+  onDismissCrossSellClick: (InChatCrossSell) -> Unit,
+  onCrossSellClick: (InChatCrossSell) -> Unit,
+  errorSnackbarState: ErrorSnackbarState?,
+) {
+  val lazyListState = rememberLazyListState()
+  ChatLoadedScreen(
+    uiState = uiState,
+    lazyListState = lazyListState,
+    imageLoader = imageLoader,
+    simpleVideoCache = simpleVideoCache,
+    openUrl = openUrl,
+    onNavigateToImageViewer = onNavigateToImageViewer,
+    onRetrySendChatMessage = onRetrySendChatMessage,
+    chatInput = {
+      ChatInput(
+        onSendMessage = {
+          onSendMessage(it)
+        },
+        onSendPhoto = {
+          onSendPhoto(it)
+        },
+        onSendMedia = {
+          onSendMedia(it)
+        },
+        appPackageId = appPackageId,
+        modifier = Modifier.padding(16.dp),
+        showUploading = uiState.showUploading,
+      )
+    },
+    errorSnackbarState = errorSnackbarState,
+    onCloseBannerClick = onCloseBannerClick,
+    onCrossSellShown = onCrossSellShown,
+    onDismissCrossSellClick = onDismissCrossSellClick,
+    onCrossSellClick = onCrossSellClick,
+  )
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ChatLoadedScreen(
+  uiState: Loaded,
+  lazyListState: LazyListState,
+  imageLoader: ImageLoader,
+  simpleVideoCache: ChatVideoCache,
+  openUrl: (String) -> Unit,
+  onCloseBannerClick: () -> Unit,
+  onCrossSellShown: (offerId: String, offerUrl: String) -> Unit,
+  onDismissCrossSellClick: (InChatCrossSell) -> Unit,
+  onCrossSellClick: (InChatCrossSell) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  onRetrySendChatMessage: (messageId: String) -> Unit,
+  chatInput: @Composable () -> Unit,
+  errorSnackbarState: ErrorSnackbarState?,
+) {
+  val crossSellShownReporter = rememberCrossSellShownReporter(onCrossSellShown)
+  val dividerColor = HedvigTheme.colorScheme.borderSecondary
+  val dividerThickness = 1.dp
+  Box {
+    Column {
+      ChatLazyColumn(
+        lazyListState = lazyListState,
+        messages = uiState.messages,
+        latestChatMessage = uiState.latestMessage,
+        enableMessageSenderLabeling = uiState.enableMessageSenderLabeling,
+        enableInlineMediaPlayer = uiState.enableInlineMediaPlayer,
+        imageLoader = imageLoader,
+        simpleVideoCache = simpleVideoCache,
+        openUrl = openUrl,
+        onNavigateToImageViewer = onNavigateToImageViewer,
+        onRetrySendChatMessage = onRetrySendChatMessage,
+        modifier = Modifier
+          .fillMaxWidth()
+          .weight(1f)
+          .clearFocusOnTap(),
+      )
+      // Hold on to the offer while the card animates away, so that it does not blank out mid-exit.
+      var lastCrossSell by remember { mutableStateOf<InChatCrossSell?>(null) }
+      if (uiState.crossSell != null) {
+        lastCrossSell = uiState.crossSell
+      }
+      AnimatedVisibility(
+        visible = WindowInsets.chatImeAnimationTarget.asPaddingValues().calculateBottomPadding() == 0.dp &&
+          uiState.crossSell != null,
+        enter = expandVertically(
+          spring(
+            stiffness = Spring.StiffnessMedium,
+            visibilityThreshold = IntSize.VisibilityThreshold,
+          ),
+        ),
+        exit = shrinkVertically(
+          spring(
+            stiffness = Spring.StiffnessMedium,
+            visibilityThreshold = IntSize.VisibilityThreshold,
+          ),
+        ),
+      ) {
+        val crossSell = lastCrossSell
+        if (crossSell != null) {
+          InChatCrossSellCard(
+            crossSell = crossSell,
+            onDismissClick = { onDismissCrossSellClick(crossSell) },
+            onSeePriceClick = { onCrossSellClick(crossSell) },
+            modifier = Modifier
+              .reportCrossSellShown(crossSellShownReporter, crossSell.id, crossSell.storeUrl)
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+              .padding(horizontal = 16.dp)
+              .padding(bottom = 16.dp),
+          )
+        }
+      }
+      AnimatedVisibility(
+        visible = WindowInsets.chatImeAnimationTarget.asPaddingValues().calculateBottomPadding() == 0.dp &&
+          uiState.bannerText != null,
+        enter = expandVertically(
+          spring(
+            stiffness = Spring.StiffnessMedium,
+            visibilityThreshold = IntSize.VisibilityThreshold,
+          ),
+        ),
+        exit = shrinkVertically(
+          spring(
+            stiffness = Spring.StiffnessMedium,
+            visibilityThreshold = IntSize.VisibilityThreshold,
+          ),
+        ),
+      ) {
+        ChatBanner(
+          text = when (uiState.bannerText) {
+            ClosedConversation -> stringResource(Res.string.CHAT_CONVERSATION_CLOSED_INFO)
+            is BannerText.Text -> uiState.bannerText.text
+            null -> ""
+          },
+          possibleToClose = uiState.bannerText !is ClosedConversation,
+          onCloseCLick = onCloseBannerClick,
+          modifier = Modifier
+            .fillMaxWidth()
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+            .drawWithContent {
+              drawContent()
+              drawLine(
+                color = dividerColor,
+                strokeWidth = dividerThickness.toPx(),
+                start = Offset(0f, dividerThickness.toPx() / 2),
+                end = Offset(size.width, dividerThickness.toPx() / 2),
+              )
+            },
+        )
+      }
+      Box(
+        propagateMinConstraints = true,
+        modifier = Modifier
+          .fillMaxWidth()
+          .windowInsetsPadding(WindowInsets.safeDrawing)
+          .drawWithContent {
+            drawContent()
+            drawLine(
+              color = dividerColor,
+              strokeWidth = dividerThickness.toPx(),
+              start = Offset(0f, dividerThickness.toPx() / 2),
+              end = Offset(size.width, dividerThickness.toPx() / 2),
+            )
+          },
+      ) {
+        chatInput()
+      }
+    }
+    if (errorSnackbarState != null) {
+      ErrorSnackbar(
+        errorSnackbarState = errorSnackbarState,
+        modifier = Modifier
+          .align(Alignment.BottomCenter)
+          .windowInsetsPadding(WindowInsets.safeDrawing)
+          .padding(16.dp),
+      )
+    }
+  }
+}
+
+@Composable
+private fun ScrollToBottomEffect(
+  lazyListState: LazyListState,
+  latestChatMessage: LatestChatMessage?,
+  messages: LazyPagingItems<CbmUiChatMessage>,
+) {
+  val updatedLatestChatMessage by rememberUpdatedState(latestChatMessage)
+  LaunchedEffect(lazyListState) {
+    snapshotFlow { updatedLatestChatMessage }
+      .filterNotNull()
+      .distinctUntilChangedBy(LatestChatMessage::id)
+      .drop(1)
+      .collectLatest { chatMessage ->
+        val idToScrollTo = chatMessage.id
+        withTimeout(1.seconds) {
+          snapshotFlow {
+            messages.itemSnapshotList
+              .getOrNull(0)
+              ?.chatMessage
+              ?.id
+          }.filterNotNull()
+            .first { it == idToScrollTo.toString() }
+        }
+        ensureActive()
+        val senderIsMember = chatMessage.sender == MEMBER
+        val isAlreadyCloseToTheBottom = lazyListState.firstVisibleItemIndex <= 2
+        if (senderIsMember || isAlreadyCloseToTheBottom) {
+          lazyListState.scrollToItem(0)
+        }
+      }
+  }
+}
+
+@Composable
+private fun ChatLazyColumn(
+  lazyListState: LazyListState,
+  messages: LazyPagingItems<CbmUiChatMessage>,
+  latestChatMessage: LatestChatMessage?,
+  enableMessageSenderLabeling: Boolean,
+  imageLoader: ImageLoader,
+  enableInlineMediaPlayer: Boolean,
+  simpleVideoCache: ChatVideoCache,
+  openUrl: (String) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  onRetrySendChatMessage: (messageId: String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val videoPlayers = rememberChatVideoPlayers()
+  DisposableEffect(
+    Unit,
+  ) {
+    onDispose {
+      videoPlayers.releaseAll()
+    }
+  }
+  ScrollToBottomEffect(
+    lazyListState = lazyListState,
+    latestChatMessage = latestChatMessage,
+    messages = messages,
+  )
+  val appendStatus by remember(messages) {
+    derivedStateOf { messages.loadState.append }
+  }
+  LazyColumn(
+    state = lazyListState,
+    reverseLayout = true,
+    contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues(),
+    modifier = modifier,
+  ) {
+    items(
+      count = messages.itemCount,
+      key = messages.itemKey { it.chatMessage.id },
+      contentType = messages.itemContentType { uiChatMessage ->
+        when (uiChatMessage.chatMessage) {
+          is ChatMessageFile -> {
+            when (uiChatMessage.chatMessage.mimeType) {
+              IMAGE -> "ChatMessage.ChatMessageFileImage"
+              ChatMessageFile.MimeType.MP4 -> "ChatMessage.ChatMessageFileMP4"
+              ChatMessageFile.MimeType.PDF -> "ChatMessage.ChatMessageFilePDF"
+              ChatMessageFile.MimeType.OTHER -> "ChatMessage.ChatMessageFileOther"
+            }
+          }
+
+          is ChatMessageGif -> {
+            "ChatMessage.ChatMessageGif"
+          }
+
+          is CbmChatMessage.ChatMessageText -> {
+            "ChatMessage.ChatMessageText"
+          }
+
+          is ChatMessageText -> {
+            "ChatMessage.FailedToBeSent.ChatMessageText"
+          }
+
+          is ChatMessagePhoto -> {
+            "ChatMessage.FailedToBeSent.ChatMessagePhoto"
+          }
+
+          is ChatMessageMedia -> {
+            "ChatMessage.FailedToBeSent.ChatMessageMedia"
+          }
+        }
+      },
+    ) { index: Int ->
+      val uiChatMessage = messages[index]
+      val alignment: Alignment.Horizontal = uiChatMessage?.chatMessage.messageHorizontalAlignment(index)
+      val defaultWidth = 0.8f
+      var dynamicBubbleWidthFraction by remember { mutableFloatStateOf(defaultWidth) }
+      val isLastMessage = index == 0
+      val isThisIndicator = uiChatMessage?.chatMessage is CbmChatMessage.ChatMessageText &&
+        uiChatMessage.chatMessage.isAiGenerationIndicator
+      if (isThisIndicator && isLastMessage) {
+        AiResponseBeingGeneratedIndicator(uiChatMessage.chatMessage)
+      } else {
+        if (!isThisIndicator) {
+          Column {
+            SelectionContainer {
+              ChatBubble(
+                uiChatMessage = uiChatMessage,
+                chatItemIndex = index,
+                enableMessageSenderLabeling = enableMessageSenderLabeling,
+                imageLoader = imageLoader,
+                enableInlineMediaPlayer = enableInlineMediaPlayer,
+                simpleVideoCache = simpleVideoCache,
+                videoPlayers = videoPlayers,
+                openUrl = openUrl,
+                onNavigateToImageViewer = onNavigateToImageViewer,
+                onRetrySendChatMessage = onRetrySendChatMessage,
+                onGoFullWidth = {
+                  dynamicBubbleWidthFraction = 1f
+                },
+                onGoDefaultWidth = {
+                  dynamicBubbleWidthFraction = defaultWidth
+                },
+                showingFullWidth = dynamicBubbleWidthFraction != defaultWidth,
+                modifier = Modifier
+                  .fillParentMaxWidth()
+                  .padding(horizontal = 16.dp)
+                  .wrapContentWidth(alignment)
+                  .fillMaxWidth(dynamicBubbleWidthFraction)
+                  .wrapContentWidth(alignment)
+                  .padding(bottom = 8.dp),
+              )
+            }
+            val banner = uiChatMessage?.chatMessage?.banner
+            if (banner != null) {
+              MessageBanner(
+                banner,
+                Modifier
+                  .fillMaxWidth()
+                  .padding(horizontal = 16.dp)
+                  .padding(bottom = 8.dp),
+              )
+            }
+          }
+        }
+      }
+    }
+    if (appendStatus !is LoadState.NotLoading && messages.itemCount > 0) {
+      item(
+        key = "fetching_more",
+        contentType = "fetching_more",
+      ) {
+        LaunchedEffect(Unit) {
+          while (isActive) {
+            if (appendStatus is LoadState.Error) {
+              messages.retry()
+            }
+            delay(5.seconds)
+          }
+        }
+        val hideForFirstFrames by produceState(true) {
+          delay(200)
+          value = false
+        }
+        ThreeDotsLoading(
+          Modifier
+            .fillParentMaxWidth()
+            .wrapContentWidth()
+            .padding(24.dp)
+            .then(
+              if (hideForFirstFrames) {
+                Modifier.withoutPlacement()
+              } else {
+                Modifier
+              },
+            ),
+        )
+      }
+    }
+  }
+}
+
+@Composable
+private fun ChatBubble(
+  uiChatMessage: CbmUiChatMessage?,
+  chatItemIndex: Int,
+  enableMessageSenderLabeling: Boolean,
+  imageLoader: ImageLoader,
+  enableInlineMediaPlayer: Boolean,
+  simpleVideoCache: ChatVideoCache,
+  videoPlayers: ChatVideoPlayers,
+  openUrl: (String) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  onRetrySendChatMessage: (messageId: String) -> Unit,
+  onGoFullWidth: () -> Unit,
+  onGoDefaultWidth: () -> Unit,
+  showingFullWidth: Boolean,
+  modifier: Modifier = Modifier,
+) {
+  val chatMessage = uiChatMessage?.chatMessage
+  val description = getMessageDescription(chatMessage)
+  ChatMessageWithTimeAndDeliveryStatus(
+    messageSlot = {
+      when (chatMessage) {
+        null -> {
+          Box(
+            Modifier.hedvigPlaceholder(
+              true,
+              shape = HedvigTheme.shapes.cornerLarge,
+              highlight = PlaceholderHighlight.shimmer(),
+            ),
+          ) {
+            HedvigText(
+              text = "HHHHHHHHHH",
+              modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .withoutPlacement()
+                .semantics {
+                  hideFromAccessibility()
+                },
+            )
+          }
+        }
+
+        is CbmChatMessage.ChatMessageText -> {
+          Surface(
+            shape = HedvigTheme.shapes.cornerLarge,
+            color = chatMessage.backgroundColor(),
+            contentColor = chatMessage.onBackgroundColor(),
+          ) {
+            Column {
+              TextWithClickableUrls(
+                text = chatMessage.text,
+                style = LocalTextStyle.current.copy(color = LocalContentColor.current),
+                modifier = Modifier
+                  .padding(horizontal = 16.dp, vertical = 12.dp)
+                  .semantics {
+                    hideFromAccessibility()
+                  },
+              )
+              if (chatMessage.action != null) {
+                HedvigButton(
+                  text = chatMessage.action.title,
+                  enabled = true,
+                  buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+                  buttonSize = ButtonDefaults.ButtonSize.Medium,
+                  onClick = {
+                    openUrl(chatMessage.action.url)
+                  },
+                  modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 4.dp),
+                )
+              }
+            }
+          }
+        }
+
+        is ChatMessageFile -> {
+          when (chatMessage.mimeType) {
+            IMAGE -> {
+              ChatAsyncImage(
+                model = chatMessage.url,
+                imageLoader = imageLoader,
+                cacheKey = chatMessage.id,
+                isFailedToBeSentMessage = false,
+                modifier = Modifier
+                  .clickable {
+                    onNavigateToImageViewer(chatMessage.url, chatMessage.id)
+                  }
+                  .semantics {
+                    hideFromAccessibility()
+                  },
+              )
+            }
+
+            ChatMessageFile.MimeType.MP4 -> {
+              if (enableInlineMediaPlayer) {
+                ChatVideoMessage(
+                  videoPlayers = videoPlayers,
+                  messageId = chatMessage.id,
+                  url = chatMessage.url,
+                  videoCache = simpleVideoCache,
+                  openUrl = openUrl,
+                  onGoFullWidth = onGoFullWidth,
+                  onGoDefaultWidth = onGoDefaultWidth,
+                  showingFullWidth = showingFullWidth,
+                  modifier = Modifier.semantics {
+                    hideFromAccessibility()
+                  },
+                )
+              } else {
+                AttachedFileMessage(
+                  onClick = { openUrl(chatMessage.url) },
+                  modifier = Modifier.semantics {
+                    hideFromAccessibility()
+                  },
+                )
+              }
+            }
+
+            ChatMessageFile.MimeType.PDF -> {
+              ChatAsyncImage(
+                model = chatMessage.url,
+                imageLoader = imageLoader,
+                cacheKey = chatMessage.id,
+                isFailedToBeSentMessage = false,
+                modifier = Modifier
+                  .clickable {
+                    openUrl(chatMessage.url)
+                  }
+                  .semantics {
+                    hideFromAccessibility()
+                  },
+              )
+            }
+
+            ChatMessageFile.MimeType.OTHER,
+            -> {
+              AttachedFileMessage(
+                onClick = { openUrl(chatMessage.url) },
+                modifier = Modifier.semantics {
+                  hideFromAccessibility()
+                },
+              )
+            }
+          }
+        }
+
+        is ChatMessageGif -> {
+          ChatAsyncImage(
+            model = chatMessage.gifUrl,
+            imageLoader = imageLoader,
+            cacheKey = chatMessage.gifUrl,
+            isFailedToBeSentMessage = false,
+            modifier = Modifier.semantics {
+              hideFromAccessibility()
+            },
+          )
+        }
+
+        is FailedToBeSent -> {
+          when (chatMessage) {
+            is ChatMessageText -> {
+              Surface(
+                shape = HedvigTheme.shapes.cornerLarge,
+                color = HedvigTheme.colorScheme.signalRedFill,
+                contentColor = HedvigTheme.colorScheme.signalRedText,
+                onClick = {
+                  onRetrySendChatMessage(chatMessage.id)
+                },
+                modifier = Modifier.semantics {
+                  hideFromAccessibility()
+                },
+              ) {
+                Row(
+                  horizontalArrangement = Arrangement.spacedBy(8.dp),
+                  verticalAlignment = Alignment.CenterVertically,
+                  modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                ) {
+                  Icon(
+                    imageVector = HedvigIcons.Refresh,
+                    contentDescription = null,
+                    tint = HedvigTheme.colorScheme.signalRedElement,
+                    modifier = Modifier.size(20.dp),
+                  )
+                  HedvigText(text = chatMessage.text)
+                }
+              }
+            }
+
+            is ChatMessagePhoto -> {
+              FailedToBeSentUri(
+                chatMessage.id,
+                chatMessage.uri,
+                onRetrySendChatMessage,
+                imageLoader,
+                modifier = Modifier.semantics {
+                  hideFromAccessibility()
+                },
+              )
+            }
+
+            is ChatMessageMedia -> {
+              FailedToBeSentUri(
+                chatMessage.id,
+                chatMessage.uri,
+                onRetrySendChatMessage,
+                imageLoader,
+                modifier = Modifier.semantics {
+                  hideFromAccessibility()
+                },
+              )
+            }
+          }
+        }
+      }
+    },
+    uiChatMessage = uiChatMessage,
+    enableMessageSenderLabeling = enableMessageSenderLabeling,
+    chatItemIndex = chatItemIndex,
+    modifier = modifier.semantics(mergeDescendants = true) {
+      contentDescription = description
+    },
+  )
+}
+
+@Composable
+private fun AiResponseBeingGeneratedIndicator(chatMessage: CbmChatMessage) {
+  Surface(
+    shape = HedvigTheme.shapes.cornerLarge,
+    color = chatMessage.backgroundColor(),
+    contentColor = chatMessage.onBackgroundColor(),
+    modifier = Modifier
+      .padding(horizontal = 16.dp, vertical = 12.dp),
+  ) {
+    HedvigThreeDotsProgressIndicator(modifier = Modifier.padding(10.dp))
+  }
+}
+
+@Composable
+private fun MessageBanner(banner: CbmChatMessage.Banner, modifier: Modifier = Modifier) {
+  val sheetInformation = banner.sheetInformation
+  val sheetState = rememberHedvigBottomSheetState<CbmChatMessage.Banner.DisplayInfo>()
+  if (sheetInformation != null) {
+    HedvigBottomSheet(sheetState) { displayInfo ->
+      HedvigText(
+        displayInfo.title,
+        style = HedvigTheme.typography.headlineSmall,
+        color = HedvigTheme.colorScheme.textPrimary,
+      )
+      if (displayInfo.subtitle != null) {
+        HedvigText(
+          displayInfo.subtitle!!,
+          style = HedvigTheme.typography.bodySmall,
+          color = HedvigTheme.colorScheme.textSecondary,
+        )
+      }
+      Spacer(Modifier.height(16.dp))
+      HedvigTextButton(
+        onClick = { sheetState.dismiss() },
+        text = stringResource(Res.string.general_close_button),
+        modifier = Modifier.fillMaxWidth(),
+      )
+      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
+    }
+  }
+  HedvigNotificationCard(
+    content = {
+      Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        HedvigText(
+          text = banner.bannerInformation.title,
+          style = HedvigTheme.typography.label,
+          color = LocalTextStyle.current.color,
+        )
+        val subtitle = banner.bannerInformation.subtitle
+        if (subtitle != null) {
+          HedvigText(
+            subtitle,
+            style = HedvigTheme.typography.label,
+            color = LocalTextStyle.current.color.copy(alpha = 0.6f),
+          )
+        }
+      }
+    },
+    priority = when (banner.style) {
+      Style.INFO -> NotificationPriority.InfoInline
+      Style.FANCY_INFO -> NotificationPriority.FancyInfo
+    },
+    modifier = modifier,
+    style = if (sheetInformation != null) {
+      InfoCardStyle.Button(
+        stringResource(Res.string.AUTOMATED_MESSAGE_INFO_CARD_BUTTON),
+        { sheetState.show(sheetInformation) },
+      )
+    } else {
+      InfoCardStyle.Default
+    },
+  )
+}
+
+@Composable
+private fun getMessageDescription(chatMessage: CbmChatMessage?): String {
+  return chatMessage?.let {
+    val sender = stringResource(
+      when (it.sender) {
+        HEDVIG -> Res.string.CHAT_SENDER_HEDVIG
+        AUTOMATION -> Res.string.CHAT_SENDER_AUTOMATION
+        MEMBER -> Res.string.CHAT_SENDER_MEMBER
+      },
+    )
+    val time = talkBackDateTime(it.sentAt)
+    when (it) {
+      is ChatMessageFile -> stringResource(Res.string.TALKBACK_CHAT_MESSAGE_FILE, time, sender, it.mimeType)
+
+      // At [%s:formattedInstant], [%s:sender] sent a file with type: [%s:mimeType], double tap to open.
+      is ChatMessageGif -> stringResource(Res.string.TALKBACK_CHAT_MESSAGE_GIF, time, sender)
+
+      // At [%s:formattedInstant], [%s:sender] sent a GIF picture.
+      is CbmChatMessage.ChatMessageText -> stringResource(Res.string.TALKBACK_CHAT_MESSAGE_TEXT, time, sender, it.text)
+
+      // "at $instant, $sender said: $it.text."
+      is ChatMessageMedia -> stringResource(Res.string.TALKBACK_CHAT_FAILED_MEDIA, time)
+
+      // "at $instant, you tried to send a media file, but it failed. Double tap to try sending again."
+      is ChatMessagePhoto -> stringResource(Res.string.TALKBACK_CHAT_FAILED_PHOTO, time)
+
+      // "at $instant, you tried to send a photo, but it failed. Double tap to try sending again."
+      is ChatMessageText -> stringResource(Res.string.TALKBACK_CHAT_FAILED_TEXT, time, it.text)
+      // "at $instant, you tried to send a text message, but it failed. Double tap to try sending again. The message said: $it.text"
+    }
+  } ?: ""
+}
+
+@Composable
+private fun FailedToBeSentUri(
+  messageId: String,
+  messageUri: Uri,
+  onRetrySendChatMessage: (messageId: String) -> Unit,
+  imageLoader: ImageLoader,
+  modifier: Modifier,
+) {
+  val image = HedvigIcons.Refresh
+  val retryIconPainter = rememberVectorPainter(
+    defaultWidth = image.defaultWidth,
+    defaultHeight = image.defaultHeight,
+    viewportWidth = image.viewportWidth,
+    viewportHeight = image.viewportHeight,
+    name = image.name,
+    tintColor = Color.White,
+    tintBlendMode = image.tintBlendMode,
+    autoMirror = image.autoMirror,
+    content = { _, _ -> RenderVectorGroup(group = image.root) },
+  )
+  ChatAsyncImage(
+    model = messageUri.toString(),
+    imageLoader = imageLoader,
+    isRetryable = true,
+    isFailedToBeSentMessage = true,
+    modifier = modifier
+      .clip(HedvigTheme.shapes.cornerLarge)
+      .clickable { onRetrySendChatMessage(messageId) }
+      .drawWithContent {
+        drawContent()
+        drawRect(color = Color.Black, alpha = 0.38f)
+        withTransform(
+          transformBlock = {
+            translate(
+              left = (size.width - retryIconPainter.intrinsicSize.width) / 2,
+              top = (size.height - retryIconPainter.intrinsicSize.height) / 2,
+            )
+          },
+        ) {
+          with(retryIconPainter) {
+            draw(retryIconPainter.intrinsicSize)
+          }
+        }
+      },
+  )
+}
+
+@Composable
+internal fun AttachedFileMessage(
+  onClick: () -> Unit,
+  containerColor: Color = Color.Transparent,
+  borderColor: Color = LocalContentColor.current,
+  modifier: Modifier,
+) {
+  val shape = HedvigTheme.shapes.cornerLarge
+  Box(
+    modifier
+      .drawWithCache {
+        val stroke = Stroke(1.dp.toPx())
+        val outline = shape.createOutline(size.copy(size.width, size.height), layoutDirection, this)
+        onDrawWithContent {
+          drawContent()
+          drawOutline(outline, borderColor, style = stroke)
+        }
+      }
+      .clip(HedvigTheme.shapes.cornerLarge)
+      .background(containerColor)
+      .clickable(onClick = onClick),
+  ) {
+    Row(
+      horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+      modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+    ) {
+      Icon(imageVector = HedvigIcons.MultipleDocuments, contentDescription = null, modifier = Modifier.size(24.dp))
+      HedvigText(text = stringResource(Res.string.CHAT_FILE_DOWNLOAD))
+    }
+  }
+}
+
+@Composable
+private fun ChatAsyncImage(
+  model: Any,
+  imageLoader: ImageLoader,
+  isFailedToBeSentMessage: Boolean,
+  modifier: Modifier = Modifier,
+  isRetryable: Boolean = false,
+  cacheKey: String? = null,
+) {
+  val loadedImageIntrinsicSize = remember { mutableStateOf<IntSize?>(null) }
+  val placeholderPainter: Painter = rememberShapedColorPainter(HedvigTheme.colorScheme.surfacePrimary)
+  val errorPainter: Painter = if (isRetryable) {
+    val errorImage = HedvigIcons.Refresh
+    val vectorSize = 50.dp
+    rememberVectorPainter(
+      defaultWidth = vectorSize,
+      defaultHeight = vectorSize,
+      name = errorImage.name,
+      tintColor = HedvigTheme.colorScheme.signalRedElement,
+      tintBlendMode = errorImage.tintBlendMode,
+      autoMirror = errorImage.autoMirror,
+      content = { viewportWidth: Float, viewportHeight: Float ->
+        RenderVectorGroup(
+          group = errorImage.root,
+          configs = mapOf(
+            // "" is the default name for vectors, so this applies to the entirety of the [errorImage]
+            "" to object : VectorConfig {
+              override fun <T> getOrDefault(property: VectorProperty<T>, defaultValue: T): T {
+                @Suppress("UNCHECKED_CAST") // TranslateX and TranslateY both have `Float` as their `T`
+                return when (property) {
+                  // todo chat: vector is almost centered, not quite though, the top left is centered only
+                  //  -12.5f is an approximation for now
+                  VectorProperty.TranslateX -> ((viewportWidth / 2) - 12.5f) as T
+
+                  VectorProperty.TranslateY -> ((viewportHeight / 2) - 12.5f) as T
+
+                  else -> defaultValue
+                }
+              }
+            },
+          ),
+        )
+      },
+    )
+  } else {
+    rememberShapedColorPainter(HedvigTheme.colorScheme.signalRedFill)
+  }
+  AsyncImage(
+    model = ImageRequest
+      .Builder(LocalPlatformContext.current)
+      .data(model)
+      .apply {
+        if (cacheKey != null) {
+          diskCacheKey(cacheKey).memoryCacheKey(cacheKey)
+        }
+      }.build(),
+    contentDescription = null,
+    imageLoader = imageLoader,
+    contentScale = ContentScale.Fit,
+    transform = { state ->
+      when (state) {
+        is AsyncImagePainter.State.Loading -> {
+          state.copy(painter = placeholderPainter)
+        }
+
+        is AsyncImagePainter.State.Error -> {
+          if (isFailedToBeSentMessage) {
+            // When we are on a failed message already which has a retry icon itself, we don't want to double show the
+            // retry icon
+            state
+          } else {
+            loadedImageIntrinsicSize.value = IntSize(
+              errorPainter.intrinsicSize.width.toInt(),
+              errorPainter.intrinsicSize.height.toInt(),
+            )
+            if (state.result.throwable is NullRequestDataException) {
+              state.copy(painter = errorPainter)
+            } else {
+              state.copy(painter = errorPainter)
+            }
+          }
+        }
+
+        AsyncImagePainter.State.Empty -> {
+          state
+        }
+
+        is AsyncImagePainter.State.Success -> {
+          loadedImageIntrinsicSize.value = IntSize(
+            state.result.image.width,
+            state.result.image.height,
+          )
+          state
+        }
+      }
+    },
+    modifier = Modifier
+      .clip(HedvigTheme.shapes.cornerLarge)
+      .then(modifier)
+      .adjustSizeToImageRatio(getImageSize = { loadedImageIntrinsicSize.value })
+      .then(
+        if (loadedImageIntrinsicSize.value == null) {
+          Modifier.hedvigPlaceholder(
+            visible = true,
+            shape = HedvigTheme.shapes.cornerLarge,
+            highlight = PlaceholderHighlight.fade(),
+          )
+        } else {
+          Modifier
+        },
+      ),
+  )
+}
+
+@Composable
+internal fun ChatMessageWithTimeAndDeliveryStatus(
+  messageSlot: @Composable () -> Unit,
+  uiChatMessage: CbmUiChatMessage?,
+  enableMessageSenderLabeling: Boolean,
+  chatItemIndex: Int,
+  modifier: Modifier = Modifier,
+) {
+  val chatMessage = uiChatMessage?.chatMessage
+  Column(
+    horizontalAlignment = chatMessage.messageHorizontalAlignment(chatItemIndex),
+    modifier = modifier,
+  ) {
+    val failedToBeSent = chatMessage is FailedToBeSent
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      messageSlot()
+      if (failedToBeSent) {
+        Spacer(Modifier.width(4.dp))
+        Icon(
+          imageVector = HedvigIcons.InfoFilled,
+          contentDescription = null,
+          tint = HedvigTheme.colorScheme.signalRedElement,
+          modifier = Modifier
+            .size(16.dp)
+            .semantics {
+              hideFromAccessibility()
+            },
+        )
+      }
+    }
+    Spacer(modifier = Modifier.height(4.dp))
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier
+        .align(chatMessage.messageHorizontalAlignment(chatItemIndex))
+        .padding(horizontal = 2.dp),
+    ) {
+      HedvigText(
+        text = buildString {
+          if (chatMessage == null) {
+            append("HHHH.HH.HH")
+          } else {
+            if (failedToBeSent) {
+              append(stringResource(Res.string.CHAT_FAILED_TO_SEND))
+              append(" • ")
+            }
+            if (enableMessageSenderLabeling) {
+              when (uiChatMessage.chatMessage.sender) {
+                AUTOMATION -> {
+                  append(stringResource(Res.string.CHAT_SENDER_AUTOMATION))
+                  append(" • ")
+                }
+
+                HEDVIG -> {
+                  append(stringResource(Res.string.CHAT_SENDER_HEDVIG))
+                  append(" • ")
+                }
+
+                MEMBER -> {}
+              }
+            }
+            append(chatMessage.formattedDateTime(getLocale(), LocalClock.current.now()))
+            if (uiChatMessage.isLastDeliveredMessage) {
+              append(" • ")
+              append(stringResource(Res.string.CHAT_DELIVERED_MESSAGE))
+            }
+          }
+        },
+        style = HedvigTheme.typography.label,
+        color = HedvigTheme.colorScheme.textSecondary,
+        modifier = Modifier
+          .semantics {
+            hideFromAccessibility()
+          }
+          .weight(1f, false)
+          .then(
+            if (chatMessage == null) {
+              Modifier.hedvigPlaceholder(
+                visible = true,
+                shape = HedvigTheme.shapes.cornerSmall,
+                highlight = PlaceholderHighlight.shimmer(),
+              )
+            } else {
+              Modifier
+            },
+          ),
+      )
+      if (uiChatMessage?.isLastDeliveredMessage == true) {
+        Spacer(Modifier.width(4.dp))
+        Icon(
+          HedvigIcons.CheckFilled,
+          null,
+          Modifier.size(16.dp),
+          tint = HedvigTheme.colorScheme.signalBlueElement,
+        )
+      }
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewChatLoadedScreen() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      val banner1 = CbmChatMessage.Banner(
+        CbmChatMessage.Banner.DisplayInfo.Both(
+          "Banner title",
+          "Banner subtitle",
+        ),
+        CbmChatMessage.Banner.DisplayInfo.Both(
+          "More info title",
+          "More info subtitle",
+        ),
+        Style.INFO,
+      )
+      val banner2 =
+        CbmChatMessage.Banner(
+          CbmChatMessage.Banner.DisplayInfo.Both("Banner title", "Banner subtitle"),
+          null,
+          Style.FANCY_INFO,
+        )
+      val fakeChatMessages: List<CbmUiChatMessage> = listOf(
+        ChatMessageMedia("1", Instant.parse("2024-05-01T00:00:00Z"), Uri.EMPTY),
+        ChatMessageFile("2", AUTOMATION, Instant.parse("2024-05-01T00:00:00Z"), null, "", IMAGE),
+        ChatMessageGif("3", AUTOMATION, Instant.parse("2024-05-01T00:00:00Z"), banner1, ""),
+        ChatMessageFile("4", MEMBER, Instant.parse("2024-05-01T00:00:00Z"), banner2, "", IMAGE),
+        ChatMessagePhoto("5", Instant.parse("2024-05-01T00:01:00Z"), Uri.EMPTY),
+        ChatMessageText("6", Instant.parse("2024-05-01T00:02:00Z"), "Failed message"),
+        CbmChatMessage.ChatMessageText(
+          "7",
+          HEDVIG,
+          Instant.parse("2024-05-01T00:03:00Z"),
+          null,
+          "Last message",
+          action = CbmChatMessage.ChatMessageTextAction("go somewhere", ""),
+        ),
+      )
+        .reversed()
+        .mapIndexed { index, item ->
+          CbmUiChatMessage(item, index == 0)
+        }
+      ChatLoadedScreen(
+        uiState = Loaded(
+          backendConversationInfo = Info(
+            "1",
+            ClaimInfo("id", "claimType"),
+            Instant.parse("2024-05-01T00:00:00Z"),
+            false,
+          ),
+          messages = flowOf(PagingData.from(fakeChatMessages)).collectAsLazyPagingItems(),
+          latestMessage = null,
+          bannerText = ClosedConversation,
+          enableMessageSenderLabeling = true,
+          enableInlineMediaPlayer = true,
+          showUploading = true,
+          showFileTooBigErrorToast = false,
+          showFileFailedToBeSentToast = false,
+          crossSell = InChatCrossSell(
+            id = "crossSell:ALL",
+            title = "Få rabatt",
+            description = "Aktivera din rabatt genom att teckna en till försäkring för hem, djur eller bil.",
+            buttonTitle = "Se ditt pris",
+            storeUrl = "",
+          ),
+        ),
+        lazyListState = rememberLazyListState(),
+        imageLoader = rememberPreviewImageLoader(),
+        openUrl = {},
+        onNavigateToImageViewer = { _, _ -> },
+        onRetrySendChatMessage = {},
+        chatInput = {},
+        simpleVideoCache = rememberPreviewChatVideoCache(),
+        errorSnackbarState = null,
+        onCloseBannerClick = {},
+        onCrossSellShown = { _, _ -> },
+        onDismissCrossSellClick = {},
+        onCrossSellClick = {},
+      )
+    }
+  }
+}

@@ -1,0 +1,578 @@
+package com.hedvig.android.feature.chat
+
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.snapshots.Snapshot
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.flatMap
+import androidx.paging.map
+import androidx.room.RoomDatabase
+import arrow.core.Either
+import com.benasher44.uuid.Uuid
+import com.eygraber.uri.Uri
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.core.tracking.EventTrackingClient
+import com.hedvig.android.crosssells.CrossSellUserFlow
+import com.hedvig.android.crosssells.trackCrossSellClicked
+import com.hedvig.android.crosssells.trackCrossSellDismissed
+import com.hedvig.android.crosssells.trackCrossSellShown
+import com.hedvig.android.data.chat.database.ChatDao
+import com.hedvig.android.data.chat.database.ChatMessageEntity
+import com.hedvig.android.data.chat.database.RemoteKeyDao
+import com.hedvig.android.feature.chat.ConversationInfoStatus.Failed
+import com.hedvig.android.feature.chat.ConversationInfoStatus.Initializing
+import com.hedvig.android.feature.chat.ConversationInfoStatus.Loaded
+import com.hedvig.android.feature.chat.data.BannerText
+import com.hedvig.android.feature.chat.data.CbmChatRepository
+import com.hedvig.android.feature.chat.data.ConversationInfo
+import com.hedvig.android.feature.chat.data.ConversationInfo.Info
+import com.hedvig.android.feature.chat.data.ConversationInfo.NoConversation
+import com.hedvig.android.feature.chat.data.GetInChatCrossSellUseCase
+import com.hedvig.android.feature.chat.data.HideInChatCrossSellUseCase
+import com.hedvig.android.feature.chat.data.InChatCrossSell
+import com.hedvig.android.feature.chat.data.InChatCrossSellEvents
+import com.hedvig.android.feature.chat.data.InChatCrossSellTrackingEvent.CLICKED
+import com.hedvig.android.feature.chat.data.InChatCrossSellTrackingEvent.DISMISSED
+import com.hedvig.android.feature.chat.data.InChatCrossSellTrackingEvent.PROMPTED
+import com.hedvig.android.feature.chat.data.MessageSendError
+import com.hedvig.android.feature.chat.data.logInChatCrossSell
+import com.hedvig.android.feature.chat.model.CbmChatMessage
+import com.hedvig.android.feature.chat.model.Sender
+import com.hedvig.android.feature.chat.model.toChatMessage
+import com.hedvig.android.feature.chat.model.toLatestChatMessage
+import com.hedvig.android.feature.chat.paging.ChatRemoteMediator
+import com.hedvig.android.feature.chat.ui.ChatSimpleVideoCache
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
+import com.hedvig.android.molecule.public.MoleculePresenter
+import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedInject
+import kotlin.coroutines.CoroutineContext
+import kotlin.time.Clock
+import kotlin.time.Instant
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+@HedvigViewModel(ActivityRetainedScope::class)
+internal class CbmChatViewModel @AssistedInject constructor(
+  @Assisted conversationId: String,
+  val simpleVideoCache: ChatSimpleVideoCache,
+  database: RoomDatabase,
+  chatDao: ChatDao,
+  remoteKeyDao: RemoteKeyDao,
+  chatRepository: CbmChatRepository,
+  clock: Clock,
+  context: ChatContext,
+  getInChatCrossSellUseCase: GetInChatCrossSellUseCase,
+  hideInChatCrossSellUseCase: HideInChatCrossSellUseCase,
+  eventTrackingClient: EventTrackingClient,
+  coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + chatViewModelDispatcher),
+) : MoleculeViewModel<CbmChatEvent, CbmChatUiState>(
+    initialState = CbmChatUiState.Initializing,
+    presenter = CbmChatPresenter(
+      conversationId = Uuid.fromString(conversationId),
+      pagingData = cbmChatPresenterPagingData(
+        conversationId = conversationId,
+        database = database,
+        chatDao = chatDao,
+        remoteKeyDao = remoteKeyDao,
+        chatRepository = chatRepository,
+        clock = clock,
+        scope = coroutineScope,
+      ),
+      chatDao = chatDao,
+      chatRepository = chatRepository,
+      getInChatCrossSellUseCase = getInChatCrossSellUseCase,
+      crossSellEvents = InChatCrossSellEvents(
+        conversationId = Uuid.fromString(conversationId),
+        eventTrackingClient = eventTrackingClient,
+        hideInChatCrossSellUseCase = hideInChatCrossSellUseCase,
+      ),
+      context = context,
+    ),
+    coroutineScope = coroutineScope,
+  )
+
+@OptIn(ExperimentalPagingApi::class)
+private fun cbmChatPresenterPagingData(
+  conversationId: String,
+  database: RoomDatabase,
+  chatDao: ChatDao,
+  remoteKeyDao: RemoteKeyDao,
+  chatRepository: CbmChatRepository,
+  clock: Clock,
+  scope: CoroutineScope,
+): Flow<PagingData<CbmUiChatMessage>> {
+  val conversationId = Uuid.fromString(conversationId)
+  val remoteMediator = ChatRemoteMediator(conversationId, database, chatDao, remoteKeyDao, chatRepository, clock)
+  val pagingDataFlow = Pager(
+    config = PagingConfig(pageSize = 50, prefetchDistance = 50, jumpThreshold = 10),
+    remoteMediator = remoteMediator,
+    pagingSourceFactory = { chatDao.messages(conversationId) },
+  )
+    .flow
+    .map { value ->
+      value.flatMap { listOfNotNull(it.toChatMessage()) }
+    }.cachedIn(scope)
+  return combine(pagingDataFlow, chatDao.lastDeliveredMessage(conversationId)) { pagingData, lastDeliveredMessageId ->
+    pagingData.map { cbmChatMessage ->
+      CbmUiChatMessage(
+        cbmChatMessage,
+        cbmChatMessage.sender == Sender.MEMBER && cbmChatMessage.id == lastDeliveredMessageId.toString(),
+      )
+    }
+  }
+}
+
+internal class CbmChatPresenter(
+  private val conversationId: Uuid,
+  private val pagingData: Flow<PagingData<CbmUiChatMessage>>,
+  private val chatDao: ChatDao,
+  private val chatRepository: CbmChatRepository,
+  private val getInChatCrossSellUseCase: GetInChatCrossSellUseCase,
+  private val crossSellEvents: InChatCrossSellEvents,
+  private val context: ChatContext,
+) : MoleculePresenter<CbmChatEvent, CbmChatUiState> {
+  @OptIn(ExperimentalPagingApi::class)
+  @Composable
+  override fun MoleculePresenterScope<CbmChatEvent>.present(lastState: CbmChatUiState): CbmChatUiState {
+    var conversationInfoStatus by remember {
+      mutableStateOf(
+        if (lastState is CbmChatUiState.Loaded) {
+          Loaded(lastState.backendConversationInfo)
+        } else {
+          Initializing
+        },
+      )
+    }
+    var conversationIdStatusLoadIteration by remember { mutableIntStateOf(0) }
+    val numberOfOngoingUploads = remember { MutableStateFlow<Int>(0) }
+    var showFileTooBigErrorToast by remember { mutableStateOf(false) }
+    var hideBanner by remember { mutableStateOf(false) }
+    var hideCrossSell by remember { mutableStateOf(false) }
+    var showFileFailedToBeSendToast by remember { mutableStateOf(false) }
+    val a11yOn = isAccessibilityEnabled(context)
+    val enableInlineMediaPlayer = !a11yOn
+
+    LaunchedEffect(conversationIdStatusLoadIteration) {
+      if (conversationInfoStatus is Loaded && conversationIdStatusLoadIteration == 0) {
+        return@LaunchedEffect
+      }
+      conversationInfoStatus = Initializing
+      chatRepository.getConversationInfo(conversationId).collect { result ->
+        result.fold(
+          ifLeft = {
+            conversationInfoStatus = Failed
+          },
+          ifRight = { conversationInfo ->
+            conversationInfoStatus = Loaded(conversationInfo)
+          },
+        )
+      }
+    }
+
+    val updatedConversationInfoStatus by rememberUpdatedState(conversationInfoStatus)
+    CollectEvents { event ->
+      val startConversationIfNecessary = suspend {
+        val conversationAlreadyStarted = when (val conversationInfoStatusValue = updatedConversationInfoStatus) {
+          Failed -> {
+            false
+          }
+
+          Initializing -> {
+            false
+          }
+
+          is Loaded -> {
+            when (conversationInfoStatusValue.conversationInfo) {
+              NoConversation -> false
+              is Info -> true
+            }
+          }
+        }
+        if (!conversationAlreadyStarted) {
+          chatRepository.createConversation(conversationId).onRight { backendConversationInfo ->
+            conversationInfoStatus = Loaded(backendConversationInfo)
+          }
+        }
+      }
+      when (event) {
+        CbmChatEvent.RetryLoadingChat -> {
+          conversationIdStatusLoadIteration++
+        }
+
+        is CbmChatEvent.SendTextMessage -> {
+          launch {
+            numberOfOngoingUploads.update { it + 1 }
+            startConversationIfNecessary()
+            chatRepository.sendText(conversationId, null, event.message)
+            numberOfOngoingUploads.update { it - 1 }
+          }
+        }
+
+        is CbmChatEvent.SendPhotoMessage -> {
+          launch {
+            numberOfOngoingUploads.update { it + 1 }
+            startConversationIfNecessary()
+            chatRepository.sendPhotos(conversationId, event.uriList)
+            numberOfOngoingUploads.update { it - 1 }
+          }
+        }
+
+        is CbmChatEvent.SendMediaMessage -> {
+          launch {
+            numberOfOngoingUploads.update { it + 1 }
+            startConversationIfNecessary()
+            val result = chatRepository.sendMedia(conversationId, event.uriList)
+            Snapshot.withMutableSnapshot {
+              for (result in result) {
+                result.onError(
+                  onFailedToPersistUriPermissionError = { showFileFailedToBeSendToast = true },
+                  onFileTooBigError = { showFileTooBigErrorToast = true },
+                )
+              }
+            }
+            numberOfOngoingUploads.update { it - 1 }
+          }
+        }
+
+        is CbmChatEvent.RetrySendChatMessage -> {
+          launch {
+            numberOfOngoingUploads.update { it + 1 }
+            startConversationIfNecessary()
+            val result = chatRepository.retrySendMessage(conversationId, event.messageId)
+            result.onError(
+              onFailedToPersistUriPermissionError = { showFileFailedToBeSendToast = true },
+              onFileTooBigError = { showFileTooBigErrorToast = true },
+            )
+            numberOfOngoingUploads.update { it - 1 }
+          }
+        }
+
+        CbmChatEvent.ClearFileTooBigToast -> {
+          showFileTooBigErrorToast = false
+        }
+
+        CbmChatEvent.ClearFileFailedToBeSentToast -> {
+          showFileFailedToBeSendToast = false
+        }
+
+        CbmChatEvent.HideBanner -> {
+          hideBanner = true
+        }
+
+        is CbmChatEvent.CrossSellShown -> {
+          crossSellEvents.shown(event.offerId, event.offerUrl)
+        }
+
+        is CbmChatEvent.DismissCrossSell -> {
+          hideCrossSell = true
+          launch { crossSellEvents.dismissed(event.offerId, event.offerUrl) }
+        }
+
+        is CbmChatEvent.CrossSellClicked -> {
+          hideCrossSell = true
+          launch { crossSellEvents.clicked(event.offerId, event.offerUrl) }
+        }
+      }
+    }
+
+    return when (val conversationIdStatusValue = conversationInfoStatus) {
+      Initializing -> {
+        CbmChatUiState.Initializing
+      }
+
+      Failed -> {
+        CbmChatUiState.Error
+      }
+
+      is Loaded -> {
+        presentLoadedChat(
+          pagingData = pagingData,
+          backendConversationInfo = conversationIdStatusValue.conversationInfo,
+          enableInlineMediaPlayer = enableInlineMediaPlayer,
+          conversationId = conversationId,
+          chatDao = chatDao,
+          chatRepository = chatRepository,
+          getInChatCrossSellUseCase = getInChatCrossSellUseCase,
+          showUploading = numberOfOngoingUploads.collectAsState().value > 0,
+          showFileTooBigErrorToast = showFileTooBigErrorToast,
+          hideBanner = hideBanner,
+          hideCrossSell = hideCrossSell,
+          showFileFailedToBeSendToast = showFileFailedToBeSendToast,
+        )
+      }
+    }
+  }
+}
+
+@OptIn(ExperimentalPagingApi::class)
+@Composable
+private fun presentLoadedChat(
+  pagingData: Flow<PagingData<CbmUiChatMessage>>,
+  backendConversationInfo: ConversationInfo,
+  enableInlineMediaPlayer: Boolean,
+  conversationId: Uuid,
+  chatDao: ChatDao,
+  chatRepository: CbmChatRepository,
+  getInChatCrossSellUseCase: GetInChatCrossSellUseCase,
+  showUploading: Boolean,
+  showFileTooBigErrorToast: Boolean,
+  hideBanner: Boolean,
+  hideCrossSell: Boolean,
+  showFileFailedToBeSendToast: Boolean,
+): CbmChatUiState.Loaded {
+  val latestMessage by remember(chatDao) {
+    chatDao.latestMessage(conversationId).filterNotNull().map(ChatMessageEntity::toLatestChatMessage)
+  }.collectAsState(null)
+
+  val bannerText by if (!hideBanner) {
+    remember(conversationId, chatRepository) {
+      chatRepository.bannerText(conversationId)
+    }.collectAsState(null)
+  } else {
+    remember { mutableStateOf(null) }
+  }
+  val lazyPagingItems = pagingData.collectAsLazyPagingItems()
+  val enableMessageSenderLabeling by produceState(false, lazyPagingItems) {
+    snapshotFlow { lazyPagingItems.itemSnapshotList }.collectLatest { messages ->
+      value = messages.any { it?.chatMessage?.sender == Sender.AUTOMATION }
+    }
+  }
+
+  LaunchedEffect(backendConversationInfo, conversationId, lazyPagingItems) {
+    if (backendConversationInfo is NoConversation) return@LaunchedEffect
+    snapshotFlow { lazyPagingItems.itemCount }
+      .map { it > 0 }
+      .distinctUntilChanged()
+      .collectLatest { poll ->
+        if (poll) {
+          chatRepository.pollNewestMessages(conversationId).collect {
+            logcat { "Polling error: $it" }
+          }
+        }
+      }
+  }
+  val crossSell = presentInChatCrossSell(
+    conversationId = conversationId,
+    chatDao = chatDao,
+    getInChatCrossSellUseCase = getInChatCrossSellUseCase,
+    hideCrossSell = hideCrossSell,
+  )
+  return CbmChatUiState.Loaded(
+    backendConversationInfo = backendConversationInfo,
+    messages = lazyPagingItems,
+    latestMessage = latestMessage,
+    bannerText = bannerText,
+    enableMessageSenderLabeling = enableMessageSenderLabeling,
+    enableInlineMediaPlayer = enableInlineMediaPlayer,
+    showUploading = showUploading,
+    showFileTooBigErrorToast = showFileTooBigErrorToast,
+    showFileFailedToBeSentToast = showFileFailedToBeSendToast,
+    crossSell = crossSell,
+  )
+}
+
+/**
+ * The cross-sell offer this conversation should carry, if any. It is fetched only once Hedvig has
+ * answered [MESSAGES_FROM_HEDVIG_BEFORE_CROSS_SELL] times, so that an offer never lands before the
+ * member has been helped.
+ */
+@Composable
+private fun presentInChatCrossSell(
+  conversationId: Uuid,
+  chatDao: ChatDao,
+  getInChatCrossSellUseCase: GetInChatCrossSellUseCase,
+  hideCrossSell: Boolean,
+): InChatCrossSell? {
+  val hedvigHasAnswered by remember(conversationId, chatDao) {
+    chatDao.countMessagesFromHedvig(conversationId).map { it >= MESSAGES_FROM_HEDVIG_BEFORE_CROSS_SELL }
+  }.collectAsState(false)
+
+  var crossSell by remember { mutableStateOf<InChatCrossSell?>(null) }
+  val shouldOffer = hedvigHasAnswered && !hideCrossSell
+  LaunchedEffect(shouldOffer) {
+    if (!shouldOffer || crossSell != null) return@LaunchedEffect
+    getInChatCrossSellUseCase.invoke(conversationId).fold(
+      ifLeft = { logcat(LogPriority.WARN) { "Could not load the in-chat cross sell: ${it.message}" } },
+      ifRight = { crossSell = it },
+    )
+  }
+  val offeredCrossSell = crossSell.takeIf { shouldOffer }
+  LaunchedEffect(offeredCrossSell) {
+    if (offeredCrossSell != null) logInChatCrossSell(PROMPTED)
+  }
+  return offeredCrossSell
+}
+
+/** Hedvig has to have answered this many times before the member is offered anything. */
+private const val MESSAGES_FROM_HEDVIG_BEFORE_CROSS_SELL = 2
+
+internal sealed interface CbmChatEvent {
+  data object RetryLoadingChat : CbmChatEvent
+
+  data object HideBanner : CbmChatEvent
+
+  data class CrossSellShown(val offerId: String, val offerUrl: String) : CbmChatEvent
+
+  data class DismissCrossSell(val offerId: String, val offerUrl: String) : CbmChatEvent
+
+  data class CrossSellClicked(val offerId: String, val offerUrl: String) : CbmChatEvent
+
+  data class SendTextMessage(
+    val message: String,
+  ) : CbmChatEvent
+
+  data class RetrySendChatMessage(
+    val messageId: String,
+  ) : CbmChatEvent
+
+  data class SendPhotoMessage(
+    val uriList: List<Uri>,
+  ) : CbmChatEvent
+
+  data class SendMediaMessage(
+    val uriList: List<Uri>,
+  ) : CbmChatEvent
+
+  data object ClearFileTooBigToast : CbmChatEvent
+
+  data object ClearFileFailedToBeSentToast : CbmChatEvent
+}
+
+internal sealed interface CbmChatUiState {
+  data object Initializing : CbmChatUiState
+
+  data object Error : CbmChatUiState
+
+  @Immutable
+  data class Loaded(
+    val backendConversationInfo: ConversationInfo,
+    // The list of messages, ordered from the newest one to the oldest one
+    val messages: LazyPagingItems<CbmUiChatMessage>,
+    val latestMessage: LatestChatMessage?,
+    val bannerText: BannerText?,
+    val enableMessageSenderLabeling: Boolean,
+    val enableInlineMediaPlayer: Boolean,
+    val showUploading: Boolean,
+    val showFileTooBigErrorToast: Boolean,
+    // When we fail to persist the message in a way where we can retry it later, we simply fall back to showing an error
+    val showFileFailedToBeSentToast: Boolean,
+    val crossSell: InChatCrossSell?,
+  ) : CbmChatUiState {
+    val topAppBarText: TopAppBarText = when (backendConversationInfo) {
+      NoConversation -> {
+        TopAppBarText.NewConversation
+      }
+
+      is Info -> {
+        when {
+          backendConversationInfo.isLegacy -> TopAppBarText.Legacy
+
+          backendConversationInfo.claimInfo != null -> TopAppBarText.ClaimConversation(
+            backendConversationInfo.claimInfo.claimType,
+            backendConversationInfo.createdAt,
+          )
+
+          else -> TopAppBarText.ServiceConversation(backendConversationInfo.createdAt)
+        }
+      }
+    }
+    val claimId: String? = when (backendConversationInfo) {
+      NoConversation -> null
+      is Info -> backendConversationInfo.claimInfo?.claimId
+    }
+
+    data class LatestChatMessage(
+      val id: Uuid,
+      val sender: Sender,
+    )
+
+    sealed interface TopAppBarText {
+      data object NewConversation : TopAppBarText
+
+      data object Legacy : TopAppBarText
+
+      data class ClaimConversation(val claimType: String?, val createdAt: Instant) : TopAppBarText
+
+      data class ServiceConversation(val createdAt: Instant) : TopAppBarText
+    }
+  }
+}
+
+internal data class CbmUiChatMessage(
+  val chatMessage: CbmChatMessage,
+  val isLastDeliveredMessage: Boolean,
+)
+
+private sealed interface ConversationInfoStatus {
+  data object Initializing : ConversationInfoStatus
+
+  data object Failed : ConversationInfoStatus
+
+  data class Loaded(
+    val conversationInfo: ConversationInfo,
+  ) : ConversationInfoStatus
+}
+
+private fun Either<MessageSendError, *>.onError(
+  onFailedToPersistUriPermissionError: (MessageSendError.FailedToPersistUriPermissionError) -> Unit,
+  onFileTooBigError: (MessageSendError.FileTooBigError) -> Unit,
+) {
+  when (this) {
+    is Either.Left<MessageSendError> -> {
+      when (val error = value) {
+        is MessageSendError.FailedToPersistUriPermissionError -> {
+          onFailedToPersistUriPermissionError(error)
+        }
+
+        is MessageSendError.FileTooBigError -> {
+          onFileTooBigError(error)
+        }
+
+        is MessageSendError.GenericError -> {}
+      }
+    }
+
+    is Either.Right<*> -> {}
+  }
+}
+
+/** The context the chat ViewModel runs its presenter and caches its paged messages in. */
+internal expect val chatViewModelDispatcher: CoroutineContext
+
+/** The platform handle [isAccessibilityEnabled] reads the accessibility settings through. */
+internal expect abstract class ChatContext
+
+/** Whether an accessibility service, such as a screen reader, is turned on. */
+internal expect fun isAccessibilityEnabled(context: ChatContext): Boolean
