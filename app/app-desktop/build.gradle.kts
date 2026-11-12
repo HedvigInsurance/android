@@ -130,6 +130,7 @@ kotlin {
       implementation(libs.classgraph)
       implementation(libs.coroutines.test)
       implementation(libs.junit)
+      implementation(libs.kotlin.reflect)
       implementation(projects.featureChatNavigation)
       implementation(projects.featureClaimDetailsNavigation)
       implementation(projects.featureConnectPaymentTrustlyNavigation)
@@ -186,4 +187,42 @@ tasks.withType<JavaExec>().matching { it.name == "run" }.configureEach {
 
 tasks.withType<Test>().configureEach {
   systemProperty("java.awt.headless", "true")
+}
+
+val walkthroughTestClass = "com.hedvig.android.desktop.walkthrough.DesktopWalkthrough"
+
+tasks.named<Test>("jvmTest") {
+  filter {
+    excludeTestsMatching(walkthroughTestClass)
+    isFailOnNoMatchingTests = false
+  }
+}
+
+/**
+ * Renders the desktop app off-screen, visits every screen and writes a PNG and a status per screen. Never part of
+ * `jvmTest` or CI. Every `-Phedvig.walkthrough.*` Gradle property is passed on as a system property; see
+ * `DesktopWalkthrough` for the ones it reads.
+ */
+tasks.register<Test>("desktopWalkthrough") {
+  description = "Renders every reachable desktop screen to a PNG and writes an index of outcomes."
+  group = "verification"
+  val jvmTest = tasks.named<Test>("jvmTest").get()
+  testClassesDirs = jvmTest.testClassesDirs
+  classpath = jvmTest.classpath
+  filter { includeTestsMatching(walkthroughTestClass) }
+  systemProperty("hedvig.walkthrough", "true")
+  systemProperty(
+    "hedvig.walkthrough.outputDir",
+    providers.gradleProperty("hedvig.walkthrough.outputDir")
+      .orElse(layout.buildDirectory.dir("walkthrough").map { it.asFile.absolutePath })
+      .get(),
+  )
+  providers.gradlePropertiesPrefixedBy("hedvig.walkthrough.").get()
+    .filterKeys { it != "hedvig.walkthrough.outputDir" }
+    .forEach { (name, value) -> systemProperty(name, value) }
+  maxHeapSize = "4g"
+  testLogging {
+    showStandardStreams = true
+  }
+  outputs.upToDateWhen { false }
 }

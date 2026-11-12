@@ -129,7 +129,7 @@ class DesktopEntryProviderTest {
 }
 
 /** The key classes registered on this scope, read from Navigation 3's private registration maps. */
-private fun EntryProviderScope<HedvigNavKey>.registeredKeyClasses(): Set<KClass<*>> {
+internal fun EntryProviderScope<HedvigNavKey>.registeredKeyClasses(): Set<KClass<*>> {
   fun declaredMap(name: String): Map<*, *> = EntryProviderScope::class.java.getDeclaredField(name)
     .apply { isAccessible = true }
     .get(this) as Map<*, *>
@@ -138,7 +138,7 @@ private fun EntryProviderScope<HedvigNavKey>.registeredKeyClasses(): Set<KClass<
   return (byClass + byInstance).toSet()
 }
 
-private fun concreteSerializableNavKeysOnClasspath(): Set<KClass<*>> = ClassGraph()
+internal fun concreteSerializableNavKeysOnClasspath(): Set<KClass<*>> = ClassGraph()
   .enableClasspath()
   .enableClassInfo()
   .enableAnnotationInfo()
@@ -158,7 +158,7 @@ private fun concreteSerializableNavKeysOnClasspath(): Set<KClass<*>> = ClassGrap
  * parameters fails here with a message rather than silently.
  */
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
-private fun registerSharedEntries(scope: EntryProviderScope<HedvigNavKey>, graph: DesktopGraph) {
+internal fun registerSharedEntries(scope: EntryProviderScope<HedvigNavKey>, graph: DesktopGraph) {
   val method = Class.forName("com.hedvig.android.app.navigation.HedvigEntryProviderKt")
     .declaredMethods
     .singleOrNull { it.name == "hedvigEntryProvider" }
