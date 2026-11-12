@@ -272,6 +272,26 @@ The orchestrator presents Task 1's findings to Stylianos. Wave 3 starts only on 
 
 Sequential unless marked parallel: these tasks edit `:app` and `:navigation-compose`.
 
+### Spike findings that fix wave 3 (Task 1, confirmed 2026-11-12)
+
+- Navigation 3 UI: use `org.jetbrains.androidx.navigation3:navigation3-ui:1.2.0`. It publishes desktop and iOS variants and resolves to the androidx artifact on Android. `androidx.navigation3:navigation3-ui` has only JVM stubs. Task 14's destination is `commonMain`; `:navigation-compose` compiled for `iosSimulatorArm64` with one extra `JvmInline` import.
+- `NavDisplay` with the nav suite chrome, a dialog scene and a bottom sheet scene renders on the JVM.
+- A desktop Metro graph resolves `commonMain` ViewModels once seven missing JVM bindings are provided: `@AuthHttpClientEngine HttpClientEngine`, `AccessTokenFetcher`, `DataStore<Preferences>`, `DeviceIdFetcher`, `ExtraApolloClientConfiguration`, `ExtraKtorClientConfiguration`, `LanguageService`.
+- Molecule presenters do not run on the JVM: the `jvmMain` `mainDispatcher` in `:molecule-public` has no frame clock. Task 13a fixes it.
+- Hosts must pass Navigation 3 content keys (`"$key:${key::class}"`) to `entryDecorators`, not nav keys; with nav keys the retained decorator clears every ViewModel on composition.
+- QR login against staging works with `X-Platform=ANDROID`, `Hedvig-App-Version=android;<version>`, and the backend returns member data. Overriding `platformName` needed a hack in the spike, so Task 19 adds a proper seam.
+- All 9 feature flags come back from a plain GET to the Unleash frontend endpoint; the Ktor fetcher is 47 lines. Task 17 uses real flags.
+- The `navKeys()` processor generates serializer contributions for the Android target only. Desktop keeps its back stack in memory and does not need them; if the shared shell turns out to require the multibinding on JVM, an empty set is declared there with `@Multibinds(allowEmpty = true)`.
+
+Reference implementation for all of the above: branch `spike/desktop-app` (local only), commits 43e36b75e9, b9f2d223db, e2aed27efb, c50c0637d3. Read it, do not merge or cherry-pick it.
+
+### Task 13a: Molecule on the JVM
+
+**Files:** `app/molecule/molecule-public/src/jvmMain/kotlin/com/hedvig/android/molecule/public/MoleculeViewModel.jvm.kt`; test in `app/molecule/molecule-public/src/jvmTest`.
+
+- **Produces:** a `jvmMain` `mainDispatcher` (or the equivalent actual in that file) that carries a frame clock, so a `MoleculeViewModel`'s presenter runs and emits on the JVM. No change to `commonMain`, `androidMain` or `nativeMain`.
+- [ ] Step 1: `jvmTest`: a minimal `MoleculeViewModel` whose presenter returns a counter incremented by an event; assert with Turbine that `uiState` emits the initial state and then the incremented one after `emit(event)`. Step 2: run, expect FAIL by timeout with no emission. Step 3: implement, using the spike's fix as reference. Step 4: run, PASS. Step 5: `./gradlew :molecule-public:jvmTest test jvmTest` (every existing JVM presenter test must still pass), `:app:assembleDebug`. Step 6: commit.
+
 ### Task 14: Navigation UI infrastructure out of `androidMain`
 
 **Files:** `app/navigation/navigation-compose/src/androidMain/kotlin/**` (`Decorators.kt`, `BottomSheetSceneStrategy.kt`, `NavSuiteSceneDecorator.kt`, `NavigationSuiteType.kt`, the two retained decorators), `app/navigation/navigation-compose/build.gradle.kts`.
