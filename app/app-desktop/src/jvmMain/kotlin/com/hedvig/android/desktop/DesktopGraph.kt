@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import coil3.ImageLoader
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
@@ -83,6 +84,8 @@ internal interface DesktopGraph : ViewModelGraph {
   val onboardingGate: OnboardingGate
 
   val resetOnboardingSeenUseCase: ResetOnboardingSeenUseCase
+
+  val apolloClient: ApolloClient
 
   /**
    * Nav key serializers are only generated for the Android target, and the desktop back stack is never persisted,

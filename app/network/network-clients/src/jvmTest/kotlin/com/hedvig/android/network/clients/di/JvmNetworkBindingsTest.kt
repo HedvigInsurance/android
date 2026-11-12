@@ -4,9 +4,7 @@ import com.hedvig.android.auth.AccessTokenProvider
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.common.di.AuthHttpClientEngine
 import com.hedvig.android.network.clients.AccessTokenFetcher
-import com.hedvig.android.network.clients.ExtraApolloClientConfiguration
 import com.hedvig.android.network.clients.ExtraKtorClientConfiguration
-import com.hedvig.android.network.clients.NoopExtraApolloClientConfiguration
 import com.hedvig.android.network.clients.NoopExtraKtorClientConfiguration
 import com.hedvig.android.network.clients.TlsDiagnostics
 import dev.zacsweers.metro.DependencyGraph
@@ -24,7 +22,6 @@ import kotlinx.coroutines.test.runTest
 @DependencyGraph(AppScope::class)
 internal interface NetworkTestGraph {
   val accessTokenFetcher: AccessTokenFetcher
-  val extraApolloClientConfiguration: ExtraApolloClientConfiguration
   val extraKtorClientConfiguration: ExtraKtorClientConfiguration
   val tlsDiagnostics: TlsDiagnostics
 
@@ -48,8 +45,7 @@ class JvmNetworkBindingsTest {
   }
 
   @Test
-  fun `the extra client configurations are the no-op ones`() {
-    assertIs<NoopExtraApolloClientConfiguration>(graph.extraApolloClientConfiguration)
+  fun `the extra Ktor client configuration is the no-op one`() {
     assertIs<NoopExtraKtorClientConfiguration>(graph.extraKtorClientConfiguration)
   }
 

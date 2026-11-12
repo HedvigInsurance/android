@@ -3,6 +3,7 @@ package com.hedvig.android.feature.onboarding.di
 import assertk.assertThat
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isSameInstanceAs
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.buildconstants.AppBuildConfig
 import com.hedvig.android.core.buildconstants.Flavor
 import com.hedvig.android.core.common.di.ActivityRetainedScope
@@ -17,6 +18,7 @@ import com.hedvig.android.feature.onboarding.gate.OnboardingGateImpl
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.network.clients.ExtraApolloClientConfiguration
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.createGraphFactory
@@ -37,8 +39,9 @@ import org.junit.Test
  * taken from the JVM classpath of this module's dependencies (`core-datastore-public`, `feature-flags`,
  * `network-clients`, `language-core`, `core-build-constants` and this module's own contributions).
  *
- * The factory supplies only true host inputs (the data directory and the build config) and fakes for the two
- * types no library module binds on the JVM ([ExperimentProvider] and [Backstack]). `EventTrackingClient`, the
+ * The factory supplies only true host inputs (the data directory, the build config and the Apollo client
+ * configuration, which the host's shell binds) and fakes for the two types no library module binds on the JVM
+ * ([ExperimentProvider] and [Backstack]). `EventTrackingClient`, the
  * third such type, is needed only by a ViewModel, which these accessors do not reach.
  */
 @DependencyGraph(AppScope::class, additionalScopes = [ActivityRetainedScope::class])
@@ -53,6 +56,7 @@ internal interface OnboardingBindingsTestGraph {
       @Provides appBuildConfig: AppBuildConfig,
       @Provides experimentProvider: ExperimentProvider,
       @Provides backstack: Backstack,
+      @Provides extraApolloClientConfiguration: ExtraApolloClientConfiguration,
     ): OnboardingBindingsTestGraph
   }
 }
@@ -83,6 +87,7 @@ class JvmOnboardingBindingsTest {
       appBuildConfig = TestAppBuildConfig,
       experimentProvider = FakeExperimentProvider(),
       backstack = TestBackstack(),
+      extraApolloClientConfiguration = NoExtraApolloClientConfiguration,
     )
   }
 
@@ -101,6 +106,11 @@ class JvmOnboardingBindingsTest {
   fun `the reset onboarding use case resolves to the single implementation`() {
     assertThat(graph.resetOnboardingSeenUseCase).isInstanceOf<ResetOnboardingSeenUseCaseImpl>()
   }
+}
+
+/** The host's Apollo interceptors are outside this graph, so its client is built without any. */
+private object NoExtraApolloClientConfiguration : ExtraApolloClientConfiguration {
+  override fun configure(builder: ApolloClient.Builder): ApolloClient.Builder = builder
 }
 
 private class TestBackstack : Backstack {

@@ -26,7 +26,6 @@ import com.hedvig.android.app.ui.HedvigApp
 import com.hedvig.android.design.system.hedvig.datepicker.LocalAppLocale
 import com.hedvig.android.feature.login.navigation.LoginKey
 import com.hedvig.android.logger.LogPriority
-import com.hedvig.android.logger.LogcatLogger
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import dev.zacsweers.metro.createGraphFactory
@@ -35,7 +34,7 @@ import java.io.File
 import java.util.Locale
 
 fun main() {
-  LogcatLogger.install(StdoutLogcatLogger)
+  installDesktopLogging(StdoutLogcatLogger)
   Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
     logcat(LogPriority.ERROR, throwable) { "Uncaught exception on thread ${thread.name}" }
   }

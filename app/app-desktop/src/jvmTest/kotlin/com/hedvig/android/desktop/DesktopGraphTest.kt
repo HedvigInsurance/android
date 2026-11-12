@@ -1,6 +1,7 @@
 package com.hedvig.android.desktop
 
 import assertk.assertThat
+import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isInstanceOf
 import com.hedvig.android.app.navigation.BackstackController
@@ -69,6 +70,16 @@ class DesktopGraphTest {
     val graph = createTestDesktopGraph(dataDirectory)
 
     assertThat(graph.eventTrackingClient).isInstanceOf<LoggingEventTrackingClient>()
+  }
+
+  @Test
+  fun `the Apollo client logs out on an unauthenticated response, then logs the request`() {
+    val graph = createTestDesktopGraph(dataDirectory)
+
+    assertThat(graph.apolloClient.interceptors.map { it::class.qualifiedName }).containsExactly(
+      "com.hedvig.android.app.apollo.LogoutOnUnauthenticatedInterceptor",
+      "com.hedvig.android.app.apollo.LoggingInterceptor",
+    )
   }
 
   private companion object {
