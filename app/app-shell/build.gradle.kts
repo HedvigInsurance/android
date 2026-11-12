@@ -64,6 +64,7 @@ kotlin {
       implementation(projects.featureMovingflow)
       implementation(projects.featureMovingflowNavigation)
       implementation(projects.featureOnboardingNavigation)
+      implementation(projects.featurePayinAccount)
       implementation(projects.featurePayinAccountNavigation)
       implementation(projects.featurePaymentsNavigation)
       implementation(projects.featurePayoutAccount)

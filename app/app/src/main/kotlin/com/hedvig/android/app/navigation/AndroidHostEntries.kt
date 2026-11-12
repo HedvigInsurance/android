@@ -34,7 +34,6 @@ import com.hedvig.android.feature.movingflow.MovingSource
 import com.hedvig.android.feature.onboarding.navigation.onboardingEntries
 import com.hedvig.android.feature.payin.account.navigation.PayinMethodDetailsKey
 import com.hedvig.android.feature.payin.account.navigation.SelectPrimaryPayinMethodKey
-import com.hedvig.android.feature.payin.account.navigation.payinAccountEntries
 import com.hedvig.android.feature.payments.navigation.ManualChargeKey
 import com.hedvig.android.feature.payments.navigation.paymentsEntries
 import com.hedvig.android.feature.profile.navigation.ContactInfoKey
@@ -98,8 +97,6 @@ internal fun EntryProviderScope<HedvigNavKey>.androidHostEntries(context: HostEn
   foreverEntries()
   addPaymentsEntries(
     backstack = context.backstack,
-    hedvigBuildConstants = context.hedvigBuildConstants,
-    navigateToTrustly = context.navigateToTrustly,
     navigateToPayinAccount = context.navigateToPayinAccount,
     navigateToPayoutAccount = context.navigateToPayoutAccount,
     navigateToNewConversation = context.navigateToNewConversation,
@@ -316,8 +313,6 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
 
 private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
   backstack: BackstackController,
-  hedvigBuildConstants: HedvigBuildConstants,
-  navigateToTrustly: () -> Unit,
   navigateToPayinAccount: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
   navigateToNewConversation: () -> Unit,
@@ -330,12 +325,6 @@ private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
     navigateToPayoutAccount = navigateToPayoutAccount,
     navigateToSelectPrimaryPayinMethod = { backstack.add(SelectPrimaryPayinMethodKey) },
     openConversation = navigateToNewConversation,
-  )
-  payinAccountEntries(
-    backstack = backstack,
-    hedvigBuildConstants = hedvigBuildConstants,
-    navigateToTrustly = navigateToTrustly,
-    returnToPayinOverview = changePayinMethod,
   )
   connectPaymentEntries(
     backstack = backstack,

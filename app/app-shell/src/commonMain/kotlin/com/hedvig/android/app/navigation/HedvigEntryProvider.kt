@@ -32,6 +32,7 @@ import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
 import com.hedvig.android.feature.movingflow.movingFlowEntries
 import com.hedvig.android.feature.onboarding.data.ResetOnboardingSeenUseCase
 import com.hedvig.android.feature.payin.account.navigation.PayinAccountKey
+import com.hedvig.android.feature.payin.account.navigation.payinAccountEntries
 import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountKey
 import com.hedvig.android.feature.payoutaccount.navigation.payoutAccountEntries
 import com.hedvig.android.feature.remove.addons.removeAddonsEntries
@@ -131,6 +132,12 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   payoutAccountEntries(
     backstack = backstack,
     navigateToTrustly = navigateToTrustly,
+  )
+  payinAccountEntries(
+    backstack = backstack,
+    hedvigBuildConstants = hedvigBuildConstants,
+    navigateToTrustly = navigateToTrustly,
+    returnToPayinOverview = changePayinMethod,
   )
   addProfileEntries(backstack = backstack)
   addSharedFlowEntries(
