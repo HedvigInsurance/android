@@ -184,7 +184,7 @@ Desktop side of each seam:
 | App settings, Play Store, in-app review | Not available. |
 | File picking and saving (claims, certificates, chat attachments) | Real, native file dialog. |
 | Camera capture, audio recording | Not available (stubs exist today). |
-| Push notifications and the notification permission prompt | Not applicable. Permission reads as not granted, prompts do not appear. |
+| Push notifications and the notification permission prompt | Not applicable. The permission reads as granted, meaning there is nothing to ask for, so no prompt or reminder appears. The Settings notifications row is not shown. |
 | Feature flags | Real values from Unleash if cheap, otherwise static. See "Open risks". |
 | Tracking, Datadog, Firebase, Crashlytics | No-op. Logging goes to stdout through `logcat`. |
 | System bars, edge-to-edge, screen-on flag | No-op. |
