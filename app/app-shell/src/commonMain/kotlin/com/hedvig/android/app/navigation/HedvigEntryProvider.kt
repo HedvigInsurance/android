@@ -24,8 +24,10 @@ import com.hedvig.android.feature.chip.id.navigation.chipIdEntries
 import com.hedvig.android.feature.claim.chat.navigation.ClaimChatKey
 import com.hedvig.android.feature.claim.chat.navigation.claimChatEntries
 import com.hedvig.android.feature.claim.details.navigation.ClaimDetailsKey
+import com.hedvig.android.feature.claim.details.navigation.claimDetailsEntries
 import com.hedvig.android.feature.claimhistory.nav.ClaimHistoryKey
 import com.hedvig.android.feature.claimhistory.nav.claimHistoryEntries
+import com.hedvig.android.feature.connect.payment.connectPaymentEntries
 import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyKey
 import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountKey
 import com.hedvig.android.feature.deleteaccount.navigation.deleteAccountEntries
@@ -38,6 +40,7 @@ import com.hedvig.android.feature.help.center.helpCenterEntries
 import com.hedvig.android.feature.help.center.navigation.HelpCenterKey
 import com.hedvig.android.feature.home.home.navigation.homeEntries
 import com.hedvig.android.feature.imageviewer.navigation.ImageViewerKey
+import com.hedvig.android.feature.imageviewer.navigation.imageViewerEntries
 import com.hedvig.android.feature.insurance.certificate.navigation.InsuranceEvidenceKey
 import com.hedvig.android.feature.insurance.certificate.navigation.insuranceEvidenceEntries
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
@@ -159,6 +162,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     openCrossSellUrl = openCrossSellUrl,
     onNavigateToImageViewer = onNavigateToImageViewer,
     navigateToNewConversation = navigateToNewConversation,
+    navigateToConversation = navigateToConversation,
     navigateToInbox = navigateToInbox,
     navigateToPayinAccount = navigateToPayinAccount,
     navigateToPayoutAccount = navigateToPayoutAccount,
@@ -201,6 +205,10 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     navigateToTrustly = navigateToTrustly,
     returnToPayinOverview = changePayinMethod,
   )
+  connectPaymentEntries(
+    backstack = backstack,
+    changePaymentMethod = changePayinMethod,
+  )
   addProfileEntries(
     backstack = backstack,
     globalSnackBarState = globalSnackBarState,
@@ -232,9 +240,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
       openUrl = openUrl,
       openCrossSellUrl = openCrossSellUrl,
       navigateToNewConversation = navigateToNewConversation,
-      navigateToConversation = navigateToConversation,
       onNavigateToImageViewer = onNavigateToImageViewer,
-      changePayinMethod = changePayinMethod,
     ),
   )
 }
@@ -252,9 +258,7 @@ class HostEntryContext internal constructor(
   val openUrl: (String) -> Unit,
   val openCrossSellUrl: (String) -> Boolean,
   val navigateToNewConversation: () -> Unit,
-  val navigateToConversation: (String) -> Unit,
   val onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
-  val changePayinMethod: () -> Unit,
 )
 
 /**
@@ -300,6 +304,7 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
   openCrossSellUrl: (String) -> Boolean,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   navigateToNewConversation: () -> Unit,
+  navigateToConversation: (String) -> Unit,
   navigateToInbox: () -> Unit,
   navigateToPayinAccount: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
@@ -355,6 +360,15 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
     },
   )
   insuranceEvidenceEntries(
+    backstack = backstack,
+    applicationId = appPackageId,
+  )
+  claimDetailsEntries(
+    imageLoader = imageLoader,
+    openUrl = openUrl,
+    onNavigateToImageViewer = onNavigateToImageViewer,
+    appPackageId = appPackageId,
+    navigateToConversation = navigateToConversation,
     backstack = backstack,
     applicationId = appPackageId,
   )
@@ -516,7 +530,7 @@ private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
 
 /**
  * Cross-cutting flows reachable from more than one tab: addon purchase/removal, tier changes,
- * co-insured editing, moving, chip-id and the help center.
+ * co-insured editing, moving, chip-id, the help center and the image viewer.
  */
 private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
   backstack: BackstackController,
@@ -560,4 +574,5 @@ private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
     imageLoader = imageLoader,
   )
   removeAddonsEntries(backstack = backstack)
+  imageViewerEntries(backstack, imageLoader)
 }

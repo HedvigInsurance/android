@@ -53,6 +53,7 @@ kotlin {
       implementation(projects.featureClaimChat)
       implementation(projects.featureClaimDetails)
       implementation(projects.featureClaimHistory)
+      implementation(projects.featureConnectPaymentTrustly)
       implementation(projects.featureConnectPaymentTrustlyNavigation)
       implementation(projects.featureCrossSellSheet)
       implementation(projects.featureDeleteAccount)
