@@ -12,9 +12,6 @@ import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.feature.chat.navigation.ChatKey
 import com.hedvig.android.feature.chat.navigation.InboxKey
-import com.hedvig.android.feature.claim.details.navigation.ClaimDetailsKey
-import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyKey
-import com.hedvig.android.feature.imageviewer.navigation.ImageViewerKey
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.common.HedvigNavKey
@@ -27,9 +24,6 @@ import com.hedvig.android.navigation.compose.Backstack
 internal fun EntryProviderScope<HedvigNavKey>.desktopHostEntries(backstack: Backstack) {
   entry<ChatKey> { DesktopPlaceholder(backstack) }
   entry<InboxKey> { DesktopPlaceholder(backstack) }
-  entry<TrustlyKey> { DesktopPlaceholder(backstack) }
-  entry<ImageViewerKey> { DesktopPlaceholder(backstack) }
-  entry<ClaimDetailsKey> { DesktopPlaceholder(backstack) }
 }
 
 /**
