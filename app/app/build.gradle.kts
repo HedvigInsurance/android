@@ -213,6 +213,7 @@ dependencies {
   implementation(projects.featureHome)
   implementation(projects.featureHomeNavigation)
   implementation(projects.featureImageViewer)
+  implementation(projects.featureImageViewerNavigation)
   implementation(projects.featureInsuranceCertificate)
   implementation(projects.featureInsurances)
   implementation(projects.featureInsurancesNavigation)
