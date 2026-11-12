@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
 import hedvig.resources.Res
@@ -26,13 +27,15 @@ internal actual fun rememberOpenBugReportEmail(
     appVersionName,
     "Android ${Build.VERSION.SDK_INT}",
   )
-  return {
-    openEmailClientWithPrefilledData(
-      localContext,
-      "android@hedvig.com",
-      letterSubject,
-      letterBody,
-    )
+  return remember(localContext, letterSubject, letterBody) {
+    {
+      openEmailClientWithPrefilledData(
+        localContext,
+        "android@hedvig.com",
+        letterSubject,
+        letterBody,
+      )
+    }
   }
 }
 
