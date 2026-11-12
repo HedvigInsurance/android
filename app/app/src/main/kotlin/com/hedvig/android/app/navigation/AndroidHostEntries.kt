@@ -18,7 +18,6 @@ import com.hedvig.android.feature.connect.payment.connectPaymentEntries
 import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddInfoKey
 import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddOrRemoveKey
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredTriageKey
-import com.hedvig.android.feature.forever.navigation.foreverEntries
 import com.hedvig.android.feature.help.center.navigation.HelpCenterKey
 import com.hedvig.android.feature.home.home.navigation.homeEntries
 import com.hedvig.android.feature.imageviewer.navigation.imageViewerEntries
@@ -85,7 +84,6 @@ internal fun EntryProviderScope<HedvigNavKey>.androidHostEntries(context: HostEn
       context.navigateToMovingFlow(MovingSource.INSURANCE)
     },
   )
-  foreverEntries()
   addPaymentsEntries(
     backstack = context.backstack,
     changePayinMethod = context.changePayinMethod,

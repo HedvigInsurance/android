@@ -29,6 +29,7 @@ import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountKey
 import com.hedvig.android.feature.deleteaccount.navigation.deleteAccountEntries
 import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddInfoKey
 import com.hedvig.android.feature.editcoinsured.navigation.editCoInsuredEntries
+import com.hedvig.android.feature.forever.navigation.foreverEntries
 import com.hedvig.android.feature.help.center.helpCenterEntries
 import com.hedvig.android.feature.imageviewer.navigation.ImageViewerKey
 import com.hedvig.android.feature.insurance.certificate.navigation.InsuranceEvidenceKey
@@ -142,6 +143,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     backstack = backstack,
     navigateToTrustly = navigateToTrustly,
   )
+  foreverEntries()
   paymentsEntries(
     backstack = backstack,
     navigateToPayinAccount = navigateToPayinAccount,
