@@ -1,16 +1,14 @@
 package com.hedvig.android.feature.insurance.certificate.navigation
 
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation3.runtime.EntryProviderScope
+import com.hedvig.android.core.fileupload.rememberOpenPdf
 import com.hedvig.android.feature.insurance.certificate.ui.email.InsuranceEvidenceEmailInputDestination
 import com.hedvig.android.feature.insurance.certificate.ui.email.InsuranceEvidenceEmailInputViewModel
 import com.hedvig.android.feature.insurance.certificate.ui.overview.InsuranceEvidenceOverviewDestination
 import com.hedvig.android.feature.insurance.certificate.ui.overview.InsuranceEvidenceOverviewViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
-import com.hedvig.core.common.android.sharePDF
 import dev.zacsweers.metrox.viewmodel.metroViewModel
-import java.io.File
 
 fun EntryProviderScope<HedvigNavKey>.insuranceEvidenceEntries(backstack: Backstack, applicationId: String) {
   entry<InsuranceEvidenceKey> {
@@ -22,14 +20,12 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEvidenceEntries(backstack: Backsta
   }
   entry<ShowCertificateKey> { key ->
     val viewModel: InsuranceEvidenceOverviewViewModel = metroViewModel()
-    val context = LocalContext.current
+    val openPdf = rememberOpenPdf(applicationId)
     InsuranceEvidenceOverviewDestination(
       insuranceEvidenceUrl = key.certificateUrl,
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
-      onShareInsuranceEvidence = {
-        context.sharePDF(File(it.path), applicationId)
-      },
+      onShareInsuranceEvidence = openPdf,
     )
   }
 }
