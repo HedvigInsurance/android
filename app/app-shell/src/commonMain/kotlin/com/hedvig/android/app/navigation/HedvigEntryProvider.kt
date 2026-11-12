@@ -19,6 +19,7 @@ import com.hedvig.android.feature.change.tier.navigation.StartTierFlowKey
 import com.hedvig.android.feature.change.tier.navigation.changeTierEntries
 import com.hedvig.android.feature.chat.navigation.ChatKey
 import com.hedvig.android.feature.chat.navigation.InboxKey
+import com.hedvig.android.feature.chat.navigation.cbmChatEntries
 import com.hedvig.android.feature.chip.id.navigation.ChipIdKey
 import com.hedvig.android.feature.chip.id.navigation.chipIdEntries
 import com.hedvig.android.feature.claim.chat.navigation.ClaimChatKey
@@ -70,6 +71,7 @@ import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificate
 import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateEntries
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.memberquickactions.InnerHelpCenterDestination
 import com.hedvig.android.memberquickactions.QuickLinkDestination
 import com.hedvig.android.memberquickactions.toNavKey
@@ -85,12 +87,11 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 /**
- * Registers every in-app destination on the [EntryProviderScope]: the entries of features every host can
- * render here, the rest through [hostEntries]. Decomposed into per-domain sub-builders so each tab/flow's
- * wiring is readable in isolation. The shared cross-feature `navigateToX` closures are derived once here and
- * threaded down to the sub-builders that need them, and to [hostEntries] through [HostEntryContext]. All
- * wiring stays out of the features because feature `*Key`s live in feature *impl* modules and the
- * feature-isolation build rule blocks one feature from referencing another's key.
+ * Registers every in-app destination on the [EntryProviderScope]. Decomposed into per-domain sub-builders so
+ * each tab/flow's wiring is readable in isolation. The shared cross-feature `navigateToX` closures are derived
+ * once here and threaded down to the sub-builders that need them. All wiring stays out of the features because
+ * feature `*Key`s live in feature *impl* modules and the feature-isolation build rule blocks one feature from
+ * referencing another's key.
  */
 internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   backstack: BackstackController,
@@ -106,7 +107,6 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
   resetOnboardingSeenUseCase: ResetOnboardingSeenUseCase,
-  hostEntries: EntryProviderScope<HedvigNavKey>.(HostEntryContext) -> Unit,
 ) {
   val shouldShowRequestPermissionRationale: (String) -> Boolean = appHost::shouldShowPermissionRationale
   val navigateToTrustly: () -> Unit = { backstack.add(TrustlyKey()) }
@@ -232,34 +232,16 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     navigateToNewConversation = navigateToNewConversation,
     navigateToInbox = navigateToInbox,
   )
-  hostEntries(
-    HostEntryContext(
-      backstack = backstack,
-      imageLoader = imageLoader,
-      hedvigBuildConstants = hedvigBuildConstants,
-      openUrl = openUrl,
-      openCrossSellUrl = openCrossSellUrl,
-      navigateToNewConversation = navigateToNewConversation,
-      onNavigateToImageViewer = onNavigateToImageViewer,
-    ),
+  addChatEntries(
+    backstack = backstack,
+    hedvigBuildConstants = hedvigBuildConstants,
+    imageLoader = imageLoader,
+    openUrl = openUrl,
+    openCrossSellUrl = openCrossSellUrl,
+    onNavigateToImageViewer = onNavigateToImageViewer,
+    navigateToNewConversation = navigateToNewConversation,
   )
 }
-
-/**
- * What [hedvigEntryProvider] hands to the host's own entries: the dependencies those entries need and the
- * cross-feature closures derived once in [hedvigEntryProvider]. A closure this context provides is taken from
- * it and never rebuilt by a host; closures it does not provide are built in the host's entries. A field is
- * removed when its last host-side consumer moves into the shared provider.
- */
-class HostEntryContext internal constructor(
-  val backstack: BackstackController,
-  val imageLoader: ImageLoader,
-  val hedvigBuildConstants: HedvigBuildConstants,
-  val openUrl: (String) -> Unit,
-  val openCrossSellUrl: (String) -> Boolean,
-  val navigateToNewConversation: () -> Unit,
-  val onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
-)
 
 /**
  * The app-specific privacy notice, per language. Mirrors the "Privacy policy (Hedvig app)" link on the
@@ -575,4 +557,32 @@ private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
   )
   removeAddonsEntries(backstack = backstack)
   imageViewerEntries(backstack, imageLoader)
+}
+
+/** The inbox and the conversations. */
+private fun EntryProviderScope<HedvigNavKey>.addChatEntries(
+  backstack: BackstackController,
+  hedvigBuildConstants: HedvigBuildConstants,
+  imageLoader: ImageLoader,
+  openUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Boolean,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  navigateToNewConversation: () -> Unit,
+) {
+  cbmChatEntries(
+    hedvigBuildConstants = hedvigBuildConstants,
+    imageLoader = imageLoader,
+    openUrl = openUrl,
+    openCrossSellUrl = openCrossSellUrl,
+    onNavigateToClaimDetails = { claimId ->
+      logcat { "Navigating to claim details from chat" }
+      backstack.add(ClaimDetailsKey(claimId))
+    },
+    onNavigateToImageViewer = onNavigateToImageViewer,
+    onNavigateToNewConversation = navigateToNewConversation,
+    navigateToClaimChat = { resumeClaim ->
+      backstack.add(ClaimChatKey(messageId = null, isDevelopmentFlow = false, resumeClaim = resumeClaim))
+    },
+    backstack = backstack,
+  )
 }

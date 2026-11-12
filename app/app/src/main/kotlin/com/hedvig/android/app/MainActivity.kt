@@ -43,7 +43,6 @@ import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
 import com.hedvig.android.app.navigation.NavRetainedViewModel
 import com.hedvig.android.app.navigation.ScreenParameterExtractor
-import com.hedvig.android.app.navigation.androidHostEntries
 import com.hedvig.android.app.ui.HedvigApp
 import com.hedvig.android.app.urihandler.ExternalDeepLinkHandler
 import com.hedvig.android.auth.AuthTokenService
@@ -305,7 +304,6 @@ class MainActivity : AppCompatActivity() {
           screenParameterExtractor = screenParameterExtractor,
           onboardingGate = navRetainedViewModel.onboardingGate,
           resetOnboardingSeenUseCase = resetOnboardingSeenUseCase,
-          hostEntries = { context -> androidHostEntries(context) },
         )
       }
     }
