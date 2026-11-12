@@ -40,6 +40,7 @@ kotlin {
       implementation(projects.composeUi)
       implementation(projects.coreBuildConstants)
       implementation(projects.coreCommonPublic)
+      implementation(projects.coreDemoMode)
       implementation(projects.coreFileUpload)
       implementation(projects.coreResources)
       implementation(projects.coreUiData)
@@ -47,6 +48,8 @@ kotlin {
       implementation(projects.featureFlags)
       implementation(projects.languageCore)
       implementation(projects.moleculePublic)
+      implementation(projects.navigationCommon)
+      implementation(projects.navigationCompose)
       implementation(projects.navigationCore)
       implementation(projects.networkClients)
       implementation(projects.uiClaimFlow)
@@ -69,10 +72,7 @@ kotlin {
       implementation(libs.androidx.activity.compose)
       implementation(libs.rive.android)
       implementation(projects.composeUi)
-      implementation(projects.coreDemoMode)
       implementation(projects.coreRive)
-      implementation(projects.navigationCommon)
-      implementation(projects.navigationCompose)
       implementation(projects.notificationPermission)
     }
   }
