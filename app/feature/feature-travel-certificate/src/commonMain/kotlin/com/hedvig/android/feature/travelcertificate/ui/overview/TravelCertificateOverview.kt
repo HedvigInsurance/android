@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.travelcertificate.ui.overview
 
-import android.R.attr.enabled
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.fileupload.DownloadedFile
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.SUCCESS
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -37,7 +37,6 @@ import hedvig.resources.travel_certificate_download_recommendation
 import hedvig.resources.travel_certificate_download_travel_certificate
 import hedvig.resources.travel_certificate_share_travel_certificate
 import hedvig.resources.travel_certificate_travel_certificate_ready_description
-import java.io.File
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -45,7 +44,7 @@ internal fun TravelCertificateOverviewDestination(
   travelCertificateUrl: TravelCertificateUrl,
   viewModel: TravelCertificateOverviewViewModel,
   navigateUp: () -> Unit,
-  onShareTravelCertificate: (File) -> Unit,
+  onShareTravelCertificate: (DownloadedFile) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   TravelCertificateOverview(
@@ -66,7 +65,7 @@ internal fun TravelCertificateOverview(
   onDownloadCertificate: (TravelCertificateUrl) -> Unit,
   onRetry: () -> Unit,
   navigateUp: () -> Unit,
-  onShareTravelCertificate: (File) -> Unit,
+  onShareTravelCertificate: (DownloadedFile) -> Unit,
   uiState: TravelCertificateOverviewUiState,
 ) {
   when (uiState) {
@@ -89,7 +88,7 @@ internal fun TravelCertificateOverview(
     is Success -> {
       LaunchedEffect(uiState.travelCertificateUri) {
         uiState.travelCertificateUri?.let {
-          onShareTravelCertificate(File(it.path))
+          onShareTravelCertificate(it)
         }
       }
       HedvigScaffold(
@@ -121,7 +120,7 @@ internal fun TravelCertificateOverview(
           },
           onClick = {
             if (uiState.travelCertificateUri != null) {
-              onShareTravelCertificate(File(uiState.travelCertificateUri.path))
+              onShareTravelCertificate(uiState.travelCertificateUri)
             } else {
               onDownloadCertificate(travelCertificateUrl)
             }

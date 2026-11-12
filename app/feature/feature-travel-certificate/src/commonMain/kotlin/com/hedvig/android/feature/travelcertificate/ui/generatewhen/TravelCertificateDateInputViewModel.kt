@@ -24,7 +24,7 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
-import com.hedvig.core.common.android.validation.validateEmail
+import com.hedvig.core.common.android.validation.isValidEmail
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
 import hedvig.resources.PROFILE_MY_INFO_INVALID_EMAIL
@@ -111,9 +111,7 @@ internal class TravelCertificateDateInputPresenter(
       fun validateInputAndContinue() {
         val successScreenContent = screenContent as? DateInputScreenContent.Success ?: return
         if (successScreenContent.details.email != null &&
-          validateEmail(
-            successScreenContent.details.email,
-          ).isSuccessful
+          isValidEmail(successScreenContent.details.email)
         ) {
           if (successScreenContent.details.hasCoInsured) {
             backstack.add(
