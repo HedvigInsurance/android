@@ -384,27 +384,25 @@ internal class GetHomeDataUseCaseImpl(
           description = pillowImageLarge.alt,
         ),
         buttonText = this.buttonTitle,
-        // TODO: Temporary fake until the backend serves CrossSell.options. Restore the mapping below before merging.
-        options = fakeCrossSellOptions(id, storeUrl),
-        // options = options.map { option ->
-        //   CrossSell(
-        //     id = option.id,
-        //     title = option.title,
-        //     subtitle = option.description,
-        //     storeUrl = option.storeUrl,
-        //     pillowImageSmall = ImageAsset(
-        //       id = option.pillowImageSmall.id,
-        //       src = option.pillowImageSmall.src,
-        //       description = option.pillowImageSmall.alt,
-        //     ),
-        //     pillowImageLarge = ImageAsset(
-        //       id = option.pillowImageLarge.id,
-        //       src = option.pillowImageLarge.src,
-        //       description = option.pillowImageLarge.alt,
-        //     ),
-        //     buttonText = option.buttonTitle,
-        //   )
-        // },
+        options = options.map { option ->
+          CrossSell(
+            id = option.id,
+            title = option.title,
+            subtitle = option.description,
+            storeUrl = option.storeUrl,
+            pillowImageSmall = ImageAsset(
+              id = option.pillowImageSmall.id,
+              src = option.pillowImageSmall.src,
+              description = option.pillowImageSmall.alt,
+            ),
+            pillowImageLarge = ImageAsset(
+              id = option.pillowImageLarge.id,
+              src = option.pillowImageLarge.src,
+              description = option.pillowImageLarge.alt,
+            ),
+            buttonText = option.buttonTitle,
+          )
+        },
       )
     }
   }

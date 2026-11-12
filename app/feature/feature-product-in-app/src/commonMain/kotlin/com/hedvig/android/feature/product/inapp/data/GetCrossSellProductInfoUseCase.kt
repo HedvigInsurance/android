@@ -1,11 +1,12 @@
 package com.hedvig.android.feature.product.inapp.data
 
 import arrow.core.Either
-import arrow.core.right
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ApolloOperationError
+import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.data.contract.ImageAsset
+import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import octopus.CrossSellProductInfoQuery
@@ -20,16 +21,13 @@ internal class GetCrossSellProductInfoUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetCrossSellProductInfoUseCase {
   override suspend fun invoke(crossSellId: String): Either<ApolloOperationError, CrossSellProductInfo> {
-    // TODO: Temporary fake until the backend serves crossSellProductInfo. Restore the query below, and its
-    //  safeExecute/logcat imports, before merging.
-    return fakeCrossSellProductInfo(crossSellId).right()
-    // return apolloClient
-    //   .query(CrossSellProductInfoQuery(crossSellId))
-    //   .safeExecute()
-    //   .map { data -> data.currentMember.crossSellProductInfo.toProductInfo() }
-    //   .onLeft { error ->
-    //     logcat(operationError = error) { "GetCrossSellProductInfoUseCase failed for crossSellId:$crossSellId" }
-    //   }
+    return apolloClient
+      .query(CrossSellProductInfoQuery(crossSellId))
+      .safeExecute()
+      .map { data -> data.currentMember.crossSellProductInfo.toProductInfo() }
+      .onLeft { error ->
+        logcat(operationError = error) { "GetCrossSellProductInfoUseCase failed for crossSellId:$crossSellId" }
+      }
   }
 }
 
