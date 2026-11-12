@@ -34,7 +34,6 @@ import hedvig.resources.TERMINATION_FLOW_SUCCESS_SUBTITLE_WITH_DATE
 import hedvig.resources.TERMINATION_FLOW_SUCCESS_TITLE
 import hedvig.resources.general_done_button
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
