@@ -81,6 +81,11 @@ fun rememberAnimationsEnabled(): Boolean {
 }
 
 @Composable
+actual fun LoginBackgroundVideo() {
+  LoginBackgroundVideo(R.raw.login_video_compressed)
+}
+
+@Composable
 fun LoginBackgroundVideo(videoResId: Int = R.raw.login_video_compressed) {
   val context = LocalContext.current
   val animationsEnabled = rememberAnimationsEnabled()
