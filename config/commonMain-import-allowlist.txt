@@ -1,0 +1,2 @@
+# Files under src/commonMain that checkCommonMainImports skips, as paths relative to the repository root.
+# Precede every entry with a # comment giving the reason it may import java.*, javax.* or android.*.
