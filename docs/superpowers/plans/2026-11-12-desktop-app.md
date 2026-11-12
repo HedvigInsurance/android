@@ -21,7 +21,7 @@
 - Existing unit tests move to `src/jvmTest` unchanged.
 - A skipped piece of functionality shows "Not available on desktop". It never crashes and is never a silent no-op. Every skip is reported for the skip register.
 - No new Lokalise keys. Desktop-only text is hardcoded English.
-- One module per PR, branched off `origin/develop`, opened as a draft with the PR body format from the user's global instructions (two blank lines, then a `<details>` block of at most 1000 characters).
+- One module per branch, branched off `origin/develop` (or stacked on the branch it depends on). Branches are pushed. **No pull requests are opened** until Stylianos says so (decided 2026-11-12: he wants to work with the code before publishing it). The combined state lives on `feat/desktop-app-integration`, which merges every finished task branch.
 - No em-dash in any prose, comment, commit message or PR text.
 - Comments describe current code only, per the Comments section of `CLAUDE.md`. No "moved from", no "for desktop".
 
@@ -57,7 +57,7 @@ The agent then runs `./gradlew downloadOctopusApolloSchemaFromIntrospection down
 
 **Each agent's final report contains:** the commands it ran with their last lines of output, any file left in `androidMain` with the reason, any skip, and anything that contradicted the plan.
 
-**After each agent returns, the orchestrator:** reads the full diff, re-runs the task's verification command itself, pushes the branch, opens the draft PR, and updates the ledger below. A report is a claim, not proof.
+**After each agent returns, the orchestrator:** reads the full diff, re-runs the task's verification command itself, pushes the branch, merges it into `feat/desktop-app-integration`, and updates the ledger. No PR is opened. A report is a claim, not proof.
 
 **Per wave, before telling the user it is done:** build `./gradlew :app:assembleStaging` on a branch merging that wave's PR branches and smoke it on the Pixel (cold start, log in, open each converted feature).
 
