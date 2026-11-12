@@ -1,8 +1,5 @@
 package com.hedvig.android.feature.profile.aboutapp
 
-import android.content.Context
-import android.content.Intent
-import android.os.Build
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,18 +20,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.icons.HedvigIcons
 import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
 import com.hedvig.android.core.locale.CommonLocale
+import com.hedvig.android.core.locale.previewCommonLocale
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
@@ -68,8 +64,6 @@ import hedvig.resources.Res
 import hedvig.resources.app_info_submit_bug_button
 import hedvig.resources.app_info_submit_bug_continue
 import hedvig.resources.app_info_submit_bug_go_back
-import hedvig.resources.app_info_submit_bug_prefilled_letter_body
-import hedvig.resources.app_info_submit_bug_prefilled_letter_subject
 import hedvig.resources.app_info_submit_bug_warning_with_chat_link_1
 import hedvig.resources.app_info_submit_bug_warning_with_chat_link_2
 import hedvig.resources.app_info_submit_bug_warning_with_chat_link_3
@@ -280,14 +274,10 @@ private fun SubmitBugWarningDialog(
   navigateToNewConversation: () -> Unit,
   onDismissRequest: () -> Unit,
 ) {
-  val localContext = LocalContext.current
-  val letterSubject = stringResource(Res.string.app_info_submit_bug_prefilled_letter_subject)
-  val letterBody = String.format(
-    stringResource(Res.string.app_info_submit_bug_prefilled_letter_body),
-    memberId,
-    deviceId,
-    appVersionName,
-    "Android ${Build.VERSION.SDK_INT}",
+  val openBugReportEmail = rememberOpenBugReportEmail(
+    memberId = memberId,
+    deviceId = deviceId,
+    appVersionName = appVersionName,
   )
   HedvigAlertDialog(
     title = buildAnnotatedString {
@@ -304,39 +294,18 @@ private fun SubmitBugWarningDialog(
     },
     text = null,
     onDismissRequest = onDismissRequest,
-    onConfirmClick = {
-      openEmailClientWithPrefilledData(
-        localContext,
-        "android@hedvig.com",
-        letterSubject,
-        letterBody,
-      )
-    },
+    onConfirmClick = openBugReportEmail,
     confirmButtonLabel = stringResource(Res.string.app_info_submit_bug_continue),
     dismissButtonLabel = stringResource(Res.string.app_info_submit_bug_go_back),
   )
 }
 
-private fun openEmailClientWithPrefilledData(
-  context: Context,
-  email: String,
-  letterSubject: String,
-  letterBody: String,
-) {
-  val sendLetterIntent: Intent = Intent().apply {
-    action = Intent.ACTION_SENDTO
-    data = "mailto:".toUri()
-    putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
-    putExtra(Intent.EXTRA_SUBJECT, letterSubject)
-    putExtra(Intent.EXTRA_TEXT, letterBody)
-  }
-  context.startActivity(
-    Intent.createChooser(
-      sendLetterIntent,
-      letterSubject,
-    ),
-  )
-}
+/**
+ * Opens the member's email client with a bug report to Hedvig, prefilled with the given ids and the app and operating
+ * system versions.
+ */
+@Composable
+internal expect fun rememberOpenBugReportEmail(memberId: String?, deviceId: String?, appVersionName: String): () -> Unit
 
 private val horizontalDividerModifier = Modifier.horizontalDivider(
   DividerPosition.Bottom,
@@ -492,6 +461,6 @@ private val previewLanguageService = object : LanguageService {
   override fun setLanguage(language: Language) {}
 
   override fun getLocale(): CommonLocale {
-    return CommonLocale.getDefault()
+    return previewCommonLocale
   }
 }

@@ -1,11 +1,5 @@
 package com.hedvig.android.feature.profile.settings
 
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.os.Build
-import android.provider.Settings
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -23,7 +17,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.data.settings.datastore.AnalyticsConsent
@@ -59,10 +52,7 @@ import hedvig.resources.GENERAL_ENABLED
 import hedvig.resources.GENERAL_NOT_SELECTED
 import hedvig.resources.GENERAL_SUBSCRIBED
 import hedvig.resources.GENERAL_UNSUBSCRIBED
-import hedvig.resources.PROFILE_NOTIFICATIONS_STATUS_OFF
-import hedvig.resources.PROFILE_NOTIFICATIONS_STATUS_ON
 import hedvig.resources.Res
-import hedvig.resources.SETTINGS_NOTIFICATIONS_TITLE
 import hedvig.resources.SETTINGS_SCREEN_CONFIRM_UNSUBSCRIBE
 import hedvig.resources.SETTINGS_SCREEN_DELETE_ACCOUNT_BUTTON
 import hedvig.resources.SETTINGS_SCREEN_EMAIL_PREFERENCES
@@ -119,7 +109,6 @@ private fun SettingsScreen(
   LaunchedEffect(uiState.selectedTheme) {
     uiState.selectedTheme?.apply()
   }
-  val context = LocalContext.current
   HedvigScaffold(
     topAppBarText = stringResource(Res.string.SETTINGS_TITLE),
     navigateUp = navigateUp,
@@ -155,19 +144,12 @@ private fun SettingsScreen(
           notificationPermissionState = notificationPermissionState,
           openAppSettings = openAppSettings,
         )
-        HedvigBigCard(
-          onClick = { startAndroidNotificationSettingsActivity(context) },
-          inputText = if (notificationPermissionState.status.isGranted) {
-            stringResource(Res.string.PROFILE_NOTIFICATIONS_STATUS_ON)
-          } else {
-            stringResource(Res.string.PROFILE_NOTIFICATIONS_STATUS_OFF)
-          },
-          labelText = stringResource(Res.string.SETTINGS_NOTIFICATIONS_TITLE),
+        NotificationSettingsRow(
+          notificationPermissionState = notificationPermissionState,
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         )
-        Spacer(Modifier.height(4.dp))
         EmailSubscriptionWithDialog(
           modifier = Modifier
             .fillMaxWidth()
@@ -353,23 +335,15 @@ internal fun ThemeWithDialog(
   )
 }
 
-private fun startAndroidNotificationSettingsActivity(context: Context) {
-  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-    context.startActivity(
-      Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-      },
-    )
-  } else {
-    context.startActivity(
-      Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        data = Uri.fromParts("package", context.packageName, null)
-      },
-    )
-  }
-}
+/**
+ * The row showing whether notifications are on, followed by its spacing. Clicking it opens the system notification
+ * settings.
+ */
+@Composable
+internal expect fun NotificationSettingsRow(
+  notificationPermissionState: NotificationPermissionState,
+  modifier: Modifier = Modifier,
+)
 
 fun Theme?.getLabel() = when (this) {
   Theme.LIGHT -> Res.string.SETTINGS_THEME_LIGHT
@@ -378,23 +352,10 @@ fun Theme?.getLabel() = when (this) {
   null -> Res.string.GENERAL_NOT_SELECTED
 }
 
-private fun Theme.apply() = when (this) {
-  Theme.LIGHT -> {
-    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-  }
-
-  Theme.DARK -> {
-    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-  }
-
-  Theme.SYSTEM_DEFAULT -> {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-    } else {
-      AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
-    }
-  }
-}
+/**
+ * Applies the stored theme choice to the platform's own light and dark mode.
+ */
+internal expect fun Theme.apply()
 
 @Composable
 @HedvigPreview
