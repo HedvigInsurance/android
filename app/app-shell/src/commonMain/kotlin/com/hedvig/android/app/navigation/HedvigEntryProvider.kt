@@ -8,6 +8,7 @@ import com.hedvig.android.app.AppHost
 import com.hedvig.android.auth.MemberIdService
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.data.addons.data.AddonBannerSource
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseKey
 import com.hedvig.android.feature.addon.purchase.navigation.addonPurchaseEntries
@@ -21,19 +22,29 @@ import com.hedvig.android.feature.chip.id.navigation.ChipIdKey
 import com.hedvig.android.feature.chip.id.navigation.chipIdEntries
 import com.hedvig.android.feature.claim.chat.navigation.claimChatEntries
 import com.hedvig.android.feature.claim.details.navigation.ClaimDetailsKey
+import com.hedvig.android.feature.claimhistory.nav.ClaimHistoryKey
 import com.hedvig.android.feature.claimhistory.nav.claimHistoryEntries
 import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyKey
+import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountKey
 import com.hedvig.android.feature.deleteaccount.navigation.deleteAccountEntries
+import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddInfoKey
 import com.hedvig.android.feature.editcoinsured.navigation.editCoInsuredEntries
+import com.hedvig.android.feature.forever.navigation.foreverEntries
 import com.hedvig.android.feature.help.center.helpCenterEntries
 import com.hedvig.android.feature.imageviewer.navigation.ImageViewerKey
+import com.hedvig.android.feature.insurance.certificate.navigation.InsuranceEvidenceKey
 import com.hedvig.android.feature.movingflow.MovingSource
 import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
 import com.hedvig.android.feature.movingflow.movingFlowEntries
 import com.hedvig.android.feature.onboarding.data.ResetOnboardingSeenUseCase
 import com.hedvig.android.feature.payin.account.navigation.PayinAccountKey
+import com.hedvig.android.feature.payin.account.navigation.PayinMethodDetailsKey
+import com.hedvig.android.feature.payin.account.navigation.SelectPrimaryPayinMethodKey
+import com.hedvig.android.feature.payin.account.navigation.payinAccountEntries
+import com.hedvig.android.feature.payments.navigation.paymentsEntries
 import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountKey
 import com.hedvig.android.feature.payoutaccount.navigation.payoutAccountEntries
+import com.hedvig.android.feature.profile.tab.profileEntries
 import com.hedvig.android.feature.remove.addons.removeAddonsEntries
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceKey
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceEntries
@@ -132,7 +143,35 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     backstack = backstack,
     navigateToTrustly = navigateToTrustly,
   )
-  addProfileEntries(backstack = backstack)
+  foreverEntries()
+  paymentsEntries(
+    backstack = backstack,
+    navigateToPayinAccount = navigateToPayinAccount,
+    navigateToPayinMethodDetails = { method -> backstack.add(PayinMethodDetailsKey(method)) },
+    navigateToPayoutAccount = navigateToPayoutAccount,
+    navigateToSelectPrimaryPayinMethod = { backstack.add(SelectPrimaryPayinMethodKey) },
+    openConversation = navigateToNewConversation,
+  )
+  payinAccountEntries(
+    backstack = backstack,
+    hedvigBuildConstants = hedvigBuildConstants,
+    navigateToTrustly = navigateToTrustly,
+    returnToPayinOverview = changePayinMethod,
+  )
+  addProfileEntries(
+    backstack = backstack,
+    globalSnackBarState = globalSnackBarState,
+    hedvigBuildConstants = hedvigBuildConstants,
+    languageService = languageService,
+    externalNavigator = externalNavigator,
+    openUrl = openUrl,
+    openPrivacyPolicy = openPrivacyPolicy,
+    navigateToPayinAccount = navigateToPayinAccount,
+    navigateToPayoutAccount = navigateToPayoutAccount,
+    navigateToNewConversation = navigateToNewConversation,
+    navigateToTravelCertificate = navigateToTravelCertificate,
+    onResetOnboardingForDebug = onResetOnboardingForDebug,
+  )
   addSharedFlowEntries(
     backstack = backstack,
     globalSnackBarState = globalSnackBarState,
@@ -147,25 +186,20 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
       backstack = backstack,
       scope = scope,
       memberIdService = memberIdService,
-      globalSnackBarState = globalSnackBarState,
       externalNavigator = externalNavigator,
       imageLoader = imageLoader,
-      languageService = languageService,
       hedvigBuildConstants = hedvigBuildConstants,
       openUrl = openUrl,
       openCrossSellUrl = openCrossSellUrl,
-      navigateToTrustly = navigateToTrustly,
       navigateToPayinAccount = navigateToPayinAccount,
       navigateToPayoutAccount = navigateToPayoutAccount,
       navigateToInbox = navigateToInbox,
       navigateToNewConversation = navigateToNewConversation,
       navigateToConversation = navigateToConversation,
-      navigateToTravelCertificate = navigateToTravelCertificate,
       navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
       navigateToMovingFlow = navigateToMovingFlow,
       onNavigateToImageViewer = onNavigateToImageViewer,
       openPrivacyPolicy = openPrivacyPolicy,
-      onResetOnboardingForDebug = onResetOnboardingForDebug,
       changePayinMethod = changePayinMethod,
     ),
   )
@@ -181,25 +215,20 @@ class HostEntryContext internal constructor(
   val backstack: BackstackController,
   val scope: CoroutineScope,
   val memberIdService: MemberIdService,
-  val globalSnackBarState: GlobalSnackBarState,
   val externalNavigator: ExternalNavigator,
   val imageLoader: ImageLoader,
-  val languageService: LanguageService,
   val hedvigBuildConstants: HedvigBuildConstants,
   val openUrl: (String) -> Unit,
   val openCrossSellUrl: (String) -> Boolean,
-  val navigateToTrustly: () -> Unit,
   val navigateToPayinAccount: () -> Unit,
   val navigateToPayoutAccount: () -> Unit,
   val navigateToInbox: () -> Unit,
   val navigateToNewConversation: () -> Unit,
   val navigateToConversation: (String) -> Unit,
-  val navigateToTravelCertificate: () -> Unit,
   val navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
   val navigateToMovingFlow: (MovingSource) -> Unit,
   val onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   val openPrivacyPolicy: () -> Unit,
-  val onResetOnboardingForDebug: () -> Unit,
   val changePayinMethod: () -> Unit,
 )
 
@@ -286,8 +315,44 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
   )
 }
 
-/** The profile tab's nested destinations that every host can render. */
-private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(backstack: BackstackController) {
+/** The profile tab and its nested destinations. */
+private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
+  backstack: BackstackController,
+  globalSnackBarState: GlobalSnackBarState,
+  hedvigBuildConstants: HedvigBuildConstants,
+  languageService: LanguageService,
+  externalNavigator: ExternalNavigator,
+  openUrl: (String) -> Unit,
+  openPrivacyPolicy: () -> Unit,
+  navigateToPayinAccount: () -> Unit,
+  navigateToPayoutAccount: () -> Unit,
+  navigateToNewConversation: () -> Unit,
+  navigateToTravelCertificate: () -> Unit,
+  onResetOnboardingForDebug: () -> Unit,
+) {
+  profileEntries(
+    settingsDestinationNestedGraphs = {},
+    nestedEntries = {},
+    globalSnackBarState = globalSnackBarState,
+    backstack = backstack,
+    hedvigBuildConstants = hedvigBuildConstants,
+    navigateToConnectPayment = navigateToPayinAccount,
+    navigateToConnectPayout = navigateToPayoutAccount,
+    navigateToAddMissingInfo = { contractId: String, type: CoInsuredFlowType ->
+      backstack.add(CoInsuredAddInfoKey(contractId, type))
+    },
+    navigateToDeleteAccountFeature = { backstack.add(DeleteAccountKey) },
+    navigateToClaimHistory = { backstack.add(ClaimHistoryKey) },
+    openAppSettings = externalNavigator::openAppSettings,
+    onNavigateToNewConversation = navigateToNewConversation,
+    onNavigateToTravelCertificate = navigateToTravelCertificate,
+    onNavigateToInsuranceEvidence = { backstack.add(InsuranceEvidenceKey) },
+    openUrl = openUrl,
+    openPrivacyPolicy = openPrivacyPolicy,
+    navigateToChipId = { backstack.add(ChipIdKey()) },
+    languageService = languageService,
+    onResetOnboardingForDebug = onResetOnboardingForDebug,
+  )
   deleteAccountEntries(backstack)
   claimHistoryEntries(
     backstack = backstack,
