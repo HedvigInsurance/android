@@ -17,5 +17,11 @@ kotlin {
       implementation(libs.jetbrains.compose.runtime)
       implementation(libs.coroutines.core)
     }
+    jvmTest.dependencies {
+      implementation(libs.assertK)
+      implementation(libs.coroutines.test)
+      implementation(libs.junit)
+      implementation(libs.turbine)
+    }
   }
 }
