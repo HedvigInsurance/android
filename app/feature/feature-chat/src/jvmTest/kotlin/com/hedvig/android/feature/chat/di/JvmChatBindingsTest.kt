@@ -2,6 +2,7 @@ package com.hedvig.android.feature.chat.di
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import com.apollographql.apollo.ApolloClient
 import com.benasher44.uuid.uuid4
 import com.hedvig.android.core.buildconstants.AppBuildConfig
 import com.hedvig.android.core.buildconstants.Flavor
@@ -17,6 +18,7 @@ import com.hedvig.android.feature.chat.CbmChatViewModelFactory
 import com.hedvig.android.feature.chat.inbox.InboxUiState
 import com.hedvig.android.feature.chat.inbox.InboxViewModel
 import com.hedvig.android.logger.TestLogcatLoggingRule
+import com.hedvig.android.network.clients.ExtraApolloClientConfiguration
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.createGraphFactory
@@ -54,6 +56,7 @@ internal interface ChatBindingsTestGraph {
       @Provides experimentProvider: ExperimentProvider,
       @Provides eventTrackingClient: EventTrackingClient,
       @Provides clock: Clock,
+      @Provides extraApolloClientConfiguration: ExtraApolloClientConfiguration,
     ): ChatBindingsTestGraph
   }
 }
@@ -85,6 +88,7 @@ class JvmChatBindingsTest {
       experimentProvider = FakeExperimentProvider(),
       eventTrackingClient = FakeEventTrackingClient(),
       clock = Clock.System,
+      extraApolloClientConfiguration = NoExtraApolloClientConfiguration,
     )
   }
 
@@ -105,6 +109,11 @@ class JvmChatBindingsTest {
   fun `the inbox ViewModel can be built and starts loading`() {
     assertThat(graph.inboxViewModel.uiState.value).isEqualTo(InboxUiState.Loading)
   }
+}
+
+/** The host's Apollo interceptors are outside this graph, so its client is built without any. */
+private object NoExtraApolloClientConfiguration : ExtraApolloClientConfiguration {
+  override fun configure(builder: ApolloClient.Builder): ApolloClient.Builder = builder
 }
 
 private object TestAppBuildConfig : AppBuildConfig {
