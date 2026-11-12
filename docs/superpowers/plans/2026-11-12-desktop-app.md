@@ -386,6 +386,10 @@ Conversion Recipe for each, plus removing that feature's entries from both hosts
 ### Task 20: `feature-profile`
 - After Tasks 3, 4, 5, 11. The licenses screen's web view becomes a module-local `expect` composable (`androidMain`: today's `rememberWebViewState` + `WebView`; `jvmMain`: `NotAvailableOnDesktop()`, reported as a skip). Platform code: Accompanist permissions (use Task 4's API), `Build`/`Intent`/`Context` for app settings and language (seam; `jvmMain` shows `NotAvailableOnDesktop()` for open-app-settings, language switching works in-app), `androidx.appcompat` per-app locale (stays in `androidMain`).
 
+### Notification reminders on desktop (input to Tasks 20 and 21)
+
+`rememberNotificationPermissionStatus()` has no callers. Home, Profile and Settings each decide whether to show the "enable notifications" reminder from `rememberNotificationPermissionState().status.isGranted`, and the Settings notifications row both displays that state and opens Android settings on click. On the JVM the state reads as denied with a request that does nothing, so each of those screens would show a card or row whose action does nothing. Making the JVM state read as granted removes the cards but makes Settings say "Notifications: On". So the fix is per screen, in the task that converts it: the reminder card must not appear on desktop, and the Settings row must not claim notifications are on. The caller table is in `task-11-report.md`.
+
 ### Task 21: `feature-home`, `feature-insurances`, `feature-onboarding`
 - Held modules, one PR each, each on Stylianos's go-ahead. `feature-home` and `feature-onboarding`: DataStore usage moves to the `commonMain` DataStore API. `feature-onboarding` uses `androidx.navigation3.ui` directly: use Task 14's result.
 
