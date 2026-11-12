@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.chat.ui
 
-import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.compose.animation.AnimatedContent
@@ -46,7 +45,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import com.eygraber.uri.toAndroidUri
+import com.eygraber.uri.Uri
+import com.eygraber.uri.toKmpUri
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -88,17 +88,17 @@ internal fun ChatInput(
   var text: String by rememberSaveable { mutableStateOf("") }
   val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
     logcat { "ChatFileState sending uri:$uri" }
-    onSendPhoto(listOf(uri.toAndroidUri()))
+    onSendPhoto(listOf(uri))
   }
   val photoPicker = rememberLauncherForActivityResult(
     contract = PickMultipleVisualMediaPermittingPersistentAccess(),
-  ) { resultingUriList: List<Uri> ->
-    onSendMedia(resultingUriList)
+  ) { resultingUriList ->
+    onSendMedia(resultingUriList.map { it.toKmpUri() })
   }
   val filePicker = rememberLauncherForActivityResult(
     contract = GetMultipleContentsPermittingPersistentAccess(),
-  ) { resultingUriList: List<Uri> ->
-    onSendMedia(resultingUriList)
+  ) { resultingUriList ->
+    onSendMedia(resultingUriList.map { it.toKmpUri() })
   }
   ChatInput(
     text = text,

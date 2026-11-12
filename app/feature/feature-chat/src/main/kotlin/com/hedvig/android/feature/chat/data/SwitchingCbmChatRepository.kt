@@ -1,7 +1,7 @@
 package com.hedvig.android.feature.chat.data
 
-import android.net.Uri
 import com.benasher44.uuid.Uuid
+import com.eygraber.uri.Uri
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.DemoSwitcher

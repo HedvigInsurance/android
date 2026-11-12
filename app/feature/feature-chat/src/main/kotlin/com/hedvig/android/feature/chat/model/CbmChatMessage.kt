@@ -1,8 +1,7 @@
 package com.hedvig.android.feature.chat.model
 
-import android.net.Uri
-import androidx.core.net.toUri
 import com.benasher44.uuid.Uuid
+import com.eygraber.uri.Uri
 import com.hedvig.android.data.chat.database.ChatMessageEntity
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.MEDIA
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.PHOTO
@@ -12,7 +11,6 @@ import com.hedvig.android.data.chat.database.ChatMessageEntityBanner
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.LatestChatMessage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import java.util.UUID
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -63,7 +61,7 @@ sealed interface CbmChatMessage {
 
   companion object {
     fun aiGeneratingIndicator(sentAt: Instant) = ChatMessageText(
-      id = UUID.randomUUID().toString(),
+      id = Uuid.randomUUID().toString(),
       sender = Sender.HEDVIG,
       sentAt = sentAt,
       banner = null,
@@ -268,11 +266,11 @@ internal fun ChatMessageEntity.toChatMessage(): CbmChatMessage? {
         }
 
         failedToSend == PHOTO && url != null -> {
-          CbmChatMessage.FailedToBeSent.ChatMessagePhoto(id.toString(), sentAt, url!!.toUri())
+          CbmChatMessage.FailedToBeSent.ChatMessagePhoto(id.toString(), sentAt, Uri.parse(url!!))
         }
 
         failedToSend == MEDIA && url != null -> {
-          CbmChatMessage.FailedToBeSent.ChatMessageMedia(id.toString(), sentAt, url!!.toUri())
+          CbmChatMessage.FailedToBeSent.ChatMessageMedia(id.toString(), sentAt, Uri.parse(url!!))
         }
 
         else -> {

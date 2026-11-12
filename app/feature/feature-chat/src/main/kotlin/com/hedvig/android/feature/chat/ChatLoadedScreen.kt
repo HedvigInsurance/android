@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.chat
 
-import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.VisibilityThreshold
@@ -92,6 +91,7 @@ import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.NullRequestDataException
+import com.eygraber.uri.Uri
 import com.hedvig.android.compose.ui.LocalClock
 import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.crosssells.rememberCrossSellShownReporter
@@ -942,7 +942,7 @@ private fun FailedToBeSentUri(
     content = { _, _ -> RenderVectorGroup(group = image.root) },
   )
   ChatAsyncImage(
-    model = messageUri,
+    model = messageUri.toString(),
     imageLoader = imageLoader,
     isRetryable = true,
     isFailedToBeSentMessage = true,

@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.chat
 
 import android.content.Context
-import android.net.Uri
 import android.provider.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -30,6 +29,7 @@ import androidx.paging.map
 import androidx.room.RoomDatabase
 import arrow.core.Either
 import com.benasher44.uuid.Uuid
+import com.eygraber.uri.Uri
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.tracking.EventTrackingClient
