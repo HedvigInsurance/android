@@ -69,7 +69,6 @@ kotlin {
       implementation(projects.experimentsPublic)
       implementation(projects.featureAddonPurchase)
       implementation(projects.featureChat)
-      implementation(projects.featureChatNavigation)
       implementation(projects.featureChipId)
       implementation(projects.featureChooseTier)
       implementation(projects.featureChooseTierNavigation)
@@ -128,8 +127,10 @@ kotlin {
     }
     jvmTest.dependencies {
       implementation(libs.assertK)
+      implementation(libs.classgraph)
       implementation(libs.coroutines.test)
       implementation(libs.junit)
+      implementation(projects.featureChatNavigation)
       implementation(projects.featureClaimDetailsNavigation)
       implementation(projects.featureConnectPaymentTrustlyNavigation)
       implementation(projects.featureHomeNavigation)

@@ -5,26 +5,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.dropUnlessResumed
-import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavEntry
 import com.hedvig.android.design.system.hedvig.NotAvailableOnDesktop
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
-import com.hedvig.android.feature.chat.navigation.ChatKey
-import com.hedvig.android.feature.chat.navigation.InboxKey
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
-
-/**
- * The host half of the entry provider on desktop: every key the shared provider can put on the back stack but does
- * not register, shown as not available.
- */
-internal fun EntryProviderScope<HedvigNavKey>.desktopHostEntries(backstack: Backstack) {
-  entry<ChatKey> { DesktopPlaceholder(backstack) }
-  entry<InboxKey> { DesktopPlaceholder(backstack) }
-}
 
 /**
  * Shows a key that has no registered entry as not available. Logs each such key at WARN the first time it is shown,

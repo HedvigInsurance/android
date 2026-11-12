@@ -90,7 +90,9 @@ class DesktopGraphTest {
     val sharedFeaturePackages = listOf(
       "com.hedvig.android.feature.addon.purchase",
       "com.hedvig.android.feature.change.tier",
+      "com.hedvig.android.feature.chat.CbmChatViewModel",
       "com.hedvig.android.feature.chat.DeleteAccountViewModel",
+      "com.hedvig.android.feature.chat.inbox",
       "com.hedvig.android.feature.chip.id",
       "com.hedvig.android.feature.claim.chat",
       "com.hedvig.android.feature.claim.details",

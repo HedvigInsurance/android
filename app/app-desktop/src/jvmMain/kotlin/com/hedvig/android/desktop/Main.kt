@@ -129,7 +129,6 @@ private fun DesktopApp(
         screenParameterExtractor = graph.screenParameterExtractor,
         onboardingGate = graph.onboardingGate,
         resetOnboardingSeenUseCase = graph.resetOnboardingSeenUseCase,
-        hostEntries = { context -> desktopHostEntries(context.backstack) },
         fallbackEntry = remember(backstackController) { desktopFallbackEntry(backstackController) },
       )
     }
