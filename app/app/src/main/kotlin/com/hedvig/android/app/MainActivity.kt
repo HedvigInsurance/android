@@ -34,8 +34,12 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import coil3.ImageLoader
+import com.datadog.android.compose.ExperimentalTrackingApi
+import com.datadog.android.compose.Navigation3TrackingEffect
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.externalnavigator.ExternalNavigatorImpl
+import com.hedvig.android.app.navigation.AnalyticsNamePredicate
+import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
 import com.hedvig.android.app.navigation.NavRetainedViewModel
 import com.hedvig.android.app.navigation.ScreenParameterExtractor
@@ -184,7 +188,7 @@ class MainActivity : AppCompatActivity() {
    * in onCreate, so it must not touch any @Inject field. Deferring to first access (in/after onCreate)
    * keeps this safe even if someone later gives AndroidAppHostImpl an injected dependency.
    */
-  private val androidAppHost: AndroidAppHostImpl by lazy { AndroidAppHostImpl(this) }
+  private val androidAppHost: AndroidAppHostImpl by lazy { AndroidAppHostImpl(this, splashIsRemovedSignal) }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     (application as HedvigApplication).appGraph.inject(this)
@@ -275,13 +279,13 @@ class MainActivity : AppCompatActivity() {
         val windowSizeClass = WindowSizeClass.calculateFromSize(
           DpSize(configuration.screenWidthDp.dp, configuration.screenHeightDp.dp),
         )
+        DatadogViewTrackingEffect(backstackController)
         HedvigApp(
           backstackController = backstackController,
           deepLinkReadySignal = sessionReconciler.isReady,
           windowSizeClass = windowSizeClass,
           settingsDataStore = settingsDataStore,
           featureManager = featureManager,
-          splashIsRemovedSignal = splashIsRemovedSignal,
           authTokenService = authTokenService,
           demoManager = demoManager,
           memberIdService = memberIdService,
@@ -290,7 +294,7 @@ class MainActivity : AppCompatActivity() {
           languageService = languageService,
           hedvigBuildConstants = hedvigBuildConstants,
           waitUntilAppReviewDialogShouldBeOpenedUseCase = waitUntilAppReviewDialogShouldBeOpenedUseCase,
-          androidAppHost = androidAppHost,
+          appHost = androidAppHost,
           externalNavigator = externalNavigator,
           logoutUseCase = logoutUseCase,
           getMemberAuthorizationCodeUseCase = getMemberAuthorizationCodeUseCase,
@@ -310,6 +314,23 @@ class MainActivity : AppCompatActivity() {
     val uri = intent.data?.toString() ?: return
     deepLinkChannel.trySend(ExternalDeepLink(uri, intent.flags))
   }
+}
+
+/**
+ * Reports the top of the back stack as a Datadog RUM view, so RUM attributes errors, resources and
+ * view durations to a screen rather than to the hosting Activity.
+ *
+ * The wrapper is what keeps the back stack read inside its own restart scope: [Navigation3TrackingEffect]
+ * is non-restartable, so calling it straight from `setContent` would attribute the read there and
+ * recompose the whole app shell on every navigation.
+ */
+@OptIn(ExperimentalTrackingApi::class)
+@Composable
+private fun DatadogViewTrackingEffect(backstackController: BackstackController) {
+  Navigation3TrackingEffect(
+    backStack = backstackController.entries,
+    keyPredicate = AnalyticsNamePredicate,
+  )
 }
 
 /**

@@ -4,7 +4,7 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.navigation3.runtime.EntryProviderScope
 import coil3.ImageLoader
 import com.benasher44.uuid.Uuid
-import com.hedvig.android.app.AndroidAppHost
+import com.hedvig.android.app.AppHost
 import com.hedvig.android.auth.MemberIdService
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.data.addons.data.AddonBannerSource
@@ -100,7 +100,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   memberIdService: MemberIdService,
   globalSnackBarState: GlobalSnackBarState,
   externalNavigator: ExternalNavigator,
-  androidAppHost: AndroidAppHost,
+  appHost: AppHost,
   openUrl: (String) -> Unit,
   openCrossSellUrl: (String) -> Boolean,
   imageLoader: ImageLoader,
@@ -108,7 +108,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   hedvigBuildConstants: HedvigBuildConstants,
   resetOnboardingSeenUseCase: ResetOnboardingSeenUseCase,
 ) {
-  val shouldShowRequestPermissionRationale: (String) -> Boolean = androidAppHost::shouldShowPermissionRationale
+  val shouldShowRequestPermissionRationale: (String) -> Boolean = appHost::shouldShowPermissionRationale
   val navigateToTrustly: () -> Unit = { backstack.add(TrustlyKey()) }
   val navigateToPayinAccount: () -> Unit = { backstack.add(PayinAccountKey) }
   val navigateToPayoutAccount: () -> Unit = { backstack.add(PayoutAccountKey) }
