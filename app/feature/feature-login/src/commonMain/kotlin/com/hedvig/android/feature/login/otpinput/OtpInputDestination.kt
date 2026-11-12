@@ -28,7 +28,6 @@ import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -211,7 +210,7 @@ private fun SixDigitCodeInputField(
     labelText = "######",
     textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
     onValueChange = { newValue ->
-      if (newValue.length <= 6 && newValue.isDigitsOnly()) {
+      if (isAcceptedOtpInput(newValue)) {
         onInputChanged(newValue)
       }
 
@@ -230,6 +229,12 @@ private fun SixDigitCodeInputField(
     ),
   )
 }
+
+/**
+ * Whether the code field takes [value]: at most six characters, all digits. [Char.isDigit] accepts any Unicode
+ * decimal digit, not only ASCII.
+ */
+internal fun isAcceptedOtpInput(value: String): Boolean = value.length <= 6 && value.all(Char::isDigit)
 
 @Composable
 private fun ResendCodeItem(

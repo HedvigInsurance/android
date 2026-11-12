@@ -13,21 +13,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import com.eygraber.uri.toAndroidUri
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 
-@Stable
-internal interface BankIdState {
-  val canOpenBankId: Boolean
-
-  fun tryOpenBankId()
-}
-
 @Composable
-internal fun rememberBankIdState(bankIdUri: Uri): BankIdState {
+internal actual fun rememberBankIdState(bankIdUri: com.eygraber.uri.Uri): BankIdState {
   val context = LocalContext.current
   return remember(context, bankIdUri) {
-    BankIdStateImpl(bankIdUri, context).also {
+    BankIdStateImpl(bankIdUri.toAndroidUri(), context).also {
       it.initialize()
     }
   }

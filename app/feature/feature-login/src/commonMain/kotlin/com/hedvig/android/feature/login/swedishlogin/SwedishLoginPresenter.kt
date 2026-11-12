@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.login.swedishlogin
 
-import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -19,6 +18,7 @@ import androidx.compose.runtime.snapshots.Snapshot
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
+import com.eygraber.uri.Uri
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.authlib.AuthAttemptResult

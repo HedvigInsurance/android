@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.login.genericauth
 
-import android.view.KeyEvent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
@@ -118,7 +119,7 @@ private fun EmailTextField(
 private fun Modifier.submitOnEnter(action: () -> Unit) = composed {
   val keyboardController = LocalSoftwareKeyboardController.current
   onKeyEvent { keyEvent ->
-    if (keyEvent.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_ENTER) {
+    if (keyEvent.key == Key.Enter) {
       keyboardController?.hide()
       action()
       true

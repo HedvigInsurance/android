@@ -1,8 +1,8 @@
 package com.hedvig.android.feature.login.navigation
 
-import android.net.Uri
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.EntryProviderScope
+import com.eygraber.uri.Uri
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.login.genericauth.GenericAuthDestination
 import com.hedvig.android.feature.login.genericauth.GenericAuthViewModel
@@ -38,7 +38,7 @@ fun EntryProviderScope<HedvigNavKey>.loginEntries(
       appVersionName = appVersionName,
       openWebOnboarding = dropUnlessResumed {
         val baseUrl = urlBaseWeb.substringAfter("//")
-        val uri = createOnboardingUri(baseUrl, Language.from(locale.toLanguageTag())).toString()
+        val uri = createOnboardingUri(baseUrl, Language.from(locale.languageTag())).toString()
         openUrl(uri)
       },
       navigateToLoginScreen = dropUnlessResumed {
