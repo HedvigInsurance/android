@@ -26,6 +26,84 @@ fun findForbiddenImports(source: String): List<Pair<Int, String>> {
   }.toList()
 }
 
+private val fullyQualifiedReference = Regex("""(?<![\w.$])(?:java|javax|android)(?:\.[A-Za-z]\w*)(?:\.\w+)*""")
+
+/**
+ * Returns the 1-based line number and dotted name of every fully qualified `java.*`, `javax.*` or `android.*`
+ * reference in [source] outside `import` and `package` lines, comments, string literals and backticked names.
+ * Known misses: code inside string templates (`"${java.util.UUID.randomUUID()}"`), and a reference that is
+ * split across lines or written with spaces around its dots.
+ */
+fun findFullyQualifiedReferences(source: String): List<Pair<Int, String>> {
+  return blankCommentsAndLiterals(source).lineSequence().flatMapIndexed { index, line ->
+    val trimmed = line.trimStart()
+    if (trimmed.startsWith("import ") || trimmed.startsWith("package ")) {
+      emptySequence()
+    } else {
+      fullyQualifiedReference.findAll(line).map { index + 1 to it.value }
+    }
+  }.toList()
+}
+
+/**
+ * Replaces every character inside comments, string and char literals and backticked names with a space, keeping
+ * line breaks so line numbers stay the same.
+ */
+private fun blankCommentsAndLiterals(source: String): String {
+  val out = StringBuilder(source.length)
+  var i = 0
+  fun blank(until: Int) {
+    while (i < until && i < source.length) {
+      out.append(if (source[i] == '\n') '\n' else ' ')
+      i++
+    }
+  }
+  while (i < source.length) {
+    when {
+      source.startsWith("//", i) -> {
+        val end = source.indexOf('\n', i)
+        blank(if (end == -1) source.length else end)
+      }
+      source.startsWith("/*", i) -> {
+        var depth = 0
+        var j = i
+        while (j < source.length) {
+          if (source.startsWith("/*", j)) {
+            depth++
+            j += 2
+          } else if (source.startsWith("*/", j)) {
+            depth--
+            j += 2
+            if (depth == 0) break
+          } else {
+            j++
+          }
+        }
+        blank(j)
+      }
+      source.startsWith("\"\"\"", i) -> {
+        var end = source.indexOf("\"\"\"", i + 3)
+        end = if (end == -1) source.length else end + 3
+        while (end < source.length && source[end] == '"') end++
+        blank(end)
+      }
+      source[i] == '"' || source[i] == '\'' || source[i] == '`' -> {
+        val quote = source[i]
+        var j = i + 1
+        while (j < source.length && source[j] != quote && source[j] != '\n') {
+          j += if (source[j] == '\\' && quote != '`') 2 else 1
+        }
+        blank(minOf(j + 1, source.length))
+      }
+      else -> {
+        out.append(source[i])
+        i++
+      }
+    }
+  }
+  return out.toString()
+}
+
 /**
  * Registers `checkCommonMainImports` on the root project. `commonMain` of a module with only JVM and Android targets
  * still compiles against JVM API, so this is what keeps such code portable to iOS.
@@ -75,12 +153,16 @@ abstract class CheckCommonMainImportsTask : DefaultTask() {
     val violations = sources.files.sorted().flatMap { file ->
       val path = file.relativeTo(root).invariantSeparatorsPath
       if (path in allowed) return@flatMap emptyList()
-      findForbiddenImports(file.readText()).map { (line, import) -> "$path:$line: $import" }
+      val text = file.readText()
+      (findForbiddenImports(text) + findFullyQualifiedReferences(text))
+        .sortedBy { it.first }
+        .map { (line, reference) -> "$path:$line: $reference" }
     }
     if (violations.isNotEmpty()) {
       throw GradleException(
-        "commonMain must not import java.*, javax.* or android.*. Move the code behind a platform seam, or add the " +
-          "file to config/commonMain-import-allowlist.txt with a reason.\n" + violations.joinToString("\n"),
+        "commonMain must not import or reference java.*, javax.* or android.*. Move the code behind a platform " +
+          "seam, or add the file to config/commonMain-import-allowlist.txt with a reason.\n" +
+          violations.joinToString("\n"),
       )
     }
     marker.get().asFile.writeText("OK\n")
