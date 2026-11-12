@@ -16,6 +16,7 @@ internal actual fun NotificationSettingsRow(
 }
 
 /**
- * The JVM has no platform light or dark mode to set. The app's own theme follows the stored choice.
+ * The JVM has no platform light or dark mode to set, so this does nothing. The choice itself is stored by
+ * [SettingsPresenter], for whatever renders the app to read.
  */
 internal actual fun Theme.apply() {}
