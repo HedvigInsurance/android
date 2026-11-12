@@ -25,6 +25,22 @@ kotlin {
       implementation(projects.coreBuildConstants)
       implementation(projects.coreCommonPublic)
     }
+    jvmMain.dependencies {
+      implementation(libs.kotlinx.serialization.json)
+      implementation(libs.ktor.client.core)
+      implementation(libs.ktor.client.okhttp)
+      implementation(projects.authCorePublic)
+      implementation(projects.coreBuildConstants)
+      implementation(projects.coreCommonPublic)
+    }
+    jvmTest.dependencies {
+      implementation(libs.androidx.datastore.preferencesCore)
+      implementation(libs.coroutines.test)
+      implementation(libs.junit)
+      implementation(libs.ktor.client.mock)
+      implementation(projects.languageCore)
+      implementation(projects.loggingTest)
+    }
     getByName("androidHostTest").dependencies {
       implementation(libs.assertK)
       implementation(libs.coroutines.test)
