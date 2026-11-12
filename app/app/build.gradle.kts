@@ -228,6 +228,7 @@ dependencies {
   implementation(projects.featurePayments)
   implementation(projects.featurePaymentsNavigation)
   implementation(projects.featureProfile)
+  implementation(projects.featureProfileNavigation)
   implementation(projects.featureTerminateInsurance)
   implementation(projects.featureTerminateInsuranceNavigation)
   implementation(projects.featureTravelCertificate)
