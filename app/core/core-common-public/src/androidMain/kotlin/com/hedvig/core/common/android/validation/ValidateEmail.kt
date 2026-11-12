@@ -11,6 +11,6 @@ fun validateEmail(email: CharSequence): ValidationResult {
   }
 }
 
-fun isValidEmail(email: String): Boolean {
+actual fun isValidEmail(email: String): Boolean {
   return email.isNotBlank() && PatternsCompat.EMAIL_ADDRESS.matcher(email).matches()
 }
