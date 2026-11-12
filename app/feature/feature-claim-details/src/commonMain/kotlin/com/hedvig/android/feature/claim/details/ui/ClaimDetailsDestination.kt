@@ -1,13 +1,5 @@
 package com.hedvig.android.feature.claim.details.ui
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
-import android.net.Uri
-import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -38,25 +30,26 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import androidx.core.content.getSystemService
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.ImageLoader
-import com.eygraber.uri.toAndroidUri
+import com.eygraber.uri.Uri
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.audio.player.data.PlayableAudioSource
 import com.hedvig.android.audio.player.data.SignedAudioUrl
+import com.hedvig.android.compose.photo.capture.state.rememberGetMultipleContentsResultLauncher
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
+import com.hedvig.android.compose.photo.capture.state.rememberPickMultipleVisualMediaResultLauncher
 import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.stringWithShiftedLabel
 import com.hedvig.android.core.common.safeCast
+import com.hedvig.android.core.fileupload.DownloadedFile
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
@@ -136,11 +129,8 @@ import hedvig.resources.general_error
 import hedvig.resources.referrals_active__toast_text
 import hedvig.resources.something_went_wrong
 import hedvig.resources.travel_certificate_downloading_error
-import java.io.File
 import kotlin.time.Instant
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.toJavaLocalDate
-import kotlinx.datetime.toJavaLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -153,7 +143,7 @@ internal fun ClaimDetailsDestination(
   onFilesToUploadSelected: (List<Uri>, targetUploadUrl: String) -> Unit,
   openUrl: (String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
-  sharePdf: (File) -> Unit,
+  sharePdf: (DownloadedFile) -> Unit,
 ) {
   val viewState by viewModel.uiState.collectAsStateWithLifecycle()
   ClaimDetailScreen(
@@ -189,7 +179,7 @@ private fun ClaimDetailScreen(
   navigateToConversation: (String) -> Unit,
   onFilesToUploadSelected: (files: List<Uri>, uploadUri: String) -> Unit,
   downloadFromUrl: (String) -> Unit,
-  sharePdf: (File) -> Unit,
+  sharePdf: (DownloadedFile) -> Unit,
   onDismissDownloadError: () -> Unit,
 ) {
   Surface(
@@ -204,17 +194,13 @@ private fun ClaimDetailScreen(
         is ClaimDetailUiState.Content -> {
           val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
             logcat { "ChatFileState sending photoCaptureState uri:$uri" }
-            onFilesToUploadSelected(listOf(uri.toAndroidUri()), uiState.uploadUri)
+            onFilesToUploadSelected(listOf(uri), uiState.uploadUri)
           }
-          val photoPicker = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.PickMultipleVisualMedia(),
-          ) { resultingUriList: List<Uri> ->
+          val photoPicker = rememberPickMultipleVisualMediaResultLauncher { resultingUriList: List<Uri> ->
             logcat { "ChatFileState sending photoPicker uris:$resultingUriList" }
             onFilesToUploadSelected(resultingUriList, uiState.uploadUri)
           }
-          val filePicker = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.GetMultipleContents(),
-          ) { resultingUriList: List<Uri> ->
+          val filePicker = rememberGetMultipleContentsResultLauncher { resultingUriList: List<Uri> ->
             logcat { "ChatFileState sending filePicker uris:$resultingUriList" }
             onFilesToUploadSelected(resultingUriList, uiState.uploadUri)
           }
@@ -227,8 +213,8 @@ private fun ClaimDetailScreen(
             downloadFromUrl = downloadFromUrl,
             sharePdf = sharePdf,
             onDismissDownloadError = onDismissDownloadError,
-            onLaunchMediaRequest = { photoPicker.launch(PickVisualMediaRequest()) },
-            onPickFile = { filePicker.launch("*/*") },
+            onLaunchMediaRequest = { photoPicker.launch() },
+            onPickFile = { filePicker.launch() },
             onTakePhoto = { photoCaptureState.launchTakePhotoRequest() },
             hasUnreadMessages = uiState.safeCast<ClaimDetailUiState.Content>()?.hasUnreadMessages == true,
             navigateToConversation = uiState.safeCast<ClaimDetailUiState.Content>()?.conversationId?.let {
@@ -260,7 +246,7 @@ private fun ClaimDetailContentScreen(
   imageLoader: ImageLoader,
   downloadFromUrl: (String) -> Unit,
   onDismissDownloadError: () -> Unit,
-  sharePdf: (File) -> Unit,
+  sharePdf: (DownloadedFile) -> Unit,
   onLaunchMediaRequest: () -> Unit,
   onPickFile: () -> Unit,
   onTakePhoto: () -> Unit,
@@ -269,7 +255,7 @@ private fun ClaimDetailContentScreen(
 ) {
   if (uiState.savedFileUri != null) {
     LaunchedEffect(uiState.savedFileUri) {
-      sharePdf(File(uiState.savedFileUri.path))
+      sharePdf(uiState.savedFileUri)
     }
   }
   val fileTypeSelectBottomSheetState = rememberHedvigBottomSheetState<Unit>()
@@ -789,7 +775,7 @@ private fun ClaimDetailHedvigAudioPlayerItem(signedAudioUrl: SignedAudioUrl, mod
 @Composable
 private fun PartnerInfoRows(externalId: String?, handlerEmail: String?, modifier: Modifier = Modifier) {
   if (externalId.isNullOrBlank() && handlerEmail.isNullOrBlank()) return
-  val context = LocalContext.current
+  val copyToClipboard = rememberCopyToClipboard()
   val copiedToast = stringResource(Res.string.referrals_active__toast_text)
   CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textSecondary) {
     Column(modifier) {
@@ -797,14 +783,14 @@ private fun PartnerInfoRows(externalId: String?, handlerEmail: String?, modifier
         CopyableRow(
           title = stringResource(Res.string.claim_status_claim_details_external_id),
           value = externalId,
-          onCopy = { context.copyToClipboardAndShowToast(externalId, copiedToast) },
+          onCopy = { copyToClipboard(externalId, copiedToast) },
         )
       }
       if (!handlerEmail.isNullOrBlank()) {
         CopyableRow(
           title = stringResource(Res.string.claim_status_claim_details_handler_email),
           value = handlerEmail,
-          onCopy = { context.copyToClipboardAndShowToast(handlerEmail, copiedToast) },
+          onCopy = { copyToClipboard(handlerEmail, copiedToast) },
         )
       }
     }
@@ -828,10 +814,11 @@ private fun CopyableRow(title: String, value: String, onCopy: () -> Unit) {
   )
 }
 
-private fun Context.copyToClipboardAndShowToast(text: String, toast: String) {
-  getSystemService<ClipboardManager>()?.setPrimaryClip(ClipData.newPlainText(null, text))
-  Toast.makeText(this, toast, Toast.LENGTH_SHORT).show()
-}
+/**
+ * Puts text on the clipboard and confirms it with [confirmation] where the platform has a way to show it.
+ */
+@Composable
+internal expect fun rememberCopyToClipboard(): (text: String, confirmation: String) -> Unit
 
 @Composable
 private fun DisplayItemsSection(displayItems: List<DisplayItem>, modifier: Modifier = Modifier) {

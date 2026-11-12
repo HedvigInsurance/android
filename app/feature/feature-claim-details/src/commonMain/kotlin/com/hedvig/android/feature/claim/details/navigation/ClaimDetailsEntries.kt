@@ -1,10 +1,10 @@
 package com.hedvig.android.feature.claim.details.navigation
 
-import android.net.Uri
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation3.runtime.EntryProviderScope
 import coil3.ImageLoader
+import com.eygraber.uri.Uri
 import com.hedvig.android.compose.ui.dropUnlessResumed
+import com.hedvig.android.core.fileupload.rememberOpenPdf
 import com.hedvig.android.feature.claim.details.ui.AddFilesDestination
 import com.hedvig.android.feature.claim.details.ui.AddFilesViewModel
 import com.hedvig.android.feature.claim.details.ui.AddFilesViewModelFactory
@@ -14,7 +14,6 @@ import com.hedvig.android.feature.claim.details.ui.ClaimDetailsViewModelFactory
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
-import com.hedvig.core.common.android.sharePDF
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.claimDetailsEntries(
@@ -29,7 +28,7 @@ fun EntryProviderScope<HedvigNavKey>.claimDetailsEntries(
   entry<ClaimDetailsKey> { key ->
     val viewModel: ClaimDetailsViewModel =
       assistedMetroViewModel<ClaimDetailsViewModel, ClaimDetailsViewModelFactory> { create(key.claimId) }
-    val context = LocalContext.current
+    val openPdf = rememberOpenPdf(applicationId)
     ClaimDetailsDestination(
       viewModel = viewModel,
       imageLoader = imageLoader,
@@ -50,9 +49,7 @@ fun EntryProviderScope<HedvigNavKey>.claimDetailsEntries(
       },
       openUrl = openUrl,
       onNavigateToImageViewer = onNavigateToImageViewer,
-      sharePdf = {
-        context.sharePDF(it, applicationId)
-      },
+      sharePdf = openPdf,
     )
   }
   entry<AddFilesKey> { key ->
