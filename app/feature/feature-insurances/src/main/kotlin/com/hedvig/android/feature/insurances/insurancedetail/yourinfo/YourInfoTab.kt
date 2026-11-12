@@ -822,7 +822,7 @@ internal fun ContractOwnerSection(
             imageVector = HedvigIcons.Lock,
             tint = HedvigTheme.colorScheme.fillSecondary,
             contentDescription = "Locked info",
-            modifier = Modifier.size(16.dp),
+            modifier = Modifier.size(24.dp),
           )
         }
       },
