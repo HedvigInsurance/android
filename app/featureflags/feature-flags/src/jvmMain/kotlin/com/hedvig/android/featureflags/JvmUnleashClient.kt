@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retryWhen
@@ -42,9 +42,10 @@ private val MEMBER_ID_RETRY_DELAY = 30.seconds
 /**
  * Reads toggles from the Unleash frontend API, which lists only the toggles that are enabled for the context sent.
  *
- * Fetching runs only while something observes the flags, through [featureUpdatedFlow] or [awaitReady]: it fetches
- * when observation starts and whenever the member changes, then every [pollInterval]. The fetched state is kept in
- * memory only.
+ * The member in effect is followed for the client's whole lifetime, so whether the toggles in hand belong to the current
+ * member is known even while nothing observes the flags. Fetching runs only while something observes them, through
+ * [featureUpdatedFlow] or [awaitReady]: it fetches when observation starts and whenever the member changes, then every
+ * [pollInterval]. The fetched state is kept in memory only.
  */
 class JvmUnleashClient internal constructor(
   private val httpClient: HttpClient,
@@ -59,18 +60,24 @@ class JvmUnleashClient internal constructor(
   /** The member the client currently fetches for, or null before the first member id is read. */
   private val memberInEffect = MutableStateFlow<MemberContext?>(null)
 
-  private val fetchingWhileObserved: SharedFlow<Nothing> = memberIds
-    .retryWhen { throwable, _ ->
-      logcat(LogPriority.WARN, throwable) { "Failed to read the member id for the Unleash context" }
-      emit(null)
-      delay(MEMBER_ID_RETRY_DELAY)
-      true
+  init {
+    coroutineScope.launch {
+      memberIds
+        .retryWhen { throwable, _ ->
+          logcat(LogPriority.WARN, throwable) { "Failed to read the member id for the Unleash context" }
+          emit(null)
+          delay(MEMBER_ID_RETRY_DELAY)
+          true
+        }
+        .collect { memberId -> memberInEffect.value = MemberContext(memberId) }
     }
-    .distinctUntilChanged()
-    .transformLatest<String?, Nothing> { memberId ->
-      memberInEffect.value = MemberContext(memberId)
+  }
+
+  private val fetchingWhileObserved: SharedFlow<Nothing> = memberInEffect
+    .filterNotNull()
+    .transformLatest<MemberContext, Nothing> { member ->
       while (true) {
-        fetch(memberId)
+        fetch(member.memberId)
         delay(pollInterval)
       }
     }
@@ -82,6 +89,10 @@ class JvmUnleashClient internal constructor(
   /**
    * The current value of [feature], falling back to [neverFetchedDefaults] until the client holds fetched toggle
    * state. An absent toggle reads as false.
+   *
+   * This does not require the state to belong to the current member: right after a login, the previous state is a
+   * better answer for most flags than every flag falling back to its default. A read that must be right for the
+   * member first awaits [awaitReady].
    */
   fun valueOf(feature: Feature): Boolean {
     val state = toggleState.value ?: return neverFetchedDefaults[feature] ?: false

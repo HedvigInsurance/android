@@ -24,10 +24,13 @@ import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.withTimeoutOrNull
@@ -140,6 +143,29 @@ class JvmUnleashClientTest {
   }
 
   @Test
+  fun `a member change while nothing observes is not ready on the previous member's toggles`() = runBlocking {
+    val memberIds = MutableStateFlow<String?>("member-1")
+    val engine = MockEngine { request ->
+      if (request.url.parameters["userId"] == "member-2") awaitCancellation()
+      respondToggles("enable_claim_intent_resume")
+    }
+    // Like MemberIdService, which maps over the token store, the member id arrives after subscription, not during it.
+    val client = client(engine, memberIds = memberIds.onEach { delay(50.milliseconds) })
+    val observing = client.featureUpdatedFlow.launchIn(this)
+    withTimeout(5.seconds) { client.awaitReady() }
+    observing.cancel()
+
+    memberIds.value = "member-2"
+    delay(300)
+
+    assertNull(withTimeoutOrNull(1.seconds) { client.awaitReady() })
+    assertFalse(client.hasStateForCurrentMember())
+    // As on Android, a flag read does not wait for the member: the previous member's toggles answer until the new
+    // member's fetch lands.
+    assertTrue(client.valueOf(Feature.ENABLE_CLAIM_INTENT_RESUME))
+  }
+
+  @Test
   fun `nothing is fetched while nothing observes the flags`() = runBlocking {
     val engine = MockEngine { respondToggles() }
     val client = client(engine, pollInterval = 50.milliseconds)
@@ -156,7 +182,7 @@ class JvmUnleashClientTest {
 
   private fun client(
     engine: MockEngine,
-    memberIds: MutableStateFlow<String?> = MutableStateFlow(null),
+    memberIds: Flow<String?> = MutableStateFlow(null),
     pollInterval: Duration = 30.seconds,
   ) = JvmUnleashClient(
     httpClient = HttpClient(engine),
