@@ -220,6 +220,7 @@ dependencies {
   implementation(projects.featureMovingflow)
   implementation(projects.featureMovingflowNavigation)
   implementation(projects.featureOnboarding)
+  implementation(projects.featureOnboardingNavigation)
 
   implementation(projects.featureRemoveAddons)
   implementation(projects.featurePayinAccount)

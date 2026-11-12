@@ -43,6 +43,7 @@ dependencies {
   implementation(projects.featureConnectPaymentTrustlyNavigation)
   implementation(projects.featureEditCoinsuredNavigation)
   implementation(projects.featureFlags)
+  implementation(projects.featureOnboardingNavigation)
   implementation(projects.featurePayinAccountNavigation)
   implementation(projects.foreverUi)
   implementation(projects.moleculePublic)
