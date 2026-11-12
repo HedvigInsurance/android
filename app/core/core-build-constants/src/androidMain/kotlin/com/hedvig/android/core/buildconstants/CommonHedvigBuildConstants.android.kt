@@ -1,3 +1,3 @@
 package com.hedvig.android.core.buildconstants
 
-internal actual val platformName: String = "ANDROID"
+internal actual val defaultPlatformName: String = "ANDROID"

@@ -13,5 +13,9 @@ kotlin {
     androidMain.dependencies {
       implementation(projects.coreResources)
     }
+    jvmTest.dependencies {
+      implementation(libs.coroutines.core)
+      implementation(projects.coreLocale)
+    }
   }
 }
