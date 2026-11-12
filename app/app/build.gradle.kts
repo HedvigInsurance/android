@@ -214,6 +214,7 @@ dependencies {
   implementation(projects.featureImageViewer)
   implementation(projects.featureInsuranceCertificate)
   implementation(projects.featureInsurances)
+  implementation(projects.featureInsurancesNavigation)
   implementation(projects.featureLogin)
   implementation(projects.featureLoginNavigation)
   implementation(projects.featureMovingflow)

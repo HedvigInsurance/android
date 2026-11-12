@@ -39,6 +39,7 @@ dependencies {
   implementation(projects.designSystemHedvig)
   implementation(projects.experimentsPublic)
   implementation(projects.featureFlags)
+  implementation(projects.featureInsurancesNavigation)
   implementation(projects.languageCore)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)
