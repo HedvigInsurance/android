@@ -17,6 +17,7 @@ import dev.zacsweers.metro.SingleIn
 import io.ktor.client.HttpClient
 import java.io.File
 import kotlin.time.Clock
+import kotlinx.datetime.TimeZone
 import okio.Path.Companion.toOkioPath
 
 @ContributesTo(AppScope::class)
@@ -24,6 +25,10 @@ internal interface DesktopMetroProviders {
   @Provides
   @SingleIn(AppScope::class)
   fun provideKotlinClock(): Clock = Clock.System
+
+  @Provides
+  @SingleIn(AppScope::class)
+  fun provideTimeZone(): TimeZone = TimeZone.currentSystemDefault()
 
   @Provides
   @SingleIn(AppScope::class)
