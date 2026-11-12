@@ -32,6 +32,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.scene.Scene
@@ -92,6 +93,13 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import org.jetbrains.compose.resources.stringResource
 
+/**
+ * The app's root composable, rendered by each host.
+ *
+ * [hostEntries] registers the destinations the shared entry provider leaves to the host. A host registers an entry
+ * for every key the shared provider can put on the back stack, or supplies [fallbackEntry], which then renders any key
+ * without a registered entry. Without a [fallbackEntry] such a key throws, which is Navigation 3's default.
+ */
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun HedvigApp(
@@ -119,6 +127,7 @@ fun HedvigApp(
   onboardingGate: OnboardingGate,
   resetOnboardingSeenUseCase: ResetOnboardingSeenUseCase,
   hostEntries: EntryProviderScope<HedvigNavKey>.(HostEntryContext) -> Unit,
+  fallbackEntry: ((HedvigNavKey) -> NavEntry<HedvigNavKey>)? = null,
 ) {
   ReportCurrentDestinationEffect(backstackController, currentDestinationHolder)
   TrackScreenViewEffect(backstackController, eventTrackingClient, screenParameterExtractor)
@@ -221,7 +230,7 @@ fun HedvigApp(
                     popTransitionSpec = popSpec,
                     predictivePopTransitionSpec = { popSpec() },
                     entryProvider = withHedvigContentKeys(
-                      entryProvider {
+                      entryProviderWithFallback(fallbackEntry) {
                         hedvigEntryProvider(
                           backstack = backstackController,
                           scope = scope,
@@ -250,6 +259,16 @@ fun HedvigApp(
       }
     }
   }
+}
+
+/** Builds the entry provider with [fallbackEntry], or with Navigation 3's default fallback when it is null. */
+private fun entryProviderWithFallback(
+  fallbackEntry: ((HedvigNavKey) -> NavEntry<HedvigNavKey>)?,
+  builder: EntryProviderScope<HedvigNavKey>.() -> Unit,
+): (HedvigNavKey) -> NavEntry<HedvigNavKey> = if (fallbackEntry == null) {
+  entryProvider(builder = builder)
+} else {
+  entryProvider(fallback = fallbackEntry, builder = builder)
 }
 
 private fun hedvigTransitionSpec(

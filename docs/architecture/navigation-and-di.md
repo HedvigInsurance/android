@@ -466,6 +466,7 @@ A host gives the shell two things:
 
 - **An `AppHost`**: the URI handler for links that are not ours, the permission rationale check, the store review prompt and a system bars effect. On Android, `AndroidAppHostImpl` implements it over the Activity.
 - **A host entries block**, `hostEntries: EntryProviderScope<HedvigNavKey>.(HostEntryContext) -> Unit`, registering the features whose entries function is still Android-only (`androidHostEntries` in `:app`). `HostEntryContext` carries the dependencies those entries need and closures derived in `hedvigEntryProvider`. A closure that `HostEntryContext` provides is taken from it and never rebuilt by a host; closures the context does not provide are built in the host's entries. When a feature's entries function moves to `commonMain` its registration moves from the host block into `hedvigEntryProvider`, and a context field goes when its last host-side consumer does.
+- **Every reachable key has an entry.** A key on the back stack with no registered entry makes Navigation 3 throw. So a host registers an entry for every key the shared provider can put on the back stack (through its closures, the tab roots, session reconciliation, in-app deep links), or passes `HedvigApp` a `fallbackEntry`, which renders any key without one. Android passes no fallback, so a missing registration still fails loudly there.
 
 Keys the shell's closures construct must be reachable from the shell, so they live in KMP modules: a converted feature, or its `-navigation` module.
 
