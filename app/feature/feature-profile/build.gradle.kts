@@ -43,6 +43,7 @@ dependencies {
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlags)
+  implementation(projects.featureProfileNavigation)
   implementation(projects.languageCore)
   implementation(projects.memberRemindersPublic)
   implementation(projects.memberRemindersUi)
