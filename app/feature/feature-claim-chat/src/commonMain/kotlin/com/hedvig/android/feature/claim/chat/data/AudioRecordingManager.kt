@@ -3,7 +3,7 @@ package com.hedvig.android.feature.claim.chat.data
 import com.hedvig.android.core.fileupload.CommonFile
 
 interface AudioRecordingManager {
-  fun startRecording(onStateUpdate: (AudioRecordingStepState.AudioRecording.Recording) -> Unit)
+  fun startRecording(onStateUpdate: (AudioRecordingStepState.AudioRecording) -> Unit)
 
   fun stopRecording(onStateUpdate: (AudioRecordingStepState.AudioRecording.Playback) -> Unit)
 
