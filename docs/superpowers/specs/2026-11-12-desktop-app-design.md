@@ -182,7 +182,8 @@ Desktop side of each seam:
 | Open URL, email, phone | `java.awt.Desktop` where it applies, otherwise "Not available". |
 | Share sheet | Copies the shared text to the system clipboard. |
 | App settings, Play Store, in-app review | Not available. |
-| File picking and saving (claims, certificates, chat attachments) | Real, native file dialog. |
+| File picking (claims, chat attachments) | Real, native file dialog. |
+| Downloaded PDFs (certificates, claim documents) | Open in the system's PDF viewer. If that fails, a dialog shows where the file was saved. |
 | Camera capture, audio recording | Not available (stubs exist today). |
 | Push notifications and the notification permission prompt | Not applicable. The permission reads as granted, meaning there is nothing to ask for, so no prompt or reminder appears. The Settings notifications row is not shown. |
 | Feature flags | Real values from Unleash if cheap, otherwise static. See "Open risks". |
