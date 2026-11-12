@@ -21,7 +21,6 @@ dependencies {
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.initializable)
-  implementation(projects.testClock)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
@@ -31,4 +30,5 @@ dependencies {
   testImplementation(projects.authCoreTest)
   testImplementation(projects.coreDatastoreTest)
   testImplementation(projects.loggingTest)
+  testImplementation(projects.testClock)
 }

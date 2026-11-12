@@ -5,7 +5,8 @@ import java.net.URI
 
 /**
  * Hands calls and email to the operating system. App settings and the Play Store do not exist on desktop, so those
- * show a notice instead.
+ * show a notice instead. The desktop app reports the version of the checkout it was built from, so the way to update
+ * it is to update the checkout.
  */
 internal class DesktopExternalNavigator(
   private val desktopIntegration: DesktopIntegration = AwtDesktopIntegration,
@@ -16,7 +17,10 @@ internal class DesktopExternalNavigator(
   }
 
   override fun tryOpenPlayStore() {
-    showNotice("The Play Store is not available on desktop.")
+    showNotice(
+      "This desktop build is out of date. Update your checkout of the Android repository and start the app again " +
+        "with ./gradlew :app-desktop:run.",
+    )
   }
 
   override fun tryToDialPhone(number: String) {
