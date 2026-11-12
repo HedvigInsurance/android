@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.locale.previewCommonLocale
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -45,7 +46,6 @@ import hedvig.resources.Res
 import hedvig.resources.general_continue_button
 import hedvig.resources.travel_certificate_start_date_title
 import hedvig.resources.travel_certificate_when_is_your_trip
-import java.util.Locale
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 
@@ -236,7 +236,7 @@ private class ChooseInsuranceForAddonUiStateProvider :
         "id",
         "emaild",
         hasCoInsured = false,
-        datePickerState = HedvigDatePickerState(Locale.ENGLISH, null, null, 2020..2024, HedvigDisplayMode.Picker),
+        datePickerState = HedvigDatePickerState(previewCommonLocale, null, null, 2020..2024, HedvigDisplayMode.Picker),
         travelDate = LocalDate(2023, 1, 1),
         daysValid = 40,
         errorMessageRes = null,
