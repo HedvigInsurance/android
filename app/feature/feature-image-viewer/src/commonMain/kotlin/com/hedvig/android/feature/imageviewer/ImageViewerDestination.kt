@@ -1,7 +1,5 @@
 package com.hedvig.android.feature.imageviewer
 
-import android.graphics.Canvas as AndroidCanvas
-import android.graphics.Color as AndroidColor
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -21,17 +19,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.createBitmap
 import androidx.lifecycle.compose.dropUnlessResumed
 import coil3.Bitmap
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.transformations
 import coil3.size.Size
@@ -73,7 +70,7 @@ internal fun ImageViewerDestination(
     ) {
       AsyncImage(
         imageLoader = imageLoader,
-        model = ImageRequest.Builder(LocalContext.current)
+        model = ImageRequest.Builder(LocalPlatformContext.current)
           .data(imageUrl)
           .transformations(WhiteBackgroundTransformation())
           .diskCacheKey(cacheKey)
@@ -134,17 +131,10 @@ internal fun ImageViewerDestination(
 class WhiteBackgroundTransformation : Transformation() {
   override val cacheKey = "white_background"
 
-  override suspend fun transform(input: Bitmap, size: Size): Bitmap {
-    // Without an alpha channel there is no transparency for the white background to show through, so compositing
-    // would allocate a second full-size copy of a visually identical image.
-    if (!input.hasAlpha()) return input
-    val output = createBitmap(input.width, input.height)
-    val canvas = AndroidCanvas(output)
-    canvas.drawColor(AndroidColor.WHITE)
-    canvas.drawBitmap(input, 0f, 0f, null)
-    return output
-  }
+  override suspend fun transform(input: Bitmap, size: Size): Bitmap = input.onWhiteBackground()
 }
+
+internal expect fun Bitmap.onWhiteBackground(): Bitmap
 
 @HedvigPreview
 @Composable
