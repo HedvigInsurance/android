@@ -91,7 +91,7 @@ internal fun AddFilesDestination(
     onContinue = viewModel::uploadFiles,
     onRemove = viewModel::onRemoveFile,
     onDismissError = viewModel::dismissError,
-    launchTakePhotoRequest = photoCaptureState::launchTakePhotoRequest,
+    launchTakePhotoRequest = if (photoCaptureState.isAvailable) photoCaptureState::launchTakePhotoRequest else null,
     onPickPhoto = { photoPicker.launch() },
     onPickFile = { filePicker.launch() },
     onNavigateToImageViewer = onNavigateToImageViewer,
@@ -106,7 +106,7 @@ private fun AddFilesScreen(
   onContinue: () -> Unit,
   onRemove: (String) -> Unit,
   onDismissError: () -> Unit,
-  launchTakePhotoRequest: () -> Unit,
+  launchTakePhotoRequest: (() -> Unit)?,
   onPickPhoto: () -> Unit,
   onPickFile: () -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
@@ -122,9 +122,11 @@ private fun AddFilesScreen(
       onPickFile()
       fileTypeSelectBottomSheetState.dismiss()
     },
-    onTakePhoto = {
-      launchTakePhotoRequest()
-      fileTypeSelectBottomSheetState.dismiss()
+    onTakePhoto = launchTakePhotoRequest?.let {
+      {
+        launchTakePhotoRequest()
+        fileTypeSelectBottomSheetState.dismiss()
+      }
     },
   )
 

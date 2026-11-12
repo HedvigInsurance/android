@@ -5,6 +5,7 @@ import com.hedvig.android.logger.LogcatLogger
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import org.junit.Rule
 
 class CameraUnavailablePhotoCaptureStateTest {
@@ -18,6 +19,11 @@ class CameraUnavailablePhotoCaptureStateTest {
     CameraUnavailablePhotoCaptureState.launchTakePhotoRequest()
 
     assertEquals(listOf(LogPriority.WARN), recordingLogger.priorities)
+  }
+
+  @Test
+  fun `taking a photo is reported as unavailable`() {
+    assertFalse(CameraUnavailablePhotoCaptureState.isAvailable)
   }
 }
 

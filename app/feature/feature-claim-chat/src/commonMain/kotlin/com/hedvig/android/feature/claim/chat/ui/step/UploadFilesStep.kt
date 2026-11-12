@@ -205,9 +205,13 @@ private fun UploadFilesBubble(
       filePicker.launch()
       fileTypeSelectBottomSheetState.dismiss()
     },
-    onTakePhoto = {
-      photoCaptureState.launchTakePhotoRequest()
-      fileTypeSelectBottomSheetState.dismiss()
+    onTakePhoto = if (photoCaptureState.isAvailable) {
+      {
+        photoCaptureState.launchTakePhotoRequest()
+        fileTypeSelectBottomSheetState.dismiss()
+      }
+    } else {
+      null
     },
   )
   UploadFilesBubbleContent(
@@ -275,7 +279,7 @@ private fun FilePickerBottomSheet(
   sheetState: HedvigBottomSheetState<Unit>,
   onPickPhoto: () -> Unit,
   onPickFile: () -> Unit,
-  onTakePhoto: () -> Unit,
+  onTakePhoto: (() -> Unit)?,
 ) {
   HedvigBottomSheet(
     sheetState,
@@ -292,7 +296,7 @@ private fun FilePickerBottomSheet(
 @Composable
 private fun FilePickerBottomSheetContent(
   onPickPhoto: () -> Unit,
-  onTakePhoto: () -> Unit,
+  onTakePhoto: (() -> Unit)?,
   onPickFile: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -302,16 +306,18 @@ private fun FilePickerBottomSheetContent(
     Column(
       verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-      HedvigButton(
-        onClick = onTakePhoto,
-        true,
-        modifier = Modifier.fillMaxWidth(),
-        buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
-      ) {
-        Row {
-          Icon(HedvigIcons.Camera, null)
-          Spacer(Modifier.width(8.dp))
-          HedvigText(stringResource(Res.string.file_upload_take_photo))
+      if (onTakePhoto != null) {
+        HedvigButton(
+          onClick = onTakePhoto,
+          true,
+          modifier = Modifier.fillMaxWidth(),
+          buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
+        ) {
+          Row {
+            Icon(HedvigIcons.Camera, null)
+            Spacer(Modifier.width(8.dp))
+            HedvigText(stringResource(Res.string.file_upload_take_photo))
+          }
         }
       }
       HedvigButton(

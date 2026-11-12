@@ -47,6 +47,8 @@ class PhotoCaptureStateImpl internal constructor(
 
   internal var launcher: ActivityResultLauncher<Uri>? = null
 
+  override val isAvailable: Boolean = true
+
   override fun launchTakePhotoRequest() {
     val newPhotoFile: File = createFileInExternalPhotosDirectory(
       "JPEG_${System.currentTimeMillis()}.jpg",
@@ -76,6 +78,8 @@ actual fun rememberPhotoCaptureState(
 ): PhotoCaptureState {
   if (LocalInspectionMode.current) {
     return object : PhotoCaptureState {
+      override val isAvailable: Boolean = true
+
       override fun launchTakePhotoRequest() {
       }
     }
