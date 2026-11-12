@@ -53,7 +53,7 @@ import kotlinx.coroutines.launch
 /**
  * Registers every in-app destination on the [EntryProviderScope]: the entries of features every host can
  * render here, the rest through [hostEntries]. Decomposed into per-domain sub-builders so each tab/flow's
- * wiring is readable in isolation; the cross-feature `navigateToX` closures are derived once here and
+ * wiring is readable in isolation. The shared cross-feature `navigateToX` closures are derived once here and
  * threaded down to the sub-builders that need them, and to [hostEntries] through [HostEntryContext]. All
  * wiring stays out of the features because feature `*Key`s live in feature *impl* modules and the
  * feature-isolation build rule blocks one feature from referencing another's key.
@@ -154,7 +154,6 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
       hedvigBuildConstants = hedvigBuildConstants,
       openUrl = openUrl,
       openCrossSellUrl = openCrossSellUrl,
-      shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
       navigateToTrustly = navigateToTrustly,
       navigateToPayinAccount = navigateToPayinAccount,
       navigateToPayoutAccount = navigateToPayoutAccount,
@@ -173,10 +172,10 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
 }
 
 /**
- * What [hedvigEntryProvider] hands to the host's own entries: the dependencies and the cross-feature
- * navigation closures that the entries of features only the host can render need. Host entries take every
- * closure from here and never derive their own, so each one exists exactly once. A field is removed when
- * its last host-side consumer moves into the shared provider.
+ * What [hedvigEntryProvider] hands to the host's own entries: the dependencies those entries need and the
+ * cross-feature closures derived once in [hedvigEntryProvider]. Host entries take these closures from here
+ * instead of building their own; closures to any other destination are built in the host block. A field is
+ * removed when its last host-side consumer moves into the shared provider.
  */
 class HostEntryContext internal constructor(
   val backstack: BackstackController,
@@ -189,7 +188,6 @@ class HostEntryContext internal constructor(
   val hedvigBuildConstants: HedvigBuildConstants,
   val openUrl: (String) -> Unit,
   val openCrossSellUrl: (String) -> Boolean,
-  val shouldShowRequestPermissionRationale: (String) -> Boolean,
   val navigateToTrustly: () -> Unit,
   val navigateToPayinAccount: () -> Unit,
   val navigateToPayoutAccount: () -> Unit,

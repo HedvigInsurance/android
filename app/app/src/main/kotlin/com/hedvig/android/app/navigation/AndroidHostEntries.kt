@@ -42,7 +42,6 @@ import com.hedvig.android.feature.profile.navigation.UsageDataKey
 import com.hedvig.android.feature.profile.tab.profileEntries
 import com.hedvig.android.feature.remove.addons.RemoveAddonsKey
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceKey
-import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateKey
 import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateEntries
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
@@ -72,7 +71,6 @@ internal fun EntryProviderScope<HedvigNavKey>.androidHostEntries(context: HostEn
   addHomeEntries(
     backstack = context.backstack,
     hedvigBuildConstants = context.hedvigBuildConstants,
-    shouldShowRequestPermissionRationale = context.shouldShowRequestPermissionRationale,
     externalNavigator = context.externalNavigator,
     imageLoader = context.imageLoader,
     openUrl = context.openUrl,
@@ -83,9 +81,7 @@ internal fun EntryProviderScope<HedvigNavKey>.androidHostEntries(context: HostEn
     navigateToInbox = context.navigateToInbox,
     navigateToPayinAccount = context.navigateToPayinAccount,
     navigateToPayoutAccount = context.navigateToPayoutAccount,
-    navigateToTravelCertificate = context.navigateToTravelCertificate,
     navigateToAddonPurchaseFlow = context.navigateToAddonPurchaseFlow,
-    navigateToMovingFlow = context.navigateToMovingFlow,
   )
   addInsuranceEntries(
     backstack = context.backstack,
@@ -118,6 +114,7 @@ internal fun EntryProviderScope<HedvigNavKey>.androidHostEntries(context: HostEn
     navigateToPayinAccount = context.navigateToPayinAccount,
     navigateToPayoutAccount = context.navigateToPayoutAccount,
     navigateToNewConversation = context.navigateToNewConversation,
+    navigateToTravelCertificate = context.navigateToTravelCertificate,
     onResetOnboardingForDebug = context.onResetOnboardingForDebug,
   )
   addChatEntries(
@@ -164,7 +161,6 @@ private fun EntryProviderScope<HedvigNavKey>.addLoginEntries(
 private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
   backstack: BackstackController,
   hedvigBuildConstants: HedvigBuildConstants,
-  shouldShowRequestPermissionRationale: (String) -> Boolean,
   externalNavigator: ExternalNavigator,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
@@ -175,9 +171,7 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
   navigateToInbox: () -> Unit,
   navigateToPayinAccount: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
-  navigateToTravelCertificate: () -> Unit,
   navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
-  navigateToMovingFlow: (MovingSource) -> Unit,
 ) {
   homeEntries(
     nestedEntries = {
@@ -367,6 +361,7 @@ private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
   navigateToPayinAccount: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
   navigateToNewConversation: () -> Unit,
+  navigateToTravelCertificate: () -> Unit,
   onResetOnboardingForDebug: () -> Unit,
 ) {
   profileEntries(
@@ -384,7 +379,7 @@ private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
     navigateToClaimHistory = { backstack.add(ClaimHistoryKey) },
     openAppSettings = externalNavigator::openAppSettings,
     onNavigateToNewConversation = navigateToNewConversation,
-    onNavigateToTravelCertificate = { backstack.add(TravelCertificateKey) },
+    onNavigateToTravelCertificate = navigateToTravelCertificate,
     onNavigateToInsuranceEvidence = { backstack.add(InsuranceEvidenceKey) },
     openUrl = openUrl,
     openPrivacyPolicy = openPrivacyPolicy,
