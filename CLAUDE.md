@@ -744,7 +744,7 @@ resolved when Unleash has never been fetched, and when a never-fetched default i
 To add a new flag:
 1. Add the enum value to `Feature` (commonMain), named to mirror its Unleash key polarity
    (`ENABLE_X` for `enable_x`, `DISABLE_X` for `disable_x`), with a short explanation.
-2. Map it to its raw Unleash key in `Feature.unleashKey` (androidMain).
+2. Map it to its raw Unleash key in `Feature.unleashKey` (commonMain).
 3. `UnleashFeatureFlagProvider` needs no change — every flag resolves through
    `HedvigUnleashClient.valueOf(feature)`. At the read site, use the value directly for a
    positive flag, or invert it (`if (!disableX)`) for a kill switch.
@@ -753,7 +753,7 @@ To add a new flag:
 what the flag should resolve to when it has *never been fetched* (offline first launch /
 fresh install before the first poll returns). If the natural polarity default is
 acceptable, do nothing. If a rollout needs the opposite default, add an entry to
-`neverFetchedDefaults` in `HedvigUnleashClient`. Never default an app-gating flag (e.g.
+`neverFetchedDefaults` in `UnleashSettings.kt`. Never default an app-gating flag (e.g.
 `UPDATE_NECESSARY`) into its blocking state — that can brick the app for offline users.
 
 **Never pass `bootstrap` to `client.start(...)`.** It is the SDK's own seeding mechanism and
