@@ -19,29 +19,31 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MutablePermissionState
 import com.google.accompanist.permissions.PermissionLifecycleCheckerEffect
-import com.google.accompanist.permissions.PermissionState
-import com.google.accompanist.permissions.PermissionStatus
-import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.PermissionState as AccompanistPermissionState
+import com.google.accompanist.permissions.PermissionStatus as AccompanistPermissionStatus
+import com.google.accompanist.permissions.isGranted as accompanistIsGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.permissions.shouldShowRationale
-import com.hedvig.android.design.system.hedvig.PermissionDialog
-import hedvig.resources.CLAIMS_ACTIVATE_NOTIFICATIONS_BODY
-import hedvig.resources.Res
-import org.jetbrains.compose.resources.stringResource
-
-interface NotificationPermissionState : PermissionState {
-  val showDialog: Boolean
-
-  fun dismissDialog()
-}
 
 private class NotificationPermissionStateImpl(
-  private val permissionState: PermissionState,
-) : NotificationPermissionState, PermissionState by permissionState {
+  private val permissionState: AccompanistPermissionState,
+) : NotificationPermissionState {
   private var _showDialog by mutableStateOf(false)
+
+  override val permission: String
+    get() = permissionState.permission
+
+  override val status: PermissionStatus
+    get() = when (val status = permissionState.status) {
+      AccompanistPermissionStatus.Granted -> PermissionStatus.Granted
+      is AccompanistPermissionStatus.Denied -> PermissionStatus.Denied(status.shouldShowRationale)
+    }
 
   override val showDialog: Boolean
     get() = _showDialog
+
+  override fun launchPermissionRequest() {
+    permissionState.launchPermissionRequest()
+  }
 
   override fun dismissDialog() {
     _showDialog = false
@@ -59,7 +61,7 @@ private class NotificationPermissionStateImpl(
  */
 @SuppressLint("InlinedApi")
 @Composable
-fun rememberNotificationPermissionState(onNotificationGranted: () -> Unit = {}): NotificationPermissionState {
+actual fun rememberNotificationPermissionState(onNotificationGranted: () -> Unit): NotificationPermissionState {
   val context = LocalContext.current
   val activity = LocalActivity.current
   val permissionState = remember {
@@ -87,43 +89,13 @@ fun rememberNotificationPermissionState(onNotificationGranted: () -> Unit = {}):
   return notificationPermissionState
 }
 
-@Composable
-fun NotificationPermissionDialog(
-  notificationPermissionState: NotificationPermissionState,
-  openAppSettings: () -> Unit,
-) {
-  if (notificationPermissionState.showDialog) {
-    PermissionDialog(
-      permissionDescription = stringResource(Res.string.CLAIMS_ACTIVATE_NOTIFICATIONS_BODY),
-      isPermanentlyDeclined = !notificationPermissionState.status.shouldShowRationale,
-      onDismiss = notificationPermissionState::dismissDialog,
-      okClick = notificationPermissionState::launchPermissionRequest,
-      openAppSettings = openAppSettings,
-    )
-  }
-}
-
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun rememberNotificationPermissionStatus(): Boolean {
+actual fun rememberNotificationPermissionStatus(): Boolean {
   val isPreview = LocalInspectionMode.current
   return if (!isPreview && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-    rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS).status.isGranted
+    rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS).status.accompanistIsGranted
   } else {
     true
   }
-}
-
-fun rememberPreviewNotificationPermissionState(
-  permissionStatus: PermissionStatus = PermissionStatus.Granted,
-  isDialogShowing: Boolean = false,
-): NotificationPermissionState = object : NotificationPermissionState {
-  override val showDialog: Boolean = isDialogShowing
-
-  override fun dismissDialog() {}
-
-  override val permission: String = ""
-  override val status: PermissionStatus = permissionStatus
-
-  override fun launchPermissionRequest() {}
 }
