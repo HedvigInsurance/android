@@ -1,5 +1,7 @@
 package com.hedvig.android.navigation.compose
 
+import kotlin.jvm.JvmInline
+
 @JvmInline
 value class NavigationSuiteType private constructor(
   private val description: String,
