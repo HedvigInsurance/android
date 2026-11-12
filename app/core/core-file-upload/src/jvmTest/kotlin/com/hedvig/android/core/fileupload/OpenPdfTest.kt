@@ -1,7 +1,8 @@
 package com.hedvig.android.core.fileupload
 
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.LogcatLogger
 import com.hedvig.android.logger.TestLogcatLoggingRule
-import java.awt.GraphicsEnvironment
 import java.io.File
 import java.io.IOException
 import kotlin.io.path.createTempDirectory
@@ -12,8 +13,10 @@ import kotlin.test.assertTrue
 import org.junit.Rule
 
 class OpenPdfTest {
+  private val recordingLogger = RecordingLogcatLogger()
+
   @get:Rule
-  val testLogcatLogger = TestLogcatLoggingRule()
+  val testLogcatLogger = TestLogcatLoggingRule(recordingLogger)
 
   private val directory = createTempDirectory("open-pdf-test").toFile()
   private val pdf = File(directory, "certificate.pdf").apply { writeBytes(byteArrayOf(1, 2, 3)) }
@@ -105,9 +108,46 @@ class OpenPdfTest {
   }
 
   @Test
-  fun `the default failure report only logs when there is no screen`() {
-    assertTrue(GraphicsEnvironment.isHeadless())
+  fun `an IllegalArgumentException from the viewer launch is reported, not thrown`() {
+    assertOpenFailureIsReported(IllegalArgumentException("not a file"))
+  }
 
-    openPdf(file = File(directory, "missing.pdf"))
+  @Test
+  fun `the failure report logs a warning and shows no dialog when there is no screen`() {
+    val dialogMessages = mutableListOf<String>()
+
+    reportOpenPdfFailure(
+      file = pdf,
+      cause = null,
+      isHeadless = { true },
+      showDialog = { dialogMessages.add(it) },
+    )
+
+    assertTrue(dialogMessages.isEmpty())
+    assertEquals(listOf(LogPriority.WARN), recordingLogger.priorities)
+  }
+
+  @Test
+  fun `the failure report shows one dialog with the file's path when there is a screen`() {
+    val dialogMessages = mutableListOf<String>()
+
+    reportOpenPdfFailure(
+      file = pdf,
+      cause = null,
+      isHeadless = { false },
+      showDialog = { dialogMessages.add(it) },
+    )
+
+    assertEquals(1, dialogMessages.size)
+    assertTrue(dialogMessages.single().contains(pdf.absolutePath))
+    assertEquals(listOf(LogPriority.WARN), recordingLogger.priorities)
+  }
+}
+
+private class RecordingLogcatLogger : LogcatLogger {
+  val priorities = mutableListOf<LogPriority>()
+
+  override fun log(priority: LogPriority, throwable: Throwable?, tag: String?, message: () -> String) {
+    priorities.add(priority)
   }
 }
