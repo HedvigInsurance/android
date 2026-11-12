@@ -93,7 +93,6 @@ import arrow.core.nonEmptyListOf
 import arrow.core.toNonEmptyListOrNull
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
-import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.pager.indicator.CardCarousel
 import com.hedvig.android.compose.ui.LocalClock
 import com.hedvig.android.compose.ui.dropUnlessResumed
@@ -209,6 +208,7 @@ import com.hedvig.android.memberreminders.ui.homeInformationalReminders
 import com.hedvig.android.memberreminders.ui.missingPayinMethodReminder
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState
+import com.hedvig.android.notification.permission.isGranted
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
 import com.hedvig.android.notification.permission.rememberPreviewNotificationPermissionState
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
