@@ -1,5 +1,6 @@
 package com.hedvig.android.auth
 
+import com.benasher44.uuid.uuid4
 import com.hedvig.android.auth.token.isTokenExpired
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.LogPriority
@@ -7,7 +8,6 @@ import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
-import java.util.UUID
 import kotlin.time.Clock
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -22,7 +22,7 @@ internal class AndroidAccessTokenProvider(
   private val mutex = Mutex()
 
   override suspend fun provide(): String? {
-    val requestId = "#${UUID.randomUUID().toString().takeLast(6)}"
+    val requestId = "#${uuid4().toString().takeLast(6)}"
     val accessToken = (authTokenService.authStatus.value as? AuthStatus.LoggedIn)?.accessToken
     logcat(LogPriority.VERBOSE) { "$requestId Got accessToken: $accessToken" }
     if (accessToken?.expiryDate?.isTokenExpired(clock)?.not() == true) {
