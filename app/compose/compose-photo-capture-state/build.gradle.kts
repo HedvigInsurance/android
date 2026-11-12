@@ -18,5 +18,9 @@ kotlin {
       implementation(libs.androidx.activity.compose)
       implementation(libs.androidx.activity.core)
     }
+    jvmTest.dependencies {
+      implementation(libs.junit)
+      implementation(projects.loggingTest)
+    }
   }
 }
