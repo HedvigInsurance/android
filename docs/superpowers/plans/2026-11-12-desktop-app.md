@@ -201,14 +201,41 @@ Tasks 3 to 10 each apply the Conversion Recipe. Only module specifics are listed
 - `M` = `forever-ui`, `D` = `app/shared/forever-ui`. Three files use `Intent`/`Context`/`Uri` to share the referral code.
 - Seam: before adding one, search `commonMain` across the repo for an existing share or external-navigation abstraction and use it if it exists. Otherwise add `expect fun rememberShareHandler(): (text: String) -> Unit`-shaped seam local to this module; `androidMain` is today's `Intent` code, `jvmMain` copies the text to the system clipboard.
 
+### Task 6a: Email validation callable from `commonMain`
+
+Three feature modules (`feature-insurance-certificate`, `feature-travel-certificate`, `feature-login`) validate emails from presenter code that must move to `commonMain`, but the only validator lives in `androidMain` of `:core-common-public` and uses `androidx.core.util.PatternsCompat`. This task makes the boolean check available in `commonMain` with zero behaviour change on Android.
+
+**Files:**
+- Modify: `app/core/core-common-public/src/androidMain/kotlin/com/hedvig/core/common/android/validation/ValidateEmail.kt`
+- Create: `app/core/core-common-public/src/commonMain/kotlin/com/hedvig/core/common/android/validation/IsValidEmail.kt`
+- Create: the `jvmMain` actual, and a `nativeMain` actual if the module has iOS targets, in the same package
+- Test: `app/core/core-common-public/src/commonTest/kotlin/com/hedvig/core/common/android/validation/IsValidEmailTest.kt` (or `jvmTest` if the module has no `commonTest` setup)
+
+**Interfaces:**
+- Produces: `expect fun isValidEmail(email: String): Boolean` in `commonMain`, package `com.hedvig.core.common.android.validation` (package unchanged, so existing Android imports keep working).
+- `androidMain` actual: today's body, `email.isNotBlank() && PatternsCompat.EMAIL_ADDRESS.matcher(email).matches()`, unchanged. `validateEmail(email: CharSequence): ValidationResult` stays in `androidMain`, unchanged.
+- `jvmMain` and `nativeMain` actuals: `email.isNotBlank()` and a full match against a `Regex` built from the exact pattern string of `PatternsCompat.EMAIL_ADDRESS` (copy it from the androidx.core source in the Gradle cache or the artifact's sources jar; do not write a pattern from memory). The pattern string lives once, in a `commonMain` `internal` declaration both actuals use.
+- No caller is changed in this task.
+
+- [ ] **Step 1: Write the failing test** with at least these cases, asserting `isValidEmail`:
+  - true: `a@b.co`, `first.last@example.com`, `user+tag@sub.example.org`, `USER_1%x-y@example-domain.se`
+  - false: empty string, three spaces, `plainaddress`, `@example.com`, `user@`, `user@example`, `user name@example.com`, ` user@example.com` (leading space), `user@example.com ` (trailing space), `user@@example.com`
+  Before finalising the expected values, check each case against the copied pattern by reading it; if any expectation above is wrong for that exact pattern, correct the expectation and say so in the report. The pattern is the authority, not this list.
+- [ ] **Step 2: Run it.** Expected: FAIL, `isValidEmail` unresolved in `commonMain`.
+- [ ] **Step 3: Implement** the `expect`, the actuals and the shared pattern string.
+- [ ] **Step 4: Run** `./gradlew :core-common-public:jvmTest` (and the iOS simulator test task if the module has iOS targets and `commonTest`). Expected: PASS.
+- [ ] **Step 5: Run** `./gradlew :core-common-public:compileAndroidMain :app:assembleDebug :core-common-public:ktlintFormat`. Expected: BUILD SUCCESSFUL.
+- [ ] **Step 6: Commit.**
+
 ### Task 7: `feature-insurance-certificate`
 
-- `M` = `feature-insurance-certificate`, `D` = `app/feature/feature-insurance-certificate`. One file uses `java.io.File`.
+- After Task 6a. `M` = `feature-insurance-certificate`, `D` = `app/feature/feature-insurance-certificate`. One file uses `java.io.File`; the email presenter calls `validateEmail(email).isSuccessful`, which becomes `isValidEmail(email)` from Task 6a.
+- `InsuranceEvidenceEntries.kt` stays in `androidMain` because it shares the PDF through `LocalContext` and `Context.sharePDF`. It is swept in Task 24 once a share-PDF seam exists.
 - Seam: use the file abstraction already in `:core-file-upload` `commonMain` (`JvmFile`/`JvmDownloadPdfUseCaseImpl` exist on the JVM side). Do not add a new one.
 
 ### Task 8: `feature-travel-certificate`
 
-- `M` = `feature-travel-certificate`, `D` = `app/feature/feature-travel-certificate`. Platform code: `java.io.File` (2 files), `java.util.Locale` (1), `android.R.attr` (1).
+- After Task 6a (email validation, as Task 7). Entries that call `Context.sharePDF` stay in `androidMain` as in Task 7. `M` = `feature-travel-certificate`, `D` = `app/feature/feature-travel-certificate`. Platform code: `java.io.File` (2 files), `java.util.Locale` (1), `android.R.attr` (1).
 - `File`: as Task 7. `Locale`: use `:core-locale` `commonMain`. `android.R.attr`: replace with the Compose equivalent already used elsewhere in the module, with no visual change; if none exists, keep that one file in `androidMain` and report it.
 
 ### Task 9: `feature-payin-account`
@@ -350,6 +377,9 @@ Conversion Recipe for each, plus removing that feature's entries from both hosts
 ### Task 23: `feature-chat`, `feature-connect-payment-trustly`
 - `feature-chat`: Room and paging from `commonMain` (paging-compose 3.5.3 publishes desktop and iOS variants); `database-android`'s builder gets a `jvmMain` sibling using the bundled SQLite driver; media3 playback behind a seam with `NotAvailableOnDesktop()` on JVM; attachments through the file picker seam. If the message list cannot be shared without restructuring the presenter, stop and bring it to Stylianos as a skip-rule decision.
 - `feature-connect-payment-trustly`: screens and presenters to `commonMain`; the web view step becomes a module-local `expect` composable whose `androidMain` actual is today's `WebView(...)` call with `TrustlyWebView` and its clients, and whose `jvmMain` actual is `NotAvailableOnDesktop()`. Report as a skip.
+
+### Task 23a: Share-PDF seam and the JVM PDF download
+- `Context.sharePDF(file, applicationId)` in `:core-common-public` `androidMain` is called from the entries of `feature-insurance-certificate`, `feature-travel-certificate` and `feature-claim-details`. Add a seam those entries can call from `commonMain`; `androidMain` is today's code, `jvmMain` opens the file with `java.awt.Desktop.open`. Implement `JvmDownloadPdfUseCaseImpl` (currently `TODO()`) and bind it in `jvmMain`.
 
 ### Task 24: Entries sweep
 - Every file the ledger lists under "Left in `androidMain`" because of `:navigation-compose` moves to `commonMain`. One commit per module. Recipe steps 4, 6, 7, 8.
