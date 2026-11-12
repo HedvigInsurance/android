@@ -261,7 +261,7 @@ Never hold a long-lived reference to `entries` snapshot contents; mutate through
 
 ### Dependency Injection
 
-**Registering destinations.** Each feature exposes a `fun EntryProviderScope<HedvigNavKey>.featureEntries(...)` that calls `entry<Key> { }` for each of its screens. `hedvigEntryProvider` in `:app-shell` calls those of features every host can render and takes the rest from the host's block (`androidHostEntries` in `:app`). Cross-feature navigation is done with `navigateToX` lambdas passed into each feature's entries function: closures shared by the shell are derived once in `hedvigEntryProvider` (host entries receive them through `HostEntryContext`), and closures to destinations only host-registered features navigate to are built in `androidHostEntries`. Features never import each other's keys.
+**Registering destinations.** Each feature exposes a `fun EntryProviderScope<HedvigNavKey>.featureEntries(...)` that calls `entry<Key> { }` for each of its screens. `hedvigEntryProvider` in `:app-shell` calls those of features every host can render and takes the rest from the host's block (`androidHostEntries` in `:app`). Cross-feature navigation is done with `navigateToX` lambdas passed into each feature's entries function by `hedvigEntryProvider` or by the host's entries (`androidHostEntries`). A closure that `HostEntryContext` provides is taken from it and never rebuilt by a host; closures the context does not provide are built in the host's entries. Features never import each other's keys.
 
 ```kotlin
 fun EntryProviderScope<HedvigNavKey>.insuranceEntries(backstack: Backstack, /* navigateToX lambdas */) {
@@ -280,7 +280,7 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEntries(backstack: Backstack, /* n
 - `BackstackController.kt` (`:app-shell`): per-Activity controller (owned by `NavRetainedViewModel`, a retained `ViewModel`; survives config changes, dies with its Activity), owns all nav state, tab switching, login/logout stash, deep-link landing, Up.
 - `NavigationStateBridge.kt` (`:app`): the single seam between Activity lifecycle and the controller (seed/restore/persist + escape-to-own-task handoff).
 - `SessionReconciler.kt` (`:app-shell`): auth↔back-stack reconciliation; gates the splash via `isReady`; forced logout.
-- `HedvigEntryProvider.kt` (`:app-shell`): destination registration for every host and the shared cross-feature lambda wiring; `AndroidHostEntries.kt` (`:app`) registers the Android-only rest and builds the closures only those entries use.
+- `HedvigEntryProvider.kt` (`:app-shell`): destination registration for every host and the shared cross-feature lambda wiring; `AndroidHostEntries.kt` (`:app`) registers the Android-only rest, taking every closure `HostEntryContext` provides from it and building only the ones it does not provide.
 
 **Critical Metro KMP rule — never put a platform-overridable `@ContributesBinding` default in `commonMain`:**
 
@@ -726,7 +726,7 @@ dependencies {
 2. Register it: `entry<{Name}Key> { key -> ... }` in the feature's entries function.
 3. Resolve the ViewModel with `metroViewModel()` / `assistedMetroViewModel(...)`.
 4. Ensure the module has `navKeys()` so the key survives process death.
-5. For cross-feature entry, thread a `navigateToX` lambda from `hedvigEntryProvider` (or from `androidHostEntries`, when only host-registered features use it) rather than importing the key.
+5. For cross-feature entry, pass a `navigateToX` lambda in from where the entries function is called (`hedvigEntryProvider`, or the host's entries, which take it from `HostEntryContext` when the context provides it) rather than importing the key.
 
 ### Adding a New GraphQL Query
 
