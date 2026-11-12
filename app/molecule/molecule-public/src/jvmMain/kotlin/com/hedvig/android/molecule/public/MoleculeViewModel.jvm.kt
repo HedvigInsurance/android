@@ -9,18 +9,18 @@ import kotlinx.coroutines.delay
  * [Dispatchers.Main] on the JVM carries no [MonotonicFrameClock], which `RecompositionMode.ContextClock` requires, so
  * one is added here.
  */
-internal actual val mainDispatcher: CoroutineContext = Dispatchers.Main + FixedRateFrameClock
+internal actual val mainDispatcher: CoroutineContext = Dispatchers.Main + DelayFrameClock
 
 /**
- * Hands out a frame every 16 ms, close to the 60 Hz cadence the Android and iOS display clocks give. The wait is a
- * [delay], so it runs on the frame's dispatcher (the Swing timer in a desktop app, virtual time under a test
- * dispatcher) and needs no UI window to exist.
+ * Completes each frame request 16 ms after it is made, and produces no frames while nobody asks for one. Every
+ * Recomposer waits on its own request, so frames of different ViewModels are not aligned with each other. The wait is a
+ * [delay] on the frame's dispatcher, so no UI window needs to exist.
  */
-private object FixedRateFrameClock : MonotonicFrameClock {
+private object DelayFrameClock : MonotonicFrameClock {
   override suspend fun <R> withFrameNanos(onFrame: (frameTimeNanos: Long) -> R): R {
-    delay(FRAME_DURATION_MILLIS)
+    delay(FRAME_DELAY_MILLIS)
     return onFrame(System.nanoTime())
   }
 
-  private const val FRAME_DURATION_MILLIS = 16L
+  private const val FRAME_DELAY_MILLIS = 16L
 }

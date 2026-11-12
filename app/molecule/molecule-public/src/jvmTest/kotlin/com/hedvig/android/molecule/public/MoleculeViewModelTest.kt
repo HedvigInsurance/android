@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModelStore
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
@@ -30,12 +31,18 @@ class MoleculeViewModelTest {
 
   @Test
   fun `the presenter emits a new state after an event`() = runTest {
+    val viewModelStore = ViewModelStore()
     val viewModel = CounterViewModel()
-
-    viewModel.uiState.test {
-      assertThat(awaitItem()).isEqualTo(0)
-      viewModel.emit(CounterEvent.Increment)
-      assertThat(awaitItem()).isEqualTo(1)
+    viewModelStore.put("counter", viewModel)
+    try {
+      viewModel.uiState.test {
+        assertThat(awaitItem()).isEqualTo(-1)
+        assertThat(awaitItem()).isEqualTo(0)
+        viewModel.emit(CounterEvent.Increment)
+        assertThat(awaitItem()).isEqualTo(1)
+      }
+    } finally {
+      viewModelStore.clear()
     }
   }
 }
@@ -45,14 +52,14 @@ private sealed interface CounterEvent {
 }
 
 private class CounterViewModel : MoleculeViewModel<CounterEvent, Int>(
-  initialState = 0,
+  initialState = -1,
   presenter = CounterPresenter(),
 )
 
 private class CounterPresenter : MoleculePresenter<CounterEvent, Int> {
   @Composable
   override fun MoleculePresenterScope<CounterEvent>.present(lastState: Int): Int {
-    var count by remember { mutableIntStateOf(lastState) }
+    var count by remember { mutableIntStateOf(0) }
     CollectEvents { event ->
       when (event) {
         CounterEvent.Increment -> count++
