@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imeAnimationTarget
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -38,14 +37,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -62,24 +59,11 @@ import androidx.compose.ui.graphics.vector.VectorConfig
 import androidx.compose.ui.graphics.vector.VectorProperty
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
-import androidx.media3.datasource.DefaultHttpDataSource
-import androidx.media3.datasource.cache.Cache
-import androidx.media3.datasource.cache.CacheDataSource
-import androidx.media3.exoplayer.DefaultRenderersFactory
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -89,6 +73,7 @@ import androidx.paging.compose.itemKey
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
+import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.NullRequestDataException
 import com.eygraber.uri.Uri
@@ -116,7 +101,6 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.Notification
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.ThreeDotsLoading
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
-import com.hedvig.android.design.system.hedvig.datepicker.formatInstantForTalkBack
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.icon.CheckFilled
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -128,16 +112,7 @@ import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
-import com.hedvig.android.design.system.hedvig.rememberPreviewSimpleCache
 import com.hedvig.android.design.system.hedvig.rememberShapedColorPainter
-import com.hedvig.android.design.system.hedvig.videoplayer.Media
-import com.hedvig.android.design.system.hedvig.videoplayer.MediaState
-import com.hedvig.android.design.system.hedvig.videoplayer.ResizeMode
-import com.hedvig.android.design.system.hedvig.videoplayer.ShowBuffering
-import com.hedvig.android.design.system.hedvig.videoplayer.SimpleVideoController
-import com.hedvig.android.design.system.hedvig.videoplayer.SurfaceType
-import com.hedvig.android.design.system.hedvig.videoplayer.rememberControllerState
-import com.hedvig.android.design.system.hedvig.videoplayer.rememberMediaState
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.LatestChatMessage
 import com.hedvig.android.feature.chat.data.BannerText
@@ -160,13 +135,20 @@ import com.hedvig.android.feature.chat.model.Sender.HEDVIG
 import com.hedvig.android.feature.chat.model.Sender.MEMBER
 import com.hedvig.android.feature.chat.ui.ChatBanner
 import com.hedvig.android.feature.chat.ui.ChatInput
+import com.hedvig.android.feature.chat.ui.ChatVideoCache
+import com.hedvig.android.feature.chat.ui.ChatVideoMessage
+import com.hedvig.android.feature.chat.ui.ChatVideoPlayers
 import com.hedvig.android.feature.chat.ui.InChatCrossSellCard
 import com.hedvig.android.feature.chat.ui.TextWithClickableUrls
 import com.hedvig.android.feature.chat.ui.adjustSizeToImageRatio
 import com.hedvig.android.feature.chat.ui.backgroundColor
+import com.hedvig.android.feature.chat.ui.chatImeAnimationTarget
 import com.hedvig.android.feature.chat.ui.formattedDateTime
 import com.hedvig.android.feature.chat.ui.messageHorizontalAlignment
 import com.hedvig.android.feature.chat.ui.onBackgroundColor
+import com.hedvig.android.feature.chat.ui.rememberChatVideoPlayers
+import com.hedvig.android.feature.chat.ui.rememberPreviewChatVideoCache
+import com.hedvig.android.feature.chat.ui.talkBackDateTime
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import hedvig.resources.AUTOMATED_MESSAGE_INFO_CARD_BUTTON
 import hedvig.resources.CHAT_CONVERSATION_CLOSED_INFO
@@ -202,7 +184,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun CbmChatLoadedScreen(
   uiState: Loaded,
   imageLoader: ImageLoader,
-  simpleVideoCache: Cache,
+  simpleVideoCache: ChatVideoCache,
   appPackageId: String,
   openUrl: (String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
@@ -255,7 +237,7 @@ private fun ChatLoadedScreen(
   uiState: Loaded,
   lazyListState: LazyListState,
   imageLoader: ImageLoader,
-  simpleVideoCache: Cache,
+  simpleVideoCache: ChatVideoCache,
   openUrl: (String) -> Unit,
   onCloseBannerClick: () -> Unit,
   onCrossSellShown: (offerId: String, offerUrl: String) -> Unit,
@@ -293,7 +275,7 @@ private fun ChatLoadedScreen(
         lastCrossSell = uiState.crossSell
       }
       AnimatedVisibility(
-        visible = WindowInsets.imeAnimationTarget.asPaddingValues().calculateBottomPadding() == 0.dp &&
+        visible = WindowInsets.chatImeAnimationTarget.asPaddingValues().calculateBottomPadding() == 0.dp &&
           uiState.crossSell != null,
         enter = expandVertically(
           spring(
@@ -323,7 +305,7 @@ private fun ChatLoadedScreen(
         }
       }
       AnimatedVisibility(
-        visible = WindowInsets.imeAnimationTarget.asPaddingValues().calculateBottomPadding() == 0.dp &&
+        visible = WindowInsets.chatImeAnimationTarget.asPaddingValues().calculateBottomPadding() == 0.dp &&
           uiState.bannerText != null,
         enter = expandVertically(
           spring(
@@ -431,19 +413,18 @@ private fun ChatLazyColumn(
   enableMessageSenderLabeling: Boolean,
   imageLoader: ImageLoader,
   enableInlineMediaPlayer: Boolean,
-  simpleVideoCache: Cache,
+  simpleVideoCache: ChatVideoCache,
   openUrl: (String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val mediaStatesWithPlayers = remember { mutableStateMapOf<String, MediaState>() }
+  val videoPlayers = rememberChatVideoPlayers()
   DisposableEffect(
     Unit,
   ) {
     onDispose {
-      mediaStatesWithPlayers.values.forEach { it.player?.release() }
-      mediaStatesWithPlayers.clear() // todo: sure?
+      videoPlayers.releaseAll()
     }
   }
   ScrollToBottomEffect(
@@ -516,7 +497,7 @@ private fun ChatLazyColumn(
                 imageLoader = imageLoader,
                 enableInlineMediaPlayer = enableInlineMediaPlayer,
                 simpleVideoCache = simpleVideoCache,
-                mediaStatesWithPlayersMap = mediaStatesWithPlayers,
+                videoPlayers = videoPlayers,
                 openUrl = openUrl,
                 onNavigateToImageViewer = onNavigateToImageViewer,
                 onRetrySendChatMessage = onRetrySendChatMessage,
@@ -592,8 +573,8 @@ private fun ChatBubble(
   enableMessageSenderLabeling: Boolean,
   imageLoader: ImageLoader,
   enableInlineMediaPlayer: Boolean,
-  simpleVideoCache: Cache,
-  mediaStatesWithPlayersMap: SnapshotStateMap<String, MediaState>,
+  simpleVideoCache: ChatVideoCache,
+  videoPlayers: ChatVideoPlayers,
   openUrl: (String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
@@ -681,14 +662,12 @@ private fun ChatBubble(
 
             ChatMessageFile.MimeType.MP4 -> {
               if (enableInlineMediaPlayer) {
-                val mediaState = mediaStatesWithPlayersMap.getOrPut(
-                  chatMessage.id,
-                  {
-                    videoPlayerMediaState(simpleVideoCache, chatMessage.url)
-                  },
-                )
-                VideoMessage(
-                  state = mediaState,
+                ChatVideoMessage(
+                  videoPlayers = videoPlayers,
+                  messageId = chatMessage.id,
+                  url = chatMessage.url,
+                  videoCache = simpleVideoCache,
+                  openUrl = openUrl,
                   onGoFullWidth = onGoFullWidth,
                   onGoDefaultWidth = onGoDefaultWidth,
                   showingFullWidth = showingFullWidth,
@@ -890,7 +869,6 @@ private fun MessageBanner(banner: CbmChatMessage.Banner, modifier: Modifier = Mo
 @Composable
 private fun getMessageDescription(chatMessage: CbmChatMessage?): String {
   return chatMessage?.let {
-    val context = LocalContext.current
     val sender = stringResource(
       when (it.sender) {
         HEDVIG -> Res.string.CHAT_SENDER_HEDVIG
@@ -898,7 +876,7 @@ private fun getMessageDescription(chatMessage: CbmChatMessage?): String {
         MEMBER -> Res.string.CHAT_SENDER_MEMBER
       },
     )
-    val time = formatInstantForTalkBack(context, it.sentAt)
+    val time = talkBackDateTime(it.sentAt)
     when (it) {
       is ChatMessageFile -> stringResource(Res.string.TALKBACK_CHAT_MESSAGE_FILE, time, sender, it.mimeType)
 
@@ -969,7 +947,7 @@ private fun FailedToBeSentUri(
 }
 
 @Composable
-private fun AttachedFileMessage(
+internal fun AttachedFileMessage(
   onClick: () -> Unit,
   containerColor: Color = Color.Transparent,
   borderColor: Color = LocalContentColor.current,
@@ -998,86 +976,6 @@ private fun AttachedFileMessage(
       HedvigText(text = stringResource(Res.string.CHAT_FILE_DOWNLOAD))
     }
   }
-}
-
-@Composable
-private fun VideoMessage(
-  state: MediaState,
-  onGoFullWidth: () -> Unit,
-  onGoDefaultWidth: () -> Unit,
-  showingFullWidth: Boolean,
-  modifier: Modifier = Modifier,
-) {
-  LocalLifecycleOwner.current.lifecycle.addObserver(
-    object : LifecycleEventObserver {
-      override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-        when (event) {
-          Lifecycle.Event.ON_STOP -> {
-            state.player?.pause()
-          }
-
-          else -> {}
-        }
-      }
-    },
-  )
-  val height = if (showingFullWidth) 350.dp else 220.dp
-  Media(
-    state = state,
-    modifier = modifier
-      .height(height)
-      .clip(HedvigTheme.shapes.cornerLarge)
-      .background(Color.Black),
-    surfaceType = SurfaceType.TextureView,
-    resizeMode = ResizeMode.Fit,
-    keepContentOnPlayerReset = true,
-    showBuffering = ShowBuffering.Always,
-    buffering = {
-      Box(Modifier.fillMaxSize(), Alignment.Center) {
-        HedvigCircularProgressIndicator()
-      }
-    },
-  ) { state ->
-    val controllerState = rememberControllerState(state)
-    SimpleVideoController(
-      mediaState = state,
-      controllerState = controllerState,
-      onGoFullWidth = onGoFullWidth,
-      onGoDefaultWidth = onGoDefaultWidth,
-      showingFullWidth = showingFullWidth,
-      modifier = Modifier
-        .fillMaxSize()
-        .clip(HedvigTheme.shapes.cornerLarge),
-    )
-  }
-}
-
-@Composable
-private fun videoPlayerMediaState(cache: Cache, uri: String): MediaState {
-  val context = LocalContext.current
-  val exoPlayer = remember(cache, uri, context) {
-    val httpDataSourceFactory = DefaultHttpDataSource.Factory()
-    val cacheDataSourceFactory = CacheDataSource.Factory().setCache(cache)
-      .setUpstreamDataSourceFactory(httpDataSourceFactory)
-      .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
-    val mediaSourceFactory = ProgressiveMediaSource.Factory(cacheDataSourceFactory)
-    ExoPlayer
-      .Builder(context)
-      .setMediaSourceFactory(
-        mediaSourceFactory,
-      )
-      .setRenderersFactory(
-        DefaultRenderersFactory(context)
-          .setEnableDecoderFallback(true),
-      )
-      .build().apply {
-        prepare()
-        playWhenReady = false
-        repeatMode = Player.REPEAT_MODE_OFF
-        setMediaItem(MediaItem.fromUri(uri))
-      }
-  }
-  return rememberMediaState(player = exoPlayer)
 }
 
 @Composable
@@ -1129,7 +1027,7 @@ private fun ChatAsyncImage(
   }
   AsyncImage(
     model = ImageRequest
-      .Builder(LocalContext.current)
+      .Builder(LocalPlatformContext.current)
       .data(model)
       .apply {
         if (cacheKey != null) {
@@ -1368,7 +1266,7 @@ private fun PreviewChatLoadedScreen() {
         onNavigateToImageViewer = { _, _ -> },
         onRetrySendChatMessage = {},
         chatInput = {},
-        simpleVideoCache = rememberPreviewSimpleCache(),
+        simpleVideoCache = rememberPreviewChatVideoCache(),
         errorSnackbarState = null,
         onCloseBannerClick = {},
         onCrossSellShown = { _, _ -> },

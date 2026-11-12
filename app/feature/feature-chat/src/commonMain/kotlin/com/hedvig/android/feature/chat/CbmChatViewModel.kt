@@ -1,7 +1,5 @@
 package com.hedvig.android.feature.chat
 
-import android.content.Context
-import android.provider.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,8 +13,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.Snapshot
-import androidx.compose.ui.platform.AndroidUiDispatcher
-import androidx.media3.datasource.cache.SimpleCache
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -62,6 +58,7 @@ import com.hedvig.android.feature.chat.model.Sender
 import com.hedvig.android.feature.chat.model.toChatMessage
 import com.hedvig.android.feature.chat.model.toLatestChatMessage
 import com.hedvig.android.feature.chat.paging.ChatRemoteMediator
+import com.hedvig.android.feature.chat.ui.ChatSimpleVideoCache
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -69,6 +66,7 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
+import kotlin.coroutines.CoroutineContext
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.coroutines.CoroutineScope
@@ -88,17 +86,17 @@ import kotlinx.coroutines.launch
 @HedvigViewModel(ActivityRetainedScope::class)
 internal class CbmChatViewModel @AssistedInject constructor(
   @Assisted conversationId: String,
-  val simpleVideoCache: SimpleCache,
+  val simpleVideoCache: ChatSimpleVideoCache,
   database: RoomDatabase,
   chatDao: ChatDao,
   remoteKeyDao: RemoteKeyDao,
   chatRepository: CbmChatRepository,
   clock: Clock,
-  context: Context,
+  context: ChatContext,
   getInChatCrossSellUseCase: GetInChatCrossSellUseCase,
   hideInChatCrossSellUseCase: HideInChatCrossSellUseCase,
   eventTrackingClient: EventTrackingClient,
-  coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + AndroidUiDispatcher.Main),
+  coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + chatViewModelDispatcher),
 ) : MoleculeViewModel<CbmChatEvent, CbmChatUiState>(
     initialState = CbmChatUiState.Initializing,
     presenter = CbmChatPresenter(
@@ -163,7 +161,7 @@ internal class CbmChatPresenter(
   private val chatRepository: CbmChatRepository,
   private val getInChatCrossSellUseCase: GetInChatCrossSellUseCase,
   private val crossSellEvents: InChatCrossSellEvents,
-  private val context: Context,
+  private val context: ChatContext,
 ) : MoleculePresenter<CbmChatEvent, CbmChatUiState> {
   @OptIn(ExperimentalPagingApi::class)
   @Composable
@@ -570,12 +568,11 @@ private fun Either<MessageSendError, *>.onError(
   }
 }
 
-private fun isAccessibilityEnabled(context: Context): Boolean {
-  val enabledServices = Settings.Secure.getString(
-    context.contentResolver,
-    Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
-  )
-  val accessibilityEnabled =
-    Settings.Secure.getInt(context.contentResolver, Settings.Secure.ACCESSIBILITY_ENABLED, 0) == 1
-  return accessibilityEnabled && enabledServices != null
-}
+/** The context the chat ViewModel runs its presenter and caches its paged messages in. */
+internal expect val chatViewModelDispatcher: CoroutineContext
+
+/** The platform handle [isAccessibilityEnabled] reads the accessibility settings through. */
+internal expect abstract class ChatContext
+
+/** Whether an accessibility service, such as a screen reader, is turned on. */
+internal expect fun isAccessibilityEnabled(context: ChatContext): Boolean

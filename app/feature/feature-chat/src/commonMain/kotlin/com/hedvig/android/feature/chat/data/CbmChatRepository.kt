@@ -1,10 +1,6 @@
 package com.hedvig.android.feature.chat.data
 
-import android.content.ContentResolver
-import android.content.Intent
-import android.util.Patterns
 import androidx.room.RoomDatabase
-import androidx.room.withTransaction
 import arrow.core.Either
 import arrow.core.Either.Left
 import arrow.core.Either.Right
@@ -18,7 +14,6 @@ import com.apollographql.cache.normalized.doNotStore
 import com.apollographql.cache.normalized.fetchPolicy
 import com.benasher44.uuid.Uuid
 import com.eygraber.uri.Uri
-import com.eygraber.uri.toAndroidUri
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
@@ -95,7 +90,7 @@ internal class CbmChatRepositoryImpl(
   private val chatDao: ChatDao,
   private val remoteKeyDao: RemoteKeyDao,
   private val botServiceService: BotServiceService,
-  private val contentResolver: ContentResolver,
+  private val contentResolver: ChatContentResolver,
   private val clock: Clock,
 ) : CbmChatRepository {
   override suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, Info> {
@@ -179,7 +174,7 @@ internal class CbmChatRepositoryImpl(
             emit(errorMessage)
           },
           ifRight = { messagePageResponse ->
-            database.withTransaction {
+            database.chatTransaction {
               val existingRemoteKey =
                 remoteKeyDao.remoteKeyForConversation(conversationId) ?: RemoteKeyEntity(conversationId, null, null)
               remoteKeyDao.insert(existingRemoteKey.copy(newerToken = messagePageResponse.newerToken))
@@ -315,12 +310,11 @@ internal class CbmChatRepositoryImpl(
     uri: Uri,
     conversationId: Uuid,
   ): MessageSendError {
-    try {
-      uri.takePersistableUriPermission()
-    } catch (e: SecurityException) {
+    val permissionError = contentResolver.takePersistableReadPermission(uri)
+    if (permissionError != null) {
       // Do not store the message in the DB if it fails, since we can't then reliably ask to retry sending it
       // without the persistent access permission given to us
-      logcat(LogPriority.ERROR, e) {
+      logcat(LogPriority.ERROR, permissionError) {
         "PersistableUriPermission: Failed to take persistable uri permission for uri:$uri"
       }
       return MessageSendError.FailedToPersistUriPermissionError(this.originalError)
@@ -418,15 +412,10 @@ internal class CbmChatRepositoryImpl(
     return uploadToken
   }
 
-  private fun Uri.takePersistableUriPermission() {
-    contentResolver.takePersistableUriPermission(toAndroidUri(), Intent.FLAG_GRANT_READ_URI_PERMISSION)
-  }
-
   private fun Uri.tryReleasePersistableUriPermission() {
-    try {
-      contentResolver.releasePersistableUriPermission(toAndroidUri(), Intent.FLAG_GRANT_READ_URI_PERMISSION)
-    } catch (e: SecurityException) {
-      logcat(LogPriority.ERROR, e) {
+    val permissionError = contentResolver.releasePersistableReadPermission(this)
+    if (permissionError != null) {
+      logcat(LogPriority.ERROR, permissionError) {
         "PersistableUriPermission: Failed to release persistable uri permission for uri:$this"
       }
     }
@@ -643,4 +632,5 @@ private fun String.isGifUrl(): Boolean {
   return webUrlLinkMatcher.matchEntire(this) != null
 }
 
-private val webUrlLinkMatcher: Regex = Patterns.WEB_URL.toRegex()
+/** Matches a whole string that is a web URL. */
+internal expect val webUrlLinkMatcher: Regex
