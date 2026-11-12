@@ -3,6 +3,7 @@ package com.hedvig.android.feature.chat.ui
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import com.eygraber.uri.Uri
 import com.eygraber.uri.toKmpUri
 import com.hedvig.android.compose.photo.capture.state.ResultLauncher
@@ -14,7 +15,7 @@ internal actual fun rememberChatVisualMediaPicker(onResult: (List<Uri>) -> Unit)
   ) { resultingUriList ->
     onResult(resultingUriList.map { it.toKmpUri() })
   }
-  return ResultLauncher { photoPicker.launch(PickVisualMediaRequest()) }
+  return remember(photoPicker) { ResultLauncher { photoPicker.launch(PickVisualMediaRequest()) } }
 }
 
 @Composable
@@ -24,5 +25,5 @@ internal actual fun rememberChatFilePicker(onResult: (List<Uri>) -> Unit): Resul
   ) { resultingUriList ->
     onResult(resultingUriList.map { it.toKmpUri() })
   }
-  return ResultLauncher { filePicker.launch("*/*") }
+  return remember(filePicker) { ResultLauncher { filePicker.launch("*/*") } }
 }
