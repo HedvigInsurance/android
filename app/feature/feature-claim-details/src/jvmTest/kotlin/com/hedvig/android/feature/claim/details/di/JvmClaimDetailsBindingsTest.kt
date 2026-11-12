@@ -2,6 +2,7 @@ package com.hedvig.android.feature.claim.details.di
 
 import assertk.assertThat
 import assertk.assertions.isNotNull
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.buildconstants.AppBuildConfig
 import com.hedvig.android.core.buildconstants.Flavor
 import com.hedvig.android.core.common.di.ActivityRetainedScope
@@ -12,6 +13,7 @@ import com.hedvig.android.feature.claim.details.ui.AddFilesViewModelFactory
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailsViewModelFactory
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.navigation.compose.DeepLinkMatcherProvider
+import com.hedvig.android.network.clients.ExtraApolloClientConfiguration
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.createGraphFactory
@@ -32,7 +34,8 @@ import org.junit.Test
 /**
  * A graph shaped like a desktop host's: [ActivityRetainedScope] collapsed into [AppScope], with every binding
  * taken from the JVM classpath of this module's dependencies and this module's own contributions. The factory
- * supplies only host inputs: the data directory, the build config and the clock.
+ * supplies only host inputs: the data directory, the build config, the clock and the Apollo client configuration,
+ * which the host's shell binds.
  */
 @DependencyGraph(AppScope::class, additionalScopes = [ActivityRetainedScope::class])
 internal interface ClaimDetailsBindingsTestGraph {
@@ -46,6 +49,7 @@ internal interface ClaimDetailsBindingsTestGraph {
       @Provides @DesktopDataDirectory dataDirectory: File,
       @Provides appBuildConfig: AppBuildConfig,
       @Provides clock: Clock,
+      @Provides extraApolloClientConfiguration: ExtraApolloClientConfiguration,
     ): ClaimDetailsBindingsTestGraph
   }
 }
@@ -75,6 +79,7 @@ class JvmClaimDetailsBindingsTest {
       dataDirectory = createTempDirectory("claim-details-bindings-test").toFile(),
       appBuildConfig = TestAppBuildConfig,
       clock = Clock.System,
+      extraApolloClientConfiguration = NoExtraApolloClientConfiguration,
     )
   }
 
@@ -93,6 +98,11 @@ class JvmClaimDetailsBindingsTest {
   fun `the claim details deep link matcher provider is contributed`() {
     assertTrue(graph.deepLinkMatcherProviders.any { it is ClaimDetailsDeepLinkMatcherProvider })
   }
+}
+
+/** The host's Apollo interceptors are outside this graph, so its client is built without any. */
+private object NoExtraApolloClientConfiguration : ExtraApolloClientConfiguration {
+  override fun configure(builder: ApolloClient.Builder): ApolloClient.Builder = builder
 }
 
 private object TestAppBuildConfig : AppBuildConfig {
