@@ -1,11 +1,12 @@
 # The Hedvig app on desktop: as built
 
-State of `feat/desktop-app-integration` at `884ee23e96`. The design is in `2026-11-12-desktop-app-design.md`.
+State of `feat/desktop-app-integration` at `0d94497df0`. The design is in `2026-11-12-desktop-app-design.md`.
 
 - Run it with `./gradlew :app-desktop:run` (staging) on macOS; log in with BankID by QR code or with email.
 - Every feature except staff impersonation runs on shared code. Trustly checkout, audio, video, camera, push and OS
   deep links do not work on desktop; the skip register lists every gap.
-- The Android app passed a device smoke run after the change, including process-death restore on a minified build.
+- On an Android device the converted app passed a smoke run, chat end to end with staff replies, the flows that
+  write on entry and process-death restore, on debug and minified builds.
 - For iOS, the next step is iOS targets on `auth-core-public` (no blocker left) and on the feature modules, each
   `expect` getting a `nativeMain` actual (see the iOS debt register).
 
@@ -54,11 +55,12 @@ Downloaded PDFs go to the system temp directory. Feature flags and the back stac
 started at once share the token store and the database file without coordinating.
 
 **Walkthrough tool.** A headless harness that renders every registered key in the real desktop graph and writes a PNG
-and the visible text per screen lives on the branch `tool/desktop-walkthrough` (tooling only, not merged, based on
-`f674f564ce`). On that branch: `./gradlew :app-desktop:desktopWalkthrough` (demo mode), or, with the desktop app
-closed and a logged-in staging session, add `-Phedvig.walkthrough.mode=session -Phedvig.walkthrough.sessionInPlace=true
--Phedvig.walkthrough.sessionDataDir=$HOME/.hedvig-desktop/staging`. Session mode never pushes the keys that write on
-entry. Output: `app/app-desktop/build/walkthrough/`.
+and the visible text per screen lives on the branch `tool/desktop-walkthrough` (tooling only, not merged; the local
+branch contains `884ee23e96`, the pushed copy is older). On that branch: `./gradlew :app-desktop:desktopWalkthrough`
+(demo mode), or, with the desktop app closed and a logged-in staging session, add `-Phedvig.walkthrough.mode=session
+-Phedvig.walkthrough.sessionInPlace=true -Phedvig.walkthrough.sessionDataDir=$HOME/.hedvig-desktop/staging`.
+Session mode skips the keys that write on entry unless `-Phedvig.walkthrough.allowWrites=true`, which also runs the
+flow and chat phases that write to staging. Output: `app/app-desktop/build/walkthrough/`.
 
 ## Modules
 
@@ -67,11 +69,10 @@ entry. Output: `app/app-desktop/build/walkthrough/`.
 | `:app-shell` (`app/app-shell`) | `hedvig.multiplatform.library` + `.android` (JVM, Android) | `HedvigApp`, `HedvigAppState`, `NavigationSuite`, `BackstackController`, `TopLevelRunLogic`, `SessionReconciler`, `HedvigEntryProvider` (`hedvigEntryProvider`, registers every key for every host), `AppHost`, `DeepLinkFirstUriHandler`, `AuthorizationCodeUriHandler`, `GlobalHedvigSnackBar`, and the Apollo chain shared by both hosts (`ApolloInterceptorMetroProviders`, `LoggingInterceptor`, `LogoutOnUnauthenticatedInterceptor`). The shell's tests are in its `jvmTest`. |
 | `:app` | `hedvig.android.application` | The Android host: `MainActivity`, `HedvigApplication`, `AppGraph`, `ActivityRetainedGraph`, `NavRetainedViewModel`, `MergedMetroViewModelFactory`, `NavigationStateBridge`, `AndroidAppHost`, external deep links, notifications, WorkManager, Firebase and Datadog (`Navigation3TrackingEffect` is composed in `MainActivity` right before `HedvigApp`). `ExhaustiveBackStackSerializationTest` and `BackStackSerializationTest` stay here. |
 | `:app-desktop` (`app/app-desktop`) | `hedvig.multiplatform.library` (JVM only), Compose Desktop | `Main.kt` (window), `DesktopBack` (back shortcuts and the mouse back button), `DesktopUnmatchedLinkRouter`, `DesktopGraph`, `DesktopMetroProviders`, `DesktopBindings`, `DesktopAppHost`, `DesktopExternalNavigator`, `DesktopAppBuildConfig`, `DesktopFallbackEntry`, `DesktopIntegration` (`java.awt.Desktop` actions, notice dialogs), `DesktopWindowSize`, `DesktopLogging`, `StdoutLogcatLogger`. |
-| `-navigation` modules added for the shell | `.ios` + `.android` | `feature-home-navigation` (`HomeKey`), `feature-login-navigation` (`LoginKey`), `feature-insurances-navigation` (`InsurancesKey`), `feature-profile-navigation` (`ProfileKey`), `feature-onboarding-navigation` (`OnboardingKey`, `OnboardingGate`, `ResetOnboardingSeenUseCase`, `KeepKmp`), `feature-chat-navigation` (`ChatKey`, `InboxKey`), `feature-claim-details-navigation` (`ClaimDetailsKey`), `feature-image-viewer-navigation` (`ImageViewerKey`). |
 | `database-jvm` (`app/database/database-jvm`) | `hedvig.jvm.library` | `DatabaseJvmMetroProviders`: Room `AppDatabase` builder with `BundledSQLiteDriver`. |
 
 Every feature module except `feature-impersonation` is KMP with its screens, presenters, ViewModels, entries and deep
-links in `commonMain`. No entry is registered by a host: `hedvigEntryProvider` registers all 111 nav keys on both.
+links in `commonMain`, and its keys in the feature; `:app-shell` depends on the features. No entry is registered by a host: `hedvigEntryProvider` registers all 111 nav keys on both.
 Android passes no fallback entry, so an unregistered key still throws there. Desktop passes `desktopFallbackEntry`,
 which shows "Not available on desktop" and logs the key once at WARN; `DesktopEntryProviderTest` asserts no key
 needs it.
@@ -82,6 +83,7 @@ Android-only (`hedvig.android.library`): `core-rive`, `database-android`, `datad
 ## Seam register
 
 Seams between the Android and desktop implementations. The Android column is the Android code behind the seam.
+Under `app/` there are 71 `expect` declarations, 39 of them added by this work (34 before).
 
 ### `expect`/`actual`
 
@@ -112,7 +114,7 @@ Seams between the Android and desktop implementations. The Android column is the
 | `feature-login` | `rememberBankIdState(bankIdUri: com.eygraber.uri.Uri)` | `BankIdStateImpl`, opens the BankID app | QR only, `canOpenBankId = false` |
 | `feature-login` | `LoginBackgroundVideo` | Video over the still | The still (a second copy in `jvmMain/composeResources`) |
 | `feature-login` | `CommonLocale.languageTag` | `toLanguageTag()` (one `jvmAndAndroidMain` actual) | same |
-| `feature-onboarding-navigation` | `KeepKmp` | Typealias to `androidx.annotation.Keep` (`jvmAndAndroidMain`) | same; native actual exists |
+| `feature-onboarding` | `KeepKmp` | Typealias to `androidx.annotation.Keep` (`jvmAndAndroidMain`) | same |
 | `feature-onboarding` | `KeypadGlyphPlatformTextStyle` | `PlatformTextStyle(includeFontPadding = false)` | `null` |
 | `feature-payin-account` | `rememberSwishAppHandover` | Detects the Swish app and hands over | Not installed: QR only; an http approval URL opens in the browser |
 | `feature-profile` | `rememberOpenBugReportEmail` | Email intent | `Desktop.mail` with a `mailto:`; logs when no mail client |
@@ -186,6 +188,7 @@ Unfinished work and bugs. Most need only a JVM actual or a host change.
 | Chat: small file reads block the UI thread; Enter inserts a newline (send with the button); links without a scheme are not detected as GIFs; the cross-sell card and banner never hide for a keyboard | Per item, small |
 | Chat video messages are a file card that opens the URL in the browser | A JVM video player behind `ChatVideoMessage` |
 | Profile, license attributions: "Not available on desktop" | Render the bundled list as text, or open a hosted page, in the `OpenSourceLicenses` JVM actual |
+| A PDF message that failed to send shows an empty tile under its retry overlay (a received PDF whose thumbnail fails shows the file card) | A file card fallback for local PDFs |
 | No camera option in chat, claim details, add files or claim chat uploads; gallery and file pickers (AWT file dialog) work | Webcam capture behind `rememberPhotoCaptureState` |
 | Claim chat "helipad" loader is blank | A Compose fallback in `HelipadRiveAnimation.jvm.kt` |
 | Login background is a still image | A JVM video player behind `LoginBackgroundVideo` |
@@ -233,7 +236,7 @@ libraries: `data-chat`, `database-core`, `database-jvm`, `apollo-auth-listeners`
 `member-reminders-ui`, `notification-permission`, `pullrefresh`, `tier-comparison`, `ui-analytics-consent`,
 `ui-claim-flow`, `ui-force-upgrade`, `ui-phone-number`, `ui-tiers-and-addons`, the four library modules above, and
 every `feature-*` module except the `-navigation` ones. Each `expect` of the seam register in these modules needs a
-`nativeMain` actual (`molecule-public`, `core-common-public`, `core-build-constants` and `KeepKmp` have one). For
+`nativeMain` actual (`molecule-public`, `core-common-public`, `core-build-constants` and `KeepKmp` in `data-coinsured` have one). For
 `core-icons`, check that `material-icons-core` 1.7.3 iOS klibs link against Compose Multiplatform 1.12.2.
 
 | Also | Action |
@@ -257,8 +260,23 @@ every `feature-*` module except the `-navigation` ones. Each `expect` of the sea
 
 | Item | Action |
 |---|---|
-| `@androidx.annotation.Keep` in `commonMain` of `feature-onboarding` (`OnboardingKeys.kt`), `feature-chip-id`, `feature-choose-tier`, `feature-addon-purchase` and `data-addons`. `checkCommonMainImports` does not check `androidx` | `KeepKmp` (as in `feature-onboarding-navigation` and `data-coinsured`) |
+| `@androidx.annotation.Keep` in `commonMain` of `feature-onboarding` (`OnboardingKeys.kt`), `feature-chip-id`, `feature-choose-tier`, `feature-addon-purchase` and `data-addons`, each allowed by name in `config/commonMain-import-allowlist.txt` | `KeepKmp` (as in `feature-onboarding` and `data-coinsured`) |
 | `:navigation-compose` (iOS) pulls Compose UI and the design system through the JetBrains `navigation3-ui` artifacts | Keep it out of `:umbrella` unless that is intended |
+
+### Sharing with iOS without UI
+
+- `:umbrella` exports `authlib` and `logging-public` only, as a static XCFramework with `smallBinary`, with no
+  Compose or Skiko linked. The Ugglan app calls into it for auth and logging.
+- Measured shipped size (`size -m`, `ios-arm64` slice): 75.8 MB with Compose UI; 7.33 MB compose-free with seven
+  exports; 4.40 MB with the two exports; 3.59 MB with `smallBinary`. A Molecule presenter on the Compose runtime, without
+  Compose UI, adds 1.3 MB; exporting `network-clients` adds about 2.9 MB (Apollo, Arrow, Okio). No data layer or
+  feature has been measured.
+- Presenters (`MoleculePresenter`) need the Compose runtime, not Compose UI. Features keep presenters and Compose UI
+  in the same source set, so sharing presenters without UI needs them separated, most cheaply by source set.
+- The two apps have drifted in three places: the conversation deep link (`/conversation/{id}` on Android,
+  `conversation?conversationId=` on iOS); analytics event definitions written twice (`cross_sell_*`,
+  `addon_purchased`); and same-named GraphQL operations with different bodies (`query Home` is 17 lines on iOS and
+  131 on Android).
 
 ## Converting a module
 
@@ -269,10 +287,50 @@ every `feature-*` module except the `-navigation` ones. Each `expect` of the sea
    Android code, resources or the `navKeys()`/`viewModels()` processors, plus `.ios` when every dependency compiles
    for iOS; dependencies in `kotlin { sourceSets { commonMain.dependencies { } } }`; the `libs.jetbrains.*` Compose
    artifacts. Robolectric tests go to `androidHostTest`, as in `feature-flags`.
-3. Verify: the module's `jvmTest` runs as many tests as `test` did (a test left in `src/test` runs nothing),
+3. Verify: `:<module>:test` runs as many tests as before (a test left in `src/test` runs nothing),
    `checkCommonMainImports`, `:app:assembleDebug`, `:app-desktop:jvmTest`, and the compiled `:app` graph keeps the
    same ViewModels and deep link matchers (the `javap` recipe in `CLAUDE.md`). Library modules are release-only, so
    compile Android with `compileAndroidMain`.
+
+## Working on the Android app after this change
+
+| Topic | What to do |
+|---|---|
+| Where code lives | Features and most libraries keep their code in `src/commonMain/kotlin`; Android-only files are `X.android.kt` in `src/androidMain/kotlin`; tests are in `src/jvmTest/kotlin` (Robolectric tests in `src/androidHostTest/kotlin`) |
+| Tests | `./gradlew test` runs every unit test; `./gradlew :feature-home:test --tests "*HomePresenterTest*"` works in every module |
+| Android-only code written in `commonMain` | `android.*` or `LocalContext` compiles for Android and the app runs; the JVM compile fails, and `checkCommonMainImports` (in `./gradlew check` and CI) reports it. `java.*` compiles on both targets and only the guard reports it |
+| An Android-specific need in shared code | Three files: an `expect` (or an interface) in `commonMain`, the Android `actual` in `androidMain`, a JVM `actual` in `jvmMain` |
+| A new feature module | `hedvig.multiplatform.library` plus `.android`; its entries called from `hedvigEntryProvider` in `:app-shell`; a dependency in `:app`, `:app-shell` and `:app-desktop` |
+
+Build times, `229bd79df0` against `884ee23e96`, single runs on a shared machine, so indicative: clean
+`:app:assembleDebug` 6m05s to 6m44s; a one-line edit in a feature, median 11 s to 12 s. Unchanged: `@Preview`s and
+their tooling, string and drawable resources (Compose resources before and after), ktlint, every library version
+apart from three JetBrains Android wrappers and `savedstate` 1.3.6 to 1.4.0, and the APK size (debug 118 KB smaller,
+minified within 300 bytes). Lint analyses `commonMain` of every converted module; modules with both an Android and a
+JVM target are linted twice, once per target.
+
+## Module graph
+
+157 Gradle modules at `0d94497df0`, by convention plugin:
+
+| Kind | Modules |
+|---|---|
+| KMP with iOS targets | 62 |
+| KMP, Android and JVM | 46 |
+| KMP, JVM only | 10 |
+| Android library | 13 |
+| Plain JVM (including the lint and ktlint rule modules, the KSP processors and the `-test` modules) | 24 |
+| Android application | 2 |
+
+Measured before the eight key modules were folded back (when there were 165 modules), from Gradle's project model:
+`commonMain` holds 89% of production Kotlin (53% before the change); 125 of the 139 modules `:app` reaches, 98.4% of
+their Kotlin lines, are also compiled into the desktop host. The modules only `:app` reaches are `compose-webview`,
+`core-rive`, `database-android`, `datadog-android`, `datadog-demo-tracking`, `experiments-unleash`,
+`feature-impersonation`, `language-migration`, `logging-device-model`, `notification-core`, `notification-firebase`,
+`shareddi`, `tracking-datadog`, `tracking-firebase`.
+
+A feature's keys live in the feature. A separate `feature-{name}-navigation` module exists only where another module
+navigates to that feature without depending on it.
 
 ## Deviations from the plan
 
@@ -285,7 +343,7 @@ every `feature-*` module except the `-navigation` ones. Each `expect` of the sea
 | JVM bindings for existing seams: a short list | 7 missing in the libraries, then 12 more found by compiling a desktop graph |
 | `platformName` overridden by the host's build constants | `AppBuildConfig.platformName`, defaulting to `defaultPlatformName` per target |
 | `AppHost` interface sketched in the plan | Real shape: `uriHandler`, `shouldShowPermissionRationale`, `tryShowAppStoreReviewDialog`, `SystemBarsEffect`; Datadog's effect stays in `MainActivity` |
-| Shell keys: tab roots, `LoginKey`, onboarding | Also `ChatKey`, `InboxKey`, `ClaimDetailsKey`, `ImageViewerKey` |
+| Shell keys (tab roots, `LoginKey`, onboarding) move to `-navigation` modules | They stay in their features, as do `ChatKey`, `InboxKey`, `ClaimDetailsKey` and `ImageViewerKey`; `:app-shell` depends on the features. Eight key modules were created for them and later folded back |
 | A host-entries block that ends holding Android-only entries | Built, then deleted once every feature was shared; replaced by the optional `fallbackEntry` |
 | Desktop notification permission reads "not granted" | Reads "granted", so no prompt or reminder appears |
 | Share sheet "Not available" | Copies to the clipboard |
@@ -298,64 +356,58 @@ every `feature-*` module except the `-navigation` ones. Each `expect` of the sea
 | Escape mapped to the system back | Escape, Cmd+[ and Cmd+Left on macOS, Alt+Left elsewhere, the mouse back button; back at the root does nothing instead of quitting |
 | (not planned) | Hedvig links that no matcher handles stay in the desktop app; KMP JVM and Android compilations set `jvmDefault` to `NO_COMPATIBILITY` |
 | Each phase is a series of small PRs, one module per PR | Each change is its own branch, merged into one integration branch, `feat/desktop-app-integration`; no PR is open |
-| Per conversion, and at the end of the project, a person exercises the desktop app by hand against staging | Replaced by headless walkthroughs of every registered key (demo mode and a real staging session, both at `f674f564ce`) plus a person's use of login, Home, the tabs and the help center. The 28 screens that write on entry and the 15 without suitable data were not visited |
-| No iOS targets are added in this project | Fifteen library modules and the eight new `-navigation` modules have iOS targets |
+| Per conversion, and at the end of the project, a person exercises the desktop app by hand against staging | Replaced by headless walkthroughs of every registered key (demo mode and a staging session at `f674f564ce`, which skipped the 28 screens that write on entry and 15 without suitable data; a second staging session with `884ee23e96` merged and nothing skipped) plus a person's use of login, Home, the tabs and the help center |
+| No iOS targets are added in this project | Fifteen library modules have iOS targets |
 
 ## Verification status
 
 "Author" is whoever made the change, reporting on their own run. "Independent" is a second party: a reviewer reading
-the code, or the integrator re-running a build or viewing screenshots.
+the code, or the integrator re-running a build, driving a device or viewing screenshots.
 
 | What | How it was verified, and by whom | Result |
 |---|---|---|
-| Tests per change | On every branch: the module's tests before and after (same count), `checkCommonMainImports`, `:app:assembleDebug`. Author, and re-run by the integrator on most branches; every branch's diff read by a reviewer, except a few small changes (the chat camera change, the `jvmDefault` change and some fix rounds) whose diffs the integrator read | Pass |
-| Repo-wide tests | `test jvmTest checkCommonMainImports :app:assembleDebug`, independent, at `150f117a53` (all library conversions merged). `test jvmTest` by the author at the `jvmDefault` change (`4dee5ff43b`): 1112 tests. The last merge, `ed80d6b267`, ran only the tests of the modules it touched (author) | Pass, 0 failures |
-| Android dependency graph | `javap` of `AppGraph$Impl` and `ActivityRetainedGraphImpl` before and after: 87 ViewModel entries, 21 deep link matcher providers, 111 nav keys; jar member signatures and `releaseRuntimeClasspath` for the library conversions. Author on each conversion; independent re-checks on a few branches. `ed80d6b267` changes no Metro annotation and was not compared | Identical on every comparison |
-| Desktop graph and entries | `DesktopGraphTest`, `DesktopEntryProviderTest`, the per-module JVM graph tests, headless tests of the back keys, link router, Home hero and navigation bar highlight, at `ed80d6b267` (author, within the module tests above) | Pass |
+| Tests per change | On every branch: the module's tests before and after (same count), `checkCommonMainImports`, `:app:assembleDebug`. Author, and re-run by the integrator on most branches; every branch's diff read by a reviewer, except small changes (the chat camera change, the `jvmDefault` change, the test task and guard changes, the chat thumbnail and follow fixes, and some fix rounds) whose diffs the integrator read | Pass |
+| Repo-wide tests | `test jvmTest checkCommonMainImports :app:assembleDebug` at `150f117a53`, independent. `./gradlew test` at `d9e1ec3c8a` (after the key modules were folded), author: 1,154 tests | Pass, 0 failures |
+| Android dependency graph | `javap` of `AppGraph$Impl` and `ActivityRetainedGraphImpl` before and after each conversion: 87 ViewModel entries, 21 deep link matcher providers, 111 nav keys; jar member signatures and `releaseRuntimeClasspath` for the library conversions; serial names of the nine folded keys before and after the fold. Author; independent re-checks on a few branches | Identical on every comparison |
+| Desktop graph and entries | `DesktopGraphTest`, `DesktopEntryProviderTest`, the per-module JVM graph tests, headless tests of the back keys, link router, Home hero, navigation bar highlight, chat thumbnail fallback (`ChatFileThumbnailTest`) and chat follow (`ChatFollowsNewestMessageTest`), at `0d94497df0` (author, within the module tests) | Pass |
 | iOS compiles | `compileKotlinIosSimulatorArm64` and `compileKotlinIosArm64` of the library modules and `:navigation-compose`, local runs on one machine (author, and the integrator for `:navigation-compose`). Not in PR CI | Pass |
-| R8 build | `:app:assembleStaging` (minified) at `4a8672217e` and again at `ed80d6b267`, independent | Builds. APK size not compared with `develop` |
-| Device run: launch and navigation | Pixel 6 Pro, Android 17, debug and minified staging 14.6.3 (43) from `ed80d6b267`, logged out and logged in (author). Cold start and system bars in dark and light; all five tabs, with per-tab back stacks kept across tab switches; back one level deep, at tab roots (to Home) and at Home (leaves the app) | Pass on both builds |
-| Device run: process death | Same run. Debug: Profile/Contact with Insurances holding details, `ClaimDetailsKey`, `ChatKey`, `HelpCenterQuestionKey`. Minified staging: insurance details with Profile holding Contact, `ChatKey`, `HelpCenterQuestionKey`. Two staging restores viewed in screenshots by the integrator (independent) | Each restored to the same screen and stacks; no R8 or serialization error |
-| Device run: deep links and screens | Same run. Deep links logged out (held, landed after login) and logged in (`/payments`, `/inbox`, a help center question); help center topic and question; claim details with audio playback and the add files sheet; the connect payment entry and the Trustly and Swish method list (nothing selected); chat input with the gallery, camera and file pickers opened and closed, and a rotation with a picker open | Pass |
-| Device run: stability and writes | Same run: crash buffer, `FATAL EXCEPTION`, `ANR in`; Chucker on the debug build | No crash or ANR on either build; the only mutations were the three login side effects (`MemberUpdateLanguage`, `MemberLogDevice`, `MemberDeviceRegister`) |
-| Desktop walkthrough, demo mode | Headless harness at `f674f564ce`: every registered key pushed in the real desktop graph. Author; the integrator viewed screenshots (independent) | 120 visits: 90 rendered (41 show the generic error because demo mode has no data for them), 0 threw, 0 timed out, 29 need an id, 1 not available (licenses), 0 reached the fallback |
-| Desktop walkthrough, real staging session | Same harness at `f674f564ce` on a logged-in session, ids from the app's cache, every GraphQL operation logged. Author; the integrator viewed screenshots (independent) | 134 visits: 84 rendered with real data, 6 generic errors (harness id choice or failure screens by design), 0 threw, 0 timed out, 15 need an id, 1 not available, 0 fallback, 28 excluded; 914 operations, 0 mutations |
+| R8 build | `:app:assembleStaging` (minified) at `4a8672217e`, `ed80d6b267`, `884ee23e96` and `d9e1ec3c8a`, independent | Builds and runs on the device |
+| APK size | `apkanalyzer` on debug and minified staging APKs, `229bd79df0` against `884ee23e96`, author | Debug 118 KB smaller; minified 287 bytes smaller (download size 157 bytes larger) |
+| Build time | Clean `:app:assembleDebug` and a one-line incremental edit, `229bd79df0` against `884ee23e96`, single runs on a shared machine, author | Clean 6m05s to 6m44s; incremental median 11 s to 12 s. Indicative only |
+| Device: launch and navigation | Pixel 6 Pro, Android 17, debug and minified staging 14.6.3 (43) at `ed80d6b267`, logged out and logged in, author. Cold start and system bars in dark and light; all five tabs, with per-tab back stacks kept across tab switches; back one level deep, at tab roots (to Home) and at Home (leaves the app) | Pass on both builds |
+| Device: process death | Same run, author. Debug: Profile/Contact with Insurances holding details, `ClaimDetailsKey`, `ChatKey`, `HelpCenterQuestionKey`. Minified: insurance details with Profile holding Contact, `ChatKey`, `HelpCenterQuestionKey`. Two minified restores viewed by the integrator (independent) | Each restored to the same screen and stacks; no R8 or serialization error |
+| Device: deep links and screens | Same run, author. Deep links logged out (held, landed after login) and logged in (`/payments`, `/inbox`, a help center question); help center topic and question; claim details with audio playback and the add files sheet; the connect payment entry and the method list; chat pickers opened and closed, and a rotation with a picker open. No crash or ANR; the only mutations were the three login side effects | Pass |
+| Device: chat end to end, debug | Debug build at `884ee23e96`, driven by hand by the integrator (independent), support replies sent from the staff tool on staging. Text send and delivery state; 45 messages sent and history paged back to the top in order; an image uploaded, rendered and opened in the image viewer; a PDF uploaded, rendered as a thumbnail and opened externally; a new conversation started; inbox previews and ordering; a support reply arriving live | Pass |
+| Device: chat, minified | Minified staging build at `884ee23e96`, same way. History with attachments, text send, an image attachment, paging to the top, a support reply arriving live with the conversation open. Messages and attachments sent from the desktop app render on Android | Pass |
+| Device: upload retry after process death | Debug build at `884ee23e96` with a temporary, uncommitted failure hook, integrator. A failed image upload, force stop, relaunch | The failed message keeps its thumbnail; retry succeeds |
+| Device: flows that write on entry | Debug build at `884ee23e96`, integrator: claim start (first question answered), moving, change tier, travel add-on offer, Trustly web view, Swish setup, each opened and left | No crash, no GraphQL error |
+| Device: process death after the key modules were folded | Debug and minified builds at `d9e1ec3c8a`, integrator: a conversation with content on screen, process killed, relaunched | Restored to the same conversation with its content; no serialization error |
+| Device: chat follows a new message after a background | `develop` debug builds, integrator: without the fix the list stays on the previous message after a support reply arrives in the background; with the fix it follows. On the integration branch the scenario is covered by `ChatFollowsNewestMessageTest` (author) | Fixed; not re-run on an integration build |
+| Desktop walkthrough, demo mode | Headless harness at `f674f564ce`, every registered key pushed in the real desktop graph. Author; screenshots viewed by the integrator | 120 visits: 90 rendered (41 show the generic error because demo mode has no data for them), 0 threw, 0 timed out, 29 need an id, 1 not available |
+| Desktop walkthrough, staging session | Harness with `884ee23e96` merged, on a logged-in staging session with no screen excluded. Author; screenshots viewed by the integrator | 156 visits: 125 rendered, 0 threw, 0 timed out, 29 need the output of an earlier flow step, 2 not available (Trustly checkout, licenses). The four desktop fixes confirmed in a rendered scene. Chat history renders; two texts, an image, a PDF and a new conversation were sent from desktop |
 | Seen by a person on desktop | The owner, on staging, macOS. At `961f975c97`: BankID QR login; the app's log also records navigation to Home, `OnboardingKey`, its steps and `SetupSwishPayinKey`, which shows those screens were navigated to, not that a person judged them. At `f674f564ce`: Home, the tabs, the help center (where the owner found the four problems fixed at `ed80d6b267`), with the log recording insurance details, chat, claim details, payments and profile screens | Login works; four problems found and fixed. The fixes are covered by headless tests, not yet by a person |
-| Follow-ups at `884ee23e96` | Per-platform `PermissionManager`, production stdout filter, `java.net.URI` file paths, clearing an unsupported stored language. Tests by the author; diff read by an independent reviewer; Android graph compared for the permission binding by the author. Not run on a device or in a desktop window (the device run stays at `ed80d6b267`) | Pass |
-| PR CI | None | Never run on these branches: no PR is open |
+| Follow-ups at `884ee23e96` | Per-platform `PermissionManager`, production stdout filter, `java.net.URI` file paths, clearing an unsupported stored language. Tests by the author; diff read by an independent reviewer; Android graph compared for the permission binding by the author | Pass |
+| PR CI | None on these branches; only the separate chat follow fix for `develop` has run CI | Not run |
 
 ### Not verified
 
-- PR CI on any of these branches.
-- Chat with content, on both platforms. The test account's only conversation is empty on the Android device and opened
-  empty on desktop, so it is data, but history paging, older timestamps, images in the image viewer, inline video,
-  TalkBack descriptions and sending (text, photo, document, failed upload and retry) were not exercised after the
-  conversion on either platform.
-- The 28 desktop screens that write on entry: `TrustlyKey` (`SetupTrustlyPayoutMutation`), `ClaimChatKey`
-  (`ClaimIntentStartMutation`), `ClaimDetailsKey` for a closed claim (`ClaimAcknowledgeClosedStatusMutation`), every
-  moving flow key (`MoveIntentV2CreateMutation`), every change tier key (`ChangeTierDeductibleCreateIntentMutation`),
-  every addon purchase key (`AddonGenerateOfferMutation`), `PuppyGuideArticleKey` (`PuppyGuideEngagementMutation`),
-  `SetupSwishPayinKey` (`SetupSwishPayinMutation`) and `SwedishLoginKey` (starts a BankID attempt). Also the 15
-  screens that need an id the session did not provide.
-- Everything merged after `f674f564ce` on desktop by walkthrough: the library conversions, the `jvmDefault` change,
-  the chat camera change, the four desktop fixes and the four follow-ups. `tool/desktop-walkthrough` is 31 commits
-  behind `884ee23e96`.
-- Datadog RUM view names on Android against the previous release. Look up version 14.6.3 (43) of the staging build
-  (`com.hedvig.app`) on 2026-11-13 UTC, 09:25:35 to 09:26:56 (logged out) and 09:45:01 to 09:54:49 (logged in); the
-  debug build (`com.hedvig.dev.app`) ran 09:22:18 to 09:25:10 and 09:28:58 to 09:44:30.
+- PR CI on these branches.
+- The six flows that write on entry, on the minified build.
+- On desktop: a support reply arriving while the app runs, and an image or file sent from the staff tool.
+- The cold start where many messages wait: a separate timing issue in the same scroll effect (`ScrollToBottomEffect`),
+  present on `develop`.
+- Android Studio behaviour in `commonMain`: highlighting, previews, navigation between `expect` and `actual`.
+- Datadog RUM view names on Android against the previous release. Look up version 14.6.3 (43) on 2026-11-13 UTC:
+  staging build (`com.hedvig.app`) 09:25:35 to 09:26:56, 09:45:01 to 09:54:49 and 11:32 to 11:35; debug build
+  (`com.hedvig.dev.app`) 09:22:18 to 09:25:10, 09:28:58 to 09:44:30 and 11:28 to 11:32.
 - Production flavour builds: no Android release build, no desktop run with `-Phedvig.desktop.production=true`.
-- APK size against `develop`; startup time; build time and CI duration.
-- Lint: it analyses nothing in the 17 converted library modules (a JVM-only KMP module gets `lintJvm`, which sees
-  `jvmMain` only).
-- Staging network traffic on the device: the staging build is not debuggable.
+- Startup time; CI duration.
 - On Android: the notification permission prompt (the device had it denied and it was left so), a cross-sell link
-  with `requiresAuthorization = true`, details of a past payment, opening a claim file other than audio.
-- On desktop: `DeleteAccountKey` stayed on its loading indicator in the demo run; every return to Home fires
-  `ActiveInsuranceContractTypes`, `MemberActions` and `AvailableSelfServiceOnContracts` twice each (not shown to be
-  desktop-specific); in a real window, the back keys with nothing focused, Cmd+[ on a non-US keyboard layout, the
-  mouse back button over a sheet or dialog, reopening the Home hero with a real trackpad, the help center payments
-  link, and whether one Enter press on the email login screen submits twice.
-- Linux and Windows: never run. `JvmFileService` parses Windows `file:/C:/...` URIs in tests only.
+  with `requiresAuthorization = true`, details of a past payment.
+- In a real desktop window: the back keys with nothing focused, Cmd+[ on a non-US keyboard layout, the mouse back
+  button over a sheet or dialog, reopening the Home hero with a real trackpad.
+- Windows and Linux: never run, by decision; the code keeps their back shortcuts and file paths
+  (`file:/C:/...` parsing is covered by `UriToPathTest`).
 
 ## For other developers
 
@@ -368,11 +420,11 @@ the code, or the integrator re-running a build or viewing screenshots.
 | Already-KMP entries | `androidMain` of claim-chat, claim-history, remove-addons | `commonMain` |
 | Shell | `app/app/src/main/.../app/` (`BackstackController`, `TopLevelRunLogic`, `SessionReconciler`, `HedvigEntryProvider`, `HedvigContentKeys`, `ScreenName`, `ScreenParameterExtractor`, `CurrentDestinationHolder`, `HedvigApp`, `HedvigAppState`, `NavigationSuite`, `TopLevelTabStartDestination`, `GlobalHedvigSnackBar`, `DeepLinkFirstUriHandler`, `AuthorizationCodeUriHandler`, `GetMemberAuthorizationCodeUseCase`, `LoggingInterceptor`) and their tests | `app/app-shell/src/commonMain`, `src/jvmTest`, same packages |
 | Nav UI | `:navigation-compose` `androidMain` (`Decorators`, `BottomSheetSceneStrategy`, `NavSuiteSceneDecorator`, `NavigationSuiteType`, the two retained decorators) | `commonMain`, same package |
-| Keys | `HomeKey`, `LoginKey`, `InsurancesKey`, `ProfileKey`, `OnboardingKey` (+ `OnboardingGate`, `ResetOnboardingSeenUseCase` interfaces), `ChatKey`, `InboxKey`, `ClaimDetailsKey`, `ImageViewerKey` | The new `-navigation` modules, same packages |
+| Keys | `HomeKey`, `LoginKey`, `InsurancesKey`, `ProfileKey`, `OnboardingKey`, `ClaimDetailsKey` and the `OnboardingGate` and `ResetOnboardingSeenUseCase` interfaces shared files with other declarations | Their own files in the same feature and package (`HomeKey.kt`, `LoginKey.kt` and so on; the implementations in `OnboardingGateImpl.kt`, `ResetOnboardingSeenUseCaseImpl.kt`) |
 | Unleash keys | `Feature.unleashKey`, `neverFetchedDefaults` in `feature-flags` `androidMain` | `commonMain` (`FeatureUnleashKey.kt`, `UnleashSettings.kt`) |
 | `Language.label` | `language-core` `androidMain/Language.kt` | `commonMain/LanguageLabel.kt` |
 | `TlsDiagnostics` | `network-clients` `androidMain` | `commonMain` |
-| Library sources | `src/main/kotlin`, `src/main/graphql`, `src/test/kotlin` of 17 libraries that were plain JVM modules (`auth-event-core`, `auth-core-public`, `core-demo-mode`, `core-app-review`, `theme`, `experiments-public`, `navigation-activity`, `notification-badge-data-public`, `language-data`, `data-addons`, `data-changetier`, `data-cross-sell-after-claim-closed`, `data-cross-sell-after-flow`, `data-display-items`, `data-paying-member`, `data-settings-datastore-public`, `member-reminders-public`) | `src/commonMain/kotlin`, `src/commonMain/graphql`, `src/jvmTest/kotlin`; `:<module>:test` is now `:<module>:jvmTest` |
+| Library sources | `src/main/kotlin`, `src/main/graphql`, `src/test/kotlin` of 17 libraries that were plain JVM modules (`auth-event-core`, `auth-core-public`, `core-demo-mode`, `core-app-review`, `theme`, `experiments-public`, `navigation-activity`, `notification-badge-data-public`, `language-data`, `data-addons`, `data-changetier`, `data-cross-sell-after-claim-closed`, `data-cross-sell-after-flow`, `data-display-items`, `data-paying-member`, `data-settings-datastore-public`, `member-reminders-public`) | `src/commonMain/kotlin`, `src/commonMain/graphql`, `src/jvmTest/kotlin` |
 
 ### Changed symbols
 
@@ -388,25 +440,30 @@ the code, or the integrator re-running a build or viewing screenshots.
 
 ### Shared behaviour changes that reach Android
 
-Both affect only mouse, trackpad and keyboard input; touch input produces neither event and is unchanged.
+| Change | File | Test |
+|---|---|---|
+| On Home with the hero collapsed, an upward, mostly vertical mouse wheel scroll that the list leaves unused reopens the hero in one animation. Touch input produces no wheel event and is unchanged | `feature-home` `HomeDestination.kt` | `HomeHeroScrollTest` |
+| Navigation bar items drop their hover or focus highlight when the bar moves between scenes: a new collector first receives the end of every hover and focus the previous one saw start. Press ripples and touch are unchanged | `design-system-hedvig` `internal/MappedInteractionSource.kt` | `MappedInteractionSourceTest`, `NavigationBarHighlightTest` |
+| A chat image or PDF attachment whose thumbnail fails to load renders as the file card, which opens the URL, instead of an empty tile | `feature-chat` `ChatLoadedScreen.kt` (`ChatFileThumbnail`) | `ChatFileThumbnailTest` |
+| The chat list follows a newly arrived message after the screen returns from the background: `ScrollToBottomEffect` reads the paging list through `rememberUpdatedState`, so it observes the list the new presenter produces. The same bug exists on `develop` and is fixed there separately | `feature-chat` `ChatLoadedScreen.kt` | `ChatFollowsNewestMessageTest` |
 
-| Change | File |
-|---|---|
-| On Home with the hero collapsed, an upward, mostly vertical mouse wheel scroll that the list leaves unused reopens the hero in one animation | `feature-home` `HomeDestination.kt` |
-| Navigation bar items drop their hover or focus highlight when the bar moves between scenes: a new collector first receives the end of every hover and focus the previous one saw start. Press ripples are unchanged | `design-system-hedvig` `internal/MappedInteractionSource.kt` |
+### Observed, not fixed
 
-### Observed on the Android device run
+Seen on builds of this branch; not compared against a build of `develop` unless stated.
 
-Seen on 14.6.3 (43) built from `ed80d6b267`; not compared against a build of `develop`.
-
+- Each return to Home fires `ActiveInsuranceContractTypes`, `MemberActions` and `AvailableSelfServiceOnContracts`
+  twice. The cause is in shared presenter code; seen on Android and desktop.
+- Tapping a co-insured row in the edit list opens the remove confirmation directly.
 - A deep link from outside the app (`am start` VIEW intent) stacks a second `MainActivity` on the existing task, so
   after landing, one Back on Home appears to do nothing while the second activity unwinds.
-- The login screen in dark mode shows white status bar icons over a light background.
-- `MissedPayment` is queried on the login screen while logged out, which forces a redundant logout.
+- The login screen in dark mode shows white status bar icons over a light background (the same logic as `develop`).
+- `MissedPayment` is queried on the login screen while logged out, which forces a redundant logout (the same as
+  `develop`).
 - On a cold start with a stored session, `LoginKey` is navigated to about 30 ms before `HomeKey`, behind the splash;
   it may record a Login view in Datadog RUM. It does not happen on every cold start.
 - Production `link.hedvig.com` links in help center answers are not matched by the develop and staging flavours and
-  go to the OS (Google Play on the device); only release builds navigate them in the app.
+  go to the OS on Android (Google Play on the device); only release builds navigate them in the app. The desktop app
+  rewrites them to the staging host.
 
 ### Open branches that collide
 
@@ -423,3 +480,6 @@ Seen on 14.6.3 (43) built from `ed80d6b267`; not compared against a build of `de
 - Empty `<manifest />` files in `androidMain` of feature-forever, feature-home, feature-insurance-certificate,
   feature-insurances, feature-payments, feature-terminate-insurance, feature-travel-certificate.
 
+### Landing the work
+
+The proposed split into pull requests is in `docs/superpowers/plans/2026-11-13-desktop-app-pr-split.md`.
