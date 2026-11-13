@@ -20,8 +20,9 @@ Molecule ViewModel on the Compose runtime measured about +1.3 MB; exporting the 
 experiment finds out what a real screen costs and how it feels to consume from Swift.
 
 Nothing here ships. No PR is opened for this work until the owner says so. Branches are pushed and merged into
-`feat/desktop-app-integration`. The Android app must not get worse: if supporting iOS would complicate `commonMain` a
-lot, skipping that piece is acceptable (the skip rule of the desktop design, applied to iOS).
+`feat/desktop-app-integration`. The Android app must not get worse. During the experiment, a piece may be skipped and
+reported if sharing it would make Android's `commonMain` much worse. That allowance is for the experiment only (owner
+decision 12): anything that would later ship to Ugglan through the umbrella must be complete and correct on iOS.
 
 ## Goals
 
@@ -37,6 +38,8 @@ The experiment has proved its point when all of these hold:
 5. Android's compiled DI graph and behaviour are unchanged, verified the way the desktop work did (see
    "Verification").
 6. The shipped size of the shared framework is recorded after every step.
+7. The report to the owner (see "What the experiment reports") lists every skip, so the decision to commit to the
+   approach is made with them in view.
 
 ## Non-goals
 
@@ -58,6 +61,9 @@ These make the experiment a failure even if the screen works.
   this work.
 - **Visibility widened across all features.** Only what the claim history proof needs becomes public.
 - **Anything shipped or any PR opened.**
+- **A second-class iOS.** A skip is an experiment-only allowance, never a shape to ship. If a piece cannot be both good
+  for Android and complete on iOS, that is a reason not to share that piece, or to stop, not to ship a reduced iOS
+  version of it (owner decision 12).
 
 ## Constraints
 
@@ -140,6 +146,16 @@ These make the experiment a failure even if the screen works.
    a JVM and Android source set (`jvmAndAndroidMain`). No extra `-ui` modules.
 10. **KMP-NativeCoroutines is not assumed** to be the right bridge.
 11. **Deep link and navigation semantics are tied to Navigation 3** and are not shared; at most link definitions.
+12. **The skip rule is for the experiment only.** The desktop app never sees production use, so skipping pieces there
+    was fine. Ugglan is the production app: if the approach is committed to and Ugglan receives features through the
+    umbrella, iOS is not a second-class citizen. It must work completely and get the same attention Android does. In the
+    experiment a piece may be skipped and reported when sharing it would make Android's `commonMain` much worse; what
+    would ship to Ugglan must be complete and correct on iOS, and a piece that cannot be both good for Android and
+    complete on iOS is not shared (or the work stops), never shipped compromised. Every skip is listed in the report.
+13. **Size is not a hard limit.** Even 20 to 30 MB is fine if the value is worth it; the past problem was doubling the
+    app size for the UI of one small feature. Size is measured and reported, not used as a stop condition.
+14. **A `commonTest` smoke test on the iOS simulator** for the facade and native graph is done alongside the iOS shell
+    (step 3).
 
 ## Design
 
@@ -152,7 +168,7 @@ Each call below is the designer's, open to override. Each gives the reason and w
 | 0 | Foundation fixes before any native graph: the `language-core` edge, per-platform auth and demo bindings, a guard against Compose UI in shared `commonMain` | Android graph unchanged; the data layer's iOS compile classpath has no Compose resources |
 | 1 | Split `feature-claim-history` by source set, add iOS targets, give it a deliberate public surface | The module compiles for both iOS targets; Android unchanged |
 | 2 | A native Metro graph in `:umbrella` with Swift-supplied inputs | The framework links with the graph and the claim history ViewModel reachable |
-| 3 | The iOS shell app | Goal 1 and goal 3 in the shell |
+| 3 | The iOS shell app, and the iOS simulator smoke test (call K) | Goal 1 and goal 3 in the shell; the smoke test passes |
 | 4 | Bridge comparison inside the shell | A written recommendation to the owner |
 | 5 | The Ugglan screen on an experiment branch | Goals 2 to 4 in Ugglan |
 
@@ -415,9 +431,33 @@ After each step, report the shipped size of the device slice: `./gradlew :umbrel
 the symbol count. Quote shipped bytes, never zip size. First re-measure the integration branch's baseline, since it is
 not `develop`'s 3.59 MB.
 
-Stop and report to the owner if the shared framework exceeds 15 MB shipped. The owner's pain threshold is 30 to 40 MB;
-15 MB is the designer's early warning, high enough for Apollo, the runtime and a feature, low enough to catch Compose
-UI or a stray large dependency long before the threshold.
+Size is not a stop condition (owner decision 13). Each step's report gives the shipped-size delta of that step and the
+running total. It calls out, without stopping the work, any single step that adds more than about 3 MB, or anything
+that pulls in Compose UI or Compose resources (designer's call: 3 MB is roughly the whole network stack measured so
+far, so one step adding more than that deserves an explanation). Reason: the owner judges size against value, so the
+numbers have to be there per step. Cost if wrong: none beyond a few lines per report.
+
+### K. iOS simulator smoke test (owner decision 14; contents are the designer's call)
+
+A `commonTest` source set in `feature-claim-history`, run on `iosSimulatorArm64Test` (the Kotlin plugin's task for the
+iOS simulator target; Kotlin/Native runs the test binary in a simulator), delivered with the shell in step 3. It
+covers:
+
+- The facade and the native graph construct with fake inputs (fake `AccessTokenFetcher`, token storage, device id,
+  language storage, build config, demo mode).
+- The claim history ViewModel, driven through the facade, goes from loading to content, and from loading to error,
+  against a fake GraphQL response (an Apollo mock or a fake Ktor engine; the builder picks whichever runs on native).
+- Clearing the facade's store cancels the presenter's work: no further emission and no further request after
+  `close()`.
+
+What the conventions do today: `registerTestLifecycleTask` in `KotlinMultiplatformLibraryConventionPlugin.kt` gives
+every KMP module a `test` task that depends on `jvmTest` and `testAndroidHostTest` only, and `commonTest` gets
+`kotlin.test`. Nothing runs iOS tests, and the shared fixture modules (`molecule-test` and the other `-test` modules)
+are `hedvig.jvm.library`, so the test uses only `kotlin.test`, coroutines test and Turbine-style code that compiles for
+native, or the builder converts the fixture it needs. PR CI runs `./gradlew test jvmTest` on `ubuntu-latest`, where
+no iOS simulator exists, so this test does not join `test`; it stays a separately named task
+(`:feature-claim-history:iosSimulatorArm64Test`, run locally on macOS). If a later convention change wants iOS tests in
+the lifecycle, it needs a macOS CI runner first.
 
 ### J. Later work, out of scope here (designer's call)
 
@@ -437,7 +477,7 @@ UI or a stray large dependency long before the threshold.
 | 0 | `checkCommonMainImports`, the touched modules' tests (same count before and after), `:app:assembleDebug`, `:app-desktop:jvmTest`. `javap` of `AppGraph$Impl` and `ActivityRetainedGraphImpl` against the parent commit (recipe in `CLAUDE.md`): 87 ViewModels, 21 deep link matcher providers, 111 keys, and only the `AuthTokenStorage` binding changed (step 0, item 2). A debug build on a device: log in, kill, relaunch still logged in, log out | `compileKotlinIosSimulatorArm64` and `compileKotlinIosArm64` of `language-core`, `auth-core-public`, `core-demo-mode`, `network-clients`; the iOS compile classpath of `network-clients` has no `components-resources` |
 | 1 | As step 0, plus the key count and `ExhaustiveBackStackSerializationTest` (the key moves to `jvmAndAndroidMain`) and the desktop app opening claim history | Both iOS compiles of `feature-claim-history`; the guard passes |
 | 2 | Unchanged from step 1 | `:umbrella` debug framework link for the simulator; the generated header shows the facade and the input interfaces and nothing from Compose UI; size |
-| 3 | n/a | The shell on the simulator: QR login on staging, the four states (error by switching the network off, retry by switching it on, empty and content with suitable staging members), leaving the screen clears the ViewModel (log) and no request follows (network log), logout then login as another member shows that member's claims; size |
+| 3 | n/a | `:feature-claim-history:iosSimulatorArm64Test` passes (K). The shell on the simulator: QR login on staging, the four states (error by switching the network off, retry by switching it on, empty and content with suitable staging members), leaving the screen clears the ViewModel (log) and no request follows (network log), logout then login as another member shows that member's claims; size |
 | 4 | n/a | The comparison write-up with code, timings and sizes |
 | 5 | n/a | The same checks as step 3 in Ugglan, plus the partner claim route and demo mode still showing the Swift demo data |
 
@@ -448,11 +488,13 @@ querying staging, not assumed; the empty and partner cases may need the owner to
 
 ## Risks and what stops the experiment
 
-- **Size.** Above 15 MB shipped at any step: stop and report (I).
-- **Compose UI or Skiko in the link.** Any Skiko or Compose UI symbol in the framework: stop and find the edge before
-  continuing.
+- **Size.** Not a stop condition (owner decision 13). A step adding more than about 3 MB, or Compose UI or Compose
+  resources appearing in the link, is called out in that step's report (I).
+- **Compose UI or Skiko in the link.** Any Skiko or Compose UI symbol in the framework is an anti-goal: find the edge
+  and remove it as part of that step.
 - **Android gets worse.** If a step needs a change to Android behaviour or a non-trivial restructuring of shared code
-  to suit Swift, apply the skip rule: skip that piece and record it, do not change Android.
+  to suit Swift, skip that piece for the experiment and record it in the report; do not change Android. A skipped
+  piece is a finding that the piece is not shareable as designed, not something to ship around (owner decision 12).
 - **The KSP metadata pass with UI in `jvmAndAndroidMain`.** Not verified by any compile yet; `feature-help-center`
   proves the metadata pass with iOS targets but still has UI in `commonMain`. If the ViewModel processor cannot resolve
   the module on the metadata compilation, that is a convention fix, and if it is not a small one, report it.
@@ -462,6 +504,14 @@ querying staging, not assumed; the empty and partner cases may need the owner to
 - **The display-link clock in the background** stalls state delivery: report; it affects every shared screen.
 - **Two Kotlin frameworks in one app** cannot share objects (unverified); keep everything in the one umbrella.
 
+## What the experiment reports
+
+After step 4, and again after step 5, the builder reports to the owner: the size table (per-step delta and running
+total, with any callouts from I); the bridge recommendation (D); the answers to goals 1 to 6 with how each was checked;
+every skip made during the experiment, each with what was skipped, why sharing it would have made Android's
+`commonMain` much worse, and what completing it on iOS would take; and every finding from the risks below. The
+decision to commit to the approach is made with the skips in view (owner decision 12).
+
 ## Left to the builder
 
 - The facade's exact names and shape, and how the input adapters are written, within the constraints in E and F.
@@ -469,7 +519,6 @@ querying staging, not assumed; the empty and partner cases may need the owner to
 - The shell's Swift structure, its Keychain wrapper and QR rendering, and whether its demo switch is cheap enough.
 - How `Hedvig-TimeZone` and the iOS user agent are added on native.
 - Which modules `:umbrella` must export for the input interfaces, judged from the header.
-- Whether a `commonTest` smoke test on `iosSimulatorArm64Test` is worth adding for the facade.
 - Branch names and the order of commits within a step.
 
 ## Open questions for the owner
@@ -480,14 +529,16 @@ querying staging, not assumed; the empty and partner cases may need the owner to
    compatibility with Ugglan's 3.17.0 unverified), or no Kotlin-side tracing on iOS for the experiment?
 3. Once the shell works, delete `micro-apps/umbrella-consumer` (and the access token committed in it)?
 
-Questions 1 and 2 do not block the shell: until they are answered, native runs with logout on `UNAUTHENTICATED` off
-and no Kotlin-side Datadog tracing (G). Both must be answered before step 5.
+The owner has seen these questions and left them open. Questions 1 and 2 do not block the shell: until they are
+answered, native runs with logout on `UNAUTHENTICATED` off and no Kotlin-side Datadog tracing (G). All three are
+answered before step 5.
 
 ## Decisions and who made them
 
-Stylianos: decisions 1 to 11 above, the intent, and that nothing ships.
+Stylianos: decisions 1 to 14 above, the intent, and that nothing ships. The owner approved this design with
+decisions 12 to 14 as amendments.
 
 Designer's calls, open to override: A (order), B (shell at `app/app-ios/`, checked in, embed and sign from Gradle), C
 (ViewModel, Swift-owned lifetime), D (three-way comparison ending in a recommendation), E (public facade in
 `nativeMain`), F (graph in `:umbrella`, Swift inputs, no Swift-produced flows), G (parity positions), H (Ugglan
-pattern), I (15 MB early warning), J (scope cut).
+pattern), I (3 MB per-step callout), K (smoke test contents and its separate task), J (scope cut).
