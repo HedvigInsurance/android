@@ -98,7 +98,7 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
    * assisted factory, so no VM hand-writes `@ViewModelKey` / `@ContributesIntoMap` / a nested factory.
    *
    * For KMP modules both `kspCommonMainMetadata` (commonMain VMs — generated DI must be visible to
-   * every target, including iOS via IosGraph) and `kspAndroid` (androidMain-only VMs, e.g. a screen
+   * every target, including iOS) and `kspAndroid` (androidMain-only VMs, e.g. a screen
    * iOS never renders) are wired, so a single module may freely mix the two. See [ViewModelsHandler]
    * for how the resulting double-emission of commonMain VMs is suppressed.
    *
@@ -374,7 +374,7 @@ private abstract class ViewModelsHandler {
       }
       return
     }
-    // commonMain VMs must be visible to every target (notably iOS via IosGraph), so they are
+    // commonMain VMs must be visible to every target (notably iOS), so they are
     // generated into commonMain through kspCommonMainMetadata. androidMain-only VMs are invisible to
     // the metadata pass, so kspAndroid is ALSO wired to cover them. kspAndroid also re-sees commonMain
     // VMs and would double-emit them, but kspAndroid runs with the `leaf` role below, in which the
