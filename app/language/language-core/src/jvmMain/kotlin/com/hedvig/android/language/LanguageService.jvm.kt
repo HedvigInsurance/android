@@ -35,9 +35,7 @@ internal class JvmLanguageService(
   @Inject
   constructor(dataStore: DataStore<Preferences>) : this(dataStore, listOf(operatingSystemLocaleTag()))
 
-  private var storedLocaleTags: List<String> = runBlocking { dataStore.data.first()[storedLanguageKey] }
-    ?.let(::listOf)
-    .orEmpty()
+  private var storedLocaleTags: List<String> = runBlocking { readStoredLocaleTagsApplyingMigration() }
   private val mutableLanguage = MutableStateFlow(applyCurrentPick())
   override val language: StateFlow<Language> = mutableLanguage.asStateFlow()
 
@@ -62,6 +60,25 @@ internal class JvmLanguageService(
 
   override fun getLocale(): CommonLocale {
     return language.value.toLocale()
+  }
+
+  /**
+   * The stored pick, cleared first when [storedLanguageMigration] says so, as Android does at startup. With nothing
+   * stored the app follows the operating system.
+   */
+  private suspend fun readStoredLocaleTagsApplyingMigration(): List<String> {
+    val storedLocaleTags = dataStore.data.first()[storedLanguageKey]?.let(::listOf).orEmpty()
+    return when (storedLanguageMigration(storedLocaleTags, systemLocaleTags)) {
+      StoredLanguageMigration.Keep -> {
+        storedLocaleTags
+      }
+
+      StoredLanguageMigration.Clear -> {
+        logcat { "LanguageService: clearing stored [${storedLocaleTags.joinToString()}]" }
+        dataStore.edit { preferences -> preferences.remove(storedLanguageKey) }
+        emptyList()
+      }
+    }
   }
 
   /**
