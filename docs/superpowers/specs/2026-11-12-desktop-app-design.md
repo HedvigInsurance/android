@@ -72,7 +72,7 @@ How to apply it:
   platform conditionals through presenters and screens, only to accommodate desktop.
 - A skipped piece of functionality shows a plain "Not available on desktop" state where the member
   would reach it. It never crashes and is never hidden behind a silent no-op that looks like a bug.
-- Every skip is recorded in the skip register at the bottom of this document, with one line of
+- Every skip is recorded in the skip register of the as-built document, with one line of
   reason. The register is the honest measure of how real the desktop app is.
 
 ## Current state
@@ -254,7 +254,7 @@ loses its iOS targets in this project, and `:umbrella` keeps exporting what it e
 The one expected exception is navigation UI infrastructure in `:navigation-compose`. Phase 0
 checks whether `navigation3-ui` and `lifecycle-viewmodel-navigation3` publish both JVM and iOS
 variants. If both exist, that code goes to `commonMain`. If only JVM exists, it may go to
-`jvmAndAndroidMain`, and that is recorded in the iOS debt register at the bottom of this document.
+`jvmAndAndroidMain`, and that is recorded in the iOS debt register of the as-built document.
 The register is for exactly this case: shared-in-practice code that iOS cannot compile yet for a
 reason outside this repo.
 
