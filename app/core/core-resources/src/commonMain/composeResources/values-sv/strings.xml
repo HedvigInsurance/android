@@ -442,6 +442,7 @@
   <string name="GENERAL_RETRY">Försök igen</string>
   <string name="GENERAL_SAVE_CHANGES_BUTTON">Spara ändringar</string>
   <string name="GENERAL_SHOW">Visa</string>
+  <string name="GENERAL_YESTERDAY">Igår</string>
   <string name="HC_ALL_QUESTION_TITLE">Alla frågor</string>
   <string name="HC_ANSWER_TITLE">Svar</string>
   <string name="HC_CHAT_ANSWER">Vi är tillgängliga vardagar 08–22 och helger 10–22</string>
