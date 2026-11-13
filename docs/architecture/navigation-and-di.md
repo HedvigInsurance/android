@@ -821,7 +821,7 @@ The fresh instance reads the ancestry back in `restoreAndPersist` via the **same
 ## VI.2 Tests that guard the architecture
 
 - **`ExhaustiveBackStackSerializationTest`** (`:app`) — round-trips every `HedvigNavKey` through the merged serializers module. This is the safety net for invariant #4: forget `navKeys()` on a module and this test fails instead of users hitting a process-death crash.
-- **`BackstackTest`** (`navigation-compose`) — the `Backstack` helper extensions.
+- **`BackstackTest`** (`navigation-common`) — the `Backstack` helper extensions.
 - **`HedvigDeepLinkMatcherTest`** — matching/priority/throw-as-non-match behaviour.
 - **`HedvigNavKeySavedStateTest`** (`navigation-common`) — key saved-state behaviour.
 - **`HedvigContentKeysTest`** (`:app-shell`): pins the content-key contract (II.8): entries carry our derivation, the controller reports the same value as live for both rendered and *parked* destinations, and repeated provider calls for one key stay equal. Every case fails if the stamping is removed.
