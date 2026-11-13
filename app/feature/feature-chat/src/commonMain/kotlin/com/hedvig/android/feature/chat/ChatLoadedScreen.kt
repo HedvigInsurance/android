@@ -41,7 +41,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -569,7 +568,7 @@ private fun ChatLazyColumn(
 }
 
 @Composable
-private fun ChatBubble(
+internal fun ChatBubble(
   uiChatMessage: CbmUiChatMessage?,
   chatItemIndex: Int,
   enableMessageSenderLabeling: Boolean,
@@ -647,15 +646,18 @@ private fun ChatBubble(
         is ChatMessageFile -> {
           when (chatMessage.mimeType) {
             IMAGE -> {
-              ChatFileThumbnail(
-                url = chatMessage.url,
-                cacheKey = chatMessage.id,
+              ChatAsyncImage(
+                model = chatMessage.url,
                 imageLoader = imageLoader,
-                onThumbnailClick = { onNavigateToImageViewer(chatMessage.url, chatMessage.id) },
-                onFileCardClick = { openUrl(chatMessage.url) },
-                modifier = Modifier.semantics {
-                  hideFromAccessibility()
-                },
+                cacheKey = chatMessage.id,
+                isFailedToBeSentMessage = false,
+                modifier = Modifier
+                  .clickable {
+                    onNavigateToImageViewer(chatMessage.url, chatMessage.id)
+                  }
+                  .semantics {
+                    hideFromAccessibility()
+                  },
               )
             }
 
@@ -685,12 +687,11 @@ private fun ChatBubble(
             }
 
             ChatMessageFile.MimeType.PDF -> {
-              ChatFileThumbnail(
+              PdfThumbnailOrFileCard(
                 url = chatMessage.url,
                 cacheKey = chatMessage.id,
                 imageLoader = imageLoader,
-                onThumbnailClick = { openUrl(chatMessage.url) },
-                onFileCardClick = { openUrl(chatMessage.url) },
+                onClick = { openUrl(chatMessage.url) },
                 modifier = Modifier.semantics {
                   hideFromAccessibility()
                 },
@@ -975,23 +976,22 @@ internal fun AttachedFileMessage(
 }
 
 /**
- * A file attachment shown as its decoded thumbnail, or as the [AttachedFileMessage] card once the image request
- * fails, for example when the [imageLoader] has no decoder for the file's type. The failure is kept in saveable state
- * so the message does not go back to a loading tile when it is scrolled out of view and back.
+ * A PDF shown as its thumbnail, or as the [AttachedFileMessage] card once the thumbnail request fails, for example
+ * when the [imageLoader] has no PDF decoder. Both open the same URL. The failure is only remembered while the message
+ * stays in composition, so a message scrolled back into view requests its thumbnail again.
  */
 @Composable
-internal fun ChatFileThumbnail(
+private fun PdfThumbnailOrFileCard(
   url: String,
   cacheKey: String,
   imageLoader: ImageLoader,
-  onThumbnailClick: () -> Unit,
-  onFileCardClick: () -> Unit,
+  onClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  var thumbnailFailed by rememberSaveable(url) { mutableStateOf(false) }
+  var thumbnailFailed by remember(url) { mutableStateOf(false) }
   if (thumbnailFailed) {
     AttachedFileMessage(
-      onClick = onFileCardClick,
+      onClick = onClick,
       modifier = modifier,
     )
   } else {
@@ -1002,7 +1002,7 @@ internal fun ChatFileThumbnail(
       isFailedToBeSentMessage = false,
       onError = { thumbnailFailed = true },
       modifier = Modifier
-        .clickable(onClick = onThumbnailClick)
+        .clickable(onClick = onClick)
         .then(modifier),
     )
   }
