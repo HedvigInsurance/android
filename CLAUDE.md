@@ -78,7 +78,7 @@ The codebase is organized under `/app` with 80+ modules following a strict modul
 - **data/** - Data layer modules (data-contract, data-chat, data-addons, etc.)
 - **core/** - Core utilities (core-common, core-datastore, core-resources, etc.)
 - **apollo/** - GraphQL client modules (apollo-octopus-public, apollo-core, etc.)
-- **navigation/** - Navigation infrastructure: `navigation-common` (KMP, holds `HedvigNavKey` + marker interfaces), `navigation-compose` (KMP, the `Backstack` interface, deep-link matching, decorators), `navigation-keys-processor` (KSP processor generating serializer registrations), `navigation-activity` (Android `ExternalNavigator`).
+- **navigation/** - Navigation infrastructure: `navigation-common` (KMP, UI-free: `HedvigNavKey` + marker interfaces, the `Backstack` interface, deep-link matching), `navigation-compose` (KMP, Compose UI only: scene strategies and decorators), `navigation-keys-processor` (KSP processor generating serializer registrations), `navigation-activity` (Android `ExternalNavigator`).
 - **design-system/** - Design system components
 - **ui/** - Shared UI components
 - **auth/** - Authentication modules
