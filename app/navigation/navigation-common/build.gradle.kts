@@ -1,5 +1,6 @@
 plugins {
   id("hedvig.multiplatform.library.ios")
+  id("hedvig.multiplatform.library.android")
   id("hedvig.gradle.plugin")
 }
 
@@ -8,6 +9,9 @@ hedvig {
 }
 
 kotlin {
+  android {
+    androidResources.enable = false
+  }
   sourceSets {
     commonMain.dependencies {
       api(libs.androidx.navigation3.runtime)
