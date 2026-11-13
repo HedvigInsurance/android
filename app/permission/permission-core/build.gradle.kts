@@ -9,6 +9,9 @@ kotlin {
     commonMain.dependencies {
       implementation(projects.coreCommonPublic)
     }
+    jvmTest.dependencies {
+      implementation(libs.junit)
+    }
     androidMain.dependencies {
       implementation(libs.androidx.other.appCompat)
     }
