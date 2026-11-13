@@ -606,6 +606,29 @@ How to handle it:
   with the seam). Tell 3305's developer before R10 opens; this is still listed as open in the ledger. I could not see
   3305's branch locally, so its current state is unknown.
 
+### 3.9 Branches merged after `bb772ba399`
+
+Placed by reading each branch's files against the PR table above; no line counts were computed for them, and no
+existing PR is renumbered. Up to the integration tip `99815f5a70`:
+
+| Merge | Branch | Belongs to |
+|---|---|---|
+| `840b64ea16` | `build/guard-androidx-core-note` (guard and its test) | R1 |
+| `d9e1ec3c8a` | `refactor/fold-navigation-key-modules` | R8: it deletes the eight key modules that A8 creates and moves their keys back into the features. On develop, R8 can skip creating them instead of creating and folding them |
+| `0d94497df0` | `fix/chat-follow-new-message` | R12, next to the thumbnail fix. The same bug is fixed on develop separately, so on develop this is the converted file plus its `jvmTest` |
+| `9b8bd6b874` | `fix/chat-thumbnail-fallback-pdf-only` | R12: a fix round of branch 50 (A26), squash it into that commit |
+| `b92cf70eab` | `refactor/foundation-cleanups` | Split by commit. `KeepKmp` (`d7aea7ae38`, `4b1832f9fe`): R8, since it deletes the onboarding copy that the key module commit `dc02288300` (A8) adds, touches `data-addons` (R5) and empties the allow-list entries `90db99d446` (R1) adds; on develop, landing the one `KeepKmp` before R1 would let the guard start with an empty allow-list. `shareddi` and the Compose-on-iOS remnants (`0c840345d7`, `b353996f8a`): new PR R19. `uuid4` (`099024c74d`): R14, the first PR after both the chat conversion and the shell. `Dispatchers.IO` import (`fd2379b1ee`): R8 (home). Empty manifests (`ac676436d2`): on develop the conversions in R5, R8, R9 and R10 should delete these manifests instead of moving them. JDK 21 pin (`985be3b485`): R2, before the first library becomes a JVM-only KMP module in R5 |
+| `98ba3d235f` | `refactor/apollo-chain-in-network-clients` | R15: squashed, the interceptors go from `:app` straight into `network-clients`, and `auth-core-public` gets its iOS targets there. Its `DesktopGraphTest` hunk goes to R16, which adds that test |
+| `442e03047e` | `refactor/navigation-types-to-common-2` | New PR R20 after R14: the feature build edits need the converted features and `LoneDeepLinkChrome` serves the shell's `BackstackController`. Its last commit (`38f344c7ea`, `IosSwipeBackController`) goes to R19 |
+| `99815f5a70` | docs commit on the integration branch | R20 |
+
+New PRs:
+
+| PR | Title | Contents | Base after | Android risk | Auto-merge |
+|---|---|---|---|---|---|
+| R19 | Delete the dead Compose-on-iOS code | `0c840345d7`, `b353996f8a`, `38f344c7ea` | develop | none: `shareddi` holds only `nativeMain` code; `:app` loses an empty dependency | yes |
+| R20 | UI-free navigation types in `navigation-common` | `7e42358a5e`, `ffec8229cc`, `2eed12509c`, `36f1fe9095`, `8e82c99e4e`, `99815f5a70` | R14 | low to medium: `navigation-common` gains an Android target, so Android compiles its classes against the Android Navigation 3 runtime instead of linking the JVM jar | after a deep link check |
+
 ---
 
 ## 4. What should not go to develop, or not yet

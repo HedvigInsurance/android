@@ -1,14 +1,14 @@
 # The Hedvig app on desktop: as built
 
-State of `feat/desktop-app-integration` at `0d94497df0`. The design is in `2026-11-12-desktop-app-design.md`.
+State of `feat/desktop-app-integration` at `99815f5a70`. The design is in `2026-11-12-desktop-app-design.md`.
 
 - Run it with `./gradlew :app-desktop:run` (staging) on macOS; log in with BankID by QR code or with email.
 - Every feature except staff impersonation runs on shared code. Trustly checkout, audio, video, camera, push and OS
   deep links do not work on desktop; the skip register lists every gap.
 - On an Android device the converted app passed a smoke run, chat end to end with staff replies, the flows that
   write on entry and process-death restore, on debug and minified builds.
-- For iOS, the next step is iOS targets on `auth-core-public` (no blocker left) and on the feature modules, each
-  `expect` getting a `nativeMain` actual (see the iOS debt register).
+- For iOS, the next step is iOS targets on the remaining libraries and the feature modules, each `expect` getting a
+  `nativeMain` actual (see the iOS debt register and "Open items for the iOS sharing work").
 
 ## Running it
 
@@ -66,7 +66,7 @@ flow and chat phases that write to staging. Output: `app/app-desktop/build/walkt
 
 | Module | Plugins | Holds |
 |---|---|---|
-| `:app-shell` (`app/app-shell`) | `hedvig.multiplatform.library` + `.android` (JVM, Android) | `HedvigApp`, `HedvigAppState`, `NavigationSuite`, `BackstackController`, `TopLevelRunLogic`, `SessionReconciler`, `HedvigEntryProvider` (`hedvigEntryProvider`, registers every key for every host), `AppHost`, `DeepLinkFirstUriHandler`, `AuthorizationCodeUriHandler`, `GlobalHedvigSnackBar`, and the Apollo chain shared by both hosts (`ApolloInterceptorMetroProviders`, `LoggingInterceptor`, `LogoutOnUnauthenticatedInterceptor`). The shell's tests are in its `jvmTest`. |
+| `:app-shell` (`app/app-shell`) | `hedvig.multiplatform.library` + `.android` (JVM, Android) | `HedvigApp`, `HedvigAppState`, `NavigationSuite`, `BackstackController`, `TopLevelRunLogic`, `SessionReconciler`, `HedvigEntryProvider` (`hedvigEntryProvider`, registers every key for every host), `AppHost`, `DeepLinkFirstUriHandler`, `AuthorizationCodeUriHandler`, `GlobalHedvigSnackBar`, `GetMemberAuthorizationCodeUseCase`. Most of it is Compose UI; the files in its `navigation` package use the Compose runtime, `androidx.lifecycle` and the Navigation 3 runtime but no Compose UI, except `HedvigEntryProvider`. The shell's tests are in its `jvmTest`. |
 | `:app` | `hedvig.android.application` | The Android host: `MainActivity`, `HedvigApplication`, `AppGraph`, `ActivityRetainedGraph`, `NavRetainedViewModel`, `MergedMetroViewModelFactory`, `NavigationStateBridge`, `AndroidAppHost`, external deep links, notifications, WorkManager, Firebase and Datadog (`Navigation3TrackingEffect` is composed in `MainActivity` right before `HedvigApp`). `ExhaustiveBackStackSerializationTest` and `BackStackSerializationTest` stay here. |
 | `:app-desktop` (`app/app-desktop`) | `hedvig.multiplatform.library` (JVM only), Compose Desktop | `Main.kt` (window), `DesktopBack` (back shortcuts and the mouse back button), `DesktopUnmatchedLinkRouter`, `DesktopGraph`, `DesktopMetroProviders`, `DesktopBindings`, `DesktopAppHost`, `DesktopExternalNavigator`, `DesktopAppBuildConfig`, `DesktopFallbackEntry`, `DesktopIntegration` (`java.awt.Desktop` actions, notice dialogs), `DesktopWindowSize`, `DesktopLogging`, `StdoutLogcatLogger`. |
 | `database-jvm` (`app/database/database-jvm`) | `hedvig.jvm.library` | `DatabaseJvmMetroProviders`: Room `AppDatabase` builder with `BundledSQLiteDriver`. |
@@ -80,10 +80,22 @@ needs it.
 Android-only (`hedvig.android.library`): `core-rive`, `database-android`, `datadog-android`,
 `accessibility-test`, `experiments-unleash`, `feature-impersonation`, `language-migration`, `logging-device-model`,
 `notification-core`, `notification-firebase`, `tracking-datadog`, `tracking-firebase`, `compose-webview`.
+
+The Apollo client is built once, in `network-clients` (`NetworkMetroProviders.provideApolloClient`, `commonMain`),
+which adds `LogoutOnUnauthenticatedInterceptor` and then `LoggingInterceptor` through `addHedvigInterceptors`. Every
+graph that includes `network-clients` gets both, on every platform, with no host binding.
+
+`Backstack`, `HedvigDeepLinkMatcher`, `uriDeepLinkMatchers`, `DeepLinkMatcherProvider`, the serializer fold in
+`DestinationSerializersModule.kt` and `LoneDeepLinkChrome` live in `navigation-common` (JVM, Android, iOS; no Compose
+UI), still in the package `com.hedvig.android.navigation.compose`. `:navigation-compose` keeps the scene strategies
+and decorators and exposes `navigation-common` as `api`. 6 of the 26 feature modules that depended on
+`:navigation-compose` still do, for the scene strategy metadata in their entries (forever, home, insurances,
+payments, profile) or in `ClaimHistoryDestination.kt` (claim-history).
 ## Seam register
 
 Seams between the Android and desktop implementations. The Android column is the Android code behind the seam.
-Under `app/` there are 71 `expect` declarations, 39 of them added by this work (34 before).
+A grep for `expect` declarations in `app/**/*.kt` finds 69 at the tip, 70 at `0d94497df0` (the two `KeepKmp`
+declarations became one) and 33 at the base `229bd79df0`.
 
 ### `expect`/`actual`
 
@@ -91,6 +103,7 @@ Under `app/` there are 71 `expect` declarations, 39 of them added by this work (
 |---|---|---|---|
 | `core-build-constants` | `AppBuildConfig.platformName` (defaults to `internal expect val defaultPlatformName`) | `"ANDROID"` | `"jvm"`; `DesktopAppBuildConfig` overrides it with `"ANDROID"`. A Swift conformer must supply it, it does not see the Kotlin default |
 | `core-common-public` | `isValidEmail` | `PatternsCompat.EMAIL_ADDRESS` | `Regex` of the same pattern string (native too) |
+| `core-common-public` | `KeepKmp` (the one keep annotation for `commonMain`) | Typealias to `androidx.annotation.Keep` (`jvmAndAndroidMain`) | same; native: a plain annotation class |
 | `core-file-upload` | `rememberOpenPdf(applicationId)` | `ACTION_VIEW` chooser through the app's `FileProvider` | `Desktop.open`; on failure a WARN and a dialog with the saved path |
 | `molecule-public` | `mainDispatcher` (public) | `AndroidUiDispatcher.Main` | `Dispatchers.Main` (Swing) plus a frame clock that completes each frame 16 ms after it is requested |
 | `notification-permission` | `rememberNotificationPermissionState`, `rememberNotificationPermissionStatus` | Accompanist permission state | Always granted, never prompts. So Home and Profile drop the notification reminder, and Settings hides its "Allow notifications" reminder |
@@ -114,7 +127,6 @@ Under `app/` there are 71 `expect` declarations, 39 of them added by this work (
 | `feature-login` | `rememberBankIdState(bankIdUri: com.eygraber.uri.Uri)` | `BankIdStateImpl`, opens the BankID app | QR only, `canOpenBankId = false` |
 | `feature-login` | `LoginBackgroundVideo` | Video over the still | The still (a second copy in `jvmMain/composeResources`) |
 | `feature-login` | `CommonLocale.languageTag` | `toLanguageTag()` (one `jvmAndAndroidMain` actual) | same |
-| `feature-onboarding` | `KeepKmp` | Typealias to `androidx.annotation.Keep` (`jvmAndAndroidMain`) | same |
 | `feature-onboarding` | `KeypadGlyphPlatformTextStyle` | `PlatformTextStyle(includeFontPadding = false)` | `null` |
 | `feature-payin-account` | `rememberSwishAppHandover` | Detects the Swish app and hands over | Not installed: QR only; an http approval URL opens in the browser |
 | `feature-profile` | `rememberOpenBugReportEmail` | Email intent | `Desktop.mail` with a `mailto:`; logs when no mail client |
@@ -125,8 +137,7 @@ Under `app/` there are 71 `expect` declarations, 39 of them added by this work (
 ### Per-platform Metro bindings
 
 The bindings below sit in `jvmMain` (or `database-jvm`, or `:app-desktop`), next to an Android binding in
-`androidMain` or `:app`. No binding is a platform-overridable `commonMain` default; the one `commonMain` binding,
-`ExtraApolloClientConfiguration` in `:app-shell`, is a single provider for both hosts. Nothing in the desktop graph
+`androidMain` or `:app`. No binding is a platform-overridable `commonMain` default. Nothing in the desktop graph
 reads `PermissionManager` (its readers are the notification senders in `:app`, `notification-core` and
 `logging-device-model`, all Android-only); the notification UI reads `notification-permission`, which reports granted
 on the JVM.
@@ -134,6 +145,7 @@ on the JVM.
 | Module | Type bound | Android | JVM |
 |---|---|---|---|
 | `core-common-public` | `@DesktopDataDirectory File` (qualifier, `jvmMain`) | n/a | Provided by `DesktopGraph.Factory` |
+| `auth-core-public` | `AuthRepository` (`AuthMetroProviders`, `jvmMain`, because `authlib` keeps `networkAuthRepositoryWithEngine` in `jvmMain`) | The same provider: the module has no Android target, so Android uses its JVM variant | same; native has none, so a native graph that needs it fails to compile |
 | `core-datastore-public` | `DataStore<Preferences>` | `filesDir` | Same file name under the data directory (`JvmDataStoreMetroProviders`) |
 | `core-datastore-public` | `DeviceIdFetcher` | Android binding | `JvmDeviceIdFetcher`, same body |
 | `core-file-upload` | `FileService` | `AndroidFileService` (`ContentResolver`) | `JvmFileService` (`file:` URIs) |
@@ -146,7 +158,6 @@ on the JVM.
 | `feature-chat` | `ChatContext`, `ChatContentResolver` | Typealiases to `Context`, `ContentResolver` | `DesktopChatContext`, `DesktopChatContentResolver` |
 | `permission-core` | `PermissionManager` | `ActivityCompatPermissionManager` | `JvmPermissionManager`, every permission not granted (iOS: `NativePermissionManager` in `nativeMain`) |
 | `feature-claim-chat` | `AudioRecordingManager` | `MediaRecorder` | `JvmAudioRecordingManager`, reports the recording error state |
-| `:app-shell` (`commonMain`) | `ExtraApolloClientConfiguration` | One provider for both hosts | same |
 | `:app-desktop` | `MetroViewModelFactory` | `MergedMetroViewModelFactory` | `DesktopViewModelFactory` (one graph holds both scopes) |
 | `:app-desktop` | `EventTrackingClient` | Firebase | `LoggingEventTrackingClient`, DEBUG log only |
 | `:app-desktop` | `ExperimentProvider` | `UnleashExperimentProvider` | `NoActiveExperimentsProvider`, empty |
@@ -209,7 +220,7 @@ Unfinished work and bugs. Most need only a JVM actual or a host change.
 ### Library modules without iOS
 
 `commonMain` reaches no plain JVM library except `data-chat`. These KMP modules compile for `iosSimulatorArm64` and
-`iosArm64`: `auth-event-core`, `core-demo-mode`, `core-app-review`, `theme`, `experiments-public`,
+`iosArm64`: `auth-event-core`, `auth-core-public`, `core-demo-mode`, `core-app-review`, `theme`, `experiments-public`,
 `navigation-activity`, `notification-badge-data-public`, `data-cross-sell-after-claim-closed`,
 `data-cross-sell-after-flow`, `data-display-items`, `data-paying-member`, `data-settings-datastore-public`,
 `member-reminders-public`, `initializable`, `apollo-network-cache-manager`. Those iOS compiles are local runs on one
@@ -217,14 +228,16 @@ machine; PR CI compiles no iOS target. What is left:
 
 | Module | Reached from `commonMain` of | Blocker | Action |
 |---|---|---|---|
-| `auth-core-public` (KMP, JVM only) | app-shell, delete-account, login, onboarding, payments, profile | None in its build file: every dependency has iOS targets and `test-clock` is test-only | Add `.ios` and compile it for iOS |
-| `language-data` (KMP, JVM only) | payments | `auth-core-public` | `.ios` after `auth-core-public` |
-| `data-addons` (KMP, JVM only) | app-shell, cross-sells, 5 features | `androidx.annotation.Keep` on `AddonBannerSource` (no iOS klib) | `KeepKmp`, or drop the annotation |
+| `language-data` (KMP, JVM only) | payments | None in its build file: every in-repo dependency compiles for iOS. Not compiled for iOS | Add `.ios` and compile it for iOS |
+| `data-addons` (KMP, JVM only) | app-shell, cross-sells, 5 features | None in its build file (`AddonBannerSource` now carries `KeepKmp`). Not compiled for iOS | Add `.ios` and compile it for iOS |
 | `data-changetier` (KMP, JVM only) | app-shell, choose-tier, terminate-insurance | `CostBreakdownEntry` comes from `ui-tiers-and-addons` (Compose UI, no iOS); `ProductVariant` and `AddonVariant` from `data-product-variant-public` (JVM only) | Move the model to a data module; `.ios` on `data-product-variant-public` |
 | `data-chat` (plain JVM) | feature-chat | Room: the `room()` convention hard-codes `ksp`/`kspTest`; depends on `data-product-variant-public` (JVM only) | Room KSP for KMP in the convention, `.ios` on `data-product-variant-public`, then convert |
 
 The multiplatform conventions set `jvmDefault` to `NO_COMPATIBILITY` on the JVM target and the Android library
-compilation, as plain JVM and Android modules have it, so a conversion adds no `$DefaultImpls` classes. Plain JVM
+compilation, as plain JVM and Android modules have it, so a conversion adds no `$DefaultImpls` classes. They also
+compile and test the JVM target with the JDK 21 toolchain and `release` 21, as `hedvig.jvm.library` does; before
+`985be3b485` the 17 converted libraries compiled and ran their tests on whatever JDK ran Gradle locally (CI pins JDK 21,
+so CI was not affected). The Android target is left to AGP. Plain JVM
 libraries: `data-chat`, `database-core`, `database-jvm`, `apollo-auth-listeners`, `datadog-demo-tracking`,
 `auth-event-fake`, the two KSP processors, `test-clock` and the `-test` modules.
 
@@ -234,9 +247,9 @@ libraries: `data-chat`, `database-core`, `database-jvm`, `apollo-auth-listeners`
 `compose-photo-capture-state`, `compose-result-launcher`, `core-file-upload`, `core-icons`, `core-markdown`,
 `cross-sells`, `data-claim-intent`, `data-product-variant-public`, `file-upload-ui`, `forever-ui`,
 `member-reminders-ui`, `notification-permission`, `pullrefresh`, `tier-comparison`, `ui-analytics-consent`,
-`ui-claim-flow`, `ui-force-upgrade`, `ui-phone-number`, `ui-tiers-and-addons`, the four library modules above, and
+`ui-claim-flow`, `ui-force-upgrade`, `ui-phone-number`, `ui-tiers-and-addons`, the three library modules above, and
 every `feature-*` module except the `-navigation` ones. Each `expect` of the seam register in these modules needs a
-`nativeMain` actual (`molecule-public`, `core-common-public`, `core-build-constants` and `KeepKmp` in `data-coinsured` have one). For
+`nativeMain` actual (`molecule-public`, `core-common-public`, including `KeepKmp`, and `core-build-constants` have one). For
 `core-icons`, check that `material-icons-core` 1.7.3 iOS klibs link against Compose Multiplatform 1.12.2.
 
 | Also | Action |
@@ -246,22 +259,24 @@ every `feature-*` module except the `-navigation` ones. Each `expect` of the sea
 | `login_still_9x16.webp` exists in Android `res` and in `jvmMain/composeResources` | One shared Compose resource |
 | Room's `AppDatabase` (`database-core`, plain JVM) has no `@ConstructedBy`; chat needs a native driver and file location | Room KMP setup for iOS, plus a `chatTransaction` native actual |
 | `DeviceIdFetcher`: Android and JVM bodies are identical and iOS gets it from Swift | Optional: one `commonMain` implementation |
+| `ApolloNormalizedCacheAuthEventListener` (`apollo-auth-listeners`, plain JVM) clears the Apollo cache on login and logout; Android and desktop include it, a native graph would not | An iOS target on `apollo-auth-listeners` before an iOS data layer serves real members, or one member's cached data shows to the next |
 | `AppBuildConfig.platformName`: Kotlin/Native exports interface members as required, so a Swift conformer must implement it | Note for any Swift `AppBuildConfig` (none exists on ugglan master) |
 
 ### JDK and JVM-only calls the import guard cannot see
 
 | Where | Call | Action |
 |---|---|---|
-| `feature-chat` `CbmChatViewModel.kt:103,117,136`, `model/CbmChatMessage.kt:64,157,173,189,210,226,242`, `data/CbmChatRepository.kt:239,273,294`; `app-shell` `HedvigEntryProvider.kt:116` | `Uuid.fromString`, `Uuid.randomUUID()`: `java.util.UUID` statics through benasher's `Uuid` typealias | `uuidFrom()` / `uuid4()` |
-| `feature-home` `GetHomeDataUseCase.kt:286` | `Dispatchers.IO` without the `kotlinx.coroutines.IO` import needed on native | Add the import |
+| `feature-chat` `CbmChatViewModel.kt:103,117,136`, `model/CbmChatMessage.kt:158,174,190,211,227,243` | `Uuid.fromString`: the `java.util.UUID` static through benasher's `Uuid` typealias. It does not compile for iOS | Not a drop-in swap: benasher's `uuidFrom` on the JVM accepts only the canonical 36-character form, while `UUID.fromString` also accepts shortened forms such as `1-2-3-4-5`, and `CbmChatViewModel`'s input comes from `ChatKey.conversationId`, which a deep link sets. Decide when chat gets an iOS target: strict `uuidFrom`, or a module-local seam whose JVM and Android actual keeps `Uuid.fromString` |
 | Any `commonMain` | Members of `CommonLocale` (`java.util.Locale` on the JVM) and other typealiased JDK types | Found only by an iOS compile; review by hand |
 
 ### Annotations and libraries
 
 | Item | Action |
 |---|---|
-| `@androidx.annotation.Keep` in `commonMain` of `feature-onboarding` (`OnboardingKeys.kt`), `feature-chip-id`, `feature-choose-tier`, `feature-addon-purchase` and `data-addons`, each allowed by name in `config/commonMain-import-allowlist.txt` | `KeepKmp` (as in `feature-onboarding` and `data-coinsured`) |
-| `:navigation-compose` (iOS) pulls Compose UI and the design system through the JetBrains `navigation3-ui` artifacts | Keep it out of `:umbrella` unless that is intended |
+| `:navigation-compose` (iOS) pulls Compose UI and the design system through the JetBrains `navigation3-ui` artifacts | Keep it out of `:umbrella` unless that is intended. Presenters and deep link providers need only `navigation-common` |
+
+`commonMain` uses one keep annotation, `KeepKmp` from `core-common-public`, and
+`config/commonMain-import-allowlist.txt` has no entries.
 
 ### Sharing with iOS without UI
 
@@ -277,6 +292,34 @@ every `feature-*` module except the `-navigation` ones. Each `expect` of the sea
   `conversation?conversationId=` on iOS); analytics event definitions written twice (`cross_sell_*`,
   `addon_purchased`); and same-named GraphQL operations with different bodies (`query Home` is 17 lines on iOS and
   131 on Android).
+
+## Open items for the iOS sharing work
+
+The next step shares presenters, state, use cases and data with iOS, with the UI staying in SwiftUI. Known before it
+starts:
+
+- **Token storage.** `auth-core-public` compiles for iOS, and its `commonMain` contributes `AuthTokenServiceImpl`
+  (`@ContributesBinding`) and `AuthTokenStorage`, a concrete `@Inject` class over `DataStore<Preferences>`. A native
+  graph that includes the module would store tokens in a DataStore file. The owner has decided iOS tokens stay where
+  iOS keeps them today, behind an interface, so `AuthTokenStorage` has to become an interface bound per platform
+  before the first native graph includes `auth-core-public`.
+- **Presenters that hold `TextFieldState` go last.** `EditBankAccountViewModel` and `SetupSwishPayoutViewModel`
+  (`feature-payout-account`) and `ContactInfoViewModel` (`feature-profile`, two fields) keep Compose text field state
+  in the presenter.
+- **UI types in presenter state and use cases.** The final foundations review counted 36 files in 17 modules at
+  `0d94497df0` (`final-review-foundations.md`, section 3, next to the task 44 report); not re-counted here. Examples
+  checked at the tip: `LazyPagingItems` in `CbmChatViewModel`, `StringResource` in `InsuranceEvidenceEmailInputViewModel`
+  and `TravelCertificateDateInputViewModel`, `DrawableResource` returned by `data-contract`'s `ContractGroup`.
+- **Policy effects in `HedvigApp`.** `ReportCurrentDestinationEffect`, `TrackScreenViewEffect`,
+  `TryShowAppStoreReviewDialogEffect` and `TryShowOnboardingEffect` run app behaviour as Compose effects. A SwiftUI
+  host would have to write each again unless they move into plain classes that `HedvigApp` only launches.
+- **Strings in state** become typed values (errors, messages) that each UI maps to its own strings.
+- **Small seams** such as opening links or composing email become an injected interface where that applies, with
+  the UI that triggers them staying in SwiftUI.
+- **Navigation stays per platform.** Presenters push keys onto `Backstack` today (33 ViewModel and presenter files in
+  `commonMain` reference it); how to keep navigation out of the shared code is not decided.
+- **ViewModels or presenters.** Whether Swift consumes the `MoleculeViewModel`s from the graph or the presenters
+  directly is to be decided by a prototype.
 
 ## Converting a module
 
@@ -311,13 +354,14 @@ JVM target are linted twice, once per target.
 
 ## Module graph
 
-157 Gradle modules at `0d94497df0`, by convention plugin:
+156 Gradle modules at `99815f5a70` (157 at `0d94497df0`: `shareddi` was deleted), by convention plugin, counted from
+the build files of the modules `settings.gradle.kts` includes:
 
 | Kind | Modules |
 |---|---|
 | KMP with iOS targets | 62 |
 | KMP, Android and JVM | 46 |
-| KMP, JVM only | 10 |
+| KMP, JVM only | 9 |
 | Android library | 13 |
 | Plain JVM (including the lint and ktlint rule modules, the KSP processors and the `-test` modules) | 24 |
 | Android application | 2 |
@@ -327,7 +371,7 @@ Measured before the eight key modules were folded back (when there were 165 modu
 their Kotlin lines, are also compiled into the desktop host. The modules only `:app` reaches are `compose-webview`,
 `core-rive`, `database-android`, `datadog-android`, `datadog-demo-tracking`, `experiments-unleash`,
 `feature-impersonation`, `language-migration`, `logging-device-model`, `notification-core`, `notification-firebase`,
-`shareddi`, `tracking-datadog`, `tracking-firebase`.
+`shareddi` (since deleted), `tracking-datadog`, `tracking-firebase`.
 
 A feature's keys live in the feature. A separate `feature-{name}-navigation` module exists only where another module
 navigates to that feature without depending on it.
@@ -351,13 +395,15 @@ navigates to that feature without depending on it.
 | Tests move to `jvmTest` | Robolectric tests go to `androidHostTest` (feature-flags precedent) |
 | A final "entries sweep" | Nothing was left; replaced by an audit |
 | Phase 5: `hedvig.multiplatform.library` on 20 modules | JVM-only alone does nothing for iOS, so `.ios` per module; 17 modules; `graphql` dirs move too; `java.util.UUID` must change; no `.android` plugin |
-| (not planned) | `LogoutOnUnauthenticatedInterceptor` and `LoggingInterceptor` moved to `:app-shell` so desktop logs out on an expired session; a build rule forbids `feature-*` depending on `:app-shell` |
+| (not planned) | `LogoutOnUnauthenticatedInterceptor` and `LoggingInterceptor` moved out of `:app` so desktop logs out on an expired session: first to `:app-shell`, then into `network-clients`, where `provideApolloClient` adds them and `ExtraApolloClientConfiguration` was deleted; `auth-core-public` got iOS targets for that. A build rule forbids `feature-*` depending on `:app-shell` |
+| (not planned) | The UI-free navigation types (`Backstack`, deep link matching, `LoneDeepLinkChrome`) moved from `:navigation-compose` to `navigation-common`, which gained an Android target so Android compiles them against the Android Navigation 3 runtime (its JVM jar calls a `DeepLinkUri` API the Android artifact does not have) |
+| (not planned) | Cleanups: one `KeepKmp`; `shareddi`, the Compose-on-iOS view controllers, `IosSwipeBackController` and 13 empty `androidMain` manifests deleted; `uuid4()` for random chat ids |
 | Guard appended to the ktlint step | Its own `pr.yml` step, since the ktlint step is `continue-on-error` |
 | Escape mapped to the system back | Escape, Cmd+[ and Cmd+Left on macOS, Alt+Left elsewhere, the mouse back button; back at the root does nothing instead of quitting |
 | (not planned) | Hedvig links that no matcher handles stay in the desktop app; KMP JVM and Android compilations set `jvmDefault` to `NO_COMPATIBILITY` |
 | Each phase is a series of small PRs, one module per PR | Each change is its own branch, merged into one integration branch, `feat/desktop-app-integration`; no PR is open |
 | Per conversion, and at the end of the project, a person exercises the desktop app by hand against staging | Replaced by headless walkthroughs of every registered key (demo mode and a staging session at `f674f564ce`, which skipped the 28 screens that write on entry and 15 without suitable data; a second staging session with `884ee23e96` merged and nothing skipped) plus a person's use of login, Home, the tabs and the help center |
-| No iOS targets are added in this project | Fifteen library modules have iOS targets |
+| No iOS targets are added in this project | Sixteen library modules have iOS targets |
 
 ## Verification status
 
@@ -369,8 +415,9 @@ the code, or the integrator re-running a build, driving a device or viewing scre
 | Tests per change | On every branch: the module's tests before and after (same count), `checkCommonMainImports`, `:app:assembleDebug`. Author, and re-run by the integrator on most branches; every branch's diff read by a reviewer, except small changes (the chat camera change, the `jvmDefault` change, the test task and guard changes, the chat thumbnail and follow fixes, and some fix rounds) whose diffs the integrator read | Pass |
 | Repo-wide tests | `test jvmTest checkCommonMainImports :app:assembleDebug` at `150f117a53`, independent. `./gradlew test` at `d9e1ec3c8a` (after the key modules were folded), author: 1,154 tests | Pass, 0 failures |
 | Android dependency graph | `javap` of `AppGraph$Impl` and `ActivityRetainedGraphImpl` before and after each conversion: 87 ViewModel entries, 21 deep link matcher providers, 111 nav keys; jar member signatures and `releaseRuntimeClasspath` for the library conversions; serial names of the nine folded keys before and after the fold. Author; independent re-checks on a few branches | Identical on every comparison |
-| Desktop graph and entries | `DesktopGraphTest`, `DesktopEntryProviderTest`, the per-module JVM graph tests, headless tests of the back keys, link router, Home hero, navigation bar highlight, chat thumbnail fallback (`ChatFileThumbnailTest`) and chat follow (`ChatFollowsNewestMessageTest`), at `0d94497df0` (author, within the module tests) | Pass |
-| iOS compiles | `compileKotlinIosSimulatorArm64` and `compileKotlinIosArm64` of the library modules and `:navigation-compose`, local runs on one machine (author, and the integrator for `:navigation-compose`). Not in PR CI | Pass |
+| Desktop graph and entries | `DesktopGraphTest`, `DesktopEntryProviderTest`, the per-module JVM graph tests, headless tests of the back keys, link router, Home hero, navigation bar highlight, chat thumbnail fallback and chat follow (`ChatFollowsNewestMessageTest`), at `0d94497df0` (author, within the module tests) | Pass |
+| The branches merged after `0d94497df0`: thumbnail fallback for PDFs only, foundation cleanups, Apollo chain, navigation types | For the last three, per branch, by the author, as recorded in the task 44 report (`.superpowers/sdd/2026-11-12-desktop-app/task-44-report.md` in the `desktop-app-design` worktree): `checkCommonMainImports :app:assembleDebug :app-desktop:compileKotlinJvm :app:compileReleaseKotlin :app:assembleStaging`; `javap` of `AppGraph$Impl` and `ActivityRetainedGraphImpl` against `9b8bd6b874`, identical except the Apollo change (the `ExtraApolloClientConfiguration` provider gone, `provideApolloClient` taking `AuthTokenService` and `DemoManager`); 87 ViewModels, 21 matcher providers and 111 keys unchanged; minified `mapping.txt` and APK class lists compared. `./gradlew test ktlintCheck` at the navigation branch tip, which includes the thumbnail branch and its `ChatBubbleFileThumbnailTest`: 1,197 tests, 0 failures | Pass. No device run of these builds |
+| iOS compiles | `compileKotlinIosSimulatorArm64` and `compileKotlinIosArm64` of the library modules and `:navigation-compose`, local runs on one machine (author, and the integrator for `:navigation-compose`); after `0d94497df0`, by the author per the task 44 report: `auth-core-public`, `network-clients` and `navigation-common` (both targets), and `core-common-public`, `data-coinsured`, `design-system-hedvig`, `feature-help-center`, `navigation-compose` and `:umbrella`'s debug framework link (simulator). Not in PR CI | Pass |
 | R8 build | `:app:assembleStaging` (minified) at `4a8672217e`, `ed80d6b267`, `884ee23e96` and `d9e1ec3c8a`, independent | Builds and runs on the device |
 | APK size | `apkanalyzer` on debug and minified staging APKs, `229bd79df0` against `884ee23e96`, author | Debug 118 KB smaller; minified 287 bytes smaller (download size 157 bytes larger) |
 | Build time | Clean `:app:assembleDebug` and a one-line incremental edit, `229bd79df0` against `884ee23e96`, single runs on a shared machine, author | Clean 6m05s to 6m44s; incremental median 11 s to 12 s. Indicative only |
@@ -392,6 +439,9 @@ the code, or the integrator re-running a build, driving a device or viewing scre
 ### Not verified
 
 - PR CI on these branches.
+- Any device run after `0d94497df0`. The Android deep link matcher compiled in `navigation-common` is covered by a
+  dex comparison and Robolectric host tests (`HedvigDeepLinkMatcherAndroidTest`), the moved logout interceptor by
+  `ApolloInterceptorsTest` (author, task 44 report).
 - The six flows that write on entry, on the minified build.
 - On desktop: a support reply arriving while the app runs, and an image or file sent from the staff tool.
 - The cold start where many messages wait: a separate timing issue in the same scroll effect (`ScrollToBottomEffect`),
@@ -418,8 +468,12 @@ the code, or the integrator re-running a build, driving a device or viewing scre
 | Feature sources | `src/main/kotlin`, `src/main/graphql`, `src/test/kotlin` | `src/commonMain/kotlin`, `src/commonMain/graphql`, `src/jvmTest/kotlin` (platform files to `androidMain` with `.android.kt` names). Modules: core-icons, forever-ui, member-reminders-ui, notification-permission and the features chat, claim-details, connect-payment-trustly, forever, home, image-viewer, insurance-certificate, insurances, login, onboarding, payin-account, payments, profile, terminate-insurance, travel-certificate |
 | Robolectric tests | `src/test` of feature-login, feature-payin-account | `src/androidHostTest` |
 | Already-KMP entries | `androidMain` of claim-chat, claim-history, remove-addons | `commonMain` |
-| Shell | `app/app/src/main/.../app/` (`BackstackController`, `TopLevelRunLogic`, `SessionReconciler`, `HedvigEntryProvider`, `HedvigContentKeys`, `ScreenName`, `ScreenParameterExtractor`, `CurrentDestinationHolder`, `HedvigApp`, `HedvigAppState`, `NavigationSuite`, `TopLevelTabStartDestination`, `GlobalHedvigSnackBar`, `DeepLinkFirstUriHandler`, `AuthorizationCodeUriHandler`, `GetMemberAuthorizationCodeUseCase`, `LoggingInterceptor`) and their tests | `app/app-shell/src/commonMain`, `src/jvmTest`, same packages |
+| Shell | `app/app/src/main/.../app/` (`BackstackController`, `TopLevelRunLogic`, `SessionReconciler`, `HedvigEntryProvider`, `HedvigContentKeys`, `ScreenName`, `ScreenParameterExtractor`, `CurrentDestinationHolder`, `HedvigApp`, `HedvigAppState`, `NavigationSuite`, `TopLevelTabStartDestination`, `GlobalHedvigSnackBar`, `DeepLinkFirstUriHandler`, `AuthorizationCodeUriHandler`, `GetMemberAuthorizationCodeUseCase`) and their tests | `app/app-shell/src/commonMain`, `src/jvmTest`, same packages |
+| Apollo interceptors | `:app` `apollo/LoggingInterceptor.kt` (both interceptors) | `network-clients` `commonMain`, package `com.hedvig.android.network.clients.apollo`, with the new `ApolloInterceptorsTest` in `jvmTest` |
 | Nav UI | `:navigation-compose` `androidMain` (`Decorators`, `BottomSheetSceneStrategy`, `NavSuiteSceneDecorator`, `NavigationSuiteType`, the two retained decorators) | `commonMain`, same package |
+| UI-free navigation types | `:navigation-compose` `commonMain` (`Backstack.kt`, `HedvigDeepLinkMatcher.kt`, `DeepLinkMatcherProvider.kt`, `DestinationSerializersModule.kt`; `LoneDeepLinkChrome` cut from `NavSuiteSceneDecorator.kt`) and `commonTest` (`BackstackTest`, `HedvigDeepLinkMatcherTest`) | `navigation-common`, same package `com.hedvig.android.navigation.compose` |
+| `KeepKmp` | `feature-onboarding` and `data-coinsured` (one declaration each) | `core-common-public`, package `com.hedvig.android.core.common` |
+| `AuthMetroProviders` | `auth-core-public` `commonMain` | `jvmMain`, same package |
 | Keys | `HomeKey`, `LoginKey`, `InsurancesKey`, `ProfileKey`, `OnboardingKey`, `ClaimDetailsKey` and the `OnboardingGate` and `ResetOnboardingSeenUseCase` interfaces shared files with other declarations | Their own files in the same feature and package (`HomeKey.kt`, `LoginKey.kt` and so on; the implementations in `OnboardingGateImpl.kt`, `ResetOnboardingSeenUseCaseImpl.kt`) |
 | Unleash keys | `Feature.unleashKey`, `neverFetchedDefaults` in `feature-flags` `androidMain` | `commonMain` (`FeatureUnleashKey.kt`, `UnleashSettings.kt`) |
 | `Language.label` | `language-core` `androidMain/Language.kt` | `commonMain/LanguageLabel.kt` |
@@ -437,6 +491,14 @@ the code, or the integrator re-running a build, driving a device or viewing scre
 - `isSupportedLocaleTag(localeTag)` in `language-core` `commonMain` is public.
 - `PermissionManager` has a binding per platform; `NoopPermissionManager` is deleted and `ActivityCompatPermissionManager` no longer uses `replaces`.
 - `java.util.UUID.randomUUID()` in `auth-core-public` and `member-reminders-public` is `uuid4()` (the same call on the JVM).
+- `Uuid.randomUUID()` in `feature-chat` (`CbmChatMessage`, three in `CbmChatRepository`) and `app-shell`
+  (`HedvigEntryProvider`) is `uuid4()`, an inline function that calls `UUID.randomUUID()` on the JVM and Android.
+- `ExtraApolloClientConfiguration`, its no-op and `ApolloInterceptorMetroProviders` are deleted; `provideApolloClient`
+  takes `AuthTokenService` and `DemoManager`.
+- `KeepKmp` is `com.hedvig.android.core.common.KeepKmp`, used for every keep annotation in `commonMain`.
+- Deleted: the `shareddi` module (`IosGraph`), `IosDiHolder`, `HedvigComposeUIViewController`, the help center's
+  `PuppyGuideViewControllers` and `PuppyGuideAvailability`, and `IosSwipeBackController`. The native
+  `blockSwipeBackOnIos()` returns the modifier unchanged.
 
 ### Shared behaviour changes that reach Android
 
@@ -444,7 +506,7 @@ the code, or the integrator re-running a build, driving a device or viewing scre
 |---|---|---|
 | On Home with the hero collapsed, an upward, mostly vertical mouse wheel scroll that the list leaves unused reopens the hero in one animation. Touch input produces no wheel event and is unchanged | `feature-home` `HomeDestination.kt` | `HomeHeroScrollTest` |
 | Navigation bar items drop their hover or focus highlight when the bar moves between scenes: a new collector first receives the end of every hover and focus the previous one saw start. Press ripples and touch are unchanged | `design-system-hedvig` `internal/MappedInteractionSource.kt` | `MappedInteractionSourceTest`, `NavigationBarHighlightTest` |
-| A chat image or PDF attachment whose thumbnail fails to load renders as the file card, which opens the URL, instead of an empty tile | `feature-chat` `ChatLoadedScreen.kt` (`ChatFileThumbnail`) | `ChatFileThumbnailTest` |
+| A chat PDF attachment whose thumbnail fails to load renders as the file card, which opens the same URL, instead of an empty tile. The failure is kept in plain `remember`, so a message scrolled back into view requests its thumbnail again. Image attachments use the same code as `develop` (`ChatAsyncImage`, opening the image viewer) | `feature-chat` `ChatLoadedScreen.kt` (`PdfThumbnailOrFileCard`) | `ChatBubbleFileThumbnailTest` |
 | The chat list follows a newly arrived message after the screen returns from the background: `ScrollToBottomEffect` reads the paging list through `rememberUpdatedState`, so it observes the list the new presenter produces. The same bug exists on `develop` and is fixed there separately | `feature-chat` `ChatLoadedScreen.kt` | `ChatFollowsNewestMessageTest` |
 
 ### Observed, not fixed
@@ -477,8 +539,9 @@ Seen on builds of this branch; not compared against a build of `develop` unless 
 - `validateEmail` and `ValidationResult` (`core-common-public` `androidMain/.../validation/`).
 - `SubmittedAndClosedColumns.kt` (`feature-claim-details` `androidMain`, called only from its preview).
 - `rememberFilePicker` with both actuals and `FilePicker` (`feature-claim-chat`).
-- Empty `<manifest />` files in `androidMain` of feature-forever, feature-home, feature-insurance-certificate,
-  feature-insurances, feature-payments, feature-terminate-insurance, feature-travel-certificate.
+- Unused dependencies: `ktor-client-core` in `:navigation-compose` (`jvmMain`, `nativeMain`). `kotlin-reflect` in
+  `navigation-common` is used by no code but stays: it is what resolves `kotlin-reflect` to the Kotlin version on
+  Android and the only path to it on desktop (task 44 report).
 
 ### Landing the work
 

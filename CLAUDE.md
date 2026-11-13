@@ -71,20 +71,19 @@ The same app also runs as a desktop (JVM) application. If a feature fails to com
 The codebase is organized under `/app` with 80+ modules following a strict modularization pattern:
 
 - **app/** - Android application module, a thin host of `:app-shell`. Owns the Android Metro `AppGraph` and the per-Activity `ActivityRetainedGraph`, `MainActivity`, back stack persistence, external deep links, and the Datadog view tracking effect.
-- **app-shell/** - KMP module (JVM and Android) with the platform-neutral app shell: `HedvigApp` and its single `NavDisplay`, the back stack controller, session reconciliation, and the shared cross-feature navigation wiring (`hedvigEntryProvider`). A host implements `AppHost` and may pass a fallback entry for keys without one.
+- **app-shell/**: KMP module (JVM and Android) with the app shell shared by the Android and desktop hosts, mostly Compose UI: `HedvigApp` and its single `NavDisplay`, the back stack controller, session reconciliation, and the shared cross-feature navigation wiring (`hedvigEntryProvider`). A host implements `AppHost` and may pass a fallback entry for keys without one.
 - **app-desktop/** - The desktop (JVM) host of `:app-shell`: `main()`, `DesktopGraph` and the desktop-only bindings. See "Desktop app".
 - **feature/** - Feature modules (feature-home, feature-chat, feature-login, etc.)
 - **feature/feature-{name}-navigation/** - Tiny modules holding *only* the public `@Serializable HedvigNavKey`s of a feature that another module must navigate to without depending on that feature. These are the one carve-out to the "features can't depend on features" rule. A feature's other keys live in the feature itself.
 - **data/** - Data layer modules (data-contract, data-chat, data-addons, etc.)
 - **core/** - Core utilities (core-common, core-datastore, core-resources, etc.)
 - **apollo/** - GraphQL client modules (apollo-octopus-public, apollo-core, etc.)
-- **navigation/** - Navigation infrastructure: `navigation-common` (KMP, holds `HedvigNavKey` + marker interfaces), `navigation-compose` (KMP, the `Backstack` interface, deep-link matching, decorators), `navigation-keys-processor` (KSP processor generating serializer registrations), `navigation-activity` (Android `ExternalNavigator`).
+- **navigation/** - Navigation infrastructure: `navigation-common` (KMP, UI-free: `HedvigNavKey` + marker interfaces, the `Backstack` interface, deep-link matching), `navigation-compose` (KMP, Compose UI only: scene strategies and decorators), `navigation-keys-processor` (KSP processor generating serializer registrations), `navigation-activity` (Android `ExternalNavigator`).
 - **design-system/** - Design system components
 - **ui/** - Shared UI components
 - **auth/** - Authentication modules
 - **database/** - Room database modules
 - **language/** - Localization modules
-- **shareddi/** - KMP module declaring the iOS `IosGraph` (Metro graph for the iOS target).
 - **Other utilities** - payment, tracking, logging, featureflags, etc.
 
 **Critical architectural rule:** Feature modules CANNOT depend on other feature modules. This is enforced at build time by `hedvig.gradle.plugin` (`configureFeatureModuleGuidelines()`). The single exception: any module can depend on a `feature-{name}-navigation` module, because those exist precisely to be shared cross-feature.
@@ -715,7 +714,7 @@ kotlin {
       implementation(libs.jetbrains.compose.runtime)
       implementation(projects.coreCommonPublic)
       implementation(projects.designSystemHedvig)
-      implementation(projects.navigationCompose)
+      implementation(projects.navigationCommon)
     }
     jvmTest.dependencies {
       implementation(libs.assertK)
@@ -724,7 +723,7 @@ kotlin {
   }
 }
 ```
-   Code goes in `src/commonMain/kotlin`, platform code behind a seam in `src/androidMain` and `src/jvmMain` (see "Desktop app"), tests in `src/jvmTest/kotlin`.
+   Code goes in `src/commonMain/kotlin`, platform code behind a seam in `src/androidMain` and `src/jvmMain` (see "Desktop app"), tests in `src/jvmTest/kotlin`. Add `projects.navigationCompose` only if the entries use its scene strategies (`NavSuiteSceneDecoratorStrategy`, `BottomSheetSceneStrategy`).
 3. Create standard structure: `ui/`, `navigation/`, `di/` (contributions live next to the classes they bind via Metro annotations, not in a central `di` module).
 4. Define `@Serializable` `HedvigNavKey`s in the feature. Add a `feature-{name}-navigation` module only for keys another module must navigate to without depending on the feature.
 5. Expose a `fun EntryProviderScope<HedvigNavKey>.{name}Entries(...)` and call it from `hedvigEntryProvider` in `:app-shell`; add the module to the dependencies of `:app-shell`, `:app` and `:app-desktop`.
