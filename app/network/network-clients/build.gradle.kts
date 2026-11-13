@@ -28,12 +28,16 @@ kotlin {
       implementation(libs.arrow.core)
       implementation(libs.ktor.client.auth)
       implementation(libs.ktor.client.logging)
+      implementation(projects.apolloCore)
       implementation(projects.apolloOctopusPublic)
       implementation(projects.authCoreApi)
+      implementation(projects.authCorePublic)
       implementation(projects.coreBuildConstants)
       implementation(projects.coreCommonPublic)
       implementation(projects.coreDatastorePublic)
+      implementation(projects.coreDemoMode)
       implementation(projects.languageCore)
+      implementation(projects.trackingCore)
     }
     getByName("mobileMain") {
       dependencies {
@@ -48,7 +52,12 @@ kotlin {
       implementation(libs.ktor.client.okhttp)
     }
     jvmTest.dependencies {
+      implementation(libs.apollo.testingSupport)
+      implementation(libs.assertK)
       implementation(libs.coroutines.test)
+      implementation(libs.junit)
+      implementation(projects.authCoreTest)
+      implementation(projects.loggingTest)
     }
     nativeMain.dependencies {
       implementation(libs.ktor.client.darwin)

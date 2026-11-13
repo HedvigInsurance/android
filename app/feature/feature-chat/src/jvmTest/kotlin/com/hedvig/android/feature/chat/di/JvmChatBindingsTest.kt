@@ -2,6 +2,7 @@ package com.hedvig.android.feature.chat.di
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import com.apollographql.apollo.ApolloClient
 import com.benasher44.uuid.uuid4
 import com.hedvig.android.core.buildconstants.AppBuildConfig
 import com.hedvig.android.core.buildconstants.Flavor

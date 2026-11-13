@@ -3,6 +3,7 @@ package com.hedvig.android.feature.onboarding.di
 import assertk.assertThat
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isSameInstanceAs
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.buildconstants.AppBuildConfig
 import com.hedvig.android.core.buildconstants.Flavor
 import com.hedvig.android.core.common.di.ActivityRetainedScope
@@ -37,8 +38,9 @@ import org.junit.Test
  * taken from the JVM classpath of this module's dependencies (`core-datastore-public`, `feature-flags`,
  * `network-clients`, `language-core`, `core-build-constants` and this module's own contributions).
  *
- * The factory supplies only true host inputs (the data directory and the build config) and fakes for the two
- * types no library module binds on the JVM ([ExperimentProvider] and [Backstack]). `EventTrackingClient`, the
+ * The factory supplies only true host inputs (the data directory, the build config and the Apollo client
+ * configuration, which the host's shell binds) and fakes for the two types no library module binds on the JVM
+ * ([ExperimentProvider] and [Backstack]). `EventTrackingClient`, the
  * third such type, is needed only by a ViewModel, which these accessors do not reach.
  */
 @DependencyGraph(AppScope::class, additionalScopes = [ActivityRetainedScope::class])

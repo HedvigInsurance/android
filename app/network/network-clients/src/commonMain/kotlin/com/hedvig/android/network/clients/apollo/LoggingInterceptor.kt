@@ -1,5 +1,6 @@
-package com.hedvig.android.app.apollo
+package com.hedvig.android.network.clients.apollo
 
+import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.ApolloRequest
 import com.apollographql.apollo.api.ApolloResponse
 import com.apollographql.apollo.api.Error as ApolloKotlinError
@@ -19,6 +20,17 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+
+/**
+ * The app's Apollo interceptors, the same on every platform and in this order: a member whose session the backend
+ * rejects is logged out first, then the request is logged.
+ */
+internal fun ApolloClient.Builder.addHedvigInterceptors(
+  authTokenService: AuthTokenService,
+  demoManager: DemoManager,
+): ApolloClient.Builder = this
+  .addInterceptor(LogoutOnUnauthenticatedInterceptor(authTokenService, demoManager))
+  .addInterceptor(LoggingInterceptor())
 
 internal class LoggingInterceptor : ApolloInterceptor {
   override fun <D : Data> intercept(
