@@ -257,6 +257,7 @@ import hedvig.resources.home_tab_claim_button_text
 import hedvig.resources.home_tab_get_help
 import hedvig.resources.home_tab_welcome_title_without_name
 import hedvig.resources.ongoing_shop_session_dismiss_offer
+import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.ExperimentalTime
@@ -832,11 +833,12 @@ private fun HomeScreenSuccess(
     }
 
     /**
-     * Opens the collapsed hero in one go on a mouse wheel or trackpad scroll toward the top that the list leaves
-     * unused. Compose hands a wheel or trackpad event to a scrollable only when that scrollable can scroll in the
-     * event's direction, so with the list at its top such an event reaches neither the list nor
-     * [heroCollapseConnection], which opens the hero only from scroll the list could not use. Touch input produces
-     * neither event type, so drags keep going through the connection alone.
+     * Opens the collapsed hero in one go on a mouse wheel scroll toward the top that the list leaves unused. Compose
+     * hands a wheel event to a scrollable only when that scrollable can scroll in the event's direction, so with the
+     * list at its top such an event reaches neither the list nor [heroCollapseConnection], which opens the hero only
+     * from scroll the list could not use. A negative y scroll delta scrolls toward the top. Only a mostly vertical
+     * wheel scroll counts, since the list also leaves mostly horizontal ones unused. Touch drags and trackpad pans are
+     * other event types, which Compose always passes through the connection, so they open the hero there.
      */
     val reopenHeroOnUnusedScroll = remember {
       Modifier.pointerInput(Unit) {
@@ -846,12 +848,10 @@ private fun HomeScreenSuccess(
             while (true) {
               val event = awaitPointerEvent()
               val change = event.changes.firstOrNull() ?: continue
-              val towardTop = when (event.type) {
-                PointerEventType.Scroll -> change.scrollDelta.y < 0f
-                PointerEventType.PanMove -> change.panOffset.y > 0f
-                else -> continue
-              }
-              if (!towardTop) {
+              if (event.type != PointerEventType.Scroll) continue
+              val delta = change.scrollDelta
+              if (abs(delta.y) <= abs(delta.x)) continue
+              if (delta.y > 0f) {
                 reopening?.cancel()
                 continue
               }
