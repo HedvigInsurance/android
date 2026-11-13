@@ -473,7 +473,7 @@ Inside an entry, the ViewModel is resolved with `metroViewModel()` / `assistedMe
 
 ## II.6 `feature-x-navigation` modules and the enforced carve-out
 
-Sometimes a feature genuinely needs to navigate to *another* feature's entry point (e.g. anywhere → chat). The keys that are meant to be reachable cross-feature live in a dedicated `feature-{name}-navigation` module containing **only** those public `@Serializable` keys. Everything else — entries, screens, internal keys — stays private in the owning feature.
+A feature's keys live in the feature. Sometimes another feature must navigate to a feature's entry point without depending on it (e.g. onboarding → edit co-insured). Only then do the keys it needs live in a dedicated `feature-{name}-navigation` module containing **only** those public `@Serializable` keys. Everything else (entries, screens, other keys) stays in the owning feature.
 
 The feature-isolation rule has a precise carve-out for exactly these modules (`configureFeatureModuleGuidelines` in `HedvigGradlePlugin.kt`):
 
@@ -487,7 +487,7 @@ if (requested.name.isFeatureNavigationModule()) return@eachDependency  // allowe
 require(!requested.name.isFeatureModule()) { "…feature cannot depend on feature…" }
 ```
 
-So: depend on `feature-chat-navigation` to get `ChatKey`; you still cannot depend on `feature-chat`.
+So: `feature-onboarding` depends on `feature-edit-coinsured-navigation` to get `CoInsuredAddInfoKey`; it still cannot depend on `feature-edit-coinsured`.
 
 ## II.7 Multiple back stacks: the "runs model"
 

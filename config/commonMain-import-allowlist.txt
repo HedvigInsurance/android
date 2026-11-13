@@ -5,7 +5,7 @@
 
 # @Keep stops R8 from renaming these serialized types. androidx.annotation.Keep is absent from the
 # iOS variant of androidx.annotation, so these modules need a KMP keep annotation (an expect class with
-# a typealias actual, like KeepKmp in feature-onboarding-navigation) before they can gain an iOS target.
+# a typealias actual, like KeepKmp in feature-onboarding) before they can gain an iOS target.
 app/data/data-addons/src/commonMain/kotlin/com/hedvig/android/data/addons/data/GetAddonBannerInfoUseCase.kt androidx.annotation.Keep
 app/feature/feature-addon-purchase/src/commonMain/kotlin/com/hedvig/android/feature/addon/purchase/ui/triage/TravelAddonTriageDestination.kt androidx.annotation.Keep
 app/feature/feature-chip-id/src/commonMain/kotlin/com/hedvig/android/feature/chip/id/navigation/ChipIdNavDestination.kt androidx.annotation.Keep
