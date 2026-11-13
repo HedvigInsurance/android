@@ -90,8 +90,3 @@ kotlin {
     }
   }
 }
-
-// CI runs the root `test` task, which only reaches modules that have a task with that exact name.
-tasks.register("test") {
-  dependsOn("testAndroidHostTest")
-}

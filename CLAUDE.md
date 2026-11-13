@@ -582,17 +582,14 @@ Place `.graphql` files in module's `src/main/graphql/`. Apollo generates type-sa
 ## Testing
 
 ```bash
-# Run all tests
+# Run all unit tests (JVM, Android and KMP modules; in KMP modules `test` runs `jvmTest` and any Android host tests)
 ./gradlew test
 
 # Run tests for specific module
 ./gradlew :feature-home:test
 ./gradlew :data-contract:test
 
-# Run unit tests only
-./gradlew test
-
-# Filter to specific tests (works on Android library modules too)
+# Filter to specific tests (in a KMP module this is the same as :feature-home:jvmTest --tests ...)
 ./gradlew :feature-home:test --tests "*HomePresenterTest*"
 ```
 
