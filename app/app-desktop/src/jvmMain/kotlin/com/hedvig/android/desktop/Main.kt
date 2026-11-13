@@ -63,7 +63,12 @@ fun main() {
   for (initializable in graph.initializables) {
     initializable.initialize()
   }
-  val appHost = DesktopAppHost()
+  val unmatchedLinkRouter = DesktopUnmatchedLinkRouter(
+    runningFlavor = appBuildConfig.appFlavor,
+    matcher = graph.deepLinkMatcher,
+    backstackController = backstackController,
+  )
+  val appHost = DesktopAppHost(routeUnmatchedLink = unmatchedLinkRouter::route)
   val externalNavigator = DesktopExternalNavigator()
   val escapeAsBack = EscapeAsBackInput(onBackWithoutHandler = { backstackController.popBackstack() })
   application {
