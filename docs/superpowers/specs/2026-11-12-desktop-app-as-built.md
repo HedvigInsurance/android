@@ -1,6 +1,6 @@
 # The Hedvig app on desktop: as built
 
-State of `feat/desktop-app-integration` at `ed80d6b267`. The design is in `2026-11-12-desktop-app-design.md`.
+State of `feat/desktop-app-integration` at `884ee23e96`. The design is in `2026-11-12-desktop-app-design.md`.
 
 - Run it with `./gradlew :app-desktop:run` (staging) on macOS; log in with BankID by QR code or with email.
 - Every feature except staff impersonation runs on shared code. Trustly checkout, audio, video, camera, push and OS
@@ -18,7 +18,8 @@ State of `feat/desktop-app-integration` at `ed80d6b267`. The design is in `2026-
 
 Only the `run` task gets the JVM arguments (backend, and `versionName`/`versionCode` read from
 `app/app/build.gradle.kts`; the task fails if either cannot be read). Other Compose Desktop tasks such as
-`runDistributable` start without them and fail at startup. Only macOS has been used. The log goes to stdout.
+`runDistributable` start without them and fail at startup. Only macOS has been used. The log goes to stdout: every priority against staging, INFO and above against production
+(`-Phedvig.desktop.production=true`), since DEBUG lines carry GraphQL response data with real members' data.
 
 The app identifies itself as the Android app: `X-Platform: ANDROID`, `Hedvig-App-Version: android;<versionName>`,
 the develop application id and debug build type on staging, release values on production, and brand "Hedvig", model
@@ -122,13 +123,11 @@ Seams between the Android and desktop implementations. The Android column is the
 ### Per-platform Metro bindings
 
 The bindings below sit in `jvmMain` (or `database-jvm`, or `:app-desktop`), next to an Android binding in
-`androidMain` or `:app`, with two exceptions in `commonMain`. `ExtraApolloClientConfiguration` is one provider for both
-hosts, with no platform override. `PermissionManager` resolves on desktop to `NoopPermissionManager`, a `commonMain`
-`@ContributesBinding` in `permission-core` that answers `false` for every permission; Android replaces it with
-`ActivityCompatPermissionManager` through `replaces`. That default is what the Metro KMP rule in `CLAUDE.md` forbids.
-Nothing in the desktop graph reads `PermissionManager` (its readers are the notification senders in `:app`,
-`notification-core` and `logging-device-model`, all Android-only); the notification UI reads `notification-permission`,
-which reports granted on the JVM.
+`androidMain` or `:app`. No binding is a platform-overridable `commonMain` default; the one `commonMain` binding,
+`ExtraApolloClientConfiguration` in `:app-shell`, is a single provider for both hosts. Nothing in the desktop graph
+reads `PermissionManager` (its readers are the notification senders in `:app`, `notification-core` and
+`logging-device-model`, all Android-only); the notification UI reads `notification-permission`, which reports granted
+on the JVM.
 
 | Module | Type bound | Android | JVM |
 |---|---|---|---|
@@ -143,6 +142,7 @@ which reports granted on the JVM.
 | `network-clients` | `TlsDiagnostics` (interface in `commonMain`) | Android binding | `JvmTlsDiagnostics`, returns `null` |
 | `database-jvm` | `RoomDatabase.Builder<AppDatabase>` | `database-android` | Bundled SQLite at `hedvig_chat_database.db` |
 | `feature-chat` | `ChatContext`, `ChatContentResolver` | Typealiases to `Context`, `ContentResolver` | `DesktopChatContext`, `DesktopChatContentResolver` |
+| `permission-core` | `PermissionManager` | `ActivityCompatPermissionManager` | `JvmPermissionManager`, every permission not granted (iOS: `NativePermissionManager` in `nativeMain`) |
 | `feature-claim-chat` | `AudioRecordingManager` | `MediaRecorder` | `JvmAudioRecordingManager`, reports the recording error state |
 | `:app-shell` (`commonMain`) | `ExtraApolloClientConfiguration` | One provider for both hosts | same |
 | `:app-desktop` | `MetroViewModelFactory` | `MergedMetroViewModelFactory` | `DesktopViewModelFactory` (one graph holds both scopes) |
@@ -194,10 +194,8 @@ Unfinished work and bugs. Most need only a JVM actual or a host change.
 | "Submit a bug" only logs when no mail client is configured | A notice with the address |
 | No experiment variants: the member is in no experiment, so the backend serves defaults | Keep variants in `JvmUnleashClient`, convert `experiments-unleash` |
 | Feature flags read never-fetched defaults on every start until the first fetch | Persist the toggle state under the data directory |
-| No log file. `StdoutLogcatLogger` prints every priority, and `LoggingInterceptor` logs each GraphQL `Response data` at DEBUG, so a production desktop run prints member data to stdout | Drop DEBUG on production; a rotating log file |
+| No log file and no crash report: logs go to stdout only | A rotating log file under the data directory |
 | The backend gets no device row for a desktop login | A JVM `AuthEventListener` like `DeviceNameLoggingAuthListener` |
-| Windows: `JvmFileService.toPathOrNull` turns `file:/C:/...` into `File("/C:/...")`, so picked files are unreadable | `Paths.get(URI)` |
-| A stored language tag that is not supported stays stored; the app falls back to the OS language on each start | Clear it when resolving |
 | Home and Insurances: pull to refresh cannot be triggered with a mouse | A refresh action or wheel trigger |
 | Image viewer zooms by double click and drag only, no pinch or wheel | Wheel zoom |
 | Animated GIFs do not animate | An animated image decoder in the desktop `ImageLoader` |
@@ -323,6 +321,7 @@ the code, or the integrator re-running a build or viewing screenshots.
 | Desktop walkthrough, demo mode | Headless harness at `f674f564ce`: every registered key pushed in the real desktop graph. Author; the integrator viewed screenshots (independent) | 120 visits: 90 rendered (41 show the generic error because demo mode has no data for them), 0 threw, 0 timed out, 29 need an id, 1 not available (licenses), 0 reached the fallback |
 | Desktop walkthrough, real staging session | Same harness at `f674f564ce` on a logged-in session, ids from the app's cache, every GraphQL operation logged. Author; the integrator viewed screenshots (independent) | 134 visits: 84 rendered with real data, 6 generic errors (harness id choice or failure screens by design), 0 threw, 0 timed out, 15 need an id, 1 not available, 0 fallback, 28 excluded; 914 operations, 0 mutations |
 | Seen by a person on desktop | The owner, on staging, macOS. At `961f975c97`: BankID QR login; the app's log also records navigation to Home, `OnboardingKey`, its steps and `SetupSwishPayinKey`, which shows those screens were navigated to, not that a person judged them. At `f674f564ce`: Home, the tabs, the help center (where the owner found the four problems fixed at `ed80d6b267`), with the log recording insurance details, chat, claim details, payments and profile screens | Login works; four problems found and fixed. The fixes are covered by headless tests, not yet by a person |
+| Follow-ups at `884ee23e96` | Per-platform `PermissionManager`, production stdout filter, `java.net.URI` file paths, clearing an unsupported stored language. Tests by the author; diff read by an independent reviewer; Android graph compared for the permission binding by the author. Not run on a device or in a desktop window (the device run stays at `ed80d6b267`) | Pass |
 | PR CI | None | Never run on these branches: no PR is open |
 
 ### Not verified
@@ -339,7 +338,8 @@ the code, or the integrator re-running a build or viewing screenshots.
   `SetupSwishPayinKey` (`SetupSwishPayinMutation`) and `SwedishLoginKey` (starts a BankID attempt). Also the 15
   screens that need an id the session did not provide.
 - Everything merged after `f674f564ce` on desktop by walkthrough: the library conversions, the `jvmDefault` change,
-  the chat camera change and the four desktop fixes. `tool/desktop-walkthrough` is 24 commits behind `ed80d6b267`.
+  the chat camera change, the four desktop fixes and the four follow-ups. `tool/desktop-walkthrough` is 31 commits
+  behind `884ee23e96`.
 - Datadog RUM view names on Android against the previous release. Look up version 14.6.3 (43) of the staging build
   (`com.hedvig.app`) on 2026-11-13 UTC, 09:25:35 to 09:26:56 (logged out) and 09:45:01 to 09:54:49 (logged in); the
   debug build (`com.hedvig.dev.app`) ran 09:22:18 to 09:25:10 and 09:28:58 to 09:44:30.
@@ -355,7 +355,7 @@ the code, or the integrator re-running a build or viewing screenshots.
   desktop-specific); in a real window, the back keys with nothing focused, Cmd+[ on a non-US keyboard layout, the
   mouse back button over a sheet or dialog, reopening the Home hero with a real trackpad, the help center payments
   link, and whether one Enter press on the email login screen submits twice.
-- Linux and Windows: never run.
+- Linux and Windows: never run. `JvmFileService` parses Windows `file:/C:/...` URIs in tests only.
 
 ## For other developers
 
@@ -382,6 +382,8 @@ the code, or the integrator re-running a build or viewing screenshots.
 - `NoopFeatureFlagProvider` is deleted. `mainDispatcher` in `molecule-public` is public.
 - `HostEntryContext`, `AndroidHostEntries.kt` and the host entries block no longer exist.
 - `deepLinkHostsOf(flavor)` in `core-build-constants` is public (same host values as before).
+- `isSupportedLocaleTag(localeTag)` in `language-core` `commonMain` is public.
+- `PermissionManager` has a binding per platform; `NoopPermissionManager` is deleted and `ActivityCompatPermissionManager` no longer uses `replaces`.
 - `java.util.UUID.randomUUID()` in `auth-core-public` and `member-reminders-public` is `uuid4()` (the same call on the JVM).
 
 ### Shared behaviour changes that reach Android
