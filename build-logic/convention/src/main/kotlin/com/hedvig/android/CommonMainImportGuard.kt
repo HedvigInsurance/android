@@ -28,6 +28,13 @@ val forbiddenCommonMainNames: List<String> = listOf(
   "androidx.activity",
   "androidx.appcompat",
   "androidx.browser",
+  // The whole prefix is forbidden because every Google artifact in the `androidx.core` group (`core`, `core-ktx`,
+  // `core-splashscreen`, `core-viewtree` and the rest) publishes only an Android variant. JetBrains publishes
+  // multiplatform artifacts under the same import path: `org.jetbrains.androidx.core:core-bundle` (package
+  // `androidx.core.bundle`) and `org.jetbrains.androidx.core:core-uri` (package `androidx.core.uri`), each with
+  // Android, JVM, iOS, other native, JS and Wasm variants (checked on Maven Central on 2026-11-13, latest
+  // 1.1.0-alpha03). An import from one of those is valid in commonMain, and adopting one means adding its
+  // sub-package to [allowedCommonMainSubPackages], which is the correct and expected fix.
   "androidx.core",
   "androidx.exifinterface",
   "androidx.fragment",
@@ -45,10 +52,22 @@ val forbiddenCommonMainNames: List<String> = listOf(
   "androidx.compose.ui.viewinterop.AndroidView",
 )
 
-/** Returns the entry of [forbiddenCommonMainNames] that [name] is, or lies inside, or null. */
-fun forbiddenEntryOf(name: String): String? {
+/**
+ * Sub-packages inside a [forbiddenCommonMainNames] entry that `commonMain` may use, because a multiplatform artifact
+ * publishes them. For example, adopting `org.jetbrains.androidx.core:core-bundle` means adding
+ * `"androidx.core.bundle"` here.
+ */
+val allowedCommonMainSubPackages: List<String> = emptyList()
+
+/**
+ * Returns the entry of [forbiddenCommonMainNames] that [name] is, or lies inside, or null. A name inside one of
+ * [allowedSubPackages] is never forbidden.
+ */
+fun forbiddenEntryOf(name: String, allowedSubPackages: List<String> = allowedCommonMainSubPackages): String? {
   val plain = name.replace("`", "")
-  return forbiddenCommonMainNames.firstOrNull { plain == it || plain.startsWith("$it.") }
+  fun String.isOrIsInside(prefix: String) = this == prefix || startsWith("$prefix.")
+  if (allowedSubPackages.any { plain.isOrIsInside(it) }) return null
+  return forbiddenCommonMainNames.firstOrNull { plain.isOrIsInside(it) }
 }
 
 private val importedName = Regex("""^\s*import\s+([\w.`*]+)""")
@@ -57,10 +76,13 @@ private val importedName = Regex("""^\s*import\s+([\w.`*]+)""")
  * Returns the 1-based line number and imported name of every import in [source] that names a
  * [forbiddenCommonMainNames] entry or something inside it.
  */
-fun findForbiddenImports(source: String): List<Pair<Int, String>> {
+fun findForbiddenImports(
+  source: String,
+  allowedSubPackages: List<String> = allowedCommonMainSubPackages,
+): List<Pair<Int, String>> {
   return source.lineSequence().mapIndexedNotNull { index, line ->
     importedName.find(line)?.groupValues?.get(1)
-      ?.takeIf { forbiddenEntryOf(it) != null }
+      ?.takeIf { forbiddenEntryOf(it, allowedSubPackages) != null }
       ?.let { index + 1 to it }
   }.toList()
 }
@@ -207,7 +229,7 @@ abstract class CheckCommonMainImportsTask : DefaultTask() {
     val wholeFiles = entries.filter { it.size == 1 }.map { it[0] }.toSet()
     val allowedNames = entries.filter { it.size == 2 }.groupBy({ it[0] }, { it[1] })
     val root = rootDirectory.get().asFile
-    val violations = sources.files.sorted().flatMap { file ->
+    val violations: List<Pair<String, String>> = sources.files.sorted().flatMap { file ->
       val path = file.relativeTo(root).invariantSeparatorsPath
       if (path in wholeFiles) return@flatMap emptyList()
       val allowedHere = allowedNames[path].orEmpty()
@@ -215,17 +237,32 @@ abstract class CheckCommonMainImportsTask : DefaultTask() {
       (findForbiddenImports(text) + findFullyQualifiedReferences(text))
         .filter { (_, reference) -> forbiddenEntryOf(reference) !in allowedHere }
         .sortedBy { it.first }
-        .map { (line, reference) -> "$path:$line: $reference" }
+        .map { (line, reference) -> "$path:$line" to reference }
     }
     if (violations.isNotEmpty()) {
-      throw GradleException(
-        "commonMain must not use JVM or Android-only API: move the code to androidMain (or jvmAndAndroidMain) " +
-          "behind an expect declaration or an interface bound per platform, as the \"Critical Metro KMP rule\" " +
-          "under \"Dependency Injection\" in CLAUDE.md describes, or list it in " +
-          "config/commonMain-import-allowlist.txt with a reason.\n" +
-          violations.joinToString("\n"),
-      )
+      throw GradleException(commonMainFailureMessage(violations))
     }
     marker.get().asFile.writeText("OK\n")
   }
+}
+
+/**
+ * Returns the failure message for [violations], each a `path:line` location and the reference found there. When a
+ * reference is under `androidx.core`, the message also points at the sub-package exemption for multiplatform
+ * artifacts that share that import path.
+ */
+fun commonMainFailureMessage(violations: List<Pair<String, String>>): String {
+  val androidxCoreHint = if (violations.any { (_, reference) -> forbiddenEntryOf(reference) == "androidx.core" }) {
+    "If an androidx.core import comes from a multiplatform artifact (such as the JetBrains " +
+      "org.jetbrains.androidx.core ports), the fix is to add its sub-package to allowedCommonMainSubPackages in " +
+      "CommonMainImportGuard.kt, not to move the code.\n"
+  } else {
+    ""
+  }
+  return "commonMain must not use JVM or Android-only API: move the code to androidMain (or jvmAndAndroidMain) " +
+    "behind an expect declaration or an interface bound per platform, as the \"Critical Metro KMP rule\" " +
+    "under \"Dependency Injection\" in CLAUDE.md describes, or list it in " +
+    "config/commonMain-import-allowlist.txt with a reason.\n" +
+    androidxCoreHint +
+    violations.joinToString("\n") { (location, reference) -> "$location: $reference" }
 }
