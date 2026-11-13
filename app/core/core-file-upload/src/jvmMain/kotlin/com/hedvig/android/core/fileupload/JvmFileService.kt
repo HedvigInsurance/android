@@ -5,10 +5,11 @@ import com.hedvig.android.core.common.di.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
-import java.io.File
+import java.net.URI
 import java.net.URLConnection
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.Paths
 
 @ContributesBinding(AppScope::class)
 @SingleIn(AppScope::class)
@@ -40,10 +41,16 @@ class JvmFileService : FileService {
   }
 }
 
-/** The local file [this] points at, or null for anything but a `file:` URI. */
-private fun Uri.toPathOrNull(): Path? {
+/**
+ * The local file [this] points at. Converted through [URI], so the Windows form `file:/C:/Users/a.txt` becomes the
+ * path `C:\Users\a.txt`.
+ *
+ * Null for a scheme other than `file`, for a URI that is not valid (such as an unencoded space or `%`), for an opaque
+ * one (`file:relative/a.txt`), and for one with an authority, a query or a fragment.
+ */
+internal fun Uri.toPathOrNull(): Path? {
   if (scheme != "file") return null
-  return path?.let { File(it).toPath() }
+  return runCatching { Paths.get(URI(toString())) }.getOrNull()
 }
 
 /** The size of the file at [path] in bytes, or -1 when there is no readable file there. */
