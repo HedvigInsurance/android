@@ -3,6 +3,8 @@ package com.hedvig.android
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
 import org.junit.Test
 
 class CommonMainImportGuardTest {
@@ -78,5 +80,76 @@ class CommonMainImportGuardTest {
       fun `name with java.io.File`() = Unit
     """.trimIndent()
     assertThat(findFullyQualifiedReferences(source)).isEmpty()
+  }
+
+  @Test
+  fun `flags imports of Android-only androidx packages`() {
+    val source = """
+      package a
+      import androidx.activity.compose.BackHandler
+      import androidx.core.net.toUri
+      import androidx.appcompat.app.AppCompatActivity
+      import androidx.browser.customtabs.CustomTabsIntent
+      import androidx.media3.exoplayer.ExoPlayer
+      import androidx.work.WorkManager
+      import androidx.fragment.app.Fragment
+      import androidx.exifinterface.media.ExifInterface
+      import com.google.accompanist.permissions.rememberPermissionState
+      import androidx.compose.ui.res.stringResource
+      import androidx.lifecycle.compose.LocalLifecycleOwner
+      import androidx.coreutils.Thing
+      import androidx.activityx.Thing
+    """.trimIndent()
+    assertThat(findForbiddenImports(source)).containsExactly(
+      2 to "androidx.activity.compose.BackHandler",
+      3 to "androidx.core.net.toUri",
+      4 to "androidx.appcompat.app.AppCompatActivity",
+      5 to "androidx.browser.customtabs.CustomTabsIntent",
+      6 to "androidx.media3.exoplayer.ExoPlayer",
+      7 to "androidx.work.WorkManager",
+      8 to "androidx.fragment.app.Fragment",
+      9 to "androidx.exifinterface.media.ExifInterface",
+      10 to "com.google.accompanist.permissions.rememberPermissionState",
+      11 to "androidx.compose.ui.res.stringResource",
+    )
+  }
+
+  @Test
+  fun `flags single Android-only members of multiplatform packages and nothing else in them`() {
+    val source = """
+      package a
+      import androidx.annotation.Keep
+      import androidx.annotation.VisibleForTesting
+      import androidx.compose.ui.platform.LocalContext
+      import androidx.compose.ui.platform.LocalConfiguration
+      import androidx.compose.ui.platform.LocalView
+      import androidx.compose.ui.platform.LocalDensity
+      import androidx.compose.ui.platform.LocalContextMenuRepresentation
+      import androidx.compose.ui.platform.*
+      import androidx.compose.ui.viewinterop.AndroidView
+      @androidx.annotation.Keep
+      class K
+      val c = androidx.compose.ui.platform.LocalContext.current
+      val d = androidx.compose.ui.platform.LocalDensity.current
+    """.trimIndent()
+    assertThat(findForbiddenImports(source)).containsExactly(
+      2 to "androidx.annotation.Keep",
+      4 to "androidx.compose.ui.platform.LocalContext",
+      5 to "androidx.compose.ui.platform.LocalConfiguration",
+      6 to "androidx.compose.ui.platform.LocalView",
+      10 to "androidx.compose.ui.viewinterop.AndroidView",
+    )
+    assertThat(findFullyQualifiedReferences(source)).containsExactly(
+      11 to "androidx.annotation.Keep",
+      13 to "androidx.compose.ui.platform.LocalContext.current",
+    )
+  }
+
+  @Test
+  fun `maps a reference to the entry that forbids it`() {
+    assertThat(forbiddenEntryOf("androidx.annotation.Keep")).isEqualTo("androidx.annotation.Keep")
+    assertThat(forbiddenEntryOf("androidx.core.net.toUri")).isEqualTo("androidx.core")
+    assertThat(forbiddenEntryOf("java.util.UUID.randomUUID")).isEqualTo("java")
+    assertThat(forbiddenEntryOf("androidx.annotation.KeepKmp")).isNull()
   }
 }

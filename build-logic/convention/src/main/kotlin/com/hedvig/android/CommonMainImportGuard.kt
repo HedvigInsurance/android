@@ -14,24 +14,64 @@ import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.register
-
-private val forbiddenImport = Regex("""^\s*import\s+((?:java|javax|android)\.[\w.`*]+)""")
+import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 /**
- * Returns the 1-based line number and imported name of every `java.*`, `javax.*` or `android.*` import in [source].
+ * Packages, and single declarations of otherwise multiplatform packages, that `commonMain` must not use. `java`,
+ * `javax` and `android` are JVM or Android API. The `androidx` and Accompanist entries are artifacts that publish
+ * only an Android variant, or declarations that exist only in the Android variant of a multiplatform artifact.
+ */
+val forbiddenCommonMainNames: List<String> = listOf(
+  "java",
+  "javax",
+  "android",
+  "androidx.activity",
+  "androidx.appcompat",
+  "androidx.browser",
+  "androidx.core",
+  "androidx.exifinterface",
+  "androidx.fragment",
+  "androidx.media3",
+  "androidx.work",
+  "com.google.accompanist",
+  "androidx.annotation.Keep",
+  "androidx.compose.ui.platform.LocalConfiguration",
+  "androidx.compose.ui.platform.LocalContext",
+  "androidx.compose.ui.platform.LocalLifecycleOwner",
+  "androidx.compose.ui.platform.LocalResources",
+  "androidx.compose.ui.platform.LocalSavedStateRegistryOwner",
+  "androidx.compose.ui.platform.LocalView",
+  "androidx.compose.ui.res",
+  "androidx.compose.ui.viewinterop.AndroidView",
+)
+
+/** Returns the entry of [forbiddenCommonMainNames] that [name] is, or lies inside, or null. */
+fun forbiddenEntryOf(name: String): String? {
+  val plain = name.replace("`", "")
+  return forbiddenCommonMainNames.firstOrNull { plain == it || plain.startsWith("$it.") }
+}
+
+private val importedName = Regex("""^\s*import\s+([\w.`*]+)""")
+
+/**
+ * Returns the 1-based line number and imported name of every import in [source] that names a
+ * [forbiddenCommonMainNames] entry or something inside it.
  */
 fun findForbiddenImports(source: String): List<Pair<Int, String>> {
   return source.lineSequence().mapIndexedNotNull { index, line ->
-    forbiddenImport.find(line)?.let { index + 1 to it.groupValues[1] }
+    importedName.find(line)?.groupValues?.get(1)
+      ?.takeIf { forbiddenEntryOf(it) != null }
+      ?.let { index + 1 to it }
   }.toList()
 }
 
-private val fullyQualifiedReference = Regex("""(?<![\w.$])(?:java|javax|android)(?:\.[A-Za-z]\w*)(?:\.\w+)*""")
+private val fullyQualifiedReference =
+  Regex("""(?<![\w.$])(?:java|javax|android|androidx|com)(?:\.[A-Za-z]\w*)(?:\.\w+)*""")
 
 /**
- * Returns the 1-based line number and dotted name of every fully qualified `java.*`, `javax.*` or `android.*`
- * reference in [source] outside `import` and `package` lines, comments, string literals and backticked names.
- * Known misses: code inside string templates (`"${java.util.UUID.randomUUID()}"`), and a reference that is
+ * Returns the 1-based line number and dotted name of every fully qualified reference in [source] to a
+ * [forbiddenCommonMainNames] entry, outside `import` and `package` lines, comments, string literals and backticked
+ * names. Known misses: code inside string templates (`"${java.util.UUID.randomUUID()}"`), and a reference that is
  * split across lines or written with spaces around its dots.
  */
 fun findFullyQualifiedReferences(source: String): List<Pair<Int, String>> {
@@ -40,7 +80,9 @@ fun findFullyQualifiedReferences(source: String): List<Pair<Int, String>> {
     if (trimmed.startsWith("import ") || trimmed.startsWith("package ")) {
       emptySequence()
     } else {
-      fullyQualifiedReference.findAll(line).map { index + 1 to it.value }
+      fullyQualifiedReference.findAll(line)
+        .filter { forbiddenEntryOf(it.value) != null }
+        .map { index + 1 to it.value }
     }
   }.toList()
 }
@@ -105,14 +147,15 @@ private fun blankCommentsAndLiterals(source: String): String {
 }
 
 /**
- * Registers `checkCommonMainImports` on the root project. `commonMain` of a module with only JVM and Android targets
- * still compiles against JVM API, so this is what keeps such code portable to iOS.
+ * Registers `checkCommonMainImports` on the root project and makes the root `check` depend on it. `commonMain` of a
+ * module with JVM and Android targets compiles against Android API in the Android build, and `java.*` compiles on
+ * both, so this text check is what reports such code before a JVM or iOS compile does.
  */
 fun Project.registerCommonMainImportGuard() {
   check(this == rootProject) { "checkCommonMainImports is a root project task" }
-  tasks.register<CheckCommonMainImportsTask>("checkCommonMainImports") {
+  val guard = tasks.register<CheckCommonMainImportsTask>("checkCommonMainImports") {
     group = "verification"
-    description = "Fails when a commonMain Kotlin file imports java.*, javax.* or android.*."
+    description = "Fails when a commonMain Kotlin file uses java.*, javax.*, android.* or Android-only androidx API."
     for (dir in listOf("app", "micro-apps")) {
       sources.from(
         fileTree(dir) {
@@ -125,6 +168,15 @@ fun Project.registerCommonMainImportGuard() {
     rootDirectory.set(layout.projectDirectory)
     marker.set(layout.buildDirectory.file("checkCommonMainImports/ok"))
   }
+  val check = if (LifecycleBasePlugin.CHECK_TASK_NAME in tasks.names) {
+    tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME)
+  } else {
+    tasks.register(LifecycleBasePlugin.CHECK_TASK_NAME) {
+      group = LifecycleBasePlugin.VERIFICATION_GROUP
+      description = "Runs all checks."
+    }
+  }
+  check.configure { dependsOn(guard) }
 }
 
 abstract class CheckCommonMainImportsTask : DefaultTask() {
@@ -132,7 +184,10 @@ abstract class CheckCommonMainImportsTask : DefaultTask() {
   @get:PathSensitive(PathSensitivity.RELATIVE)
   abstract val sources: ConfigurableFileCollection
 
-  /** Root-relative paths, one per line, each preceded by a `#` comment giving the reason. */
+  /**
+   * One entry per line, each preceded by a `#` comment giving the reason: a root-relative path skips the whole file,
+   * and a path followed by a [forbiddenCommonMainNames] entry allows only that entry in the file.
+   */
   @get:InputFile
   @get:PathSensitive(PathSensitivity.RELATIVE)
   abstract val allowList: RegularFileProperty
@@ -145,23 +200,29 @@ abstract class CheckCommonMainImportsTask : DefaultTask() {
 
   @TaskAction
   fun check() {
-    val allowed = allowList.get().asFile.readLines()
+    val entries = allowList.get().asFile.readLines()
       .map { it.trim() }
       .filter { it.isNotEmpty() && !it.startsWith("#") }
-      .toSet()
+      .map { it.split(Regex("""\s+"""), limit = 2) }
+    val wholeFiles = entries.filter { it.size == 1 }.map { it[0] }.toSet()
+    val allowedNames = entries.filter { it.size == 2 }.groupBy({ it[0] }, { it[1] })
     val root = rootDirectory.get().asFile
     val violations = sources.files.sorted().flatMap { file ->
       val path = file.relativeTo(root).invariantSeparatorsPath
-      if (path in allowed) return@flatMap emptyList()
+      if (path in wholeFiles) return@flatMap emptyList()
+      val allowedHere = allowedNames[path].orEmpty()
       val text = file.readText()
       (findForbiddenImports(text) + findFullyQualifiedReferences(text))
+        .filter { (_, reference) -> forbiddenEntryOf(reference) !in allowedHere }
         .sortedBy { it.first }
         .map { (line, reference) -> "$path:$line: $reference" }
     }
     if (violations.isNotEmpty()) {
       throw GradleException(
-        "commonMain must not import or reference java.*, javax.* or android.*. Move the code behind a platform " +
-          "seam, or add the file to config/commonMain-import-allowlist.txt with a reason.\n" +
+        "commonMain must not use JVM or Android-only API: move the code to androidMain (or jvmAndAndroidMain) " +
+          "behind an expect declaration or an interface bound per platform, as the \"Critical Metro KMP rule\" " +
+          "under \"Dependency Injection\" in CLAUDE.md describes, or list it in " +
+          "config/commonMain-import-allowlist.txt with a reason.\n" +
           violations.joinToString("\n"),
       )
     }
