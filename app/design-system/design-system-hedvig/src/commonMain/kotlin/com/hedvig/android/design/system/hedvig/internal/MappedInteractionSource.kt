@@ -19,7 +19,8 @@ import kotlinx.coroutines.flow.map
  * when movable content moves it, the hover exit and unfocus emitted in between reach no collector, and the indication
  * would keep showing that hover or focus. So a collection first receives the end of every hover and focus that the
  * previous collection saw start and not end, and then the live interactions. Presses are not replayed: a press that
- * was in flight still ends through its release or cancel, mapped to the same mapped press.
+ * was in flight still ends through its release or cancel, mapped to the same mapped press. The tracking assumes one
+ * collector at a time, the indication: concurrent collectors would each record the same hovers and focuses.
  */
 class MappedInteractionSource(
   private val underlyingInteractionSource: MutableInteractionSource,
