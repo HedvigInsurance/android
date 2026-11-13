@@ -42,8 +42,11 @@ class JvmFileService : FileService {
 }
 
 /**
- * The local file [this] points at, or null for anything but a well-formed `file:` URI. Converted through [URI], so
- * the Windows form `file:/C:/Users/a.txt` becomes the path `C:\Users\a.txt`.
+ * The local file [this] points at. Converted through [URI], so the Windows form `file:/C:/Users/a.txt` becomes the
+ * path `C:\Users\a.txt`.
+ *
+ * Null for a scheme other than `file`, for a URI that is not valid (such as an unencoded space or `%`), for an opaque
+ * one (`file:relative/a.txt`), and for one with an authority, a query or a fragment.
  */
 internal fun Uri.toPathOrNull(): Path? {
   if (scheme != "file") return null
