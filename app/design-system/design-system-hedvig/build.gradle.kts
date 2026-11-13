@@ -57,9 +57,5 @@ kotlin {
       implementation(libs.kotlin.test)
       implementation(org.jetbrains.compose.ComposePlugin.DesktopDependencies.currentOs)
     }
-    nativeMain.dependencies {
-      implementation(libs.metro.viewmodel)
-      implementation(libs.metro.viewmodel.compose)
-    }
   }
 }
