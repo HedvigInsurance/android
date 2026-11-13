@@ -19,14 +19,11 @@ internal data class CrossSellProductInfo(
   )
 
   /**
-   * [image] is the slide itself, or the poster shown under [videoUrl] while a video slide loads. A video
-   * slide with [loop] false plays once and holds its last frame.
+   * [image] is a still image or an animated WebP.
    */
   data class CarouselItem(
     val title: String,
     val subtitle: String?,
     val image: ImageAsset,
-    val videoUrl: String?,
-    val loop: Boolean,
   )
 }

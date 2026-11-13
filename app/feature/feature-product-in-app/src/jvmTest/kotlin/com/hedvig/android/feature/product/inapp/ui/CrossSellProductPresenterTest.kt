@@ -60,8 +60,6 @@ private val productInfo = CrossSellProductInfo(
       title = "Slide",
       subtitle = null,
       image = ImageAsset(id = "slide", src = "https://slide", description = null),
-      videoUrl = null,
-      loop = false,
     ),
   ),
 )

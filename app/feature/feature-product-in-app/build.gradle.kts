@@ -36,8 +36,7 @@ kotlin {
       implementation(projects.navigationCompose)
     }
     androidMain.dependencies {
-      implementation(libs.media3.exoplayer)
-      implementation(libs.media3.ui)
+      implementation(libs.coil.gif)
     }
     jvmTest.dependencies {
       implementation(libs.assertK)

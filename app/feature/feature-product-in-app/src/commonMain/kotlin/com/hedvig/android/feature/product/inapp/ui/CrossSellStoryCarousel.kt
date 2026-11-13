@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -35,15 +36,20 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
+import coil3.request.CachePolicy
+import coil3.request.ImageRequest
 import com.hedvig.android.compose.ui.EmptyContentDescription
+import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.feature.product.inapp.data.CrossSellProductInfo
 
 /**
- * Shows one slide at a time and moves to the next after [SLIDE_DURATION_MILLIS], wrapping around after the
- * last. Tapping the left half goes back a slide and the right half forward. The timer only runs while the
- * screen is resumed, and picks up where it stopped.
+ * Shows one slide at a time, wrapping around after the last. An animated image plays once and moves on as
+ * soon as it ends; a still image stays for [SLIDE_DURATION_MILLIS].
+ * Tapping the left half goes back a slide and the right half forward. The timer only runs while the screen
+ * is resumed, and picks up where it stopped.
  */
 @Composable
 internal fun CrossSellStoryCarousel(
@@ -54,16 +60,18 @@ internal fun CrossSellStoryCarousel(
   var currentIndex by rememberSaveable(items) { mutableIntStateOf(0) }
   val goToNext = { currentIndex = (currentIndex + 1) % items.size }
   val goToPrevious = { currentIndex = (currentIndex - 1 + items.size) % items.size }
+  val item = items[currentIndex]
   val progress = remember(currentIndex) { Animatable(0f) }
+  var slideDurationMillis by remember(currentIndex) { mutableStateOf<Int?>(null) }
   val lifecycleOwner = LocalLifecycleOwner.current
-  LaunchedEffect(currentIndex, lifecycleOwner) {
+  LaunchedEffect(currentIndex, slideDurationMillis, lifecycleOwner) {
+    val durationMillis = slideDurationMillis ?: return@LaunchedEffect
     lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-      val remainingMillis = ((1f - progress.value) * SLIDE_DURATION_MILLIS).toInt()
+      val remainingMillis = ((1f - progress.value) * durationMillis).toInt()
       progress.animateTo(1f, tween(durationMillis = remainingMillis, easing = LinearEasing))
       goToNext()
     }
   }
-  val item = items[currentIndex]
   Box(
     modifier = modifier
       .clip(HedvigTheme.shapes.cornerXXLarge)
@@ -90,16 +98,18 @@ internal fun CrossSellStoryCarousel(
         }
       },
   ) {
-    AsyncImage(
-      model = item.image.src,
-      contentDescription = item.image.description ?: EmptyContentDescription,
+    SlideImage(
+      image = item.image,
       imageLoader = imageLoader,
-      contentScale = ContentScale.Crop,
-      modifier = Modifier.matchParentSize(),
+      onLoaded = { animationMillis ->
+        slideDurationMillis = animationMillis
+          ?.let { it * ANIMATION_PLAY_COUNT + ANIMATION_HOLD_MILLIS }
+          ?: SLIDE_DURATION_MILLIS
+      },
+      modifier = Modifier
+        .matchParentSize()
+        .padding(16.dp),
     )
-    if (item.videoUrl != null) {
-      CarouselVideo(url = item.videoUrl, loop = item.loop, modifier = Modifier.matchParentSize())
-    }
     if (items.size > 1) {
       StoryProgress(
         count = items.size,
@@ -127,6 +137,39 @@ internal fun CrossSellStoryCarousel(
       }
     }
   }
+}
+
+/**
+ * [onLoaded] gets the length of one play of an animated image, or null for a still image or a failed load.
+ * The memory cache is skipped so every visit decodes afresh, which restarts the animation and re-reads its length.
+ */
+@Composable
+private fun SlideImage(
+  image: ImageAsset,
+  imageLoader: ImageLoader,
+  onLoaded: (animationMillis: Int?) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val context = LocalPlatformContext.current
+  val durationReader = remember(image.src) { WebpAnimationDurationReader() }
+  val request = remember(image.src, context) {
+    ImageRequest
+      .Builder(context)
+      .data(image.src)
+      .decoderFactory(durationReader)
+      .memoryCachePolicy(CachePolicy.DISABLED)
+      .playAnimation(times = ANIMATION_PLAY_COUNT)
+      .build()
+  }
+  AsyncImage(
+    model = request,
+    contentDescription = image.description ?: EmptyContentDescription,
+    imageLoader = imageLoader,
+    contentScale = ContentScale.Fit,
+    onSuccess = { onLoaded(durationReader.durationMillis) },
+    onError = { onLoaded(null) },
+    modifier = modifier,
+  )
 }
 
 @Composable
@@ -161,10 +204,9 @@ private fun StoryProgress(count: Int, currentIndex: Int, currentProgress: () -> 
 }
 
 private const val SLIDE_DURATION_MILLIS = 5_000
+private const val ANIMATION_HOLD_MILLIS = 500
+private const val ANIMATION_PLAY_COUNT = 2
 
-/**
- * Plays [url] muted over the slide's image, which stays visible until the first frame renders. With [loop]
- * false it plays once and holds its last frame.
- */
-@Composable
-internal expect fun CarouselVideo(url: String, loop: Boolean, modifier: Modifier = Modifier)
+internal expect fun ImageRequest.Builder.playAnimation(times: Int): ImageRequest.Builder
+
+internal expect fun ImageRequest.Builder.playAnimationOnce(): ImageRequest.Builder

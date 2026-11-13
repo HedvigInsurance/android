@@ -22,8 +22,6 @@ query CrossSellProductInfo($crossSellId: ID!) {
           src
           alt
         }
-        videoUrlWebm
-        loop
       }
     }
   }
