@@ -40,14 +40,11 @@ The same app also runs as a desktop (JVM) application. If a feature fails to com
 # Build the app
 ./gradlew :app:assemble
 
-# Run all tests
-./gradlew test
+# Run all unit tests (what CI runs: `test` for Android modules, `jvmTest` for KMP modules)
+./gradlew test jvmTest
 
-# Run tests for a specific module
-./gradlew :feature-home:test
-
-# Run unit tests
-./gradlew test
+# Run tests for a specific KMP module
+./gradlew :feature-home:jvmTest
 
 # Formatting
 ./gradlew ktlintCheck          # Check formatting
@@ -575,32 +572,29 @@ When tempted to write "X instead of Y", drop the Y half and justify X on its own
 ```
 
 **Schema locations:**
-- `app/apollo/apollo-octopus-public/src/main/graphql/` - Main schema
+- `app/apollo/apollo-octopus-public/src/commonMain/graphql/` - Main schema
 - Client-side schema modifications supported via build plugin
 
 ### Writing GraphQL Queries
 
-Place `.graphql` files in module's `src/main/graphql/`. Apollo generates type-safe Kotlin code automatically. Keep generated `octopus.*` types confined to internal impl classes (see the data layer rule above).
+Place `.graphql` files in the module's `src/commonMain/graphql/` (`src/main/graphql/` in a module that is not KMP). Apollo generates type-safe Kotlin code automatically. Keep generated `octopus.*` types confined to internal impl classes (see the data layer rule above).
 
 ## Testing
 
 ```bash
-# Run all tests
-./gradlew test
+# Run all unit tests (what CI runs)
+./gradlew test jvmTest
 
-# Run tests for specific module
-./gradlew :feature-home:test
-./gradlew :data-contract:test
+# Run tests for a specific module: jvmTest in a KMP module, test in an Android-only one
+./gradlew :feature-home:jvmTest
+./gradlew :data-contract:jvmTest
 
-# Run unit tests only
-./gradlew test
-
-# Filter to specific tests (works on Android library modules too)
-./gradlew :feature-home:test --tests "*HomePresenterTest*"
+# Filter to specific tests
+./gradlew :feature-home:jvmTest --tests "*HomePresenterTest*"
 ```
 
 **Test patterns:**
-- Unit tests: `src/test/kotlin/` (or `src/commonTest/` for KMP)
+- Unit tests: `src/jvmTest/kotlin/` in KMP modules (Robolectric tests in `src/androidHostTest/kotlin/`), `src/test/kotlin/` in Android-only and plain JVM modules
 - Android tests: `src/androidTest/kotlin/`
 - Use Turbine for testing Flows
 - Use test modules for shared test utilities
@@ -702,25 +696,38 @@ GitHub Actions workflows (in `.github/workflows/`):
 2. Add `build.gradle.kts`:
 ```kotlin
 plugins {
-  id("hedvig.android.library")
+  id("hedvig.multiplatform.library")
+  id("hedvig.multiplatform.library.android")
   id("hedvig.gradle.plugin")
 }
 
 hedvig {
   compose()
   navKeys()          // if the module declares any HedvigNavKey
+  viewModels()       // if the module declares any @HedvigViewModel
   apollo("octopus")  // if needed
 }
 
-dependencies {
-  implementation(projects.coreCommonPublic)
-  implementation(projects.navigationCompose)
-  implementation(projects.designSystemHedvig)
+kotlin {
+  sourceSets {
+    commonMain.dependencies {
+      implementation(libs.jetbrains.compose.foundation)
+      implementation(libs.jetbrains.compose.runtime)
+      implementation(projects.coreCommonPublic)
+      implementation(projects.designSystemHedvig)
+      implementation(projects.navigationCompose)
+    }
+    jvmTest.dependencies {
+      implementation(libs.assertK)
+      implementation(libs.junit)
+    }
+  }
 }
 ```
+   Code goes in `src/commonMain/kotlin`, platform code behind a seam in `src/androidMain` and `src/jvmMain` (see "Desktop app"), tests in `src/jvmTest/kotlin`.
 3. Create standard structure: `ui/`, `navigation/`, `di/` (contributions live next to the classes they bind via Metro annotations, not in a central `di` module).
 4. Define `@Serializable` `HedvigNavKey`s. Put any cross-feature-reachable keys in a `feature-{name}-navigation` module.
-5. Expose a `fun EntryProviderScope<HedvigNavKey>.{name}Entries(...)` and call it from `hedvigEntryProvider` in `:app-shell`.
+5. Expose a `fun EntryProviderScope<HedvigNavKey>.{name}Entries(...)` and call it from `hedvigEntryProvider` in `:app-shell`; add the module to the dependencies of `:app-shell`, `:app` and `:app-desktop`.
 6. Module will be auto-discovered by `settings.gradle.kts`.
 
 ### Adding a New Screen/Destination
@@ -733,7 +740,7 @@ dependencies {
 
 ### Adding a New GraphQL Query
 
-1. Create `.graphql` file in `src/main/graphql/`.
+1. Create a `.graphql` file in `src/commonMain/graphql/` (`src/main/graphql/` in a module that is not KMP).
 2. Enable Apollo in `build.gradle.kts`: `hedvig { apollo("octopus") }`.
 3. Build generates type-safe Kotlin code.
 4. Use the generated query in an internal repository/use case impl; return a project-owned type.
@@ -835,29 +842,15 @@ nothing validates, so re-check them whenever the metric changes.
 
 ## Desktop app
 
-Every feature module except `feature-impersonation` is KMP (JVM and Android) with its screens, presenters, ViewModels and entries in `commonMain`, and `:app-desktop` renders the shared `HedvigApp` in a Compose Desktop window. It is a proof that the app does not need Android and the step before iOS; nobody ships it. Its seams, skips and iOS debt are listed in `docs/superpowers/specs/2026-11-12-desktop-app-design.md` ("As built").
+Every feature module except `feature-impersonation` is KMP with its code in `commonMain`, and `:app-desktop` runs the shared `HedvigApp` as a desktop (JVM) app: `./gradlew :app-desktop:run` (staging; `-Phedvig.desktop.production=true` for production). What works there, the seams, the skips, the iOS debt and the recipe for converting a module are in `docs/superpowers/specs/2026-11-12-desktop-app-as-built.md`.
 
-```bash
-./gradlew :app-desktop:run                                   # staging backend
-./gradlew :app-desktop:run -Phedvig.desktop.production=true  # production backend
-```
+**The commonMain rule.** A module with only JVM and Android targets compiles `commonMain` against the JDK, so nothing stops it reaching code iOS cannot compile. `commonMain` may not use `java.*`, `javax.*`, `android.*`, Android-only `androidx` artifacts, libraries without iOS artifacts, or `hedvig.jvm.library` modules; such code goes behind a seam. `./gradlew checkCommonMainImports` (run by CI) fails on `java.*`, `javax.*` and `android.*` imports and fully qualified references; `config/commonMain-import-allowlist.txt` is empty, keep it so for feature code. It does not check `androidx` or third-party libraries, and it misses members of a JDK type reached through a typealias, such as `Uuid.randomUUID()` on benasher's `Uuid` (`java.util.UUID` on the JVM) or `toLanguageTag()` on `CommonLocale`. Check those by hand; only an iOS compile catches them.
 
-It identifies itself to the backend as the Android app (`X-Platform: ANDROID`, the `versionName` read from `app/app/build.gradle.kts`, model "Desktop"). Login is BankID by QR code (scanned with a phone), or email and a one-time code. Tokens, settings and the chat database live in `~/.hedvig-desktop/<staging|production>/`, so a login survives restarts. Back is Escape, Cmd+[ or Cmd+Left on macOS, Alt+Left elsewhere, or the mouse back button; back at the root does nothing. A link on a Hedvig deep link host that no matcher handles stays in the app (Home) instead of opening the browser. A headless walkthrough that screenshots every screen lives on the unmerged branch `tool/desktop-walkthrough` (`./gradlew :app-desktop:desktopWalkthrough`).
+**Seams.** Declare a module-local `expect` next to its caller: the Android `actual` holds the Android code unchanged, the JVM `actual` the simplest honest desktop behaviour, plus a `nativeMain` actual if the module compiles for iOS. For an injected type, put the interface in `commonMain` and a `@ContributesBinding` in `androidMain` and in `jvmMain`, never a default in `commonMain` (see the Metro KMP rule), so a missing desktop binding fails to compile. A JVM binding that needs a file location takes `@DesktopDataDirectory`. Where desktop support would complicate `commonMain` and make the Android code worse, the desktop actual renders `NotAvailableOnDesktop()` (`design-system-hedvig` `jvmMain`) instead, never a crash or a silent no-op, and the as-built file records it.
 
-**The commonMain rule.** A module with only JVM and Android targets compiles `commonMain` against the JDK, so nothing stops it reaching code iOS cannot compile. `commonMain` may not use `java.*`, `javax.*`, `android.*` or Android-only `androidx` artifacts, and a library used there must publish iOS artifacts; anything else goes behind a seam. Do not add a `hedvig.jvm.library` module to `commonMain`: the libraries `commonMain` used are KMP now, and `data-chat` is the one plain JVM module left there. `./gradlew checkCommonMainImports` (CI runs it) fails on such imports and on fully qualified references. `config/commonMain-import-allowlist.txt` exists for exceptions, each with a `#` reason; it is empty, keep it that way for feature code. **Blind spot:** members of a JDK type reached through a typealias pass the check, for example `Uuid.randomUUID()` on benasher's `Uuid` (`java.util.UUID` on the JVM) or `toLanguageTag()` on `CommonLocale` (`java.util.Locale`). Only an iOS compile catches them, so do not write them; use a module-local `expect`.
+**JVM graph tests.** `:app-desktop` `jvmTest` catches what the Android build cannot: `DesktopGraphTest` builds every ViewModel and factory from the real desktop graph, so a missing JVM binding fails there, and `DesktopEntryProviderTest` checks that `hedvigEntryProvider` registers every serializable key exactly once. Most modules with JVM bindings also have a `Jvm<Name>BindingsTest` or `Jvm<Name>GraphTest` building a small graph from their JVM contributions.
 
-**Converting an Android-only module:**
-1. A commit of pure `git mv`: `src/main/kotlin` to `src/commonMain/kotlin`, `src/main/graphql` to `src/commonMain/graphql`, `src/test/kotlin` to `src/jvmTest/kotlin`, and files that need Android API to `src/androidMain/kotlin` as `X.android.kt`. `git show -M --summary HEAD` must list only 100% renames.
-2. A second commit with the build file (`hedvig.multiplatform.library` + `hedvig.multiplatform.library.android`, plus `.ios` only when every dependency compiles for iOS; dependencies in `kotlin { sourceSets { commonMain.dependencies { } } }`, the `libs.jetbrains.*` Compose artifacts) and the seams. Robolectric tests go to `androidHostTest`, as in `feature-flags`. A library with no Android code takes no `.android` plugin; Android consumes its JVM jar, and since the KMP conventions compile with `jvmDefault = NO_COMPATIBILITY` the jar gains no `$DefaultImpls` classes over a `hedvig.jvm.library` build.
-3. Verify: the module's `jvmTest` runs the same number of tests as `test` did before (a test left in `src/test` silently runs nothing), `checkCommonMainImports`, `:app:assembleDebug`, `:app-desktop:jvmTest`, and the compiled `:app` graph has the same ViewModels and deep link matchers (the `javap` recipe under Common Issues). Library modules are release-only, so compile with `compileAndroidMain`, not `compileDebugKotlin`.
-
-**Adding a seam.** Declare a module-local `expect` next to its caller. The Android `actual` is the code that was there before, moved unchanged; the JVM `actual` is the simplest honest thing (`java.awt.Desktop`, the clipboard, an AWT file dialog). Add a `nativeMain` actual if the module compiles for iOS. For an injected type, put the interface in `commonMain` and a `@ContributesBinding` in `androidMain` and in `jvmMain`; never a platform-overridable default in `commonMain` (see the Metro KMP rule above), so a missing desktop binding fails to compile. A JVM binding that needs a file location takes `@DesktopDataDirectory`.
-
-**Skipping.** Skip a piece of functionality on desktop when supporting it would complicate `commonMain` and make the Android code worse. A skipped screen renders `NotAvailableOnDesktop()` (`design-system-hedvig` `jvmMain`) under its usual top bar, never a crash and never a silent no-op; record it in the spec's skip register.
-
-**JVM graph tests** in `:app-desktop` `jvmTest` catch what the Android build cannot: `DesktopGraphTest` builds every ViewModel and factory from the real desktop graph, so a missing JVM binding fails there, and `DesktopEntryProviderTest` checks that `hedvigEntryProvider` registers every serializable key exactly once without the desktop fallback. Modules with their own JVM bindings have a `Jvm*BindingsTest`.
-
-**Build rule.** A `feature-*` module must not depend on `:app-shell`; `hedvig.gradle.plugin` fails the build. Take a `navigateToX` lambda in the entries function instead. A new feature's entries are registered in `hedvigEntryProvider`, and the module is added to the dependencies of `:app-shell`, `:app` and `:app-desktop`.
+**Build rule.** A `feature-*` module must not depend on `:app-shell`; `configureFeatureModuleGuidelines()` in `hedvig.gradle.plugin` fails the build. Take a `navigateToX` lambda in the entries function instead.
 
 ## Debugging
 
