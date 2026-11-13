@@ -3,6 +3,7 @@ package com.hedvig.android.desktop.walkthrough
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.semantics.Role
 import androidx.navigation3.runtime.EntryProviderScope
+import com.apollographql.apollo.api.Mutation
 import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.desktop.DesktopAppBuildConfig
 import com.hedvig.android.desktop.DesktopBackend
@@ -11,6 +12,8 @@ import com.hedvig.android.desktop.installDesktopLogging
 import com.hedvig.android.desktop.newBackstackController
 import com.hedvig.android.desktop.registerSharedEntries
 import com.hedvig.android.desktop.registeredKeyClasses
+import com.hedvig.android.feature.chat.navigation.InboxKey
+import com.hedvig.android.feature.claimhistory.nav.ClaimHistoryKey
 import com.hedvig.android.feature.login.navigation.LoginKey
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.TopLevelTab
@@ -19,6 +22,7 @@ import java.io.File
 import java.util.Collections
 import java.util.Locale
 import java.util.TimeZone
+import java.util.zip.ZipFile
 import kotlin.io.path.createTempDirectory
 import kotlin.reflect.KClass
 import kotlinx.coroutines.runBlocking
@@ -34,7 +38,9 @@ import org.junit.Test
  * - `-Phedvig.walkthrough.outputDir=<path>` (default `app/app-desktop/build/walkthrough`).
  * - `-Phedvig.walkthrough.dataDir=<path>`: demo mode only, the data directory; default a fresh temporary one.
  * - `-Phedvig.walkthrough.sessionDataDir=<path>`: session mode only, a logged-in desktop data directory. It is
- *   copied to a temporary directory and only the copy is used.
+ *   copied to a temporary directory and only the copy is used, unless `-Phedvig.walkthrough.sessionInPlace=true`,
+ *   which uses the directory itself, so a token refresh is stored where the desktop app reads it.
+ * - `-Phedvig.walkthrough.startOnly=true`: stop after the first logged-in screen, to check a session works.
  * - `-Phedvig.walkthrough.only=<text>`: only visit keys whose name contains the text.
  *
  * Demo mode turns on the app's demo mode, which is what the login screen's demo option does, so no account is used.
@@ -42,8 +48,10 @@ import org.junit.Test
  *
  * Session mode shows real staging data. It only pushes keys and clicks the navigation bar, and never pushes a key
  * whose screen writes to the backend on entry (see [sessionModeExclusions]). It refuses to start while a desktop app
- * process runs, since both would refresh the same session. Even run alone, a token refresh in the copy can rotate the
- * refresh token, so the desktop app the copy was taken from may have to log in again afterwards.
+ * process runs, since both would refresh the same session. Run on a copy, a token refresh rotates the refresh token
+ * and leaves the original directory with a dead one, so the desktop app has to log in again; run in place, it does
+ * not. Keys that need an id get the first contract, claim or conversation id in the app's Apollo cache, after Home,
+ * Insurances, the claim history and the inbox have loaded. After the keys, [investigate] runs.
  */
 class DesktopWalkthrough {
   private val spec = SceneSpec()
@@ -72,6 +80,7 @@ class DesktopWalkthrough {
     outputDirectory.deleteRecursively()
     outputDirectory.mkdirs()
     val dataDirectory = if (mode == "session") sessionDataDirectory() else demoDataDirectory()
+    println("Mutation operation names known: ${mutationNames.size}")
     println("Walkthrough in $mode mode, data directory ${dataDirectory.absolutePath}")
 
     backstackController = newBackstackController()
@@ -91,18 +100,51 @@ class DesktopWalkthrough {
         enterDemoMode()
       }
       visitCurrent("start-logged-in", "start")
+      if (!onEdt { backstackController.isLoggedIn }) {
+        println("The app did not reach a logged-in screen. Stopping before tabs and keys.")
+        stoppedReason = "the app did not reach a logged-in screen (expired or missing session)"
+        return
+      }
+      if (System.getProperty("hedvig.walkthrough.startOnly") == "true") {
+        stoppedReason = "start only"
+        return
+      }
       visitTabs()
-      visitKeys(mode)
+      val ids = if (mode == "demo") demoIds else sessionIds()
+      visitKeys(mode, ids)
+      investigate()
     } finally {
       closeScene()
       val header = listOf(
         "Mode: $mode ($demoEntryNote)",
+        "Stopped early: ${stoppedReason ?: "no"}",
+        "Ids: $idsNote",
         "Scene: ${spec.widthDp} x ${spec.heightDp} dp at density ${spec.density}, locale en-SE, zone Europe/Stockholm",
         "Settle: idle after ${spec.quietMillis} ms without invalidation, or settled after ${spec.settledMillis} ms " +
           "of unchanged semantics with no spinner, timeout ${spec.timeoutMillis} ms",
         "Notices shown by the app: ${notices.distinct().ifEmpty { listOf("none") }.joinToString(" / ")}",
       )
-      writeIndex(File(outputDirectory, "index.md"), header, visits)
+      collectOperations("end")
+      val sentMutations = operationLog.filter { (_, operation) -> operation in mutationNames }
+      File(outputDirectory, "operations.txt").writeText(
+        operationLog.joinToString("\n") { (label, operation) ->
+          "$label | $operation${if (operation in mutationNames) " | MUTATION" else ""}"
+        },
+      )
+      writeIndex(
+        File(outputDirectory, "index.md"),
+        header + (
+          "GraphQL operations: ${operationLog.size} (operations.txt), mutations among them: " +
+            if (sentMutations.isEmpty()) {
+              "none"
+            } else {
+              sentMutations.joinToString { (label, operation) ->
+                "$operation ($label)"
+              }
+            }
+        ),
+        visits,
+      )
       println("Wrote ${visits.size} visits to ${outputDirectory.absolutePath}")
       Outcome.entries.forEach { outcome -> println("${outcome.label}: ${visits.count { it.outcome == outcome }}") }
     }
@@ -144,6 +186,155 @@ class DesktopWalkthrough {
 
   private var demoEntryNote: String = "not demo mode"
 
+  private var stoppedReason: String? = null
+
+  /** Every GraphQL operation the app started, with the visit it belongs to, in order. */
+  private val operationLog = mutableListOf<Pair<String, String>>()
+
+  /** The operation names of every generated GraphQL mutation on the classpath. */
+  private val mutationNames: Set<String> by lazy {
+    System.getProperty("java.class.path").split(File.pathSeparator).map(::File).flatMap { entry ->
+      when {
+        entry.isDirectory -> entry.walkTopDown().filter {
+          it.isFile
+        }.map { it.relativeTo(entry).invariantSeparatorsPath }
+          .toList()
+
+        entry.isFile && entry.name.endsWith(".jar") -> ZipFile(entry).use { zip ->
+          zip.entries().toList().map { it.name }
+        }
+
+        else -> emptyList()
+      }
+    }
+      .filter { path -> path.startsWith("octopus/") && path.endsWith("Mutation.class") }
+      .map { path -> path.removeSuffix(".class").replace('/', '.') }
+      .filter { name ->
+        Mutation::class.java.isAssignableFrom(Class.forName(name, false, Mutation::class.java.classLoader))
+      }
+      .map { name -> name.substringAfterLast('.').removeSuffix("Mutation") }
+      .toSet()
+  }
+
+  private fun collectOperations(label: String): List<String> =
+    logger.drainOperations().also { operations -> operationLog += operations.map { label to it } }
+
+  private fun drainBetweenVisits() {
+    logger.drain()
+    collectOperations("between visits")
+  }
+
+  private var idsNote: String = "demo ids"
+
+  /**
+   * Ids for keys that need one, taken from what the app has loaded: contracts from Home and Insurances, and claims
+   * and conversations after the read-only claim history and inbox screens have been shown once.
+   */
+  private fun sessionIds(): Map<String, String> {
+    for (key in listOf<HedvigNavKey>(InboxKey, ClaimHistoryKey)) {
+      onEdt { Snapshot.withMutableSnapshot { backstackController.entries.add(key) } }
+      scene!!.settle()
+      onEdt {
+        Snapshot.withMutableSnapshot { backstackController.entries.removeAt(backstackController.entries.lastIndex) }
+      }
+      scene!!.settle(minimumMillis = 0)
+    }
+    drainBetweenVisits()
+    val loaded = LoadedData.read(graph.apolloClient)
+    val contracts = loaded.idsOf("Contract")
+    val claims = loaded.idsOf("Claim")
+    val conversations = loaded.idsOf("Conversation")
+    idsNote = "from the Apollo cache: ${contracts.size} contracts, ${claims.size} claims, " +
+      "${conversations.size} conversations; the first of each is used"
+    return buildMap {
+      contracts.firstOrNull()?.let {
+        put("contractId", it)
+        put("insuranceId", it)
+      }
+      claims.firstOrNull()?.let { put("claimId", it) }
+      conversations.firstOrNull()?.let { put("conversationId", it) }
+    }
+  }
+
+  /**
+   * Looks at three behaviours reported from the real window, each in a fresh scene from the Home tab:
+   * - the navigation bar after clicking each tab in turn, after the pointer leaves the bar, after only hovering a
+   *   tab, and after switching tabs through the back stack with no pointer event at all;
+   * - scrolling Home down with the mouse wheel until the lower section reaches the top, then back up;
+   * - every markdown link the app has cached, to find where the help center's "Go to payments" link points.
+   */
+  private fun investigate() {
+    fun freshHome() {
+      openScene()
+      onEdt { backstackController.selectTopLevel(TopLevelTab.Home) }
+      scene!!.settle()
+      drainBetweenVisits()
+      uncaught.clear()
+    }
+
+    fun tabs(): List<VisibleNode> = scene!!.visibleNodes().filter { it.role == Role.Tab }.sortedBy { it.bounds.left }
+
+    freshHome()
+    for (index in tabs().indices) {
+      val tab = tabs()[index]
+      scene!!.click(tab.bounds)
+      record(
+        "inv-navbar-click-${index + 1}-${tab.text}",
+        "investigation",
+        scene!!.settle(),
+        listOf("clicked ${tab.text}"),
+      )
+    }
+    scene!!.movePointer(androidx.compose.ui.geometry.Offset(412f, 600f))
+    record("inv-navbar-pointer-left-bar", "investigation", scene!!.settle(), listOf("pointer moved to the content"))
+
+    freshHome()
+    tabs().getOrNull(2)?.let { tab ->
+      scene!!.movePointer(tab.bounds.center)
+      record("inv-navbar-hover-only", "investigation", scene!!.settle(), listOf("pointer over ${tab.text}, no press"))
+      scene!!.movePointer(androidx.compose.ui.geometry.Offset(412f, 600f))
+      record("inv-navbar-hover-left", "investigation", scene!!.settle(), listOf("pointer moved away from ${tab.text}"))
+    }
+
+    freshHome()
+    for (tab in TopLevelTab.entries) {
+      onEdt { backstackController.selectTopLevel(tab) }
+      record(
+        "inv-navbar-backstack-${tab.name}",
+        "investigation",
+        scene!!.settle(),
+        listOf("selectTopLevel($tab), no pointer"),
+      )
+    }
+
+    freshHome()
+    val middle = androidx.compose.ui.geometry.Offset(412f, 1200f)
+    record("inv-home-scroll-0-before", "investigation", scene!!.settle(), listOf("Home before scrolling"))
+    scene!!.wheel(middle, deltaY = 3f, count = 15)
+    record(
+      "inv-home-scroll-1-down",
+      "investigation",
+      scene!!.settle(),
+      listOf("15 wheel events of +3 at (412, 1200) px"),
+    )
+    scene!!.wheel(middle, deltaY = -3f, count = 15)
+    record("inv-home-scroll-2-up", "investigation", scene!!.settle(), listOf("15 wheel events of -3 at (412, 1200) px"))
+    val top = androidx.compose.ui.geometry.Offset(412f, 300f)
+    scene!!.wheel(top, deltaY = -3f, count = 15)
+    record(
+      "inv-home-scroll-3-up-higher",
+      "investigation",
+      scene!!.settle(),
+      listOf("15 wheel events of -3 at (412, 300) px"),
+    )
+
+    val links = LoadedData.read(graph.apolloClient).markdownLinks()
+    File(outputDirectory, "cached-markdown-links.txt").writeText(
+      links.joinToString("\n") { (field, text, url) -> "$field | $text | $url" },
+    )
+    println("Cached markdown links: ${links.size}")
+  }
+
   private fun openScene() {
     closeScene()
     scene = WalkthroughScene(spec) {
@@ -158,7 +349,7 @@ class DesktopWalkthrough {
 
   /** Settles the current screen and records it as a visit named [name]. */
   private fun visitCurrent(name: String, kind: String, notes: List<String> = emptyList()): Visit {
-    logger.drain()
+    drainBetweenVisits()
     uncaught.clear()
     val scene = scene ?: error("No scene")
     val settle = scene.settle()
@@ -168,6 +359,8 @@ class DesktopWalkthrough {
   private fun record(name: String, kind: String, settle: SettleResult, notes: List<String>): Visit {
     val scene = scene ?: error("No scene")
     val problems = logger.drain()
+    val operations = collectOperations(name)
+    val mutations = operations.filter { it in mutationNames }
     val throwables = listOfNotNull(settle.renderFailure) + uncaught.toList()
     uncaught.clear()
     val nodes = if (settle.renderFailure ==
@@ -189,6 +382,7 @@ class DesktopWalkthrough {
     }
     val extraNotes = buildList {
       addAll(notes)
+      if (mutations.isNotEmpty()) add("MUTATIONS SENT: ${mutations.joinToString()}")
       if (texts.any { it.contains("Something went wrong") }) add("shows the generic error")
       val untranslated = texts.flatMap { it.split(" ") }.filter { it.matches(Regex("[A-Z][A-Z0-9]*_[A-Z0-9_]+")) }
       if (untranslated.isNotEmpty()) add("untranslated keys: ${untranslated.distinct().joinToString()}")
@@ -221,7 +415,7 @@ class DesktopWalkthrough {
     for (index in 0 until tabCount) {
       val tab = scene.visibleNodes().filter { it.role == Role.Tab }.sortedBy { it.bounds.left }.getOrNull(index)
         ?: continue
-      logger.drain()
+      drainBetweenVisits()
       uncaught.clear()
       scene.click(tab.bounds)
       val settle = scene.settle()
@@ -243,9 +437,8 @@ class DesktopWalkthrough {
     scene?.settle()
   }
 
-  private fun visitKeys(mode: String) {
+  private fun visitKeys(mode: String, ids: Map<String, String>) {
     val only = System.getProperty("hedvig.walkthrough.only")
-    val ids = if (mode == "demo") demoIds else emptyMap()
     val keyClasses = registeredKeyClasses().sortedBy { it.qualifiedName }
       .filter { only == null || it.qualifiedName.orEmpty().contains(only) }
     val baseEntries = onEdt { backstackController.entries.toList() }
@@ -269,7 +462,7 @@ class DesktopWalkthrough {
         }
 
         is KeyInstance.Built -> {
-          logger.drain()
+          drainBetweenVisits()
           uncaught.clear()
           onEdt { Snapshot.withMutableSnapshot { backstackController.entries.add(instance.key) } }
           val settle = scene!!.settle()
@@ -287,7 +480,7 @@ class DesktopWalkthrough {
             }
           }
           scene!!.settle(minimumMillis = 0)
-          logger.drain()
+          drainBetweenVisits()
           uncaught.clear()
         }
       }
@@ -319,6 +512,7 @@ class DesktopWalkthrough {
       "A desktop app is running (${running.joinToString()}). Session mode refreshes the same session, which can " +
         "log that app out, so it does not start while one runs."
     }
+    if (System.getProperty("hedvig.walkthrough.sessionInPlace") == "true") return source
     val copy = createTempDirectory("hedvig-walkthrough-session").toFile()
     source.copyRecursively(copy, overwrite = true)
     return copy
@@ -359,24 +553,31 @@ class DesktopWalkthrough {
     const val DESKTOP_MAIN_CLASS = "com.hedvig.android.desktop.MainKt"
 
     /**
-     * Key packages whose screens may write to the backend on entry, or whose first step does. The list is
-     * conservative: a package is listed when its entry screen starts a flow (an intent, a quote, a conversation, a
-     * login attempt, a payment setup), without proving each one writes.
+     * Keys whose screen, or a screen it forwards to by itself, writes to the backend while loading, with the write.
+     * Each was found by reading the entry's ViewModel or presenter. A prefix excludes every key below it.
      */
     val sessionModeExclusions: Map<String, String> = mapOf(
-      "com.hedvig.android.feature.connect.payment.trustly" to "Trustly runs a payment setup mutation on entry",
-      "com.hedvig.android.feature.claim.chat" to "claim chat starts a claim on entry",
-      "com.hedvig.android.feature.terminateinsurance" to "termination starts a termination flow on entry",
-      "com.hedvig.android.feature.movingflow" to "the moving flow creates a move intent on entry",
-      "com.hedvig.android.feature.change.tier" to "the tier flow creates a change intent on entry",
-      "com.hedvig.android.feature.addon.purchase" to "the addon flow requests quotes on entry",
-      "com.hedvig.android.feature.remove.addons" to "the remove-addon flow starts on entry",
-      "com.hedvig.android.feature.editcoinsured" to "co-insured editing is a write flow",
-      "com.hedvig.android.feature.chat.navigation.ChatKey" to "a chat key may create a conversation",
-      "com.hedvig.android.feature.login" to "login screens start a login attempt",
-      "com.hedvig.android.feature.payin.account.navigation.SetupSwishPayinKey" to "Swish setup starts a payment request",
-      "com.hedvig.android.feature.payoutaccount.navigation.SetupSwishPayoutKey" to "Swish setup starts a payout setup",
-      "com.hedvig.android.feature.deleteaccount" to "account deletion is a write flow",
+      "com.hedvig.android.feature.connect.payment.trustly" to
+        "SetupTrustlyPayoutMutation (StartTrustlySessionUseCase, TrustlyPresenter load)",
+      "com.hedvig.android.feature.claim.chat.navigation.ClaimChatKey" to
+        "ClaimIntentStartMutation (StartClaimIntentUseCase, ClaimChatViewModel load)",
+      "com.hedvig.android.feature.claim.details.navigation.ClaimDetailsKey" to
+        "ClaimAcknowledgeClosedStatusMutation (GetClaimDetailUiStateUseCase load, for a closed claim)",
+      "com.hedvig.android.feature.movingflow" to
+        "MoveIntentV2CreateMutation (SelectContractViewModel load); the later steps need its move intent id",
+      "com.hedvig.android.feature.change.tier" to
+        "ChangeTierDeductibleCreateIntentMutation (StartTierFlowViewModel load; ChooseInsuranceViewModel load " +
+        "when one insurance is eligible); the later steps need its intent",
+      "com.hedvig.android.feature.addon.purchase" to
+        "AddonGenerateOfferMutation (CustomizeAddonViewModel load, which the addon entries forward to by " +
+        "themselves for a single insurance)",
+      "com.hedvig.android.feature.help.center.navigation.PuppyGuideArticleKey" to
+        "PuppyGuideEngagementMutation (PuppyArticleViewModel, as soon as the article is scrolled to the end, " +
+        "which a short article is on load)",
+      "com.hedvig.android.feature.payin.account.navigation.SetupSwishPayinKey" to
+        "SetupSwishPayinMutation (SwishPayinStatusViewModel load)",
+      "com.hedvig.android.feature.login.navigation.SwedishLoginKey" to
+        "starts a BankID login attempt on the auth service on load",
     )
   }
 }

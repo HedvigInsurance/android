@@ -193,6 +193,24 @@ internal class WalkthroughScene(
     }
   }
 
+  /** Moves the mouse to [position] (pixels) without pressing. */
+  fun movePointer(position: Offset) {
+    onEdt { scene.sendPointerEvent(PointerEventType.Move, position) }
+  }
+
+  /**
+   * Sends [count] mouse wheel events of [deltaY] each at [position] (pixels), rendering frames between them. A
+   * positive [deltaY] scrolls the content down, like turning the wheel towards the user.
+   */
+  fun wheel(position: Offset, deltaY: Float, count: Int) {
+    onEdt { scene.sendPointerEvent(PointerEventType.Move, position) }
+    repeat(count) {
+      onEdt { scene.sendPointerEvent(PointerEventType.Scroll, position, scrollDelta = Offset(0f, deltaY)) }
+      renderFrame()
+      Thread.sleep(50)
+    }
+  }
+
   /** Presses the centre of [bounds] (pixels) for [millis] while rendering frames, then releases. */
   fun longPress(bounds: Rect, millis: Long = 1_000) {
     val position = Offset(bounds.center.x, bounds.center.y)

@@ -126,6 +126,7 @@ kotlin {
       implementation(projects.uiForceUpgrade)
     }
     jvmTest.dependencies {
+      implementation(libs.apollo.normalizedCache)
       implementation(libs.assertK)
       implementation(libs.classgraph)
       implementation(libs.coroutines.test)

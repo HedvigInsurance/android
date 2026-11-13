@@ -12,8 +12,13 @@ internal data class LoggedProblem(val priority: LogPriority, val tag: String?, v
  */
 internal class WalkthroughLogger : LogcatLogger {
   private val problems = mutableListOf<LoggedProblem>()
+  private val operations = mutableListOf<String>()
 
   override fun log(priority: LogPriority, throwable: Throwable?, tag: String?, message: () -> String) {
+    if (priority == LogPriority.DEBUG) {
+      val operation = operationStart.matchEntire(message())?.groupValues?.get(1)
+      if (operation != null) synchronized(operations) { operations += operation }
+    }
     if (priority < LogPriority.INFO) return
     val text = message()
     println("${priority.name.first()}/${tag ?: "Hedvig"}: $text")
@@ -25,6 +30,13 @@ internal class WalkthroughLogger : LogcatLogger {
   }
 
   fun drain(): List<LoggedProblem> = synchronized(problems) { problems.toList().also { problems.clear() } }
+
+  /** The GraphQL operations started since the last call, by operation name, in order. */
+  fun drainOperations(): List<String> = synchronized(operations) { operations.toList().also { operations.clear() } }
+
+  private companion object {
+    val operationStart = Regex("GraphQL request for (\\S+) START\\.")
+  }
 }
 
 /** The throwable's class, message and first [count] frames, followed by the same for its causes. */
