@@ -12,6 +12,11 @@ internal class LoadedData(private val records: List<Map<String, Any?>>) {
     .mapNotNull { it["id"] as? String }
     .distinct()
 
+  /** The `id` of the first cached object with a string field [field] that contains [needle]. */
+  fun idWhere(field: String, needle: String): String? = records
+    .firstOrNull { (it[field] as? String)?.contains(needle) == true && it["id"] is String }
+    ?.get("id") as? String
+
   /** Every markdown link (`[text](url)`) in a cached string, with the cached field name it was found in. */
   fun markdownLinks(): List<Triple<String, String, String>> = records.flatMap { record ->
     record.flatMap { (field, value) ->

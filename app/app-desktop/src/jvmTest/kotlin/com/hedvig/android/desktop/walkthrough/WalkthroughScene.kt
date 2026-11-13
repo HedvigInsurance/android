@@ -8,9 +8,11 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsNode
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.Density
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -66,6 +68,8 @@ internal data class VisibleNode(
   val isIndeterminateProgress: Boolean,
   val isSelected: Boolean,
   val testTag: String?,
+  val isClickable: Boolean,
+  val isEditable: Boolean,
 )
 
 /**
@@ -80,6 +84,9 @@ internal class WalkthroughScene(
 ) : AutoCloseable {
   private val owner = onEdt { WindowOwner().also { it.lifecycle.currentState = Lifecycle.State.RESUMED } }
   private val startNanos = System.nanoTime()
+
+  /** The window's ViewModel store, the root the screens' ViewModels hang from. */
+  val viewModelStoreRoot: Any get() = owner.viewModelStore
   private var lastImage: Image? = null
 
   private val scene: ImageComposeScene = onEdt {
@@ -167,7 +174,9 @@ internal class WalkthroughScene(
       val progress = config.getOrNull(SemanticsProperties.ProgressBarRangeInfo)
       val role = config.getOrNull(SemanticsProperties.Role)
       val testTag = config.getOrNull(SemanticsProperties.TestTag)
-      if (text.isNotBlank() || role != null || progress != null || testTag != null) {
+      val isClickable = config.getOrNull(SemanticsActions.OnClick) != null
+      val isEditable = config.getOrNull(SemanticsActions.SetText) != null
+      if (text.isNotBlank() || role != null || progress != null || testTag != null || isClickable || isEditable) {
         result += VisibleNode(
           text = text,
           role = role,
@@ -175,6 +184,8 @@ internal class WalkthroughScene(
           isIndeterminateProgress = progress == ProgressBarRangeInfo.Indeterminate,
           isSelected = config.getOrNull(SemanticsProperties.Selected) == true,
           testTag = testTag,
+          isClickable = isClickable,
+          isEditable = isEditable,
         )
       }
       node.children.forEach(::visit)
@@ -191,6 +202,30 @@ internal class WalkthroughScene(
       scene.sendPointerEvent(PointerEventType.Press, position)
       scene.sendPointerEvent(PointerEventType.Release, position)
     }
+  }
+
+  /**
+   * Types [text] into the first editable node [matches] accepts, through the node's set-text semantics action, the
+   * same action a screen reader or a UI test uses. Returns whether a node took it.
+   */
+  fun setText(text: String, matches: (VisibleNode) -> Boolean = { true }): Boolean = onEdt {
+    var done = false
+
+    fun visit(node: SemanticsNode) {
+      if (done) return
+      val action = node.config.getOrNull(SemanticsActions.SetText)
+      if (action != null) {
+        val candidate = visibleNodes().firstOrNull { it.bounds == node.boundsInRoot && it.isEditable }
+        if (candidate != null && matches(candidate)) {
+          action.action?.invoke(AnnotatedString(text))
+          done = true
+          return
+        }
+      }
+      node.children.forEach(::visit)
+    }
+    scene.semanticsOwners.forEach { visit(it.rootSemanticsNode) }
+    done
   }
 
   /** Moves the mouse to [position] (pixels) without pressing. */

@@ -70,6 +70,16 @@ private sealed interface FakeArgument {
   data class Missing(val reason: String) : FakeArgument
 }
 
+/** A class that only wraps one id string, such as a contract id, built from [ids] by the parameter's [name]. */
+private fun idWrapper(type: KClass<*>, name: String, ids: Map<String, String>): FakeArgument? {
+  val id = ids[name] ?: return null
+  val constructor = type.primaryConstructor ?: return null
+  val parameter = constructor.parameters.singleOrNull() ?: return null
+  if (parameter.type.jvmErasure != String::class) return null
+  constructor.isAccessible = true
+  return FakeArgument.Value(constructor.call(id))
+}
+
 private fun fakeArgument(parameter: KParameter, ids: Map<String, String>): FakeArgument {
   val name = parameter.name.orEmpty()
   if (parameter.type.isMarkedNullable) return FakeArgument.Value(null)
