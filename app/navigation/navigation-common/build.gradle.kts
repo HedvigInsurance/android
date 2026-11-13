@@ -15,6 +15,7 @@ kotlin {
   sourceSets {
     commonMain.dependencies {
       api(libs.androidx.navigation3.runtime)
+      api(libs.jetbrains.compose.runtime)
       implementation(libs.kotlin.reflect)
     }
     commonTest.dependencies {
