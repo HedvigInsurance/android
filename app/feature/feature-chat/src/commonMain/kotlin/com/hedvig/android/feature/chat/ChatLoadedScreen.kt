@@ -380,6 +380,7 @@ private fun ScrollToBottomEffect(
   messages: LazyPagingItems<CbmUiChatMessage>,
 ) {
   val updatedLatestChatMessage by rememberUpdatedState(latestChatMessage)
+  val updatedMessages by rememberUpdatedState(messages)
   LaunchedEffect(lazyListState) {
     snapshotFlow { updatedLatestChatMessage }
       .filterNotNull()
@@ -389,7 +390,7 @@ private fun ScrollToBottomEffect(
         val idToScrollTo = chatMessage.id
         withTimeout(1.seconds) {
           snapshotFlow {
-            messages.itemSnapshotList
+            updatedMessages.itemSnapshotList
               .getOrNull(0)
               ?.chatMessage
               ?.id
