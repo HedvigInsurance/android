@@ -35,7 +35,7 @@ internal class JvmLanguageService(
   @Inject
   constructor(dataStore: DataStore<Preferences>) : this(dataStore, listOf(operatingSystemLocaleTag()))
 
-  private var storedLocaleTags: List<String> = runBlocking { readStoredLocaleTagsApplyingMigration() }
+  private var storedLocaleTags: List<String> = runBlocking { readStoredLocaleTagsClearingUnsupported() }
   private val mutableLanguage = MutableStateFlow(applyCurrentPick())
   override val language: StateFlow<Language> = mutableLanguage.asStateFlow()
 
@@ -63,22 +63,16 @@ internal class JvmLanguageService(
   }
 
   /**
-   * The stored pick, cleared first when [storedLanguageMigration] says so, as Android does at startup. With nothing
-   * stored the app follows the operating system.
+   * The stored pick. A stored tag that is not a supported language ([isSupportedLocaleTag]) is removed from the store,
+   * so the app follows the operating system. A supported pick is kept at every start, also while it matches the
+   * operating system's language, so it still applies after that language changes.
    */
-  private suspend fun readStoredLocaleTagsApplyingMigration(): List<String> {
-    val storedLocaleTags = dataStore.data.first()[storedLanguageKey]?.let(::listOf).orEmpty()
-    return when (storedLanguageMigration(storedLocaleTags, systemLocaleTags)) {
-      StoredLanguageMigration.Keep -> {
-        storedLocaleTags
-      }
-
-      StoredLanguageMigration.Clear -> {
-        logcat { "LanguageService: clearing stored [${storedLocaleTags.joinToString()}]" }
-        dataStore.edit { preferences -> preferences.remove(storedLanguageKey) }
-        emptyList()
-      }
-    }
+  private suspend fun readStoredLocaleTagsClearingUnsupported(): List<String> {
+    val storedTag = dataStore.data.first()[storedLanguageKey] ?: return emptyList()
+    if (isSupportedLocaleTag(storedTag)) return listOf(storedTag)
+    logcat { "LanguageService: clearing unsupported stored language [$storedTag]" }
+    dataStore.edit { preferences -> preferences.remove(storedLanguageKey) }
+    return emptyList()
   }
 
   /**

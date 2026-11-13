@@ -84,7 +84,22 @@ class JvmLanguageServiceTest {
   }
 
   @Test
-  fun `a supported stored language is kept`() = runBlocking {
+  fun `a stored language equal to the operating system's is kept, so it survives a later system change`() =
+    runBlocking {
+      openStore().edit { it[stringPreferencesKey(STORED_LANGUAGE_KEY)] = "sv-SE" }
+      closeStores()
+
+      JvmLanguageService(openStore(), listOf("sv-SE"))
+      closeStores()
+      val store = openStore()
+      val restartedOnEnglishSystem = JvmLanguageService(store, listOf("en-US"))
+
+      assertEquals("sv-SE", store.data.first()[stringPreferencesKey(STORED_LANGUAGE_KEY)])
+      assertEquals(Language.SV_SE, restartedOnEnglishSystem.language.value)
+    }
+
+  @Test
+  fun `a supported stored language different from the operating system's is kept`() = runBlocking {
     val store = openStore()
     store.edit { it[stringPreferencesKey(STORED_LANGUAGE_KEY)] = "sv-SE" }
 
