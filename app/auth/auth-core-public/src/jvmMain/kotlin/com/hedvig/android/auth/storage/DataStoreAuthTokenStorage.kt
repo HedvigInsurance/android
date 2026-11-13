@@ -12,6 +12,7 @@ import com.hedvig.android.authlib.RefreshToken
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlin.time.Clock
@@ -20,13 +21,14 @@ import kotlin.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
+@ContributesBinding(AppScope::class)
 @SingleIn(AppScope::class)
 @Inject
-class AuthTokenStorage(
+class DataStoreAuthTokenStorage(
   private val dataStore: DataStore<Preferences>,
   private val clock: Clock = Clock.System,
-) {
-  fun getTokens(): Flow<AuthTokens?> {
+) : AuthTokenStorage {
+  override fun getTokens(): Flow<AuthTokens?> {
     return dataStore.data
       .map { preferences ->
         val accessTokenString = preferences[accessTokenPreferenceKey] ?: return@map null
@@ -44,7 +46,7 @@ class AuthTokenStorage(
       }
   }
 
-  suspend fun updateTokens(accessToken: AccessToken, refreshToken: RefreshToken) {
+  override suspend fun updateTokens(accessToken: AccessToken, refreshToken: RefreshToken) {
     dataStore.edit { preferences ->
       val now = clock.now()
 
@@ -66,7 +68,7 @@ class AuthTokenStorage(
     }
   }
 
-  suspend fun clearTokens() {
+  override suspend fun clearTokens() {
     dataStore.edit { preferences ->
       preferences.remove(accessTokenPreferenceKey)
       preferences.remove(refreshTokenPreferenceKey)

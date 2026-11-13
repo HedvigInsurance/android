@@ -8,7 +8,7 @@ import assertk.assertions.containsExactly
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.MemberIdService
-import com.hedvig.android.auth.storage.AuthTokenStorage
+import com.hedvig.android.auth.storage.DataStoreAuthTokenStorage
 import com.hedvig.android.auth.token.AuthTokens
 import com.hedvig.android.auth.token.LocalAccessToken
 import com.hedvig.android.auth.token.LocalRefreshToken
@@ -98,7 +98,7 @@ internal class SessionReconcilerTest {
     controller: BackstackController,
     isDemoMode: Boolean = false,
   ): SessionReconciler {
-    val authTokenStorage = AuthTokenStorage(
+    val authTokenStorage = DataStoreAuthTokenStorage(
       TestPreferencesDataStore(
         datastoreTestFileDirectory = testFolder.newFolder(),
         coroutineScope = backgroundScope,

@@ -8,10 +8,6 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.launch
 
-interface LogoutUseCase {
-  fun invoke()
-}
-
 @ContributesBinding(AppScope::class)
 @SingleIn(AppScope::class)
 @Inject

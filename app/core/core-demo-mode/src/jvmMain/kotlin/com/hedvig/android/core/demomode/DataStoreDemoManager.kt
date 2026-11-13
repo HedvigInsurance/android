@@ -15,12 +15,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
-interface DemoManager {
-  fun isDemoMode(): Flow<Boolean>
-
-  suspend fun setDemoMode(demoMode: Boolean)
-}
-
 @ContributesBinding(AppScope::class)
 @SingleIn(AppScope::class)
 @Inject
