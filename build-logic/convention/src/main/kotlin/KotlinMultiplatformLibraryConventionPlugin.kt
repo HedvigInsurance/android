@@ -38,6 +38,21 @@ private fun Project.applyKotlinMultiplatform(withIos: Boolean) {
     apply(libs.plugins.kotlinMultiplatform.get().pluginId)
   }
   configureKotlinMultiplatform(withIos)
+  registerTestLifecycleTask()
+}
+
+/**
+ * Gives the module a `test` task, so `./gradlew test` and `./gradlew :module:test` run its unit tests like they do
+ * in Android and JVM modules. The Kotlin plugin names the JVM test task `jvmTest`, and the Android host tests run
+ * as `testAndroidHostTest` in modules that enable them with `withHostTest {}`.
+ */
+private fun Project.registerTestLifecycleTask() {
+  tasks.register("test") {
+    group = "verification"
+    description = "Runs the JVM unit tests, and the Android host tests when the module has them."
+    dependsOn("jvmTest")
+    dependsOn(tasks.named { it == "testAndroidHostTest" })
+  }
 }
 
 /**

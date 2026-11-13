@@ -41,7 +41,6 @@ kotlin {
       implementation(projects.coreLocale)
       implementation(projects.coreResources)
       implementation(projects.designSystemHedvig)
-      implementation(projects.featureLoginNavigation)
       implementation(projects.languageCore)
       implementation(projects.moleculePublic)
       implementation(projects.navigationCommon)
@@ -89,9 +88,4 @@ kotlin {
       implementation(projects.moleculeTest)
     }
   }
-}
-
-// CI runs the root `test` task, which only reaches modules that have a task with that exact name.
-tasks.register("test") {
-  dependsOn("testAndroidHostTest")
 }

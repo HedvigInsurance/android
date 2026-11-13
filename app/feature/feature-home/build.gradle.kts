@@ -49,7 +49,6 @@ kotlin {
       implementation(projects.designSystemHedvig)
       implementation(projects.experimentsPublic)
       implementation(projects.featureFlags)
-      implementation(projects.featureHomeNavigation)
       implementation(projects.languageCore)
       implementation(projects.memberQuickActions)
       implementation(projects.memberRemindersPublic)
