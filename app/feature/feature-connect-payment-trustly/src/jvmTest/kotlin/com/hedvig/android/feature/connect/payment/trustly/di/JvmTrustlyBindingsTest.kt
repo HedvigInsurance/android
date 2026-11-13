@@ -14,7 +14,6 @@ import com.hedvig.android.feature.connect.payment.trustly.TrustlyViewModel
 import com.hedvig.android.feature.connect.payment.trustly.data.TrustlyCallback
 import com.hedvig.android.feature.connect.payment.trustly.data.TrustlyCallbackImpl
 import com.hedvig.android.logger.TestLogcatLoggingRule
-import com.hedvig.android.network.clients.ExtraApolloClientConfiguration
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.createGraphFactory
@@ -45,7 +44,6 @@ internal interface TrustlyBindingsTestGraph {
     fun create(
       @Provides @DesktopDataDirectory dataDirectory: File,
       @Provides appBuildConfig: AppBuildConfig,
-      @Provides extraApolloClientConfiguration: ExtraApolloClientConfiguration,
     ): TrustlyBindingsTestGraph
   }
 }
@@ -73,7 +71,6 @@ class JvmTrustlyBindingsTest {
     graph = createGraphFactory<TrustlyBindingsTestGraph.Factory>().create(
       dataDirectory = dataDirectory,
       appBuildConfig = TestAppBuildConfig,
-      extraApolloClientConfiguration = NoExtraApolloClientConfiguration,
     )
   }
 
@@ -92,11 +89,6 @@ class JvmTrustlyBindingsTest {
   fun `the Trustly callback resolves to the single implementation`() {
     assertThat(graph.trustlyCallback).isInstanceOf<TrustlyCallbackImpl>()
   }
-}
-
-/** The host's Apollo interceptors are outside this graph, so its client is built without any. */
-private object NoExtraApolloClientConfiguration : ExtraApolloClientConfiguration {
-  override fun configure(builder: ApolloClient.Builder): ApolloClient.Builder = builder
 }
 
 private object TestAppBuildConfig : AppBuildConfig {

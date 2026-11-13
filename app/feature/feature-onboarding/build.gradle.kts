@@ -67,6 +67,7 @@ kotlin {
       implementation(projects.coreBuildConstants)
       implementation(projects.coreCommonTest)
       implementation(projects.coreDatastorePublic)
+      implementation(projects.coreDemoMode)
       implementation(projects.dataSettingsDatastoreTest)
       implementation(projects.experimentsTest)
       implementation(projects.featureFlagsTest)

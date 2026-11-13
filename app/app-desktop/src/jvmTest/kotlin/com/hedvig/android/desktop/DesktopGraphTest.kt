@@ -77,8 +77,8 @@ class DesktopGraphTest {
     val graph = createTestDesktopGraph(dataDirectory)
 
     assertThat(graph.apolloClient.interceptors.map { it::class.qualifiedName }).containsExactly(
-      "com.hedvig.android.app.apollo.LogoutOnUnauthenticatedInterceptor",
-      "com.hedvig.android.app.apollo.LoggingInterceptor",
+      "com.hedvig.android.network.clients.apollo.LogoutOnUnauthenticatedInterceptor",
+      "com.hedvig.android.network.clients.apollo.LoggingInterceptor",
     )
   }
 
