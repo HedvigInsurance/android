@@ -1,7 +1,9 @@
 package com.hedvig.android
 
 import assertk.assertThat
+import assertk.assertions.contains
 import assertk.assertions.containsExactly
+import assertk.assertions.doesNotContain
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
@@ -151,5 +153,26 @@ class CommonMainImportGuardTest {
     assertThat(forbiddenEntryOf("androidx.core.net.toUri")).isEqualTo("androidx.core")
     assertThat(forbiddenEntryOf("java.util.UUID.randomUUID")).isEqualTo("java")
     assertThat(forbiddenEntryOf("androidx.annotation.KeepKmp")).isNull()
+  }
+
+  @Test
+  fun `an allowed sub-package exempts only that sub-package of a forbidden prefix`() {
+    val allowed = listOf("androidx.core.bundle")
+    assertThat(forbiddenEntryOf("androidx.core.bundle.Bundle", allowed)).isNull()
+    assertThat(forbiddenEntryOf("androidx.core.bundle.Bundle")).isEqualTo("androidx.core")
+    assertThat(forbiddenEntryOf("androidx.core.bundlex.Thing", allowed)).isEqualTo("androidx.core")
+    val source = """
+      package a
+      import androidx.core.bundle.Bundle
+      import androidx.core.net.toUri
+    """.trimIndent()
+    assertThat(findForbiddenImports(source, allowed)).containsExactly(3 to "androidx.core.net.toUri")
+  }
+
+  @Test
+  fun `failure message points at the sub-package exemption only for androidx core`() {
+    val hint = "add its sub-package to allowedCommonMainSubPackages in CommonMainImportGuard.kt"
+    assertThat(commonMainFailureMessage(listOf("a/B.kt:3" to "androidx.core.bundle.Bundle"))).contains(hint)
+    assertThat(commonMainFailureMessage(listOf("a/B.kt:3" to "java.util.Locale"))).doesNotContain(hint)
   }
 }
