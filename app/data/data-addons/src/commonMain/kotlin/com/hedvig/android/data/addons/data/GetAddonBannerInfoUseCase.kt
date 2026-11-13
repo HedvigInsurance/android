@@ -1,6 +1,5 @@
 package com.hedvig.android.data.addons.data
 
-import androidx.annotation.Keep
 import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.raise.either
@@ -10,6 +9,7 @@ import com.apollographql.cache.normalized.FetchPolicy.CacheAndNetwork
 import com.apollographql.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.KeepKmp
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -108,7 +108,7 @@ enum class FlowType {
 }
 
 @Serializable
-@Keep
+@KeepKmp
 enum class AddonBannerSource {
   TRAVEL_CERTIFICATES,
   INSURANCES_TAB,

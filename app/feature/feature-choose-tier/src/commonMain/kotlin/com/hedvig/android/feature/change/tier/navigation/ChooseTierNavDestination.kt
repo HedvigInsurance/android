@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.change.tier.navigation
 
+import com.hedvig.android.core.common.KeepKmp
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import kotlinx.datetime.LocalDate
@@ -9,7 +10,7 @@ import kotlinx.serialization.Serializable
 /**
  * The start of the flow, where we have only insurance ID and start the flow as self-service
  */
-@androidx.annotation.Keep
+@KeepKmp
 @Serializable
 data class StartTierFlowKey(
   /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer.changeTierWithContractId] */

@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.onboarding.navigation
 
+import com.hedvig.android.core.common.KeepKmp
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.SuppressesAppStoreReviewRequest
 import kotlinx.serialization.Serializable
@@ -11,7 +12,7 @@ import kotlinx.serialization.Serializable
  * It stays on the back stack for the whole flow, including while a step hosts a shared flow such as
  * edit co-insured, which is what makes it the right place to hang [SuppressesAppStoreReviewRequest].
  */
-@androidx.annotation.Keep
+@KeepKmp
 @Serializable
 data object OnboardingKey : HedvigNavKey, SuppressesAppStoreReviewRequest
 
@@ -20,7 +21,7 @@ data object OnboardingKey : HedvigNavKey, SuppressesAppStoreReviewRequest
  * lives in the ActivityRetainedScope OnboardingSessionStore, not in the key, so back-stack
  * persistence stays cheap and process-death restore re-fetches instead of deserializing a blob.
  */
-@androidx.annotation.Keep
+@KeepKmp
 @Serializable
 internal data class OnboardingStepKey(
   val stepId: OnboardingStepId,
@@ -31,7 +32,7 @@ internal data class OnboardingStepKey(
  * without leaving onboarding. Reached from the invite step's "Invite a friend" button and left with
  * system back, which pops back to the invite step still sitting in the back stack.
  */
-@androidx.annotation.Keep
+@KeepKmp
 @Serializable
 internal data object OnboardingForeverKey : HedvigNavKey
 
