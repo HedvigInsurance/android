@@ -31,10 +31,9 @@ jobs:
           lokalise-id: ${{ secrets.LOKALISE_ID }}
           lokalise-token: ${{ secrets.LOKALISE_TOKEN }}
       - name: Unit tests
-        # `test` only runs tasks literally named `test` (Android `testDebugUnitTest`, JVM-library
-        # `test`). KMP modules expose their commonTest as `jvmTest`, which `test` never triggers, so
-        # add it explicitly. `jvmTest` (not `allTests`/`check`) keeps this off the iOS targets that
-        # can't run on the Linux runner.
+        # `test` runs every module's unit tests; in KMP modules it depends on `jvmTest` and the Android
+        # host tests. Naming `jvmTest` as well adds nothing but is harmless. `test`/`jvmTest` (not
+        # `allTests`/`check`) keeps this off the iOS targets that can't run on the Linux runner.
         run: ./gradlew test jvmTest
   lint:
     runs-on: ${{ github.event_name == 'push' && 'ubuntu-latest' || 'ubuntu-latest-8-vcpu' }}
