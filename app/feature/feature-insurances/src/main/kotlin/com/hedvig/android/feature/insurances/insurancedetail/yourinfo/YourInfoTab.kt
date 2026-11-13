@@ -309,7 +309,7 @@ internal fun YourInfoTab(
     ) {
       Column {
         CoverageRows(coverageItems, Modifier.padding(horizontal = 16.dp))
-        if (priceToShow != null) {
+        if (priceToShow != null && !isTerminated) {
           PriceRow(
             priceToShow = priceToShow,
             showInfoIcon = showPriceInfoIcon,
