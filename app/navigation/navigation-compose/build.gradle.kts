@@ -22,7 +22,7 @@ kotlin {
       implementation(libs.kotlinx.serialization.core)
       implementation(libs.kotlinx.serialization.json)
       implementation(projects.designSystemHedvig)
-      implementation(projects.navigationCommon)
+      api(projects.navigationCommon)
     }
     commonTest.dependencies {
       implementation(libs.assertK)

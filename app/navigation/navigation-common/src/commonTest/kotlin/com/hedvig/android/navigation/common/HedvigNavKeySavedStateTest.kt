@@ -27,7 +27,7 @@ private data object TestHomeKey : HedvigNavKey
 @Serializable
 private data class TestDetailKey(val id: String) : HedvigNavKey
 
-internal class HedvigNavKeySavedStateTest {
+internal open class HedvigNavKeySavedStateTest {
   private val configuration = SavedStateConfiguration {
     serializersModule = SerializersModule {
       polymorphic(HedvigNavKey::class) {

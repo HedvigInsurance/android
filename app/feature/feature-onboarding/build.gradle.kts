@@ -51,7 +51,6 @@ kotlin {
       implementation(projects.foreverUi)
       implementation(projects.moleculePublic)
       implementation(projects.navigationCommon)
-      implementation(projects.navigationCompose)
       implementation(projects.theme)
       implementation(projects.uiAnalyticsConsent)
       implementation(projects.uiPhoneNumber)

@@ -44,7 +44,6 @@ kotlin {
       implementation(projects.featurePayinAccountNavigation)
       implementation(projects.moleculePublic)
       implementation(projects.navigationCommon)
-      implementation(projects.navigationCompose)
       implementation(projects.navigationCore)
     }
     jvmTest.dependencies {

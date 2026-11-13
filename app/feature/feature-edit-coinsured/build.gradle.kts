@@ -38,7 +38,6 @@ kotlin {
       implementation(projects.featureEditCoinsuredNavigation)
       implementation(projects.moleculePublic)
       implementation(projects.navigationCommon)
-      implementation(projects.navigationCompose)
       implementation(projects.navigationCore)
     }
     jvmTest.dependencies {
