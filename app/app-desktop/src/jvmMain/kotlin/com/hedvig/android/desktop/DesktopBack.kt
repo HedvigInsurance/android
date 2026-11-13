@@ -39,8 +39,9 @@ internal data class DesktopKeyPress(
 
 /**
  * Whether [press] is a back shortcut on [os]: Escape everywhere, Cmd+[ and Cmd+Left on macOS, and Alt+Left elsewhere,
- * the shortcuts of Finder, Explorer and the browsers. Cmd+Left and Alt+Left also move the caret in a text field, which
- * handles them before the window does, so they only go back while no text field takes them.
+ * the shortcuts of Finder, Explorer and the browsers. On macOS a focused text field handles Cmd+Left (line start)
+ * before the window does, so it goes back only while no text field takes it. Text fields on Windows and Linux bind
+ * Ctrl+Left, not Alt+Left, so Alt+Left goes back even while typing, as it does in a browser.
  */
 internal fun isBackShortcut(press: DesktopKeyPress, os: DesktopOs): Boolean {
   val noModifiers = !press.isMetaPressed && !press.isAltPressed && !press.isCtrlPressed && !press.isShiftPressed
@@ -56,7 +57,8 @@ internal fun isBackShortcut(press: DesktopKeyPress, os: DesktopOs): Boolean {
 /**
  * The desktop's system back. While a back handler is enabled (a screen deeper than the root, a sheet, a dialog), a
  * back shortcut or the mouse back button is delivered to the window's back handlers like the Android back gesture. At
- * the root it does nothing, so the app only quits when its window closes.
+ * the root it does nothing, so the app only quits when its window closes. Holding a back key repeats it, going back
+ * one screen per key repeat.
  */
 internal class DesktopBackInput(private val os: DesktopOs = DesktopOs.current) : NavigationEventInput() {
   private var hasEnabledHandlers = false
