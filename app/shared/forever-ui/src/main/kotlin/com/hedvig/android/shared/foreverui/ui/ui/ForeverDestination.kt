@@ -481,7 +481,7 @@ internal fun ReferralCodeCard(campaignCode: String, modifier: Modifier = Modifie
       Column {
         HedvigText(
           text = stringResource(Res.string.referrals_empty_code_headline),
-          style = HedvigTheme.typography.bodySmall.copy(color = HedvigTheme.colorScheme.textSecondary),
+          style = HedvigTheme.typography.label.copy(color = HedvigTheme.colorScheme.textSecondary),
         )
         HedvigText(
           text = campaignCode,
