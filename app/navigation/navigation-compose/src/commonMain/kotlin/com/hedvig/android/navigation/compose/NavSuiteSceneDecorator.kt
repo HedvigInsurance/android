@@ -40,22 +40,6 @@ import androidx.navigation3.scene.SceneDecoratorStrategyScope
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 
 /**
- * Which chrome the scene decorator should render for a chrome-bearing scene. Driven by a single
- * runtime probe supplied by `:app`. A lone deep link must never show the rail (it would expose the
- * broken index-0 runs invariant — see spec D7), yet a bare tab root has no Up affordance of its own.
- */
-enum class LoneDeepLinkChrome {
-  /** Normal: render the rail/bar. */
-  ShowSuite,
-
-  /** Lone tab root (no own Up): the decorator supplies a top-app-bar Up. */
-  ShowUpBar,
-
-  /** Lone deep "bar-keeper" that already renders its own Up: render nothing extra. */
-  ShowNothing,
-}
-
-/**
  * Renders the global navigation bar/rail as part of the scene itself, via a
  * [SceneDecoratorStrategy], rather than wrapping `NavDisplay` in an outer
  * `Row/Column { chrome ; content }`. This is the purpose-built Navigation 3 way to add persistent
