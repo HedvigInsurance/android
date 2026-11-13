@@ -9,6 +9,7 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.the
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -77,6 +78,7 @@ private fun Project.configureKotlinAndroidMultiplatform() {
           compilerOptions {
             if (this is KotlinJvmCompilerOptions) {
               this.jvmTarget.set(JvmTarget.JVM_21)
+              this.jvmDefault.set(JvmDefaultMode.NO_COMPATIBILITY)
             }
             this.languageVersion.set(KotlinVersion.KOTLIN_2_3)
           }

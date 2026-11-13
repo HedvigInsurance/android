@@ -6,6 +6,7 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
@@ -62,6 +63,7 @@ private fun Project.configureKotlinMultiplatform(withIos: Boolean) {
     jvm {
       compilerOptions {
         jvmTarget.set(JvmTarget.JVM_21)
+        jvmDefault.set(JvmDefaultMode.NO_COMPATIBILITY)
       }
     }
     compilerOptions {

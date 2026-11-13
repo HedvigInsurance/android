@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.home.home.ui
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -69,6 +70,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
@@ -255,14 +257,18 @@ import hedvig.resources.home_tab_claim_button_text
 import hedvig.resources.home_tab_get_help
 import hedvig.resources.home_tab_welcome_title_without_name
 import hedvig.resources.ongoing_shop_session_dismiss_offer
+import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -825,6 +831,44 @@ private fun HomeScreenSuccess(
         }
       }
     }
+
+    /**
+     * Opens the collapsed hero in one go on a mouse wheel scroll toward the top that the list leaves unused. Compose
+     * hands a wheel event to a scrollable only when that scrollable can scroll in the event's direction, so with the
+     * list at its top such an event reaches neither the list nor [heroCollapseConnection], which opens the hero only
+     * from scroll the list could not use. A negative y scroll delta scrolls toward the top. Only a mostly vertical
+     * wheel scroll counts, since the list also leaves mostly horizontal ones unused. Touch drags and trackpad pans are
+     * other event types, which Compose always passes through the connection, so they open the hero there.
+     */
+    val reopenHeroOnUnusedScroll = remember {
+      Modifier.pointerInput(Unit) {
+        coroutineScope {
+          var reopening: Job? = null
+          awaitPointerEventScope {
+            while (true) {
+              val event = awaitPointerEvent()
+              val change = event.changes.firstOrNull() ?: continue
+              if (event.type != PointerEventType.Scroll) continue
+              val delta = change.scrollDelta
+              if (abs(delta.y) <= abs(delta.x)) continue
+              if (delta.y > 0f) {
+                reopening?.cancel()
+                continue
+              }
+              if (change.isConsumed || heroCollapsePx.floatValue <= 0f) continue
+              change.consume()
+              if (reopening?.isActive != true) {
+                reopening = launch {
+                  animate(initialValue = heroCollapsePx.floatValue, targetValue = 0f) { value, _ ->
+                    heroCollapsePx.floatValue = value
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
     // The sheet's surface is painted by three things that have to agree: this backdrop, the pinned lid,
     // and every scrolling section's own background. Only the parts the sections don't cover are actually
     // this backdrop, so changing one of the three alone leaves the rest at the old color.
@@ -857,7 +901,8 @@ private fun HomeScreenSuccess(
       state = listState,
       modifier = Modifier
         .fillMaxSize()
-        .nestedScroll(heroCollapseConnection),
+        .nestedScroll(heroCollapseConnection)
+        .then(reopenHeroOnUnusedScroll),
       contentPadding = PaddingValues(
         start = horizontalContentPadding,
         end = horizontalContentPadding,
@@ -1723,7 +1768,7 @@ private fun CrossSellBottomSheet(
 
 @HedvigPreview
 @Composable
-private fun PreviewHomeScreen(
+internal fun PreviewHomeScreen(
   @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) hasUnseenChatMessages: Boolean,
 ) {
   HedvigTheme {

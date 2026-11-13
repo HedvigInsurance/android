@@ -3,6 +3,8 @@ package com.hedvig.android.language
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import java.io.File
 import java.util.Locale
@@ -69,6 +71,52 @@ class JvmLanguageServiceTest {
     assertEquals(Language.SV_SE, restartedOnSwedishSystem.language.value)
   }
 
+  @Test
+  fun `an unsupported stored language is cleared and the service resolves as with nothing stored`() = runBlocking {
+    val store = openStore()
+    store.edit { it[stringPreferencesKey(STORED_LANGUAGE_KEY)] = "nb-NO" }
+
+    val service = JvmLanguageService(store, listOf("sv-SE"))
+
+    assertTrue(store.data.first().asMap().isEmpty())
+    assertEquals(JvmLanguageService(openEmptyStore(), listOf("sv-SE")).language.value, service.language.value)
+    assertEquals("sv-SE", Locale.getDefault().toLanguageTag())
+  }
+
+  @Test
+  fun `a stored language equal to the operating system's is kept, so it survives a later system change`() =
+    runBlocking {
+      openStore().edit { it[stringPreferencesKey(STORED_LANGUAGE_KEY)] = "sv-SE" }
+      closeStores()
+
+      JvmLanguageService(openStore(), listOf("sv-SE"))
+      closeStores()
+      val store = openStore()
+      val restartedOnEnglishSystem = JvmLanguageService(store, listOf("en-US"))
+
+      assertEquals("sv-SE", store.data.first()[stringPreferencesKey(STORED_LANGUAGE_KEY)])
+      assertEquals(Language.SV_SE, restartedOnEnglishSystem.language.value)
+    }
+
+  @Test
+  fun `a supported stored language different from the operating system's is kept`() = runBlocking {
+    val store = openStore()
+    store.edit { it[stringPreferencesKey(STORED_LANGUAGE_KEY)] = "sv-SE" }
+
+    val service = JvmLanguageService(store, listOf("en-US"))
+
+    assertEquals("sv-SE", store.data.first()[stringPreferencesKey(STORED_LANGUAGE_KEY)])
+    assertEquals(Language.SV_SE, service.language.value)
+  }
+
+  private fun openEmptyStore(): DataStore<Preferences> {
+    val job = Job()
+    openStores += job
+    return PreferenceDataStoreFactory.createWithPath(scope = CoroutineScope(Dispatchers.IO + job)) {
+      File(createTempDirectory("language-test-empty").toFile(), "test.preferences_pb").absolutePath.toPath()
+    }
+  }
+
   private fun openStore(): DataStore<Preferences> {
     val job = Job()
     openStores += job
@@ -82,3 +130,5 @@ class JvmLanguageServiceTest {
     openStores.clear()
   }
 }
+
+private const val STORED_LANGUAGE_KEY = "com.hedvig.android.language.APP_LANGUAGE"

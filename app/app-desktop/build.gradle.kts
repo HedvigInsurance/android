@@ -130,6 +130,7 @@ kotlin {
       implementation(libs.assertK)
       implementation(libs.classgraph)
       implementation(libs.coroutines.test)
+      implementation(libs.jetbrains.compose.ui.test)
       implementation(libs.junit)
       implementation(libs.kotlin.reflect)
       implementation(projects.featureChatNavigation)

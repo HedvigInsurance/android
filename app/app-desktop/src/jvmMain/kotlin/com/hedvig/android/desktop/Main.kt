@@ -1,5 +1,7 @@
 package com.hedvig.android.desktop
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
@@ -10,16 +12,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEvent
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.type
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.navigationevent.NavigationEventInput
 import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.app.ui.HedvigApp
@@ -34,14 +31,14 @@ import java.io.File
 import java.util.Locale
 
 fun main() {
-  installDesktopLogging(StdoutLogcatLogger)
-  Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
-    logcat(LogPriority.ERROR, throwable) { "Uncaught exception on thread ${thread.name}" }
-  }
   val backend = if (requiredSystemProperty("hedvig.desktop.production").toBooleanStrict()) {
     DesktopBackend.Production
   } else {
     DesktopBackend.Staging
+  }
+  installDesktopLogging(stdoutLogcatLogger(backend))
+  Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+    logcat(LogPriority.ERROR, throwable) { "Uncaught exception on thread ${thread.name}" }
   }
   val appBuildConfig = DesktopAppBuildConfig(
     backend = backend,
@@ -63,23 +60,30 @@ fun main() {
   for (initializable in graph.initializables) {
     initializable.initialize()
   }
-  val appHost = DesktopAppHost()
+  val unmatchedLinkRouter = DesktopUnmatchedLinkRouter(
+    runningFlavor = appBuildConfig.appFlavor,
+    matcher = graph.deepLinkMatcher,
+    backstackController = backstackController,
+  )
+  val appHost = DesktopAppHost(routeUnmatchedLink = unmatchedLinkRouter::route)
   val externalNavigator = DesktopExternalNavigator()
-  val escapeAsBack = EscapeAsBackInput(onBackWithoutHandler = { backstackController.popBackstack() })
+  val backInput = DesktopBackInput()
   application {
     backstackController.finishApp = ::exitApplication
     Window(
       onCloseRequest = ::exitApplication,
       title = "Hedvig",
       state = rememberWindowState(size = initialWindowSize(usableScreenHeight())),
-      onKeyEvent = escapeAsBack::handle,
+      onKeyEvent = backInput::handle,
     ) {
       val navigationEventDispatcher = LocalNavigationEventDispatcherOwner.current?.navigationEventDispatcher
       DisposableEffect(navigationEventDispatcher) {
-        navigationEventDispatcher?.addInput(escapeAsBack)
-        onDispose { navigationEventDispatcher?.removeInput(escapeAsBack) }
+        navigationEventDispatcher?.addInput(backInput)
+        onDispose { navigationEventDispatcher?.removeInput(backInput) }
       }
-      DesktopApp(graph, backstackController, appHost, externalNavigator)
+      Box(Modifier.fillMaxSize().mouseBackButton(backInput)) {
+        DesktopApp(graph, backstackController, appHost, externalNavigator)
+      }
     }
   }
 }
@@ -132,29 +136,6 @@ private fun DesktopApp(
         fallbackEntry = remember(backstackController) { desktopFallbackEntry(backstackController) },
       )
     }
-  }
-}
-
-/**
- * Escape as the system back. While a back handler is enabled (a screen deeper than the root, a sheet, a dialog), it
- * is delivered to the window's back handlers like the Android back gesture. Otherwise it calls
- * [onBackWithoutHandler], which pops the back stack and, at its root, exits the app.
- */
-private class EscapeAsBackInput(private val onBackWithoutHandler: () -> Unit) : NavigationEventInput() {
-  private var hasEnabledHandlers = false
-
-  override fun onHasEnabledHandlersChanged(hasEnabledHandlers: Boolean) {
-    this.hasEnabledHandlers = hasEnabledHandlers
-  }
-
-  fun handle(event: KeyEvent): Boolean {
-    if (event.type != KeyEventType.KeyDown || event.key != Key.Escape) return false
-    if (hasEnabledHandlers) {
-      dispatchOnBackCompleted()
-    } else {
-      onBackWithoutHandler()
-    }
-    return true
   }
 }
 
