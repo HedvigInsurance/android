@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.onboarding.navigation
 
+import com.hedvig.android.core.common.KeepKmp
 import com.hedvig.android.navigation.common.HedvigNavKey
 import kotlinx.serialization.Serializable
 
@@ -8,7 +9,7 @@ import kotlinx.serialization.Serializable
  * lives in the ActivityRetainedScope OnboardingSessionStore, not in the key, so back-stack
  * persistence stays cheap and process-death restore re-fetches instead of deserializing a blob.
  */
-@androidx.annotation.Keep
+@KeepKmp
 @Serializable
 internal data class OnboardingStepKey(
   val stepId: OnboardingStepId,
@@ -19,7 +20,7 @@ internal data class OnboardingStepKey(
  * without leaving onboarding. Reached from the invite step's "Invite a friend" button and left with
  * system back, which pops back to the invite step still sitting in the back stack.
  */
-@androidx.annotation.Keep
+@KeepKmp
 @Serializable
 internal data object OnboardingForeverKey : HedvigNavKey
 

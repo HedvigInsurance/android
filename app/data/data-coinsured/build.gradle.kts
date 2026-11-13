@@ -6,7 +6,7 @@ plugins {
 kotlin {
   sourceSets {
     commonMain.dependencies {
-      implementation(libs.androidx.annotation)
+      implementation(projects.coreCommonPublic)
     }
   }
 }

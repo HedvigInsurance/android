@@ -1,4 +1,4 @@
-package com.hedvig.android.data.coinsured
+package com.hedvig.android.core.common
 
 import androidx.annotation.Keep
 

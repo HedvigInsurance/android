@@ -84,7 +84,6 @@ The codebase is organized under `/app` with 80+ modules following a strict modul
 - **auth/** - Authentication modules
 - **database/** - Room database modules
 - **language/** - Localization modules
-- **shareddi/** - KMP module declaring the iOS `IosGraph` (Metro graph for the iOS target).
 - **Other utilities** - payment, tracking, logging, featureflags, etc.
 
 **Critical architectural rule:** Feature modules CANNOT depend on other feature modules. This is enforced at build time by `hedvig.gradle.plugin` (`configureFeatureModuleGuidelines()`). The single exception: any module can depend on a `feature-{name}-navigation` module, because those exist precisely to be shared cross-feature.
