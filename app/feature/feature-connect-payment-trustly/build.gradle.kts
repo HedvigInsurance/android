@@ -42,7 +42,6 @@ kotlin {
       implementation(projects.featureConnectPaymentTrustlyNavigation)
       implementation(projects.moleculePublic)
       implementation(projects.navigationCommon)
-      implementation(projects.navigationCompose)
       implementation(projects.navigationCore)
     }
     androidMain.dependencies {

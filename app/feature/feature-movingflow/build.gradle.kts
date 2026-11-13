@@ -39,7 +39,6 @@ kotlin {
       implementation(projects.featureMovingflowNavigation)
       implementation(projects.moleculePublic)
       implementation(projects.navigationCommon)
-      implementation(projects.navigationCompose)
       implementation(projects.navigationCore)
       implementation(projects.tierComparison)
       implementation(projects.uiTiersAndAddons)

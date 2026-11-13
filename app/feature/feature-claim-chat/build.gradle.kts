@@ -49,7 +49,6 @@ kotlin {
       implementation(projects.languageCore)
       implementation(projects.moleculePublic)
       implementation(projects.navigationCommon)
-      implementation(projects.navigationCompose)
       implementation(projects.navigationCore)
       implementation(projects.networkClients)
       implementation(projects.uiClaimFlow)

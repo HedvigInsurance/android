@@ -51,7 +51,6 @@ kotlin {
       implementation(projects.fileUploadUi)
       implementation(projects.moleculePublic)
       implementation(projects.navigationCommon)
-      implementation(projects.navigationCompose)
       implementation(projects.navigationCore)
     }
     androidMain.dependencies {

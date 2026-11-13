@@ -38,7 +38,6 @@ kotlin {
       implementation(projects.moleculePublic)
       implementation(projects.uiTiersAndAddons)
       implementation(projects.navigationCommon)
-      implementation(projects.navigationCompose)
     }
     androidMain.dependencies {
       implementation(projects.composeUi)
