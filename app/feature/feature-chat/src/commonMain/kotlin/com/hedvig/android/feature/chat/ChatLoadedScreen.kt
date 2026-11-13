@@ -568,7 +568,7 @@ private fun ChatLazyColumn(
 }
 
 @Composable
-private fun ChatBubble(
+internal fun ChatBubble(
   uiChatMessage: CbmUiChatMessage?,
   chatItemIndex: Int,
   enableMessageSenderLabeling: Boolean,
@@ -687,18 +687,14 @@ private fun ChatBubble(
             }
 
             ChatMessageFile.MimeType.PDF -> {
-              ChatAsyncImage(
-                model = chatMessage.url,
-                imageLoader = imageLoader,
+              PdfThumbnailOrFileCard(
+                url = chatMessage.url,
                 cacheKey = chatMessage.id,
-                isFailedToBeSentMessage = false,
-                modifier = Modifier
-                  .clickable {
-                    openUrl(chatMessage.url)
-                  }
-                  .semantics {
-                    hideFromAccessibility()
-                  },
+                imageLoader = imageLoader,
+                onClick = { openUrl(chatMessage.url) },
+                modifier = Modifier.semantics {
+                  hideFromAccessibility()
+                },
               )
             }
 
@@ -979,6 +975,39 @@ internal fun AttachedFileMessage(
   }
 }
 
+/**
+ * A PDF shown as its thumbnail, or as the [AttachedFileMessage] card once the thumbnail request fails, for example
+ * when the [imageLoader] has no PDF decoder. Both open the same URL. The failure is only remembered while the message
+ * stays in composition, so a message scrolled back into view requests its thumbnail again.
+ */
+@Composable
+private fun PdfThumbnailOrFileCard(
+  url: String,
+  cacheKey: String,
+  imageLoader: ImageLoader,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  var thumbnailFailed by remember(url) { mutableStateOf(false) }
+  if (thumbnailFailed) {
+    AttachedFileMessage(
+      onClick = onClick,
+      modifier = modifier,
+    )
+  } else {
+    ChatAsyncImage(
+      model = url,
+      imageLoader = imageLoader,
+      cacheKey = cacheKey,
+      isFailedToBeSentMessage = false,
+      onError = { thumbnailFailed = true },
+      modifier = Modifier
+        .clickable(onClick = onClick)
+        .then(modifier),
+    )
+  }
+}
+
 @Composable
 private fun ChatAsyncImage(
   model: Any,
@@ -987,6 +1016,7 @@ private fun ChatAsyncImage(
   modifier: Modifier = Modifier,
   isRetryable: Boolean = false,
   cacheKey: String? = null,
+  onError: (() -> Unit)? = null,
 ) {
   val loadedImageIntrinsicSize = remember { mutableStateOf<IntSize?>(null) }
   val placeholderPainter: Painter = rememberShapedColorPainter(HedvigTheme.colorScheme.surfacePrimary)
@@ -1038,6 +1068,11 @@ private fun ChatAsyncImage(
     contentDescription = null,
     imageLoader = imageLoader,
     contentScale = ContentScale.Fit,
+    onState = { state ->
+      if (state is AsyncImagePainter.State.Error) {
+        onError?.invoke()
+      }
+    },
     transform = { state ->
       when (state) {
         is AsyncImagePainter.State.Loading -> {
