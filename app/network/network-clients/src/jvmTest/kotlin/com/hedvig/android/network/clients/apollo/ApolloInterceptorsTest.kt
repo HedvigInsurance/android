@@ -1,4 +1,4 @@
-package com.hedvig.android.app.apollo
+package com.hedvig.android.network.clients.apollo
 
 import assertk.assertThat
 import assertk.assertions.containsExactly
@@ -30,8 +30,8 @@ import org.junit.Rule
 import org.junit.Test
 
 /**
- * Runs queued GraphQL responses through an [ApolloClient] configured by the shared
- * [ApolloInterceptorMetroProviders], the configuration every host binds.
+ * Runs queued GraphQL responses through an [ApolloClient] carrying [addHedvigInterceptors], the chain the provided
+ * Apollo client is built with.
  */
 @OptIn(ApolloExperimental::class)
 internal class ApolloInterceptorsTest {
@@ -87,11 +87,10 @@ internal class ApolloInterceptorsTest {
   }
 
   private fun apolloClient(isDemoMode: Boolean): ApolloClient {
-    val configuration = object : ApolloInterceptorMetroProviders {}.provideExtraApolloClientConfiguration(
-      authTokenService = authTokenService,
-      demoManager = FakeDemoManager(isDemoMode),
-    )
-    return configuration.configure(ApolloClient.Builder().networkTransport(QueueTestNetworkTransport())).build()
+    return ApolloClient.Builder()
+      .networkTransport(QueueTestNetworkTransport())
+      .addHedvigInterceptors(authTokenService = authTokenService, demoManager = FakeDemoManager(isDemoMode))
+      .build()
   }
 
   private val unauthenticatedError = Error.Builder(

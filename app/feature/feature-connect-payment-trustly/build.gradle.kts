@@ -55,6 +55,7 @@ kotlin {
       implementation(libs.junit)
       implementation(projects.authCorePublic)
       implementation(projects.coreDatastorePublic)
+      implementation(projects.coreDemoMode)
       implementation(projects.languageCore)
       implementation(projects.loggingTest)
       implementation(projects.networkClients)

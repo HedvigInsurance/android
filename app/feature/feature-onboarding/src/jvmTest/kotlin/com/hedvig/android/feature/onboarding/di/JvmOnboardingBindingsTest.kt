@@ -18,7 +18,6 @@ import com.hedvig.android.feature.onboarding.gate.OnboardingGateImpl
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
-import com.hedvig.android.network.clients.ExtraApolloClientConfiguration
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.createGraphFactory
@@ -56,7 +55,6 @@ internal interface OnboardingBindingsTestGraph {
       @Provides appBuildConfig: AppBuildConfig,
       @Provides experimentProvider: ExperimentProvider,
       @Provides backstack: Backstack,
-      @Provides extraApolloClientConfiguration: ExtraApolloClientConfiguration,
     ): OnboardingBindingsTestGraph
   }
 }
@@ -87,7 +85,6 @@ class JvmOnboardingBindingsTest {
       appBuildConfig = TestAppBuildConfig,
       experimentProvider = FakeExperimentProvider(),
       backstack = TestBackstack(),
-      extraApolloClientConfiguration = NoExtraApolloClientConfiguration,
     )
   }
 
@@ -106,11 +103,6 @@ class JvmOnboardingBindingsTest {
   fun `the reset onboarding use case resolves to the single implementation`() {
     assertThat(graph.resetOnboardingSeenUseCase).isInstanceOf<ResetOnboardingSeenUseCaseImpl>()
   }
-}
-
-/** The host's Apollo interceptors are outside this graph, so its client is built without any. */
-private object NoExtraApolloClientConfiguration : ExtraApolloClientConfiguration {
-  override fun configure(builder: ApolloClient.Builder): ApolloClient.Builder = builder
 }
 
 private class TestBackstack : Backstack {
