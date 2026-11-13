@@ -3,7 +3,7 @@ package com.hedvig.android.app.navigation
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.navigation3.runtime.EntryProviderScope
 import coil3.ImageLoader
-import com.benasher44.uuid.Uuid
+import com.benasher44.uuid.uuid4
 import com.hedvig.android.app.AppHost
 import com.hedvig.android.auth.MemberIdService
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
@@ -113,7 +113,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   val navigateToPayinAccount: () -> Unit = { backstack.add(PayinAccountKey) }
   val navigateToPayoutAccount: () -> Unit = { backstack.add(PayoutAccountKey) }
   val navigateToInbox: () -> Unit = { backstack.add(InboxKey) }
-  val navigateToNewConversation: () -> Unit = { backstack.add(ChatKey(Uuid.randomUUID().toString())) }
+  val navigateToNewConversation: () -> Unit = { backstack.add(ChatKey(uuid4().toString())) }
   val navigateToConversation: (String) -> Unit = { conversationId -> backstack.add(ChatKey(conversationId)) }
   val navigateToTravelCertificate: () -> Unit = { backstack.add(TravelCertificateKey) }
   val navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit = { ids, source ->

@@ -13,6 +13,7 @@ import com.apollographql.cache.normalized.FetchPolicy
 import com.apollographql.cache.normalized.doNotStore
 import com.apollographql.cache.normalized.fetchPolicy
 import com.benasher44.uuid.Uuid
+import com.benasher44.uuid.uuid4
 import com.eygraber.uri.Uri
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.apollo.ErrorMessage
@@ -236,7 +237,7 @@ internal class CbmChatRepositoryImpl(
     retryingMessageId: Uuid?,
     text: String,
   ): Either<MessageSendError, CbmChatMessage> {
-    val messageId = retryingMessageId ?: Uuid.randomUUID()
+    val messageId = retryingMessageId ?: uuid4()
     return sendMessage(conversationId, messageId, ConversationInput.Text(text)).onLeft { error ->
       val failedMessage = CbmChatMessage.FailedToBeSent.ChatMessageText(
         messageId.toString(),
@@ -270,7 +271,7 @@ internal class CbmChatRepositoryImpl(
     retryingMessageId: Uuid?,
     uri: Uri,
   ): Either<MessageSendError, CbmChatMessage> {
-    val messageId = retryingMessageId ?: Uuid.randomUUID()
+    val messageId = retryingMessageId ?: uuid4()
     return either {
       val uploadToken = uploadMediaToBotService(uri)
       sendMessage(conversationId, messageId, ConversationInput.File(uploadToken)).bind()
@@ -291,7 +292,7 @@ internal class CbmChatRepositoryImpl(
     retryingMessageId: Uuid?,
     uri: Uri,
   ): Either<MessageSendError, CbmChatMessage> {
-    val messageId = retryingMessageId ?: Uuid.randomUUID()
+    val messageId = retryingMessageId ?: uuid4()
     return either {
       val uploadToken = uploadPhotoToBotService(uri)
       sendMessage(conversationId, messageId, ConversationInput.File(uploadToken)).bind()
