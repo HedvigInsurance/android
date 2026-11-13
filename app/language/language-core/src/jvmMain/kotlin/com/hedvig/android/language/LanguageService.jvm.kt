@@ -35,9 +35,7 @@ internal class JvmLanguageService(
   @Inject
   constructor(dataStore: DataStore<Preferences>) : this(dataStore, listOf(operatingSystemLocaleTag()))
 
-  private var storedLocaleTags: List<String> = runBlocking { dataStore.data.first()[storedLanguageKey] }
-    ?.let(::listOf)
-    .orEmpty()
+  private var storedLocaleTags: List<String> = runBlocking { readStoredLocaleTagsClearingUnsupported() }
   private val mutableLanguage = MutableStateFlow(applyCurrentPick())
   override val language: StateFlow<Language> = mutableLanguage.asStateFlow()
 
@@ -62,6 +60,19 @@ internal class JvmLanguageService(
 
   override fun getLocale(): CommonLocale {
     return language.value.toLocale()
+  }
+
+  /**
+   * The stored pick. A stored tag that is not a supported language ([isSupportedLocaleTag]) is removed from the store,
+   * so the app follows the operating system. A supported pick is kept at every start, also while it matches the
+   * operating system's language, so it still applies after that language changes.
+   */
+  private suspend fun readStoredLocaleTagsClearingUnsupported(): List<String> {
+    val storedTag = dataStore.data.first()[storedLanguageKey] ?: return emptyList()
+    if (isSupportedLocaleTag(storedTag)) return listOf(storedTag)
+    logcat { "LanguageService: clearing unsupported stored language [$storedTag]" }
+    dataStore.edit { preferences -> preferences.remove(storedLanguageKey) }
+    return emptyList()
   }
 
   /**
