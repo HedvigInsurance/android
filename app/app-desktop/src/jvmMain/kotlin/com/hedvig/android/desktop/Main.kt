@@ -31,14 +31,14 @@ import java.io.File
 import java.util.Locale
 
 fun main() {
-  installDesktopLogging(StdoutLogcatLogger)
-  Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
-    logcat(LogPriority.ERROR, throwable) { "Uncaught exception on thread ${thread.name}" }
-  }
   val backend = if (requiredSystemProperty("hedvig.desktop.production").toBooleanStrict()) {
     DesktopBackend.Production
   } else {
     DesktopBackend.Staging
+  }
+  installDesktopLogging(stdoutLogcatLogger(backend))
+  Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+    logcat(LogPriority.ERROR, throwable) { "Uncaught exception on thread ${thread.name}" }
   }
   val appBuildConfig = DesktopAppBuildConfig(
     backend = backend,
