@@ -41,6 +41,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -645,18 +646,15 @@ private fun ChatBubble(
         is ChatMessageFile -> {
           when (chatMessage.mimeType) {
             IMAGE -> {
-              ChatAsyncImage(
-                model = chatMessage.url,
-                imageLoader = imageLoader,
+              ChatFileThumbnail(
+                url = chatMessage.url,
                 cacheKey = chatMessage.id,
-                isFailedToBeSentMessage = false,
-                modifier = Modifier
-                  .clickable {
-                    onNavigateToImageViewer(chatMessage.url, chatMessage.id)
-                  }
-                  .semantics {
-                    hideFromAccessibility()
-                  },
+                imageLoader = imageLoader,
+                onThumbnailClick = { onNavigateToImageViewer(chatMessage.url, chatMessage.id) },
+                onFileCardClick = { openUrl(chatMessage.url) },
+                modifier = Modifier.semantics {
+                  hideFromAccessibility()
+                },
               )
             }
 
@@ -686,18 +684,15 @@ private fun ChatBubble(
             }
 
             ChatMessageFile.MimeType.PDF -> {
-              ChatAsyncImage(
-                model = chatMessage.url,
-                imageLoader = imageLoader,
+              ChatFileThumbnail(
+                url = chatMessage.url,
                 cacheKey = chatMessage.id,
-                isFailedToBeSentMessage = false,
-                modifier = Modifier
-                  .clickable {
-                    openUrl(chatMessage.url)
-                  }
-                  .semantics {
-                    hideFromAccessibility()
-                  },
+                imageLoader = imageLoader,
+                onThumbnailClick = { openUrl(chatMessage.url) },
+                onFileCardClick = { openUrl(chatMessage.url) },
+                modifier = Modifier.semantics {
+                  hideFromAccessibility()
+                },
               )
             }
 
@@ -978,6 +973,40 @@ internal fun AttachedFileMessage(
   }
 }
 
+/**
+ * A file attachment shown as its decoded thumbnail, or as the [AttachedFileMessage] card once the image request
+ * fails, for example when the [imageLoader] has no decoder for the file's type. The failure is kept in saveable state
+ * so the message does not go back to a loading tile when it is scrolled out of view and back.
+ */
+@Composable
+internal fun ChatFileThumbnail(
+  url: String,
+  cacheKey: String,
+  imageLoader: ImageLoader,
+  onThumbnailClick: () -> Unit,
+  onFileCardClick: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  var thumbnailFailed by rememberSaveable(url) { mutableStateOf(false) }
+  if (thumbnailFailed) {
+    AttachedFileMessage(
+      onClick = onFileCardClick,
+      modifier = modifier,
+    )
+  } else {
+    ChatAsyncImage(
+      model = url,
+      imageLoader = imageLoader,
+      cacheKey = cacheKey,
+      isFailedToBeSentMessage = false,
+      onError = { thumbnailFailed = true },
+      modifier = Modifier
+        .clickable(onClick = onThumbnailClick)
+        .then(modifier),
+    )
+  }
+}
+
 @Composable
 private fun ChatAsyncImage(
   model: Any,
@@ -986,6 +1015,7 @@ private fun ChatAsyncImage(
   modifier: Modifier = Modifier,
   isRetryable: Boolean = false,
   cacheKey: String? = null,
+  onError: (() -> Unit)? = null,
 ) {
   val loadedImageIntrinsicSize = remember { mutableStateOf<IntSize?>(null) }
   val placeholderPainter: Painter = rememberShapedColorPainter(HedvigTheme.colorScheme.surfacePrimary)
@@ -1037,6 +1067,11 @@ private fun ChatAsyncImage(
     contentDescription = null,
     imageLoader = imageLoader,
     contentScale = ContentScale.Fit,
+    onState = { state ->
+      if (state is AsyncImagePainter.State.Error) {
+        onError?.invoke()
+      }
+    },
     transform = { state ->
       when (state) {
         is AsyncImagePainter.State.Loading -> {
