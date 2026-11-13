@@ -13,6 +13,7 @@ import androidx.compose.ui.semantics.SemanticsNode
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.Density
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -70,6 +71,7 @@ internal data class VisibleNode(
   val testTag: String?,
   val isClickable: Boolean,
   val isEditable: Boolean,
+  val id: Int,
 )
 
 /**
@@ -186,6 +188,7 @@ internal class WalkthroughScene(
           testTag = testTag,
           isClickable = isClickable,
           isEditable = isEditable,
+          id = node.id,
         )
       }
       node.children.forEach(::visit)
@@ -215,7 +218,7 @@ internal class WalkthroughScene(
       if (done) return
       val action = node.config.getOrNull(SemanticsActions.SetText)
       if (action != null) {
-        val candidate = visibleNodes().firstOrNull { it.bounds == node.boundsInRoot && it.isEditable }
+        val candidate = visibleNodes().firstOrNull { it.id == node.id && it.isEditable }
         if (candidate != null && matches(candidate)) {
           action.action?.invoke(AnnotatedString(text))
           done = true
@@ -226,6 +229,67 @@ internal class WalkthroughScene(
     }
     scene.semanticsOwners.forEach { visit(it.rootSemanticsNode) }
     done
+  }
+
+  /**
+   * The centre, in pixels, of the [occurrence]th (from 0) appearance of [substring] in a text on screen, from the
+   * text's own layout, so a link inside a paragraph can be clicked where it is drawn.
+   */
+  fun textSpanCenter(substring: String, occurrence: Int = 0): Offset? = onEdt {
+    var result: Offset? = null
+
+    fun visit(node: SemanticsNode) {
+      if (result != null) return
+      val full = node.config.getOrNull(SemanticsProperties.Text)?.joinToString("") { it.text }
+      val getLayout = node.config.getOrNull(SemanticsActions.GetTextLayoutResult)
+      if (full != null && getLayout != null) {
+        var index = -1
+        for (i in 0..occurrence) {
+          index = full.indexOf(substring, index + 1)
+          if (index < 0) break
+        }
+        val layouts = mutableListOf<TextLayoutResult>()
+        if (index >= 0 && getLayout.action?.invoke(layouts) == true && layouts.isNotEmpty()) {
+          val box = layouts.first().getBoundingBox(index + substring.length / 2)
+          result = node.positionInRoot + box.center
+          return
+        }
+      }
+      node.children.forEach(::visit)
+    }
+    scene.semanticsOwners.forEach { visit(it.unmergedRootSemanticsNode) }
+    result
+  }
+
+  /**
+   * Invokes the click semantics action of the last node [matches] accepts, which works for a node scrolled out of the
+   * viewport, where a pointer cannot reach it. Returns whether a node was clicked.
+   */
+  fun performClick(matches: (VisibleNode) -> Boolean): Boolean = onEdt {
+    val target = visibleNodes().lastOrNull { it.isClickable && matches(it) } ?: return@onEdt false
+    var clicked = false
+
+    fun visit(node: SemanticsNode) {
+      if (clicked) return
+      if (node.id == target.id) {
+        val action = node.config.getOrNull(SemanticsActions.OnClick)
+        if (action != null) {
+          clicked = action.action?.invoke() == true
+          if (clicked) return
+        }
+      }
+      node.children.forEach(::visit)
+    }
+    scene.semanticsOwners.forEach { visit(it.rootSemanticsNode) }
+    clicked
+  }
+
+  /** The scene's height in pixels. */
+  val heightPx: Int get() = (spec.heightDp * spec.density).toInt()
+
+  /** Clicks at [position] (pixels) with the primary mouse button. */
+  fun clickAt(position: Offset) {
+    click(Rect(position.x - 1f, position.y - 1f, position.x + 1f, position.y + 1f))
   }
 
   /** Moves the mouse to [position] (pixels) without pressing. */

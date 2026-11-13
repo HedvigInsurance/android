@@ -73,6 +73,15 @@ private sealed interface FakeArgument {
 /** A class that only wraps one id string, such as a contract id, built from [ids] by the parameter's [name]. */
 private fun idWrapper(type: KClass<*>, name: String, ids: Map<String, String>): FakeArgument? {
   val id = ids[name] ?: return null
+  if (type.isValue) {
+    val box =
+      type.java.declaredMethods.firstOrNull {
+        it.name == "box-impl" &&
+          it.parameterTypes.contentEquals(arrayOf(String::class.java))
+      }
+        ?: return null
+    return FakeArgument.Value(box.invoke(null, id))
+  }
   val constructor = type.primaryConstructor ?: return null
   val parameter = constructor.parameters.singleOrNull() ?: return null
   if (parameter.type.jvmErasure != String::class) return null
@@ -85,6 +94,8 @@ private fun fakeArgument(parameter: KParameter, ids: Map<String, String>): FakeA
   if (parameter.type.isMarkedNullable) return FakeArgument.Value(null)
   val type = parameter.type.jvmErasure
   return when {
+    type == String::class && name in ids -> FakeArgument.Value(ids.getValue(name))
+
     type == String::class -> if (name == "id" || name.endsWith("Id") || name.endsWith("Ids")) {
       ids[name]?.let { FakeArgument.Value(it) } ?: FakeArgument.Missing("needs a real $name")
     } else {

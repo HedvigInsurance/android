@@ -53,7 +53,7 @@ import org.junit.Test
  *   copied to a temporary directory and only the copy is used, unless `-Phedvig.walkthrough.sessionInPlace=true`,
  *   which uses the directory itself, so a token refresh is stored where the desktop app reads it.
  * - `-Phedvig.walkthrough.startOnly=true`: stop after the first logged-in screen, to check a session works.
- * - `-Phedvig.walkthrough.only=<text>`: only visit keys whose name contains the text.
+ * - `-Phedvig.walkthrough.only=<text>[,<text>]`: only visit keys whose name contains one of the texts.
  *
  * Demo mode turns on the app's demo mode, which is what the login screen's demo option does, so no account is used.
  * Screens without demo data call the staging backend unauthenticated and show its errors.
@@ -262,6 +262,9 @@ class DesktopWalkthrough {
   /** Every chat message the walkthrough sent, with its UTC time. */
   private val sentChatMessages = mutableListOf<String>()
 
+  /** Every conversation id the app has loaded; chat opens the first that shows an image. */
+  private var conversationCandidates: List<String> = emptyList()
+
   private var baseEntries: List<HedvigNavKey> = emptyList()
   private var baseParked: Map<TopLevelTab, List<HedvigNavKey>> = emptyMap()
 
@@ -308,7 +311,10 @@ class DesktopWalkthrough {
    * and conversations after the read-only claim history and inbox screens have been shown once.
    */
   private fun sessionIds(): Map<String, String> {
-    for (key in listOf<HedvigNavKey>(InboxKey, ClaimHistoryKey)) {
+    val puppyGuide = Class.forName(
+      "com.hedvig.android.feature.help.center.navigation.PuppyGuideKey",
+    ).kotlin.objectInstance
+    for (key in listOfNotNull(InboxKey, ClaimHistoryKey, puppyGuide as? HedvigNavKey)) {
       onEdt { Snapshot.withMutableSnapshot { backstackController.entries.add(key) } }
       scene!!.settle()
       onEdt {
@@ -322,9 +328,10 @@ class DesktopWalkthrough {
     contractCandidates = contracts
     val claims = loaded.idsOf("Claim")
     val conversations = loaded.idsOf("Conversation")
+    conversationCandidates = conversations
     idsNote = "from the Apollo cache: ${contracts.size} contracts, ${claims.size} claims, " +
       "${conversations.size} conversations; a key taking a contract tries each until its screen loads, " +
-      "the first claim and conversation are used"
+      "the first claim is used, chat opens the first conversation that shows an image"
     return buildMap {
       contracts.firstOrNull()?.let {
         put("contractId", it)
@@ -332,6 +339,7 @@ class DesktopWalkthrough {
       }
       claims.firstOrNull()?.let { put("claimId", it) }
       conversations.firstOrNull()?.let { put("conversationId", it) }
+      loaded.firstStringWhereAlso("name", requiredField = "content")?.let { put("storyName", it) }
     }
   }
 
@@ -606,20 +614,18 @@ class DesktopWalkthrough {
    */
   private fun runChat(ids: Map<String, String>) {
     pushAndRecord("chat-1-inbox", "chat", InboxKey, emptyList())
-    val conversationId = ids["conversationId"]
-    if (conversationId == null) {
-      visits +=
-        Visit(
-          "chat-2-conversation",
-          "chat",
-          Outcome.NeedsData,
-          null,
-          listOf("no conversation loaded"),
-          null,
-          emptyList(),
-          null,
-        )
-      return
+    if (conversationCandidates.isEmpty()) return missing("chat-2-conversation", "chat", "no conversation loaded")
+    var conversationId = conversationCandidates.first()
+    for (candidate in conversationCandidates) {
+      onEdt { Snapshot.withMutableSnapshot { backstackController.entries.add(ChatKey(candidate)) } }
+      scene!!.settle()
+      val hasImage = scene!!.visibleNodes().any { it.text.contains("type: IMAGE") }
+      onEdt { backstackController.popBackstack() }
+      scene!!.settle(minimumMillis = 0)
+      if (hasImage) {
+        conversationId = candidate
+        break
+      }
     }
     drainBetweenVisits()
     onEdt { Snapshot.withMutableSnapshot { backstackController.entries.add(ChatKey(conversationId)) } }
@@ -628,58 +634,110 @@ class DesktopWalkthrough {
     record("chat-3-scrolled-back", "chat", scene!!.settle(), listOf("30 wheel events of -5 over the messages"))
     scene!!.wheel(Offset(412f, 900f), deltaY = 5f, count = 60)
     scene!!.settle(minimumMillis = 0)
-    val image = scene!!.visibleNodes().lastOrNull { it.isClickable && it.text.contains("IMAGE") }
-    if (image != null) {
-      scene!!.click(image.bounds)
-      record("chat-4-image-viewer", "chat", scene!!.settle(), listOf("clicked the image message '${image.text}'"))
-      onEdt { backstackController.popBackstack() }
-      scene!!.settle()
-    } else {
-      visits +=
-        Visit(
-          "chat-4-image-viewer",
-          "chat",
-          Outcome.NeedsData,
-          null,
-          listOf("no image message on screen"),
-          null,
-          emptyList(),
-          null,
-        )
+    if (allowWrites && "chat-send" in phases) {
+      sendText("chat-5-sent-text-1", "Desktop walkthrough test message one")
+      sendText("chat-6-sent-text-2", "Desktop walkthrough test message two")
+      val attachments = createTempDirectory("walkthrough-attachments").toFile()
+      val png = File(attachments, "desktop-walkthrough.png").also(::writeTestPng)
+      val pdf = File(attachments, "desktop-walkthrough.pdf").also { writeTestPdf(it, "Desktop walkthrough test PDF") }
+      sendAttachment("chat-7-sent-image", png)
+      sendAttachment("chat-8-sent-pdf", pdf)
     }
-    if (!allowWrites) {
+    openImageViewer()
+    restoreBase()
+    if (allowWrites && "chat-new" in phases) startConversation()
+  }
+
+  /** Clicks the newest image message on screen, records the image viewer and goes back. */
+  private fun openImageViewer() {
+    val image = scene!!.visibleNodes().lastOrNull { it.text.contains("type: IMAGE") }
+      ?: return missing("chat-4-image-viewer", "chat", "no image message on screen")
+    scene!!.click(image.bounds)
+    record("chat-4-image-viewer", "chat", scene!!.settle(), listOf("clicked the image message '${image.text}'"))
+    onEdt { backstackController.popBackstack() }
+    scene!!.settle()
+  }
+
+  /** Starts a new conversation from the inbox's New button and sends one text in it. */
+  private fun startConversation() {
+    onEdt { Snapshot.withMutableSnapshot { backstackController.entries.add(InboxKey) } }
+    scene!!.settle()
+    val newButton = scene!!.visibleNodes().firstOrNull { it.isClickable && it.text == "New" }
+      ?: return missing("chat-9-new-conversation", "chat", "the inbox offers no New button")
+    scene!!.click(newButton.bounds)
+    record("chat-9-new-conversation-sheet", "chat", scene!!.settle(), listOf("clicked New in the inbox"))
+    val support = scene!!.visibleNodes().firstOrNull { it.text.startsWith("Support") && it.isClickable }
+      ?: scene!!.visibleNodes().firstOrNull { it.text.startsWith("Support") }
+      ?: return missing("chat-10-new-conversation", "chat", "the New sheet offers no Support option")
+    scene!!.click(support.bounds)
+    record("chat-10-new-conversation", "chat", scene!!.settle(), listOf("chose '${support.text}'"))
+    sendText("chat-11-new-conversation-sent", "Desktop walkthrough test, new conversation")
+    restoreBase()
+  }
+
+  /**
+   * Opens a help center question whose answer links to Payments, and clicks the link where it is drawn. Questions
+   * the question screen cannot find are skipped.
+   */
+  private fun clickPaymentsLink(ids: Map<String, String>) {
+    val candidates = LoadedData.read(graph.apolloClient).pairsWhere("question", "answer", "/payments)")
+    val topics = listOf(null, "Payments", "Claims", "Coverage", "My insurance", "Other")
+    for (topic in topics) {
+      onEdt { Snapshot.withMutableSnapshot { backstackController.entries.add(HelpCenterKey) } }
+      scene!!.settle()
+      if (topic != null && !scene!!.performClick { it.text == topic }) {
+        restoreBase()
+        continue
+      }
+      scene!!.settle()
+      val shown = scene!!.visibleNodes()
+      val match = candidates.firstOrNull { (question, _) -> shown.any { it.isClickable && it.text == question } }
+      if (match == null) {
+        restoreBase()
+        continue
+      }
+      val (question, answer) = match
+      scene!!.performClick { it.text == question }
+      record(
+        "fix-payments-link-1-question",
+        "fix",
+        scene!!.settle(),
+        listOf(
+          "${topic?.let {
+            "topic $it"
+          } ?: "Help center common questions"}, question '$question'",
+        ),
+      )
+      val link = Regex("""\[([^\]]+)]\((https://[^)]+/payments)\)""").find(answer)!!
+      val linkText = link.groupValues[1]
+      val occurrence = Regex(Regex.escape(linkText)).findAll(answer.substring(0, link.range.first)).count()
+      var position = scene!!.textSpanCenter(linkText, occurrence)
+      repeat(10) {
+        val y = position?.y ?: return@repeat
+        if (y < scene!!.heightPx - 300) return@repeat
+        scene!!.wheel(Offset(412f, 900f), deltaY = 3f, count = 3)
+        scene!!.settle(minimumMillis = 0)
+        position = scene!!.textSpanCenter(linkText, occurrence)
+      }
+      position ?: return missing("fix-payments-link-2-clicked", "fix", "'$linkText' not found in the rendered answer")
+      val browsedBefore = handedToSystem.size
+      scene!!.clickAt(position!!)
+      val settle = scene!!.settle()
+      val browsed = handedToSystem.drop(browsedBefore).ifEmpty { listOf("nothing") }
+      record(
+        "fix-payments-link-2-clicked",
+        "fix",
+        settle,
+        listOf("clicked '$linkText' (${link.groupValues[2]})", "browser called with: $browsed"),
+      )
       restoreBase()
       return
     }
-    sendText("chat-5-sent-text-1", "Desktop walkthrough test message one")
-    sendText("chat-6-sent-text-2", "Desktop walkthrough test message two")
-    val attachments = createTempDirectory("walkthrough-attachments").toFile()
-    val png = File(attachments, "desktop-walkthrough.png").also(::writeTestPng)
-    val pdf = File(attachments, "desktop-walkthrough.pdf").also { writeTestPdf(it, "Desktop walkthrough test PDF") }
-    sendAttachment("chat-7-sent-image", png)
-    sendAttachment("chat-8-sent-pdf", pdf)
-    restoreBase()
-    onEdt { Snapshot.withMutableSnapshot { backstackController.entries.add(InboxKey) } }
-    scene!!.settle()
-    val newConversation = scene!!.visibleNodes().firstOrNull { it.isClickable && it.text == "New" }
-    if (newConversation == null) {
-      visits +=
-        Visit(
-          "chat-9-new-conversation",
-          "chat",
-          Outcome.NeedsData,
-          null,
-          listOf("the inbox offers no New button"),
-          null,
-          emptyList(),
-          null,
-        )
-    } else {
-      scene!!.click(newConversation.bounds)
-      record("chat-9-new-conversation", "chat", scene!!.settle(), listOf("clicked New in the inbox"))
-      sendText("chat-10-new-conversation-sent", "Desktop walkthrough test, new conversation")
-    }
-    restoreBase()
+    missing("fix-payments-link", "fix", "no topic lists a question whose answer links to payments")
+  }
+
+  private fun missing(name: String, kind: String, reason: String) {
+    visits += Visit(name, kind, Outcome.NeedsData, null, listOf(reason), null, emptyList(), null)
   }
 
   private fun sendText(name: String, text: String) {
@@ -740,60 +798,7 @@ class DesktopWalkthrough {
    */
   private fun checkFixes(ids: Map<String, String>) {
     pushAndRecord("fix-help-center", "fix", HelpCenterKey, emptyList())
-    val loaded = LoadedData.read(graph.apolloClient)
-    val paymentsLinks = loaded.markdownLinks().filter { (_, _, url) -> url.trimEnd('/').endsWith("/payments") }
-    val questionId = loaded.idWhere("answer", "Go to payments") ?: loaded.idWhere("answer", "link.hedvig.com/payments")
-    val keyClass = Class.forName("com.hedvig.android.feature.help.center.navigation.HelpCenterQuestionKey").kotlin
-    val question = questionId?.let { buildKey(keyClass, ids + ("questionId" to it)) as? KeyInstance.Built }
-    if (question == null) {
-      visits +=
-        Visit(
-          "fix-payments-link",
-          "fix",
-          Outcome.NeedsData,
-          null,
-          listOf("no cached question links to payments"),
-          null,
-          emptyList(),
-          null,
-        )
-    } else {
-      drainBetweenVisits()
-      onEdt { Snapshot.withMutableSnapshot { backstackController.entries.add(question.key) } }
-      record("fix-payments-link-1-question", "fix", scene!!.settle(), listOf("question $questionId"))
-      val linkTexts = paymentsLinks.map { (_, text, _) -> text.lowercase() }.toSet() + "go to payments"
-      val link = scene!!.visibleNodes().firstOrNull { it.isClickable && it.text.lowercase() in linkTexts }
-      if (link == null) {
-        visits +=
-          Visit(
-            "fix-payments-link-2-clicked",
-            "fix",
-            Outcome.NeedsData,
-            null,
-            listOf("no clickable link node with text in $linkTexts"),
-            null,
-            emptyList(),
-            null,
-          )
-      } else {
-        val browsedBefore = handedToSystem.size
-        scene!!.click(link.bounds)
-        val settle = scene!!.settle()
-        val browsed = handedToSystem.drop(browsedBefore)
-        record(
-          "fix-payments-link-2-clicked",
-          "fix",
-          settle,
-          listOf(
-            "clicked '${link.text}'",
-            "browser called with: ${browsed.ifEmpty {
-              listOf("nothing")
-            }}",
-          ),
-        )
-      }
-      restoreBase()
-    }
+    clickPaymentsLink(ids)
     val before = onEdt { backstackController.entries.toList() }
     onEdt { backstackController.finishApp = { finishAppCalls++ } }
     onEdt { backInput.back() }
@@ -809,7 +814,9 @@ class DesktopWalkthrough {
   private fun visitKeys(mode: String, ids: Map<String, String>) {
     val only = System.getProperty("hedvig.walkthrough.only")
     val keyClasses = registeredKeyClasses().sortedBy { it.qualifiedName }
-      .filter { only == null || it.qualifiedName.orEmpty().contains(only) }
+      .filter { keyClass ->
+        only == null || only.split(",").any { keyClass.qualifiedName.orEmpty().contains(it.trim()) }
+      }
     for (keyClass in keyClasses) {
       val name = keyClass.qualifiedName!!.removePrefix("com.hedvig.android.").removePrefix("feature.")
       val exclusion = if (mode == "session" && !allowWrites) {
@@ -920,18 +927,28 @@ class DesktopWalkthrough {
   /** The pids of running processes whose command line starts the desktop app. */
   private fun runningDesktopApps(): List<Long> {
     val self = ProcessHandle.current().pid()
-    val fromHandles = ProcessHandle.allProcesses()
-      .filter { it.pid() != self }
-      .filter { handle -> handle.info().commandLine().orElse("").contains(DESKTOP_MAIN_CLASS) }
-      .map { it.pid() }
-      .toList()
     val fromPs = runCatching {
       ProcessBuilder("ps", "-axo", "pid=,command=").start().inputStream.bufferedReader().readLines()
-        .filter { it.contains(DESKTOP_MAIN_CLASS) && !it.contains(" ps ") }
-        .mapNotNull { it.trim().substringBefore(" ").toLongOrNull() }
+        .map { it.trim() }
+        .filter { line -> isDesktopAppCommand(line.substringAfter(" ").trim()) }
+        .mapNotNull { it.substringBefore(" ").toLongOrNull() }
         .filter { it != self }
     }.getOrDefault(emptyList())
+    val fromHandles = ProcessHandle.allProcesses()
+      .filter { it.pid() != self }
+      .filter { handle -> isDesktopAppCommand(handle.info().commandLine().orElse("")) }
+      .map { it.pid() }
+      .toList()
     return (fromHandles + fromPs).distinct()
+  }
+
+  /**
+   * Whether [command] is a JVM started with the desktop app's main class, which a shell that only mentions the class
+   * name, such as a grep for it, is not.
+   */
+  private fun isDesktopAppCommand(command: String): Boolean {
+    val executable = command.substringBefore(" ")
+    return executable.endsWith("/java") && command.split(" ").any { it == DESKTOP_MAIN_CLASS }
   }
 
   private fun realDataRoot(): File = File(System.getProperty("user.home"), ".hedvig-desktop")
