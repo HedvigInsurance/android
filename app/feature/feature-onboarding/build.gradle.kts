@@ -15,7 +15,6 @@ hedvig {
 kotlin {
   sourceSets {
     commonMain.dependencies {
-      implementation(libs.androidx.annotation)
       implementation(libs.androidx.datastore.core)
       implementation(libs.androidx.datastore.preferencesCore)
       implementation(libs.apollo.normalizedCache)

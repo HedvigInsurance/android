@@ -11,6 +11,10 @@ kotlin {
       implementation(libs.kotlinx.datetime)
     }
 
+    getByName("jvmAndAndroidMain").dependencies {
+      api(libs.androidx.annotation)
+    }
+
     androidMain.apply {
       dependencies {
         implementation(libs.androidx.other.core)

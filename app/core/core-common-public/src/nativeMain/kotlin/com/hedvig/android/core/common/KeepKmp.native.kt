@@ -1,3 +1,3 @@
-package com.hedvig.android.data.coinsured
+package com.hedvig.android.core.common
 
 actual annotation class KeepKmp actual constructor()

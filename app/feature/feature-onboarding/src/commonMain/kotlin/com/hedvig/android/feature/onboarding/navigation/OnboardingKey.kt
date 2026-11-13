@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.onboarding.navigation
 
+import com.hedvig.android.core.common.KeepKmp
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.SuppressesAppStoreReviewRequest
 import kotlinx.serialization.Serializable
