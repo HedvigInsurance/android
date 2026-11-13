@@ -74,7 +74,7 @@ The codebase is organized under `/app` with 80+ modules following a strict modul
 - **app/** - Android application module, a thin host of `:app-shell`. Owns the Android Metro `AppGraph` and the per-Activity `ActivityRetainedGraph`, `MainActivity`, back stack persistence, external deep links, and the Datadog view tracking effect.
 - **app-shell/** - KMP module (JVM and Android) with the platform-neutral app shell: `HedvigApp` and its single `NavDisplay`, the back stack controller, session reconciliation, and the shared cross-feature navigation wiring (`hedvigEntryProvider`). A host implements `AppHost` and may pass a fallback entry for keys without one.
 - **feature/** - Feature modules (feature-home, feature-chat, feature-login, etc.)
-- **feature/feature-{name}-navigation/** - Tiny modules holding *only* the public `@Serializable HedvigNavKey`s of a feature that other features may navigate to. These are the one carve-out to the "features can't depend on features" rule.
+- **feature/feature-{name}-navigation/** - Tiny modules holding *only* the public `@Serializable HedvigNavKey`s of a feature that another module must navigate to without depending on that feature. These are the one carve-out to the "features can't depend on features" rule. A feature's other keys live in the feature itself.
 - **data/** - Data layer modules (data-contract, data-chat, data-addons, etc.)
 - **core/** - Core utilities (core-common, core-datastore, core-resources, etc.)
 - **apollo/** - GraphQL client modules (apollo-octopus-public, apollo-core, etc.)
@@ -229,7 +229,7 @@ internal data class InsuranceContractDetailKey(val contractId: String) : HedvigN
 }
 ```
 
-Keys reachable cross-feature live in the feature's `-navigation` module and are public. Keys internal to a feature stay `internal` in the feature module.
+A feature's keys live in the feature. Keys that `:app-shell` or a host names are public, the rest stay `internal`. A key moves to a separate `feature-{name}-navigation` module only when another module must navigate to that feature without depending on it.
 
 **Marker interfaces** (in `navigation-common`) let the app shell reason about a key without depending on the feature:
 - `TopLevelTabRoot` — this key is the root of a bottom-nav tab (exposes `topLevelTab`).
@@ -713,7 +713,7 @@ dependencies {
 }
 ```
 3. Create standard structure: `ui/`, `navigation/`, `di/` (contributions live next to the classes they bind via Metro annotations, not in a central `di` module).
-4. Define `@Serializable` `HedvigNavKey`s. Put any cross-feature-reachable keys in a `feature-{name}-navigation` module.
+4. Define `@Serializable` `HedvigNavKey`s in the feature. Add a `feature-{name}-navigation` module only for keys another module must navigate to without depending on the feature.
 5. Expose a `fun EntryProviderScope<HedvigNavKey>.{name}Entries(...)` and call it from `hedvigEntryProvider` in `:app-shell`.
 6. Module will be auto-discovered by `settings.gradle.kts`.
 

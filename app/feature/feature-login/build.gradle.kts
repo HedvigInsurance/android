@@ -41,7 +41,6 @@ kotlin {
       implementation(projects.coreLocale)
       implementation(projects.coreResources)
       implementation(projects.designSystemHedvig)
-      implementation(projects.featureLoginNavigation)
       implementation(projects.languageCore)
       implementation(projects.moleculePublic)
       implementation(projects.navigationCommon)

@@ -47,7 +47,6 @@ kotlin {
       implementation(projects.dataCrossSellAfterClaimClosed)
       implementation(projects.dataDisplayItems)
       implementation(projects.designSystemHedvig)
-      implementation(projects.featureClaimDetailsNavigation)
       implementation(projects.featureFlags)
       implementation(projects.fileUploadUi)
       implementation(projects.moleculePublic)

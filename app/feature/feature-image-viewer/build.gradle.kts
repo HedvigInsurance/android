@@ -7,6 +7,7 @@ plugins {
 hedvig {
   compose()
   serialization()
+  navKeys()
 }
 
 kotlin {
@@ -26,7 +27,6 @@ kotlin {
       implementation(projects.coreCommonPublic)
       implementation(projects.coreResources)
       implementation(projects.designSystemHedvig)
-      implementation(projects.featureImageViewerNavigation)
       implementation(projects.navigationCommon)
       implementation(projects.navigationCompose)
       implementation(projects.navigationCore)
