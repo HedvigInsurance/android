@@ -6,11 +6,13 @@ plugins {
 kotlin {
   sourceSets {
     commonMain.dependencies {
-      implementation(libs.androidx.datastore.core)
-      implementation(libs.androidx.datastore.preferencesCore)
       implementation(libs.coroutines.core)
       implementation(projects.authEventCore)
       implementation(projects.coreCommonPublic)
+    }
+    jvmMain.dependencies {
+      implementation(libs.androidx.datastore.core)
+      implementation(libs.androidx.datastore.preferencesCore)
     }
   }
 }
