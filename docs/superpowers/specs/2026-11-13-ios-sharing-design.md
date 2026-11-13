@@ -104,8 +104,9 @@ These make the experiment a failure even if the screen works.
   the Kotlin model does not say whether a row is a partner claim.
 - There is no native Metro graph (`shareddi` was deleted). `network-clients` and `auth-core-public` compile for iOS,
   but native has no binding for `AccessTokenFetcher`, `AuthRepository`, `@AuthHttpClientEngine HttpClientEngine` or
-  `DeviceIdFetcher`, and `auth-core-public` stores tokens through `AuthTokenStorage`, a concrete class over
-  `DataStore<Preferences>` contributed from `commonMain`.
+  `DeviceIdFetcher`, and `auth-core-public` stores tokens through `AuthTokenStorage`, a concrete
+  `@Inject @SingleIn(AppScope::class)` class over `DataStore<Preferences>` in `commonMain`, injected as itself (no
+  interface, no `@ContributesBinding`), so it reaches every graph that includes the module.
 - `language-core` `commonMain` depends on `core-resources` since `10330a3da7`, for one file, `LanguageLabel.kt`
   (`val Language.label: StringResource`). `core-build-constants`, `network-clients`, `auth-core-public` and more
   depend on `language-core`, so the whole data layer reaches `core-resources`, whose `commonMain` has
@@ -169,25 +170,44 @@ cheaper before any feature depends on the shapes they change. Cost if wrong: if 
    reaches Compose resources. Check with the iOS compile classpath of `network-clients` (no `components-resources`).
 2. **Auth bindings per platform, Android graph unchanged.** `auth-core-public` has JVM and iOS targets and no Android
    target, so Android consumes its JVM variant: a binding moved from `commonMain` to `jvmMain` keeps Android's graph as
-   it is. `AuthTokenStorage` becomes an interface; today's DataStore class becomes its JVM implementation, bound in
-   `jvmMain`. `AuthTokenServiceImpl`, `AndroidAccessTokenProvider` and `LogoutUseCaseImpl` lose their `commonMain`
-   `@ContributesBinding` and are bound from `jvmMain` (and, for `AuthTokenServiceImpl`, from the native graph, see
-   F). `core-demo-mode`'s `DataStoreDemoManager` gets the same treatment: that module also has JVM and iOS targets and
-   no Android target, so it moves to `jvmMain`. `MemberIdService` and the tests that construct `AuthTokenStorage`
-   follow the interface. The expected Android graph difference is the implementation class behind
-   `AuthTokenStorage`, nothing else.
+   it is. `AuthTokenStorage` is a concrete `@Inject @SingleIn(AppScope::class)` class today, bound as itself; it
+   becomes an interface, and today's DataStore class becomes its JVM implementation in `jvmMain` with a new
+   `@ContributesBinding(AppScope::class)` (keeping `@SingleIn`). `AuthTokenServiceImpl`, `AndroidAccessTokenProvider`
+   and `LogoutUseCaseImpl` keep their classes but move to `jvmMain` with their `@ContributesBinding` (and, for
+   `AuthTokenServiceImpl`, are also bound by the native graph, see F). `core-demo-mode`'s `DataStoreDemoManager` gets
+   the same treatment: that module also has JVM and iOS targets and no Android target, so it moves to `jvmMain`.
+   `MemberIdService` and the tests that construct `AuthTokenStorage` follow the interface. Expected Android graph
+   difference, precisely: the `AuthTokenStorage` key is now satisfied by a binding to the new implementation class
+   (a new class name if it is renamed) where it was the class's own constructor; the other moved bindings keep the
+   same keys and classes; 87 ViewModels, 21 matcher providers and 111 keys unchanged.
 3. **A guard against Compose UI in shared `commonMain`.** Opt-in per module through the `hedvig { }` DSL (the name is
    the builder's), because many modules with iOS targets are UI modules themselves (`design-system-*`, `compose-ui`,
    `navigation-compose`, `feature-help-center`). For an opted-in module it fails the build when `commonMain` imports
    Compose UI, foundation, material, the design system, `hedvig.resources`, `org.jetbrains.compose.resources`, Coil,
-   `paging-compose` or `navigation3-ui`, reusing the `CommonMainImportGuard` machinery with a second list, and it moves
-   `metro.viewmodel.compose` from `commonMain` to `jvmAndAndroidMain` for that module. A dependency-list assertion on
+   `paging-compose` or `navigation3-ui`, reusing the `CommonMainImportGuard` machinery with a second list. The same
+   flag changes the convention itself: `viewModels()` in `HedvigGradlePluginExtension` adds `metro.viewmodel.compose`
+   to `commonMainImplementation` for every module that calls it, not per module, so for an opted-in module the
+   convention must add it to `jvmAndAndroidMain` instead (`metro.viewmodel` stays in `commonMain`). Non-opted modules
+   keep today's placement, so Android's classpaths do not change. A dependency-list assertion on
    `commonMain` (Compose UI artifacts, `design-system-*`, `ui/*`, `core-resources`, `navigation-compose` forbidden) is
    the stronger form; add it if it is cheap. Reason: the compiler will not catch UI in `commonMain`, since every one of
    those artifacts publishes iOS variants. Cost if wrong: a guard that is too strict blocks a legitimate import; the
    allowlist mechanism the guard already has covers that.
 
 Step 0 does not touch the 44 leak files in other modules (J).
+
+#### Step 1 in detail
+
+`feature-claim-history` applies `hedvig.multiplatform.library`, which the convention documents as never part of the
+iOS umbrella (`KotlinMultiplatformLibraryConventionPlugin.kt`, the class KDoc), and its `commonMain` depends on
+`design-system-hedvig`, `core-resources`, `jetbrains.compose.ui.tooling.preview` and `navigation-compose`. Designer's
+call: switch it to `hedvig.multiplatform.library.ios` (keeping `.android`), opt it into the step 0 guard, and move
+`ClaimHistoryDestination.kt` and `nav/ClaimHistoryDestination.kt` (with `ClaimHistoryKey` and the entries function)
+to `jvmAndAndroidMain` with `git mv`, together with the dependencies only they use: `design-system-hedvig`,
+`core-resources`, the tooling preview, `navigation-compose`, `navigation-common` and `kotlinx.serialization.core`.
+`commonMain` keeps Apollo, Arrow, the Compose runtime, `apollo-core`, `apollo-octopus-public`, `core-common-public` and
+`molecule-public`, all of which have iOS targets. `ClaimHistoryKey`'s only consumers are `:app-shell` and `:app`
+(JVM and Android), so the move is invisible to them. The facade (E) and the partner flag land in the same step.
 
 ### B. The iOS shell (designer's call)
 
@@ -310,9 +330,23 @@ a missing binding at compile time, which is the intended way to find out. No `Ba
 
 On native, `AuthTokenServiceImpl` is bound over the Swift token storage, so `MemberIdService` and the logout
 interceptor work, while the access token on requests comes from Swift's `AccessTokenFetcher`; Kotlin's
-`AndroidAccessTokenProvider` and its refresh are not bound on native. `AuthEventBroadcaster` is an `Initializable`, so
-whoever creates the graph runs its initializables. `ApolloNormalizedCacheAuthEventListener` is in
-`apollo-auth-listeners`, a plain JVM module: it needs an iOS target (it is 20 lines) before a second member logs in.
+`AndroidAccessTokenProvider` and its refresh are not bound on native.
+
+Session events and initializables (designer's call). `AuthEventBroadcaster` is an `Initializable`, so the Kotlin
+function that creates the graph also runs the graph's initializables before returning it; Swift never calls them. The
+object that function returns (the graph holder) has one Kotlin function Swift calls when a session starts or ends,
+which fires `AuthEventStorage.loggedIn` or `loggedOut` and so clears the Kotlin cache; it does not write tokens. In the
+shell it is called from its login and logout code. In Ugglan the call has to sit in the App target, since only the App
+target links `HedvigShared`; `hGraphQL/Sources/ApolloClient.swift` (`deleteToken()` at line 107, `saveToken` at line
+136) cannot import it. And `saveToken`, through `handleAuthTokenSuccessResult`, also runs on every token refresh
+(`AuthenticationClientAuthLib.exchange(refreshToken:)`), which would clear the Kotlin cache on each refresh. So Ugglan
+calls it next to `handleAuthTokenSuccessResult` in `AuthenticationClientAuthLib.exchange(code:)` (line 226, the login
+exchange) and next to `ApolloClient.deleteToken()` in `AppDelegate.logout()` (line 62).
+
+`ApolloNormalizedCacheAuthEventListener` is in `apollo-auth-listeners`, a `hedvig.jvm.library` module (`src/main`).
+Before a second member logs in on iOS it is converted in step 2: the plugin becomes `hedvig.multiplatform.library.ios`
+(plus `.android` only if needed), `src/main/kotlin` moves to `src/commonMain/kotlin`, dependencies move into
+`commonMain`. The listener is 24 lines with no platform code.
 
 Reason: one graph for both Swift hosts and missing bindings fail at compile time. Cost if wrong: moving the graph to
 its own module later is a file move.
@@ -346,6 +380,13 @@ to Ugglan's force logout hook or be switched off. Kotlin requests go through Kto
 `URLSession` delegate, so Ugglan's Datadog instrumentation does not see them; the Kotlin Datadog plugin on iOS needs the
 Datadog iOS frameworks linked with the shared framework, and whether KMP 1.8.0 works with `dd-sdk-ios` 3.17.0 is
 unverified.
+
+Interim defaults until the owner answers (designer's call): on native, logout on `UNAUTHENTICATED` is off, and there
+is no Kotlin-side Datadog tracing. Today both run on native: `addHedvigInterceptors` adds the logout interceptor in
+`commonMain`, and `installDatadogKtorPlugin` has one actual in `mobileMain` (Android and native), so the defaults need
+a native-only switch for the first and a native no-op actual for the second (splitting the `mobileMain` actual so
+Android keeps its plugin). The shell (steps 2 to 4) runs on these defaults. Both questions must be answered before
+step 5, since both change Ugglan's behaviour.
 
 ### H. The Ugglan step (designer's call)
 
@@ -393,12 +434,17 @@ UI or a stray large dependency long before the threshold.
 
 | Step | Android | iOS |
 |---|---|---|
-| 0 | `checkCommonMainImports`, the touched modules' tests (same count before and after), `:app:assembleDebug`, `:app-desktop:jvmTest`. `javap` of `AppGraph$Impl` and `ActivityRetainedGraphImpl` against the parent commit (recipe in `CLAUDE.md`): 87 ViewModels, 21 deep link matcher providers, 111 keys, and only the `AuthTokenStorage` and `DemoManager` implementation bindings changed. A debug build on a device: log in, kill, relaunch still logged in, log out | `compileKotlinIosSimulatorArm64` and `compileKotlinIosArm64` of `language-core`, `auth-core-public`, `core-demo-mode`, `network-clients`; the iOS compile classpath of `network-clients` has no `components-resources` |
+| 0 | `checkCommonMainImports`, the touched modules' tests (same count before and after), `:app:assembleDebug`, `:app-desktop:jvmTest`. `javap` of `AppGraph$Impl` and `ActivityRetainedGraphImpl` against the parent commit (recipe in `CLAUDE.md`): 87 ViewModels, 21 deep link matcher providers, 111 keys, and only the `AuthTokenStorage` binding changed (step 0, item 2). A debug build on a device: log in, kill, relaunch still logged in, log out | `compileKotlinIosSimulatorArm64` and `compileKotlinIosArm64` of `language-core`, `auth-core-public`, `core-demo-mode`, `network-clients`; the iOS compile classpath of `network-clients` has no `components-resources` |
 | 1 | As step 0, plus the key count and `ExhaustiveBackStackSerializationTest` (the key moves to `jvmAndAndroidMain`) and the desktop app opening claim history | Both iOS compiles of `feature-claim-history`; the guard passes |
 | 2 | Unchanged from step 1 | `:umbrella` debug framework link for the simulator; the generated header shows the facade and the input interfaces and nothing from Compose UI; size |
 | 3 | n/a | The shell on the simulator: QR login on staging, the four states (error by switching the network off, retry by switching it on, empty and content with suitable staging members), leaving the screen clears the ViewModel (log) and no request follows (network log), logout then login as another member shows that member's claims; size |
 | 4 | n/a | The comparison write-up with code, timings and sizes |
 | 5 | n/a | The same checks as step 3 in Ugglan, plus the partner claim route and demo mode still showing the Swift demo data |
+
+Verification logistics. The owner scans the staging BankID QR code for the shell, as for the desktop app; one scan
+lasts until the refresh token expires. The staging test member is 666227461. Whether staging has members with no
+claims, with regular history claims and with partner history claims is established by the builder at step 3 by
+querying staging, not assumed; the empty and partner cases may need the owner to point at another member.
 
 ## Risks and what stops the experiment
 
@@ -433,6 +479,9 @@ UI or a stray large dependency long before the threshold.
 2. Datadog on iOS: link the Kotlin Datadog Ktor plugin (needs the Datadog iOS frameworks with the shared framework;
    compatibility with Ugglan's 3.17.0 unverified), or no Kotlin-side tracing on iOS for the experiment?
 3. Once the shell works, delete `micro-apps/umbrella-consumer` (and the access token committed in it)?
+
+Questions 1 and 2 do not block the shell: until they are answered, native runs with logout on `UNAUTHENTICATED` off
+and no Kotlin-side Datadog tracing (G). Both must be answered before step 5.
 
 ## Decisions and who made them
 
