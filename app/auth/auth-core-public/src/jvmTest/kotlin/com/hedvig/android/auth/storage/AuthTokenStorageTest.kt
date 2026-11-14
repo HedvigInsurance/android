@@ -44,7 +44,7 @@ internal class AuthTokenStorageTest {
   }
 
   private fun TestScope.authTokenStorage(clock: Clock): AuthTokenStorage {
-    return AuthTokenStorage(
+    return DataStoreAuthTokenStorage(
       TestPreferencesDataStore(
         datastoreTestFileDirectory = testFolder.newFolder("datastoreTempFolder"),
         coroutineScope = backgroundScope,
