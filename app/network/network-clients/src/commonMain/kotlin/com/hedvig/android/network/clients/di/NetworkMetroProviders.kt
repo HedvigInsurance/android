@@ -130,6 +130,7 @@ private fun DefaultRequest.DefaultRequestBuilder.commonHeaders(
       "Hedvig-App-Version",
       "${hedvigBuildConstants.platformName.lowercase()};${hedvigBuildConstants.appVersionName}",
     )
+    appendPlatformHeaders()
   }
 }
 
