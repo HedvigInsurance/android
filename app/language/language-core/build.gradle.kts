@@ -11,7 +11,6 @@ kotlin {
       implementation(libs.androidx.annotation)
       implementation(projects.coreCommonPublic)
       implementation(projects.coreLocale)
-      implementation(projects.coreResources)
     }
     commonTest.dependencies {
       implementation(libs.assertK)
