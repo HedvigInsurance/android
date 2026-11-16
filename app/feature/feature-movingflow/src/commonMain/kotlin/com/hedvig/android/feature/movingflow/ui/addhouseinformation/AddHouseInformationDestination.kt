@@ -41,6 +41,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.PrimaryAlt
 import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle.NoButtons
+import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownSize
+import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle
+import com.hedvig.android.design.system.hedvig.DropdownItem.SimpleDropdownItem
+import com.hedvig.android.design.system.hedvig.DropdownWithDialog
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
@@ -392,26 +396,24 @@ private fun ExtraBuildingsDialogContent(
       Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
       ) {
-        HedvigCard {
-          RadioGroup(
-            options = allowedExtraBuildings.map { extraBuildingType ->
-              RadioOption(
-                RadioOptionId(extraBuildingType.type),
-                extraBuildingType.string(),
-              )
+        DropdownWithDialog(
+          style = DropdownStyle.Default(
+            items = allowedExtraBuildings.map { SimpleDropdownItem(it.string()) },
+          ),
+          size = DropdownSize.Medium,
+          hintText = stringResource(Res.string.CHANGE_ADDRESS_EXTRA_BUILDING_CONTAINER_TITLE),
+          chosenItemIndex = allowedExtraBuildings.indexOf(chosenBuilding).takeIf { it != -1 },
+          dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
+        ) { onDismissRequest ->
+          ExtraBuildingTypeDialogContent(
+            allowedExtraBuildings = allowedExtraBuildings,
+            chosenBuilding = chosenBuilding,
+            onBuildingChosen = {
+              chosenBuilding = it
+              onDismissRequest()
             },
-            selectedOption = chosenBuilding?.type?.let { RadioOptionId(it) },
-            onRadioOptionSelected = {
-              val buildingByType = allowedExtraBuildings.firstOrNull { allowedBuilding ->
-                allowedBuilding.type == it.id
-              }
-              buildingByType?.let { notNullResult ->
-                chosenBuilding = notNullResult
-              }
-            },
-            style = RadioGroupStyle.Labeled.VerticalWithDivider(
-              stringResource(Res.string.CHANGE_ADDRESS_EXTRA_BUILDING_CONTAINER_TITLE),
-            ),
+            dismissDialog = onDismissRequest,
+          //  modifier = Modifier.padding(horizontal = 16.dp),
           )
         }
         HedvigTextField(
@@ -464,6 +466,46 @@ private fun ExtraBuildingsDialogContent(
       )
       Spacer(Modifier.height(16.dp))
     }
+  }
+}
+
+@Composable
+private fun ExtraBuildingTypeDialogContent(
+  allowedExtraBuildings: List<MoveExtraBuildingType>,
+  chosenBuilding: MoveExtraBuildingType?,
+  onBuildingChosen: (MoveExtraBuildingType) -> Unit,
+  dismissDialog: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Column(modifier.verticalScroll(rememberScrollState())) {
+    Spacer(Modifier.height(16.dp))
+    HedvigCard {
+      RadioGroup(
+        options = allowedExtraBuildings.map { extraBuildingType ->
+          RadioOption(
+            RadioOptionId(extraBuildingType.type),
+            extraBuildingType.string(),
+          )
+        },
+        selectedOption = chosenBuilding?.type?.let { RadioOptionId(it) },
+        onRadioOptionSelected = { optionId ->
+          allowedExtraBuildings.firstOrNull { it.type == optionId.id }?.let(onBuildingChosen)
+        },
+        style = RadioGroupStyle.Labeled
+          .VerticalWithDivider(
+          stringResource(Res.string.CHANGE_ADDRESS_EXTRA_BUILDING_CONTAINER_TITLE),
+        ),
+      )
+    }
+    Spacer(Modifier.height(16.dp))
+    HedvigTextButton(
+      text = stringResource(Res.string.general_cancel_button),
+      onClick = dismissDialog,
+      enabled = true,
+      buttonSize = ButtonSize.Large,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(16.dp))
   }
 }
 
