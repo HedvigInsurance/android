@@ -1,38 +1,41 @@
-# Sharing presenters and data with iOS: experiment report, step 4 edition
+# Sharing presenters and data with iOS: experiment report, final edition
 
-Date: 2026-11-16. State of `feat/desktop-app-integration` at `acdedcaf45` and of the three bridge branches
+Date: 2026-11-16. State of `feat/desktop-app-integration` at `acdedcaf45`, of the three bridge branches
 `ios/bridge-plain` (`0e30384173`), `ios/bridge-nativecoroutines` (`a48caaae8d`) and `ios/bridge-skie` (`eb11dbef4c`),
-which stay pushed and unmerged as the record of the comparison. The design is
+which stay pushed and unmerged as the record of the comparison, and of the local Ugglan branch
+`experiment/kmp-claim-history` (`275e8fdc7`, `74d00e71a`). The design is
 `docs/superpowers/specs/2026-11-13-ios-sharing-design.md`, the plan `docs/superpowers/plans/2026-11-14-ios-sharing.md`.
 Every number below comes from the run directory `.superpowers/sdd/2026-11-14-ios-sharing/` of the `android/` clone;
 the file is named next to it. "Ledger" means `ledger.md` there.
 
 ## 1. Summary
 
-**Built.** The claim history screen's ViewModel, presenter, use case and GraphQL client run in Kotlin on iOS and feed
-a SwiftUI screen in the iOS test host, `micro-apps/umbrella-consumer` (the shell). A native Metro graph in `:umbrella`
-takes five Swift inputs; Swift keeps the tokens in the Keychain and owns their refresh. Thirteen task branches are
-merged into the integration branch.
+**What ran.** The experiment ran to the end. The claim history screen's ViewModel, presenter, use case and GraphQL
+client run in Kotlin and feed SwiftUI: first in the iOS test host in this repo (`micro-apps/umbrella-consumer`), then
+in the real iOS app, Ugglan, on a local branch built against a local umbrella. Swift keeps the tokens in the Keychain
+and owns the one refresh path.
 
-**Bridge, decided by the owner.** KMP-NativeCoroutines, behind one generic Kotlin host and one generic Swift owner, with
-`handle` functions that make Swift fail to compile when Kotlin adds a case. SKIE gave the best Swift code but was
-rejected because it gates Kotlin upgrades.
+**Proven in both, on the iOS 27.2 simulator against staging:** login; Loading, Empty, and Failed with a retry; leaving
+the screen clears the ViewModel and no request follows; logout clears the Kotlin cache; request headers match the iOS
+app's except `hedvig-device-id`. In Ugglan the Kotlin request also carries the app's Datadog trace headers on the
+wire. Android's compiled graph has two deliberate differences and nothing else; 1199 JVM and Android tests and 43 iOS
+simulator tests pass.
 
-**Proven** on the iOS 27.2 simulator against staging: BankID login; Loading, Empty, Failed with Retry; leaving the
-screen clears the ViewModel and no request follows; one shared token refresh; headers match the iOS app's except
-`hedvig-device-id`. 43 iOS simulator tests pass. On Android the ViewModel, deep link and key sets and the APK class
-set are unchanged, 1199 tests pass, and the compiled graph has two deliberate differences.
+**Bridge.** KMP-NativeCoroutines behind one shared Kotlin host and one shared Swift owner, chosen over SKIE because
+SKIE gates Kotlin upgrades.
 
-**Size.** 3.59 MB to 7.96 MB shipped, almost all in the step that first linked the data layer.
+**Size.** The shared framework went from 3.59 MB to 7.96 MB shipped, almost all of it when the data layer was first
+linked.
 
-**Not proven.** Content rows from real data (the only BankID identity has no claims), a member switch, a server error
-on a device, Android on a device after Task 3, iOS below 18.4, production configuration.
+**Do not miss:**
 
-**Found.** Three existing bugs on all platforms, not fixed: no `hedvig-device-id` header, `Authorization: Bearer
-null`, and a reload that never refetches. Fixed on the way: an iOS crash on any GraphQL error, and tokens in the iOS
-system log.
+- Content rows from real data and a member switch could not be verified: the only staging identity has no claim
+  history.
+- The Ugglan screen would change what members see: a spinner and an error state, history cached for the life of the
+  process instead of refetched per visit, and a detail screen that loads by id (section 5).
+- What a real adoption needs, most blocking first, is in section 12.
 
-**Step 5, the real iOS app, is not started.** It waits on the owner's gate (section 3.11).
+Nothing is shipped and no PR is open. The Ugglan branch is local, never pushed, and not for merge.
 
 ## 2. Bridge decision
 
@@ -254,7 +257,8 @@ From the ledger, "KNOWN LIMITS", and `task-16b-report.md`:
   is not exercised.
 - **`isolated deinit` is unverified below iOS 18.4**, while the real iOS app's minimum is 17.0. The compiler
   back-deploys it through a shim, present in the binary; the iOS 18.3 simulator runtime, which takes the shim, is
-  installed but has no device, and a run needs a login there.
+  installed but has no device, and a run needs a login there. Ugglan's copy of the owner avoids it with an ordinary
+  `deinit` and a teardown helper (section 4); the test host has not adopted that yet.
 - **The next login on the test host is the first run of the login code on Swift package 1.0.6.** It compiles
   unchanged; a login needs a logout first.
 
@@ -262,12 +266,10 @@ From the ledger, "KNOWN LIMITS", and `task-16b-report.md`:
 
 Not measured and not needed for the decision: SKIE's release lag over more than two Kotlin versions, a second screen
 with events or a larger state, and SKIE's flow exception path. Real-data content and the member switch remain
-unverifiable for every variant (section 3.9). If Kotlin's Swift export reaches a stable level with documented
+unverifiable for every variant (section 13). If Kotlin's Swift export reaches a stable level with documented
 coexistence with the Objective-C export, the exit cost above is the Swift-side cost of moving to it.
 
-## 3. Step 4 report
-
-### 3.1 What was built, by design step
+## 3. What was built, and the goals
 
 | Design step | Task (merged at) | What it did | What it proved |
 |---|---|---|---|
@@ -285,20 +287,155 @@ coexistence with the Objective-C export, the exit cost above is the Swift-side c
 | 3 | 12 (`f446fbfaac`) | Claim history in the shell | Loading, Empty, Failed with Retry; leaving clears the ViewModel; header parity; shared refresh; logout during refresh |
 | 4 | 13, 14, 15 (pushed, not merged) | Three bridge candidates and device measurements | Section 2 |
 | 4 | 16b (`acdedcaf45`, not in the plan) | The screen pattern after the owner's bridge decision: shared Kotlin `ScreenModel` host, shared Swift `ScreenOwner`, `handle` functions; replaces the facade | Android graph and runtime classpath identical; 43 native tests; lifetime, Failed and sample content on the simulator (section 2) |
+| 5 | 17 (gate, no code) | The owner's go-ahead to switch `android/` and `ugglan/` to experiment branches | `owner-answers.md`, "Task 17 gate" |
+| 5 | 18 (nothing to apply) | The owner's answers on logout and Datadog were already the merged behaviour | ledger |
+| 5 | 19 (Ugglan `275e8fdc7`, `74d00e71a`, local only) | Ugglan's claim history screen on the shared screen model, and a DEBUG header logger | Section 4 |
 
-Goals 1 to 7 of the design, as of step 4:
+### Goals 1 to 7 of the design
 
-| Goal | Result | How it was checked |
+| Goal | Result | Evidence |
 |---|---|---|
-| 1. Shell shows loading, error with retry, empty, content | Loading, Empty and Failed shown. Retry re-runs the request (it failed again under the forced token failure); recovery was observed only after a relaunch. Content from real data not shown; Kotlin-built items rendered through each bridge | Simulator log and screenshots, `task-12-report.md` a and e; sample probe in `bridge-comparison.md` |
-| 2. Same in Ugglan | Step 5 not started | |
-| 3. Leaving stops the work | Holds: owner deinit and `ClaimHistoryViewModel cleared` in the same millisecond, no ClaimsHistory request in the next 10 to 11 s, 3 cycles per candidate and 3 more on the screen pattern | Log lines, `task-12-report.md` b, `bridge-comparison.md`, `task-16b-report.md` |
-| 4. Login and logout keep both clients consistent | Kotlin sends the token Swift holds (Swift's fetcher). Member A then B not verifiable; cache clearing on logout pinned by a native test | `parity.md` Authorization row; `IosGraphTest` "sessionChanged false clears the Apollo store" |
-| 5. Android graph and behaviour unchanged | Graph: two deliberate differences, nothing else. Behaviour on a device checked once, after Task 3 | Section 3.3 |
-| 6. Size recorded after every step | Yes | Section 3.2 |
-| 7. Every skip listed | Section 3.5 | |
+| 1. The test host shows loading, error with a working retry, empty and content, from the shared ViewModel, against staging | **Partly met.** Loading, Empty and Failed shown; Retry re-runs the request (it failed again under the forced token failure) and recovery was seen after a relaunch, not inside one process. Content from real data not verifiable; a Kotlin-built five-item sample rendered 5 of 5 rows | `task-12-report.md` a and e; `bridge-comparison.md`; `task-16b-report.md` |
+| 2. The same in Ugglan's real screen on an experiment branch | **Partly met.** Loading, Empty, and Failed with "Try again" shown; recovery seen after a relaunch. Content not verifiable, and no sample path was added in Ugglan | `task-19-report.md` checks 1 and 4; `i1-claim-history-empty.png`, `i4-failed.png`, `i4-recovered.png` |
+| 3. Leaving the screen stops the work | **Met.** Owner deinit and `ClaimHistoryViewModel cleared` together, no ClaimsHistory request after: 3 cycles per bridge candidate, 3 on the screen pattern in the test host, 3 in Ugglan | `task-12-report.md` b; `bridge-comparison.md`; `task-16b-report.md`; `i2-i3-cycles-excerpt.txt` |
+| 4. Login and logout keep both clients consistent; the Kotlin client sends the token iOS holds | **Partly met.** Kotlin's token comes from the app's own fetcher in both hosts; logout reaches the Kotlin cache listener (Ugglan: 0.24 s after the app's logout) and no Kotlin request follows. Member A then B not verifiable (one identity); the cache clear is pinned by a native test | `parity.md`; `logout-excerpt.txt`; `IosGraphTest` |
+| 5. Android's compiled DI graph and behaviour unchanged | **Met for the compiled graph, partly for behaviour.** Two deliberate graph differences, nothing else; 87 / 21 / 111 unchanged; APK class set unchanged. Behaviour on a device checked once, after Task 3 | Section 7 |
+| 6. Shipped size recorded after every step | **Met** | Section 6, `size-log.md` |
+| 7. The report lists every skip | **Met.** Nothing was skipped under the experiment-only rule; reductions are listed | Section 9 |
 
-### 3.2 Size
+## 4. Step 5: the real iOS app
+
+### Design as built
+
+Ugglan's feature modules cannot import `HedvigShared`; only the App target links it. So the screen is split
+(`task-19-proposal.md`, section 2; Ugglan commit `275e8fdc7`, 11 files, +464 lines, -24):
+
+- **Claims module, Swift only.** A main-actor protocol with a Swift view state, a provider resolved once per screen in
+  `onAppear` and kept in `@State` (Ugglan's `@Inject` resolves on every read), and a Swift implementation over the
+  existing client for demo mode:
+
+  ```swift
+  @MainActor
+  public protocol ClaimHistoryModel: AnyObject, Observable {
+      var state: ClaimHistoryViewState { get }
+      func reload()
+  }
+
+  @MainActor
+  public protocol ClaimHistoryModelProvider {
+      func makeModel() -> any ClaimHistoryModel
+  }
+  ```
+
+- **App target, the Kotlin conformance.** The test host's generic `ScreenOwner`, copied, conforms to that protocol for
+  this one screen, and maps the Kotlin state through `handle`:
+
+  ```swift
+  typealias ClaimHistoryModelKotlin = ScreenOwner<ClaimHistoryScreenModel, ClaimHistoryViewState>
+
+  extension ScreenOwner: ClaimHistoryModel where Model == ClaimHistoryScreenModel, ViewState == ClaimHistoryViewState {
+      func reload() {
+          model.reload()
+      }
+  }
+
+  struct ClaimHistoryModelProviderKotlin: ClaimHistoryModelProvider {
+      func makeModel() -> any ClaimHistoryModel {
+          ClaimHistoryModelKotlin(KotlinGraph.holder.claimHistoryScreenModel())
+      }
+  }
+  ```
+
+  DI registers the Kotlin provider in both non-demo branches and the Swift one in demo mode, so demo mode never
+  creates a Kotlin screen model.
+- **The five inputs over the app's own code.** `AccessTokenFetcher` calls Ugglan's `TokenRefresher.shared.refreshIfNeeded()`,
+  then reads the Keychain token, and throws instead of returning nil, so Kotlin never sends an unauthenticated
+  request or `Bearer null`. `DeviceIdFetcher` reads the app's stored device id. `LanguageStorage` reads the app's
+  locale. `IosDemoMode` reads and writes `UgglanStore.isDemoMode`. `AppBuildConfig` is built from `Environment.current`,
+  `Bundle.main` and `UIDevice`. The graph holder is created once, in `didFinishLaunchingWithOptions`, after the force
+  logout hook and the locale are set.
+- **One refresh path.** Both clients go through the same `TokenRefresher` and Keychain item; Kotlin has no refresh of
+  its own.
+- **Session calls.** `sessionChanged(loggedIn: true)` after the login exchange saves the token in
+  `AuthenticationClientAuthLib.exchange(code:)` (not on refresh); `sessionChanged(loggedIn: false)` after the token is
+  deleted in `AppDelegate.logout()`. No call at launch with a stored session: Kotlin's cache is empty at process start.
+- **An iOS 17-safe teardown.** Ugglan's minimum is iOS 17.0, so the owner does not use `isolated deinit`. Its ordinary
+  `deinit` hands the work to a small helper that cancels the collection and closes the model on the main thread, at
+  once when already there, else on the next main-queue turn:
+
+  ```swift
+  func run() {
+      screenLog.debug("\(self.name, privacy: .public) owner deinit")
+      collection?.cancel()
+      if Thread.isMainThread {
+          model.close()
+      } else {
+          DispatchQueue.main.async { self.model.close() }
+      }
+  }
+  ```
+
+  The review found it correct on iOS 17 by reading; it ran on iOS 27.2 only. The test host still uses `isolated
+  deinit`; adopting this teardown there was ruled a later one-file change and was not made.
+- **Navigation.** A row pushes the claim detail by id and partner flag, `ClaimDetailView(claim: nil, type:)`, the
+  path deep links already use.
+
+### Feasibility
+
+Xcode 27.2, Ugglan at `origin/master` (`c6a43377f`), the `android/` clone at `acdedcaf45` (`task-19-report.md`):
+
+| Step | Result |
+|---|---|
+| `:umbrella:linkDebugFrameworkIosSimulatorArm64` in `android/` | 33 s (cache) |
+| `scripts/use-local-umbrella.sh` | 174 s; one tracked file changed by the script (`local-mode-appdependencies.diff`) |
+| Unmodified Ugglan master in local mode, signed simulator Debug | `BUILD SUCCEEDED` in 147 s |
+| Modified Ugglan | `BUILD SUCCEEDED` after one missing import; 0 Swift warnings in the touched files; Ugglan's `ClaimsTests` 11 of 11, none exercising the new code |
+| `scripts/use-released-umbrella.sh` | exit 0; the tracked project file back to its committed state, the local-mode marker gone |
+
+The mode switch runs `tuist generate`, which deleted about 85 untracked generated leftovers in `ugglan/`. The branch
+builds only in local mode.
+
+### On the device
+
+Ugglan Debug (staging app `com.hedvigForsakring.test.app`), iPhone 18 Pro simulator, iOS 27.2, a staging member with
+an empty history, logged in by the owner with BankID. From `task-19-report.md`; evidence in `task-19/`.
+
+| Check | Result | Evidence |
+|---|---|---|
+| Login | One Kotlin `LoggedIn` event to the demo and cache listeners, with empty token fields | report, "Proven in Ugglan" |
+| Open | Seeded Loading, then Empty; exactly one Kotlin ClaimsHistory request, 200; the app's refresher consulted twice for it (F2), no refresh needed | `i1-open-excerpt.txt`, `i1-claim-history-empty.png` |
+| Leave | 3 cycles: owner deinit and `ClaimHistoryViewModel cleared` on the main thread about 0.5 s after the back tap; 0 Kotlin requests after | `i2-i3-cycles-excerpt.txt`, `i2-after-back-1.png`, `i2-after-back-3.png` |
+| Reopen | Answered from Kotlin's cache within 1 ms, no network request (today's Swift screen refetches on every visit) | `i2-i3-cycles-excerpt.txt`, `i3-reopen-1.png` |
+| Failed | DEBUG `-kotlinFailTokenFetch YES`: the app's error view with "Try again"; Kotlin got `ApolloNetworkException` from the Swift throw; 0 requests sent; "Try again" ran the query and stayed Failed; no crash. Relaunched without it: one request, Empty | `i4-failed-retry-excerpt.txt`, `i4-failed.png`, `i4-recovery-excerpt.txt`, `i4-recovered.png` |
+| Headers | User-Agent, `Hedvig-App-Version`, `apollographql-client-name`, both language headers and `Hedvig-TimeZone` identical on the Kotlin and Swift requests; `hedvig-device-id` absent on Kotlin, present on Swift (F3) | `i5-headers-kotlin.txt`, `i5-headers-swift.txt` |
+| Datadog | The Kotlin request carries `x-datadog-trace-id`, `-parent-id`, `-origin`, `-sampling-priority`, `-tags`, `traceparent`, `tracestate` and `baggage`, the same set as the Swift request, added by the app's Datadog SDK (Kotlin installs none): **verified on the wire**. "Exactly one RUM resource per Kotlin request" was **not observable** on the simulator (the SDK's debug output logs batches, not resources) and the read-only RUM query was **not run** | `i5-headers-all.txt`, `i5-datadog-sdk-output-summary.txt` |
+| Side by side, one minute | 14 Swift requests, 5 refresher checks, 0 refreshes, 0 forced logouts, 0 Swift errors, 0 Kotlin warnings or errors, 0 crash markers | `i6-side-by-side-summary.txt` |
+| Demo mode | Swift demo data (Empty); no Kotlin screen model created, 0 Kotlin requests; leaving demo through logout reached the Kotlin listeners, nothing sent | `i7-demo-summary.txt`, `i7-demo-claim-history.png`, `i7-after-demo-logout.png` |
+| Logout | Kotlin `LoggedOut` to the demo and cache listeners 0.24 s after the app's logout; 0 Kotlin requests after | `logout-excerpt.txt`, `logout-after.png` |
+| Secrets | 58,912 log lines: 0 JWT-shaped strings, 0 `Bearer` with a credential, 0 non-empty token fields | `i8-secret-scan.txt` |
+
+The request header check used a DEBUG-only logger on the branch (`74d00e71a`) that records headers after Datadog's
+instrumentation, with credentials reduced to their shape. The raw `task-19/log-stream.txt` contains member data from
+response bodies (body logging, section 12) and is not quoted here.
+
+Not verifiable in Ugglan: content rows, the partner label and route, detail navigation from a row (no row to tap),
+member A then B, and the same device id from both clients (Kotlin sends none).
+
+## 5. Member-visible behaviour changes in the Ugglan screen
+
+From the review of the Ugglan branch (ledger, "Task 19 review"). Whether to keep each is a product decision.
+
+| Change | Inherent to the shared presenter today, or this experiment's Swift |
+|---|---|
+| History is cached for the life of the process: a second visit sends nothing, and a claim closed during the session appears only after a relaunch or a logout | **Inherent**: `GetClaimsHistoryUseCase` reads CacheFirst (F4, F5), the same on Android |
+| No refetch per visit, including on return from a detail screen; no refresh short of a relaunch or a logout | **Inherent**, same cause |
+| The cache is not cleared on a language change | **Inherent**: only login and logout clear it |
+| The detail screen opens by id with `claim: nil`: it shows a loading state and fetches on every tap, fails offline, and its chat toolbar is empty until loaded (previously it opened pre-filled) | **This experiment's Swift**: the shared item carries no full claim, so the row routes by id. Not flagged by the implementer; found in review |
+| A spinner on the first visit (previously a brief empty state while loading) | **This experiment's Swift**: hand-built loading view |
+| A failed load shows an error with "Try again" (previously a silent empty state) | **This experiment's Swift**: hand-built error view, not the app's `ProcessingState` |
+| A partner claim submitted on a given day may show the previous day west of UTC (Kotlin turns the date into UTC midnight; Swift parsed a local date) | **Inherent** to the shared mapping; not checked |
+
+## 6. Size
 
 Shipped bytes of the `iosArm64` release framework (`__TEXT` plus non-zerofill `__DATA`, as `umbrella.yml` computes
 them). Rows from `size-log.md` unless the source column says otherwise.
@@ -329,7 +466,7 @@ approximate `__text` growth by package from `nm` address gaps (`size-log.md`, `t
 | kotlinx-datetime | +357 KB |
 | Apollo normalized cache | +257 KB |
 | Okio | +257 KB |
-| DataStore core and preferences, kotlinx-serialization-protobuf (dead code, see 3.8) | +172 KB |
+| DataStore core and preferences, kotlinx-serialization-protobuf (dead code, see section 12) | +172 KB |
 | generated `octopus` code | +163 KB |
 | Hedvig code | +143 KB |
 | coroutines flow | +79 KB |
@@ -341,7 +478,11 @@ Task 9 is worth about 50 KB against the plan's (7,946,780 against 7,997,209 on t
 pattern (`task-16b-report.md`, fix round 1). For comparison, the design
 recorded about 1.3 MB for a Molecule ViewModel and about 2.9 MB for the network clients measured separately.
 
-### 3.3 Android and desktop impact
+The size in Ugglan itself was not measured (ruling): the framework links statically into the app, so the app grows by
+at most about the framework growth; a simulator Debug build is not comparable (`task-19-proposal.md`, section 6).
+Step 5 changed no Kotlin, so the last row stands.
+
+## 7. Android and desktop impact
 
 Every compiled-graph difference introduced, from `javap` of the release graph classes against the parent (P2):
 
@@ -376,7 +517,7 @@ Datadog Ktor plugin moved to `androidMain`, same bytecode) and Task 9 (the Apoll
 code after that and were not run on a device, nor was any minified build. The desktop app was not opened on claim
 history (the optional run in Task 5 was skipped).
 
-### 3.4 Network client parity
+## 8. Network client parity
 
 `parity.md`, verified in Task 12 on the simulator by a DEBUG header logger, 4 requests with identical headers
 (`task-12/d-headers.txt`).
@@ -397,15 +538,22 @@ history (the optional run in Task 5 was skipped).
 | Logout on `UNAUTHENTICATED` | Off on native (owner) | Read and tested only: no server `UNAUTHENTICATED` on a device; pinned by `NativeApolloClientTest` and `IosGraphTest` "an UNAUTHENTICATED response does not log out" |
 | Datadog tracing | None from Kotlin on native (ruling, pending owner objection) | Observed: no `x-datadog-*` header. The shell links no Datadog, so this shows only that Kotlin adds none |
 
-Rows resting on reading rather than observation: timeouts, language re-read, the client header names, logout on
-`UNAUTHENTICATED`, and everything about Ugglan's Datadog SDK picking up Kotlin requests (`research-ugglan-auth-and-datadog.md`
-read dd-sdk-ios 3.17.0 source: every `URLSessionTask` in the process is tracked automatically, so Kotlin's Darwin
-requests should appear in Ugglan's RUM with trace headers and no Kotlin work; never observed).
+In Ugglan (Task 19, `i5-headers-kotlin.txt`, `i5-headers-swift.txt`), the Kotlin and Swift requests carry the same
+`User-Agent` (`com.hedvigForsakring.test.app 14.0.13 (iOS 27.2)`), `Hedvig-App-Version` (`ios;14.0.13`),
+`apollographql-client-name` (`iOS:com.hedvigForsakring.test.app`), `Accept-Language` and `hedvig-language` (`en-SE`)
+and `Hedvig-TimeZone`; Kotlin adds its five `X-*` headers; `hedvig-device-id` is on the Swift request only. The
+Datadog row is no longer only read: in Ugglan the app's SDK added its trace headers to the Kotlin request (section 4);
+the RUM resource count stays unobserved. Token refresh in Ugglan is the app's own `TokenRefresher`, consulted twice per
+Kotlin request (F2).
+
+Rows still resting on reading rather than observation: timeouts, language re-read, the client header names, logout on
+`UNAUTHENTICATED`, and one RUM resource per Kotlin request (`research-ugglan-auth-and-datadog.md` read dd-sdk-ios
+3.17.0 source: every `URLSessionTask` in the process is tracked automatically).
 
 The device id gap is the one that matters: with it the backend cannot tell a Kotlin request from the same device as
-Ugglan's. It is not an iOS problem; see F3 in 3.7.
+the app's own. It is not an iOS problem; see F3 in section 11.
 
-### 3.5 Skips and reductions
+## 9. Skips and reductions
 
 **Nothing was skipped under the experiment-only skip rule (owner decision 12).** No piece was left out because sharing
 it would have made Android's `commonMain` much worse; the ledger's skip column is empty for every task. These were
@@ -413,32 +561,41 @@ reduced for other reasons:
 
 | What | Why | What completing it would take |
 |---|---|---|
-| iOS simulator tests cover only the Loading state; loading to content, to failed, empty, reload and "no callback after close" with a second state were moved to the manual run | The display link does not tick in a Kotlin/Native test process, so the presenter composes once and never recomposes (`task-10-report.md`) | A frame clock that ticks in a test process; that is a change to `molecule-public` this work did not make. The manual run covered all of them except content and a reload that reaches the network |
-| Content rows from real data, the Partner label from real data | The only BankID identity has no claims, and a claim takes 30 days to reach history (owner, ledger). Replaced by a DEBUG probe with five Kotlin-built items through each bridge | A staging member with claim history, including partner claims |
+| iOS simulator tests observe only the Loading state of the presenter | The display link does not tick in a Kotlin/Native test process, so the presenter composes once and never recomposes (`task-10-report.md`) | A frame clock that ticks in a test process, a change to `molecule-public` this work did not make. The manual runs covered every state except content and a reload that reaches the network |
+| Content rows and the partner label from real data, in both hosts | The only BankID identity has no claims, and a claim takes 30 days to reach history (owner, ledger). The test host rendered a Kotlin-built sample instead; Ugglan has no sample path (ruling) | A staging member with claim history, including partner claims |
 | Member A then member B | One BankID identity | A second staging identity |
 | A server GraphQL error and `UNAUTHENTICATED` on a device | Needs the owner or a backend toggle | Same; both paths are pinned by native tests on a mock engine |
 | Retry recovering inside one process | The forced token failure is a launch argument that cannot be turned off in the process; the network toggle was not used | One run with the network switched off and on |
 | Owner login and logout through Android's new token storage | Judged unnecessary after the upgrade-in-place check (ledger, Task 3) | One login and logout on the Pixel |
-| Task 7 did not run P3 or P5; Task 6 ran no P2 or P3 | Nothing Android-compiled or linked changed in a way they would see | Covered later: P3 at the `b1683bc248` integration proof, P5 at Task 9 |
-| The shell's demo mode switch (design B, "if cheap") | Not built; `IosDemoMode` is fixed to false | A toggle in the shell |
-| The SKIE flow exception path | Not probed | A probe that throws inside a collected flow |
+| Task 7 ran no P3 or P5; Task 6 ran no P2 or P3 | Nothing Android-compiled or linked changed in a way they would see | Covered later: P3 at the `b1683bc248` integration proof, P5 at Task 9 |
+| The test host's demo mode switch (design B, "if cheap") | Not built; demo mode was checked in Ugglan instead | A toggle in the test host |
+| The SKIE flow exception path | Not probed; SKIE was not chosen | A probe that throws inside a collected flow |
 | Desktop run of claim history | Optional in Task 5, skipped | `./gradlew :app-desktop:run` |
+| App-level size of Ugglan | Not measured (ruling): the umbrella row bounds the growth | Two Release device builds of Ugglan, one per umbrella mode |
+| The iOS 18.3 run of `isolated deinit` | Not requested once Ugglan used a teardown that does not rely on it | A device on the 18.3 runtime and a login, for the test host |
 
-### 3.6 Deviations from the design and plan
+## 10. Deviations from the design and plan
 
 | Deviation | Reason |
 |---|---|
 | The plan's own five, accepted before execution: `AuthTokenServiceImpl` stays in `commonMain`; the smoke test is split between `feature-claim-history` and `:umbrella` (design K said one module); the `android/` clone needs a new branch, not the integration branch; the Ugglan work needs a branch in `ugglan/` itself; Task 7 before Task 9 | The design text was unbuildable on those points (ledger, pre-flight scan) |
 | Task 3: `auth-core-public` keeps its DataStore dependencies in `commonMain` | `BankIdSandboxState` is a `commonMain` `@Inject` class that takes `DataStore<Preferences>` |
-| Task 9, option C: the Apollo client is provided per platform, and native reaches no token storage, `AuthRepository`, `AuthTokenService` or `MemberIdService`. Dropped from the plan: `IosTokenStore`, `NativeAuthTokenStorage`, `IosMetroProviders`, the `AuthMetroProviders` move. `logsOutOnUnauthenticated` and its three actuals deleted. `sessionChanged` takes a Boolean, not the tokens | Nothing in the claim history slice reads tokens; the shared provider reached auth only for the logout interceptor, which native does not install. One refresh path, owned by Swift; no second Keychain reader in Kotlin. The Boolean replaced the tokens after review found them printed to the iOS log (3.7). Cost: Kotlin cannot read tokens on iOS (3.8) |
-| The per-platform Apollo provider reverses part of the desktop work's arrangement, in which the client and its interceptor chain were built once in `network-clients` `commonMain` for every graph | Native must not install the logout interceptor; the shared parts stay in one internal builder, and `ApolloInterceptorsTest` still pins the Android and JVM chain from the provider's own list |
+| Task 9, option C: the Apollo client is provided per platform, and native reaches no token storage, `AuthRepository`, `AuthTokenService` or `MemberIdService`. Dropped: `IosTokenStore`, `NativeAuthTokenStorage`, `IosMetroProviders`, the `AuthMetroProviders` move. `logsOutOnUnauthenticated` and its three actuals deleted. `sessionChanged` takes a Boolean, not the tokens | Nothing in the slice reads tokens; the shared provider reached auth only for the logout interceptor, which native does not install. One refresh path, owned by Swift. The Boolean replaced the tokens after review found them printed to the iOS log (section 11). Cost: Kotlin cannot read tokens on iOS (section 12) |
+| The per-platform Apollo provider reverses part of the desktop work's arrangement, in which the client and its interceptor chain were built once in `network-clients` `commonMain` for every graph | Native must not install the logout interceptor; the shared parts stay in one internal builder, and `ApolloInterceptorsTest` still pins the Android and JVM chain |
 | Task 9b, a native `RumLogger`, not in the plan | Finding F1: without it any GraphQL error would crash the iOS app |
-| The shell is `micro-apps/umbrella-consumer` evolved in place, not a new `app/app-ios/`: name, location and bundle id kept; committed token and hardcoded `JAVA_HOME` removed; dd-sdk-ios replaced by `KMPNativeCoroutinesAsync` for login (1.0.5, exact 1.0.6 since Task 16b); iOS 17.0, Swift 6 | Owner answer 3 (keep it); evolving loses nothing and its synchronized source folder means new Swift files never touch the project file. `authlib` exports only KMP-NativeCoroutines forms, so login needs the package |
-| Xcode 27.2 instead of 26.4.1; simulator iPhone 18 Pro, iOS 27.2 | Xcode updated mid-session; iPhone 17 Pro exists only on the 26.5 runtime now |
-| Task 10 reduced; Task 12 content via a sample probe | 3.5 |
-| Task 16b, not in the plan: the facade's callback API (`observe`, `ClaimHistorySubscription`) replaced by the shared `ScreenModel` host and Swift `ScreenOwner`; the plan's Ugglan step used plain export until a decision | The owner's bridge decision (section 2) |
+| The test host is `micro-apps/umbrella-consumer` evolved in place, not a new `app/app-ios/`: name, location and bundle id kept; committed token and hardcoded `JAVA_HOME` removed; dd-sdk-ios replaced by `KMPNativeCoroutinesAsync` for login (1.0.5, exact 1.0.6 since Task 16b); iOS 17.0, Swift 6 | Owner answer 3 (keep it); its synchronized source folder means new Swift files never touch the project file. `authlib` exports only KMP-NativeCoroutines forms |
+| Xcode 27.2 instead of 26.4.1; simulator iPhone 18 Pro, iOS 27.2; Ugglan based on `origin/master` (`c6a43377f`) instead of `ff89c395e` with a local patch | Xcode updated mid-session; master needs 27.2; iPhone 17 Pro exists only on the 26.5 runtime now |
+| Task 10 reduced; content checked through a sample in the test host | Section 9 |
+| Task 16b, not in the plan: the facade's callback API replaced by the shared `ScreenModel` host and Swift `ScreenOwner` | The owner's bridge decision (section 2) |
+| Task 18 applied nothing | The owner's answers on logout and Datadog were already the merged behaviour |
+| Task 19: no token store input in Ugglan (the plan still named `IosTokenStore` over `KeychainHelper`) | Option C has no token store input |
+| Task 19: `ClaimStore.historyClaims` and `fetchHistoryClaims` kept, now unused | Removing them changes a persisted store for no gain on a local branch (ruling) |
+| Task 19: no `KMPNativeCoroutinesAsync` bump in Ugglan (Swift 1.0.5 against the Kotlin runtime 1.0.6) | Ugglan has shipped that pair for login since 2026-09-16, and the two tags have identical Swift sources (`task-19-proposal.md`, section 6) |
+| Task 19: no DEBUG sample-content path in Ugglan | Ruling; the sample was checked in the test host |
+| Task 19: the owner in Ugglan uses an ordinary `deinit` with a teardown helper, not the test host's `isolated deinit` | Ugglan's minimum is iOS 17.0 and `isolated deinit` was verified on 27.2 only |
+| Task 19: no fix round on the Ugglan branch after review | The branch is never merged; the review's findings are this experiment's output and are in sections 5 and 12 |
 
-### 3.7 Findings in existing code
+## 11. Findings in existing code
 
 **Pre-existing on Android or all platforms, not fixed here:**
 
@@ -459,6 +616,9 @@ reduced for other reasons:
   `MainScope` terminates the process.
 - A platform difference, not introduced here: a refresh that fails with an unknown error logs the member out on iOS
   and keeps the tokens on Android (`research-ugglan-auth-and-datadog.md`).
+- **In Ugglan's tooling, not fixed:** the mode switch scripts run `tuist generate`, which deletes untracked generated
+  leftovers in `ugglan/`; Ugglan's pre-commit hook expects a swift-format binary under `build/` and prints
+  "-i: command not found" when it is missing (`task-19-report.md`, findings 6 and 7).
 
 **Found and fixed in this work:**
 
@@ -473,85 +633,92 @@ reduced for other reasons:
 - **An expired impersonation JWT committed in `micro-apps/umbrella-consumer`** (`IosInterfaces.swift:23`) is removed from
   the tip. It stays in history (`5883e22c80`, `a36a96f4a8`); rewriting history is the owner's call.
 
-### 3.8 Shipping gaps
+## 12. What a real adoption needs that this experiment lacks
 
-What must be true before any of this ships to the real iOS app.
+Most blocking first. Three items are bugs on `develop` that affect Android today and now also matter for parity on
+iOS; they are labelled **fix on `develop`**.
 
-| Gap | What it would take |
-|---|---|
-| GraphQL errors on iOS reach only `NSLog`, not the iOS app's Datadog RUM | A Swift-supplied `RumLogger`, exported through the umbrella and installed before `createIosGraphHolder`, which already keeps an earlier install |
-| The iOS logger writes every priority to the system log; `LoggingInterceptor`'s ERROR line and its DEBUG `Response data` line include response data, and the Ktor logger prints bodies on non-production builds | Priority filtering in the iOS logger for release builds, or redaction of those lines in common code (which also changes Android's logs) |
-| `isolated deinit` in the shared Swift owner is unverified below iOS 18.4, where the compiler's back-deploy shim runs; the shell and Ugglan target iOS 17.0 | A lifetime run on an iOS 18.3 simulator device (the runtime is installed, no device exists, and it needs a login); if the shim misbehaves, teardown from the view's `onDisappear`, which would change the pattern |
-| A collection holding an unacknowledged item never ends (section 2, known limits) | Keep the rule that the Swift loop never exits early; the cancellation race in `deinit` is not exercised |
-| The KMP-NativeCoroutines Swift package and Kotlin library must be bumped together; Ugglan pins the Swift package at 1.0.5 | Move Ugglan's Swift package to 1.0.6 when it adopts the screen pattern |
-| No duration breakdown for Kotlin requests in the iOS app's Datadog, and no check that each Kotlin request appears once with a trace id | Register Ktor's session delegate class for the breakdown (needs the class visible to Swift, unverified), or accept the gap as `authlib` does today; one staging RUM check |
-| Apollo's `ClaimsHistoryQuery` family, Metro's `ClaimHistoryViewModelModule` and prefixed Apollo, Okio and datetime types are in the framework header (about 345 lines) | Internal Apollo codegen for the module, which touches Android-compiled code; the sources propose no fix for the Metro module |
-| About 172 KB of dead DataStore code linked because the graph implements every contributed provider interface | `NativeDataStoreMetroProviders` as a `@BindingContainer` object, or `DeviceIdFetcher` moved out of `core-datastore-public`; each with its own graph check |
-| Kotlin cannot read tokens on iOS; a later screen that injects `AuthTokenService` or `MemberIdService` fails to compile | A Swift token storage input and a native `AuthRepository` provider (the plan's option A, measured at about 50 KB) |
-| Reload never refetches (F5); the presenter keeps the old state during a reload | A network-first reload in the use case, which changes Android too |
-| No `hedvig-device-id` (F3), `Bearer null` (F2) | Fixes on `develop` |
-| Two GraphQL caches: a Swift mutation does not update Kotlin's cached data, and the reverse | Per feature: refetch policy or explicit invalidation; not addressed |
-| The shell's Release configuration requests x86_64 and fails in the Gradle phase | `ONLY_ACTIVE_ARCH = YES` for Release, or an x86_64 simulator target. The shell is a test host; Release with `ARCHS=arm64` built with 0 warnings |
-| Swift sees prefixed names (`Network_clientsAccessTokenFetcher`) | `typealias`es in the host; `@ObjCName` would be a Swift-facing annotation in shared code |
-| KMP-NativeCoroutines 1.0.6 targets Kotlin 2.4.20; the repo is on 2.4.21 and 1.0.7 is the matching release | Bump both sides together; it builds and works on 1.0.6 today |
+| # | Need | What it would take |
+|---|---|---|
+| 1 | A published umbrella with these types. The Ugglan branch builds only in local mode | Merge the integration work, publish an umbrella version, bump Ugglan's pin |
+| 2 | Body logging gated correctly on iOS. Kotlin's `isProduction` is `buildType == "release" && applicationId == "com.hedvig.app"`, and the Ktor client logs request and response bodies whenever it is false. On iOS that means body logging is **on** in Ugglan Debug, in Release builds of the staging app (the TestFlight build), and in Debug builds of the production app (production member data in the device log), and **off** only in Release of the production app. Separately, the iOS logger writes every priority to the system log, and `LoggingInterceptor`'s ERROR line and DEBUG `Response data` line carry response data | An iOS-correct gate for body logging, and priority filtering in the iOS logger or redaction of those lines in common code (which also changes Android's logs) |
+| 3 | **Fix on `develop`, F3:** the authenticated Kotlin client sends no `hedvig-device-id` (on Android since `b93c73e300`, January 2026). In Ugglan the Swift request has it and the Kotlin one does not | Install `DeviceIdInterceptor` on the client `provideHttpClient` builds |
+| 4 | **Fix on `develop`, F2:** the token fetcher is called twice per request, which sends `Authorization: Bearer null` when the second read is null. Ugglan's fetcher throws instead of returning nil, so it cannot send `Bearer null`, but the app's refresher runs twice per Kotlin request | One fetcher call per request in `addAuthPlugin` |
+| 5 | **Fix on `develop`, F5:** reload is answered from the cache and never refetches; with F4, history is cached for the process (section 5) | A decided cache policy for the use case (network-first on reload, refetch per visit, or an expiry), which changes Android too |
+| 6 | GraphQL errors on iOS reach only the system log, not the app's Datadog RUM | A Swift-supplied `RumLogger` backed by Datadog, installed before `createIosGraphHolder`, which already keeps an earlier install |
+| 7 | A way back to the Swift path without a release | A kill switch (feature flag) choosing the Swift or the Kotlin provider |
+| 8 | Tests for the new Swift code (none of Ugglan's 11 `ClaimsTests` exercise it) | Tests of the provider, the mapping and the teardown |
+| 9 | The detail screen decision: it now loads by id with a loading state (section 5) | Either carry enough in the shared item to open it pre-filled, or accept the change |
+| 10 | The app's own loading and error components | Use `ProcessingState` instead of the hand-built views; move `ClaimHistoryModelSwift` out of `DemoImplementation/`, since it is the general Swift implementation |
+| 11 | The cost of creating the Kotlin graph on the main thread at launch is unknown | A launch measurement with timestamps around the creation |
+| 12 | Datadog: "one RUM resource per Kotlin request" unchecked; no duration breakdown for Kotlin requests | A read-only RUM query of a staging session; register Ktor's session delegate class for the breakdown (needs the class visible to Swift, unverified), or accept the gap as `authlib` does |
+| 13 | Ugglan's custom environment (`Environment.custom`, launch argument only) sends Swift to its own router while Kotlin uses the dev router | An optional GraphQL URL on `AppBuildConfig` that the build constants prefer |
+| 14 | Kotlin learns the session only from login and logout calls | An `isLoggedIn` input at graph creation |
+| 15 | One teardown for both hosts: Ugglan's ordinary `deinit` with a helper; the test host's `isolated deinit` is unverified below iOS 18.4 | Adopt Ugglan's teardown in the test host (one file) |
+| 16 | The framework header carries Apollo's `ClaimsHistoryQuery` family, Metro's `ClaimHistoryViewModelModule` and prefixed Apollo, Okio and datetime types (about 345 lines) | Internal Apollo codegen for the module, which touches Android-compiled code; the sources propose no fix for the Metro module |
+| 17 | About 172 KB of dead DataStore code is linked | `NativeDataStoreMetroProviders` as a `@BindingContainer` object, or `DeviceIdFetcher` moved out of `core-datastore-public`; each with its own graph check |
+| 18 | Kotlin cannot read tokens on iOS; a later screen that injects `AuthTokenService` or `MemberIdService` fails to compile | A Swift token storage input and a native `AuthRepository` provider (the plan's option A, measured at about 50 KB) |
+| 19 | Two GraphQL caches: a Swift mutation does not update Kotlin's cached data, and the reverse | Per feature: refetch policy or explicit invalidation |
+| 20 | The screen pattern's known limits (section 2): nav-argument ViewModels unsupported, one ViewModel per model, two mappings per screen, the never-exit-early loop rule | Design input for the second feature |
+| 21 | The KMP-NativeCoroutines Swift package and Kotlin library move together; Ugglan pins the Swift package at 1.0.5; the Kotlin library is 1.0.6, and 1.0.7 is the Kotlin 2.4.21 release | Bump both sides together |
+| 22 | Minor: Kotlin's `setDemoMode(false)` lands 0.24 s after a logout and could overwrite a demo entry made in that window (practically unreachable); `setLanguageTag` is asynchronous; Swift sees prefixed names (`Network_clientsAccessTokenFetcher`) | Order the write before the logout returns; `typealias`es in the host |
 
-### 3.9 What was not verified
+## 13. What was not verified
 
-- Content rows from real data, the Partner label from real data, `Identifiable` diffing with real items.
-- A member switch (A then B never shows A's claims) on a device; only the cache clear is tested.
+- Content rows from real data, the partner label and route from real data, `Identifiable` diffing with real items,
+  detail navigation from a history row.
+- A member switch (A then B never shows A's claims) on a device; only the cache clear is tested and logged.
 - A server GraphQL error or `UNAUTHENTICATED` on a device.
 - Retry recovering inside one process; recovery was seen after a relaunch.
-- Datadog's header rewrite on Ktor-created requests, and Kotlin requests appearing once in Ugglan's RUM.
-- Any iOS version other than 27.2, and any device other than the simulator. In particular `isolated deinit` below
-  iOS 18.4, where it runs through the back-deploy shim, while the real iOS app's minimum is 17.0.
-- Login on the KMP-NativeCoroutines Swift package 1.0.6: the next login on the shell is its first run.
+- Datadog: one RUM resource per Kotlin request (not observable on the simulator; query not run). The trace headers
+  on the wire are verified.
+- The cost of creating the Kotlin graph on the main thread at launch.
+- Whether the backend returns claim type text already translated for the member's language; the row shows the
+  string as received.
+- The partner submission day west of UTC.
+- Any iOS version other than 27.2, any device other than the simulator. In particular the test host's `isolated
+  deinit` below iOS 18.4, and Ugglan's teardown on iOS 17 (correct by reading).
+- Login on the KMP-NativeCoroutines Swift package 1.0.6 in the test host (its next login is the first; the Swift
+  sources of 1.0.5 and 1.0.6 are identical).
 - Kotlin's main-thread delivery on a device: the Swift precondition could not observe it (section 2); it rests on
-  `ScreenModelTest`.
-- Any production configuration: the shell runs staging only.
+  `ScreenModelTest`. In Ugglan the deinit and clear lines ran on the process's main thread.
+- Any production configuration: every run used staging.
 - Android on a device after Task 3, any minified build on a device, a login and logout through the new storage.
 - Timeouts and language re-read parity.
-- The SKIE flow exception path; candidate 2's declared exception domain (only the Swift type was logged).
+- The SKIE flow exception path; candidate 2's declared exception domain.
 - R8's representative swaps in Tasks 3 and 9 as the cause of the mapping differences.
-- In the shell: a Keychain write failure, an exchange failure after a scan, the login polling pause off-foreground, two
-  overlapping requests that both complete after one refresh.
-- The background case beyond what happened: the response arrived during the background transition, before suspension;
-  a response arriving while suspended was not seen.
+- In the test host: a Keychain write failure, an exchange failure after a scan, the login polling pause
+  off-foreground, two overlapping requests that both complete after one refresh.
+- A response arriving while the app is suspended in the background.
+- App-level size of Ugglan.
 
-### 3.10 Later work, already decided
+## 14. Later work, already decided
 
 Navigation out of presenters, piloted on `feature-payments`; the 44 leak files in 24 modules beyond claim history;
 presenters holding `TextFieldState`, last (owner decision 4); policy effects out of `HedvigApp`; the other 25 features.
 
-### 3.11 Step 5: not started
+## 15. State left behind
 
-What the gate (plan Task 17) needs from the owner:
+- `feat/desktop-app-integration` at `acdedcaf45`, pushed, with every merged task of this work.
+- `docs/desktop-app-claude-md` holds this report, the design and the plan.
+- `ios/bridge-plain`, `ios/bridge-nativecoroutines`, `ios/bridge-skie`: pushed, unmerged, kept as the record of the
+  comparison.
+- `ugglan/` on the local branch `experiment/kmp-claim-history` (`275e8fdc7`, `74d00e71a` on `origin/master`
+  `c6a43377f`), never pushed, back in released umbrella mode; the owner's modified
+  `.claude/agents/accessibility-agent.md` untouched. Restore with `git -C ugglan switch fix/firebase-user-id-after-consent`.
+- `android/` on `experiment/ugglan-local-umbrella` at `acdedcaf45`, clean. Restore with
+  `git -C android switch develop` and delete the branch.
+- Simulator iPhone 18 Pro (iOS 27.2): the test host installed and logged in; Ugglan installed, logged out,
+  terminated.
+- 16 worktrees under `android/.claude/worktrees/` named `ios-*`, one per task branch of this work, plus
+  `desktop-integration` (the integration branch) and `docs-desktop-claude-md` (the docs branch).
+- The run directory `android/.superpowers/sdd/2026-11-14-ios-sharing/`. Its raw simulator logs (the `log-stream*.txt`
+  files under `task-11/` to `task-16b/` and `task-19/`) contain member data from staging responses and must not be shared;
+  the `*-excerpt.txt` and `*-summary.txt` files are safe to read.
 
-- **The `android/` clone.** It is on `develop` today. The Ugglan loop builds only from `android/`; the go-ahead is for
-  `git -C android switch -c experiment/ugglan-local-umbrella origin/feat/desktop-app-integration`.
-- **The `ugglan/` clone and base.** It is on `fix/firebase-user-id-after-consent` at `0431fb12d`. The go-ahead is for a
-  local branch `experiment/kmp-claim-history`, never pushed, and its base. Ugglan master needs Xcode 27.2, which is now
-  installed, so `origin/master` is the plan's option (not yet built here); the alternative is `ff89c395e` with the local
-  `ToolbarButtonView` patch. Xcode must be closed before `use-local-umbrella.sh` runs.
-- **The bridge for Ugglan.** Decided: the screen pattern on KMP-NativeCoroutines (section 2). Task 16b's proposal
-  suggests copying `ScreenOwner.swift` and `oneOf` into Ugglan's Kotlin-facing module as the reference implementation;
-  not yet decided.
-- **Already answered** (`owner-answers.md`): Kotlin logout on `UNAUTHENTICATED` stays off on iOS, as Ugglan never
-  reacts to it; no Kotlin-side Datadog on iOS, since dd-sdk-ios 3.17.0 tracks Ktor's requests automatically (a ruling
-  pending the owner's objection); `micro-apps/umbrella-consumer` is kept, and is now the shell.
+### Suggested next decisions
 
-Constraints recorded for step 5:
-
-- `sessionChanged` sits next to the login exchange in `AuthenticationClientAuthLib.exchange(code:)` and next to
-  `ApolloClient.deleteToken()` in `AppDelegate.logout()`, not next to `saveToken`, which also runs on every refresh.
-- The plan's Task 19 still names `IosTokenStore` over `KeychainHelper`; under option C there is no token store input.
-  `setDemoMode(false)` arrives on the main thread after a logout.
-- `isolated deinit` at Ugglan's 17.0 minimum needs the iOS 18.3 run first (3.8).
-- The Swift loop over a screen's states must never exit early (section 2, known limits).
-- The `AppBuildConfig` values Kotlin derives for Ugglan's production configuration (`isProduction`, the Octopus URL)
-  must be checked; nothing here ran production.
-- `apollographql-client-version` matches iOS only if Swift supplies the short version as `versionName` (Task 7 report).
-- Ugglan pairs the KMP-NativeCoroutines Swift package 1.0.5 with Kotlin 1.0.6; the shell is on 1.0.6 for both since
-  Task 16b, and the two must move together.
-- Never commit a project generation made in local mode, the local-umbrella marker or the `ToolbarButtonView` patch.
-- A staging RUM check that each Kotlin request appears once, with a trace id (owner answer 2).
-- Every simulator build that runs is signed, and `xcodebuild test` runs with `-parallel-testing-enabled NO`.
+- Whether to commit to the approach, with sections 5, 12 and 13 in view.
+- The three fixes on `develop` (F3, F2, F5), which are worth making whatever is decided, since they affect Android.
+- When to open PRs for the desktop and iOS work on the integration branch, and in what split.
+- If committing: which feature is second, with the screen pattern's known limits (section 2) as its design input.
