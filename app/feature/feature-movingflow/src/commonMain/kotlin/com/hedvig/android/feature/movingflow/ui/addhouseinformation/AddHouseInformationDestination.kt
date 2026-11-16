@@ -412,7 +412,8 @@ private fun ExtraBuildingsDialogContent(
               chosenBuilding = it
               onDismissRequest()
             },
-            dismissDialog = onDismissRequest)
+            dismissDialog = onDismissRequest,
+          )
         }
         HedvigTextField(
           text = size?.toString() ?: "",
@@ -496,8 +497,8 @@ private fun ExtraBuildingTypeDialogContent(
         },
         style = RadioGroupStyle.Labeled
           .VerticalWithDivider(
-          stringResource(Res.string.CHANGE_ADDRESS_EXTRA_BUILDING_CONTAINER_TITLE),
-        ),
+            stringResource(Res.string.CHANGE_ADDRESS_EXTRA_BUILDING_CONTAINER_TITLE),
+          ),
       )
     }
     Spacer(Modifier.height(16.dp))

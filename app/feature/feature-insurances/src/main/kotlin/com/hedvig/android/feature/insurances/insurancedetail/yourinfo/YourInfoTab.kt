@@ -809,7 +809,7 @@ internal fun ContractOwnerSection(
               HedvigText(
                 text = contractHolderSSN,
                 color = HedvigTheme.colorScheme.textSecondary,
-                style = HedvigTheme.typography.label
+                style = HedvigTheme.typography.label,
               )
             }
           }
@@ -837,7 +837,8 @@ internal fun ContractOwnerSection(
 internal fun CoInsuredSection(
   coInsuredList: List<CoInsured>,
   onMissingCoInsuredInfoClick: () -> Unit,
-  modifier: Modifier) {
+  modifier: Modifier,
+) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
   val birthDateTimeFormatter = rememberHedvigBirthDateDateTimeFormatter()
   Column(modifier = modifier) {
@@ -860,7 +861,7 @@ internal fun CoInsuredSection(
                 text = coInsured.getSsnOrBirthDate(birthDateTimeFormatter)
                   ?: stringResource(Res.string.CONTRACT_NO_INFORMATION),
                 color = HedvigTheme.colorScheme.textSecondary,
-                style = HedvigTheme.typography.label
+                style = HedvigTheme.typography.label,
               )
 
               if (coInsured.activatesOn != null) {

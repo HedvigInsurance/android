@@ -73,8 +73,8 @@ internal fun StillNeedHelpSection(
         textAlign = TextAlign.Center,
         color = HedvigTheme.colorScheme.textSecondary,
         style = LocalTextStyle.current.copy(
-        lineBreak = LineBreak.Heading,
-        )
+          lineBreak = LineBreak.Heading,
+        ),
       )
       Spacer(modifier = Modifier.height(40.dp))
       Row {
