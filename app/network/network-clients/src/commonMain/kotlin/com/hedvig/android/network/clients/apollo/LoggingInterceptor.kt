@@ -22,18 +22,13 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 
 /**
- * The app's Apollo interceptors, in this order: a member whose session the backend rejects is logged out first, where
- * [logsOutOnUnauthenticated] is set for the platform, then the request is logged.
+ * Adds [platformInterceptors] in order, then [LoggingInterceptor], so a request is logged after every other
+ * interceptor has seen its response.
  */
 internal fun ApolloClient.Builder.addHedvigInterceptors(
-  authTokenService: AuthTokenService,
-  demoManager: DemoManager,
+  platformInterceptors: List<ApolloInterceptor>,
 ): ApolloClient.Builder = this
-  .apply {
-    if (logsOutOnUnauthenticated) {
-      addInterceptor(LogoutOnUnauthenticatedInterceptor(authTokenService, demoManager))
-    }
-  }
+  .apply { platformInterceptors.forEach(::addInterceptor) }
   .addInterceptor(LoggingInterceptor())
 
 internal class LoggingInterceptor : ApolloInterceptor {
