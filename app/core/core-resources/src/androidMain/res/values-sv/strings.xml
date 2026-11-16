@@ -229,6 +229,10 @@
   <string name="CLAIMS_USE_TEXT_INSTEAD">Beskriv i text</string>
   <string name="CLAIMS_VOICE_RECORDING_SENDING">Skickar...</string>
   <string name="CLAIMS_YOUR_CLAIM">Din skadeanmälan</string>
+  <string name="CLAIM_CHAT_AGENT_NOTICE_APPLIANCE_AUTHORIZED_DIAGNOSIS">Reparera inte maskinen på egen hand ännu. Om reparation blir aktuell behöver vi ett utlåtande eller kostnadsförslag från en auktoriserad verkstad som vi godkänt i förväg.</string>
+  <string name="CLAIM_CHAT_AGENT_NOTICE_APPLIANCE_PHYSICAL_INSPECTION">Behåll maskinen och gör dig inte av med den, eftersom vi kan behöva hämta upp eller besiktiga den fysiskt för att bedöma skadan och godkänna ersättning.</string>
+  <string name="CLAIM_CHAT_AGENT_NOTICE_GLASS_AUTHORIZED_GLAZIER">Beställ inte byte eller reparation av glaset innan vi godkänt det. Arbetet behöver utföras av den auktoriserade glasmästare som vi anvisar.</string>
+  <string name="CLAIM_CHAT_AGENT_NOTICE_PROOF_OF_OWNERSHIP_AND_VALUE">Förbered eller bifoga kvitton, garantibevis eller bankutdrag för sakerna du söker ersättning för. Enligt villkoren behöver du kunna styrka att du äger föremålen, hur gamla de är och vad de kostade i inköp för att vi ska kunna beräkna rätt ersättning.</string>
   <string name="CLAIM_CHAT_AI_INFO">Vi använder AI som stöd när du anmäler din skada och när vi hanterar den. Vårt team granskar alltid ärendet innan vi fattar något beslut.</string>
   <string name="CLAIM_CHAT_AUDIO_RECORDING_LABEL">Röstinspelning</string>
   <string name="CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE">Annat föremål</string>
@@ -443,6 +447,7 @@
   <string name="GENERAL_RETRY">Försök igen</string>
   <string name="GENERAL_SAVE_CHANGES_BUTTON">Spara ändringar</string>
   <string name="GENERAL_SHOW">Visa</string>
+  <string name="GENERAL_YESTERDAY">Igår</string>
   <string name="HC_ALL_QUESTION_TITLE">Alla frågor</string>
   <string name="HC_ANSWER_TITLE">Svar</string>
   <string name="HC_CHAT_ANSWER">Vi är tillgängliga vardagar 08–22 och helger 10–22</string>
