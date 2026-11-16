@@ -2,6 +2,7 @@ import SwiftUI
 
 struct LoginView: View {
     @State private var model: LoginModel
+    @Environment(\.scenePhase) private var scenePhase
 
     init(app: AppModel) {
         _model = State(initialValue: LoginModel(app: app))
@@ -19,8 +20,19 @@ struct LoginView: View {
             .buttonStyle(.bordered)
         }
         .padding()
-        .onAppear { model.start() }
+        .onAppear {
+            if scenePhase == .active {
+                model.start()
+            }
+        }
         .onDisappear { model.cancel() }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active {
+                model.start()
+            } else {
+                model.cancel()
+            }
+        }
     }
 
     @ViewBuilder

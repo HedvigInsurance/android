@@ -10,7 +10,6 @@ final class AppModel {
 
     @ObservationIgnored let holder: IosGraphHolder
     @ObservationIgnored let authClient: AuthClient
-    @ObservationIgnored private let store: KeychainTokenStore
     @ObservationIgnored private let refresher: TokenRefresher
 
     init() {
@@ -18,7 +17,6 @@ final class AppModel {
         let authClient = AuthClient()
         let forcedLogout = ForcedLogoutRelay()
         let refresher = TokenRefresher(store: store, authClient: authClient) { forcedLogout.fire() }
-        self.store = store
         self.authClient = authClient
         self.refresher = refresher
         self.holder = ShellGraph.makeHolder(accessTokenFetcher: ShellAccessTokenFetcher(refresher: refresher))
@@ -28,27 +26,30 @@ final class AppModel {
         forcedLogout.handler = { [weak self] in self?.logOut() }
     }
 
-    func didLogIn(session: StoredSession) {
-        store.save(session)
-        let refresher = refresher
-        Task { await refresher.sessionStarted() }
+    /// Stores the session and enters the logged-in UI. Returns the Keychain status; on failure nothing else happens.
+    func didLogIn(session: StoredSession) async -> OSStatus {
+        let status = await refresher.startSession(session)
+        guard status == errSecSuccess else { return status }
         holder.sessionChanged(loggedIn: true)
         ShellLog.info("sessionChanged(loggedIn: true)")
         isLoggedIn = true
+        return status
     }
 
     /// Leaves the logged-in UI first, so screen models are closed, then forgets the session in the Keychain and in
-    /// Kotlin, then revokes the refresh token without waiting for the result.
+    /// Kotlin, then revokes the refresh token.
     func logOut() {
         guard isLoggedIn else { return }
-        let previous = (try? store.read()) ?? nil
         isLoggedIn = false
-        store.delete()
-        holder.sessionChanged(loggedIn: false)
-        ShellLog.info("sessionChanged(loggedIn: false)")
-        if let refreshToken = previous?.refreshToken {
-            let authClient = authClient
-            Task.detached { await authClient.revoke(refreshToken: refreshToken) }
+        let refresher = refresher
+        let authClient = authClient
+        Task {
+            let previous = await refresher.endSession()
+            holder.sessionChanged(loggedIn: false)
+            ShellLog.info("sessionChanged(loggedIn: false)")
+            if let refreshToken = previous?.refreshToken {
+                await authClient.revoke(refreshToken: refreshToken)
+            }
         }
     }
 }

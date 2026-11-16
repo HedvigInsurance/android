@@ -43,16 +43,23 @@ final class ShellAppBuildConfig: NSObject, Core_build_constantsAppBuildConfig, @
 
 /// A UUID kept in `UserDefaults` under the key the Hedvig iOS app uses. Kotlin calls it from request threads.
 final class ShellDeviceIdFetcher: NSObject, Core_datastore_publicDeviceIdFetcher, @unchecked Sendable {
-    private let key = "hedvig-device-identifier"
+    private static let key = "hedvig-device-identifier"
+    private static let lock = NSLock()
 
     func fetch() async throws -> String? {
-        let defaults = UserDefaults.standard
-        if let existing = defaults.string(forKey: key) {
-            return existing
+        ShellDeviceIdFetcher.readOrCreate()
+    }
+
+    private static func readOrCreate() -> String {
+        lock.withLock {
+            let defaults = UserDefaults.standard
+            if let existing = defaults.string(forKey: key) {
+                return existing
+            }
+            let created = UUID().uuidString
+            defaults.set(created, forKey: key)
+            return created
         }
-        let created = UUID().uuidString
-        defaults.set(created, forKey: key)
-        return created
     }
 }
 

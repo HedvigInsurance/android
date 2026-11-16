@@ -1,4 +1,5 @@
 import Foundation
+import Security
 
 enum TokenRefreshError: Error, Sendable {
     case notLoggedIn
@@ -8,15 +9,19 @@ enum TokenRefreshError: Error, Sendable {
     case other(String)
 }
 
-/// Hands out an access token that is valid for at least another 60 seconds, refreshing it through `authlib` first
-/// when needed. Concurrent callers share one in-flight attempt and its result, failures included. Logs out when there
-/// is no session, when the refresh token has expired, or when the auth service rejects the refresh; a network
-/// failure or a Kotlin exception only fails the current request.
+/// Owns the session in the Keychain and hands out an access token that is valid for at least another 60 seconds,
+/// refreshing it through `authlib` first when needed. Concurrent callers share one in-flight attempt and its result,
+/// failures included. Logs out when there is no session, when the refresh token has expired, or when the auth
+/// service rejects the refresh; a network failure or a Kotlin exception only fails the current request.
+///
+/// Every login and logout starts a new generation, so a refresh that finishes after the session it started from has
+/// ended never writes its tokens back.
 actor TokenRefresher {
     private let store: KeychainTokenStore
     private let authClient: AuthClient
     private let onForcedLogout: @MainActor @Sendable () -> Void
     private var inFlight: Task<String, Error>?
+    private var generation = 0
     private var hasForcedLogout = false
 
     init(
@@ -29,8 +34,21 @@ actor TokenRefresher {
         self.onForcedLogout = onForcedLogout
     }
 
-    func sessionStarted() {
+    /// Stores a new session and returns the Keychain status of the write.
+    func startSession(_ session: StoredSession) -> OSStatus {
+        generation += 1
         hasForcedLogout = false
+        return store.save(session)
+    }
+
+    /// Forgets the session and returns the one that was stored, if any. Requests after this fail without logging out
+    /// again.
+    func endSession() -> StoredSession? {
+        generation += 1
+        hasForcedLogout = true
+        let previous = (try? store.read()) ?? nil
+        store.delete()
+        return previous
     }
 
     func validAccessToken() async throws -> String {
@@ -48,6 +66,7 @@ actor TokenRefresher {
     }
 
     private func resolve() async throws -> String {
+        let startGeneration = generation
         let session: StoredSession?
         do {
             session = try store.read()
@@ -66,7 +85,16 @@ actor TokenRefresher {
             throw TokenRefreshError.refreshTokenExpired
         }
         ShellLog.info("Refreshing the access token")
-        switch await authClient.refresh(refreshToken: session.refreshToken) {
+        let outcome = await authClient.refresh(refreshToken: session.refreshToken)
+        if generation != startGeneration {
+            ShellLog.info("Session ended during the refresh, discarding its result")
+            if case let .success(refreshed) = outcome {
+                let authClient = authClient
+                Task.detached { await authClient.revoke(refreshToken: refreshed.refreshToken) }
+            }
+            throw TokenRefreshError.notLoggedIn
+        }
+        switch outcome {
         case let .success(refreshed):
             store.save(refreshed)
             ShellLog.info("Access token refreshed")
