@@ -59,4 +59,15 @@ class IosGraphHolder internal constructor(
       graph.authEventStorage.loggedOut()
     }
   }
+
+  /** Throws [IllegalStateException] without declaring it, so Swift sees a plain non-throwing call. */
+  fun throwForBridgeCheck() {
+    throw IllegalStateException("throwForBridgeCheck")
+  }
+
+  /** Throws [IllegalStateException], declared with [Throws], so Swift sees a throwing call. */
+  @Throws(IllegalStateException::class)
+  fun throwDeclaredForBridgeCheck() {
+    throw IllegalStateException("throwDeclaredForBridgeCheck")
+  }
 }

@@ -55,6 +55,9 @@ final class ClaimHistoryScreenOwner {
         state = ClaimHistoryViewState(model.currentState)
         ShellLog.info("ClaimHistoryScreenOwner seeded: \(state.logDescription)")
         subscription = model.observe { [weak self] kotlinState in
+            #if DEBUG
+            dispatchPrecondition(condition: .onQueue(.main))
+            #endif
             MainActor.assumeIsolated {
                 self?.receive(kotlinState)
             }
