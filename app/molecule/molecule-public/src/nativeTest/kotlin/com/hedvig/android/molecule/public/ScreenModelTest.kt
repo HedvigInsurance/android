@@ -195,6 +195,52 @@ class ScreenModelTest {
   }
 
   @Test
+  fun `a throwing mapping is logged once and ends the collection with an error`() {
+    val model = FakeScreenModel(toState = { throw IllegalStateException("mapping failed") })
+
+    val collection = Collection(model)
+    pumpMainLoopUntil { collection.completions == 1 }
+    pumpMainLoop(1.seconds)
+
+    assertThat(collection.items).isEmpty()
+    assertThat(collection.completionErrors).isEqualTo(1)
+    assertThat(collection.cancellations).isEqualTo(0)
+    val errors = logs.entries().filter { (priority, message) ->
+      priority == LogPriority.ERROR && message == "FakeScreenModel state collection failed"
+    }
+    assertThat(errors.size).isEqualTo(1)
+    model.close()
+  }
+
+  @Test
+  fun `close while an item waits to be acknowledged clears the ViewModel but never ends that collection`() {
+    val model = FakeScreenModel()
+    val collection = Collection(model, acknowledgeItems = false)
+    pumpMainLoopUntil { collection.items.isNotEmpty() }
+
+    model.close()
+    pumpMainLoop(1.seconds)
+
+    // The native flow waits for the acknowledgement without listening for cancellation.
+    assertThat(collection.items).containsExactly("screen:initial")
+    assertThat(collection.cancellations).isEqualTo(0)
+    assertThat(collection.completions).isEqualTo(0)
+    assertThat(logs.messages().count { it == "FakeViewModel cleared" }).isEqualTo(1)
+  }
+
+  @Test
+  fun `a ViewModel cannot be created after close`() {
+    val model = FakeScreenModel()
+    model.close()
+
+    val result = runCatching { model.secondViewModel() }
+
+    assertThat(
+      result.exceptionOrNull()?.message,
+    ).isEqualTo("FakeScreenModel is closed, so it cannot create a ViewModel")
+  }
+
+  @Test
   fun `a screen model holds one ViewModel`() {
     val model = FakeScreenModel()
 
@@ -207,18 +253,22 @@ class ScreenModelTest {
 }
 
 /** One collection of [ScreenModel.states], recording what reaches each callback. */
-private class Collection(model: ScreenModel<String>) {
+private class Collection(model: ScreenModel<String>, acknowledgeItems: Boolean = true) {
   val items = mutableListOf<String>()
   val onMainThread = mutableListOf<Boolean>()
   var completions = 0
+  var completionErrors = 0
   var cancellations = 0
   private val cancel = model.states(
     { item, next, _ ->
       items += item
       onMainThread += NSThread.isMainThread
-      next()
+      if (acknowledgeItems) next()
     },
-    { _, _ -> completions++ },
+    { error, _ ->
+      completions++
+      if (error != null) completionErrors++
+    },
     { _, _ -> cancellations++ },
   )
 
@@ -227,14 +277,17 @@ private class Collection(model: ScreenModel<String>) {
   }
 }
 
-private class FakeScreenModel(starts: AtomicInt = AtomicInt(0)) : ScreenModel<String>() {
+private class FakeScreenModel(
+  starts: AtomicInt = AtomicInt(0),
+  toState: (String) -> String = { "screen:$it" },
+) : ScreenModel<String>() {
   private val factory = object : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T {
       @Suppress("UNCHECKED_CAST")
       return FakeViewModel(starts) as T
     }
   }
-  private val viewModel = viewModel(factory, FakeViewModel::class) { "screen:$it" }
+  private val viewModel = viewModel(factory, FakeViewModel::class, toState)
 
   fun ping() {
     viewModel.send(Unit)

@@ -19,6 +19,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 
 /**
@@ -33,6 +34,8 @@ import kotlinx.coroutines.flow.map
  *   of the main queue, never during the call that starts the collection, and it usually repeats [currentState].
  * - Hold the collection's task, and capture the owner weakly inside it, so the collection does not keep the owner
  *   alive.
+ * - Keep consuming items until the collection ends. A collection holding an item it has not asked past is ended by
+ *   neither its cancellation nor [close], and stays suspended for the life of the process.
  * - When the screen goes away, cancel the collection, then call [close] on the main thread, from the owner's
  *   main-actor `deinit`. A model that is never closed keeps its ViewModel. Its presenter runs while any collection
  *   is active, and stops 5 seconds after the last one is cancelled.
@@ -42,6 +45,12 @@ import kotlinx.coroutines.flow.map
  *
  * After [close], a new collection of [states] ends at once without an item, events are dropped, [close] does nothing,
  * and [currentState] keeps returning the last state.
+ *
+ * An exception while producing a state, such as a throwing mapping, is logged as an error and ends that collection
+ * with an error; the screen keeps showing its last state.
+ *
+ * Swift must neither create nor subclass this class. Such an instance holds no ViewModel, so reading [currentState]
+ * or [states] throws, and a Kotlin exception that reaches Swift terminates the app.
  */
 @ObjCName(name = "HedvigSharedScreenModel", swiftName = "ScreenModel", exact = true)
 abstract class ScreenModel<State : Any> protected constructor() {
@@ -52,19 +61,24 @@ abstract class ScreenModel<State : Any> protected constructor() {
 
   /** Readable from any thread. Reading it does not start the presenter. */
   val currentState: State
-    get() = checkNotNull(source).current()
+    get() = requireSource().current()
 
   /**
    * The current state and every later one, delivered on the main thread. Each collection is independent, ends when it
    * is cancelled or when [close] is called, and keeps the presenter running while it lasts.
    */
   val states: NativeFlow<State>
-    get() = stateUpdates.asNativeFlow(scope)
+    get() = stateUpdates
+      .catch { throwable ->
+        logcat(LogPriority.ERROR, throwable) { "${this@ScreenModel::class.simpleName} state collection failed" }
+        throw throwable
+      }
+      .asNativeFlow(scope)
 
   /** The Kotlin side of [states], for tests. It is not ended by [close]. */
   @HiddenFromObjC
   val stateUpdates: Flow<State>
-    get() = checkNotNull(source).flow()
+    get() = requireSource().flow()
 
   /** Ends every collection of [states] and clears the ViewModel, which stops the presenter at once. Main thread only. */
   fun close() {
@@ -81,6 +95,7 @@ abstract class ScreenModel<State : Any> protected constructor() {
     viewModelClass: KClass<VM>,
     toState: (UiState) -> State,
   ): VM {
+    check(!closed) { "${this::class.simpleName} is closed, so it cannot create a ViewModel" }
     check(source == null) { "${this::class.simpleName} already holds a ViewModel" }
     val viewModel = ViewModelProvider.create(viewModelStore, viewModelFactory)[viewModelClass]
     viewModel.addCloseable(AutoCloseable { logcat { "${viewModelClass.simpleName} cleared" } })
@@ -101,6 +116,10 @@ abstract class ScreenModel<State : Any> protected constructor() {
     } catch (e: IllegalStateException) {
       logcat(LogPriority.WARN, e) { "${this::class.simpleName} dropped an event" }
     }
+  }
+
+  private fun requireSource(): Source<*, State> = checkNotNull(source) {
+    "${this::class.simpleName} has no ViewModel: call viewModel() while the subclass is constructed"
   }
 
   private class Source<UiState, State>(

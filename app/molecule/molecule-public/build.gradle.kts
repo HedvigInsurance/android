@@ -18,7 +18,7 @@ kotlin {
       implementation(libs.coroutines.core)
     }
     nativeMain.dependencies {
-      implementation("com.rickclephas.kmp:kmp-nativecoroutines-core:${libs.versions.kmpNativeCoroutines.get()}")
+      implementation(libs.kmpNativeCoroutines.core)
     }
     nativeTest.dependencies {
       implementation(libs.assertK)
