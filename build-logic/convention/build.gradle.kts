@@ -46,6 +46,7 @@ dependencies {
   implementation(libs.datadog.gradlePlugin)
   implementation(libs.googleServices.gradlePlugin)
   implementation(libs.license.gradlePlugin)
+  implementation(libs.skie.gradlePlugin)
   implementation(libs.appIconBannerGenerator.gradlePlugin)
   implementation(libs.squareSortDependencies.gradlePlugin)
 

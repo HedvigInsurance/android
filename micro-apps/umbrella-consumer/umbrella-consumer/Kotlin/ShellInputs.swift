@@ -46,7 +46,8 @@ final class ShellDeviceIdFetcher: NSObject, Core_datastore_publicDeviceIdFetcher
     private static let key = "hedvig-device-identifier"
     private static let lock = NSLock()
 
-    func fetch() async throws -> String? {
+    // SKIE exposes the Kotlin requirement as `__fetch` and adds `fetch()` for callers.
+    func __fetch() async throws -> String? {
         ShellDeviceIdFetcher.readOrCreate()
     }
 

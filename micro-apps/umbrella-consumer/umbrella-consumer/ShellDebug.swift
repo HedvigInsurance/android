@@ -21,6 +21,13 @@ enum ShellDebug {
             + "refresh token length \(session.refreshToken.count), expires \(session.refreshTokenExpiresAt)"
     }
 
+    /// The Swift error type, its `NSError` domain and code, and the Kotlin exception it carries, if any.
+    static func describe(_ error: any Error) -> String {
+        let nsError = error as NSError
+        let kotlinException = nsError.userInfo["KotlinException"].map { String(describing: type(of: $0)) } ?? "none"
+        return "\(type(of: error)), domain \(nsError.domain), code \(nsError.code), KotlinException \(kotlinException)"
+    }
+
     /// Adds `HeaderLoggingProtocol` to every configuration made from `URLSessionConfiguration.default`. Call once,
     /// before any session exists.
     static func installHeaderLoggingIfRequested() {
@@ -38,6 +45,15 @@ enum ShellDebug {
         }
         method_exchangeImplementations(original, replacement)
         ShellLog.info("Header logging installed")
+    }
+}
+
+/// Holds a reference without keeping its object alive.
+final class WeakReference<Object: AnyObject> {
+    weak var value: Object?
+
+    init(_ value: Object?) {
+        self.value = value
     }
 }
 

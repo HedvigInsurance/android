@@ -39,23 +39,28 @@ struct ClaimHistoryRow: Identifiable, Equatable {
     let isPartnerClaim: Bool
 }
 
-/// Owns one Kotlin `ClaimHistoryScreenModel` for as long as the screen exists, following the model's rules: seed from
-/// `currentState`, observe with a weak capture, and cancel and close on the main actor in `deinit`.
+/// Owns one Kotlin `ClaimHistoryScreenModel` for as long as the screen exists: seeds from the `states` flow's value,
+/// iterates the flow in a main-actor `Task` that captures the owner weakly, and cancels the task and closes the model
+/// on the main actor in `deinit`.
 @MainActor
 @Observable
 final class ClaimHistoryScreenOwner {
     private(set) var state: ClaimHistoryViewState
 
     @ObservationIgnored private let model: ClaimHistoryScreenModel
-    @ObservationIgnored private var subscription: ClaimHistorySubscription?
+    @ObservationIgnored private var collection: Task<Void, Never>?
 
     init(holder: IosGraphHolder) {
         let model = holder.claimHistoryScreenModel()
         self.model = model
-        state = ClaimHistoryViewState(model.currentState)
+        let states = model.states
+        state = ClaimHistoryViewState(states.value)
         ShellLog.info("ClaimHistoryScreenOwner seeded: \(state.logDescription)")
-        subscription = model.observe { [weak self] kotlinState in
-            MainActor.assumeIsolated {
+        collection = Task { [weak self] in
+            for await kotlinState in states {
+                #if DEBUG
+                dispatchPrecondition(condition: .onQueue(.main))
+                #endif
                 self?.receive(kotlinState)
             }
         }
@@ -74,25 +79,22 @@ final class ClaimHistoryScreenOwner {
     // Runs on the main actor; verified on iOS 27.2 only, while the deployment target is 17.0.
     isolated deinit {
         ShellLog.info("ClaimHistoryScreenOwner deinit")
-        subscription?.cancel()
+        collection?.cancel()
         model.close()
     }
 }
 
 private extension ClaimHistoryViewState {
     init(_ kotlinState: ClaimHistoryScreenState) {
-        switch kotlinState {
-        case let content as ClaimHistoryScreenState.Content:
+        switch onEnum(of: kotlinState) {
+        case let .content(content):
             self = .content(content.items.map(ClaimHistoryRow.init))
-        case is ClaimHistoryScreenState.Empty:
+        case .empty:
             self = .empty
-        case is ClaimHistoryScreenState.Failed:
+        case .failed:
             self = .failed
-        case is ClaimHistoryScreenState.Loading:
+        case .loading:
             self = .loading
-        default:
-            ShellLog.error("Unknown ClaimHistoryScreenState \(type(of: kotlinState)), showing failed")
-            self = .failed
         }
     }
 }
@@ -109,7 +111,7 @@ private extension ClaimHistoryRow {
         case .notCompensated: .notCompensated
         case .notCovered: .notCovered
         case .unresponsive: .unresponsive
-        default: .unknown
+        case .unknown: .unknown
         }
     }
 }

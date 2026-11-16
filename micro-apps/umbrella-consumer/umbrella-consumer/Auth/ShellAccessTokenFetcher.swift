@@ -10,7 +10,8 @@ final class ShellAccessTokenFetcher: NSObject, Network_clientsAccessTokenFetcher
         super.init()
     }
 
-    func fetch() async throws -> String? {
+    // SKIE exposes the Kotlin requirement as `__fetch` and adds `fetch()` for callers.
+    func __fetch() async throws -> String? {
         #if DEBUG
         if ShellDebug.failTokenFetch {
             ShellLog.info("Access token fetch throwing (-shellFailTokenFetch)")

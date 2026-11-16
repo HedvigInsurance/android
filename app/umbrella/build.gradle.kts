@@ -6,6 +6,14 @@ plugins {
   id("hedvig.multiplatform.library.android")
   id("hedvig.gradle.plugin")
   id("com.rickclephas.kmp.nativecoroutines")
+  id("co.touchlab.skie")
+}
+
+skie {
+  // SKIE collects build analytics and uploads them to Touchlab by default.
+  analytics {
+    enabled.set(false)
+  }
 }
 
 kotlin {

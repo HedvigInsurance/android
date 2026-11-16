@@ -34,6 +34,7 @@ ktor = "3.6.1"
 license = "0.9.91"
 molecule = "2.2.0"
 okhttpBom = "5.5.1"
+skie = "0.10.16"
 squareSortDependencies = "0.21.0"
 
 # Other versions sorted alphabetically
@@ -289,6 +290,7 @@ ksp-gradlePlugin = { module = "com.google.devtools.ksp:com.google.devtools.ksp.g
 license-gradlePlugin = { module = "com.jaredsburrows.license:com.jaredsburrows.license.gradle.plugin", version.ref = "license" }
 metro-gradlePlugin = { module = "dev.zacsweers.metro:dev.zacsweers.metro.gradle.plugin", version.ref = "metro" }
 room-gradlePlugin = { module = "androidx.room:room-gradle-plugin", version.ref = "room" }
+skie-gradlePlugin = { module = "co.touchlab.skie:co.touchlab.skie.gradle.plugin", version.ref = "skie" }
 squareSortDependencies-gradlePlugin = { module = "com.squareup.sort-dependencies:com.squareup.sort-dependencies.gradle.plugin", version.ref = "squareSortDependencies" }
 
 [bundles]
@@ -321,4 +323,5 @@ lintGradlePlugin = { id = "com.android.lint", version.ref = "lintGradlePlugin" }
 metro = { id = "dev.zacsweers.metro", version.ref = "metro" }
 room = { id = "androidx.room", version.ref = "room" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+skie = { id = "co.touchlab.skie", version.ref = "skie" }
 squareSortDependencies = { id = "com.squareup.sort-dependencies", version.ref = "squareSortDependencies" }

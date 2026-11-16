@@ -1,3 +1,6 @@
+#if DEBUG
+@preconcurrency import HedvigShared
+#endif
 import SwiftUI
 
 struct RootView: View {
@@ -10,6 +13,24 @@ struct RootView: View {
                     NavigationLink("Claim history") {
                         claimHistoryDestination()
                     }
+                    #if DEBUG
+                    Section("Bridge checks") {
+                        Button("Throw undeclared") {
+                            ShellLog.info("Bridge check: calling throwForBridgeCheck")
+                            app.holder.throwForBridgeCheck()
+                            ShellLog.info("Bridge check: throwForBridgeCheck returned")
+                        }
+                        Button("Throw declared") {
+                            ShellLog.info("Bridge check: calling throwDeclaredForBridgeCheck")
+                            do {
+                                try app.holder.throwDeclaredForBridgeCheck()
+                                ShellLog.info("Bridge check: throwDeclaredForBridgeCheck returned")
+                            } catch {
+                                ShellLog.info("Bridge check: throwDeclaredForBridgeCheck threw \(ShellDebug.describe(error))")
+                            }
+                        }
+                    }
+                    #endif
                     Section {
                         Button("Log out", role: .destructive) {
                             app.logOut()

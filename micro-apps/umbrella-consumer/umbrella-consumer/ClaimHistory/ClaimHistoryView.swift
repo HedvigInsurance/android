@@ -27,6 +27,15 @@ struct ClaimHistoryView: View {
                 owner = ClaimHistoryScreenOwner(holder: holder)
             }
         }
+        #if DEBUG
+        .onDisappear {
+            let reference = WeakReference(owner)
+            Task {
+                try? await Task.sleep(for: .seconds(1))
+                ShellLog.info("ClaimHistoryScreenOwner released: \(reference.value == nil)")
+            }
+        }
+        #endif
     }
 }
 
