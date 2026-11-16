@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 
 /**
@@ -29,6 +30,6 @@ internal class NativeDemoManager(
 
   override suspend fun setDemoMode(demoMode: Boolean) {
     withContext(Dispatchers.Main) { iosDemoMode.setDemoMode(demoMode) }
-    writes.value++
+    writes.update { it + 1 }
   }
 }

@@ -10,7 +10,9 @@ import com.hedvig.android.network.clients.AccessTokenFetcher
 import dev.zacsweers.metro.createGraphFactory
 
 /**
- * Builds the shared Kotlin graph and starts its initializables. Call it once per process, on the main thread.
+ * Builds the shared Kotlin graph and starts its initializables. Call it once per process. It reads [appBuildConfig] and
+ * calls [LanguageStorage.getCurrentLanguageTag] on the calling thread, and makes no request. A Kotlin exception thrown
+ * while building the graph is fatal once it reaches Swift.
  *
  * [accessTokenFetcher] is called before every request; when it throws, the request fails without being sent.
  */
@@ -39,19 +41,15 @@ class IosGraphHolder internal constructor(
   fun claimHistoryScreenModel(): ClaimHistoryScreenModel = createClaimHistoryScreenModel(graph.metroViewModelFactory)
 
   /**
-   * Tells Kotlin a session started ([tokens] non-null) or ended (null), so it clears what it cached for the previous
-   * member. Callable from any thread; the clearing finishes asynchronously. It never stores [tokens].
+   * Tells Kotlin a session started ([loggedIn] true) or ended (false), so it clears what it cached for the previous
+   * member. Callable from any thread; the clearing finishes asynchronously. No token passes through this call.
    */
-  fun sessionChanged(tokens: SessionTokens?) {
-    if (tokens == null) {
-      graph.authEventStorage.loggedOut()
+  fun sessionChanged(loggedIn: Boolean) {
+    if (loggedIn) {
+      // The native auth event listeners do not read the tokens, which the event type requires.
+      graph.authEventStorage.loggedIn(accessToken = "", refreshToken = "")
     } else {
-      graph.authEventStorage.loggedIn(tokens.accessToken, tokens.refreshToken)
+      graph.authEventStorage.loggedOut()
     }
   }
 }
-
-class SessionTokens(
-  val accessToken: String,
-  val refreshToken: String,
-)
