@@ -23,6 +23,7 @@ import com.hedvig.android.core.tracking.ActionType
 import com.hedvig.android.core.tracking.ErrorSource
 import com.hedvig.android.core.tracking.RumLogger
 import com.hedvig.android.logger.TestLogcatLoggingRule
+import com.hedvig.android.network.clients.di.apolloPlatformInterceptors
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
@@ -30,8 +31,8 @@ import org.junit.Rule
 import org.junit.Test
 
 /**
- * Runs queued GraphQL responses through an [ApolloClient] carrying [addHedvigInterceptors], the chain the provided
- * Apollo client is built with.
+ * Runs queued GraphQL responses through an [ApolloClient] carrying [addHedvigInterceptors] with
+ * [apolloPlatformInterceptors], the chain the provided Android and JVM Apollo client is built with.
  */
 @OptIn(ApolloExperimental::class)
 internal class ApolloInterceptorsTest {
@@ -89,7 +90,7 @@ internal class ApolloInterceptorsTest {
   private fun apolloClient(isDemoMode: Boolean): ApolloClient {
     return ApolloClient.Builder()
       .networkTransport(QueueTestNetworkTransport())
-      .addHedvigInterceptors(authTokenService = authTokenService, demoManager = FakeDemoManager(isDemoMode))
+      .addHedvigInterceptors(apolloPlatformInterceptors(authTokenService, FakeDemoManager(isDemoMode)))
       .build()
   }
 
