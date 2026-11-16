@@ -19,6 +19,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.toNSDate
 import platform.Foundation.NSDate
@@ -63,6 +67,15 @@ class ClaimHistoryScreenModel internal constructor(viewModelFactory: ViewModelPr
   /** Readable from any thread. Reading it does not start the presenter. */
   val currentState: ClaimHistoryScreenState
     get() = viewModel.uiState.value.toScreenState()
+
+  /**
+   * The current state and every later one. Collecting it runs the presenter like an [observe] subscription does, and
+   * ending the collection releases it. Collections end when they are cancelled; after [close] the flow keeps its last
+   * state and never emits again.
+   */
+  val states: StateFlow<ClaimHistoryScreenState> = viewModel.uiState
+    .map { it.toScreenState() }
+    .stateIn(scope, SharingStarted.WhileSubscribed(), currentState)
 
   /**
    * Calls [onState] on the main thread with the current state and every later one. Each call adds an independent

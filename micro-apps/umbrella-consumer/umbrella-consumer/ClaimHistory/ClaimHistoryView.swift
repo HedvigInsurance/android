@@ -5,7 +5,7 @@ import SwiftUI
 /// when SwiftUI builds the view value, and lives as long as the screen's state.
 struct ClaimHistoryView: View {
     let holder: IosGraphHolder
-    @State private var owner: ClaimHistoryScreenOwner?
+    @State private var owner: ClaimHistoryScreenOwnerFlows?
 
     var body: some View {
         Group {
@@ -24,14 +24,14 @@ struct ClaimHistoryView: View {
         }
         .onAppear {
             if owner == nil {
-                owner = ClaimHistoryScreenOwner(holder: holder)
+                owner = ClaimHistoryScreenOwnerFlows(holder: holder)
             }
         }
     }
 }
 
 private struct ClaimHistoryContent: View {
-    let owner: ClaimHistoryScreenOwner
+    let owner: ClaimHistoryScreenOwnerFlows
 
     var body: some View {
         switch owner.state {

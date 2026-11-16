@@ -79,7 +79,7 @@ final class ClaimHistoryScreenOwner {
     }
 }
 
-private extension ClaimHistoryViewState {
+extension ClaimHistoryViewState {
     init(_ kotlinState: ClaimHistoryScreenState) {
         switch kotlinState {
         case let content as ClaimHistoryScreenState.Content:
