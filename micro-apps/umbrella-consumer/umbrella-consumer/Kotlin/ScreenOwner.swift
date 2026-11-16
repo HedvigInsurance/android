@@ -1,6 +1,8 @@
+import Foundation
 @preconcurrency import HedvigShared
-@preconcurrency import KMPNativeCoroutinesAsync
+import KMPNativeCoroutinesAsync
 import Observation
+import os
 
 /// What a screen shows, built from the Kotlin state its screen model publishes.
 protocol ScreenViewState: Equatable {
@@ -10,8 +12,13 @@ protocol ScreenViewState: Equatable {
     var logDescription: String { get }
 }
 
+private let screenLog = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ScreenOwner", category: "screen")
+
 /// Owns one Kotlin screen model for as long as the screen exists, following `ScreenModel`'s rules: seeds `state` from
 /// the model's current state, follows every later one on the main actor, and cancels and closes when released.
+///
+/// The collection loop must run until the stream ends and never `break` or `return` early. An item the loop has not
+/// asked past keeps the Kotlin collection suspended, and neither cancelling the task nor `close()` ends it.
 @MainActor
 @Observable
 final class ScreenOwner<Model, ViewState: ScreenViewState> where Model: ScreenModel<ViewState.KotlinState> {
@@ -23,7 +30,7 @@ final class ScreenOwner<Model, ViewState: ScreenViewState> where Model: ScreenMo
     init(_ model: Model) {
         self.model = model
         state = ViewState(model.currentState)
-        ShellLog.info("\(Model.self) owner seeded: \(state.logDescription)")
+        screenLog.debug("\(Model.self, privacy: .public) owner seeded: \(self.state.logDescription, privacy: .public)")
         let states = model.states
         collection = Task { [weak self] in
             do {
@@ -32,26 +39,28 @@ final class ScreenOwner<Model, ViewState: ScreenViewState> where Model: ScreenMo
                 }
             } catch is CancellationError {
             } catch {
-                ShellLog.error("\(Model.self) state collection failed: \(type(of: error))")
+                let nsError = error as NSError
+                let kotlinException = nsError.userInfo["KotlinException"].map { "\(type(of: $0))" } ?? "none"
+                screenLog.error(
+                    "\(Model.self, privacy: .public) state collection failed: domain \(nsError.domain, privacy: .public), Kotlin exception \(kotlinException, privacy: .public)"
+                )
             }
         }
     }
 
     private func receive(_ kotlinState: ViewState.KotlinState) {
-        #if DEBUG
-        dispatchPrecondition(condition: .onQueue(.main))
-        #endif
         let next = ViewState(kotlinState)
         guard next != state else {
-            ShellLog.info("\(Model.self) owner state unchanged: \(next.logDescription)")
+            screenLog.debug("\(Model.self, privacy: .public) owner state unchanged: \(next.logDescription, privacy: .public)")
             return
         }
         state = next
-        ShellLog.info("\(Model.self) owner state: \(state.logDescription)")
+        screenLog.debug("\(Model.self, privacy: .public) owner state: \(next.logDescription, privacy: .public)")
     }
 
+    // Runs on the main actor; verified on iOS 27.2 only, while the deployment target is 17.0.
     isolated deinit {
-        ShellLog.info("\(Model.self) owner deinit")
+        screenLog.debug("\(Model.self, privacy: .public) owner deinit")
         collection?.cancel()
         model.close()
     }
