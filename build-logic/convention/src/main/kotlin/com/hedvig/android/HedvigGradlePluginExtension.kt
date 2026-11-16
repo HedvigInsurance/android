@@ -118,7 +118,7 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
   /**
    * Marks this module's `commonMain` as shared with iOS: it registers the module's `checkCommonMainImports`, which
    * forbids Compose UI, the design system and compose resources in `commonMain` (see [registerSharedCommonMainGuard]),
-   * and makes [viewModels] put `metro-viewmodel-compose` in `jvmAndAndroidMain`.
+   * and makes [viewModels] put `metrox-viewmodel-compose` in `jvmAndAndroidMain`.
    */
   fun sharedWithIos() {
     if (viewModelsConfigured) {

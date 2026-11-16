@@ -30,6 +30,7 @@ val forbiddenSharedCommonMainNames: List<String> = listOf(
   "androidx.compose.foundation",
   "androidx.compose.material",
   "androidx.compose.material3",
+  "androidx.compose.animation",
   "com.hedvig.android.design.system",
   "hedvig.resources",
   "org.jetbrains.compose.resources",
@@ -54,6 +55,12 @@ private val forbiddenSharedGroups = setOf(
   "org.jetbrains.compose.material",
   "org.jetbrains.compose.material3",
   "org.jetbrains.compose.components",
+  "org.jetbrains.compose.animation",
+  "androidx.compose.ui",
+  "androidx.compose.foundation",
+  "androidx.compose.material",
+  "androidx.compose.material3",
+  "androidx.compose.animation",
   "io.coil-kt",
   "io.coil-kt.coil3",
 )
@@ -61,6 +68,8 @@ private val forbiddenSharedGroups = setOf(
 private val forbiddenSharedModules = setOf(
   "androidx.paging:paging-compose",
   "org.jetbrains.androidx.navigation3:navigation3-ui",
+  "org.jetbrains.androidx.navigationevent:navigationevent-compose",
+  "dev.zacsweers.metro:metrox-viewmodel-compose",
 )
 
 /**
@@ -78,7 +87,8 @@ fun isForbiddenSharedCommonMainDependency(dependency: String, projectDirectory: 
   return dependency.substringBefore(":") in forbiddenSharedGroups
 }
 
-private val sharedCommonMainDependencyConfigurations = listOf("commonMainImplementation", "commonMainApi")
+private val sharedCommonMainDependencyConfigurations =
+  listOf("commonMainImplementation", "commonMainApi", "commonMainCompileOnly")
 
 /**
  * Registers this module's `checkCommonMainImports`, which fails on Compose UI imports in `src/commonMain` and on UI
@@ -124,7 +134,7 @@ abstract class CheckSharedCommonMainTask : DefaultTask() {
   @get:PathSensitive(PathSensitivity.RELATIVE)
   abstract val sources: ConfigurableFileCollection
 
-  /** Project paths and `group:name` coordinates declared in `commonMainImplementation` and `commonMainApi`. */
+  /** Project paths and `group:name` coordinates declared for `commonMain`. */
   @get:Input
   abstract val declaredDependencies: ListProperty<String>
 
