@@ -73,6 +73,7 @@ class ClaimHistoryScreenModel internal constructor(viewModelFactory: ViewModelPr
    * ending the collection releases it. Collections end when they are cancelled; after [close] the flow keeps its last
    * state and never emits again.
    */
+  @HiddenFromObjC
   val states: StateFlow<ClaimHistoryScreenState> = viewModel.uiState
     .map { it.toScreenState() }
     .stateIn(scope, SharingStarted.WhileSubscribed(), currentState)
