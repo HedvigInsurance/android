@@ -1,52 +1,52 @@
 # Sharing presenters and data with iOS: experiment report, step 4 edition
 
-Date: 2026-11-16. State of `feat/desktop-app-integration` at `f446fbfaac` and of the three bridge branches
-`ios/bridge-plain` (`0e30384173`), `ios/bridge-nativecoroutines` (`a48caaae8d`) and `ios/bridge-skie` (`eb11dbef4c`).
-The design is `docs/superpowers/specs/2026-11-13-ios-sharing-design.md`, the plan
-`docs/superpowers/plans/2026-11-14-ios-sharing.md`. Every number below comes from the run directory
-`.superpowers/sdd/2026-11-14-ios-sharing/` of the `android/` clone; the file is named next to it. "Ledger" means
-`ledger.md` there.
+Date: 2026-11-16. State of `feat/desktop-app-integration` at `acdedcaf45` and of the three bridge branches
+`ios/bridge-plain` (`0e30384173`), `ios/bridge-nativecoroutines` (`a48caaae8d`) and `ios/bridge-skie` (`eb11dbef4c`),
+which stay pushed and unmerged as the record of the comparison. The design is
+`docs/superpowers/specs/2026-11-13-ios-sharing-design.md`, the plan `docs/superpowers/plans/2026-11-14-ios-sharing.md`.
+Every number below comes from the run directory `.superpowers/sdd/2026-11-14-ios-sharing/` of the `android/` clone;
+the file is named next to it. "Ledger" means `ledger.md` there.
 
 ## 1. Summary
 
 **Built.** The claim history screen's ViewModel, presenter, use case and GraphQL client run in Kotlin on iOS and feed
 a SwiftUI screen in the iOS test host, `micro-apps/umbrella-consumer` (the shell). A native Metro graph in `:umbrella`
-takes five Swift inputs; Swift keeps the tokens in the Keychain and owns their refresh. Twelve task branches are merged
-into the integration branch; the three bridge candidates are pushed and not merged.
+takes five Swift inputs; Swift keeps the tokens in the Keychain and owns their refresh. Thirteen task branches are
+merged into the integration branch.
+
+**Bridge, decided by the owner.** KMP-NativeCoroutines, behind one generic Kotlin host and one generic Swift owner, with
+`handle` functions that make Swift fail to compile when Kotlin adds a case. SKIE gave the best Swift code but was
+rejected because it gates Kotlin upgrades.
 
 **Proven** on the iOS 27.2 simulator against staging: BankID login; Loading, Empty, Failed with Retry; leaving the
-screen clears the ViewModel and no request follows; main-thread delivery; one shared token refresh; headers match the
-iOS app's except `hedvig-device-id`. 30 iOS simulator tests pass. On Android the ViewModel, deep link and key sets and
-the APK class set are unchanged, 1199 tests pass, and the compiled graph has two deliberate differences. No Compose UI
-symbol is in the framework.
+screen clears the ViewModel and no request follows; one shared token refresh; headers match the iOS app's except
+`hedvig-device-id`. 43 iOS simulator tests pass. On Android the ViewModel, deep link and key sets and the APK class
+set are unchanged, 1199 tests pass, and the compiled graph has two deliberate differences.
 
-**Size.** 3.59 MB to 7.95 MB shipped, almost all in the step that first linked the data layer.
+**Size.** 3.59 MB to 7.96 MB shipped, almost all in the step that first linked the data layer.
 
-**Not proven.** Content rows from real data (the only BankID identity has no claims; Kotlin-built sample items were
-rendered instead), a member switch, a server error on a device, Android on a device after Task 3, older iOS versions,
-production configuration.
+**Not proven.** Content rows from real data (the only BankID identity has no claims), a member switch, a server error
+on a device, Android on a device after Task 3, iOS below 18.4, production configuration.
 
-**Found.** Three existing bugs on all platforms, not fixed: no `hedvig-device-id` header (on Android since January
-2026), `Authorization: Bearer null`, and a reload that never refetches. Fixed on the way: an iOS crash on any GraphQL
-error, and tokens in the iOS system log.
-
-**Bridge.** The three candidates behave alike at runtime; only SKIE makes Swift switches exhaustive. Recommended:
-plain export for step 5, then SKIE or Kotlin's Swift export chosen before a second screen.
+**Found.** Three existing bugs on all platforms, not fixed: no `hedvig-device-id` header, `Authorization: Bearer
+null`, and a reload that never refetches. Fixed on the way: an iOS crash on any GraphQL error, and tokens in the iOS
+system log.
 
 **Step 5, the real iOS app, is not started.** It waits on the owner's gate (section 3.11).
 
-## 2. Bridge recommendation
+## 2. Bridge decision
 
 ### Measured comparison
 
 From `bridge-comparison.md`, "Measured comparison" (device run of 2026-11-16, iPhone 18 Pro simulator, iOS 27.2, one
-logged-in member with an empty history; evidence in `task-13/`, `task-14/`, `task-15/`).
+logged-in member with an empty history; evidence in `task-13/`, `task-14/`, `task-15/`). This is the record of what
+was measured; the screen pattern built after the decision is described further down.
 
 | Criterion | 1: plain Objective-C export | 2: KMP-NativeCoroutines | 3: SKIE 0.10.16 |
 |---|---|---|---|
 | Sealed state and outcome enum in Swift | 4 casts, 2 `default` branches the compiler requires; a missing case compiles silently | same as 1: delivery changes, the element type does not | `onEnum(of:)` and real Swift enums; no `default`; a missing case is a compile error |
 | Lifetime (owner deinit, ViewModel cleared, owner released about 1 s later, no request after) | holds, 3 of 3 cycles | holds, 3 of 3 | holds, 3 of 3 |
-| Main thread precondition | no trap, 6 deliveries (callback plus `MainActor.assumeIsolated`) | no trap, 6 (async sequence on the main actor) | no trap, 6 (`for await` on the main actor) |
+| Swift main-thread precondition (see the correction below) | no trap, 6 deliveries | no trap, 6 | no trap, 6 |
 | Kotlin exception, declared with `@Throws` | caught as `NSError`, domain `KotlinException` | caught as `NSError` (domain not logged) | caught, same as 1 |
 | Kotlin exception, undeclared | process ends, SIGABRT via `Kotlin_ObjCExport_trapOnUndeclaredException` | same | same; and per the candidate's report, an exception inside a SKIE-collected flow ends in `fatalError` (not probed) |
 | Swift token fetch failure | Failed with Retry, no crash | same | same, through SKIE's renamed `__fetch` |
@@ -61,74 +61,209 @@ logged-in member with an empty history; evidence in `task-13/`, `task-14/`, `tas
 The timings are noise: the first run of each candidate included task graph calculation, another app used about two
 cores throughout, and the spread inside a candidate is larger than between candidates (`task-13-15-device-report.md`).
 
-### Recommendation
+**Correction to the main-thread row.** The Swift `dispatchPrecondition` sat in a function isolated to the main actor,
+so Swift had already put it on the main thread whatever thread Kotlin called from. It never tested Kotlin's delivery
+thread: the device runs show Swift's isolation and nothing more. Kotlin's main-thread delivery is pinned by the host's
+native test (`ScreenModelTest`, "states delivers the mapped state on the main thread and starts the presenter"). The
+precondition was deleted in Task 16b (ledger, "Corrected claim"; `task-16b-report.md`, fix round 1, M1).
 
-To the owner, not a decision: **use plain Objective-C export for step 5 and for as long as one screen is shared, and
-choose between SKIE and Kotlin's Swift export before a second feature is converted.** KMP-NativeCoroutines stays where
-it is, for login, and is not adopted for screens.
+### What was weighed
 
-What decides it:
+- **The candidates differ on one criterion.** Lifetime, the exception behaviour, the token failure path and build time
+  came out the same. Only SKIE gives compiler-enforced exhaustiveness: under the other two a new Kotlin state falls
+  into a `default` and shows Failed with an error log, and a new outcome silently shows "Unknown".
+- **SKIE's Swift code is the best of the three.** No casts, no `default`, no annotations in shared code, and the
+  outcome mirror becomes deletable.
+- **SKIE's costs.** Every Kotlin upgrade waits for a SKIE release that lists it (an unsupported Kotlin version is an
+  error at install time, `task-15-availability.md`). It changes the exported API of every exported module:
+  Swift-implemented suspend requirements are renamed (`fetch` became `__fetch` in two shell inputs), Kotlin enums cross
+  through `_ObjectiveCBridgeable`, an underscored Swift protocol, and an exception inside a collected flow ends in
+  `fatalError` per the candidate's report. It adds about 400 KB and a generated surface larger than the rest of the
+  header. It sends build analytics to its vendor by default: the first link on `ios/bridge-skie` ran the upload before
+  the opt-out was added, with a payload, as collected locally, of a hashed project id, git contributor, commit, branch
+  and tag counts, the Mac model and memory, Kotlin, Gradle, JVM and macOS versions and the compiler configuration, and
+  no project name (ledger, "DISCLOSURE"). Every build since reports the upload task SKIPPED.
+- **KMP-NativeCoroutines as measured** changed delivery and not the element type: the casts and both `default`
+  branches stayed, `close()` stayed manual, and its gains were a typed value and no `assumeIsolated`.
+- **Kotlin's own Swift export** is Alpha since Kotlin 2.4.0: suspend as `async`, `Flow` as an `AsyncSequence`, sealed
+  hierarchies as Swift enums; no generics, final classes only, it replaces `embedAndSignAppleFrameworkForXcode`, and
+  coexistence with the Objective-C export that login uses is undocumented (`task-15-availability.md`). The thing to
+  watch.
 
-1. **The candidates differ on one criterion only.** Lifetime, main-thread delivery, exception behaviour, the token
-   failure path and build time came out the same for all three. The one real difference is exhaustiveness, and only
-   SKIE fixes it. So the choice is SKIE or not, and KMP-NativeCoroutines buys little: its element type is still the
-   Objective-C class, it keeps the casts and both `default` branches, `close()` is still manual, and its only gains are
-   a typed value and no `assumeIsolated`, for 4 more Swift lines (`bridge-comparison.md`, candidate 2).
-2. **SKIE's costs are paid from the first day and are hard to back out of later; plain export's cost grows with each
-   screen but stays cheap to change while there is one.** With SKIE every Kotlin upgrade waits for a SKIE release that
-   lists it (an unsupported Kotlin version is an error at install time; 0.10.16 is the first with 2.4.21,
-   `task-15-availability.md`), on top of Metro, which already has to move with Kotlin. It changes the exported API of
-   every exported module: Swift-implemented suspend requirements are renamed (`fetch` became `__fetch` in two shell
-   inputs), Kotlin enums cross through `_ObjectiveCBridgeable`, an underscored Swift protocol, and an exception thrown
-   inside a collected flow ends in `fatalError` per the candidate's report. It sends build analytics to its vendor by
-   default: in this experiment the first link on `ios/bridge-skie` ran the upload before the opt-out was added; the
-   payload as collected locally was a hashed project id, git contributor, commit, branch and tag counts, the Mac model
-   and memory, Kotlin, Gradle, JVM and macOS versions and the compiler configuration, with no project name (ledger,
-   "DISCLOSURE"). Every build since reports the upload task SKIPPED. Swift code written against `onEnum(of:)` and
-   SKIE's enums is tied to it. Moving one screen from plain export to SKIE later rewrites the owner class and the state mapper,
-   about 55 Swift lines on this screen, and lets the facade drop about 14 net Kotlin lines.
-3. **The thing worth waiting for is Kotlin's own Swift export.** It is Alpha since Kotlin 2.4.0 and exports suspend
-   functions as `async`, `Flow` as an `AsyncSequence` and sealed hierarchies as Swift enums for an exhaustive `switch`,
-   which is SKIE's main benefit without a third party. It does not support generics, supports only final classes
-   inheriting from `Any`, replaces `embedAndSignAppleFrameworkForXcode`, and does not document coexisting with the
-   Objective-C export that login uses today (`task-15-availability.md`). Not usable now; it could be within the time it
-   takes to share a second feature.
+Before the decision, this report recommended plain export for step 5 and a choice between SKIE and Swift export before
+a second feature was converted.
 
-The case against this recommendation, stated as strongly as the evidence allows. The owner's rule is that iOS must
-never be second class. Under plain export a new Kotlin state or outcome is a silent fallback in Ugglan: the state
-becomes Failed with an error log, a new outcome shows "Unknown", and nothing fails to compile. Across 26 features that
-is a recurring class of bug that Android, with `when` over a sealed type, never has. SKIE removes it today with no
-annotations in shared code, which fits the rule against Swift-only annotations in common presenters, and 400 KB is
-about 5% of the framework, where size is monitored and not a limit. If the owner reads "never second class" as
-requiring compile-time exhaustiveness on iOS from the first shipped screen, SKIE is the right choice now, with the
-analytics opt-out in the first configuration and a test of the flow exception path.
+### The decision
 
-**Cost per screen under the recommendation**, from this screen: a `nativeMain` facade of 141 lines (92 non-blank) and a
-public state file of 29, one export line, and on the Swift side about 112 lines of owner, mappers and mirror types next
-to the view, with one cast per state, two forced `default` branches and four manual lifetime pieces (owner created on
-appear, weak capture, `assumeIsolated`, cancel and `close()` in `deinit`). The design's estimate of about 30 lines of
-mapping per screen (design E) was low: the facade also carries the subscription, the lifetime rules and the date
-conversion.
+The owner decided on 2026-11-16 (ledger, "BRIDGE DECISION"), in this order.
 
-**What would change the call:**
+**SKIE has the best Swift code, and it is rejected because it gates Kotlin upgrades.** The evidence is this repo's own
+history and the last two Kotlin releases:
 
-- The owner deciding that compile-time exhaustiveness is part of iOS parity: SKIE now.
-- Swift export reaching a stable or Beta level with documented coexistence with Objective-C export: Swift export, and
-  no SKIE.
-- A second screen whose state has more cases, nested sealed types or events as sealed types: the casts and `default`
-  branches grow per case, which strengthens SKIE.
-- Public state types in `commonMain` reading well under one bridge (design E): under SKIE the Kotlin sealed state could
-  be consumed directly, which might remove the per-screen facade mapping and change the per-screen cost more than
-  anything measured here. Not tried; the mirror types were kept under every candidate on purpose.
-- A SKIE release lagging a Kotlin upgrade the repo needs: against SKIE.
+- This repo used SKIE from July to November 2025 (`728453015a`, "Add skie to authlib", 6 July 2025; `47f46e3fec`,
+  "Revert to skie that works for Kotlin 2.1.21", the next day) and removed it in `a530bbe9e8` ("Temporarily remove
+  SKIE", 5 November 2025), whose message says it was removed to use Kotlin 2.2.21, which supports Xcode 26, while
+  "Skie is locked into using Kotlin 2.2.10". KMP-NativeCoroutines replaced it the next day (`3a019074d4`).
+- Kotlin 2.4.20 was released on 7 September 2026 and merged to `develop` on 17 September (`2e17ee9b5d`); SKIE
+  supported it on 25 September (0.10.15). Kotlin 2.4.21 was released on 8 October and merged to `develop` on
+  14 October (`477a1491bf`); SKIE supported it on 10 November (0.10.16; its Maven metadata says 29 October). Release
+  and SKIE dates are from the GitHub release pages as recorded in the ledger; merge dates are from `git log` on
+  `develop`. With SKIE in the build those upgrades would have waited 8 days and 27 days (15 by the Maven date).
+- The exit cost grows with every shared screen whose Swift is written against SKIE's shapes (`onEnum(of:)`, its Swift
+  enums, the renamed suspend requirements).
 
-**What this comparison cannot say.** One screen, one sealed state with four cases and one five-case enum, no events as
-types. Timings within noise. Real-data content and the member switch were not verifiable on any candidate; the content
-mapping was checked with five Kotlin items built in Swift (5 of 5 rows on all three). Main-thread delivery for
-KMP-NativeCoroutines and SKIE rests on the Swift `Task` inheriting the main actor, which held here. To choose with
-confidence: the same comparison on a second screen with events and a larger state; SKIE's release lag over its last
-few Kotlin versions against the repo's upgrade cadence (not measured); a probe of SKIE's flow exception path; and the
-Swift export status at the next Kotlin release.
+**The bridge is KMP-NativeCoroutines, "made to feel as native as possible".** The orchestrator's ruling on its shape:
+the bridge is a detail of one shared Kotlin host and one shared Swift owner, so no screen depends on it and an exit
+touches no screen file. Built as Task 16b and merged at `acdedcaf45`, it replaces the facade as the screen pattern.
+
+### The screen pattern as built (Task 16b)
+
+**One Kotlin host.** `ScreenModel<State : Any>`, an abstract class in
+`app/molecule/molecule-public/src/nativeMain/kotlin/com/hedvig/android/molecule/public/ScreenModel.kt`, exported to
+Swift as `ScreenModel` through `@ObjCName(name = "HedvigSharedScreenModel", swiftName = "ScreenModel", exact = true)`.
+It owns the ViewModel store and a `SupervisorJob() + Dispatchers.Main` scope, exposes `currentState`, `states` and
+`close()`, and gives subclasses a hidden `viewModel(factory, class, toState)` and `send(event)`. State reaches Swift
+through one call, the library's runtime function `asNativeFlow(scope)` from `kmp-nativecoroutines-core`, an
+`implementation` dependency of `molecule-public`'s `nativeMain` only. No compiler plugin and no annotation is in the
+screens' path and feature modules cannot see the bridge, so screens do not depend on it and it is not in the Kotlin
+upgrade path for screens (login keeps its own use of the plugin in `authlib`). The element type survives the
+Objective-C generic: the header declares `HedvigSharedScreenModel<State>` and
+`HedvigSharedClaimHistoryScreenModel : HedvigSharedScreenModel<HedvigSharedClaimHistoryScreenState *>`
+(`task-16b-report.md`).
+
+**One Swift owner.** `Kotlin/ScreenOwner.swift` in the shell: a `@MainActor @Observable` generic
+`ScreenOwner<Model, ViewState>` that seeds from `currentState`, collects `states` with `for try await` in a task that
+captures it weakly, keeps a mapped `Equatable` Swift view state and skips equal states, and in `isolated deinit`
+cancels the task and calls `close()`. The same file holds `oneOf`, which turns a `handle` call into a value.
+
+**Exhaustiveness without a library.** Every Swift-facing sealed state and enum gets a Kotlin `handle` function with
+one closure per case, written with an exhaustive `when`. A new case fails Kotlin first (`'when' expression must be
+exhaustive`) and then every Swift call site (`missing argument for parameter 'onArchived' in call`); both errors came
+from a probe that added a fifth state and a sixth outcome (`task-16b-proposal.md`, D). A value-returning generic `fold`
+is erased to `id` by the Objective-C export and is not usable.
+
+**Per screen, Kotlin** (`ClaimHistoryScreenModel.kt`; the mapping functions below it are unchanged):
+
+```kotlin
+@HiddenFromObjC
+fun createClaimHistoryScreenModel(viewModelFactory: ViewModelProvider.Factory): ClaimHistoryScreenModel =
+  ClaimHistoryScreenModel(viewModelFactory)
+
+/** The claim history screen. The Swift owner's rules are on [ScreenModel]. */
+class ClaimHistoryScreenModel internal constructor(viewModelFactory: ViewModelProvider.Factory) :
+  ScreenModel<ClaimHistoryScreenState>() {
+    private val viewModel = viewModel(viewModelFactory, ClaimHistoryViewModel::class) { it.toScreenState() }
+
+    /** Loads the history again. Safe to call from any thread. */
+    fun reload() {
+      viewModel.send(ClaimHistoryEvent.Reload)
+    }
+  }
+```
+
+and on the state (`ClaimHistoryScreenState.kt`; the outcome enum has the same shape with five closures):
+
+```kotlin
+  fun handle(onLoading: () -> Unit, onEmpty: () -> Unit, onFailed: () -> Unit, onContent: (Content) -> Unit) {
+    when (this) {
+      Loading -> onLoading()
+      Empty -> onEmpty()
+      Failed -> onFailed()
+      is Content -> onContent(this)
+    }
+  }
+```
+
+**Per screen, Swift** (`ClaimHistory/ClaimHistoryScreenOwner.swift`, without the `logDescription` property and the
+`ClaimHistoryRow` mirror and its initializer, which maps the outcome the same way):
+
+```swift
+typealias ClaimHistoryScreenOwner = ScreenOwner<ClaimHistoryScreenModel, ClaimHistoryViewState>
+
+extension ClaimHistoryScreenOwner {
+    func reload() {
+        ShellLog.info("ClaimHistoryScreenOwner reload")
+        model.reload()
+    }
+}
+
+enum ClaimHistoryViewState: ScreenViewState {
+    case loading
+    case empty
+    case failed
+    case content([ClaimHistoryRow])
+
+    init(_ kotlinState: ClaimHistoryScreenState) {
+        self = oneOf { pick in
+            kotlinState.handle(
+                onLoading: { pick(.loading) },
+                onEmpty: { pick(.empty) },
+                onFailed: { pick(.failed) },
+                onContent: { pick(.content($0.items.map(ClaimHistoryRow.init))) }
+            )
+        }
+    }
+}
+```
+
+No lifetime code is left per screen: the owner class, weak capture, task, cancel, `close()`, `assumeIsolated`, casts
+and `default` branches are in the shared owner or gone.
+
+Line counts, total / real (no blanks, no comments), from `task-16b-report.md` and the files at `acdedcaf45`:
+
+| Code | Facade (before) | Screen pattern (after) |
+|---|---|---|
+| Kotlin `ClaimHistoryScreenModel.kt` | 141 / 92 | 60 / 50 |
+| Kotlin `ClaimHistoryScreenState.kt` | 29 / 22 | 57 / 46 (two `handle` functions) |
+| Kotlin per screen, real lines | 114 | 96 |
+| Swift `ClaimHistoryScreenOwner.swift` | 115 / 97 | 78 / 67 |
+| Shared once: Kotlin `ScreenModel.kt` | | 133 / 78 |
+| Shared once: Swift `Kotlin/ScreenOwner.swift` | | 76 / 58 |
+
+The ledger's 68 and 54 real lines for the shared files predate the review round. `ClaimHistoryView.swift` grew from 99
+to 143 lines, for four `#Preview`s, the DEBUG sample view and a content view that takes the state instead of the owner.
+
+**Exit cost.** Leaving KMP-NativeCoroutines for screens touches the `states` property and its imports in
+`ScreenModel.kt`, one dependency line in `molecule-public`'s build file, the host's bridge tests, and the collection
+loop of `ScreenOwner.swift` (about 10 lines). No per-screen Kotlin class, Swift-facing state, Swift view state,
+typealias or view changes (`task-16b-proposal.md`, F).
+
+**Proofs.** Android and desktop: `javap` of both release graph classes identical (0 lines), 87 / 21 / 111, the
+release runtime classpath byte-identical, 1199 tests. Native tests 43 of 43 (`ScreenModelTest` 14,
+`ClaimHistoryScreenModelTest` 18, `GetClaimsHistoryUseCaseTest` 2, `IosGraphTest` 9). Size 7,956,904 bytes, +3,400.
+Header 6,020 lines, one coroutines protocol, as before. On the simulator: Loading then Empty, three open and back
+cycles with deinit and `ClaimHistoryViewModel cleared` in the same millisecond and no request after, Failed with Retry
+on a token failure, and the five-item sample rendered 5 of 5 rows. The shell's Swift package `KMPNativeCoroutinesAsync`
+is now exact 1.0.6, matching the Kotlin library. Adding the host's `close()` renamed Okio's `close()` to `close_()` in
+Swift (order-dependent name disambiguation); nothing in the shell or Ugglan calls it.
+
+### Known limits of the screen pattern
+
+From the ledger, "KNOWN LIMITS", and `task-16b-report.md`:
+
+- **Two mappings per screen**: the Kotlin UI state to the Swift-facing state, then that to the Swift view state. Every
+  nested sealed type or enum Swift maps needs its own hand-written `handle` and a Swift mirror.
+- **ViewModels with navigation arguments** (assisted injection) are not supported by the host's `viewModel()` yet.
+- **One ViewModel per model.** A second `viewModel()` call fails.
+- **Only sealed classes are proven** through the Objective-C generic; sealed interfaces are untested.
+- **A collection holding an item Swift never acknowledges stays suspended for the life of the process**, even after
+  `close()`: the library waits for the next request without listening for cancellation. Pinned by a host test ("close
+  while an item waits to be acknowledged clears the ViewModel but never ends that collection"); the ViewModel is still
+  cleared once. Rule, written on both classes: the Swift loop must never `break` or `return` early. The same could
+  happen if the owner's task were cancelled between the library buffering an item and the loop taking it; that path
+  is not exercised.
+- **`isolated deinit` is unverified below iOS 18.4**, while the real iOS app's minimum is 17.0. The compiler
+  back-deploys it through a shim, present in the binary; the iOS 18.3 simulator runtime, which takes the shim, is
+  installed but has no device, and a run needs a login there.
+- **The next login on the test host is the first run of the login code on Swift package 1.0.6.** It compiles
+  unchanged; a login needs a logout first.
+
+### Open points of the comparison
+
+Not measured and not needed for the decision: SKIE's release lag over more than two Kotlin versions, a second screen
+with events or a larger state, and SKIE's flow exception path. Real-data content and the member switch remain
+unverifiable for every variant (section 3.9). If Kotlin's Swift export reaches a stable level with documented
+coexistence with the Objective-C export, the exit cost above is the Swift-side cost of moving to it.
 
 ## 3. Step 4 report
 
@@ -149,6 +284,7 @@ Swift export status at the next Kotlin release.
 | 3 | 11 (`3afe3fbfdd`) | The shell: BankID QR login through `authlib`, Keychain session, token refresh | Login, relaunch keeps the session, logout deletes the Keychain item and clears the Kotlin cache |
 | 3 | 12 (`f446fbfaac`) | Claim history in the shell | Loading, Empty, Failed with Retry; leaving clears the ViewModel; header parity; shared refresh; logout during refresh |
 | 4 | 13, 14, 15 (pushed, not merged) | Three bridge candidates and device measurements | Section 2 |
+| 4 | 16b (`acdedcaf45`, not in the plan) | The screen pattern after the owner's bridge decision: shared Kotlin `ScreenModel` host, shared Swift `ScreenOwner`, `handle` functions; replaces the facade | Android graph and runtime classpath identical; 43 native tests; lifetime, Failed and sample content on the simulator (section 2) |
 
 Goals 1 to 7 of the design, as of step 4:
 
@@ -156,7 +292,7 @@ Goals 1 to 7 of the design, as of step 4:
 |---|---|---|
 | 1. Shell shows loading, error with retry, empty, content | Loading, Empty and Failed shown. Retry re-runs the request (it failed again under the forced token failure); recovery was observed only after a relaunch. Content from real data not shown; Kotlin-built items rendered through each bridge | Simulator log and screenshots, `task-12-report.md` a and e; sample probe in `bridge-comparison.md` |
 | 2. Same in Ugglan | Step 5 not started | |
-| 3. Leaving stops the work | Holds: `ClaimHistoryScreenOwner deinit` and `ClaimHistoryViewModel cleared` in the same millisecond, no ClaimsHistory request in the next 10 to 11 s, 3 cycles per candidate | Log lines, `task-12-report.md` b, `bridge-comparison.md` |
+| 3. Leaving stops the work | Holds: owner deinit and `ClaimHistoryViewModel cleared` in the same millisecond, no ClaimsHistory request in the next 10 to 11 s, 3 cycles per candidate and 3 more on the screen pattern | Log lines, `task-12-report.md` b, `bridge-comparison.md`, `task-16b-report.md` |
 | 4. Login and logout keep both clients consistent | Kotlin sends the token Swift holds (Swift's fetcher). Member A then B not verifiable; cache clearing on logout pinned by a native test | `parity.md` Authorization row; `IosGraphTest` "sessionChanged false clears the Apollo store" |
 | 5. Android graph and behaviour unchanged | Graph: two deliberate differences, nothing else. Behaviour on a device checked once, after Task 3 | Section 3.3 |
 | 6. Size recorded after every step | Yes | Section 3.2 |
@@ -178,6 +314,10 @@ them). Rows from `size-log.md` unless the source column says otherwise.
 | step 4, candidate 1 (with probes) | `ios/bridge-plain` | 7,954,935 | +1,431 | +4,361,765 | 13,923 | 0 | `bridge-comparison.md` |
 | step 4, candidate 2 (with probes) | `ios/bridge-nativecoroutines` | 7,961,741 | +8,237 | +4,368,571 | 13,934 | 0 | `bridge-comparison.md` |
 | step 4, candidate 3 (with probes) | `ios/bridge-skie` | 8,353,289 | +399,785 | +4,760,119 | 14,262 | 0 | `bridge-comparison.md` |
+| step 4 (screen pattern, Task 16b) | `b835fc17f9` | 7,956,904 | +3,400 vs 7,953,504 | +4,363,734 | 13,924 | 0 | `size-log.md`; measured at `8154d2cf15`, which differs only in how the build file names the same dependency and in one test |
+
+The candidate rows are deltas against step 3, not against each other; the merged state of the branch is the screen
+pattern row.
 
 Steps 0 and 1 cost nothing because `:umbrella` did not link the new modules until Task 9. The 4.36 MB of step 2,
 approximate `__text` growth by package from `nm` address gaps (`size-log.md`, `task-9-report.md`):
@@ -197,7 +337,8 @@ approximate `__text` growth by package from `nm` address gaps (`size-log.md`, `t
 
 These rows add up to about 2.6 MB of `__text`; the sources do not break down the rest. The auth arrangement chosen in
 Task 9 is worth about 50 KB against the plan's (7,946,780 against 7,997,209 on the scratch build,
-`task-9-proposal.md`). The header grew from 781 to 6,006 lines (`task-9-report.md`). For comparison, the design
+`task-9-proposal.md`). The header grew from 781 to 6,006 lines (`task-9-report.md`) and is 6,020 lines with the screen
+pattern (`task-16b-report.md`, fix round 1). For comparison, the design
 recorded about 1.3 MB for a Molecule ViewModel and about 2.9 MB for the network clients measured separately.
 
 ### 3.3 Android and desktop impact
@@ -210,6 +351,7 @@ Every compiled-graph difference introduced, from `javap` of the release graph cl
 | 9 | 3 lines: the class also implements `ApolloClientMetroProviders`; one `checkcast` and the factory class change from `NetworkMetroProviders$ProvideApolloClientMetroFactory` to `ApolloClientMetroProviders$ProvideApolloClientMetroFactory`, same five inputs and offsets | empty | the same 3 lines |
 | 2, 4, 5, 7, 8 | none | none | not compared |
 | 6, 9b, 10, 11, 12 | no Android-compiled production change (nativeMain, nativeTest or Swift only) | | |
+| 16b | none (0 lines against `cec22c80c7`); `releaseRuntimeClasspath` byte-identical; changes in `nativeMain`, `nativeTest`, Swift and a `nativeMain` dependency only | none | not compared |
 
 Sources: `task-3-report.md`, `task-9-report.md`, `integration-b1683bc248-report.md` (which confirmed the six Task 3 lines
 as the only difference from `99815f5a70` at that tip), the other task reports.
@@ -291,9 +433,10 @@ reduced for other reasons:
 | Task 9, option C: the Apollo client is provided per platform, and native reaches no token storage, `AuthRepository`, `AuthTokenService` or `MemberIdService`. Dropped from the plan: `IosTokenStore`, `NativeAuthTokenStorage`, `IosMetroProviders`, the `AuthMetroProviders` move. `logsOutOnUnauthenticated` and its three actuals deleted. `sessionChanged` takes a Boolean, not the tokens | Nothing in the claim history slice reads tokens; the shared provider reached auth only for the logout interceptor, which native does not install. One refresh path, owned by Swift; no second Keychain reader in Kotlin. The Boolean replaced the tokens after review found them printed to the iOS log (3.7). Cost: Kotlin cannot read tokens on iOS (3.8) |
 | The per-platform Apollo provider reverses part of the desktop work's arrangement, in which the client and its interceptor chain were built once in `network-clients` `commonMain` for every graph | Native must not install the logout interceptor; the shared parts stay in one internal builder, and `ApolloInterceptorsTest` still pins the Android and JVM chain from the provider's own list |
 | Task 9b, a native `RumLogger`, not in the plan | Finding F1: without it any GraphQL error would crash the iOS app |
-| The shell is `micro-apps/umbrella-consumer` evolved in place, not a new `app/app-ios/`: name, location and bundle id kept; committed token and hardcoded `JAVA_HOME` removed; dd-sdk-ios replaced by `KMPNativeCoroutinesAsync` 1.0.5 for login; iOS 17.0, Swift 6 | Owner answer 3 (keep it); evolving loses nothing and its synchronized source folder means new Swift files never touch the project file. `authlib` exports only KMP-NativeCoroutines forms, so login needs the package |
+| The shell is `micro-apps/umbrella-consumer` evolved in place, not a new `app/app-ios/`: name, location and bundle id kept; committed token and hardcoded `JAVA_HOME` removed; dd-sdk-ios replaced by `KMPNativeCoroutinesAsync` for login (1.0.5, exact 1.0.6 since Task 16b); iOS 17.0, Swift 6 | Owner answer 3 (keep it); evolving loses nothing and its synchronized source folder means new Swift files never touch the project file. `authlib` exports only KMP-NativeCoroutines forms, so login needs the package |
 | Xcode 27.2 instead of 26.4.1; simulator iPhone 18 Pro, iOS 27.2 | Xcode updated mid-session; iPhone 17 Pro exists only on the 26.5 runtime now |
 | Task 10 reduced; Task 12 content via a sample probe | 3.5 |
+| Task 16b, not in the plan: the facade's callback API (`observe`, `ClaimHistorySubscription`) replaced by the shared `ScreenModel` host and Swift `ScreenOwner`; the plan's Ugglan step used plain export until a decision | The owner's bridge decision (section 2) |
 
 ### 3.7 Findings in existing code
 
@@ -338,7 +481,9 @@ What must be true before any of this ships to the real iOS app.
 |---|---|
 | GraphQL errors on iOS reach only `NSLog`, not the iOS app's Datadog RUM | A Swift-supplied `RumLogger`, exported through the umbrella and installed before `createIosGraphHolder`, which already keeps an earlier install |
 | The iOS logger writes every priority to the system log; `LoggingInterceptor`'s ERROR line and its DEBUG `Response data` line include response data, and the Ktor logger prints bodies on non-production builds | Priority filtering in the iOS logger for release builds, or redaction of those lines in common code (which also changes Android's logs) |
-| `isolated deinit` in the Swift owner was verified on iOS 27.2 only; the shell and Ugglan target iOS 17.0 | Check its availability on older iOS, or a non-isolated `deinit` that hops to the main actor, or teardown from the view's `onDisappear` |
+| `isolated deinit` in the shared Swift owner is unverified below iOS 18.4, where the compiler's back-deploy shim runs; the shell and Ugglan target iOS 17.0 | A lifetime run on an iOS 18.3 simulator device (the runtime is installed, no device exists, and it needs a login); if the shim misbehaves, teardown from the view's `onDisappear`, which would change the pattern |
+| A collection holding an unacknowledged item never ends (section 2, known limits) | Keep the rule that the Swift loop never exits early; the cancellation race in `deinit` is not exercised |
+| The KMP-NativeCoroutines Swift package and Kotlin library must be bumped together; Ugglan pins the Swift package at 1.0.5 | Move Ugglan's Swift package to 1.0.6 when it adopts the screen pattern |
 | No duration breakdown for Kotlin requests in the iOS app's Datadog, and no check that each Kotlin request appears once with a trace id | Register Ktor's session delegate class for the breakdown (needs the class visible to Swift, unverified), or accept the gap as `authlib` does today; one staging RUM check |
 | Apollo's `ClaimsHistoryQuery` family, Metro's `ClaimHistoryViewModelModule` and prefixed Apollo, Okio and datetime types are in the framework header (about 345 lines) | Internal Apollo codegen for the module, which touches Android-compiled code; the sources propose no fix for the Metro module |
 | About 172 KB of dead DataStore code linked because the graph implements every contributed provider interface | `NativeDataStoreMetroProviders` as a `@BindingContainer` object, or `DeviceIdFetcher` moved out of `core-datastore-public`; each with its own graph check |
@@ -348,7 +493,7 @@ What must be true before any of this ships to the real iOS app.
 | Two GraphQL caches: a Swift mutation does not update Kotlin's cached data, and the reverse | Per feature: refetch policy or explicit invalidation; not addressed |
 | The shell's Release configuration requests x86_64 and fails in the Gradle phase | `ONLY_ACTIVE_ARCH = YES` for Release, or an x86_64 simulator target. The shell is a test host; Release with `ARCHS=arm64` built with 0 warnings |
 | Swift sees prefixed names (`Network_clientsAccessTokenFetcher`) | `typealias`es in the host; `@ObjCName` would be a Swift-facing annotation in shared code |
-| KMP-NativeCoroutines 1.0.6 targets Kotlin 2.4.20; the repo is on 2.4.21 and 1.0.7 is the matching release | Bump; it builds and works on 1.0.6 today |
+| KMP-NativeCoroutines 1.0.6 targets Kotlin 2.4.20; the repo is on 2.4.21 and 1.0.7 is the matching release | Bump both sides together; it builds and works on 1.0.6 today |
 
 ### 3.9 What was not verified
 
@@ -357,7 +502,11 @@ What must be true before any of this ships to the real iOS app.
 - A server GraphQL error or `UNAUTHENTICATED` on a device.
 - Retry recovering inside one process; recovery was seen after a relaunch.
 - Datadog's header rewrite on Ktor-created requests, and Kotlin requests appearing once in Ugglan's RUM.
-- Any iOS version other than 27.2, and any device other than the simulator.
+- Any iOS version other than 27.2, and any device other than the simulator. In particular `isolated deinit` below
+  iOS 18.4, where it runs through the back-deploy shim, while the real iOS app's minimum is 17.0.
+- Login on the KMP-NativeCoroutines Swift package 1.0.6: the next login on the shell is its first run.
+- Kotlin's main-thread delivery on a device: the Swift precondition could not observe it (section 2); it rests on
+  `ScreenModelTest`.
 - Any production configuration: the shell runs staging only.
 - Android on a device after Task 3, any minified build on a device, a login and logout through the new storage.
 - Timeouts and language re-read parity.
@@ -382,9 +531,10 @@ What the gate (plan Task 17) needs from the owner:
 - **The `ugglan/` clone and base.** It is on `fix/firebase-user-id-after-consent` at `0431fb12d`. The go-ahead is for a
   local branch `experiment/kmp-claim-history`, never pushed, and its base. Ugglan master needs Xcode 27.2, which is now
   installed, so `origin/master` is the plan's option (not yet built here); the alternative is `ff89c395e` with the local
-  `ToolbarButtonView` patch. Xcode must be closed
-  before `use-local-umbrella.sh` runs.
-- **The bridge for Ugglan.** Plain export unless the owner chooses otherwise after section 2.
+  `ToolbarButtonView` patch. Xcode must be closed before `use-local-umbrella.sh` runs.
+- **The bridge for Ugglan.** Decided: the screen pattern on KMP-NativeCoroutines (section 2). Task 16b's proposal
+  suggests copying `ScreenOwner.swift` and `oneOf` into Ugglan's Kotlin-facing module as the reference implementation;
+  not yet decided.
 - **Already answered** (`owner-answers.md`): Kotlin logout on `UNAUTHENTICATED` stays off on iOS, as Ugglan never
   reacts to it; no Kotlin-side Datadog on iOS, since dd-sdk-ios 3.17.0 tracks Ktor's requests automatically (a ruling
   pending the owner's objection); `micro-apps/umbrella-consumer` is kept, and is now the shell.
@@ -395,12 +545,13 @@ Constraints recorded for step 5:
   `ApolloClient.deleteToken()` in `AppDelegate.logout()`, not next to `saveToken`, which also runs on every refresh.
 - The plan's Task 19 still names `IosTokenStore` over `KeychainHelper`; under option C there is no token store input.
   `setDemoMode(false)` arrives on the main thread after a logout.
-- Do not copy `isolated deinit` without checking Ugglan's deployment target (3.8).
+- `isolated deinit` at Ugglan's 17.0 minimum needs the iOS 18.3 run first (3.8).
+- The Swift loop over a screen's states must never exit early (section 2, known limits).
 - The `AppBuildConfig` values Kotlin derives for Ugglan's production configuration (`isProduction`, the Octopus URL)
   must be checked; nothing here ran production.
 - `apollographql-client-version` matches iOS only if Swift supplies the short version as `versionName` (Task 7 report).
-- Ugglan pairs the KMP-NativeCoroutines Swift package 1.0.5 with Kotlin 1.0.6; the shell builds and runs with that
-  pair.
+- Ugglan pairs the KMP-NativeCoroutines Swift package 1.0.5 with Kotlin 1.0.6; the shell is on 1.0.6 for both since
+  Task 16b, and the two must move together.
 - Never commit a project generation made in local mode, the local-umbrella marker or the `ToolbarButtonView` patch.
 - A staging RUM check that each Kotlin request appears once, with a trace id (owner answer 2).
 - Every simulator build that runs is signed, and `xcodebuild test` runs with `-parallel-testing-enabled NO`.
