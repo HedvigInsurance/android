@@ -28,6 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.ErrorDialog
@@ -54,6 +55,7 @@ import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
+import com.hedvig.android.feature.editcoinsured.data.ContractInfo
 import com.hedvig.android.feature.editcoinsured.data.Member
 import com.hedvig.android.feature.editcoinsured.data.MonthlyCost
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
@@ -246,6 +248,13 @@ private fun EditCoInsuredScreen(
           HedvigBottomSheetPriceBreakdown(
             costBreakdownBottomSheetState,
           )
+          uiState.listState.contractInfo?.let { contractInfo ->
+            InsuranceInfoCard(
+              contractInfo = contractInfo,
+              modifier = Modifier.padding(horizontal = 16.dp),
+            )
+            Spacer(Modifier.height(16.dp))
+          }
           CoInsuredList(
             uiState = uiState.listState,
             type = uiState.type,
@@ -496,6 +505,11 @@ private fun EditCoInsuredScreenEditablePreview() {
               ),
             ),
             coInsuredFromOtherContracts = listOf(),
+            contractInfo = ContractInfo(
+              contractGroup = ContractGroup.RENTAL,
+              displayName = "Home insurance",
+              exposureName = "Lulanden 85H, 71220",
+            ),
           ),
           addBottomSheetContentState = EditCoInsuredState.Loaded.AddBottomSheetContentState(
             isLoading = false,
@@ -561,6 +575,11 @@ private fun EditCoInsuredScreenNonEditablePreview() {
               ssn = "197312331093",
             ),
             coInsuredFromOtherContracts = listOf(),
+            contractInfo = ContractInfo(
+              contractGroup = ContractGroup.RENTAL,
+              displayName = "Home insurance",
+              exposureName = "Lulanden 85H, 71220",
+            ),
           ),
           addBottomSheetContentState = EditCoInsuredState.Loaded.AddBottomSheetContentState(
             isLoading = false,

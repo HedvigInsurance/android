@@ -7,6 +7,8 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.data.contract.toContractGroup
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
@@ -58,6 +60,11 @@ internal class GetCoInsuredUseCaseImpl(
       ),
       coInsuredOnContract = coInsuredOnContract,
       coInsuredFromOtherContracts = coInsuredFromOtherContracts,
+      contractInfo = ContractInfo(
+        contractGroup = contract.currentAgreement.productVariant.typeOfContract.toContractGroup(),
+        displayName = contract.currentAgreement.productVariant.displayName,
+        exposureName = contract.exposureDisplayName,
+      ),
     )
   }
 
@@ -92,4 +99,11 @@ internal data class CoInsuredResult(
   val member: Member,
   val coInsuredOnContract: List<CoInsured>,
   val coInsuredFromOtherContracts: List<CoInsured>,
+  val contractInfo: ContractInfo,
+)
+
+internal data class ContractInfo(
+  val contractGroup: ContractGroup,
+  val displayName: String,
+  val exposureName: String,
 )

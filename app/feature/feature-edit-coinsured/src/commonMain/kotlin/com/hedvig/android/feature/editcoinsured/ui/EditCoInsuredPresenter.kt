@@ -14,6 +14,7 @@ import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.CoInsuredPersonalInformation
 import com.hedvig.android.feature.editcoinsured.data.CommitMidtermChangeUseCase
+import com.hedvig.android.feature.editcoinsured.data.ContractInfo
 import com.hedvig.android.feature.editcoinsured.data.CreateMidtermChangeUseCase
 import com.hedvig.android.feature.editcoinsured.data.FetchCoInsuredPersonalInformationUseCase
 import com.hedvig.android.feature.editcoinsured.data.GetCoInsuredUseCase
@@ -93,6 +94,7 @@ internal class EditCoInsuredPresenter(
             originalCoInsured = result.coInsuredOnContract,
             coInsuredFromOtherContracts = result.coInsuredFromOtherContracts,
             member = result.member,
+            contractInfo = result.contractInfo,
           )
         }
       }.onLeft {
@@ -490,6 +492,7 @@ internal sealed interface EditCoInsuredState {
       val updatedCoInsured: List<CoInsured>? = null,
       val coInsuredFromOtherContracts: List<CoInsured>? = null,
       val member: Member? = null,
+      val contractInfo: ContractInfo? = null,
       val priceInfo: PriceInfo? = null,
       val isCommittingUpdate: Boolean = false,
     ) {

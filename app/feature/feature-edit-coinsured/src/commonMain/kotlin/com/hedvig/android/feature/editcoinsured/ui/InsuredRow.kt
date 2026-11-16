@@ -76,7 +76,7 @@ internal fun InsuredRow(
               } else {
                 HedvigTheme.colorScheme.textSecondary
               },
-            style = HedvigTheme.typography.label
+            style = HedvigTheme.typography.label,
           )
           val dateTimeFormatter = rememberHedvigDateTimeFormatter()
           if (activatesOn != null) {

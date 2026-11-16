@@ -19,6 +19,7 @@ import com.hedvig.android.feature.editcoinsured.ui.data.TestFetchCoInsuredPerson
 import com.hedvig.android.feature.editcoinsured.ui.data.TestGetCoInsuredUseCase
 import com.hedvig.android.feature.editcoinsured.ui.data.coInsuredTestList
 import com.hedvig.android.feature.editcoinsured.ui.data.testContractId
+import com.hedvig.android.feature.editcoinsured.ui.data.testContractInfo
 import com.hedvig.android.feature.editcoinsured.ui.data.testMember
 import com.hedvig.android.molecule.test.test
 import kotlinx.coroutines.test.runTest
@@ -51,6 +52,7 @@ internal class EditCoInsuredPresenterTest {
           member = testMember,
           coInsuredOnContract = coInsuredTestList,
           coInsuredFromOtherContracts = listOf(),
+          contractInfo = testContractInfo,
         ),
       )
 
@@ -90,6 +92,7 @@ internal class EditCoInsuredPresenterTest {
           member = testMember,
           coInsuredOnContract = coInsuredTestList,
           coInsuredFromOtherContracts = listOf(),
+          contractInfo = testContractInfo,
         ),
       )
       assertThat(awaitItem()).isInstanceOf<EditCoInsuredState.Loaded>()
