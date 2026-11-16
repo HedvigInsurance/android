@@ -120,6 +120,7 @@
   <string name="CHANGE_ADDRESS_EXTRA_BUILDINGS_WATER_INPUT_LABEL">Connected to water</string>
   <string name="CHANGE_ADDRESS_EXTRA_BUILDINGS_WATER_LABEL">Water connected</string>
   <string name="CHANGE_ADDRESS_EXTRA_BUILDING_CONTAINER_TITLE">Type of building</string>
+  <string name="CHANGE_ADDRESS_EXTRA_BUILDING_SIZE_ERROR">Please enter size of extra building</string>
   <string name="CHANGE_ADDRESS_EXTRA_BUILDING_SIZE_LABEL">Size</string>
   <string name="CHANGE_ADDRESS_FAQ_DATE_LABEL">As soon as you have got the keys or signed the contract for your new rental apartment. Or when you have made the purchase of your new home.</string>
   <string name="CHANGE_ADDRESS_FAQ_DATE_TITLE">When should I change my address?</string>
@@ -133,6 +134,8 @@
   <string name="CHANGE_ADDRESS_FAQ_STUDENT_TITLE">What is the difference between a regular home insurance and a home insurance for students?</string>
   <string name="CHANGE_ADDRESS_INCLUDED">See what\'s included</string>
   <string name="CHANGE_ADDRESS_INFORMATION_ABOUT_YOUR_HOUSE">Information about your new house</string>
+  <string name="CHANGE_ADDRESS_LIVING_SPACE_ERROR">Please enter square meters</string>
+  <string name="CHANGE_ADDRESS_LIVING_SPACE_OVER_LIMIT_WITH_INPUT_ERROR" formatted="false">The space is too big. Maximum space is %d%s.</string>
   <string name="CHANGE_ADDRESS_MOVING_DATE_ERROR">Please select a moving date</string>
   <string name="CHANGE_ADDRESS_MOVING_DATE_LABEL">Move-in date</string>
   <string name="CHANGE_ADDRESS_NEW_ADDRESS_LABEL">Address</string>
