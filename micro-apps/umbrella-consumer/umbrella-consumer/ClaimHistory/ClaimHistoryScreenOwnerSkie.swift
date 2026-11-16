@@ -84,6 +84,15 @@ final class ClaimHistoryScreenOwner {
     }
 }
 
+#if DEBUG
+extension ClaimHistoryViewState {
+    /// Converts a Kotlin state the same way the owner converts a delivered one.
+    static func mapped(_ kotlinState: ClaimHistoryScreenState) -> ClaimHistoryViewState {
+        ClaimHistoryViewState(kotlinState)
+    }
+}
+#endif
+
 private extension ClaimHistoryViewState {
     init(_ kotlinState: ClaimHistoryScreenState) {
         switch onEnum(of: kotlinState) {
