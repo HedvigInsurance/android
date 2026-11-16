@@ -50,7 +50,7 @@ internal class EditCoInsuredPresenterTest {
         CoInsuredResult(
           member = testMember,
           coInsuredOnContract = coInsuredTestList,
-          allCoInsured = listOf(),
+          coInsuredFromOtherContracts = listOf(),
         ),
       )
 
@@ -89,7 +89,7 @@ internal class EditCoInsuredPresenterTest {
         CoInsuredResult(
           member = testMember,
           coInsuredOnContract = coInsuredTestList,
-          allCoInsured = listOf(),
+          coInsuredFromOtherContracts = listOf(),
         ),
       )
       assertThat(awaitItem()).isInstanceOf<EditCoInsuredState.Loaded>()
@@ -119,7 +119,7 @@ internal class EditCoInsuredPresenterTest {
         listState = EditCoInsuredState.Loaded.CoInsuredListState(
           originalCoInsured = coInsuredTestList,
           member = testMember,
-          allCoInsured = listOf(),
+          coInsuredFromOtherContracts = listOf(),
         ),
         addBottomSheetContentState = EditCoInsuredState.Loaded.AddBottomSheetContentState(
           infoFromSsn = InfoFromSsn(),
@@ -166,7 +166,7 @@ internal class EditCoInsuredPresenterTest {
         listState = EditCoInsuredState.Loaded.CoInsuredListState(
           originalCoInsured = coInsuredTestList,
           member = testMember,
-          allCoInsured = listOf(),
+          coInsuredFromOtherContracts = listOf(),
         ),
         addBottomSheetContentState = EditCoInsuredState.Loaded.AddBottomSheetContentState(
           showManualInput = false,

@@ -495,7 +495,7 @@ private fun EditCoInsuredScreenEditablePreview() {
                 "Bundle discount 20%" to "-79 kr/mo",
               ),
             ),
-            allCoInsured = listOf(),
+            coInsuredFromOtherContracts = listOf(),
           ),
           addBottomSheetContentState = EditCoInsuredState.Loaded.AddBottomSheetContentState(
             isLoading = false,
@@ -560,7 +560,7 @@ private fun EditCoInsuredScreenNonEditablePreview() {
               lastName = "Membersson",
               ssn = "197312331093",
             ),
-            allCoInsured = listOf(),
+            coInsuredFromOtherContracts = listOf(),
           ),
           addBottomSheetContentState = EditCoInsuredState.Loaded.AddBottomSheetContentState(
             isLoading = false,

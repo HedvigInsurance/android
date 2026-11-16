@@ -410,7 +410,7 @@ private fun EditCoInsuredScreenEditablePreview() {
               newCostBreakDown = listOf(),
               validFrom = LocalDate.fromEpochDays(400),
             ),
-            allCoInsured = listOf(),
+            coInsuredFromOtherContracts = listOf(),
           ),
           addBottomSheetContentState = EditCoInsuredState.Loaded.AddBottomSheetContentState(
             isLoading = false,
@@ -472,7 +472,7 @@ private fun EditCoInsuredScreenNonEditablePreview() {
               lastName = "Membersson",
               ssn = "197312331093",
             ),
-            allCoInsured = listOf(),
+            coInsuredFromOtherContracts = listOf(),
           ),
           addBottomSheetContentState = EditCoInsuredState.Loaded.AddBottomSheetContentState(
             isLoading = false,

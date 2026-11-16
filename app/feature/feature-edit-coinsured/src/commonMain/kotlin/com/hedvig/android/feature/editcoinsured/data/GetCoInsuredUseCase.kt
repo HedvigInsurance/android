@@ -41,13 +41,14 @@ internal class GetCoInsuredUseCaseImpl(
         contract.coOwners.orEmpty().map { it.toCoInsured() }
     ).filter { it.terminatesOn == null }
 
-    val allCoInsured = result.currentMember.activeContracts.flatMap {
+    val coInsuredFromOtherContracts = result.currentMember.activeContracts.flatMap {
       val coInsureds = it.coInsured?.map { it.toCoInsured() }.orEmpty()
       val coOwners = it.coOwners?.map { it.toCoInsured() }.orEmpty()
       coInsureds + coOwners
     }
       .filter { !it.hasMissingInfo }
-      .filter { coinsured -> coInsuredOnContract.any { it.id == coinsured.id } }
+      .filter { coinsured -> coInsuredOnContract.none { it.id == coinsured.id } }
+      .distinctBy { it.id }
 
     CoInsuredResult(
       member = Member(
@@ -56,7 +57,7 @@ internal class GetCoInsuredUseCaseImpl(
         ssn = result.currentMember.ssn,
       ),
       coInsuredOnContract = coInsuredOnContract,
-      allCoInsured = allCoInsured,
+      coInsuredFromOtherContracts = coInsuredFromOtherContracts,
     )
   }
 
@@ -90,5 +91,5 @@ internal sealed interface CoInsuredError {
 internal data class CoInsuredResult(
   val member: Member,
   val coInsuredOnContract: List<CoInsured>,
-  val allCoInsured: List<CoInsured>,
+  val coInsuredFromOtherContracts: List<CoInsured>,
 )
