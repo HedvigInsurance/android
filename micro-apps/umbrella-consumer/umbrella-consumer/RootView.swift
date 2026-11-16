@@ -1,20 +1,30 @@
-import HedvigShared
 import SwiftUI
 
-// The umbrella no longer exports any Compose screen (the puppy guide moved to native iOS), so this
-// harness only checks that the non-UI exports link and are callable from Swift. See
-// IosInterfaces.swift for the Kotlin interfaces it implements.
-struct ContentView: View {
+struct RootView: View {
+    @Environment(AppModel.self) private var app
+
     var body: some View {
-        NavigationStack {
-            List {
-                Text("HedvigShared linked")
+        if app.isLoggedIn {
+            NavigationStack {
+                List {
+                    NavigationLink("Claim history") {
+                        claimHistoryDestination()
+                    }
+                    Section {
+                        Button("Log out", role: .destructive) {
+                            app.logOut()
+                        }
+                    }
+                }
+                .navigationTitle("Umbrella consumer")
             }
-            .navigationTitle("Umbrella consumer")
+        } else {
+            LoginView(app: app)
         }
     }
-}
 
-#Preview {
-    ContentView()
+    @ViewBuilder
+    private func claimHistoryDestination() -> some View {
+        Text("Claim history is not built yet")
+    }
 }

@@ -1,24 +1,19 @@
+@preconcurrency import HedvigShared
 import SwiftUI
-import HedvigShared
 
 @main
 struct umbrella_consumerApp: App {
+    @State private var app: AppModel
+
+    init() {
+        IosLogcatLogger.companion.install()
+        _app = State(initialValue: AppModel())
+    }
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView()
+                .environment(app)
         }
-    }
-    
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-}
-
-class AppDelegate: UIResponder, UIApplicationDelegate {
-    // Run initializers on app launch
-    func application(
-        _ application: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
-    ) -> Bool {
-        IosLogcatLogger.companion.install()
-        return true
     }
 }
