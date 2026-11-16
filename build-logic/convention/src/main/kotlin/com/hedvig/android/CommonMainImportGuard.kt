@@ -60,29 +60,34 @@ val forbiddenCommonMainNames: List<String> = listOf(
 val allowedCommonMainSubPackages: List<String> = emptyList()
 
 /**
- * Returns the entry of [forbiddenCommonMainNames] that [name] is, or lies inside, or null. A name inside one of
+ * Returns the entry of [forbiddenNames] that [name] is, or lies inside, or null. A name inside one of
  * [allowedSubPackages] is never forbidden.
  */
-fun forbiddenEntryOf(name: String, allowedSubPackages: List<String> = allowedCommonMainSubPackages): String? {
+fun forbiddenEntryOf(
+  name: String,
+  allowedSubPackages: List<String> = allowedCommonMainSubPackages,
+  forbiddenNames: List<String> = forbiddenCommonMainNames,
+): String? {
   val plain = name.replace("`", "")
   fun String.isOrIsInside(prefix: String) = this == prefix || startsWith("$prefix.")
   if (allowedSubPackages.any { plain.isOrIsInside(it) }) return null
-  return forbiddenCommonMainNames.firstOrNull { plain.isOrIsInside(it) }
+  return forbiddenNames.firstOrNull { plain.isOrIsInside(it) }
 }
 
 private val importedName = Regex("""^\s*import\s+([\w.`*]+)""")
 
 /**
- * Returns the 1-based line number and imported name of every import in [source] that names a
- * [forbiddenCommonMainNames] entry or something inside it.
+ * Returns the 1-based line number and imported name of every import in [source] that names a [forbiddenNames] entry
+ * or something inside it.
  */
 fun findForbiddenImports(
   source: String,
   allowedSubPackages: List<String> = allowedCommonMainSubPackages,
+  forbiddenNames: List<String> = forbiddenCommonMainNames,
 ): List<Pair<Int, String>> {
   return source.lineSequence().mapIndexedNotNull { index, line ->
     importedName.find(line)?.groupValues?.get(1)
-      ?.takeIf { forbiddenEntryOf(it, allowedSubPackages) != null }
+      ?.takeIf { forbiddenEntryOf(it, allowedSubPackages, forbiddenNames) != null }
       ?.let { index + 1 to it }
   }.toList()
 }
