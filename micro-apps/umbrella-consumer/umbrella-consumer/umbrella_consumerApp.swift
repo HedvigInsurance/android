@@ -6,6 +6,9 @@ struct umbrella_consumerApp: App {
     @State private var app: AppModel
 
     init() {
+        #if DEBUG
+        ShellDebug.installHeaderLoggingIfRequested()
+        #endif
         IosLogcatLogger.companion.install()
         _app = State(initialValue: AppModel())
     }

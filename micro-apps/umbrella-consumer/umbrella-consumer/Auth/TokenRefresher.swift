@@ -23,6 +23,9 @@ actor TokenRefresher {
     private var inFlight: Task<String, Error>?
     private var generation = 0
     private var hasForcedLogout = false
+    #if DEBUG
+    private var debugLaunchAccessTokenExpiry: Date?
+    #endif
 
     init(
         store: KeychainTokenStore,
@@ -77,7 +80,16 @@ actor TokenRefresher {
             await forceLogout(reason: "no stored session")
             throw TokenRefreshError.notLoggedIn
         }
-        if session.accessTokenExpiresAt > Date().addingTimeInterval(60) {
+        var countsAsExpiring = false
+        #if DEBUG
+        if ShellDebug.expireAccessToken {
+            if debugLaunchAccessTokenExpiry == nil {
+                debugLaunchAccessTokenExpiry = session.accessTokenExpiresAt
+            }
+            countsAsExpiring = session.accessTokenExpiresAt == debugLaunchAccessTokenExpiry
+        }
+        #endif
+        if !countsAsExpiring, session.accessTokenExpiresAt > Date().addingTimeInterval(60) {
             return session.accessToken
         }
         guard Date() < session.refreshTokenExpiresAt else {
@@ -85,6 +97,12 @@ actor TokenRefresher {
             throw TokenRefreshError.refreshTokenExpired
         }
         ShellLog.info("Refreshing the access token")
+        #if DEBUG
+        if countsAsExpiring {
+            ShellLog.info("Holding the refresh 3 s (-shellExpireAccessToken)")
+            try? await Task.sleep(for: .seconds(3))
+        }
+        #endif
         let outcome = await authClient.refresh(refreshToken: session.refreshToken)
         if generation != startGeneration {
             ShellLog.info("Session ended during the refresh, discarding its result")
