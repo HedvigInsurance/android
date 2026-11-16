@@ -215,6 +215,7 @@ private class ClaimHistoryUiStateCollectionPreviewParameterProvider :
             claimType = "$it",
             outcome = ClaimHistory.ClaimOutcome.entries[it],
             submittedAt = if (it == 0) null else Instant.fromEpochMilliseconds(100),
+            isPartnerClaim = false,
           )
         }.toNonEmptyListOrThrow(),
       ),
