@@ -228,6 +228,10 @@
   <string name="CLAIMS_USE_TEXT_INSTEAD">Describe using text</string>
   <string name="CLAIMS_VOICE_RECORDING_SENDING">Sending...</string>
   <string name="CLAIMS_YOUR_CLAIM">Your claim</string>
+  <string name="CLAIM_CHAT_AGENT_NOTICE_APPLIANCE_AUTHORIZED_DIAGNOSIS">Do not repair the appliance on your own just yet. If a repair is needed, we will require an assessment or repair quote from an authorized technician approved by us in advance.</string>
+  <string name="CLAIM_CHAT_AGENT_NOTICE_APPLIANCE_PHYSICAL_INSPECTION">Keep the appliance and do not dispose of it, as we may need to collect or inspect it physically to assess the damage and approve coverage.</string>
+  <string name="CLAIM_CHAT_AGENT_NOTICE_GLASS_AUTHORIZED_GLAZIER">Do not order the replacement or repair of the glass before we have approved it. The work must be carried out by the authorized glazier we assign.</string>
+  <string name="CLAIM_CHAT_AGENT_NOTICE_PROOF_OF_OWNERSHIP_AND_VALUE">Please gather or attach receipts, warranty certificates, or bank statements for the items you're claiming. Under your terms, you need to verify ownership, age, and original purchase price, so we can assess and calculate the right compensation.</string>
   <string name="CLAIM_CHAT_AI_INFO">We use AI to support the process of submitting and handling your claim. Our team always reviews your claim before any decision is made.</string>
   <string name="CLAIM_CHAT_AUDIO_RECORDING_LABEL">Voice recording</string>
   <string name="CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE">Other item</string>
@@ -442,6 +446,7 @@
   <string name="GENERAL_RETRY">Try again</string>
   <string name="GENERAL_SAVE_CHANGES_BUTTON">Save changes</string>
   <string name="GENERAL_SHOW">Show</string>
+  <string name="GENERAL_YESTERDAY">Yesterday</string>
   <string name="HC_ALL_QUESTION_TITLE">All questions</string>
   <string name="HC_ANSWER_TITLE">Answer</string>
   <string name="HC_CHAT_ANSWER">Reach us on weekdays 08–22 or weekends &amp; public holidays 10–22</string>
