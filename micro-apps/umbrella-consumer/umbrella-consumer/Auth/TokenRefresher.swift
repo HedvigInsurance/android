@@ -23,6 +23,9 @@ actor TokenRefresher {
     private var inFlight: Task<String, Error>?
     private var generation = 0
     private var hasForcedLogout = false
+    #if DEBUG
+    private var debugLaunchAccessTokenExpiry: Date?
+    #endif
 
     init(
         store: KeychainTokenStore,
@@ -77,7 +80,12 @@ actor TokenRefresher {
             await forceLogout(reason: "no stored session")
             throw TokenRefreshError.notLoggedIn
         }
-        if session.accessTokenExpiresAt > Date().addingTimeInterval(60) {
+        #if DEBUG
+        let countsAsExpiring = debugCountsAsExpiring(session)
+        #else
+        let countsAsExpiring = false
+        #endif
+        if !countsAsExpiring, session.accessTokenExpiresAt > Date().addingTimeInterval(60) {
             return session.accessToken
         }
         guard Date() < session.refreshTokenExpiresAt else {
@@ -85,6 +93,12 @@ actor TokenRefresher {
             throw TokenRefreshError.refreshTokenExpired
         }
         ShellLog.info("Refreshing the access token")
+        #if DEBUG
+        if countsAsExpiring {
+            ShellLog.info("Holding the refresh 3 s (-shellExpireAccessToken)")
+            try? await Task.sleep(for: .seconds(3))
+        }
+        #endif
         let outcome = await authClient.refresh(refreshToken: session.refreshToken)
         if generation != startGeneration {
             ShellLog.info("Session ended during the refresh, discarding its result")
@@ -110,6 +124,17 @@ actor TokenRefresher {
             throw TokenRefreshError.other(message)
         }
     }
+
+    #if DEBUG
+    /// Under `-shellExpireAccessToken YES`, true for the access token in use at the first request.
+    private func debugCountsAsExpiring(_ session: StoredSession) -> Bool {
+        guard ShellDebug.expireAccessToken else { return false }
+        if debugLaunchAccessTokenExpiry == nil {
+            debugLaunchAccessTokenExpiry = session.accessTokenExpiresAt
+        }
+        return session.accessTokenExpiresAt == debugLaunchAccessTokenExpiry
+    }
+    #endif
 
     private func forceLogout(reason: String) async {
         guard !hasForcedLogout else { return }

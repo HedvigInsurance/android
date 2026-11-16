@@ -25,6 +25,6 @@ struct RootView: View {
 
     @ViewBuilder
     private func claimHistoryDestination() -> some View {
-        Text("Claim history is not built yet")
+        ClaimHistoryView(holder: app.holder)
     }
 }

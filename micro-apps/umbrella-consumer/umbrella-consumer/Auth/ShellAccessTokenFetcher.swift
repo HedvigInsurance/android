@@ -11,6 +11,12 @@ final class ShellAccessTokenFetcher: NSObject, Network_clientsAccessTokenFetcher
     }
 
     func fetch() async throws -> String? {
-        try await refresher.validAccessToken()
+        #if DEBUG
+        if ShellDebug.failTokenFetch {
+            ShellLog.info("Access token fetch throwing (-shellFailTokenFetch)")
+            throw TokenRefreshError.other("forced by -shellFailTokenFetch")
+        }
+        #endif
+        return try await refresher.validAccessToken()
     }
 }

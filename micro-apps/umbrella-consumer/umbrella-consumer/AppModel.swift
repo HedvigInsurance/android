@@ -23,6 +23,11 @@ final class AppModel {
         let stored = (try? store.read()) ?? nil
         self.isLoggedIn = stored != nil
         ShellLog.info("Launched, stored session present: \(stored != nil)")
+        #if DEBUG
+        if let stored {
+            ShellLog.info("Stored session: \(ShellDebug.describe(stored))")
+        }
+        #endif
         forcedLogout.handler = { [weak self] in self?.logOut() }
     }
 
