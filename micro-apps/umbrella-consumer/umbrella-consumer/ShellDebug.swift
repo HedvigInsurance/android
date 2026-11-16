@@ -12,8 +12,8 @@ enum ShellDebug {
     /// waits 3 seconds first so a second request can arrive while it runs.
     static var expireAccessToken: Bool { UserDefaults.standard.bool(forKey: "shellExpireAccessToken") }
 
-    /// `-shellLogRequestHeaders YES`: logs the headers of every URLSession request the process makes, with the
-    /// `Authorization` value and the device id reduced to their shape.
+    /// `-shellLogRequestHeaders YES`: logs the headers of every URLSession request the process makes. Only the
+    /// parity headers print their values; `Authorization` prints its shape and the rest their length.
     static var logRequestHeaders: Bool { UserDefaults.standard.bool(forKey: "shellLogRequestHeaders") }
 
     static func describe(_ session: StoredSession) -> String {
@@ -60,18 +60,27 @@ final class HeaderLoggingProtocol: URLProtocol {
         return false
     }
 
+    /// Headers whose values are printed in full; every other value is reduced to its length.
+    private static let printableHeaders: Set<String> = [
+        "accept-language", "hedvig-language", "user-agent", "hedvig-app-version", "hedvig-timezone",
+        "x-build-version", "x-app-version", "x-system-version", "x-platform", "x-model",
+        "apollographql-client-name", "apollographql-client-version", "content-type",
+    ]
+
     private static func shape(name: String, value: String) -> String {
-        switch name.lowercased() {
+        let lowercased = name.lowercased()
+        if printableHeaders.contains(lowercased) {
+            return value
+        }
+        switch lowercased {
         case "authorization":
             let parts = value.split(separator: " ", maxSplits: 1)
             let scheme = parts.first.map(String.init) ?? ""
             let credential = parts.count > 1 ? String(parts[1]) : ""
             let segments = credential.split(separator: ".", omittingEmptySubsequences: false).count
             return "<\(scheme), credential length \(credential.count), \(segments) dot-separated parts>"
-        case "hedvig-device-id":
-            return "<length \(value.count)>"
         default:
-            return value
+            return "<length \(value.count)>"
         }
     }
 }

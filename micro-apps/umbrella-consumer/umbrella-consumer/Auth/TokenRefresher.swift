@@ -80,14 +80,10 @@ actor TokenRefresher {
             await forceLogout(reason: "no stored session")
             throw TokenRefreshError.notLoggedIn
         }
-        var countsAsExpiring = false
         #if DEBUG
-        if ShellDebug.expireAccessToken {
-            if debugLaunchAccessTokenExpiry == nil {
-                debugLaunchAccessTokenExpiry = session.accessTokenExpiresAt
-            }
-            countsAsExpiring = session.accessTokenExpiresAt == debugLaunchAccessTokenExpiry
-        }
+        let countsAsExpiring = debugCountsAsExpiring(session)
+        #else
+        let countsAsExpiring = false
         #endif
         if !countsAsExpiring, session.accessTokenExpiresAt > Date().addingTimeInterval(60) {
             return session.accessToken
@@ -128,6 +124,17 @@ actor TokenRefresher {
             throw TokenRefreshError.other(message)
         }
     }
+
+    #if DEBUG
+    /// Under `-shellExpireAccessToken YES`, true for the access token in use at the first request.
+    private func debugCountsAsExpiring(_ session: StoredSession) -> Bool {
+        guard ShellDebug.expireAccessToken else { return false }
+        if debugLaunchAccessTokenExpiry == nil {
+            debugLaunchAccessTokenExpiry = session.accessTokenExpiresAt
+        }
+        return session.accessTokenExpiresAt == debugLaunchAccessTokenExpiry
+    }
+    #endif
 
     private func forceLogout(reason: String) async {
         guard !hasForcedLogout else { return }

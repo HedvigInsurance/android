@@ -21,6 +21,7 @@ enum ClaimHistoryViewState {
 }
 
 /// One claim, copied out of Kotlin's `ClaimHistoryItem`. Kotlin compares those by identity, so lists diff by `id`.
+/// Regular and partner claims come from separate id spaces, so `id` carries the kind and `claimId` the backend id.
 struct ClaimHistoryRow: Identifiable, Equatable {
     enum Outcome: Equatable {
         case paid
@@ -31,6 +32,7 @@ struct ClaimHistoryRow: Identifiable, Equatable {
     }
 
     let id: String
+    let claimId: String
     let claimType: String?
     let submittedAt: Date?
     let outcome: Outcome
@@ -69,6 +71,7 @@ final class ClaimHistoryScreenOwner {
         ShellLog.info("ClaimHistoryScreenOwner state: \(state.logDescription)")
     }
 
+    // Runs on the main actor; verified on iOS 27.2 only, while the deployment target is 17.0.
     isolated deinit {
         ShellLog.info("ClaimHistoryScreenOwner deinit")
         subscription?.cancel()
@@ -96,7 +99,8 @@ private extension ClaimHistoryViewState {
 
 private extension ClaimHistoryRow {
     init(_ item: ClaimHistoryItem) {
-        id = item.id
+        id = item.isPartnerClaim ? "partner:\(item.id)" : "claim:\(item.id)"
+        claimId = item.id
         claimType = item.claimType
         submittedAt = item.submittedAt
         isPartnerClaim = item.isPartnerClaim
