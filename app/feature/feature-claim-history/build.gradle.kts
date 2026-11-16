@@ -39,5 +39,10 @@ kotlin {
       implementation(libs.coroutines.test)
       implementation(libs.ktor.client.mock)
     }
+    nativeTest.dependencies {
+      implementation(libs.apollo.normalizedCache)
+      implementation(projects.coreBuildConstants)
+      implementation(projects.networkClients)
+    }
   }
 }

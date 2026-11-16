@@ -63,5 +63,11 @@ kotlin {
       implementation(projects.languageCore)
       implementation(projects.networkClients)
     }
+    nativeTest.dependencies {
+      implementation(libs.apollo.engine.ktor)
+      implementation(libs.apollo.normalizedCache)
+      implementation(libs.assertK)
+      implementation(libs.ktor.client.mock)
+    }
   }
 }
