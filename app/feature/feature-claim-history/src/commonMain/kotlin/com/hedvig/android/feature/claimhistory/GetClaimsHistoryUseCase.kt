@@ -38,6 +38,7 @@ internal class GetClaimsHistoryUseCase(
                 ClaimOutcome.UNRESPONSIVE -> ClaimHistory.ClaimOutcome.UNRESPONSIVE
                 ClaimOutcome.UNKNOWN__, null -> ClaimHistory.ClaimOutcome.UNKNOWN
               },
+              isPartnerClaim = false,
             )
           }
           val partnerClaims = data.currentMember.partnerClaimsHistory.map { history ->
@@ -46,6 +47,7 @@ internal class GetClaimsHistoryUseCase(
               claimType = history.claimType,
               submittedAt = history.submittedAt?.atStartOfDayIn(TimeZone.UTC),
               outcome = ClaimHistory.ClaimOutcome.UNKNOWN,
+              isPartnerClaim = true,
             )
           }
           (regularClaims + partnerClaims).sortedWith(compareByDescending(nullsLast()) { it.submittedAt })
@@ -61,6 +63,7 @@ internal data class ClaimHistory(
   // Subtitle uses this date to show when the claim was submitted; null for partner claims with no submission date.
   val submittedAt: Instant?,
   val outcome: ClaimOutcome?,
+  val isPartnerClaim: Boolean,
 ) {
   enum class ClaimOutcome {
     PAID,
