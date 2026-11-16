@@ -6,3 +6,5 @@ import kotlinx.datetime.TimeZone
 internal actual fun HeadersBuilder.appendPlatformHeaders() {
   append("Hedvig-TimeZone", TimeZone.currentSystemDefault().id)
 }
+
+internal actual fun platformClientName(appPackageId: String): String = "iOS:$appPackageId"

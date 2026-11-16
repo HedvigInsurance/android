@@ -119,7 +119,7 @@ private fun DefaultRequest.DefaultRequestBuilder.commonHeaders(
     append("User-Agent", hedvigBuildConstants.userAgent)
     append("Accept-Language", languageTag)
     append("hedvig-language", languageTag)
-    append("apollographql-client-name", hedvigBuildConstants.appPackageId)
+    append("apollographql-client-name", platformClientName(hedvigBuildConstants.appPackageId))
     append("apollographql-client-version", hedvigBuildConstants.appVersionName)
     append("X-Build-Version", hedvigBuildConstants.appVersionCode)
     append("X-App-Version", hedvigBuildConstants.appVersionName)
