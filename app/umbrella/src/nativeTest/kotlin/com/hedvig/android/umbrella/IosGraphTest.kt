@@ -42,6 +42,8 @@ import kotlin.test.Test
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.TimeSource
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import octopus.ClaimsHistoryQuery
 import platform.Foundation.NSDate
@@ -143,9 +145,10 @@ class IosGraphTest {
     val holder = inputs.createHolder()
     val model = holder.claimHistoryScreenModel()
 
-    model.observe {}
+    val collection = MainScope().launch { model.stateUpdates.collect {} }
     assertThat(pumpMainLoopUntil { inputs.accessTokenFetcher.calls.value == 1 }).isTrue()
     pumpMainLoop(2.seconds)
+    collection.cancel()
     model.close()
     val response = runBlocking {
       holder.graph.apolloClient.query(ClaimsHistoryQuery()).fetchPolicy(FetchPolicy.NetworkOnly).execute()

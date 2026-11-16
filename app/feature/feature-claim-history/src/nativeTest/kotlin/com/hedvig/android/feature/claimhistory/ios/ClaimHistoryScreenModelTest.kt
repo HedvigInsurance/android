@@ -1,5 +1,3 @@
-@file:OptIn(NativeRuntimeApi::class)
-
 package com.hedvig.android.feature.claimhistory.ios
 
 import androidx.lifecycle.ViewModel
@@ -11,7 +9,6 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
-import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
@@ -26,6 +23,7 @@ import com.hedvig.android.feature.claimhistory.graphQlErrorJson
 import com.hedvig.android.feature.claimhistory.regularAndPartnerClaimsJson
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.LogcatLogger
+import com.hedvig.android.molecule.public.ScreenModel
 import com.hedvig.android.network.clients.AccessTokenFetcher
 import com.hedvig.android.network.clients.di.NativeNetworkMetroProviders
 import com.hedvig.android.network.clients.di.NetworkMetroProviders
@@ -37,8 +35,6 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import kotlin.concurrent.AtomicInt
-import kotlin.native.runtime.GC
-import kotlin.native.runtime.NativeRuntimeApi
 import kotlin.reflect.KClass
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -46,6 +42,7 @@ import kotlin.test.Test
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.TimeSource
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
@@ -54,7 +51,6 @@ import kotlinx.coroutines.test.runTest
 import platform.Foundation.NSDate
 import platform.Foundation.NSLock
 import platform.Foundation.NSRunLoop
-import platform.Foundation.NSThread
 import platform.Foundation.dateWithTimeIntervalSinceNow
 import platform.Foundation.runUntilDate
 
@@ -63,11 +59,13 @@ import platform.Foundation.runUntilDate
  * the main run loop ([pumpMainLoop], [pumpMainLoopUntil]).
  *
  * `DisplayLinkClock` produces no frame in the test process, so the presenter composes once and never recomposes: a
- * subscriber only ever receives the initial `Loading`, though the presenter's query is sent. These tests assert what is
- * observable without a second state: callbacks, threads, requests, headers and logs.
+ * collector only ever receives the initial `Loading`, though the presenter's query is sent. These tests assert what is
+ * observable without a second state: requests, headers, logs and `handle`. How `states` reaches Swift (threads,
+ * cancellation, close) is tested once, on `ScreenModel` in `molecule-public`.
  */
 class ClaimHistoryScreenModelTest {
   private val logs = CapturingLogger()
+  private val collections = MainScope()
 
   @BeforeTest
   fun installLogger() {
@@ -77,7 +75,12 @@ class ClaimHistoryScreenModelTest {
   @AfterTest
   fun uninstallLogger() {
     LogcatLogger.uninstall()
+    collections.cancel()
   }
+
+  /** Collects [ScreenModel.stateUpdates] on the main thread until the returned job or the test ends. */
+  private fun observe(model: ClaimHistoryScreenModel, onState: (ClaimHistoryScreenState) -> Unit): Job =
+    collections.launch { model.stateUpdates.collect { onState(it) } }
 
   @Test
   fun `the display link produces no frame in the test process`() {
@@ -97,7 +100,7 @@ class ClaimHistoryScreenModelTest {
     val model = ClaimHistoryScreenModel(factoryOver(server.apolloClient()))
     val states = mutableListOf<ClaimHistoryScreenState>()
 
-    model.observe { states += it }
+    observe(model) { states += it }
     pumpMainLoop(3.seconds)
 
     assertThat(server.requests.value).isEqualTo(1)
@@ -106,80 +109,28 @@ class ClaimHistoryScreenModelTest {
   }
 
   @Test
-  fun `state is delivered on the main thread`() {
-    val model = ClaimHistoryScreenModel(factoryOver(FakeServer(regularAndPartnerClaimsJson).apolloClient()))
-    val onMainThread = mutableListOf<Boolean>()
+  fun `currentState starts as Loading and reading it sends no request`() {
+    val server = FakeServer(regularAndPartnerClaimsJson)
+    val model = ClaimHistoryScreenModel(factoryOver(server.apolloClient()))
 
-    model.observe { onMainThread += NSThread.isMainThread }
-    pumpMainLoopUntil { onMainThread.isNotEmpty() }
-
-    assertThat(onMainThread).containsExactly(true)
-    model.close()
-  }
-
-  @Test
-  fun `the first callback arrives after observe returns and repeats currentState`() {
-    val model = ClaimHistoryScreenModel(factoryOver(FakeServer(regularAndPartnerClaimsJson).apolloClient()))
     val seeded = model.currentState
-    var observeReturned = false
-    var calledDuringObserve = false
-    val states = mutableListOf<ClaimHistoryScreenState>()
+    pumpMainLoop(1.seconds)
 
-    model.observe {
-      if (!observeReturned) calledDuringObserve = true
-      states += it
-    }
-    observeReturned = true
-    assertThat(states).isEmpty()
-    pumpMainLoopUntil { states.isNotEmpty() }
-
-    assertThat(calledDuringObserve).isFalse()
     assertThat(seeded).isEqualTo(ClaimHistoryScreenState.Loading)
-    assertThat(states.first()).isEqualTo(seeded)
+    assertThat(server.requests.value).isEqualTo(0)
     model.close()
   }
 
   @Test
-  fun `no callback arrives after cancel returns`() {
-    val model = ClaimHistoryScreenModel(factoryOver(FakeServer(regularAndPartnerClaimsJson).apolloClient()))
-    val cancelled = mutableListOf<ClaimHistoryScreenState>()
-    val control = mutableListOf<ClaimHistoryScreenState>()
-
-    val subscription = model.observe { cancelled += it }
-    model.observe { control += it }
-    subscription.cancel()
-    pumpMainLoop(1.seconds)
-
-    assertThat(control).containsExactly(ClaimHistoryScreenState.Loading)
-    assertThat(cancelled).isEmpty()
-    model.close()
-  }
-
-  @Test
-  fun `no callback arrives after close returns`() {
-    val model = ClaimHistoryScreenModel(factoryOver(FakeServer(regularAndPartnerClaimsJson).apolloClient()))
-    val states = mutableListOf<ClaimHistoryScreenState>()
-
-    model.observe { states += it }
-    model.observe { states += it }
-    model.close()
-    pumpMainLoop(1.seconds)
-
-    assertThat(states).isEmpty()
-  }
-
-  @Test
-  fun `observe after close never fires and sends nothing`() {
+  fun `a collection and a reload after close send nothing`() {
     val server = FakeServer(regularAndPartnerClaimsJson)
     val model = ClaimHistoryScreenModel(factoryOver(server.apolloClient()))
     model.close()
-    val states = mutableListOf<ClaimHistoryScreenState>()
 
-    model.observe { states += it }
+    observe(model) {}
     model.reload()
     pumpMainLoop(1.seconds)
 
-    assertThat(states).isEmpty()
     assertThat(server.requests.value).isEqualTo(0)
   }
 
@@ -187,12 +138,12 @@ class ClaimHistoryScreenModelTest {
   fun `close clears the ViewModel once and stops requests`() {
     val server = FakeServer(regularAndPartnerClaimsJson)
     val model = ClaimHistoryScreenModel(factoryOver(server.apolloClient()))
-    model.observe {}
+    observe(model) {}
     pumpMainLoopUntil { server.requests.value == 1 }
 
     model.close()
     model.close()
-    model.observe {}
+    observe(model) {}
     model.reload()
     pumpMainLoop(6.seconds)
 
@@ -201,31 +152,31 @@ class ClaimHistoryScreenModelTest {
   }
 
   @Test
-  fun `with no subscription for more than 5 seconds the presenter stops and a new observe queries again`() {
+  fun `with no collection for more than 5 seconds the presenter stops and a new collection queries again`() {
     val server = FakeServer(regularAndPartnerClaimsJson)
     val model = ClaimHistoryScreenModel(factoryOver(server.apolloClient()))
-    val subscription = model.observe {}
+    val collection = observe(model) {}
     pumpMainLoopUntil { server.requests.value == 1 }
 
-    subscription.cancel()
+    collection.cancel()
     pumpMainLoop(6.seconds)
     assertThat(server.requests.value).isEqualTo(1)
-    model.observe {}
+    observe(model) {}
 
     assertThat(pumpMainLoopUntil(5.seconds) { server.requests.value == 2 }).isTrue()
     model.close()
   }
 
   @Test
-  fun `a new observe within 5 seconds reuses the running presenter`() {
+  fun `a new collection within 5 seconds reuses the running presenter`() {
     val server = FakeServer(regularAndPartnerClaimsJson)
     val model = ClaimHistoryScreenModel(factoryOver(server.apolloClient()))
-    val subscription = model.observe {}
+    val collection = observe(model) {}
     pumpMainLoopUntil { server.requests.value == 1 }
 
-    subscription.cancel()
+    collection.cancel()
     pumpMainLoop(1.seconds)
-    model.observe {}
+    observe(model) {}
     pumpMainLoop(2.seconds)
 
     assertThat(server.requests.value).isEqualTo(1)
@@ -233,32 +184,31 @@ class ClaimHistoryScreenModelTest {
   }
 
   @Test
-  fun `a dropped subscription keeps the presenter running until close`() {
+  fun `an uncancelled collection keeps the presenter running until close`() {
     val server = FakeServer(regularAndPartnerClaimsJson)
     val model = ClaimHistoryScreenModel(factoryOver(server.apolloClient()))
-    var droppedCallbacks = 0
-    model.observe { droppedCallbacks++ }
+    val states = mutableListOf<ClaimHistoryScreenState>()
+    observe(model) { states += it }
     pumpMainLoopUntil { server.requests.value == 1 }
 
-    GC.collect()
     pumpMainLoop(6.seconds)
-    model.observe {}
+    observe(model) {}
     pumpMainLoop(2.seconds)
     assertThat(server.requests.value).isEqualTo(1)
-    assertThat(droppedCallbacks).isEqualTo(1)
+    assertThat(states).containsExactly(ClaimHistoryScreenState.Loading)
 
     model.close()
     assertThat(logs.messages().count { it == "ClaimHistoryViewModel cleared" }).isEqualTo(1)
   }
 
   @Test
-  fun `many reloads before observing do not throw and the overflow is logged`() {
+  fun `many reloads before collecting do not throw and the overflow is logged`() {
     val model = ClaimHistoryScreenModel(factoryOver(FakeServer(regularAndPartnerClaimsJson).apolloClient()))
 
     repeat(25) { model.reload() }
 
     val dropped = logs.entries().count { (priority, message) ->
-      priority == LogPriority.WARN && message.startsWith("ClaimHistoryViewModel dropped a reload")
+      priority == LogPriority.WARN && message.startsWith("ClaimHistoryViewModel dropped an event")
     }
     assertThat(dropped).isEqualTo(5)
     model.close()
@@ -270,7 +220,7 @@ class ClaimHistoryScreenModelTest {
     val fetcher = FakeAccessTokenFetcher(listOf(TOKEN, TOKEN))
     val model = ClaimHistoryScreenModel(factoryOver(server.nativeApolloClient(fetcher)))
 
-    model.observe {}
+    observe(model) {}
     pumpMainLoopUntil { server.requests.value == 1 }
 
     assertThat(server.authorizationHeaders()).containsExactly("Bearer $TOKEN")
@@ -285,7 +235,7 @@ class ClaimHistoryScreenModelTest {
     val fetcher = FakeAccessTokenFetcher(listOf(null))
     val model = ClaimHistoryScreenModel(factoryOver(server.nativeApolloClient(fetcher)))
 
-    model.observe {}
+    observe(model) {}
     pumpMainLoopUntil { server.requests.value == 1 }
 
     assertThat(server.authorizationHeaders()).containsExactly(null)
@@ -299,7 +249,7 @@ class ClaimHistoryScreenModelTest {
     val fetcher = FakeAccessTokenFetcher(listOf(TOKEN, null))
     val model = ClaimHistoryScreenModel(factoryOver(server.nativeApolloClient(fetcher)))
 
-    model.observe {}
+    observe(model) {}
     pumpMainLoopUntil { server.requests.value == 1 }
 
     assertThat(server.authorizationHeaders()).containsExactly("Bearer null")
@@ -313,13 +263,59 @@ class ClaimHistoryScreenModelTest {
     val fetcher = FakeAccessTokenFetcher(throws = true)
     val model = ClaimHistoryScreenModel(factoryOver(server.nativeApolloClient(fetcher)))
 
-    model.observe {}
+    observe(model) {}
     pumpMainLoopUntil { fetcher.calls.value == 1 }
     pumpMainLoop(2.seconds)
 
     assertThat(server.requests.value).isEqualTo(0)
     assertThat(fetcher.calls.value).isEqualTo(1)
     model.close()
+  }
+
+  @Test
+  fun `handle calls the closure of each state`() {
+    val states = listOf(
+      ClaimHistoryScreenState.Loading,
+      ClaimHistoryScreenState.Empty,
+      ClaimHistoryScreenState.Failed,
+      ClaimHistoryScreenState.Content(emptyList()),
+    )
+
+    val handled = states.map { state ->
+      val calls = mutableListOf<String>()
+      state.handle(
+        onLoading = { calls += "loading" },
+        onEmpty = { calls += "empty" },
+        onFailed = { calls += "failed" },
+        onContent = { calls += "content:${it.items.size}" },
+      )
+      calls
+    }
+
+    assertThat(handled).containsExactly(listOf("loading"), listOf("empty"), listOf("failed"), listOf("content:0"))
+  }
+
+  @Test
+  fun `handle calls the closure of each outcome`() {
+    val handled = ClaimHistoryOutcome.entries.map { outcome ->
+      val calls = mutableListOf<String>()
+      outcome.handle(
+        onPaid = { calls += "paid" },
+        onNotCompensated = { calls += "notCompensated" },
+        onNotCovered = { calls += "notCovered" },
+        onUnresponsive = { calls += "unresponsive" },
+        onUnknown = { calls += "unknown" },
+      )
+      calls
+    }
+
+    assertThat(handled).containsExactly(
+      listOf("paid"),
+      listOf("notCompensated"),
+      listOf("notCovered"),
+      listOf("unresponsive"),
+      listOf("unknown"),
+    )
   }
 
   @Test
