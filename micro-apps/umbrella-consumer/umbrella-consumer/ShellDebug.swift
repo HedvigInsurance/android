@@ -1,5 +1,6 @@
 #if DEBUG
 import Foundation
+@preconcurrency import HedvigShared
 import ObjectiveC
 
 /// Launch arguments for exercising failure and refresh paths by hand, read from the argument domain of
@@ -15,6 +16,45 @@ enum ShellDebug {
     /// `-shellLogRequestHeaders YES`: logs the headers of every URLSession request the process makes. Only the
     /// parity headers print their values; `Authorization` prints its shape and the rest their length.
     static var logRequestHeaders: Bool { UserDefaults.standard.bool(forKey: "shellLogRequestHeaders") }
+
+    /// `-shellClaimHistorySample YES`: the root screen offers "Sample content", a claim history built in Swift from
+    /// Kotlin types.
+    static var claimHistorySample: Bool { UserDefaults.standard.bool(forKey: "shellClaimHistorySample") }
+
+    /// Five claims covering every outcome, a nil date, a nil claim type, a regular and a partner claim sharing a raw
+    /// id, and a date at 00:30 UTC today.
+    static func claimHistorySampleState() -> ClaimHistoryScreenState {
+        var utc = Calendar(identifier: .gregorian)
+        utc.timeZone = TimeZone(identifier: "UTC")!
+        let earlyToday = utc.startOfDay(for: Date()).addingTimeInterval(30 * 60)
+        let october = utc.date(from: DateComponents(year: 2026, month: 10, day: 2, hour: 10))!
+        let september = utc.date(from: DateComponents(year: 2026, month: 9, day: 15, hour: 12))!
+        let items = [
+            ClaimHistoryItem(id: "1001", claimType: "Water damage", submittedAt: october, outcome: .paid,
+                             isPartnerClaim: false),
+            ClaimHistoryItem(id: "P-77", claimType: "Travel", submittedAt: nil, outcome: .unknown,
+                             isPartnerClaim: true),
+            ClaimHistoryItem(id: "2002", claimType: "Theft", submittedAt: september, outcome: .notCompensated,
+                             isPartnerClaim: false),
+            ClaimHistoryItem(id: "2002", claimType: "Bicycle", submittedAt: september, outcome: .notCovered,
+                             isPartnerClaim: true),
+            ClaimHistoryItem(id: "3003", claimType: nil, submittedAt: earlyToday, outcome: .unresponsive,
+                             isPartnerClaim: false),
+        ]
+        ShellLog.info("Sample built: \(items.count) Kotlin items, time zone \(TimeZone.current.identifier)")
+        return ClaimHistoryScreenState.Content(items: items)
+    }
+
+    static func logSample(_ state: ClaimHistoryViewState) {
+        ShellLog.info("Sample state: \(state.logDescription)")
+        guard case let .content(rows) = state else { return }
+        for row in rows {
+            let date = row.submittedAt?.formatted(.dateTime.year().month().day()) ?? "No date"
+            ShellLog.info(
+                "Sample row \(row.id): \(row.claimType ?? "Claim"), \(date), \(row.outcome), partner \(row.isPartnerClaim)"
+            )
+        }
+    }
 
     static func describe(_ session: StoredSession) -> String {
         "access token length \(session.accessToken.count), expires \(session.accessTokenExpiresAt); "

@@ -63,6 +63,29 @@ private struct ClaimHistoryContent: View {
     }
 }
 
+#if DEBUG
+/// Renders a fixed state with the real screen's rows, for checking how Kotlin content crosses the bridge.
+struct ClaimHistorySampleView: View {
+    let state: ClaimHistoryViewState
+
+    var body: some View {
+        Group {
+            if case let .content(rows) = state {
+                List(rows) { row in
+                    ClaimHistoryRowView(row: row)
+                }
+            } else {
+                Text(state.logDescription)
+            }
+        }
+        .navigationTitle("Sample content")
+        .onAppear {
+            ShellDebug.logSample(state)
+        }
+    }
+}
+#endif
+
 private struct ClaimHistoryRowView: View {
     let row: ClaimHistoryRow
 

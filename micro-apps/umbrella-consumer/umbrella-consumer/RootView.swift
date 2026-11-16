@@ -25,6 +25,13 @@ struct RootView: View {
                                 ShellLog.info("throwDeclaredForBridgeCheck() threw \(type(of: error))")
                             }
                         }
+                        if ShellDebug.claimHistorySample {
+                            NavigationLink("Sample content") {
+                                ClaimHistorySampleView(
+                                    state: ClaimHistoryViewState(ShellDebug.claimHistorySampleState())
+                                )
+                            }
+                        }
                     }
                     #endif
                     Section {
