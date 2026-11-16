@@ -1,13 +1,32 @@
 import Foundation
 @preconcurrency import HedvigShared
-import Observation
+
+typealias ClaimHistoryScreenOwner = ScreenOwner<ClaimHistoryScreenModel, ClaimHistoryViewState>
+
+extension ClaimHistoryScreenOwner {
+    func reload() {
+        ShellLog.info("ClaimHistoryScreenOwner reload")
+        model.reload()
+    }
+}
 
 /// What the claim history screen shows, mirrored from Kotlin's `ClaimHistoryScreenState`.
-enum ClaimHistoryViewState {
+enum ClaimHistoryViewState: ScreenViewState {
     case loading
     case empty
     case failed
     case content([ClaimHistoryRow])
+
+    init(_ kotlinState: ClaimHistoryScreenState) {
+        self = oneOf { pick in
+            kotlinState.handle(
+                onLoading: { pick(.loading) },
+                onEmpty: { pick(.empty) },
+                onFailed: { pick(.failed) },
+                onContent: { pick(.content($0.items.map(ClaimHistoryRow.init))) }
+            )
+        }
+    }
 
     var logDescription: String {
         switch self {
@@ -39,64 +58,6 @@ struct ClaimHistoryRow: Identifiable, Equatable {
     let isPartnerClaim: Bool
 }
 
-/// Owns one Kotlin `ClaimHistoryScreenModel` for as long as the screen exists, following the model's rules: seed from
-/// `currentState`, observe with a weak capture, and cancel and close on the main actor in `deinit`.
-@MainActor
-@Observable
-final class ClaimHistoryScreenOwner {
-    private(set) var state: ClaimHistoryViewState
-
-    @ObservationIgnored private let model: ClaimHistoryScreenModel
-    @ObservationIgnored private var subscription: ClaimHistorySubscription?
-
-    init(holder: IosGraphHolder) {
-        let model = holder.claimHistoryScreenModel()
-        self.model = model
-        state = ClaimHistoryViewState(model.currentState)
-        ShellLog.info("ClaimHistoryScreenOwner seeded: \(state.logDescription)")
-        subscription = model.observe { [weak self] kotlinState in
-            MainActor.assumeIsolated {
-                self?.receive(kotlinState)
-            }
-        }
-    }
-
-    func reload() {
-        ShellLog.info("ClaimHistoryScreenOwner reload")
-        model.reload()
-    }
-
-    private func receive(_ kotlinState: ClaimHistoryScreenState) {
-        state = ClaimHistoryViewState(kotlinState)
-        ShellLog.info("ClaimHistoryScreenOwner state: \(state.logDescription)")
-    }
-
-    // Runs on the main actor; verified on iOS 27.2 only, while the deployment target is 17.0.
-    isolated deinit {
-        ShellLog.info("ClaimHistoryScreenOwner deinit")
-        subscription?.cancel()
-        model.close()
-    }
-}
-
-private extension ClaimHistoryViewState {
-    init(_ kotlinState: ClaimHistoryScreenState) {
-        switch kotlinState {
-        case let content as ClaimHistoryScreenState.Content:
-            self = .content(content.items.map(ClaimHistoryRow.init))
-        case is ClaimHistoryScreenState.Empty:
-            self = .empty
-        case is ClaimHistoryScreenState.Failed:
-            self = .failed
-        case is ClaimHistoryScreenState.Loading:
-            self = .loading
-        default:
-            ShellLog.error("Unknown ClaimHistoryScreenState \(type(of: kotlinState)), showing failed")
-            self = .failed
-        }
-    }
-}
-
 private extension ClaimHistoryRow {
     init(_ item: ClaimHistoryItem) {
         id = item.isPartnerClaim ? "partner:\(item.id)" : "claim:\(item.id)"
@@ -104,12 +65,14 @@ private extension ClaimHistoryRow {
         claimType = item.claimType
         submittedAt = item.submittedAt
         isPartnerClaim = item.isPartnerClaim
-        outcome = switch item.outcome {
-        case .paid: .paid
-        case .notCompensated: .notCompensated
-        case .notCovered: .notCovered
-        case .unresponsive: .unresponsive
-        default: .unknown
+        outcome = oneOf { pick in
+            item.outcome.handle(
+                onPaid: { pick(.paid) },
+                onNotCompensated: { pick(.notCompensated) },
+                onNotCovered: { pick(.notCovered) },
+                onUnresponsive: { pick(.unresponsive) },
+                onUnknown: { pick(.unknown) }
+            )
         }
     }
 }

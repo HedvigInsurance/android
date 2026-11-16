@@ -10,7 +10,7 @@ struct ClaimHistoryView: View {
     var body: some View {
         Group {
             if let owner {
-                ClaimHistoryContent(owner: owner)
+                ClaimHistoryContent(state: owner.state, reload: owner.reload)
             } else {
                 ProgressView()
             }
@@ -24,17 +24,18 @@ struct ClaimHistoryView: View {
         }
         .onAppear {
             if owner == nil {
-                owner = ClaimHistoryScreenOwner(holder: holder)
+                owner = ClaimHistoryScreenOwner(holder.claimHistoryScreenModel())
             }
         }
     }
 }
 
-private struct ClaimHistoryContent: View {
-    let owner: ClaimHistoryScreenOwner
+struct ClaimHistoryContent: View {
+    let state: ClaimHistoryViewState
+    let reload: @MainActor () -> Void
 
     var body: some View {
-        switch owner.state {
+        switch state {
         case .loading:
             ProgressView()
         case .empty:
@@ -43,7 +44,7 @@ private struct ClaimHistoryContent: View {
             VStack(spacing: 16) {
                 Text("Could not load your claims")
                 Button("Retry") {
-                    owner.reload()
+                    reload()
                 }
                 .buttonStyle(.bordered)
             }
@@ -54,6 +55,21 @@ private struct ClaimHistoryContent: View {
         }
     }
 }
+
+#if DEBUG
+/// Renders a fixed state with the real screen's content view, for checking how Kotlin content crosses the bridge.
+struct ClaimHistorySampleView: View {
+    let state: ClaimHistoryViewState
+
+    var body: some View {
+        ClaimHistoryContent(state: state, reload: {})
+            .navigationTitle("Sample content")
+            .onAppear {
+                ShellDebug.logSample(state)
+            }
+    }
+}
+#endif
 
 private struct ClaimHistoryRowView: View {
     let row: ClaimHistoryRow
@@ -96,4 +112,32 @@ private extension ClaimHistoryRow.Outcome {
         case .unknown: "Unknown"
         }
     }
+}
+
+#Preview("Loading") {
+    ClaimHistoryContent(state: .loading, reload: {})
+}
+
+#Preview("Empty") {
+    ClaimHistoryContent(state: .empty, reload: {})
+}
+
+#Preview("Failed") {
+    ClaimHistoryContent(state: .failed, reload: {})
+}
+
+#Preview("Content") {
+    ClaimHistoryContent(
+        state: .content([
+            ClaimHistoryRow(
+                id: "claim:1001", claimId: "1001", claimType: "Water damage", submittedAt: .now, outcome: .paid,
+                isPartnerClaim: false
+            ),
+            ClaimHistoryRow(
+                id: "partner:1001", claimId: "1001", claimType: nil, submittedAt: nil, outcome: .unknown,
+                isPartnerClaim: true
+            ),
+        ]),
+        reload: {}
+    )
 }
