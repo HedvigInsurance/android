@@ -55,7 +55,6 @@ import com.hedvig.android.design.system.hedvig.HedvigStepper
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTextField
-import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.ErrorState.Error.WithMessage
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.ErrorState.NoError
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.TextFieldSize
@@ -104,6 +103,7 @@ import hedvig.resources.CHANGE_ADDRESS_EXTRA_BUILDINGS_LABEL
 import hedvig.resources.CHANGE_ADDRESS_EXTRA_BUILDINGS_WATER_INPUT_LABEL
 import hedvig.resources.CHANGE_ADDRESS_EXTRA_BUILDINGS_WATER_LABEL
 import hedvig.resources.CHANGE_ADDRESS_EXTRA_BUILDING_CONTAINER_TITLE
+import hedvig.resources.CHANGE_ADDRESS_EXTRA_BUILDING_SIZE_ERROR
 import hedvig.resources.CHANGE_ADDRESS_EXTRA_BUILDING_SIZE_LABEL
 import hedvig.resources.CHANGE_ADDRESS_INFORMATION_ABOUT_YOUR_HOUSE
 import hedvig.resources.CHANGE_ADDRESS_SIZE_SUFFIX
@@ -379,7 +379,7 @@ private fun ExtraBuildingsDialogContent(
   var chosenBuilding: MoveExtraBuildingType? by remember { mutableStateOf(null) }
   var size: Int? by remember { mutableStateOf(null) }
   var isConnectedToWater: Boolean by remember { mutableStateOf(false) }
-  var isSizeMissing by remember { mutableStateOf(false) }
+  var isSizeInvalid by remember { mutableStateOf(false) }
   Column(modifier) {
     Spacer(Modifier.height(16.dp))
     HedvigText(
@@ -412,20 +412,22 @@ private fun ExtraBuildingsDialogContent(
               chosenBuilding = it
               onDismissRequest()
             },
-            dismissDialog = onDismissRequest,
-          //  modifier = Modifier.padding(horizontal = 16.dp),
-          )
+            dismissDialog = onDismissRequest)
         }
         HedvigTextField(
           text = size?.toString() ?: "",
           onValueChange = {
-            isSizeMissing = false
+            isSizeInvalid = false
             size = it.toIntOrNull()
           },
           keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
           labelText = stringResource(Res.string.CHANGE_ADDRESS_EXTRA_BUILDING_SIZE_LABEL),
           textFieldSize = TextFieldSize.Medium,
-          errorState = if (isSizeMissing) HedvigTextFieldDefaults.ErrorState.Error.WithoutMessage else NoError,
+          errorState = if (isSizeInvalid) {
+            WithMessage(stringResource(Res.string.CHANGE_ADDRESS_EXTRA_BUILDING_SIZE_ERROR))
+          } else {
+            NoError
+          },
         )
         HedvigToggle(
           labelText = stringResource(Res.string.CHANGE_ADDRESS_EXTRA_BUILDINGS_WATER_INPUT_LABEL),
@@ -440,10 +442,11 @@ private fun ExtraBuildingsDialogContent(
       HedvigButton(
         text = stringResource(Res.string.general_save_button),
         onClick = {
-          if (size == null) {
-            isSizeMissing = true
+          val area = size?.takeIf { it > 0 }
+          if (area == null) {
+            isSizeInvalid = true
+            return@HedvigButton
           }
-          val area = size ?: return@HedvigButton
           val type = chosenBuilding?.type ?: return@HedvigButton
           val displayName = chosenBuilding?.displayName ?: return@HedvigButton
           extraBuildings.updateValue(
