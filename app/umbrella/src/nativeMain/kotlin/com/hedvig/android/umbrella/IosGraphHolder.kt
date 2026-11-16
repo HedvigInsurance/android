@@ -3,6 +3,7 @@ package com.hedvig.android.umbrella
 import com.hedvig.android.core.buildconstants.AppBuildConfig
 import com.hedvig.android.core.datastore.DeviceIdFetcher
 import com.hedvig.android.core.demomode.IosDemoMode
+import com.hedvig.android.core.tracking.RumLogger
 import com.hedvig.android.feature.claimhistory.ios.ClaimHistoryScreenModel
 import com.hedvig.android.feature.claimhistory.ios.createClaimHistoryScreenModel
 import com.hedvig.android.language.LanguageStorage
@@ -15,6 +16,9 @@ import dev.zacsweers.metro.createGraphFactory
  * while building the graph is fatal once it reaches Swift.
  *
  * [accessTokenFetcher] is called before every request; when it throws, the request fails without being sent.
+ *
+ * Shared code reports actions and errors through [RumLogger], which throws until a logger is installed, so when none is
+ * installed this installs [LogcatRumLogger] before building the graph.
  */
 fun createIosGraphHolder(
   appBuildConfig: AppBuildConfig,
@@ -23,6 +27,9 @@ fun createIosGraphHolder(
   languageStorage: LanguageStorage,
   demoMode: IosDemoMode,
 ): IosGraphHolder {
+  if (!RumLogger.isInstalled) {
+    RumLogger.install(LogcatRumLogger)
+  }
   val graph = createGraphFactory<IosGraph.Factory>().create(
     appBuildConfig = appBuildConfig,
     accessTokenFetcher = accessTokenFetcher,

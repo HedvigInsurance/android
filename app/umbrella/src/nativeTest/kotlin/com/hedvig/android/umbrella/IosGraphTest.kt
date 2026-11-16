@@ -20,6 +20,10 @@ import com.hedvig.android.core.buildconstants.AppBuildConfig
 import com.hedvig.android.core.buildconstants.Flavor
 import com.hedvig.android.core.datastore.DeviceIdFetcher
 import com.hedvig.android.core.demomode.IosDemoMode
+import com.hedvig.android.core.tracking.ActionType
+import com.hedvig.android.core.tracking.ErrorSource
+import com.hedvig.android.core.tracking.RumLogger
+import com.hedvig.android.core.tracking.logError
 import com.hedvig.android.language.LanguageStorage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.LogcatLogger
@@ -64,6 +68,7 @@ class IosGraphTest {
   @AfterTest
   fun uninstallLogger() {
     LogcatLogger.uninstall()
+    RumLogger.uninstall()
   }
 
   @Test
@@ -170,6 +175,51 @@ class IosGraphTest {
     assertThat(holder.storeIsEmpty()).isFalse()
     assertThat(inputs.demoMode.writes()).isEmpty()
     assertThat(logs.messages().filter { "dispatching event" in it }).isEmpty()
+  }
+
+  @Test
+  fun `a GraphQL error response does not throw and is logged once as a RUM error without attribute values`() {
+    val holder = FakeInputs().createHolder()
+
+    val response = runBlocking {
+      holder.respondingWith(graphQlErrorJson)
+        .query(ClaimsHistoryQuery())
+        .fetchPolicy(FetchPolicy.NetworkOnly)
+        .execute()
+    }
+
+    assertThat(response.errors.orEmpty().map { it.message }).containsExactly("Something went wrong")
+    assertThat(logs.entries().filter { (_, message) -> message.startsWith("RUM error") }).containsExactly(
+      LogPriority.WARN to
+        "RUM error from NETWORK: GraphQL errors for ClaimsHistory: [Something went wrong] attribute keys: [data, errors]",
+    )
+  }
+
+  @Test
+  fun `a RumLogger installed before the graph is kept`() {
+    val installed = RecordingRumLogger()
+    RumLogger.install(installed)
+
+    FakeInputs().createHolder()
+    logError("an error", ErrorSource.SOURCE)
+
+    assertThat(installed.errors).containsExactly("an error")
+  }
+}
+
+private class RecordingRumLogger : RumLogger {
+  val errors = mutableListOf<String>()
+
+  override fun logAction(type: ActionType, name: String, attributes: Map<String, Any?>) {}
+
+  override fun logError(
+    message: String,
+    source: ErrorSource,
+    attributes: Map<String, Any?>,
+    throwable: Throwable?,
+    stacktrace: String?,
+  ) {
+    errors += message
   }
 }
 
@@ -293,14 +343,16 @@ private class CapturingLogger : LogcatLogger {
   private val lock = NSLock()
   private val captured = mutableListOf<Pair<LogPriority, String>>()
 
-  fun messages(): List<String> {
+  fun entries(): List<Pair<LogPriority, String>> {
     lock.lock()
     try {
-      return captured.map { it.second }
+      return captured.toList()
     } finally {
       lock.unlock()
     }
   }
+
+  fun messages(): List<String> = entries().map { it.second }
 
   override fun log(priority: LogPriority, throwable: Throwable?, tag: String?, message: () -> String) {
     val text = message() + (throwable?.let { "\n" + it.stackTraceToString() } ?: "")
@@ -319,6 +371,17 @@ private val unauthenticatedJson = """
       {
         "message": "Unauthenticated",
         "extensions": { "errorType": "UNAUTHENTICATED" }
+      }
+    ]
+  }
+""".trimIndent()
+
+private val graphQlErrorJson = """
+  {
+    "errors": [
+      {
+        "message": "Something went wrong",
+        "extensions": { "detail": "attribute-value-7f3a" }
       }
     ]
   }
