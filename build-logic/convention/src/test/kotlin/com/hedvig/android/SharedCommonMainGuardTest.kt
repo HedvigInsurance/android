@@ -20,7 +20,10 @@ class SharedCommonMainGuardTest {
       import coil3.compose.AsyncImage
       import androidx.paging.compose.LazyPagingItems
       import androidx.navigation3.ui.NavDisplay
+      import androidx.compose.animation.AnimatedContent
       import androidx.compose.runtime.Composable
+      import androidx.compose.runtime.saveable.rememberSaveable
+      import androidx.lifecycle.viewmodel.compose.viewModel
       import androidx.lifecycle.ViewModel
       import com.hedvig.android.molecule.public.MoleculeViewModel
     """.trimIndent()
@@ -34,6 +37,7 @@ class SharedCommonMainGuardTest {
       8 to "coil3.compose.AsyncImage",
       9 to "androidx.paging.compose.LazyPagingItems",
       10 to "androidx.navigation3.ui.NavDisplay",
+      11 to "androidx.compose.animation.AnimatedContent",
     )
   }
 
@@ -47,6 +51,14 @@ class SharedCommonMainGuardTest {
       "org.jetbrains.compose.components:components-resources",
       "io.coil-kt.coil3:coil-compose",
       "androidx.paging:paging-compose",
+      "org.jetbrains.compose.animation:animation",
+      "androidx.compose.ui:ui-tooling-preview",
+      "androidx.compose.foundation:foundation-layout",
+      "androidx.compose.material:material-ripple",
+      "androidx.compose.material3:material3",
+      "androidx.compose.animation:animation-core",
+      "org.jetbrains.androidx.navigationevent:navigationevent-compose",
+      "dev.zacsweers.metro:metrox-viewmodel-compose",
     )
     for (dependency in forbidden) {
       assertThat(isForbiddenSharedCommonMainDependency(dependency), dependency).isTrue()
@@ -60,6 +72,12 @@ class SharedCommonMainGuardTest {
       "org.jetbrains.compose.runtime:runtime",
       "com.apollographql.apollo:apollo-runtime",
       "androidx.compose:compose-bom",
+      "androidx.compose.runtime:runtime-retain",
+      "org.jetbrains.compose.runtime:runtime-saveable",
+      "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose",
+      "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose",
+      "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3",
+      "dev.zacsweers.metro:metrox-viewmodel",
     )
     for (dependency in allowed) {
       assertThat(isForbiddenSharedCommonMainDependency(dependency), dependency).isFalse()
