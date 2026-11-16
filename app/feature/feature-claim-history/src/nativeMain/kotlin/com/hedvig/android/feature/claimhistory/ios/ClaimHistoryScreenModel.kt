@@ -12,6 +12,7 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import kotlin.experimental.ExperimentalObjCRefinement
 import kotlin.native.HiddenFromObjC
+import kotlin.time.Instant
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,6 +21,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.datetime.toNSDate
+import platform.Foundation.NSDate
 
 @HiddenFromObjC
 fun createClaimHistoryScreenModel(viewModelFactory: ViewModelProvider.Factory): ClaimHistoryScreenModel =
@@ -34,7 +36,11 @@ fun createClaimHistoryScreenModel(viewModelFactory: ViewModelProvider.Factory): 
  * - The [observe] closure captures its owner weakly (`[weak self]`). The model holds the closure until the
  *   subscription is cancelled, so a strong capture keeps the owner, and with it this model, alive for good.
  * - Call [close] on the main thread when the screen goes away, from the owner's main-actor `deinit`. A model that is
- *   never closed keeps its ViewModel, and the presenter keeps running for 5 seconds after its last subscription ends.
+ *   never closed keeps its ViewModel. Its presenter runs while any subscription is active, and stops 5 seconds after
+ *   the last one is cancelled.
+ *
+ * [observe], [ClaimHistorySubscription.cancel] and [close] run on the main thread. [currentState] and [reload] can be
+ * called from any thread.
  *
  * After [close], [observe] returns a subscription that never calls back, [reload] and [close] do nothing, and
  * [currentState] keeps returning the last state.
@@ -51,7 +57,7 @@ class ClaimHistoryScreenModel internal constructor(viewModelFactory: ViewModelPr
   private var closed = false
 
   init {
-    viewModel.addCloseable(AutoCloseable { logcat { "ClaimHistoryViewModel cleared" } })
+    viewModel.addCloseable(AutoCloseable { logcat { "${ClaimHistoryViewModel::class.simpleName} cleared" } })
   }
 
   /** Readable from any thread. Reading it does not start the presenter. */
@@ -59,8 +65,9 @@ class ClaimHistoryScreenModel internal constructor(viewModelFactory: ViewModelPr
     get() = viewModel.uiState.value.toScreenState()
 
   /**
-   * Calls [onState] on the main thread with the current state and every later one, until the returned subscription
-   * is cancelled or the model is closed. Each call adds an independent subscription.
+   * Calls [onState] on the main thread with the current state and every later one. Each call adds an independent
+   * subscription. Only [ClaimHistorySubscription.cancel] or [close] ends it; releasing the returned subscription
+   * object does not. Main thread only.
    */
   fun observe(onState: (ClaimHistoryScreenState) -> Unit): ClaimHistorySubscription {
     if (closed) return ClaimHistorySubscription(null)
@@ -70,13 +77,18 @@ class ClaimHistoryScreenModel internal constructor(viewModelFactory: ViewModelPr
     return ClaimHistorySubscription(job)
   }
 
-  /** Loads the history again. A reload that does not fit in the event buffer is dropped and logged. */
+  /**
+   * Loads the history again. A reload that does not fit in the event buffer is dropped and logged.
+   *
+   * Safe to call from any thread: it only offers an event to the ViewModel's channel without waiting, and a reload
+   * that races [close] on another thread can reach a ViewModel that no longer consumes events.
+   */
   fun reload() {
     if (closed) return
     try {
       viewModel.emit(ClaimHistoryEvent.Reload)
     } catch (e: IllegalStateException) {
-      logcat(LogPriority.WARN, e) { "ClaimHistoryScreenModel dropped a reload" }
+      logcat(LogPriority.WARN, e) { "${ClaimHistoryViewModel::class.simpleName} dropped a reload" }
     }
   }
 
@@ -89,8 +101,12 @@ class ClaimHistoryScreenModel internal constructor(viewModelFactory: ViewModelPr
   }
 }
 
+/**
+ * A subscription made by [ClaimHistoryScreenModel.observe]. It ends only through [cancel] or
+ * [ClaimHistoryScreenModel.close]; releasing this object does not end it.
+ */
 class ClaimHistorySubscription internal constructor(private val job: Job?) {
-  /** Stops the callbacks of this subscription. Calling it again does nothing. */
+  /** Stops the callbacks of this subscription. Calling it again does nothing. Main thread only. */
   fun cancel() {
     job?.cancel()
   }
@@ -106,7 +122,7 @@ private fun ClaimHistoryUiState.toScreenState(): ClaimHistoryScreenState = when 
 private fun ClaimHistory.toItem(): ClaimHistoryItem = ClaimHistoryItem(
   id = id,
   claimType = claimType,
-  submittedAt = submittedAt?.toNSDate(),
+  submittedAt = submittedAt?.toNSDateOrNull(),
   outcome = when (outcome) {
     ClaimHistory.ClaimOutcome.PAID -> ClaimHistoryOutcome.PAID
     ClaimHistory.ClaimOutcome.NOT_COMPENSATED -> ClaimHistoryOutcome.NOT_COMPENSATED
@@ -116,3 +132,10 @@ private fun ClaimHistory.toItem(): ClaimHistoryItem = ClaimHistoryItem(
   },
   isPartnerClaim = isPartnerClaim,
 )
+
+private fun Instant.toNSDateOrNull(): NSDate? = try {
+  toNSDate()
+} catch (e: IllegalArgumentException) {
+  logcat(LogPriority.WARN, e) { "Claim submission time $this is outside the range NSDate holds" }
+  null
+}
