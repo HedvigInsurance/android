@@ -332,6 +332,7 @@ internal fun YourInfoTab(
             CoInsuredSection(
               coInsuredList = insuredPeopleExceptHolder,
               modifier = Modifier.padding(horizontal = 16.dp),
+              onMissingCoInsuredInfoClick = onMissingCoInsuredInfoClick,
             )
           }
         }
@@ -808,6 +809,7 @@ internal fun ContractOwnerSection(
               HedvigText(
                 text = contractHolderSSN,
                 color = HedvigTheme.colorScheme.textSecondary,
+                style = HedvigTheme.typography.label
               )
             }
           }
@@ -832,7 +834,10 @@ internal fun ContractOwnerSection(
 }
 
 @Composable
-internal fun CoInsuredSection(coInsuredList: List<CoInsured>, modifier: Modifier) {
+internal fun CoInsuredSection(
+  coInsuredList: List<CoInsured>,
+  onMissingCoInsuredInfoClick: () -> Unit,
+  modifier: Modifier) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
   val birthDateTimeFormatter = rememberHedvigBirthDateDateTimeFormatter()
   Column(modifier = modifier) {
@@ -855,6 +860,7 @@ internal fun CoInsuredSection(coInsuredList: List<CoInsured>, modifier: Modifier
                 text = coInsured.getSsnOrBirthDate(birthDateTimeFormatter)
                   ?: stringResource(Res.string.CONTRACT_NO_INFORMATION),
                 color = HedvigTheme.colorScheme.textSecondary,
+                style = HedvigTheme.typography.label
               )
 
               if (coInsured.activatesOn != null) {
@@ -892,7 +898,10 @@ internal fun CoInsuredSection(coInsuredList: List<CoInsured>, modifier: Modifier
                 imageVector = HedvigIcons.WarningFilled,
                 tint = HedvigTheme.colorScheme.signalAmberElement,
                 contentDescription = null,
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(16.dp)
+                  .clickable {
+                    onMissingCoInsuredInfoClick()
+                  },
               )
             }
           }
