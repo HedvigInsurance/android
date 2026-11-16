@@ -10,6 +10,17 @@ struct RootView: View {
                     NavigationLink("Claim history") {
                         claimHistoryDestination()
                     }
+                    #if DEBUG
+                    if ShellDebug.claimHistorySample {
+                        Section("Debug") {
+                            NavigationLink("Sample content") {
+                                ClaimHistorySampleView(
+                                    state: ClaimHistoryViewState(ShellDebug.claimHistorySampleState())
+                                )
+                            }
+                        }
+                    }
+                    #endif
                     Section {
                         Button("Log out", role: .destructive) {
                             app.logOut()

@@ -17,6 +17,12 @@ kotlin {
       implementation(libs.jetbrains.compose.runtime)
       implementation(libs.coroutines.core)
     }
+    nativeMain.dependencies {
+      implementation(libs.kmpNativeCoroutines.core)
+    }
+    nativeTest.dependencies {
+      implementation(libs.assertK)
+    }
     jvmTest.dependencies {
       implementation(libs.assertK)
       implementation(libs.coroutines.test)
