@@ -59,4 +59,15 @@ class IosGraphHolder internal constructor(
       graph.authEventStorage.loggedOut()
     }
   }
+
+  /** Bridge comparison probe: throws an exception the Objective-C header does not declare. */
+  fun throwForBridgeCheck() {
+    throw IllegalStateException("Bridge check: undeclared exception")
+  }
+
+  /** Bridge comparison probe: throws an exception the Objective-C header declares, so Swift sees a throwing call. */
+  @Throws(IllegalStateException::class)
+  fun throwDeclaredForBridgeCheck() {
+    throw IllegalStateException("Bridge check: declared exception")
+  }
 }

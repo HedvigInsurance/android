@@ -27,6 +27,14 @@ struct ClaimHistoryView: View {
                 owner = ClaimHistoryScreenOwnerFlows(holder: holder)
             }
         }
+        #if DEBUG
+        .onDisappear {
+            weak let released = owner
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                ShellLog.info("owner released: \(released == nil)")
+            }
+        }
+        #endif
     }
 }
 
