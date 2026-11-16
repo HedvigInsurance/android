@@ -58,7 +58,7 @@ class GetClaimsHistoryUseCaseTest {
   }
 }
 
-private val regularAndPartnerClaimsJson = """
+internal val regularAndPartnerClaimsJson = """
   {
     "data": {
       "currentMember": {
@@ -107,7 +107,7 @@ private val regularAndPartnerClaimsJson = """
   }
 """.trimIndent()
 
-private val graphQlErrorJson = """
+internal val graphQlErrorJson = """
   {
     "errors": [
       {
