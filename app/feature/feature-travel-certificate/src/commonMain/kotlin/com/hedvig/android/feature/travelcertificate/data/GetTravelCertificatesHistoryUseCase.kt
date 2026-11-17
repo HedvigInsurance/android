@@ -48,7 +48,7 @@ internal class GetTravelCertificatesHistoryUseCaseImpl(
   }
 }
 
-data class TravelCertificate(
+internal data class TravelCertificate(
   val startDate: LocalDate,
   val id: String,
   val signedUrl: String,

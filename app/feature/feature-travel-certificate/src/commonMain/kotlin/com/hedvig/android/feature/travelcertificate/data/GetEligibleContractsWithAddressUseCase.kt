@@ -49,7 +49,7 @@ internal class GetEligibleContractsWithAddressUseCaseImpl(
   }
 }
 
-data class ContractEligibleWithAddress(
+internal data class ContractEligibleWithAddress(
   val address: String,
   val contractId: String,
 )

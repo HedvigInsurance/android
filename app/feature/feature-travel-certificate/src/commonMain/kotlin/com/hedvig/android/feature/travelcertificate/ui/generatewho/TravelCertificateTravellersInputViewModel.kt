@@ -245,6 +245,10 @@ internal sealed interface TravelCertificateTravellersInputUiState {
   ) : TravelCertificateTravellersInputUiState {
     /** A create is only sent with at least one traveller. */
     val canCreate: Boolean = isMemberIncluded || coInsuredList.any { it.isIncluded }
+
+    /** Leaves out [memberFullName]. */
+    override fun toString(): String = "Success(isMemberIncluded=$isMemberIncluded, coInsuredList=$coInsuredList, " +
+      "coInsuredHasMissingInfo=$coInsuredHasMissingInfo, isCreating=$isCreating, createFailed=$createFailed)"
   }
 
   /** The certificate exists; nothing follows on this screen. */
