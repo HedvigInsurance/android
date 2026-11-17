@@ -8,8 +8,12 @@ import com.hedvig.android.feature.claimhistory.ios.ClaimHistoryScreenModel
 import com.hedvig.android.feature.claimhistory.ios.createClaimHistoryScreenModel
 import com.hedvig.android.feature.payments.ios.PaymentDetailsScreenModel
 import com.hedvig.android.feature.payments.ios.PaymentHistoryScreenModel
+import com.hedvig.android.feature.payments.ios.PaymentManualChargeScreenModel
+import com.hedvig.android.feature.payments.ios.PaymentOverviewScreenModel
 import com.hedvig.android.feature.payments.ios.createPaymentDetailsScreenModel
 import com.hedvig.android.feature.payments.ios.createPaymentHistoryScreenModel
+import com.hedvig.android.feature.payments.ios.createPaymentManualChargeScreenModel
+import com.hedvig.android.feature.payments.ios.createPaymentOverviewScreenModel
 import com.hedvig.android.language.LanguageStorage
 import com.hedvig.android.network.clients.AccessTokenFetcher
 import dev.zacsweers.metro.createGraphFactory
@@ -61,6 +65,17 @@ class IosGraphHolder internal constructor(
    */
   fun paymentDetailsScreenModel(chargeId: String?): PaymentDetailsScreenModel =
     createPaymentDetailsScreenModel(graph.metroViewModelFactory, chargeId)
+
+  /** A new screen model with its own ViewModel. The caller owns it and must `close()` it. */
+  fun paymentOverviewScreenModel(): PaymentOverviewScreenModel =
+    createPaymentOverviewScreenModel(graph.metroViewModelFactory)
+
+  /**
+   * A new screen model with its own ViewModel, which charges the member only when its `triggerCharge()` is called. The
+   * caller owns it and must `close()` it.
+   */
+  fun paymentManualChargeScreenModel(): PaymentManualChargeScreenModel =
+    createPaymentManualChargeScreenModel(graph.metroViewModelFactory)
 
   /**
    * Tells Kotlin a session started ([loggedIn] true) or ended (false), so it clears what it cached for the previous
