@@ -25,6 +25,11 @@ import org.junit.Test
 /**
  * Wheel deltas and trackpad pan offsets are sent with Compose's own sign: positive y scrolls toward the end of the
  * list, negative y toward the top.
+ *
+ * How far one wheel notch scrolls depends on the operating system the tests run on: Compose for Desktop scrolls 10 dp
+ * per notch on macOS, the square root of the viewport height in pixels on Linux, and a twentieth of the viewport
+ * height on Windows. So the tests never scroll a fixed number of notches to collapse the hero. They scroll one notch at
+ * a time until the hero has collapsed, which leaves the greeting in the list on every platform.
  */
 @OptIn(ExperimentalTestApi::class)
 class HomeHeroScrollTest {
@@ -36,7 +41,7 @@ class HomeHeroScrollTest {
     showHome()
     val open = greetingBounds()
 
-    scrollWheel(Offset(0f, 1f), times = 10)
+    collapseHeroWithWheel(open)
 
     assertThat(greetingBounds().top).isLessThan(open.top - 40.dp)
   }
@@ -45,10 +50,10 @@ class HomeHeroScrollTest {
   fun `an upward wheel scroll the list leaves unused opens the collapsed hero again`() = runComposeUiTest {
     showHome()
     val open = greetingBounds()
-    scrollWheel(Offset(0f, 1f), times = 10)
+    val notches = collapseHeroWithWheel(open)
     assertThat(greetingBounds().top).isLessThan(open.top - 40.dp)
 
-    scrollWheel(Offset(0f, -1f), times = 10)
+    scrollWheel(Offset(0f, -1f), times = notches)
 
     assertThat(greetingBounds()).isEqualTo(open)
   }
@@ -68,7 +73,7 @@ class HomeHeroScrollTest {
     runComposeUiTest {
       showHome()
       val open = greetingBounds()
-      scrollWheel(Offset(0f, 1f), times = 10)
+      collapseHeroWithWheel(open)
       val collapsed = greetingBounds()
       assertThat(collapsed.top).isLessThan(open.top - 40.dp)
 
@@ -114,6 +119,20 @@ class HomeHeroScrollTest {
 
   private fun ComposeUiTest.greetingBounds(): DpRect =
     onNodeWithText("Richard", substring = true, useUnmergedTree = true).getBoundsInRoot()
+
+  /**
+   * Scrolls the wheel toward the end one notch at a time until the greeting sits more than 40 dp above [open], and
+   * returns how many notches that took. Stopping there keeps the greeting in the list whatever one notch scrolls.
+   */
+  private fun ComposeUiTest.collapseHeroWithWheel(open: DpRect): Int {
+    var notches = 0
+    while (greetingBounds().top >= open.top - 40.dp) {
+      check(notches < 10) { "The hero did not collapse after $notches wheel notches" }
+      scrollWheel(Offset(0f, 1f), times = 1)
+      notches++
+    }
+    return notches
+  }
 
   private fun ComposeUiTest.scrollWheel(offset: Offset, times: Int) {
     repeat(times) {
