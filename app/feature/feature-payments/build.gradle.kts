@@ -49,6 +49,9 @@ kotlin {
       implementation(projects.navigationCore)
       implementation(projects.pullrefresh)
     }
+    nativeTest.dependencies {
+      implementation(libs.assertK)
+    }
     jvmTest.dependencies {
       implementation(libs.apollo.testingSupport)
       implementation(libs.assertK)
