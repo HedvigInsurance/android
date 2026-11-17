@@ -20,6 +20,7 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
+import kotlin.jvm.JvmInline
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable

@@ -13,6 +13,7 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
+import kotlin.jvm.JvmInline
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import octopus.TravelCertificateCreateMutation

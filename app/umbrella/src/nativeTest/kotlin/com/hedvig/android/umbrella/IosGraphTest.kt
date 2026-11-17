@@ -33,6 +33,9 @@ import com.hedvig.android.feature.payments.ios.PaymentHistoryScreenState
 import com.hedvig.android.feature.payments.ios.PaymentManualChargeScreenState
 import com.hedvig.android.feature.payments.ios.PaymentOverviewScreenState
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailsViewModelFactory
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificateTravellersStep
+import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputViewModelFactory
+import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertificateTravellersInputViewModelFactory
 import com.hedvig.android.language.LanguageStorage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.LogcatLogger
@@ -57,6 +60,7 @@ import kotlin.time.TimeSource
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
 import octopus.PayingMemberPhoneNumberQuery
 import platform.Foundation.NSDate
 import platform.Foundation.NSLock
@@ -197,6 +201,63 @@ class IosGraphTest {
     assertThat(withChargeId::class.simpleName).isEqualTo("PaymentDetailsViewModel")
     assertThat(withoutChargeId::class.simpleName).isEqualTo("PaymentDetailsViewModel")
     assertThat(withChargeId === withoutChargeId).isFalse()
+    assertThat(inputs.accessTokenFetcher.calls.value).isEqualTo(0)
+    assertThat(inputs.deviceIdFetcher.calls.value).isEqualTo(0)
+  }
+
+  @Test
+  fun `the graph resolves the travel certificate ViewModels without a request`() {
+    val inputs = FakeInputs()
+    val holder = inputs.createHolder()
+    val store = ViewModelStore()
+    val provider = ViewModelProvider.create(store, holder.graph.metroViewModelFactory)
+    val travelCertificateClasses = holder.graph.viewModelProviders.keys.filter {
+      it.qualifiedName.orEmpty().startsWith("com.hedvig.android.feature.travelcertificate.")
+    }
+
+    val viewModels = travelCertificateClasses.map { provider[it] }
+    pumpMainLoop(1.seconds)
+    store.clear()
+
+    assertThat(viewModels.map { it::class.simpleName }).containsExactlyInAnyOrder(
+      "CertificateHistoryViewModel",
+      "ChooseContractForCertificateViewModel",
+      "TravelCertificateOverviewViewModel",
+    )
+    assertThat(inputs.accessTokenFetcher.calls.value).isEqualTo(0)
+    assertThat(inputs.deviceIdFetcher.calls.value).isEqualTo(0)
+  }
+
+  // The ViewModels are internal to their module; this test only needs them as ViewModels.
+  @Suppress("INFERRED_INVISIBLE_RETURN_TYPE_WARNING")
+  @Test
+  fun `the graph creates the assisted travel certificate ViewModels without a request`() {
+    val inputs = FakeInputs()
+    val holder = inputs.createHolder()
+    val factory = holder.graph.metroViewModelFactory
+    val dateInputFactory = factory
+      .createManuallyAssistedFactory(TravelCertificateDateInputViewModelFactory::class)
+      .invoke()
+    val travellersFactory = factory
+      .createManuallyAssistedFactory(TravelCertificateTravellersInputViewModelFactory::class)
+      .invoke()
+    // The step's constructor is internal to its module, so the test decodes one the way a saved back stack would.
+    val step = Json.decodeFromString(
+      TravelCertificateTravellersStep.serializer(),
+      """{"email":"member@hedvig.com","travelDate":"2026-12-01","contractId":"contract-1"}""",
+    )
+    val store = ViewModelStore()
+
+    val dateWithContractId = store.hold("date with contract id") { dateInputFactory.create("contract-1") }
+    val dateWithoutContractId = store.hold("date without contract id") { dateInputFactory.create(null) }
+    val travellers = store.hold("travellers") { travellersFactory.create(step) }
+    pumpMainLoop(1.seconds)
+    store.clear()
+
+    assertThat(dateWithContractId::class.simpleName).isEqualTo("TravelCertificateDateInputViewModel")
+    assertThat(dateWithoutContractId::class.simpleName).isEqualTo("TravelCertificateDateInputViewModel")
+    assertThat(dateWithContractId === dateWithoutContractId).isFalse()
+    assertThat(travellers::class.simpleName).isEqualTo("TravelCertificateTravellersInputViewModel")
     assertThat(inputs.accessTokenFetcher.calls.value).isEqualTo(0)
     assertThat(inputs.deviceIdFetcher.calls.value).isEqualTo(0)
   }
