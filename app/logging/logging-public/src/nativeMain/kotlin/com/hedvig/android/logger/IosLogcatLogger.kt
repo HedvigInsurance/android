@@ -2,8 +2,13 @@ package com.hedvig.android.logger
 
 import platform.Foundation.NSLog
 
-class IosLogcatLogger : LogcatLogger {
+/** Writes every line at [minimumPriority] or above to [write], and drops the rest without building their message. */
+class IosLogcatLogger internal constructor(
+  private val minimumPriority: LogPriority,
+  private val write: (String) -> Unit,
+) : LogcatLogger {
   override fun log(priority: LogPriority, throwable: Throwable?, tag: String?, message: () -> String) {
+    if (priority < minimumPriority) return
     val prefix = when (priority) {
       LogPriority.VERBOSE -> "V"
       LogPriority.DEBUG -> "D"
@@ -15,13 +20,14 @@ class IosLogcatLogger : LogcatLogger {
     val tagPart = if (tag != null) "[$tag] " else ""
     val messagePart = message()
     val throwablePart = if (throwable != null) "\n${throwable.stackTraceToString()}" else ""
-    NSLog("%s", "$prefix/$tagPart$messagePart$throwablePart")
+    write("$prefix/$tagPart$messagePart$throwablePart")
   }
 
   companion object {
-    fun install() {
+    /** Installs a logger writing lines at [minimumPriority] or above to `NSLog`, unless a logger is installed. */
+    fun install(minimumPriority: LogPriority) {
       if (!LogcatLogger.isInstalled) {
-        LogcatLogger.install(IosLogcatLogger())
+        LogcatLogger.install(IosLogcatLogger(minimumPriority) { NSLog("%s", it) })
       }
     }
   }
