@@ -379,8 +379,13 @@ private fun NonDynamicGrid(
 private fun ExplanationBottomSheet(sheetState: HedvigBottomSheetState<Unit>) {
   HedvigBottomSheet(sheetState) { _ ->
     HedvigText(
+      text = stringResource(Res.string.claim_status_claim_details_title),
+      modifier = Modifier.fillMaxWidth(),
+    )
+    HedvigText(
       text = stringResource(Res.string.claim_status_claim_details_info_text),
       modifier = Modifier.fillMaxWidth(),
+      color = HedvigTheme.colorScheme.textSecondary,
     )
     Spacer(Modifier.height(32.dp))
     HedvigTextButton(
