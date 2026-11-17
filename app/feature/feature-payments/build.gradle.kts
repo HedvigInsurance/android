@@ -5,7 +5,9 @@ plugins {
 }
 
 hedvig {
-  apollo("octopus")
+  apollo("octopus") {
+    generateAsInternal = true
+  }
   serialization()
   compose()
   navKeys()
