@@ -138,7 +138,7 @@ private fun HttpClient.addAuthPlugin(accessTokenFetcher: AccessTokenFetcher) {
     val accessToken = accessTokenFetcher.fetch()
     execute(
       if (accessToken != null) {
-        request.apply { header("Authorization", "Bearer ${accessTokenFetcher.fetch()}") }
+        request.apply { header("Authorization", "Bearer $accessToken") }
       } else {
         request
       },
