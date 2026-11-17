@@ -72,10 +72,14 @@ import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressV
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidMovingDate
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidPostalCode
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidSquareMeters
+import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.SquareMetersMissing
+import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.SquareMetersOverLimit
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import hedvig.resources.CHANGE_ADDRESS_CO_INSURED_LABEL
 import hedvig.resources.CHANGE_ADDRESS_ENTER_NEW_ADDRESS_TITLE
+import hedvig.resources.CHANGE_ADDRESS_LIVING_SPACE_ERROR
+import hedvig.resources.CHANGE_ADDRESS_LIVING_SPACE_OVER_LIMIT_WITH_INPUT_ERROR
 import hedvig.resources.CHANGE_ADDRESS_MOVING_DATE_ERROR
 import hedvig.resources.CHANGE_ADDRESS_MOVING_DATE_LABEL
 import hedvig.resources.CHANGE_ADDRESS_NEW_ADDRESS_LABEL
@@ -428,6 +432,18 @@ private fun EnterNewAddressValidationError.string(): String {
 
     is InvalidSquareMeters -> {
       stringResource(Res.string.GENERAL_INVALID_INPUT)
+    }
+
+    SquareMetersMissing -> {
+      stringResource(Res.string.CHANGE_ADDRESS_LIVING_SPACE_ERROR)
+    }
+
+    is SquareMetersOverLimit -> {
+      stringResource(
+        Res.string.CHANGE_ADDRESS_LIVING_SPACE_OVER_LIMIT_WITH_INPUT_ERROR,
+        maxSquareMeters,
+        stringResource(Res.string.CHANGE_ADDRESS_SIZE_SUFFIX),
+      )
     }
   }
 }

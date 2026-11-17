@@ -2,16 +2,13 @@ package com.hedvig.android.feature.help.center
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import arrow.core.NonEmptyList
-import arrow.core.merge
 import arrow.core.toNonEmptyListOrNull
-import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.feature.help.center.HelpCenterEvent.ClearSearchQuery
 import com.hedvig.android.feature.help.center.HelpCenterEvent.NavigateToQuickAction
 import com.hedvig.android.feature.help.center.HelpCenterEvent.OnDismissQuickActionDialog
@@ -41,7 +38,6 @@ import com.hedvig.android.navigation.compose.add
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 
 internal sealed interface HelpCenterEvent {
   data class OnQuickActionSelected(val quickAction: QuickAction) : HelpCenterEvent
@@ -66,7 +62,6 @@ internal data class HelpCenterUiState(
   val quickLinksUiState: QuickLinkUiState,
   val selectedQuickAction: QuickAction?,
   val search: Search?,
-  val showNavigateToInboxButton: Boolean,
   val puppyGuide: PuppyGuidePresentation?,
 ) {
   data class QuickLink(val quickAction: QuickAction)
@@ -104,7 +99,6 @@ internal data class HelpCenterUiState(
 
 internal class HelpCenterPresenter(
   private val getMemberQuickActionsUseCase: GetMemberQuickActionsUseCase,
-  private val hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
   private val getHelpCenterFAQUseCase: GetHelpCenterFAQUseCase,
   private val getPuppyGuideUseCase: GetPuppyGuideUseCase,
   private val featureManager: FeatureManager,
@@ -118,9 +112,6 @@ internal class HelpCenterPresenter(
       mutableStateOf(lastState)
     }
     var loadIteration by remember { mutableIntStateOf(0) }
-    val hasAnyActiveConversation by remember(hasAnyActiveConversationUseCase) {
-      hasAnyActiveConversationUseCase.invoke().map { it.mapLeft { false }.merge() }
-    }.collectAsState(false)
 
     CollectEvents { event ->
       when (event) {
@@ -209,7 +200,6 @@ internal class HelpCenterPresenter(
           questions = questions,
           quickLinksUiState = quickLinksUiState,
           selectedQuickAction = selectedQuickAction,
-          showNavigateToInboxButton = hasAnyActiveConversation,
           puppyGuide = puppyGuidePresentation,
         )
       }.collect()
@@ -217,7 +207,6 @@ internal class HelpCenterPresenter(
     return currentState.copy(
       quickLinksUiState = quickLinksUiState,
       selectedQuickAction = selectedQuickAction,
-      showNavigateToInboxButton = hasAnyActiveConversation,
     )
   }
 }
