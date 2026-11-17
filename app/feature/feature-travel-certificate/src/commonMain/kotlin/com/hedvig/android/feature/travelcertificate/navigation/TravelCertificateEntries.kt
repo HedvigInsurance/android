@@ -88,6 +88,7 @@ fun EntryProviderScope<HedvigNavKey>.travelCertificateEntries(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
       onNavigateToCoInsuredAddInfo = { onNavigateToCoInsuredAddInfo(primaryInput.contractId) },
+      onCertificateCreated = backstack::navigateToCreatedCertificate,
     )
   }
 

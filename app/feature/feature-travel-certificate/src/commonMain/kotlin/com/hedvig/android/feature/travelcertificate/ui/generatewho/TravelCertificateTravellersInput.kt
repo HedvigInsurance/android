@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -28,10 +30,13 @@ import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
+import com.hedvig.android.feature.travelcertificate.ui.generatewho.CoInsured.CoInsuredId
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertificateTravellersInputUiState.Failure
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertificateTravellersInputUiState.Success
 import hedvig.resources.GENERAL_SUBMIT
 import hedvig.resources.Res
+import hedvig.resources.something_went_wrong
 import hedvig.resources.travel_certificate_missing_coinsured_button
 import hedvig.resources.travel_certificate_missing_coinsured_info
 import hedvig.resources.travel_certificate_who_is_traveling
@@ -42,17 +47,36 @@ internal fun TravelCertificateTravellersInputDestination(
   viewModel: TravelCertificateTravellersInputViewModel,
   navigateUp: () -> Unit,
   onNavigateToCoInsuredAddInfo: () -> Unit,
+  onCertificateCreated: (TravelCertificateUrl) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  TravellersNavigationEffect(uiState = uiState, onCertificateCreated = onCertificateCreated)
   TravelCertificateTravellersInput(
     uiState = uiState,
     navigateUp = navigateUp,
     reload = { viewModel.emit(TravelCertificateTravellersInputEvent.RetryLoadData) },
-    changeCoInsuredChecked = { viewModel.emit(TravelCertificateTravellersInputEvent.ChangeCoInsuredChecked(it)) },
-    changeMemberChecked = { viewModel.emit(TravelCertificateTravellersInputEvent.ChangeMemberChecked) },
+    setCoInsuredIncluded = { id, included ->
+      viewModel.emit(TravelCertificateTravellersInputEvent.SetCoInsuredIncluded(id, included))
+    },
+    setMemberIncluded = { viewModel.emit(TravelCertificateTravellersInputEvent.SetMemberIncluded(it)) },
     onNavigateToCoInsuredAddInfo = onNavigateToCoInsuredAddInfo,
     onGenerateTravelCertificate = { viewModel.emit(TravelCertificateTravellersInputEvent.GenerateTravelCertificate) },
   )
+}
+
+/** Leaves for the certificate on [TravelCertificateTravellersInputUiState.Created]. */
+@Composable
+internal fun TravellersNavigationEffect(
+  uiState: TravelCertificateTravellersInputUiState,
+  onCertificateCreated: (TravelCertificateUrl) -> Unit,
+) {
+  val currentOnCertificateCreated by rememberUpdatedState(onCertificateCreated)
+  val createdUrl = (uiState as? TravelCertificateTravellersInputUiState.Created)?.url
+  LaunchedEffect(createdUrl) {
+    if (createdUrl != null) {
+      currentOnCertificateCreated(createdUrl)
+    }
+  }
 }
 
 @Composable
@@ -60,14 +84,16 @@ private fun TravelCertificateTravellersInput(
   uiState: TravelCertificateTravellersInputUiState,
   navigateUp: () -> Unit,
   reload: () -> Unit,
-  changeCoInsuredChecked: (CoInsured) -> Unit,
-  changeMemberChecked: () -> Unit,
+  setCoInsuredIncluded: (CoInsuredId, Boolean) -> Unit,
+  setMemberIncluded: (Boolean) -> Unit,
   onNavigateToCoInsuredAddInfo: () -> Unit,
   onGenerateTravelCertificate: () -> Unit,
 ) {
   Box(Modifier.fillMaxSize()) {
     when (uiState) {
-      TravelCertificateTravellersInputUiState.Loading -> {
+      TravelCertificateTravellersInputUiState.Loading,
+      is TravelCertificateTravellersInputUiState.Created,
+      -> {
         HedvigFullScreenCenterAlignedProgress()
       }
 
@@ -96,7 +122,7 @@ private fun TravelCertificateTravellersInput(
           Checkbox(
             option = CheckboxOption(uiState.memberFullName),
             selected = uiState.isMemberIncluded,
-            onCheckboxSelected = changeMemberChecked,
+            onCheckboxSelected = { setMemberIncluded(!uiState.isMemberIncluded) },
             modifier = Modifier
               .fillMaxWidth()
               .padding(horizontal = 16.dp),
@@ -111,11 +137,8 @@ private fun TravelCertificateTravellersInput(
             },
             selectedOptions = uiState.coInsuredList.filter { it.isIncluded }.map { RadioOptionId(it.id.value) },
             onRadioOptionSelected = { radioOptionId ->
-              changeCoInsuredChecked(
-                uiState.coInsuredList.first {
-                  radioOptionId.id == it.id.value
-                },
-              )
+              val coInsured = uiState.coInsuredList.first { radioOptionId.id == it.id.value }
+              setCoInsuredIncluded(coInsured.id, !coInsured.isIncluded)
             },
             modifier = Modifier
               .fillMaxWidth()
@@ -135,16 +158,22 @@ private fun TravelCertificateTravellersInput(
                 .padding(horizontal = 16.dp),
             )
           }
+          if (uiState.createFailed) {
+            Spacer(Modifier.height(16.dp))
+            HedvigNotificationCard(
+              message = stringResource(Res.string.something_went_wrong),
+              priority = NotificationPriority.Error,
+              modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            )
+          }
           Spacer(Modifier.height(16.dp))
           HedvigButton(
             text = stringResource(Res.string.GENERAL_SUBMIT),
-            onClick = {
-              if (uiState.hasAtLeastOneTraveler) {
-                onGenerateTravelCertificate()
-              }
-            },
-            isLoading = uiState.isButtonLoading,
-            enabled = uiState.hasAtLeastOneTraveler,
+            onClick = onGenerateTravelCertificate,
+            isLoading = uiState.isCreating,
+            enabled = uiState.canCreate,
             modifier = Modifier
               .fillMaxWidth()
               .padding(horizontal = 16.dp),
@@ -162,19 +191,28 @@ private fun PreviewTravelCertificateTravellersInput() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       TravelCertificateTravellersInput(
-        Success(
-          true,
-          listOf(
-            CoInsured(CoInsured.CoInsuredId("id"), "Co-insured Baby", null, null, false),
-            CoInsured(CoInsured.CoInsuredId("id2"), "Co-insured Baby 2", null, null, true),
-          ),
-          "The Member Themselves",
-          true,
-          isButtonLoading = true,
-        ),
+        previewContent,
+        {},
+        {},
+        { _, _ -> },
         {},
         {},
         {},
+      )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewTravelCertificateTravellersInputWithCreateFailure() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      TravelCertificateTravellersInput(
+        previewContent.copy(isCreating = false, createFailed = true),
+        {},
+        {},
+        { _, _ -> },
         {},
         {},
         {},
@@ -192,7 +230,7 @@ private fun PreviewTravelCertificateTravellersInputWithEmailFailure() {
         Failure,
         {},
         {},
-        {},
+        { _, _ -> },
         {},
         {},
         {},
@@ -200,3 +238,15 @@ private fun PreviewTravelCertificateTravellersInputWithEmailFailure() {
     }
   }
 }
+
+private val previewContent = Success(
+  memberFullName = "The Member Themselves",
+  isMemberIncluded = true,
+  coInsuredList = listOf(
+    CoInsured(CoInsured.CoInsuredId("id"), "Co-insured Baby", null, null, false),
+    CoInsured(CoInsured.CoInsuredId("id2"), "Co-insured Baby 2", null, null, true),
+  ),
+  coInsuredHasMissingInfo = true,
+  isCreating = true,
+  createFailed = false,
+)
