@@ -23,7 +23,6 @@ import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.data.contract.ContractGroup
-import com.hedvig.android.data.contract.pillowResource
 import com.hedvig.android.design.system.hedvig.CheckboxGroup
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -35,6 +34,7 @@ import com.hedvig.android.design.system.hedvig.RadioGroupStyle
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.ui.contract.pillowResource
 
 @Composable
 internal fun ShowcaseRadioGroups(modifier: Modifier = Modifier) {

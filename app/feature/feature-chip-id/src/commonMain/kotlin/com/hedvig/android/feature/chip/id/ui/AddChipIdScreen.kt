@@ -42,7 +42,6 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.data.contract.ContractGroup
-import com.hedvig.android.data.contract.pillowResource
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
@@ -62,6 +61,7 @@ import com.hedvig.android.feature.chip.id.data.PetContractForChipId
 import com.hedvig.android.feature.chip.id.ui.AddChipIdEvent.RetryLoadData
 import com.hedvig.android.feature.chip.id.ui.AddChipIdEvent.SubmitData
 import com.hedvig.android.feature.chip.id.ui.AddChipIdUiState.Content
+import com.hedvig.android.ui.contract.pillowResource
 import hedvig.resources.CHIP_ID_LABEL
 import hedvig.resources.CHIP_ID_TOP_TITLE
 import hedvig.resources.CHIP_ID_WRONG_INPUT

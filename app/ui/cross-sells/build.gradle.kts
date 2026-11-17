@@ -27,6 +27,7 @@ kotlin {
       implementation(projects.designSystemHedvig)
       //todo: or api?
       implementation(projects.placeholder)
+      implementation(projects.uiContract)
     }
     jvmTest.dependencies {
       implementation(libs.assertK)

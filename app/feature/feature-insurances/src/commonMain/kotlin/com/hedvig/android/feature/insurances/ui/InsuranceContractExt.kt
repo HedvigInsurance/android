@@ -7,13 +7,13 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import com.hedvig.android.compose.ui.LocalClock
-import com.hedvig.android.data.contract.gradientResource
 import com.hedvig.android.data.contract.isTrialContract
 import com.hedvig.android.design.system.hedvig.ChipType.GENERAL
 import com.hedvig.android.design.system.hedvig.ChipType.TIER
 import com.hedvig.android.design.system.hedvig.ChipUiData
 import com.hedvig.android.design.system.hedvig.scaledBy
 import com.hedvig.android.feature.insurances.data.InsuranceContract
+import com.hedvig.android.ui.contract.gradientResource
 import hedvig.resources.CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE
 import hedvig.resources.CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW
 import hedvig.resources.CONTRACT_STATUS_ACTIVE_IN_FUTURE

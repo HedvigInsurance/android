@@ -60,6 +60,7 @@ dependencies {
   implementation(projects.designSystemHedvig)
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
+  implementation(projects.uiContract)
 }
 
 androidComponents {

@@ -43,7 +43,6 @@ import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.compose.ui.stringWithShiftedLabel
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
-import com.hedvig.android.data.contract.pillowResource
 import com.hedvig.android.data.productvariant.InsurableLimit
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
@@ -64,6 +63,7 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.ripple
 import com.hedvig.android.design.system.hedvig.show
+import com.hedvig.android.ui.contract.pillowResource
 import com.hedvig.android.ui.tiersandaddons.CostBreakdownEntry.DisplayValue.Currency
 import com.hedvig.android.ui.tiersandaddons.CostBreakdownEntry.DisplayValue.Text
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION

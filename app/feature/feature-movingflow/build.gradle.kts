@@ -41,6 +41,7 @@ kotlin {
       implementation(projects.navigationCommon)
       implementation(projects.navigationCore)
       implementation(projects.tierComparison)
+      implementation(projects.uiContract)
       implementation(projects.uiTiersAndAddons)
     }
     jvmTest.dependencies {
