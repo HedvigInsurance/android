@@ -14,6 +14,7 @@ import com.hedvig.android.feature.payments.data.ManualChargeInfoResult
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.data.TriggerManualChargeUseCase
 import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCase
+import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeEvent
 import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeViewModel
 import com.hedvig.android.feature.payments.ui.payments.PaymentsViewModel
 import com.hedvig.android.logger.LogPriority
@@ -145,8 +146,65 @@ class PaymentOverviewAndManualChargeScreenModelsTest {
   }
 
   @Test
-  fun `manual charge triggerCharge reaches the ViewModel as TriggerCharge`() {
-    assertThat(droppedManualChargeEvent { it.triggerCharge() }).isEqualTo("TriggerCharge")
+  fun `manual charge triggerCharge sends nothing while the state is Loading`() {
+    val trigger = FakeTriggerManualChargeUseCase()
+    val model = createPaymentManualChargeScreenModel(manualChargeFactory(FakeManualChargeInfoUseCase(), trigger))
+
+    repeat(21) { model.triggerCharge() }
+    model.close()
+
+    assertThat(droppedEvents("ManualChargeViewModel")).containsExactly()
+    assertThat(trigger.calls.value).isEqualTo(0)
+  }
+
+  @Test
+  fun `a triggerCharge before collecting does not charge once collecting starts`() {
+    val info = FakeManualChargeInfoUseCase()
+    val trigger = FakeTriggerManualChargeUseCase()
+    val model = createPaymentManualChargeScreenModel(manualChargeFactory(info, trigger))
+
+    model.triggerCharge()
+    collections.launch { model.stateUpdates.collect {} }
+    assertThat(pumpMainLoopUntil { info.calls.value == 1 }).isTrue()
+    pumpMainLoop(1.seconds)
+    model.close()
+
+    assertThat(trigger.calls.value).isEqualTo(0)
+  }
+
+  @Test
+  fun `a charge starts only from Content that is not being charged`() {
+    val states = listOf(
+      PaymentManualChargeScreenState.Loading,
+      PaymentManualChargeScreenState.NoLongerChargeable,
+      PaymentManualChargeScreenState.Failed(null),
+      manualChargeContent(isCharging = false),
+      manualChargeContent(isCharging = true),
+      PaymentManualChargeScreenState.Charged(showsCancellationWarning = false, PaymentChargeMethod.SWISH),
+    )
+
+    assertThat(states.map { it.triggerChargeEvent() }).containsExactly(
+      null,
+      null,
+      null,
+      ManualChargeEvent.TriggerCharge,
+      null,
+      null,
+    )
+  }
+
+  @Test
+  fun `retry and refresh are accepted in every state but Charged`() {
+    val states = listOf(
+      PaymentManualChargeScreenState.Loading,
+      PaymentManualChargeScreenState.NoLongerChargeable,
+      PaymentManualChargeScreenState.Failed(null),
+      manualChargeContent(isCharging = false),
+      manualChargeContent(isCharging = true),
+      PaymentManualChargeScreenState.Charged(showsCancellationWarning = false, PaymentChargeMethod.SWISH),
+    )
+
+    assertThat(states.map { it.acceptsReload() }).containsExactly(true, true, true, true, true, false)
   }
 
   @Test
@@ -191,6 +249,16 @@ class PaymentOverviewAndManualChargeScreenModelsTest {
     }
     .map { (_, message) -> message.substringAfter("Event buffer overflow on event:").substringBefore(".") }
 }
+
+private fun manualChargeContent(isCharging: Boolean) = PaymentManualChargeScreenState.Content(
+  chargeId = "missed-1",
+  missedDueDate = "2026-09-27",
+  amountDue = PaymentMoney(399.0, "SEK"),
+  payinMethods = emptyList(),
+  primaryPayinAccount = null,
+  showsCancellationWarning = false,
+  isCharging = isCharging,
+)
 
 private fun overviewFactory(useCase: GetUpcomingPaymentUseCase): ViewModelProvider.Factory =
   object : ViewModelProvider.Factory {
