@@ -17,6 +17,9 @@ enum ShellDebug {
     /// parity headers print their values; `Authorization` prints its shape and the rest their length.
     static var logRequestHeaders: Bool { UserDefaults.standard.bool(forKey: "shellLogRequestHeaders") }
 
+    /// `-kotlinLogNetworkBodies YES`: Kotlin logs HTTP request and response bodies and GraphQL response data.
+    static var logNetworkBodies: Bool { UserDefaults.standard.bool(forKey: "kotlinLogNetworkBodies") }
+
     /// `-shellClaimHistorySample YES`: the root screen offers "Sample content", a claim history built in Swift from
     /// Kotlin types and mapped by the real screen's mapper.
     static var claimHistorySample: Bool { UserDefaults.standard.bool(forKey: "shellClaimHistorySample") }

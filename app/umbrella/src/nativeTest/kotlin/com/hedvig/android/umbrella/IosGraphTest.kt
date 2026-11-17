@@ -37,6 +37,7 @@ import com.hedvig.android.language.LanguageStorage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.LogcatLogger
 import com.hedvig.android.network.clients.AccessTokenFetcher
+import com.hedvig.android.network.clients.NetworkLogPolicy
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -308,8 +309,46 @@ class IosGraphTest {
     assertThat(response.errors.orEmpty().map { it.message }).containsExactly("Something went wrong")
     assertThat(logs.entries().filter { (_, message) -> message.startsWith("RUM error") }).containsExactly(
       LogPriority.WARN to
-        "RUM error from NETWORK: GraphQL errors for ClaimsHistory: [Something went wrong] attribute keys: [data, errors]",
+        "RUM error from NETWORK: GraphQL errors for ClaimsHistory: [Something went wrong] attribute keys: []",
     )
+  }
+
+  @Test
+  fun `with the policy off no logged line carries GraphQL response data or error extensions`() {
+    val holder = FakeInputs().createHolder()
+
+    runBlocking {
+      for (json in listOf(sentinelDataJson, sentinelDataAndErrorJson)) {
+        holder.respondingWith(json).query(ClaimsHistoryQuery()).fetchPolicy(FetchPolicy.NetworkOnly).execute()
+      }
+    }
+
+    assertThat(logs.messages().filter { "GraphQL" in it }).containsExactly(
+      "GraphQL request for ClaimsHistory START.",
+      "GraphQL request for ClaimsHistory EMISSION.",
+      "GraphQL request for ClaimsHistory END.",
+      "GraphQL request for ClaimsHistory START.",
+      "GraphQL request for ClaimsHistory EMISSION.",
+      "GraphQL errors for ClaimsHistory: [Something went wrong]",
+      "RUM error from NETWORK: GraphQL errors for ClaimsHistory: [Something went wrong] attribute keys: []",
+      "GraphQL request for ClaimsHistory END.",
+    )
+    assertThat(logs.messages().filter { DATA_SENTINEL in it || EXTENSION_SENTINEL in it }).isEmpty()
+  }
+
+  @Test
+  fun `with the policy on GraphQL response data and error extensions are logged`() {
+    val holder = FakeInputs(networkLogPolicy = NetworkLogPolicy(logsHttpBodies = true, logsGraphqlData = true))
+      .createHolder()
+
+    runBlocking {
+      for (json in listOf(sentinelDataJson, sentinelDataAndErrorJson)) {
+        holder.respondingWith(json).query(ClaimsHistoryQuery()).fetchPolicy(FetchPolicy.NetworkOnly).execute()
+      }
+    }
+
+    assertThat(logs.messages().any { DATA_SENTINEL in it }).isTrue()
+    assertThat(logs.messages().any { EXTENSION_SENTINEL in it }).isTrue()
   }
 
   @Test
@@ -387,6 +426,7 @@ private class FakeInputs(
   val accessTokenFetcher: FakeAccessTokenFetcher = FakeAccessTokenFetcher(),
   val deviceIdFetcher: FakeDeviceIdFetcher = FakeDeviceIdFetcher(),
   val demoMode: FakeIosDemoMode = FakeIosDemoMode(),
+  val networkLogPolicy: NetworkLogPolicy = NetworkLogPolicy(logsHttpBodies = false, logsGraphqlData = false),
 ) {
   fun createHolder(): IosGraphHolder = createIosGraphHolder(
     appBuildConfig = FakeAppBuildConfig,
@@ -394,6 +434,7 @@ private class FakeInputs(
     deviceIdFetcher = deviceIdFetcher,
     languageStorage = FakeLanguageStorage,
     demoMode = demoMode,
+    networkLogPolicy = networkLogPolicy,
   )
 }
 
@@ -522,5 +563,41 @@ private val claimsJson = """
         "partnerClaimsHistory": []
       }
     }
+  }
+""".trimIndent()
+
+private const val DATA_SENTINEL = "member-sentinel-6d0e"
+private const val EXTENSION_SENTINEL = "extension-sentinel-a41b"
+
+private val sentinelDataJson = """
+  {
+    "data": {
+      "currentMember": {
+        "__typename": "Member",
+        "id": "$DATA_SENTINEL",
+        "claimsHistory": [],
+        "partnerClaimsHistory": []
+      }
+    }
+  }
+""".trimIndent()
+
+private val sentinelDataAndErrorJson = """
+  {
+    "data": {
+      "currentMember": {
+        "__typename": "Member",
+        "id": "$DATA_SENTINEL",
+        "claimsHistory": [],
+        "partnerClaimsHistory": []
+      }
+    },
+    "errors": [
+      {
+        "message": "Something went wrong",
+        "extensions": { "detail": "$EXTENSION_SENTINEL" }
+      }
+    ],
+    "extensions": { "trace": "$EXTENSION_SENTINEL" }
   }
 """.trimIndent()

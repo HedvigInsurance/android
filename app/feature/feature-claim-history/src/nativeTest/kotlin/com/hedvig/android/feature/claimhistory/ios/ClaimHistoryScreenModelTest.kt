@@ -25,6 +25,7 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.LogcatLogger
 import com.hedvig.android.molecule.public.ScreenModel
 import com.hedvig.android.network.clients.AccessTokenFetcher
+import com.hedvig.android.network.clients.NetworkLogPolicy
 import com.hedvig.android.network.clients.di.NativeNetworkMetroProviders
 import com.hedvig.android.network.clients.di.NetworkMetroProviders
 import io.ktor.client.HttpClient
@@ -458,6 +459,7 @@ private class FakeServer(private val responseJson: String) {
       normalizedCacheFactory = MemoryCacheFactory(),
       httpClient = httpClient,
       hedvigBuildConstants = FakeHedvigBuildConstants,
+      networkLogPolicy = NetworkLogPolicy(logsHttpBodies = false, logsGraphqlData = false),
     )
   }
 }

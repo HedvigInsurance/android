@@ -8,8 +8,10 @@ struct umbrella_consumerApp: App {
     init() {
         #if DEBUG
         ShellDebug.installHeaderLoggingIfRequested()
+        IosLogcatLogger.companion.install(minimumPriority: .verbose)
+        #else
+        IosLogcatLogger.companion.install(minimumPriority: .warn)
         #endif
-        IosLogcatLogger.companion.install()
         _app = State(initialValue: AppModel())
     }
 
