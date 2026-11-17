@@ -63,14 +63,12 @@ fun EntryProviderScope<HedvigNavKey>.helpCenterEntries(
   }
 
   entry<HelpCenterTopicKey> { key ->
-    val showNavigateToInboxViewModel = metroViewModel<ShowNavigateToInboxViewModel>()
     val topicId = key.topicId
     val helpCenterTopicViewModel =
       assistedMetroViewModel<HelpCenterTopicViewModel, HelpCenterTopicViewModelFactory> {
         create(topicId)
       }
     HelpCenterTopicDestination(
-      showNavigateToInboxViewModel = showNavigateToInboxViewModel,
       helpCenterTopicViewModel = helpCenterTopicViewModel,
       onNavigateToQuestion = dropUnlessResumed { question ->
         navigateToQuestion(question, backstack)
@@ -82,14 +80,12 @@ fun EntryProviderScope<HedvigNavKey>.helpCenterEntries(
     )
   }
   entry<HelpCenterQuestionKey> { key ->
-    val showNavigateToInboxViewModel = metroViewModel<ShowNavigateToInboxViewModel>()
     val questionId = key.questionId
     val helpCenterQuestionViewModel =
       assistedMetroViewModel<HelpCenterQuestionViewModel, HelpCenterQuestionViewModelFactory> {
         create(questionId)
       }
     HelpCenterQuestionDestination(
-      showNavigateToInboxViewModel = showNavigateToInboxViewModel,
       onNavigateToInbox = dropUnlessResumed { onNavigateToInbox() },
       onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
       onNavigateUp = backstack::navigateUp,

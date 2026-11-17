@@ -125,16 +125,6 @@ internal fun PaymentDetailExpandableCard(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.Top,
           ) {
-            if (totalGrossAmount != totalNetAmount) {
-              HedvigText(
-                text = totalGrossAmount.toString(),
-                textAlign = TextAlign.End,
-                textDecoration = TextDecoration.LineThrough,
-                color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-                modifier = Modifier.semantics { hideFromAccessibility() },
-              )
-              Spacer(Modifier.width(6.dp))
-            }
             val totalNetDescription = totalNetAmount.getDescription()
             HedvigText(
               text = totalNetAmount.toString(),
