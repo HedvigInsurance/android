@@ -15,6 +15,9 @@ hedvig {
 }
 
 kotlin {
+  android {
+    withHostTest {}
+  }
   sourceSets {
     commonMain.dependencies {
       api(libs.coil.coil)
@@ -71,6 +74,14 @@ kotlin {
       implementation(libs.media3.exoplayer.dash)
       implementation(libs.media3.ui)
       implementation(libs.sqlite.bundled)
+    }
+    getByName("androidHostTest").dependencies {
+      implementation(libs.androidx.junit)
+      implementation(libs.assertK)
+      implementation(libs.coroutines.test)
+      implementation(libs.junit)
+      implementation(libs.robolectric)
+      implementation(projects.databaseCore)
     }
     jvmTest.dependencies {
       implementation(libs.apollo.testingSupport)
