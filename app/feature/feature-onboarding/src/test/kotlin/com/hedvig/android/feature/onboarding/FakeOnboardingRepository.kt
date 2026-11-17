@@ -4,9 +4,10 @@ import app.cash.turbine.Turbine
 import arrow.core.Either
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.datastore.FakeGetAnalyticsConsentUseCase
+import com.hedvig.android.data.contract.CrossSell
+import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.data.settings.datastore.AnalyticsConsent
 import com.hedvig.android.feature.onboarding.data.OnboardingContract
-import com.hedvig.android.feature.onboarding.data.OnboardingCrossSell
 import com.hedvig.android.feature.onboarding.data.OnboardingData
 import com.hedvig.android.feature.onboarding.data.OnboardingMemberIdProvider
 import com.hedvig.android.feature.onboarding.data.OnboardingPayinProvider
@@ -68,14 +69,15 @@ internal fun testOnboardingData(
   isMissingPayinConnection: Boolean = true,
   payinStatus: OnboardingPayinStatus = OnboardingPayinStatus.NeedsSetup,
   connectedPayinProvider: OnboardingPayinProvider? = null,
-  crossSells: List<OnboardingCrossSell> = listOf(
-    OnboardingCrossSell(
+  crossSells: List<CrossSell> = listOf(
+    CrossSell(
       id = "cs",
       title = "Pet",
-      description = "For your pet",
+      subtitle = "For your pet",
       storeUrl = "https://x",
-      pillowImageUrl = "https://x",
-      buttonTitle = "See price",
+      pillowImageSmall = ImageAsset(id = "cs", src = "https://x", description = null),
+      pillowImageLarge = ImageAsset(id = "cs", src = "https://x", description = null),
+      buttonText = "See price",
     ),
   ),
 ): OnboardingData = OnboardingData(

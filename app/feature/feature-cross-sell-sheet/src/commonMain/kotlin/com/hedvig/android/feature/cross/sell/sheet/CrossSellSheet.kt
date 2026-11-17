@@ -24,7 +24,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @Composable
 fun CrossSellSheet(
   isInScreenEligibleForCrossSells: Boolean,
-  onCrossSellClick: (String) -> Boolean,
+  onCrossSellClick: (CrossSell) -> Boolean,
+  onRecommendedAddonClick: (deepLink: String) -> Unit,
   onAddonClick: (eligibleInsuranceIds: List<String>) -> Unit,
   imageLoader: ImageLoader,
 ) {
@@ -76,11 +77,11 @@ fun CrossSellSheet(
         viewModel.emit(CrossSellSheetEvent.CrossSellShown(offerId, offerUrl))
       },
       onCrossSellClick = dropUnlessResumed { crossSell: CrossSell ->
-        if (onCrossSellClick(crossSell.storeUrl)) {
+        if (onCrossSellClick(crossSell)) {
           viewModel.emit(CrossSellSheetEvent.CrossSellClicked(crossSell.id, crossSell.storeUrl))
         }
       },
-      onRecommendedAddonClick = { deepLink -> onCrossSellClick(deepLink) },
+      onRecommendedAddonClick = onRecommendedAddonClick,
       onAddonClick = onAddonClick,
       imageLoader = imageLoader,
     )

@@ -10,6 +10,8 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.data.contract.CrossSell
+import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.experiments.Experiment
 import com.hedvig.android.experiments.ExperimentProvider
 import dev.zacsweers.metro.ContributesBinding
@@ -113,13 +115,41 @@ internal class OnboardingRepositoryImpl(
         .filter { it.supportsPayin }
         .mapNotNull { it.provider.toOnboardingPayinProvider() },
       crossSells = member.crossSellV2.otherCrossSells.map { crossSell ->
-        OnboardingCrossSell(
+        CrossSell(
           id = crossSell.id,
           title = crossSell.title,
-          description = crossSell.description,
+          subtitle = crossSell.description,
           storeUrl = crossSell.storeUrl,
-          pillowImageUrl = crossSell.pillowImageSmall.src,
-          buttonTitle = crossSell.buttonTitle,
+          pillowImageSmall = ImageAsset(
+            id = crossSell.pillowImageSmall.id,
+            src = crossSell.pillowImageSmall.src,
+            description = crossSell.pillowImageSmall.alt,
+          ),
+          pillowImageLarge = ImageAsset(
+            id = crossSell.pillowImageLarge.id,
+            src = crossSell.pillowImageLarge.src,
+            description = crossSell.pillowImageLarge.alt,
+          ),
+          buttonText = crossSell.buttonTitle,
+          options = crossSell.options.map { option ->
+            CrossSell(
+              id = option.id,
+              title = option.title,
+              subtitle = option.description,
+              storeUrl = option.storeUrl,
+              pillowImageSmall = ImageAsset(
+                id = option.pillowImageSmall.id,
+                src = option.pillowImageSmall.src,
+                description = option.pillowImageSmall.alt,
+              ),
+              pillowImageLarge = ImageAsset(
+                id = option.pillowImageLarge.id,
+                src = option.pillowImageLarge.src,
+                description = option.pillowImageLarge.alt,
+              ),
+              buttonText = option.buttonTitle,
+            )
+          },
         )
       },
     )

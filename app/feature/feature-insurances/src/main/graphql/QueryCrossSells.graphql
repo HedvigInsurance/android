@@ -18,6 +18,23 @@ query CrossSells($experiments: [CrossSellExperimentInput!]!) {
           id
           alt
         }
+        options {
+          id
+          title
+          description
+          storeUrl
+          buttonTitle
+          pillowImageSmall {
+            src
+            id
+            alt
+          }
+          pillowImageLarge {
+            src
+            id
+            alt
+          }
+        }
       }
     }
   }

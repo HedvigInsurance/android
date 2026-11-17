@@ -128,4 +128,22 @@ fragment HomeCrossSellFragment on CrossSell {
     id
     alt
   }
+  # TODO: Temporary: restore once the backend serves CrossSell.options.
+  # options {
+  #   id
+  #   title
+  #   description
+  #   storeUrl
+  #   buttonTitle
+  #   pillowImageSmall {
+  #     src
+  #     id
+  #     alt
+  #   }
+  #   pillowImageLarge {
+  #     src
+  #     id
+  #     alt
+  #   }
+  # }
 }
