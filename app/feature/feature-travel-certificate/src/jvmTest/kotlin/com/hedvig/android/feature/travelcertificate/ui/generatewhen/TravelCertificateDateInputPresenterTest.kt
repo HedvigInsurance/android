@@ -608,6 +608,45 @@ class TravelCertificateDateInputPresenterTest {
     }
 
   @Test
+  fun `a continue handled in the same frame as the end of a failed create is sent`() = runTest {
+    val frameClock = BroadcastFrameClock()
+    val scope = CoroutineScope(StandardTestDispatcher(testScheduler) + frameClock + Job())
+    val viewModel = object : MoleculeViewModel<TravelCertificateDateInputEvent, TravelCertificateDateInputUiState>(
+      initialState = TravelCertificateDateInputUiState.Loading,
+      presenter = presenter(),
+      sharingStarted = SharingStarted.Eagerly,
+      coroutineScope = scope,
+    ) {}
+
+    fun frame() {
+      testScheduler.runCurrent()
+      frameClock.sendFrame(0L)
+      testScheduler.runCurrent()
+    }
+    specifications.responses.trySend(specification(numberOfCoInsured = 0).right())
+    frame()
+    frame()
+    viewModel.emit(TravelCertificateDateInputEvent.Submit)
+    frame()
+    assertThat(viewModel.uiState.value).isEqualTo(expectedContent(isCreating = true))
+
+    // The failure and the retry are both handled before the next frame composes the presenter.
+    createTransport.responses.trySend(null)
+    testScheduler.runCurrent()
+    viewModel.emit(TravelCertificateDateInputEvent.Submit)
+    frame()
+    assertThat(createTransport.inputs).containsExactly(createInput(), createInput())
+    assertThat(viewModel.uiState.value).isEqualTo(expectedContent(isCreating = true))
+
+    createTransport.responses.trySend("https://example.com/new.pdf")
+    frame()
+    assertThat(viewModel.uiState.value).isEqualTo(
+      TravelCertificateDateInputUiState.Created(TravelCertificateUrl("https://example.com/new.pdf")),
+    )
+    scope.cancel()
+  }
+
+  @Test
   fun `starting from created stays created without fetching`() = runTest {
     val created = TravelCertificateDateInputUiState.Created(TravelCertificateUrl("https://example.com/new.pdf"))
     presenter().test(created) {

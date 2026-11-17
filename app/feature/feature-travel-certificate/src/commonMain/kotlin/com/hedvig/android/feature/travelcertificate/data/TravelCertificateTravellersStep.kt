@@ -12,4 +12,7 @@ internal data class TravelCertificateTravellersStep(
   val email: String,
   val travelDate: LocalDate,
   val contractId: String,
-)
+) {
+  /** Leaves out [email]. */
+  override fun toString(): String = "TravelCertificateTravellersStep(travelDate=$travelDate, contractId=$contractId)"
+}

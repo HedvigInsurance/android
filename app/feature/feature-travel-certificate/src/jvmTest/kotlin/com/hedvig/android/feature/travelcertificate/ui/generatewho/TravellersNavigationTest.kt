@@ -9,6 +9,7 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.v2.runComposeUiTest
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.isEmpty
 import com.hedvig.android.feature.travelcertificate.TestBackstack
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateTravellersStep
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
@@ -42,19 +43,26 @@ class TravellersNavigationTest {
   private var uiState by mutableStateOf<TravelCertificateTravellersInputUiState>(content)
   private var recompositionTrigger by mutableIntStateOf(0)
 
+  /** The [recompositionTrigger] value of the composition whose callback navigated, once per navigation. */
+  private val navigatedFrom = mutableListOf<Int>()
+
   private fun ComposeUiTest.showEffect() {
     setContent {
-      recompositionTrigger
+      val composition = recompositionTrigger
       TravellersNavigationEffect(
         uiState = uiState,
-        onCertificateCreated = { backstack.navigateToCreatedCertificate(it) },
+        // A new callback on every recomposition, so the effect is recomposed rather than skipped.
+        onCertificateCreated = {
+          navigatedFrom += composition
+          backstack.navigateToCreatedCertificate(it)
+        },
       )
     }
     waitForIdle()
   }
 
   @Test
-  fun `created replaces the flow above the history with the certificate`() = runComposeUiTest {
+  fun `created replaces the flow above the history with the certificate, once`() = runComposeUiTest {
     showEffect()
     val url = TravelCertificateUrl("https://example.com/new.pdf")
     uiState = TravelCertificateTravellersInputUiState.Created(url)
@@ -62,6 +70,8 @@ class TravellersNavigationTest {
     recompositionTrigger++
     waitForIdle()
     assertThat(backstack.entries).containsExactly(TravelCertificateKey, ShowCertificateKey(url))
+    // Navigating again would leave the same entries, so the calls are counted.
+    assertThat(navigatedFrom).containsExactly(0)
   }
 
   @Test
@@ -78,5 +88,6 @@ class TravellersNavigationTest {
       waitForIdle()
     }
     assertThat(backstack.entries).containsExactly(TravelCertificateKey, dateInputKey, travellersKey)
+    assertThat(navigatedFrom).isEmpty()
   }
 }

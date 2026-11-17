@@ -10,7 +10,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
-import com.hedvig.android.feature.travelcertificate.data.CoInsuredData
 import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
 import com.hedvig.android.feature.travelcertificate.data.GetCoInsuredForContractUseCase
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateTravellersStep
@@ -62,14 +61,16 @@ internal class TravelCertificateTravellersInputPresenter(
         },
       )
     }
+    val generatedIds = remember { GeneratedCoInsuredIds(lastContent?.coInsuredList.orEmpty()) }
     var loadFailed by remember { mutableStateOf(false) }
     var isMemberIncluded by remember { mutableStateOf(lastContent?.isMemberIncluded ?: true) }
     var includedCoInsuredIds by remember {
       mutableStateOf(lastContent?.coInsuredList.orEmpty().filter { it.isIncluded }.map { it.id }.toSet())
     }
-    // A create in flight belongs to a stopped run, so it is not restored.
+    // A create in flight belongs to the stopped run, so it is not restored. It may have reached the server, so it is
+    // shown as failed rather than as a form nobody submitted.
     var isCreating by remember { mutableStateOf(false) }
-    var createFailed by remember { mutableStateOf(lastContent?.createFailed ?: false) }
+    var createFailed by remember { mutableStateOf(lastContent?.let { it.createFailed || it.isCreating } ?: false) }
     var requestToCreate by remember { mutableStateOf<CreateRequest?>(null) }
     var createdUrl by remember {
       mutableStateOf((lastState as? TravelCertificateTravellersInputUiState.Created)?.url)
@@ -84,11 +85,12 @@ internal class TravelCertificateTravellersInputPresenter(
         }
 
         is TravelCertificateTravellersInputEvent.SetMemberIncluded -> {
+          if (isCreating) return@CollectEvents
           isMemberIncluded = event.included
         }
 
         is TravelCertificateTravellersInputEvent.SetCoInsuredIncluded -> {
-          if (loaded == null || loaded.coInsured.none { it.id == event.id }) return@CollectEvents
+          if (loaded == null || isCreating || loaded.coInsured.none { it.id == event.id }) return@CollectEvents
           includedCoInsuredIds = if (event.included) {
             includedCoInsuredIds + event.id
           } else {
@@ -105,7 +107,11 @@ internal class TravelCertificateTravellersInputPresenter(
           Snapshot.withMutableSnapshot {
             isCreating = true
             createFailed = false
-            requestToCreate = CreateRequest(isMemberIncluded, includedCoInsured)
+            requestToCreate = CreateRequest(
+              attempt = (requestToCreate?.attempt ?: 0) + 1,
+              isMemberIncluded = isMemberIncluded,
+              coInsured = includedCoInsured,
+            )
           }
         }
       }
@@ -124,9 +130,11 @@ internal class TravelCertificateTravellersInputPresenter(
               val coInsuredList = data.coInsuredList.filterNot {
                 it.hasMissingInfo
               }.map { coInsuredData ->
+                val name = "${coInsuredData.firstName} ${coInsuredData.lastName}"
                 CoInsured(
-                  id = CoInsuredId(coInsuredData),
-                  name = "${coInsuredData.firstName} ${coInsuredData.lastName}",
+                  id = coInsuredData.id?.let(::CoInsuredId)
+                    ?: generatedIds.idFor(name, coInsuredData.ssn, coInsuredData.dateOfBirth),
+                  name = name,
                   ssn = coInsuredData.ssn,
                   dateOfBirth = coInsuredData.dateOfBirth,
                   isIncluded = false,
@@ -165,7 +173,6 @@ internal class TravelCertificateTravellersInputPresenter(
           createdUrl = url
         },
       )
-      requestToCreate = null
     }
 
     val url = createdUrl
@@ -195,7 +202,29 @@ private data class Travellers(
   val coInsuredHasMissingInfo: Boolean,
 )
 
+/**
+ * Ids for co-insured the backend returns without one. The same name, SSN and birth date get the same id on every poll
+ * and after a restart from [restored], so a selection keyed by id survives both, and the id carries none of that data.
+ */
+private class GeneratedCoInsuredIds(restored: List<CoInsured>) {
+  private val ids: MutableMap<Identity, CoInsuredId> =
+    restored.associateTo(mutableMapOf()) { Identity(it.name, it.ssn, it.dateOfBirth) to it.id }
+  private var lastNumber = 0
+
+  fun idFor(name: String, ssn: String?, dateOfBirth: LocalDate?): CoInsuredId =
+    ids.getOrPut(Identity(name, ssn, dateOfBirth)) {
+      generateSequence { CoInsuredId("generated-${++lastNumber}") }.first { it !in ids.values }
+    }
+
+  private data class Identity(val name: String, val ssn: String?, val dateOfBirth: LocalDate?)
+}
+
+/**
+ * [attempt] increases with every accepted create, so a retry equal to the failed request still restarts the effect
+ * keyed on it, even when both are handled before the next composition.
+ */
 private data class CreateRequest(
+  val attempt: Int,
   val isMemberIncluded: Boolean,
   val coInsured: List<CoInsured>,
 )
@@ -227,10 +256,13 @@ internal sealed interface TravelCertificateTravellersInputEvent {
   /** Ignored while a create is in flight and when nobody is included. */
   data object GenerateTravelCertificate : TravelCertificateTravellersInputEvent
 
+  /** Ignored while a create is in flight. */
   data class SetMemberIncluded(val included: Boolean) : TravelCertificateTravellersInputEvent
 
-  /** Ignored when no loaded co-insured has [id]. */
-  data class SetCoInsuredIncluded(val id: CoInsuredId, val included: Boolean) : TravelCertificateTravellersInputEvent
+  /** Ignored while a create is in flight and when no loaded co-insured has [id]. */
+  data class SetCoInsuredIncluded(val id: CoInsuredId, val included: Boolean) : TravelCertificateTravellersInputEvent {
+    override fun toString(): String = "SetCoInsuredIncluded(included=$included)"
+  }
 }
 
 @Serializable
@@ -241,20 +273,12 @@ internal data class CoInsured(
   val dateOfBirth: LocalDate?,
   val isIncluded: Boolean,
 ) {
+  /** Leaves out the person's id, name, SSN and birth date. */
+  override fun toString(): String = "CoInsured(isIncluded=$isIncluded)"
+
   @Serializable
   @JvmInline
   value class CoInsuredId(val value: String) {
-    companion object {
-      operator fun invoke(coInsuredData: CoInsuredData) = CoInsuredId(
-        // The backend may return no id. The one built from the person's data is the same on every poll, so a
-        // selection keyed by it survives a refetch.
-        coInsuredData.id ?: listOf(
-          coInsuredData.firstName,
-          coInsuredData.lastName,
-          coInsuredData.ssn,
-          coInsuredData.dateOfBirth?.toString(),
-        ).joinToString(separator = "|") { it.orEmpty() },
-      )
-    }
+    override fun toString(): String = "CoInsuredId(redacted)"
   }
 }
