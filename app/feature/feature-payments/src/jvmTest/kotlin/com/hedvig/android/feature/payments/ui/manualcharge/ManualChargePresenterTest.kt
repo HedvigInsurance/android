@@ -1,27 +1,20 @@
 package com.hedvig.android.feature.payments.ui.manualcharge
 
-import androidx.compose.runtime.mutableStateListOf
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import assertk.assertThat
-import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.paying.member.PayinAccount
-import com.hedvig.android.data.paying.member.PaymentProvider
 import com.hedvig.android.feature.payments.data.GetManualChargeInfoUseCase
 import com.hedvig.android.feature.payments.data.ManualChargeInfo
 import com.hedvig.android.feature.payments.data.ManualChargeInfoResult
 import com.hedvig.android.feature.payments.data.TriggerManualChargeUseCase
-import com.hedvig.android.feature.payments.navigation.ManualChargeKey
-import com.hedvig.android.feature.payments.navigation.ManualChargeSuccessKey
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
-import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.compose.Backstack
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
@@ -79,11 +72,10 @@ class ManualChargePresenterTest {
   }
 
   @Test
-  fun `a successful charge replaces the screen with the success screen`() = runTest {
+  fun `a successful charge ends in the charged state`() = runTest {
     val getInfo = FakeGetManualChargeInfoUseCase()
     val trigger = FakeTriggerManualChargeUseCase()
-    val backstack = TestBackstack(TestRootKey, ManualChargeKey)
-    presenter(getInfo, trigger, backstack).test(ManualChargeUiState.Loading) {
+    presenter(getInfo, trigger).test(ManualChargeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Loading)
       getInfo.responses.send(ManualChargeInfoResult.Chargeable(info).right())
       assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Success(info))
@@ -91,13 +83,32 @@ class ManualChargePresenterTest {
       sendEvent(ManualChargeEvent.TriggerCharge)
       assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Success(info, payButtonLoading = true))
       trigger.responses.send(Unit.right())
-      this@runTest.testScheduler.advanceUntilIdle()
 
+      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Charged(info))
       assertThat(trigger.calls).isEqualTo(1)
-      assertThat(backstack.entries).containsExactly(
-        TestRootKey,
-        ManualChargeSuccessKey(showCancellationWarning = true, primaryPayinProvider = PaymentProvider.Swish),
-      )
+    }
+  }
+
+  @Test
+  fun `a refresh that lands after the charge keeps the charged state`() = runTest {
+    val getInfo = FakeGetManualChargeInfoUseCase()
+    val trigger = FakeTriggerManualChargeUseCase()
+    presenter(getInfo, trigger).test(ManualChargeUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Loading)
+      getInfo.responses.send(ManualChargeInfoResult.Chargeable(info).right())
+      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Success(info))
+
+      sendEvent(ManualChargeEvent.TriggerCharge)
+      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Success(info, payButtonLoading = true))
+      sendEvent(ManualChargeEvent.Refresh)
+      this@runTest.testScheduler.advanceUntilIdle()
+      trigger.responses.send(Unit.right())
+      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Charged(info))
+
+      getInfo.responses.send(ManualChargeInfoResult.NoLongerChargeable.right())
+      this@runTest.testScheduler.advanceUntilIdle()
+      assertThat(getInfo.calls).isEqualTo(2)
+      expectNoEvents()
     }
   }
 
@@ -105,8 +116,7 @@ class ManualChargePresenterTest {
   fun `a failed charge shows the error and stays on the screen`() = runTest {
     val getInfo = FakeGetManualChargeInfoUseCase()
     val trigger = FakeTriggerManualChargeUseCase()
-    val backstack = TestBackstack(TestRootKey, ManualChargeKey)
-    presenter(getInfo, trigger, backstack).test(ManualChargeUiState.Loading) {
+    presenter(getInfo, trigger).test(ManualChargeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Loading)
       getInfo.responses.send(ManualChargeInfoResult.Chargeable(info).right())
       assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Success(info))
@@ -116,7 +126,6 @@ class ManualChargePresenterTest {
       val insufficientFunds = ErrorMessage("Insufficient funds")
       trigger.responses.send(insufficientFunds.left())
       assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Failure(insufficientFunds))
-      assertThat(backstack.entries).containsExactly(TestRootKey, ManualChargeKey)
     }
   }
 
@@ -182,14 +191,7 @@ class ManualChargePresenterTest {
   private fun presenter(
     getInfo: GetManualChargeInfoUseCase,
     trigger: TriggerManualChargeUseCase = FakeTriggerManualChargeUseCase(),
-    backstack: Backstack = TestBackstack(TestRootKey, ManualChargeKey),
-  ) = ManualChargePresenter(getInfo, trigger, backstack)
-}
-
-private data object TestRootKey : HedvigNavKey
-
-private class TestBackstack(vararg initial: HedvigNavKey) : Backstack {
-  override val entries: MutableList<HedvigNavKey> = mutableStateListOf(*initial)
+  ) = ManualChargePresenter(getInfo, trigger)
 }
 
 private class FakeGetManualChargeInfoUseCase : GetManualChargeInfoUseCase {

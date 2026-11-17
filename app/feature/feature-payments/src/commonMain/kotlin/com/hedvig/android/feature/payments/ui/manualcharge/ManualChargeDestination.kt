@@ -15,8 +15,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -36,6 +38,7 @@ import com.hedvig.android.data.paying.member.PayinAccount.Invoice
 import com.hedvig.android.data.paying.member.PayinAccount.SwishPayin
 import com.hedvig.android.data.paying.member.PayinAccount.Trustly
 import com.hedvig.android.data.paying.member.maskedAccountNumber
+import com.hedvig.android.data.paying.member.provider
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -58,9 +61,11 @@ import com.hedvig.android.design.system.hedvig.icon.WarningFilled
 import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.feature.payments.data.ManualChargeInfo
+import com.hedvig.android.feature.payments.navigation.ManualChargeSuccessKey
 import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeEvent.Refresh
 import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeEvent.Retry
 import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeEvent.TriggerCharge
+import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeUiState.Charged
 import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeUiState.Failure
 import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeUiState.Loading
 import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeUiState.NoLongerChargeable
@@ -88,6 +93,9 @@ import hedvig.resources.claim_status_detail_chat_button_description
 import hedvig.resources.payment_details_receipt_card_total
 import hedvig.resources.something_went_wrong
 import hedvig.resources.swish
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 
@@ -98,8 +106,10 @@ internal fun ManualChargeDestination(
   onNavigateToPaymentDetails: (chargeId: String) -> Unit,
   onChoosePrimaryMethodClicked: () -> Unit,
   openConversation: () -> Unit,
+  onCharged: (ManualChargeSuccessKey) -> Unit,
 ) {
   val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+  ChargedEffect(uiState.value, viewModel.uiState, onCharged)
   var hasResumedOnce by rememberSaveable { mutableStateOf(false) }
   LifecycleResumeEffect(Unit) {
     if (hasResumedOnce) {
@@ -122,6 +132,31 @@ internal fun ManualChargeDestination(
     openConversation = openConversation,
   )
 }
+
+/**
+ * Calls [onCharged] once for the [Charged] state of [uiStates]. It collects [uiStates] regardless of the lifecycle, so
+ * a result that arrives in the background is still acted on, but only while a charge is in flight, so the rest of the
+ * time the presenter still stops when the screen is not visible.
+ */
+@Composable
+internal fun ChargedEffect(
+  uiState: ManualChargeUiState,
+  uiStates: Flow<ManualChargeUiState>,
+  onCharged: (ManualChargeSuccessKey) -> Unit,
+) {
+  val chargeInFlight = uiState is Charged || (uiState is Success && uiState.payButtonLoading)
+  val currentOnCharged by rememberUpdatedState(onCharged)
+  LaunchedEffect(uiStates, chargeInFlight) {
+    if (!chargeInFlight) return@LaunchedEffect
+    val charged = uiStates.filterIsInstance<Charged>().first()
+    currentOnCharged(charged.manualChargeInfo.toManualChargeSuccessKey())
+  }
+}
+
+internal fun ManualChargeInfo.toManualChargeSuccessKey(): ManualChargeSuccessKey = ManualChargeSuccessKey(
+  showCancellationWarning = showCancellationWarning,
+  primaryPayinProvider = primaryPayinMethod?.provider,
+)
 
 @Composable
 private fun ManualChargeScreen(
@@ -188,6 +223,16 @@ private fun ManualChargeScreen(
       is Success -> {
         ManualChargeSuccessScreen(
           uiState,
+          onNavigateToPaymentDetails = onNavigateToPaymentDetails,
+          onTriggerPayment = onTriggerPayment,
+          onChoosePrimaryMethodClicked = onChoosePrimaryMethodClicked,
+          modifier = Modifier.weight(1f),
+        )
+      }
+
+      is Charged -> {
+        ManualChargeSuccessScreen(
+          Success(uiState.manualChargeInfo, payButtonLoading = true),
           onNavigateToPaymentDetails = onNavigateToPaymentDetails,
           onTriggerPayment = onTriggerPayment,
           onChoosePrimaryMethodClicked = onChoosePrimaryMethodClicked,

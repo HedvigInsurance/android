@@ -23,6 +23,7 @@ import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.BottomSheetSceneStrategy
 import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
 import com.hedvig.android.navigation.compose.add
+import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
@@ -69,6 +70,9 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
       },
       onChoosePrimaryMethodClicked = dropUnlessResumed { navigateToSelectPrimaryPayinMethod() },
       openConversation = openConversation,
+      onCharged = { successKey: ManualChargeSuccessKey ->
+        backstack.navigateAndPopUpTo<ManualChargeKey>(successKey, inclusive = true)
+      },
     )
   }
 

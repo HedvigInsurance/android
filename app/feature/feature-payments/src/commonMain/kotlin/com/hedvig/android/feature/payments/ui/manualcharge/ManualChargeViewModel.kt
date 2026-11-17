@@ -10,18 +10,13 @@ import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
-import com.hedvig.android.data.paying.member.provider
 import com.hedvig.android.feature.payments.data.GetManualChargeInfoUseCase
 import com.hedvig.android.feature.payments.data.ManualChargeInfo
 import com.hedvig.android.feature.payments.data.ManualChargeInfoResult
 import com.hedvig.android.feature.payments.data.TriggerManualChargeUseCase
-import com.hedvig.android.feature.payments.navigation.ManualChargeKey
-import com.hedvig.android.feature.payments.navigation.ManualChargeSuccessKey
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
-import com.hedvig.android.navigation.compose.Backstack
-import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import dev.zacsweers.metro.Inject
 
 @Inject
@@ -29,16 +24,14 @@ import dev.zacsweers.metro.Inject
 internal class ManualChargeViewModel(
   getManualChargeInfoUseCase: GetManualChargeInfoUseCase,
   triggerManualCharge: TriggerManualChargeUseCase,
-  backstack: Backstack,
 ) : MoleculeViewModel<ManualChargeEvent, ManualChargeUiState>(
     initialState = ManualChargeUiState.Loading,
-    presenter = ManualChargePresenter(getManualChargeInfoUseCase, triggerManualCharge, backstack),
+    presenter = ManualChargePresenter(getManualChargeInfoUseCase, triggerManualCharge),
   )
 
 internal class ManualChargePresenter(
   private val getManualChargeInfoUseCase: GetManualChargeInfoUseCase,
   private val triggerManualCharge: TriggerManualChargeUseCase,
-  private val backstack: Backstack,
 ) : MoleculePresenter<ManualChargeEvent, ManualChargeUiState> {
   @Composable
   override fun MoleculePresenterScope<ManualChargeEvent>.present(lastState: ManualChargeUiState): ManualChargeUiState {
@@ -72,13 +65,7 @@ internal class ManualChargePresenter(
             screenState = ManualChargeUiState.Failure(it)
           },
           ifRight = {
-            backstack.navigateAndPopUpTo<ManualChargeKey>(
-              ManualChargeSuccessKey(
-                showCancellationWarning = currentState.manualChargeInfo.showCancellationWarning,
-                primaryPayinProvider = currentState.manualChargeInfo.primaryPayinMethod?.provider,
-              ),
-              inclusive = true,
-            )
+            screenState = ManualChargeUiState.Charged(currentState.manualChargeInfo)
           },
         )
       }
@@ -107,6 +94,7 @@ internal class ManualChargePresenter(
     LaunchedEffect(refreshIteration) {
       if (refreshIteration == 0) return@LaunchedEffect
       getManualChargeInfoUseCase.invoke().onRight { result ->
+        if (screenState is ManualChargeUiState.Charged) return@onRight
         screenState = when (result) {
           is ManualChargeInfoResult.Chargeable -> ManualChargeUiState.Success(
             manualChargeInfo = result.info,
@@ -134,6 +122,11 @@ internal sealed interface ManualChargeUiState {
   data class Success(
     val manualChargeInfo: ManualChargeInfo,
     val payButtonLoading: Boolean = false,
+  ) : ManualChargeUiState
+
+  /** The charge went through. The platform leaves the screen; nothing follows this state. */
+  data class Charged(
+    val manualChargeInfo: ManualChargeInfo,
   ) : ManualChargeUiState
 }
 
