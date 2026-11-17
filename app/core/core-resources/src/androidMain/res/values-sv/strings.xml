@@ -120,6 +120,7 @@
   <string name="CHANGE_ADDRESS_EXTRA_BUILDINGS_WATER_INPUT_LABEL">Ansluten till vatten</string>
   <string name="CHANGE_ADDRESS_EXTRA_BUILDINGS_WATER_LABEL">Indraget vatten</string>
   <string name="CHANGE_ADDRESS_EXTRA_BUILDING_CONTAINER_TITLE">Typ av byggnad</string>
+  <string name="CHANGE_ADDRESS_EXTRA_BUILDING_SIZE_ERROR">Ange storleken på den extra byggnaden</string>
   <string name="CHANGE_ADDRESS_EXTRA_BUILDING_SIZE_LABEL">Storlek</string>
   <string name="CHANGE_ADDRESS_FAQ_DATE_LABEL">Så fort du fått nycklarna eller skrivit på kontraktet för din nya hyresrätt. Eller direkt när du har köpt din nya bostad.</string>
   <string name="CHANGE_ADDRESS_FAQ_DATE_TITLE">När bör jag ändra min adress?</string>
@@ -133,6 +134,8 @@
   <string name="CHANGE_ADDRESS_FAQ_STUDENT_TITLE">Vad är skillnaden mellan en vanlig hemförsäkring och en hemförsäkring för studenter?</string>
   <string name="CHANGE_ADDRESS_INCLUDED">Se vad som ingår</string>
   <string name="CHANGE_ADDRESS_INFORMATION_ABOUT_YOUR_HOUSE">Information om ditt nya hus</string>
+  <string name="CHANGE_ADDRESS_LIVING_SPACE_ERROR">Vänligen ange kvadratmeter</string>
+  <string name="CHANGE_ADDRESS_LIVING_SPACE_OVER_LIMIT_WITH_INPUT_ERROR" formatted="false">För stor boyta. Maximal boyta är %d%s.</string>
   <string name="CHANGE_ADDRESS_MOVING_DATE_ERROR">Vänligen välj ett flyttdatum</string>
   <string name="CHANGE_ADDRESS_MOVING_DATE_LABEL">Tillträdesdatum</string>
   <string name="CHANGE_ADDRESS_NEW_ADDRESS_LABEL">Adress</string>

@@ -88,6 +88,7 @@ import hedvig.resources.CHAT_NEW_MESSAGE
 import hedvig.resources.CHAT_SENDER_MEMBER
 import hedvig.resources.CHAT_SENT_A_FILE
 import hedvig.resources.CHAT_SENT_A_MESSAGE
+import hedvig.resources.GENERAL_YESTERDAY
 import hedvig.resources.HC_CHAT_BUTTON
 import hedvig.resources.HEDVIG_NAME_TEXT
 import hedvig.resources.INBOX_EMPTY_STATE_SUBTITLE
@@ -440,6 +441,7 @@ private fun ConversationCard(
               val formattedLastMessageSent = conversation.lastMessageTimestamp.formattedChatDateTime(
                 getLocale(),
                 stringResource(Res.string.TERMINATION_FLOW_TODAY),
+                stringResource(Res.string.GENERAL_YESTERDAY),
                 LocalClock.current.now(),
               )
               HedvigText(
