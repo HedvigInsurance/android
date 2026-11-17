@@ -39,6 +39,8 @@ internal class ManualChargePresenter(
     var refreshIteration by remember { mutableIntStateOf(0) }
     var screenState by remember { mutableStateOf(lastState) }
     var triggerChargeIteration by remember { mutableIntStateOf(0) }
+    // Details shown before this run started may be stale, so only details loaded in this run can be charged.
+    var loadedInThisRun by remember { mutableStateOf(false) }
 
     CollectEvents {
       when (it) {
@@ -47,7 +49,12 @@ internal class ManualChargePresenter(
         }
 
         ManualChargeEvent.TriggerCharge -> {
-          triggerChargeIteration++
+          // Starting a second charge would cancel the one in flight, whose request has usually been sent already.
+          val current = screenState
+          if (loadedInThisRun && current is ManualChargeUiState.Success && !current.payButtonLoading) {
+            screenState = current.copy(payButtonLoading = true)
+            triggerChargeIteration++
+          }
         }
 
         ManualChargeEvent.Refresh -> {
@@ -72,6 +79,8 @@ internal class ManualChargePresenter(
     }
 
     LaunchedEffect(dataLoadIteration) {
+      // The member has paid, so nothing is loaded again, also when the presenter restarts from this state.
+      if (screenState is ManualChargeUiState.Charged) return@LaunchedEffect
       screenState = ManualChargeUiState.Loading
       getManualChargeInfoUseCase.invoke().fold(
         ifRight = { result ->
@@ -79,6 +88,7 @@ internal class ManualChargePresenter(
             is ManualChargeInfoResult.Chargeable -> ManualChargeUiState.Success(result.info)
             ManualChargeInfoResult.NoLongerChargeable -> ManualChargeUiState.NoLongerChargeable
           }
+          loadedInThisRun = true
         },
         ifLeft = { failure ->
           screenState = ManualChargeUiState.Failure(failure)

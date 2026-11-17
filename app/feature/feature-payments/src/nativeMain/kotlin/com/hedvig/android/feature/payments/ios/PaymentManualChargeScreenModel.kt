@@ -17,8 +17,8 @@ fun createPaymentManualChargeScreenModel(viewModelFactory: ViewModelProvider.Fac
   PaymentManualChargeScreenModel(viewModelFactory)
 
 /**
- * Paying a missed charge. Creating, observing or closing the model never charges: only [triggerCharge] does. The Swift
- * owner's rules are on [ScreenModel].
+ * Paying a missed charge. Creating, observing or closing the model never charges: only [triggerCharge] does. Once the
+ * state is Charged, every event function does nothing. The Swift owner's rules are on [ScreenModel].
  */
 class PaymentManualChargeScreenModel internal constructor(viewModelFactory: ViewModelProvider.Factory) :
   ScreenModel<PaymentManualChargeScreenState>() {
@@ -26,7 +26,7 @@ class PaymentManualChargeScreenModel internal constructor(viewModelFactory: View
 
     /** Loads the missed charge again, through Loading. Safe to call from any thread. */
     fun retry() {
-      viewModel.send(ManualChargeEvent.Retry)
+      if (currentState.acceptsReload()) viewModel.send(ManualChargeEvent.Retry)
     }
 
     /**
@@ -34,15 +34,19 @@ class PaymentManualChargeScreenModel internal constructor(viewModelFactory: View
      * changed their payin method elsewhere. A failure to load is ignored. Safe to call from any thread.
      */
     fun refresh() {
-      viewModel.send(ManualChargeEvent.Refresh)
+      if (currentState.acceptsReload()) viewModel.send(ManualChargeEvent.Refresh)
     }
 
     /**
-     * Charges the member the amount due, on their primary payin method. This moves money. Ignored unless the state is
-     * Content. Safe to call from any thread.
+     * Charges the member the amount due, on their primary payin method. This moves money. It does nothing unless the
+     * state is Content with `isCharging` false, so a charge in flight is never started again.
+     *
+     * Call it only while [states] is being collected, and keep collecting for as long as `isCharging` is true: the
+     * presenter stops 5 seconds after the last collection ends, which cancels the charge's request, and the Charged
+     * state would then never arrive although the member may have been charged. Safe to call from any thread.
      */
     fun triggerCharge() {
-      viewModel.send(ManualChargeEvent.TriggerCharge)
+      currentState.triggerChargeEvent()?.let { viewModel.send(it) }
     }
   }
 
@@ -79,3 +83,10 @@ private fun PayinAccount.toPaymentChargeMethod(): PaymentChargeMethod = when (th
   is PayinAccount.SwishPayin -> PaymentChargeMethod.SWISH
   is PayinAccount.Invoice -> PaymentChargeMethod.INVOICE
 }
+
+/** The event [PaymentManualChargeScreenModel.triggerCharge] sends from this state, null when no charge may start. */
+internal fun PaymentManualChargeScreenState.triggerChargeEvent(): ManualChargeEvent? =
+  if (this is PaymentManualChargeScreenState.Content && !isCharging) ManualChargeEvent.TriggerCharge else null
+
+/** Whether retry and refresh reach the ViewModel from this state. */
+internal fun PaymentManualChargeScreenState.acceptsReload(): Boolean = this !is PaymentManualChargeScreenState.Charged

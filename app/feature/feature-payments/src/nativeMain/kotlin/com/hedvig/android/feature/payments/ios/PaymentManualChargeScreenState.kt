@@ -12,9 +12,9 @@ sealed class PaymentManualChargeScreenState {
 
   /**
    * The missed charge, due on [missedDueDate] (`yyyy-MM-dd`). A null [chargeId] is a charge the backend sent without
-   * one. [payinMethods] are all of the member's payin methods; [primaryPayinAccount] is the one charged, null when none
-   * is connected. [showsCancellationWarning] is true when a contract ends for missed payments. [isCharging] is true
-   * while the charge is being made.
+   * one. [payinMethods] are the member's payin methods the app can show; [primaryPayinAccount] is the one charged,
+   * null when none is connected. [showsCancellationWarning] is true when a contract ends for missed payments.
+   * [isCharging] is true while the charge is being made.
    */
   data class Content(
     val chargeId: String?,
