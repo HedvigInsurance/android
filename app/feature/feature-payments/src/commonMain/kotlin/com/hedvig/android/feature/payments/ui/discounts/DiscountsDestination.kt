@@ -65,6 +65,7 @@ import hedvig.resources.Res
 import hedvig.resources.general_close_button
 import hedvig.resources.general_more_information_button
 import hedvig.resources.important_message_read_more
+import hedvig.resources.referrals_info_sheet_body
 import hedvig.resources.referrals_info_sheet_headline
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -267,7 +268,7 @@ internal fun ForeverExplanationBottomSheet(foreverInfoBottomSheetState: HedvigBo
 private fun ColumnScope.ForeverExplanationBottomSheetContent(onDismiss: () -> Unit) {
   HedvigText(text = stringResource(Res.string.referrals_info_sheet_headline))
   HedvigText(
-    text = stringResource(Res.string.PAYMENTS_REFERRALS_INFO_DESCRIPTION),
+    text = stringResource(Res.string.referrals_info_sheet_body, 10),
     color = HedvigTheme.colorScheme.textSecondary,
   )
   Spacer(Modifier.height(24.dp))
