@@ -1,9 +1,5 @@
 package com.hedvig.android.feature.profile.contactinfo
 
-import androidx.compose.foundation.text.input.InputTransformation
-import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.byValue
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -12,7 +8,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
-import androidx.compose.ui.text.TextRange
 import arrow.core.Either
 import arrow.core.getOrElse
 import arrow.core.right
@@ -46,6 +41,10 @@ internal sealed interface ContactInfoEvent {
   data object SubmitData : ContactInfoEvent
 
   data object ShowedMessage : ContactInfoEvent
+
+  data class ChangePhoneNumber(val phoneNumber: String) : ContactInfoEvent
+
+  data class ChangeEmail(val email: String) : ContactInfoEvent
 }
 
 internal sealed interface ContactInfoUiState {
@@ -56,40 +55,42 @@ internal sealed interface ContactInfoUiState {
 
   data object Error : ContactInfoUiState
 
+  /**
+   * [phoneNumberRevision] and [emailRevision] increase only when the presenter itself writes that text, so the UI
+   * copies [phoneNumber] or [email] into its field on a revision change and otherwise leaves what the member typed.
+   */
   data class Content(
-    val phoneNumberState: TextFieldState,
-    val emailState: TextFieldState,
+    val phoneNumber: String,
+    val email: String,
     val uploadedPhoneNumber: String?,
     val uploadedEmail: Email?,
     val submittingUpdatedInfo: Boolean,
     val showSuccessSnackBar: Boolean = false,
     val errorSnackBarText: ErrorSnackBarText? = null,
     val hasAttemptedSubmission: Boolean = false,
+    val phoneNumberRevision: Int = 0,
+    val emailRevision: Int = 0,
   ) : ContactInfoUiState {
     /**
      * Validated with the same rules the submission uses, so that an input can never look valid but be rejected on
      * submit. An empty field only counts as an error once submission has been attempted, since the member has not
      * had the chance to fill it in before that.
      */
-    private val phoneNumber: Either<ErrorMessage, PhoneNumber?>
+    private val validatedPhoneNumber: Either<ErrorMessage, PhoneNumber?>
       get() = when {
-        phoneNumberState.text.isBlank() && !hasAttemptedSubmission -> null.right()
-        else -> PhoneNumber.notNullFromString(phoneNumberState.text.toString())
+        phoneNumber.isBlank() && !hasAttemptedSubmission -> null.right()
+        else -> PhoneNumber.notNullFromString(phoneNumber)
       }
-    private val email: Either<ErrorMessage, Email?>
+    private val validatedEmail: Either<ErrorMessage, Email?>
       get() = when {
-        emailState.text.isBlank() && !hasAttemptedSubmission -> null.right()
-        else -> Email.fromStringNotNull(emailState.text.toString())
+        email.isBlank() && !hasAttemptedSubmission -> null.right()
+        else -> Email.fromStringNotNull(email)
       }
 
     val phoneNumberHasError: Boolean
-      get() = phoneNumber.isLeft()
+      get() = validatedPhoneNumber.isLeft()
     val emailHasError: Boolean
-      get() = email.isLeft()
-
-    val emailInputTransformation = InputTransformation.byValue { _, proposed ->
-      proposed.trim()
-    }
+      get() = validatedEmail.isLeft()
   }
 }
 
@@ -109,14 +110,10 @@ internal class ContactInfoPresenter(
 ) : MoleculePresenter<ContactInfoEvent, ContactInfoUiState> {
   @Composable
   override fun MoleculePresenterScope<ContactInfoEvent>.present(lastState: ContactInfoUiState): ContactInfoUiState {
-    val phoneNumber = remember {
-      val lastPhoneNumberState = lastState.content?.phoneNumberState
-      TextFieldState(lastPhoneNumberState?.text?.toString() ?: "", lastPhoneNumberState?.selection ?: TextRange(0))
-    }
-    val email = remember {
-      val lastEmailState = lastState.content?.emailState
-      TextFieldState(lastEmailState?.text?.toString() ?: "", lastEmailState?.selection ?: TextRange(0))
-    }
+    var phoneNumber by remember { mutableStateOf(lastState.content?.phoneNumber ?: "") }
+    var phoneNumberRevision by remember { mutableIntStateOf(lastState.content?.phoneNumberRevision ?: 0) }
+    var email by remember { mutableStateOf(lastState.content?.email ?: "") }
+    var emailRevision by remember { mutableIntStateOf(lastState.content?.emailRevision ?: 0) }
     var uploadedEmail: Email? by remember { mutableStateOf(lastState.content?.uploadedEmail) }
     var uploadedPhoneNumber: String? by remember { mutableStateOf(lastState.content?.uploadedPhoneNumber) }
 
@@ -141,8 +138,10 @@ internal class ContactInfoPresenter(
       dataFetchingState = Idle
       uploadedEmail = contactInformation.email
       uploadedPhoneNumber = contactInformation.phoneNumber
-      email.setTextAndPlaceCursorAtEnd(contactInformation.email.valueForTextField)
-      phoneNumber.setTextAndPlaceCursorAtEnd(contactInformation.phoneNumber ?: "")
+      email = contactInformation.email.valueForTextField
+      emailRevision++
+      phoneNumber = contactInformation.phoneNumber ?: ""
+      phoneNumberRevision++
     }
 
     LaunchedEffect(refetchDataIteration) {
@@ -217,14 +216,23 @@ internal class ContactInfoPresenter(
           hasAttemptedSubmission = true
           if (submittingData != null) return@CollectEvents
           val trimmedPhoneNumber = PhoneNumber
-            .notNullFromString(phoneNumber.text.toString())
+            .notNullFromString(phoneNumber)
             .getOrElse {
               return@CollectEvents
             }
-          val emailValue = Email.fromStringNotNull(email.text.toString()).getOrElse {
+          val emailValue = Email.fromStringNotNull(email).getOrElse {
             return@CollectEvents
           }
           submittingData = trimmedPhoneNumber to emailValue
+        }
+
+        is ContactInfoEvent.ChangePhoneNumber -> {
+          phoneNumber = event.phoneNumber
+        }
+
+        is ContactInfoEvent.ChangeEmail -> {
+          // An email address never starts or ends with whitespace, whichever keyboard or paste it came from.
+          email = event.email.trim()
         }
 
         ContactInfoEvent.ShowedMessage -> {
@@ -242,8 +250,10 @@ internal class ContactInfoPresenter(
       Fetching -> Loading
 
       Idle -> Content(
-        emailState = email,
-        phoneNumberState = phoneNumber,
+        email = email,
+        emailRevision = emailRevision,
+        phoneNumber = phoneNumber,
+        phoneNumberRevision = phoneNumberRevision,
         uploadedEmail = uploadedEmail,
         uploadedPhoneNumber = uploadedPhoneNumber,
         submittingUpdatedInfo = submittingData != null,
