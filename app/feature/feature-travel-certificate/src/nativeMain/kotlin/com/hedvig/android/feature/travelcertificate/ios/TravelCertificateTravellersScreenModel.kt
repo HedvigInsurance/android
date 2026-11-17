@@ -22,9 +22,11 @@ fun createTravelCertificateTravellersScreenModel(
 
 /**
  * Choosing who travels, then creating the certificate. The Swift owner's rules are on [ScreenModel], and one more
- * applies here: keep collecting [states] while `isCreating` is true. The presenter stops 5 seconds after the last
- * collection is cancelled, which cancels the create's request; the certificate may still have been created, but this
- * model then shows `createFailed` instead of Created, and a retry creates a second one.
+ * applies here: do not let the screen be dismissed while `isCreating` is true: disable back and interactive
+ * dismissal. Closing the model cancels the create's request at once, the certificate may still have been created,
+ * and nothing shows the outcome, so if the screen goes away anyway, reload the history. Collection must not stop
+ * while `isCreating` is true either: the presenter stops 5 seconds after the last collection is cancelled, which
+ * cancels the request too.
  *
  * Every event function is safe to call from any thread. Events sent while [states] is not collected wait in a
  * buffer of 20, and further ones are dropped and logged, so send them only while collecting.

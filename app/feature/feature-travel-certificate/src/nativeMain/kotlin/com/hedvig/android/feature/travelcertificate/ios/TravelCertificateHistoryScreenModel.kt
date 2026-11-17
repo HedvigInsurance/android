@@ -17,7 +17,11 @@ fun createTravelCertificateHistoryScreenModel(
   viewModelFactory: ViewModelProvider.Factory,
 ): TravelCertificateHistoryScreenModel = TravelCertificateHistoryScreenModel(viewModelFactory)
 
-/** The member's travel certificates. The Swift owner's rules are on [ScreenModel]. */
+/**
+ * The member's travel certificates. The Swift owner's rules are on [ScreenModel], and one more applies here: the list,
+ * the eligibility and the add-on offer are loaded once per model, so call [reload] when a create flow started from
+ * this screen ends, however it ends (Created, dismissed, or closed while creating).
+ */
 class TravelCertificateHistoryScreenModel internal constructor(viewModelFactory: ViewModelProvider.Factory) :
   ScreenModel<TravelCertificateHistoryScreenState>() {
     private val viewModel = viewModel(viewModelFactory, CertificateHistoryViewModel::class) { it.toScreenState() }

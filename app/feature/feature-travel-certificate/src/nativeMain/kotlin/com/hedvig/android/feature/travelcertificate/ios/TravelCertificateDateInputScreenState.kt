@@ -9,7 +9,8 @@ sealed class TravelCertificateDateInputScreenState {
   data object Failed : TravelCertificateDateInputScreenState()
 
   /**
-   * The form. All dates are `yyyy-MM-dd`.
+   * The form. All dates are `yyyy-MM-dd` calendar days: show each as that year, month and day in the picker's own
+   * calendar, never through a GMT-based formatter such as `ISO8601DateFormatter`.
    *
    * [email] is the text Kotlin holds. [emailRevision] changes only when Kotlin writes [email] itself (the prefill
    * from the member's profile), never when `setEmail` is applied, so a field that owns its text copies [email] in
