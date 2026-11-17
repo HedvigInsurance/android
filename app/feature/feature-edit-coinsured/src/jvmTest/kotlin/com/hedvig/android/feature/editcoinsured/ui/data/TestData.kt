@@ -1,6 +1,8 @@
 package com.hedvig.android.feature.editcoinsured.ui.data
 
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
+import com.hedvig.android.feature.editcoinsured.data.ContractInfo
 import com.hedvig.android.feature.editcoinsured.data.Member
 import kotlinx.datetime.LocalDate
 
@@ -43,4 +45,10 @@ internal val testMember = Member(
   firstName = "Member",
   lastName = "Membersson",
   ssn = "12345",
+)
+
+internal val testContractInfo = ContractInfo(
+  contractGroup = ContractGroup.RENTAL,
+  displayName = "Home insurance",
+  exposureName = "Lulanden 85H, 71220",
 )

@@ -31,7 +31,9 @@ fun DiscountPieChart(
   incentiveColor: Color = HedvigTheme.colorScheme.signalGreenFill,
 ) {
   val transition = rememberInfiniteTransition(label = "transition")
+  // Kept visible even when the incentive is a tiny share of a large price, at the cost of exaggerating it.
   val targetForeverIncentiveValue = calculateAngleDegrees(totalPrice, incentive)
+    .let { if (it > 0f) it.coerceIn(25f, 360f) else it }
   val foreverIncentiveSweep by transition.animateFloat(
     initialValue = 0f,
     targetValue = targetForeverIncentiveValue,
@@ -39,7 +41,7 @@ fun DiscountPieChart(
       animation = keyframes {
         durationMillis = 4100
         0f at 0
-        0f at 1800 using FastOutSlowInEasing
+        0f at 800 using FastOutSlowInEasing
         targetForeverIncentiveValue at 2300
         targetForeverIncentiveValue at 3600 using FastOutSlowInEasing
         0f at 4100
@@ -74,7 +76,8 @@ private fun calculateAngleDegrees(totalPrice: Float, totalDiscount: Float): Floa
     0f
   } else {
     (totalDiscount / totalPrice) * 360
-  }.coerceAtMost(360f)
+  }
+    .coerceAtMost(360f)
 }
 
 @Composable

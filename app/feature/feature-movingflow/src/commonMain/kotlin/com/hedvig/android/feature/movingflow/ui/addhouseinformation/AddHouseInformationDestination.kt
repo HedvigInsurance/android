@@ -41,6 +41,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.PrimaryAlt
 import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle.NoButtons
+import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownSize
+import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle
+import com.hedvig.android.design.system.hedvig.DropdownItem.SimpleDropdownItem
+import com.hedvig.android.design.system.hedvig.DropdownWithDialog
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
@@ -51,7 +55,6 @@ import com.hedvig.android.design.system.hedvig.HedvigStepper
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTextField
-import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.ErrorState.Error.WithMessage
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.ErrorState.NoError
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.TextFieldSize
@@ -100,6 +103,7 @@ import hedvig.resources.CHANGE_ADDRESS_EXTRA_BUILDINGS_LABEL
 import hedvig.resources.CHANGE_ADDRESS_EXTRA_BUILDINGS_WATER_INPUT_LABEL
 import hedvig.resources.CHANGE_ADDRESS_EXTRA_BUILDINGS_WATER_LABEL
 import hedvig.resources.CHANGE_ADDRESS_EXTRA_BUILDING_CONTAINER_TITLE
+import hedvig.resources.CHANGE_ADDRESS_EXTRA_BUILDING_SIZE_ERROR
 import hedvig.resources.CHANGE_ADDRESS_EXTRA_BUILDING_SIZE_LABEL
 import hedvig.resources.CHANGE_ADDRESS_INFORMATION_ABOUT_YOUR_HOUSE
 import hedvig.resources.CHANGE_ADDRESS_SIZE_SUFFIX
@@ -375,7 +379,7 @@ private fun ExtraBuildingsDialogContent(
   var chosenBuilding: MoveExtraBuildingType? by remember { mutableStateOf(null) }
   var size: Int? by remember { mutableStateOf(null) }
   var isConnectedToWater: Boolean by remember { mutableStateOf(false) }
-  var isSizeMissing by remember { mutableStateOf(false) }
+  var isSizeInvalid by remember { mutableStateOf(false) }
   Column(modifier) {
     Spacer(Modifier.height(16.dp))
     HedvigText(
@@ -392,38 +396,39 @@ private fun ExtraBuildingsDialogContent(
       Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
       ) {
-        HedvigCard {
-          RadioGroup(
-            options = allowedExtraBuildings.map { extraBuildingType ->
-              RadioOption(
-                RadioOptionId(extraBuildingType.type),
-                extraBuildingType.string(),
-              )
+        DropdownWithDialog(
+          style = DropdownStyle.Default(
+            items = allowedExtraBuildings.map { SimpleDropdownItem(it.string()) },
+          ),
+          size = DropdownSize.Medium,
+          hintText = stringResource(Res.string.CHANGE_ADDRESS_EXTRA_BUILDING_CONTAINER_TITLE),
+          chosenItemIndex = allowedExtraBuildings.indexOf(chosenBuilding).takeIf { it != -1 },
+          dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
+        ) { onDismissRequest ->
+          ExtraBuildingTypeDialogContent(
+            allowedExtraBuildings = allowedExtraBuildings,
+            chosenBuilding = chosenBuilding,
+            onBuildingChosen = {
+              chosenBuilding = it
+              onDismissRequest()
             },
-            selectedOption = chosenBuilding?.type?.let { RadioOptionId(it) },
-            onRadioOptionSelected = {
-              val buildingByType = allowedExtraBuildings.firstOrNull { allowedBuilding ->
-                allowedBuilding.type == it.id
-              }
-              buildingByType?.let { notNullResult ->
-                chosenBuilding = notNullResult
-              }
-            },
-            style = RadioGroupStyle.Labeled.VerticalWithDivider(
-              stringResource(Res.string.CHANGE_ADDRESS_EXTRA_BUILDING_CONTAINER_TITLE),
-            ),
+            dismissDialog = onDismissRequest,
           )
         }
         HedvigTextField(
           text = size?.toString() ?: "",
           onValueChange = {
-            isSizeMissing = false
+            isSizeInvalid = false
             size = it.toIntOrNull()
           },
           keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
           labelText = stringResource(Res.string.CHANGE_ADDRESS_EXTRA_BUILDING_SIZE_LABEL),
           textFieldSize = TextFieldSize.Medium,
-          errorState = if (isSizeMissing) HedvigTextFieldDefaults.ErrorState.Error.WithoutMessage else NoError,
+          errorState = if (isSizeInvalid) {
+            WithMessage(stringResource(Res.string.CHANGE_ADDRESS_EXTRA_BUILDING_SIZE_ERROR))
+          } else {
+            NoError
+          },
         )
         HedvigToggle(
           labelText = stringResource(Res.string.CHANGE_ADDRESS_EXTRA_BUILDINGS_WATER_INPUT_LABEL),
@@ -438,10 +443,11 @@ private fun ExtraBuildingsDialogContent(
       HedvigButton(
         text = stringResource(Res.string.general_save_button),
         onClick = {
-          if (size == null) {
-            isSizeMissing = true
+          val area = size?.takeIf { it > 0 }
+          if (area == null) {
+            isSizeInvalid = true
+            return@HedvigButton
           }
-          val area = size ?: return@HedvigButton
           val type = chosenBuilding?.type ?: return@HedvigButton
           val displayName = chosenBuilding?.displayName ?: return@HedvigButton
           extraBuildings.updateValue(
@@ -464,6 +470,46 @@ private fun ExtraBuildingsDialogContent(
       )
       Spacer(Modifier.height(16.dp))
     }
+  }
+}
+
+@Composable
+private fun ExtraBuildingTypeDialogContent(
+  allowedExtraBuildings: List<MoveExtraBuildingType>,
+  chosenBuilding: MoveExtraBuildingType?,
+  onBuildingChosen: (MoveExtraBuildingType) -> Unit,
+  dismissDialog: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Column(modifier.verticalScroll(rememberScrollState())) {
+    Spacer(Modifier.height(16.dp))
+    HedvigCard {
+      RadioGroup(
+        options = allowedExtraBuildings.map { extraBuildingType ->
+          RadioOption(
+            RadioOptionId(extraBuildingType.type),
+            extraBuildingType.string(),
+          )
+        },
+        selectedOption = chosenBuilding?.type?.let { RadioOptionId(it) },
+        onRadioOptionSelected = { optionId ->
+          allowedExtraBuildings.firstOrNull { it.type == optionId.id }?.let(onBuildingChosen)
+        },
+        style = RadioGroupStyle.Labeled
+          .VerticalWithDivider(
+            stringResource(Res.string.CHANGE_ADDRESS_EXTRA_BUILDING_CONTAINER_TITLE),
+          ),
+      )
+    }
+    Spacer(Modifier.height(16.dp))
+    HedvigTextButton(
+      text = stringResource(Res.string.general_cancel_button),
+      onClick = dismissDialog,
+      enabled = true,
+      buttonSize = ButtonSize.Large,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(16.dp))
   }
 }
 
