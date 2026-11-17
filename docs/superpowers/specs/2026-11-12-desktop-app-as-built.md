@@ -94,7 +94,7 @@ payments, profile) or in `ClaimHistoryDestination.kt` (claim-history).
 ## Seam register
 
 Seams between the Android and desktop implementations. The Android column is the Android code behind the seam.
-A grep for `expect` declarations in `app/**/*.kt` finds 69 at the tip, 70 at `0d94497df0` (the two `KeepKmp`
+A grep for `expect` declarations in `app/**/*.kt` finds 68 at the tip, 70 at `0d94497df0` (the two `KeepKmp`
 declarations became one) and 33 at the base `229bd79df0`.
 
 ### `expect`/`actual`
@@ -116,7 +116,6 @@ declarations became one) and 33 at the base `229bd79df0`.
 | `feature-chat` | `ChatContext`, `isAccessibilityEnabled` | `Context`, reads enabled accessibility services | Always `false` |
 | `feature-chat` | `webUrlLinkMatcher` | `Patterns.WEB_URL` | `https?://\S+`, case-insensitive |
 | `feature-chat` | `ChatContentResolver`, `takePersistableReadPermission`, `releasePersistableReadPermission` | `ContentResolver` persistable URI grants | No-op (a picked file stays readable) |
-| `feature-chat` | `RoomDatabase.chatTransaction` | `withTransaction` | `useWriterConnection { immediateTransaction }` |
 | `feature-chat` | `rememberChatVisualMediaPicker`, `rememberChatFilePicker` | Activity result pickers (remembered) | The `compose-result-launcher` JVM pickers |
 | `feature-chat` | `ChatVideoMessage`, `ChatVideoCache`, `ChatSimpleVideoCache`, `ChatVideoPlayers`, `rememberChatVideoPlayers`, `rememberPreviewChatVideoCache` | ExoPlayer inline video with a media3 cache | The attached-file card, opening the URL |
 | `feature-chat` | `WindowInsets.chatImeAnimationTarget` | `imeAnimationTarget` | `WindowInsets.ime` (zero) |
@@ -257,7 +256,7 @@ every `feature-*` module except the `-navigation` ones. Each `expect` of the sea
 | `HedvigQrCode` is in `design-system-hedvig` `jvmAndAndroidMain` and used from `commonMain` of `feature-payin-account` and `feature-login` | Move to `commonMain` with a native QR encoder |
 | `CommonLocale.languageTag` has one `jvmAndAndroidMain` actual | A native actual over `NSLocale` |
 | `login_still_9x16.webp` exists in Android `res` and in `jvmMain/composeResources` | One shared Compose resource |
-| Room's `AppDatabase` (`database-core`, plain JVM) has no `@ConstructedBy`; chat needs a native driver and file location | Room KMP setup for iOS, plus a `chatTransaction` native actual |
+| Room's `AppDatabase` (`database-core`, plain JVM) has no `@ConstructedBy`; chat needs a native driver and file location | Room KMP setup for iOS |
 | `DeviceIdFetcher`: Android and JVM bodies are identical and iOS gets it from Swift | Optional: one `commonMain` implementation |
 | `ApolloNormalizedCacheAuthEventListener` (`apollo-auth-listeners`, plain JVM) clears the Apollo cache on login and logout; Android and desktop include it, a native graph would not | An iOS target on `apollo-auth-listeners` before an iOS data layer serves real members, or one member's cached data shows to the next |
 | `AppBuildConfig.platformName`: Kotlin/Native exports interface members as required, so a Swift conformer must implement it | Note for any Swift `AppBuildConfig` (none exists on ugglan master) |
