@@ -2,10 +2,11 @@ import SwiftUI
 
 struct RootView: View {
     @Environment(AppModel.self) private var app
+    @State private var travelFlow = TravelCertificateFlow()
 
     var body: some View {
         if app.isLoggedIn {
-            NavigationStack {
+            NavigationStack(path: $travelFlow.path) {
                 List {
                     NavigationLink("Claim history") {
                         claimHistoryDestination()
@@ -13,6 +14,7 @@ struct RootView: View {
                     NavigationLink("Payments") {
                         PaymentOverviewView(holder: app.holder)
                     }
+                    NavigationLink("Travel certificate", value: TravelRoute.history)
                     #if DEBUG
                     if ShellDebug.claimHistorySample {
                         Section("Debug") {
@@ -31,9 +33,16 @@ struct RootView: View {
                     }
                 }
                 .navigationTitle("Umbrella consumer")
+                .navigationDestination(for: TravelRoute.self) { route in
+                    TravelCertificateDestination(route: route, holder: app.holder, flow: travelFlow)
+                }
             }
         } else {
             LoginView(app: app)
+                .onAppear {
+                    // A later login starts at the root, not on the travel screens left open at logout.
+                    travelFlow = TravelCertificateFlow()
+                }
         }
     }
 
