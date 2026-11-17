@@ -47,6 +47,7 @@ kotlin {
       implementation(projects.navigationCore)
       implementation(projects.notificationBadgeDataPublic)
       implementation(projects.pullrefresh)
+      implementation(projects.uiContract)
       implementation(projects.uiEmergency)
     }
     jvmTest.dependencies {

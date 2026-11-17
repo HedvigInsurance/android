@@ -43,7 +43,6 @@ import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup.ACCIDENT
 import com.hedvig.android.data.contract.ContractType.SE_APARTMENT_BRF
-import com.hedvig.android.data.contract.pillowResource
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownSize.Small
@@ -84,6 +83,7 @@ import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.DeductibleOptions.MutlipleOptions
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.DeductibleOptions.NoOptions
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.DeductibleOptions.OneOption
+import com.hedvig.android.ui.contract.pillowResource
 import com.hedvig.android.ui.tiersandaddons.CostBreakdownEntry
 import com.hedvig.android.ui.tiersandaddons.DiscountCostBreakdown
 import hedvig.resources.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL

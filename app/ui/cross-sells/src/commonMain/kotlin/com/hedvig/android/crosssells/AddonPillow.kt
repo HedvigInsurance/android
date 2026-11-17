@@ -11,13 +11,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.data.addons.data.FlowType
-import com.hedvig.android.data.contract.PillowType
-import com.hedvig.android.data.contract.pillowResource
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Plus
+import com.hedvig.android.ui.contract.PillowType
+import com.hedvig.android.ui.contract.pillowResource
 import org.jetbrains.compose.resources.painterResource
 
 /**

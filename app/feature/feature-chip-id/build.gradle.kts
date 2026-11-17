@@ -34,6 +34,7 @@ kotlin {
       implementation(projects.moleculePublic)
       implementation(projects.navigationCore)
       implementation(projects.navigationCommon)
+      implementation(projects.uiContract)
     }
     jvmTest.dependencies {
       implementation(libs.assertK)

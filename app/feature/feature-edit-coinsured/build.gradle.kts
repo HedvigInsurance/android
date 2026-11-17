@@ -40,6 +40,7 @@ kotlin {
       implementation(projects.moleculePublic)
       implementation(projects.navigationCommon)
       implementation(projects.navigationCore)
+      implementation(projects.uiContract)
     }
     jvmTest.dependencies {
       implementation(libs.apollo.testingSupport)

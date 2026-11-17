@@ -43,6 +43,7 @@ kotlin {
       implementation(projects.moleculePublic)
       implementation(projects.navigationCommon)
       implementation(projects.navigationCore)
+      implementation(projects.uiContract)
       implementation(projects.uiTiersAndAddons)
     }
     jvmTest.dependencies {

@@ -53,6 +53,7 @@ kotlin {
       implementation(projects.navigationCommon)
       implementation(projects.theme)
       implementation(projects.uiAnalyticsConsent)
+      implementation(projects.uiContract)
       implementation(projects.uiPhoneNumber)
     }
     jvmTest.dependencies {

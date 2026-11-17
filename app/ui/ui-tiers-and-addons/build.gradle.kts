@@ -30,6 +30,7 @@ kotlin {
       implementation(projects.dataContract)
       implementation(projects.dataProductVariantPublic)
       implementation(projects.designSystemHedvig)
+      implementation(projects.uiContract)
     }
   }
 }

@@ -26,7 +26,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.data.contract.ContractGroup.HOMEOWNER
-import com.hedvig.android.data.contract.pillowResource
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.ERROR
@@ -52,6 +51,7 @@ import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.chip.id.data.PetContractForChipId
+import com.hedvig.android.ui.contract.pillowResource
 import hedvig.resources.ADDON_FLOW_SELECT_INSURANCE_SUBTITLE
 import hedvig.resources.ADDON_FLOW_SELECT_INSURANCE_TITLE
 import hedvig.resources.CHIP_ID_NO_INSURANCES

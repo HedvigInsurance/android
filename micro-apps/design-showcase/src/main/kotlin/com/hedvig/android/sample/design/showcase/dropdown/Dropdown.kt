@@ -20,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.data.contract.ContractGroup
-import com.hedvig.android.data.contract.pillowResource
 import com.hedvig.android.design.system.hedvig.DropdownDefaults
 import com.hedvig.android.design.system.hedvig.DropdownItem
 import com.hedvig.android.design.system.hedvig.DropdownWithDialog
@@ -29,6 +28,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.IconResource
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.ui.contract.pillowResource
 
 @Composable
 fun DropdownShowcase() {
