@@ -1,3 +1,4 @@
+import com.hedvig.android.registerUmbrellaClasspathGuard
 import org.gradle.api.internal.catalog.DelegatingProjectDependency
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
@@ -71,3 +72,5 @@ kotlin {
     }
   }
 }
+
+registerUmbrellaClasspathGuard()
