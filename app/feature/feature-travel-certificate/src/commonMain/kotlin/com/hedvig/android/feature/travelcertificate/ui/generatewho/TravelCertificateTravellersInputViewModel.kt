@@ -15,9 +15,9 @@ import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.travelcertificate.data.CoInsuredData
 import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
 import com.hedvig.android.feature.travelcertificate.data.GetCoInsuredForContractUseCase
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificateTravellersStep
 import com.hedvig.android.feature.travelcertificate.navigation.ShowCertificateKey
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateKey
-import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateTravellersInputKey
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.CoInsured.CoInsuredId
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -33,7 +33,7 @@ import kotlinx.serialization.Serializable
 @AssistedInject
 @HedvigViewModel(ActivityRetainedScope::class)
 internal class TravelCertificateTravellersInputViewModel(
-  @Assisted primaryInput: TravelCertificateTravellersInputKey.TravelCertificatePrimaryInput,
+  @Assisted primaryInput: TravelCertificateTravellersStep,
   createTravelCertificateUseCase: CreateTravelCertificateUseCase,
   getCoInsuredForContractUseCase: GetCoInsuredForContractUseCase,
   backstack: Backstack,
@@ -48,7 +48,7 @@ internal class TravelCertificateTravellersInputViewModel(
   )
 
 internal class TravelCertificateTravellersInputPresenter(
-  private val primaryInput: TravelCertificateTravellersInputKey.TravelCertificatePrimaryInput,
+  private val primaryInput: TravelCertificateTravellersStep,
   private val createTravelCertificateUseCase: CreateTravelCertificateUseCase,
   private val getCoInsuredForContractUseCase: GetCoInsuredForContractUseCase,
   private val backstack: Backstack,

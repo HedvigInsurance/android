@@ -1,43 +1,27 @@
 package com.hedvig.android.feature.travelcertificate.ui.generatewhen
 
-import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.left
 import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
-import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
-import assertk.assertions.isNull
-import assertk.assertions.isTrue
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.travelcertificate.FakeCreateTravelCertificateTransport
 import com.hedvig.android.feature.travelcertificate.FakeGetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.feature.travelcertificate.FixedClock
-import com.hedvig.android.feature.travelcertificate.TestBackstack
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateData
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateError
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificateTravellersStep
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.expectNoStateChange
-import com.hedvig.android.feature.travelcertificate.navigation.ShowCertificateKey
-import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateDateInputKey
-import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateKey
-import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateTravellersInputKey
-import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateTravellersInputKey.TravelCertificatePrimaryInput
-import com.hedvig.android.language.test.FakeLanguageService
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.MoleculePresenterTestContext
 import com.hedvig.android.molecule.test.test
-import hedvig.resources.PROFILE_MY_INFO_INVALID_EMAIL
-import hedvig.resources.Res
-import hedvig.resources.travel_certificate_email_empty_error
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
 import octopus.type.TravelCertificateCreateInput
-import org.jetbrains.compose.resources.StringResource
 import org.junit.Rule
 import org.junit.Test
 
@@ -48,8 +32,6 @@ class TravelCertificateDateInputPresenterTest {
   private val today = LocalDate(2026, 11, 17)
   private val specifications = FakeGetTravelCertificateSpecificationsUseCase()
   private val createTransport = FakeCreateTravelCertificateTransport()
-  private val dateInputKey = TravelCertificateDateInputKey(null)
-  private val backstack = TestBackstack(TravelCertificateKey, dateInputKey)
 
   private fun specification(
     email: String = "member@hedvig.com",
@@ -69,25 +51,33 @@ class TravelCertificateDateInputPresenterTest {
     contractId = contractId,
     getTravelCertificateSpecificationsUseCase = specifications,
     createTravelCertificateUseCase = createTransport.createUseCase(),
-    languageService = FakeLanguageService(),
-    backstack = backstack,
     clock = FixedClock(),
   )
 
   private fun expectedContent(
-    actual: TravelCertificateDateInputUiState,
-    email: String? = "member@hedvig.com",
-    travelDate: LocalDate = today,
+    email: String = "member@hedvig.com",
+    emailRevision: Int = 1,
+    selectedDate: LocalDate = today,
     hasCoInsured: Boolean = false,
-    errorMessageRes: StringResource? = null,
+    emailError: EmailError? = null,
+    minDate: LocalDate = LocalDate(2026, 11, 10),
+    maxDate: LocalDate = LocalDate(2027, 1, 16),
+    isCreating: Boolean = false,
+    createFailed: Boolean = false,
+    next: TravelCertificateTravellersStep? = null,
   ) = TravelCertificateDateInputUiState.Success(
     contractId = "contractId",
     email = email,
-    travelDate = travelDate,
-    hasCoInsured = hasCoInsured,
-    datePickerState = (actual as TravelCertificateDateInputUiState.Success).datePickerState,
+    emailRevision = emailRevision,
+    emailError = emailError,
+    minDate = minDate,
+    maxDate = maxDate,
+    selectedDate = selectedDate,
     daysValid = 45,
-    errorMessageRes = errorMessageRes,
+    hasCoInsured = hasCoInsured,
+    isCreating = isCreating,
+    createFailed = createFailed,
+    next = next,
   )
 
   private suspend fun MoleculePresenterTestContext<
@@ -108,16 +98,12 @@ class TravelCertificateDateInputPresenterTest {
       email = email,
     )
 
-  private fun utcMillis(date: LocalDate): Long = date.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
-
   @Test
   fun `loading then content with the email prefilled and today as the date`() = runTest {
     presenter().test(TravelCertificateDateInputUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Loading)
       specifications.responses.trySend(specification().right())
-      val content = awaitContent()
-      assertThat(content).isEqualTo(expectedContent(content))
-      assertThat(content.datePickerState.selectedDateMillis).isNull()
+      assertThat(awaitContent()).isEqualTo(expectedContent())
       assertThat(specifications.contractIds).containsExactly(null)
     }
   }
@@ -133,34 +119,41 @@ class TravelCertificateDateInputPresenterTest {
   }
 
   @Test
-  fun `the picker allows exactly the specification's date range`() = runTest {
+  fun `the allowed dates are exactly the specification's date range`() = runTest {
     presenter().test(TravelCertificateDateInputUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Loading)
       specifications.responses.trySend(specification().right())
-      val picker = awaitContent().datePickerState
-      assertThat(picker.yearRange).isEqualTo(2026..2027)
-      val selectable = picker.selectableDates
-      assertThat(selectable.isSelectableDate(utcMillis(LocalDate(2026, 11, 9)))).isFalse()
-      assertThat(selectable.isSelectableDate(utcMillis(LocalDate(2026, 11, 10)))).isTrue()
-      assertThat(selectable.isSelectableDate(utcMillis(LocalDate(2027, 1, 16)))).isTrue()
-      assertThat(selectable.isSelectableDate(utcMillis(LocalDate(2027, 1, 17)))).isFalse()
-      assertThat(selectable.isSelectableYear(2025)).isFalse()
-      assertThat(selectable.isSelectableYear(2026)).isTrue()
-      assertThat(selectable.isSelectableYear(2027)).isTrue()
-      assertThat(selectable.isSelectableYear(2028)).isFalse()
+      val content = awaitContent()
+      assertThat(content.minDate).isEqualTo(LocalDate(2026, 11, 10))
+      assertThat(content.maxDate).isEqualTo(LocalDate(2027, 1, 16))
     }
   }
 
   @Test
-  fun `the default date is today even when the range starts later`() = runTest {
+  fun `the default date is clamped to the start of a range that starts after today`() = runTest {
     presenter().test(TravelCertificateDateInputUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Loading)
-      specifications.responses.trySend(
-        specification(dateRange = LocalDate(2026, 11, 20)..LocalDate(2027, 1, 16)).right(),
+      val range = LocalDate(2026, 11, 20)..LocalDate(2027, 1, 16)
+      specifications.responses.trySend(specification(dateRange = range).right())
+      assertThat(awaitContent()).isEqualTo(
+        expectedContent(selectedDate = LocalDate(2026, 11, 20), minDate = LocalDate(2026, 11, 20)),
       )
-      val content = awaitContent()
-      assertThat(content.travelDate).isEqualTo(today)
-      assertThat(content.datePickerState.selectableDates.isSelectableDate(utcMillis(today))).isFalse()
+    }
+  }
+
+  @Test
+  fun `the default date is clamped to the end of a range that ends before today`() = runTest {
+    presenter().test(TravelCertificateDateInputUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Loading)
+      val range = LocalDate(2026, 10, 1)..LocalDate(2026, 11, 16)
+      specifications.responses.trySend(specification(dateRange = range).right())
+      assertThat(awaitContent()).isEqualTo(
+        expectedContent(
+          selectedDate = LocalDate(2026, 11, 16),
+          minDate = LocalDate(2026, 10, 1),
+          maxDate = LocalDate(2026, 11, 16),
+        ),
+      )
     }
   }
 
@@ -169,12 +162,39 @@ class TravelCertificateDateInputPresenterTest {
     presenter().test(TravelCertificateDateInputUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Loading)
       specifications.responses.trySend(specification().right())
-      val content = awaitContent()
-      Snapshot.withMutableSnapshot {
-        content.datePickerState.selectedDateMillis = utcMillis(LocalDate(2026, 12, 24))
-      }
-      val changed = awaitContent()
-      assertThat(changed).isEqualTo(expectedContent(changed, travelDate = LocalDate(2026, 12, 24)))
+      skipItems(1)
+      sendEvent(TravelCertificateDateInputEvent.SelectTravelDate(LocalDate(2026, 12, 24)))
+      assertThat(awaitContent()).isEqualTo(expectedContent(selectedDate = LocalDate(2026, 12, 24)))
+    }
+  }
+
+  @Test
+  fun `the first and last day of the range can be picked`() = runTest {
+    presenter().test(TravelCertificateDateInputUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Loading)
+      specifications.responses.trySend(specification().right())
+      skipItems(1)
+      sendEvent(TravelCertificateDateInputEvent.SelectTravelDate(LocalDate(2026, 11, 10)))
+      assertThat(awaitContent()).isEqualTo(expectedContent(selectedDate = LocalDate(2026, 11, 10)))
+      sendEvent(TravelCertificateDateInputEvent.SelectTravelDate(LocalDate(2027, 1, 16)))
+      assertThat(awaitContent()).isEqualTo(expectedContent(selectedDate = LocalDate(2027, 1, 16)))
+    }
+  }
+
+  @Test
+  fun `a date outside the range is rejected`() = runTest {
+    presenter().test(TravelCertificateDateInputUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Loading)
+      specifications.responses.trySend(specification(numberOfCoInsured = 0).right())
+      skipItems(1)
+      sendEvent(TravelCertificateDateInputEvent.SelectTravelDate(LocalDate(2027, 3, 1)))
+      sendEvent(TravelCertificateDateInputEvent.SelectTravelDate(LocalDate(2026, 11, 9)))
+      testScheduler.advanceUntilIdle()
+      expectNoStateChange(expectedContent())
+
+      sendEvent(TravelCertificateDateInputEvent.Submit)
+      assertThat(awaitContent()).isEqualTo(expectedContent(isCreating = true))
+      assertThat(createTransport.inputs).containsExactly(createInput(startDate = today))
     }
   }
 
@@ -188,8 +208,7 @@ class TravelCertificateDateInputPresenterTest {
       sendEvent(TravelCertificateDateInputEvent.RetryLoadData)
       assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Loading)
       specifications.responses.trySend(specification().right())
-      val content = awaitContent()
-      assertThat(content).isEqualTo(expectedContent(content))
+      assertThat(awaitContent()).isEqualTo(expectedContent())
     }
   }
 
@@ -216,37 +235,43 @@ class TravelCertificateDateInputPresenterTest {
   }
 
   @Test
-  fun `an empty email gives the empty error and goes nowhere`() = runTest {
-    assertEmailError(email = "", expected = Res.string.travel_certificate_email_empty_error)
+  fun `the prefill writes the email with a new revision, typing keeps the revision`() = runTest {
+    presenter().test(TravelCertificateDateInputUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Loading)
+      specifications.responses.trySend(specification().right())
+      assertThat(awaitContent()).isEqualTo(expectedContent(email = "member@hedvig.com", emailRevision = 1))
+
+      sendEvent(TravelCertificateDateInputEvent.ChangeEmailInput("m"))
+      assertThat(awaitContent()).isEqualTo(expectedContent(email = "m", emailRevision = 1))
+      sendEvent(TravelCertificateDateInputEvent.ChangeEmailInput(""))
+      assertThat(awaitContent()).isEqualTo(expectedContent(email = "", emailRevision = 1))
+    }
   }
 
   @Test
-  fun `a blank email gives the invalid error, not the empty one`() = runTest {
-    assertEmailError(email = "   ", expected = Res.string.PROFILE_MY_INFO_INVALID_EMAIL)
+  fun `an empty email gives the empty error and goes nowhere`() = runTest {
+    assertEmailError(email = "", expected = EmailError.Empty)
+  }
+
+  @Test
+  fun `a blank email gives the empty error`() = runTest {
+    assertEmailError(email = "   ", expected = EmailError.Empty)
   }
 
   @Test
   fun `a malformed email gives the invalid error`() = runTest {
     for (email in listOf("member", "member@", "@hedvig.com", "member@hedvig", "member@@hedvig.com")) {
-      assertEmailError(email = email, expected = Res.string.PROFILE_MY_INFO_INVALID_EMAIL)
+      assertEmailError(email = email, expected = EmailError.Invalid)
     }
   }
 
-  @Test
-  fun `an email with surrounding spaces is not trimmed and gives the invalid error`() = runTest {
-    assertEmailError(email = " member@hedvig.com ", expected = Res.string.PROFILE_MY_INFO_INVALID_EMAIL)
-  }
-
-  private suspend fun assertEmailError(email: String, expected: StringResource) {
-    val backstack = TestBackstack(TravelCertificateKey, dateInputKey)
+  private suspend fun assertEmailError(email: String, expected: EmailError) {
     val specifications = FakeGetTravelCertificateSpecificationsUseCase()
     val createTransport = FakeCreateTravelCertificateTransport()
     TravelCertificateDateInputPresenter(
       contractId = null,
       getTravelCertificateSpecificationsUseCase = specifications,
       createTravelCertificateUseCase = createTransport.createUseCase(),
-      languageService = FakeLanguageService(),
-      backstack = backstack,
       clock = FixedClock(),
     ).test(TravelCertificateDateInputUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Loading)
@@ -254,47 +279,59 @@ class TravelCertificateDateInputPresenterTest {
       skipItems(1)
       sendEvent(TravelCertificateDateInputEvent.ChangeEmailInput(email))
       val edited = awaitContent()
-      assertThat(edited, email).isEqualTo(expectedContent(edited, email = email, hasCoInsured = true))
+      assertThat(edited, email).isEqualTo(expectedContent(email = email, hasCoInsured = true))
 
       sendEvent(TravelCertificateDateInputEvent.Submit)
       val rejected = awaitContent()
       assertThat(rejected, email).isEqualTo(
-        expectedContent(rejected, email = email, hasCoInsured = true, errorMessageRes = expected),
+        expectedContent(email = email, hasCoInsured = true, emailError = expected),
       )
-      assertThat(backstack.entries, email).containsExactly(TravelCertificateKey, dateInputKey)
       assertThat(createTransport.inputs, email).isEmpty()
 
       sendEvent(TravelCertificateDateInputEvent.ChangeEmailInput("member@hedvig.com"))
       val fixed = awaitContent()
-      assertThat(fixed, email).isEqualTo(expectedContent(fixed, hasCoInsured = true))
+      assertThat(fixed, email).isEqualTo(expectedContent(hasCoInsured = true))
     }
   }
 
   @Test
-  fun `continue with co-insured pushes the travellers step with the entered input`() = runTest {
+  fun `an email with surrounding spaces is trimmed before it is validated and used`() = runTest {
+    presenter().test(TravelCertificateDateInputUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Loading)
+      specifications.responses.trySend(specification(numberOfCoInsured = 0).right())
+      skipItems(1)
+      sendEvent(TravelCertificateDateInputEvent.ChangeEmailInput(" other@hedvig.com "))
+      skipItems(1)
+
+      sendEvent(TravelCertificateDateInputEvent.Submit)
+      assertThat(awaitContent()).isEqualTo(expectedContent(email = " other@hedvig.com ", isCreating = true))
+      assertThat(createTransport.inputs).containsExactly(createInput(email = "other@hedvig.com"))
+    }
+  }
+
+  @Test
+  fun `continue with co-insured offers the travellers step with the entered input`() = runTest {
     presenter().test(TravelCertificateDateInputUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Loading)
       specifications.responses.trySend(specification(numberOfCoInsured = 2).right())
-      val content = awaitContent()
-      sendEvent(TravelCertificateDateInputEvent.ChangeEmailInput("other@hedvig.com"))
       skipItems(1)
-      Snapshot.withMutableSnapshot {
-        content.datePickerState.selectedDateMillis = utcMillis(LocalDate(2026, 12, 24))
-      }
-      val ready = awaitContent()
+      sendEvent(TravelCertificateDateInputEvent.ChangeEmailInput(" other@hedvig.com"))
+      skipItems(1)
+      sendEvent(TravelCertificateDateInputEvent.SelectTravelDate(LocalDate(2026, 12, 24)))
+      skipItems(1)
 
       sendEvent(TravelCertificateDateInputEvent.Submit)
-      testScheduler.advanceUntilIdle()
-      expectNoStateChange(ready)
-      assertThat(backstack.entries).containsExactly(
-        TravelCertificateKey,
-        dateInputKey,
-        TravelCertificateTravellersInputKey(
-          TravelCertificatePrimaryInput(
-            email = "other@hedvig.com",
-            travelDate = LocalDate(2026, 12, 24),
-            contractId = "contractId",
-          ),
+      val step = TravelCertificateTravellersStep(
+        email = "other@hedvig.com",
+        travelDate = LocalDate(2026, 12, 24),
+        contractId = "contractId",
+      )
+      assertThat(awaitContent()).isEqualTo(
+        expectedContent(
+          email = " other@hedvig.com",
+          selectedDate = LocalDate(2026, 12, 24),
+          hasCoInsured = true,
+          next = step,
         ),
       )
       assertThat(createTransport.inputs).isEmpty()
@@ -302,84 +339,89 @@ class TravelCertificateDateInputPresenterTest {
   }
 
   @Test
-  fun `a second continue with co-insured pushes the travellers step again`() = runTest {
+  fun `a second continue before the step is shown offers it once, and after it is shown offers it again`() = runTest {
     presenter().test(TravelCertificateDateInputUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Loading)
       specifications.responses.trySend(specification(numberOfCoInsured = 1).right())
       skipItems(1)
+      val step = TravelCertificateTravellersStep("member@hedvig.com", today, "contractId")
+
       sendEvent(TravelCertificateDateInputEvent.Submit)
+      sendEvent(TravelCertificateDateInputEvent.Submit)
+      val offered = expectedContent(hasCoInsured = true, next = step)
+      assertThat(awaitContent()).isEqualTo(offered)
+      sendEvent(TravelCertificateDateInputEvent.SelectTravelDate(LocalDate(2026, 12, 24)))
       sendEvent(TravelCertificateDateInputEvent.Submit)
       testScheduler.advanceUntilIdle()
-      val travellersKey = TravelCertificateTravellersInputKey(
-        TravelCertificatePrimaryInput("member@hedvig.com", today, "contractId"),
-      )
-      assertThat(backstack.entries).containsExactly(TravelCertificateKey, dateInputKey, travellersKey, travellersKey)
+      expectNoStateChange(offered.copy(selectedDate = LocalDate(2026, 12, 24)))
+
+      sendEvent(TravelCertificateDateInputEvent.SelectTravelDate(today))
+      sendEvent(TravelCertificateDateInputEvent.StepShown)
+      testScheduler.advanceUntilIdle()
+      expectNoStateChange(expectedContent(hasCoInsured = true))
+
+      sendEvent(TravelCertificateDateInputEvent.Submit)
+      testScheduler.advanceUntilIdle()
+      assertThat(expectMostRecentItem()).isEqualTo(offered)
     }
   }
 
   @Test
-  fun `continue without co-insured creates directly and shows the certificate`() = runTest {
+  fun `continue without co-insured creates directly and ends in created`() = runTest {
     presenter().test(TravelCertificateDateInputUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Loading)
       specifications.responses.trySend(specification(numberOfCoInsured = 0).right())
       skipItems(1)
 
       sendEvent(TravelCertificateDateInputEvent.Submit)
-      assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Loading)
+      assertThat(awaitContent()).isEqualTo(expectedContent(isCreating = true))
       assertThat(createTransport.inputs).containsExactly(createInput())
-      assertThat(backstack.entries).containsExactly(TravelCertificateKey, dateInputKey)
 
       createTransport.responses.trySend("https://example.com/new.pdf")
+      val created = TravelCertificateDateInputUiState.Created(TravelCertificateUrl("https://example.com/new.pdf"))
+      assertThat(awaitItem()).isEqualTo(created)
+      sendEvent(TravelCertificateDateInputEvent.Submit)
+      sendEvent(TravelCertificateDateInputEvent.RetryLoadData)
       testScheduler.advanceUntilIdle()
-      assertThat(backstack.entries).containsExactly(
-        TravelCertificateKey,
-        ShowCertificateKey(TravelCertificateUrl("https://example.com/new.pdf")),
-      )
-      expectNoStateChange(TravelCertificateDateInputUiState.Loading)
+      expectNoStateChange(created)
+      assertThat(createTransport.inputs).containsExactly(createInput())
+      assertThat(specifications.contractIds).containsExactly(null)
     }
   }
 
   @Test
-  fun `a date outside the range is not rejected and is sent to create`() = runTest {
+  fun `a failed create keeps the input, shows the failure, and continue retries`() = runTest {
     presenter().test(TravelCertificateDateInputUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Loading)
       specifications.responses.trySend(specification(numberOfCoInsured = 0).right())
-      val content = awaitContent()
-      Snapshot.withMutableSnapshot {
-        content.datePickerState.selectedDateMillis = utcMillis(LocalDate(2027, 3, 1))
-      }
       skipItems(1)
+      sendEvent(TravelCertificateDateInputEvent.ChangeEmailInput("typed@hedvig.com"))
+      skipItems(1)
+      sendEvent(TravelCertificateDateInputEvent.SelectTravelDate(LocalDate(2026, 12, 24)))
+      skipItems(1)
+
       sendEvent(TravelCertificateDateInputEvent.Submit)
-      assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Loading)
-      assertThat(createTransport.inputs).containsExactly(createInput(startDate = LocalDate(2027, 3, 1)))
+      val creating = expectedContent(
+        email = "typed@hedvig.com",
+        selectedDate = LocalDate(2026, 12, 24),
+        isCreating = true,
+      )
+      assertThat(awaitContent()).isEqualTo(creating)
+      createTransport.responses.trySend(null)
+      assertThat(awaitContent()).isEqualTo(creating.copy(isCreating = false, createFailed = true))
+      val expectedInput = createInput(email = "typed@hedvig.com", startDate = LocalDate(2026, 12, 24))
+      assertThat(createTransport.inputs).containsExactly(expectedInput)
+
+      sendEvent(TravelCertificateDateInputEvent.Submit)
+      assertThat(awaitContent()).isEqualTo(creating)
+      assertThat(createTransport.inputs).containsExactly(expectedInput, expectedInput)
+      createTransport.responses.trySend("https://example.com/new.pdf")
+      assertThat(awaitItem()).isEqualTo(
+        TravelCertificateDateInputUiState.Created(TravelCertificateUrl("https://example.com/new.pdf")),
+      )
+      assertThat(specifications.contractIds).containsExactly(null)
     }
   }
-
-  @Test
-  fun `a failed create shows the failure, and retrying reloads the specification and drops the typed email`() =
-    runTest {
-      presenter().test(TravelCertificateDateInputUiState.Loading) {
-        assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Loading)
-        specifications.responses.trySend(specification(numberOfCoInsured = 0).right())
-        skipItems(1)
-        sendEvent(TravelCertificateDateInputEvent.ChangeEmailInput("typed@hedvig.com"))
-        skipItems(1)
-
-        sendEvent(TravelCertificateDateInputEvent.Submit)
-        assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Loading)
-        createTransport.responses.trySend(null)
-        assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Failure)
-        assertThat(backstack.entries).containsExactly(TravelCertificateKey, dateInputKey)
-        assertThat(createTransport.inputs).containsExactly(createInput(email = "typed@hedvig.com"))
-
-        sendEvent(TravelCertificateDateInputEvent.RetryLoadData)
-        assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Loading)
-        specifications.responses.trySend(specification(numberOfCoInsured = 0).right())
-        val reloaded = awaitContent()
-        assertThat(reloaded).isEqualTo(expectedContent(reloaded, email = "member@hedvig.com"))
-        assertThat(specifications.contractIds).containsExactly(null, null)
-      }
-    }
 
   @Test
   fun `a second continue while creating is ignored`() = runTest {
@@ -389,39 +431,62 @@ class TravelCertificateDateInputPresenterTest {
       skipItems(1)
 
       sendEvent(TravelCertificateDateInputEvent.Submit)
-      assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Loading)
+      assertThat(awaitContent()).isEqualTo(expectedContent(isCreating = true))
+      sendEvent(TravelCertificateDateInputEvent.Submit)
+      sendEvent(TravelCertificateDateInputEvent.ChangeEmailInput("other@hedvig.com"))
       sendEvent(TravelCertificateDateInputEvent.Submit)
       testScheduler.advanceUntilIdle()
-      expectNoStateChange(TravelCertificateDateInputUiState.Loading)
+      expectNoStateChange(expectedContent(email = "other@hedvig.com", isCreating = true))
       assertThat(createTransport.inputs).containsExactly(createInput())
 
       createTransport.responses.trySend("https://example.com/new.pdf")
-      testScheduler.advanceUntilIdle()
-      assertThat(createTransport.inputs).containsExactly(createInput())
-      assertThat(backstack.entries).containsExactly(
-        TravelCertificateKey,
-        ShowCertificateKey(TravelCertificateUrl("https://example.com/new.pdf")),
+      assertThat(awaitItem()).isEqualTo(
+        TravelCertificateDateInputUiState.Created(TravelCertificateUrl("https://example.com/new.pdf")),
       )
-      expectNoStateChange(TravelCertificateDateInputUiState.Loading)
+      assertThat(createTransport.inputs).containsExactly(createInput())
     }
   }
 
   @Test
-  fun `starting from earlier content keeps it, including the picker, without fetching`() = runTest {
+  fun `starting from earlier content keeps it without fetching`() = runTest {
     val first = presenter()
     var earlier: TravelCertificateDateInputUiState.Success? = null
     first.test(TravelCertificateDateInputUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Loading)
       specifications.responses.trySend(specification().right())
       skipItems(1)
+      sendEvent(TravelCertificateDateInputEvent.SelectTravelDate(LocalDate(2026, 12, 24)))
+      skipItems(1)
       sendEvent(TravelCertificateDateInputEvent.ChangeEmailInput("typed@hedvig.com"))
       earlier = awaitContent()
     }
     val restored = earlier!!
     presenter().test(restored) {
-      assertThat(awaitItem()).isEqualTo(restored.copy(errorMessageRes = null))
+      assertThat(awaitItem()).isEqualTo(restored.copy(emailError = null))
       testScheduler.advanceUntilIdle()
       assertThat(specifications.contractIds).containsExactly(null)
+    }
+  }
+
+  @Test
+  fun `starting from content that was creating or offering a step clears both`() = runTest {
+    val step = TravelCertificateTravellersStep("member@hedvig.com", today, "contractId")
+    presenter().test(expectedContent(isCreating = true, next = step, emailError = EmailError.Invalid)) {
+      assertThat(awaitItem()).isEqualTo(expectedContent())
+      testScheduler.advanceUntilIdle()
+      assertThat(specifications.contractIds).isEmpty()
+      assertThat(createTransport.inputs).isEmpty()
+    }
+  }
+
+  @Test
+  fun `starting from created stays created without fetching`() = runTest {
+    val created = TravelCertificateDateInputUiState.Created(TravelCertificateUrl("https://example.com/new.pdf"))
+    presenter().test(created) {
+      assertThat(awaitItem()).isEqualTo(created)
+      testScheduler.advanceUntilIdle()
+      expectNoStateChange(created)
+      assertThat(specifications.contractIds).isEmpty()
     }
   }
 }
