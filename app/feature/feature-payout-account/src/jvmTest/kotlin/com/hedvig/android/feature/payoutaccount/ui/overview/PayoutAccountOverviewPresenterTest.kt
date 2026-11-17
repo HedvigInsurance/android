@@ -1,9 +1,15 @@
 package com.hedvig.android.feature.payoutaccount.ui.overview
 
+import app.cash.turbine.Turbine
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.annotations.ApolloExperimental
+import com.apollographql.apollo.api.ApolloRequest
+import com.apollographql.apollo.api.ApolloResponse
+import com.apollographql.apollo.api.Operation
+import com.apollographql.apollo.interceptor.ApolloInterceptor
+import com.apollographql.apollo.interceptor.ApolloInterceptorChain
 import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.apollo.test.registerSuspendingTestNetworkError
@@ -15,6 +21,8 @@ import com.hedvig.android.feature.payoutaccount.payoutMethodsData
 import com.hedvig.android.feature.payoutaccount.swishPayoutMethod
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.test.runTest
 import octopus.GetPayoutMethodsQuery
 import octopus.type.MemberPaymentProvider
@@ -82,16 +90,32 @@ class PayoutAccountOverviewPresenterTest {
 
   @Test
   fun `a refresh that fails keeps the list on screen`() = runTest {
-    presenter().test(PayoutAccountOverviewUiState.Loading) {
+    val responses = Turbine<Unit>()
+    val observedClient = apolloClient.newBuilder()
+      .addInterceptor(
+        object : ApolloInterceptor {
+          override fun <D : Operation.Data> intercept(
+            request: ApolloRequest<D>,
+            chain: ApolloInterceptorChain,
+          ): Flow<ApolloResponse<D>> = chain.proceed(request).onEach { responses.add(Unit) }
+        },
+      )
+      .build()
+    PayoutAccountOverviewPresenter(GetPayoutAccountUseCase(observedClient)).test(PayoutAccountOverviewUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(PayoutAccountOverviewUiState.Loading)
       registerMethods(withSwish = true, available = emptyList())
       assertThat(awaitItem()).isEqualTo(PayoutAccountOverviewUiState.Content(listOf(swish), emptyList()))
+      responses.awaitItem()
 
       sendEvent(PayoutAccountOverviewEvent.Refresh)
       apolloClient.registerSuspendingTestNetworkError(GetPayoutMethodsQuery())
-      this@runTest.testScheduler.advanceUntilIdle()
-      assertThat(expectMostRecentItem())
-        .isEqualTo(PayoutAccountOverviewUiState.Content(listOf(swish), emptyList()))
+      // Once the failed response is out, a second refresh shows whether the first one changed what is on screen: the
+      // next distinct state must be the new list, with no error or loading state before it.
+      responses.awaitItem()
+      sendEvent(PayoutAccountOverviewEvent.Refresh)
+      registerMethods(withSwish = false, available = listOf(MemberPaymentProvider.SWISH))
+      assertThat(awaitItem())
+        .isEqualTo(PayoutAccountOverviewUiState.Content(emptyList(), listOf(PaymentProvider.Swish)))
     }
   }
 
