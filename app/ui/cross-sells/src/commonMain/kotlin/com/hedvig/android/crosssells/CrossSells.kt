@@ -446,7 +446,7 @@ private fun RecommendationSection(
     Spacer(Modifier.height(12.dp))
     HedvigText(
       text = recommendedCrossSell.buttonDescription,
-      style = HedvigTheme.typography.label,
+      style = HedvigTheme.typography.finePrint,
       color = HedvigTheme.colorScheme.textSecondaryTranslucent,
     )
   }
