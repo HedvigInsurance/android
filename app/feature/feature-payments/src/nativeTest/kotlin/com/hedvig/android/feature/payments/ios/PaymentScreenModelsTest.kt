@@ -231,12 +231,12 @@ private class FakeDetailsUseCase : GetChargeDetailsUseCase {
   }
 }
 
-private fun pumpMainLoop(duration: Duration) {
+internal fun pumpMainLoop(duration: Duration) {
   pumpMainLoopUntil(duration) { false }
 }
 
 /** Drives the main run loop in 10 ms slices until [condition] holds or [timeout] passes. */
-private fun pumpMainLoopUntil(timeout: Duration = 10.seconds, condition: () -> Boolean): Boolean {
+internal fun pumpMainLoopUntil(timeout: Duration = 10.seconds, condition: () -> Boolean): Boolean {
   val start = TimeSource.Monotonic.markNow()
   while (!condition()) {
     if (start.elapsedNow() > timeout) return false
@@ -246,7 +246,7 @@ private fun pumpMainLoopUntil(timeout: Duration = 10.seconds, condition: () -> B
 }
 
 /** Logs arrive from the main thread and from other threads. */
-private class CapturingLogger : LogcatLogger {
+internal class CapturingLogger : LogcatLogger {
   private val lock = NSLock()
   private val captured = mutableListOf<Pair<LogPriority, String>>()
 

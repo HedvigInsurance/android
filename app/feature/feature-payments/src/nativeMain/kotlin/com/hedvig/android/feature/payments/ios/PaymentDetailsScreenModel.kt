@@ -116,7 +116,7 @@ private fun MemberPaymentChargeMethod.toPaymentChargeMethod(): PaymentChargeMeth
   MemberPaymentChargeMethod.UNKNOWN -> PaymentChargeMethod.UNKNOWN
 }
 
-private fun PayinAccount.toPaymentPayinAccount(): PaymentPayinAccount = when (this) {
+internal fun PayinAccount.toPaymentPayinAccount(): PaymentPayinAccount = when (this) {
   is PayinAccount.Trustly -> PaymentPayinAccount.Trustly(clearingNumber, accountNumber, bankName)
 
   is PayinAccount.SwishPayin -> PaymentPayinAccount.Swish(phoneNumber)
