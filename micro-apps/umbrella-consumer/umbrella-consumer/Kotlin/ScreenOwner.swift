@@ -23,6 +23,9 @@ private let screenLog = Logger(subsystem: Bundle.main.bundleIdentifier ?? "Scree
 @Observable
 final class ScreenOwner<Model, ViewState: ScreenViewState> where Model: ScreenModel<ViewState.KotlinState> {
     private(set) var state: ViewState
+    /// True from the first item of `states` until the collection ends. Kotlin's collection is running exactly then,
+    /// so events sent while it is false wait in a small buffer that can overflow and drop the newest ones.
+    private(set) var isCollecting = false
 
     @ObservationIgnored let model: Model
     @ObservationIgnored private let teardown: ScreenModelTeardown<ViewState.KotlinState>
@@ -38,8 +41,10 @@ final class ScreenOwner<Model, ViewState: ScreenViewState> where Model: ScreenMo
                 for try await kotlinState in asyncSequence(for: states) {
                     self?.receive(kotlinState)
                 }
+                self?.isCollecting = false
             } catch is CancellationError {
             } catch {
+                self?.isCollecting = false
                 let nsError = error as NSError
                 let kotlinException = nsError.userInfo["KotlinException"].map { "\(type(of: $0))" } ?? "none"
                 screenLog.error(
@@ -50,6 +55,9 @@ final class ScreenOwner<Model, ViewState: ScreenViewState> where Model: ScreenMo
     }
 
     private func receive(_ kotlinState: ViewState.KotlinState) {
+        if !isCollecting {
+            isCollecting = true
+        }
         let next = ViewState(kotlinState)
         guard next != state else {
             screenLog.debug("\(Model.self, privacy: .public) owner state unchanged: \(next.logDescription, privacy: .public)")
@@ -57,6 +65,15 @@ final class ScreenOwner<Model, ViewState: ScreenViewState> where Model: ScreenMo
         }
         state = next
         screenLog.debug("\(Model.self, privacy: .public) owner state: \(next.logDescription, privacy: .public)")
+    }
+
+    /// Runs `event` only while `states` is collected; otherwise drops it and logs `name`, never the event's values.
+    func sendWhileCollecting(_ name: String, _ event: () -> Void) {
+        guard isCollecting else {
+            screenLog.info("\(Model.self, privacy: .public) not collecting, \(name, privacy: .public) not sent")
+            return
+        }
+        event()
     }
 
     // Not isolated: the deployment target is iOS 17.0. SwiftUI releases the owner on the main thread, so the model
