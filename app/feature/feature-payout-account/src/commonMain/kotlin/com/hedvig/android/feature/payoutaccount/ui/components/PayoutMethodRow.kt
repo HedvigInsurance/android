@@ -35,7 +35,7 @@ import com.hedvig.android.design.system.hedvig.icon.Trustly
 import com.hedvig.android.design.system.hedvig.icon.colored.Swish
 import com.hedvig.android.feature.payoutaccount.data.PayoutAccount
 import com.hedvig.android.feature.payoutaccount.data.provider
-import hedvig.resources.PAYMENTS_ACCOUNT
+import hedvig.resources.BANK_PAYOUT_METHOD_CARD_TITLE
 import hedvig.resources.PAYMENT_METHOD_PENDING_STATUS_LABEL
 import hedvig.resources.PAYMENT_PRIMARY_LABEL
 import hedvig.resources.Res
@@ -81,15 +81,21 @@ private val PaymentProvider?.onDarkTile: Boolean
 internal fun payoutMethodTitle(method: PayoutAccount): String = when (method) {
   is PayoutAccount.SwishPayout -> stringResource(Res.string.swish)
   is PayoutAccount.Trustly -> formatBankAccountLabel(stringResource(Res.string.trustly), method.bankName)
-  is PayoutAccount.BankAccount -> formatBankAccountLabel(stringResource(Res.string.PAYMENTS_ACCOUNT), method.bankName)
+  is PayoutAccount.BankAccount -> stringResource(Res.string.BANK_PAYOUT_METHOD_CARD_TITLE)
 }
 
 @Composable
 internal fun payoutMethodSubtitle(method: PayoutAccount): String? {
   val value = when (method) {
     is PayoutAccount.SwishPayout -> method.phoneNumber.orEmpty()
-    is PayoutAccount.Trustly -> formatBankAccountNumber(method.clearingNumber, method.accountNumber)
-    is PayoutAccount.BankAccount -> formatBankAccountNumber(method.clearingNumber, method.accountNumber)
+
+    is PayoutAccount.Trustly -> formatBankAccountNumber(null, method.clearingNumber, method.accountNumber)
+
+    is PayoutAccount.BankAccount -> formatBankAccountNumber(
+      method.bankName,
+      method.clearingNumber,
+      method.accountNumber,
+    )
   }
   return when {
     value.isNotBlank() -> value
@@ -102,11 +108,12 @@ private fun formatBankAccountLabel(baseLabel: String, bankName: String?): String
   return if (bankName != null) "$baseLabel - $bankName" else baseLabel
 }
 
-private fun formatBankAccountNumber(clearingNumber: String?, accountNumber: String?): String {
-  return when {
+private fun formatBankAccountNumber(bankName: String?, clearingNumber: String?, accountNumber: String?): String {
+  val number = when {
     clearingNumber != null && accountNumber != null -> "$clearingNumber-$accountNumber"
     else -> clearingNumber.orEmpty()
   }
+  return "${bankName?.let { "$it " } ?: ""}$number"
 }
 
 /**
@@ -209,9 +216,9 @@ private class PayoutAccountPreviewProvider : CollectionPreviewParameterProvider<
       isDefault = false,
     ),
     PayoutAccount.BankAccount(
-      clearingNumber = null,
-      accountNumber = null,
-      bankName = null,
+      clearingNumber = "8327",
+      accountNumber = "12345678",
+      bankName = "Swedbank",
       isPending = true,
       isDefault = false,
     ),
