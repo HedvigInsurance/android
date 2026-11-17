@@ -1,10 +1,10 @@
 package com.hedvig.android.feature.travelcertificate.ui.generatewho
 
+import androidx.compose.runtime.BroadcastFrameClock
 import arrow.core.left
 import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.containsExactly
-import assertk.assertions.doesNotContain
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
@@ -19,8 +19,14 @@ import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.expectNoStateChange
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.CoInsured.CoInsuredId
 import com.hedvig.android.logger.TestLogcatLoggingRule
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.molecule.test.MoleculePresenterTestContext
 import com.hedvig.android.molecule.test.test
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.type.TravelCertificateCreateCoInsured
@@ -71,7 +77,7 @@ class TravelCertificateTravellersInputPresenterTest {
   )
 
   private val annaItem = CoInsured(
-    id = CoInsuredId("Anna|Berg||2015-03-01"),
+    id = CoInsuredId("generated-1"),
     name = "Anna Berg",
     ssn = null,
     dateOfBirth = LocalDate(2015, 3, 1),
@@ -222,20 +228,33 @@ class TravelCertificateTravellersInputPresenterTest {
   }
 
   @Test
-  fun `a co-insured without an id gets an id from its data, without null, the same on every poll`() = runTest {
+  fun `a co-insured without an id gets a generated id without their data, the same on every poll`() = runTest {
     presenter.test(TravelCertificateTravellersInputUiState.Loading) {
       loadContent()
-      val noSsnNoBirthDate = anna.copy(firstName = "Bo", lastName = null, dateOfBirth = null)
-      coInsuredUseCase.responses.tryEmit(data(zed, anna, noSsnNoBirthDate).right())
+      val bo = anna.copy(firstName = "Bo", lastName = null, ssn = "201001019876", dateOfBirth = null)
+      coInsuredUseCase.responses.tryEmit(data(zed, anna, bo).right())
       val first = awaitItem() as TravelCertificateTravellersInputUiState.Success
-      assertThat(first.coInsuredList.map { it.id.value }).containsExactly("Anna|Berg||2015-03-01", "Bo|||", "zed")
-      for (id in first.coInsuredList.map { it.id.value }) {
-        assertThat(id).doesNotContain("null")
-      }
+      assertThat(first.coInsuredList.map { it.id.value }).containsExactly("generated-1", "generated-2", "zed")
 
-      coInsuredUseCase.responses.tryEmit(data(noSsnNoBirthDate, anna, zed).right())
+      coInsuredUseCase.responses.tryEmit(data(bo, anna, zed).right())
       testScheduler.advanceUntilIdle()
       expectNoStateChange(first)
+    }
+  }
+
+  @Test
+  fun `an id-less co-insured whose data changes comes back unticked under a new id`() = runTest {
+    presenter.test(TravelCertificateTravellersInputUiState.Loading) {
+      loadContent()
+      sendEvent(TravelCertificateTravellersInputEvent.SetCoInsuredIncluded(annaItem.id, true))
+      assertThat(awaitItem()).isEqualTo(content(coInsured = listOf(annaItem.copy(isIncluded = true), zedItem)))
+
+      coInsuredUseCase.responses.tryEmit(data(zed, anna.copy(ssn = "201503011234")).right())
+      val annaWithSsn = annaItem.copy(id = CoInsuredId("generated-2"), ssn = "201503011234")
+      assertThat(awaitItem()).isEqualTo(content(coInsured = listOf(annaWithSsn, zedItem)))
+      sendEvent(TravelCertificateTravellersInputEvent.GenerateTravelCertificate)
+      skipItems(1)
+      assertThat(createTransport.inputs).containsExactly(memberOnlyInput)
     }
   }
 
@@ -357,13 +376,9 @@ class TravelCertificateTravellersInputPresenterTest {
 
       sendEvent(TravelCertificateTravellersInputEvent.GenerateTravelCertificate)
       assertThat(awaitItem()).isEqualTo(content(isCreating = true))
-      // A different selection, so only the guard stops a second request.
-      sendEvent(TravelCertificateTravellersInputEvent.SetCoInsuredIncluded(annaItem.id, true))
-      assertThat(awaitItem()).isEqualTo(
-        content(coInsured = listOf(annaItem.copy(isIncluded = true), zedItem), isCreating = true),
-      )
       sendEvent(TravelCertificateTravellersInputEvent.GenerateTravelCertificate)
       testScheduler.advanceUntilIdle()
+      expectNoStateChange(content(isCreating = true))
       assertThat(createTransport.inputs).containsExactly(memberOnlyInput)
 
       createTransport.responses.trySend("https://example.com/new.pdf")
@@ -371,6 +386,65 @@ class TravelCertificateTravellersInputPresenterTest {
       testScheduler.advanceUntilIdle()
       assertThat(createTransport.inputs).containsExactly(memberOnlyInput)
     }
+  }
+
+  @Test
+  fun `the selection cannot change while creating, so the screen shows what was sent`() = runTest {
+    presenter.test(TravelCertificateTravellersInputUiState.Loading) {
+      loadContent()
+
+      sendEvent(TravelCertificateTravellersInputEvent.GenerateTravelCertificate)
+      assertThat(awaitItem()).isEqualTo(content(isCreating = true))
+      sendEvent(TravelCertificateTravellersInputEvent.SetMemberIncluded(false))
+      sendEvent(TravelCertificateTravellersInputEvent.SetCoInsuredIncluded(annaItem.id, true))
+      testScheduler.advanceUntilIdle()
+      expectNoStateChange(content(isCreating = true))
+
+      createTransport.responses.trySend(null)
+      assertThat(awaitItem()).isEqualTo(content(createFailed = true))
+      assertThat(createTransport.inputs).containsExactly(memberOnlyInput)
+    }
+  }
+
+  @Test
+  fun `a retry handled in the same frame as the end of a failed create is sent`() = runTest {
+    val frameClock = BroadcastFrameClock()
+    val scope = CoroutineScope(StandardTestDispatcher(testScheduler) + frameClock + Job())
+    val viewModel = object : MoleculeViewModel<
+      TravelCertificateTravellersInputEvent,
+      TravelCertificateTravellersInputUiState,
+    >(
+      initialState = TravelCertificateTravellersInputUiState.Loading,
+      presenter = presenter,
+      sharingStarted = SharingStarted.Eagerly,
+      coroutineScope = scope,
+    ) {}
+
+    fun frame() {
+      testScheduler.runCurrent()
+      frameClock.sendFrame(0L)
+      testScheduler.runCurrent()
+    }
+    coInsuredUseCase.responses.tryEmit(data(zed, anna).right())
+    frame()
+    frame()
+    assertThat(viewModel.uiState.value).isEqualTo(content())
+    viewModel.emit(TravelCertificateTravellersInputEvent.GenerateTravelCertificate)
+    frame()
+    assertThat(viewModel.uiState.value).isEqualTo(content(isCreating = true))
+
+    // The failure and the retry are both handled before the next frame composes the presenter.
+    createTransport.responses.trySend(null)
+    testScheduler.runCurrent()
+    viewModel.emit(TravelCertificateTravellersInputEvent.GenerateTravelCertificate)
+    frame()
+    assertThat(createTransport.inputs).containsExactly(memberOnlyInput, memberOnlyInput)
+    assertThat(viewModel.uiState.value).isEqualTo(content(isCreating = true))
+
+    createTransport.responses.trySend("https://example.com/new.pdf")
+    frame()
+    assertThat(viewModel.uiState.value).isEqualTo(TravelCertificateTravellersInputUiState.Created(newUrl))
+    scope.cancel()
   }
 
   @Test
@@ -446,16 +520,36 @@ class TravelCertificateTravellersInputPresenterTest {
   }
 
   @Test
-  fun `starting from content keeps the selection and the failure, not a create in flight`() = runTest {
-    val annaIncluded = listOf(annaItem.copy(isIncluded = true), zedItem)
-    val earlier = content(coInsured = annaIncluded, isMemberIncluded = false, isCreating = true, createFailed = true)
+  fun `starting from content keeps the selection and the failure`() = runTest {
+    // An id the counter of a new run would not hand out again, so only the restored mapping keeps Anna ticked.
+    val restoredAnna = annaItem.copy(id = CoInsuredId("generated-7"), isIncluded = true)
+    val earlier = content(coInsured = listOf(restoredAnna, zedItem), isMemberIncluded = false, createFailed = true)
     presenter.test(earlier) {
-      val restored = content(coInsured = annaIncluded, isMemberIncluded = false, createFailed = true)
-      assertThat(awaitItem()).isEqualTo(restored)
+      assertThat(awaitItem()).isEqualTo(earlier)
       assertThat(coInsuredUseCase.contractIds).containsExactly("contractId")
       coInsuredUseCase.responses.tryEmit(data(zed, anna).right())
       testScheduler.advanceUntilIdle()
+      expectNoStateChange(earlier)
+    }
+  }
+
+  @Test
+  fun `starting from content that was creating shows the create as failed and keeps the selection`() = runTest {
+    val annaIncluded = listOf(annaItem.copy(isIncluded = true), zedItem)
+    val earlier = content(coInsured = annaIncluded, isMemberIncluded = false, isCreating = true)
+    presenter.test(earlier) {
+      val restored = content(coInsured = annaIncluded, isMemberIncluded = false, createFailed = true)
+      assertThat(awaitItem()).isEqualTo(restored)
+      coInsuredUseCase.responses.tryEmit(data(zed, anna).right())
+      testScheduler.advanceUntilIdle()
       expectNoStateChange(restored)
+      assertThat(createTransport.inputs).containsExactly()
+
+      sendEvent(TravelCertificateTravellersInputEvent.GenerateTravelCertificate)
+      assertThat(awaitItem()).isEqualTo(earlier)
+      assertThat(createTransport.inputs).containsExactly(
+        createInput(isMemberIncluded = false, coInsured = listOf(annaInput)),
+      )
     }
   }
 }

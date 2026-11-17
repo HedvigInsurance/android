@@ -64,4 +64,7 @@ internal class CreateTravelCertificateUseCase(
 
 @JvmInline
 @Serializable
-internal value class TravelCertificateUrl(val uri: String)
+internal value class TravelCertificateUrl(val uri: String) {
+  /** Leaves out [uri], which is signed and gives access to the certificate. */
+  override fun toString(): String = "TravelCertificateUrl(redacted)"
+}

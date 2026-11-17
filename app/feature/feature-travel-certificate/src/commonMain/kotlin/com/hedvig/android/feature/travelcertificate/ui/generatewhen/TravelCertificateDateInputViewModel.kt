@@ -57,7 +57,7 @@ internal class TravelCertificateDateInputPresenter(
     lastState: TravelCertificateDateInputUiState,
   ): TravelCertificateDateInputUiState {
     var loadIteration by remember { mutableIntStateOf(0) }
-    var stepToCreate by remember { mutableStateOf<TravelCertificateTravellersStep?>(null) }
+    var requestToCreate by remember { mutableStateOf<CreateRequest?>(null) }
     var screenState by remember {
       mutableStateOf(
         when (lastState) {
@@ -131,14 +131,14 @@ internal class TravelCertificateDateInputPresenter(
             screenState = content.copy(emailError = null, createFailed = false, next = step)
           } else {
             screenState = content.copy(emailError = null, createFailed = false, isCreating = true)
-            stepToCreate = step
+            requestToCreate = CreateRequest(attempt = (requestToCreate?.attempt ?: 0) + 1, step = step)
           }
         }
       }
     }
 
-    LaunchedEffect(stepToCreate) {
-      val step = stepToCreate ?: return@LaunchedEffect
+    LaunchedEffect(requestToCreate) {
+      val step = requestToCreate?.step ?: return@LaunchedEffect
       createTravelCertificateUseCase.invoke(
         contractId = step.contractId,
         startDate = step.travelDate,
@@ -156,7 +156,6 @@ internal class TravelCertificateDateInputPresenter(
           screenState = TravelCertificateDateInputUiState.Created(url)
         },
       )
-      stepToCreate = null
     }
 
     LaunchedEffect(loadIteration) {
@@ -203,6 +202,12 @@ internal class TravelCertificateDateInputPresenter(
     return state
   }
 }
+
+/**
+ * [attempt] increases with every accepted create, so a retry equal to the failed request still restarts the effect
+ * keyed on it, even when both are handled before the next composition.
+ */
+private data class CreateRequest(val attempt: Int, val step: TravelCertificateTravellersStep)
 
 private fun TravelCertificateDateInputUiState.Success.travelDate(clock: Clock): LocalDate =
   pickedDate ?: defaultTravelDate(clock, minDate, maxDate)
