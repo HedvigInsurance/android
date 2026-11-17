@@ -250,6 +250,83 @@ class ScreenModelTest {
     assertThat(logs.messages().any { "cleared" in it }).isFalse()
     model.close()
   }
+
+  @Test
+  fun `a ViewModel created through create receives its argument and its state reaches the collection`() {
+    val creations = AtomicInt(0)
+    val model = ArgumentScreenModel("charge-1", creations)
+
+    val current = model.currentState
+    val collection = Collection(model)
+    pumpMainLoopUntil { collection.items.isNotEmpty() }
+
+    assertThat(model.viewModel.argument).isEqualTo("charge-1")
+    assertThat(current).isEqualTo("screen:charge-1")
+    assertThat(collection.items).containsExactly("screen:charge-1")
+    assertThat(collection.onMainThread).containsExactly(true)
+    assertThat(creations.value).isEqualTo(1)
+    model.close()
+  }
+
+  @Test
+  fun `close clears a ViewModel created through create once`() {
+    val model = ArgumentScreenModel("charge-1")
+    Collection(model)
+    pumpMainLoop(1.seconds)
+
+    model.close()
+    model.close()
+
+    assertThat(logs.messages().count { it == "ArgumentViewModel cleared" }).isEqualTo(1)
+    assertThat(model.currentState).isEqualTo("screen:charge-1")
+  }
+
+  @Test
+  fun `screen models created with different arguments hold different ViewModels`() {
+    val first = ArgumentScreenModel("charge-1")
+    val second = ArgumentScreenModel("charge-2")
+    val firstCollection = Collection(first)
+    val secondCollection = Collection(second)
+    pumpMainLoopUntil { firstCollection.items.isNotEmpty() && secondCollection.items.isNotEmpty() }
+
+    first.close()
+    pumpMainLoop(1.seconds)
+
+    assertThat(first.viewModel === second.viewModel).isFalse()
+    assertThat(firstCollection.items).containsExactly("screen:charge-1")
+    assertThat(secondCollection.items).containsExactly("screen:charge-2")
+    assertThat(second.currentState).isEqualTo("screen:charge-2")
+    assertThat(logs.messages().count { it == "ArgumentViewModel cleared" }).isEqualTo(1)
+    assertThat(secondCollection.cancellations).isEqualTo(0)
+    second.close()
+  }
+
+  @Test
+  fun `a screen model holds one ViewModel created through create`() {
+    val creations = AtomicInt(0)
+    val model = ArgumentScreenModel("charge-1", creations)
+
+    val result = runCatching { model.secondViewModel() }
+
+    assertThat(result.exceptionOrNull()?.message).isEqualTo("ArgumentScreenModel already holds a ViewModel")
+    assertThat(creations.value).isEqualTo(1)
+    assertThat(model.currentState).isEqualTo("screen:charge-1")
+    model.close()
+  }
+
+  @Test
+  fun `a ViewModel cannot be created through create after close`() {
+    val creations = AtomicInt(0)
+    val model = ArgumentScreenModel("charge-1", creations)
+    model.close()
+
+    val result = runCatching { model.secondViewModel() }
+
+    assertThat(
+      result.exceptionOrNull()?.message,
+    ).isEqualTo("ArgumentScreenModel is closed, so it cannot create a ViewModel")
+    assertThat(creations.value).isEqualTo(1)
+  }
 }
 
 /** One collection of [ScreenModel.states], recording what reaches each callback. */
@@ -301,6 +378,28 @@ private class FakeScreenModel(
 private class FakeViewModel(presenterStarts: AtomicInt) : MoleculeViewModel<Unit, String>(
   initialState = "initial",
   presenter = FakePresenter(presenterStarts),
+)
+
+/** Creates its ViewModel the way an assisted factory does: from a runtime argument, through `create`. */
+private class ArgumentScreenModel(
+  private val argument: String,
+  private val creations: AtomicInt = AtomicInt(0),
+) : ScreenModel<String>() {
+  val viewModel = viewModel(ArgumentViewModel::class, { createViewModel() }) { "screen:$it" }
+
+  fun secondViewModel() {
+    viewModel(ArgumentViewModel::class, { createViewModel() }) { "second:$it" }
+  }
+
+  private fun createViewModel(): ArgumentViewModel {
+    creations.incrementAndGet()
+    return ArgumentViewModel(argument)
+  }
+}
+
+private class ArgumentViewModel(val argument: String) : MoleculeViewModel<Unit, String>(
+  initialState = argument,
+  presenter = FakePresenter(AtomicInt(0)),
 )
 
 private class FakePresenter(private val starts: AtomicInt) : MoleculePresenter<Unit, String> {

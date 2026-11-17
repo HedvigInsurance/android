@@ -2,8 +2,10 @@
 
 package com.hedvig.android.molecule.public
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.rickclephas.kmp.nativecoroutines.NativeFlow
@@ -13,6 +15,7 @@ import kotlin.experimental.ExperimentalObjCRefinement
 import kotlin.native.HiddenFromObjC
 import kotlin.native.ObjCName
 import kotlin.reflect.KClass
+import kotlin.reflect.cast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -27,7 +30,10 @@ import kotlinx.coroutines.flow.map
  * ViewModel's state mapped to [State], the type Swift renders.
  *
  * A screen subclasses it with a concrete class whose constructor is internal, creates its ViewModel once through
- * [viewModel], and turns each Swift call into an event with [send].
+ * [viewModel], and turns each Swift call into an event with [send]. A ViewModel without runtime arguments comes from
+ * the graph's `ViewModelProvider.Factory`. One with arguments, such as a navigation argument, comes from the overload
+ * taking `create`, which calls the ViewModel's assisted factory with them. Each model keeps its ViewModel in its own
+ * store, so no two models share one.
  *
  * Rules for the Swift owner:
  * - Seed the displayed state from [currentState], then collect [states]. The first item always arrives on a later turn
@@ -101,6 +107,23 @@ abstract class ScreenModel<State : Any> protected constructor() {
     viewModel.addCloseable(AutoCloseable { logcat { "${viewModelClass.simpleName} cleared" } })
     source = Source(viewModel.uiState, toState)
     return viewModel
+  }
+
+  /**
+   * Creates the screen's ViewModel through [create], for a ViewModel built from runtime arguments, such as by its
+   * assisted factory. Call it once, while the subclass is constructed.
+   */
+  @HiddenFromObjC
+  protected fun <Event, UiState, VM : MoleculeViewModel<Event, UiState>> viewModel(
+    viewModelClass: KClass<VM>,
+    create: () -> VM,
+    toState: (UiState) -> State,
+  ): VM {
+    val viewModelFactory = object : ViewModelProvider.Factory {
+      override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T =
+        modelClass.cast(create.invoke())
+    }
+    return viewModel(viewModelFactory, viewModelClass, toState)
   }
 
   /**
