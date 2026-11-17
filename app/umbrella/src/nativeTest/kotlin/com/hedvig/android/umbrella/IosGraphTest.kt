@@ -1,5 +1,9 @@
 package com.hedvig.android.umbrella
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.viewmodel.CreationExtras
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.containsExactlyInAnyOrder
@@ -24,6 +28,7 @@ import com.hedvig.android.core.tracking.ActionType
 import com.hedvig.android.core.tracking.ErrorSource
 import com.hedvig.android.core.tracking.RumLogger
 import com.hedvig.android.core.tracking.logError
+import com.hedvig.android.feature.payments.ui.details.PaymentDetailsViewModelFactory
 import com.hedvig.android.language.LanguageStorage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.LogcatLogger
@@ -36,6 +41,8 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import kotlin.concurrent.AtomicInt
+import kotlin.reflect.KClass
+import kotlin.reflect.cast
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -82,6 +89,53 @@ class IosGraphTest {
     pumpMainLoop(1.seconds)
     model.close()
 
+    assertThat(inputs.accessTokenFetcher.calls.value).isEqualTo(0)
+    assertThat(inputs.deviceIdFetcher.calls.value).isEqualTo(0)
+  }
+
+  @Test
+  fun `the graph resolves the payments ViewModels without a request`() {
+    val inputs = FakeInputs()
+    val holder = inputs.createHolder()
+    val store = ViewModelStore()
+    val provider = ViewModelProvider.create(store, holder.graph.metroViewModelFactory)
+    val paymentsClasses = holder.graph.viewModelProviders.keys.filter {
+      it.qualifiedName.orEmpty().startsWith("com.hedvig.android.feature.payments.")
+    }
+
+    val viewModels = paymentsClasses.map { provider[it] }
+    pumpMainLoop(1.seconds)
+    store.clear()
+
+    assertThat(viewModels.map { it::class.simpleName }).containsExactlyInAnyOrder(
+      "DiscountsViewModel",
+      "ManualChargeViewModel",
+      "PaymentHistoryViewModel",
+      "PaymentsViewModel",
+    )
+    assertThat(inputs.accessTokenFetcher.calls.value).isEqualTo(0)
+    assertThat(inputs.deviceIdFetcher.calls.value).isEqualTo(0)
+  }
+
+  // The ViewModel is internal to its module; this test only needs it as a ViewModel.
+  @Suppress("INFERRED_INVISIBLE_RETURN_TYPE_WARNING")
+  @Test
+  fun `the graph creates the payment details ViewModel with and without a charge id without a request`() {
+    val inputs = FakeInputs()
+    val holder = inputs.createHolder()
+    val factory = holder.graph.metroViewModelFactory
+      .createManuallyAssistedFactory(PaymentDetailsViewModelFactory::class)
+      .invoke()
+    val store = ViewModelStore()
+
+    val withChargeId = store.hold("with charge id") { factory.create("charge-1") }
+    val withoutChargeId = store.hold("without charge id") { factory.create(null) }
+    pumpMainLoop(1.seconds)
+    store.clear()
+
+    assertThat(withChargeId::class.simpleName).isEqualTo("PaymentDetailsViewModel")
+    assertThat(withoutChargeId::class.simpleName).isEqualTo("PaymentDetailsViewModel")
+    assertThat(withChargeId === withoutChargeId).isFalse()
     assertThat(inputs.accessTokenFetcher.calls.value).isEqualTo(0)
     assertThat(inputs.deviceIdFetcher.calls.value).isEqualTo(0)
   }
@@ -224,6 +278,14 @@ private class RecordingRumLogger : RumLogger {
   ) {
     errors += message
   }
+}
+
+/** Keeps the ViewModel from [create] in this store under [key], so clearing the store clears it. */
+private fun ViewModelStore.hold(key: String, create: () -> ViewModel): ViewModel {
+  val factory = object : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T = modelClass.cast(create())
+  }
+  return ViewModelProvider.create(this, factory)[key, ViewModel::class]
 }
 
 private fun IosGraphHolder.respondingWith(json: String): ApolloClient {
