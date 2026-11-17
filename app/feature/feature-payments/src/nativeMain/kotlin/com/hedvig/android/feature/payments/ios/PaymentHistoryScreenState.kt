@@ -27,7 +27,10 @@ sealed class PaymentHistoryScreenState {
   }
 }
 
-/** [dueDate] is `yyyy-MM-dd`. A null [id] is a charge the backend sent without one. */
+/**
+ * [dueDate] is `yyyy-MM-dd`. A null [id] is a charge the backend sent without one, which cannot be opened: no id
+ * selects it in the details.
+ */
 data class PaymentHistoryCharge(
   val id: String?,
   val dueDate: String,
