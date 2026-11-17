@@ -16,7 +16,10 @@ import dev.zacsweers.metrox.viewmodel.MetroViewModelFactory
 import kotlin.experimental.ExperimentalObjCRefinement
 import kotlin.native.HiddenFromObjC
 
-/** Null and "" as [chargeId] both select the charge the backend sent without an id. */
+/**
+ * Null and "" as [chargeId] are the same: they select the upcoming charge when the backend sent it without an id,
+ * otherwise the first past charge without one, otherwise nothing, which shows Failed.
+ */
 @HiddenFromObjC
 fun createPaymentDetailsScreenModel(
   viewModelFactory: MetroViewModelFactory,
@@ -50,7 +53,11 @@ internal fun PaymentDetailsUiState.toScreenState(): PaymentDetailsScreenState = 
 
 private fun PaymentDetails.toContent(): PaymentDetailsScreenState.Content {
   val charge = memberCharge
-  val nextCharge = getNextCharge(charge) ?: upComingCharge
+  val nextCharge = if (charge.status == MemberCharge.MemberChargeStatus.FAILED) {
+    getNextCharge(charge) ?: upComingCharge
+  } else {
+    null
+  }
   return PaymentDetailsScreenState.Content(
     id = charge.id.toChargeIdOrNull(),
     status = charge.status.toPaymentChargeStatus(),

@@ -56,8 +56,9 @@ class IosGraphHolder internal constructor(
     createPaymentHistoryScreenModel(graph.metroViewModelFactory)
 
   /**
-   * A new screen model with its own ViewModel, for the charge [chargeId]. Null and "" both select the charge the backend
-   * sent without an id. The caller owns it and must `close()` it.
+   * A new screen model with its own ViewModel, for the charge [chargeId]. Null and "" are the same: they select the
+   * upcoming charge when the backend sent it without an id, otherwise the first past charge without one, otherwise
+   * nothing, which shows Failed. The caller owns it and must `close()` it.
    */
   fun paymentDetailsScreenModel(chargeId: String?): PaymentDetailsScreenModel =
     createPaymentDetailsScreenModel(graph.metroViewModelFactory, chargeId)

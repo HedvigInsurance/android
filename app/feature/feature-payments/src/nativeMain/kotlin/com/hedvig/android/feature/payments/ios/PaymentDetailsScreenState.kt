@@ -11,8 +11,9 @@ sealed class PaymentDetailsScreenState {
    * [carriedAdjustment] and [settlementAdjustment] are null unless above zero. [payinAccount] is the member's default
    * account, present only for an upcoming or ongoing charge made with that account's method.
    *
-   * [nextChargeId] and [nextChargeDueDate] describe the charge after this one, or the upcoming charge when this is the
-   * last past charge: the charge a failed amount is added to. [nextChargeId] is null for a next charge without an id.
+   * [nextChargeId] and [nextChargeDueDate] are set only for a FAILED charge: they describe the charge its amount is
+   * added to, the next past charge or else the upcoming one. [nextChargeId] is null for such a charge without an id,
+   * which cannot be opened.
    */
   data class Content(
     val id: String?,
@@ -48,7 +49,11 @@ data class PaymentChargeBreakdown(
   val netAmount: PaymentMoney,
   val periods: List<PaymentChargePeriod>,
   val priceBreakdown: List<PaymentPriceBreakdownItem>,
-)
+) {
+  /** Leaves out [contractDetails], which can hold the insured address. */
+  override fun toString(): String = "PaymentChargeBreakdown(contractDisplayName=$contractDisplayName, " +
+    "grossAmount=$grossAmount, netAmount=$netAmount, periods=$periods, priceBreakdown=$priceBreakdown)"
+}
 
 /** [fromDate] and [toDate] are `yyyy-MM-dd`. */
 data class PaymentChargePeriod(
@@ -60,7 +65,7 @@ data class PaymentChargePeriod(
 )
 
 sealed class PaymentPeriodDescription {
-  /** The period covers a whole calendar month. */
+  /** The period starts on the first of a month and ends on the last day of a month. */
   data object FullPeriod : PaymentPeriodDescription()
 
   data class BetweenDays(val daysBetween: Int) : PaymentPeriodDescription()
@@ -78,7 +83,10 @@ sealed class PaymentPeriodDescription {
 data class PaymentPriceBreakdownItem(val displayTitle: String, val amount: PaymentMoney)
 
 /** [amount] is negative: it is taken off the charge. */
-data class PaymentReferralDiscount(val code: String, val amount: PaymentMoney?)
+data class PaymentReferralDiscount(val code: String, val amount: PaymentMoney?) {
+  /** Leaves out the member's own [code]. */
+  override fun toString(): String = "PaymentReferralDiscount(amount=$amount)"
+}
 
 enum class PaymentChargeMethod {
   TRUSTLY,

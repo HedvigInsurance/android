@@ -192,7 +192,11 @@ class PaymentDetailsScreenStateTest {
 
   @Test
   fun `the last past charge points at the upcoming charge`() {
-    val last = charge(id = "charge-2", dueDate = LocalDate(2026, 10, 27))
+    val last = charge(
+      id = "charge-2",
+      status = MemberCharge.MemberChargeStatus.FAILED,
+      dueDate = LocalDate(2026, 10, 27),
+    )
     val details = PaymentDetails(
       memberCharge = last,
       pastCharges = listOf(charge(id = "charge-1"), last),
@@ -208,7 +212,7 @@ class PaymentDetailsScreenStateTest {
 
   @Test
   fun `without a later or upcoming charge there is no next charge`() {
-    val last = charge(id = "charge-2")
+    val last = charge(id = "charge-2", status = MemberCharge.MemberChargeStatus.FAILED)
     val details = PaymentDetails(
       memberCharge = last,
       pastCharges = listOf(charge(id = "charge-1"), last),
@@ -224,7 +228,7 @@ class PaymentDetailsScreenStateTest {
 
   @Test
   fun `a next charge without an id keeps its due date`() {
-    val first = charge(id = "charge-1")
+    val first = charge(id = "charge-1", status = MemberCharge.MemberChargeStatus.FAILED)
     val details = PaymentDetails(
       memberCharge = first,
       pastCharges = listOf(first, charge(id = null, dueDate = LocalDate(2026, 3, 27))),
@@ -236,6 +240,70 @@ class PaymentDetailsScreenStateTest {
 
     assertThat(content.nextChargeId).isNull()
     assertThat(content.nextChargeDueDate).isEqualTo("2026-03-27")
+  }
+
+  @Test
+  fun `a past charge that did not fail has no next charge`() {
+    val first = charge(id = "charge-1", status = MemberCharge.MemberChargeStatus.SUCCESS)
+    val details = PaymentDetails(
+      memberCharge = first,
+      pastCharges = listOf(first, charge(id = "charge-2")),
+      paymentsInfo = PaymentDetails.PaymentsInfo.NoPresentableInfo,
+      upComingCharge = charge(id = "upcoming"),
+    )
+
+    val content = PaymentDetailsUiState.Success(details).toScreenState() as PaymentDetailsScreenState.Content
+
+    assertThat(content.nextChargeId).isNull()
+    assertThat(content.nextChargeDueDate).isNull()
+  }
+
+  @Test
+  fun `an upcoming charge has no next charge though past charges exist`() {
+    val upcoming = charge(id = "upcoming", status = MemberCharge.MemberChargeStatus.UPCOMING)
+    val details = PaymentDetails(
+      memberCharge = upcoming,
+      pastCharges = listOf(charge(id = "charge-1"), charge(id = "charge-2")),
+      paymentsInfo = PaymentDetails.PaymentsInfo.NoPresentableInfo,
+      upComingCharge = upcoming,
+    )
+
+    val content = PaymentDetailsUiState.Success(details).toScreenState() as PaymentDetailsScreenState.Content
+
+    assertThat(content.nextChargeId).isNull()
+    assertThat(content.nextChargeDueDate).isNull()
+  }
+
+  @Test
+  fun `an upcoming charge without past charges does not point at itself`() {
+    val upcoming = charge(id = "upcoming", status = MemberCharge.MemberChargeStatus.UPCOMING)
+    val details = PaymentDetails(
+      memberCharge = upcoming,
+      pastCharges = emptyList(),
+      paymentsInfo = PaymentDetails.PaymentsInfo.NoPresentableInfo,
+      upComingCharge = upcoming,
+    )
+
+    val content = PaymentDetailsUiState.Success(details).toScreenState() as PaymentDetailsScreenState.Content
+
+    assertThat(content.nextChargeId).isNull()
+    assertThat(content.nextChargeDueDate).isNull()
+  }
+
+  @Test
+  fun `an ongoing pending charge has no next charge`() {
+    val ongoing = charge(id = "ongoing", status = MemberCharge.MemberChargeStatus.PENDING)
+    val details = PaymentDetails(
+      memberCharge = ongoing,
+      pastCharges = listOf(charge(id = "charge-1")),
+      paymentsInfo = PaymentDetails.PaymentsInfo.NoPresentableInfo,
+      upComingCharge = charge(id = "upcoming"),
+    )
+
+    val content = PaymentDetailsUiState.Success(details).toScreenState() as PaymentDetailsScreenState.Content
+
+    assertThat(content.nextChargeId).isNull()
+    assertThat(content.nextChargeDueDate).isNull()
   }
 
   @Test
@@ -279,6 +347,27 @@ class PaymentDetailsScreenStateTest {
     }
 
     assertThat(handled).containsExactly(listOf("trustly"), listOf("swish"), listOf("invoice"), listOf("unknown"))
+  }
+
+  @Test
+  fun `a breakdown's and a referral's text leave out the address and the code`() {
+    val breakdown = PaymentChargeBreakdown(
+      contractDisplayName = "Home insurance",
+      contractDetails = "Street 1",
+      grossAmount = PaymentMoney(500.0, "SEK"),
+      netAmount = PaymentMoney(449.5, "SEK"),
+      periods = emptyList(),
+      priceBreakdown = emptyList(),
+    )
+    val referral = PaymentReferralDiscount("FRIEND", PaymentMoney(-10.0, "SEK"))
+
+    assertThat(breakdown.toString()).isEqualTo(
+      "PaymentChargeBreakdown(contractDisplayName=Home insurance, grossAmount=PaymentMoney(amount=500.0, " +
+        "currencyCode=SEK), netAmount=PaymentMoney(amount=449.5, currencyCode=SEK), periods=[], priceBreakdown=[])",
+    )
+    assertThat(referral.toString()).isEqualTo(
+      "PaymentReferralDiscount(amount=PaymentMoney(amount=-10.0, currencyCode=SEK))",
+    )
   }
 
   @Test
