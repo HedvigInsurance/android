@@ -38,6 +38,7 @@ class DateInputNavigationTest {
     emailError = null,
     minDate = LocalDate(2026, 11, 10),
     maxDate = LocalDate(2027, 1, 16),
+    pickedDate = LocalDate(2026, 12, 24),
     selectedDate = LocalDate(2026, 12, 24),
     daysValid = 45,
     hasCoInsured = true,
@@ -55,10 +56,7 @@ class DateInputNavigationTest {
       DateInputNavigationEffect(
         uiState = uiState,
         onNavigateToTravellers = { backstack.navigateToTravellersStep(it) },
-        onStepShown = {
-          stepShownCalls++
-          uiState = (uiState as TravelCertificateDateInputUiState.Success).copy(next = null)
-        },
+        onStepShown = { stepShownCalls++ },
         onCertificateCreated = { backstack.navigateToCreatedCertificate(it) },
       )
     }
@@ -76,12 +74,17 @@ class DateInputNavigationTest {
     showEffect()
     uiState = content.copy(next = step)
     waitForIdle()
+    // The acknowledgement reaches the presenter later, so states that keep the step arrive before it is cleared.
+    uiState = content.copy(next = step, pickedDate = LocalDate(2026, 12, 25), selectedDate = LocalDate(2026, 12, 25))
+    waitForIdle()
     recompositionTrigger++
     waitForIdle()
     val travellersKey = TravelCertificateTravellersInputKey(step)
     assertThat(backstack.entries).containsExactly(TravelCertificateKey, dateInputKey, travellersKey)
     assertThat(stepShownCalls).isEqualTo(1)
 
+    uiState = content
+    waitForIdle()
     backstack.entries.removeLast()
     uiState = content.copy(next = step)
     waitForIdle()

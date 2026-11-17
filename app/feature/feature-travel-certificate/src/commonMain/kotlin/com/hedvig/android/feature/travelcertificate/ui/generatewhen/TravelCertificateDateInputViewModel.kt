@@ -2,6 +2,7 @@ package com.hedvig.android.feature.travelcertificate.ui.generatewhen
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -60,10 +61,12 @@ internal class TravelCertificateDateInputPresenter(
     var screenState by remember {
       mutableStateOf(
         when (lastState) {
-          // A create or a navigation in flight belongs to the stopped run, so neither is restored.
+          // A create or a navigation in flight belongs to the stopped run, so neither is restored. The create may
+          // have reached the server, so it is shown as failed rather than as a form nobody submitted.
           is TravelCertificateDateInputUiState.Success -> lastState.copy(
             emailError = null,
             isCreating = false,
+            createFailed = lastState.createFailed || lastState.isCreating,
             next = null,
           )
 
@@ -74,6 +77,9 @@ internal class TravelCertificateDateInputPresenter(
     var emailRevision by remember {
       mutableIntStateOf((lastState as? TravelCertificateDateInputUiState.Success)?.emailRevision ?: 0)
     }
+    // The `next` of the state this presenter last returned. Submit waits until a cleared `next` has been returned, so
+    // an observer keyed on `next` always sees null between two equal steps.
+    var returnedNext by remember { mutableStateOf<TravelCertificateTravellersStep?>(null) }
 
     CollectEvents { event ->
       val content = screenState as? TravelCertificateDateInputUiState.Success
@@ -89,7 +95,7 @@ internal class TravelCertificateDateInputPresenter(
 
         is TravelCertificateDateInputEvent.SelectTravelDate -> {
           if (content == null || event.date !in content.minDate..content.maxDate) return@CollectEvents
-          screenState = content.copy(selectedDate = event.date)
+          screenState = content.copy(pickedDate = event.date, selectedDate = event.date)
         }
 
         TravelCertificateDateInputEvent.StepShown -> {
@@ -98,7 +104,9 @@ internal class TravelCertificateDateInputPresenter(
         }
 
         TravelCertificateDateInputEvent.Submit -> {
-          if (content == null || content.isCreating || content.next != null) return@CollectEvents
+          if (content == null || content.isCreating || content.next != null || returnedNext != null) {
+            return@CollectEvents
+          }
           val email = content.email.trim()
           val emailError = when {
             email.isEmpty() -> EmailError.Empty
@@ -109,9 +117,14 @@ internal class TravelCertificateDateInputPresenter(
             screenState = content.copy(emailError = emailError)
             return@CollectEvents
           }
+          val travelDate = content.travelDate(clock)
+          if (travelDate !in content.minDate..content.maxDate) {
+            screenState = TravelCertificateDateInputUiState.Failure
+            return@CollectEvents
+          }
           val step = TravelCertificateTravellersStep(
             email = email,
-            travelDate = content.selectedDate,
+            travelDate = travelDate,
             contractId = content.contractId,
           )
           if (content.hasCoInsured) {
@@ -163,7 +176,6 @@ internal class TravelCertificateDateInputPresenter(
             val specification = travelCertificateData.travelCertificateSpecification
             val minDate = specification.dateRange.start
             val maxDate = specification.dateRange.endInclusive
-            val today = clock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
             emailRevision++
             screenState = TravelCertificateDateInputUiState.Success(
               contractId = specification.contractId,
@@ -172,11 +184,8 @@ internal class TravelCertificateDateInputPresenter(
               emailError = null,
               minDate = minDate,
               maxDate = maxDate,
-              selectedDate = when {
-                today < minDate -> minDate
-                today > maxDate -> maxDate
-                else -> today
-              },
+              pickedDate = null,
+              selectedDate = defaultTravelDate(clock, minDate, maxDate),
               daysValid = specification.maxDurationDays,
               hasCoInsured = specification.numberOfCoInsured > 0,
               isCreating = false,
@@ -186,9 +195,21 @@ internal class TravelCertificateDateInputPresenter(
           },
         )
     }
-    return screenState
+    val state = when (val current = screenState) {
+      is TravelCertificateDateInputUiState.Success -> current.copy(selectedDate = current.travelDate(clock))
+      else -> current
+    }
+    SideEffect { returnedNext = (state as? TravelCertificateDateInputUiState.Success)?.next }
+    return state
   }
 }
+
+private fun TravelCertificateDateInputUiState.Success.travelDate(clock: Clock): LocalDate =
+  pickedDate ?: defaultTravelDate(clock, minDate, maxDate)
+
+/** Today in the device zone, moved into the range. */
+private fun defaultTravelDate(clock: Clock, minDate: LocalDate, maxDate: LocalDate): LocalDate =
+  clock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date.coerceAtMost(maxDate).coerceAtLeast(minDate)
 
 internal sealed interface TravelCertificateDateInputEvent {
   data object RetryLoadData : TravelCertificateDateInputEvent
@@ -201,6 +222,7 @@ internal sealed interface TravelCertificateDateInputEvent {
   /** Sent once the step in `next` is on screen, so a later Continue can open it again. */
   data object StepShown : TravelCertificateDateInputEvent
 
+  /** Ignored while creating, and while a step is in `next` or its clearing has not been emitted yet. */
   data object Submit : TravelCertificateDateInputEvent
 }
 
@@ -225,9 +247,13 @@ internal sealed interface TravelCertificateDateInputUiState {
     val emailError: EmailError?,
     val minDate: LocalDate,
     val maxDate: LocalDate,
+    /** The member's own pick, or null while the date follows today. */
+    val pickedDate: LocalDate?,
+    /** [pickedDate], or today moved into the range, as of when this state was emitted. Submit resolves it again. */
     val selectedDate: LocalDate,
     val daysValid: Int,
     val hasCoInsured: Boolean,
+    /** A create is only observed while this state is collected; a restart shows it as [createFailed]. */
     val isCreating: Boolean,
     val createFailed: Boolean,
     val next: TravelCertificateTravellersStep?,
