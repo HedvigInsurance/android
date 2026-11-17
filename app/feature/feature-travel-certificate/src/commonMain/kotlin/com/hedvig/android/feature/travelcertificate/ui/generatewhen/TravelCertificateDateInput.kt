@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -160,9 +161,7 @@ private fun DateInputContent(
   navigateUp: () -> Unit,
   submitInput: () -> Unit,
 ) {
-  var emailInput by remember(uiState.emailRevision) {
-    mutableStateOf(uiState.email)
-  }
+  var emailInput by rememberEmailInput(uiState.email, uiState.emailRevision)
   val locale = getLocale()
   val datePickerState = remember(locale, uiState.minDate, uiState.maxDate) {
     travelDatePickerState(locale, uiState.minDate, uiState.maxDate, uiState.selectedDate)
@@ -228,6 +227,12 @@ private fun DateInputContent(
     )
     Spacer(Modifier.height(16.dp))
   }
+}
+
+/** The field's text: it keeps what the member types and takes [email] only when [emailRevision] changes. */
+@Composable
+internal fun rememberEmailInput(email: String, emailRevision: Int): MutableState<String> = remember(emailRevision) {
+  mutableStateOf(email)
 }
 
 @Composable
@@ -344,6 +349,7 @@ private val previewContent = Success(
   emailError = null,
   minDate = LocalDate(2020, 1, 1),
   maxDate = LocalDate(2024, 12, 31),
+  pickedDate = LocalDate(2023, 1, 1),
   selectedDate = LocalDate(2023, 1, 1),
   daysValid = 40,
   hasCoInsured = false,
@@ -360,10 +366,11 @@ internal fun travelDatePickerState(
   selectedDate: LocalDate,
 ): HedvigDatePickerState {
   val yearRange = minDate.year..maxDate.year
+  val selectedDateMillis = selectedDate.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
   return HedvigDatePickerState(
     locale = locale,
-    initialSelectedDateMillis = selectedDate.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds(),
-    initialDisplayedMonthMillis = null,
+    initialSelectedDateMillis = selectedDateMillis,
+    initialDisplayedMonthMillis = selectedDateMillis,
     yearRange = yearRange,
     selectableDates = object : HedvigSelectableDates {
       override fun isSelectableDate(utcTimeMillis: Long): Boolean = utcMillisToDate(utcTimeMillis) in minDate..maxDate

@@ -60,4 +60,15 @@ class TravelDatePickerStateTest {
     assertThat(picker.selectedDateMillis).isEqualTo(utcMillis(LocalDate(2026, 12, 24)))
     assertThat(utcMillisToDate(picker.selectedDateMillis!!)).isEqualTo(LocalDate(2026, 12, 24))
   }
+
+  @Test
+  fun `the picker opens on the month of the selected date`() {
+    val picker = travelDatePickerState(
+      locale = Locale.forLanguageTag("sv-SE"),
+      minDate = LocalDate(2040, 1, 1),
+      maxDate = LocalDate(2040, 12, 31),
+      selectedDate = LocalDate(2040, 3, 14),
+    )
+    assertThat(picker.displayedMonthMillis).isEqualTo(utcMillis(LocalDate(2040, 3, 1)))
+  }
 }

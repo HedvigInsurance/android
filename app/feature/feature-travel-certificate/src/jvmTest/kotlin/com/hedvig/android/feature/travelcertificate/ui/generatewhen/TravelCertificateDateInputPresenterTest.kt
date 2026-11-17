@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.travelcertificate.ui.generatewhen
 
+import androidx.compose.runtime.BroadcastFrameClock
 import arrow.core.left
 import arrow.core.right
 import assertk.assertThat
@@ -17,8 +18,17 @@ import com.hedvig.android.feature.travelcertificate.data.TravelCertificateTravel
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.expectNoStateChange
 import com.hedvig.android.logger.TestLogcatLoggingRule
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.molecule.test.MoleculePresenterTestContext
 import com.hedvig.android.molecule.test.test
+import kotlin.time.Clock
+import kotlin.time.Instant
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.type.TravelCertificateCreateInput
@@ -47,17 +57,18 @@ class TravelCertificateDateInputPresenterTest {
     ),
   )
 
-  private fun presenter(contractId: String? = null) = TravelCertificateDateInputPresenter(
+  private fun presenter(contractId: String? = null, clock: Clock = FixedClock()) = TravelCertificateDateInputPresenter(
     contractId = contractId,
     getTravelCertificateSpecificationsUseCase = specifications,
     createTravelCertificateUseCase = createTransport.createUseCase(),
-    clock = FixedClock(),
+    clock = clock,
   )
 
   private fun expectedContent(
     email: String = "member@hedvig.com",
     emailRevision: Int = 1,
-    selectedDate: LocalDate = today,
+    pickedDate: LocalDate? = null,
+    selectedDate: LocalDate = pickedDate ?: today,
     hasCoInsured: Boolean = false,
     emailError: EmailError? = null,
     minDate: LocalDate = LocalDate(2026, 11, 10),
@@ -72,6 +83,7 @@ class TravelCertificateDateInputPresenterTest {
     emailError = emailError,
     minDate = minDate,
     maxDate = maxDate,
+    pickedDate = pickedDate,
     selectedDate = selectedDate,
     daysValid = 45,
     hasCoInsured = hasCoInsured,
@@ -164,7 +176,7 @@ class TravelCertificateDateInputPresenterTest {
       specifications.responses.trySend(specification().right())
       skipItems(1)
       sendEvent(TravelCertificateDateInputEvent.SelectTravelDate(LocalDate(2026, 12, 24)))
-      assertThat(awaitContent()).isEqualTo(expectedContent(selectedDate = LocalDate(2026, 12, 24)))
+      assertThat(awaitContent()).isEqualTo(expectedContent(pickedDate = LocalDate(2026, 12, 24)))
     }
   }
 
@@ -175,9 +187,9 @@ class TravelCertificateDateInputPresenterTest {
       specifications.responses.trySend(specification().right())
       skipItems(1)
       sendEvent(TravelCertificateDateInputEvent.SelectTravelDate(LocalDate(2026, 11, 10)))
-      assertThat(awaitContent()).isEqualTo(expectedContent(selectedDate = LocalDate(2026, 11, 10)))
+      assertThat(awaitContent()).isEqualTo(expectedContent(pickedDate = LocalDate(2026, 11, 10)))
       sendEvent(TravelCertificateDateInputEvent.SelectTravelDate(LocalDate(2027, 1, 16)))
-      assertThat(awaitContent()).isEqualTo(expectedContent(selectedDate = LocalDate(2027, 1, 16)))
+      assertThat(awaitContent()).isEqualTo(expectedContent(pickedDate = LocalDate(2027, 1, 16)))
     }
   }
 
@@ -195,6 +207,65 @@ class TravelCertificateDateInputPresenterTest {
       sendEvent(TravelCertificateDateInputEvent.Submit)
       assertThat(awaitContent()).isEqualTo(expectedContent(isCreating = true))
       assertThat(createTransport.inputs).containsExactly(createInput(startDate = today))
+    }
+  }
+
+  @Test
+  fun `the default date is today when continue is tapped, not when the step loaded`() = runTest {
+    // Noon UTC is the same calendar day in every zone a test may run in.
+    val clock = AdvancingClock(Instant.parse("2026-11-17T12:00:00Z"))
+    presenter(clock = clock).test(TravelCertificateDateInputUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Loading)
+      specifications.responses.trySend(specification(numberOfCoInsured = 0).right())
+      assertThat(awaitContent()).isEqualTo(expectedContent())
+
+      clock.now = Instant.parse("2026-11-18T12:00:00Z")
+      sendEvent(TravelCertificateDateInputEvent.Submit)
+      val tomorrow = LocalDate(2026, 11, 18)
+      assertThat(awaitContent()).isEqualTo(expectedContent(selectedDate = tomorrow, isCreating = true))
+      assertThat(createTransport.inputs).containsExactly(createInput(startDate = tomorrow))
+    }
+  }
+
+  @Test
+  fun `a picked date stays as picked when the day changes`() = runTest {
+    val clock = AdvancingClock(Instant.parse("2026-11-17T12:00:00Z"))
+    presenter(clock = clock).test(TravelCertificateDateInputUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Loading)
+      specifications.responses.trySend(specification(numberOfCoInsured = 0).right())
+      skipItems(1)
+      sendEvent(TravelCertificateDateInputEvent.SelectTravelDate(today))
+      assertThat(awaitContent()).isEqualTo(expectedContent(pickedDate = today))
+
+      clock.now = Instant.parse("2026-11-18T12:00:00Z")
+      sendEvent(TravelCertificateDateInputEvent.Submit)
+      assertThat(awaitContent()).isEqualTo(expectedContent(pickedDate = today, isCreating = true))
+      assertThat(createTransport.inputs).containsExactly(createInput(startDate = today))
+    }
+  }
+
+  @Test
+  fun `continue with a range that has no days fails without creating or offering a step`() = runTest {
+    for (numberOfCoInsured in listOf(0, 1)) {
+      val specifications = FakeGetTravelCertificateSpecificationsUseCase()
+      val createTransport = FakeCreateTravelCertificateTransport()
+      TravelCertificateDateInputPresenter(
+        contractId = null,
+        getTravelCertificateSpecificationsUseCase = specifications,
+        createTravelCertificateUseCase = createTransport.createUseCase(),
+        clock = FixedClock(),
+      ).test(TravelCertificateDateInputUiState.Loading) {
+        assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Loading)
+        val emptyRange = LocalDate(2026, 11, 20)..LocalDate(2026, 11, 15)
+        specifications.responses.trySend(
+          specification(numberOfCoInsured = numberOfCoInsured, dateRange = emptyRange).right(),
+        )
+        assertThat(awaitContent().selectedDate).isEqualTo(LocalDate(2026, 11, 20))
+
+        sendEvent(TravelCertificateDateInputEvent.Submit)
+        assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Failure)
+        assertThat(createTransport.inputs).isEmpty()
+      }
     }
   }
 
@@ -329,7 +400,7 @@ class TravelCertificateDateInputPresenterTest {
       assertThat(awaitContent()).isEqualTo(
         expectedContent(
           email = " other@hedvig.com",
-          selectedDate = LocalDate(2026, 12, 24),
+          pickedDate = LocalDate(2026, 12, 24),
           hasCoInsured = true,
           next = step,
         ),
@@ -353,16 +424,16 @@ class TravelCertificateDateInputPresenterTest {
       sendEvent(TravelCertificateDateInputEvent.SelectTravelDate(LocalDate(2026, 12, 24)))
       sendEvent(TravelCertificateDateInputEvent.Submit)
       testScheduler.advanceUntilIdle()
-      expectNoStateChange(offered.copy(selectedDate = LocalDate(2026, 12, 24)))
+      expectNoStateChange(offered.copy(pickedDate = LocalDate(2026, 12, 24), selectedDate = LocalDate(2026, 12, 24)))
 
       sendEvent(TravelCertificateDateInputEvent.SelectTravelDate(today))
       sendEvent(TravelCertificateDateInputEvent.StepShown)
       testScheduler.advanceUntilIdle()
-      expectNoStateChange(expectedContent(hasCoInsured = true))
+      expectNoStateChange(expectedContent(hasCoInsured = true, pickedDate = today))
 
       sendEvent(TravelCertificateDateInputEvent.Submit)
       testScheduler.advanceUntilIdle()
-      assertThat(expectMostRecentItem()).isEqualTo(offered)
+      assertThat(expectMostRecentItem()).isEqualTo(offered.copy(pickedDate = today))
     }
   }
 
@@ -403,7 +474,7 @@ class TravelCertificateDateInputPresenterTest {
       sendEvent(TravelCertificateDateInputEvent.Submit)
       val creating = expectedContent(
         email = "typed@hedvig.com",
-        selectedDate = LocalDate(2026, 12, 24),
+        pickedDate = LocalDate(2026, 12, 24),
         isCreating = true,
       )
       assertThat(awaitContent()).isEqualTo(creating)
@@ -469,15 +540,72 @@ class TravelCertificateDateInputPresenterTest {
   }
 
   @Test
-  fun `starting from content that was creating or offering a step clears both`() = runTest {
+  fun `starting from content that was offering a step drops the step`() = runTest {
     val step = TravelCertificateTravellersStep("member@hedvig.com", today, "contractId")
-    presenter().test(expectedContent(isCreating = true, next = step, emailError = EmailError.Invalid)) {
-      assertThat(awaitItem()).isEqualTo(expectedContent())
+    presenter().test(expectedContent(hasCoInsured = true, next = step, emailError = EmailError.Invalid)) {
+      assertThat(awaitItem()).isEqualTo(expectedContent(hasCoInsured = true))
       testScheduler.advanceUntilIdle()
       assertThat(specifications.contractIds).isEmpty()
       assertThat(createTransport.inputs).isEmpty()
     }
   }
+
+  @Test
+  fun `starting from content that was creating shows the create as failed and keeps the input`() = runTest {
+    val creating = expectedContent(email = "typed@hedvig.com", isCreating = true)
+    presenter().test(creating) {
+      assertThat(awaitItem()).isEqualTo(expectedContent(email = "typed@hedvig.com", createFailed = true))
+      testScheduler.advanceUntilIdle()
+      assertThat(specifications.contractIds).isEmpty()
+      assertThat(createTransport.inputs).isEmpty()
+
+      sendEvent(TravelCertificateDateInputEvent.Submit)
+      assertThat(awaitContent()).isEqualTo(creating)
+      assertThat(createTransport.inputs).containsExactly(createInput(email = "typed@hedvig.com"))
+    }
+  }
+
+  @Test
+  fun `a continue in the same frame as the acknowledgement is ignored, so the cleared step is always emitted`() =
+    runTest {
+      val frameClock = BroadcastFrameClock()
+      val scope = CoroutineScope(StandardTestDispatcher(testScheduler) + frameClock + Job())
+      val viewModel = object : MoleculeViewModel<TravelCertificateDateInputEvent, TravelCertificateDateInputUiState>(
+        initialState = TravelCertificateDateInputUiState.Loading,
+        presenter = presenter(),
+        sharingStarted = SharingStarted.Eagerly,
+        coroutineScope = scope,
+      ) {}
+      val observedSteps = mutableListOf<TravelCertificateTravellersStep?>()
+      scope.launch {
+        viewModel.uiState.collect { observedSteps += (it as? TravelCertificateDateInputUiState.Success)?.next }
+      }
+
+      fun frame() {
+        testScheduler.runCurrent()
+        frameClock.sendFrame(0L)
+        testScheduler.runCurrent()
+      }
+      specifications.responses.trySend(specification(numberOfCoInsured = 1).right())
+      frame()
+      frame()
+      val step = TravelCertificateTravellersStep("member@hedvig.com", today, "contractId")
+      viewModel.emit(TravelCertificateDateInputEvent.Submit)
+      frame()
+      assertThat(viewModel.uiState.value).isEqualTo(expectedContent(hasCoInsured = true, next = step))
+
+      // Both events are handled before the next frame composes the presenter.
+      viewModel.emit(TravelCertificateDateInputEvent.StepShown)
+      viewModel.emit(TravelCertificateDateInputEvent.Submit)
+      frame()
+      assertThat(viewModel.uiState.value).isEqualTo(expectedContent(hasCoInsured = true))
+
+      viewModel.emit(TravelCertificateDateInputEvent.Submit)
+      frame()
+      assertThat(viewModel.uiState.value).isEqualTo(expectedContent(hasCoInsured = true, next = step))
+      assertThat(observedSteps.dropWhile { it == null }).containsExactly(step, null, step)
+      scope.cancel()
+    }
 
   @Test
   fun `starting from created stays created without fetching`() = runTest {
@@ -489,4 +617,8 @@ class TravelCertificateDateInputPresenterTest {
       assertThat(specifications.contractIds).isEmpty()
     }
   }
+}
+
+private class AdvancingClock(var now: Instant) : Clock {
+  override fun now(): Instant = now
 }
