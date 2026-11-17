@@ -25,14 +25,15 @@ final class ScreenOwner<Model, ViewState: ScreenViewState> where Model: ScreenMo
     private(set) var state: ViewState
 
     @ObservationIgnored let model: Model
-    @ObservationIgnored private var collection: Task<Void, Never>?
+    @ObservationIgnored private let teardown: ScreenModelTeardown<ViewState.KotlinState>
 
     init(_ model: Model) {
         self.model = model
         state = ViewState(model.currentState)
+        teardown = ScreenModelTeardown(model: model, name: "\(Model.self)")
         screenLog.debug("\(Model.self, privacy: .public) owner seeded: \(self.state.logDescription, privacy: .public)")
         let states = model.states
-        collection = Task { [weak self] in
+        teardown.collection = Task { [weak self] in
             do {
                 for try await kotlinState in asyncSequence(for: states) {
                     self?.receive(kotlinState)
@@ -58,11 +59,33 @@ final class ScreenOwner<Model, ViewState: ScreenViewState> where Model: ScreenMo
         screenLog.debug("\(Model.self, privacy: .public) owner state: \(next.logDescription, privacy: .public)")
     }
 
-    // Runs on the main actor; verified on iOS 27.2 only, while the deployment target is 17.0.
-    isolated deinit {
-        screenLog.debug("\(Model.self, privacy: .public) owner deinit")
+    // Not isolated: the deployment target is iOS 17.0. SwiftUI releases the owner on the main thread, so the model
+    // is closed before deinit returns; a release elsewhere closes it on the next main queue turn.
+    deinit {
+        teardown.run()
+    }
+}
+
+/// Cancels a screen model's state collection and closes the model on the main thread, which `close()` requires. The
+/// owner sets it up on the main actor and only its `deinit` uses it again, so it is never used from two threads at once.
+private final class ScreenModelTeardown<KotlinState: AnyObject>: @unchecked Sendable {
+    private let model: ScreenModel<KotlinState>
+    private let name: String
+    var collection: Task<Void, Never>?
+
+    init(model: ScreenModel<KotlinState>, name: String) {
+        self.model = model
+        self.name = name
+    }
+
+    func run() {
+        screenLog.debug("\(self.name, privacy: .public) owner deinit")
         collection?.cancel()
-        model.close()
+        if Thread.isMainThread {
+            model.close()
+        } else {
+            DispatchQueue.main.async { self.model.close() }
+        }
     }
 }
 
