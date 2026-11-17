@@ -66,6 +66,7 @@ kotlin {
       implementation(libs.metro.viewmodel)
     }
     nativeTest.dependencies {
+      implementation(projects.dataPayingMember)
       implementation(libs.apollo.engine.ktor)
       implementation(libs.apollo.normalizedCache)
       implementation(libs.assertK)

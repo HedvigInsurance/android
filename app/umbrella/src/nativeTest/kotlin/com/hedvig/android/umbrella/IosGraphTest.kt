@@ -57,7 +57,7 @@ import kotlin.time.TimeSource
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import octopus.ClaimsHistoryQuery
+import octopus.PayingMemberPhoneNumberQuery
 import platform.Foundation.NSDate
 import platform.Foundation.NSLock
 import platform.Foundation.NSRunLoop
@@ -266,7 +266,7 @@ class IosGraphTest {
     collection.cancel()
     model.close()
     val response = runBlocking {
-      holder.graph.apolloClient.query(ClaimsHistoryQuery()).fetchPolicy(FetchPolicy.NetworkOnly).execute()
+      holder.graph.apolloClient.query(PayingMemberPhoneNumberQuery()).fetchPolicy(FetchPolicy.NetworkOnly).execute()
     }
 
     assertThat(response.exception).isNotNull().isInstanceOf<ApolloNetworkException>()
@@ -283,7 +283,7 @@ class IosGraphTest {
 
     val response = runBlocking {
       holder.respondingWith(unauthenticatedJson)
-        .query(ClaimsHistoryQuery())
+        .query(PayingMemberPhoneNumberQuery())
         .fetchPolicy(FetchPolicy.NetworkOnly)
         .execute()
     }
@@ -301,7 +301,7 @@ class IosGraphTest {
 
     val response = runBlocking {
       holder.respondingWith(graphQlErrorJson)
-        .query(ClaimsHistoryQuery())
+        .query(PayingMemberPhoneNumberQuery())
         .fetchPolicy(FetchPolicy.NetworkOnly)
         .execute()
     }
@@ -309,7 +309,7 @@ class IosGraphTest {
     assertThat(response.errors.orEmpty().map { it.message }).containsExactly("Something went wrong")
     assertThat(logs.entries().filter { (_, message) -> message.startsWith("RUM error") }).containsExactly(
       LogPriority.WARN to
-        "RUM error from NETWORK: GraphQL errors for ClaimsHistory: [Something went wrong] attribute keys: []",
+        "RUM error from NETWORK: GraphQL errors for PayingMemberPhoneNumber: [Something went wrong] attribute keys: []",
     )
   }
 
@@ -319,19 +319,19 @@ class IosGraphTest {
 
     runBlocking {
       for (json in listOf(sentinelDataJson, sentinelDataAndErrorJson)) {
-        holder.respondingWith(json).query(ClaimsHistoryQuery()).fetchPolicy(FetchPolicy.NetworkOnly).execute()
+        holder.respondingWith(json).query(PayingMemberPhoneNumberQuery()).fetchPolicy(FetchPolicy.NetworkOnly).execute()
       }
     }
 
     assertThat(logs.messages().filter { "GraphQL" in it }).containsExactly(
-      "GraphQL request for ClaimsHistory START.",
-      "GraphQL request for ClaimsHistory EMISSION.",
-      "GraphQL request for ClaimsHistory END.",
-      "GraphQL request for ClaimsHistory START.",
-      "GraphQL request for ClaimsHistory EMISSION.",
-      "GraphQL errors for ClaimsHistory: [Something went wrong]",
-      "RUM error from NETWORK: GraphQL errors for ClaimsHistory: [Something went wrong] attribute keys: []",
-      "GraphQL request for ClaimsHistory END.",
+      "GraphQL request for PayingMemberPhoneNumber START.",
+      "GraphQL request for PayingMemberPhoneNumber EMISSION.",
+      "GraphQL request for PayingMemberPhoneNumber END.",
+      "GraphQL request for PayingMemberPhoneNumber START.",
+      "GraphQL request for PayingMemberPhoneNumber EMISSION.",
+      "GraphQL errors for PayingMemberPhoneNumber: [Something went wrong]",
+      "RUM error from NETWORK: GraphQL errors for PayingMemberPhoneNumber: [Something went wrong] attribute keys: []",
+      "GraphQL request for PayingMemberPhoneNumber END.",
     )
     assertThat(logs.messages().filter { DATA_SENTINEL in it || EXTENSION_SENTINEL in it }).isEmpty()
   }
@@ -343,7 +343,7 @@ class IosGraphTest {
 
     runBlocking {
       for (json in listOf(sentinelDataJson, sentinelDataAndErrorJson)) {
-        holder.respondingWith(json).query(ClaimsHistoryQuery()).fetchPolicy(FetchPolicy.NetworkOnly).execute()
+        holder.respondingWith(json).query(PayingMemberPhoneNumberQuery()).fetchPolicy(FetchPolicy.NetworkOnly).execute()
       }
     }
 
@@ -399,7 +399,7 @@ private fun IosGraphHolder.respondingWith(json: String): ApolloClient {
 }
 
 private fun IosGraphHolder.seedStore() {
-  val response = runBlocking { respondingWith(claimsJson).query(ClaimsHistoryQuery()).execute() }
+  val response = runBlocking { respondingWith(memberJson).query(PayingMemberPhoneNumberQuery()).execute() }
   check(response.data != null) { "Seeding failed: ${response.exception} ${response.errors}" }
   check(!storeIsEmpty()) { "Seeding wrote nothing" }
 }
@@ -553,14 +553,13 @@ private val graphQlErrorJson = """
   }
 """.trimIndent()
 
-private val claimsJson = """
+private val memberJson = """
   {
     "data": {
       "currentMember": {
         "__typename": "Member",
         "id": "member-1",
-        "claimsHistory": [],
-        "partnerClaimsHistory": []
+        "phoneNumber": null
       }
     }
   }
@@ -575,8 +574,7 @@ private val sentinelDataJson = """
       "currentMember": {
         "__typename": "Member",
         "id": "$DATA_SENTINEL",
-        "claimsHistory": [],
-        "partnerClaimsHistory": []
+        "phoneNumber": null
       }
     }
   }
@@ -588,8 +586,7 @@ private val sentinelDataAndErrorJson = """
       "currentMember": {
         "__typename": "Member",
         "id": "$DATA_SENTINEL",
-        "claimsHistory": [],
-        "partnerClaimsHistory": []
+        "phoneNumber": null
       }
     },
     "errors": [
