@@ -10,6 +10,9 @@ struct RootView: View {
                     NavigationLink("Claim history") {
                         claimHistoryDestination()
                     }
+                    NavigationLink("Payments") {
+                        PaymentOverviewView(holder: app.holder)
+                    }
                     #if DEBUG
                     if ShellDebug.claimHistorySample {
                         Section("Debug") {
