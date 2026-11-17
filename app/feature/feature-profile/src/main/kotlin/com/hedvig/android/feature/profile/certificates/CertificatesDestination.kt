@@ -15,8 +15,8 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.icon.Document
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.icon.MultipleDocuments
 import com.hedvig.android.feature.profile.tab.ProfileRow
 import hedvig.resources.INSURANCE_EVIDENCE_DOCUMENT_TITLE
 import hedvig.resources.PROFILE_ROW_TRAVEL_CERTIFICATE
@@ -89,7 +89,7 @@ private fun ColumnScope.CertificatesRows(
   if (uiState.isTravelCertificateAvailable) {
     ProfileRow(
       title = stringResource(Res.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
-      icon = HedvigIcons.MultipleDocuments,
+      icon = HedvigIcons.Document,
       onClick = dropUnlessResumed { onNavigateToTravelCertificate() },
       isLoading = false,
     )
@@ -97,7 +97,7 @@ private fun ColumnScope.CertificatesRows(
   if (uiState.isInsuranceEvidenceAvailable) {
     ProfileRow(
       title = stringResource(Res.string.INSURANCE_EVIDENCE_DOCUMENT_TITLE),
-      icon = HedvigIcons.MultipleDocuments,
+      icon = HedvigIcons.Document,
       onClick = dropUnlessResumed { onNavigateToInsuranceEvidence() },
       isLoading = false,
     )
@@ -108,13 +108,13 @@ private fun ColumnScope.CertificatesRows(
 private fun ColumnScope.CertificatesRowsPlaceholder() {
   ProfileRow(
     title = stringResource(Res.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
-    icon = HedvigIcons.MultipleDocuments,
+    icon = HedvigIcons.Document,
     onClick = {},
     isLoading = true,
   )
   ProfileRow(
     title = stringResource(Res.string.INSURANCE_EVIDENCE_DOCUMENT_TITLE),
-    icon = HedvigIcons.MultipleDocuments,
+    icon = HedvigIcons.Document,
     onClick = { },
     isLoading = true,
   )
