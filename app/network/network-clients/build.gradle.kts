@@ -28,6 +28,13 @@ kotlin {
       implementation(projects.languageCore)
       implementation(projects.trackingCore)
     }
+    commonTest.dependencies {
+      implementation(libs.apollo.testingSupport)
+      implementation(libs.atomicfu)
+      implementation(libs.coroutines.test)
+      implementation(libs.ktor.client.mock)
+      implementation(projects.coreLocale)
+    }
     androidMain.dependencies {
       implementation(libs.datadog.sdk.ktor)
       implementation(libs.ktor.client.okhttp)
