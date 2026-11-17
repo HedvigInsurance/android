@@ -1,9 +1,15 @@
 package com.hedvig.android.feature.payments.ui.manualcharge
 
+import app.cash.molecule.RecompositionMode
+import app.cash.molecule.moleculeFlow
+import app.cash.turbine.Event
+import app.cash.turbine.TurbineTestContext
+import app.cash.turbine.test
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import assertk.assertThat
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode
@@ -14,8 +20,10 @@ import com.hedvig.android.feature.payments.data.ManualChargeInfo
 import com.hedvig.android.feature.payments.data.ManualChargeInfoResult
 import com.hedvig.android.feature.payments.data.TriggerManualChargeUseCase
 import com.hedvig.android.logger.TestLogcatLoggingRule
+import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.test.test
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import org.junit.Rule
@@ -138,7 +146,7 @@ class ManualChargePresenterTest {
       sendEvent(ManualChargeEvent.TriggerCharge)
       this@runTest.testScheduler.advanceUntilIdle()
       assertThat(trigger.calls).isEqualTo(0)
-      assertThat(expectMostRecentItem()).isEqualTo(ManualChargeUiState.Loading)
+      expectNoEvents()
     }
   }
 
@@ -188,10 +196,146 @@ class ManualChargePresenterTest {
     }
   }
 
+  @Test
+  fun `a second charge request while one is in flight neither cancels it nor charges again`() = runTest {
+    val getInfo = FakeGetManualChargeInfoUseCase()
+    val trigger = FakeTriggerManualChargeUseCase()
+    presenter(getInfo, trigger).test(ManualChargeUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Loading)
+      getInfo.responses.send(ManualChargeInfoResult.Chargeable(info).right())
+      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Success(info))
+
+      sendEvent(ManualChargeEvent.TriggerCharge)
+      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Success(info, payButtonLoading = true))
+      this@runTest.testScheduler.advanceUntilIdle()
+      sendEvent(ManualChargeEvent.TriggerCharge)
+      this@runTest.testScheduler.advanceUntilIdle()
+      trigger.responses.send(Unit.right())
+
+      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Charged(info))
+      this@runTest.testScheduler.advanceUntilIdle()
+      assertThat(trigger.calls).isEqualTo(1)
+      assertThat(remainingStates() - ManualChargeUiState.Charged(info)).isEmpty()
+    }
+  }
+
+  @Test
+  fun `two charge requests in a row charge once`() = runTest {
+    val getInfo = FakeGetManualChargeInfoUseCase()
+    val trigger = FakeTriggerManualChargeUseCase()
+    presenter(getInfo, trigger).test(ManualChargeUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Loading)
+      getInfo.responses.send(ManualChargeInfoResult.Chargeable(info).right())
+      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Success(info))
+
+      sendEvent(ManualChargeEvent.TriggerCharge)
+      sendEvent(ManualChargeEvent.TriggerCharge)
+      this@runTest.testScheduler.advanceUntilIdle()
+      trigger.responses.send(Unit.right())
+
+      assertThat(expectMostRecentItem()).isEqualTo(ManualChargeUiState.Charged(info))
+      this@runTest.testScheduler.advanceUntilIdle()
+      assertThat(trigger.calls).isEqualTo(1)
+    }
+  }
+
+  @Test
+  fun `a charge request after the charge went through does nothing`() = runTest {
+    val getInfo = FakeGetManualChargeInfoUseCase()
+    val trigger = FakeTriggerManualChargeUseCase()
+    presenter(getInfo, trigger).test(ManualChargeUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Loading)
+      getInfo.responses.send(ManualChargeInfoResult.Chargeable(info).right())
+      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Success(info))
+      sendEvent(ManualChargeEvent.TriggerCharge)
+      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Success(info, payButtonLoading = true))
+      trigger.responses.send(Unit.right())
+      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Charged(info))
+
+      sendEvent(ManualChargeEvent.TriggerCharge)
+      this@runTest.testScheduler.advanceUntilIdle()
+
+      assertThat(trigger.calls).isEqualTo(1)
+      assertThat(remainingStates() - ManualChargeUiState.Charged(info)).isEmpty()
+    }
+  }
+
+  @Test
+  fun `a retry after the charge went through keeps the charged state without loading`() = runTest {
+    val getInfo = FakeGetManualChargeInfoUseCase()
+    val trigger = FakeTriggerManualChargeUseCase()
+    presenter(getInfo, trigger).test(ManualChargeUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Loading)
+      getInfo.responses.send(ManualChargeInfoResult.Chargeable(info).right())
+      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Success(info))
+      sendEvent(ManualChargeEvent.TriggerCharge)
+      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Success(info, payButtonLoading = true))
+      trigger.responses.send(Unit.right())
+      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Charged(info))
+
+      sendEvent(ManualChargeEvent.Retry)
+      this@runTest.testScheduler.advanceUntilIdle()
+
+      assertThat(getInfo.calls).isEqualTo(1)
+      assertThat(remainingStates() - ManualChargeUiState.Charged(info)).isEmpty()
+    }
+  }
+
+  @Test
+  fun `a charge request queued while the presenter was stopped does not charge the stale details`() = runTest {
+    val getInfo = FakeGetManualChargeInfoUseCase()
+    val trigger = FakeTriggerManualChargeUseCase()
+    presenter(getInfo, trigger).restartedWith(
+      lastState = ManualChargeUiState.Success(info),
+      queued = listOf(ManualChargeEvent.TriggerCharge),
+    ) {
+      this@runTest.testScheduler.advanceUntilIdle()
+      getInfo.responses.send(ManualChargeInfoResult.Chargeable(info).right())
+      this@runTest.testScheduler.advanceUntilIdle()
+
+      assertThat(trigger.calls).isEqualTo(0)
+      assertThat(expectMostRecentItem()).isEqualTo(ManualChargeUiState.Success(info))
+    }
+  }
+
+  @Test
+  fun `a presenter restarted after the charge went through stays charged without loading`() = runTest {
+    val getInfo = FakeGetManualChargeInfoUseCase()
+    val trigger = FakeTriggerManualChargeUseCase()
+    presenter(getInfo, trigger).restartedWith(lastState = ManualChargeUiState.Charged(info)) {
+      this@runTest.testScheduler.advanceUntilIdle()
+
+      assertThat(expectMostRecentItem()).isEqualTo(ManualChargeUiState.Charged(info))
+      assertThat(getInfo.calls).isEqualTo(0)
+      assertThat(trigger.calls).isEqualTo(0)
+    }
+  }
+
   private fun presenter(
     getInfo: GetManualChargeInfoUseCase,
     trigger: TriggerManualChargeUseCase = FakeTriggerManualChargeUseCase(),
   ) = ManualChargePresenter(getInfo, trigger)
+}
+
+/** The distinct states emitted since the last read, which a recomposition may repeat. */
+private suspend fun TurbineTestContext<ManualChargeUiState>.remainingStates(): Set<ManualChargeUiState> =
+  cancelAndConsumeRemainingEvents().filterIsInstance<Event.Item<ManualChargeUiState>>().map { it.value }.toSet()
+
+/**
+ * Runs the presenter as `MoleculeViewModel` restarts it after its collectors left: from [lastState], over a channel
+ * that already holds the [queued] events.
+ */
+private suspend fun ManualChargePresenter.restartedWith(
+  lastState: ManualChargeUiState,
+  queued: List<ManualChargeEvent> = emptyList(),
+  block: suspend TurbineTestContext<ManualChargeUiState>.() -> Unit,
+) {
+  val events = Channel<ManualChargeEvent>(capacity = 20)
+  queued.forEach { events.trySend(it) }
+  val scope = MoleculePresenterScope(events.receiveAsFlow())
+  moleculeFlow(RecompositionMode.Immediate) {
+    with(this@restartedWith) { scope.present(lastState) }
+  }.test(validate = block)
 }
 
 private class FakeGetManualChargeInfoUseCase : GetManualChargeInfoUseCase {
