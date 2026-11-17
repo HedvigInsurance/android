@@ -219,7 +219,10 @@ private fun defaultTravelDate(clock: Clock, minDate: LocalDate, maxDate: LocalDa
 internal sealed interface TravelCertificateDateInputEvent {
   data object RetryLoadData : TravelCertificateDateInputEvent
 
-  data class ChangeEmailInput(val email: String) : TravelCertificateDateInputEvent
+  data class ChangeEmailInput(val email: String) : TravelCertificateDateInputEvent {
+    /** Leaves out [email]; an event that does not fit in the ViewModel's buffer is logged with this text. */
+    override fun toString(): String = "ChangeEmailInput(redacted)"
+  }
 
   /** Ignored when [date] is outside the content's `minDate..maxDate`. */
   data class SelectTravelDate(val date: LocalDate) : TravelCertificateDateInputEvent

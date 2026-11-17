@@ -14,6 +14,15 @@ import com.hedvig.android.feature.payments.ios.createPaymentDetailsScreenModel
 import com.hedvig.android.feature.payments.ios.createPaymentHistoryScreenModel
 import com.hedvig.android.feature.payments.ios.createPaymentManualChargeScreenModel
 import com.hedvig.android.feature.payments.ios.createPaymentOverviewScreenModel
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificateTravellersStep
+import com.hedvig.android.feature.travelcertificate.ios.TravelCertificateChooseContractScreenModel
+import com.hedvig.android.feature.travelcertificate.ios.TravelCertificateDateInputScreenModel
+import com.hedvig.android.feature.travelcertificate.ios.TravelCertificateHistoryScreenModel
+import com.hedvig.android.feature.travelcertificate.ios.TravelCertificateTravellersScreenModel
+import com.hedvig.android.feature.travelcertificate.ios.createTravelCertificateChooseContractScreenModel
+import com.hedvig.android.feature.travelcertificate.ios.createTravelCertificateDateInputScreenModel
+import com.hedvig.android.feature.travelcertificate.ios.createTravelCertificateHistoryScreenModel
+import com.hedvig.android.feature.travelcertificate.ios.createTravelCertificateTravellersScreenModel
 import com.hedvig.android.language.LanguageStorage
 import com.hedvig.android.network.clients.AccessTokenFetcher
 import com.hedvig.android.network.clients.NetworkLogPolicy
@@ -82,6 +91,30 @@ class IosGraphHolder internal constructor(
    */
   fun paymentManualChargeScreenModel(): PaymentManualChargeScreenModel =
     createPaymentManualChargeScreenModel(graph.metroViewModelFactory)
+
+  /** A new screen model with its own ViewModel. The caller owns it and must `close()` it. */
+  fun travelCertificateHistoryScreenModel(): TravelCertificateHistoryScreenModel =
+    createTravelCertificateHistoryScreenModel(graph.metroViewModelFactory)
+
+  /** A new screen model with its own ViewModel. The caller owns it and must `close()` it. */
+  fun travelCertificateChooseContractScreenModel(): TravelCertificateChooseContractScreenModel =
+    createTravelCertificateChooseContractScreenModel(graph.metroViewModelFactory)
+
+  /**
+   * A new screen model with its own ViewModel, for the contract [contractId] from the choose step. Null and "" are the
+   * same: the first contract a certificate can be created for. The caller owns it and must `close()` it.
+   */
+  fun travelCertificateDateInputScreenModel(contractId: String?): TravelCertificateDateInputScreenModel =
+    createTravelCertificateDateInputScreenModel(graph.metroViewModelFactory, contractId)
+
+  /**
+   * A new screen model with its own ViewModel, for the [step] a date step's `next` offered. The caller owns it and must
+   * `close()` it.
+   */
+  fun travelCertificateTravellersScreenModel(
+    step: TravelCertificateTravellersStep,
+  ): TravelCertificateTravellersScreenModel =
+    createTravelCertificateTravellersScreenModel(graph.metroViewModelFactory, step)
 
   /**
    * Tells Kotlin a session started ([loggedIn] true) or ended (false), so it clears what it cached for the previous

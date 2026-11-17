@@ -68,12 +68,12 @@ internal class GetCoInsuredForContractUseCaseImpl(
   }
 }
 
-data class CoInsuredDataWithMember(
+internal data class CoInsuredDataWithMember(
   val coInsuredList: List<CoInsuredData>,
   val memberFullName: String,
 )
 
-data class CoInsuredData(
+internal data class CoInsuredData(
   val id: String?,
   val firstName: String?,
   val lastName: String?,

@@ -34,6 +34,10 @@ import com.hedvig.android.feature.payments.ios.PaymentManualChargeScreenState
 import com.hedvig.android.feature.payments.ios.PaymentOverviewScreenState
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailsViewModelFactory
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateTravellersStep
+import com.hedvig.android.feature.travelcertificate.ios.TravelCertificateChooseContractScreenState
+import com.hedvig.android.feature.travelcertificate.ios.TravelCertificateDateInputScreenState
+import com.hedvig.android.feature.travelcertificate.ios.TravelCertificateHistoryScreenState
+import com.hedvig.android.feature.travelcertificate.ios.TravelCertificateTravellersScreenState
 import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputViewModelFactory
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertificateTravellersInputViewModelFactory
 import com.hedvig.android.language.LanguageStorage
@@ -258,6 +262,47 @@ class IosGraphTest {
     assertThat(dateWithoutContractId::class.simpleName).isEqualTo("TravelCertificateDateInputViewModel")
     assertThat(dateWithContractId === dateWithoutContractId).isFalse()
     assertThat(travellers::class.simpleName).isEqualTo("TravelCertificateTravellersInputViewModel")
+    assertThat(inputs.accessTokenFetcher.calls.value).isEqualTo(0)
+    assertThat(inputs.deviceIdFetcher.calls.value).isEqualTo(0)
+  }
+
+  @Test
+  fun `the holder builds the travel certificate screen models without a request`() {
+    val inputs = FakeInputs()
+    val holder = inputs.createHolder()
+    // The step's constructor is internal to its module, so the test decodes one the way a saved back stack would.
+    val step = Json.decodeFromString(
+      TravelCertificateTravellersStep.serializer(),
+      """{"email":"member@hedvig.com","travelDate":"2026-12-01","contractId":"contract-1"}""",
+    )
+
+    val models = listOf(
+      holder.travelCertificateHistoryScreenModel(),
+      holder.travelCertificateChooseContractScreenModel(),
+      holder.travelCertificateDateInputScreenModel("contract-1"),
+      holder.travelCertificateDateInputScreenModel(null),
+      holder.travelCertificateTravellersScreenModel(step),
+    )
+    val states = models.map { it.currentState }
+    pumpMainLoop(1.seconds)
+    models.forEach { it.close() }
+
+    assertThat(states).containsExactly(
+      TravelCertificateHistoryScreenState.Loading,
+      TravelCertificateChooseContractScreenState.Loading,
+      TravelCertificateDateInputScreenState.Loading,
+      TravelCertificateDateInputScreenState.Loading,
+      TravelCertificateTravellersScreenState.Loading,
+    )
+    assertThat(
+      logs.messages().filter { it.endsWith("ViewModel cleared") },
+    ).containsExactlyInAnyOrder(
+      "CertificateHistoryViewModel cleared",
+      "ChooseContractForCertificateViewModel cleared",
+      "TravelCertificateDateInputViewModel cleared",
+      "TravelCertificateDateInputViewModel cleared",
+      "TravelCertificateTravellersInputViewModel cleared",
+    )
     assertThat(inputs.accessTokenFetcher.calls.value).isEqualTo(0)
     assertThat(inputs.deviceIdFetcher.calls.value).isEqualTo(0)
   }

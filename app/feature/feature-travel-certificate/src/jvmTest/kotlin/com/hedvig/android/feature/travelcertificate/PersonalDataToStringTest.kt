@@ -7,6 +7,7 @@ import com.hedvig.android.feature.travelcertificate.data.TravelCertificateTravel
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.navigation.ShowCertificateKey
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateTravellersInputKey
+import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputEvent
 import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputUiState
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.CoInsured
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.CoInsured.CoInsuredId
@@ -52,6 +53,28 @@ class PersonalDataToStringTest {
       createFailed = false,
     )
     assertHasNoPersonalData(content.toString())
+  }
+
+  @Test
+  fun `the travellers content leaves out the member's name`() {
+    val content = TravelCertificateTravellersInputUiState.Success(
+      memberFullName = "Member Name",
+      isMemberIncluded = true,
+      coInsuredList = listOf(coInsured),
+      coInsuredHasMissingInfo = false,
+      isCreating = true,
+      createFailed = false,
+    )
+    assertThat(content.toString()).isEqualTo(
+      "Success(isMemberIncluded=true, coInsuredList=[CoInsured(isIncluded=true)], coInsuredHasMissingInfo=false, " +
+        "isCreating=true, createFailed=false)",
+    )
+  }
+
+  @Test
+  fun `an email change leaves out the email`() {
+    val event = TravelCertificateDateInputEvent.ChangeEmailInput("member@hedvig.com")
+    assertThat(event.toString()).isEqualTo("ChangeEmailInput(redacted)")
   }
 
   @Test

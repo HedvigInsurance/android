@@ -71,7 +71,7 @@ private fun TravelCertificateSpecificationsQuery.Data.CurrentMember.TravelCertif
   numberOfCoInsured = numberOfCoInsured,
 )
 
-sealed interface TravelCertificateError {
+internal sealed interface TravelCertificateError {
   data class Error(
     val errorMessage: ErrorMessage,
   ) : TravelCertificateError, ErrorMessage by errorMessage
@@ -79,7 +79,7 @@ sealed interface TravelCertificateError {
   data object NotEligible : TravelCertificateError
 }
 
-data class TravelCertificateData(
+internal data class TravelCertificateData(
   val travelCertificateSpecification: TravelCertificateSpecification,
 ) {
   data class TravelCertificateSpecification(
