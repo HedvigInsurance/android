@@ -51,11 +51,14 @@ kotlin {
       implementation(libs.coroutines.test)
       implementation(libs.junit)
       implementation(libs.testParameterInjector)
+      implementation(libs.turbine)
       implementation(projects.apolloOctopusTest)
       implementation(projects.apolloTest)
       implementation(projects.coreCommonTest)
       implementation(projects.featureFlagsTest)
+      implementation(projects.languageTest)
       implementation(projects.loggingTest)
+      implementation(projects.moleculeTest)
     }
   }
 }
