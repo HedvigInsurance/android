@@ -1,0 +1,139 @@
+package com.hedvig.android.feature.travelcertificate.ios
+
+import assertk.assertThat
+import assertk.assertions.doesNotContain
+import assertk.assertions.isEqualTo
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificateTravellersStep
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
+import com.hedvig.android.feature.travelcertificate.ui.generatewhen.EmailError
+import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputUiState
+import kotlin.test.Test
+import kotlinx.datetime.LocalDate
+
+class TravelCertificateDateInputScreenStateTest {
+  private val form = TravelCertificateDateInputUiState.Success(
+    contractId = "contract-1",
+    email = "member@hedvig.com",
+    emailRevision = 1,
+    emailError = null,
+    minDate = LocalDate(2026, 11, 17),
+    maxDate = LocalDate(2027, 2, 5),
+    pickedDate = null,
+    selectedDate = LocalDate(2026, 11, 18),
+    daysValid = 45,
+    hasCoInsured = true,
+    isCreating = false,
+    createFailed = false,
+    next = null,
+  )
+
+  private val content = TravelCertificateDateInputScreenState.Content(
+    email = "member@hedvig.com",
+    emailRevision = 1,
+    emailError = null,
+    minDate = "2026-11-17",
+    maxDate = "2027-02-05",
+    selectedDate = "2026-11-18",
+    daysValid = 45,
+    isCreating = false,
+    createFailed = false,
+    next = null,
+  )
+
+  @Test
+  fun `loading and failure`() {
+    assertThat(TravelCertificateDateInputUiState.Loading.toScreenState())
+      .isEqualTo(TravelCertificateDateInputScreenState.Loading)
+    assertThat(TravelCertificateDateInputUiState.Failure.toScreenState())
+      .isEqualTo(TravelCertificateDateInputScreenState.Failed)
+  }
+
+  @Test
+  fun `the form carries its fields with dates as yyyy-MM-dd`() {
+    assertThat(form.toScreenState()).isEqualTo(content)
+  }
+
+  @Test
+  fun `a picked date is the selected date`() {
+    val picked = form.copy(pickedDate = LocalDate(2027, 1, 2), selectedDate = LocalDate(2027, 1, 2), emailRevision = 3)
+
+    assertThat(picked.toScreenState()).isEqualTo(content.copy(selectedDate = "2027-01-02", emailRevision = 3))
+  }
+
+  @Test
+  fun `each email error`() {
+    assertThat(form.copy(emailError = EmailError.Empty).toScreenState())
+      .isEqualTo(content.copy(emailError = TravelCertificateEmailError.EMPTY))
+    assertThat(form.copy(email = "member@", emailError = EmailError.Invalid).toScreenState())
+      .isEqualTo(content.copy(email = "member@", emailError = TravelCertificateEmailError.INVALID))
+  }
+
+  @Test
+  fun `creating and a failed create`() {
+    assertThat(form.copy(isCreating = true).toScreenState()).isEqualTo(content.copy(isCreating = true))
+    assertThat(form.copy(createFailed = true).toScreenState()).isEqualTo(content.copy(createFailed = true))
+  }
+
+  @Test
+  fun `the travellers step offered`() {
+    val step = TravelCertificateTravellersStep("member@hedvig.com", LocalDate(2026, 12, 1), "contract-1")
+
+    assertThat(form.copy(next = step).toScreenState()).isEqualTo(content.copy(next = step))
+  }
+
+  @Test
+  fun `created carries the signed url`() {
+    val created = TravelCertificateDateInputUiState.Created(TravelCertificateUrl("https://example.com/c.pdf?s=1"))
+
+    assertThat(created.toScreenState()).isEqualTo(
+      TravelCertificateDateInputScreenState.Created(TravelCertificateCreated("https://example.com/c.pdf?s=1")),
+    )
+  }
+
+  @Test
+  fun `the form and created leave out the email and the signed url from their text`() {
+    val step = TravelCertificateTravellersStep("member@hedvig.com", LocalDate(2026, 12, 1), "contract-1")
+    val text = content.copy(next = step).toString()
+
+    assertThat(text).isEqualTo(
+      "Content(emailRevision=1, emailError=null, minDate=2026-11-17, maxDate=2027-02-05, selectedDate=2026-11-18, " +
+        "daysValid=45, isCreating=false, createFailed=false, " +
+        "next=TravelCertificateTravellersStep(travelDate=2026-12-01, contractId=contract-1))",
+    )
+    assertThat(TravelCertificateDateInputScreenState.Created(TravelCertificateCreated("https://secret")).toString())
+      .doesNotContain("secret")
+  }
+
+  @Test
+  fun `handle calls the closure for each case`() {
+    val created = TravelCertificateDateInputScreenState.Created(TravelCertificateCreated("https://c"))
+    val calls = listOf(
+      TravelCertificateDateInputScreenState.Loading,
+      TravelCertificateDateInputScreenState.Failed,
+      content,
+      created,
+    ).map { state ->
+      var called = ""
+      state.handle(
+        onLoading = { called = "loading" },
+        onFailed = { called = "failed" },
+        onContent = { called = "content:${it.daysValid}" },
+        onCreated = { called = "created:${it.certificate.certificateUrl}" },
+      )
+      called
+    }
+
+    assertThat(calls).isEqualTo(listOf("loading", "failed", "content:45", "created:https://c"))
+  }
+
+  @Test
+  fun `email error handle calls the closure for each entry`() {
+    val calls = TravelCertificateEmailError.entries.map { error ->
+      var called = ""
+      error.handle(onEmpty = { called = "empty" }, onInvalid = { called = "invalid" })
+      called
+    }
+
+    assertThat(calls).isEqualTo(listOf("empty", "invalid"))
+  }
+}
