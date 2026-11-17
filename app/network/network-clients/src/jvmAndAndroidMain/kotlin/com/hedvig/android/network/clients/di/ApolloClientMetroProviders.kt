@@ -7,6 +7,7 @@ import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.network.clients.NetworkLogPolicy
 import com.hedvig.android.network.clients.apollo.LogoutOnUnauthenticatedInterceptor
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
@@ -24,11 +25,20 @@ interface ApolloClientMetroProviders {
     normalizedCacheFactory: NormalizedCacheFactory,
     httpClient: HttpClient,
     hedvigBuildConstants: HedvigBuildConstants,
+    networkLogPolicy: NetworkLogPolicy,
   ): ApolloClient = buildHedvigApolloClient(
     normalizedCacheFactory,
     httpClient,
     hedvigBuildConstants,
     apolloPlatformInterceptors(authTokenService, demoManager),
+    networkLogPolicy,
+  )
+
+  /** HTTP bodies are logged outside production builds, GraphQL data in every build. */
+  @Provides
+  fun provideNetworkLogPolicy(hedvigBuildConstants: HedvigBuildConstants): NetworkLogPolicy = NetworkLogPolicy(
+    logsHttpBodies = !hedvigBuildConstants.isProduction,
+    logsGraphqlData = true,
   )
 }
 

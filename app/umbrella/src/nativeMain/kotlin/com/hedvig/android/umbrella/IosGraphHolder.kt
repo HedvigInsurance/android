@@ -16,6 +16,7 @@ import com.hedvig.android.feature.payments.ios.createPaymentManualChargeScreenMo
 import com.hedvig.android.feature.payments.ios.createPaymentOverviewScreenModel
 import com.hedvig.android.language.LanguageStorage
 import com.hedvig.android.network.clients.AccessTokenFetcher
+import com.hedvig.android.network.clients.NetworkLogPolicy
 import dev.zacsweers.metro.createGraphFactory
 
 /**
@@ -24,6 +25,8 @@ import dev.zacsweers.metro.createGraphFactory
  * while building the graph is fatal once it reaches Swift.
  *
  * [accessTokenFetcher] is called before every request; when it throws, the request fails without being sent.
+ *
+ * [networkLogPolicy] decides whether HTTP bodies and GraphQL response data reach the log.
  *
  * Shared code reports actions and errors through [RumLogger], which throws until a logger is installed, so when none is
  * installed this installs [LogcatRumLogger] before building the graph.
@@ -34,6 +37,7 @@ fun createIosGraphHolder(
   deviceIdFetcher: DeviceIdFetcher,
   languageStorage: LanguageStorage,
   demoMode: IosDemoMode,
+  networkLogPolicy: NetworkLogPolicy,
 ): IosGraphHolder {
   if (!RumLogger.isInstalled) {
     RumLogger.install(LogcatRumLogger)
@@ -44,6 +48,7 @@ fun createIosGraphHolder(
     deviceIdFetcher = deviceIdFetcher,
     languageStorage = languageStorage,
     demoMode = demoMode,
+    networkLogPolicy = networkLogPolicy,
   )
   graph.initializables.forEach { it.initialize() }
   return IosGraphHolder(graph)

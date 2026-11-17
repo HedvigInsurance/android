@@ -11,6 +11,7 @@ import com.hedvig.android.core.demomode.IosDemoMode
 import com.hedvig.android.initializable.Initializable
 import com.hedvig.android.language.LanguageStorage
 import com.hedvig.android.network.clients.AccessTokenFetcher
+import com.hedvig.android.network.clients.NetworkLogPolicy
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metrox.viewmodel.ViewModelGraph
@@ -37,6 +38,7 @@ internal interface IosGraph : ViewModelGraph {
       @Provides deviceIdFetcher: DeviceIdFetcher,
       @Provides languageStorage: LanguageStorage,
       @Provides demoMode: IosDemoMode,
+      @Provides networkLogPolicy: NetworkLogPolicy,
     ): IosGraph
   }
 }

@@ -16,6 +16,7 @@ import com.hedvig.android.core.tracking.ErrorSource
 import com.hedvig.android.core.tracking.logError
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.network.clients.NetworkLogPolicy
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onCompletion
@@ -27,11 +28,14 @@ import kotlinx.coroutines.flow.onEach
  */
 internal fun ApolloClient.Builder.addHedvigInterceptors(
   platformInterceptors: List<ApolloInterceptor>,
+  networkLogPolicy: NetworkLogPolicy,
 ): ApolloClient.Builder = this
   .apply { platformInterceptors.forEach(::addInterceptor) }
-  .addInterceptor(LoggingInterceptor())
+  .addInterceptor(LoggingInterceptor(networkLogPolicy))
 
-internal class LoggingInterceptor : ApolloInterceptor {
+internal class LoggingInterceptor(
+  private val networkLogPolicy: NetworkLogPolicy,
+) : ApolloInterceptor {
   override fun <D : Data> intercept(
     request: ApolloRequest<D>,
     chain: ApolloInterceptorChain,
@@ -39,7 +43,11 @@ internal class LoggingInterceptor : ApolloInterceptor {
     logcat(LogPriority.DEBUG) { "GraphQL request for ${request.operation.name()} START." }
     return chain.proceed(request).onEach { response ->
       logcat(LogPriority.DEBUG) {
-        "GraphQL request for ${request.operation.name()} EMISSION. Response data: ${response.data}"
+        if (networkLogPolicy.logsGraphqlData) {
+          "GraphQL request for ${request.operation.name()} EMISSION. Response data: ${response.data}"
+        } else {
+          "GraphQL request for ${request.operation.name()} EMISSION."
+        }
       }
       val data = response.data
       val errors = response.errors.orEmpty().map { it.toGraphqlError() }
@@ -64,6 +72,11 @@ internal class LoggingInterceptor : ApolloInterceptor {
   ) {
     val errorMessagesJoinedToString = errors.joinToString(", ", "[", "]") { it.message }
     val errorMessage = "GraphQL errors for ${request.operation.name()}: $errorMessagesJoinedToString"
+    if (!networkLogPolicy.logsGraphqlData) {
+      logcat(LogPriority.ERROR) { errorMessage }
+      logError(message = errorMessage, source = ErrorSource.NETWORK)
+      return
+    }
     val errorAttributes = buildMap {
       put("data", response.data)
       put("errors", errors)

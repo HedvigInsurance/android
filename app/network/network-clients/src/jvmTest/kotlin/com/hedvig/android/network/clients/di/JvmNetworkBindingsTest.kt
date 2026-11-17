@@ -8,6 +8,7 @@ import com.hedvig.android.core.common.di.AuthHttpClientEngine
 import com.hedvig.android.core.common.di.DesktopDataDirectory
 import com.hedvig.android.network.clients.AccessTokenFetcher
 import com.hedvig.android.network.clients.ExtraKtorClientConfiguration
+import com.hedvig.android.network.clients.NetworkLogPolicy
 import com.hedvig.android.network.clients.NoopExtraKtorClientConfiguration
 import com.hedvig.android.network.clients.TlsDiagnostics
 import dev.zacsweers.metro.DependencyGraph
@@ -30,6 +31,7 @@ internal interface NetworkTestGraph {
   val accessTokenFetcher: AccessTokenFetcher
   val extraKtorClientConfiguration: ExtraKtorClientConfiguration
   val tlsDiagnostics: TlsDiagnostics
+  val networkLogPolicy: NetworkLogPolicy
 
   @AuthHttpClientEngine
   val authHttpClientEngine: HttpClientEngine
