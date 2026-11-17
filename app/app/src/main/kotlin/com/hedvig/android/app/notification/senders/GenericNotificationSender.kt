@@ -13,6 +13,7 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.logger.memberData
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
@@ -44,7 +45,9 @@ class GenericNotificationSender(
     val title = remoteMessage.titleFromCustomerIoData() ?: remoteMessage.data[DATA_MESSAGE_TITLE]
     val body = remoteMessage.bodyFromCustomerIoData() ?: remoteMessage.data[DATA_MESSAGE_BODY]
     val link = remoteMessage.linkFromCustomerIoData()
-    logcat(tag = "GenericNotificationSender") { "Generic notification got data:${remoteMessage.data}" }
+    logcat(tag = "GenericNotificationSender") {
+      "Generic notification got data:${memberData(remoteMessage.data, "keys ${remoteMessage.data.keys}")}"
+    }
     val pendingIntent = PendingIntentCompat.getActivity(
       context,
       0,

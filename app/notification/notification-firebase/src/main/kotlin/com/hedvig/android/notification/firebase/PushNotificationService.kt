@@ -4,6 +4,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.logger.memberData
 import com.hedvig.android.notification.core.NotificationSender
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -25,17 +26,22 @@ class PushNotificationService : FirebaseMessagingService() {
   }
 
   override fun onNewToken(token: String) {
-    logcat(LogPriority.INFO) { "FCM onNewToken:$token" }
+    logcat(LogPriority.INFO) { "FCM onNewToken:${memberData(token)}" }
     coroutineScope.launch {
       fcmTokenManager.saveLocallyAndUploadTokenToBackend(token)
     }
   }
 
   override fun onMessageReceived(remoteMessage: RemoteMessage) {
-    logcat(LogPriority.INFO) { "FCM onMessageReceived, with data:${remoteMessage.data}" }
+    logcat(LogPriority.INFO) {
+      "FCM onMessageReceived, with data:${memberData(remoteMessage.data, "keys ${remoteMessage.data.keys}")}"
+    }
     val type = remoteMessage.data[NOTIFICATION_TYPE_KEY]
     if (type == null) {
-      logcat(LogPriority.ERROR) { "FCM onMessageReceived, type was not present. Data:${remoteMessage.data}" }
+      logcat(LogPriority.ERROR) {
+        "FCM onMessageReceived, type was not present. Data:" +
+          memberData(remoteMessage.data, "keys ${remoteMessage.data.keys}")
+      }
       return
     }
     logcat(LogPriority.INFO) { "FCM onMessageReceived, type:$type" }

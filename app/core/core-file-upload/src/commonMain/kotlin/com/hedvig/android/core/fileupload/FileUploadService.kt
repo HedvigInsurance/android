@@ -6,6 +6,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.logger.memberData
 import com.hedvig.android.network.clients.NetworkError
 import com.hedvig.android.network.clients.safePost
 import dev.zacsweers.metro.Inject
@@ -122,14 +123,14 @@ class FileUploadService(
 
     return if (response.status.isSuccess()) {
       val responseBody = response.bodyAsText()
-      logcat { "FileUploadService: Upload successful, response: $responseBody" }
+      logcat { "FileUploadService: Upload successful, response: ${memberData(responseBody)}" }
       deserializer(responseBody)
     } else {
       val errorBody = response.bodyAsText()
       logcat(LogPriority.ERROR) {
-        "FileUploadService failed with status ${response.status}: $errorBody"
+        "FileUploadService failed with status ${response.status}: ${memberData(errorBody)}"
       }
-      raise(ErrorMessage("File upload failed with status ${response.status}: $errorBody"))
+      raise(ErrorMessage("File upload failed with status ${response.status}: ${memberData(errorBody)}"))
     }
   }
 }

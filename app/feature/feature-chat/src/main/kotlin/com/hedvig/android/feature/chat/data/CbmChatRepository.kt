@@ -42,6 +42,7 @@ import com.hedvig.android.feature.chat.model.toChatMessageEntity
 import com.hedvig.android.feature.chat.model.toSender
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.logger.memberData
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
@@ -139,7 +140,7 @@ internal class CbmChatRepositoryImpl(
         }
 
         else -> {
-          logcat(LogPriority.INFO) { "Got unknown conversation status message:$conversation" }
+          logcat(LogPriority.INFO) { "Got unknown conversation status message:${memberData(conversation)}" }
           null
         }
       }
@@ -220,7 +221,9 @@ internal class CbmChatRepositoryImpl(
           }
 
           else -> {
-            logcat(LogPriority.ERROR) { "Tried to retry sending a message which had a wrong structure:$messageToRetry" }
+            logcat(LogPriority.ERROR) {
+              "Tried to retry sending a message which had a wrong structure:${memberData(messageToRetry)}"
+            }
             raise(ErrorMessage("Unknown message type").toMessageSendError())
           }
         }.onRight {
@@ -404,7 +407,7 @@ internal class CbmChatRepositoryImpl(
       it.toMessageSendError()
     }.bind().firstOrNull()?.uploadToken
     ensureNotNull(uploadToken) { ErrorMessage("No upload token").toMessageSendError() }
-    logcat { "Uploaded file with path:${file.absolutePath}. UploadToken:$uploadToken" }
+    logcat { "Uploaded file with path:${file.absolutePath}. UploadToken:${memberData(uploadToken)}" }
     return uploadToken
   }
 
@@ -416,7 +419,7 @@ internal class CbmChatRepositoryImpl(
       it.toMessageSendError()
     }.bind().firstOrNull()?.uploadToken
     ensureNotNull(uploadToken) { ErrorMessage("No upload token").toMessageSendError() }
-    logcat { "Uploaded file with uri:$uri. UploadToken:$uploadToken" }
+    logcat { "Uploaded file with uri:$uri. UploadToken:${memberData(uploadToken)}" }
     return uploadToken
   }
 
@@ -574,7 +577,7 @@ private fun ChatMessageFragment.toChatMessage(): CbmChatMessage? = when (this) {
   }
 
   else -> {
-    logcat(LogPriority.WARN) { "Got unknown message type, can not map message:$this" }
+    logcat(LogPriority.WARN) { "Got unknown message type, can not map message:${memberData(this)}" }
     null
   }
 }

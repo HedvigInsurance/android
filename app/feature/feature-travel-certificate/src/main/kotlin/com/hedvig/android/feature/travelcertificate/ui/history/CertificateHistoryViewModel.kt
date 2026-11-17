@@ -20,6 +20,7 @@ import com.hedvig.android.feature.travelcertificate.data.GetTravelCertificatesHi
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificate
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.logger.urlForLog
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -118,7 +119,7 @@ internal class CertificateHistoryPresenter(
       isLoadingCertificate = false
       val downloadingUrlValue = downloadingUrl ?: return@LaunchedEffect
       isLoadingCertificate = true
-      logcat(LogPriority.INFO) { "Downloading travel certificate with url:$downloadingUrl" }
+      logcat(LogPriority.INFO) { "Downloading travel certificate with url:${urlForLog(downloadingUrl)}" }
       downloadPdfUseCase.invoke(downloadingUrlValue)
         .fold(
           ifLeft = { errorMessage ->

@@ -11,6 +11,7 @@ import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.common.di.ChildWorkerFactory
 import com.hedvig.android.core.common.di.WorkerKey
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.logger.memberData
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
@@ -54,16 +55,19 @@ internal class FCMTokenUploadWorker @AssistedInject constructor(
       .safeExecute()
       .fold(
         ifLeft = {
-          logcat { "NotificationRegisterDeviceMutation failed with token:$storedToken. Will retry later. Error:$it" }
+          logcat {
+            "NotificationRegisterDeviceMutation failed with token:${memberData(storedToken)}. " +
+              "Will retry later. Error:$it"
+          }
           Result.retry()
         },
         ifRight = { response ->
           if (response.memberDeviceRegister) {
-            logcat { "NotificationRegisterDeviceMutation success with token:$storedToken" }
+            logcat { "NotificationRegisterDeviceMutation success with token:${memberData(storedToken)}" }
             Result.success()
           } else {
             logcat {
-              "NotificationRegisterDeviceMutation failed with token:$storedToken. " +
+              "NotificationRegisterDeviceMutation failed with token:${memberData(storedToken)}. " +
                 "Will retry later. memberDeviceRegister:${response.memberDeviceRegister}"
             }
             Result.retry()

@@ -14,6 +14,7 @@ import com.hedvig.android.core.fileupload.DownloadedFile
 import com.hedvig.android.feature.insurance.certificate.ui.overview.InsuranceEvidenceOverviewState.Loading
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.logger.urlForLog
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -64,7 +65,7 @@ internal class InsuranceEvidenceOverviewPresenter(
           Loading -> return@LaunchedEffect
           is InsuranceEvidenceOverviewState.Success -> oldState.copy(isButtonLoading = true)
         }
-        logcat(LogPriority.INFO) { "Downloading insurance evidence with url:$url" }
+        logcat(LogPriority.INFO) { "Downloading insurance evidence with url:${urlForLog(url)}" }
         downloadPdfUseCase.invoke(url)
           .fold(
             ifLeft = { errorMessage ->
