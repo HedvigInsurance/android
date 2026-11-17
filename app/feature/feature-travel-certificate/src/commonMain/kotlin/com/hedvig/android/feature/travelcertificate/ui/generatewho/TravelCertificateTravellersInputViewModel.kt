@@ -133,7 +133,7 @@ internal class TravelCertificateTravellersInputPresenter(
               }.map { coInsuredData ->
                 val name = "${coInsuredData.firstName} ${coInsuredData.lastName}"
                 CoInsured(
-                  id = coInsuredData.id?.let(::CoInsuredId)
+                  id = coInsuredData.id?.takeIf { it.isNotBlank() }?.let(::CoInsuredId)
                     ?: generatedIds.idFor(name, coInsuredData.ssn, coInsuredData.dateOfBirth),
                   name = name,
                   ssn = coInsuredData.ssn,

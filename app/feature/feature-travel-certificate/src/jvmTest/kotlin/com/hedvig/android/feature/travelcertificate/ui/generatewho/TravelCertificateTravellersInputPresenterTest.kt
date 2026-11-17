@@ -243,6 +243,29 @@ class TravelCertificateTravellersInputPresenterTest {
   }
 
   @Test
+  fun `co-insured with an empty backend id get their own generated ids and are sent as before`() = runTest {
+    presenter.test(TravelCertificateTravellersInputUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(TravelCertificateTravellersInputUiState.Loading)
+      val emptyIdAnna = anna.copy(id = "")
+      val emptyIdBo = anna.copy(id = "", firstName = "Bo", ssn = "201001019876", dateOfBirth = null)
+      coInsuredUseCase.responses.tryEmit(data(emptyIdAnna, emptyIdBo).right())
+      val boItem = annaItem.copy(
+        id = CoInsuredId("generated-2"),
+        name = "Bo Berg",
+        ssn = "201001019876",
+        dateOfBirth = null,
+      )
+      assertThat(awaitItem()).isEqualTo(content(coInsured = listOf(annaItem, boItem)))
+
+      sendEvent(TravelCertificateTravellersInputEvent.SetCoInsuredIncluded(annaItem.id, true))
+      assertThat(awaitItem()).isEqualTo(content(coInsured = listOf(annaItem.copy(isIncluded = true), boItem)))
+      sendEvent(TravelCertificateTravellersInputEvent.GenerateTravelCertificate)
+      skipItems(1)
+      assertThat(createTransport.inputs).containsExactly(createInput(coInsured = listOf(annaInput)))
+    }
+  }
+
+  @Test
   fun `an id-less co-insured whose data changes comes back unticked under a new id`() = runTest {
     presenter.test(TravelCertificateTravellersInputUiState.Loading) {
       loadContent()
