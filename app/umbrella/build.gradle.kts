@@ -15,7 +15,7 @@ kotlin {
   }
   val frameworkName = "HedvigShared"
   val xcf = XCFramework(frameworkName)
-  // Only what iOS calls: the auth client, the logger and the claim history screen model. Everything
+  // Only what iOS calls: the auth client, the logger, and the claim history and payments features. Everything
   // a module here reaches through its public API is linked into the framework, so exporting a
   // module iOS does not use only adds bytes and header surface (network-clients alone dragged
   // Apollo, Arrow and Okio in, ~2.9 MB).
@@ -26,6 +26,7 @@ kotlin {
     projects.authlib,
     projects.loggingPublic,
     projects.featureClaimHistory,
+    projects.featurePayments,
   )
   listOf(
     iosArm64(),
@@ -51,8 +52,6 @@ kotlin {
       }
     }
     nativeMain.dependencies {
-      implementation(libs.apollo.runtime)
-      implementation(libs.metro.viewmodel)
       implementation(projects.apolloAuthListeners)
       implementation(projects.authCorePublic)
       implementation(projects.authEventCore)
@@ -63,6 +62,8 @@ kotlin {
       implementation(projects.initializable)
       implementation(projects.languageCore)
       implementation(projects.networkClients)
+      implementation(libs.apollo.runtime)
+      implementation(libs.metro.viewmodel)
     }
     nativeTest.dependencies {
       implementation(libs.apollo.engine.ktor)
