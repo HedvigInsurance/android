@@ -1,10 +1,13 @@
 package com.hedvig.android.feature.insurances.insurance
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,12 +33,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
@@ -99,6 +107,8 @@ import hedvig.resources.DASHBOARD_SCREEN_TITLE
 import hedvig.resources.INSURANCES_NO_ACTIVE
 import hedvig.resources.Res
 import hedvig.resources.insurances_tab_terminated_insurance_subtitile
+import kotlin.math.roundToInt
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -212,12 +222,15 @@ private fun InsuranceScreenContent(
   onNavigateToAddonPurchaseFlow: (List<ContractId>) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val scrollState = rememberScrollState()
+  var scrollViewportCoordinates by remember { mutableStateOf<LayoutCoordinates?>(null) }
   Column(
     modifier = modifier
       .fillMaxSize()
       .pullRefresh(pullRefreshState)
       .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-      .verticalScroll(rememberScrollState()),
+      .onPlaced { scrollViewportCoordinates = it }
+      .verticalScroll(scrollState),
   ) {
     Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
     Row(
@@ -252,6 +265,8 @@ private fun InsuranceScreenContent(
             imageLoader = imageLoader,
             onInsuranceCardClick = onInsuranceCardClick,
             contracts = uiState.contracts + uiState.pendingContracts,
+            scrollState = scrollState,
+            scrollViewportCoordinates = { scrollViewportCoordinates },
           )
           if (uiState.crossSells.isNotEmpty()) {
             Spacer(Modifier.height(24.dp))
@@ -300,6 +315,8 @@ private fun ContractsSection(
   contracts: List<InsuranceContract>,
   imageLoader: ImageLoader,
   onInsuranceCardClick: (contractId: String) -> Unit,
+  scrollState: ScrollState,
+  scrollViewportCoordinates: () -> LayoutCoordinates?,
   modifier: Modifier = Modifier,
 ) {
   Box(modifier) {
@@ -319,6 +336,8 @@ private fun ContractsSection(
         contracts = contracts,
         imageLoader = imageLoader,
         onInsuranceCardClick = onInsuranceCardClick,
+        scrollState = scrollState,
+        scrollViewportCoordinates = scrollViewportCoordinates,
       )
     }
   }
@@ -329,6 +348,8 @@ private fun InsuranceCardsPile(
   contracts: List<InsuranceContract>,
   imageLoader: ImageLoader,
   onInsuranceCardClick: (contractId: String) -> Unit,
+  scrollState: ScrollState,
+  scrollViewportCoordinates: () -> LayoutCoordinates?,
 ) {
   val peekTopPadding = 10.dp
   val peekBottomPadding = 16.dp
@@ -336,21 +357,42 @@ private fun InsuranceCardsPile(
   val expandedSpacing = 8.dp
 
   var expanded by rememberSaveable { mutableStateOf(false) }
-  val progress by animateFloatAsState(
-    targetValue = if (expanded) 1f else 0f,
-    label = "insuranceCardsPileExpandProgress",
-  )
+  val progress = remember { Animatable(if (expanded) 1f else 0f) }
+  val pileLayout = remember { PileLayout() }
+  val coroutineScope = rememberCoroutineScope()
+  val density = LocalDensity.current
+  val scrollTargetTopPx = WindowInsets.safeDrawing.getTop(density) + with(density) { 16.dp.roundToPx() }
+
+  fun expandAndScrollTo(index: Int) {
+    expanded = true
+    coroutineScope.launch {
+      val viewport = scrollViewportCoordinates()
+      val pile = pileLayout.coordinates
+      val startScroll = scrollState.value
+      val targetScroll = if (viewport?.isAttached == true && pile?.isAttached == true) {
+        val pileTopInViewport = viewport.localPositionOf(pile, Offset.Zero).y.roundToInt()
+        startScroll + pileTopInViewport + pileLayout.expandedY[index] - scrollTargetTopPx
+      } else {
+        startScroll
+      }
+      // Scrolling in step with the expansion keeps the tapped card moving in one motion. The content grows as the
+      // pile expands, so the scroll position is clamped by the current height on every frame.
+      progress.animateTo(1f, tween(durationMillis = 500, easing = FastOutSlowInEasing)) {
+        scrollState.dispatchRawDelta(lerp(startScroll.toFloat(), targetScroll.toFloat(), value) - scrollState.value)
+      }
+    }
+  }
 
   Layout(
     contents = listOf(
       {
-        for (contract in contracts) {
+        contracts.forEachIndexed { index, contract ->
           key(contract.id) {
             InsuranceCardWrapper(
               contract = contract,
               imageLoader = imageLoader,
               onClick = {
-                if (expanded) onInsuranceCardClick(contract.id) else expanded = true
+                if (expanded) onInsuranceCardClick(contract.id) else expandAndScrollTo(index)
               },
             )
           }
@@ -371,7 +413,9 @@ private fun InsuranceCardsPile(
         }
       },
     ),
-    modifier = Modifier.fillMaxWidth(),
+    modifier = Modifier
+      .fillMaxWidth()
+      .onPlaced { pileLayout.coordinates = it },
   ) { (cardMeasurables, peekMeasurables), constraints ->
     val expandedSpacingPx = expandedSpacing.roundToPx()
     val cardPlaceables = cardMeasurables.map { it.measure(constraints) }
@@ -397,16 +441,22 @@ private fun InsuranceCardsPile(
       expandedAccumulated += cardPlaceables[i].height + expandedSpacingPx
     }
     val expandedHeight = (expandedAccumulated - expandedSpacingPx).coerceAtLeast(0)
+    pileLayout.expandedY = expandedY
 
-    val totalHeight = lerp(collapsedHeight, expandedHeight, progress)
+    val totalHeight = lerp(collapsedHeight, expandedHeight, progress.value)
 
     layout(constraints.maxWidth, totalHeight) {
       for (i in contracts.indices) {
-        val y = lerp(collapsedY[i], expandedY[i], progress)
+        val y = lerp(collapsedY[i], expandedY[i], progress.value)
         cardPlaceables[i].placeRelative(0, y, zIndex = (contracts.size - i).toFloat())
       }
     }
   }
+}
+
+private class PileLayout {
+  var coordinates: LayoutCoordinates? = null
+  var expandedY: IntArray = IntArray(0)
 }
 
 private fun InsuranceContract.topText(): String = when (this) {
