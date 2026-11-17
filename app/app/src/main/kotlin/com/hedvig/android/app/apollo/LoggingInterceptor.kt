@@ -20,7 +20,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 
-internal class LoggingInterceptor : ApolloInterceptor {
+internal class LoggingInterceptor(
+  private val logResponseData: Boolean,
+) : ApolloInterceptor {
   override fun <D : Data> intercept(
     request: ApolloRequest<D>,
     chain: ApolloInterceptorChain,
@@ -28,7 +30,8 @@ internal class LoggingInterceptor : ApolloInterceptor {
     logcat(LogPriority.DEBUG) { "GraphQL request for ${request.operation.name()} START." }
     return chain.proceed(request).onEach { response ->
       logcat(LogPriority.DEBUG) {
-        "GraphQL request for ${request.operation.name()} EMISSION. Response data: ${response.data}"
+        val responseData = if (logResponseData) " Response data: ${response.data}" else ""
+        "GraphQL request for ${request.operation.name()} EMISSION.$responseData"
       }
       val data = response.data
       val errors = response.errors.orEmpty().map { it.toGraphqlError() }
@@ -54,7 +57,9 @@ internal class LoggingInterceptor : ApolloInterceptor {
     val errorMessagesJoinedToString = errors.joinToString(", ", "[", "]") { it.message }
     val errorMessage = "GraphQL errors for ${request.operation.name()}: $errorMessagesJoinedToString"
     val errorAttributes = buildMap {
-      put("data", response.data)
+      if (logResponseData) {
+        put("data", response.data)
+      }
       put("errors", errors)
       if (response.extensions.isNotEmpty()) {
         put("extensions", response.extensions.toList().joinToString(", ", "[", "]") { it.toString() })
@@ -66,7 +71,10 @@ internal class LoggingInterceptor : ApolloInterceptor {
         append(" attributes: ")
         append(errorAttributes)
         if (data != null) {
-          append(" There was data and errors at the same time! Data:$data")
+          append(" There was data and errors at the same time!")
+          if (logResponseData) {
+            append(" Data:$data")
+          }
         }
       }
     }

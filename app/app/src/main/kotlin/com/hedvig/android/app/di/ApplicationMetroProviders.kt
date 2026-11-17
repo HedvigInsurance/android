@@ -27,6 +27,7 @@ import com.hedvig.android.app.apollo.LogoutOnUnauthenticatedInterceptor
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.buildconstants.AppBuildConfig
 import com.hedvig.android.core.buildconstants.Flavor
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.common.di.BaseHttpClient
 import com.hedvig.android.core.common.di.DatabaseFile
@@ -56,11 +57,12 @@ interface ApplicationMetroProviders {
   fun provideExtraApolloClientConfiguration(
     authTokenService: AuthTokenService,
     demoManager: DemoManager,
+    hedvigBuildConstants: HedvigBuildConstants,
   ): ExtraApolloClientConfiguration = object : ExtraApolloClientConfiguration {
     override fun configure(builder: ApolloClient.Builder): ApolloClient.Builder {
       return builder
         .addInterceptor(LogoutOnUnauthenticatedInterceptor(authTokenService, demoManager))
-        .addInterceptor(LoggingInterceptor())
+        .addInterceptor(LoggingInterceptor(logResponseData = hedvigBuildConstants.isDebug))
     }
   }
 
