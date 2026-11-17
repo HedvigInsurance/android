@@ -313,6 +313,208 @@ class PaymentDetailsScreenStateTest {
   }
 
   @Test
+  fun `an upcoming charge maps every field with the default method's account and no next charge`() {
+    val upcoming = charge(
+      id = "upcoming",
+      status = MemberCharge.MemberChargeStatus.UPCOMING,
+      dueDate = LocalDate(2026, 11, 27),
+      gross = 399.0,
+      net = 389.0,
+      chargeBreakdowns = listOf(
+        MemberCharge.ChargeBreakdown(
+          contractDisplayName = "Home insurance",
+          contractDetails = "",
+          grossAmount = sek(399.0),
+          netAmount = sek(389.0),
+          periods = listOf(
+            MemberCharge.ChargeBreakdown.Period(
+              amount = sek(389.0),
+              fromDate = LocalDate(2026, 11, 1),
+              toDate = LocalDate(2026, 11, 30),
+              isPreviouslyFailedCharge = false,
+            ),
+          ),
+          priceBreakdown = emptyList(),
+        ),
+      ),
+      referralDiscount = Discount("FRIEND", null, Discount.DiscountStatus.ACTIVE, null, sek(-10.0), isReferral = true),
+      chargeMethod = MemberPaymentChargeMethod.SWISH,
+    )
+    val details = PaymentDetails(
+      memberCharge = upcoming,
+      pastCharges = listOf(
+        charge(id = "charge-1"),
+        charge(id = "charge-2", status = MemberCharge.MemberChargeStatus.FAILED),
+      ),
+      paymentsInfo = PaymentDetails.PaymentsInfo.Active(PayinAccount.SwishPayin("0701234567", false, true)),
+      upComingCharge = upcoming.copy(chargeMethod = MemberPaymentChargeMethod.TRUSTLY),
+    )
+
+    assertThat(PaymentDetailsUiState.Success(details).toScreenState()).isEqualTo(
+      PaymentDetailsScreenState.Content(
+        id = "upcoming",
+        status = PaymentChargeStatus.UPCOMING,
+        dueDate = "2026-11-27",
+        grossAmount = PaymentMoney(399.0, "SEK"),
+        netAmount = PaymentMoney(389.0, "SEK"),
+        chargeBreakdowns = listOf(
+          PaymentChargeBreakdown(
+            contractDisplayName = "Home insurance",
+            contractDetails = "",
+            grossAmount = PaymentMoney(399.0, "SEK"),
+            netAmount = PaymentMoney(389.0, "SEK"),
+            periods = listOf(
+              PaymentChargePeriod(
+                amount = PaymentMoney(389.0, "SEK"),
+                fromDate = "2026-11-01",
+                toDate = "2026-11-30",
+                isPreviouslyFailedCharge = false,
+                periodDescription = PaymentPeriodDescription.FullPeriod,
+              ),
+            ),
+            priceBreakdown = emptyList(),
+          ),
+        ),
+        carriedAdjustment = null,
+        settlementAdjustment = null,
+        referralDiscount = PaymentReferralDiscount("FRIEND", PaymentMoney(-10.0, "SEK")),
+        chargeMethod = PaymentChargeMethod.SWISH,
+        payinAccount = PaymentPayinAccount.Swish("0701234567"),
+        nextChargeId = null,
+        nextChargeDueDate = null,
+      ),
+    )
+  }
+
+  @Test
+  fun `an ongoing pending charge maps every field with its account and no next charge`() {
+    val ongoing = charge(
+      id = "ongoing",
+      status = MemberCharge.MemberChargeStatus.PENDING,
+      dueDate = LocalDate(2026, 10, 27),
+      gross = 120.0,
+      net = 120.0,
+      chargeBreakdowns = listOf(
+        MemberCharge.ChargeBreakdown(
+          contractDisplayName = "Car insurance",
+          contractDetails = "ABC 123",
+          grossAmount = sek(120.0),
+          netAmount = sek(120.0),
+          periods = listOf(
+            MemberCharge.ChargeBreakdown.Period(
+              amount = sek(120.0),
+              fromDate = LocalDate(2026, 10, 10),
+              toDate = LocalDate(2026, 10, 31),
+              isPreviouslyFailedCharge = false,
+            ),
+          ),
+          priceBreakdown = listOf("Base price" to sek(120.0)),
+        ),
+      ),
+      carriedAdjustment = sek(0.01),
+      chargeMethod = MemberPaymentChargeMethod.TRUSTLY,
+    )
+    val details = PaymentDetails(
+      memberCharge = ongoing,
+      pastCharges = listOf(charge(id = "charge-1")),
+      paymentsInfo = PaymentDetails.PaymentsInfo.Active(
+        PayinAccount.Trustly("8327", "91234124", "Swedbank", isPending = false, isDefault = true),
+      ),
+      upComingCharge = charge(id = "upcoming", status = MemberCharge.MemberChargeStatus.UPCOMING),
+    )
+
+    assertThat(PaymentDetailsUiState.Success(details).toScreenState()).isEqualTo(
+      PaymentDetailsScreenState.Content(
+        id = "ongoing",
+        status = PaymentChargeStatus.PENDING,
+        dueDate = "2026-10-27",
+        grossAmount = PaymentMoney(120.0, "SEK"),
+        netAmount = PaymentMoney(120.0, "SEK"),
+        chargeBreakdowns = listOf(
+          PaymentChargeBreakdown(
+            contractDisplayName = "Car insurance",
+            contractDetails = "ABC 123",
+            grossAmount = PaymentMoney(120.0, "SEK"),
+            netAmount = PaymentMoney(120.0, "SEK"),
+            periods = listOf(
+              PaymentChargePeriod(
+                amount = PaymentMoney(120.0, "SEK"),
+                fromDate = "2026-10-10",
+                toDate = "2026-10-31",
+                isPreviouslyFailedCharge = false,
+                periodDescription = PaymentPeriodDescription.BetweenDays(21),
+              ),
+            ),
+            priceBreakdown = listOf(PaymentPriceBreakdownItem("Base price", PaymentMoney(120.0, "SEK"))),
+          ),
+        ),
+        carriedAdjustment = PaymentMoney(0.01, "SEK"),
+        settlementAdjustment = null,
+        referralDiscount = null,
+        chargeMethod = PaymentChargeMethod.TRUSTLY,
+        payinAccount = PaymentPayinAccount.Trustly("8327", "91234124", "Swedbank"),
+        nextChargeId = null,
+        nextChargeDueDate = null,
+      ),
+    )
+  }
+
+  @Test
+  fun `a successful past charge maps every field without an account or a next charge`() {
+    val january = charge(
+      id = "charge-jan",
+      status = MemberCharge.MemberChargeStatus.SUCCESS,
+      dueDate = LocalDate(2026, 1, 27),
+      gross = 300.0,
+      net = 250.0,
+      settlementAdjustment = UiMoney(50.0, UiCurrencyCode.NOK),
+      chargeMethod = MemberPaymentChargeMethod.INVOICE,
+    )
+    val details = PaymentDetails(
+      memberCharge = january,
+      pastCharges = listOf(january, charge(id = "charge-feb", dueDate = LocalDate(2026, 2, 27))),
+      paymentsInfo = PaymentDetails.PaymentsInfo.NoPresentableInfo,
+      upComingCharge = charge(id = "upcoming", status = MemberCharge.MemberChargeStatus.UPCOMING),
+    )
+
+    assertThat(PaymentDetailsUiState.Success(details).toScreenState()).isEqualTo(
+      PaymentDetailsScreenState.Content(
+        id = "charge-jan",
+        status = PaymentChargeStatus.SUCCESS,
+        dueDate = "2026-01-27",
+        grossAmount = PaymentMoney(300.0, "SEK"),
+        netAmount = PaymentMoney(250.0, "SEK"),
+        chargeBreakdowns = emptyList(),
+        carriedAdjustment = null,
+        settlementAdjustment = PaymentMoney(50.0, "NOK"),
+        referralDiscount = null,
+        chargeMethod = PaymentChargeMethod.INVOICE,
+        payinAccount = null,
+        nextChargeId = null,
+        nextChargeDueDate = null,
+      ),
+    )
+  }
+
+  @Test
+  fun `a failed charge without an id followed by a charge with an empty id has null ids and the next due date`() {
+    val failed = charge(id = null, status = MemberCharge.MemberChargeStatus.FAILED, dueDate = LocalDate(2026, 2, 27))
+    val details = PaymentDetails(
+      memberCharge = failed,
+      pastCharges = listOf(failed, charge(id = "", dueDate = LocalDate(2026, 3, 27))),
+      paymentsInfo = PaymentDetails.PaymentsInfo.NoPresentableInfo,
+      upComingCharge = charge(id = "upcoming", status = MemberCharge.MemberChargeStatus.UPCOMING),
+    )
+
+    val content = PaymentDetailsUiState.Success(details).toScreenState() as PaymentDetailsScreenState.Content
+
+    assertThat(content.id).isNull()
+    assertThat(content.status).isEqualTo(PaymentChargeStatus.FAILED)
+    assertThat(content.nextChargeId).isNull()
+    assertThat(content.nextChargeDueDate).isEqualTo("2026-03-27")
+  }
+
+  @Test
   fun `handle calls the closure of each state`() {
     val states = listOf(
       PaymentDetailsScreenState.Loading,

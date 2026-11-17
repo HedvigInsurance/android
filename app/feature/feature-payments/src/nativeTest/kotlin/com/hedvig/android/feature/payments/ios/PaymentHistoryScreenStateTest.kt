@@ -59,6 +59,42 @@ class PaymentHistoryScreenStateTest {
   }
 
   @Test
+  fun `charges of every status and currency keep their order and those without an id cannot open`() {
+    val state = PaymentHistoryUiState.Success(
+      listOf(
+        historyItem("charge-4", LocalDate(2026, 4, 27), 399.0, MemberCharge.MemberChargeStatus.PENDING),
+        historyItem("", LocalDate(2026, 3, 27), 449.5, MemberCharge.MemberChargeStatus.FAILED),
+        PaymentHistoryItem(
+          UiMoney(0.0, UiCurrencyCode.NOK),
+          "charge-2",
+          MemberCharge.MemberChargeStatus.SUCCESS,
+          LocalDate(2025, 12, 27),
+        ),
+        PaymentHistoryItem(
+          UiMoney(120.25, UiCurrencyCode.DKK),
+          "charge-5",
+          MemberCharge.MemberChargeStatus.UPCOMING,
+          LocalDate(2026, 5, 27),
+        ),
+        historyItem("", LocalDate(2025, 1, 2), -10.0, MemberCharge.MemberChargeStatus.UNKNOWN),
+      ),
+    )
+
+    assertThat(state.toScreenState()).isEqualTo(
+      PaymentHistoryScreenState.Content(
+        charges = listOf(
+          PaymentHistoryCharge("charge-4", "2026-04-27", PaymentMoney(399.0, "SEK"), PaymentChargeStatus.PENDING),
+          PaymentHistoryCharge(null, "2026-03-27", PaymentMoney(449.5, "SEK"), PaymentChargeStatus.FAILED),
+          PaymentHistoryCharge("charge-2", "2025-12-27", PaymentMoney(0.0, "NOK"), PaymentChargeStatus.SUCCESS),
+          PaymentHistoryCharge("charge-5", "2026-05-27", PaymentMoney(120.25, "DKK"), PaymentChargeStatus.UPCOMING),
+          PaymentHistoryCharge(null, "2025-01-02", PaymentMoney(-10.0, "SEK"), PaymentChargeStatus.UNKNOWN),
+        ),
+        showsOlderChargesNotice = false,
+      ),
+    )
+  }
+
+  @Test
   fun `the older charges notice shows from twelve charges on`() {
     val eleven = PaymentHistoryUiState.Success(List(11) { historyItem(id = "charge-$it") }).toScreenState()
     val twelve = PaymentHistoryUiState.Success(List(12) { historyItem(id = "charge-$it") }).toScreenState()
