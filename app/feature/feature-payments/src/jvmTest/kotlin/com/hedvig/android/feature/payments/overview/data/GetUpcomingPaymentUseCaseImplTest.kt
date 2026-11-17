@@ -22,6 +22,8 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.paying.member.GetMemberTypeUseCase
 import com.hedvig.android.data.paying.member.MemberType
 import com.hedvig.android.feature.payments.data.ManualChargeToPrompt
+import com.hedvig.android.feature.payments.data.MemberCharge
+import com.hedvig.android.feature.payments.data.MemberChargeShortInfo
 import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.logger.TestLogcatLoggingRule
@@ -36,10 +38,13 @@ import octopus.builder.MemberPaymentMethodMap
 import octopus.builder.buildContract
 import octopus.builder.buildMember
 import octopus.builder.buildMemberCharge
+import octopus.builder.buildMemberChargeBreakdownItem
+import octopus.builder.buildMemberChargeBreakdownItemPeriod
 import octopus.builder.buildMemberPaymentMethod
 import octopus.builder.buildMemberPaymentMethods
 import octopus.builder.buildMoney
 import octopus.type.CurrencyCode
+import octopus.type.MemberChargeStatus
 import octopus.type.MemberPaymentMethodStatus
 import octopus.type.MemberPaymentProvider
 import octopus.type.MissingPaymentConnection
@@ -180,6 +185,67 @@ class GetUpcomingPaymentUseCaseImplTest {
   }
 
   @Test
+  fun `a future charge carrying previously failed periods carries the failed period and its sum`() = runTest {
+    registerMember(
+      futureCharge = {
+        buildMemberCharge {
+          id = "upcoming"
+          status = MemberChargeStatus.UPCOMING
+          date = LocalDate(2026, 11, 27)
+          net = sekMoney(748.0)
+          chargeBreakdown = listOf(
+            buildMemberChargeBreakdownItem {
+              periods = listOf(
+                failedPeriod(LocalDate(2026, 9, 1), LocalDate(2026, 9, 30), 349.0),
+                failedPeriod(LocalDate(2026, 8, 15), LocalDate(2026, 8, 31), 0.5),
+                buildMemberChargeBreakdownItemPeriod {
+                  fromDate = LocalDate(2026, 11, 1)
+                  toDate = LocalDate(2026, 11, 30)
+                  amount = sekMoney(398.5)
+                  isPreviouslyFailedCharge = false
+                },
+              )
+            },
+          )
+        }
+      },
+    ) { null }
+
+    assertThat(useCase().invoke()).isRightWith { it.memberChargeShortInfo }.isEqualTo(
+      MemberChargeShortInfo(
+        netAmount = UiMoney(748.0, UiCurrencyCode.SEK),
+        dueDate = LocalDate(2026, 11, 27),
+        id = "upcoming",
+        status = MemberCharge.MemberChargeStatus.UPCOMING,
+        failedCharge = MemberCharge.FailedCharge(
+          fromDate = LocalDate(2026, 8, 15),
+          toDate = LocalDate(2026, 9, 30),
+          sum = UiMoney(349.5, UiCurrencyCode.SEK),
+        ),
+      ),
+    )
+  }
+
+  @Test
+  fun `a missed charge to pay manually is offered also when there is no future charge`() = runTest {
+    registerMember(
+      missedChargeIdToChargeManually = "missed",
+      pastCharges = {
+        listOf(
+          buildMemberCharge {
+            id = "missed"
+            net = sekMoney(233.0)
+          },
+        )
+      },
+    ) { null }
+
+    val overview = (useCase().invoke() as Either.Right).value
+    assertThat(overview.memberChargeShortInfo).isNull()
+    assertThat(overview.isManualChargeAllowed).isEqualTo(ManualChargeToPrompt(UiMoney(233.0, UiCurrencyCode.SEK)))
+  }
+
+  @Test
   fun `a network failure is returned as an error`() = runTest {
     apolloClient.registerTestNetworkError(UpcomingPaymentQuery())
 
@@ -194,6 +260,19 @@ class GetUpcomingPaymentUseCaseImplTest {
     },
   )
 
+  private fun DataBuilderScope.sekMoney(amount: Double) = buildMoney {
+    this.amount = amount
+    currencyCode = CurrencyCode.SEK
+  }
+
+  private fun DataBuilderScope.failedPeriod(from: LocalDate, to: LocalDate, amount: Double) =
+    buildMemberChargeBreakdownItemPeriod {
+      fromDate = from
+      toDate = to
+      this.amount = sekMoney(amount)
+      isPreviouslyFailedCharge = true
+    }
+
   private fun DataBuilderScope.buildPayinMethod(status: MemberPaymentMethodStatus) = buildMemberPaymentMethod {
     provider = MemberPaymentProvider.TRUSTLY
     this.status = status
@@ -206,6 +285,7 @@ class GetUpcomingPaymentUseCaseImplTest {
     missedChargeIdToChargeManually: String? = null,
     pastCharges: DataBuilderScope.() -> List<MemberChargeMap> = { emptyList() },
     ongoingCharges: DataBuilderScope.() -> List<MemberChargeMap> = { emptyList() },
+    futureCharge: DataBuilderScope.() -> MemberChargeMap? = { null },
     activeContracts: DataBuilderScope.() -> List<ContractMap> = { emptyList() },
     defaultPayinMethod: DataBuilderScope.() -> MemberPaymentMethodMap?,
   ) {
@@ -218,7 +298,7 @@ class GetUpcomingPaymentUseCaseImplTest {
           this.pastCharges = pastCharges()
           this.ongoingCharges = ongoingCharges()
           this.activeContracts = activeContracts()
-          futureCharge = null
+          this.futureCharge = futureCharge()
           val defaultMethod = defaultPayinMethod()
           paymentMethods = buildMemberPaymentMethods {
             this.missingConnection = missingConnection
