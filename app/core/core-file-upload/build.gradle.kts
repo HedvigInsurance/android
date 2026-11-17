@@ -1,5 +1,5 @@
 plugins {
-  id("hedvig.multiplatform.library")
+  id("hedvig.multiplatform.library.ios")
   id("hedvig.multiplatform.library.android")
   id("hedvig.gradle.plugin")
 }
@@ -35,6 +35,11 @@ kotlin {
       implementation(libs.junit)
       implementation(libs.ktor.client.mock)
       implementation(projects.loggingTest)
+    }
+
+    nativeTest.dependencies {
+      implementation(libs.coroutines.test)
+      implementation(libs.ktor.client.mock)
     }
   }
 }
