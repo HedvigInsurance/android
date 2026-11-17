@@ -21,11 +21,15 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.byValue
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
@@ -84,6 +88,8 @@ internal fun ContactInfoDestination(
     reload = {
       viewModel.emit(RetryLoadData)
     },
+    onPhoneNumberChange = { viewModel.emit(ContactInfoEvent.ChangePhoneNumber(it)) },
+    onEmailChange = { viewModel.emit(ContactInfoEvent.ChangeEmail(it)) },
     navigateUp = navigateUp,
     showedSnackBar = {
       viewModel.emit(ContactInfoEvent.ShowedMessage)
@@ -98,6 +104,8 @@ private fun ContactInfoScreen(
   globalSnackBarState: GlobalSnackBarState,
   updateEmailAndPhoneNumber: () -> Unit,
   reload: () -> Unit,
+  onPhoneNumberChange: (String) -> Unit,
+  onEmailChange: (String) -> Unit,
   navigateUp: () -> Unit,
   showedSnackBar: () -> Unit,
 ) {
@@ -132,6 +140,8 @@ private fun ContactInfoScreen(
           uiState = uiState,
           globalSnackBarState = globalSnackBarState,
           updateEmailAndPhoneNumber = updateEmailAndPhoneNumber,
+          onPhoneNumberChange = onPhoneNumberChange,
+          onEmailChange = onEmailChange,
           focusManager = focusManager,
           showedSnackBar = showedSnackBar,
         )
@@ -145,9 +155,20 @@ private fun ColumnScope.SuccessState(
   uiState: Content,
   globalSnackBarState: GlobalSnackBarState,
   updateEmailAndPhoneNumber: () -> Unit,
+  onPhoneNumberChange: (String) -> Unit,
+  onEmailChange: (String) -> Unit,
   showedSnackBar: () -> Unit,
   focusManager: FocusManager,
 ) {
+  val emailState = rememberPresenterTextFieldState(uiState.email, uiState.emailRevision, onEmailChange)
+  val phoneNumberState =
+    rememberPresenterTextFieldState(uiState.phoneNumber, uiState.phoneNumberRevision, onPhoneNumberChange)
+  val submit = {
+    // The forwarding of each edit is asynchronous, so the latest text is sent ahead of the submission it belongs to.
+    onEmailChange(emailState.text.toString())
+    onPhoneNumberChange(phoneNumberState.text.toString())
+    updateEmailAndPhoneNumber()
+  }
   val errorCardText: String? = when (val err = uiState.errorSnackBarText) {
     ErrorSnackBarText.General -> stringResource(Res.string.something_went_wrong)
     is ErrorSnackBarText.WithMessage -> err.message
@@ -169,7 +190,7 @@ private fun ColumnScope.SuccessState(
   Spacer(Modifier.height(4.dp))
   Column {
     ContactInfoTextField(
-      textFieldState = uiState.emailState,
+      textFieldState = emailState,
       labelText = stringResource(Res.string.PROFILE_MY_INFO_EMAIL_LABEL),
       errorText = stringResource(Res.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_EMAIL).takeIf {
         uiState.emailHasError
@@ -178,9 +199,9 @@ private fun ColumnScope.SuccessState(
         keyboardType = KeyboardType.Email,
         imeAction = ImeAction.Done,
       ),
-      inputTransformation = uiState.emailInputTransformation,
+      inputTransformation = EmailInputTransformation,
       keyboardActionHandler = KeyboardActionHandler {
-        updateEmailAndPhoneNumber()
+        submit()
         focusManager.clearFocus()
       },
     )
@@ -190,7 +211,7 @@ private fun ColumnScope.SuccessState(
     val phoneNumberErrorText = stringResource(Res.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER)
       .takeIf { uiState.phoneNumberHasError }
     HedvigPhoneNumberField(
-      state = uiState.phoneNumberState,
+      state = phoneNumberState,
       labelText = stringResource(Res.string.PHONE_NUMBER_ROW_TITLE),
       rules = PhoneNumberRules.MemberPhoneNumber,
       errorState = if (phoneNumberErrorText == null || phoneNumberIsFocused) {
@@ -225,7 +246,7 @@ private fun ColumnScope.SuccessState(
     enabled = true,
     onClick = {
       focusManager.clearFocus()
-      updateEmailAndPhoneNumber()
+      submit()
     },
     isLoading = uiState.submittingUpdatedInfo,
     modifier = Modifier
@@ -233,6 +254,34 @@ private fun ColumnScope.SuccessState(
       .fillMaxSize(),
   )
   Spacer(Modifier.height(16.dp))
+}
+
+private val EmailInputTransformation = InputTransformation.byValue { _, proposed ->
+  proposed.trim()
+}
+
+/**
+ * A field the member edits while the presenter holds the same text: every edit is sent through [onTextChange], and
+ * [text] is copied into the field only when [revision] changes, which the presenter does only when it writes the text
+ * itself. A presenter state that still carries older text under the same revision therefore never overwrites typing.
+ */
+@Composable
+internal fun rememberPresenterTextFieldState(
+  text: String,
+  revision: Int,
+  onTextChange: (String) -> Unit,
+): TextFieldState {
+  val state = rememberTextFieldState(text)
+  LaunchedEffect(revision) {
+    if (state.text.toString() != text) {
+      state.setTextAndPlaceCursorAtEnd(text)
+    }
+  }
+  val currentOnTextChange by rememberUpdatedState(onTextChange)
+  LaunchedEffect(state) {
+    snapshotFlow { state.text.toString() }.collect { currentOnTextChange(it) }
+  }
+  return state
 }
 
 @Composable
@@ -274,8 +323,8 @@ private fun PreviewContactInfoScreen(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ContactInfoScreen(
         uiState = Content(
-          rememberTextFieldState(if (filled) "072102103" else ""),
-          rememberTextFieldState(if (filled) "emaildqd@gmail.com" else ""),
+          if (filled) "072102103" else "",
+          if (filled) "emaildqd@gmail.com" else "",
           null,
           null,
           false,
@@ -283,6 +332,8 @@ private fun PreviewContactInfoScreen(
         globalSnackBarState = GlobalSnackBarState(),
         updateEmailAndPhoneNumber = {},
         reload = {},
+        onPhoneNumberChange = {},
+        onEmailChange = {},
         navigateUp = {},
         {},
       )
@@ -300,6 +351,8 @@ private fun PreviewContactInfoScreenFailure() {
         globalSnackBarState = GlobalSnackBarState(),
         updateEmailAndPhoneNumber = {},
         reload = {},
+        onPhoneNumberChange = {},
+        onEmailChange = {},
         navigateUp = {},
         {},
       )
