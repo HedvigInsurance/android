@@ -11,9 +11,11 @@ import java.time.temporal.TemporalAdjusters
 import java.util.Locale
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.minus
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalDateTime
 import kotlinx.datetime.toLocalDateTime
@@ -70,18 +72,19 @@ private fun getStartOfThisYear(nowLocalDateTime: LocalDateTime, timeZone: TimeZo
     .atStartOfDayIn(timeZone)
 }
 
-internal fun Instant.formattedChatDateTime(locale: Locale, todayLabel: String, now: Instant): String {
-  val sentAt = this
+internal fun Instant.formattedChatDateTime(
+  locale: Locale,
+  todayLabel: String,
+  yesterdayLabel: String,
+  now: Instant,
+): String {
   val timeZone = TimeZone.currentSystemDefault()
-  val nowLocalDateTime: LocalDateTime = now.toLocalDateTime(timeZone)
-  val todayAtStartOfDay = nowLocalDateTime.date.atStartOfDayIn(timeZone)
-  val isToday = sentAt > todayAtStartOfDay
-  val formatter = when {
-    isToday -> HedvigDateTimeFormatterDefaults.timeOnly(locale)
-    sentAt > todayAtStartOfDay.minus(3.days) -> HedvigDateTimeFormatterDefaults.dayOfTheWeekAndTime(locale)
-    sentAt > getStartOfThisYear(nowLocalDateTime, timeZone) -> HedvigDateTimeFormatterDefaults.monthDateAndTime(locale)
-    else -> HedvigDateTimeFormatterDefaults.yearMonthDateAndTime(locale)
+  val sentAt = toLocalDateTime(timeZone)
+  val today = now.toLocalDateTime(timeZone).date
+  val time by lazy { HedvigDateTimeFormatterDefaults.timeOnly(locale).format(sentAt) }
+  return when (sentAt.date) {
+    today -> "$todayLabel $time"
+    today.minus(1, DateTimeUnit.DAY) -> "$yesterdayLabel $time"
+    else -> HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale).format(sentAt.date)
   }
-  val formatted = formatter.format(sentAt.toLocalDateTime(timeZone))
-  return if (isToday) "$todayLabel $formatted" else formatted
 }
