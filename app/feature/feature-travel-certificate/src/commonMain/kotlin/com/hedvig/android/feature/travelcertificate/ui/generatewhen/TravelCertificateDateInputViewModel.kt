@@ -9,36 +9,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
-import com.hedvig.android.design.system.hedvig.api.HedvigDatePickerState
-import com.hedvig.android.design.system.hedvig.api.HedvigSelectableDates
-import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
 import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
 import com.hedvig.android.feature.travelcertificate.data.GetTravelCertificateSpecificationsUseCase
-import com.hedvig.android.feature.travelcertificate.navigation.ShowCertificateKey
-import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateKey
-import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateTravellersInputKey
-import com.hedvig.android.language.LanguageService
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificateTravellersStep
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
-import com.hedvig.android.navigation.compose.Backstack
-import com.hedvig.android.navigation.compose.add
-import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.core.common.android.validation.isValidEmail
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
-import hedvig.resources.PROFILE_MY_INFO_INVALID_EMAIL
-import hedvig.resources.Res
-import hedvig.resources.travel_certificate_email_empty_error
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.Instant
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.jetbrains.compose.resources.StringResource
 
 @AssistedInject
 @HedvigViewModel(ActivityRetainedScope::class)
@@ -46,8 +33,6 @@ internal class TravelCertificateDateInputViewModel(
   @Assisted contractId: String?,
   getTravelCertificateSpecificationsUseCase: GetTravelCertificateSpecificationsUseCase,
   createTravelCertificateUseCase: CreateTravelCertificateUseCase,
-  languageService: LanguageService,
-  backstack: Backstack,
   clock: Clock,
 ) : MoleculeViewModel<TravelCertificateDateInputEvent, TravelCertificateDateInputUiState>(
     initialState = TravelCertificateDateInputUiState.Loading,
@@ -55,8 +40,6 @@ internal class TravelCertificateDateInputViewModel(
       contractId,
       getTravelCertificateSpecificationsUseCase,
       createTravelCertificateUseCase,
-      languageService,
-      backstack,
       clock,
     ),
     sharingStarted = SharingStarted.WhileSubscribed(5.seconds),
@@ -66,8 +49,6 @@ internal class TravelCertificateDateInputPresenter(
   private val contractId: String?,
   private val getTravelCertificateSpecificationsUseCase: GetTravelCertificateSpecificationsUseCase,
   private val createTravelCertificateUseCase: CreateTravelCertificateUseCase,
-  private val languageService: LanguageService,
-  private val backstack: Backstack,
   private val clock: Clock,
 ) : MoleculePresenter<TravelCertificateDateInputEvent, TravelCertificateDateInputUiState> {
   @Composable
@@ -75,196 +56,137 @@ internal class TravelCertificateDateInputPresenter(
     lastState: TravelCertificateDateInputUiState,
   ): TravelCertificateDateInputUiState {
     var loadIteration by remember { mutableIntStateOf(0) }
-
-    var createTravelCertificateData by remember { mutableStateOf<CreateTravelCertificateData?>(null) }
-
-    var screenContent by remember {
+    var stepToCreate by remember { mutableStateOf<TravelCertificateTravellersStep?>(null) }
+    var screenState by remember {
       mutableStateOf(
         when (lastState) {
-          is TravelCertificateDateInputUiState.Success -> {
-            DateInputScreenContent.Success(
-              DateInputScreenContent.Success.SpecificationsDetails(
-                contractId = lastState.contractId,
-                email = lastState.email,
-                datePickerState = lastState.datePickerState,
-                daysValid = lastState.daysValid,
-                hasCoInsured = lastState.hasCoInsured,
-              ),
-            )
-          }
+          // A create or a navigation in flight belongs to the stopped run, so neither is restored.
+          is TravelCertificateDateInputUiState.Success -> lastState.copy(
+            emailError = null,
+            isCreating = false,
+            next = null,
+          )
 
-          TravelCertificateDateInputUiState.Failure -> {
-            DateInputScreenContent.Failure
-          }
-
-          TravelCertificateDateInputUiState.Loading -> {
-            DateInputScreenContent.Loading
-          }
+          else -> lastState
         },
       )
     }
-
-    var invalidEmailErrorMessage by remember { mutableStateOf<StringResource?>(null) }
+    var emailRevision by remember {
+      mutableIntStateOf((lastState as? TravelCertificateDateInputUiState.Success)?.emailRevision ?: 0)
+    }
 
     CollectEvents { event ->
-
-      fun validateInputAndContinue() {
-        val successScreenContent = screenContent as? DateInputScreenContent.Success ?: return
-        if (successScreenContent.details.email != null &&
-          isValidEmail(successScreenContent.details.email)
-        ) {
-          if (successScreenContent.details.hasCoInsured) {
-            backstack.add(
-              TravelCertificateTravellersInputKey(
-                TravelCertificateTravellersInputKey.TravelCertificatePrimaryInput(
-                  successScreenContent.details.email,
-                  successScreenContent.details.travelDate(clock),
-                  successScreenContent.details.contractId,
-                ),
-              ),
-            )
-          } else {
-            createTravelCertificateData = CreateTravelCertificateData(
-              successScreenContent.details.contractId,
-              successScreenContent.details.travelDate(clock),
-              successScreenContent.details.email,
-            )
-          }
-          invalidEmailErrorMessage = null
-        } else {
-          invalidEmailErrorMessage = if (successScreenContent.details.email.isNullOrEmpty()) {
-            Res.string.travel_certificate_email_empty_error
-          } else {
-            Res.string.PROFILE_MY_INFO_INVALID_EMAIL
-          }
-        }
-      }
-
+      val content = screenState as? TravelCertificateDateInputUiState.Success
       when (event) {
-        is TravelCertificateDateInputEvent.ChangeEmailInput -> {
-          val successScreenContent = screenContent as? DateInputScreenContent.Success ?: return@CollectEvents
-          invalidEmailErrorMessage = null
-          screenContent = successScreenContent.copy(
-            details = successScreenContent.details.copy(
-              email = event.email,
-            ),
-          )
-        }
-
         TravelCertificateDateInputEvent.RetryLoadData -> {
           loadIteration++
         }
 
-        is TravelCertificateDateInputEvent.Submit -> {
-          validateInputAndContinue()
+        is TravelCertificateDateInputEvent.ChangeEmailInput -> {
+          if (content == null) return@CollectEvents
+          screenState = content.copy(email = event.email, emailError = null)
+        }
+
+        is TravelCertificateDateInputEvent.SelectTravelDate -> {
+          if (content == null || event.date !in content.minDate..content.maxDate) return@CollectEvents
+          screenState = content.copy(selectedDate = event.date)
+        }
+
+        TravelCertificateDateInputEvent.StepShown -> {
+          if (content == null) return@CollectEvents
+          screenState = content.copy(next = null)
+        }
+
+        TravelCertificateDateInputEvent.Submit -> {
+          if (content == null || content.isCreating || content.next != null) return@CollectEvents
+          val email = content.email.trim()
+          val emailError = when {
+            email.isEmpty() -> EmailError.Empty
+            !isValidEmail(email) -> EmailError.Invalid
+            else -> null
+          }
+          if (emailError != null) {
+            screenState = content.copy(emailError = emailError)
+            return@CollectEvents
+          }
+          val step = TravelCertificateTravellersStep(
+            email = email,
+            travelDate = content.selectedDate,
+            contractId = content.contractId,
+          )
+          if (content.hasCoInsured) {
+            screenState = content.copy(emailError = null, createFailed = false, next = step)
+          } else {
+            screenState = content.copy(emailError = null, createFailed = false, isCreating = true)
+            stepToCreate = step
+          }
         }
       }
     }
 
-    LaunchedEffect(createTravelCertificateData) {
-      val currentCreateTravelCertificateData = createTravelCertificateData ?: return@LaunchedEffect
-      screenContent = DateInputScreenContent.Loading
+    LaunchedEffect(stepToCreate) {
+      val step = stepToCreate ?: return@LaunchedEffect
       createTravelCertificateUseCase.invoke(
-        contractId = currentCreateTravelCertificateData.contractId,
-        startDate = currentCreateTravelCertificateData.travelDate,
+        contractId = step.contractId,
+        startDate = step.travelDate,
         isMemberIncluded = true,
         coInsured = listOf(),
-        email = currentCreateTravelCertificateData.email,
+        email = step.email,
       ).fold(
         ifLeft = {
-          screenContent = DateInputScreenContent.Failure
+          val content = screenState as? TravelCertificateDateInputUiState.Success
+          if (content != null) {
+            screenState = content.copy(isCreating = false, createFailed = true)
+          }
         },
         ifRight = { url ->
-          backstack.navigateAndPopUpTo<TravelCertificateKey>(ShowCertificateKey(url), inclusive = false)
+          screenState = TravelCertificateDateInputUiState.Created(url)
         },
       )
-      createTravelCertificateData = null
+      stepToCreate = null
     }
 
     LaunchedEffect(loadIteration) {
-      if (screenContent is DateInputScreenContent.Success) {
+      if (screenState is TravelCertificateDateInputUiState.Success ||
+        screenState is TravelCertificateDateInputUiState.Created
+      ) {
         return@LaunchedEffect
       }
-      screenContent = DateInputScreenContent.Loading
+      screenState = TravelCertificateDateInputUiState.Loading
       getTravelCertificateSpecificationsUseCase
         .invoke(contractId)
         .fold(
           ifLeft = { _ ->
-            screenContent = DateInputScreenContent.Failure
+            screenState = TravelCertificateDateInputUiState.Failure
           },
           ifRight = { travelCertificateData ->
-            val travelSpecification = travelCertificateData.travelCertificateSpecification
-            val yearRange = travelSpecification.dateRange.start.year..travelSpecification.dateRange.endInclusive.year
-            val datePickerState = HedvigDatePickerState(
-              locale = languageService.getLocale(),
-              initialSelectedDateMillis = null,
-              initialDisplayedMonthMillis = null,
-              yearRange = yearRange,
-              selectableDates = object : HedvigSelectableDates {
-                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                  val selectedDate =
-                    Instant.fromEpochMilliseconds(utcTimeMillis).toLocalDateTime(TimeZone.UTC).date
-                  return selectedDate in travelSpecification.dateRange
-                }
-
-                override fun isSelectableYear(year: Int): Boolean = year in yearRange
+            val specification = travelCertificateData.travelCertificateSpecification
+            val minDate = specification.dateRange.start
+            val maxDate = specification.dateRange.endInclusive
+            val today = clock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+            emailRevision++
+            screenState = TravelCertificateDateInputUiState.Success(
+              contractId = specification.contractId,
+              email = specification.email,
+              emailRevision = emailRevision,
+              emailError = null,
+              minDate = minDate,
+              maxDate = maxDate,
+              selectedDate = when {
+                today < minDate -> minDate
+                today > maxDate -> maxDate
+                else -> today
               },
-            )
-            screenContent = DateInputScreenContent.Success(
-              DateInputScreenContent.Success.SpecificationsDetails(
-                datePickerState = datePickerState,
-                daysValid = travelSpecification.maxDurationDays,
-                email = travelSpecification.email,
-                contractId = travelSpecification.contractId,
-                hasCoInsured = travelSpecification.numberOfCoInsured > 0,
-              ),
+              daysValid = specification.maxDurationDays,
+              hasCoInsured = specification.numberOfCoInsured > 0,
+              isCreating = false,
+              createFailed = false,
+              next = null,
             )
           },
         )
     }
-    return when (val currentContent = screenContent) {
-      DateInputScreenContent.Failure -> {
-        TravelCertificateDateInputUiState.Failure
-      }
-
-      DateInputScreenContent.Loading -> {
-        TravelCertificateDateInputUiState.Loading
-      }
-
-      is DateInputScreenContent.Success -> {
-        TravelCertificateDateInputUiState.Success(
-          email = currentContent.details.email,
-          travelDate = currentContent.details.travelDate(clock),
-          contractId = currentContent.details.contractId,
-          hasCoInsured = currentContent.details.hasCoInsured,
-          datePickerState = currentContent.details.datePickerState,
-          daysValid = currentContent.details.daysValid,
-          errorMessageRes = invalidEmailErrorMessage,
-        )
-      }
-    }
-  }
-}
-
-private sealed interface DateInputScreenContent {
-  data object Loading : DateInputScreenContent
-
-  data object Failure : DateInputScreenContent
-
-  data class Success(val details: SpecificationsDetails) : DateInputScreenContent {
-    data class SpecificationsDetails(
-      val contractId: String,
-      val email: String?,
-      val datePickerState: HedvigDatePickerState,
-      val daysValid: Int,
-      val hasCoInsured: Boolean,
-    ) {
-      fun travelDate(clock: Clock): LocalDate = datePickerState.selectedDateMillis?.let {
-        Instant.fromEpochMilliseconds(it)
-          .toLocalDateTime(TimeZone.UTC)
-          .date
-      } ?: clock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-    }
+    return screenState
   }
 }
 
@@ -273,7 +195,18 @@ internal sealed interface TravelCertificateDateInputEvent {
 
   data class ChangeEmailInput(val email: String) : TravelCertificateDateInputEvent
 
+  /** Ignored when [date] is outside the content's `minDate..maxDate`. */
+  data class SelectTravelDate(val date: LocalDate) : TravelCertificateDateInputEvent
+
+  /** Sent once the step in `next` is on screen, so a later Continue can open it again. */
+  data object StepShown : TravelCertificateDateInputEvent
+
   data object Submit : TravelCertificateDateInputEvent
+}
+
+internal enum class EmailError {
+  Empty,
+  Invalid,
 }
 
 internal sealed interface TravelCertificateDateInputUiState {
@@ -281,19 +214,25 @@ internal sealed interface TravelCertificateDateInputUiState {
 
   data object Failure : TravelCertificateDateInputUiState
 
+  /**
+   * [email] is the text as last typed. [emailRevision] increases only when the presenter writes [email] itself, so a
+   * screen that owns its editing state copies [email] in only when the revision changes.
+   */
   data class Success(
     val contractId: String,
-    val email: String?,
-    val travelDate: LocalDate,
-    val hasCoInsured: Boolean,
-    val datePickerState: HedvigDatePickerState,
+    val email: String,
+    val emailRevision: Int,
+    val emailError: EmailError?,
+    val minDate: LocalDate,
+    val maxDate: LocalDate,
+    val selectedDate: LocalDate,
     val daysValid: Int,
-    val errorMessageRes: StringResource?,
+    val hasCoInsured: Boolean,
+    val isCreating: Boolean,
+    val createFailed: Boolean,
+    val next: TravelCertificateTravellersStep?,
   ) : TravelCertificateDateInputUiState
-}
 
-private data class CreateTravelCertificateData(
-  val contractId: String,
-  val travelDate: LocalDate,
-  val email: String,
-)
+  /** The certificate exists; nothing follows on this screen. */
+  data class Created(val url: TravelCertificateUrl) : TravelCertificateDateInputUiState
+}

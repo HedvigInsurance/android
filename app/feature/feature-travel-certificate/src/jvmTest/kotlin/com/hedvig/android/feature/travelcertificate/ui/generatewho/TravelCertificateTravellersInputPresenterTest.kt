@@ -14,13 +14,13 @@ import com.hedvig.android.feature.travelcertificate.FakeGetCoInsuredForContractU
 import com.hedvig.android.feature.travelcertificate.TestBackstack
 import com.hedvig.android.feature.travelcertificate.data.CoInsuredData
 import com.hedvig.android.feature.travelcertificate.data.CoInsuredDataWithMember
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificateTravellersStep
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.expectNoStateChange
 import com.hedvig.android.feature.travelcertificate.navigation.ShowCertificateKey
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateDateInputKey
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateKey
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateTravellersInputKey
-import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateTravellersInputKey.TravelCertificatePrimaryInput
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.CoInsured.CoInsuredId
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
@@ -36,7 +36,7 @@ class TravelCertificateTravellersInputPresenterTest {
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
 
-  private val primaryInput = TravelCertificatePrimaryInput(
+  private val primaryInput = TravelCertificateTravellersStep(
     email = "member@hedvig.com",
     travelDate = LocalDate(2026, 12, 24),
     contractId = "contractId",

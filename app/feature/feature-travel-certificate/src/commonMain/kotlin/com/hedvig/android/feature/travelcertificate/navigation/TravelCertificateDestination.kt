@@ -1,8 +1,8 @@
 package com.hedvig.android.feature.travelcertificate.navigation
 
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificateTravellersStep
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.navigation.common.HedvigNavKey
-import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -15,15 +15,8 @@ internal data class TravelCertificateDateInputKey(
 
 @Serializable
 internal data class TravelCertificateTravellersInputKey(
-  val primaryInput: TravelCertificatePrimaryInput,
-) : HedvigNavKey {
-  @Serializable
-  data class TravelCertificatePrimaryInput(
-    val email: String,
-    val travelDate: LocalDate,
-    val contractId: String,
-  )
-}
+  val primaryInput: TravelCertificateTravellersStep,
+) : HedvigNavKey
 
 @Serializable
 internal data class ShowCertificateKey(
