@@ -94,6 +94,7 @@ internal class ManualChargePresenter(
     LaunchedEffect(refreshIteration) {
       if (refreshIteration == 0) return@LaunchedEffect
       getManualChargeInfoUseCase.invoke().onRight { result ->
+        if (screenState is ManualChargeUiState.Charged) return@onRight
         screenState = when (result) {
           is ManualChargeInfoResult.Chargeable -> ManualChargeUiState.Success(
             manualChargeInfo = result.info,

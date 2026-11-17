@@ -90,6 +90,29 @@ class ManualChargePresenterTest {
   }
 
   @Test
+  fun `a refresh that lands after the charge keeps the charged state`() = runTest {
+    val getInfo = FakeGetManualChargeInfoUseCase()
+    val trigger = FakeTriggerManualChargeUseCase()
+    presenter(getInfo, trigger).test(ManualChargeUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Loading)
+      getInfo.responses.send(ManualChargeInfoResult.Chargeable(info).right())
+      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Success(info))
+
+      sendEvent(ManualChargeEvent.TriggerCharge)
+      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Success(info, payButtonLoading = true))
+      sendEvent(ManualChargeEvent.Refresh)
+      this@runTest.testScheduler.advanceUntilIdle()
+      trigger.responses.send(Unit.right())
+      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Charged(info))
+
+      getInfo.responses.send(ManualChargeInfoResult.NoLongerChargeable.right())
+      this@runTest.testScheduler.advanceUntilIdle()
+      assertThat(getInfo.calls).isEqualTo(2)
+      expectNoEvents()
+    }
+  }
+
+  @Test
   fun `a failed charge shows the error and stays on the screen`() = runTest {
     val getInfo = FakeGetManualChargeInfoUseCase()
     val trigger = FakeTriggerManualChargeUseCase()
