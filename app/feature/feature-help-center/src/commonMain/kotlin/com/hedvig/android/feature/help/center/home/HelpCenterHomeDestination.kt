@@ -157,7 +157,6 @@ internal fun HelpCenterHomeDestination(
     onDismissQuickActionDialog = {
       viewModel.emit(HelpCenterEvent.OnDismissQuickActionDialog)
     },
-    showNavigateToInboxButton = uiState.showNavigateToInboxButton,
     onNavigateToInbox = onNavigateToInbox,
     onNavigateToNewConversation = onNavigateToNewConversation,
     onNavigateUp = onNavigateUp,
@@ -189,7 +188,6 @@ private fun HelpCenterHomeScreen(
   onNavigateToQuickLink: (QuickLinkDestination) -> Unit,
   onQuickActionsSelected: (QuickAction) -> Unit,
   onDismissQuickActionDialog: () -> Unit,
-  showNavigateToInboxButton: Boolean,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   onNavigateUp: () -> Unit,
@@ -344,7 +342,6 @@ private fun HelpCenterHomeScreen(
                 onNavigateToTopic = onNavigateToTopic,
                 questions = questions,
                 onNavigateToQuestion = onNavigateToQuestion,
-                showNavigateToInboxButton = showNavigateToInboxButton,
                 onNavigateToInbox = onNavigateToInbox,
                 onNavigateToNewConversation = onNavigateToNewConversation,
                 puppyGuide = puppyGuide,
@@ -377,7 +374,6 @@ private fun ContentWithoutSearch(
   questions: List<FAQItem>,
   puppyGuide: PuppyGuidePresentation?,
   onNavigateToQuestion: (questionId: String) -> Unit,
-  showNavigateToInboxButton: Boolean,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   onNavigateToPuppyGuide: () -> Unit,
@@ -490,7 +486,6 @@ private fun ContentWithoutSearch(
     StillNeedHelpSection(
       onNavigateToInbox = onNavigateToInbox,
       onNavigateToNewConversation = onNavigateToNewConversation,
-      showNavigateToInboxButton = showNavigateToInboxButton,
       contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues() +
         PaddingValues(horizontal = 16.dp),
     )
@@ -836,7 +831,6 @@ private fun PreviewHelpCenterHomeScreen(
         onNavigateToQuickLink = {},
         onQuickActionsSelected = {},
         onDismissQuickActionDialog = {},
-        showNavigateToInboxButton = true,
         onNavigateToInbox = {},
         onNavigateToNewConversation = {},
         onNavigateUp = {},
@@ -883,7 +877,6 @@ private fun PreviewQuickLinkAnimations() {
           onNavigateToQuickLink = {},
           onQuickActionsSelected = {},
           onDismissQuickActionDialog = {},
-          showNavigateToInboxButton = true,
           onNavigateToInbox = {},
           onNavigateToNewConversation = {},
           onNavigateUp = {},
@@ -914,7 +907,6 @@ private fun PreviewQuickLinkEmptyState() {
         onNavigateToQuickLink = {},
         onQuickActionsSelected = {},
         onDismissQuickActionDialog = {},
-        showNavigateToInboxButton = true,
         onNavigateToInbox = {},
         onNavigateToNewConversation = {},
         onNavigateUp = {},
@@ -959,7 +951,6 @@ private fun PreviewHelpCenterPuppyGuideVariants(
         onNavigateToQuickLink = {},
         onQuickActionsSelected = {},
         onDismissQuickActionDialog = {},
-        showNavigateToInboxButton = true,
         onNavigateToInbox = {},
         onNavigateToNewConversation = {},
         onNavigateUp = {},
