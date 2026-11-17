@@ -64,7 +64,7 @@ class LoggingInterceptorTest {
   }
 
   @Test
-  fun `outside debug builds, response data is never logged`() = runTest {
+  fun `in production builds, response data is never logged`() = runTest {
     intercept(logResponseData = false, withErrors = false)
     intercept(logResponseData = false, withErrors = true)
 
@@ -78,7 +78,7 @@ class LoggingInterceptorTest {
   }
 
   @Test
-  fun `in debug builds, response data is logged`() = runTest {
+  fun `outside production builds, response data is logged`() = runTest {
     intercept(logResponseData = true, withErrors = false)
 
     assertThat(logLines).any { it.contains(DATA_MARKER) }
