@@ -62,12 +62,12 @@ import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.Clock
+import com.hedvig.android.design.system.hedvig.icon.Document
 import com.hedvig.android.design.system.hedvig.icon.Eurobonus
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.ID
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.icon.InfoOutline
-import com.hedvig.android.design.system.hedvig.icon.MultipleDocuments
 import com.hedvig.android.design.system.hedvig.icon.Settings
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
@@ -359,7 +359,7 @@ private fun ColumnScope.ProfileItemRows(
   if (profileUiState.certificatesAvailable) {
     ProfileRow(
       title = stringResource(Res.string.profile_certificates_title),
-      icon = HedvigIcons.MultipleDocuments,
+      icon = HedvigIcons.Document,
       onClick = dropUnlessResumed { navigateToCertificates() },
       isLoading = false,
       modifier = horizontalDividerModifier,
