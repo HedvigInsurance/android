@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextRange
@@ -67,6 +68,11 @@ internal fun EditCodeBottomSheet(
       )
     }
 
+    val keyboardController = LocalSoftwareKeyboardController.current
+    LaunchedEffect(Unit) {
+      runCatching { focusRequester.requestFocus() }
+      keyboardController?.show()
+    }
     ClearErrorOnNewInputEffect({ textFieldValue }, showedReferralCodeSubmissionError)
     HedvigText(
       text = stringResource(Res.string.referrals_change_change_code),
