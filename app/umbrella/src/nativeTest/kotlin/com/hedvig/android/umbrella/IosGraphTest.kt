@@ -28,6 +28,8 @@ import com.hedvig.android.core.tracking.ActionType
 import com.hedvig.android.core.tracking.ErrorSource
 import com.hedvig.android.core.tracking.RumLogger
 import com.hedvig.android.core.tracking.logError
+import com.hedvig.android.feature.payments.ios.PaymentDetailsScreenState
+import com.hedvig.android.feature.payments.ios.PaymentHistoryScreenState
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailsViewModelFactory
 import com.hedvig.android.language.LanguageStorage
 import com.hedvig.android.logger.LogPriority
@@ -89,6 +91,36 @@ class IosGraphTest {
     pumpMainLoop(1.seconds)
     model.close()
 
+    assertThat(inputs.accessTokenFetcher.calls.value).isEqualTo(0)
+    assertThat(inputs.deviceIdFetcher.calls.value).isEqualTo(0)
+  }
+
+  @Test
+  fun `the holder builds the payments screen models without a request`() {
+    val inputs = FakeInputs()
+    val holder = inputs.createHolder()
+
+    val history = holder.paymentHistoryScreenModel()
+    val detailsWithChargeId = holder.paymentDetailsScreenModel("charge-1")
+    val detailsWithoutChargeId = holder.paymentDetailsScreenModel(null)
+    val states = listOf(history.currentState, detailsWithChargeId.currentState, detailsWithoutChargeId.currentState)
+    pumpMainLoop(1.seconds)
+    history.close()
+    detailsWithChargeId.close()
+    detailsWithoutChargeId.close()
+
+    assertThat(states).containsExactly(
+      PaymentHistoryScreenState.Loading,
+      PaymentDetailsScreenState.Loading,
+      PaymentDetailsScreenState.Loading,
+    )
+    assertThat(
+      logs.messages().filter { it.endsWith("ViewModel cleared") },
+    ).containsExactlyInAnyOrder(
+      "PaymentHistoryViewModel cleared",
+      "PaymentDetailsViewModel cleared",
+      "PaymentDetailsViewModel cleared",
+    )
     assertThat(inputs.accessTokenFetcher.calls.value).isEqualTo(0)
     assertThat(inputs.deviceIdFetcher.calls.value).isEqualTo(0)
   }

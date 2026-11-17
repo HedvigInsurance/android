@@ -6,6 +6,10 @@ import com.hedvig.android.core.demomode.IosDemoMode
 import com.hedvig.android.core.tracking.RumLogger
 import com.hedvig.android.feature.claimhistory.ios.ClaimHistoryScreenModel
 import com.hedvig.android.feature.claimhistory.ios.createClaimHistoryScreenModel
+import com.hedvig.android.feature.payments.ios.PaymentDetailsScreenModel
+import com.hedvig.android.feature.payments.ios.PaymentHistoryScreenModel
+import com.hedvig.android.feature.payments.ios.createPaymentDetailsScreenModel
+import com.hedvig.android.feature.payments.ios.createPaymentHistoryScreenModel
 import com.hedvig.android.language.LanguageStorage
 import com.hedvig.android.network.clients.AccessTokenFetcher
 import dev.zacsweers.metro.createGraphFactory
@@ -46,6 +50,17 @@ class IosGraphHolder internal constructor(
 ) {
   /** A new screen model with its own ViewModel. The caller owns it and must `close()` it. */
   fun claimHistoryScreenModel(): ClaimHistoryScreenModel = createClaimHistoryScreenModel(graph.metroViewModelFactory)
+
+  /** A new screen model with its own ViewModel. The caller owns it and must `close()` it. */
+  fun paymentHistoryScreenModel(): PaymentHistoryScreenModel =
+    createPaymentHistoryScreenModel(graph.metroViewModelFactory)
+
+  /**
+   * A new screen model with its own ViewModel, for the charge [chargeId]. Null and "" both select the charge the backend
+   * sent without an id. The caller owns it and must `close()` it.
+   */
+  fun paymentDetailsScreenModel(chargeId: String?): PaymentDetailsScreenModel =
+    createPaymentDetailsScreenModel(graph.metroViewModelFactory, chargeId)
 
   /**
    * Tells Kotlin a session started ([loggedIn] true) or ended (false), so it clears what it cached for the previous
