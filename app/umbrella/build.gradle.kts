@@ -52,8 +52,6 @@ kotlin {
       }
     }
     nativeMain.dependencies {
-      implementation(libs.apollo.runtime)
-      implementation(libs.metro.viewmodel)
       implementation(projects.apolloAuthListeners)
       implementation(projects.authCorePublic)
       implementation(projects.authEventCore)
@@ -64,6 +62,8 @@ kotlin {
       implementation(projects.initializable)
       implementation(projects.languageCore)
       implementation(projects.networkClients)
+      implementation(libs.apollo.runtime)
+      implementation(libs.metro.viewmodel)
     }
     nativeTest.dependencies {
       implementation(libs.apollo.engine.ktor)
