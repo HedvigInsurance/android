@@ -34,7 +34,6 @@ kotlin {
       implementation(projects.coreResources)
       implementation(projects.dataCoinsured)
       implementation(projects.dataContract)
-      implementation(projects.dataConversations)
       implementation(projects.dataTermination)
       implementation(projects.designSystemHedvig)
       implementation(projects.featureChooseTierNavigation)
