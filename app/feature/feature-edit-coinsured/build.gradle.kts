@@ -24,6 +24,7 @@ kotlin {
       implementation(libs.kotlinx.serialization.core)
       implementation(libs.uuid)
       implementation(projects.dataCoinsured)
+      implementation(projects.dataContract)
       implementation(projects.apolloCore)
       implementation(projects.apolloNetworkCacheManager)
       implementation(projects.apolloOctopusPublic)

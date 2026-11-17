@@ -5,6 +5,13 @@ query CoInsured {
     ssn
     activeContracts {
       id
+      exposureDisplayName
+      currentAgreement {
+        productVariant {
+          displayName
+          typeOfContract
+        }
+      }
       coInsured {
         ...CoInsuredFragment
       }
