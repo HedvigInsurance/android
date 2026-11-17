@@ -30,6 +30,7 @@ import octopus.MemberUpdateContactInfoMutation
 import octopus.builder.Data
 import octopus.builder.buildMember
 import octopus.builder.buildMemberMutationOutput
+import octopus.builder.buildUserError
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -333,6 +334,126 @@ class ContactInfoPresenterTest {
         assertThat(emailHasError).isTrue()
         assertThat(submittingUpdatedInfo).isFalse()
       }
+    }
+  }
+
+  @Test
+  fun `Before a submission attempt only a non-empty invalid field shows an error`() = runTest {
+    val repository = ContactInfoRepositoryImpl(apolloClient, NoopNetworkCacheManager)
+    val presenter = ContactInfoPresenter(repository, TestClock())
+    presenter.test(
+      ContactInfoUiState.Content(
+        phoneNumberState = TextFieldState(""),
+        emailState = TextFieldState(""),
+        uploadedPhoneNumber = null,
+        uploadedEmail = null,
+        submittingUpdatedInfo = false,
+      ),
+    ) {
+      with(expectMostRecentItem().content!!) {
+        assertThat(hasAttemptedSubmission).isFalse()
+        assertThat(phoneNumberHasError).isFalse()
+        assertThat(emailHasError).isFalse()
+        phoneNumberState.setTextAndPlaceCursorAtEnd("+12")
+        emailState.setTextAndPlaceCursorAtEnd("a@a")
+        assertThat(phoneNumberHasError).isTrue()
+        assertThat(emailHasError).isTrue()
+        phoneNumberState.setTextAndPlaceCursorAtEnd(" ")
+        emailState.setTextAndPlaceCursorAtEnd(" ")
+        assertThat(phoneNumberHasError).isFalse()
+        assertThat(emailHasError).isFalse()
+      }
+    }
+  }
+
+  @Test
+  fun `A phone number typed with separators is sent without them`() = runTest {
+    val repository = ContactInfoRepositoryImpl(apolloClient, NoopNetworkCacheManager)
+    val presenter = ContactInfoPresenter(repository, TestClock())
+    val email = "test@hedvig.com"
+    presenter.test(
+      ContactInfoUiState.Content(
+        phoneNumberState = TextFieldState("+46 70-123 45 67"),
+        emailState = TextFieldState(email),
+        uploadedPhoneNumber = null,
+        uploadedEmail = Email(email),
+        submittingUpdatedInfo = false,
+      ),
+    ) {
+      skipItems(1)
+      sendEvent(ContactInfoEvent.SubmitData)
+      assertThat(awaitItem().content!!.submittingUpdatedInfo).isTrue()
+      apolloClient.registerSuspendingTestResponse(
+        MemberUpdateContactInfoMutation(email, "+46701234567"),
+        MemberUpdateContactInfoMutation.Data(OctopusFakeResolver) {
+          this.memberUpdateContactInfo = this.buildMemberMutationOutput {
+            this.userError = null
+            this.member = this.buildMember {
+              this.phoneNumber = "+46701234567"
+              this.email = email
+            }
+          }
+        },
+      )
+      with(awaitItem().content!!) {
+        assertThat(phoneNumberState.text.toString()).isEqualTo("+46701234567")
+        assertThat(uploadedPhoneNumber).isEqualTo("+46701234567")
+        assertThat(submittingUpdatedInfo).isFalse()
+        assertThat(showSuccessSnackBar).isTrue()
+      }
+      sendEvent(ContactInfoEvent.ShowedMessage)
+      assertThat(awaitItem().content!!.showSuccessSnackBar).isFalse()
+    }
+  }
+
+  @Test
+  fun `A failed submission keeps the input and shows the backend message or a general error`(
+    @TestParameter backendGivesMessage: Boolean,
+  ) = runTest {
+    val repository = ContactInfoRepositoryImpl(apolloClient, NoopNetworkCacheManager)
+    val presenter = ContactInfoPresenter(repository, TestClock())
+    val email = "test@hedvig.com"
+    val phoneNumber = "+46701234567"
+    presenter.test(
+      ContactInfoUiState.Content(
+        phoneNumberState = TextFieldState(phoneNumber),
+        emailState = TextFieldState(email),
+        uploadedPhoneNumber = "+46700000000",
+        uploadedEmail = Email("old@hedvig.com"),
+        submittingUpdatedInfo = false,
+      ),
+    ) {
+      skipItems(1)
+      sendEvent(ContactInfoEvent.SubmitData)
+      assertThat(awaitItem().content!!.submittingUpdatedInfo).isTrue()
+      if (backendGivesMessage) {
+        apolloClient.registerSuspendingTestResponse(
+          MemberUpdateContactInfoMutation(email, phoneNumber),
+          MemberUpdateContactInfoMutation.Data(OctopusFakeResolver) {
+            this.memberUpdateContactInfo = this.buildMemberMutationOutput {
+              this.userError = this.buildUserError {
+                this.message = "Not allowed"
+              }
+              this.member = null
+            }
+          },
+        )
+      } else {
+        apolloClient.registerSuspendingTestNetworkError(MemberUpdateContactInfoMutation(email, phoneNumber))
+      }
+      with(awaitItem().content!!) {
+        assertThat(submittingUpdatedInfo).isFalse()
+        assertThat(errorSnackBarText).isEqualTo(
+          if (backendGivesMessage) ErrorSnackBarText.WithMessage("Not allowed") else ErrorSnackBarText.General,
+        )
+        assertThat(phoneNumberState.text.toString()).isEqualTo(phoneNumber)
+        assertThat(emailState.text.toString()).isEqualTo(email)
+        assertThat(uploadedPhoneNumber).isEqualTo("+46700000000")
+        assertThat(uploadedEmail).isEqualTo(Email("old@hedvig.com"))
+        assertThat(showSuccessSnackBar).isFalse()
+      }
+      sendEvent(ContactInfoEvent.ShowedMessage)
+      assertThat(awaitItem().content!!.errorSnackBarText).isNull()
     }
   }
 }
