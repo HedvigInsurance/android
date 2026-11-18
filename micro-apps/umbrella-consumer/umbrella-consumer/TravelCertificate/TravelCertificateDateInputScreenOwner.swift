@@ -66,6 +66,7 @@ enum TravelCertificateDateInputViewState: ScreenViewState {
                                 maxDate: content.maxDate,
                                 selectedDate: content.selectedDate,
                                 daysValid: Int(content.daysValid),
+                                hasCoInsured: content.hasCoInsured,
                                 isCreating: content.isCreating,
                                 createFailed: content.createFailed,
                                 next: content.next
@@ -89,7 +90,7 @@ enum TravelCertificateDateInputViewState: ScreenViewState {
         case .loading: "loading"
         case .failed: "failed"
         case let .content(content):
-            "content(email \(content.email.count) characters, revision \(content.emailRevision), error \(content.emailError.map { "\($0)" } ?? "none"), creating \(content.isCreating), createFailed \(content.createFailed), next \(content.next != nil))"
+            "content(email \(content.email.count) characters, revision \(content.emailRevision), error \(content.emailError.map { "\($0)" } ?? "none"), coInsured \(content.hasCoInsured), creating \(content.isCreating), createFailed \(content.createFailed), next \(content.next != nil))"
         case let .created(summary): "created(url length \(summary.length))"
         }
     }
@@ -103,6 +104,8 @@ struct TravelDateInputContent: Equatable {
     let maxDate: String
     let selectedDate: String
     let daysValid: Int
+    /// False: Continue creates the certificate. True: Continue offers the travellers step in `next`.
+    let hasCoInsured: Bool
     let isCreating: Bool
     let createFailed: Bool
     /// Opaque: Swift can only hold it and pass it to `travelCertificateTravellersScreenModel(step:)`.

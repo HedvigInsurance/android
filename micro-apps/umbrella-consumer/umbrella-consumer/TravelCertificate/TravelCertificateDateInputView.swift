@@ -57,7 +57,7 @@ struct TravelCertificateDateInputView: View {
         }
         .travelCreateConfirmation(
             createGuard,
-            message: "Continue creates the certificate at once when the contract has no co-insured. It cannot be removed."
+            message: "Continue creates the certificate at once. It cannot be removed."
         )
         .onAppear {
             if owner == nil {
@@ -137,14 +137,18 @@ struct TravelCertificateDateInputView: View {
                         Text("Creating certificate")
                     }
                 } else {
-                    Button("Continue") {
+                    Button(content.hasCoInsured ? "Continue" : "Create certificate") {
                         let text = fieldText
-                        createGuard.request { owner.submit(fieldText: text) }
+                        if content.hasCoInsured {
+                            owner.submit(fieldText: text)
+                        } else {
+                            createGuard.request { owner.submit(fieldText: text) }
+                        }
                     }
                     .disabled(!owner.isCollecting)
                 }
                 if content.createFailed {
-                    Text("Could not create the certificate. Continue tries again.")
+                    Text("Could not create the certificate. Create certificate tries again.")
                         .foregroundStyle(.red)
                 }
             }

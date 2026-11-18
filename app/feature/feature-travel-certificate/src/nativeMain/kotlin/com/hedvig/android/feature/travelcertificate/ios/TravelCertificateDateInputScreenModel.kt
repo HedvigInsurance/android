@@ -111,6 +111,7 @@ internal fun TravelCertificateDateInputUiState.toScreenState(): TravelCertificat
     maxDate = maxDate.toIsoDateString(),
     selectedDate = selectedDate.toIsoDateString(),
     daysValid = daysValid,
+    hasCoInsured = hasCoInsured,
     isCreating = isCreating,
     createFailed = createFailed,
     next = next,

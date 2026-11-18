@@ -35,6 +35,7 @@ class TravelCertificateDateInputScreenStateTest {
     maxDate = "2027-02-05",
     selectedDate = "2026-11-18",
     daysValid = 45,
+    hasCoInsured = true,
     isCreating = false,
     createFailed = false,
     next = null,
@@ -69,6 +70,11 @@ class TravelCertificateDateInputScreenStateTest {
   }
 
   @Test
+  fun `a contract without co-insured`() {
+    assertThat(form.copy(hasCoInsured = false).toScreenState()).isEqualTo(content.copy(hasCoInsured = false))
+  }
+
+  @Test
   fun `creating and a failed create`() {
     assertThat(form.copy(isCreating = true).toScreenState()).isEqualTo(content.copy(isCreating = true))
     assertThat(form.copy(createFailed = true).toScreenState()).isEqualTo(content.copy(createFailed = true))
@@ -97,7 +103,7 @@ class TravelCertificateDateInputScreenStateTest {
 
     assertThat(text).isEqualTo(
       "Content(emailRevision=1, emailError=null, minDate=2026-11-17, maxDate=2027-02-05, selectedDate=2026-11-18, " +
-        "daysValid=45, isCreating=false, createFailed=false, " +
+        "daysValid=45, hasCoInsured=true, isCreating=false, createFailed=false, " +
         "next=TravelCertificateTravellersStep(travelDate=2026-12-01, contractId=contract-1))",
     )
     assertThat(TravelCertificateDateInputScreenState.Created(TravelCertificateCreated("https://secret")).toString())

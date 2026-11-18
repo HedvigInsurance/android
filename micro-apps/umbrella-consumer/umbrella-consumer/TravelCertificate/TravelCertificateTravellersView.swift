@@ -74,7 +74,8 @@ struct TravelCertificateTravellersContentView: View {
                     content.memberFullName,
                     isOn: Binding(get: { content.isMemberIncluded }, set: { setMemberIncluded($0) })
                 )
-                // By position: Kotlin keeps a blank backend id, so two co-insured can share one.
+                // By position: ids are not guaranteed distinct. A backend id passes through as given, and co-insured
+                // without one who share name, SSN and birth date get the same generated id.
                 ForEach(Array(content.coInsured.enumerated()), id: \.offset) { _, traveller in
                     Toggle(
                         isOn: Binding(
