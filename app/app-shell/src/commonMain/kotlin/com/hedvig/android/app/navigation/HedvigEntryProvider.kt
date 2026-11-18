@@ -152,6 +152,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     hedvigBuildConstants = hedvigBuildConstants,
     externalNavigator = externalNavigator,
     openUrl = openUrl,
+    openMessageLink = appHost.uriHandler::openUri,
   )
   addHomeEntries(
     backstack = backstack,
@@ -261,6 +262,7 @@ private fun EntryProviderScope<HedvigNavKey>.addLoginEntries(
   hedvigBuildConstants: HedvigBuildConstants,
   externalNavigator: ExternalNavigator,
   openUrl: (String) -> Unit,
+  openMessageLink: (String) -> Unit,
 ) {
   loginEntries(
     backstack = backstack,
@@ -274,7 +276,8 @@ private fun EntryProviderScope<HedvigNavKey>.addLoginEntries(
       }
     },
     publicImportantMessages = { reloadKey, modifier ->
-      PublicImportantMessages(reloadKey = reloadKey, openUrl = openUrl, modifier = modifier)
+      // Logged out, an in-app deep link would only be stashed until after login, so a message link would look dead.
+      PublicImportantMessages(reloadKey = reloadKey, openUrl = openMessageLink, modifier = modifier)
     },
   )
 }
