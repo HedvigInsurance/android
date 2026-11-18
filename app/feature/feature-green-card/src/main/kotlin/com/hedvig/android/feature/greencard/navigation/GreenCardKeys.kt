@@ -7,6 +7,14 @@ import kotlinx.serialization.Serializable
 @Serializable
 data object GreenCardKey : HedvigNavKey
 
+/**
+ * [contractId] is the contract the flow continues with, or null when the member has to choose one first.
+ */
+@Serializable
+internal data class GreenCardImportantInfoKey(
+  val contractId: String?,
+) : HedvigNavKey
+
 @Serializable
 internal data object GreenCardChooseContractKey : HedvigNavKey
 

@@ -13,7 +13,6 @@ internal data class GreenCard(
 )
 
 internal data class GreenCardSpecifications(
-  val email: String?,
   val contracts: List<GreenCardContractSpecification>,
 )
 
@@ -22,6 +21,18 @@ internal data class GreenCardContractSpecification(
   val registrationNumber: String,
   val minStartDate: LocalDate,
   val maxEndDate: LocalDate,
+)
+
+internal data class GreenCardAddress(
+  val street: String,
+  val postalCode: String,
+  val city: String,
+  val country: String,
+)
+
+internal data class GreenCardCoDriver(
+  val name: String,
+  val address: GreenCardAddress,
 )
 
 @JvmInline

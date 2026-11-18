@@ -10,6 +10,7 @@ import com.hedvig.android.feature.greencard.ui.dateinput.GreenCardDateInputViewM
 import com.hedvig.android.feature.greencard.ui.history.GreenCardHistoryDestination
 import com.hedvig.android.feature.greencard.ui.history.GreenCardHistoryEvent
 import com.hedvig.android.feature.greencard.ui.history.GreenCardHistoryViewModel
+import com.hedvig.android.feature.greencard.ui.importantinfo.GreenCardImportantInfoDestination
 import com.hedvig.android.feature.greencard.ui.overview.GreenCardOverviewDestination
 import com.hedvig.android.feature.greencard.ui.overview.GreenCardOverviewViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
@@ -26,11 +27,21 @@ fun EntryProviderScope<HedvigNavKey>.greenCardEntries(backstack: Backstack, appl
     GreenCardHistoryDestination(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
-      onStartGenerateGreenCardFlow = { contractId -> backstack.add(GreenCardDateInputKey(contractId)) },
-      onNavigateToChooseContract = { backstack.add(GreenCardChooseContractKey) },
+      onStartGenerateGreenCardFlow = { contractId -> backstack.add(GreenCardImportantInfoKey(contractId)) },
+      onNavigateToChooseContract = { backstack.add(GreenCardImportantInfoKey(contractId = null)) },
       onShareGreenCard = {
         viewModel.emit(GreenCardHistoryEvent.HaveProcessedGreenCardFile)
         context.sharePDF(it, applicationId)
+      },
+    )
+  }
+
+  entry<GreenCardImportantInfoKey> { key ->
+    GreenCardImportantInfoDestination(
+      navigateUp = backstack::navigateUp,
+      onContinue = {
+        val contractId = key.contractId
+        backstack.add(if (contractId != null) GreenCardDateInputKey(contractId) else GreenCardChooseContractKey)
       },
     )
   }

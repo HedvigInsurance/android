@@ -35,9 +35,9 @@ internal class FakeGreenCardBackend(
     return greenCards.toList()
   }
 
-  suspend fun specifications(): Pair<String?, List<GreenCardContractSpecification>> {
+  suspend fun specifications(): List<GreenCardContractSpecification> {
     delay(FAKE_LATENCY)
-    val contracts = listOf("ABC 123", "XYZ 789").mapIndexed { index, registrationNumber ->
+    return listOf("ABC 123", "XYZ 789").mapIndexed { index, registrationNumber ->
       GreenCardContractSpecification(
         contractId = "fake-car-contract-$index",
         registrationNumber = registrationNumber,
@@ -45,12 +45,11 @@ internal class FakeGreenCardBackend(
         maxEndDate = today.plus(DatePeriod(months = 3)),
       )
     }
-    return "member@example.com" to contracts
   }
 
   suspend fun create(contractId: String, travelStartDate: LocalDate, travelEndDate: LocalDate): FakeGreenCard {
     delay(FAKE_LATENCY)
-    val registrationNumber = specifications().second.first { it.contractId == contractId }.registrationNumber
+    val registrationNumber = specifications().first { it.contractId == contractId }.registrationNumber
     val greenCard = FakeGreenCard(
       id = "fake-green-card-${greenCards.size + 1}",
       registrationNumber = registrationNumber,

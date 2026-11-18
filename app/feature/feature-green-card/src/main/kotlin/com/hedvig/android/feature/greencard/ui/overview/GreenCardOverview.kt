@@ -81,8 +81,8 @@ private fun GreenCardOverviewScreen(
         EmptyState(
           // TODO: Add "Your green card is ready" / "Ditt gröna kort är klart" to Lokalise
           text = "Your green card is ready",
-          // TODO: Add "If you entered an email, we have sent the green card there too." / "Om du angav en e-postadress har vi även skickat det gröna kortet dit." to Lokalise
-          description = "If you entered an email, we have sent the green card there too.",
+          // TODO: Add "We will send the physical copy to the address you entered." / "Vi skickar det fysiska kortet till adressen du angav." to Lokalise
+          description = "We will send the physical copy to the address you entered.",
           iconStyle = SUCCESS,
         )
         Spacer(Modifier.weight(1f))

@@ -18,8 +18,7 @@ internal class FakeGetGreenCardSpecificationsUseCase(
   private val fakeGreenCardBackend: FakeGreenCardBackend,
 ) : GetGreenCardSpecificationsUseCase {
   override suspend fun invoke(): Either<ErrorMessage, GreenCardSpecifications> {
-    val (email, contracts) = fakeGreenCardBackend.specifications()
-    return GreenCardSpecifications(email, contracts).right()
+    return GreenCardSpecifications(fakeGreenCardBackend.specifications()).right()
   }
 }
 
@@ -37,7 +36,6 @@ internal class FakeGetGreenCardSpecificationsUseCase(
 //       .mapLeft(::ErrorMessage)
 //       .map { data ->
 //         GreenCardSpecifications(
-//           email = data.currentMember.email,
 //           contracts = data.currentMember.greenCardSpecifications.map {
 //             GreenCardContractSpecification(
 //               contractId = it.contractId,

@@ -13,7 +13,8 @@ internal interface CreateGreenCardUseCase {
     contractId: String,
     travelStartDate: LocalDate,
     travelEndDate: LocalDate,
-    email: String?,
+    mailingAddress: GreenCardAddress,
+    coDrivers: List<GreenCardCoDriver>,
   ): Either<ErrorMessage, GreenCardUrl>
 }
 
@@ -27,7 +28,8 @@ internal class FakeCreateGreenCardUseCase(
     contractId: String,
     travelStartDate: LocalDate,
     travelEndDate: LocalDate,
-    email: String?,
+    mailingAddress: GreenCardAddress,
+    coDrivers: List<GreenCardCoDriver>,
   ): Either<ErrorMessage, GreenCardUrl> {
     return GreenCardUrl(fakeGreenCardBackend.create(contractId, travelStartDate, travelEndDate).signedUrl).right()
   }
@@ -43,13 +45,15 @@ internal class FakeCreateGreenCardUseCase(
 //     contractId: String,
 //     travelStartDate: LocalDate,
 //     travelEndDate: LocalDate,
-//     email: String?,
+//     mailingAddress: GreenCardAddress,
+//     coDrivers: List<GreenCardCoDriver>,
 //   ): Either<ErrorMessage, GreenCardUrl> {
 //     val input = GreenCardCreateInput(
 //       contractId = contractId,
 //       travelStartDate = travelStartDate,
 //       travelEndDate = travelEndDate,
-//       email = Optional.presentIfNotNull(email),
+//       mailingAddress = mailingAddress.toInput(),
+//       coDrivers = coDrivers.map { GreenCardCoDriverInput(name = it.name, address = it.address.toInput()) },
 //     )
 //     return apolloClient.mutation(GreenCardCreateMutation(input))
 //       .safeExecute()
@@ -58,3 +62,10 @@ internal class FakeCreateGreenCardUseCase(
 //       .map { GreenCardUrl(it.greenCardCreate.signedUrl) }
 //   }
 // }
+//
+// private fun GreenCardAddress.toInput() = GreenCardAddressInput(
+//   street = street,
+//   postalCode = postalCode,
+//   city = city,
+//   country = country,
+// )

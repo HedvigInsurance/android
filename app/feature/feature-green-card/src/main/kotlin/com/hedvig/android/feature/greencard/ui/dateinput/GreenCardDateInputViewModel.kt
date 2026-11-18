@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.greencard.ui.dateinput
 
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -14,6 +15,8 @@ import com.hedvig.android.design.system.hedvig.api.HedvigSelectableDates
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
 import com.hedvig.android.feature.greencard.data.CreateGreenCardUseCase
 import com.hedvig.android.feature.greencard.data.GetGreenCardSpecificationsUseCase
+import com.hedvig.android.feature.greencard.data.GreenCardAddress
+import com.hedvig.android.feature.greencard.data.GreenCardCoDriver
 import com.hedvig.android.feature.greencard.data.GreenCardContractSpecification
 import com.hedvig.android.feature.greencard.navigation.GreenCardCreatedKey
 import com.hedvig.android.feature.greencard.navigation.GreenCardKey
@@ -25,7 +28,6 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
-import com.hedvig.core.common.android.validation.isValidEmail
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
 import kotlin.time.Instant
@@ -70,7 +72,7 @@ internal class GreenCardDateInputPresenter(
     }
     var loadFailed by remember { mutableStateOf(false) }
     var dateError by remember { mutableStateOf<DateError?>(null) }
-    var emailError by remember { mutableStateOf<EmailError?>(null) }
+    var showMissingFieldErrors by remember { mutableStateOf(false) }
     var createRequest by remember { mutableStateOf<CreateRequest?>(null) }
     var showCreateError by remember { mutableStateOf(false) }
 
@@ -80,9 +82,12 @@ internal class GreenCardDateInputPresenter(
           loadIteration++
         }
 
-        is GreenCardDateInputEvent.ChangeEmail -> {
-          emailError = null
-          form = form?.copy(email = event.email)
+        GreenCardDateInputEvent.AddCoDriver -> {
+          form = form?.let { it.copy(coDrivers = it.coDrivers + CoDriverFieldsState()) }
+        }
+
+        is GreenCardDateInputEvent.RemoveCoDriver -> {
+          form = form?.let { it.copy(coDrivers = it.coDrivers - event.coDriver) }
         }
 
         GreenCardDateInputEvent.ClearDateError -> {
@@ -97,16 +102,23 @@ internal class GreenCardDateInputPresenter(
           val currentForm = form ?: return@CollectEvents
           val startDate = currentForm.startDatePickerState.selectedDate()
           val endDate = currentForm.endDatePickerState.selectedDate()
-          val email = currentForm.email.trim().ifEmpty { null }
           dateError = when {
             startDate == null -> DateError.MissingStartDate
             endDate == null -> DateError.MissingEndDate
             endDate < startDate -> DateError.EndBeforeStart
             else -> null
           }
-          emailError = if (email != null && !isValidEmail(email)) EmailError.Invalid else null
-          if (dateError == null && emailError == null) {
-            createRequest = CreateRequest(currentForm.specification.contractId, startDate!!, endDate!!, email)
+          val hasMissingFields = !currentForm.mailingAddress.isComplete() ||
+            currentForm.coDrivers.any { !it.isComplete() }
+          showMissingFieldErrors = hasMissingFields
+          if (dateError == null && !hasMissingFields) {
+            createRequest = CreateRequest(
+              contractId = currentForm.specification.contractId,
+              startDate = startDate!!,
+              endDate = endDate!!,
+              mailingAddress = currentForm.mailingAddress.toAddress(),
+              coDrivers = currentForm.coDrivers.map(CoDriverFieldsState::toCoDriver),
+            )
           }
         }
       }
@@ -126,7 +138,7 @@ internal class GreenCardDateInputPresenter(
             logcat(LogPriority.ERROR) { "No green card specification for contract $contractId" }
             loadFailed = true
           } else {
-            form = createForm(specification, specifications.email)
+            form = createForm(specification)
           }
         },
       )
@@ -138,7 +150,8 @@ internal class GreenCardDateInputPresenter(
         contractId = request.contractId,
         travelStartDate = request.startDate,
         travelEndDate = request.endDate,
-        email = request.email,
+        mailingAddress = request.mailingAddress,
+        coDrivers = request.coDrivers,
       ).fold(
         ifLeft = {
           logcat(LogPriority.ERROR) { "Creating green card failed: $it" }
@@ -156,7 +169,7 @@ internal class GreenCardDateInputPresenter(
       currentForm != null -> GreenCardDateInputUiState.Success(
         form = currentForm,
         dateError = dateError,
-        emailError = emailError,
+        showMissingFieldErrors = showMissingFieldErrors,
         isCreating = createRequest != null,
         showCreateError = showCreateError,
       )
@@ -167,7 +180,7 @@ internal class GreenCardDateInputPresenter(
     }
   }
 
-  private fun createForm(specification: GreenCardContractSpecification, email: String?): GreenCardForm {
+  private fun createForm(specification: GreenCardContractSpecification): GreenCardForm {
     val dateRange = specification.minStartDate..specification.maxEndDate
     val yearRange = dateRange.start.year..dateRange.endInclusive.year
     val startDatePickerState = HedvigDatePickerState(
@@ -189,9 +202,10 @@ internal class GreenCardDateInputPresenter(
     )
     return GreenCardForm(
       specification = specification,
-      email = email.orEmpty(),
       startDatePickerState = startDatePickerState,
       endDatePickerState = endDatePickerState,
+      mailingAddress = AddressFieldsState(),
+      coDrivers = emptyList(),
     )
   }
 }
@@ -213,24 +227,63 @@ private data class CreateRequest(
   val contractId: String,
   val startDate: LocalDate,
   val endDate: LocalDate,
-  val email: String?,
+  val mailingAddress: GreenCardAddress,
+  val coDrivers: List<GreenCardCoDriver>,
 )
 
 internal data class GreenCardForm(
   val specification: GreenCardContractSpecification,
-  val email: String,
   val startDatePickerState: HedvigDatePickerState,
   val endDatePickerState: HedvigDatePickerState,
+  val mailingAddress: AddressFieldsState,
+  val coDrivers: List<CoDriverFieldsState>,
 )
 
-internal enum class DateError { MissingStartDate, MissingEndDate, EndBeforeStart }
+/**
+ * Text field states owned by the presenter, so typing edits them in place and keeps the cursor where it is.
+ */
+internal class AddressFieldsState(
+  street: String = "",
+  postalCode: String = "",
+  city: String = "",
+  country: String = "",
+) {
+  val street = TextFieldState(street)
+  val postalCode = TextFieldState(postalCode)
+  val city = TextFieldState(city)
+  val country = TextFieldState(country)
 
-internal enum class EmailError { Invalid }
+  fun isComplete(): Boolean = listOf(street, postalCode, city, country).none { it.text.isBlank() }
+
+  fun toAddress(): GreenCardAddress = GreenCardAddress(
+    street = street.trimmedText(),
+    postalCode = postalCode.trimmedText(),
+    city = city.trimmedText(),
+    country = country.trimmedText(),
+  )
+}
+
+internal class CoDriverFieldsState(
+  name: String = "",
+  val address: AddressFieldsState = AddressFieldsState(),
+) {
+  val name = TextFieldState(name)
+
+  fun isComplete(): Boolean = name.text.isNotBlank() && address.isComplete()
+
+  fun toCoDriver(): GreenCardCoDriver = GreenCardCoDriver(name.trimmedText(), address.toAddress())
+}
+
+private fun TextFieldState.trimmedText(): String = text.trim().toString()
+
+internal enum class DateError { MissingStartDate, MissingEndDate, EndBeforeStart }
 
 internal sealed interface GreenCardDateInputEvent {
   data object RetryLoadData : GreenCardDateInputEvent
 
-  data class ChangeEmail(val email: String) : GreenCardDateInputEvent
+  data object AddCoDriver : GreenCardDateInputEvent
+
+  data class RemoveCoDriver(val coDriver: CoDriverFieldsState) : GreenCardDateInputEvent
 
   data object ClearDateError : GreenCardDateInputEvent
 
@@ -247,7 +300,7 @@ internal sealed interface GreenCardDateInputUiState {
   data class Success(
     val form: GreenCardForm,
     val dateError: DateError?,
-    val emailError: EmailError?,
+    val showMissingFieldErrors: Boolean,
     val isCreating: Boolean,
     val showCreateError: Boolean,
   ) : GreenCardDateInputUiState
