@@ -18,8 +18,9 @@ import kotlin.native.ObjCName
  *
  * The platform performs it only when [tryConsume] returns true, which happens once per request, for whichever caller
  * gets there first: every copy of the state that carries the request shares it, on every thread. The presenter reads
- * [isPending] to tell whether the platform has taken it. Nothing shown on screen may depend on [isPending], since
- * taking a request does not produce a new state.
+ * [isPending] to tell whether the platform has taken it, in event handlers only. Nothing shown on screen, and no value
+ * computed while composing, may depend on [isPending], since taking a request does not produce a new state and is not
+ * observed by composition.
  */
 @Stable
 @ObjCName(name = "HedvigSharedNavigationRequest", swiftName = "NavigationRequest", exact = true)
