@@ -1,15 +1,19 @@
+@preconcurrency import HedvigShared
 import SwiftUI
 
 struct LoginView: View {
     @State private var model: LoginModel
     @Environment(\.scenePhase) private var scenePhase
+    private let holder: IosGraphHolder
 
     init(app: AppModel) {
         _model = State(initialValue: LoginModel(app: app))
+        holder = app.holder
     }
 
     var body: some View {
         VStack(spacing: 24) {
+            PublicImportantMessagesView(holder: holder)
             Text("Log in with BankID")
                 .font(.title2)
             content
