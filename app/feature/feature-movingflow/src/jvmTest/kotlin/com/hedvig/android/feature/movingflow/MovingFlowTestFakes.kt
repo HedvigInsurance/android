@@ -27,7 +27,21 @@ internal class InMemoryPreferencesDataStore : DataStore<Preferences> {
 
   override val data: Flow<Preferences> = preferences
 
+  /** How many writes were started. */
+  var writes = 0
+    private set
+
+  /** When set, each write waits for one entry before it reads and changes the preferences, in the order started. */
+  var gate: Channel<Unit>? = null
+
+  /** Removes everything stored, as if the flow was never started. */
+  fun clear() {
+    preferences.value = emptyPreferences()
+  }
+
   override suspend fun updateData(transform: suspend (t: Preferences) -> Preferences): Preferences {
+    writes++
+    gate?.receive()
     val updated = transform(preferences.value)
     preferences.value = updated
     return updated

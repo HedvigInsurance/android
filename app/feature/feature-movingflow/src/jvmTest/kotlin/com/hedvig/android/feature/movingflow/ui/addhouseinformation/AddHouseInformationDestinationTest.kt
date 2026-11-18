@@ -1,6 +1,9 @@
 package com.hedvig.android.feature.movingflow.ui.addhouseinformation
 
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onAllNodesWithText
@@ -43,6 +46,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.getString
 import org.junit.After
 import org.junit.Before
@@ -64,6 +68,9 @@ class AddHouseInformationDestinationTest {
   private val backstack = TestBackstack(flowStack.toMutableList())
   private val transport = FakeMoveIntentRequestTransport()
   private val lifecycleOwner = TestLifecycleOwner()
+
+  /** False while the member is on another tab, whose run is shown instead of this entry. */
+  private var shown by mutableStateOf(true)
 
   // Cleared after each test, so no presenter keeps running into the next test class.
   private val viewModelStore = ViewModelStore()
@@ -104,6 +111,7 @@ class AddHouseInformationDestinationTest {
     }
     val viewModel = ViewModelProvider.create(viewModelStore, factory)[AddHouseInformationViewModel::class]
     setContent {
+      if (!shown) return@setContent
       CompositionLocalProvider(LocalLifecycleOwner provides lifecycleOwner) {
         HedvigTheme {
           AddHouseInformationDestination(
@@ -166,11 +174,49 @@ class AddHouseInformationDestinationTest {
     assertThat(backstack.entries).isEqualTo(flowStack + coverageKey)
   }
 
+  @Test
+  fun `quotes that arrive after the member went back from the step push nothing`() = runComposeUiTest {
+    showDestination()
+    onNodeWithText(continueText).performClick()
+    waitUntil(timeoutMillis = TIMEOUT_MILLIS) { transport.inputs.isNotEmpty() }
+    // Back: the entry is popped and runs its exit transition capped at CREATED.
+    backstack.entries.removeLast()
+    lifecycleOwner.registry.currentState = Lifecycle.State.CREATED
+    transport.responses.trySend(moveIntentRequestData(homeQuotes = listOf(testMoveHomeQuote(id = "quote"))))
+    settle()
+    assertThat(backstack.entries).isEqualTo(flowStack.dropLast(1))
+  }
+
+  @Test
+  fun `quotes that arrive while another tab is shown push the step onto the flow once the member is back`() =
+    runComposeUiTest {
+      showDestination()
+      onNodeWithText(continueText).performClick()
+      waitUntil(timeoutMillis = TIMEOUT_MILLIS) { transport.inputs.isNotEmpty() }
+      val otherTab = listOf<HedvigNavKey>(OtherTabKey)
+      backstack.entries.clear()
+      backstack.entries.addAll(otherTab)
+      shown = false
+      transport.responses.trySend(moveIntentRequestData(homeQuotes = listOf(testMoveHomeQuote(id = "quote"))))
+      settle()
+      assertThat(backstack.entries).isEqualTo(otherTab)
+
+      backstack.entries.clear()
+      backstack.entries.addAll(flowStack)
+      shown = true
+      waitUntil(timeoutMillis = TIMEOUT_MILLIS) { backstack.entries.size > flowStack.size }
+      settle()
+      assertThat(backstack.entries).isEqualTo(flowStack + coverageKey)
+    }
+
   private companion object {
     const val TIMEOUT_MILLIS = 5_000L
     const val SETTLE_MILLIS = 300L
   }
 }
+
+@Serializable
+private data object OtherTabKey : HedvigNavKey
 
 private class TestLifecycleOwner : LifecycleOwner {
   val registry: LifecycleRegistry = LifecycleRegistry.createUnsafe(this).apply {

@@ -41,6 +41,7 @@ import com.hedvig.android.molecule.test.MoleculePresenterTestContext
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.molecule.test.testFrames
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -286,8 +287,10 @@ class AddHouseInformationPresenterTest {
   private val requestTransport = FakeMoveIntentRequestTransport()
   private val quotes = moveIntentRequestData(homeQuotes = listOf(testMoveHomeQuote(id = "quote")))
 
-  private suspend fun inMemoryRepository(): MovingFlowRepository {
-    val storage = MovingFlowStorage(InMemoryPreferencesDataStore())
+  private suspend fun inMemoryRepository(
+    dataStore: InMemoryPreferencesDataStore = InMemoryPreferencesDataStore(),
+  ): MovingFlowRepository {
+    val storage = MovingFlowStorage(dataStore)
     storage.setMovingFlowState(
       testMovingFlowStateWithPropertyInput(HousingType.Villa, movingSource = MovingSource.TERMINATION),
     )
@@ -439,6 +442,68 @@ class AddHouseInformationPresenterTest {
       val next = succeed()
       frame()
       assertThat(observed.mapNotNull { (it as? Content)?.next }.distinct()).containsExactly(next)
+    }
+  }
+
+  @Test
+  fun `frames, two continues handled in one frame write the input once and send one request`() = runTest {
+    val dataStore = InMemoryPreferencesDataStore()
+    framePresenter(inMemoryRepository(dataStore)).testFrames(AddHouseInformationUiState.Loading) {
+      showFilledInForm()
+      val writesBefore = dataStore.writes
+      emit(AddHouseInformationEvent.Submit, AddHouseInformationEvent.Submit)
+      frame()
+      assertThat(dataStore.writes - writesBefore).isEqualTo(1)
+      assertThat(requestTransport.inputs).hasSize(1)
+    }
+  }
+
+  @Test
+  fun `frames, a second continue during a slow write is not sent after the first request failed`() = runTest {
+    val dataStore = InMemoryPreferencesDataStore()
+    val repository = inMemoryRepository(dataStore)
+    framePresenter(repository).testFrames(AddHouseInformationUiState.Loading) {
+      showFilledInForm()
+      val writes = Channel<Unit>(Channel.UNLIMITED)
+      dataStore.gate = writes
+      emit(AddHouseInformationEvent.Submit, AddHouseInformationEvent.Submit)
+      frame()
+      // The input is stored before the request is sent.
+      assertThat(requestTransport.inputs).isEmpty()
+      writes.trySend(Unit)
+      frame()
+      val stored = repository.movingFlowState().first()?.propertyState as MovingFlowState.PropertyState.HouseState
+      assertThat(stored.ancillaryArea).isEqualTo(15)
+      assertThat(requestTransport.inputs).containsExactly(expectedRequest.moveIntentRequestInput)
+
+      // The request fails fast, before any further write lands.
+      requestTransport.responses.trySend(null)
+      frame()
+      writes.trySend(Unit)
+      writes.trySend(Unit)
+      frame()
+      frame()
+      assertThat(requestTransport.inputs).hasSize(1)
+      assertThat(content.submittingInfoFailure).isEqualTo(SubmittingInfoFailure.NetworkFailure)
+      assertThat(content.isLoadingNextStep).isFalse()
+    }
+  }
+
+  @Test
+  fun `frames, a continue whose stored flow is gone when the input is written sends nothing`() = runTest {
+    val dataStore = InMemoryPreferencesDataStore()
+    framePresenter(inMemoryRepository(dataStore)).testFrames(AddHouseInformationUiState.Loading) {
+      showFilledInForm()
+      val writes = Channel<Unit>(Channel.UNLIMITED)
+      dataStore.gate = writes
+      emit(AddHouseInformationEvent.Submit)
+      frame()
+      dataStore.clear()
+      writes.trySend(Unit)
+      frame()
+      frame()
+      assertThat(requestTransport.inputs).isEmpty()
+      assertThat(latest).isEqualTo(AddHouseInformationUiState.MissingOngoingMovingFlow)
     }
   }
 

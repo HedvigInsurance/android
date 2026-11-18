@@ -6,7 +6,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import arrow.core.None
 import arrow.core.Option
@@ -43,7 +42,6 @@ import com.hedvig.android.molecule.public.NavigationRequest
 import com.hedvig.android.molecule.public.rememberAttempts
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
-import kotlinx.coroutines.launch
 import octopus.feature.movingflow.MoveIntentV2RequestMutation
 import octopus.type.MoveExtraBuildingInput
 import octopus.type.MoveIntentRequestInput
@@ -89,14 +87,26 @@ internal class AddHouseInformationPresenter(
     var next: NavigationRequest<ChoseCoverageLevelAndDeductibleStep>? by remember {
       mutableStateOf((lastState as? Content)?.next)
     }
-    val requestQuotes = rememberAttempts<InputForSubmission>(
+    // The input is stored inside the run, so the run starts in the event handler that passed the guard.
+    val requestQuotes = rememberAttempts<ValidAddressInput>(
       restoredWhileRunning = (lastState as? Content)?.isLoadingNextStep == true,
-    ) { inputForSubmission ->
+    ) { validContent ->
+      val movingFlowState = movingFlowRepository.updateWithHouseInput(
+        validContent.yearOfConstruction,
+        validContent.ancillaryArea,
+        validContent.numberOfBathrooms,
+        validContent.isSublet,
+        validContent.extraBuildings,
+      )
+      if (movingFlowState == null) {
+        submittingInfoFailure = NetworkFailure
+        return@rememberAttempts false
+      }
       apolloClient
         .mutation(
           MoveIntentV2RequestMutation(
             intentId = moveIntentId,
-            moveIntentRequestInput = inputForSubmission.moveIntentRequestInput,
+            moveIntentRequestInput = movingFlowState.toInputForSubmission(validContent).moveIntentRequestInput,
             addonsFlagOn = true,
           ),
         )
@@ -133,7 +143,6 @@ internal class AddHouseInformationPresenter(
       }
     }
 
-    val coroutineScope = rememberCoroutineScope()
     CollectEvents { event ->
       when (event) {
         Submit -> {
@@ -142,20 +151,7 @@ internal class AddHouseInformationPresenter(
           val addressInput = addressInput.getOrNull() ?: return@CollectEvents
           val validContent = addressInput.validate()
           if (validContent == null) return@CollectEvents
-          coroutineScope.launch {
-            val movingFlowState = movingFlowRepository.updateWithHouseInput(
-              validContent.yearOfConstruction,
-              validContent.ancillaryArea,
-              validContent.numberOfBathrooms,
-              validContent.isSublet,
-              validContent.extraBuildings,
-            )
-            if (movingFlowState != null) {
-              requestQuotes.start(movingFlowState.toInputForSubmission(validContent))
-            } else {
-              submittingInfoFailure = NetworkFailure
-            }
-          }
+          requestQuotes.start(validContent)
         }
 
         DismissSubmissionError -> {
