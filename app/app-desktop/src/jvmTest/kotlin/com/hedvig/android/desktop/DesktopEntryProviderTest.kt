@@ -29,13 +29,10 @@ import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
 import io.github.classgraph.ClassGraph
-import java.io.File
 import java.lang.reflect.InvocationTargetException
-import kotlin.io.path.createTempDirectory
 import kotlin.reflect.KClass
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 
@@ -45,14 +42,7 @@ class DesktopEntryProviderTest {
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule(recordingLogger)
 
-  private val dataDirectory: File = createTempDirectory("desktop-entry-provider-test").toFile()
-
   private val backstack = newBackstackController()
-
-  @After
-  fun tearDown() {
-    dataDirectory.deleteRecursively()
-  }
 
   /**
    * Every concrete `@Serializable` [HedvigNavKey] on the desktop classpath is a key the back stack can hold, so the
@@ -64,7 +54,7 @@ class DesktopEntryProviderTest {
   @Test
   fun `the shared provider registers an entry for every navigation key on the classpath`() {
     val scope = EntryProviderScope<HedvigNavKey> { key -> error("No entry is registered for $key") }
-    registerSharedEntries(scope, createTestDesktopGraph(dataDirectory))
+    registerSharedEntries(scope, createTestDesktopGraph())
     val registeredKeyClasses = scope.registeredKeyClasses()
     val navigationKeyClasses = concreteSerializableNavKeysOnClasspath()
 
@@ -79,7 +69,7 @@ class DesktopEntryProviderTest {
   @Test
   fun `the keys the app opens resolve through the shared provider without a fallback`() {
     val provider = entryProvider<HedvigNavKey> {
-      registerSharedEntries(this, createTestDesktopGraph(dataDirectory))
+      registerSharedEntries(this, createTestDesktopGraph())
     }
 
     publicKeys.forEach { key ->
@@ -90,7 +80,7 @@ class DesktopEntryProviderTest {
   @Test
   fun `the shared tab roots keep the navigation bar`() {
     val provider = entryProvider<HedvigNavKey> {
-      registerSharedEntries(this, createTestDesktopGraph(dataDirectory))
+      registerSharedEntries(this, createTestDesktopGraph())
     }
     val showNavBar = NavSuiteSceneDecoratorStrategy.showNavBar()
 
