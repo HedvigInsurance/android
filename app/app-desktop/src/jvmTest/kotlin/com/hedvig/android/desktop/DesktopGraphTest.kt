@@ -7,7 +7,6 @@ import assertk.assertions.isInstanceOf
 import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import dev.zacsweers.metro.createGraphFactory
-import java.io.File
 import kotlin.io.path.createTempDirectory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,8 +23,6 @@ class DesktopGraphTest {
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
 
-  private val dataDirectory: File = createTempDirectory("desktop-graph-test").toFile()
-
   @Before
   fun setUp() {
     // ViewModels launch their presenters on Dispatchers.Main. This dispatcher is never advanced, so constructing them
@@ -36,12 +33,11 @@ class DesktopGraphTest {
   @After
   fun tearDown() {
     Dispatchers.resetMain()
-    dataDirectory.deleteRecursively()
   }
 
   @Test
   fun `every feature the shared entry provider registers has its ViewModels in the graph`() {
-    val graph = createTestDesktopGraph(dataDirectory)
+    val graph = createTestDesktopGraph()
     val registeredViewModels = (
       graph.viewModelProviders.keys +
         graph.assistedFactoryProviders.keys +
@@ -57,7 +53,7 @@ class DesktopGraphTest {
 
   @Test
   fun `every ViewModel and ViewModel factory in the graph can be built`() {
-    val graph = createTestDesktopGraph(dataDirectory)
+    val graph = createTestDesktopGraph()
 
     graph.viewModelProviders.values.forEach { provider -> provider() }
     graph.assistedFactoryProviders.values.forEach { provider -> provider() }
@@ -67,14 +63,14 @@ class DesktopGraphTest {
 
   @Test
   fun `tracking is the desktop client that sends nothing`() {
-    val graph = createTestDesktopGraph(dataDirectory)
+    val graph = createTestDesktopGraph()
 
     assertThat(graph.eventTrackingClient).isInstanceOf<LoggingEventTrackingClient>()
   }
 
   @Test
   fun `the Apollo client logs out on an unauthenticated response, then logs the request`() {
-    val graph = createTestDesktopGraph(dataDirectory)
+    val graph = createTestDesktopGraph()
 
     assertThat(graph.apolloClient.interceptors.map { it::class.qualifiedName }).containsExactly(
       "com.hedvig.android.network.clients.apollo.LogoutOnUnauthenticatedInterceptor",
@@ -119,11 +115,17 @@ class DesktopGraphTest {
   }
 }
 
-internal fun createTestDesktopGraph(
-  dataDirectory: File,
-  backend: DesktopBackend = DesktopBackend.Staging,
-): DesktopGraph = createGraphFactory<DesktopGraph.Factory>().create(
-  backstackController = newBackstackController(),
-  appBuildConfig = DesktopAppBuildConfig(backend, versionName = "14.6.3", versionCode = 43),
-  dataDirectory = dataDirectory,
-)
+/**
+ * A desktop graph over its own data directory, deleted when the test JVM exits rather than when the test ends: the
+ * graph's DataStore keeps writing there from background coroutines (the device id, on `Dispatchers.IO`), and a write
+ * failing on a deleted directory surfaces as an uncaught exception in the next `runTest` of the JVM.
+ */
+internal fun createTestDesktopGraph(backend: DesktopBackend = DesktopBackend.Staging): DesktopGraph {
+  val dataDirectory = createTempDirectory("desktop-graph-test").toFile()
+  Runtime.getRuntime().addShutdownHook(Thread { dataDirectory.deleteRecursively() })
+  return createGraphFactory<DesktopGraph.Factory>().create(
+    backstackController = newBackstackController(),
+    appBuildConfig = DesktopAppBuildConfig(backend, versionName = "14.6.3", versionCode = 43),
+    dataDirectory = dataDirectory,
+  )
+}
