@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.login.navigation
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.EntryProviderScope
 import com.eygraber.uri.Uri
@@ -29,6 +31,7 @@ fun EntryProviderScope<HedvigNavKey>.loginEntries(
   openUrl: (String) -> Unit,
   onOpenEmailApp: () -> Unit,
   onNavigateToLoggedIn: () -> Unit,
+  publicImportantMessages: @Composable (reloadKey: Any?, modifier: Modifier) -> Unit,
 ) {
   entry<LoginKey> {
     val marketingViewModel: MarketingViewModel = metroViewModel()
@@ -44,6 +47,7 @@ fun EntryProviderScope<HedvigNavKey>.loginEntries(
       navigateToLoginScreen = dropUnlessResumed {
         backstack.add(SwedishLoginKey)
       },
+      publicImportantMessages = publicImportantMessages,
     )
   }
   entry<SwedishLoginKey> {

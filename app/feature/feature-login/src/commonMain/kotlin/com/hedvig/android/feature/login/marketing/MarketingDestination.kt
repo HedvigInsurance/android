@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -34,12 +36,14 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigToggle
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.IconResource
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioGroupSize
 import com.hedvig.android.design.system.hedvig.RadioOption
@@ -71,6 +75,7 @@ internal fun MarketingDestination(
   appVersionName: String,
   openWebOnboarding: () -> Unit,
   navigateToLoginScreen: () -> Unit,
+  publicImportantMessages: @Composable (reloadKey: Any?, modifier: Modifier) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   MarketingScreen(
@@ -80,6 +85,7 @@ internal fun MarketingDestination(
     setBankIdSandboxEnabled = { enabled -> viewModel.emit(MarketingEvent.SetBankIdSandboxEnabled(enabled)) },
     openWebOnboarding = openWebOnboarding,
     navigateToLoginScreen = navigateToLoginScreen,
+    publicImportantMessages = publicImportantMessages,
   )
 }
 
@@ -91,6 +97,7 @@ private fun MarketingScreen(
   setBankIdSandboxEnabled: (Boolean) -> Unit,
   openWebOnboarding: () -> Unit,
   navigateToLoginScreen: () -> Unit,
+  publicImportantMessages: @Composable (reloadKey: Any?, modifier: Modifier) -> Unit,
 ) {
   val preferencesSheetState = rememberHedvigBottomSheetState<Unit>()
   if (uiState is MarketingUiState.Success) {
@@ -144,7 +151,6 @@ private fun MarketingScreen(
             .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
         )
         Column(
-          verticalArrangement = Arrangement.spacedBy(8.dp),
           modifier = Modifier
             .padding(horizontal = 16.dp)
             .padding(bottom = 16.dp)
@@ -152,41 +158,53 @@ private fun MarketingScreen(
               WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
             ),
         ) {
-          if (uiState is MarketingUiState.Success && uiState.isBankIdSandboxAvailable) {
-            HedvigToggle(
-              labelText = "BankID sandbox",
-              turnedOn = uiState.isBankIdSandboxEnabled,
-              onClick = setBankIdSandboxEnabled,
-              enabled = true,
-              toggleStyle = ToggleStyle.Default(ToggleDefaultStyleSize.Small),
+          // Measured after the buttons, so the cards get only the height left over and scroll within it.
+          Column(
+            Modifier
+              .weight(1f, fill = false)
+              .verticalScroll(rememberScrollState()),
+          ) {
+            if (uiState is MarketingUiState.Success) {
+              publicImportantMessages(uiState.language, Modifier.padding(top = 16.dp, bottom = 8.dp))
+            }
+          }
+          Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            if (uiState is MarketingUiState.Success && uiState.isBankIdSandboxAvailable) {
+              HedvigToggle(
+                labelText = "BankID sandbox",
+                turnedOn = uiState.isBankIdSandboxEnabled,
+                onClick = setBankIdSandboxEnabled,
+                enabled = true,
+                toggleStyle = ToggleStyle.Default(ToggleDefaultStyleSize.Small),
+                modifier = Modifier.fillMaxWidth(),
+              )
+            }
+            HedvigButton(
+              text = stringResource(Res.string.SETTINGS_LOGIN_ROW),
+              enabled = uiState is MarketingUiState.Success,
+              onClick = {
+                (uiState as? MarketingUiState.Success)?.run {
+                  navigateToLoginScreen()
+                }
+              },
+              modifier = Modifier
+                .fillMaxWidth()
+                .testTag("login_button"),
+            )
+            val linkRoleDescription = stringResource(Res.string.TALKBACK_OPEN_EXTERNAL_LINK)
+            HedvigTextButton(
+              text = stringResource(Res.string.MARKETING_GET_HEDVIG),
+              onClickLabel = linkRoleDescription,
               modifier = Modifier.fillMaxWidth(),
+              enabled = uiState is MarketingUiState.Success,
+              buttonSize = Large,
+              onClick = {
+                (uiState as? MarketingUiState.Success)?.run {
+                  openWebOnboarding()
+                }
+              },
             )
           }
-          HedvigButton(
-            text = stringResource(Res.string.SETTINGS_LOGIN_ROW),
-            enabled = uiState is MarketingUiState.Success,
-            onClick = {
-              (uiState as? MarketingUiState.Success)?.run {
-                navigateToLoginScreen()
-              }
-            },
-            modifier = Modifier
-              .fillMaxWidth()
-              .testTag("login_button"),
-          )
-          val linkRoleDescription = stringResource(Res.string.TALKBACK_OPEN_EXTERNAL_LINK)
-          HedvigTextButton(
-            text = stringResource(Res.string.MARKETING_GET_HEDVIG),
-            onClickLabel = linkRoleDescription,
-            modifier = Modifier.fillMaxWidth(),
-            enabled = uiState is MarketingUiState.Success,
-            buttonSize = Large,
-            onClick = {
-              (uiState as? MarketingUiState.Success)?.run {
-                openWebOnboarding()
-              }
-            },
-          )
         }
       }
       if (uiState is MarketingUiState.Success) {
@@ -279,6 +297,38 @@ private fun PreviewMarketingScreen() {
         {},
         {},
         {},
+        { _, _ -> },
+      )
+    }
+  }
+}
+
+@Preview
+@Composable
+private fun PreviewMarketingScreenWithImportantMessages() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      MarketingScreen(
+        MarketingUiState.Success(Language.EN_SE, isBankIdSandboxAvailable = false, isBankIdSandboxEnabled = false),
+        "X.Y.Z",
+        {},
+        {},
+        {},
+        {},
+        { _, modifier ->
+          Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            HedvigNotificationCard(
+              message = "Logging in with BankID is slower than usual. We are working on it.",
+              priority = NotificationPriority.Error,
+              modifier = Modifier.fillMaxWidth(),
+            )
+            HedvigNotificationCard(
+              message = "Our phone lines are closed today.",
+              priority = NotificationPriority.Info,
+              modifier = Modifier.fillMaxWidth(),
+            )
+          }
+        },
       )
     }
   }
