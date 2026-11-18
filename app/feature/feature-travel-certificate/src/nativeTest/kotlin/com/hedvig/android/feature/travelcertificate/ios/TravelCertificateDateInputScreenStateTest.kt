@@ -3,7 +3,9 @@ package com.hedvig.android.feature.travelcertificate.ios
 import assertk.assertThat
 import assertk.assertions.doesNotContain
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isSameInstanceAs
+import assertk.assertions.isTrue
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateTravellersStep
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.ui.generatewhen.EmailError
@@ -99,9 +101,11 @@ class TravelCertificateDateInputScreenStateTest {
       NavigationRequest.of(TravelCertificateUrl("https://example.com/c.pdf?s=1")),
     )
 
-    assertThat(created.toScreenState()).isEqualTo(
-      TravelCertificateDateInputScreenState.Created(TravelCertificateCreated("https://example.com/c.pdf?s=1")),
-    )
+    val mapped = created.toScreenState() as TravelCertificateDateInputScreenState.Created
+    assertThat(mapped.certificate.target).isEqualTo(TravelCertificateCreated("https://example.com/c.pdf?s=1"))
+    // Swift taking the request it is shown takes the presenter's, so Android cannot perform it again.
+    assertThat(mapped.certificate.tryConsume()).isTrue()
+    assertThat(created.exit.isPending).isFalse()
   }
 
   @Test
@@ -116,13 +120,17 @@ class TravelCertificateDateInputScreenStateTest {
         "daysValid=45, hasCoInsured=true, isCreating=false, createFailed=false, " +
         "next=NavigationRequest(id=${step.id}, isPending=true))",
     )
-    assertThat(TravelCertificateDateInputScreenState.Created(TravelCertificateCreated("https://secret")).toString())
-      .doesNotContain("secret")
+    val created = TravelCertificateDateInputScreenState.Created(
+      NavigationRequest.of(TravelCertificateCreated("https://secret")),
+    )
+    assertThat(created.toString()).doesNotContain("secret")
   }
 
   @Test
   fun `handle calls the closure for each case`() {
-    val created = TravelCertificateDateInputScreenState.Created(TravelCertificateCreated("https://c"))
+    val created = TravelCertificateDateInputScreenState.Created(
+      NavigationRequest.of(TravelCertificateCreated("https://c")),
+    )
     val calls = listOf(
       TravelCertificateDateInputScreenState.Loading,
       TravelCertificateDateInputScreenState.Failed,
@@ -134,7 +142,7 @@ class TravelCertificateDateInputScreenStateTest {
         onLoading = { called = "loading" },
         onFailed = { called = "failed" },
         onContent = { called = "content:${it.daysValid}" },
-        onCreated = { called = "created:${it.certificate.certificateUrl}" },
+        onCreated = { called = "created:${it.certificate.target.certificateUrl}" },
       )
       called
     }

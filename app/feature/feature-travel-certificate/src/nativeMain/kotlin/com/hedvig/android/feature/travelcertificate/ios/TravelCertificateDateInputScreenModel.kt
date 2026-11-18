@@ -2,6 +2,7 @@
 
 package com.hedvig.android.feature.travelcertificate.ios
 
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.ui.generatewhen.EmailError
 import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputEvent
 import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputUiState
@@ -109,5 +110,7 @@ internal fun TravelCertificateDateInputUiState.toScreenState(): TravelCertificat
     next = next,
   )
 
-  is TravelCertificateDateInputUiState.Created -> TravelCertificateDateInputScreenState.Created(url.toCreated())
+  is TravelCertificateDateInputUiState.Created -> TravelCertificateDateInputScreenState.Created(
+    exit.map(TravelCertificateUrl::toCreated),
+  )
 }

@@ -7,6 +7,7 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
+import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotEqualTo
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
@@ -142,11 +143,9 @@ class TravelCertificatePresenterScreenStatesTest {
     assertThat(run.awaitState()).isEqualTo(form.copy(isCreating = true))
     transport.responses.send("https://example.com/certificate.pdf?signature=secret")
 
-    assertThat(run.awaitState()).isEqualTo(
-      TravelCertificateDateInputScreenState.Created(
-        TravelCertificateCreated("https://example.com/certificate.pdf?signature=secret"),
-      ),
-    )
+    assertThat(run.awaitState()).isInstanceOf<TravelCertificateDateInputScreenState.Created>()
+      .transform { it.certificate.target }
+      .isEqualTo(TravelCertificateCreated("https://example.com/certificate.pdf?signature=secret"))
     assertThat(transport.inputs().map { it.email to it.startDate }).containsExactly(
       "member@hedvig.com" to LocalDate(2026, 11, 17),
       "member@hedvig.com" to LocalDate(2026, 11, 17),
@@ -204,11 +203,9 @@ class TravelCertificatePresenterScreenStatesTest {
       assertThat(run.awaitState()).isEqualTo(onlyBo.copy(isCreating = true))
       transport.responses.send("https://example.com/certificate.pdf?signature=secret")
 
-      assertThat(run.awaitState()).isEqualTo(
-        TravelCertificateTravellersScreenState.Created(
-          TravelCertificateCreated("https://example.com/certificate.pdf?signature=secret"),
-        ),
-      )
+      assertThat(run.awaitState()).isInstanceOf<TravelCertificateTravellersScreenState.Created>()
+        .transform { it.certificate.target }
+        .isEqualTo(TravelCertificateCreated("https://example.com/certificate.pdf?signature=secret"))
       val sent = transport.inputs()
       assertThat(sent.map { input -> input.isMemberIncluded to input.coInsured.map { it.fullName } }).containsExactly(
         false to listOf("Bo Berg"),

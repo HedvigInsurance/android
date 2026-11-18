@@ -52,8 +52,12 @@ sealed class TravelCertificateDateInputScreenState {
       "hasCoInsured=$hasCoInsured, isCreating=$isCreating, createFailed=$createFailed, next=$next)"
   }
 
-  /** The certificate exists. Nothing follows on this screen. */
-  data class Created(val certificate: TravelCertificateCreated) : TravelCertificateDateInputScreenState()
+  /**
+   * The certificate exists. Nothing follows on this screen. Leave for [certificate]'s target only when its
+   * `tryConsume()` returns true, which it does once, however often this state is observed.
+   */
+  data class Created(val certificate: NavigationRequest<TravelCertificateCreated>) :
+    TravelCertificateDateInputScreenState()
 
   /** Calls the closure for this state's case, so a Swift call site stops compiling when a case is added. */
   fun handle(onLoading: () -> Unit, onFailed: () -> Unit, onContent: (Content) -> Unit, onCreated: (Created) -> Unit) {

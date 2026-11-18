@@ -39,7 +39,8 @@ enum TravelCertificateTravellersViewState: ScreenViewState {
     case loading
     case failed
     case content(TravellersContent)
-    case created(TravelCreatedSummary)
+    /// The summary to show and the request to leave for it, taken with `perform`.
+    case created(TravelCreatedSummary, NavigationRequest<TravelCertificateCreated>)
 
     init(_ kotlinState: TravelCertificateTravellersScreenState) {
         self = oneOf { pick in
@@ -62,7 +63,7 @@ enum TravelCertificateTravellersViewState: ScreenViewState {
                     )
                 },
                 onCreated: { created in
-                    pick(.created(TravelCreatedSummary(created.certificate)))
+                    pick(.created(TravelCreatedSummary(created.certificate.target), created.certificate))
                 }
             )
         }
@@ -78,7 +79,7 @@ enum TravelCertificateTravellersViewState: ScreenViewState {
         case .failed: "failed"
         case let .content(content):
             "content(member \(content.isMemberIncluded), \(content.coInsured.filter(\.isIncluded).count) of \(content.coInsured.count) co-insured, missing info \(content.coInsuredHasMissingInfo), canCreate \(content.canCreate), creating \(content.isCreating), createFailed \(content.createFailed))"
-        case let .created(summary): "created(url length \(summary.length))"
+        case let .created(summary, _): "created(url length \(summary.length))"
         }
     }
 }

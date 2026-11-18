@@ -2,6 +2,8 @@ package com.hedvig.android.feature.travelcertificate.ios
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isTrue
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.CoInsured
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.CoInsured.CoInsuredId
@@ -110,9 +112,11 @@ class TravelCertificateTravellersScreenStateTest {
       NavigationRequest.of(TravelCertificateUrl("https://example.com/c.pdf")),
     )
 
-    assertThat(created.toScreenState()).isEqualTo(
-      TravelCertificateTravellersScreenState.Created(TravelCertificateCreated("https://example.com/c.pdf")),
-    )
+    val mapped = created.toScreenState() as TravelCertificateTravellersScreenState.Created
+    assertThat(mapped.certificate.target).isEqualTo(TravelCertificateCreated("https://example.com/c.pdf"))
+    // Swift taking the request it is shown takes the presenter's, so Android cannot perform it again.
+    assertThat(mapped.certificate.tryConsume()).isTrue()
+    assertThat(created.exit.isPending).isFalse()
   }
 
   @Test
@@ -130,14 +134,14 @@ class TravelCertificateTravellersScreenStateTest {
       TravelCertificateTravellersScreenState.Loading,
       TravelCertificateTravellersScreenState.Failed,
       content(),
-      TravelCertificateTravellersScreenState.Created(TravelCertificateCreated("https://c")),
+      TravelCertificateTravellersScreenState.Created(NavigationRequest.of(TravelCertificateCreated("https://c"))),
     ).map { state ->
       var called = ""
       state.handle(
         onLoading = { called = "loading" },
         onFailed = { called = "failed" },
         onContent = { called = "content:${it.coInsured.size}" },
-        onCreated = { called = "created:${it.certificate.certificateUrl}" },
+        onCreated = { called = "created:${it.certificate.target.certificateUrl}" },
       )
       called
     }

@@ -86,8 +86,10 @@ struct TravelCertificateDateInputView: View {
             owner?.perform(content.next) { step in
                 flow.path.append(.travellers(step))
             }
-        case let .created(summary):
-            flow.finish(summary)
+        case let .created(summary, request):
+            owner?.perform(request) { _ in
+                flow.finish(summary)
+            }
         }
     }
 
