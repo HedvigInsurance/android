@@ -1,6 +1,7 @@
 package com.hedvig.android.molecule.test
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -10,6 +11,7 @@ import assertk.assertions.containsExactly
 import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
+import assertk.assertions.isNotEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNotSameInstanceAs
 import assertk.assertions.isNull
@@ -18,7 +20,9 @@ import assertk.assertions.isTrue
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.NavigationRequest
-import com.hedvig.android.molecule.public.restoredAsOffer
+import com.hedvig.android.molecule.public.restoredAsRedirect
+import com.hedvig.android.molecule.public.restoredAsTapOffer
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
@@ -42,7 +46,7 @@ class NavigationRequestPresenterTest {
   private class RequestPresenter : MoleculePresenter<Event, Screen> {
     @Composable
     override fun MoleculePresenterScope<Event>.present(lastState: Screen): Screen {
-      var screen by remember { mutableStateOf(lastState.copy(next = lastState.next.restoredAsOffer())) }
+      var screen by remember { mutableStateOf(lastState.copy(next = lastState.next.restoredAsTapOffer())) }
       CollectEvents { event ->
         when (event) {
           Event.Submit -> {
@@ -254,5 +258,82 @@ class NavigationRequestPresenterTest {
 
     val withBodyRequest = DoneWithBodyRequest("certificate")
     assertThat(withBodyRequest.copy().exit).isNotSameInstanceAs(withBodyRequest.exit)
+  }
+
+  private sealed interface Redirecting {
+    data object Loading : Redirecting
+
+    data class Redirect(val step: NavigationRequest<String>) : Redirecting
+  }
+
+  /**
+   * Loads on start and redirects to what it loaded. [restore] maps the redirect of the last state; a null result
+   * makes the presenter load again.
+   */
+  private class RedirectPresenter(
+    private val loads: Channel<String>,
+    private val restore: (NavigationRequest<String>) -> NavigationRequest<String>?,
+  ) : MoleculePresenter<Unit, Redirecting> {
+    @Composable
+    override fun MoleculePresenterScope<Unit>.present(lastState: Redirecting): Redirecting {
+      var state by remember {
+        mutableStateOf(
+          (lastState as? Redirecting.Redirect)?.step?.let(restore)?.let(Redirecting::Redirect) ?: Redirecting.Loading,
+        )
+      }
+      LaunchedEffect(Unit) {
+        if (state is Redirecting.Redirect) return@LaunchedEffect
+        state = Redirecting.Redirect(NavigationRequest.of(loads.receive()))
+      }
+      return state
+    }
+  }
+
+  @Test
+  fun `redirect, a restart while the redirect is pending keeps it and loads nothing`() = runTest {
+    val loads = Channel<String>(Channel.UNLIMITED)
+    RedirectPresenter(loads) { it.restoredAsRedirect() }.testFrames(Redirecting.Loading) {
+      loads.trySend("step")
+      frame()
+      val redirect = (latest as Redirecting.Redirect).step
+      restart()
+      frame()
+      assertThat((latest as Redirecting.Redirect).step).isSameInstanceAs(redirect)
+      assertThat(redirect.isPending).isTrue()
+    }
+  }
+
+  @Test
+  fun `redirect, a restart after the redirect was taken loads again and redirects with a new request`() = runTest {
+    val loads = Channel<String>(Channel.UNLIMITED)
+    RedirectPresenter(loads) { it.restoredAsRedirect() }.testFrames(Redirecting.Loading) {
+      loads.trySend("step")
+      frame()
+      val taken = (latest as Redirecting.Redirect).step
+      taken.tryConsume()
+      restart()
+      frame()
+      assertThat(latest).isEqualTo(Redirecting.Loading)
+
+      loads.trySend("step")
+      frame()
+      val again = (latest as Redirecting.Redirect).step
+      assertThat(again).isNotEqualTo(taken)
+      assertThat(again.isPending).isTrue()
+    }
+  }
+
+  @Test
+  fun `redirect kept as it was, a restart after it was taken leaves a redirect nothing performs`() = runTest {
+    val loads = Channel<String>(Channel.UNLIMITED)
+    RedirectPresenter(loads) { it }.testFrames(Redirecting.Loading) {
+      loads.trySend("step")
+      frame()
+      (latest as Redirecting.Redirect).step.tryConsume()
+      restart()
+      loads.trySend("step")
+      frame()
+      assertThat((latest as Redirecting.Redirect).step.isPending).isFalse()
+    }
   }
 }

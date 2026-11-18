@@ -20,6 +20,7 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.molecule.public.NavigationRequest
 import com.hedvig.android.molecule.public.rememberAttempts
+import com.hedvig.android.molecule.public.restoredAsWriteOutcome
 import dev.zacsweers.metro.Inject
 
 @Inject
@@ -40,7 +41,14 @@ internal class ManualChargePresenter(
   override fun MoleculePresenterScope<ManualChargeEvent>.present(lastState: ManualChargeUiState): ManualChargeUiState {
     var dataLoadIteration by remember { mutableIntStateOf(0) }
     var refreshIteration by remember { mutableIntStateOf(0) }
-    var screenState by remember { mutableStateOf(lastState) }
+    var screenState by remember {
+      mutableStateOf(
+        when (lastState) {
+          is ManualChargeUiState.Charged -> lastState.copy(exit = lastState.exit.restoredAsWriteOutcome())
+          else -> lastState
+        },
+      )
+    }
     // Details shown before this run started may be stale, so only details loaded in this run can be charged.
     var loadedInThisRun by remember { mutableStateOf(false) }
     val charge = rememberAttempts<Unit>(

@@ -92,16 +92,41 @@ class NavigationRequestTest {
   }
 
   @Test
-  fun `restoring an offer drops it while pending and keeps it once taken`() {
+  fun `restoring a tap offer drops it while pending and keeps it once taken`() {
     val pending = NavigationRequest.of("step")
-    assertThat(pending.restoredAsOffer()).isNull()
+    assertThat(pending.restoredAsTapOffer()).isNull()
     // A screen still showing the state from before the restart cannot perform the dropped offer.
     assertThat(pending.tryConsume()).isFalse()
 
     val taken = NavigationRequest.of("step").also { it.tryConsume() }
-    assertThat(taken.restoredAsOffer()).isSameInstanceAs(taken)
-    assertThat(taken.restoredAsOffer()!!.tryConsume()).isFalse()
+    assertThat(taken.restoredAsTapOffer()).isSameInstanceAs(taken)
+    assertThat(taken.restoredAsTapOffer()!!.tryConsume()).isFalse()
 
-    assertThat((null as NavigationRequest<String>?).restoredAsOffer()).isNull()
+    assertThat((null as NavigationRequest<String>?).restoredAsTapOffer()).isNull()
+  }
+
+  @Test
+  fun `restoring the outcome of a write keeps it as it was, pending or taken`() {
+    val pending = NavigationRequest.of("certificate")
+    assertThat(pending.restoredAsWriteOutcome()).isSameInstanceAs(pending)
+    assertThat(pending.isPending).isTrue()
+
+    val taken = NavigationRequest.of("certificate").also { it.tryConsume() }
+    assertThat(taken.restoredAsWriteOutcome()).isSameInstanceAs(taken)
+    assertThat(taken.isPending).isFalse()
+
+    assertThat((null as NavigationRequest<String>?).restoredAsWriteOutcome()).isNull()
+  }
+
+  @Test
+  fun `restoring a redirect keeps it while pending and drops it once taken`() {
+    val pending = NavigationRequest.of("step")
+    assertThat(pending.restoredAsRedirect()).isSameInstanceAs(pending)
+    assertThat(pending.isPending).isTrue()
+
+    val taken = NavigationRequest.of("step").also { it.tryConsume() }
+    assertThat(taken.restoredAsRedirect()).isNull()
+
+    assertThat((null as NavigationRequest<String>?).restoredAsRedirect()).isNull()
   }
 }

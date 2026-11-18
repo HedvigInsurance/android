@@ -18,9 +18,13 @@ import kotlin.native.ObjCName
  *
  * The platform performs it only when [tryConsume] returns true, which happens once per request, for whichever caller
  * gets there first: every copy of the state that carries the request shares it, on every thread. The presenter reads
- * [isPending] to tell whether the platform has taken it, in event handlers only. Nothing shown on screen, and no value
- * computed while composing, may depend on [isPending], since taking a request does not produce a new state and is not
- * observed by composition.
+ * [isPending] to tell whether the platform has taken it, in event handlers, effects and when restoring. Nothing shown
+ * on screen, and no value computed while composing, may depend on [isPending], since taking a request does not produce
+ * a new state and is not observed by composition.
+ *
+ * A presenter that starts from a last state holding a request passes it through the restore function for its kind:
+ * [restoredAsTapOffer], [restoredAsWriteOutcome] or [restoredAsRedirect]. Each kind needs a different rule, so there
+ * is no default.
  */
 @Stable
 @ObjCName(name = "HedvigSharedNavigationRequest", swiftName = "NavigationRequest", exact = true)
@@ -61,9 +65,29 @@ class NavigationRequest<out T : Any> private constructor(
 }
 
 /**
- * The offer to keep when a presenter restarts from a state that held this one. A pending offer is taken and dropped,
- * so a screen still showing the state from before the restart cannot perform it either, and the member asks again. A
- * taken one is kept; it is never performed again.
+ * Restores an offer the member can repeat with one tap, such as the next step after checking local input. A pending
+ * offer is taken and dropped, since a restart can come long after the tap and the member taps again; taking it means a
+ * screen still showing the old state cannot perform it either. A taken one is kept and never performed again.
+ *
+ * Not for anything that follows a write: dropping it makes the member write again.
  */
 @HiddenFromObjC
-fun <T : Any> NavigationRequest<T>?.restoredAsOffer(): NavigationRequest<T>? = this?.takeUnless { it.tryConsume() }
+fun <T : Any> NavigationRequest<T>?.restoredAsTapOffer(): NavigationRequest<T>? = this?.takeUnless { it.tryConsume() }
+
+/**
+ * Restores a navigation that reports the outcome of a write, such as a success exit or a failure screen. It is kept as
+ * it was, pending or taken, because the write already happened: dropping it would hide its outcome or make the member
+ * send it again.
+ */
+@HiddenFromObjC
+fun <R : NavigationRequest<*>?> R.restoredAsWriteOutcome(): R = this
+
+/**
+ * Restores a redirect the presenter made by itself, such as skipping a choice with only one option. A pending one is
+ * kept, since nobody repeats a redirect. A taken one is dropped: the screen that took it navigated away, so a screen
+ * showing it again was left behind (for example a second entry sharing the ViewModel) and would wait on it forever.
+ * The presenter treats null as "no redirect yet" and computes it again, usually by loading, which redirects with a new
+ * request.
+ */
+@HiddenFromObjC
+fun <T : Any> NavigationRequest<T>?.restoredAsRedirect(): NavigationRequest<T>? = this?.takeIf { it.isPending }

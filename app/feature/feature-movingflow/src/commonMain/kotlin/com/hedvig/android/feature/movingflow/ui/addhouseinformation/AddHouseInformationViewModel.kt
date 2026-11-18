@@ -40,6 +40,7 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.molecule.public.NavigationRequest
 import com.hedvig.android.molecule.public.rememberAttempts
+import com.hedvig.android.molecule.public.restoredAsWriteOutcome
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
 import octopus.feature.movingflow.MoveIntentV2RequestMutation
@@ -85,7 +86,7 @@ internal class AddHouseInformationPresenter(
     // A pending step is kept across a restart: its request already succeeded and stored the quotes, so the member
     // lands on the coverage step on return instead of having to request the quotes again.
     var next: NavigationRequest<ChoseCoverageLevelAndDeductibleStep>? by remember {
-      mutableStateOf((lastState as? Content)?.next)
+      mutableStateOf((lastState as? Content)?.next.restoredAsWriteOutcome())
     }
     // The input is stored inside the run, so the run starts in the event handler that passed the guard.
     val requestQuotes = rememberAttempts<ValidAddressInput>(
