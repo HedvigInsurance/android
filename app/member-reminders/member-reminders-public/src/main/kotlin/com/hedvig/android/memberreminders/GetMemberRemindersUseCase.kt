@@ -195,7 +195,7 @@ sealed interface MemberReminder {
     override val id: String = UUID.randomUUID().toString(),
   ) : MemberReminder
 
-  /** A recently closed claim the member has neither rated nor dismissed the rating for. Home "To do" list only. */
+  /** A recently closed claim the member has not rated yet. Home "To do" list only. */
   data class ClaimRatingPending(
     val claimId: String,
     override val id: String = "claim-rating-$claimId",

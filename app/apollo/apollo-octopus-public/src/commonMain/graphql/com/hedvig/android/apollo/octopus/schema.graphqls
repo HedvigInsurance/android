@@ -2916,7 +2916,7 @@ type Member {
   claimsActive: [Claim!]!
   claimsHistory: [Claim!]!
   """
-  Closed claims from the last 30 days that the member has neither rated nor dismissed the rating for.
+  Closed claims from the last 30 days that the member has not rated. Dismissing the rating keeps a claim here.
   """
   claimsPendingRating: [Claim!]!
   partnerClaimsActive: [PartnerClaim!]!
