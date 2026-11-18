@@ -19,7 +19,7 @@ import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 fun EntryProviderScope<HedvigNavKey>.inAppPurchaseEntries(
   backstack: Backstack,
   navigateToContract: (contractId: String) -> Unit,
-  finishPurchase: () -> Unit,
+  showPurchaseResult: (HedvigNavKey) -> Unit,
 ) {
   val exitFlow: () -> Unit = { backstack.popUpTo<InAppPurchaseKey>(inclusive = true) }
 
@@ -57,13 +57,14 @@ fun EntryProviderScope<HedvigNavKey>.inAppPurchaseEntries(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
       exitFlow = exitFlow,
+      onSigned = { startDate -> showPurchaseResult(InAppPurchaseSuccessKey(startDate)) },
     )
   }
 
   entry<InAppPurchaseSuccessKey> { key ->
     InAppPurchaseSuccessScreen(
       startDate = key.startDate,
-      close = finishPurchase,
+      close = backstack::popBackstack,
     )
   }
 }

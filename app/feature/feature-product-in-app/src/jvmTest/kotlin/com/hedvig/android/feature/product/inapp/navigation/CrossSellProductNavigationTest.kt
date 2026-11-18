@@ -15,12 +15,12 @@ class CrossSellProductNavigationTest {
   }
 
   @Test
-  fun `finishing a purchase returns to where the cross-sell was tapped`() {
+  fun `a finished purchase replaces the product page and the flow, so leaving it returns to the caller`() {
     val backstack = TestBackstack(CallerKey, productKey("dog"), PurchaseStepKey, PurchaseStepKey)
 
-    backstack.exitCrossSellPurchase()
+    backstack.showCrossSellPurchaseResult(PurchaseResultKey)
 
-    assertThat(backstack.entries).containsExactly(CallerKey)
+    assertThat(backstack.entries).containsExactly(CallerKey, PurchaseResultKey)
   }
 
   @Test
@@ -80,3 +80,6 @@ private data object CallerKey : HedvigNavKey
 
 @Serializable
 private data object PurchaseStepKey : HedvigNavKey
+
+@Serializable
+private data object PurchaseResultKey : HedvigNavKey

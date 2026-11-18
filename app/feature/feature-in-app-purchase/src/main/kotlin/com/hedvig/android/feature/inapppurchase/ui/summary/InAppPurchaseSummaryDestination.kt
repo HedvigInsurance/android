@@ -69,14 +69,20 @@ import hedvig.resources.general_cancel_button
 import hedvig.resources.general_close_button
 import hedvig.resources.something_went_wrong
 import org.jetbrains.compose.resources.stringResource
+import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun InAppPurchaseSummaryDestination(
   viewModel: InAppPurchaseSummaryViewModel,
   navigateUp: () -> Unit,
   exitFlow: () -> Unit,
+  onSigned: (startDate: LocalDate?) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  val signingState = uiState.signingState
+  if (signingState is SigningState.Signed) {
+    LaunchedEffect(signingState) { onSigned(signingState.startDate) }
+  }
   InAppPurchaseSummaryScreen(
     uiState = uiState,
     navigateUp = navigateUp,
@@ -97,7 +103,9 @@ private fun InAppPurchaseSummaryScreen(
   when (val signingState = uiState.signingState) {
     is SigningState.AwaitingBankId -> AwaitingBankIdSignature(signingState)
 
-    is SigningState.Creating -> CreatingInsurance()
+    is SigningState.Creating,
+    is SigningState.Signed,
+    -> CreatingInsurance()
 
     SigningState.Idle,
     SigningState.Starting,

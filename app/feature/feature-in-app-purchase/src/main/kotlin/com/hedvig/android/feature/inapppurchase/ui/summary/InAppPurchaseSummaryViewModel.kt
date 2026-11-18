@@ -14,18 +14,15 @@ import com.hedvig.android.feature.inapppurchase.data.InAppPurchaseOffer
 import com.hedvig.android.feature.inapppurchase.data.InAppPurchaseSigning
 import com.hedvig.android.feature.inapppurchase.data.InAppPurchaseSigningStatus
 import com.hedvig.android.feature.inapppurchase.data.SignInAppPurchaseUseCase
-import com.hedvig.android.feature.inapppurchase.navigation.InAppPurchaseKey
-import com.hedvig.android.feature.inapppurchase.navigation.InAppPurchaseSuccessKey
 import com.hedvig.android.feature.inapppurchase.navigation.InAppPurchaseSummaryKey
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
-import com.hedvig.android.navigation.compose.Backstack
-import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
+import kotlinx.datetime.LocalDate
 
 @AssistedInject
 @HedvigViewModel(ActivityRetainedScope::class)
@@ -33,14 +30,12 @@ internal class InAppPurchaseSummaryViewModel(
   @Assisted params: InAppPurchaseSummaryKey,
   signInAppPurchaseUseCase: SignInAppPurchaseUseCase,
   getInAppPurchaseSigningUseCase: GetInAppPurchaseSigningUseCase,
-  backstack: Backstack,
 ) : MoleculeViewModel<InAppPurchaseSummaryEvent, InAppPurchaseSummaryUiState>(
     initialState = InAppPurchaseSummaryUiState(params.productDisplayName, params.offer, SigningState.Idle),
     presenter = InAppPurchaseSummaryPresenter(
       params = params,
       signInAppPurchaseUseCase = signInAppPurchaseUseCase,
       getInAppPurchaseSigningUseCase = getInAppPurchaseSigningUseCase,
-      backstack = backstack,
     ),
   )
 
@@ -48,7 +43,6 @@ internal class InAppPurchaseSummaryPresenter(
   private val params: InAppPurchaseSummaryKey,
   private val signInAppPurchaseUseCase: SignInAppPurchaseUseCase,
   private val getInAppPurchaseSigningUseCase: GetInAppPurchaseSigningUseCase,
-  private val backstack: Backstack,
 ) : MoleculePresenter<InAppPurchaseSummaryEvent, InAppPurchaseSummaryUiState> {
   @Composable
   override fun MoleculePresenterScope<InAppPurchaseSummaryEvent>.present(
@@ -83,10 +77,7 @@ internal class InAppPurchaseSummaryPresenter(
 
         InAppPurchaseSigningStatus.SIGNED -> {
           ongoingSigningId = null
-          backstack.navigateAndPopUpTo<InAppPurchaseKey>(
-            InAppPurchaseSuccessKey(params.offer.startDate),
-            inclusive = true,
-          )
+          signingState = SigningState.Signed(params.offer.startDate)
         }
 
         InAppPurchaseSigningStatus.FAILED -> {
@@ -153,6 +144,8 @@ internal sealed interface SigningState {
    */
   data class Failed(val message: String?) : SigningState
 
+  data class Signed(val startDate: LocalDate?) : SigningState
+
   val canStartSigning: Boolean get() = this is Idle || this is Failed
 }
 
@@ -165,5 +158,6 @@ private val SigningState.ongoingSigningId: String?
     SigningState.Idle,
     SigningState.Starting,
     is SigningState.Failed,
+    is SigningState.Signed,
     -> null
   }
