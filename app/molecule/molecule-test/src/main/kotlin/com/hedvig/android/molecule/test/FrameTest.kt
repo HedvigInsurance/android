@@ -3,6 +3,7 @@ package com.hedvig.android.molecule.test
 import androidx.compose.runtime.BroadcastFrameClock
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -20,7 +21,8 @@ import kotlinx.coroutines.test.TestCoroutineScheduler
  * [FrameTestContext.frame], so two events handled between two frames are seen by the presenter exactly as on a device.
  *
  * Call it from `runTest`: the ViewModel runs on that test's scheduler. The ViewModel stops its presenter 5 seconds
- * after the last collection ends, as in production, so [FrameTestContext.stop] moves virtual time on by 5 seconds.
+ * after the last collection ends, as in production, and [FrameTestContext.stop] moves virtual time on by the duration
+ * it is given.
  */
 suspend fun <Event, State> MoleculePresenter<Event, State>.testFrames(
   initialState: State,
@@ -67,13 +69,17 @@ interface FrameTestContext<Event, State> {
   /** Every state the collector received, in order. A state replaced before the collector ran is not in it. */
   val observed: List<State>
 
-  /** Ends the collection and lets the presenter stop, as when a screen stops collecting for more than 5 seconds. */
-  fun stop()
+  /**
+   * Ends the collection and moves virtual time on by [duration], as when a screen stops collecting for that long. The
+   * presenter stops at 5 seconds, the default; under that it keeps running, handling events and producing states, so
+   * a test can show what lands while nobody collects but before the presenter stops.
+   */
+  fun stop(duration: Duration = STOP_TIMEOUT)
 
   /** Starts a collection, which starts a new presenter run from the last produced state if it was stopped. */
   fun start()
 
-  /** [stop] then [start]. */
+  /** [stop] for 5 seconds, then [start]. */
   fun restart()
 }
 
@@ -108,11 +114,11 @@ private class FrameTestContextImpl<Event, State>(
   override val observed: List<State>
     get() = observedStates.toList()
 
-  override fun stop() {
+  override fun stop(duration: Duration) {
     collection?.cancel()
     collection = null
     scheduler.runCurrent()
-    scheduler.advanceTimeBy(STOP_TIMEOUT)
+    scheduler.advanceTimeBy(duration)
     scheduler.runCurrent()
   }
 
@@ -129,6 +135,8 @@ private class FrameTestContextImpl<Event, State>(
 
   private companion object {
     const val FRAME_NANOS = 16_000_000L
-    val STOP_TIMEOUT = 5.seconds
   }
 }
+
+/** How long the ViewModel keeps its presenter running after the last collection ends. */
+private val STOP_TIMEOUT = 5.seconds
