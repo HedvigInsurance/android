@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -34,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -204,7 +206,7 @@ private fun ClaimRatingSheetContent(
             imageVector = HedvigIcons.CheckFilled,
             contentDescription = null,
             tint = HedvigTheme.colorScheme.signalGreenElement,
-            modifier = Modifier.size(32.dp),
+            modifier = Modifier.size(40.dp),
           )
           Spacer(Modifier.height(16.dp))
           if (step.rating >= 4) {
@@ -324,7 +326,9 @@ private fun StarRatingRow(selectedRating: Int?, onRatingClick: (Int) -> Unit, mo
       }
     }
     Spacer(Modifier.height(8.dp))
+    val labelsAlpha by animateFloatAsState(if (selectedRating == null) 1f else 0f)
     HorizontalItemsWithMaximumSpaceTaken(
+      modifier = Modifier.alpha(labelsAlpha),
       startSlot = {
         // TODO: Add "Not happy at all" / "Inte alls nöjd" to Lokalise
         HedvigText(
