@@ -194,12 +194,13 @@ private fun InAppPurchaseFormUiState.toLoadedForm(): LoadedForm = when (this) {
 }
 
 /**
- * The values as sent in [InAppPurchaseFieldInput.values]. A single select without a default starts on its first option.
+ * The values as sent in [InAppPurchaseFieldInput.values]. A field without a default starts unanswered, so the member
+ * never submits an answer they didn't choose.
  */
 internal fun InAppPurchaseFormField.defaultValues(): List<String> = when (this) {
   is InAppPurchaseFormField.Number -> listOfNotNull(defaultValue?.toString())
   is InAppPurchaseFormField.Date -> listOfNotNull(defaultValue?.toString())
-  is InAppPurchaseFormField.SingleSelect -> listOfNotNull(defaultValue ?: options.firstOrNull()?.value)
+  is InAppPurchaseFormField.SingleSelect -> listOfNotNull(defaultValue)
   is InAppPurchaseFormField.Text -> listOfNotNull(defaultValue)
   is InAppPurchaseFormField.SearchableSelect -> defaultValues
   is InAppPurchaseFormField.ExtraBuildings -> emptyList()

@@ -50,6 +50,24 @@ class InAppPurchaseFormPresenterTest {
   }
 
   @Test
+  fun `a question without a default starts unanswered`() = runTest {
+    val question = InAppPurchaseFormField.SingleSelect(
+      id = "isNeutered",
+      title = "Neutered",
+      options = listOf("true", "false").map { InAppPurchaseFormField.SingleSelect.Option(it, it, true, null) },
+      defaultValue = null,
+    )
+
+    presenter.test(InAppPurchaseFormUiState.Loading) {
+      skipItems(1)
+      getForm.results.add(form.copy(fields = listOf(question)).right())
+
+      val content = awaitItem() as InAppPurchaseFormUiState.Content
+      assertThat(content.valuesOf("isNeutered")).isEqualTo(emptyList())
+    }
+  }
+
+  @Test
   fun `updating a field replaces its values and clears its error`() = runTest {
     presenter.test(InAppPurchaseFormUiState.Loading) {
       skipItems(1)

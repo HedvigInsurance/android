@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
@@ -71,14 +73,25 @@ internal fun FormFieldInput(
 ) {
   val onValueChange: (String?) -> Unit = { onValuesChange(listOfNotNull(it)) }
   when (val field = state.field) {
-    is InAppPurchaseFormField.Number -> NumberFieldInput(
-      field = field,
-      value = state.value?.toIntOrNull(),
-      errorMessage = state.errorMessage,
-      enabled = enabled,
-      onValueChange = { onValueChange(it.toString()) },
-      modifier = modifier,
-    )
+    is InAppPurchaseFormField.Number -> if (field.usesStepper()) {
+      NumberFieldInput(
+        field = field,
+        value = state.value?.toIntOrNull(),
+        errorMessage = state.errorMessage,
+        enabled = enabled,
+        onValueChange = { onValueChange(it.toString()) },
+        modifier = modifier,
+      )
+    } else {
+      TypedNumberFieldInput(
+        field = field,
+        value = state.value,
+        errorMessage = state.errorMessage,
+        enabled = enabled,
+        onValueChange = onValueChange,
+        modifier = modifier,
+      )
+    }
 
     is InAppPurchaseFormField.Date -> DateFieldInput(
       field = field,
@@ -137,15 +150,15 @@ private fun NumberFieldInput(
   onValueChange: (Int) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val current = value ?: field.minValue ?: 0
+  val lowest = field.minValue ?: 0
   HedvigStepper(
-    text = current.toString(),
+    text = value?.toString() ?: "–",
     stepperSize = Medium,
     stepperStyle = Labeled(field.title),
-    onMinusClick = { onValueChange(current - 1) },
-    onPlusClick = { onValueChange(current + 1) },
-    isMinusEnabled = enabled && (field.minValue == null || current > field.minValue),
-    isPlusEnabled = enabled && (field.maxValue == null || current < field.maxValue),
+    onMinusClick = { onValueChange(value?.minus(1) ?: lowest) },
+    onPlusClick = { onValueChange(value?.plus(1) ?: lowest) },
+    isMinusEnabled = enabled && value != null && (field.minValue == null || value > field.minValue),
+    isPlusEnabled = enabled && (field.maxValue == null || value == null || value < field.maxValue),
     errorText = errorMessage,
     modifier = modifier,
   )
@@ -298,4 +311,39 @@ private fun SingleSelectDialogContent(
       modifier = Modifier.fillMaxWidth(),
     )
   }
+}
+
+/**
+ * Small counts like household size are stepped; anything wider, like a year or a living area, is typed.
+ */
+internal fun InAppPurchaseFormField.Number.usesStepper(): Boolean {
+  val max = maxValue ?: return false
+  return max - (minValue ?: 0) <= MAX_STEPPER_RANGE
+}
+
+private const val MAX_STEPPER_RANGE = 20
+
+@Composable
+private fun TypedNumberFieldInput(
+  field: InAppPurchaseFormField.Number,
+  value: String?,
+  errorMessage: String?,
+  enabled: Boolean,
+  onValueChange: (String?) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  HedvigTextField(
+    text = value.orEmpty(),
+    onValueChange = { typed -> onValueChange(typed.filter(Char::isDigit).ifEmpty { null }) },
+    labelText = field.title,
+    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
+    enabled = enabled,
+    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+    errorState = if (errorMessage != null) {
+      HedvigTextFieldDefaults.ErrorState.Error.WithMessage(errorMessage)
+    } else {
+      HedvigTextFieldDefaults.ErrorState.NoError
+    },
+    modifier = modifier,
+  )
 }
