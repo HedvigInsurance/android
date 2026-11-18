@@ -16,10 +16,19 @@ import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import octopus.ClaimAcknowledgeClosedStatusMutation
-import octopus.fragment.ClaimFragment
+
+data class ClosedClaimInfo(
+  val id: String,
+  val status: String?,
+  val type: String?,
+  val typeOfContract: String?,
+  val contractId: String?,
+)
 
 interface CrossSellAfterClaimClosedRepository {
-  suspend fun acknowledgeClaimClosedStatus(claim: ClaimFragment): Either<ErrorMessage, Unit>
+  suspend fun acknowledgeClaimClosedStatus(claimId: String): Either<ErrorMessage, Unit>
+
+  fun triggerCrossSell(claim: ClosedClaimInfo)
 }
 
 @ContributesBinding(AppScope::class)
@@ -29,9 +38,9 @@ internal class CrossSellAfterClaimClosedRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
 ) : CrossSellAfterClaimClosedRepository {
-  override suspend fun acknowledgeClaimClosedStatus(claim: ClaimFragment): Either<ErrorMessage, Unit> {
+  override suspend fun acknowledgeClaimClosedStatus(claimId: String): Either<ErrorMessage, Unit> {
     return apolloClient
-      .mutation(ClaimAcknowledgeClosedStatusMutation(claim.id))
+      .mutation(ClaimAcknowledgeClosedStatusMutation(claimId))
       .safeExecute(::ErrorMessage)
       .map { response ->
         either {
@@ -42,18 +51,21 @@ internal class CrossSellAfterClaimClosedRepositoryImpl(
             logcat(LogPriority.ERROR) { "ClaimAcknowledgeClosedStatusMutation failed: ${userError.message}" }
             raise(ErrorMessage(userError.message))
           }
-          crossSellAfterFlowRepository.completedCrossSellTriggeringSelfServiceSuccessfully(
-            CrossSellInfoType.ClosedClaim(
-              ClaimInfo(
-                id = claim.id,
-                status = claim.status?.name,
-                type = claim.claimType,
-                typeOfContract = claim.productVariant?.typeOfContract,
-              ),
-              contractId = claim.contractId,
-            ),
-          )
         }
       }
+  }
+
+  override fun triggerCrossSell(claim: ClosedClaimInfo) {
+    crossSellAfterFlowRepository.completedCrossSellTriggeringSelfServiceSuccessfully(
+      CrossSellInfoType.ClosedClaim(
+        ClaimInfo(
+          id = claim.id,
+          status = claim.status,
+          type = claim.type,
+          typeOfContract = claim.typeOfContract,
+        ),
+        contractId = claim.contractId,
+      ),
+    )
   }
 }

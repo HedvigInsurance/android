@@ -10,6 +10,7 @@ import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.audio.player.data.SignedAudioUrl
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.uidata.UiFile
+import com.hedvig.android.data.cross.sell.after.claim.closed.ClosedClaimInfo
 import com.hedvig.android.data.cross.sell.after.claim.closed.CrossSellAfterClaimClosedRepository
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState
@@ -74,7 +75,17 @@ internal class GetClaimDetailUiStateUseCase(
           val claim = response.bind().claim
           ensureNotNull(claim) { Error.NoClaimFound }
           if (claim.showClaimClosedFlow) {
-            crossSellAfterClaimClosedRepository.acknowledgeClaimClosedStatus(claim)
+            crossSellAfterClaimClosedRepository.acknowledgeClaimClosedStatus(claim.id).onRight {
+              crossSellAfterClaimClosedRepository.triggerCrossSell(
+                ClosedClaimInfo(
+                  id = claim.id,
+                  status = claim.status?.name,
+                  type = claim.claimType,
+                  typeOfContract = claim.productVariant?.typeOfContract,
+                  contractId = claim.contractId,
+                ),
+              )
+            }
           }
           ClaimDetailUiState.Content.fromClaim(claim, claim.conversation?.id, claim.conversation?.unreadMessageCount)
         }
