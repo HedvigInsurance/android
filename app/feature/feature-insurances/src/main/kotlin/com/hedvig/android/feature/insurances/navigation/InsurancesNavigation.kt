@@ -14,7 +14,7 @@ data object InsurancesKey : HedvigNavKey, CrossSellEligibleDestination, TopLevel
 }
 
 @Serializable
-internal data class InsuranceContractDetailKey(
+data class InsuranceContractDetailKey(
   /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer.contract] */
   @SerialName("contractId")
   val contractId: String,

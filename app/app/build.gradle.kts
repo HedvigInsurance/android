@@ -211,6 +211,8 @@ dependencies {
   implementation(projects.featureHelpCenterNavigation)
   implementation(projects.featureHome)
   implementation(projects.featureImageViewer)
+  implementation(projects.featureInAppPurchase)
+  implementation(projects.featureInAppPurchaseNavigation)
   implementation(projects.featureInsuranceCertificate)
   implementation(projects.featureInsurances)
   implementation(projects.featureLogin)

@@ -1,0 +1,14 @@
+plugins {
+  id("hedvig.android.library")
+  id("hedvig.gradle.plugin")
+}
+
+hedvig {
+  compose()
+}
+
+dependencies {
+  implementation(libs.androidx.compose.foundation)
+  implementation(libs.zXing)
+  implementation(projects.coreResources)
+}
