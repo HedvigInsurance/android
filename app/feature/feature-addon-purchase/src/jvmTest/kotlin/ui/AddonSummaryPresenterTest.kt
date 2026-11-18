@@ -1,14 +1,18 @@
 package ui
 
-import app.cash.turbine.Turbine
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isNotNull
+import assertk.assertions.isSameInstanceAs
+import assertk.assertions.isTrue
 import assertk.assertions.prop
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.tracking.EventTrackingClient
@@ -27,18 +31,25 @@ import com.hedvig.android.feature.addon.purchase.data.GetInsuranceForTravelAddon
 import com.hedvig.android.feature.addon.purchase.data.GetQuoteCostBreakdownUseCase
 import com.hedvig.android.feature.addon.purchase.data.InsuranceForAddon
 import com.hedvig.android.feature.addon.purchase.data.SubmitAddonPurchaseUseCase
-import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseKey
 import com.hedvig.android.feature.addon.purchase.navigation.AddonType
-import com.hedvig.android.feature.addon.purchase.navigation.SubmitFailureKey
-import com.hedvig.android.feature.addon.purchase.navigation.SubmitSuccessKey
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryEvent
+import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryEvent.Reload
+import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryEvent.Submit
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryPresenter
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState
+import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Content
+import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Loading
+import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Purchased
+import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Submitting
 import com.hedvig.android.feature.addon.purchase.ui.summary.CostBreakdownWithExtras
 import com.hedvig.android.logger.TestLogcatLoggingRule
+import com.hedvig.android.molecule.public.NavigationRequest
+import com.hedvig.android.molecule.test.FrameTestContext
 import com.hedvig.android.molecule.test.test
+import com.hedvig.android.molecule.test.testFrames
 import com.hedvig.android.ui.tiersandaddons.QuoteCostBreakdown
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
@@ -51,12 +62,11 @@ class AddonSummaryPresenterTest {
   val testLogcatLogger = TestLogcatLoggingRule()
 
   @Test
-  fun `if receive error navigate to failure screen`() = runTest {
+  fun `if receive error offer the failure screen`() = runTest {
     val scheduler = testScheduler
     val submitUseCase = FakeSubmitAddonPurchaseUseCase()
     val insuranceUseCase = FakeAddonSummaryGetInsuranceUseCase()
     val costBreakdownUseCase = FakeGetQuoteCostBreakdownUseCase()
-    val backstack = TestBackstack(mutableListOf(AddonPurchaseKey()))
     val eventTrackingClient = FakeEventTrackingClient()
     val presenter = AddonSummaryPresenter(
       summaryParameters = testSummaryParametersWithCurrentAddon,
@@ -64,30 +74,32 @@ class AddonSummaryPresenterTest {
       addonPurchaseSource = AddonBannerSource.INSURANCES_TAB,
       getQuoteCostBreakdownUseCase = costBreakdownUseCase,
       getInsuranceForTravelAddonUseCase = insuranceUseCase,
-      backstack = backstack,
       eventTrackingClient = eventTrackingClient,
     )
     presenter.test(AddonSummaryState.Loading) {
       skipItems(1)
-      insuranceUseCase.turbine.add(listOf(fakeInsuranceForAddon).right())
-      costBreakdownUseCase.turbine.add(fakeQuoteCostBreakdown.right())
+      insuranceUseCase.responses.trySend(listOf(fakeInsuranceForAddon).right())
+      costBreakdownUseCase.responses.trySend(fakeQuoteCostBreakdown.right())
       skipItems(1)
       sendEvent(AddonSummaryEvent.Submit)
-      submitUseCase.turbine.add(ErrorMessage().left())
+      submitUseCase.responses.trySend(ErrorMessage().left())
       scheduler.advanceUntilIdle()
-      assertThat(backstack.entries.last()).isInstanceOf(SubmitFailureKey::class)
+      assertThat(expectMostRecentItem()).isInstanceOf(AddonSummaryState.Content::class)
+        .prop(AddonSummaryState.Content::submitFailure)
+        .isNotNull()
+        .prop(NavigationRequest<Unit>::isPending)
+        .isTrue()
       assertThat(eventTrackingClient.trackedEvents).isEmpty()
       cancelAndIgnoreRemainingEvents()
     }
   }
 
   @Test
-  fun `if receive no errors navigate to success screen with activationDate from previous parameters`() = runTest {
+  fun `if receive no errors offer the success screen with activationDate from previous parameters`() = runTest {
     val scheduler = testScheduler
     val submitUseCase = FakeSubmitAddonPurchaseUseCase()
     val insuranceUseCase = FakeAddonSummaryGetInsuranceUseCase()
     val costBreakdownUseCase = FakeGetQuoteCostBreakdownUseCase()
-    val backstack = TestBackstack(mutableListOf(AddonPurchaseKey()))
     val eventTrackingClient = FakeEventTrackingClient()
     val presenter = AddonSummaryPresenter(
       summaryParameters = testSummaryParametersWithCurrentAddon,
@@ -95,19 +107,19 @@ class AddonSummaryPresenterTest {
       addonPurchaseSource = AddonBannerSource.INSURANCES_TAB,
       getQuoteCostBreakdownUseCase = costBreakdownUseCase,
       getInsuranceForTravelAddonUseCase = insuranceUseCase,
-      backstack = backstack,
       eventTrackingClient = eventTrackingClient,
     )
     presenter.test(AddonSummaryState.Loading) {
       skipItems(1)
-      insuranceUseCase.turbine.add(listOf(fakeInsuranceForAddon).right())
-      costBreakdownUseCase.turbine.add(fakeQuoteCostBreakdown.right())
+      insuranceUseCase.responses.trySend(listOf(fakeInsuranceForAddon).right())
+      costBreakdownUseCase.responses.trySend(fakeQuoteCostBreakdown.right())
       skipItems(1)
       sendEvent(AddonSummaryEvent.Submit)
-      submitUseCase.turbine.add(Unit.right())
+      submitUseCase.responses.trySend(Unit.right())
       scheduler.advanceUntilIdle()
-      assertThat(backstack.entries.last()).isInstanceOf(SubmitSuccessKey::class)
-        .prop(SubmitSuccessKey::activationDate)
+      assertThat(expectMostRecentItem()).isInstanceOf(AddonSummaryState.Purchased::class)
+        .prop(AddonSummaryState.Purchased::exit)
+        .prop(NavigationRequest<LocalDate>::target)
         .isEqualTo(testSummaryParametersWithCurrentAddon.activationDate)
       assertThat(eventTrackingClient.trackedEvents).containsExactly(
         "addon_purchased" to mapOf(
@@ -137,16 +149,15 @@ class AddonSummaryPresenterTest {
       addonPurchaseSource = AddonBannerSource.HOME_CROSS_SELL_SHEET,
       getQuoteCostBreakdownUseCase = costBreakdownUseCase,
       getInsuranceForTravelAddonUseCase = insuranceUseCase,
-      backstack = TestBackstack(mutableListOf(AddonPurchaseKey())),
       eventTrackingClient = eventTrackingClient,
     )
     presenter.test(AddonSummaryState.Loading) {
       skipItems(1)
-      insuranceUseCase.turbine.add(listOf(fakeInsuranceForAddon).right())
-      costBreakdownUseCase.turbine.add(fakeQuoteCostBreakdown.right())
+      insuranceUseCase.responses.trySend(listOf(fakeInsuranceForAddon).right())
+      costBreakdownUseCase.responses.trySend(fakeQuoteCostBreakdown.right())
       skipItems(1)
       sendEvent(AddonSummaryEvent.Submit)
-      submitUseCase.turbine.add(Unit.right())
+      submitUseCase.responses.trySend(Unit.right())
       scheduler.advanceUntilIdle()
       assertThat(eventTrackingClient.trackedEvents).containsExactly(
         "addon_purchased" to mapOf(
@@ -185,16 +196,15 @@ class AddonSummaryPresenterTest {
       addonPurchaseSource = AddonBannerSource.CONTRACT_DETAIL,
       getQuoteCostBreakdownUseCase = costBreakdownUseCase,
       getInsuranceForTravelAddonUseCase = insuranceUseCase,
-      backstack = TestBackstack(mutableListOf(AddonPurchaseKey())),
       eventTrackingClient = eventTrackingClient,
     )
     presenter.test(AddonSummaryState.Loading) {
       skipItems(1)
-      insuranceUseCase.turbine.add(listOf(fakeInsuranceForAddon).right())
-      costBreakdownUseCase.turbine.add(fakeQuoteCostBreakdown.right())
+      insuranceUseCase.responses.trySend(listOf(fakeInsuranceForAddon).right())
+      costBreakdownUseCase.responses.trySend(fakeQuoteCostBreakdown.right())
       skipItems(1)
       sendEvent(AddonSummaryEvent.Submit)
-      submitUseCase.turbine.add(Unit.right())
+      submitUseCase.responses.trySend(Unit.right())
       scheduler.advanceUntilIdle()
       assertThat(eventTrackingClient.trackedEvents).containsExactly(
         "addon_purchased" to mapOf(
@@ -221,13 +231,12 @@ class AddonSummaryPresenterTest {
       addonPurchaseSource = AddonBannerSource.INSURANCES_TAB,
       getQuoteCostBreakdownUseCase = costBreakdownUseCase1,
       getInsuranceForTravelAddonUseCase = insuranceUseCase1,
-      backstack = TestBackstack(),
       eventTrackingClient = FakeEventTrackingClient(),
     )
     presenter1.test(AddonSummaryState.Loading) {
       skipItems(1)
-      insuranceUseCase1.turbine.add(listOf(fakeInsuranceForAddon).right())
-      costBreakdownUseCase1.turbine.add(fakeQuoteCostBreakdown.right())
+      insuranceUseCase1.responses.trySend(listOf(fakeInsuranceForAddon).right())
+      costBreakdownUseCase1.responses.trySend(fakeQuoteCostBreakdown.right())
       assertThat(awaitItem()).isInstanceOf(AddonSummaryState.Content::class)
         .prop(AddonSummaryState.Content::costBreakdownWithExtras)
         .prop(CostBreakdownWithExtras::totalExtra)
@@ -242,13 +251,12 @@ class AddonSummaryPresenterTest {
       addonPurchaseSource = AddonBannerSource.INSURANCES_TAB,
       getQuoteCostBreakdownUseCase = costBreakdownUseCase2,
       getInsuranceForTravelAddonUseCase = insuranceUseCase2,
-      backstack = TestBackstack(),
       eventTrackingClient = FakeEventTrackingClient(),
     )
     presenter2.test(AddonSummaryState.Loading) {
       skipItems(1)
-      insuranceUseCase2.turbine.add(listOf(fakeInsuranceForAddon).right())
-      costBreakdownUseCase2.turbine.add(fakeQuoteCostBreakdown.right())
+      insuranceUseCase2.responses.trySend(listOf(fakeInsuranceForAddon).right())
+      costBreakdownUseCase2.responses.trySend(fakeQuoteCostBreakdown.right())
       assertThat(awaitItem()).isInstanceOf(AddonSummaryState.Content::class)
         .prop(AddonSummaryState.Content::costBreakdownWithExtras)
         .prop(CostBreakdownWithExtras::totalExtra)
@@ -266,17 +274,312 @@ class AddonSummaryPresenterTest {
       addonPurchaseSource = AddonBannerSource.INSURANCES_TAB,
       getQuoteCostBreakdownUseCase = costBreakdownUseCase,
       getInsuranceForTravelAddonUseCase = insuranceUseCase,
-      backstack = TestBackstack(),
       eventTrackingClient = FakeEventTrackingClient(),
     )
     presenter.test(AddonSummaryState.Loading) {
       skipItems(1)
-      insuranceUseCase.turbine.add(listOf(fakeInsuranceForAddon).right())
-      costBreakdownUseCase.turbine.add(fakeQuoteCostBreakdown.right())
+      insuranceUseCase.responses.trySend(listOf(fakeInsuranceForAddon).right())
+      costBreakdownUseCase.responses.trySend(fakeQuoteCostBreakdown.right())
       assertThat(awaitItem()).isInstanceOf(AddonSummaryState.Content::class)
         .prop(AddonSummaryState.Content::costBreakdownWithExtras)
         .prop(CostBreakdownWithExtras::totalExtra)
         .isEqualTo(newQuote.itemCost.monthlyNet)
+    }
+  }
+
+  @Test
+  fun `a purchase ends in Purchased, offering the success screen for the activation date once`() = runTest {
+    val fixture = Fixture()
+    fixture.presenter.testFrames(Loading) {
+      loadedContent(fixture)
+      send(Submit)
+      assertThat(latest).isEqualTo(Submitting)
+      assertThat(fixture.submit.calls).containsExactly("quoteId" to listOf("addonId1"))
+
+      fixture.submit.responses.trySend(Unit.right())
+      frame()
+      val purchased = latest as Purchased
+      assertThat(purchased.exit.target).isEqualTo(fixture.params.activationDate)
+      assertThat(purchased.exit.tryConsume()).isTrue()
+      assertThat(purchased.exit.tryConsume()).isFalse()
+      assertThat(fixture.tracking.trackedEvents.map { it.first }).containsExactly("addon_purchased")
+    }
+  }
+
+  @Test
+  fun `a failed purchase shows the summary again and offers the failure screen over it`() = runTest {
+    val fixture = Fixture()
+    fixture.presenter.testFrames(Loading) {
+      val content = loadedContent(fixture)
+      send(Submit)
+      fixture.submit.responses.trySend(ErrorMessage().left())
+      frame()
+      val failed = latest as Content
+      assertThat(failed.copy(submitFailure = null)).isEqualTo(content)
+      assertThat(failed.submitFailure).isNotNull().prop(NavigationRequest<Unit>::isPending).isTrue()
+      assertThat(fixture.tracking.trackedEvents).isEmpty()
+    }
+  }
+
+  @Test
+  fun `a retry after the failure screen was shown buys and offers the success screen`() = runTest {
+    val fixture = Fixture()
+    fixture.presenter.testFrames(Loading) {
+      loadedContent(fixture)
+      send(Submit)
+      fixture.submit.responses.trySend(ErrorMessage().left())
+      frame()
+      assertThat((latest as Content).submitFailure?.tryConsume()).isEqualTo(true)
+
+      send(Submit)
+      assertThat(latest).isEqualTo(Submitting)
+      fixture.submit.responses.trySend(ErrorMessage().left())
+      frame()
+      val secondFailure = (latest as Content).submitFailure
+      assertThat(secondFailure).isNotNull().prop(NavigationRequest<Unit>::isPending).isTrue()
+      assertThat(secondFailure!!.tryConsume()).isTrue()
+
+      send(Submit)
+      fixture.submit.responses.trySend(Unit.right())
+      frame()
+      assertThat(fixture.submit.calls).hasSize(3)
+      assertThat(latest).isInstanceOf(Purchased::class)
+    }
+  }
+
+  @Test
+  fun `two submits in one frame buy once`() = runTest {
+    val fixture = Fixture()
+    fixture.presenter.testFrames(Loading) {
+      loadedContent(fixture)
+      send(Submit, Submit)
+      fixture.submit.responses.trySend(Unit.right())
+      frame()
+      assertThat(fixture.submit.calls).hasSize(1)
+      assertThat(latest).isInstanceOf(Purchased::class)
+    }
+  }
+
+  @Test
+  fun `a submit while a purchase is in flight is ignored and the purchase completes`() = runTest {
+    val fixture = Fixture()
+    fixture.presenter.testFrames(Loading) {
+      loadedContent(fixture)
+      send(Submit)
+      send(Submit)
+      assertThat(latest).isEqualTo(Submitting)
+      fixture.submit.responses.trySend(Unit.right())
+      frame()
+      assertThat(fixture.submit.calls).hasSize(1)
+      assertThat(latest).isInstanceOf(Purchased::class)
+      assertThat(fixture.tracking.trackedEvents).hasSize(1)
+    }
+  }
+
+  @Test
+  fun `a submit handled in the frame a failure lands is ignored until the failure screen is shown`() = runTest {
+    val fixture = Fixture()
+    fixture.presenter.testFrames(Loading) {
+      loadedContent(fixture)
+      send(Submit)
+      fixture.submit.responses.trySend(ErrorMessage().left())
+      send(Submit)
+      assertThat(fixture.submit.calls).hasSize(1)
+      val failure = (latest as Content).submitFailure
+      assertThat(failure).isNotNull().prop(NavigationRequest<Unit>::isPending).isTrue()
+
+      failure!!.tryConsume()
+      send(Submit)
+      assertThat(fixture.submit.calls).hasSize(2)
+      assertThat(latest).isEqualTo(Submitting)
+    }
+  }
+
+  @Test
+  fun `a submit before the summary has loaded is ignored`() = runTest {
+    val fixture = Fixture()
+    fixture.presenter.testFrames(Loading) {
+      send(Submit)
+      val content = loadedContent(fixture)
+      assertThat(latest).isEqualTo(content)
+      assertThat(fixture.submit.calls).isEmpty()
+
+      send(Submit)
+      assertThat(fixture.submit.calls).hasSize(1)
+    }
+  }
+
+  @Test
+  fun `a failed load shows the error, and reload shows the summary`() = runTest {
+    val fixture = Fixture()
+    fixture.presenter.testFrames(Loading) {
+      fixture.insurance.responses.trySend(emptyList<InsuranceForAddon>().right())
+      frame()
+      frame()
+      assertThat(latest).isEqualTo(AddonSummaryState.Error)
+
+      send(Reload)
+      loadedContent(fixture)
+      assertThat(fixture.insurance.calls).isEqualTo(2)
+    }
+  }
+
+  @Test
+  fun `a restart while loading loads again`() = runTest {
+    val fixture = Fixture()
+    fixture.presenter.testFrames(Loading) {
+      frame()
+      restart()
+      frame()
+      assertThat(latest).isEqualTo(Loading)
+      loadedContent(fixture)
+      assertThat(fixture.insurance.calls).isEqualTo(2)
+    }
+  }
+
+  @Test
+  fun `a restart from the summary keeps showing it while it loads again`() = runTest {
+    val fixture = Fixture()
+    fixture.presenter.testFrames(Loading) {
+      val content = loadedContent(fixture)
+      restart()
+      frame()
+      assertThat(latest).isEqualTo(content)
+      assertThat(loadedContent(fixture)).isEqualTo(content)
+      assertThat(fixture.insurance.calls).isEqualTo(2)
+    }
+  }
+
+  /** The purchase stops with the presenter and may have reached the server; the member decides whether to buy again. */
+  @Test
+  fun `a restart while purchasing shows the summary again without an outcome, and allows a second purchase`() =
+    runTest {
+      val fixture = Fixture()
+      fixture.presenter.testFrames(Loading) {
+        val content = loadedContent(fixture)
+        send(Submit)
+        restart()
+        frame()
+        assertThat(latest).isEqualTo(Loading)
+        assertThat(loadedContent(fixture)).isEqualTo(content)
+
+        send(Submit)
+        assertThat(fixture.submit.calls).hasSize(2)
+        assertThat(latest).isEqualTo(Submitting)
+      }
+    }
+
+  @Test
+  fun `a restart after the failure screen was shown does not offer it again`() = runTest {
+    val fixture = Fixture()
+    fixture.presenter.testFrames(Loading) {
+      val content = loadedContent(fixture)
+      send(Submit)
+      fixture.submit.responses.trySend(ErrorMessage().left())
+      frame()
+      val failure = (latest as Content).submitFailure!!
+      assertThat(failure.tryConsume()).isTrue()
+
+      restart()
+      frame()
+      assertThat(loadedContent(fixture).copy(submitFailure = null)).isEqualTo(content)
+      assertThat((latest as Content).submitFailure).isEqualTo(failure)
+      assertThat(failure.tryConsume()).isFalse()
+    }
+  }
+
+  /** The member did not send the purchase again, so the failure is still theirs to see, as when the presenter ran on. */
+  @Test
+  fun `a restart before the failure screen was shown still offers it once`() = runTest {
+    val fixture = Fixture()
+    fixture.presenter.testFrames(Loading) {
+      loadedContent(fixture)
+      send(Submit)
+      fixture.submit.responses.trySend(ErrorMessage().left())
+      frame()
+      val failure = (latest as Content).submitFailure!!
+
+      restart()
+      loadedContent(fixture)
+      assertThat((latest as Content).submitFailure).isEqualTo(failure)
+      assertThat(failure.tryConsume()).isTrue()
+      assertThat(fixture.submit.calls).hasSize(1)
+    }
+  }
+
+  @Test
+  fun `a restart after a purchase keeps the outcome without loading or buying again`() = runTest {
+    val fixture = Fixture()
+    fixture.presenter.testFrames(Loading) {
+      loadedContent(fixture)
+      send(Submit)
+      fixture.submit.responses.trySend(Unit.right())
+      frame()
+      val purchased = latest as Purchased
+      assertThat(purchased.exit.tryConsume()).isTrue()
+
+      restart()
+      frame()
+      fixture.answerLoad()
+      send(Submit)
+      assertThat(latest).isSameInstanceAs(purchased)
+      assertThat(purchased.exit.tryConsume()).isFalse()
+      assertThat(fixture.insurance.calls).isEqualTo(1)
+      assertThat(fixture.submit.calls).hasSize(1)
+    }
+  }
+
+  @Test
+  fun `a restart before the success screen was shown still offers it once`() = runTest {
+    val fixture = Fixture()
+    fixture.presenter.testFrames(Loading) {
+      loadedContent(fixture)
+      send(Submit)
+      fixture.submit.responses.trySend(Unit.right())
+      frame()
+      val purchased = latest as Purchased
+
+      restart()
+      frame()
+      assertThat(latest).isSameInstanceAs(purchased)
+      assertThat(purchased.exit.tryConsume()).isTrue()
+      assertThat(fixture.tracking.trackedEvents).hasSize(1)
+    }
+  }
+
+  @Test
+  fun `every event after a purchase is ignored`() = runTest {
+    val fixture = Fixture()
+    fixture.presenter.testFrames(Loading) {
+      loadedContent(fixture)
+      send(Submit)
+      fixture.submit.responses.trySend(Unit.right())
+      frame()
+      val purchased = latest as Purchased
+
+      send(Reload)
+      fixture.answerLoad()
+      send(Submit)
+      frame()
+      assertThat(latest).isSameInstanceAs(purchased)
+      assertThat(observed.last()).isSameInstanceAs(purchased)
+      assertThat(fixture.insurance.calls).isEqualTo(1)
+      assertThat(fixture.submit.calls).hasSize(1)
+    }
+  }
+
+  @Test
+  fun `reload while purchasing keeps showing the purchase in flight`() = runTest {
+    val fixture = Fixture()
+    fixture.presenter.testFrames(Loading) {
+      loadedContent(fixture)
+      send(Submit)
+      send(Reload)
+      fixture.answerLoad()
+      frame()
+      frame()
+      assertThat(latest).isEqualTo(Submitting)
+      assertThat(fixture.submit.calls).hasSize(1)
     }
   }
 }
@@ -297,24 +600,29 @@ private class FakeEventTrackingClient : EventTrackingClient {
   override fun setUserProperty(name: String, value: String?) {}
 }
 
+/** Each purchase waits for one entry in [responses]; [calls] records every purchase sent, also one cancelled later. */
 private class FakeSubmitAddonPurchaseUseCase : SubmitAddonPurchaseUseCase {
-  val turbine = Turbine<Either<ErrorMessage, Unit>>()
+  val responses = Channel<Either<ErrorMessage, Unit>>(Channel.UNLIMITED)
+  val calls = mutableListOf<Pair<String, List<String>>>()
 
   override suspend fun invoke(quoteId: String, addonIds: List<String>): Either<ErrorMessage, Unit> {
-    return turbine.awaitItem()
+    calls += quoteId to addonIds
+    return responses.receive()
   }
 }
 
 private class FakeAddonSummaryGetInsuranceUseCase : GetInsuranceForTravelAddonUseCase {
-  val turbine = Turbine<Either<ErrorMessage, List<InsuranceForAddon>>>()
+  val responses = Channel<Either<ErrorMessage, List<InsuranceForAddon>>>(Channel.UNLIMITED)
+  var calls = 0
 
   override suspend fun invoke(ids: List<String>): Flow<Either<ErrorMessage, List<InsuranceForAddon>>> {
-    return flow { emit(turbine.awaitItem()) }
+    calls++
+    return flow { emit(responses.receive()) }
   }
 }
 
 private class FakeGetQuoteCostBreakdownUseCase : GetQuoteCostBreakdownUseCase {
-  val turbine = Turbine<Either<ErrorMessage, QuoteCostBreakdown>>()
+  val responses = Channel<Either<ErrorMessage, QuoteCostBreakdown>>(Channel.UNLIMITED)
 
   override suspend fun invoke(
     quoteId: String,
@@ -324,8 +632,44 @@ private class FakeGetQuoteCostBreakdownUseCase : GetQuoteCostBreakdownUseCase {
     insuranceDisplayName: String,
     addonType: AddonType,
   ): Either<ErrorMessage, QuoteCostBreakdown> {
-    return turbine.awaitItem()
+    return responses.receive()
   }
+}
+
+/** The summary's presenter over fakes. */
+private class Fixture(val params: SummaryParameters = testSummaryParametersWithCurrentAddon) {
+  val submit = FakeSubmitAddonPurchaseUseCase()
+  val insurance = FakeAddonSummaryGetInsuranceUseCase()
+  val costBreakdown = FakeGetQuoteCostBreakdownUseCase()
+  val tracking = FakeEventTrackingClient()
+  val presenter = AddonSummaryPresenter(
+    summaryParameters = params,
+    submitAddonPurchaseUseCase = submit,
+    addonPurchaseSource = AddonBannerSource.INSURANCES_TAB,
+    getQuoteCostBreakdownUseCase = costBreakdown,
+    getInsuranceForTravelAddonUseCase = insurance,
+    eventTrackingClient = tracking,
+  )
+
+  fun answerLoad() {
+    insurance.responses.trySend(listOf(fakeInsuranceForAddon).right())
+    costBreakdown.responses.trySend(fakeQuoteCostBreakdown.right())
+  }
+}
+
+/** Answers the load and returns the summary it shows. */
+private fun FrameTestContext<AddonSummaryEvent, AddonSummaryState>.loadedContent(fixture: Fixture): Content {
+  fixture.answerLoad()
+  frame()
+  frame()
+  return latest as Content
+}
+
+/** Sends [events] together and lets their effects run and show their state. */
+private fun FrameTestContext<AddonSummaryEvent, AddonSummaryState>.send(vararg events: AddonSummaryEvent) {
+  emit(*events)
+  frame()
+  frame()
 }
 
 private val fakeProductVariant = ProductVariant(

@@ -21,20 +21,19 @@ import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
 import com.hedvig.android.feature.addon.purchase.data.GetInsuranceForTravelAddonUseCase
 import com.hedvig.android.feature.addon.purchase.data.GetQuoteCostBreakdownUseCase
 import com.hedvig.android.feature.addon.purchase.data.SubmitAddonPurchaseUseCase
-import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseKey
 import com.hedvig.android.feature.addon.purchase.navigation.AddonType
-import com.hedvig.android.feature.addon.purchase.navigation.SubmitFailureKey
-import com.hedvig.android.feature.addon.purchase.navigation.SubmitSuccessKey
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonLogInfo.AddonEventType
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Content
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Loading
+import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Purchased
+import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Submitting
+import com.hedvig.android.molecule.public.AttemptStatus
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
-import com.hedvig.android.navigation.compose.Backstack
-import com.hedvig.android.navigation.compose.add
-import com.hedvig.android.navigation.compose.navigateAndPopUpTo
+import com.hedvig.android.molecule.public.NavigationRequest
+import com.hedvig.android.molecule.public.rememberAttempts
 import com.hedvig.android.ui.tiersandaddons.CostBreakdownEntry
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
@@ -49,7 +48,6 @@ internal class AddonSummaryViewModel(
   submitAddonPurchaseUseCase: SubmitAddonPurchaseUseCase,
   getQuoteCostBreakdownUseCase: GetQuoteCostBreakdownUseCase,
   getInsuranceForTravelAddonUseCase: GetInsuranceForTravelAddonUseCase,
-  backstack: Backstack,
   eventTrackingClient: EventTrackingClient,
 ) : MoleculeViewModel<AddonSummaryEvent, AddonSummaryState>(
     initialState = Loading,
@@ -59,7 +57,6 @@ internal class AddonSummaryViewModel(
       addonPurchaseSource,
       getQuoteCostBreakdownUseCase,
       getInsuranceForTravelAddonUseCase,
-      backstack,
       eventTrackingClient,
     ),
   )
@@ -70,19 +67,51 @@ internal class AddonSummaryPresenter(
   private val addonPurchaseSource: AddonBannerSource,
   private val getQuoteCostBreakdownUseCase: GetQuoteCostBreakdownUseCase,
   private val getInsuranceForTravelAddonUseCase: GetInsuranceForTravelAddonUseCase,
-  private val backstack: Backstack,
   private val eventTrackingClient: EventTrackingClient,
 ) : MoleculePresenter<AddonSummaryEvent, AddonSummaryState> {
   @Composable
   override fun MoleculePresenterScope<AddonSummaryEvent>.present(lastState: AddonSummaryState): AddonSummaryState {
-    var submitIteration by remember { mutableIntStateOf(0) }
     var loadIteration by remember { mutableIntStateOf(0) }
-    var currentState by remember { mutableStateOf(lastState) }
+    var currentState by remember {
+      mutableStateOf(
+        when (lastState) {
+          Loading, AddonSummaryState.Error, is Content -> lastState
+          Submitting, is Purchased -> Loading
+        },
+      )
+    }
+    // Kept on restart: the member has not sent the purchase again, so its failure is still theirs to see.
+    var submitFailure by remember { mutableStateOf((lastState as? Content)?.submitFailure) }
+    var purchased by remember { mutableStateOf(lastState as? Purchased) }
+    val purchase = rememberAttempts<Unit>(
+      restoredWhileRunning = lastState is Submitting,
+      terminal = true,
+    ) {
+      submitAddonPurchaseUseCase.invoke(
+        quoteId = summaryParameters.quoteId,
+        addonIds = summaryParameters.chosenQuotes.map {
+          it.addonId
+        },
+      ).fold(
+        ifLeft = {
+          submitFailure = NavigationRequest.of(Unit)
+          false
+        },
+        ifRight = {
+          logSuccessfulAddonPurchaseAction(summaryParameters, addonPurchaseSource)
+          trackAddonPurchased(eventTrackingClient, summaryParameters, addonPurchaseSource)
+          purchased = Purchased(NavigationRequest.of(summaryParameters.activationDate))
+          true
+        },
+      )
+    }
 
     CollectEvents { event ->
+      if (purchased != null) return@CollectEvents
       when (event) {
         AddonSummaryEvent.Submit -> {
-          submitIteration++
+          if (currentState !is Content || submitFailure?.isPending == true) return@CollectEvents
+          purchase.start(Unit)
         }
 
         AddonSummaryEvent.Reload -> {
@@ -92,6 +121,8 @@ internal class AddonSummaryPresenter(
     }
 
     LaunchedEffect(loadIteration) {
+      // The member has bought the addon, so nothing is loaded again, also when the presenter restarts from this state.
+      if (purchased != null) return@LaunchedEffect
       val exposureName = getInsuranceForTravelAddonUseCase
         .invoke(listOf(summaryParameters.contractId))
         .firstOrNull()?.getOrNull()?.firstOrNull()?.contractExposure
@@ -140,32 +171,19 @@ internal class AddonSummaryPresenter(
       )
     }
 
-    LaunchedEffect(submitIteration) {
-      val state = currentState as? Content ?: return@LaunchedEffect
-      if (submitIteration > 0) {
-        currentState = Loading
-        submitAddonPurchaseUseCase.invoke(
-          quoteId = summaryParameters.quoteId,
-          addonIds = summaryParameters.chosenQuotes.map {
-            it.addonId
-          },
-        ).fold(
-          ifLeft = {
-            currentState = state
-            backstack.add(SubmitFailureKey)
-          },
-          ifRight = {
-            logSuccessfulAddonPurchaseAction(summaryParameters, addonPurchaseSource)
-            trackAddonPurchased(eventTrackingClient, summaryParameters, addonPurchaseSource)
-            backstack.navigateAndPopUpTo<AddonPurchaseKey>(
-              SubmitSuccessKey(summaryParameters.activationDate),
-              inclusive = true,
-            )
-          },
-        )
-      }
+    purchased?.let { return it }
+    val state = currentState
+    val shown = if (state is Content) state.copy(submitFailure = submitFailure) else state
+    return when (purchase.status) {
+      AttemptStatus.Running -> Submitting
+
+      // The purchase stopped with the last presenter run and may have reached the server. The summary is loaded again
+      // and shown as before the purchase, with nothing telling the member a purchase was sent, and a Submit sends the
+      // same quote again. Whether the first one went through is not known here.
+      AttemptStatus.Interrupted -> shown
+
+      AttemptStatus.Idle -> shown
     }
-    return currentState
   }
 }
 
@@ -203,6 +221,15 @@ internal sealed interface AddonSummaryState {
 
   data object Error : AddonSummaryState
 
+  /** A purchase is in flight. */
+  data object Submitting : AddonSummaryState
+
+  /** The addon is bought. The platform leaves the flow; nothing follows this state. */
+  data class Purchased(
+    /** The navigation to the success screen, made where the purchase went through, so every copy shares it. */
+    val exit: NavigationRequest<LocalDate>,
+  ) : AddonSummaryState
+
   data class Content(
     val insuranceDisplayName: String,
     val insuranceExposure: String?,
@@ -213,6 +240,8 @@ internal sealed interface AddonSummaryState {
     val notificationMessage: String?,
     val documents: List<InsuranceVariantDocument>,
     val costBreakdownWithExtras: CostBreakdownWithExtras,
+    /** The failure screen to show over the summary after a purchase failed. */
+    val submitFailure: NavigationRequest<Unit>? = null,
     val displayItems: List<Pair<String, String>>, // todo: check how those look
   ) : AddonSummaryState
 }

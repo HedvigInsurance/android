@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
+import com.hedvig.android.compose.ui.NavigationEffect
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.ItemCostDiscount
 import com.hedvig.android.core.uidata.UiCurrencyCode
@@ -50,6 +51,8 @@ import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuoteInsuranceDocument
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Content
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Loading
+import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Purchased
+import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Submitting
 import com.hedvig.android.ui.tiersandaddons.CostBreakdownEntry
 import com.hedvig.android.ui.tiersandaddons.DisplayDocument
 import com.hedvig.android.ui.tiersandaddons.QuoteCard
@@ -76,8 +79,11 @@ internal fun AddonSummaryDestination(
   viewModel: AddonSummaryViewModel,
   navigateBack: () -> Unit,
   navigateUp: () -> Unit,
+  onPurchased: (activationDate: LocalDate) -> Unit,
+  onSubmitFailed: () -> Unit,
 ) {
   val uiState: AddonSummaryState by viewModel.uiState.collectAsStateWithLifecycle()
+  AddonSummaryNavigationEffect(uiState, onPurchased, onSubmitFailed)
   AddonSummaryScreen(
     uiState = uiState,
     navigateUp = navigateUp,
@@ -92,6 +98,16 @@ internal fun AddonSummaryDestination(
 }
 
 @Composable
+internal fun AddonSummaryNavigationEffect(
+  uiState: AddonSummaryState,
+  onPurchased: (activationDate: LocalDate) -> Unit,
+  onSubmitFailed: () -> Unit,
+) {
+  NavigationEffect((uiState as? Purchased)?.exit, onPurchased)
+  NavigationEffect((uiState as? Content)?.submitFailure) { onSubmitFailed() }
+}
+
+@Composable
 private fun AddonSummaryScreen(
   uiState: AddonSummaryState,
   navigateBack: () -> Unit,
@@ -100,7 +116,7 @@ private fun AddonSummaryScreen(
   onSubmitQuoteClick: () -> Unit,
 ) {
   when (uiState) {
-    is Loading -> {
+    is Loading, Submitting, is Purchased -> {
       HedvigFullScreenCenterAlignedProgress()
     }
 
