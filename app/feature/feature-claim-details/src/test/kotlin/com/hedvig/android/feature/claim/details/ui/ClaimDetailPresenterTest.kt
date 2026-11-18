@@ -148,6 +148,35 @@ class ClaimDetailPresenterTest {
   }
 
   @Test
+  fun `the rating opens again after the stars step sheet is closed`() = runTest {
+    presenter.test(ClaimDetailUiState.Loading) {
+      awaitContent(content())
+      sendRatingEvent(RatingEvent.OpenRequested)
+      sendRatingEvent(RatingEvent.SheetDismissed)
+
+      assertThat(sendRatingEvent(RatingEvent.OpenRequested).rating).isEqualTo(RatingState.Open(RatingStep.Stars))
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `the rating opens again after skipping the stars step and the sheet reporting its close`() = runTest {
+    presenter.test(ClaimDetailUiState.Loading) {
+      awaitContent(content())
+      sendRatingEvent(RatingEvent.OpenRequested)
+      sendRatingEvent(RatingEvent.Skip)
+      sendEvent(ClaimDetailsEvent.Rating(RatingEvent.SheetDismissed))
+
+      val reopened = sendRatingEvent(RatingEvent.OpenRequested)
+
+      assertThat(reopened.rating).isEqualTo(RatingState.Open(RatingStep.Stars))
+      assertThat(reopened.ratingButton).isEqualTo(RatingButtonState.Enabled)
+      assertThat(recorder.recorded).containsExactly("claim-1" to ClaimRatingAnswer.Dismissed)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
   fun `the open sheet survives a second claim emission`() = runTest {
     presenter.test(ClaimDetailUiState.Loading) {
       awaitContent(content())

@@ -225,9 +225,13 @@ private fun Body(text: String) {
 
 @Composable
 private fun StarRatingRow(selectedRating: Int?, onRatingClick: (Int) -> Unit, modifier: Modifier = Modifier) {
-  Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+  Column(modifier = modifier.fillMaxWidth()) {
     val hapticFeedback = LocalHapticFeedback.current
-    Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+    Row(
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier.fillMaxWidth(),
+    ) {
       (1..5).forEach { rating ->
         // TODO: Add "%d of 5" / "%d av 5" to Lokalise
         val ratingDescription = "$rating of 5"

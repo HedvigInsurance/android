@@ -635,6 +635,9 @@ private fun AfterGridContent(
     }
     if (uiState.ratingButton != null) {
       Spacer(Modifier.height(16.dp))
+      // TODO: Add "Claims rating" / "Skadebetyg" to Lokalise
+      HedvigText("Claims rating", Modifier.padding(horizontal = 2.dp))
+      Spacer(Modifier.height(8.dp))
       ClaimRatingButton(state = uiState.ratingButton, onClick = onRateClaimClick)
     }
     Spacer(Modifier.height(16.dp))
