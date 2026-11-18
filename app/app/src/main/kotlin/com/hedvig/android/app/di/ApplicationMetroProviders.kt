@@ -62,7 +62,7 @@ interface ApplicationMetroProviders {
     override fun configure(builder: ApolloClient.Builder): ApolloClient.Builder {
       return builder
         .addInterceptor(LogoutOnUnauthenticatedInterceptor(authTokenService, demoManager))
-        .addInterceptor(LoggingInterceptor(logResponseData = !hedvigBuildConstants.isProduction))
+        .addInterceptor(LoggingInterceptor(logMemberData = !hedvigBuildConstants.isProduction))
     }
   }
 

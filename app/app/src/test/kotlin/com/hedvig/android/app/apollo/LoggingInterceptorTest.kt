@@ -65,8 +65,8 @@ class LoggingInterceptorTest {
 
   @Test
   fun `in production builds, response data is never logged`() = runTest {
-    intercept(logResponseData = false, withErrors = false)
-    intercept(logResponseData = false, withErrors = true)
+    intercept(logMemberData = false, withErrors = false)
+    intercept(logMemberData = false, withErrors = true)
 
     assertThat(logLines).any { it.contains(OPERATION_NAME) }
     assertThat(logLines).any { it.contains(ERROR_MESSAGE) }
@@ -78,13 +78,32 @@ class LoggingInterceptorTest {
   }
 
   @Test
+  fun `in production builds, operation variables are never logged`() = runTest {
+    intercept(logMemberData = false, withErrors = false)
+    intercept(logMemberData = false, withErrors = true)
+
+    assertThat(rumErrors).isNotEmpty()
+    for (line in logLines + rumErrors) {
+      assertThat(line).doesNotContain(VARIABLE_MARKER)
+    }
+  }
+
+  @Test
+  fun `outside production builds, operation variables are logged with a GraphQL error`() = runTest {
+    intercept(logMemberData = true, withErrors = true)
+
+    assertThat(logLines).any { it.contains(VARIABLE_MARKER) }
+    assertThat(rumErrors).any { it.contains(VARIABLE_MARKER) }
+  }
+
+  @Test
   fun `outside production builds, response data is logged`() = runTest {
-    intercept(logResponseData = true, withErrors = false)
+    intercept(logMemberData = true, withErrors = false)
 
     assertThat(logLines).any { it.contains(DATA_MARKER) }
   }
 
-  private suspend fun intercept(logResponseData: Boolean, withErrors: Boolean) {
+  private suspend fun intercept(logMemberData: Boolean, withErrors: Boolean) {
     val request = ApolloRequest.Builder(FakeQuery).build()
     val response = ApolloResponse.Builder(FakeQuery, request.requestUuid)
       .data(FakeQuery.FakeData(DATA_MARKER))
@@ -96,7 +115,7 @@ class LoggingInterceptorTest {
         return flowOf(response as ApolloResponse<D>)
       }
     }
-    LoggingInterceptor(logResponseData).intercept(request, chain).toList()
+    LoggingInterceptor(logMemberData).intercept(request, chain).toList()
   }
 
   private object FakeQuery : Operation<FakeQuery.FakeData> {
@@ -114,7 +133,10 @@ class LoggingInterceptorTest {
       writer: JsonWriter,
       customScalarAdapters: CustomScalarAdapters,
       withDefaultValues: Boolean,
-    ) {}
+    ) {
+      writer.name("input")
+      writer.value(VARIABLE_MARKER)
+    }
 
     override fun rootField(): CompiledField = error("Not needed")
   }
@@ -123,5 +145,6 @@ class LoggingInterceptorTest {
     const val OPERATION_NAME = "FakeMemberQuery"
     const val ERROR_MESSAGE = "Something went wrong"
     const val DATA_MARKER = "SensitiveMemberName"
+    const val VARIABLE_MARKER = "SensitiveMemberInput"
   }
 }
