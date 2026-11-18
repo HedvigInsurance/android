@@ -155,6 +155,14 @@ class JvmNetworkBindingsTest {
     assertEquals(2, received.size)
     assertEquals("Bearer token", received.last()["Authorization"])
     assertTrue(fetcher.calls > 0)
+
+    // In the app the member client exists and has been used before the public query runs, so check that order too.
+    val callsAfterMemberClient = fetcher.calls
+    publicClient.query(TestQuery).fetchPolicy(FetchPolicy.NetworkOnly).execute()
+
+    assertEquals(3, received.size)
+    assertNull(received.last()["Authorization"])
+    assertEquals(callsAfterMemberClient, fetcher.calls)
   }
 
   @Test
