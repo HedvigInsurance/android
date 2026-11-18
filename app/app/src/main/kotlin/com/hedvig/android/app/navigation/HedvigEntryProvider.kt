@@ -43,8 +43,9 @@ import com.hedvig.android.feature.help.center.navigation.HelpCenterKey
 import com.hedvig.android.feature.home.home.navigation.homeEntries
 import com.hedvig.android.feature.imageviewer.navigation.ImageViewerKey
 import com.hedvig.android.feature.imageviewer.navigation.imageViewerEntries
-import com.hedvig.android.feature.inapppurchase.navigation.InAppPurchaseKey
 import com.hedvig.android.feature.inapppurchase.navigation.inAppPurchaseEntries
+import com.hedvig.android.feature.product.inapp.navigation.exitCrossSellPurchase
+import com.hedvig.android.feature.product.inapp.navigation.CrossSellProductKey
 import com.hedvig.android.feature.insurance.certificate.navigation.InsuranceEvidenceKey
 import com.hedvig.android.feature.insurance.certificate.navigation.insuranceEvidenceEntries
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
@@ -612,8 +613,9 @@ private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
   inAppPurchaseEntries(
     backstack = backstack,
     navigateToContract = { contractId ->
-      backstack.navigateAndPopUpTo<InAppPurchaseKey>(InsuranceContractDetailKey(contractId), inclusive = true)
+      backstack.navigateAndPopUpTo<CrossSellProductKey>(InsuranceContractDetailKey(contractId), inclusive = true)
     },
+    finishPurchase = backstack::exitCrossSellPurchase,
   )
   chipIdEntries(
     backstack = backstack,

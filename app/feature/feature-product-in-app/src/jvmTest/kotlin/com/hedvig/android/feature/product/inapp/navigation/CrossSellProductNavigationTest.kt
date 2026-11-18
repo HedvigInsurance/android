@@ -15,6 +15,15 @@ class CrossSellProductNavigationTest {
   }
 
   @Test
+  fun `finishing a purchase returns to where the cross-sell was tapped`() {
+    val backstack = TestBackstack(CallerKey, productKey("dog"), PurchaseStepKey, PurchaseStepKey)
+
+    backstack.exitCrossSellPurchase()
+
+    assertThat(backstack.entries).containsExactly(CallerKey)
+  }
+
+  @Test
   fun `a single product opens its product page`() {
     val backstack = TestBackstack(CallerKey)
 
@@ -68,3 +77,6 @@ private fun productKey(id: String) = CrossSellProductKey(
 
 @Serializable
 private data object CallerKey : HedvigNavKey
+
+@Serializable
+private data object PurchaseStepKey : HedvigNavKey

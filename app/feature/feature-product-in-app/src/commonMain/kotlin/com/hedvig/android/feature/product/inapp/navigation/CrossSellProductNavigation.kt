@@ -4,6 +4,7 @@ import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
+import com.hedvig.android.navigation.compose.popUpTo
 
 /**
  * Opens the product page of [crossSell], or, for a generic cross-sell, the sheet to pick one of its options from.
@@ -20,6 +21,13 @@ fun Backstack.navigateToCrossSellProduct(crossSell: CrossSell) {
  * Replaces the options sheet with the chosen product page, so leaving that page returns to wherever the
  * cross-sell was tapped rather than to the sheet.
  */
+/**
+ * Leaves a purchase started from a product page, returning to wherever the cross-sell was tapped.
+ */
+fun Backstack.exitCrossSellPurchase() {
+  popUpTo<CrossSellProductKey>(inclusive = true)
+}
+
 internal fun Backstack.navigateToSelectedOption(option: CrossSellProductKey) {
   navigateAndPopUpTo<CrossSellOptionsKey>(option, inclusive = true)
 }

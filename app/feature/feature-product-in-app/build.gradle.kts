@@ -31,6 +31,7 @@ kotlin {
       implementation(projects.coreResources)
       implementation(projects.dataContract)
       implementation(projects.designSystemHedvig)
+      implementation(projects.featureInAppPurchaseNavigation)
       implementation(projects.moleculePublic)
       implementation(projects.navigationCommon)
       implementation(projects.navigationCompose)

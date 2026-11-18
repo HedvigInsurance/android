@@ -1,5 +1,11 @@
 package com.hedvig.android.feature.product.inapp.ui
 
+import com.hedvig.android.design.system.hedvig.HedvigMarkdownText
+import com.hedvig.android.design.system.hedvig.ExpandablePlusCard
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -70,6 +76,7 @@ internal fun CrossSellProductDestination(
   header: CrossSellProductHeader,
   imageLoader: ImageLoader,
   close: () -> Unit,
+  startPurchase: (InAppProduct) -> Unit,
   openStoreUrl: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -79,7 +86,12 @@ internal fun CrossSellProductDestination(
     imageLoader = imageLoader,
     close = close,
     retry = { viewModel.emit(CrossSellProductEvent.Retry) },
-    openStoreUrl = openStoreUrl,
+    buy = {
+      when (val destination = uiState.buyDestination()) {
+        is BuyDestination.InApp -> startPurchase(destination.product)
+        BuyDestination.Web -> openStoreUrl()
+      }
+    },
   )
 }
 
@@ -90,7 +102,7 @@ private fun CrossSellProductScreen(
   imageLoader: ImageLoader,
   close: () -> Unit,
   retry: () -> Unit,
-  openStoreUrl: () -> Unit,
+  buy: () -> Unit,
 ) {
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,
@@ -121,7 +133,7 @@ private fun CrossSellProductScreen(
       // TODO: Add "Discover your offer" / "Upptäck ditt erbjudande" to Lokalise
       HedvigButton(
         text = "Discover your offer",
-        onClick = openStoreUrl,
+        onClick = buy,
         enabled = true,
         modifier = Modifier
           .fillMaxWidth()
@@ -201,8 +213,35 @@ private fun ProductContent(
             .aspectRatio(STORY_CARD_ASPECT_RATIO),
         )
       }
+      if (productInfo.faq.isNotEmpty()) {
+        Faq(productInfo.faq)
+      }
     }
     Spacer(Modifier.height(8.dp))
+  }
+}
+
+@Composable
+private fun Faq(items: List<CrossSellProductInfo.FaqItem>) {
+  Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    // TODO: Add "Questions and answers" / "Frågor och svar" to Lokalise
+    HedvigText(text = "Questions and answers", modifier = Modifier.semantics { heading() })
+    Spacer(Modifier.height(4.dp))
+    for (item in items) {
+      var isExpanded by rememberSaveable(item.question) { mutableStateOf(false) }
+      ExpandablePlusCard(
+        isExpanded = isExpanded,
+        onClick = { isExpanded = !isExpanded },
+        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 10.dp),
+        content = { HedvigText(item.question, modifier = Modifier.weight(1f)) },
+        expandedContent = {
+          HedvigMarkdownText(
+            content = item.answerMarkdown,
+            modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
+          )
+        },
+      )
+    }
   }
 }
 
@@ -272,7 +311,7 @@ private fun PreviewCrossSellProductScreen(
       imageLoader = rememberPreviewImageLoader(),
       close = {},
       retry = {},
-      openStoreUrl = {},
+      buy = {},
     )
   }
 }

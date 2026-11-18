@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.data.contract.InAppProduct
 import com.hedvig.android.feature.product.inapp.data.CrossSellProductInfo
 import com.hedvig.android.feature.product.inapp.data.GetCrossSellProductInfoUseCase
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -67,6 +68,19 @@ internal sealed interface CrossSellProductUiState {
 
   data class Content(val productInfo: CrossSellProductInfo) : CrossSellProductUiState
 }
+
+internal sealed interface BuyDestination {
+  data class InApp(val product: InAppProduct) : BuyDestination
+
+  data object Web : BuyDestination
+}
+
+/**
+ * Where the buy button leads. Until the product info has loaded the web store is the safe choice.
+ */
+internal fun CrossSellProductUiState.buyDestination(): BuyDestination =
+  (this as? CrossSellProductUiState.Content)?.productInfo?.inAppProduct?.let { BuyDestination.InApp(it) }
+    ?: BuyDestination.Web
 
 internal sealed interface CrossSellProductEvent {
   data object Retry : CrossSellProductEvent
