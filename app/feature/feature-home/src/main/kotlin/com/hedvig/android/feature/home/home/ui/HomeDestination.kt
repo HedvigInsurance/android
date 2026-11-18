@@ -282,7 +282,7 @@ internal fun HomeDestination(
   navigateToHelpCenter: () -> Unit,
   navigateToQuickLink: (QuickLinkDestination) -> Unit,
   openUrl: (String) -> Unit,
-  openCrossSellUrl: (String) -> Boolean,
+  openCrossSell: (CrossSell) -> Boolean,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
@@ -312,7 +312,7 @@ internal fun HomeDestination(
       viewModel.emit(HomeEvent.CrossSellShown(userFlow, offerId, offerUrl))
     },
     onCrossSellClick = dropUnlessResumed { userFlow: CrossSellUserFlow, crossSell: CrossSell ->
-      if (openCrossSellUrl(crossSell.storeUrl)) {
+      if (openCrossSell(crossSell)) {
         viewModel.emit(HomeEvent.CrossSellClicked(userFlow, crossSell.id, crossSell.storeUrl))
       }
     },
