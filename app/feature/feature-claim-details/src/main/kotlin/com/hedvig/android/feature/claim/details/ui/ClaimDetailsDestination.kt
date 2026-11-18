@@ -5,6 +5,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -100,6 +101,10 @@ import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.show
+import com.hedvig.android.feature.claim.details.ui.rating.ClaimRatingSheet
+import com.hedvig.android.feature.claim.details.ui.rating.ExitVia
+import com.hedvig.android.feature.claim.details.ui.rating.RatingEvent
+import com.hedvig.android.feature.claim.details.ui.rating.RatingState
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.shared.file.upload.ui.FilePickerBottomSheet
 import com.hedvig.android.ui.claimstatus.ClaimStatusCard
@@ -149,6 +154,7 @@ internal fun ClaimDetailsDestination(
   imageLoader: ImageLoader,
   appPackageId: String,
   navigateUp: () -> Unit,
+  popBackstack: () -> Unit,
   navigateToConversation: (String) -> Unit,
   onFilesToUploadSelected: (List<Uri>, targetUploadUrl: String) -> Unit,
   openUrl: (String) -> Unit,
@@ -165,6 +171,9 @@ internal fun ClaimDetailsDestination(
     onDismissUploadError = { viewModel.emit(ClaimDetailsEvent.DismissUploadError) },
     retry = { viewModel.emit(ClaimDetailsEvent.Retry) },
     navigateUp = navigateUp,
+    popBackstack = popBackstack,
+    onRatingEvent = { viewModel.emit(ClaimDetailsEvent.Rating(it)) },
+    onExitHandled = { viewModel.emit(ClaimDetailsEvent.ExitHandled) },
     navigateToConversation = navigateToConversation,
     onFilesToUploadSelected = onFilesToUploadSelected,
     downloadFromUrl = { viewModel.emit(ClaimDetailsEvent.DownloadPdf(it)) },
@@ -186,19 +195,46 @@ private fun ClaimDetailScreen(
   onDismissUploadError: () -> Unit,
   retry: () -> Unit,
   navigateUp: () -> Unit,
+  popBackstack: () -> Unit,
+  onRatingEvent: (RatingEvent) -> Unit,
+  onExitHandled: () -> Unit,
   navigateToConversation: (String) -> Unit,
   onFilesToUploadSelected: (files: List<Uri>, uploadUri: String) -> Unit,
   downloadFromUrl: (String) -> Unit,
   sharePdf: (File) -> Unit,
   onDismissDownloadError: () -> Unit,
 ) {
+  val content = uiState.safeCast<ClaimDetailUiState.Content>()
+  val closedClaimFlow = content?.closedClaimFlow
+  val rating = content?.rating
+  BackHandler(enabled = closedClaimFlow != null && rating == RatingState.Idle) {
+    onRatingEvent(RatingEvent.ExitRequested(ExitVia.SystemBack))
+  }
+  if (rating is RatingState.Leaving) {
+    LaunchedEffect(rating) {
+      when (rating.via) {
+        ExitVia.TopBar -> navigateUp()
+        ExitVia.SystemBack -> popBackstack()
+      }
+      onExitHandled()
+    }
+  }
+  ClaimRatingSheet(
+    step = (rating as? RatingState.Asking)?.step,
+    onEvent = onRatingEvent,
+    openUrl = openUrl,
+  )
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,
     modifier = Modifier.fillMaxSize(),
   ) {
     Column(Modifier.fillMaxSize()) {
       ClaimDetailTopAppBar(
-        navigateUp = navigateUp,
+        navigateUp = if (closedClaimFlow == null) {
+          navigateUp
+        } else {
+          { onRatingEvent(RatingEvent.ExitRequested(ExitVia.TopBar)) }
+        },
       )
       when (uiState) {
         is ClaimDetailUiState.Content -> {
@@ -881,6 +917,9 @@ private fun PreviewClaimDetailScreen(
         appPackageId = "",
         retry = { },
         navigateUp = {},
+        popBackstack = {},
+        onRatingEvent = {},
+        onExitHandled = {},
         navigateToConversation = {},
         onFilesToUploadSelected = { _, _ -> },
       )

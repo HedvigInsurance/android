@@ -35,6 +35,7 @@ fun EntryProviderScope<HedvigNavKey>.claimDetailsEntries(
       imageLoader = imageLoader,
       appPackageId = appPackageId,
       navigateUp = backstack::navigateUp,
+      popBackstack = backstack::popBackstack,
       navigateToConversation = dropUnlessResumed { conversationId: String ->
         navigateToConversation(conversationId)
       },

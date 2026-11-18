@@ -1,0 +1,283 @@
+package com.hedvig.android.feature.claim.details.ui.rating
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTextField
+import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.TextFieldSize.Large
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+
+internal const val TRUSTPILOT_REVIEW_URL = "https://www.trustpilot.com/evaluate/hedvig.com"
+
+@Composable
+internal fun ClaimRatingSheet(step: RatingStep?, onEvent: (RatingEvent) -> Unit, openUrl: (String) -> Unit) {
+  val sheetState = rememberHedvigBottomSheetState<RatingStep>()
+  val currentOnEvent by rememberUpdatedState(onEvent)
+  LaunchedEffect(step) {
+    if (step != null) {
+      sheetState.show(step)
+    } else if (sheetState.isVisible) {
+      sheetState.dismiss()
+    }
+  }
+  LaunchedEffect(sheetState) {
+    var wasVisible = false
+    snapshotFlow { sheetState.isVisible }.collect { isVisible ->
+      if (wasVisible && !isVisible) {
+        currentOnEvent(RatingEvent.SheetDismissed)
+      }
+      wasVisible = isVisible
+    }
+  }
+  HedvigBottomSheet(sheetState) { shownStep ->
+    ClaimRatingSheetContent(
+      step = shownStep,
+      onEvent = onEvent,
+      onOpenTrustpilot = {
+        openUrl(TRUSTPILOT_REVIEW_URL)
+        onEvent(RatingEvent.Finish)
+      },
+      modifier = Modifier.padding(bottom = 16.dp),
+    )
+  }
+}
+
+@Composable
+private fun ClaimRatingSheetContent(
+  step: RatingStep,
+  onEvent: (RatingEvent) -> Unit,
+  onOpenTrustpilot: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+    when (step) {
+      RatingStep.Stars -> {
+        // TODO: Add "How happy are you with how we handled your claim?" / "Hur nöjd är du med hur vi hanterade din skada?" to Lokalise. The question wording is still unsettled with the data team, against Typeform's "Hur nöjd är du med upplevelsen av ditt skadeärende hos Hedvig?"
+        Title("How happy are you with how we handled your claim?")
+        Spacer(Modifier.height(24.dp))
+        StarRatingRow(selectedRating = null, onRatingClick = { onEvent(RatingEvent.StarSelected(it)) })
+        Spacer(Modifier.height(24.dp))
+        // TODO: Add "Skip" / "Hoppa över" to Lokalise
+        HedvigTextButton("Skip", onClick = { onEvent(RatingEvent.Skip) }, modifier = Modifier.fillMaxWidth())
+      }
+
+      is RatingStep.Comment -> {
+        // TODO: Add "Want to tell us more? (optional)" / "Vill du berätta mer? (valfritt)" to Lokalise
+        Title("Want to tell us more? (optional)")
+        Spacer(Modifier.height(24.dp))
+        StarRatingRow(selectedRating = step.rating, onRatingClick = { onEvent(RatingEvent.StarSelected(it)) })
+        Spacer(Modifier.height(16.dp))
+        HedvigTextField(
+          text = step.comment,
+          onValueChange = { onEvent(RatingEvent.CommentChanged(it)) },
+          labelText = if (step.rating >= 4) {
+            // TODO: Add "What did we do best?" / "Vad var bäst med hanteringen?" to Lokalise
+            "What did we do best?"
+          } else {
+            // TODO: Add "What could we have done better?" / "Vad kunde vi ha gjort bättre?" to Lokalise
+            "What could we have done better?"
+          },
+          textFieldSize = Large,
+          singleLine = false,
+          minLines = 3,
+          modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.height(16.dp))
+        // TODO: Add "Send" / "Skicka" to Lokalise
+        HedvigButton(
+          text = "Send",
+          onClick = { onEvent(RatingEvent.Send) },
+          enabled = true,
+          modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.height(8.dp))
+        // TODO: Add "Skip" / "Hoppa över" to Lokalise
+        HedvigTextButton("Skip", onClick = { onEvent(RatingEvent.Skip) }, modifier = Modifier.fillMaxWidth())
+      }
+
+      is RatingStep.ThankYou -> {
+        if (step.rating >= 4) {
+          // TODO: Add "Thanks for your rating" / "Tack för ditt betyg" to Lokalise
+          Title("Thanks for your rating")
+          Spacer(Modifier.height(8.dp))
+          // TODO: Add "Would you like to share your experience on Trustpilot too? It helps others choose insurance." / "Vill du dela din upplevelse på Trustpilot också? Det hjälper andra att välja försäkring." to Lokalise
+          Body("Would you like to share your experience on Trustpilot too? It helps others choose insurance.")
+          Spacer(Modifier.height(24.dp))
+          // TODO: Add "Write a review on Trustpilot" / "Skriv ett omdöme på Trustpilot" to Lokalise
+          HedvigButton(
+            text = "Write a review on Trustpilot",
+            onClick = onOpenTrustpilot,
+            enabled = true,
+            modifier = Modifier.fillMaxWidth(),
+          )
+          Spacer(Modifier.height(8.dp))
+          // TODO: Add "No thanks" / "Nej tack" to Lokalise
+          HedvigTextButton(
+            "No thanks",
+            onClick = { onEvent(RatingEvent.Finish) },
+            modifier = Modifier.fillMaxWidth(),
+          )
+        } else {
+          // TODO: Add "Thanks for telling us" / "Tack för att du berättade" to Lokalise
+          Title("Thanks for telling us")
+          Spacer(Modifier.height(8.dp))
+          // TODO: Add "We read every answer and use it to get better. If you have questions about your claim, you can write to us." / "Vi läser alla svar och använder dem för att bli bättre. Har du frågor om ditt ärende kan du skriva till oss." to Lokalise
+          Body(
+            "We read every answer and use it to get better. If you have questions about your claim, you can write to us.",
+          )
+          Spacer(Modifier.height(24.dp))
+          // TODO: Add "Continue" / "Fortsätt" to Lokalise
+          HedvigButton(
+            text = "Continue",
+            onClick = { onEvent(RatingEvent.Finish) },
+            enabled = true,
+            buttonStyle = Secondary,
+            modifier = Modifier.fillMaxWidth(),
+          )
+        }
+      }
+    }
+  }
+}
+
+@Composable
+private fun Title(text: String) {
+  HedvigText(text, style = HedvigTheme.typography.headlineSmall, textAlign = TextAlign.Center)
+}
+
+@Composable
+private fun Body(text: String) {
+  HedvigText(
+    text,
+    style = HedvigTheme.typography.bodySmall,
+    color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+    textAlign = TextAlign.Center,
+  )
+}
+
+@Composable
+private fun StarRatingRow(selectedRating: Int?, onRatingClick: (Int) -> Unit, modifier: Modifier = Modifier) {
+  Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+    val hapticFeedback = LocalHapticFeedback.current
+    Row(horizontalArrangement = Arrangement.SpaceAround) {
+      (1..5).forEach { rating ->
+        val isSelected = selectedRating == rating
+        HedvigCard(
+          modifier = Modifier.weight(1f),
+          onClick = {
+            hapticFeedback.performHapticFeedback(
+              if (rating >= 4) HapticFeedbackType.Confirm else HapticFeedbackType.TextHandleMove,
+            )
+            onRatingClick(rating)
+          },
+          color = if (isSelected) HedvigTheme.colorScheme.signalGreenFill else HedvigTheme.colorScheme.surfacePrimary,
+        ) {
+          HedvigText(
+            text = rating.toString(),
+            style = HedvigTheme.typography.bodyLarge,
+            color = if (isSelected) {
+              HedvigTheme.colorScheme.textBlack
+            } else {
+              HedvigTheme.colorScheme.textSecondaryTranslucent
+            },
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(vertical = 16.dp),
+          )
+        }
+        Spacer(Modifier.width(6.dp))
+      }
+    }
+    Spacer(Modifier.height(8.dp))
+    HorizontalItemsWithMaximumSpaceTaken(
+      startSlot = {
+        // TODO: Add "Not happy at all" / "Inte alls nöjd" to Lokalise
+        HedvigText(
+          "Not happy at all",
+          style = HedvigTheme.typography.label,
+          color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+        )
+      },
+      endSlot = {
+        Row(horizontalArrangement = Arrangement.End) {
+          // TODO: Add "Very happy" / "Mycket nöjd" to Lokalise
+          HedvigText(
+            "Very happy",
+            style = HedvigTheme.typography.label,
+            color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+          )
+        }
+      },
+      spaceBetween = 8.dp,
+    )
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewRatingStars() {
+  PreviewStep(RatingStep.Stars)
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewRatingCommentHappy() {
+  PreviewStep(RatingStep.Comment(rating = 5, comment = ""))
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewRatingCommentUnhappy() {
+  PreviewStep(RatingStep.Comment(rating = 2, comment = "The handling took too long."))
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewRatingThankYouHappy() {
+  PreviewStep(RatingStep.ThankYou(rating = 5))
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewRatingThankYouUnhappy() {
+  PreviewStep(RatingStep.ThankYou(rating = 2))
+}
+
+@Composable
+private fun PreviewStep(step: RatingStep) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ClaimRatingSheetContent(
+        step = step,
+        onEvent = {},
+        onOpenTrustpilot = {},
+        modifier = Modifier.padding(16.dp),
+      )
+    }
+  }
+}
