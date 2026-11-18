@@ -34,13 +34,6 @@ extension TravelCertificateDateInputScreenOwner {
             model.submit()
         }
     }
-
-    func stepShown() {
-        sendWhileCollecting("stepShown") {
-            ShellLog.info("TravelCertificateDateInputScreenOwner stepShown")
-            model.stepShown()
-        }
-    }
 }
 
 /// The email and date step, mirrored from Kotlin's `TravelCertificateDateInputScreenState`.
@@ -108,8 +101,9 @@ struct TravelDateInputContent: Equatable {
     let hasCoInsured: Bool
     let isCreating: Bool
     let createFailed: Bool
-    /// Opaque: Swift can only hold it and pass it to `travelCertificateTravellersScreenModel(step:)`.
-    let next: TravelCertificateTravellersStep?
+    /// The travellers step to open, taken with `perform`. Its target is opaque: Swift can only hold it and pass it to
+    /// `travelCertificateTravellersScreenModel(step:)`.
+    let next: NavigationRequest<TravelCertificateTravellersStep>?
 }
 
 enum TravelEmailError: Equatable {
