@@ -14,6 +14,7 @@ import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
+import assertk.assertions.single
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.exception.ApolloNetworkException
 import com.apollographql.cache.normalized.FetchPolicy
@@ -48,7 +49,10 @@ import com.hedvig.android.network.clients.NetworkLogPolicy
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
+import io.ktor.client.plugins.HttpSend
+import io.ktor.client.plugins.plugin
 import io.ktor.http.ContentType
+import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
@@ -379,6 +383,31 @@ class IosGraphTest {
     assertThat(response.exception?.message).isEqualTo("token refresh failed")
     assertThat(response.data).isNull()
     assertThat(inputs.accessTokenFetcher.calls.value).isEqualTo(2)
+  }
+
+  @Test
+  fun `a query on the public Apollo client is sent without an Authorization header and without fetching a token`() {
+    val inputs = FakeInputs()
+    val holder = inputs.createHolder()
+    val sent = mutableListOf<Headers>()
+    // The graph's Darwin engine cannot be replaced, so the request is recorded just before the engine and aborted
+    // there. The client's default headers are already on it by then.
+    holder.graph.baseHttpClient.plugin(HttpSend).intercept { request ->
+      sent += request.headers.build()
+      throw IllegalStateException("Request recorded, not sent")
+    }
+
+    runBlocking {
+      holder.graph.publicApolloClient
+        .query(PayingMemberPhoneNumberQuery())
+        .fetchPolicy(FetchPolicy.NetworkOnly)
+        .execute()
+    }
+
+    assertThat(sent.size).isEqualTo(1)
+    assertThat(sent.single()["Authorization"]).isNull()
+    assertThat(sent.single()["Accept-Language"]).isNotNull()
+    assertThat(inputs.accessTokenFetcher.calls.value).isEqualTo(0)
   }
 
   @Test
