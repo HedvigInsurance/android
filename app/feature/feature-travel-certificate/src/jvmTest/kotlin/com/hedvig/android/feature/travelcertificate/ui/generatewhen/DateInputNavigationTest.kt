@@ -20,7 +20,13 @@ import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificate
 import com.hedvig.android.feature.travelcertificate.navigation.navigateToCreatedCertificate
 import com.hedvig.android.feature.travelcertificate.navigation.navigateToTravellersStep
 import com.hedvig.android.molecule.public.NavigationRequest
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 
 /**
@@ -49,6 +55,17 @@ class DateInputNavigationTest {
   )
   private var uiState by mutableStateOf<TravelCertificateDateInputUiState>(content)
   private var recompositionTrigger by mutableIntStateOf(0)
+
+  @Before
+  fun setUp() {
+    // The effect waits for the resumed lifecycle on Dispatchers.Main, which the JVM has no platform implementation of.
+    Dispatchers.setMain(UnconfinedTestDispatcher())
+  }
+
+  @After
+  fun tearDown() {
+    Dispatchers.resetMain()
+  }
 
   private fun ComposeUiTest.showEffect() {
     setContent {

@@ -1,6 +1,7 @@
 package com.hedvig.android.compose.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -11,14 +12,26 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.v2.runComposeUiTest
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
+import assertk.assertions.isFalse
+import assertk.assertions.isTrue
 import com.hedvig.android.molecule.public.NavigationRequest
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 
 /**
@@ -47,18 +60,114 @@ class NavigationEffectTest {
 
   /** The [recompositionTrigger] value of the composition whose callback navigated, once per navigation. */
   private val navigatedFrom = mutableListOf<Int>()
+  private val lifecycleOwner = TestLifecycleOwner()
+
+  @Before
+  fun setUp() {
+    // Waiting for a lifecycle state dispatches to Dispatchers.Main, which the JVM has no platform implementation of.
+    Dispatchers.setMain(UnconfinedTestDispatcher())
+  }
+
+  @After
+  fun tearDown() {
+    Dispatchers.resetMain()
+  }
 
   private fun ComposeUiTest.show(effect: Effect) {
     setContent {
-      val composition = recompositionTrigger
-      if (shown) {
-        repeat(screens) {
-          // A new callback on every recomposition, so the effect is recomposed rather than skipped.
-          effect.Show(request) { navigatedFrom += composition }
+      CompositionLocalProvider(LocalLifecycleOwner provides lifecycleOwner) {
+        val composition = recompositionTrigger
+        if (shown) {
+          repeat(screens) {
+            // A new callback on every recomposition, so the effect is recomposed rather than skipped.
+            effect.Show(request) { navigatedFrom += composition }
+          }
         }
       }
     }
     waitForIdle()
+  }
+
+  private fun ComposeUiTest.setLifecycleState(state: Lifecycle.State) {
+    runOnIdle { lifecycleOwner.registry.currentState = state }
+    waitForIdle()
+  }
+
+  @Test
+  fun `block, a request that arrives while started but not resumed is performed once on resume`() = runComposeUiTest {
+    lifecycleOwner.registry.currentState = Lifecycle.State.STARTED
+    show(block)
+    val offered = NavigationRequest.of("step")
+    request = offered
+    waitForIdle()
+    assertThat(navigatedFrom).isEmpty()
+    assertThat(offered.isPending).isTrue()
+
+    setLifecycleState(Lifecycle.State.RESUMED)
+    recompositionTrigger++
+    waitForIdle()
+    assertThat(navigatedFrom).containsExactly(0)
+    assertThat(offered.isPending).isFalse()
+  }
+
+  @Test
+  fun `block, a request whose screen leaves before it resumes stays pending for the next screen showing it`() =
+    runComposeUiTest {
+      lifecycleOwner.registry.currentState = Lifecycle.State.STARTED
+      show(block)
+      val offered = NavigationRequest.of("step")
+      request = offered
+      waitForIdle()
+      shown = false
+      waitForIdle()
+      setLifecycleState(Lifecycle.State.RESUMED)
+      assertThat(navigatedFrom).isEmpty()
+      assertThat(offered.isPending).isTrue()
+
+      recompositionTrigger++
+      shown = true
+      waitForIdle()
+      assertThat(navigatedFrom).containsExactly(1)
+    }
+
+  /** The callback shape most entries use: it does nothing unless the screen is resumed. */
+  private fun dropUnlessResumed(navigate: (String) -> Unit): (String) -> Unit = { target ->
+    if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) navigate(target)
+  }
+
+  private val ungated = Effect { request, navigate ->
+    val currentNavigate by rememberUpdatedState(navigate)
+    LaunchedEffect(request) {
+      if (request != null && request.tryConsume()) currentNavigate(request.target)
+    }
+  }
+
+  private fun ComposeUiTest.requestWhileStartedWithADroppingCallback(effect: Effect): NavigationRequest<String> {
+    lifecycleOwner.registry.currentState = Lifecycle.State.STARTED
+    setContent {
+      CompositionLocalProvider(LocalLifecycleOwner provides lifecycleOwner) {
+        effect.Show(request, dropUnlessResumed { navigatedFrom += 0 })
+      }
+    }
+    val offered = NavigationRequest.of("step")
+    request = offered
+    waitForIdle()
+    setLifecycleState(Lifecycle.State.RESUMED)
+    return offered
+  }
+
+  @Test
+  fun `block, a callback that drops calls while not resumed still navigates once the screen resumes`() =
+    runComposeUiTest {
+      requestWhileStartedWithADroppingCallback(block)
+      assertThat(navigatedFrom).containsExactly(0)
+    }
+
+  @Test
+  fun `taken before resumed, a callback that drops calls while not resumed loses the request`() = runComposeUiTest {
+    val offered = requestWhileStartedWithADroppingCallback(ungated)
+    assertThat(navigatedFrom).isEmpty()
+    assertThat(offered.isPending).isFalse()
   }
 
   private fun ComposeUiTest.recomposeTwice(effect: Effect): List<Int> {
@@ -186,6 +295,14 @@ class NavigationEffectTest {
   }
 
   @Test
+  fun `block flow, a taken request on the flow does not hide a later pending one`() = runComposeUiTest {
+    showFlow { NavigationEffect(it, active) { target -> flowNavigations += target } }
+    setRequest(NavigationRequest.of("taken").also { it.tryConsume() })
+    setRequest(NavigationRequest.of("pending"))
+    assertThat(flowNavigations).containsExactly("pending")
+  }
+
+  @Test
   fun `first on the flow, two screens collecting the same flow perform a request twice`() = runComposeUiTest {
     showFlow(screens = 2) { flow ->
       LaunchedEffect(flow) { flowNavigations += flow.filterNotNull().first().target }
@@ -193,4 +310,12 @@ class NavigationEffectTest {
     setRequest(NavigationRequest.of("charged"))
     assertThat(flowNavigations).containsExactly("charged", "charged")
   }
+}
+
+private class TestLifecycleOwner : LifecycleOwner {
+  val registry: LifecycleRegistry = LifecycleRegistry.createUnsafe(this).apply {
+    currentState = Lifecycle.State.RESUMED
+  }
+  override val lifecycle: Lifecycle
+    get() = registry
 }

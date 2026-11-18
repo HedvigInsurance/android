@@ -18,7 +18,13 @@ import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificate
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateKey
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateTravellersInputKey
 import com.hedvig.android.feature.travelcertificate.navigation.navigateToCreatedCertificate
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 
 /**
@@ -42,6 +48,17 @@ class TravellersNavigationTest {
   )
   private var uiState by mutableStateOf<TravelCertificateTravellersInputUiState>(content)
   private var recompositionTrigger by mutableIntStateOf(0)
+
+  @Before
+  fun setUp() {
+    // The effect waits for the resumed lifecycle on Dispatchers.Main, which the JVM has no platform implementation of.
+    Dispatchers.setMain(UnconfinedTestDispatcher())
+  }
+
+  @After
+  fun tearDown() {
+    Dispatchers.resetMain()
+  }
 
   /** The [recompositionTrigger] value of the composition whose callback navigated, once per navigation. */
   private val navigatedFrom = mutableListOf<Int>()
