@@ -7,6 +7,7 @@ import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isNotEqualTo
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.travelcertificate.FakeCreateTravelCertificateTransport
 import com.hedvig.android.feature.travelcertificate.FakeGetTravelCertificateSpecificationsUseCase
@@ -17,6 +18,7 @@ import com.hedvig.android.feature.travelcertificate.data.TravelCertificateTravel
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.expectNoStateChange
 import com.hedvig.android.logger.TestLogcatLoggingRule
+import com.hedvig.android.molecule.public.NavigationRequest
 import com.hedvig.android.molecule.test.MoleculePresenterTestContext
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.molecule.test.testFrames
@@ -68,7 +70,7 @@ class TravelCertificateDateInputPresenterTest {
     maxDate: LocalDate = LocalDate(2027, 1, 16),
     isCreating: Boolean = false,
     createFailed: Boolean = false,
-    next: TravelCertificateTravellersStep? = null,
+    next: NavigationRequest<TravelCertificateTravellersStep>? = null,
   ) = TravelCertificateDateInputUiState.Success(
     contractId = "contractId",
     email = email,
@@ -390,12 +392,15 @@ class TravelCertificateDateInputPresenterTest {
         travelDate = LocalDate(2026, 12, 24),
         contractId = "contractId",
       )
-      assertThat(awaitContent()).isEqualTo(
+      val offered = awaitContent()
+      assertThat(offered.next?.target).isEqualTo(step)
+      assertThat(offered.next?.isPending).isEqualTo(true)
+      assertThat(offered).isEqualTo(
         expectedContent(
           email = " other@hedvig.com",
           pickedDate = LocalDate(2026, 12, 24),
           hasCoInsured = true,
-          next = step,
+          next = offered.next,
         ),
       )
       assertThat(createTransport.inputs).isEmpty()
@@ -403,7 +408,7 @@ class TravelCertificateDateInputPresenterTest {
   }
 
   @Test
-  fun `a second continue before the step is shown offers it once, and after it is shown offers it again`() = runTest {
+  fun `a second continue before the step is taken offers it once, and after it is taken offers it again`() = runTest {
     presenter().test(TravelCertificateDateInputUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(TravelCertificateDateInputUiState.Loading)
       specifications.responses.trySend(specification(numberOfCoInsured = 1).right())
@@ -412,21 +417,26 @@ class TravelCertificateDateInputPresenterTest {
 
       sendEvent(TravelCertificateDateInputEvent.Submit)
       sendEvent(TravelCertificateDateInputEvent.Submit)
-      val offered = expectedContent(hasCoInsured = true, next = step)
-      assertThat(awaitContent()).isEqualTo(offered)
+      val offered = awaitContent()
+      assertThat(offered.next?.target).isEqualTo(step)
+      assertThat(offered).isEqualTo(expectedContent(hasCoInsured = true, next = offered.next))
       sendEvent(TravelCertificateDateInputEvent.SelectTravelDate(LocalDate(2026, 12, 24)))
       sendEvent(TravelCertificateDateInputEvent.Submit)
       testScheduler.advanceUntilIdle()
       expectNoStateChange(offered.copy(pickedDate = LocalDate(2026, 12, 24), selectedDate = LocalDate(2026, 12, 24)))
 
       sendEvent(TravelCertificateDateInputEvent.SelectTravelDate(today))
-      sendEvent(TravelCertificateDateInputEvent.StepShown)
+      assertThat(offered.next!!.tryConsume()).isEqualTo(true)
       testScheduler.advanceUntilIdle()
-      expectNoStateChange(expectedContent(hasCoInsured = true, pickedDate = today))
+      expectNoStateChange(expectedContent(hasCoInsured = true, pickedDate = today, next = offered.next))
 
       sendEvent(TravelCertificateDateInputEvent.Submit)
       testScheduler.advanceUntilIdle()
-      assertThat(expectMostRecentItem()).isEqualTo(offered.copy(pickedDate = today))
+      val offeredAgain = expectMostRecentItem() as TravelCertificateDateInputUiState.Success
+      assertThat(offeredAgain.next).isNotEqualTo(offered.next)
+      assertThat(offeredAgain.next?.target).isEqualTo(step)
+      assertThat(offeredAgain.next?.isPending).isEqualTo(true)
+      assertThat(offeredAgain).isEqualTo(offered.copy(pickedDate = today, next = offeredAgain.next))
     }
   }
 
@@ -535,7 +545,12 @@ class TravelCertificateDateInputPresenterTest {
   @Test
   fun `starting from content that was offering a step drops the step`() = runTest {
     val step = TravelCertificateTravellersStep("member@hedvig.com", today, "contractId")
-    presenter().test(expectedContent(hasCoInsured = true, next = step, emailError = EmailError.Invalid)) {
+    val earlier = expectedContent(
+      hasCoInsured = true,
+      next = NavigationRequest.of(step),
+      emailError = EmailError.Invalid,
+    )
+    presenter().test(earlier) {
       assertThat(awaitItem()).isEqualTo(expectedContent(hasCoInsured = true))
       testScheduler.advanceUntilIdle()
       assertThat(specifications.contractIds).isEmpty()
@@ -559,29 +574,29 @@ class TravelCertificateDateInputPresenterTest {
   }
 
   @Test
-  fun `a continue in the same frame as the acknowledgement is ignored, so the cleared step is always emitted`() =
-    runTest {
-      presenter().testFrames(TravelCertificateDateInputUiState.Loading) {
-        specifications.responses.trySend(specification(numberOfCoInsured = 1).right())
-        frame()
-        frame()
-        val step = TravelCertificateTravellersStep("member@hedvig.com", today, "contractId")
-        emit(TravelCertificateDateInputEvent.Submit)
-        frame()
-        assertThat(latest).isEqualTo(expectedContent(hasCoInsured = true, next = step))
+  fun `a continue in the frame the step was taken offers it again as a new request`() = runTest {
+    presenter().testFrames(TravelCertificateDateInputUiState.Loading) {
+      specifications.responses.trySend(specification(numberOfCoInsured = 1).right())
+      frame()
+      frame()
+      val step = TravelCertificateTravellersStep("member@hedvig.com", today, "contractId")
+      emit(TravelCertificateDateInputEvent.Submit)
+      frame()
+      val first = (latest as TravelCertificateDateInputUiState.Success).next!!
+      assertThat(latest).isEqualTo(expectedContent(hasCoInsured = true, next = first))
 
-        // Both events are handled before the next frame composes the presenter.
-        emit(TravelCertificateDateInputEvent.StepShown, TravelCertificateDateInputEvent.Submit)
-        frame()
-        assertThat(latest).isEqualTo(expectedContent(hasCoInsured = true))
-
-        emit(TravelCertificateDateInputEvent.Submit)
-        frame()
-        assertThat(latest).isEqualTo(expectedContent(hasCoInsured = true, next = step))
-        val observedSteps = observed.map { (it as? TravelCertificateDateInputUiState.Success)?.next }
-        assertThat(observedSteps.dropWhile { it == null }).containsExactly(step, null, step)
-      }
+      // The platform takes the step and the member taps Continue again before the next frame.
+      assertThat(first.tryConsume()).isEqualTo(true)
+      emit(TravelCertificateDateInputEvent.Submit)
+      frame()
+      val second = (latest as TravelCertificateDateInputUiState.Success).next!!
+      assertThat(second.isPending).isEqualTo(true)
+      assertThat(second.target).isEqualTo(step)
+      assertThat(latest).isEqualTo(expectedContent(hasCoInsured = true, next = second))
+      val observedSteps = observed.mapNotNull { (it as? TravelCertificateDateInputUiState.Success)?.next }
+      assertThat(observedSteps.distinct()).containsExactly(first, second)
     }
+  }
 
   @Test
   fun `a continue handled in the same frame as the end of a failed create is sent`() = runTest {
@@ -606,6 +621,25 @@ class TravelCertificateDateInputPresenterTest {
       assertThat(latest).isEqualTo(
         TravelCertificateDateInputUiState.Created(TravelCertificateUrl("https://example.com/new.pdf")),
       )
+    }
+  }
+
+  @Test
+  fun `a restart after the certificate was opened keeps it opened, so it is not opened again`() = runTest {
+    presenter().testFrames(TravelCertificateDateInputUiState.Loading) {
+      specifications.responses.trySend(specification(numberOfCoInsured = 0).right())
+      frame()
+      frame()
+      emit(TravelCertificateDateInputEvent.Submit)
+      frame()
+      createTransport.responses.trySend("https://example.com/new.pdf")
+      frame()
+      val created = latest as TravelCertificateDateInputUiState.Created
+      assertThat(created.leave.tryConsume()).isEqualTo(true)
+
+      restart()
+      frame()
+      assertThat((latest as TravelCertificateDateInputUiState.Created).leave.tryConsume()).isEqualTo(false)
     }
   }
 

@@ -138,7 +138,6 @@ class TravelCertificateScreenModelsTest {
     assertThat(droppedEvent(dateModel(null), name) { it.selectTravelDate("2026-12-24") })
       .isEqualTo("SelectTravelDate(date=2026-12-24)")
     assertThat(droppedEvent(dateModel(null), name) { it.submit() }).isEqualTo("Submit")
-    assertThat(droppedEvent(dateModel(null), name) { it.stepShown() }).isEqualTo("StepShown")
     assertNothingLoaded()
   }
 

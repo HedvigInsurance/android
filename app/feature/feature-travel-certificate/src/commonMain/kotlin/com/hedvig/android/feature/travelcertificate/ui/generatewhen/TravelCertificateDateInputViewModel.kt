@@ -2,7 +2,6 @@ package com.hedvig.android.feature.travelcertificate.ui.generatewhen
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -17,6 +16,9 @@ import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.molecule.public.NavigationRequest
+import com.hedvig.android.molecule.public.rememberAttempts
+import com.hedvig.android.molecule.public.restoredAsOffer
 import com.hedvig.core.common.android.validation.isValidEmail
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
@@ -57,17 +59,16 @@ internal class TravelCertificateDateInputPresenter(
     lastState: TravelCertificateDateInputUiState,
   ): TravelCertificateDateInputUiState {
     var loadIteration by remember { mutableIntStateOf(0) }
-    var requestToCreate by remember { mutableStateOf<CreateRequest?>(null) }
     var screenState by remember {
       mutableStateOf(
         when (lastState) {
-          // A create or a navigation in flight belongs to the stopped run, so neither is restored. The create may
-          // have reached the server, so it is shown as failed rather than as a form nobody submitted.
+          // A create in flight belongs to the stopped run, so it is not restored. It may have reached the server, so
+          // it is shown as failed rather than as a form nobody submitted.
           is TravelCertificateDateInputUiState.Success -> lastState.copy(
             emailError = null,
             isCreating = false,
             createFailed = lastState.createFailed || lastState.isCreating,
-            next = null,
+            next = lastState.next.restoredAsOffer(),
           )
 
           else -> lastState
@@ -77,9 +78,27 @@ internal class TravelCertificateDateInputPresenter(
     var emailRevision by remember {
       mutableIntStateOf((lastState as? TravelCertificateDateInputUiState.Success)?.emailRevision ?: 0)
     }
-    // The `next` of the state this presenter last returned. Submit waits until a cleared `next` has been returned, so
-    // an observer keyed on `next` always sees null between two equal steps.
-    var returnedNext by remember { mutableStateOf<TravelCertificateTravellersStep?>(null) }
+    val create = rememberAttempts<TravelCertificateTravellersStep>(terminal = true) { step ->
+      createTravelCertificateUseCase.invoke(
+        contractId = step.contractId,
+        startDate = step.travelDate,
+        isMemberIncluded = true,
+        coInsured = listOf(),
+        email = step.email,
+      ).fold(
+        ifLeft = {
+          val content = screenState as? TravelCertificateDateInputUiState.Success
+          if (content != null) {
+            screenState = content.copy(isCreating = false, createFailed = true)
+          }
+          false
+        },
+        ifRight = { url ->
+          screenState = TravelCertificateDateInputUiState.Created(url)
+          true
+        },
+      )
+    }
 
     CollectEvents { event ->
       val content = screenState as? TravelCertificateDateInputUiState.Success
@@ -98,13 +117,8 @@ internal class TravelCertificateDateInputPresenter(
           screenState = content.copy(pickedDate = event.date, selectedDate = event.date)
         }
 
-        TravelCertificateDateInputEvent.StepShown -> {
-          if (content == null) return@CollectEvents
-          screenState = content.copy(next = null)
-        }
-
         TravelCertificateDateInputEvent.Submit -> {
-          if (content == null || content.isCreating || content.next != null || returnedNext != null) {
+          if (content == null || content.isCreating || content.next?.isPending == true) {
             return@CollectEvents
           }
           val email = content.email.trim()
@@ -128,34 +142,13 @@ internal class TravelCertificateDateInputPresenter(
             contractId = content.contractId,
           )
           if (content.hasCoInsured) {
-            screenState = content.copy(emailError = null, createFailed = false, next = step)
+            screenState = content.copy(emailError = null, createFailed = false, next = NavigationRequest.of(step))
           } else {
             screenState = content.copy(emailError = null, createFailed = false, isCreating = true)
-            requestToCreate = CreateRequest(attempt = (requestToCreate?.attempt ?: 0) + 1, step = step)
+            create.start(step)
           }
         }
       }
-    }
-
-    LaunchedEffect(requestToCreate) {
-      val step = requestToCreate?.step ?: return@LaunchedEffect
-      createTravelCertificateUseCase.invoke(
-        contractId = step.contractId,
-        startDate = step.travelDate,
-        isMemberIncluded = true,
-        coInsured = listOf(),
-        email = step.email,
-      ).fold(
-        ifLeft = {
-          val content = screenState as? TravelCertificateDateInputUiState.Success
-          if (content != null) {
-            screenState = content.copy(isCreating = false, createFailed = true)
-          }
-        },
-        ifRight = { url ->
-          screenState = TravelCertificateDateInputUiState.Created(url)
-        },
-      )
     }
 
     LaunchedEffect(loadIteration) {
@@ -194,20 +187,12 @@ internal class TravelCertificateDateInputPresenter(
           },
         )
     }
-    val state = when (val current = screenState) {
+    return when (val current = screenState) {
       is TravelCertificateDateInputUiState.Success -> current.copy(selectedDate = current.travelDate(clock))
       else -> current
     }
-    SideEffect { returnedNext = (state as? TravelCertificateDateInputUiState.Success)?.next }
-    return state
   }
 }
-
-/**
- * [attempt] increases with every accepted create, so a retry equal to the failed request still restarts the effect
- * keyed on it, even when both are handled before the next composition.
- */
-private data class CreateRequest(val attempt: Int, val step: TravelCertificateTravellersStep)
 
 private fun TravelCertificateDateInputUiState.Success.travelDate(clock: Clock): LocalDate =
   pickedDate ?: defaultTravelDate(clock, minDate, maxDate)
@@ -227,10 +212,7 @@ internal sealed interface TravelCertificateDateInputEvent {
   /** Ignored when [date] is outside the content's `minDate..maxDate`. */
   data class SelectTravelDate(val date: LocalDate) : TravelCertificateDateInputEvent
 
-  /** Sent once the step in `next` is on screen, so a later Continue can open it again. */
-  data object StepShown : TravelCertificateDateInputEvent
-
-  /** Ignored while creating, and while a step is in `next` or its clearing has not been emitted yet. */
+  /** Ignored while creating, and while the step in `next` has not been taken by the platform. */
   data object Submit : TravelCertificateDateInputEvent
 }
 
@@ -264,9 +246,16 @@ internal sealed interface TravelCertificateDateInputUiState {
     /** A create is only observed while this state is collected; a restart shows it as [createFailed]. */
     val isCreating: Boolean,
     val createFailed: Boolean,
-    val next: TravelCertificateTravellersStep?,
+    /** The travellers step to open. A later Submit offers it again once the platform has taken this one. */
+    val next: NavigationRequest<TravelCertificateTravellersStep>?,
   ) : TravelCertificateDateInputUiState
 
   /** The certificate exists; nothing follows on this screen. */
-  data class Created(val url: TravelCertificateUrl) : TravelCertificateDateInputUiState
+  data class Created(val url: TravelCertificateUrl) : TravelCertificateDateInputUiState {
+    /**
+     * Leaving for the certificate. The presenter keeps returning this instance, also after a restart from it, so a
+     * request the platform has taken is never performed again.
+     */
+    val leave: NavigationRequest<TravelCertificateUrl> = NavigationRequest.of(url)
+  }
 }

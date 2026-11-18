@@ -75,18 +75,10 @@ class TravelCertificateDateInputScreenModel internal constructor(
 
   /**
    * Validates the email and the date, then offers the travellers step or creates the certificate. Ignored while
-   * creating and while `next` is set.
+   * creating and while the request in `next` has not been taken.
    */
   fun submit() {
     viewModel.send(TravelCertificateDateInputEvent.Submit)
-  }
-
-  /**
-   * Tells Kotlin the step in `next` is on screen, which clears `next`. Continue ([submit]) stays ignored until this
-   * is called.
-   */
-  fun stepShown() {
-    viewModel.send(TravelCertificateDateInputEvent.StepShown)
   }
 }
 

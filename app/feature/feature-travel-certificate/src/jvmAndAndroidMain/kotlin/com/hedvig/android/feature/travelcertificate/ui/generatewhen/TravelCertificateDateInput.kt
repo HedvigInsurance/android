@@ -23,6 +23,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.compose.ui.NavigationEffect
 import com.hedvig.android.core.locale.CommonLocale
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
@@ -77,7 +78,6 @@ internal fun TravelCertificateDateInputDestination(
   DateInputNavigationEffect(
     uiState = uiState,
     onNavigateToTravellers = onNavigateToTravellers,
-    onStepShown = { viewModel.emit(TravelCertificateDateInputEvent.StepShown) },
     onCertificateCreated = onCertificateCreated,
   )
   TravelCertificateDateInput(
@@ -90,33 +90,15 @@ internal fun TravelCertificateDateInputDestination(
   )
 }
 
-/**
- * Opens the step in [Success.next] once per value and acknowledges it, and leaves for the certificate on
- * [TravelCertificateDateInputUiState.Created].
- */
+/** Opens the step in [Success.next], and leaves for the certificate on [TravelCertificateDateInputUiState.Created]. */
 @Composable
 internal fun DateInputNavigationEffect(
   uiState: TravelCertificateDateInputUiState,
   onNavigateToTravellers: (TravelCertificateTravellersStep) -> Unit,
-  onStepShown: () -> Unit,
   onCertificateCreated: (TravelCertificateUrl) -> Unit,
 ) {
-  val currentOnNavigateToTravellers by rememberUpdatedState(onNavigateToTravellers)
-  val currentOnStepShown by rememberUpdatedState(onStepShown)
-  val currentOnCertificateCreated by rememberUpdatedState(onCertificateCreated)
-  val next = (uiState as? Success)?.next
-  LaunchedEffect(next) {
-    if (next != null) {
-      currentOnNavigateToTravellers(next)
-      currentOnStepShown()
-    }
-  }
-  val createdUrl = (uiState as? TravelCertificateDateInputUiState.Created)?.url
-  LaunchedEffect(createdUrl) {
-    if (createdUrl != null) {
-      currentOnCertificateCreated(createdUrl)
-    }
-  }
+  NavigationEffect((uiState as? Success)?.next, onNavigateToTravellers)
+  NavigationEffect((uiState as? TravelCertificateDateInputUiState.Created)?.leave, onCertificateCreated)
 }
 
 @Composable

@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.travelcertificate.ios
 
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateTravellersStep
+import com.hedvig.android.molecule.public.NavigationRequest
 
 sealed class TravelCertificateDateInputScreenState {
   data object Loading : TravelCertificateDateInputScreenState()
@@ -27,8 +28,10 @@ sealed class TravelCertificateDateInputScreenState {
    * [isCreating] is true while a certificate is being created, which happens when [hasCoInsured] is false.
    * [createFailed] is true after a create failed, until the next accepted submit.
    *
-   * [next] is the travellers step to open, after a submit by a member with co-insured. Open it, then call
-   * `stepShown()`; until then a submit is ignored.
+   * [next] is the travellers step to open, after a submit by a member with co-insured. Open its target only when
+   * its `tryConsume()` returns true, which it does once per request however often this state is observed. A submit
+   * is ignored until the request is taken, and a later one offers a new request. The taken request stays in [next]
+   * until then.
    */
   data class Content(
     val email: String,
@@ -41,7 +44,7 @@ sealed class TravelCertificateDateInputScreenState {
     val hasCoInsured: Boolean,
     val isCreating: Boolean,
     val createFailed: Boolean,
-    val next: TravelCertificateTravellersStep?,
+    val next: NavigationRequest<TravelCertificateTravellersStep>?,
   ) : TravelCertificateDateInputScreenState() {
     /** Leaves out [email]. */
     override fun toString(): String = "Content(emailRevision=$emailRevision, emailError=$emailError, " +
