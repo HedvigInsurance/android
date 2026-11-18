@@ -25,6 +25,7 @@ fun EntryProviderScope<HedvigNavKey>.editCoInsuredEntries(backstack: Backstack) 
     EditCoInsuredTriageDestination(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
+      navigateToStep = backstack::navigateToTriageStep,
     )
   }
 
@@ -37,6 +38,7 @@ fun EntryProviderScope<HedvigNavKey>.editCoInsuredEntries(backstack: Backstack) 
     EditCoInsuredTriageDestination(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
+      navigateToStep = backstack::navigateToTriageStep,
     )
   }
 
