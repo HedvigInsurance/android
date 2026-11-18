@@ -11,9 +11,9 @@ import com.hedvig.android.audio.player.data.SignedAudioUrl
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.data.cross.sell.after.claim.closed.ClosedClaimInfo
-import com.hedvig.android.data.cross.sell.after.claim.closed.CrossSellAfterClaimClosedRepository
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState
+import com.hedvig.android.feature.claim.details.ui.rating.ClosedClaimFlow
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
@@ -41,7 +41,6 @@ import octopus.type.InsuranceDocumentType
 @Inject
 internal class GetClaimDetailUiStateUseCase(
   private val apolloClient: ApolloClient,
-  private val crossSellAfterClaimClosedRepository: CrossSellAfterClaimClosedRepository,
   private val clock: Clock,
 ) {
   fun invoke(claimId: String): Flow<Either<Error, ClaimDetailUiState.Content>> = flow {
@@ -74,19 +73,6 @@ internal class GetClaimDetailUiStateUseCase(
         either {
           val claim = response.bind().claim
           ensureNotNull(claim) { Error.NoClaimFound }
-          if (claim.showClaimClosedFlow) {
-            crossSellAfterClaimClosedRepository.acknowledgeClaimClosedStatus(claim.id).onRight {
-              crossSellAfterClaimClosedRepository.triggerCrossSell(
-                ClosedClaimInfo(
-                  id = claim.id,
-                  status = claim.status?.name,
-                  type = claim.claimType,
-                  typeOfContract = claim.productVariant?.typeOfContract,
-                  contractId = claim.contractId,
-                ),
-              )
-            }
-          }
           ClaimDetailUiState.Content.fromClaim(claim, claim.conversation?.id, claim.conversation?.unreadMessageCount)
         }
       }
@@ -148,6 +134,7 @@ internal class GetClaimDetailUiStateUseCase(
       externalId = claim.externalId,
       handlerEmail = claim.handlerEmail,
       isPartnerClaim = true,
+      closedClaimFlow = null,
     )
   }
 
@@ -240,6 +227,20 @@ internal class GetClaimDetailUiStateUseCase(
       externalId = null,
       handlerEmail = null,
       isPartnerClaim = false,
+      closedClaimFlow = if (claim.showClaimClosedFlow) {
+        ClosedClaimFlow(
+          claim = ClosedClaimInfo(
+            id = claim.id,
+            status = claim.status?.name,
+            type = claim.claimType,
+            typeOfContract = claim.productVariant?.typeOfContract,
+            contractId = claim.contractId,
+          ),
+          askForRating = !claim.hasAnsweredRating,
+        )
+      } else {
+        null
+      },
     )
   }
 

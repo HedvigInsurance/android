@@ -17,9 +17,14 @@ import com.hedvig.android.core.fileupload.DownloadPdfUseCase
 import com.hedvig.android.core.fileupload.DownloadedFile
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.data.display.items.DisplayItem
+import com.hedvig.android.feature.claim.details.data.ClaimClosedExitRecorder
 import com.hedvig.android.feature.claim.details.data.GetClaimDetailUiStateUseCase
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimStatus.CLOSED
+import com.hedvig.android.feature.claim.details.ui.rating.ClosedClaimFlow
+import com.hedvig.android.feature.claim.details.ui.rating.RatingEvent
+import com.hedvig.android.feature.claim.details.ui.rating.RatingState
+import com.hedvig.android.feature.claim.details.ui.rating.reduceRating
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -41,6 +46,7 @@ internal class ClaimDetailsViewModel(
   getClaimDetailUiStateUseCase: GetClaimDetailUiStateUseCase,
   claimsServiceUploadFileUseCase: ClaimsServiceUploadFileUseCase,
   downloadPdfUseCase: DownloadPdfUseCase,
+  claimClosedExitRecorder: ClaimClosedExitRecorder,
 ) : MoleculeViewModel<ClaimDetailsEvent, ClaimDetailUiState>(
     ClaimDetailUiState.Loading,
     ClaimDetailPresenter(
@@ -48,6 +54,7 @@ internal class ClaimDetailsViewModel(
       getClaimDetailUiStateUseCase,
       claimsServiceUploadFileUseCase,
       downloadPdfUseCase,
+      claimClosedExitRecorder,
     ),
   )
 
@@ -56,12 +63,16 @@ private class ClaimDetailPresenter(
   private val getClaimDetailUiStateUseCase: GetClaimDetailUiStateUseCase,
   private val claimsServiceUploadFileUseCase: ClaimsServiceUploadFileUseCase,
   private val downloadPdfUseCase: DownloadPdfUseCase,
+  private val claimClosedExitRecorder: ClaimClosedExitRecorder,
 ) : MoleculePresenter<ClaimDetailsEvent, ClaimDetailUiState> {
   @Composable
   override fun MoleculePresenterScope<ClaimDetailsEvent>.present(lastState: ClaimDetailUiState): ClaimDetailUiState {
     var isLoading: Boolean by remember { mutableStateOf(lastState as? ClaimDetailUiState.Loading != null) }
     var hasError: Boolean by remember { mutableStateOf(lastState as? ClaimDetailUiState.Error != null) }
     var content: ClaimDetailUiState.Content? by remember { mutableStateOf(lastState as? ClaimDetailUiState.Content) }
+    var rating: RatingState by remember {
+      mutableStateOf((lastState as? ClaimDetailUiState.Content)?.rating ?: RatingState.Idle)
+    }
     var loadIteration by remember { mutableIntStateOf(0) }
     val mediaToSend = remember { Channel<Uri>(Channel.UNLIMITED) }
 
@@ -152,13 +163,28 @@ private class ClaimDetailPresenter(
         ClaimDetailsEvent.HandledSharingPdfFile -> {
           content = content?.copy(downloadError = null, savedFileUri = null)
         }
+
+        is ClaimDetailsEvent.Rating -> {
+          // Without content there is no state to carry the transition, so Loading and Error pop directly.
+          val currentContent = content ?: return@CollectEvents
+          val closedClaimFlow = currentContent.closedClaimFlow
+          val transition = reduceRating(rating, event.event, closedClaimFlow)
+          rating = transition.state
+          if (transition.answer != null && closedClaimFlow != null) {
+            claimClosedExitRecorder.record(closedClaimFlow.claim, transition.answer)
+          }
+        }
+
+        ClaimDetailsEvent.ExitHandled -> {
+          rating = RatingState.Idle
+        }
       }
     }
 
     if (hasError) {
       return ClaimDetailUiState.Error
     }
-    return content ?: ClaimDetailUiState.Loading
+    return content?.copy(rating = rating) ?: ClaimDetailUiState.Loading
   }
 }
 
@@ -172,6 +198,11 @@ internal sealed interface ClaimDetailsEvent {
   data class DownloadPdf(val url: String) : ClaimDetailsEvent
 
   data object HandledSharingPdfFile : ClaimDetailsEvent
+
+  data class Rating(val event: RatingEvent) : ClaimDetailsEvent
+
+  /** The destination has popped the screen after [RatingState.Leaving]. */
+  data object ExitHandled : ClaimDetailsEvent
 }
 
 internal sealed interface ClaimDetailUiState {
@@ -205,6 +236,9 @@ internal sealed interface ClaimDetailUiState {
     val externalId: String?,
     val handlerEmail: String?,
     val isPartnerClaim: Boolean,
+    /** Null unless the claim was closed and leaving it should record the member's answer. */
+    val closedClaimFlow: ClosedClaimFlow?,
+    val rating: RatingState = RatingState.Idle,
   ) : ClaimDetailUiState {
     val claimIsInUndeterminedState: Boolean = claimStatus == CLOSED && claimOutcome == UNKNOWN
 

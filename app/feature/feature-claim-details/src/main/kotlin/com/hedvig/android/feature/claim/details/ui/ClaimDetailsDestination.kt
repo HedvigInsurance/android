@@ -969,6 +969,7 @@ private fun PreviewClaimDetailScreen(
           externalId = "EIR-2026-000123",
           handlerEmail = "claims@eir.se",
           isPartnerClaim = true,
+          closedClaimFlow = null,
         ),
         openUrl = {},
         imageLoader = rememberPreviewImageLoader(),
