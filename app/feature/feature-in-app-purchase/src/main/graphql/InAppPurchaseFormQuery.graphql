@@ -16,10 +16,6 @@ query InAppPurchaseForm($product: InAppProduct!) {
       variants {
         ...ProductVariantFragment
       }
-      faq {
-        question
-        answer
-      }
     }
     eligibility {
       isEligible

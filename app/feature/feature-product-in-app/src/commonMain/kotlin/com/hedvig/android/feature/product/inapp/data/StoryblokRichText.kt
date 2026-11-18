@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.inapppurchase.data
+package com.hedvig.android.feature.product.inapp.data
 
 /**
  * Renders a Storyblok rich text document (`{"type": "doc", "content": [...]}`) as markdown. Node types without a

@@ -2016,6 +2016,14 @@ type CrossSellProductInfo {
   Story-style slides from the product's web page, in page order
   """
   carousel: [CrossSellCarouselItem!]!
+  """
+  Set when the product can be bought natively in the app, as on `CrossSell.inAppProduct`
+  """
+  inAppProduct: InAppProduct
+  """
+  Questions and answers from the FAQ on the product's web page, in the member's language. Empty when it has none.
+  """
+  faq: [ProductFaqItem!]!
 }
 enum CrossSellSource {
   HOME
@@ -2764,6 +2772,14 @@ type IconVariants {
 enum InAppProduct {
   ACCIDENT
   PAYMENT_PROTECTION
+  DOG
+  CAT
+  CAR
+  APARTMENT_RENT
+  APARTMENT_BRF
+  APARTMENT_STUDENT
+  HOUSE
+  VACATION_HOME
 }
 type InAppPurchaseEligibility {
   isEligible: Boolean!
@@ -2804,7 +2820,7 @@ type InAppPurchaseFormField {
   """
   title: String!
   """
-  Present for SINGLE_SELECT.
+  Present for SINGLE_SELECT and SEARCHABLE_SELECT; for EXTRA_BUILDINGS, the building types.
   """
   options: [InAppPurchaseFormFieldOption!]
   """
@@ -2816,6 +2832,10 @@ type InAppPurchaseFormField {
   """
   minValue: String
   maxValue: String
+  """
+  SEARCHABLE_SELECT only: how many options may be chosen. Null means one.
+  """
+  maxSelections: Int
 }
 type InAppPurchaseFormFieldOption {
   value: String!
@@ -2840,6 +2860,9 @@ enum InAppPurchaseFormFieldType {
   NUMBER
   DATE
   SINGLE_SELECT
+  TEXT
+  SEARCHABLE_SELECT
+  EXTRA_BUILDINGS
 }
 type InAppPurchaseFormOutput {
   product: Product!

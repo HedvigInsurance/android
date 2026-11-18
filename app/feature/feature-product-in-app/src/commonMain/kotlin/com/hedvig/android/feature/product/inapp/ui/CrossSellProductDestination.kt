@@ -34,6 +34,7 @@ import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.data.contract.ImageAsset
+import com.hedvig.android.data.contract.InAppProduct
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -302,6 +303,13 @@ private class CrossSellProductUiStateProvider : PreviewParameterProvider<CrossSe
             title = "Second slide",
             subtitle = null,
             image = ImageAsset(id = "slide2", src = "", description = null),
+          ),
+        ),
+        inAppProduct = InAppProduct.ACCIDENT,
+        faq = listOf(
+          CrossSellProductInfo.FaqItem(
+            question = "Who is covered?",
+            answerMarkdown = "You and everyone in your household.",
           ),
         ),
       ),

@@ -14,6 +14,11 @@ query CrossSellProductInfo($crossSellId: ID!) {
         title
         description
       }
+      inAppProduct
+      faq {
+        question
+        answer
+      }
       carousel {
         title
         subtitle

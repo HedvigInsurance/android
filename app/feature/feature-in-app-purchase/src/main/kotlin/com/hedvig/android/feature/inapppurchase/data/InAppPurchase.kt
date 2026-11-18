@@ -24,19 +24,12 @@ internal data class InAppPurchaseProduct(
   val pillowImage: InAppPurchaseImage,
   val featuredImage: InAppPurchaseImage?,
   val variants: List<ProductVariant>,
-  val faq: List<InAppPurchaseFaqItem>,
 )
 
 @Serializable
 internal data class InAppPurchaseImage(
   val src: String,
   val alt: String?,
-)
-
-@Serializable
-internal data class InAppPurchaseFaqItem(
-  val question: String,
-  val answerMarkdown: String,
 )
 
 internal sealed interface InAppPurchaseEligibility {

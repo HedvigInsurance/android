@@ -9,4 +9,12 @@ import kotlinx.serialization.Serializable
 enum class InAppProduct {
   ACCIDENT,
   PAYMENT_PROTECTION,
+  DOG,
+  CAT,
+  CAR,
+  APARTMENT_RENT,
+  APARTMENT_BRF,
+  APARTMENT_STUDENT,
+  HOUSE,
+  VACATION_HOME,
 }

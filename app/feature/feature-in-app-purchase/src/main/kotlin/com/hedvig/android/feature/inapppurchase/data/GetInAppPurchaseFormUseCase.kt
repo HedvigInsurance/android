@@ -49,7 +49,6 @@ internal class GetInAppPurchaseFormUseCaseImpl(
             pillowImage = InAppPurchaseImage(pillowImage.src, pillowImage.alt),
             featuredImage = featuredImage?.let { InAppPurchaseImage(it.src, it.alt) },
             variants = variants.map { it.toProductVariant() },
-            faq = faq.map { InAppPurchaseFaqItem(it.question, storyblokRichTextToMarkdown(it.answer)) },
           )
         },
         eligibility = if (form.eligibility.isEligible) {
@@ -77,6 +76,14 @@ internal class GetInAppPurchaseFormUseCaseImpl(
 internal fun InAppProduct.toOctopus(): octopus.type.InAppProduct = when (this) {
   InAppProduct.ACCIDENT -> octopus.type.InAppProduct.ACCIDENT
   InAppProduct.PAYMENT_PROTECTION -> octopus.type.InAppProduct.PAYMENT_PROTECTION
+  InAppProduct.DOG -> octopus.type.InAppProduct.DOG
+  InAppProduct.CAT -> octopus.type.InAppProduct.CAT
+  InAppProduct.CAR -> octopus.type.InAppProduct.CAR
+  InAppProduct.APARTMENT_RENT -> octopus.type.InAppProduct.APARTMENT_RENT
+  InAppProduct.APARTMENT_BRF -> octopus.type.InAppProduct.APARTMENT_BRF
+  InAppProduct.APARTMENT_STUDENT -> octopus.type.InAppProduct.APARTMENT_STUDENT
+  InAppProduct.HOUSE -> octopus.type.InAppProduct.HOUSE
+  InAppProduct.VACATION_HOME -> octopus.type.InAppProduct.VACATION_HOME
 }
 
 // A field of a type this app version doesn't know is dropped, the quote then reports it in fieldErrors.
@@ -113,7 +120,11 @@ private fun InAppPurchaseFormQuery.Data.InAppPurchaseForm.Field.toFormField(): I
       )
     }
 
-    InAppPurchaseFormFieldType.UNKNOWN__ -> {
+    InAppPurchaseFormFieldType.TEXT,
+    InAppPurchaseFormFieldType.SEARCHABLE_SELECT,
+    InAppPurchaseFormFieldType.EXTRA_BUILDINGS,
+    InAppPurchaseFormFieldType.UNKNOWN__,
+    -> {
       logcat(LogPriority.ERROR) { "InAppPurchaseForm field $id has unknown type ${type.rawValue}" }
       null
     }

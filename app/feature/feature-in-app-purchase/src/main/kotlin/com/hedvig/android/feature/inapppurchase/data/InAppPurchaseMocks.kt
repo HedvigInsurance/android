@@ -4,7 +4,6 @@ import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
-import com.hedvig.android.data.contract.InAppProduct
 import com.hedvig.android.data.productvariant.InsurableLimit
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument.InsuranceDocumentType
@@ -112,50 +111,6 @@ internal object InAppPurchaseMocks {
 
   const val NO_REGISTERED_ADDRESS_MESSAGE =
     "We couldn't find a registered address for you. Contact us and we'll help you."
-
-  fun quote(product: InAppProduct, fields: List<InAppPurchaseFieldInput>): InAppPurchaseQuote {
-    val values = fields.associate { it.fieldId to it.values.firstOrNull() }
-    val startDate = values[FIELD_START_DATE]?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
-    val coInsured = values[FIELD_CO_INSURED]?.toIntOrNull()
-    val errors = buildList {
-      if (startDate == null || startDate < today || startDate > maxStartDate) {
-        add(InAppPurchaseFieldError(FIELD_START_DATE, "Choose a date from today onwards."))
-      }
-      when (product) {
-        InAppProduct.ACCIDENT -> {
-          if (coInsured == null || coInsured !in 0..5) {
-            add(InAppPurchaseFieldError(FIELD_CO_INSURED, "Choose between 0 and 5 co-insured."))
-          }
-        }
-
-        InAppProduct.PAYMENT_PROTECTION -> {
-          val selectable = paymentProtectionForm.fields
-            .filterIsInstance<InAppPurchaseFormField.SingleSelect>()
-            .single()
-            .options
-            .filter { it.isSelectable }
-            .map { it.value }
-          if (values[FIELD_EMPLOYMENT_TYPE] !in selectable) {
-            add(
-              InAppPurchaseFieldError(
-                FIELD_EMPLOYMENT_TYPE,
-                "Payment Protection requires you to be working when the insurance starts.",
-              ),
-            )
-          }
-        }
-      }
-    }
-    if (errors.isNotEmpty() ||
-      startDate == null
-    ) {
-      return InAppPurchaseQuote.InvalidFields(errors, campaignCodeError = null)
-    }
-    return when (product) {
-      InAppProduct.ACCIDENT -> accidentQuote(numberCoInsured = coInsured ?: 0, startDate = startDate)
-      InAppProduct.PAYMENT_PROTECTION -> paymentProtectionQuote(startDate)
-    }
-  }
 
   /**
    * 79 kr per insured person, with the app's 50% campaign discount.
@@ -328,16 +283,6 @@ internal object InAppPurchaseMocks {
     ),
     featuredImage = null,
     variants = listOf(accidentVariant),
-    faq = listOf(
-      InAppPurchaseFaqItem(
-        question = "Who does the insurance cover?",
-        answerMarkdown = "It covers you and the **co-insured** you add.",
-      ),
-      InAppPurchaseFaqItem(
-        question = "Does it cover me abroad?",
-        answerMarkdown = "Yes, worldwide during the first 45 days of a trip.",
-      ),
-    ),
   )
 
   private val paymentProtectionVariant = ProductVariant(
@@ -384,16 +329,6 @@ internal object InAppPurchaseMocks {
     ),
     featuredImage = null,
     variants = listOf(paymentProtectionVariant),
-    faq = listOf(
-      InAppPurchaseFaqItem(
-        question = "How long do I get compensation?",
-        answerMarkdown = "Up to **12 months** per claim.",
-      ),
-      InAppPurchaseFaqItem(
-        question = "Is there a qualifying period?",
-        answerMarkdown = "Yes, 30 days from when the insurance starts.",
-      ),
-    ),
   )
 
   // endregion

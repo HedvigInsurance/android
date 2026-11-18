@@ -62,6 +62,8 @@ private val productInfo = CrossSellProductInfo(
       image = ImageAsset(id = "slide", src = "https://slide", description = null),
     ),
   ),
+  inAppProduct = null,
+  faq = emptyList(),
 )
 
 private class FakeGetCrossSellProductInfoUseCase : GetCrossSellProductInfoUseCase {
