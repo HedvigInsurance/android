@@ -36,7 +36,7 @@ internal class GetPublicImportantMessagesUseCase(
               ImportantMessageSeverity.UNKNOWN__ -> Severity.Warning
             },
             link = message.linkInfo
-              ?.takeIf { it.url.isNotBlank() }
+              ?.takeIf { it.url.isNotBlank() && it.buttonText.isNotBlank() }
               ?.let { Link(url = it.url, buttonText = it.buttonText) },
           )
         }

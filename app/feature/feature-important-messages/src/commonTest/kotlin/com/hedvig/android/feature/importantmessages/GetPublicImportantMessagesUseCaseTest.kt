@@ -56,6 +56,19 @@ class GetPublicImportantMessagesUseCaseTest {
   }
 
   @Test
+  fun `a link with a blank button text is dropped and the message kept`() = runTest {
+    val json = messagesJson(
+      messageJson("info-1", "Read this", linkUrl = "https://example.test/status", linkButtonText = " "),
+    )
+
+    val result = useCaseAnswering(json).invoke()
+
+    assertThat(result).isEqualTo(
+      Either.Right(listOf(PublicImportantMessage("info-1", "Read this", Severity.Info, link = null))),
+    )
+  }
+
+  @Test
   fun `a message with blank text is left out`() = runTest {
     val json = messagesJson(messageJson("blank-1", message = " "), messageJson("kept-1", message = "Kept"))
 
