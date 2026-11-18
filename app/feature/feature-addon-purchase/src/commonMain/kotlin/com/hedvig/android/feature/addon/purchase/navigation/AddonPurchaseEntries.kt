@@ -27,6 +27,7 @@ import com.hedvig.android.navigation.compose.findLastOrNull
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.popUpTo
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -133,6 +134,8 @@ fun EntryProviderScope<HedvigNavKey>.addonPurchaseEntries(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
       navigateBack = backstack::popBackstack,
+      onPurchased = backstack::navigateToAddonPurchased,
+      onSubmitFailed = backstack::navigateToAddonSubmitFailure,
     )
   }
 
@@ -148,6 +151,15 @@ fun EntryProviderScope<HedvigNavKey>.addonPurchaseEntries(
       popBackstack = backstack::popBackstack,
     )
   }
+}
+
+/** Replaces the whole addon flow, from its anchor up, with the success screen. */
+internal fun Backstack.navigateToAddonPurchased(activationDate: LocalDate) {
+  navigateAndPopUpTo<AddonPurchaseKey>(SubmitSuccessKey(activationDate), inclusive = true)
+}
+
+internal fun Backstack.navigateToAddonSubmitFailure() {
+  add(SubmitFailureKey)
 }
 
 @Composable
