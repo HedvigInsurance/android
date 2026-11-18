@@ -1,0 +1,7 @@
+# TODO: Uncomment once the green card schema is published on Octopus.
+# mutation GreenCardCreate($input: GreenCardCreateInput!) {
+#   greenCardCreate(input: $input) {
+#     id
+#     signedUrl
+#   }
+# }

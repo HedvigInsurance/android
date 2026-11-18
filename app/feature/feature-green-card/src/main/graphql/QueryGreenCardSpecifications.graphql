@@ -1,0 +1,12 @@
+# TODO: Uncomment once the green card schema is published on Octopus.
+# query GreenCardSpecifications {
+#   currentMember {
+#     email
+#     greenCardSpecifications {
+#       contractId
+#       registrationNumber
+#       minStartDate
+#       maxEndDate
+#     }
+#   }
+# }

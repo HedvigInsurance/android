@@ -23,19 +23,18 @@ internal class CheckCertificatesAvailabilityUseCaseImpl(
   private val checkTravelCertificateDestinationAvailabilityUseCase:
     CheckTravelCertificateDestinationAvailabilityUseCase,
   private val checkInsuranceEvidenceAvailabilityUseCase: CheckInsuranceEvidenceAvailabilityUseCase,
+  private val checkGreenCardDestinationAvailabilityUseCase: CheckGreenCardDestinationAvailabilityUseCase,
 ) : CheckCertificatesAvailabilityUseCase {
   override suspend fun invoke(): Either<ErrorMessage, Unit> {
-    val combinedResult = combine(
+    val (insuranceEvidence, travelCertificate, greenCard) = combine(
       flow { emit(checkInsuranceEvidenceAvailabilityUseCase.invoke()) },
       flow { emit(checkTravelCertificateDestinationAvailabilityUseCase.invoke()) },
-    ) { insuranceEvidence, travelCertificateDestination ->
-      insuranceEvidence to travelCertificateDestination
+      flow { emit(checkGreenCardDestinationAvailabilityUseCase.invoke()) },
+    ) { insuranceEvidence, travelCertificate, greenCard ->
+      Triple(insuranceEvidence, travelCertificate, greenCard)
     }.first()
     return either {
-      val (insuranceEvidenceAvailability, travelCertificateDestinationAvailability) = combinedResult
-      val evidenceAvailable = insuranceEvidenceAvailability.getOrNull()
-      val travelCertificateDestinationAvailable = travelCertificateDestinationAvailability.getOrNull()
-      if (evidenceAvailable == null && travelCertificateDestinationAvailable == null) {
+      if (insuranceEvidence.isLeft() && travelCertificate.isLeft() && greenCard.isLeft()) {
         logcat { "CheckCertificatesAvailabilityUseCase: no certificates available" }
         raise(ErrorMessage())
       } else {

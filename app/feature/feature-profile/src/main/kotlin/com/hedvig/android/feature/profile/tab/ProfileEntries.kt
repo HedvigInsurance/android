@@ -49,6 +49,7 @@ fun EntryProviderScope<HedvigNavKey>.profileEntries(
   onNavigateToNewConversation: () -> Unit,
   onNavigateToTravelCertificate: () -> Unit,
   onNavigateToInsuranceEvidence: () -> Unit,
+  onNavigateToGreenCard: () -> Unit,
   openUrl: (String) -> Unit,
   openPrivacyPolicy: () -> Unit,
   navigateToChipId: () -> Unit,
@@ -132,6 +133,7 @@ fun EntryProviderScope<HedvigNavKey>.profileEntries(
       navigateUp = backstack::navigateUp,
       onNavigateToInsuranceEvidence = dropUnlessResumed { onNavigateToInsuranceEvidence() },
       onNavigateToTravelCertificate = dropUnlessResumed { onNavigateToTravelCertificate() },
+      onNavigateToGreenCard = dropUnlessResumed { onNavigateToGreenCard() },
     )
   }
   entry<SettingsKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {

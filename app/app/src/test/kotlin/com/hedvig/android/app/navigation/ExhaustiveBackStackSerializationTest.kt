@@ -11,6 +11,7 @@ import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyKey
 import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountKey
 import com.hedvig.android.feature.forever.navigation.ForeverKey
 import com.hedvig.android.feature.forever.navigation.InviteFriendsKey
+import com.hedvig.android.feature.greencard.navigation.GreenCardKey
 import com.hedvig.android.feature.help.center.navigation.HelpCenterKey
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.imageviewer.navigation.ImageViewerKey
@@ -284,6 +285,7 @@ internal class ExhaustiveBackstackSerializationTest {
       InsuranceEvidenceKey,
       PayoutAccountKey,
       TravelCertificateKey,
+      GreenCardKey,
       SelectContractForMovingKey(MovingSource.TERMINATION),
       ImageViewerKey(imageUrl = "https://example.com/i.png", cacheKey = "cache-1"),
       ChipIdKey(contractId = "contract-1"),

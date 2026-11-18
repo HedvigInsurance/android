@@ -73,6 +73,8 @@ interface HedvigDeepLinkContainer {
 
   val insuranceEvidence: List<String> // The screen where member can generate insurance evidence
 
+  val greenCard: List<String> // The screen which shows existing and allows creating new green cards
+
   // the screen where member can start moving flow to change address
   // for their home insurance
   val moveContract: List<String>
@@ -204,6 +206,9 @@ internal class HedvigDeepLinkContainerImpl(
   }
   override val insuranceEvidence: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/insurance-evidence"
+  }
+  override val greenCard: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/green-card"
   }
   override val moveContract: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/move-contract"

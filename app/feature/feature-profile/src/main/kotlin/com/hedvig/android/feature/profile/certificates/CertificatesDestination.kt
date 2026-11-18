@@ -30,6 +30,7 @@ internal fun CertificatesDestination(
   navigateUp: () -> Unit,
   onNavigateToInsuranceEvidence: () -> Unit,
   onNavigateToTravelCertificate: () -> Unit,
+  onNavigateToGreenCard: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   CertificatesScreen(
@@ -37,6 +38,7 @@ internal fun CertificatesDestination(
     navigateUp = navigateUp,
     onNavigateToInsuranceEvidence = onNavigateToInsuranceEvidence,
     onNavigateToTravelCertificate = onNavigateToTravelCertificate,
+    onNavigateToGreenCard = onNavigateToGreenCard,
     onRetry = {
       viewModel.emit(CertificatesEvent.Retry)
     },
@@ -49,6 +51,7 @@ private fun CertificatesScreen(
   navigateUp: () -> Unit,
   onNavigateToInsuranceEvidence: () -> Unit,
   onNavigateToTravelCertificate: () -> Unit,
+  onNavigateToGreenCard: () -> Unit,
   onRetry: () -> Unit,
 ) {
   HedvigScaffold(
@@ -74,6 +77,7 @@ private fun CertificatesScreen(
           uiState,
           onNavigateToInsuranceEvidence = onNavigateToInsuranceEvidence,
           onNavigateToTravelCertificate = onNavigateToTravelCertificate,
+          onNavigateToGreenCard = onNavigateToGreenCard,
         )
       }
     }
@@ -85,6 +89,7 @@ private fun ColumnScope.CertificatesRows(
   uiState: CertificatesState.Success,
   onNavigateToInsuranceEvidence: () -> Unit,
   onNavigateToTravelCertificate: () -> Unit,
+  onNavigateToGreenCard: () -> Unit,
 ) {
   if (uiState.isTravelCertificateAvailable) {
     ProfileRow(
@@ -99,6 +104,15 @@ private fun ColumnScope.CertificatesRows(
       title = stringResource(Res.string.INSURANCE_EVIDENCE_DOCUMENT_TITLE),
       icon = HedvigIcons.Document,
       onClick = dropUnlessResumed { onNavigateToInsuranceEvidence() },
+      isLoading = false,
+    )
+  }
+  if (uiState.isGreenCardAvailable) {
+    ProfileRow(
+      // TODO: Add "Green card" / "Grönt kort" to Lokalise
+      title = "Green card",
+      icon = HedvigIcons.Document,
+      onClick = dropUnlessResumed { onNavigateToGreenCard() },
       isLoading = false,
     )
   }
@@ -118,6 +132,13 @@ private fun ColumnScope.CertificatesRowsPlaceholder() {
     onClick = { },
     isLoading = true,
   )
+  ProfileRow(
+    // TODO: Add "Green card" / "Grönt kort" to Lokalise
+    title = "Green card",
+    icon = HedvigIcons.Document,
+    onClick = {},
+    isLoading = true,
+  )
 }
 
 @HedvigPreview
@@ -133,6 +154,7 @@ private fun PreviewInsuranceEvidenceEmailInputScreen(
         {},
         {},
         {},
+        {},
       )
     }
   }
@@ -144,14 +166,17 @@ private class CertificatesStateProvider :
       CertificatesState.Success(
         isTravelCertificateAvailable = true,
         isInsuranceEvidenceAvailable = true,
+        isGreenCardAvailable = true,
       ),
       CertificatesState.Success(
         isTravelCertificateAvailable = true,
         isInsuranceEvidenceAvailable = false,
+        isGreenCardAvailable = false,
       ),
       CertificatesState.Success(
         isTravelCertificateAvailable = false,
         isInsuranceEvidenceAvailable = true,
+        isGreenCardAvailable = true,
       ),
       CertificatesState.Failure,
       CertificatesState.Loading,

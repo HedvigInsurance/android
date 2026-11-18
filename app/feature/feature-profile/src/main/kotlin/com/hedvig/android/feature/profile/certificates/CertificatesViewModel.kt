@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.feature.profile.data.CheckGreenCardDestinationAvailabilityUseCase
 import com.hedvig.android.feature.profile.data.CheckInsuranceEvidenceAvailabilityUseCase
 import com.hedvig.android.feature.profile.data.CheckTravelCertificateDestinationAvailabilityUseCase
 import com.hedvig.android.logger.logcat
@@ -25,11 +26,13 @@ import kotlinx.coroutines.flow.flow
 internal class CertificatesViewModel(
   checkTravelCertificateDestinationAvailabilityUseCase: CheckTravelCertificateDestinationAvailabilityUseCase,
   checkInsuranceEvidenceAvailabilityUseCase: CheckInsuranceEvidenceAvailabilityUseCase,
+  checkGreenCardDestinationAvailabilityUseCase: CheckGreenCardDestinationAvailabilityUseCase,
 ) : MoleculeViewModel<CertificatesEvent, CertificatesState>(
     initialState = CertificatesState.Loading,
     presenter = CertificatesPresenter(
       checkTravelCertificateDestinationAvailabilityUseCase,
       checkInsuranceEvidenceAvailabilityUseCase,
+      checkGreenCardDestinationAvailabilityUseCase,
     ),
   )
 
@@ -37,6 +40,7 @@ private class CertificatesPresenter(
   private val checkTravelCertificateDestinationAvailabilityUseCase:
     CheckTravelCertificateDestinationAvailabilityUseCase,
   private val checkInsuranceEvidenceAvailabilityUseCase: CheckInsuranceEvidenceAvailabilityUseCase,
+  private val checkGreenCardDestinationAvailabilityUseCase: CheckGreenCardDestinationAvailabilityUseCase,
 ) : MoleculePresenter<CertificatesEvent, CertificatesState> {
   @Composable
   override fun MoleculePresenterScope<CertificatesEvent>.present(lastState: CertificatesState): CertificatesState {
@@ -54,18 +58,18 @@ private class CertificatesPresenter(
       combine(
         flow { emit(checkInsuranceEvidenceAvailabilityUseCase.invoke()) },
         flow { emit(checkTravelCertificateDestinationAvailabilityUseCase.invoke()) },
-      ) { evidence, travel ->
-        (evidence to travel)
-      }.collectLatest { (insuranceEvidenceAvailability, travelCertificateDestinationAvailability) ->
-        if (insuranceEvidenceAvailability.isLeft() && travelCertificateDestinationAvailability.isLeft()) {
-          logcat { "CertificatesPresenter: both InsuranceEvidence and TravelCertificateDestination not available" }
+        flow { emit(checkGreenCardDestinationAvailabilityUseCase.invoke()) },
+      ) { evidence, travel, greenCard ->
+        Triple(evidence, travel, greenCard)
+      }.collectLatest { (evidence, travel, greenCard) ->
+        if (evidence.isLeft() && travel.isLeft() && greenCard.isLeft()) {
+          logcat { "CertificatesPresenter: no certificates available" }
           currentState = CertificatesState.Failure
         } else {
-          val evidenceAvailable = travelCertificateDestinationAvailability.getOrNull()
-          val travelCertificateDestinationAvailable = travelCertificateDestinationAvailability.getOrNull()
           currentState = CertificatesState.Success(
-            isTravelCertificateAvailable = travelCertificateDestinationAvailable != null,
-            isInsuranceEvidenceAvailable = evidenceAvailable != null,
+            isTravelCertificateAvailable = travel.isRight(),
+            isInsuranceEvidenceAvailable = evidence.isRight(),
+            isGreenCardAvailable = greenCard.isRight(),
           )
         }
       }
@@ -82,6 +86,7 @@ internal sealed interface CertificatesState {
   data class Success(
     val isTravelCertificateAvailable: Boolean,
     val isInsuranceEvidenceAvailable: Boolean,
+    val isGreenCardAvailable: Boolean,
   ) : CertificatesState
 }
 

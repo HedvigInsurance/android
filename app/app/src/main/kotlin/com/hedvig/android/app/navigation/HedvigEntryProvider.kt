@@ -37,6 +37,8 @@ import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddOrRemoveK
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredTriageKey
 import com.hedvig.android.feature.editcoinsured.navigation.editCoInsuredEntries
 import com.hedvig.android.feature.forever.navigation.foreverEntries
+import com.hedvig.android.feature.greencard.navigation.GreenCardKey
+import com.hedvig.android.feature.greencard.navigation.greenCardEntries
 import com.hedvig.android.feature.help.center.helpCenterEntries
 import com.hedvig.android.feature.help.center.navigation.HelpCenterKey
 import com.hedvig.android.feature.home.home.navigation.homeEntries
@@ -368,6 +370,10 @@ private fun EntryProviderScope<HedvigNavKey>.addNestedHomeEntries(
     backstack = backstack,
     applicationId = appPackageId,
   )
+  greenCardEntries(
+    backstack = backstack,
+    applicationId = appPackageId,
+  )
 }
 
 private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
@@ -540,6 +546,7 @@ private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
     onNavigateToNewConversation = navigateToNewConversation,
     onNavigateToTravelCertificate = { backstack.add(TravelCertificateKey) },
     onNavigateToInsuranceEvidence = { backstack.add(InsuranceEvidenceKey) },
+    onNavigateToGreenCard = { backstack.add(GreenCardKey) },
     openUrl = openUrl,
     openPrivacyPolicy = { openUrl(privacyPolicyInAppUrl(languageService.getLanguage())) },
     navigateToChipId = { backstack.add(ChipIdKey()) },

@@ -1,0 +1,12 @@
+# TODO: Uncomment once the green card schema is published on Octopus.
+# query GreenCards {
+#   currentMember {
+#     greenCards {
+#       id
+#       signedUrl
+#       registrationNumber
+#       validFrom
+#       validTo
+#     }
+#   }
+# }

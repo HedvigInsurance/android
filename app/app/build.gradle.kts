@@ -209,6 +209,7 @@ dependencies {
   implementation(projects.featureForeverNavigation)
   implementation(projects.featureHelpCenter)
   implementation(projects.featureHelpCenterNavigation)
+  implementation(projects.featureGreenCard)
   implementation(projects.featureHome)
   implementation(projects.featureImageViewer)
   implementation(projects.featureInsuranceCertificate)
