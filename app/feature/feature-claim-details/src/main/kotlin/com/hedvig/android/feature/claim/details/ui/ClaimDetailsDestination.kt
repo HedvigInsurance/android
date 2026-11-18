@@ -5,7 +5,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.net.Uri
 import android.widget.Toast
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -101,8 +100,8 @@ import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.show
+import com.hedvig.android.feature.claim.details.ui.rating.ClaimRatingButton
 import com.hedvig.android.feature.claim.details.ui.rating.ClaimRatingSheet
-import com.hedvig.android.feature.claim.details.ui.rating.ExitVia
 import com.hedvig.android.feature.claim.details.ui.rating.RatingEvent
 import com.hedvig.android.feature.claim.details.ui.rating.RatingState
 import com.hedvig.android.logger.logcat
@@ -154,7 +153,6 @@ internal fun ClaimDetailsDestination(
   imageLoader: ImageLoader,
   appPackageId: String,
   navigateUp: () -> Unit,
-  popBackstack: () -> Unit,
   navigateToConversation: (String) -> Unit,
   onFilesToUploadSelected: (List<Uri>, targetUploadUrl: String) -> Unit,
   openUrl: (String) -> Unit,
@@ -171,9 +169,7 @@ internal fun ClaimDetailsDestination(
     onDismissUploadError = { viewModel.emit(ClaimDetailsEvent.DismissUploadError) },
     retry = { viewModel.emit(ClaimDetailsEvent.Retry) },
     navigateUp = navigateUp,
-    popBackstack = popBackstack,
     onRatingEvent = { viewModel.emit(ClaimDetailsEvent.Rating(it)) },
-    onExitHandled = { viewModel.emit(ClaimDetailsEvent.ExitHandled) },
     navigateToConversation = navigateToConversation,
     onFilesToUploadSelected = onFilesToUploadSelected,
     downloadFromUrl = { viewModel.emit(ClaimDetailsEvent.DownloadPdf(it)) },
@@ -195,32 +191,15 @@ private fun ClaimDetailScreen(
   onDismissUploadError: () -> Unit,
   retry: () -> Unit,
   navigateUp: () -> Unit,
-  popBackstack: () -> Unit,
   onRatingEvent: (RatingEvent) -> Unit,
-  onExitHandled: () -> Unit,
   navigateToConversation: (String) -> Unit,
   onFilesToUploadSelected: (files: List<Uri>, uploadUri: String) -> Unit,
   downloadFromUrl: (String) -> Unit,
   sharePdf: (File) -> Unit,
   onDismissDownloadError: () -> Unit,
 ) {
-  val content = uiState.safeCast<ClaimDetailUiState.Content>()
-  val closedClaimFlow = content?.closedClaimFlow
-  val rating = content?.rating
-  BackHandler(enabled = closedClaimFlow != null && rating == RatingState.Idle) {
-    onRatingEvent(RatingEvent.ExitRequested(ExitVia.SystemBack))
-  }
-  if (rating is RatingState.Leaving) {
-    LaunchedEffect(rating) {
-      when (rating.via) {
-        ExitVia.TopBar -> navigateUp()
-        ExitVia.SystemBack -> popBackstack()
-      }
-      onExitHandled()
-    }
-  }
   ClaimRatingSheet(
-    step = (rating as? RatingState.Asking)?.step,
+    step = (uiState.safeCast<ClaimDetailUiState.Content>()?.rating as? RatingState.Open)?.step,
     onEvent = onRatingEvent,
     openUrl = openUrl,
   )
@@ -230,11 +209,7 @@ private fun ClaimDetailScreen(
   ) {
     Column(Modifier.fillMaxSize()) {
       ClaimDetailTopAppBar(
-        navigateUp = if (closedClaimFlow == null) {
-          navigateUp
-        } else {
-          { onRatingEvent(RatingEvent.ExitRequested(ExitVia.TopBar)) }
-        },
+        navigateUp = navigateUp,
       )
       when (uiState) {
         is ClaimDetailUiState.Content -> {
@@ -266,6 +241,7 @@ private fun ClaimDetailScreen(
             onLaunchMediaRequest = { photoPicker.launch(PickVisualMediaRequest()) },
             onPickFile = { filePicker.launch("*/*") },
             onTakePhoto = { photoCaptureState.launchTakePhotoRequest() },
+            onRateClaimClick = { onRatingEvent(RatingEvent.OpenRequested) },
             hasUnreadMessages = uiState.safeCast<ClaimDetailUiState.Content>()?.hasUnreadMessages == true,
             navigateToConversation = uiState.safeCast<ClaimDetailUiState.Content>()?.conversationId?.let {
               { navigateToConversation(it) }
@@ -300,6 +276,7 @@ private fun ClaimDetailContentScreen(
   onLaunchMediaRequest: () -> Unit,
   onPickFile: () -> Unit,
   onTakePhoto: () -> Unit,
+  onRateClaimClick: () -> Unit,
   hasUnreadMessages: Boolean,
   navigateToConversation: (() -> Unit)?,
 ) {
@@ -344,6 +321,7 @@ private fun ClaimDetailContentScreen(
     hasUnreadMessages = hasUnreadMessages,
     navigateToConversation = navigateToConversation,
     onAddFilesButtonClick = fileTypeSelectBottomSheetState::show,
+    onRateClaimClick = onRateClaimClick,
   )
 }
 
@@ -366,6 +344,7 @@ private fun NonDynamicGrid(
   downloadFromUrl: (String) -> Unit,
   hasUnreadMessages: Boolean,
   onAddFilesButtonClick: () -> Unit,
+  onRateClaimClick: () -> Unit,
   navigateToConversation: (() -> Unit)?,
 ) {
   val explanationBottomSheetState = rememberHedvigBottomSheetState<Unit>()
@@ -421,6 +400,7 @@ private fun NonDynamicGrid(
       onAddFilesButtonClick = onAddFilesButtonClick,
       onDismissUploadError = onDismissUploadError,
       downloadFromUrl = downloadFromUrl,
+      onRateClaimClick = onRateClaimClick,
     )
   }
 }
@@ -590,6 +570,7 @@ private fun AfterGridContent(
   onAddFilesButtonClick: () -> Unit,
   onDismissUploadError: () -> Unit,
   downloadFromUrl: (url: String) -> Unit,
+  onRateClaimClick: () -> Unit,
 ) {
   Column {
     if (uiState.isUploadingFilesEnabled) {
@@ -650,6 +631,10 @@ private fun AfterGridContent(
         modifier = Modifier.padding(16.dp),
         isLoading = uiState.appealInstructionsUrl == uiState.isLoadingPdf,
       )
+    }
+    if (uiState.ratingButton != null) {
+      Spacer(Modifier.height(16.dp))
+      ClaimRatingButton(state = uiState.ratingButton, onClick = onRateClaimClick)
     }
     Spacer(Modifier.height(16.dp))
   }
@@ -917,9 +902,7 @@ private fun PreviewClaimDetailScreen(
         appPackageId = "",
         retry = { },
         navigateUp = {},
-        popBackstack = {},
         onRatingEvent = {},
-        onExitHandled = {},
         navigateToConversation = {},
         onFilesToUploadSelected = { _, _ -> },
       )
@@ -1008,7 +991,6 @@ private fun PreviewClaimDetailScreen(
           externalId = "EIR-2026-000123",
           handlerEmail = "claims@eir.se",
           isPartnerClaim = true,
-          closedClaimFlow = null,
           hasSubmittedRating = false,
         ),
         openUrl = {},
@@ -1020,6 +1002,7 @@ private fun PreviewClaimDetailScreen(
         onLaunchMediaRequest = {},
         onTakePhoto = {},
         onPickFile = {},
+        onRateClaimClick = {},
         onNavigateToImageViewer = { _, _ -> },
         hasUnreadMessages = withNotification,
         navigateToConversation = {},

@@ -1,42 +1,32 @@
 package com.hedvig.android.feature.claim.details.ui.rating
 
-import com.hedvig.android.data.cross.sell.after.claim.closed.ClosedClaimInfo
 import com.hedvig.android.feature.claim.details.data.ClaimRatingAnswer
 
-internal data class ClosedClaimFlow(val claim: ClosedClaimInfo, val askForRating: Boolean)
-
-internal enum class ExitVia { TopBar, SystemBack }
-
 internal sealed interface RatingState {
-  data object Idle : RatingState
+  data object Closed : RatingState
 
-  data class Asking(val step: RatingStep, val via: ExitVia) : RatingState
-
-  /** The destination pops the screen the way [via] says, then sends ExitHandled. */
-  data class Leaving(val via: ExitVia) : RatingState
+  data class Open(val step: RatingStep) : RatingState
 }
 
 internal sealed interface RatingStep {
   data object Stars : RatingStep
 
-  data class Comment(val rating: Int, val comment: String) : RatingStep
+  data class Comment(val rating: Int) : RatingStep
 
   /** A [rating] of 4 or more shows the Trustpilot ask. */
   data class ThankYou(val rating: Int) : RatingStep
 }
 
 internal sealed interface RatingEvent {
-  data class ExitRequested(val via: ExitVia) : RatingEvent
+  data object OpenRequested : RatingEvent
 
   data class StarSelected(val rating: Int) : RatingEvent
 
-  data class CommentChanged(val text: String) : RatingEvent
-
-  data object Send : RatingEvent
+  data class Send(val comment: String) : RatingEvent
 
   data object Skip : RatingEvent
 
-  data object SheetDismissed : RatingEvent
+  data class SheetDismissed(val comment: String) : RatingEvent
 
   /** "Fortsätt", "Nej tack" or the Trustpilot button on the thank you step. */
   data object Finish : RatingEvent
@@ -45,59 +35,48 @@ internal sealed interface RatingEvent {
 /** [answer] is non-null when the event ends the member's answer and it must be recorded. */
 internal data class RatingTransition(val state: RatingState, val answer: ClaimRatingAnswer?)
 
-internal fun reduceRating(state: RatingState, event: RatingEvent, flow: ClosedClaimFlow?): RatingTransition {
+internal fun reduceRating(state: RatingState, event: RatingEvent): RatingTransition {
   val unchanged = RatingTransition(state, null)
   return when (state) {
-    RatingState.Idle -> {
-      if (event !is RatingEvent.ExitRequested) return unchanged
-      when {
-        flow == null -> RatingTransition(RatingState.Leaving(event.via), null)
-        !flow.askForRating -> RatingTransition(RatingState.Leaving(event.via), null)
-        else -> RatingTransition(RatingState.Asking(RatingStep.Stars, event.via), null)
-      }
-    }
-
-    is RatingState.Asking -> {
-      reduceAsking(state, event) ?: unchanged
-    }
-
-    is RatingState.Leaving -> {
+    RatingState.Closed -> if (event == RatingEvent.OpenRequested) {
+      RatingTransition(RatingState.Open(RatingStep.Stars), null)
+    } else {
       unchanged
     }
+
+    is RatingState.Open -> reduceOpen(state.step, event) ?: unchanged
   }
 }
 
-private fun reduceAsking(state: RatingState.Asking, event: RatingEvent): RatingTransition? {
-  fun ask(step: RatingStep, answer: ClaimRatingAnswer? = null) = RatingTransition(state.copy(step = step), answer)
+private fun reduceOpen(step: RatingStep, event: RatingEvent): RatingTransition? {
+  fun show(step: RatingStep, answer: ClaimRatingAnswer? = null) = RatingTransition(RatingState.Open(step), answer)
 
-  fun leave(answer: ClaimRatingAnswer? = null) = RatingTransition(RatingState.Leaving(state.via), answer)
+  fun close(answer: ClaimRatingAnswer? = null) = RatingTransition(RatingState.Closed, answer)
 
-  return when (val step = state.step) {
+  return when (step) {
     RatingStep.Stars -> when (event) {
-      is RatingEvent.StarSelected -> ask(RatingStep.Comment(event.rating, ""))
-      RatingEvent.Skip, RatingEvent.SheetDismissed -> leave(ClaimRatingAnswer.Dismissed)
+      is RatingEvent.StarSelected -> show(RatingStep.Comment(event.rating))
+      RatingEvent.Skip, is RatingEvent.SheetDismissed -> close(ClaimRatingAnswer.Dismissed)
       else -> null
     }
 
     is RatingStep.Comment -> when (event) {
-      is RatingEvent.StarSelected -> ask(step.copy(rating = event.rating))
+      is RatingEvent.StarSelected -> show(RatingStep.Comment(event.rating))
 
-      is RatingEvent.CommentChanged -> ask(step.copy(comment = event.text))
-
-      RatingEvent.Send -> ask(
+      is RatingEvent.Send -> show(
         RatingStep.ThankYou(step.rating),
-        ClaimRatingAnswer.Rated(step.rating, step.comment.trim().ifEmpty { null }),
+        ClaimRatingAnswer.Rated(step.rating, event.comment.trim().ifEmpty { null }),
       )
 
-      RatingEvent.Skip -> ask(RatingStep.ThankYou(step.rating), ClaimRatingAnswer.Rated(step.rating, null))
+      RatingEvent.Skip -> show(RatingStep.ThankYou(step.rating), ClaimRatingAnswer.Rated(step.rating, null))
 
-      RatingEvent.SheetDismissed -> leave(ClaimRatingAnswer.Rated(step.rating, null))
+      is RatingEvent.SheetDismissed -> close(ClaimRatingAnswer.Rated(step.rating, null))
 
       else -> null
     }
 
     is RatingStep.ThankYou -> when (event) {
-      RatingEvent.Finish, RatingEvent.SheetDismissed -> leave()
+      RatingEvent.Finish, is RatingEvent.SheetDismissed -> close()
       else -> null
     }
   }

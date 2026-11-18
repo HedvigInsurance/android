@@ -90,18 +90,19 @@ class GetClaimDetailUiStateUseCaseTest {
     )
   }
 
-  private fun useCase(events: MutableList<String>, acknowledgeSucceeds: Boolean = true) = GetClaimDetailUiStateUseCase(
-    apolloClient = testApolloClientRule.apolloClient,
-    crossSellAfterClaimClosedRepository = object : CrossSellAfterClaimClosedRepository {
-      override suspend fun acknowledgeClaimClosedStatus(claimId: String): Either<ErrorMessage, Unit> {
-        events.add("acknowledge:$claimId")
-        return if (acknowledgeSucceeds) Unit.right() else ErrorMessage().left()
-      }
+  private fun useCase(events: MutableList<String>, acknowledgeSucceeds: Boolean = true) =
+    GetClaimDetailUiStateUseCaseImpl(
+      apolloClient = testApolloClientRule.apolloClient,
+      crossSellAfterClaimClosedRepository = object : CrossSellAfterClaimClosedRepository {
+        override suspend fun acknowledgeClaimClosedStatus(claimId: String): Either<ErrorMessage, Unit> {
+          events.add("acknowledge:$claimId")
+          return if (acknowledgeSucceeds) Unit.right() else ErrorMessage().left()
+        }
 
-      override fun triggerCrossSell(claim: ClosedClaimInfo) {
-        events.add("crossSell:${claim.id}:${claim.status}:${claim.type}:${claim.contractId}")
-      }
-    },
-    clock = Clock.System,
-  )
+        override fun triggerCrossSell(claim: ClosedClaimInfo) {
+          events.add("crossSell:${claim.id}:${claim.status}:${claim.type}:${claim.contractId}")
+        }
+      },
+      clock = Clock.System,
+    )
 }

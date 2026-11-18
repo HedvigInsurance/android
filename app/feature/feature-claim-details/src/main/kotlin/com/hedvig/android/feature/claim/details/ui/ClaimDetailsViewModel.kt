@@ -17,11 +17,12 @@ import com.hedvig.android.core.fileupload.DownloadPdfUseCase
 import com.hedvig.android.core.fileupload.DownloadedFile
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.data.display.items.DisplayItem
+import com.hedvig.android.feature.claim.details.data.ClaimRatingAnswer
 import com.hedvig.android.feature.claim.details.data.ClaimRatingRecorder
 import com.hedvig.android.feature.claim.details.data.GetClaimDetailUiStateUseCase
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimStatus.CLOSED
-import com.hedvig.android.feature.claim.details.ui.rating.ClosedClaimFlow
+import com.hedvig.android.feature.claim.details.ui.rating.RatingButtonState
 import com.hedvig.android.feature.claim.details.ui.rating.RatingEvent
 import com.hedvig.android.feature.claim.details.ui.rating.RatingState
 import com.hedvig.android.feature.claim.details.ui.rating.reduceRating
@@ -58,7 +59,7 @@ internal class ClaimDetailsViewModel(
     ),
   )
 
-private class ClaimDetailPresenter(
+internal class ClaimDetailPresenter(
   private val claimId: String,
   private val getClaimDetailUiStateUseCase: GetClaimDetailUiStateUseCase,
   private val claimsServiceUploadFileUseCase: ClaimsServiceUploadFileUseCase,
@@ -71,7 +72,10 @@ private class ClaimDetailPresenter(
     var hasError: Boolean by remember { mutableStateOf(lastState as? ClaimDetailUiState.Error != null) }
     var content: ClaimDetailUiState.Content? by remember { mutableStateOf(lastState as? ClaimDetailUiState.Content) }
     var rating: RatingState by remember {
-      mutableStateOf((lastState as? ClaimDetailUiState.Content)?.rating ?: RatingState.Idle)
+      mutableStateOf((lastState as? ClaimDetailUiState.Content)?.rating ?: RatingState.Closed)
+    }
+    var ratingSubmittedLocally by remember {
+      mutableStateOf((lastState as? ClaimDetailUiState.Content)?.ratingButton == RatingButtonState.Submitted)
     }
     var loadIteration by remember { mutableIntStateOf(0) }
     val mediaToSend = remember { Channel<Uri>(Channel.UNLIMITED) }
@@ -165,18 +169,14 @@ private class ClaimDetailPresenter(
         }
 
         is ClaimDetailsEvent.Rating -> {
-          // Without content there is no state to carry the transition, so Loading and Error pop directly.
-          val currentContent = content ?: return@CollectEvents
-          val closedClaimFlow = currentContent.closedClaimFlow
-          val transition = reduceRating(rating, event.event, closedClaimFlow)
+          val transition = reduceRating(rating, event.event)
           rating = transition.state
-          if (transition.answer != null && closedClaimFlow != null) {
-            claimRatingRecorder.record(closedClaimFlow.claim.id, transition.answer)
+          if (transition.answer != null) {
+            claimRatingRecorder.record(claimId, transition.answer)
+            if (transition.answer is ClaimRatingAnswer.Rated) {
+              ratingSubmittedLocally = true
+            }
           }
-        }
-
-        ClaimDetailsEvent.ExitHandled -> {
-          rating = RatingState.Idle
         }
       }
     }
@@ -184,7 +184,9 @@ private class ClaimDetailPresenter(
     if (hasError) {
       return ClaimDetailUiState.Error
     }
-    return content?.copy(rating = rating) ?: ClaimDetailUiState.Loading
+    return content?.let {
+      it.copy(rating = rating, ratingButton = it.ratingButton(ratingSubmittedLocally))
+    } ?: ClaimDetailUiState.Loading
   }
 }
 
@@ -200,9 +202,6 @@ internal sealed interface ClaimDetailsEvent {
   data object HandledSharingPdfFile : ClaimDetailsEvent
 
   data class Rating(val event: RatingEvent) : ClaimDetailsEvent
-
-  /** The destination has popped the screen after [RatingState.Leaving]. */
-  data object ExitHandled : ClaimDetailsEvent
 }
 
 internal sealed interface ClaimDetailUiState {
@@ -236,10 +235,10 @@ internal sealed interface ClaimDetailUiState {
     val externalId: String?,
     val handlerEmail: String?,
     val isPartnerClaim: Boolean,
-    /** Null unless the claim was closed and leaving it should record the member's answer. */
-    val closedClaimFlow: ClosedClaimFlow?,
     val hasSubmittedRating: Boolean,
-    val rating: RatingState = RatingState.Idle,
+    val rating: RatingState = RatingState.Closed,
+    /** Null when the claim cannot be rated in the app. */
+    val ratingButton: RatingButtonState? = null,
   ) : ClaimDetailUiState {
     val claimIsInUndeterminedState: Boolean = claimStatus == CLOSED && claimOutcome == UNKNOWN
 
@@ -267,4 +266,10 @@ internal sealed interface ClaimDetailUiState {
 
     companion object
   }
+}
+
+private fun ClaimDetailUiState.Content.ratingButton(ratingSubmittedLocally: Boolean): RatingButtonState? = when {
+  claimStatus != CLOSED || isPartnerClaim -> null
+  hasSubmittedRating || ratingSubmittedLocally -> RatingButtonState.Submitted
+  else -> RatingButtonState.Enabled
 }

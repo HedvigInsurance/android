@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -45,11 +46,15 @@ import kotlinx.coroutines.flow.map
 
 internal const val TRUSTPILOT_REVIEW_URL = "https://www.trustpilot.com/evaluate/hedvig.com"
 
+/** The backend rejects longer comments. */
+private const val MAX_COMMENT_LENGTH = 2000
+
 @Composable
 internal fun ClaimRatingSheet(step: RatingStep?, onEvent: (RatingEvent) -> Unit, openUrl: (String) -> Unit) {
   val sheetState = rememberHedvigBottomSheetState<RatingStep>()
   val currentOnEvent by rememberUpdatedState(onEvent)
   var isSheetReady by remember { mutableStateOf(false) }
+  var comment by rememberSaveable { mutableStateOf("") }
   LaunchedEffect(sheetState) {
     snapshotFlow { sheetState.isVisible }.first { !it }
     isSheetReady = true
@@ -58,20 +63,27 @@ internal fun ClaimRatingSheet(step: RatingStep?, onEvent: (RatingEvent) -> Unit,
     if (!isSheetReady) return@LaunchedEffect
     if (step != null) {
       sheetState.show(step)
-    } else if (sheetState.isVisible) {
-      sheetState.dismiss()
+    } else {
+      comment = ""
+      if (sheetState.isVisible) {
+        sheetState.dismiss()
+      }
     }
   }
   LaunchedEffect(sheetState) {
-    snapshotFlow { sheetState.isVisible }.userDismissals().collect { currentOnEvent(RatingEvent.SheetDismissed) }
+    snapshotFlow { sheetState.isVisible }.userDismissals().collect {
+      currentOnEvent(RatingEvent.SheetDismissed(comment))
+    }
   }
   HedvigBottomSheet(sheetState) { shownStep ->
     ClaimRatingSheetContent(
       step = shownStep,
+      comment = comment,
+      onCommentChange = { comment = it.take(MAX_COMMENT_LENGTH) },
       onEvent = onEvent,
       onOpenTrustpilot = {
-        openUrl(TRUSTPILOT_REVIEW_URL)
         onEvent(RatingEvent.Finish)
+        openUrl(TRUSTPILOT_REVIEW_URL)
       },
       modifier = Modifier.padding(bottom = 16.dp),
     )
@@ -91,6 +103,8 @@ internal fun Flow<Boolean>.userDismissals(): Flow<Unit> = dropWhile { it }
 @Composable
 private fun ClaimRatingSheetContent(
   step: RatingStep,
+  comment: String,
+  onCommentChange: (String) -> Unit,
   onEvent: (RatingEvent) -> Unit,
   onOpenTrustpilot: () -> Unit,
   modifier: Modifier = Modifier,
@@ -114,8 +128,8 @@ private fun ClaimRatingSheetContent(
         StarRatingRow(selectedRating = step.rating, onRatingClick = { onEvent(RatingEvent.StarSelected(it)) })
         Spacer(Modifier.height(16.dp))
         HedvigTextField(
-          text = step.comment,
-          onValueChange = { onEvent(RatingEvent.CommentChanged(it)) },
+          text = comment,
+          onValueChange = onCommentChange,
           labelText = if (step.rating >= 4) {
             // TODO: Add "What did we do best?" / "Vad var bäst med hanteringen?" to Lokalise
             "What did we do best?"
@@ -132,7 +146,7 @@ private fun ClaimRatingSheetContent(
         // TODO: Add "Send" / "Skicka" to Lokalise
         HedvigButton(
           text = "Send",
-          onClick = { onEvent(RatingEvent.Send) },
+          onClick = { onEvent(RatingEvent.Send(comment)) },
           enabled = true,
           modifier = Modifier.fillMaxWidth(),
         )
@@ -267,13 +281,13 @@ private fun PreviewRatingStars() {
 @HedvigPreview
 @Composable
 private fun PreviewRatingCommentHappy() {
-  PreviewStep(RatingStep.Comment(rating = 5, comment = ""))
+  PreviewStep(RatingStep.Comment(rating = 5))
 }
 
 @HedvigPreview
 @Composable
 private fun PreviewRatingCommentUnhappy() {
-  PreviewStep(RatingStep.Comment(rating = 2, comment = "The handling took too long."))
+  PreviewStep(RatingStep.Comment(rating = 2), comment = "The handling took too long.")
 }
 
 @HedvigPreview
@@ -289,11 +303,13 @@ private fun PreviewRatingThankYouUnhappy() {
 }
 
 @Composable
-private fun PreviewStep(step: RatingStep) {
+private fun PreviewStep(step: RatingStep, comment: String = "") {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ClaimRatingSheetContent(
         step = step,
+        comment = comment,
+        onCommentChange = {},
         onEvent = {},
         onOpenTrustpilot = {},
         modifier = Modifier.padding(16.dp),

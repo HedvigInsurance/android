@@ -14,8 +14,8 @@ import com.hedvig.android.data.cross.sell.after.claim.closed.ClosedClaimInfo
 import com.hedvig.android.data.cross.sell.after.claim.closed.CrossSellAfterClaimClosedRepository
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState
-import com.hedvig.android.feature.claim.details.ui.rating.ClosedClaimFlow
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
+import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlin.time.Clock
@@ -38,14 +38,19 @@ import octopus.type.ClaimOutcome
 import octopus.type.ClaimStatus
 import octopus.type.InsuranceDocumentType
 
+internal interface GetClaimDetailUiStateUseCase {
+  fun invoke(claimId: String): Flow<Either<Error, ClaimDetailUiState.Content>>
+}
+
 @SingleIn(AppScope::class)
+@ContributesBinding(AppScope::class)
 @Inject
-internal class GetClaimDetailUiStateUseCase(
+internal class GetClaimDetailUiStateUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val crossSellAfterClaimClosedRepository: CrossSellAfterClaimClosedRepository,
   private val clock: Clock,
-) {
-  fun invoke(claimId: String): Flow<Either<Error, ClaimDetailUiState.Content>> = flow {
+) : GetClaimDetailUiStateUseCase {
+  override fun invoke(claimId: String): Flow<Either<Error, ClaimDetailUiState.Content>> = flow {
     // First iteration: try the regular endpoint. A NoClaimFound here means this
     // is a partner claim — fall back to the partner endpoint and remember that
     // choice for the polling loop below.
@@ -146,7 +151,6 @@ internal class GetClaimDetailUiStateUseCase(
       externalId = claim.externalId,
       handlerEmail = claim.handlerEmail,
       isPartnerClaim = true,
-      closedClaimFlow = null,
       hasSubmittedRating = false,
     )
   }
@@ -241,11 +245,6 @@ internal class GetClaimDetailUiStateUseCase(
       externalId = null,
       handlerEmail = null,
       isPartnerClaim = false,
-      closedClaimFlow = if (claim.showClaimClosedFlow) {
-        ClosedClaimFlow(claim = claim.toClosedClaimInfo(), askForRating = !hasSubmittedRating)
-      } else {
-        null
-      },
       hasSubmittedRating = hasSubmittedRating,
     )
   }
