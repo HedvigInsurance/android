@@ -79,7 +79,9 @@ fun main() {
         navigationEventDispatcher?.addInput(escapeAsBack)
         onDispose { navigationEventDispatcher?.removeInput(escapeAsBack) }
       }
-      DesktopApp(graph, backstackController, appHost, externalNavigator)
+      ProvideVisibleWindowLifecycle {
+        DesktopApp(graph, backstackController, appHost, externalNavigator)
+      }
     }
   }
 }
