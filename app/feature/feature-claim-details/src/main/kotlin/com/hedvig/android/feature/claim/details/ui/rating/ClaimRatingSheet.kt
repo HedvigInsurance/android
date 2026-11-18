@@ -11,7 +11,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +35,13 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.dropWhile
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
 internal const val TRUSTPILOT_REVIEW_URL = "https://www.trustpilot.com/evaluate/hedvig.com"
 
@@ -39,7 +49,13 @@ internal const val TRUSTPILOT_REVIEW_URL = "https://www.trustpilot.com/evaluate/
 internal fun ClaimRatingSheet(step: RatingStep?, onEvent: (RatingEvent) -> Unit, openUrl: (String) -> Unit) {
   val sheetState = rememberHedvigBottomSheetState<RatingStep>()
   val currentOnEvent by rememberUpdatedState(onEvent)
-  LaunchedEffect(step) {
+  var isSheetReady by remember { mutableStateOf(false) }
+  LaunchedEffect(sheetState) {
+    snapshotFlow { sheetState.isVisible }.first { !it }
+    isSheetReady = true
+  }
+  LaunchedEffect(step, isSheetReady) {
+    if (!isSheetReady) return@LaunchedEffect
     if (step != null) {
       sheetState.show(step)
     } else if (sheetState.isVisible) {
@@ -47,13 +63,7 @@ internal fun ClaimRatingSheet(step: RatingStep?, onEvent: (RatingEvent) -> Unit,
     }
   }
   LaunchedEffect(sheetState) {
-    var wasVisible = false
-    snapshotFlow { sheetState.isVisible }.collect { isVisible ->
-      if (wasVisible && !isVisible) {
-        currentOnEvent(RatingEvent.SheetDismissed)
-      }
-      wasVisible = isVisible
-    }
+    snapshotFlow { sheetState.isVisible }.userDismissals().collect { currentOnEvent(RatingEvent.SheetDismissed) }
   }
   HedvigBottomSheet(sheetState) { shownStep ->
     ClaimRatingSheetContent(
@@ -67,6 +77,16 @@ internal fun ClaimRatingSheet(step: RatingStep?, onEvent: (RatingEvent) -> Unit,
     )
   }
 }
+
+/**
+ * Emits each time the sheet goes from shown to hidden. A sheet restored as visible after recreation is hidden by the
+ * design system before anything is shown, so a leading visible run is not a dismissal by the member.
+ */
+internal fun Flow<Boolean>.userDismissals(): Flow<Unit> = dropWhile { it }
+  .distinctUntilChanged()
+  .drop(1)
+  .filter { !it }
+  .map { }
 
 @Composable
 private fun ClaimRatingSheetContent(
