@@ -53,9 +53,9 @@ class NavigationRequest<out T : Any> private constructor(
 }
 
 /**
- * The offer to keep when a presenter restarts from a state that held this one. A pending offer is dropped, because the
- * screen that should have performed it stopped observing before it did, and the member asks again. A taken one is
- * kept; it is never performed again.
+ * The offer to keep when a presenter restarts from a state that held this one. A pending offer is taken and dropped,
+ * so a screen still showing the state from before the restart cannot perform it either, and the member asks again. A
+ * taken one is kept; it is never performed again.
  */
 @HiddenFromObjC
-fun <T : Any> NavigationRequest<T>?.restoredAsOffer(): NavigationRequest<T>? = this?.takeUnless { it.isPending }
+fun <T : Any> NavigationRequest<T>?.restoredAsOffer(): NavigationRequest<T>? = this?.takeUnless { it.tryConsume() }

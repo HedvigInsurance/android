@@ -83,6 +83,8 @@ class NavigationRequestTest {
   fun `restoring an offer drops it while pending and keeps it once taken`() {
     val pending = NavigationRequest.of("step")
     assertThat(pending.restoredAsOffer()).isNull()
+    // A screen still showing the state from before the restart cannot perform the dropped offer.
+    assertThat(pending.tryConsume()).isFalse()
 
     val taken = NavigationRequest.of("step").also { it.tryConsume() }
     assertThat(taken.restoredAsOffer()).isSameInstanceAs(taken)
