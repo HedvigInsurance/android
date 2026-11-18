@@ -2719,6 +2719,11 @@ type InsurableLimit {
   description: String!
   type: InsurableLimitType!
 }
+enum ImportantMessageSeverity {
+  INFO
+  WARNING
+  ERROR
+}
 enum InsurableLimitType {
   DEDUCTIBLE
   DEDUCTIBLE_NATURE_DAMAGE
@@ -3185,6 +3190,7 @@ type MemberImportantMessage {
   message: String!
   link: Url! @deprecated(reason: "Use linkInfo instead, which allows for a message to not have a link at all attached and allows editing the button text too")
   linkInfo: LinkInfo
+  severity: ImportantMessageSeverity!
 }
 type MemberInsuranceCost {
   """
