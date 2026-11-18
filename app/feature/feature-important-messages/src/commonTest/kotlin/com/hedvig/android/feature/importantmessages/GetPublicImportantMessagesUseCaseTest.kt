@@ -12,7 +12,7 @@ import kotlinx.coroutines.test.runTest
 
 class GetPublicImportantMessagesUseCaseTest {
   @Test
-  fun `maps id, message, severity and link`() = runTest {
+  fun `maps id message severity and link`() = runTest {
     val json = messagesJson(
       messageJson("error-1", "Logins are failing", "ERROR", "https://example.test/status", "Status"),
       messageJson("warning-1", "Slow claims", "WARNING"),
