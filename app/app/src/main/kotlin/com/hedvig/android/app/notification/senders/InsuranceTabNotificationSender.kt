@@ -12,7 +12,6 @@ import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.logger.memberData
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
@@ -43,8 +42,7 @@ internal class InsuranceTabNotificationSender(
     val body = remoteMessage.bodyFromCustomerIoData()
     if (title == null || body == null) {
       logcat(LogPriority.ERROR) {
-        "InsuranceTabNotificationSender got no title or body, bailing! data:" +
-          memberData(remoteMessage.data, "keys ${remoteMessage.data.keys}")
+        "InsuranceTabNotificationSender got no title or body, bailing! data:[${remoteMessage.data}]"
       }
       return
     }

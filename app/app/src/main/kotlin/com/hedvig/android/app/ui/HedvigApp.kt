@@ -83,6 +83,7 @@ import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.logger.memberData
+import com.hedvig.android.logger.withoutUrlQueries
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.BottomSheetSceneStrategy
@@ -322,8 +323,7 @@ private fun ReportCurrentDestinationEffect(
   LaunchedEffect(backstackController, currentDestinationHolder) {
     snapshotFlow { backstackController.currentDestination }.collect { destination ->
       logcat {
-        val destinationName = destination?.let { it::class.simpleName }.toString()
-        "Navigated to destination:${memberData(destination, destinationName)}"
+        "Navigated to destination:${memberData(destination, destination.toString().withoutUrlQueries())}"
       }
       currentDestinationHolder.update(destination)
     }

@@ -5,6 +5,7 @@ import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.logger.memberData
 import com.hedvig.android.logger.urlForLog
+import com.hedvig.android.logger.withoutUrlQueries
 import com.hedvig.android.navigation.compose.HedvigDeepLinkMatcher
 
 /**
@@ -24,7 +25,7 @@ internal class DeepLinkFirstUriHandler(
     val destination = matcher.match(uri)
     if (destination != null) {
       logcat {
-        val loggedDestination = memberData(destination, destination::class.simpleName.toString())
+        val loggedDestination = memberData(destination, destination.toString().withoutUrlQueries())
         "DeepLinkFirstUriHandler navigating to $loggedDestination for uri:${urlForLog(uri)}"
       }
       backstackController.navigateToInAppLink(destination)

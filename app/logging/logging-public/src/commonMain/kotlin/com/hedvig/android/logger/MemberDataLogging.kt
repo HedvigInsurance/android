@@ -20,9 +20,18 @@ fun memberData(value: Any?, replacement: String = "<redacted>"): String {
 }
 
 /**
- * [url] as text for a log message. Where [MemberDataLogging] is not allowed the query and fragment are dropped, since
- * that is where signatures and tokens travel.
+ * [url] as text for a log message. Where [MemberDataLogging] is not allowed its query and fragment are dropped.
  */
 fun urlForLog(url: Any?): String {
-  return memberData(url, replacement = url.toString().substringBefore('?').substringBefore('#'))
+  return memberData(url, replacement = url.toString().withoutUrlQueries())
 }
+
+/**
+ * This text with the query and fragment dropped from every URL in it, since that is where signatures and tokens
+ * travel.
+ */
+fun String.withoutUrlQueries(): String {
+  return replace(urlWithQuery, "$1")
+}
+
+private val urlWithQuery = Regex("""(\w+://[^\s?#)]*)[?#][^\s)]*""")

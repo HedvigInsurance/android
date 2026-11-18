@@ -6,6 +6,7 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.logger.memberData
 import com.hedvig.android.logger.urlForLog
+import com.hedvig.android.logger.withoutUrlQueries
 import com.hedvig.android.navigation.compose.HedvigDeepLinkMatcher
 import java.net.URI
 import kotlinx.coroutines.flow.StateFlow
@@ -47,7 +48,7 @@ internal class ExternalDeepLinkHandler(
     val destination = matcher.match(uri)
     if (destination != null) {
       logcat {
-        val loggedDestination = memberData(destination, destination::class.simpleName.toString())
+        val loggedDestination = memberData(destination, destination.toString().withoutUrlQueries())
         "ExternalDeepLinkHandler landing external deep link $loggedDestination for uri:${urlForLog(uri)}"
       }
       backstackController.navigateToExternalDeepLink(destination, hostedInForeignTask())

@@ -33,15 +33,10 @@ class PushNotificationService : FirebaseMessagingService() {
   }
 
   override fun onMessageReceived(remoteMessage: RemoteMessage) {
-    logcat(LogPriority.INFO) {
-      "FCM onMessageReceived, with data:${memberData(remoteMessage.data, "keys ${remoteMessage.data.keys}")}"
-    }
+    logcat(LogPriority.INFO) { "FCM onMessageReceived, with data:${remoteMessage.data}" }
     val type = remoteMessage.data[NOTIFICATION_TYPE_KEY]
     if (type == null) {
-      logcat(LogPriority.ERROR) {
-        "FCM onMessageReceived, type was not present. Data:" +
-          memberData(remoteMessage.data, "keys ${remoteMessage.data.keys}")
-      }
+      logcat(LogPriority.ERROR) { "FCM onMessageReceived, type was not present. Data:${remoteMessage.data}" }
       return
     }
     logcat(LogPriority.INFO) { "FCM onMessageReceived, type:$type" }
