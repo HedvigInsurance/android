@@ -42,6 +42,7 @@ import com.hedvig.android.feature.help.center.navigation.HelpCenterKey
 import com.hedvig.android.feature.home.home.navigation.homeEntries
 import com.hedvig.android.feature.imageviewer.navigation.ImageViewerKey
 import com.hedvig.android.feature.imageviewer.navigation.imageViewerEntries
+import com.hedvig.android.feature.importantmessages.ui.PublicImportantMessages
 import com.hedvig.android.feature.insurance.certificate.navigation.InsuranceEvidenceKey
 import com.hedvig.android.feature.insurance.certificate.navigation.insuranceEvidenceEntries
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
@@ -271,6 +272,9 @@ private fun EntryProviderScope<HedvigNavKey>.addLoginEntries(
       scope.launch {
         backstack.setLoggedIn(memberIdService.getMemberId().first())
       }
+    },
+    publicImportantMessages = { reloadKey, modifier ->
+      PublicImportantMessages(reloadKey = reloadKey, openUrl = openUrl, modifier = modifier)
     },
   )
 }
