@@ -207,6 +207,7 @@ Unfinished work and bugs. Most need only a JVM actual or a host change.
 | "Submit a bug" only logs when no mail client is configured | A notice with the address |
 | No experiment variants: the member is in no experiment, so the backend serves defaults | Keep variants in `JvmUnleashClient`, convert `experiments-unleash` |
 | Feature flags read never-fetched defaults on every start until the first fetch | Persist the toggle state under the data directory |
+| A screen that navigates after a request (travel certificate steps, add-on summary, moving flow house information) keeps its spinner while the window has no focus, and navigates once it is focused again. The window lifecycle is RESUMED only while focused, and `NavigationEffect` waits for RESUMED, since Navigation 3 holds a leaving entry at STARTED and a STARTED gate navigates twice from it (`NavigationEffectInNavDisplayTest`). Clicks wrapped in `dropUnlessResumed` are dropped on an unfocused window for the same reason | A host lifecycle in `Main.kt` that is RESUMED while the window is visible and not minimised, as on Android in multi-window; Navigation 3 still caps entries during transitions and under overlays |
 | No log file and no crash report: logs go to stdout only | A rotating log file under the data directory |
 | The backend gets no device row for a desktop login | A JVM `AuthEventListener` like `DeviceNameLoggingAuthListener` |
 | Home and Insurances: pull to refresh cannot be triggered with a mouse | A refresh action or wheel trigger |

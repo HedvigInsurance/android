@@ -20,9 +20,12 @@ kotlin {
       implementation(libs.jetbrains.lifecycle.runtime.compose)
     }
     jvmTest.dependencies {
+      implementation(libs.androidx.navigation3.runtime)
       implementation(libs.assertK)
       implementation(libs.coroutines.test)
       implementation(libs.jetbrains.compose.ui.test)
+      implementation(libs.jetbrains.navigation3.ui)
+      implementation(libs.jetbrains.navigationevent.compose)
       implementation(libs.junit)
       implementation(org.jetbrains.compose.ComposePlugin.DesktopDependencies.currentOs)
     }
