@@ -6,9 +6,6 @@ import assertk.assertions.isFalse
 import assertk.assertions.isTrue
 import assertk.assertions.startsWith
 import com.hedvig.android.logger.TestLogcatLoggingRule
-import java.io.File
-import kotlin.io.path.createTempDirectory
-import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 
@@ -16,16 +13,9 @@ class DesktopBuildConstantsTest {
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
 
-  private val dataDirectory: File = createTempDirectory("desktop-build-constants-test").toFile()
-
-  @After
-  fun tearDown() {
-    dataDirectory.deleteRecursively()
-  }
-
   @Test
   fun `on staging the desktop app identifies as the Android develop build`() {
-    val buildConstants = createTestDesktopGraph(dataDirectory, DesktopBackend.Staging).hedvigBuildConstants
+    val buildConstants = createTestDesktopGraph(DesktopBackend.Staging).hedvigBuildConstants
 
     assertThat(buildConstants.platformName).isEqualTo("ANDROID")
     assertThat(buildConstants.appPackageId).isEqualTo("com.hedvig.dev.app")
@@ -38,7 +28,7 @@ class DesktopBuildConstantsTest {
 
   @Test
   fun `on production the desktop app identifies as the Android release build`() {
-    val buildConstants = createTestDesktopGraph(dataDirectory, DesktopBackend.Production).hedvigBuildConstants
+    val buildConstants = createTestDesktopGraph(DesktopBackend.Production).hedvigBuildConstants
 
     assertThat(buildConstants.platformName).isEqualTo("ANDROID")
     assertThat(buildConstants.appPackageId).isEqualTo("com.hedvig.app")
