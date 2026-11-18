@@ -6,7 +6,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import arrow.core.None
 import arrow.core.Option
@@ -19,7 +18,6 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
-import com.hedvig.android.feature.movingflow.ChoseCoverageLevelAndDeductibleKey
 import com.hedvig.android.feature.movingflow.compose.BooleanInput
 import com.hedvig.android.feature.movingflow.compose.ConstrainedNumberInput
 import com.hedvig.android.feature.movingflow.compose.ListInput
@@ -36,14 +34,14 @@ import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInfo
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationUiState.Content.SubmittingInfoFailure.NetworkFailure
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationUiState.Loading
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationUiState.MissingOngoingMovingFlow
+import com.hedvig.android.molecule.public.AttemptStatus
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
-import com.hedvig.android.navigation.compose.Backstack
-import com.hedvig.android.navigation.compose.add
+import com.hedvig.android.molecule.public.NavigationRequest
+import com.hedvig.android.molecule.public.rememberAttempts
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
-import kotlinx.coroutines.launch
 import octopus.feature.movingflow.MoveIntentV2RequestMutation
 import octopus.type.MoveExtraBuildingInput
 import octopus.type.MoveIntentRequestInput
@@ -56,14 +54,12 @@ internal class AddHouseInformationViewModel(
   @Assisted moveIntentId: String,
   movingFlowRepository: MovingFlowRepository,
   apolloClient: ApolloClient,
-  backstack: Backstack,
 ) : MoleculeViewModel<AddHouseInformationEvent, AddHouseInformationUiState>(
     Loading,
     AddHouseInformationPresenter(
       moveIntentId,
       movingFlowRepository,
       apolloClient,
-      backstack,
     ),
   )
 
@@ -71,7 +67,6 @@ internal class AddHouseInformationPresenter(
   private val moveIntentId: String,
   private val movingFlowRepository: MovingFlowRepository,
   private val apolloClient: ApolloClient,
-  private val backstack: Backstack,
 ) : MoleculePresenter<AddHouseInformationEvent, AddHouseInformationUiState> {
   @Composable
   override fun MoleculePresenterScope<AddHouseInformationEvent>.present(
@@ -87,7 +82,60 @@ internal class AddHouseInformationPresenter(
       )
     }
     var submittingInfoFailure: SubmittingInfoFailure? by remember { mutableStateOf(null) }
-    var inputForSubmission: InputForSubmission? by remember { mutableStateOf(null) }
+    // A pending step is kept across a restart: its request already succeeded and stored the quotes, so the member
+    // lands on the coverage step on return instead of having to request the quotes again.
+    var next: NavigationRequest<ChoseCoverageLevelAndDeductibleStep>? by remember {
+      mutableStateOf((lastState as? Content)?.next)
+    }
+    // The input is stored inside the run, so the run starts in the event handler that passed the guard.
+    val requestQuotes = rememberAttempts<ValidAddressInput>(
+      restoredWhileRunning = (lastState as? Content)?.isLoadingNextStep == true,
+    ) { validContent ->
+      val movingFlowState = movingFlowRepository.updateWithHouseInput(
+        validContent.yearOfConstruction,
+        validContent.ancillaryArea,
+        validContent.numberOfBathrooms,
+        validContent.isSublet,
+        validContent.extraBuildings,
+      )
+      if (movingFlowState == null) {
+        submittingInfoFailure = NetworkFailure
+        return@rememberAttempts false
+      }
+      apolloClient
+        .mutation(
+          MoveIntentV2RequestMutation(
+            intentId = moveIntentId,
+            moveIntentRequestInput = movingFlowState.toInputForSubmission(validContent).moveIntentRequestInput,
+            addonsFlagOn = true,
+          ),
+        )
+        .safeExecute()
+        .map { it.moveIntentRequest }
+        .fold(
+          ifLeft = {
+            submittingInfoFailure = NetworkFailure
+            false
+          },
+          ifRight = { request ->
+            when (val moveIntentQuotesFragment = request.moveIntent) {
+              null -> {
+                submittingInfoFailure = when (val errorMessage = request.userError?.message) {
+                  null -> NetworkFailure
+                  else -> SubmittingInfoFailure.UserError(errorMessage)
+                }
+                false
+              }
+
+              else -> {
+                movingFlowRepository.updateWithMoveIntentQuotes(moveIntentQuotesFragment)
+                next = NavigationRequest.of(ChoseCoverageLevelAndDeductibleStep(moveIntentId))
+                true
+              }
+            }
+          },
+        )
+    }
 
     LaunchedEffect(Unit) {
       movingFlowRepository.movingFlowState().collect {
@@ -95,71 +143,20 @@ internal class AddHouseInformationPresenter(
       }
     }
 
-    val coroutineScope = rememberCoroutineScope()
     CollectEvents { event ->
       when (event) {
         Submit -> {
+          if (requestQuotes.status == AttemptStatus.Running || next?.isPending == true) return@CollectEvents
           @Suppress("NAME_SHADOWING")
           val addressInput = addressInput.getOrNull() ?: return@CollectEvents
           val validContent = addressInput.validate()
           if (validContent == null) return@CollectEvents
-          coroutineScope.launch {
-            val movingFlowState = movingFlowRepository.updateWithHouseInput(
-              validContent.yearOfConstruction,
-              validContent.ancillaryArea,
-              validContent.numberOfBathrooms,
-              validContent.isSublet,
-              validContent.extraBuildings,
-            )
-            if (movingFlowState != null) {
-              inputForSubmission = movingFlowState.toInputForSubmission(validContent)
-            } else {
-              submittingInfoFailure = NetworkFailure
-            }
-          }
+          requestQuotes.start(validContent)
         }
 
         DismissSubmissionError -> {
           submittingInfoFailure = null
         }
-      }
-    }
-
-    if (inputForSubmission != null) {
-      LaunchedEffect(inputForSubmission) {
-        @Suppress("NAME_SHADOWING")
-        val inputForSubmissionValue = inputForSubmission ?: return@LaunchedEffect
-        apolloClient
-          .mutation(
-            MoveIntentV2RequestMutation(
-              intentId = moveIntentId,
-              moveIntentRequestInput = inputForSubmissionValue.moveIntentRequestInput,
-              addonsFlagOn = true,
-            ),
-          )
-          .safeExecute()
-          .map { it.moveIntentRequest }
-          .fold(
-            ifLeft = {
-              submittingInfoFailure = NetworkFailure
-            },
-            ifRight = { request ->
-              when (val moveIntentQuotesFragment = request.moveIntent) {
-                null -> {
-                  submittingInfoFailure = when (val errorMessage = request.userError?.message) {
-                    null -> NetworkFailure
-                    else -> SubmittingInfoFailure.UserError(errorMessage)
-                  }
-                }
-
-                else -> {
-                  movingFlowRepository.updateWithMoveIntentQuotes(moveIntentQuotesFragment)
-                  backstack.add(ChoseCoverageLevelAndDeductibleKey(moveIntentId))
-                }
-              }
-            },
-          )
-        inputForSubmission = null
       }
     }
 
@@ -175,8 +172,18 @@ internal class AddHouseInformationPresenter(
           else -> Content(
             moveFromAddressId = moveIntentId,
             addressInput = value,
-            isLoadingNextStep = inputForSubmission != null,
+            isLoadingNextStep = when (requestQuotes.status) {
+              AttemptStatus.Running -> true
+
+              // The request stopped with the last presenter run and may have reached the server. Its quotes were
+              // never stored, so the only way on is to request them again with the same input, and the form is shown
+              // ready for that rather than with a failure that may not have happened.
+              AttemptStatus.Interrupted -> false
+
+              AttemptStatus.Idle -> false
+            },
             submittingInfoFailure = submittingInfoFailure,
+            next = next,
           )
         }
       }
@@ -235,6 +242,7 @@ internal sealed interface AddHouseInformationUiState {
     val addressInput: AddressInput,
     val isLoadingNextStep: Boolean,
     val submittingInfoFailure: SubmittingInfoFailure?,
+    val next: NavigationRequest<ChoseCoverageLevelAndDeductibleStep>?,
   ) : AddHouseInformationUiState {
     val shouldDisableInput: Boolean = submittingInfoFailure != null ||
       isLoadingNextStep == true
@@ -256,6 +264,9 @@ internal sealed interface AddHouseInformationValidationError {
 
   data object MissingAncillaryArea : AddHouseInformationValidationError
 }
+
+/** The coverage level and deductible step, for the move intent whose quotes were just stored. */
+internal data class ChoseCoverageLevelAndDeductibleStep(val moveIntentId: String)
 
 private data class InputForSubmission(
   val moveIntentRequestInput: MoveIntentRequestInput,
