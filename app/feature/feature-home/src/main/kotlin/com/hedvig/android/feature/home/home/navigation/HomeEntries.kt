@@ -34,6 +34,7 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
   navigateToClaimChat: (resumeClaim: Boolean) -> Unit,
   navigateToChipIdScreen: () -> Unit,
   navigateToUsageData: () -> Unit,
+  navigateToClaimRating: (claimId: String) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   openCrossSellUrl: (String) -> Boolean,
@@ -74,6 +75,7 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
       imageLoader = imageLoader,
       navigateToChipId = navigateToChipIdScreen,
       navigateToUsageData = dropUnlessResumed { navigateToUsageData() },
+      navigateToClaimRating = dropUnlessResumed { claimId: String -> navigateToClaimRating(claimId) },
       navigateToAddonPurchaseFlow = dropUnlessResumed { ids: List<String>, source: AddonBannerSource ->
         navigateToAddonPurchaseFlow(ids, source)
       },

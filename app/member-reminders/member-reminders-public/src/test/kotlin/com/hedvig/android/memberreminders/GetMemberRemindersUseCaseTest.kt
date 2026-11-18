@@ -46,6 +46,7 @@ class GetMemberRemindersUseCaseTest {
       getContactInfoUpdateIsNeededUseCase = getContactInfoUpdateIsNeededUseCase,
       getMissingChipIdReminderUseCase = getMissingChipIdReminderUseCase,
       getAnalyticsConsentUseCase = getAnalyticsConsentUseCase,
+      getClaimRatingRemindersUseCase = TestGetClaimRatingRemindersUseCase(),
     )
 
     getMemberRemindersUseCase.invoke().test {
@@ -82,6 +83,7 @@ class GetMemberRemindersUseCaseTest {
       getContactInfoUpdateIsNeededUseCase = getContactInfoUpdateIsNeededUseCase,
       getMissingChipIdReminderUseCase = getMissingChipIdReminderUseCase,
       getAnalyticsConsentUseCase = getAnalyticsConsentUseCase,
+      getClaimRatingRemindersUseCase = TestGetClaimRatingRemindersUseCase(),
     )
     val testId = "test"
 
@@ -127,6 +129,7 @@ class GetMemberRemindersUseCaseTest {
       getContactInfoUpdateIsNeededUseCase = getContactInfoUpdateIsNeededUseCase,
       getMissingChipIdReminderUseCase = getMissingChipIdReminderUseCase,
       getAnalyticsConsentUseCase = getAnalyticsConsentUseCase,
+      getClaimRatingRemindersUseCase = TestGetClaimRatingRemindersUseCase(),
     )
 
     getMemberRemindersUseCase.invoke().test {
@@ -142,6 +145,38 @@ class GetMemberRemindersUseCaseTest {
       // Null stands for the analytics consent kill switch being on, which must not bring it back.
       getAnalyticsConsentUseCase.consent.value = null
       assertThat(awaitItem().decideAnalyticsConsent).isNull()
+    }
+  }
+
+  @Test
+  fun `claims pending rating are listed as applicable reminders`() = runTest {
+    val enableNotificationsReminderManager = TestEnableNotificationsReminderSnoozeManager()
+    val getConnectPaymentReminderUseCase = TestGetConnectPaymentReminderUseCase()
+    val getUpcomingRenewalRemindersUseCase = TestGetUpcomingRenewalRemindersUseCase()
+    val getNeedsCoInsuredInfoRemindersUseCase = TestGetNeedsCoInsuredInfoRemindersUseCase()
+    val getMemberRemindersUseCase = GetMemberRemindersUseCaseImpl(
+      enableNotificationsReminderSnoozeManager = enableNotificationsReminderManager,
+      getConnectPaymentReminderUseCase = getConnectPaymentReminderUseCase,
+      getUpcomingRenewalRemindersUseCase = getUpcomingRenewalRemindersUseCase,
+      getNeedsCoInsuredInfoRemindersUseCase = getNeedsCoInsuredInfoRemindersUseCase,
+      getContactInfoUpdateIsNeededUseCase = TestGetContactInfoUpdateIsNeededUseCase(),
+      getMissingChipIdReminderUseCase = TestGetMissingChipIdReminderUseCase(),
+      getAnalyticsConsentUseCase = FakeGetAnalyticsConsentUseCase(initialConsent = null),
+      getClaimRatingRemindersUseCase = TestGetClaimRatingRemindersUseCase(
+        listOf(MemberReminder.ClaimRatingPending("claim-1"), MemberReminder.ClaimRatingPending("claim-2")),
+      ),
+    )
+
+    getMemberRemindersUseCase.invoke().test {
+      enableNotificationsReminderManager.showNotification.add(false)
+      getConnectPaymentReminderUseCase.turbine.add(ConnectPaymentReminderError.DomainError.AlreadySetup.left())
+      getUpcomingRenewalRemindersUseCase.turbine.add(UpcomingRenewalReminderError.NoUpcomingRenewals.left())
+      getNeedsCoInsuredInfoRemindersUseCase.turbine.add(CoInsuredInfoReminderError.NoCoInsuredReminders.left())
+
+      assertThat(awaitItem().onlyApplicableReminders(alreadyHasNotificationPermission = true)).containsExactly(
+        MemberReminder.ClaimRatingPending("claim-1"),
+        MemberReminder.ClaimRatingPending("claim-2"),
+      )
     }
   }
 
@@ -187,5 +222,11 @@ class GetMemberRemindersUseCaseTest {
         },
       )
     }
+  }
+
+  class TestGetClaimRatingRemindersUseCase(
+    private val pending: List<MemberReminder.ClaimRatingPending> = emptyList(),
+  ) : GetClaimRatingRemindersUseCase {
+    override fun invoke(): Flow<Either<ErrorMessage, List<MemberReminder.ClaimRatingPending>>> = flowOf(pending.right())
   }
 }

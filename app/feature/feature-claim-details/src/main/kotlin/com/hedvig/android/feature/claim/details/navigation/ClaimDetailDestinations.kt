@@ -12,6 +12,9 @@ data class ClaimDetailsKey(
    */
   @SerialName("claimId")
   val claimId: String,
+  /** Opens the rating sheet once the claim has loaded, if the claim can still be rated. */
+  @SerialName("openRating")
+  val openRating: Boolean = false,
 ) : HedvigNavKey, SuppressesChatPushNotification
 
 @Serializable

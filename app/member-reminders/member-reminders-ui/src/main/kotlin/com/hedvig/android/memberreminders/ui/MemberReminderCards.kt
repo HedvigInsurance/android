@@ -103,6 +103,10 @@ fun getMemberReminderMessage(reminder: MemberReminder): String {
     is MemberReminder.DecideAnalyticsConsent -> {
       stringResource(Res.string.HOME_TODO_SELECT_USAGE_DATA_TITLE)
     }
+
+    is MemberReminder.ClaimRatingPending -> {
+      claimRatingToDoTitle()
+    }
   }
 }
 
@@ -184,7 +188,9 @@ fun MemberReminderCards(
  */
 fun List<MemberReminder>.cardReminders(): List<MemberReminder> {
   return filter {
-    it !is MemberReminder.DecideAnalyticsConsent && it !is MemberReminder.PaymentReminder.ConnectPayment
+    it !is MemberReminder.DecideAnalyticsConsent &&
+      it !is MemberReminder.PaymentReminder.ConnectPayment &&
+      it !is MemberReminder.ClaimRatingPending
   }
 }
 
@@ -275,9 +281,11 @@ private fun MemberReminderCard(
       )
     }
 
-    // Both are filtered out by [cardReminders] before reaching here: the analytics prompt is offered
-    // in the home "To do" list, and a missing payin method by [MissingPayinMethodCard].
+    // Filtered out by [cardReminders] before reaching here: the analytics prompt and claim rating are
+    // offered in the home "To do" list, and a missing payin method by [MissingPayinMethodCard].
     is MemberReminder.DecideAnalyticsConsent -> {}
+
+    is MemberReminder.ClaimRatingPending -> {}
 
     is MemberReminder.PaymentReminder.ConnectPayment -> {}
   }

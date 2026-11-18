@@ -289,6 +289,7 @@ internal fun HomeDestination(
   navigateToContactInfo: () -> Unit,
   navigateToChipId: () -> Unit,
   navigateToUsageData: () -> Unit,
+  navigateToClaimRating: (claimId: String) -> Unit,
   imageLoader: ImageLoader,
   navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
 ) {
@@ -328,6 +329,7 @@ internal fun HomeDestination(
     navigateToContactInfo = navigateToContactInfo,
     navigateToChipIdScreen = navigateToChipId,
     navigateToUsageData = navigateToUsageData,
+    navigateToClaimRating = navigateToClaimRating,
     setEpochDayWhenLastToolTipShown = { epochDay ->
       viewModel.emit(CrossSellToolTipShown(epochDay))
     },
@@ -362,6 +364,7 @@ private fun HomeScreen(
   navigateToContactInfo: () -> Unit,
   navigateToChipIdScreen: () -> Unit,
   navigateToUsageData: () -> Unit,
+  navigateToClaimRating: (claimId: String) -> Unit,
   markCrossSellsNotificationAsSeen: () -> Unit,
   setEpochDayWhenLastToolTipShown: (Long) -> Unit,
   imageLoader: ImageLoader,
@@ -511,6 +514,7 @@ private fun HomeScreen(
             navigateToContactInfo = navigateToContactInfo,
             navigateToChipIdScreen = navigateToChipIdScreen,
             navigateToUsageData = navigateToUsageData,
+            navigateToClaimRating = navigateToClaimRating,
             onCrossSellClick = onCrossSellClick,
             discoverCrossSellShownReporter = discoverCrossSellShownReporter,
             imageLoader = imageLoader,
@@ -691,6 +695,7 @@ private fun HomeScreenSuccess(
   navigateToContactInfo: () -> Unit,
   navigateToChipIdScreen: () -> Unit,
   navigateToUsageData: () -> Unit,
+  navigateToClaimRating: (claimId: String) -> Unit,
   onCrossSellClick: (CrossSellUserFlow, CrossSell) -> Unit,
   discoverCrossSellShownReporter: CrossSellShownReporter,
   imageLoader: ImageLoader,
@@ -1018,6 +1023,7 @@ private fun HomeScreenSuccess(
               navigateToContactInfo = navigateToContactInfo,
               navigateToChipIdScreen = navigateToChipIdScreen,
               navigateToUsageData = navigateToUsageData,
+              navigateToClaimRating = navigateToClaimRating,
               horizontalInsets = horizontalInsets,
             )
 
@@ -1298,6 +1304,7 @@ private fun MemberRemindersSection(
   navigateToContactInfo: () -> Unit,
   navigateToChipIdScreen: () -> Unit,
   navigateToUsageData: () -> Unit,
+  navigateToClaimRating: (claimId: String) -> Unit,
   horizontalInsets: PaddingValues,
 ) {
   val toDoReminders = applicableReminders.homeActionRequiredReminders()
@@ -1323,6 +1330,7 @@ private fun MemberRemindersSection(
           navigateToContactInfo = navigateToContactInfo,
           navigateToChipId = navigateToChipIdScreen,
           navigateToUsageData = navigateToUsageData,
+          navigateToClaimRating = navigateToClaimRating,
         )
       }
     }
@@ -1869,6 +1877,7 @@ private fun PreviewHomeScreen(
         navigateToContactInfo = {},
         navigateToChipIdScreen = {},
         navigateToUsageData = {},
+        navigateToClaimRating = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
         navigateToAddonPurchaseFlow = { _, _ -> },
@@ -1908,6 +1917,7 @@ private fun PreviewHomeScreenWithError() {
         navigateToContactInfo = {},
         navigateToChipIdScreen = {},
         navigateToUsageData = {},
+        navigateToClaimRating = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
         navigateToAddonPurchaseFlow = { _, _ -> },
@@ -1980,6 +1990,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToContactInfo = {},
         navigateToChipIdScreen = {},
         navigateToUsageData = {},
+        navigateToClaimRating = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
         navigateToAddonPurchaseFlow = { _, _ -> },

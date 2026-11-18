@@ -6,6 +6,7 @@ mutation ClaimSubmitRating($claimId: ID!, $rating: Int!, $comment: String) {
     claim {
       id
       hasSubmittedRating
+      isRatingPending
     }
   }
 }

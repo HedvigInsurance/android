@@ -1107,6 +1107,10 @@ type Claim {
   True once the member has submitted a rating for this claim. Dismissals do not count.
   """
   hasSubmittedRating: Boolean!
+  """
+  True while the claim is listed in Member.claimsPendingRating.
+  """
+  isRatingPending: Boolean!
   appealInstructionsUrl: String
   isUploadingFilesEnabled: Boolean!
   infoText: String
@@ -2911,6 +2915,10 @@ type Member {
   claims: [Claim!]!
   claimsActive: [Claim!]!
   claimsHistory: [Claim!]!
+  """
+  Closed claims from the last 30 days that the member has neither rated nor dismissed the rating for.
+  """
+  claimsPendingRating: [Claim!]!
   partnerClaimsActive: [PartnerClaim!]!
   partnerClaimsHistory: [PartnerClaim!]!
   firstName: String!
