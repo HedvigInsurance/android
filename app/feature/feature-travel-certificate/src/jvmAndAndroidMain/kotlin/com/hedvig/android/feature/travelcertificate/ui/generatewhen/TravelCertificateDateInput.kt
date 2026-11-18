@@ -23,6 +23,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.compose.ui.NavigationEffect
 import com.hedvig.android.core.locale.CommonLocale
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -84,7 +85,8 @@ internal fun TravelCertificateDateInputDestination(
     uiState = uiState,
     reload = { viewModel.emit(TravelCertificateDateInputEvent.RetryLoadData) },
     navigateUp = navigateUp,
-    submitInput = { viewModel.emit(TravelCertificateDateInputEvent.Submit) },
+    // A second tap during the push transition would offer the step again on a screen that is leaving.
+    submitInput = dropUnlessResumed { viewModel.emit(TravelCertificateDateInputEvent.Submit) },
     onEmailChanged = { viewModel.emit(TravelCertificateDateInputEvent.ChangeEmailInput(it)) },
     onTravelDateSelected = { viewModel.emit(TravelCertificateDateInputEvent.SelectTravelDate(it)) },
   )
