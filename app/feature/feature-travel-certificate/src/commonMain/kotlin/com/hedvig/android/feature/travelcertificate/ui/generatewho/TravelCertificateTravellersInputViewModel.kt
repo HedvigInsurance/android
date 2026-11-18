@@ -15,6 +15,7 @@ import com.hedvig.android.feature.travelcertificate.data.GetCoInsuredForContract
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateTravellersStep
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.CoInsured.CoInsuredId
+import com.hedvig.android.molecule.public.AttemptStatus
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -70,11 +71,12 @@ internal class TravelCertificateTravellersInputPresenter(
     var includedCoInsuredIds by remember {
       mutableStateOf(lastContent?.coInsuredList.orEmpty().filter { it.isIncluded }.map { it.id }.toSet())
     }
-    // A create in flight belongs to the stopped run, so it is not restored. It may have reached the server, so it is
-    // shown as failed rather than as a form nobody submitted.
-    var createFailed by remember { mutableStateOf(lastContent?.let { it.createFailed || it.isCreating } ?: false) }
+    var createFailed by remember { mutableStateOf(lastContent?.createFailed ?: false) }
     var created by remember { mutableStateOf(lastState as? TravelCertificateTravellersInputUiState.Created) }
-    val create = rememberAttempts<CreateRequest>(terminal = true) { request ->
+    val create = rememberAttempts<CreateRequest>(
+      restoredWhileRunning = lastContent?.isCreating == true,
+      terminal = true,
+    ) { request ->
       createTravelCertificateUseCase.invoke(
         contractId = primaryInput.contractId,
         startDate = primaryInput.travelDate,
@@ -102,12 +104,13 @@ internal class TravelCertificateTravellersInputPresenter(
         }
 
         is TravelCertificateTravellersInputEvent.SetMemberIncluded -> {
-          if (create.isRunning) return@CollectEvents
+          if (create.status == AttemptStatus.Running) return@CollectEvents
           isMemberIncluded = event.included
         }
 
         is TravelCertificateTravellersInputEvent.SetCoInsuredIncluded -> {
-          if (loaded == null || create.isRunning || loaded.coInsured.none { it.id == event.id }) return@CollectEvents
+          val isCreating = create.status == AttemptStatus.Running
+          if (loaded == null || isCreating || loaded.coInsured.none { it.id == event.id }) return@CollectEvents
           includedCoInsuredIds = if (event.included) {
             includedCoInsuredIds + event.id
           } else {
@@ -116,14 +119,13 @@ internal class TravelCertificateTravellersInputPresenter(
         }
 
         TravelCertificateTravellersInputEvent.GenerateTravelCertificate -> {
-          if (loaded == null || create.isRunning) return@CollectEvents
+          if (loaded == null || create.status == AttemptStatus.Running) return@CollectEvents
           val includedCoInsured = loaded.coInsured
             .filter { it.id in includedCoInsuredIds }
             .map { it.copy(isIncluded = true) }
           if (!isMemberIncluded && includedCoInsured.isEmpty()) return@CollectEvents
-          Snapshot.withMutableSnapshot {
+          if (create.start(CreateRequest(isMemberIncluded = isMemberIncluded, coInsured = includedCoInsured))) {
             createFailed = false
-            create.start(CreateRequest(isMemberIncluded = isMemberIncluded, coInsured = includedCoInsured))
           }
         }
       }
@@ -176,8 +178,14 @@ internal class TravelCertificateTravellersInputPresenter(
         isMemberIncluded = isMemberIncluded,
         coInsuredList = loaded.coInsured.map { it.copy(isIncluded = it.id in includedCoInsuredIds) },
         coInsuredHasMissingInfo = loaded.coInsuredHasMissingInfo,
-        isCreating = create.isRunning,
-        createFailed = createFailed,
+        isCreating = create.status == AttemptStatus.Running,
+        createFailed = when (create.status) {
+          // The create stopped with the last presenter run and may have reached the server, so it is shown as failed
+          // rather than as a form nobody submitted.
+          AttemptStatus.Interrupted -> true
+
+          AttemptStatus.Running, AttemptStatus.Idle -> createFailed
+        },
       )
 
       loadFailed -> TravelCertificateTravellersInputUiState.Failure

@@ -13,6 +13,7 @@ import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificate
 import com.hedvig.android.feature.travelcertificate.data.GetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateTravellersStep
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
+import com.hedvig.android.molecule.public.AttemptStatus
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -62,12 +63,9 @@ internal class TravelCertificateDateInputPresenter(
     var screenState by remember {
       mutableStateOf(
         when (lastState) {
-          // A create in flight belongs to the stopped run, so it is not restored. It may have reached the server, so
-          // it is shown as failed rather than as a form nobody submitted.
           is TravelCertificateDateInputUiState.Success -> lastState.copy(
             emailError = null,
             isCreating = false,
-            createFailed = lastState.createFailed || lastState.isCreating,
             next = lastState.next.restoredAsOffer(),
           )
 
@@ -78,7 +76,10 @@ internal class TravelCertificateDateInputPresenter(
     var emailRevision by remember {
       mutableIntStateOf((lastState as? TravelCertificateDateInputUiState.Success)?.emailRevision ?: 0)
     }
-    val create = rememberAttempts<TravelCertificateTravellersStep>(terminal = true) { step ->
+    val create = rememberAttempts<TravelCertificateTravellersStep>(
+      restoredWhileRunning = (lastState as? TravelCertificateDateInputUiState.Success)?.isCreating == true,
+      terminal = true,
+    ) { step ->
       createTravelCertificateUseCase.invoke(
         contractId = step.contractId,
         startDate = step.travelDate,
@@ -89,7 +90,7 @@ internal class TravelCertificateDateInputPresenter(
         ifLeft = {
           val content = screenState as? TravelCertificateDateInputUiState.Success
           if (content != null) {
-            screenState = content.copy(isCreating = false, createFailed = true)
+            screenState = content.copy(createFailed = true)
           }
           false
         },
@@ -118,7 +119,7 @@ internal class TravelCertificateDateInputPresenter(
         }
 
         TravelCertificateDateInputEvent.Submit -> {
-          if (content == null || content.isCreating || content.next?.isPending == true) {
+          if (content == null || create.status == AttemptStatus.Running || content.next?.isPending == true) {
             return@CollectEvents
           }
           val email = content.email.trim()
@@ -144,8 +145,9 @@ internal class TravelCertificateDateInputPresenter(
           if (content.hasCoInsured) {
             screenState = content.copy(emailError = null, createFailed = false, next = NavigationRequest.of(step))
           } else {
-            screenState = content.copy(emailError = null, createFailed = false, isCreating = true)
-            create.start(step)
+            if (create.start(step)) {
+              screenState = content.copy(emailError = null, createFailed = false)
+            }
           }
         }
       }
@@ -188,7 +190,16 @@ internal class TravelCertificateDateInputPresenter(
         )
     }
     return when (val current = screenState) {
-      is TravelCertificateDateInputUiState.Success -> current.copy(selectedDate = current.travelDate(clock))
+      is TravelCertificateDateInputUiState.Success -> when (create.status) {
+        AttemptStatus.Running -> current.copy(isCreating = true)
+
+        // The create stopped with the last presenter run and may have reached the server, so it is shown as failed
+        // rather than as a form nobody submitted.
+        AttemptStatus.Interrupted -> current.copy(createFailed = true)
+
+        AttemptStatus.Idle -> current
+      }.copy(selectedDate = current.travelDate(clock))
+
       else -> current
     }
   }

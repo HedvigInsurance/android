@@ -336,6 +336,28 @@ class ManualChargePresenterTest {
     }
   }
 
+  @Test
+  fun `a restart while charging stops showing the charge and loads the details again`() = runTest {
+    val getInfo = FakeGetManualChargeInfoUseCase()
+    val trigger = FakeTriggerManualChargeUseCase()
+    presenter(getInfo, trigger).testFrames(ManualChargeUiState.Loading) {
+      getInfo.responses.trySend(ManualChargeInfoResult.Chargeable(info).right())
+      frame()
+      frame()
+      emit(ManualChargeEvent.TriggerCharge)
+      frame()
+      assertThat(latest).isEqualTo(ManualChargeUiState.Success(info, payButtonLoading = true))
+
+      restart()
+      frame()
+      assertThat(latest).isEqualTo(ManualChargeUiState.Loading)
+      getInfo.responses.trySend(ManualChargeInfoResult.NoLongerChargeable.right())
+      frame()
+      assertThat(latest).isEqualTo(ManualChargeUiState.NoLongerChargeable)
+      assertThat(trigger.calls).isEqualTo(1)
+    }
+  }
+
   private fun presenter(
     getInfo: GetManualChargeInfoUseCase,
     trigger: TriggerManualChargeUseCase = FakeTriggerManualChargeUseCase(),

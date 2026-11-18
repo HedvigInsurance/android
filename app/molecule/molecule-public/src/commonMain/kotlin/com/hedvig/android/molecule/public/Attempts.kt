@@ -14,16 +14,31 @@ import androidx.compose.runtime.setValue
 import kotlin.experimental.ExperimentalObjCRefinement
 import kotlin.native.HiddenFromObjC
 
+/** Where the runs of [Attempts] stand. Map it with an exhaustive `when`, so a presenter decides what each case shows. */
+@HiddenFromObjC
+sealed interface AttemptStatus {
+  /** Nothing is running. */
+  data object Idle : AttemptStatus
+
+  /** A run started by [Attempts.start] has not returned yet. */
+  data object Running : AttemptStatus
+
+  /**
+   * The presenter restarted from a state in which a run was in flight. That run was cancelled with the stopped
+   * presenter, and its request may have reached the server. Lasts until the next accepted start.
+   */
+  data object Interrupted : AttemptStatus
+}
+
 /** Runs a presenter's request, such as a mutation, once per accepted [start]. Made by [rememberAttempts]. */
 @HiddenFromObjC
 @Stable
 interface Attempts<in R : Any> {
-  /** True from an accepted [start] until the run it started returns or is cancelled. */
-  val isRunning: Boolean
+  val status: AttemptStatus
 
   /**
-   * Runs [request] unless a run is in flight, or, for terminal attempts, one has succeeded. A later start never
-   * cancels a run in flight. Returns whether a run was started.
+   * Runs [request] unless a run is in flight, or, for terminal attempts, one has succeeded in this presenter run. A
+   * later start never cancels a run in flight. Returns whether a run was started.
    */
   fun start(request: R): Boolean
 }
@@ -31,16 +46,20 @@ interface Attempts<in R : Any> {
 /**
  * Runs [run] once for each accepted [Attempts.start], in this composition. Every accepted start runs, also when its
  * request equals the last one and both are handled between two frames. [run] returns whether the request succeeded.
- * With [terminal], which is read once, a success ends the attempts: every later start is refused.
  *
- * The run belongs to this composition, so it is cancelled when the presenter stops, and a presenter restarted from its
- * last state starts with no run in flight. A presenter that showed a run in flight decides from its own state what a
- * restart shows for it.
+ * The run belongs to this composition, so it is cancelled when the presenter stops. Pass [restoredWhileRunning] from
+ * the last state: true when that state showed a run in flight, which makes the status start as
+ * [AttemptStatus.Interrupted]. With [terminal], which is read once, a success refuses every later start, within this
+ * presenter run only: after a restart, only the presenter's own state stops a second run.
  */
 @HiddenFromObjC
 @Composable
-fun <R : Any> rememberAttempts(terminal: Boolean = false, run: suspend (request: R) -> Boolean): Attempts<R> {
-  val attempts = remember { AttemptsState<R>(terminal) }
+fun <R : Any> rememberAttempts(
+  restoredWhileRunning: Boolean,
+  terminal: Boolean = false,
+  run: suspend (request: R) -> Boolean,
+): Attempts<R> {
+  val attempts = remember { AttemptsState<R>(terminal, restoredWhileRunning) }
   val currentRun by rememberUpdatedState(run)
   LaunchedEffect(attempts.number) {
     val request = attempts.request ?: return@LaunchedEffect
@@ -54,26 +73,28 @@ fun <R : Any> rememberAttempts(terminal: Boolean = false, run: suspend (request:
   return attempts
 }
 
-private class AttemptsState<R : Any>(private val terminal: Boolean) : Attempts<R> {
+private class AttemptsState<R : Any>(private val terminal: Boolean, restoredWhileRunning: Boolean) : Attempts<R> {
   /** Grows with every accepted start and never goes back, so each one restarts the effect keyed on it. */
   var number by mutableIntStateOf(0)
     private set
   var request: R? by mutableStateOf(null)
     private set
-  override var isRunning: Boolean by mutableStateOf(false)
+  override var status: AttemptStatus by mutableStateOf(
+    if (restoredWhileRunning) AttemptStatus.Interrupted else AttemptStatus.Idle,
+  )
     private set
   private var succeeded by mutableStateOf(false)
 
   override fun start(request: R): Boolean {
-    if (isRunning || (terminal && succeeded)) return false
+    if (status == AttemptStatus.Running || (terminal && succeeded)) return false
     this.request = request
-    isRunning = true
+    status = AttemptStatus.Running
     number++
     return true
   }
 
   fun finish(succeeded: Boolean) {
     if (succeeded) this.succeeded = true
-    isRunning = false
+    status = AttemptStatus.Idle
   }
 }

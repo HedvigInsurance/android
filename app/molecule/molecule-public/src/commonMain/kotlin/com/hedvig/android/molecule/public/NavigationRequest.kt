@@ -29,7 +29,6 @@ class NavigationRequest<out T : Any> private constructor(
   val target: T,
   private val consumed: AtomicBoolean,
 ) {
-
   /** True until the platform takes the request with [tryConsume]. */
   val isPending: Boolean
     get() = !consumed.load()

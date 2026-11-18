@@ -11,8 +11,8 @@ import androidx.compose.runtime.setValue
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
-import assertk.assertions.isFalse
-import assertk.assertions.isTrue
+import assertk.assertions.isEqualTo
+import com.hedvig.android.molecule.public.AttemptStatus
 import com.hedvig.android.molecule.public.Attempts
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -30,12 +30,14 @@ import org.junit.Test
 class AttemptsTest {
   private fun interface AttemptsFactory {
     @Composable
-    fun create(terminal: Boolean, run: suspend (String) -> Boolean): Attempts<String>
+    fun create(restoredWhileRunning: Boolean, terminal: Boolean, run: suspend (String) -> Boolean): Attempts<String>
   }
 
-  private val block = AttemptsFactory { terminal, run -> rememberAttempts(terminal, run) }
-  private val keyedOnRequest = AttemptsFactory { _, run -> rememberKeyedOnRequest(run) }
-  private val cancelAndRelaunch = AttemptsFactory { _, run -> rememberCancelAndRelaunch(run) }
+  private val block = AttemptsFactory { restoredWhileRunning, terminal, run ->
+    rememberAttempts(restoredWhileRunning, terminal, run)
+  }
+  private val keyedOnRequest = AttemptsFactory { _, _, run -> rememberKeyedOnRequest(run) }
+  private val cancelAndRelaunch = AttemptsFactory { _, _, run -> rememberCancelAndRelaunch(run) }
 
   /** Each run waits for its result on [results]. */
   private class Runs {
@@ -55,23 +57,23 @@ class AttemptsTest {
     }
   }
 
-  /** Starts an attempt for every event and shows whether one is running. */
+  /** Starts an attempt for every event and shows the status. */
   private class StartingPresenter(
     private val factory: AttemptsFactory,
     private val runs: Runs,
     private val terminal: Boolean = false,
-  ) : MoleculePresenter<String, Boolean> {
+  ) : MoleculePresenter<String, AttemptStatus> {
     @Composable
-    override fun MoleculePresenterScope<String>.present(lastState: Boolean): Boolean {
-      val attempts = factory.create(terminal, runs::run)
+    override fun MoleculePresenterScope<String>.present(lastState: AttemptStatus): AttemptStatus {
+      val attempts = factory.create(lastState == AttemptStatus.Running, terminal, runs::run)
       CollectEvents { attempts.start(it) }
-      return attempts.isRunning
+      return attempts.status
     }
   }
 
   private suspend fun retryInTheFrameOfTheFailure(factory: AttemptsFactory): Runs {
     val runs = Runs()
-    StartingPresenter(factory, runs).testFrames(false) {
+    StartingPresenter(factory, runs).testFrames(AttemptStatus.Idle) {
       emit("same")
       frame()
       runs.results.trySend(false)
@@ -94,7 +96,7 @@ class AttemptsTest {
 
   private suspend fun startWhileRunning(factory: AttemptsFactory): Runs {
     val runs = Runs()
-    StartingPresenter(factory, runs).testFrames(false) {
+    StartingPresenter(factory, runs).testFrames(AttemptStatus.Idle) {
       emit("first")
       frame()
       emit("second")
@@ -123,17 +125,17 @@ class AttemptsTest {
   @Test
   fun `block, two starts in one frame run once`() = runTest {
     val runs = Runs()
-    StartingPresenter(block, runs).testFrames(false) {
+    StartingPresenter(block, runs).testFrames(AttemptStatus.Idle) {
       emit("first", "second")
       frame()
-      assertThat(latest).isTrue()
+      assertThat(latest).isEqualTo(AttemptStatus.Running)
     }
     assertThat(runs.started).containsExactly("first")
   }
 
   private suspend fun startAfterSuccess(factory: AttemptsFactory, terminal: Boolean): Runs {
     val runs = Runs()
-    StartingPresenter(factory, runs, terminal).testFrames(false) {
+    StartingPresenter(factory, runs, terminal).testFrames(AttemptStatus.Idle) {
       emit("first")
       frame()
       runs.results.trySend(true)
@@ -157,7 +159,7 @@ class AttemptsTest {
   @Test
   fun `block, a terminal attempt that failed can start again`() = runTest {
     val runs = Runs()
-    StartingPresenter(block, runs, terminal = true).testFrames(false) {
+    StartingPresenter(block, runs, terminal = true).testFrames(AttemptStatus.Idle) {
       emit("first")
       frame()
       runs.results.trySend(false)
@@ -169,20 +171,35 @@ class AttemptsTest {
   }
 
   @Test
-  fun `block, a restart ends the run in flight and the new run starts idle`() = runTest {
+  fun `block, a restart ends the run in flight and the new run shows it interrupted until the next start`() = runTest {
     val runs = Runs()
-    StartingPresenter(block, runs).testFrames(false) {
+    StartingPresenter(block, runs).testFrames(AttemptStatus.Idle) {
       emit("first")
       frame()
-      assertThat(latest).isTrue()
+      assertThat(latest).isEqualTo(AttemptStatus.Running)
       restart()
       frame()
-      assertThat(latest).isFalse()
+      assertThat(latest).isEqualTo(AttemptStatus.Interrupted)
       assertThat(runs.cancelled).containsExactly("first")
 
       emit("second")
       frame()
+      assertThat(latest).isEqualTo(AttemptStatus.Running)
       assertThat(runs.started).containsExactly("first", "second")
+    }
+  }
+
+  @Test
+  fun `block, a restart from a state without a run in flight starts idle`() = runTest {
+    val runs = Runs()
+    StartingPresenter(block, runs).testFrames(AttemptStatus.Idle) {
+      emit("first")
+      frame()
+      runs.results.trySend(false)
+      frame()
+      restart()
+      frame()
+      assertThat(latest).isEqualTo(AttemptStatus.Idle)
     }
   }
 }
@@ -193,7 +210,9 @@ private fun rememberKeyedOnRequest(run: suspend (String) -> Boolean): Attempts<S
   val attempts = remember {
     object : Attempts<String> {
       var request: String? by mutableStateOf(null)
-      override var isRunning: Boolean by mutableStateOf(false)
+      var isRunning: Boolean by mutableStateOf(false)
+      override val status: AttemptStatus
+        get() = if (isRunning) AttemptStatus.Running else AttemptStatus.Idle
 
       override fun start(request: String): Boolean {
         if (isRunning) return false
@@ -220,7 +239,9 @@ private fun rememberCancelAndRelaunch(run: suspend (String) -> Boolean): Attempt
     object : Attempts<String> {
       var number by mutableIntStateOf(0)
       var request: String? = null
-      override var isRunning: Boolean by mutableStateOf(false)
+      var isRunning: Boolean by mutableStateOf(false)
+      override val status: AttemptStatus
+        get() = if (isRunning) AttemptStatus.Running else AttemptStatus.Idle
 
       override fun start(request: String): Boolean {
         this.request = request
