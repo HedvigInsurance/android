@@ -39,6 +39,9 @@ interface Attempts<in R : Any> {
   /**
    * Runs [request] unless a run is in flight, or, for terminal attempts, one has succeeded in this presenter run. A
    * later start never cancels a run in flight. Returns whether a run was started.
+   *
+   * Call it in the event handler that checked the presenter's guard, with nothing suspending in between: this call is
+   * what makes the next event see a run in flight.
    */
   fun start(request: R): Boolean
 }
@@ -46,6 +49,14 @@ interface Attempts<in R : Any> {
 /**
  * Runs [run] once for each accepted [Attempts.start], in this composition. Every accepted start runs, also when its
  * request equals the last one and both are handled between two frames. [run] returns whether the request succeeded.
+ *
+ * Work that must come before the request, such as storing the input it is built from, belongs inside [run]: a second
+ * event that arrives while that work suspends outside [run] still sees nothing running, so it passes the same guard
+ * and does the work again.
+ *
+ * Not for a load that starts by itself when the presenter composes: [run] runs only on [Attempts.start], and
+ * [AttemptStatus.Interrupted] means nothing for a read, which simply runs again. Use a `LaunchedEffect` keyed on a
+ * number that only grows, such as a reload count, which gives the same "every start runs" property.
  *
  * The run belongs to this composition, so it is cancelled when the presenter stops. Pass [restoredWhileRunning] from
  * the last state: true when that state showed a run in flight, which makes the status start as

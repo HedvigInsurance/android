@@ -34,6 +34,7 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.molecule.public.NavigationRequest
 import com.hedvig.android.molecule.public.rememberAttempts
+import com.hedvig.android.molecule.public.restoredAsWriteOutcome
 import com.hedvig.android.ui.tiersandaddons.CostBreakdownEntry
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
@@ -81,8 +82,10 @@ internal class AddonSummaryPresenter(
       )
     }
     // Kept on restart: the member has not sent the purchase again, so its failure is still theirs to see.
-    var submitFailure by remember { mutableStateOf((lastState as? Content)?.submitFailure) }
-    var purchased by remember { mutableStateOf(lastState as? Purchased) }
+    var submitFailure by remember { mutableStateOf((lastState as? Content)?.submitFailure.restoredAsWriteOutcome()) }
+    var purchased by remember {
+      mutableStateOf((lastState as? Purchased)?.let { it.copy(exit = it.exit.restoredAsWriteOutcome()) })
+    }
     val purchase = rememberAttempts<Unit>(
       restoredWhileRunning = lastState is Submitting,
       terminal = true,

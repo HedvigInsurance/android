@@ -11,6 +11,7 @@ import assertk.assertions.containsExactly
 import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
 import com.hedvig.android.molecule.public.MoleculePresenter
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -108,6 +109,28 @@ class FrameTestTest {
       start()
       frame()
       assertThat(latest).isEqualTo(Counted(run = 2, count = 1))
+    }
+  }
+
+  @Test
+  fun `a stop shorter than the timeout keeps the presenter running and handling events`() = runTest {
+    countingPresenter.testFrames(Counted(run = 0, count = 0)) {
+      stop(4.seconds)
+      emit(Unit)
+      frame()
+      assertThat(latest).isEqualTo(Counted(run = 1, count = 1))
+
+      start()
+      assertThat(latest).isEqualTo(Counted(run = 1, count = 1))
+    }
+  }
+
+  @Test
+  fun `a stop as long as the timeout stops the presenter`() = runTest {
+    countingPresenter.testFrames(Counted(run = 0, count = 0)) {
+      stop(5.seconds)
+      start()
+      assertThat(latest).isEqualTo(Counted(run = 2, count = 0))
     }
   }
 

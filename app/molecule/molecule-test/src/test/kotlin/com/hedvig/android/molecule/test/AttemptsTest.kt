@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import assertk.assertThat
@@ -19,7 +20,9 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.rememberAttempts
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.yield
 import org.junit.Test
 
 /**
@@ -201,6 +204,65 @@ class AttemptsTest {
       frame()
       assertThat(latest).isEqualTo(AttemptStatus.Idle)
     }
+  }
+
+  /**
+   * Starts an attempt for every event that passes the guard. The work that must come before each request, such as a
+   * local write, is recorded in [preparedFor]; with [prepareInRun] it is done inside the run, otherwise in a coroutine
+   * launched by the event handler, which calls `start` after it.
+   */
+  private class PreparingPresenter(
+    private val runs: Runs,
+    private val prepareInRun: Boolean,
+    private val preparedFor: MutableList<String>,
+  ) : MoleculePresenter<String, AttemptStatus> {
+    @Composable
+    override fun MoleculePresenterScope<String>.present(lastState: AttemptStatus): AttemptStatus {
+      val scope = rememberCoroutineScope()
+      val attempts = rememberAttempts<String>(restoredWhileRunning = false) { request ->
+        if (prepareInRun) prepare(request)
+        runs.run(request)
+      }
+      CollectEvents { request ->
+        if (attempts.status == AttemptStatus.Running) return@CollectEvents
+        if (prepareInRun) {
+          attempts.start(request)
+        } else {
+          scope.launch {
+            prepare(request)
+            attempts.start(request)
+          }
+        }
+      }
+      return attempts.status
+    }
+
+    private suspend fun prepare(request: String) {
+      yield()
+      preparedFor += request
+    }
+  }
+
+  private suspend fun twoEventsInOneFrame(prepareInRun: Boolean): List<String> {
+    val runs = Runs()
+    val preparedFor = mutableListOf<String>()
+    PreparingPresenter(runs, prepareInRun, preparedFor).testFrames(AttemptStatus.Idle) {
+      emit("first", "second")
+      frame()
+      frame()
+      assertThat(runs.started).containsExactly("first")
+    }
+    return preparedFor
+  }
+
+  @Test
+  fun `block, work before the request done inside run happens once for two events in one frame`() = runTest {
+    assertThat(twoEventsInOneFrame(prepareInRun = true)).containsExactly("first")
+  }
+
+  @Test
+  fun `work before the request launched ahead of start happens for both of two events in one frame`() = runTest {
+    assertThat(twoEventsInOneFrame(prepareInRun = false)).containsExactly("first", "second")
   }
 }
 

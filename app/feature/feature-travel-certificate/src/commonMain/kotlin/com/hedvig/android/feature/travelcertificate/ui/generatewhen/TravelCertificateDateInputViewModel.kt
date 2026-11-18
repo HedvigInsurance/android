@@ -19,7 +19,8 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.molecule.public.NavigationRequest
 import com.hedvig.android.molecule.public.rememberAttempts
-import com.hedvig.android.molecule.public.restoredAsOffer
+import com.hedvig.android.molecule.public.restoredAsTapOffer
+import com.hedvig.android.molecule.public.restoredAsWriteOutcome
 import com.hedvig.core.common.android.validation.isValidEmail
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
@@ -66,8 +67,10 @@ internal class TravelCertificateDateInputPresenter(
           is TravelCertificateDateInputUiState.Success -> lastState.copy(
             emailError = null,
             isCreating = false,
-            next = lastState.next.restoredAsOffer(),
+            next = lastState.next.restoredAsTapOffer(),
           )
+
+          is TravelCertificateDateInputUiState.Created -> lastState.copy(exit = lastState.exit.restoredAsWriteOutcome())
 
           else -> lastState
         },

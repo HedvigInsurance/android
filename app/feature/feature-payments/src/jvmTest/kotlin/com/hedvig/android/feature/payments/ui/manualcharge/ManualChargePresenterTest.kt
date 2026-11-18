@@ -219,10 +219,11 @@ class ManualChargePresenterTest {
       this@runTest.testScheduler.advanceUntilIdle()
       trigger.responses.send(Unit.right())
 
-      assertThat(awaitItem()).isCharged(info)
+      val charged = awaitItem()
+      assertThat(charged).isCharged(info)
       this@runTest.testScheduler.advanceUntilIdle()
       assertThat(trigger.calls).isEqualTo(1)
-      assertThat(remainingStates().filterNot { it.isChargedWith(info) }).isEmpty()
+      assertThat(remainingStates() - charged).isEmpty()
     }
   }
 
@@ -257,13 +258,14 @@ class ManualChargePresenterTest {
       sendEvent(ManualChargeEvent.TriggerCharge)
       assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Success(info, payButtonLoading = true))
       trigger.responses.send(Unit.right())
-      assertThat(awaitItem()).isCharged(info)
+      val charged = awaitItem()
+      assertThat(charged).isCharged(info)
 
       sendEvent(ManualChargeEvent.TriggerCharge)
       this@runTest.testScheduler.advanceUntilIdle()
 
       assertThat(trigger.calls).isEqualTo(1)
-      assertThat(remainingStates().filterNot { it.isChargedWith(info) }).isEmpty()
+      assertThat(remainingStates() - charged).isEmpty()
     }
   }
 
@@ -278,13 +280,14 @@ class ManualChargePresenterTest {
       sendEvent(ManualChargeEvent.TriggerCharge)
       assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Success(info, payButtonLoading = true))
       trigger.responses.send(Unit.right())
-      assertThat(awaitItem()).isCharged(info)
+      val charged = awaitItem()
+      assertThat(charged).isCharged(info)
 
       sendEvent(ManualChargeEvent.Retry)
       this@runTest.testScheduler.advanceUntilIdle()
 
       assertThat(getInfo.calls).isEqualTo(1)
-      assertThat(remainingStates().filterNot { it.isChargedWith(info) }).isEmpty()
+      assertThat(remainingStates() - charged).isEmpty()
     }
   }
 
@@ -409,9 +412,6 @@ private class FakeTriggerManualChargeUseCase : TriggerManualChargeUseCase {
     return responses.receive()
   }
 }
-
-private fun ManualChargeUiState.isChargedWith(info: ManualChargeInfo): Boolean =
-  this is ManualChargeUiState.Charged && manualChargeInfo == info
 
 /** Charged with [info]. The request in it is made by the presenter, so it is not compared. */
 private fun Assert<ManualChargeUiState>.isCharged(info: ManualChargeInfo) {

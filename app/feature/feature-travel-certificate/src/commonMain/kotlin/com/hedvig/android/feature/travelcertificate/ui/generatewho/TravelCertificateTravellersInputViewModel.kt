@@ -21,6 +21,7 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.molecule.public.NavigationRequest
 import com.hedvig.android.molecule.public.rememberAttempts
+import com.hedvig.android.molecule.public.restoredAsWriteOutcome
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
 import kotlin.jvm.JvmInline
@@ -72,7 +73,13 @@ internal class TravelCertificateTravellersInputPresenter(
       mutableStateOf(lastContent?.coInsuredList.orEmpty().filter { it.isIncluded }.map { it.id }.toSet())
     }
     var createFailed by remember { mutableStateOf(lastContent?.createFailed ?: false) }
-    var created by remember { mutableStateOf(lastState as? TravelCertificateTravellersInputUiState.Created) }
+    var created by remember {
+      mutableStateOf(
+        (lastState as? TravelCertificateTravellersInputUiState.Created)?.let {
+          it.copy(exit = it.exit.restoredAsWriteOutcome())
+        },
+      )
+    }
     val create = rememberAttempts<CreateRequest>(
       restoredWhileRunning = lastContent?.isCreating == true,
       terminal = true,
