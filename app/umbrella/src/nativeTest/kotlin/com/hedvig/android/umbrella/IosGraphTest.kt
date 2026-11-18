@@ -397,13 +397,14 @@ class IosGraphTest {
       throw IllegalStateException("Request recorded, not sent")
     }
 
-    runBlocking {
+    val response = runBlocking {
       holder.graph.publicApolloClient
         .query(PayingMemberPhoneNumberQuery())
         .fetchPolicy(FetchPolicy.NetworkOnly)
         .execute()
     }
 
+    assertThat(response.exception?.message).isEqualTo("Request recorded, not sent")
     assertThat(sent.size).isEqualTo(1)
     assertThat(sent.single()["Authorization"]).isNull()
     assertThat(sent.single()["Accept-Language"]).isNotNull()
