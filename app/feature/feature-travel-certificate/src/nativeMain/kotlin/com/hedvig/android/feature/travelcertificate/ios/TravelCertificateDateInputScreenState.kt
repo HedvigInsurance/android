@@ -21,7 +21,10 @@ sealed class TravelCertificateDateInputScreenState {
    * [selectedDate] is the member's pick, or today moved into [minDate]..[maxDate] while there is none. [daysValid] is
    * how many days the certificate covers.
    *
-   * [isCreating] is true while a certificate is being created, which happens when the member has no co-insured.
+   * [hasCoInsured] says what `submit()` does once the form is valid: when false it creates the certificate at once;
+   * when true it offers the travellers step in [next] instead, and nothing is created until that step's create.
+   *
+   * [isCreating] is true while a certificate is being created, which happens when [hasCoInsured] is false.
    * [createFailed] is true after a create failed, until the next accepted submit.
    *
    * [next] is the travellers step to open, after a submit by a member with co-insured. Open it, then call
@@ -35,6 +38,7 @@ sealed class TravelCertificateDateInputScreenState {
     val maxDate: String,
     val selectedDate: String,
     val daysValid: Int,
+    val hasCoInsured: Boolean,
     val isCreating: Boolean,
     val createFailed: Boolean,
     val next: TravelCertificateTravellersStep?,
@@ -42,7 +46,7 @@ sealed class TravelCertificateDateInputScreenState {
     /** Leaves out [email]. */
     override fun toString(): String = "Content(emailRevision=$emailRevision, emailError=$emailError, " +
       "minDate=$minDate, maxDate=$maxDate, selectedDate=$selectedDate, daysValid=$daysValid, " +
-      "isCreating=$isCreating, createFailed=$createFailed, next=$next)"
+      "hasCoInsured=$hasCoInsured, isCreating=$isCreating, createFailed=$createFailed, next=$next)"
   }
 
   /** The certificate exists. Nothing follows on this screen. */

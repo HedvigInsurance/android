@@ -62,6 +62,7 @@ class TravelCertificatePresenterScreenStatesTest {
     maxDate = "2027-02-05",
     selectedDate = "2026-11-17",
     daysValid = 45,
+    hasCoInsured = false,
     isCreating = false,
     createFailed = false,
     next = null,
@@ -75,36 +76,41 @@ class TravelCertificatePresenterScreenStatesTest {
       val run = dateRun(specifications, transport)
       assertThat(run.awaitState()).isEqualTo(TravelCertificateDateInputScreenState.Loading)
       specifications.responses.send(specification(numberOfCoInsured = 2).right())
-      assertThat(run.awaitState()).isEqualTo(form)
+      val withCoInsured = form.copy(hasCoInsured = true)
+      assertThat(run.awaitState()).isEqualTo(withCoInsured)
 
       run.send(selectTravelDateEvent("2027-02-06")!!)
       run.send(selectTravelDateEvent("2026-11-16")!!)
       run.expectNoState()
       assertThat(selectTravelDateEvent("2027-02-30")).isNull()
       run.send(selectTravelDateEvent("2027-02-05")!!)
-      assertThat(run.awaitState()).isEqualTo(form.copy(selectedDate = "2027-02-05"))
+      assertThat(run.awaitState()).isEqualTo(withCoInsured.copy(selectedDate = "2027-02-05"))
 
       run.send(TravelCertificateDateInputEvent.ChangeEmailInput(""))
-      assertThat(run.awaitState()).isEqualTo(form.copy(email = "", selectedDate = "2027-02-05"))
+      assertThat(run.awaitState()).isEqualTo(withCoInsured.copy(email = "", selectedDate = "2027-02-05"))
       run.send(TravelCertificateDateInputEvent.Submit)
       assertThat(run.awaitState()).isEqualTo(
-        form.copy(email = "", selectedDate = "2027-02-05", emailError = TravelCertificateEmailError.EMPTY),
+        withCoInsured.copy(email = "", selectedDate = "2027-02-05", emailError = TravelCertificateEmailError.EMPTY),
       )
       run.send(TravelCertificateDateInputEvent.ChangeEmailInput("member@"))
       run.send(TravelCertificateDateInputEvent.Submit)
       assertThat(run.awaitStateMatching { (it as? TravelCertificateDateInputScreenState.Content)?.emailError != null })
         .isEqualTo(
-          form.copy(email = "member@", selectedDate = "2027-02-05", emailError = TravelCertificateEmailError.INVALID),
+          withCoInsured.copy(
+            email = "member@",
+            selectedDate = "2027-02-05",
+            emailError = TravelCertificateEmailError.INVALID,
+          ),
         )
 
       run.send(TravelCertificateDateInputEvent.ChangeEmailInput("other@hedvig.com"))
       run.send(TravelCertificateDateInputEvent.Submit)
       val step = TravelCertificateTravellersStep("other@hedvig.com", LocalDate(2027, 2, 5), "contract-1")
       assertThat(run.awaitStateMatching { (it as? TravelCertificateDateInputScreenState.Content)?.next != null })
-        .isEqualTo(form.copy(email = "other@hedvig.com", selectedDate = "2027-02-05", next = step))
+        .isEqualTo(withCoInsured.copy(email = "other@hedvig.com", selectedDate = "2027-02-05", next = step))
       run.send(TravelCertificateDateInputEvent.StepShown)
       assertThat(run.awaitState())
-        .isEqualTo(form.copy(email = "other@hedvig.com", selectedDate = "2027-02-05", next = null))
+        .isEqualTo(withCoInsured.copy(email = "other@hedvig.com", selectedDate = "2027-02-05", next = null))
       assertThat(transport.inputs()).containsExactly()
       run.cancel()
     }
