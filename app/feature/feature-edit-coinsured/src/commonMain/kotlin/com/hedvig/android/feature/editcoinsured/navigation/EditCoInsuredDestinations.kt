@@ -1,6 +1,8 @@
 package com.hedvig.android.feature.editcoinsured.navigation
 
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
+import com.hedvig.android.feature.editcoinsured.data.EditCoInsuredDestination
+import com.hedvig.android.feature.editcoinsured.data.InsuranceForEditOrAddCoInsured
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.findLastOrNull
@@ -28,6 +30,16 @@ internal fun Backstack.navigateFromTriage(destination: HedvigNavKey) {
   } else {
     navigateAndPopUpTo<EditCoOwnersTriageDeepLinkKey>(destination, inclusive = true)
   }
+}
+
+/** Replaces the triage screen with the step that edits the co-insured or co-owners of [insurance]. */
+internal fun Backstack.navigateToTriageStep(insurance: InsuranceForEditOrAddCoInsured) {
+  navigateFromTriage(insurance.toNavKey())
+}
+
+private fun InsuranceForEditOrAddCoInsured.toNavKey(): HedvigNavKey = when (destination) {
+  EditCoInsuredDestination.MISSING_INFO -> CoInsuredAddInfoKey(id, type)
+  EditCoInsuredDestination.ADD_OR_REMOVE -> CoInsuredAddOrRemoveKey(id, type)
 }
 
 /**

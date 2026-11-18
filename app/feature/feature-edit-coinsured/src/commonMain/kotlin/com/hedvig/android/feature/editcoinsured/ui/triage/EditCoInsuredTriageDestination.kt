@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
+import com.hedvig.android.compose.ui.NavigationEffect
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -31,6 +33,7 @@ import com.hedvig.android.feature.editcoinsured.data.EditCoInsuredDestination
 import com.hedvig.android.feature.editcoinsured.data.InsuranceForEditOrAddCoInsured
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Failure
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Loading
+import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Redirect
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Success
 import hedvig.resources.EDIT_COOWNER_SUBTITLE
 import hedvig.resources.EDIT_COOWNER_TITLE
@@ -41,22 +44,39 @@ import hedvig.resources.general_close_button
 import hedvig.resources.general_continue_button
 import org.jetbrains.compose.resources.stringResource
 
+/**
+ * [navigateToStep] replaces the triage screen with the step for the insurance, both when the member continues with a
+ * selection and when [Redirect] skips the picker.
+ */
 @Composable
-internal fun EditCoInsuredTriageDestination(viewModel: EditCoInsuredTriageViewModel, navigateUp: () -> Unit) {
+internal fun EditCoInsuredTriageDestination(
+  viewModel: EditCoInsuredTriageViewModel,
+  navigateUp: () -> Unit,
+  navigateToStep: (InsuranceForEditOrAddCoInsured) -> Unit,
+) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  EditCoInsuredTriageNavigationEffect(uiState, navigateToStep)
   EditCoInsuredTriageScreen(
     uiState = uiState,
     navigateUp = navigateUp,
     reload = {
       viewModel.emit(EditCoInsuredTriageEvent.Reload)
     },
-    submitSelectedInsurance = {
-      viewModel.emit(EditCoInsuredTriageEvent.OnContinueWithSelected)
+    submitSelectedInsurance = dropUnlessResumed {
+      (uiState as? Success)?.selected?.let(navigateToStep)
     },
     selectInsurance = {
       viewModel.emit(EditCoInsuredTriageEvent.SelectInsurance(it))
     },
   )
+}
+
+@Composable
+internal fun EditCoInsuredTriageNavigationEffect(
+  uiState: EditCoInsuredTriageUiState,
+  navigateToStep: (InsuranceForEditOrAddCoInsured) -> Unit,
+) {
+  NavigationEffect((uiState as? Redirect)?.step, navigateToStep)
 }
 
 @Composable
@@ -76,7 +96,7 @@ private fun EditCoInsuredTriageScreen(
       }
     }
 
-    Loading -> {
+    Loading, is Redirect -> {
       HedvigFullScreenCenterAlignedProgress()
     }
 

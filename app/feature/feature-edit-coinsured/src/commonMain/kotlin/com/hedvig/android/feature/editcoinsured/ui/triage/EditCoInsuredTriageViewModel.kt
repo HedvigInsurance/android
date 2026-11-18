@@ -10,21 +10,16 @@ import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
-import com.hedvig.android.feature.editcoinsured.data.EditCoInsuredDestination
 import com.hedvig.android.feature.editcoinsured.data.GetInsurancesForEditCoInsuredUseCase
 import com.hedvig.android.feature.editcoinsured.data.InsuranceForEditOrAddCoInsured
-import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddInfoKey
-import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddOrRemoveKey
-import com.hedvig.android.feature.editcoinsured.navigation.navigateFromTriage
-import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageEvent.OnContinueWithSelected
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Failure
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Loading
+import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Redirect
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Success
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
-import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.molecule.public.NavigationRequest
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
 
@@ -32,7 +27,6 @@ import dev.zacsweers.metro.AssistedInject
 @HedvigViewModel(ActivityRetainedScope::class)
 internal class EditCoInsuredTriageViewModel(
   getInsuranceForEditCoInsuredUseCase: GetInsurancesForEditCoInsuredUseCase,
-  backstack: Backstack,
   @Assisted insuranceId: String?,
   @Assisted type: CoInsuredFlowType,
 ) : MoleculeViewModel<
@@ -40,12 +34,11 @@ internal class EditCoInsuredTriageViewModel(
     EditCoInsuredTriageUiState,
   >(
     initialState = Loading,
-    presenter = EditCoInsuredTriagePresenter(getInsuranceForEditCoInsuredUseCase, backstack, insuranceId, type),
+    presenter = EditCoInsuredTriagePresenter(getInsuranceForEditCoInsuredUseCase, insuranceId, type),
   )
 
 internal class EditCoInsuredTriagePresenter(
   private val getInsuranceForEditCoInsuredUseCase: GetInsurancesForEditCoInsuredUseCase,
-  private val backstack: Backstack,
   private val insuranceId: String?,
   private val type: CoInsuredFlowType,
 ) : MoleculePresenter<
@@ -63,11 +56,6 @@ internal class EditCoInsuredTriagePresenter(
     }
     CollectEvents { event ->
       when (event) {
-        is OnContinueWithSelected -> {
-          currentState as? Success ?: return@CollectEvents
-          selected?.let { backstack.navigateFromTriage(it.toNavKey()) }
-        }
-
         EditCoInsuredTriageEvent.Reload -> {
           loadIteration++
         }
@@ -80,6 +68,8 @@ internal class EditCoInsuredTriagePresenter(
       }
     }
     LaunchedEffect(loadIteration) {
+      // A redirect is kept as it was, also across a restart, so it is never lost and never loaded again.
+      if (currentState is Redirect) return@LaunchedEffect
       currentState = Loading
       getInsuranceForEditCoInsuredUseCase.invoke(type).fold(
         ifLeft = {
@@ -93,12 +83,10 @@ internal class EditCoInsuredTriagePresenter(
           } else {
             null
           }
-          if (preselected != null) {
-            // Single match (deep link or only one insurance): skip the picker and navigate directly,
-            // popping the triage entry so back leaves the flow.
-            backstack.navigateFromTriage(preselected.toNavKey())
+          currentState = if (preselected != null) {
+            Redirect(NavigationRequest.of(preselected))
           } else {
-            currentState = Success(
+            Success(
               list = data,
               selected = null,
               type = type,
@@ -110,19 +98,13 @@ internal class EditCoInsuredTriagePresenter(
     return when (val currentStateValue = currentState) {
       Failure -> Failure
       Loading -> Loading
+      is Redirect -> currentStateValue
       is Success -> currentStateValue.copy(selected = selected)
     }
   }
 }
 
-private fun InsuranceForEditOrAddCoInsured.toNavKey(): HedvigNavKey = when (destination) {
-  EditCoInsuredDestination.MISSING_INFO -> CoInsuredAddInfoKey(id, type)
-  EditCoInsuredDestination.ADD_OR_REMOVE -> CoInsuredAddOrRemoveKey(id, type)
-}
-
 internal sealed interface EditCoInsuredTriageEvent {
-  data object OnContinueWithSelected : EditCoInsuredTriageEvent
-
   data object Reload : EditCoInsuredTriageEvent
 
   data class SelectInsurance(val id: String) : EditCoInsuredTriageEvent
@@ -138,4 +120,10 @@ internal sealed interface EditCoInsuredTriageUiState {
     val selected: InsuranceForEditOrAddCoInsured?,
     val type: CoInsuredFlowType,
   ) : EditCoInsuredTriageUiState
+
+  /**
+   * One insurance fits (the contract asked for, or the only one), so the picker is skipped for its step. Shown as
+   * loading, and ends the triage: events are ignored and nothing loads again, also after a restart.
+   */
+  data class Redirect(val step: NavigationRequest<InsuranceForEditOrAddCoInsured>) : EditCoInsuredTriageUiState
 }
