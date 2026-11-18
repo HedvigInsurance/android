@@ -68,8 +68,9 @@ internal class EditCoInsuredTriagePresenter(
       }
     }
     LaunchedEffect(loadIteration) {
-      // A redirect is kept as it was, also across a restart, so it is never lost and never loaded again.
-      if (currentState is Redirect) return@LaunchedEffect
+      // A pending redirect is kept, also across a restart, so it is never lost. A taken one means this triage is still
+      // shown after its redirect, as when an equal key elsewhere shares the ViewModel, so it loads again.
+      if ((currentState as? Redirect)?.step?.isPending == true) return@LaunchedEffect
       currentState = Loading
       getInsuranceForEditCoInsuredUseCase.invoke(type).fold(
         ifLeft = {
@@ -123,7 +124,7 @@ internal sealed interface EditCoInsuredTriageUiState {
 
   /**
    * One insurance fits (the contract asked for, or the only one), so the picker is skipped for its step. Shown as
-   * loading, and ends the triage: events are ignored and nothing loads again, also after a restart.
+   * loading. While it is pending, events are ignored and nothing loads again, also after a restart.
    */
   data class Redirect(val step: NavigationRequest<InsuranceForEditOrAddCoInsured>) : EditCoInsuredTriageUiState
 }

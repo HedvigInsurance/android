@@ -244,6 +244,44 @@ internal class EditCoInsuredTriageNavigationTest {
     assertThat(navigations).isEmpty()
   }
 
+  @Test
+  fun `a triage left on a taken redirect by a second equal key loads and redirects again when it is shown later`() =
+    runComposeUiTest {
+      // Two equal triage keys share one ViewModel: one in the Insurances run, one later pushed on Home's run.
+      val backstack = TestBackstack(inAppPush.toMutableList())
+      show(backstack)
+      // The member switches to Home during the load: the Insurances run is parked and its triage leaves composition.
+      shown = false
+      val insurancesRun = backstack.entries.toList()
+      settle()
+      load(listOf(addOrRemove).right())
+      // In Home the member opens the same link: an equal key on Home's run shows the shared ViewModel and redirects.
+      backstack.entries.clear()
+      backstack.entries.addAll(listOf(HomeStandIn, triageKey))
+      shown = true
+      settle()
+      assertThat(backstack.entries).containsExactly(HomeStandIn, addOrRemoveStep)
+      // The step covers it, and nothing collects the ViewModel for longer than 5 seconds.
+      shown = false
+      settle()
+      main.scheduler.advanceTimeBy(6_000)
+      main.scheduler.runCurrent()
+      // Back to Insurances: the parked triage is shown again.
+      backstack.entries.clear()
+      backstack.entries.addAll(insurancesRun)
+      shown = true
+      settle()
+      load(listOf(addOrRemove).right())
+      assertThat(backstack.entries).containsExactly(
+        HomeStandIn,
+        InsurancesStandIn,
+        ContractDetailStandIn,
+        addOrRemoveStep,
+      )
+      assertThat(useCase.calls.size).isEqualTo(2)
+      assertThat(navigations.size).isEqualTo(2)
+    }
+
   // Continue from the picker
 
   @Test

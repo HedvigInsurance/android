@@ -276,16 +276,18 @@ internal class EditCoInsuredTriagePresenterTest {
   }
 
   @Test
-  fun `a restart after the redirect was performed neither loads nor redirects again`() = runTest {
+  fun `a restart after the redirect was performed loads again and offers a new redirect`() = runTest {
     presenter().testFrames(Loading) {
       load(listOf(addOrRemove).right())
       val redirect = latest as Redirect
       assertThat(redirect.step.tryConsume()).isTrue()
       restart()
       frame()
-      assertThat(latest).isSameInstanceAs(redirect)
-      assertThat(redirect.step.tryConsume()).isFalse()
-      assertThat(useCase.calls).containsExactly(CoInsuredFlowType.CoOwners)
+      frame()
+      assertThat(latest).isEqualTo(Loading)
+      load(listOf(addOrRemove).right())
+      assertThat(latest).isPendingRedirectTo(addOrRemove)
+      assertThat(useCase.calls).containsExactly(CoInsuredFlowType.CoOwners, CoInsuredFlowType.CoOwners)
     }
   }
 }
