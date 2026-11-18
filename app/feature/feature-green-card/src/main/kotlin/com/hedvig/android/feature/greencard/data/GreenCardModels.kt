@@ -23,6 +23,7 @@ internal data class GreenCardContractSpecification(
   val maxEndDate: LocalDate,
 )
 
+@Serializable
 internal data class GreenCardAddress(
   val street: String,
   val postalCode: String,

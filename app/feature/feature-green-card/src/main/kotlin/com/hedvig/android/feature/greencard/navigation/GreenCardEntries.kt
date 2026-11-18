@@ -2,8 +2,12 @@ package com.hedvig.android.feature.greencard.navigation
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation3.runtime.EntryProviderScope
+import com.hedvig.android.feature.greencard.ui.address.GreenCardAddressInputDestination
 import com.hedvig.android.feature.greencard.ui.choose.ChooseContractForGreenCardDestination
 import com.hedvig.android.feature.greencard.ui.choose.ChooseContractForGreenCardViewModel
+import com.hedvig.android.feature.greencard.ui.codrivers.GreenCardCoDriversInputDestination
+import com.hedvig.android.feature.greencard.ui.codrivers.GreenCardCoDriversInputViewModel
+import com.hedvig.android.feature.greencard.ui.codrivers.GreenCardCoDriversInputViewModelFactory
 import com.hedvig.android.feature.greencard.ui.dateinput.GreenCardDateInputDestination
 import com.hedvig.android.feature.greencard.ui.dateinput.GreenCardDateInputViewModel
 import com.hedvig.android.feature.greencard.ui.dateinput.GreenCardDateInputViewModelFactory
@@ -61,6 +65,26 @@ fun EntryProviderScope<HedvigNavKey>.greenCardEntries(backstack: Backstack, appl
         create(key.contractId)
       }
     GreenCardDateInputDestination(
+      viewModel = viewModel,
+      navigateUp = backstack::navigateUp,
+    )
+  }
+
+  entry<GreenCardAddressInputKey> { key ->
+    GreenCardAddressInputDestination(
+      navigateUp = backstack::navigateUp,
+      onContinue = { mailingAddress ->
+        backstack.add(GreenCardCoDriversInputKey(key.tripInput, mailingAddress))
+      },
+    )
+  }
+
+  entry<GreenCardCoDriversInputKey> { key ->
+    val viewModel: GreenCardCoDriversInputViewModel =
+      assistedMetroViewModel<GreenCardCoDriversInputViewModel, GreenCardCoDriversInputViewModelFactory> {
+        create(key)
+      }
+    GreenCardCoDriversInputDestination(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
     )
