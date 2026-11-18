@@ -12,6 +12,7 @@ import com.hedvig.android.auth.AccessTokenProvider
 import com.hedvig.android.core.buildconstants.AppBuildConfig
 import com.hedvig.android.core.buildconstants.Flavor
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.common.di.AuthHttpClientEngine
 import com.hedvig.android.core.common.di.BaseHttpClient
@@ -46,6 +47,9 @@ import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlinx.coroutines.job
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 
@@ -56,6 +60,7 @@ internal interface NetworkTestGraph {
   val tlsDiagnostics: TlsDiagnostics
   val networkLogPolicy: NetworkLogPolicy
   val hedvigBuildConstants: HedvigBuildConstants
+  val applicationScope: ApplicationScope
 
   @PublicApolloClient
   val publicApolloClient: ApolloClient
@@ -84,6 +89,9 @@ class JvmNetworkBindingsTest {
 
   @AfterTest
   fun tearDown() {
+    // Building the base HTTP client launches the device id's first DataStore write on the application scope. Deleting
+    // the directory under that write fails it, and the uncaught IOException then fails whichever runTest comes next.
+    runBlocking { graph.applicationScope.coroutineContext.job.children.toList().joinAll() }
     dataDirectory.deleteRecursively()
   }
 
