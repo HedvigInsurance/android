@@ -2802,7 +2802,7 @@ type InAppPurchaseFieldError {
 input InAppPurchaseFieldInput {
   fieldId: ID!
   """
-  Every field takes a single value today; see `InAppPurchaseFormFieldType` for the format.
+  See `InAppPurchaseFormFieldType` for how many values each type takes and their format.
   """
   values: [String!]!
 }
@@ -2854,7 +2854,9 @@ type InAppPurchaseFormFieldOption {
 }
 """
 Value format per type: NUMBER is an integer like "2", DATE is ISO "2026-11-01", SINGLE_SELECT is the
-option's `value`.
+option's `value`, TEXT is free text. SEARCHABLE_SELECT sends one value per chosen option. EXTRA_BUILDINGS sends
+one value per building, as JSON `{"type":"GARAGE","area":25,"hasWaterConnected":false}` with `type` one of the
+field's options; no values means no buildings. Every other type takes exactly one value.
 """
 enum InAppPurchaseFormFieldType {
   NUMBER
@@ -4905,7 +4907,7 @@ type Product {
   multiple: Boolean
   """
   Questions and answers from the FAQ on the product's page on the website, in the member's language.
-  Empty when the page has none. Only filled for products sold in the app.
+  Empty when the page has none.
   """
   faq: [ProductFaqItem!]!
   """
