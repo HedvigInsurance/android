@@ -11,6 +11,7 @@ import com.apollographql.cache.normalized.fetchPolicy
 import com.hedvig.android.auth.AccessTokenProvider
 import com.hedvig.android.core.buildconstants.AppBuildConfig
 import com.hedvig.android.core.buildconstants.Flavor
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.common.di.AuthHttpClientEngine
 import com.hedvig.android.core.common.di.BaseHttpClient
@@ -27,10 +28,14 @@ import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.createGraphFactory
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
 import io.ktor.client.engine.okhttp.OkHttpEngine
 import io.ktor.client.plugins.HttpSend
 import io.ktor.client.plugins.plugin
+import io.ktor.client.request.get
 import io.ktor.http.Headers
+import io.ktor.http.HttpStatusCode
 import java.io.File
 import javax.net.ssl.SSLHandshakeException
 import kotlin.io.path.createTempDirectory
@@ -40,6 +45,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 
@@ -49,6 +55,7 @@ internal interface NetworkTestGraph {
   val extraKtorClientConfiguration: ExtraKtorClientConfiguration
   val tlsDiagnostics: TlsDiagnostics
   val networkLogPolicy: NetworkLogPolicy
+  val hedvigBuildConstants: HedvigBuildConstants
 
   @PublicApolloClient
   val publicApolloClient: ApolloClient
@@ -98,20 +105,49 @@ class JvmNetworkBindingsTest {
   }
 
   @Test
-  fun `a query on the public Apollo client is sent without an Authorization header even when a token is available`() =
-    runTest {
-      val sent = mutableListOf<Headers>()
-      graph.baseHttpClient.plugin(HttpSend).intercept { request ->
-        sent += request.headers.build()
-        throw RequestRecorded()
-      }
-
-      graph.publicApolloClient.query(TestQuery).fetchPolicy(FetchPolicy.NetworkOnly).execute()
-
-      assertEquals(1, sent.size)
-      assertNull(sent.single()["Authorization"])
-      assertNotNull(sent.single()["Accept-Language"])
+  fun `the public Apollo client sends through the graph's base HTTP client`() = runTest {
+    val sent = mutableListOf<Headers>()
+    graph.baseHttpClient.plugin(HttpSend).intercept { request ->
+      sent += request.headers.build()
+      throw RequestRecorded()
     }
+
+    val response = graph.publicApolloClient.query(TestQuery).fetchPolicy(FetchPolicy.NetworkOnly).execute()
+
+    assertEquals(REQUEST_RECORDED_MESSAGE, response.exception?.message)
+    assertEquals(1, sent.size)
+    assertNotNull(sent.single()["Accept-Language"])
+  }
+
+  @Test
+  fun `the public Apollo client never fetches a token while the member client does`() = runTest {
+    val fetcher = CountingAccessTokenFetcher()
+    val received = mutableListOf<Headers>()
+    val engine = MockEngine { request ->
+      received += request.headers
+      respond("", HttpStatusCode.InternalServerError)
+    }
+    val baseClient = HttpClient(engine) { install(HttpSend) }
+    val providers = object : NetworkMetroProviders {}
+    val publicClient = providers.providePublicApolloClient(
+      baseClient,
+      graph.hedvigBuildConstants,
+      graph.networkLogPolicy,
+    )
+
+    publicClient.query(TestQuery).fetchPolicy(FetchPolicy.NetworkOnly).execute()
+
+    assertEquals(1, received.size)
+    assertNull(received.single()["Authorization"])
+    assertEquals(0, fetcher.calls)
+
+    // Control: the member client over the same base client does fetch the token and send it.
+    providers.provideHttpClient(baseClient, fetcher).get("https://example.com")
+
+    assertEquals(2, received.size)
+    assertEquals("Bearer token", received.last()["Authorization"])
+    assertTrue(fetcher.calls > 0)
+  }
 
   @Test
   fun `the TLS diagnostics describe nothing, even for a trust failure`() = runTest {
@@ -140,7 +176,19 @@ private object TestQuery : Query<TestQuery.Data> {
 }
 
 /** Thrown by the test's last-stop interceptor so the request never leaves the machine. */
-private class RequestRecorded : RuntimeException()
+private class RequestRecorded : RuntimeException(REQUEST_RECORDED_MESSAGE)
+
+private const val REQUEST_RECORDED_MESSAGE = "Request recorded, not sent"
+
+private class CountingAccessTokenFetcher : AccessTokenFetcher {
+  var calls = 0
+    private set
+
+  override suspend fun fetch(): String? {
+    calls++
+    return "token"
+  }
+}
 
 private object TestAppBuildConfig : AppBuildConfig {
   override val debug: Boolean = true
