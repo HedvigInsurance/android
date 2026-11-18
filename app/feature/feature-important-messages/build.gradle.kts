@@ -46,9 +46,5 @@ kotlin {
       implementation(projects.loggingTest)
       implementation(projects.moleculeTest)
     }
-    nativeTest.dependencies {
-      implementation(projects.coreBuildConstants)
-      implementation(projects.networkClients)
-    }
   }
 }
