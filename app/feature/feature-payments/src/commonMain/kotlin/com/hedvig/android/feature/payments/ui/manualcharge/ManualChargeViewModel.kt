@@ -54,7 +54,7 @@ internal class ManualChargePresenter(
           false
         },
         ifRight = {
-          screenState = ManualChargeUiState.Charged(currentState.manualChargeInfo)
+          screenState = ManualChargeUiState.Charged(NavigationRequest.of(currentState.manualChargeInfo))
           true
         },
       )
@@ -143,13 +143,11 @@ internal sealed interface ManualChargeUiState {
 
   /** The charge went through. The platform leaves the screen; nothing follows this state. */
   data class Charged(
-    val manualChargeInfo: ManualChargeInfo,
+    /** The navigation to the success screen, made where the charge went through, so every copy shares it. */
+    val exit: NavigationRequest<ManualChargeInfo>,
   ) : ManualChargeUiState {
-    /**
-     * Leaving for the success screen. It is not part of equality, so the state flow keeps the first of equal states,
-     * and a restart that produces this state again does not offer a second request.
-     */
-    val leave: NavigationRequest<ManualChargeInfo> = NavigationRequest.of(manualChargeInfo)
+    val manualChargeInfo: ManualChargeInfo
+      get() = exit.target
   }
 }
 

@@ -11,7 +11,9 @@ import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isNotNull
+import assertk.assertions.isNotSameInstanceAs
 import assertk.assertions.isNull
+import assertk.assertions.isSameInstanceAs
 import assertk.assertions.isTrue
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -179,5 +181,78 @@ class NavigationRequestPresenterTest {
       // A screen composed again starts from this state and opens the step a second time.
       assertThat(latest.next).isEqualTo("step")
     }
+  }
+
+  /** A terminal outcome holding its request as a constructor field, made once where the outcome is decided. */
+  private data class Done(val exit: NavigationRequest<String>)
+
+  /** The same outcome with the request made on every construction, outside equality. */
+  private data class DoneWithBodyRequest(val target: String) {
+    val exit: NavigationRequest<String> = NavigationRequest.of(target)
+  }
+
+  private data class Wrapper(val counter: Int, val exit: NavigationRequest<String>?)
+
+  /** Finishes on [Event.Submit] and keeps counting [Event.Type] afterwards, with the outcome nested in its state. */
+  private class NestedOutcomePresenter(private val bodyRequest: Boolean) : MoleculePresenter<Event, Wrapper> {
+    @Composable
+    override fun MoleculePresenterScope<Event>.present(lastState: Wrapper): Wrapper {
+      var counter by remember { mutableStateOf(lastState.counter) }
+      var done by remember { mutableStateOf<Done?>(null) }
+      var doneTarget by remember { mutableStateOf<String?>(null) }
+      CollectEvents { event ->
+        when (event) {
+          Event.Submit -> {
+            if (bodyRequest) {
+              doneTarget = "certificate"
+            } else {
+              done =
+                Done(NavigationRequest.of("certificate"))
+            }
+          }
+
+          is Event.Type -> {
+            counter++
+          }
+
+          Event.Shown -> {}
+        }
+      }
+      val exit = if (bodyRequest) doneTarget?.let { DoneWithBodyRequest(it).exit } else done?.exit
+      return Wrapper(counter, exit)
+    }
+  }
+
+  /** How often a platform taking every request it observes navigates. */
+  private suspend fun navigationsWithANestedOutcome(bodyRequest: Boolean): Int {
+    var navigations = 0
+    NestedOutcomePresenter(bodyRequest).testFrames(Wrapper(0, null)) {
+      emit(Event.Submit)
+      frame()
+      if (latest.exit?.tryConsume() == true) navigations++
+      emit(Event.Type("edited"))
+      frame()
+      if (latest.exit?.tryConsume() == true) navigations++
+    }
+    return navigations
+  }
+
+  @Test
+  fun `constructor field, a nested outcome is performed once when the state around it changes`() = runTest {
+    assertThat(navigationsWithANestedOutcome(bodyRequest = false)).isEqualTo(1)
+  }
+
+  @Test
+  fun `body property, a nested outcome is performed again when the state around it changes`() = runTest {
+    assertThat(navigationsWithANestedOutcome(bodyRequest = true)).isEqualTo(2)
+  }
+
+  @Test
+  fun `constructor field, a copy of an outcome shares its request, and a body property does not`() {
+    val done = Done(NavigationRequest.of("certificate"))
+    assertThat(done.copy().exit).isSameInstanceAs(done.exit)
+
+    val withBodyRequest = DoneWithBodyRequest("certificate")
+    assertThat(withBodyRequest.copy().exit).isNotSameInstanceAs(withBodyRequest.exit)
   }
 }

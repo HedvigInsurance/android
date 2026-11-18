@@ -69,7 +69,7 @@ internal fun TravellersNavigationEffect(
   uiState: TravelCertificateTravellersInputUiState,
   onCertificateCreated: (TravelCertificateUrl) -> Unit,
 ) {
-  NavigationEffect((uiState as? TravelCertificateTravellersInputUiState.Created)?.leave, onCertificateCreated)
+  NavigationEffect((uiState as? TravelCertificateTravellersInputUiState.Created)?.exit, onCertificateCreated)
 }
 
 @Composable

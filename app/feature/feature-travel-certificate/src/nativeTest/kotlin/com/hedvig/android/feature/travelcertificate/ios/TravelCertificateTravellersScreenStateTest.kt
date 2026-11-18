@@ -6,6 +6,7 @@ import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.CoInsured
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.CoInsured.CoInsuredId
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertificateTravellersInputUiState
+import com.hedvig.android.molecule.public.NavigationRequest
 import kotlin.test.Test
 import kotlinx.datetime.LocalDate
 
@@ -105,7 +106,9 @@ class TravelCertificateTravellersScreenStateTest {
 
   @Test
   fun `created carries the signed url`() {
-    val created = TravelCertificateTravellersInputUiState.Created(TravelCertificateUrl("https://example.com/c.pdf"))
+    val created = TravelCertificateTravellersInputUiState.Created(
+      NavigationRequest.of(TravelCertificateUrl("https://example.com/c.pdf")),
+    )
 
     assertThat(created.toScreenState()).isEqualTo(
       TravelCertificateTravellersScreenState.Created(TravelCertificateCreated("https://example.com/c.pdf")),

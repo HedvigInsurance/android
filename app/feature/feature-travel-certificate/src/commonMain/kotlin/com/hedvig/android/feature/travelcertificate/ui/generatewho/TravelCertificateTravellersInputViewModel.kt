@@ -89,7 +89,7 @@ internal class TravelCertificateTravellersInputPresenter(
           false
         },
         ifRight = { url ->
-          created = TravelCertificateTravellersInputUiState.Created(url)
+          created = TravelCertificateTravellersInputUiState.Created(NavigationRequest.of(url))
           true
         },
       )
@@ -245,12 +245,12 @@ internal sealed interface TravelCertificateTravellersInputUiState {
   }
 
   /** The certificate exists; nothing follows on this screen. */
-  data class Created(val url: TravelCertificateUrl) : TravelCertificateTravellersInputUiState {
-    /**
-     * Leaving for the certificate. It is not part of equality, so the state flow keeps the first of equal states, and a
-     * restart that produces this state again does not offer a second request.
-     */
-    val leave: NavigationRequest<TravelCertificateUrl> = NavigationRequest.of(url)
+  data class Created(
+    /** The navigation to the certificate, made where the create succeeded, so every copy of this state shares it. */
+    val exit: NavigationRequest<TravelCertificateUrl>,
+  ) : TravelCertificateTravellersInputUiState {
+    val url: TravelCertificateUrl
+      get() = exit.target
   }
 }
 

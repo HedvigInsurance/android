@@ -95,7 +95,9 @@ class TravelCertificateDateInputScreenStateTest {
 
   @Test
   fun `created carries the signed url`() {
-    val created = TravelCertificateDateInputUiState.Created(TravelCertificateUrl("https://example.com/c.pdf?s=1"))
+    val created = TravelCertificateDateInputUiState.Created(
+      NavigationRequest.of(TravelCertificateUrl("https://example.com/c.pdf?s=1")),
+    )
 
     assertThat(created.toScreenState()).isEqualTo(
       TravelCertificateDateInputScreenState.Created(TravelCertificateCreated("https://example.com/c.pdf?s=1")),

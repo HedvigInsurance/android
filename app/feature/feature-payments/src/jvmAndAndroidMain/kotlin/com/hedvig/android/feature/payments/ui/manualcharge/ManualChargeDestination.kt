@@ -144,7 +144,7 @@ internal fun ChargedEffect(
   onCharged: (ManualChargeSuccessKey) -> Unit,
 ) {
   val chargeInFlight = uiState is Charged || (uiState is Success && uiState.payButtonLoading)
-  val requests = remember(uiStates) { uiStates.map { (it as? Charged)?.leave } }
+  val requests = remember(uiStates) { uiStates.map { (it as? Charged)?.exit } }
   NavigationEffect(requests, active = chargeInFlight) { onCharged(it.toManualChargeSuccessKey()) }
 }
 

@@ -98,7 +98,7 @@ internal fun DateInputNavigationEffect(
   onCertificateCreated: (TravelCertificateUrl) -> Unit,
 ) {
   NavigationEffect((uiState as? Success)?.next, onNavigateToTravellers)
-  NavigationEffect((uiState as? TravelCertificateDateInputUiState.Created)?.leave, onCertificateCreated)
+  NavigationEffect((uiState as? TravelCertificateDateInputUiState.Created)?.exit, onCertificateCreated)
 }
 
 @Composable

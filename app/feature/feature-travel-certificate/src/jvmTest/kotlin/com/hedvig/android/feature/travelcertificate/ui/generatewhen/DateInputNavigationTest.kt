@@ -110,7 +110,7 @@ class DateInputNavigationTest {
   fun `created replaces the flow above the history with the certificate`() = runComposeUiTest {
     showEffect()
     val url = TravelCertificateUrl("https://example.com/new.pdf")
-    uiState = TravelCertificateDateInputUiState.Created(url)
+    uiState = TravelCertificateDateInputUiState.Created(NavigationRequest.of(url))
     waitForIdle()
     recompositionTrigger++
     waitForIdle()

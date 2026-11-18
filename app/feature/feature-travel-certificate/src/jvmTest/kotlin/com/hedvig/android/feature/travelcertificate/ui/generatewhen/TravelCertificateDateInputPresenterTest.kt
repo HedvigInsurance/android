@@ -2,12 +2,14 @@ package com.hedvig.android.feature.travelcertificate.ui.generatewhen
 
 import arrow.core.left
 import arrow.core.right
+import assertk.Assert
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotEqualTo
+import assertk.assertions.prop
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.travelcertificate.FakeCreateTravelCertificateTransport
 import com.hedvig.android.feature.travelcertificate.FakeGetTravelCertificateSpecificationsUseCase
@@ -452,8 +454,8 @@ class TravelCertificateDateInputPresenterTest {
       assertThat(createTransport.inputs).containsExactly(createInput())
 
       createTransport.responses.trySend("https://example.com/new.pdf")
-      val created = TravelCertificateDateInputUiState.Created(TravelCertificateUrl("https://example.com/new.pdf"))
-      assertThat(awaitItem()).isEqualTo(created)
+      val created = awaitItem()
+      assertThat(created).isCreated(TravelCertificateUrl("https://example.com/new.pdf"))
       sendEvent(TravelCertificateDateInputEvent.Submit)
       sendEvent(TravelCertificateDateInputEvent.RetryLoadData)
       testScheduler.advanceUntilIdle()
@@ -490,9 +492,7 @@ class TravelCertificateDateInputPresenterTest {
       assertThat(awaitContent()).isEqualTo(creating)
       assertThat(createTransport.inputs).containsExactly(expectedInput, expectedInput)
       createTransport.responses.trySend("https://example.com/new.pdf")
-      assertThat(awaitItem()).isEqualTo(
-        TravelCertificateDateInputUiState.Created(TravelCertificateUrl("https://example.com/new.pdf")),
-      )
+      assertThat(awaitItem()).isCreated(TravelCertificateUrl("https://example.com/new.pdf"))
       assertThat(specifications.contractIds).containsExactly(null)
     }
   }
@@ -514,9 +514,7 @@ class TravelCertificateDateInputPresenterTest {
       assertThat(createTransport.inputs).containsExactly(createInput())
 
       createTransport.responses.trySend("https://example.com/new.pdf")
-      assertThat(awaitItem()).isEqualTo(
-        TravelCertificateDateInputUiState.Created(TravelCertificateUrl("https://example.com/new.pdf")),
-      )
+      assertThat(awaitItem()).isCreated(TravelCertificateUrl("https://example.com/new.pdf"))
       assertThat(createTransport.inputs).containsExactly(createInput())
     }
   }
@@ -618,9 +616,7 @@ class TravelCertificateDateInputPresenterTest {
 
       createTransport.responses.trySend("https://example.com/new.pdf")
       frame()
-      assertThat(latest).isEqualTo(
-        TravelCertificateDateInputUiState.Created(TravelCertificateUrl("https://example.com/new.pdf")),
-      )
+      assertThat(latest).isCreated(TravelCertificateUrl("https://example.com/new.pdf"))
     }
   }
 
@@ -635,17 +631,19 @@ class TravelCertificateDateInputPresenterTest {
       createTransport.responses.trySend("https://example.com/new.pdf")
       frame()
       val created = latest as TravelCertificateDateInputUiState.Created
-      assertThat(created.leave.tryConsume()).isEqualTo(true)
+      assertThat(created.exit.tryConsume()).isEqualTo(true)
 
       restart()
       frame()
-      assertThat((latest as TravelCertificateDateInputUiState.Created).leave.tryConsume()).isEqualTo(false)
+      assertThat((latest as TravelCertificateDateInputUiState.Created).exit.tryConsume()).isEqualTo(false)
     }
   }
 
   @Test
   fun `starting from created stays created without fetching`() = runTest {
-    val created = TravelCertificateDateInputUiState.Created(TravelCertificateUrl("https://example.com/new.pdf"))
+    val created = TravelCertificateDateInputUiState.Created(
+      NavigationRequest.of(TravelCertificateUrl("https://example.com/new.pdf")),
+    )
     presenter().test(created) {
       assertThat(awaitItem()).isEqualTo(created)
       testScheduler.advanceUntilIdle()
@@ -657,4 +655,11 @@ class TravelCertificateDateInputPresenterTest {
 
 private class AdvancingClock(var now: Instant) : Clock {
   override fun now(): Instant = now
+}
+
+/** Created for [url]. The request in it is made by the presenter, so it is not compared. */
+private fun Assert<TravelCertificateDateInputUiState>.isCreated(url: TravelCertificateUrl) {
+  isInstanceOf<TravelCertificateDateInputUiState.Created>().prop(
+    TravelCertificateDateInputUiState.Created::url,
+  ).isEqualTo(url)
 }

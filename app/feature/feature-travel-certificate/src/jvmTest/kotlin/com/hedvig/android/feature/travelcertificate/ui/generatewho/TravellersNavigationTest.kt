@@ -18,6 +18,7 @@ import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificate
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateKey
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateTravellersInputKey
 import com.hedvig.android.feature.travelcertificate.navigation.navigateToCreatedCertificate
+import com.hedvig.android.molecule.public.NavigationRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -82,7 +83,7 @@ class TravellersNavigationTest {
   fun `created replaces the flow above the history with the certificate, once`() = runComposeUiTest {
     showEffect()
     val url = TravelCertificateUrl("https://example.com/new.pdf")
-    uiState = TravelCertificateTravellersInputUiState.Created(url)
+    uiState = TravelCertificateTravellersInputUiState.Created(NavigationRequest.of(url))
     waitForIdle()
     recompositionTrigger++
     waitForIdle()
