@@ -102,6 +102,7 @@ import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.claim.details.ui.rating.ClaimRatingButton
 import com.hedvig.android.feature.claim.details.ui.rating.ClaimRatingSheet
+import com.hedvig.android.feature.claim.details.ui.rating.RatingButtonState
 import com.hedvig.android.feature.claim.details.ui.rating.RatingEvent
 import com.hedvig.android.feature.claim.details.ui.rating.RatingState
 import com.hedvig.android.logger.logcat
@@ -992,6 +993,7 @@ private fun PreviewClaimDetailScreen(
           handlerEmail = "claims@eir.se",
           isPartnerClaim = true,
           hasSubmittedRating = false,
+          ratingButton = RatingButtonState.Enabled,
         ),
         openUrl = {},
         imageLoader = rememberPreviewImageLoader(),

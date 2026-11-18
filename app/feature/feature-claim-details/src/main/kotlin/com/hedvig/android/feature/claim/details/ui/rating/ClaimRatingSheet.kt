@@ -21,6 +21,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
@@ -72,7 +75,7 @@ internal fun ClaimRatingSheet(step: RatingStep?, onEvent: (RatingEvent) -> Unit,
   }
   LaunchedEffect(sheetState) {
     snapshotFlow { sheetState.isVisible }.userDismissals().collect {
-      currentOnEvent(RatingEvent.SheetDismissed(comment))
+      currentOnEvent(RatingEvent.SheetDismissed)
     }
   }
   HedvigBottomSheet(sheetState) { shownStep ->
@@ -222,8 +225,13 @@ private fun StarRatingRow(selectedRating: Int?, onRatingClick: (Int) -> Unit, mo
     Row(horizontalArrangement = Arrangement.SpaceAround) {
       (1..5).forEach { rating ->
         val isSelected = selectedRating == rating
+        // TODO: Add "%d of 5" / "%d av 5" to Lokalise
+        val ratingDescription = "$rating of 5"
         HedvigCard(
-          modifier = Modifier.weight(1f),
+          modifier = Modifier.weight(1f).semantics {
+            contentDescription = ratingDescription
+            selected = isSelected
+          },
           onClick = {
             hapticFeedback.performHapticFeedback(
               if (rating >= 4) HapticFeedbackType.Confirm else HapticFeedbackType.TextHandleMove,

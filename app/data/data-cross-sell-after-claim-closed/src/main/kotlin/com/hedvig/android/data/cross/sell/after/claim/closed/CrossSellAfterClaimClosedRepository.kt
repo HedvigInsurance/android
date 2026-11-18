@@ -38,21 +38,16 @@ internal class CrossSellAfterClaimClosedRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
 ) : CrossSellAfterClaimClosedRepository {
-  override suspend fun acknowledgeClaimClosedStatus(claimId: String): Either<ErrorMessage, Unit> {
-    return apolloClient
+  override suspend fun acknowledgeClaimClosedStatus(claimId: String): Either<ErrorMessage, Unit> = either {
+    val response = apolloClient
       .mutation(ClaimAcknowledgeClosedStatusMutation(claimId))
       .safeExecute(::ErrorMessage)
-      .map { response ->
-        either {
-          val userError = response
-            .claimAcknowledgeClosedStatus
-            ?.userError
-          if (userError != null) {
-            logcat(LogPriority.ERROR) { "ClaimAcknowledgeClosedStatusMutation failed: ${userError.message}" }
-            raise(ErrorMessage(userError.message))
-          }
-        }
-      }
+      .bind()
+    val userError = response.claimAcknowledgeClosedStatus?.userError
+    if (userError != null) {
+      logcat(LogPriority.ERROR) { "ClaimAcknowledgeClosedStatusMutation failed: ${userError.message}" }
+      raise(ErrorMessage(userError.message))
+    }
   }
 
   override fun triggerCrossSell(claim: ClosedClaimInfo) {

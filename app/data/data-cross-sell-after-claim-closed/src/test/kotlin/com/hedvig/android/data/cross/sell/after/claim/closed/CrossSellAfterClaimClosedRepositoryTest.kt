@@ -7,6 +7,7 @@ import com.apollographql.apollo.annotations.ApolloExperimental
 import com.apollographql.apollo.testing.registerTestResponse
 import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
+import com.hedvig.android.core.common.test.isLeft
 import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
@@ -69,6 +70,27 @@ class CrossSellAfterClaimClosedRepositoryTest {
     val result = repository().acknowledgeClaimClosedStatus("claimId")
 
     assertThat(result).isRight()
+    assertThat(crossSellAfterFlowRepository.completedTypes).isEmpty()
+  }
+
+  @Test
+  fun `acknowledgeClaimClosedStatus returns Left when the backend responds with a user error`() = runTest {
+    testApolloClientRule.apolloClient.registerTestResponse(
+      ClaimAcknowledgeClosedStatusMutation("claimId"),
+      ClaimAcknowledgeClosedStatusMutation.Data(
+        ClaimAcknowledgeClosedStatusMutation.Data.ClaimAcknowledgeClosedStatus(
+          __typename = "ClaimMutationOutput",
+          userError = ClaimAcknowledgeClosedStatusMutation.Data.ClaimAcknowledgeClosedStatus.UserError(
+            __typename = "UserError",
+            message = "Not allowed",
+          ),
+        ),
+      ),
+    )
+
+    val result = repository().acknowledgeClaimClosedStatus("claimId")
+
+    assertThat(result).isLeft()
     assertThat(crossSellAfterFlowRepository.completedTypes).isEmpty()
   }
 }

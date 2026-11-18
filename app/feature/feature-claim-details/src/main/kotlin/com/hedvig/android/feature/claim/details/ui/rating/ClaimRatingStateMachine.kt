@@ -26,7 +26,7 @@ internal sealed interface RatingEvent {
 
   data object Skip : RatingEvent
 
-  data class SheetDismissed(val comment: String) : RatingEvent
+  data object SheetDismissed : RatingEvent
 
   /** "Fortsätt", "Nej tack" or the Trustpilot button on the thank you step. */
   data object Finish : RatingEvent
@@ -56,7 +56,7 @@ private fun reduceOpen(step: RatingStep, event: RatingEvent): RatingTransition? 
   return when (step) {
     RatingStep.Stars -> when (event) {
       is RatingEvent.StarSelected -> show(RatingStep.Comment(event.rating))
-      RatingEvent.Skip, is RatingEvent.SheetDismissed -> close(ClaimRatingAnswer.Dismissed)
+      RatingEvent.Skip, RatingEvent.SheetDismissed -> close(ClaimRatingAnswer.Dismissed)
       else -> null
     }
 
@@ -70,13 +70,13 @@ private fun reduceOpen(step: RatingStep, event: RatingEvent): RatingTransition? 
 
       RatingEvent.Skip -> show(RatingStep.ThankYou(step.rating), ClaimRatingAnswer.Rated(step.rating, null))
 
-      is RatingEvent.SheetDismissed -> close(ClaimRatingAnswer.Rated(step.rating, null))
+      RatingEvent.SheetDismissed -> close(ClaimRatingAnswer.Rated(step.rating, null))
 
       else -> null
     }
 
     is RatingStep.ThankYou -> when (event) {
-      RatingEvent.Finish, is RatingEvent.SheetDismissed -> close()
+      RatingEvent.Finish, RatingEvent.SheetDismissed -> close()
       else -> null
     }
   }

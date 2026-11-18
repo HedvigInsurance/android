@@ -138,7 +138,7 @@ class ClaimDetailPresenterTest {
     presenter.test(ClaimDetailUiState.Loading) {
       awaitContent(content())
       sendRatingEvent(RatingEvent.OpenRequested)
-      val afterDismiss = sendRatingEvent(RatingEvent.SheetDismissed(""))
+      val afterDismiss = sendRatingEvent(RatingEvent.SheetDismissed)
 
       assertThat(afterDismiss.rating).isEqualTo(RatingState.Closed)
       assertThat(afterDismiss.ratingButton).isEqualTo(RatingButtonState.Enabled)

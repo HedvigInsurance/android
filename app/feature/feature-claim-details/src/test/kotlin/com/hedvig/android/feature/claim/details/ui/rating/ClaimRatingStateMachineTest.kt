@@ -29,7 +29,7 @@ class ClaimRatingStateMachineTest {
 
   @Test
   fun `closing the sheet on the stars step dismisses and closes`() {
-    assertThat(reduceRating(Open(Stars), SheetDismissed("")))
+    assertThat(reduceRating(Open(Stars), SheetDismissed))
       .isEqualTo(RatingTransition(Closed, ClaimRatingAnswer.Dismissed))
   }
 
@@ -63,7 +63,7 @@ class ClaimRatingStateMachineTest {
 
   @Test
   fun `closing the sheet on the comment step submits the rating without the typed comment and closes`() {
-    assertThat(reduceRating(Open(Comment(5)), SheetDismissed("Bra")))
+    assertThat(reduceRating(Open(Comment(5)), SheetDismissed))
       .isEqualTo(RatingTransition(Closed, ClaimRatingAnswer.Rated(5, null)))
   }
 
@@ -74,12 +74,12 @@ class ClaimRatingStateMachineTest {
 
   @Test
   fun `closing the sheet on the thank you step closes without another answer`() {
-    assertThat(reduceRating(Open(ThankYou(2)), SheetDismissed(""))).isEqualTo(RatingTransition(Closed, null))
+    assertThat(reduceRating(Open(ThankYou(2)), SheetDismissed)).isEqualTo(RatingTransition(Closed, null))
   }
 
   @Test
   fun `sheet events while closed are ignored`() {
-    listOf(StarSelected(3), Send("x"), Skip, SheetDismissed("x"), Finish).forEach { event ->
+    listOf(StarSelected(3), Send("x"), Skip, SheetDismissed, Finish).forEach { event ->
       assertThat(reduceRating(Closed, event)).isEqualTo(RatingTransition(Closed, null))
     }
   }
