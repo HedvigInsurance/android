@@ -38,6 +38,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
+import com.hedvig.android.compose.ui.NavigationEffect
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.PrimaryAlt
 import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle.NoButtons
@@ -129,16 +131,27 @@ internal fun AddHouseInformationDestination(
   navigateUp: () -> Unit,
   popBackstack: () -> Unit,
   exitFlow: () -> Unit,
+  navigateToCoverageStep: (ChoseCoverageLevelAndDeductibleStep) -> Unit,
 ) {
   val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+  AddHouseInformationNavigationEffect(uiState, navigateToCoverageStep)
   AddHouseInformationScreen(
     uiState = uiState,
     navigateUp = navigateUp,
     popBackstack = popBackstack,
     exitFlow = exitFlow,
     dismissSubmissionError = { viewModel.emit(DismissSubmissionError) },
-    onSubmit = { viewModel.emit(Submit) },
+    onSubmit = dropUnlessResumed { viewModel.emit(Submit) },
   )
+}
+
+/** Opens the step in [Content.next]. */
+@Composable
+internal fun AddHouseInformationNavigationEffect(
+  uiState: AddHouseInformationUiState,
+  navigateToCoverageStep: (ChoseCoverageLevelAndDeductibleStep) -> Unit,
+) {
+  NavigationEffect((uiState as? Content)?.next, navigateToCoverageStep)
 }
 
 @Composable
@@ -549,6 +562,7 @@ private fun PreviewAddHouseInformationScreen() {
           ),
           isLoadingNextStep = false,
           submittingInfoFailure = null,
+          next = null,
         ),
         navigateUp = {},
         popBackstack = {},

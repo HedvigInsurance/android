@@ -4,6 +4,7 @@ import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationDestination
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationViewModel
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationViewModelFactory
+import com.hedvig.android.feature.movingflow.ui.addhouseinformation.ChoseCoverageLevelAndDeductibleStep
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleDestination
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleViewModel
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleViewModelFactory
@@ -23,6 +24,7 @@ import com.hedvig.android.feature.movingflow.ui.summary.SummaryViewModelFactory
 import com.hedvig.android.navigation.common.AnalyticsNamed
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.popUpTo
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonDestination
@@ -110,6 +112,7 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowEntries(backstack: Backstack, goT
       navigateUp = backstack::navigateUp,
       popBackstack = backstack::popBackstack,
       exitFlow = { backstack.exitMovingFlow() },
+      navigateToCoverageStep = backstack::navigateToCoverageStep,
     )
   }
   entry<ChoseCoverageLevelAndDeductibleKey> { key ->
@@ -158,6 +161,10 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowEntries(backstack: Backstack, goT
       popBackstack = backstack::popBackstack,
     )
   }
+}
+
+internal fun Backstack.navigateToCoverageStep(step: ChoseCoverageLevelAndDeductibleStep) {
+  add(ChoseCoverageLevelAndDeductibleKey(step.moveIntentId))
 }
 
 /**

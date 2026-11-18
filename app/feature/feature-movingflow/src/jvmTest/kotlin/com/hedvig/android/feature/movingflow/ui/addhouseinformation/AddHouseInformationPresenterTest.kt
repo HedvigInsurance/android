@@ -7,6 +7,7 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isNotEqualTo
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import assertk.assertions.prop
@@ -19,15 +20,10 @@ import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver
 import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
-import com.hedvig.android.feature.movingflow.AddHouseInformationKey
-import com.hedvig.android.feature.movingflow.ChoseCoverageLevelAndDeductibleKey
-import com.hedvig.android.feature.movingflow.EnterNewAddressKey
 import com.hedvig.android.feature.movingflow.FakeMoveIntentRequestTransport
-import com.hedvig.android.feature.movingflow.HousingTypeKey
 import com.hedvig.android.feature.movingflow.InMemoryPreferencesDataStore
 import com.hedvig.android.feature.movingflow.MovingSource
 import com.hedvig.android.feature.movingflow.TEST_MOVE_INTENT_ID
-import com.hedvig.android.feature.movingflow.TestBackstack
 import com.hedvig.android.feature.movingflow.awaitCondition
 import com.hedvig.android.feature.movingflow.data.HousingType
 import com.hedvig.android.feature.movingflow.data.MovingFlowState
@@ -39,11 +35,11 @@ import com.hedvig.android.feature.movingflow.testMovingFlowStateWithPropertyInpu
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationUiState.Content
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationUiState.Content.SubmittingInfoFailure
 import com.hedvig.android.logger.TestLogcatLoggingRule
+import com.hedvig.android.molecule.public.NavigationRequest
 import com.hedvig.android.molecule.test.FrameTestContext
 import com.hedvig.android.molecule.test.MoleculePresenterTestContext
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.molecule.test.testFrames
-import com.hedvig.android.navigation.common.HedvigNavKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
@@ -65,6 +61,8 @@ import org.junit.rules.TemporaryFolder
 private typealias AddHouseInformationTestContext = MoleculePresenterTestContext<*, AddHouseInformationUiState>
 
 private typealias AddHouseInformationFrames = FrameTestContext<AddHouseInformationEvent, AddHouseInformationUiState>
+
+private typealias CoverageStepRequest = NavigationRequest<ChoseCoverageLevelAndDeductibleStep>
 
 @OptIn(ApolloExperimental::class)
 class AddHouseInformationPresenterTest {
@@ -113,18 +111,10 @@ class AddHouseInformationPresenterTest {
     return MovingFlowRepository(storage)
   }
 
-  /** The stack the flow runs on when this step is shown: housing type, new address, then this step. */
-  private val flowStack: List<HedvigNavKey> = listOf(
-    HousingTypeKey(TEST_MOVE_INTENT_ID),
-    EnterNewAddressKey(TEST_MOVE_INTENT_ID),
-    AddHouseInformationKey(TEST_MOVE_INTENT_ID),
-  )
-  private val coverageKey = ChoseCoverageLevelAndDeductibleKey(TEST_MOVE_INTENT_ID)
+  private val coverageStep = ChoseCoverageLevelAndDeductibleStep(TEST_MOVE_INTENT_ID)
 
-  private fun flowBackstack() = TestBackstack(flowStack.toMutableList())
-
-  private fun presenter(repository: MovingFlowRepository, backstack: TestBackstack = flowBackstack()) =
-    AddHouseInformationPresenter(TEST_MOVE_INTENT_ID, repository, apolloClient, backstack)
+  private fun presenter(repository: MovingFlowRepository) =
+    AddHouseInformationPresenter(TEST_MOVE_INTENT_ID, repository, apolloClient)
 
   private suspend fun AddHouseInformationTestContext.awaitContent(): Content {
     assertThat(awaitItem()).isEqualTo(AddHouseInformationUiState.Loading)
@@ -191,9 +181,8 @@ class AddHouseInformationPresenterTest {
   @Test
   fun `submitting incomplete info shows validation errors and stays on the screen`() = runTest {
     val repository = repositoryWith(testMovingFlowStateWithPropertyInput(HousingType.Villa))
-    val backstack = flowBackstack()
 
-    presenter(repository, backstack).test(AddHouseInformationUiState.Loading) {
+    presenter(repository).test(AddHouseInformationUiState.Loading) {
       val content = awaitContent()
       content.addressInput.yearOfConstruction.updateValue(1850)
 
@@ -204,9 +193,9 @@ class AddHouseInformationPresenterTest {
         .isEqualTo(AddHouseInformationValidationError.InvalidYearOfConstruction.TooEarly)
       assertThat(content.addressInput.ancillaryArea.validationError)
         .isEqualTo(AddHouseInformationValidationError.MissingAncillaryArea)
+      assertThat(content.next).isNull()
       cancelAndIgnoreRemainingEvents()
     }
-    assertThat(backstack.entries).isEqualTo(flowStack)
   }
 
   @Test
@@ -235,17 +224,16 @@ class AddHouseInformationPresenterTest {
     val repository = repositoryWith(
       testMovingFlowStateWithPropertyInput(HousingType.Villa, movingSource = MovingSource.TERMINATION),
     )
-    val backstack = flowBackstack()
-
-    presenter(repository, backstack).test(AddHouseInformationUiState.Loading) {
+    presenter(repository).test(AddHouseInformationUiState.Loading) {
       awaitContent().fillInValidHouseInfo()
 
       sendEvent(AddHouseInformationEvent.Submit)
-      awaitCondition { backstack.entries.size > flowStack.size }
+      val next = awaitNext()
+      assertThat(next.target).isEqualTo(coverageStep)
+      assertThat(next.isPending).isTrue()
       cancelAndIgnoreRemainingEvents()
     }
 
-    assertThat(backstack.entries).isEqualTo(flowStack + coverageKey)
     val state = repository.movingFlowState().first()
     assertThat(state?.movingFlowQuotes?.homeQuotes?.map { it.id }).isEqualTo(listOf("quote"))
     val house = state?.propertyState as MovingFlowState.PropertyState.HouseState
@@ -259,9 +247,7 @@ class AddHouseInformationPresenterTest {
     val repository = repositoryWith(
       testMovingFlowStateWithPropertyInput(HousingType.Villa, movingSource = MovingSource.TERMINATION),
     )
-    val backstack = flowBackstack()
-
-    presenter(repository, backstack).test(AddHouseInformationUiState.Loading) {
+    presenter(repository).test(AddHouseInformationUiState.Loading) {
       awaitContent().fillInValidHouseInfo()
 
       sendEvent(AddHouseInformationEvent.Submit)
@@ -271,7 +257,6 @@ class AddHouseInformationPresenterTest {
       sendEvent(AddHouseInformationEvent.DismissSubmissionError)
       assertThat(awaitItem()).isInstanceOf<Content>().prop(Content::submittingInfoFailure).isNull()
     }
-    assertThat(backstack.entries).isEqualTo(flowStack)
   }
 
   @Test
@@ -289,16 +274,13 @@ class AddHouseInformationPresenterTest {
       testMovingFlowStateWithPropertyInput(HousingType.Villa, movingSource = MovingSource.TERMINATION),
     )
 
-    val backstack = flowBackstack()
-
-    presenter(repository, backstack).test(AddHouseInformationUiState.Loading) {
+    presenter(repository).test(AddHouseInformationUiState.Loading) {
       awaitContent().fillInValidHouseInfo()
 
       sendEvent(AddHouseInformationEvent.Submit)
 
       assertThat(awaitFailure()).isEqualTo(SubmittingInfoFailure.UserError("Address not supported"))
     }
-    assertThat(backstack.entries).isEqualTo(flowStack)
   }
 
   private val requestTransport = FakeMoveIntentRequestTransport()
@@ -312,8 +294,8 @@ class AddHouseInformationPresenterTest {
     return MovingFlowRepository(storage)
   }
 
-  private fun framePresenter(repository: MovingFlowRepository, backstack: TestBackstack) =
-    AddHouseInformationPresenter(TEST_MOVE_INTENT_ID, repository, requestTransport.apolloClient(), backstack)
+  private fun framePresenter(repository: MovingFlowRepository) =
+    AddHouseInformationPresenter(TEST_MOVE_INTENT_ID, repository, requestTransport.apolloClient())
 
   private val AddHouseInformationFrames.content: Content
     get() = latest as Content
@@ -331,42 +313,49 @@ class AddHouseInformationPresenterTest {
     assertThat(content.isLoadingNextStep).isTrue()
   }
 
+  /** Answers the request in flight with quotes and returns the step offered for it. */
+  private fun AddHouseInformationFrames.succeed(): CoverageStepRequest {
+    requestTransport.responses.trySend(quotes)
+    frame()
+    val next = content.next!!
+    assertThat(next.target).isEqualTo(coverageStep)
+    assertThat(next.isPending).isTrue()
+    return next
+  }
+
   @Test
-  fun `frames, a success pushes the coverage step once on top of the flow and enables the form again`() = runTest {
+  fun `frames, a success offers the coverage step once and enables the form again`() = runTest {
     val repository = inMemoryRepository()
-    val backstack = flowBackstack()
-    framePresenter(repository, backstack).testFrames(AddHouseInformationUiState.Loading) {
+    framePresenter(repository).testFrames(AddHouseInformationUiState.Loading) {
       continueUntilInFlight()
       assertThat(requestTransport.inputs).containsExactly(expectedRequest.moveIntentRequestInput)
-      assertThat(backstack.entries).isEqualTo(flowStack)
+      assertThat(content.next).isNull()
 
-      requestTransport.responses.trySend(quotes)
-      runCurrent()
-      // The step is pushed as soon as the response lands, before the presenter produces its next state.
-      assertThat(backstack.entries).isEqualTo(flowStack + coverageKey)
-      assertThat(content.isLoadingNextStep).isTrue()
-      frame()
+      val next = succeed()
       assertThat(content.isLoadingNextStep).isFalse()
       assertThat(content.submittingInfoFailure).isNull()
-      frame()
-      frame()
-      assertThat(backstack.entries).isEqualTo(flowStack + coverageKey)
-      assertThat(requestTransport.inputs).hasSize(1)
       val stored = repository.movingFlowState().first()
       assertThat(stored?.movingFlowQuotes?.homeQuotes?.map { it.id }).isEqualTo(listOf("quote"))
+
+      // The platform takes the step; later states keep the same, taken request and offer nothing new.
+      assertThat(next.tryConsume()).isTrue()
+      frame()
+      frame()
+      assertThat(content.next).isEqualTo(next)
+      assertThat(observed.mapNotNull { (it as? Content)?.next }.distinct()).containsExactly(next)
+      assertThat(requestTransport.inputs).hasSize(1)
     }
   }
 
   @Test
-  fun `frames, a failure keeps the back stack, and a retry after dismissing sends the request again`() = runTest {
-    val backstack = flowBackstack()
-    framePresenter(inMemoryRepository(), backstack).testFrames(AddHouseInformationUiState.Loading) {
+  fun `frames, a failure offers nothing, and a retry after dismissing sends the request again`() = runTest {
+    framePresenter(inMemoryRepository()).testFrames(AddHouseInformationUiState.Loading) {
       continueUntilInFlight()
       requestTransport.responses.trySend(null)
       frame()
       assertThat(content.submittingInfoFailure).isEqualTo(SubmittingInfoFailure.NetworkFailure)
       assertThat(content.isLoadingNextStep).isFalse()
-      assertThat(backstack.entries).isEqualTo(flowStack)
+      assertThat(content.next).isNull()
 
       emit(AddHouseInformationEvent.DismissSubmissionError)
       frame()
@@ -379,111 +368,95 @@ class AddHouseInformationPresenterTest {
         expectedRequest.moveIntentRequestInput,
       )
 
-      requestTransport.responses.trySend(quotes)
-      frame()
-      assertThat(backstack.entries).isEqualTo(flowStack + coverageKey)
+      succeed()
     }
   }
 
   @Test
-  fun `frames, an equal retry handled before the frame after a failure is never sent and loads forever`() = runTest {
-    val backstack = flowBackstack()
-    framePresenter(inMemoryRepository(), backstack).testFrames(AddHouseInformationUiState.Loading) {
+  fun `frames, an equal retry handled before the frame after a failure is sent`() = runTest {
+    framePresenter(inMemoryRepository()).testFrames(AddHouseInformationUiState.Loading) {
       continueUntilInFlight()
       // The failure and the retry are both handled before the next frame composes the presenter.
       requestTransport.responses.trySend(null)
       runCurrent()
       emit(AddHouseInformationEvent.Submit)
       frame()
-      assertThat(requestTransport.inputs).hasSize(1)
+      assertThat(requestTransport.inputs).containsExactly(
+        expectedRequest.moveIntentRequestInput,
+        expectedRequest.moveIntentRequestInput,
+      )
       assertThat(content.isLoadingNextStep).isTrue()
-      assertThat(content.submittingInfoFailure).isEqualTo(SubmittingInfoFailure.NetworkFailure)
 
-      // Nothing is in flight, yet the step stays loading, and a later continue is absorbed as well.
-      emit(AddHouseInformationEvent.DismissSubmissionError)
-      frame()
-      frame()
-      assertThat(content.isLoadingNextStep).isTrue()
-      emit(AddHouseInformationEvent.Submit)
-      frame()
-      frame()
-      assertThat(requestTransport.inputs).hasSize(1)
-      assertThat(content.isLoadingNextStep).isTrue()
-      assertThat(backstack.entries).isEqualTo(flowStack)
+      succeed()
+      assertThat(content.isLoadingNextStep).isFalse()
     }
   }
 
   @Test
   fun `frames, a continue while the request is in flight with the same input sends nothing more`() = runTest {
-    val backstack = flowBackstack()
-    framePresenter(inMemoryRepository(), backstack).testFrames(AddHouseInformationUiState.Loading) {
+    framePresenter(inMemoryRepository()).testFrames(AddHouseInformationUiState.Loading) {
       continueUntilInFlight()
       emit(AddHouseInformationEvent.Submit)
       frame()
       assertThat(requestTransport.inputs).hasSize(1)
       assertThat(content.isLoadingNextStep).isTrue()
 
-      requestTransport.responses.trySend(quotes)
+      val next = succeed()
       frame()
-      frame()
-      assertThat(backstack.entries).isEqualTo(flowStack + coverageKey)
+      assertThat(observed.mapNotNull { (it as? Content)?.next }.distinct()).containsExactly(next)
     }
   }
 
   @Test
-  fun `frames, a continue with changed input while the request is in flight cancels it and sends the new one`() =
+  fun `frames, a continue with changed input while the request is in flight is ignored and cancels nothing`() =
     runTest {
-      val backstack = flowBackstack()
-      framePresenter(inMemoryRepository(), backstack).testFrames(AddHouseInformationUiState.Loading) {
+      val repository = inMemoryRepository()
+      framePresenter(repository).testFrames(AddHouseInformationUiState.Loading) {
         continueUntilInFlight()
         content.addressInput.ancillaryArea.updateValue(30)
         emit(AddHouseInformationEvent.Submit)
         frame()
-        assertThat(requestTransport.inputs).hasSize(2)
-        assertThat(requestTransport.cancelled).isEqualTo(1)
-        assertThat(requestTransport.inputs.last().house.getOrThrow()?.ancillaryArea).isEqualTo(30)
+        assertThat(requestTransport.inputs).containsExactly(expectedRequest.moveIntentRequestInput)
+        assertThat(requestTransport.cancelled).isEqualTo(0)
+        assertThat(content.isLoadingNextStep).isTrue()
+        // The stored input stays the one the quotes in flight are for.
+        val stored = repository.movingFlowState().first()?.propertyState as MovingFlowState.PropertyState.HouseState
+        assertThat(stored.ancillaryArea).isEqualTo(15)
 
-        requestTransport.responses.trySend(quotes)
-        frame()
-        frame()
-        assertThat(backstack.entries).isEqualTo(flowStack + coverageKey)
+        succeed()
       }
     }
 
   @Test
   fun `frames, two continues in one frame send one request`() = runTest {
-    val backstack = flowBackstack()
-    framePresenter(inMemoryRepository(), backstack).testFrames(AddHouseInformationUiState.Loading) {
+    framePresenter(inMemoryRepository()).testFrames(AddHouseInformationUiState.Loading) {
       showFilledInForm()
       emit(AddHouseInformationEvent.Submit, AddHouseInformationEvent.Submit)
       frame()
       assertThat(requestTransport.inputs).hasSize(1)
       assertThat(content.isLoadingNextStep).isTrue()
 
-      requestTransport.responses.trySend(quotes)
+      val next = succeed()
       frame()
-      frame()
-      assertThat(backstack.entries).isEqualTo(flowStack + coverageKey)
+      assertThat(observed.mapNotNull { (it as? Content)?.next }.distinct()).containsExactly(next)
     }
   }
 
   @Test
   fun `frames, a continue before the flow loaded is dropped`() = runTest {
-    val backstack = flowBackstack()
-    framePresenter(inMemoryRepository(), backstack).testFrames(AddHouseInformationUiState.Loading) {
+    framePresenter(inMemoryRepository()).testFrames(AddHouseInformationUiState.Loading) {
       emit(AddHouseInformationEvent.Submit)
       frame()
       frame()
       assertThat(content.isLoadingNextStep).isFalse()
+      assertThat(content.next).isNull()
       assertThat(requestTransport.inputs).isEmpty()
-      assertThat(backstack.entries).isEqualTo(flowStack)
     }
   }
 
   @Test
   fun `frames, a continue while the failure is shown sends the request and keeps the failure shown`() = runTest {
-    val backstack = flowBackstack()
-    framePresenter(inMemoryRepository(), backstack).testFrames(AddHouseInformationUiState.Loading) {
+    framePresenter(inMemoryRepository()).testFrames(AddHouseInformationUiState.Loading) {
       continueUntilInFlight()
       requestTransport.responses.trySend(null)
       frame()
@@ -492,60 +465,57 @@ class AddHouseInformationPresenterTest {
       assertThat(requestTransport.inputs).hasSize(2)
       assertThat(content.isLoadingNextStep).isTrue()
       assertThat(content.submittingInfoFailure).isEqualTo(SubmittingInfoFailure.NetworkFailure)
-      assertThat(backstack.entries).isEqualTo(flowStack)
+      assertThat(content.next).isNull()
     }
   }
 
   @Test
-  fun `frames, continuing again after coming back from the coverage step requests and pushes it again`() = runTest {
-    val backstack = flowBackstack()
-    framePresenter(inMemoryRepository(), backstack).testFrames(AddHouseInformationUiState.Loading) {
+  fun `frames, a continue while the offered step is not taken yet is ignored`() = runTest {
+    framePresenter(inMemoryRepository()).testFrames(AddHouseInformationUiState.Loading) {
       continueUntilInFlight()
-      requestTransport.responses.trySend(quotes)
-      frame()
-      backstack.entries.removeLast()
+      val next = succeed()
 
       emit(AddHouseInformationEvent.Submit)
       frame()
-      assertThat(requestTransport.inputs).hasSize(2)
-      requestTransport.responses.trySend(quotes)
-      frame()
-      assertThat(backstack.entries).isEqualTo(flowStack + coverageKey)
+      assertThat(requestTransport.inputs).hasSize(1)
+      assertThat(content.isLoadingNextStep).isFalse()
+      assertThat(content.next).isEqualTo(next)
+      assertThat(next.isPending).isTrue()
     }
   }
 
   @Test
-  fun `frames, a continue right after the coverage step was pushed pushes it a second time`() = runTest {
-    val backstack = flowBackstack()
-    framePresenter(inMemoryRepository(), backstack).testFrames(AddHouseInformationUiState.Loading) {
+  fun `frames, continuing again after the step was taken requests the quotes again and offers a new step`() = runTest {
+    framePresenter(inMemoryRepository()).testFrames(AddHouseInformationUiState.Loading) {
       continueUntilInFlight()
-      requestTransport.responses.trySend(quotes)
-      frame()
+      val first = succeed()
+      assertThat(first.tryConsume()).isTrue()
 
-      // The member taps continue again while the coverage step is still animating in.
+      // Back from the coverage step, or a tap while it is still animating in, then continue.
       emit(AddHouseInformationEvent.Submit)
       frame()
-      requestTransport.responses.trySend(quotes)
-      frame()
       assertThat(requestTransport.inputs).hasSize(2)
-      assertThat(backstack.entries).isEqualTo(flowStack + coverageKey + coverageKey)
+      assertThat(content.next).isEqualTo(first)
+      val second = succeed()
+      assertThat(second).isNotEqualTo(first)
     }
   }
 
   @Test
   fun `frames, a restart before the flow loaded shows the form`() = runTest {
-    framePresenter(inMemoryRepository(), flowBackstack()).testFrames(AddHouseInformationUiState.Loading) {
+    framePresenter(inMemoryRepository()).testFrames(AddHouseInformationUiState.Loading) {
       restart()
       frame()
       frame()
       assertThat(content.isLoadingNextStep).isFalse()
       assertThat(content.submittingInfoFailure).isNull()
+      assertThat(content.next).isNull()
     }
   }
 
   @Test
   fun `frames, a restart replaces input typed but not continued with the stored input`() = runTest {
-    framePresenter(inMemoryRepository(), flowBackstack()).testFrames(AddHouseInformationUiState.Loading) {
+    framePresenter(inMemoryRepository()).testFrames(AddHouseInformationUiState.Loading) {
       frame()
       frame()
       content.addressInput.ancillaryArea.updateValue(15)
@@ -561,8 +531,7 @@ class AddHouseInformationPresenterTest {
 
   @Test
   fun `frames, a restart while the request is in flight cancels it and shows the form ready to continue`() = runTest {
-    val backstack = flowBackstack()
-    framePresenter(inMemoryRepository(), backstack).testFrames(AddHouseInformationUiState.Loading) {
+    framePresenter(inMemoryRepository()).testFrames(AddHouseInformationUiState.Loading) {
       continueUntilInFlight()
       restart()
       frame()
@@ -570,23 +539,21 @@ class AddHouseInformationPresenterTest {
       assertThat(requestTransport.cancelled).isEqualTo(1)
       assertThat(content.isLoadingNextStep).isFalse()
       assertThat(content.submittingInfoFailure).isNull()
+      assertThat(content.next).isNull()
       assertThat(content.addressInput.ancillaryArea.value).isEqualTo(15)
       assertThat(requestTransport.inputs).hasSize(1)
-      assertThat(backstack.entries).isEqualTo(flowStack)
 
       emit(AddHouseInformationEvent.Submit)
       frame()
       assertThat(requestTransport.inputs).hasSize(2)
-      requestTransport.responses.trySend(quotes)
-      frame()
-      assertThat(backstack.entries).isEqualTo(flowStack + coverageKey)
+      assertThat(content.isLoadingNextStep).isTrue()
+      succeed()
     }
   }
 
   @Test
   fun `frames, a restart after a failure drops the failure`() = runTest {
-    val backstack = flowBackstack()
-    framePresenter(inMemoryRepository(), backstack).testFrames(AddHouseInformationUiState.Loading) {
+    framePresenter(inMemoryRepository()).testFrames(AddHouseInformationUiState.Loading) {
       continueUntilInFlight()
       requestTransport.responses.trySend(null)
       frame()
@@ -597,24 +564,48 @@ class AddHouseInformationPresenterTest {
       frame()
       assertThat(content.submittingInfoFailure).isNull()
       assertThat(content.isLoadingNextStep).isFalse()
-      assertThat(backstack.entries).isEqualTo(flowStack)
+      assertThat(content.next).isNull()
     }
   }
 
   @Test
-  fun `frames, a restart after the coverage step was pushed does not push it again`() = runTest {
-    val backstack = flowBackstack()
-    framePresenter(inMemoryRepository(), backstack).testFrames(AddHouseInformationUiState.Loading) {
+  fun `frames, a restart after the step was taken keeps it taken and offers nothing new`() = runTest {
+    framePresenter(inMemoryRepository()).testFrames(AddHouseInformationUiState.Loading) {
       continueUntilInFlight()
-      requestTransport.responses.trySend(quotes)
-      frame()
+      val next = succeed()
+      assertThat(next.tryConsume()).isTrue()
 
       restart()
       frame()
       frame()
-      assertThat(backstack.entries).isEqualTo(flowStack + coverageKey)
+      assertThat(content.next).isEqualTo(next)
+      assertThat(next.isPending).isFalse()
       assertThat(content.isLoadingNextStep).isFalse()
       assertThat(requestTransport.inputs).hasSize(1)
+    }
+  }
+
+  @Test
+  fun `frames, a restart while the step is offered and not taken keeps offering the same step`() = runTest {
+    framePresenter(inMemoryRepository()).testFrames(AddHouseInformationUiState.Loading) {
+      continueUntilInFlight()
+      val next = succeed()
+
+      restart()
+      frame()
+      frame()
+      assertThat(content.next).isEqualTo(next)
+      assertThat(next.isPending).isTrue()
+      emit(AddHouseInformationEvent.Submit)
+      frame()
+      assertThat(requestTransport.inputs).hasSize(1)
+    }
+  }
+
+  private suspend fun AddHouseInformationTestContext.awaitNext(): CoverageStepRequest {
+    while (true) {
+      val next = (awaitItem() as Content).next
+      if (next != null) return next
     }
   }
 
@@ -623,6 +614,7 @@ class AddHouseInformationPresenterTest {
       val content = awaitItem() as Content
       if (content.submittingInfoFailure != null && !content.isLoadingNextStep) {
         assertThat(content.shouldDisableInput).isEqualTo(true)
+        assertThat(content.next).isNull()
         return content.submittingInfoFailure
       }
     }
