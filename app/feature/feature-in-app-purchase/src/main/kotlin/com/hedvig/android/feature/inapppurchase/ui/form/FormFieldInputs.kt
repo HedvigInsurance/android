@@ -99,10 +99,25 @@ internal fun FormFieldInput(
       modifier = modifier,
     )
 
-    is InAppPurchaseFormField.Text,
-    is InAppPurchaseFormField.SearchableSelect,
-    is InAppPurchaseFormField.ExtraBuildings,
-    -> Unit
+    is InAppPurchaseFormField.Text -> TextFieldInput(
+      field = field,
+      value = state.value,
+      errorMessage = state.errorMessage,
+      enabled = enabled,
+      onValueChange = onValueChange,
+      modifier = modifier,
+    )
+
+    is InAppPurchaseFormField.SearchableSelect -> SearchableSelectFieldInput(
+      field = field,
+      values = state.values,
+      errorMessage = state.errorMessage,
+      enabled = enabled,
+      onValuesChange = onValuesChange,
+      modifier = modifier,
+    )
+
+    is InAppPurchaseFormField.ExtraBuildings -> Unit
   }
 }
 
