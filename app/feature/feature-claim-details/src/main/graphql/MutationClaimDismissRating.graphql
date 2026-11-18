@@ -3,5 +3,9 @@ mutation ClaimDismissRating($claimId: ID!) {
     userError {
       message
     }
+    claim {
+      id
+      hasSubmittedRating
+    }
   }
 }

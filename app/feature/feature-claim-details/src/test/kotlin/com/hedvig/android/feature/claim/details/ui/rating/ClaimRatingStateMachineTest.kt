@@ -3,7 +3,7 @@ package com.hedvig.android.feature.claim.details.ui.rating
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.hedvig.android.data.cross.sell.after.claim.closed.ClosedClaimInfo
-import com.hedvig.android.feature.claim.details.data.ClaimClosedAnswer
+import com.hedvig.android.feature.claim.details.data.ClaimRatingAnswer
 import com.hedvig.android.feature.claim.details.ui.rating.RatingEvent.CommentChanged
 import com.hedvig.android.feature.claim.details.ui.rating.RatingEvent.ExitRequested
 import com.hedvig.android.feature.claim.details.ui.rating.RatingEvent.Finish
@@ -31,9 +31,9 @@ class ClaimRatingStateMachineTest {
   }
 
   @Test
-  fun `exit on a closed claim already rated leaves and records NotAsked`() {
+  fun `exit on a closed claim already rated leaves with no answer`() {
     assertThat(reduceRating(Idle, ExitRequested(ExitVia.SystemBack), alreadyRated))
-      .isEqualTo(RatingTransition(Leaving(ExitVia.SystemBack), ClaimClosedAnswer.NotAsked))
+      .isEqualTo(RatingTransition(Leaving(ExitVia.SystemBack), null))
   }
 
   @Test
@@ -45,13 +45,13 @@ class ClaimRatingStateMachineTest {
   @Test
   fun `skip on the stars step dismisses and leaves`() {
     assertThat(reduceRating(Asking(Stars, ExitVia.SystemBack), Skip, eligible))
-      .isEqualTo(RatingTransition(Leaving(ExitVia.SystemBack), ClaimClosedAnswer.Dismissed))
+      .isEqualTo(RatingTransition(Leaving(ExitVia.SystemBack), ClaimRatingAnswer.Dismissed))
   }
 
   @Test
   fun `closing the sheet on the stars step dismisses and leaves`() {
     assertThat(reduceRating(Asking(Stars, ExitVia.SystemBack), SheetDismissed, eligible))
-      .isEqualTo(RatingTransition(Leaving(ExitVia.SystemBack), ClaimClosedAnswer.Dismissed))
+      .isEqualTo(RatingTransition(Leaving(ExitVia.SystemBack), ClaimRatingAnswer.Dismissed))
   }
 
   @Test
@@ -75,25 +75,25 @@ class ClaimRatingStateMachineTest {
   @Test
   fun `send submits the rating and trimmed comment and shows thank you`() {
     assertThat(reduceRating(Asking(Comment(4, "  Snabbt \n"), ExitVia.SystemBack), Send, eligible))
-      .isEqualTo(RatingTransition(Asking(ThankYou(4), ExitVia.SystemBack), ClaimClosedAnswer.Rated(4, "Snabbt")))
+      .isEqualTo(RatingTransition(Asking(ThankYou(4), ExitVia.SystemBack), ClaimRatingAnswer.Rated(4, "Snabbt")))
   }
 
   @Test
   fun `send with a blank comment submits null`() {
     assertThat(reduceRating(Asking(Comment(3, "   "), ExitVia.SystemBack), Send, eligible))
-      .isEqualTo(RatingTransition(Asking(ThankYou(3), ExitVia.SystemBack), ClaimClosedAnswer.Rated(3, null)))
+      .isEqualTo(RatingTransition(Asking(ThankYou(3), ExitVia.SystemBack), ClaimRatingAnswer.Rated(3, null)))
   }
 
   @Test
   fun `skip on the comment step submits the rating without a comment`() {
     assertThat(reduceRating(Asking(Comment(2, "Långsamt"), ExitVia.SystemBack), Skip, eligible))
-      .isEqualTo(RatingTransition(Asking(ThankYou(2), ExitVia.SystemBack), ClaimClosedAnswer.Rated(2, null)))
+      .isEqualTo(RatingTransition(Asking(ThankYou(2), ExitVia.SystemBack), ClaimRatingAnswer.Rated(2, null)))
   }
 
   @Test
   fun `closing the sheet on the comment step submits the rating and leaves`() {
     assertThat(reduceRating(Asking(Comment(5, "x"), ExitVia.SystemBack), SheetDismissed, eligible))
-      .isEqualTo(RatingTransition(Leaving(ExitVia.SystemBack), ClaimClosedAnswer.Rated(5, null)))
+      .isEqualTo(RatingTransition(Leaving(ExitVia.SystemBack), ClaimRatingAnswer.Rated(5, null)))
   }
 
   @Test

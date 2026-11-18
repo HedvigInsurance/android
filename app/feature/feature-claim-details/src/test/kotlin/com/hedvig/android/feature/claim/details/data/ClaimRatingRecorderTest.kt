@@ -8,9 +8,8 @@ import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.data.cross.sell.after.claim.closed.ClosedClaimInfo
-import com.hedvig.android.data.cross.sell.after.claim.closed.CrossSellAfterClaimClosedRepository
 import com.hedvig.android.logger.TestLogcatLoggingRule
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.SupervisorJob
@@ -22,69 +21,70 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 
-class ClaimClosedExitRecorderTest {
+class ClaimRatingRecorderTest {
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
 
-  private val claim = ClosedClaimInfo("claim-1", "CLOSED", "THEFT", "SE_APARTMENT_RENT", "contract-1")
-
   @Test
-  fun `Rated submits the rating and comment and triggers the cross-sell`() = runTest {
+  fun `Rated submits the rating and comment`() = runTest {
     val events = mutableListOf<String>()
     val recorder = recorder(events)
 
-    recorder.record(claim, ClaimClosedAnswer.Rated(4, "Great"))
+    recorder.record("claim-1", ClaimRatingAnswer.Rated(4, "Great"))
     runCurrent()
 
-    assertThat(events).containsExactly("crossSell:claim-1", "submit:claim-1:4:Great")
+    assertThat(events).containsExactly("submit:claim-1:4:Great")
   }
 
   @Test
-  fun `Dismissed dismisses and triggers the cross-sell`() = runTest {
+  fun `Rated without a comment submits a null comment`() = runTest {
     val events = mutableListOf<String>()
     val recorder = recorder(events)
 
-    recorder.record(claim, ClaimClosedAnswer.Dismissed)
+    recorder.record("claim-1", ClaimRatingAnswer.Rated(2, null))
     runCurrent()
 
-    assertThat(events).containsExactly("crossSell:claim-1", "dismiss:claim-1")
+    assertThat(events).containsExactly("submit:claim-1:2:null")
   }
 
   @Test
-  fun `NotAsked acknowledges and triggers the cross-sell`() = runTest {
+  fun `Dismissed dismisses the rating`() = runTest {
     val events = mutableListOf<String>()
     val recorder = recorder(events)
 
-    recorder.record(claim, ClaimClosedAnswer.NotAsked)
+    recorder.record("claim-1", ClaimRatingAnswer.Dismissed)
     runCurrent()
 
-    assertThat(events).containsExactly("crossSell:claim-1", "acknowledge:claim-1")
+    assertThat(events).containsExactly("dismiss:claim-1")
   }
 
   @Test
-  fun `a failed call still triggers the cross-sell`() = runTest {
+  fun `a failed call is logged and does not throw`() = runTest {
     val events = mutableListOf<String>()
     val recorder = recorder(events, fail = true)
 
-    recorder.record(claim, ClaimClosedAnswer.Rated(1, null))
+    recorder.record("claim-1", ClaimRatingAnswer.Rated(1, null))
     runCurrent()
 
-    assertThat(events).containsExactly("crossSell:claim-1", "submit:claim-1:1:null")
+    assertThat(events).containsExactly("submit:claim-1:1:null")
   }
 
   @Test
   fun `the call completes after the caller's scope is cancelled`() = runTest {
     val events = mutableListOf<String>()
-    val recorder = recorder(events)
+    val gate = CompletableDeferred<Unit>()
+    val recorder = recorder(events, gate = gate)
     val callerScope = CoroutineScope(SupervisorJob())
 
     callerScope.launch(start = CoroutineStart.UNDISPATCHED) {
-      recorder.record(claim, ClaimClosedAnswer.Rated(5, null))
+      recorder.record("claim-1", ClaimRatingAnswer.Rated(5, null))
     }
+    runCurrent()
     callerScope.cancel()
+    gate.complete(Unit)
     runCurrent()
 
-    assertThat(events).containsExactly("crossSell:claim-1", "submit:claim-1:5:null")
+    assertThat(events).containsExactly("submit:claim-1:5:null")
   }
 
   @Test
@@ -96,30 +96,25 @@ class ClaimClosedExitRecorderTest {
     assertThat(events).isEmpty()
   }
 
-  private fun TestScope.recorder(events: MutableList<String>, fail: Boolean = false): ClaimClosedExitRecorder {
-    fun result(): Either<ErrorMessage, Unit> = if (fail) ErrorMessage().left() else Unit.right()
-    return ClaimClosedExitRecorderImpl(
+  private fun TestScope.recorder(
+    events: MutableList<String>,
+    fail: Boolean = false,
+    gate: CompletableDeferred<Unit>? = null,
+  ): ClaimRatingRecorder {
+    suspend fun result(): Either<ErrorMessage, Unit> {
+      gate?.await()
+      return if (fail) ErrorMessage().left() else Unit.right()
+    }
+    return ClaimRatingRecorderImpl(
       applicationScope = ApplicationScope(backgroundScope),
       submitClaimRatingUseCase = object : SubmitClaimRatingUseCase {
         override suspend fun invoke(claimId: String, rating: Int, comment: String?): Either<ErrorMessage, Unit> {
-          events.add("submit:$claimId:$rating:$comment")
-          return result()
+          return result().also { events.add("submit:$claimId:$rating:$comment") }
         }
       },
       dismissClaimRatingUseCase = object : DismissClaimRatingUseCase {
         override suspend fun invoke(claimId: String): Either<ErrorMessage, Unit> {
-          events.add("dismiss:$claimId")
-          return result()
-        }
-      },
-      crossSellAfterClaimClosedRepository = object : CrossSellAfterClaimClosedRepository {
-        override suspend fun acknowledgeClaimClosedStatus(claimId: String): Either<ErrorMessage, Unit> {
-          events.add("acknowledge:$claimId")
-          return result()
-        }
-
-        override fun triggerCrossSell(claim: ClosedClaimInfo) {
-          events.add("crossSell:${claim.id}")
+          return result().also { events.add("dismiss:$claimId") }
         }
       },
     )

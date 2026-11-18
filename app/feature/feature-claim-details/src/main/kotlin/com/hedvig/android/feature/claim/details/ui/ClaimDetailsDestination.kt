@@ -1009,6 +1009,7 @@ private fun PreviewClaimDetailScreen(
           handlerEmail = "claims@eir.se",
           isPartnerClaim = true,
           closedClaimFlow = null,
+          hasSubmittedRating = false,
         ),
         openUrl = {},
         imageLoader = rememberPreviewImageLoader(),

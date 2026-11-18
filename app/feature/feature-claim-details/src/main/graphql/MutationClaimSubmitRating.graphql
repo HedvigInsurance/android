@@ -3,5 +3,9 @@ mutation ClaimSubmitRating($claimId: ID!, $rating: Int!, $comment: String) {
     userError {
       message
     }
+    claim {
+      id
+      hasSubmittedRating
+    }
   }
 }

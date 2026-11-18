@@ -1104,9 +1104,9 @@ type Claim {
   incidentDate: Date @deprecated(reason: "Use displayItems instead")
   showClaimClosedFlow: Boolean!
   """
-  True once the member rated or dismissed this claim.
+  True once the member has submitted a rating for this claim. Dismissals do not count.
   """
-  hasAnsweredRating: Boolean!
+  hasSubmittedRating: Boolean!
   appealInstructionsUrl: String
   isUploadingFilesEnabled: Boolean!
   infoText: String

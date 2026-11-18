@@ -1,7 +1,7 @@
 package com.hedvig.android.feature.claim.details.ui.rating
 
 import com.hedvig.android.data.cross.sell.after.claim.closed.ClosedClaimInfo
-import com.hedvig.android.feature.claim.details.data.ClaimClosedAnswer
+import com.hedvig.android.feature.claim.details.data.ClaimRatingAnswer
 
 internal data class ClosedClaimFlow(val claim: ClosedClaimInfo, val askForRating: Boolean)
 
@@ -43,7 +43,7 @@ internal sealed interface RatingEvent {
 }
 
 /** [answer] is non-null when the event ends the member's answer and it must be recorded. */
-internal data class RatingTransition(val state: RatingState, val answer: ClaimClosedAnswer?)
+internal data class RatingTransition(val state: RatingState, val answer: ClaimRatingAnswer?)
 
 internal fun reduceRating(state: RatingState, event: RatingEvent, flow: ClosedClaimFlow?): RatingTransition {
   val unchanged = RatingTransition(state, null)
@@ -52,7 +52,7 @@ internal fun reduceRating(state: RatingState, event: RatingEvent, flow: ClosedCl
       if (event !is RatingEvent.ExitRequested) return unchanged
       when {
         flow == null -> RatingTransition(RatingState.Leaving(event.via), null)
-        !flow.askForRating -> RatingTransition(RatingState.Leaving(event.via), ClaimClosedAnswer.NotAsked)
+        !flow.askForRating -> RatingTransition(RatingState.Leaving(event.via), null)
         else -> RatingTransition(RatingState.Asking(RatingStep.Stars, event.via), null)
       }
     }
@@ -68,14 +68,14 @@ internal fun reduceRating(state: RatingState, event: RatingEvent, flow: ClosedCl
 }
 
 private fun reduceAsking(state: RatingState.Asking, event: RatingEvent): RatingTransition? {
-  fun ask(step: RatingStep, answer: ClaimClosedAnswer? = null) = RatingTransition(state.copy(step = step), answer)
+  fun ask(step: RatingStep, answer: ClaimRatingAnswer? = null) = RatingTransition(state.copy(step = step), answer)
 
-  fun leave(answer: ClaimClosedAnswer? = null) = RatingTransition(RatingState.Leaving(state.via), answer)
+  fun leave(answer: ClaimRatingAnswer? = null) = RatingTransition(RatingState.Leaving(state.via), answer)
 
   return when (val step = state.step) {
     RatingStep.Stars -> when (event) {
       is RatingEvent.StarSelected -> ask(RatingStep.Comment(event.rating, ""))
-      RatingEvent.Skip, RatingEvent.SheetDismissed -> leave(ClaimClosedAnswer.Dismissed)
+      RatingEvent.Skip, RatingEvent.SheetDismissed -> leave(ClaimRatingAnswer.Dismissed)
       else -> null
     }
 
@@ -86,12 +86,12 @@ private fun reduceAsking(state: RatingState.Asking, event: RatingEvent): RatingT
 
       RatingEvent.Send -> ask(
         RatingStep.ThankYou(step.rating),
-        ClaimClosedAnswer.Rated(step.rating, step.comment.trim().ifEmpty { null }),
+        ClaimRatingAnswer.Rated(step.rating, step.comment.trim().ifEmpty { null }),
       )
 
-      RatingEvent.Skip -> ask(RatingStep.ThankYou(step.rating), ClaimClosedAnswer.Rated(step.rating, null))
+      RatingEvent.Skip -> ask(RatingStep.ThankYou(step.rating), ClaimRatingAnswer.Rated(step.rating, null))
 
-      RatingEvent.SheetDismissed -> leave(ClaimClosedAnswer.Rated(step.rating, null))
+      RatingEvent.SheetDismissed -> leave(ClaimRatingAnswer.Rated(step.rating, null))
 
       else -> null
     }

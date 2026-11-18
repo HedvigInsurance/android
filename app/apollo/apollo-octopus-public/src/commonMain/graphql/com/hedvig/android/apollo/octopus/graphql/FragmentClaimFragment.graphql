@@ -25,7 +25,6 @@ fragment ClaimFragment on Claim {
     }
   }
   showClaimClosedFlow
-  hasAnsweredRating
   appealInstructionsUrl
   isUploadingFilesEnabled
   infoText

@@ -17,7 +17,7 @@ import com.hedvig.android.core.fileupload.DownloadPdfUseCase
 import com.hedvig.android.core.fileupload.DownloadedFile
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.data.display.items.DisplayItem
-import com.hedvig.android.feature.claim.details.data.ClaimClosedExitRecorder
+import com.hedvig.android.feature.claim.details.data.ClaimRatingRecorder
 import com.hedvig.android.feature.claim.details.data.GetClaimDetailUiStateUseCase
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimStatus.CLOSED
@@ -46,7 +46,7 @@ internal class ClaimDetailsViewModel(
   getClaimDetailUiStateUseCase: GetClaimDetailUiStateUseCase,
   claimsServiceUploadFileUseCase: ClaimsServiceUploadFileUseCase,
   downloadPdfUseCase: DownloadPdfUseCase,
-  claimClosedExitRecorder: ClaimClosedExitRecorder,
+  claimRatingRecorder: ClaimRatingRecorder,
 ) : MoleculeViewModel<ClaimDetailsEvent, ClaimDetailUiState>(
     ClaimDetailUiState.Loading,
     ClaimDetailPresenter(
@@ -54,7 +54,7 @@ internal class ClaimDetailsViewModel(
       getClaimDetailUiStateUseCase,
       claimsServiceUploadFileUseCase,
       downloadPdfUseCase,
-      claimClosedExitRecorder,
+      claimRatingRecorder,
     ),
   )
 
@@ -63,7 +63,7 @@ private class ClaimDetailPresenter(
   private val getClaimDetailUiStateUseCase: GetClaimDetailUiStateUseCase,
   private val claimsServiceUploadFileUseCase: ClaimsServiceUploadFileUseCase,
   private val downloadPdfUseCase: DownloadPdfUseCase,
-  private val claimClosedExitRecorder: ClaimClosedExitRecorder,
+  private val claimRatingRecorder: ClaimRatingRecorder,
 ) : MoleculePresenter<ClaimDetailsEvent, ClaimDetailUiState> {
   @Composable
   override fun MoleculePresenterScope<ClaimDetailsEvent>.present(lastState: ClaimDetailUiState): ClaimDetailUiState {
@@ -171,7 +171,7 @@ private class ClaimDetailPresenter(
           val transition = reduceRating(rating, event.event, closedClaimFlow)
           rating = transition.state
           if (transition.answer != null && closedClaimFlow != null) {
-            claimClosedExitRecorder.record(closedClaimFlow.claim, transition.answer)
+            claimRatingRecorder.record(closedClaimFlow.claim.id, transition.answer)
           }
         }
 
@@ -238,6 +238,7 @@ internal sealed interface ClaimDetailUiState {
     val isPartnerClaim: Boolean,
     /** Null unless the claim was closed and leaving it should record the member's answer. */
     val closedClaimFlow: ClosedClaimFlow?,
+    val hasSubmittedRating: Boolean,
     val rating: RatingState = RatingState.Idle,
   ) : ClaimDetailUiState {
     val claimIsInUndeterminedState: Boolean = claimStatus == CLOSED && claimOutcome == UNKNOWN

@@ -52,10 +52,13 @@ dependencies {
   implementation(projects.navigationCompose)
   implementation(projects.navigationCore)
 
+  testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
   testImplementation(libs.turbine)
+  testImplementation(projects.apolloOctopusTest)
+  testImplementation(projects.apolloTest)
   testImplementation(projects.coreCommonTest)
   testImplementation(projects.loggingTest)
   testImplementation(projects.moleculeTest)
