@@ -46,6 +46,7 @@ class NavigationEffectTest {
   }
 
   private val block = Effect { request, navigate -> NavigationEffect(request, navigate) }
+  private val tapOffer = Effect { offer, navigate -> TapOfferNavigationEffect(offer, navigate) }
   private val sideEffect = Effect { request, navigate -> SideEffect { request?.target?.let(navigate) } }
   private val keyedOnTarget = Effect { request, navigate ->
     val currentNavigate by rememberUpdatedState(navigate)
@@ -250,6 +251,61 @@ class NavigationEffectTest {
     request = null
     waitForIdle()
     assertThat(navigatedFrom).isEmpty()
+  }
+
+  @Test
+  fun `tap offer, an offer is performed once across recompositions with a new callback`() = runComposeUiTest {
+    assertThat(recomposeTwice(tapOffer)).containsExactly(0)
+  }
+
+  @Test
+  fun `tap offer, two screens showing the same offer perform it once`() = runComposeUiTest {
+    assertThat(twoScreens(tapOffer)).containsExactly(0)
+  }
+
+  @Test
+  fun `tap offer, an offer that reaches a screen that is not resumed is dropped, also once it resumes`() =
+    runComposeUiTest {
+      lifecycleOwner.registry.currentState = Lifecycle.State.STARTED
+      show(tapOffer)
+      val offered = NavigationRequest.of("step")
+      request = offered
+      waitForIdle()
+      assertThat(navigatedFrom).isEmpty()
+      assertThat(offered.isPending).isFalse()
+
+      setLifecycleState(Lifecycle.State.RESUMED)
+      recompositionTrigger++
+      waitForIdle()
+      assertThat(navigatedFrom).isEmpty()
+    }
+
+  /**
+   * A second tap in the frame before the navigation of the first one caps the screen below resumed: its offer reaches
+   * a screen that is leaving, which is then covered and shown again when the member presses Back.
+   */
+  private fun ComposeUiTest.offerOnALeavingScreenThenBack(effect: Effect): List<Int> {
+    lifecycleOwner.registry.currentState = Lifecycle.State.STARTED
+    show(effect)
+    request = NavigationRequest.of("step")
+    waitForIdle()
+    shown = false
+    waitForIdle()
+    setLifecycleState(Lifecycle.State.RESUMED)
+    recompositionTrigger++
+    shown = true
+    waitForIdle()
+    return navigatedFrom
+  }
+
+  @Test
+  fun `tap offer, an offer made on a leaving screen does not navigate when the member comes back`() = runComposeUiTest {
+    assertThat(offerOnALeavingScreenThenBack(tapOffer)).isEmpty()
+  }
+
+  @Test
+  fun `block, an offer made on a leaving screen navigates when the member comes back`() = runComposeUiTest {
+    assertThat(offerOnALeavingScreenThenBack(block)).containsExactly(1)
   }
 
   private val requests = MutableStateFlow<NavigationRequest<String>?>(null)

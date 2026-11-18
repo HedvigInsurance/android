@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.travelcertificate.ui.generatewhen
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -7,6 +8,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.v2.runComposeUiTest
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isFalse
@@ -67,14 +72,24 @@ class DateInputNavigationTest {
     Dispatchers.resetMain()
   }
 
+  private var shown by mutableStateOf(true)
+  private val lifecycleOwner = object : LifecycleOwner {
+    val registry = LifecycleRegistry.createUnsafe(this).apply { currentState = Lifecycle.State.RESUMED }
+    override val lifecycle: Lifecycle get() = registry
+  }
+
   private fun ComposeUiTest.showEffect() {
     setContent {
       recompositionTrigger
-      DateInputNavigationEffect(
-        uiState = uiState,
-        onNavigateToTravellers = { backstack.navigateToTravellersStep(it) },
-        onCertificateCreated = { backstack.navigateToCreatedCertificate(it) },
-      )
+      CompositionLocalProvider(LocalLifecycleOwner provides lifecycleOwner) {
+        if (shown) {
+          DateInputNavigationEffect(
+            uiState = uiState,
+            onNavigateToTravellers = { backstack.navigateToTravellersStep(it) },
+            onCertificateCreated = { backstack.navigateToCreatedCertificate(it) },
+          )
+        }
+      }
     }
     waitForIdle()
   }
@@ -105,6 +120,26 @@ class DateInputNavigationTest {
     waitForIdle()
     assertThat(backstack.entries).containsExactly(TravelCertificateKey, dateInputKey, travellersKey)
   }
+
+  @Test
+  fun `a next step offered while the screen is leaving is dropped, so Back to the screen does not push it`() =
+    runComposeUiTest {
+      showEffect()
+      // The travellers step was pushed and the transition holds the date screen below resumed.
+      runOnIdle { lifecycleOwner.registry.currentState = Lifecycle.State.STARTED }
+      val offered = NavigationRequest.of(step)
+      uiState = content.copy(next = offered)
+      waitForIdle()
+      shown = false
+      waitForIdle()
+
+      runOnIdle { lifecycleOwner.registry.currentState = Lifecycle.State.RESUMED }
+      shown = true
+      waitForIdle()
+      assertThat(backstack.entries).containsExactly(TravelCertificateKey, dateInputKey)
+      // Taken, so the presenter accepts the next Continue.
+      assertThat(offered.isPending).isFalse()
+    }
 
   @Test
   fun `created replaces the flow above the history with the certificate`() = runComposeUiTest {

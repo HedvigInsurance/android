@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.compose.ui.NavigationEffect
+import com.hedvig.android.compose.ui.TapOfferNavigationEffect
 import com.hedvig.android.core.locale.CommonLocale
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
@@ -99,7 +100,7 @@ internal fun DateInputNavigationEffect(
   onNavigateToTravellers: (TravelCertificateTravellersStep) -> Unit,
   onCertificateCreated: (TravelCertificateUrl) -> Unit,
 ) {
-  NavigationEffect((uiState as? Success)?.next, onNavigateToTravellers)
+  TapOfferNavigationEffect((uiState as? Success)?.next, onNavigateToTravellers)
   NavigationEffect((uiState as? TravelCertificateDateInputUiState.Created)?.exit, onCertificateCreated)
 }
 

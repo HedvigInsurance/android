@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleDestroyedException
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.withResumed
@@ -16,7 +17,8 @@ import kotlinx.coroutines.flow.first
 /**
  * Calls [navigate] with the target of [request] if no one has taken the request yet, so each request is performed
  * once however often it is recomposed, however many times its composition is created, and however many screens show
- * the same state.
+ * the same state. For requests that must not be lost: the outcome of a write and a redirect. A tap offer goes to
+ * [TapOfferNavigationEffect] instead.
  *
  * The request is taken only while the screen is resumed, so a request that arrives during a transition or behind an
  * overlay waits for the screen to resume, and one whose screen leaves before that stays pending for whichever screen
@@ -36,6 +38,23 @@ fun <T : Any> NavigationEffect(request: NavigationRequest<T>?, navigate: (T) -> 
     } catch (_: LifecycleDestroyedException) {
       // The screen is gone for good, so the request stays pending.
     }
+  }
+}
+
+/**
+ * Calls [navigate] with the target of [offer] if the screen is resumed when the offer reaches it, once per offer, for
+ * an offer the member makes with a tap and can repeat. An offer that reaches a screen that is not resumed is taken
+ * without navigating: that screen is covered, leaving or in the background, and performing the offer when it is shown
+ * again would navigate without a tap, such as when the member presses Back to it. The presenter sees the offer taken
+ * and accepts the next tap. [navigate] must always navigate, as for [NavigationEffect].
+ */
+@Composable
+fun <T : Any> TapOfferNavigationEffect(offer: NavigationRequest<T>?, navigate: (T) -> Unit) {
+  val currentNavigate by rememberUpdatedState(navigate)
+  val lifecycle = LocalLifecycleOwner.current.lifecycle
+  LaunchedEffect(offer, lifecycle) {
+    if (offer == null || !offer.tryConsume()) return@LaunchedEffect
+    if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) currentNavigate(offer.target)
   }
 }
 
