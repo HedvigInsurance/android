@@ -2,7 +2,6 @@ package com.hedvig.android.feature.claim.details.ui.rating
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
@@ -22,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -46,15 +46,18 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTextField
-import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.TextFieldSize.Large
+import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.TextFieldSize.Medium
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
+import com.hedvig.android.design.system.hedvig.icon.CheckFilled
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Star
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
@@ -143,15 +146,8 @@ private fun ClaimRatingSheetContent(
       when (step) {
         is RatingStep.Stars, is RatingStep.Comment -> {
           val isComment = step is RatingStep.Comment
-          Crossfade(targetState = isComment, label = "ClaimRatingTitle") { showComment ->
-            if (showComment) {
-              // TODO: Add "Want to tell us more? (optional)" / "Vill du berätta mer? (valfritt)" to Lokalise
-              Title("Want to tell us more? (optional)")
-            } else {
-              // TODO: Add "How happy are you with how we handled your claim?" / "Hur nöjd är du med hur vi hanterade din skada?" to Lokalise. The question wording is still unsettled with the data team, against Typeform's "Hur nöjd är du med upplevelsen av ditt skadeärende hos Hedvig?"
-              Title("How happy are you with how we handled your claim?")
-            }
-          }
+          // TODO: Add "How happy are you with how we handled your claim?" / "Hur nöjd är du med hur vi hanterade din skada?" to Lokalise. The question wording is still unsettled with the data team, against Typeform's "Hur nöjd är du med upplevelsen av ditt skadeärende hos Hedvig?"
+          Title("How happy are you with how we handled your claim?")
           Spacer(Modifier.height(24.dp))
           StarRatingRow(
             selectedRating = (step as? RatingStep.Comment)?.rating,
@@ -163,7 +159,15 @@ private fun ClaimRatingSheetContent(
             exit = shrinkVertically() + fadeOut(),
           ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-              Spacer(Modifier.height(16.dp))
+              Spacer(Modifier.height(24.dp))
+              // TODO: Add "Want to tell us more? (optional)" / "Vill du berätta mer? (valfritt)" to Lokalise
+              HedvigText(
+                "Want to tell us more? (optional)",
+                style = HedvigTheme.typography.label,
+                color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+                modifier = Modifier.fillMaxWidth().padding(start = 2.dp),
+              )
+              Spacer(Modifier.height(8.dp))
               HedvigTextField(
                 text = comment,
                 onValueChange = onCommentChange,
@@ -174,9 +178,9 @@ private fun ClaimRatingSheetContent(
                   // TODO: Add "What could we have done better?" / "Vad kunde vi ha gjort bättre?" to Lokalise
                   "What could we have done better?"
                 },
-                textFieldSize = Large,
+                textFieldSize = Medium,
                 singleLine = false,
-                minLines = 3,
+                minLines = 4,
                 modifier = Modifier.fillMaxWidth(),
               )
               Spacer(Modifier.height(16.dp))
@@ -196,6 +200,13 @@ private fun ClaimRatingSheetContent(
         }
 
         is RatingStep.ThankYou -> {
+          Icon(
+            imageVector = HedvigIcons.CheckFilled,
+            contentDescription = null,
+            tint = HedvigTheme.colorScheme.signalGreenElement,
+            modifier = Modifier.size(32.dp),
+          )
+          Spacer(Modifier.height(16.dp))
           if (step.rating >= 4) {
             // TODO: Add "Thanks for your rating" / "Tack för ditt betyg" to Lokalise
             Title("Thanks for your rating")
@@ -205,11 +216,14 @@ private fun ClaimRatingSheetContent(
             Spacer(Modifier.height(24.dp))
             // TODO: Add "Write a review on Trustpilot" / "Skriv ett omdöme på Trustpilot" to Lokalise
             HedvigButton(
-              text = "Write a review on Trustpilot",
               onClick = onOpenTrustpilot,
               enabled = true,
               modifier = Modifier.fillMaxWidth(),
-            )
+            ) {
+              HedvigText("Write a review on Trustpilot")
+              Spacer(Modifier.width(8.dp))
+              Icon(HedvigIcons.ArrowNorthEast, contentDescription = null)
+            }
             Spacer(Modifier.height(8.dp))
             // TODO: Add "No thanks" / "Nej tack" to Lokalise
             HedvigTextButton(
@@ -263,8 +277,7 @@ private fun StarRatingRow(selectedRating: Int?, onRatingClick: (Int) -> Unit, mo
     val coroutineScope = rememberCoroutineScope()
     val popScales = remember { List(5) { Animatable(1f) } }
     Row(
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
       modifier = Modifier.fillMaxWidth(),
     ) {
       (1..5).forEach { rating ->
@@ -279,31 +292,34 @@ private fun StarRatingRow(selectedRating: Int?, onRatingClick: (Int) -> Unit, mo
           },
           label = "StarColor",
         )
-        Box(
-          contentAlignment = Alignment.Center,
-          modifier = Modifier
-            .size(56.dp)
-            .semantics {
-              contentDescription = ratingDescription
-              selected = selectedRating == rating
-            }
-            .clickable(role = Role.RadioButton) {
-              hapticFeedback.performHapticFeedback(
-                if (rating >= 4) HapticFeedbackType.Confirm else HapticFeedbackType.TextHandleMove,
-              )
-              onRatingClick(rating)
-              coroutineScope.launch {
-                popScale.animateTo(1.25f, spring(stiffness = Spring.StiffnessHigh))
-                popScale.animateTo(1f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
+        HedvigCard(shape = HedvigTheme.shapes.cornerLarge, modifier = Modifier.weight(1f)) {
+          Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+              .fillMaxWidth()
+              .height(56.dp)
+              .semantics {
+                contentDescription = ratingDescription
+                selected = selectedRating == rating
               }
-            },
-        ) {
-          Icon(
-            imageVector = HedvigIcons.Star,
-            contentDescription = null,
-            tint = starColor,
-            modifier = Modifier.size(48.dp).scale(popScale.value),
-          )
+              .clickable(role = Role.RadioButton) {
+                hapticFeedback.performHapticFeedback(
+                  if (rating >= 4) HapticFeedbackType.Confirm else HapticFeedbackType.TextHandleMove,
+                )
+                onRatingClick(rating)
+                coroutineScope.launch {
+                  popScale.animateTo(1.25f, spring(stiffness = Spring.StiffnessHigh))
+                  popScale.animateTo(1f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
+                }
+              },
+          ) {
+            Icon(
+              imageVector = HedvigIcons.Star,
+              contentDescription = null,
+              tint = starColor,
+              modifier = Modifier.size(32.dp).scale(popScale.value),
+            )
+          }
         }
       }
     }
