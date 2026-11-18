@@ -73,12 +73,12 @@ class NavigationEffectTest {
   }
 
   @Test
-  fun `block - a request is performed once across recompositions with a new callback`() = runComposeUiTest {
+  fun `block, a request is performed once across recompositions with a new callback`() = runComposeUiTest {
     assertThat(recomposeTwice(block)).containsExactly(0)
   }
 
   @Test
-  fun `side effect - a request is performed on every recomposition`() = runComposeUiTest {
+  fun `side effect, a request is performed on every recomposition`() = runComposeUiTest {
     assertThat(recomposeTwice(sideEffect)).containsExactly(0, 1, 2)
   }
 
@@ -95,12 +95,12 @@ class NavigationEffectTest {
   }
 
   @Test
-  fun `block - a composition created again does not perform a request again`() = runComposeUiTest {
+  fun `block, a composition created again does not perform a request again`() = runComposeUiTest {
     assertThat(recreateComposition(block)).containsExactly(0)
   }
 
   @Test
-  fun `keyed on the target - a composition created again performs the request again`() = runComposeUiTest {
+  fun `keyed on the target, a composition created again performs the request again`() = runComposeUiTest {
     assertThat(recreateComposition(keyedOnTarget)).containsExactly(0, 1)
   }
 
@@ -113,17 +113,17 @@ class NavigationEffectTest {
   }
 
   @Test
-  fun `block - two screens showing the same request perform it once`() = runComposeUiTest {
+  fun `block, two screens showing the same request perform it once`() = runComposeUiTest {
     assertThat(twoScreens(block)).containsExactly(0)
   }
 
   @Test
-  fun `keyed on the target - two screens showing the same request perform it twice`() = runComposeUiTest {
+  fun `keyed on the target, two screens showing the same request perform it twice`() = runComposeUiTest {
     assertThat(twoScreens(keyedOnTarget)).containsExactly(0, 0)
   }
 
   @Test
-  fun `block - a new request for an equal target is performed again`() = runComposeUiTest {
+  fun `block, a new request for an equal target is performed again`() = runComposeUiTest {
     show(block)
     request = NavigationRequest.of("step")
     waitForIdle()
@@ -134,7 +134,7 @@ class NavigationEffectTest {
   }
 
   @Test
-  fun `block - no request and a request taken elsewhere perform nothing`() = runComposeUiTest {
+  fun `block, no request and a request taken elsewhere perform nothing`() = runComposeUiTest {
     show(block)
     request = NavigationRequest.of("step").also { it.tryConsume() }
     waitForIdle()
@@ -160,7 +160,7 @@ class NavigationEffectTest {
   }
 
   @Test
-  fun `block flow - a request on the flow is performed once while active`() = runComposeUiTest {
+  fun `block flow, a request on the flow is performed once while active`() = runComposeUiTest {
     showFlow { NavigationEffect(it, active) { target -> flowNavigations += target } }
     setRequest(NavigationRequest.of("charged"))
     runOnIdle { active = false }
@@ -171,7 +171,7 @@ class NavigationEffectTest {
   }
 
   @Test
-  fun `block flow - nothing is performed while inactive`() = runComposeUiTest {
+  fun `block flow, nothing is performed while inactive`() = runComposeUiTest {
     active = false
     showFlow { NavigationEffect(it, active) { target -> flowNavigations += target } }
     setRequest(NavigationRequest.of("charged"))
@@ -179,14 +179,14 @@ class NavigationEffectTest {
   }
 
   @Test
-  fun `block flow - two screens collecting the same flow perform a request once`() = runComposeUiTest {
+  fun `block flow, two screens collecting the same flow perform a request once`() = runComposeUiTest {
     showFlow(screens = 2) { NavigationEffect(it, active) { target -> flowNavigations += target } }
     setRequest(NavigationRequest.of("charged"))
     assertThat(flowNavigations).containsExactly("charged")
   }
 
   @Test
-  fun `first on the flow - two screens collecting the same flow perform a request twice`() = runComposeUiTest {
+  fun `first on the flow, two screens collecting the same flow perform a request twice`() = runComposeUiTest {
     showFlow(screens = 2) { flow ->
       LaunchedEffect(flow) { flowNavigations += flow.filterNotNull().first().target }
     }

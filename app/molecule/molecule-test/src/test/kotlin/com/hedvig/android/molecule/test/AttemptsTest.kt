@@ -83,12 +83,12 @@ class AttemptsTest {
   }
 
   @Test
-  fun `block - a retry equal to a failed request, handled before the next frame, runs`() = runTest {
+  fun `block, a retry equal to a failed request, handled before the next frame, runs`() = runTest {
     assertThat(retryInTheFrameOfTheFailure(block).started).containsExactly("same", "same")
   }
 
   @Test
-  fun `keyed on the request - a retry equal to a failed request, handled before the next frame, is lost`() = runTest {
+  fun `keyed on the request, a retry equal to a failed request, handled before the next frame, is lost`() = runTest {
     assertThat(retryInTheFrameOfTheFailure(keyedOnRequest).started).containsExactly("same")
   }
 
@@ -106,7 +106,7 @@ class AttemptsTest {
   }
 
   @Test
-  fun `block - a start while one is running is refused and does not cancel it`() = runTest {
+  fun `block, a start while one is running is refused and does not cancel it`() = runTest {
     val runs = startWhileRunning(block)
     assertThat(runs.started).containsExactly("first")
     assertThat(runs.completed).containsExactly("first")
@@ -114,14 +114,14 @@ class AttemptsTest {
   }
 
   @Test
-  fun `cancel and relaunch - a start while one is running cancels it and runs again`() = runTest {
+  fun `cancel and relaunch, a start while one is running cancels it and runs again`() = runTest {
     val runs = startWhileRunning(cancelAndRelaunch)
     assertThat(runs.started).containsExactly("first", "second")
     assertThat(runs.cancelled).containsExactly("first")
   }
 
   @Test
-  fun `block - two starts in one frame run once`() = runTest {
+  fun `block, two starts in one frame run once`() = runTest {
     val runs = Runs()
     StartingPresenter(block, runs).testFrames(false) {
       emit("first", "second")
@@ -145,17 +145,17 @@ class AttemptsTest {
   }
 
   @Test
-  fun `block - a terminal attempt that succeeded refuses every later start`() = runTest {
+  fun `block, a terminal attempt that succeeded refuses every later start`() = runTest {
     assertThat(startAfterSuccess(block, terminal = true).started).containsExactly("first")
   }
 
   @Test
-  fun `block - an attempt that is not terminal starts again after a success`() = runTest {
+  fun `block, an attempt that is not terminal starts again after a success`() = runTest {
     assertThat(startAfterSuccess(block, terminal = false).started).containsExactly("first", "second")
   }
 
   @Test
-  fun `block - a terminal attempt that failed can start again`() = runTest {
+  fun `block, a terminal attempt that failed can start again`() = runTest {
     val runs = Runs()
     StartingPresenter(block, runs, terminal = true).testFrames(false) {
       emit("first")
@@ -169,7 +169,7 @@ class AttemptsTest {
   }
 
   @Test
-  fun `block - a restart ends the run in flight and the new run starts idle`() = runTest {
+  fun `block, a restart ends the run in flight and the new run starts idle`() = runTest {
     val runs = Runs()
     StartingPresenter(block, runs).testFrames(false) {
       emit("first")

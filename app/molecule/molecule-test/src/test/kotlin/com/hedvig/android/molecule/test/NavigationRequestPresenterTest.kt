@@ -85,7 +85,7 @@ class NavigationRequestPresenterTest {
   }
 
   @Test
-  fun `request - a continue in the frame the platform took the last offer gets a new offer`() = runTest {
+  fun `request, a continue in the frame the platform took the last offer gets a new offer`() = runTest {
     RequestPresenter().testFrames(Screen("step", null)) {
       emit(Event.Submit)
       frame()
@@ -102,7 +102,7 @@ class NavigationRequestPresenterTest {
   }
 
   @Test
-  fun `acknowledgement - an acknowledgement and a continue in one frame leave the screen stuck`() = runTest {
+  fun `acknowledgement, an acknowledgement and a continue in one frame leave the screen stuck`() = runTest {
     AckPresenter().testFrames(AckScreen("step", null)) {
       emit(Event.Submit)
       frame()
@@ -118,7 +118,7 @@ class NavigationRequestPresenterTest {
   }
 
   @Test
-  fun `request - every state after an offer carries it until the platform takes it`() = runTest {
+  fun `request, every state after an offer carries it until the platform takes it`() = runTest {
     RequestPresenter().testFrames(Screen("step", null)) {
       emit(Event.Submit, Event.Type("edited"))
       frame()
@@ -132,7 +132,7 @@ class NavigationRequestPresenterTest {
   }
 
   @Test
-  fun `request - a continue while the offer is pending is ignored, and after it was taken offers again`() = runTest {
+  fun `request, a continue while the offer is pending is ignored, and after it was taken offers again`() = runTest {
     RequestPresenter().testFrames(Screen("step", null)) {
       emit(Event.Submit)
       frame()
@@ -150,7 +150,7 @@ class NavigationRequestPresenterTest {
   }
 
   @Test
-  fun `request - a restart drops a pending offer and never replays a taken one`() = runTest {
+  fun `request, a restart drops a pending offer and never replays a taken one`() = runTest {
     RequestPresenter().testFrames(Screen("step", null)) {
       emit(Event.Submit)
       frame()
@@ -168,7 +168,7 @@ class NavigationRequestPresenterTest {
   }
 
   @Test
-  fun `acknowledgement - an offer restored as it was is opened again after a restart`() = runTest {
+  fun `acknowledgement, an offer restored as it was is opened again after a restart`() = runTest {
     AckPresenter(keepOfferOnRestart = true).testFrames(AckScreen("step", null)) {
       emit(Event.Submit)
       frame()
