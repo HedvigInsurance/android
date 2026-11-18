@@ -20,6 +20,7 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.molecule.public.NavigationRequest
+import com.hedvig.android.molecule.public.restoredAsRedirect
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
 
@@ -50,7 +51,17 @@ internal class EditCoInsuredTriagePresenter(
     lastState: EditCoInsuredTriageUiState,
   ): EditCoInsuredTriageUiState {
     var loadIteration by remember { mutableIntStateOf(0) }
-    var currentState by remember { mutableStateOf(lastState) }
+    var currentState by remember {
+      mutableStateOf(
+        when (lastState) {
+          // A taken redirect means this triage is still shown after its redirect, as when an equal key
+          // elsewhere shares the ViewModel, so it loads again.
+          is Redirect -> lastState.step.restoredAsRedirect()?.let(::Redirect) ?: Loading
+
+          else -> lastState
+        },
+      )
+    }
     var selected by remember {
       mutableStateOf((currentState as? Success)?.selected)
     }
@@ -68,9 +79,7 @@ internal class EditCoInsuredTriagePresenter(
       }
     }
     LaunchedEffect(loadIteration) {
-      // A pending redirect is kept, also across a restart, so it is never lost. A taken one means this triage is still
-      // shown after its redirect, as when an equal key elsewhere shares the ViewModel, so it loads again.
-      if ((currentState as? Redirect)?.step?.isPending == true) return@LaunchedEffect
+      if (currentState is Redirect) return@LaunchedEffect
       currentState = Loading
       getInsuranceForEditCoInsuredUseCase.invoke(type).fold(
         ifLeft = {
@@ -124,7 +133,8 @@ internal sealed interface EditCoInsuredTriageUiState {
 
   /**
    * One insurance fits (the contract asked for, or the only one), so the picker is skipped for its step. Shown as
-   * loading. While it is pending, events are ignored and nothing loads again, also after a restart.
+   * loading. Events are ignored and nothing loads again. A restart keeps a pending one, and loads again after a
+   * taken one.
    */
   data class Redirect(val step: NavigationRequest<InsuranceForEditOrAddCoInsured>) : EditCoInsuredTriageUiState
 }
