@@ -81,8 +81,10 @@ fun main() {
         navigationEventDispatcher?.addInput(backInput)
         onDispose { navigationEventDispatcher?.removeInput(backInput) }
       }
-      Box(Modifier.fillMaxSize().mouseBackButton(backInput)) {
-        DesktopApp(graph, backstackController, appHost, externalNavigator)
+      ProvideVisibleWindowLifecycle {
+        Box(Modifier.fillMaxSize().mouseBackButton(backInput)) {
+          DesktopApp(graph, backstackController, appHost, externalNavigator)
+        }
       }
     }
   }

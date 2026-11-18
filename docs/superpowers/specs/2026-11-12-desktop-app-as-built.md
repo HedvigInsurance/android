@@ -37,6 +37,19 @@ same interceptor as Android.
 even while typing. Holding a key goes back once per key repeat. Back at the root does nothing; the app quits when its
 window closes or an in-content close button pops the root.
 
+**Window lifecycle.** The app's composition gets a lifecycle that is RESUMED while the window is visible, focused or
+not, and follows the window otherwise: CREATED while minimised, DESTROYED once closed (`ProvideVisibleWindowLifecycle`
+in `Main.kt`). Compose desktop's own window lifecycle is RESUMED only while the window has focus. So a click wrapped
+in `dropUnlessResumed`, and anything else that waits for RESUMED, behaves on an unfocused window as on a focused one;
+while the window is minimised such a click is dropped. Navigation 3 still holds a leaving or covered entry at STARTED,
+so the click guards keep protecting screens on their way out (`VisibleWindowLifecycleTest`). Collection tied to
+STARTED stops only while the window is minimised, so the BankID login's retry when the member returns fires after a
+restore from minimised. Effects that repeat on every resume (screen view tracking, the onboarding and app review checks
+in `HedvigApp`) run again after a restore from minimised, not after a focus change. For the same reason the screens
+that refresh when shown again (payin and payout account overview, manual charge, the onboarding pet id, co-insured
+and payment steps) refresh when the member returns to them in the app or restores the minimised window, not when the
+window regains focus.
+
 **Links.** A link no deep link matcher handles does not open the browser when it is on a Hedvig deep link host
 (`DesktopUnmatchedLinkRouter`, used by `DesktopAppHost.uriHandler`). On the running flavour's hosts it lands on the
 Home tab (nothing while logged out); a production host link under staging is moved to the staging host of the same
