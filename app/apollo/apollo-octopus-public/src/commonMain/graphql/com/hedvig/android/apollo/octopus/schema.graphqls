@@ -809,6 +809,51 @@ enum CarTrialProduct {
   HEDVIG_60_DAYS
   HEDVIG_14_DAYS
 }
+union ChangeMileageCreateIntentOutput = ChangeMileageIntent|UserError
+type ChangeMileageDisplayItem {
+  displayTitle: String!
+  displayValue: String!
+  """
+   The value without the change. Set only when this quote changes the row. 
+  """
+  previousDisplayValue: String
+}
+type ChangeMileageIntent {
+  """
+   The date the change will take effect. Tomorrow, or the start date of an upcoming change or renewal if there is one. 
+  """
+  activationDate: Date!
+  """
+   Total monthly cost of the contract on the activation date without the change (incl. addons) 
+  """
+  currentTotalCost: ItemCost!
+  """
+   Sorted ascending by mileage. Exactly one has isCurrent = true. 
+  """
+  quotes: [ChangeMileageQuote!]!
+}
+type ChangeMileageQuote {
+  """
+  The quote id. For the quote with isCurrent = true no quote is created, and this is the id of the agreement that is changed.
+  """
+  id: ID!
+  """
+   The mileage option, ex. "1 000 mil", "Över 2 500 mil" 
+  """
+  displayName: String!
+  """
+   Whether this is the mileage the contract already has on the activation date 
+  """
+  isCurrent: Boolean!
+  """
+   Total monthly contract cost if this mileage is chosen (incl. addons) 
+  """
+  totalCost: ItemCost!
+  """
+   Summary rows, ex. mileage, registration number and coverage level 
+  """
+  displayItems: [ChangeMileageDisplayItem!]!
+}
 """
 Returns changed price for an addon.
 """
@@ -1103,6 +1148,7 @@ type Claim {
   claimType: String
   incidentDate: Date @deprecated(reason: "Use displayItems instead")
   showClaimClosedFlow: Boolean!
+  hasSubmittedRating: Boolean!
   appealInstructionsUrl: String
   isUploadingFilesEnabled: Boolean!
   infoText: String
@@ -1686,6 +1732,10 @@ type Contract {
   """
   supportsChangeTier: Boolean!
   """
+  Whether the yearly mileage on this contract can be changed through the 'ChangeMileage' API.
+  """
+  supportsChangeMileage: Boolean!
+  """
   Whether or not this contract can be terminated by user
   """
   supportsTermination: Boolean!
@@ -1945,6 +1995,31 @@ type CrossSell {
   Products to choose between, e.g. dog or cat for pet. Empty for a single product.
   """
   options: [CrossSell!]!
+  """
+  Set when this cross-sell can be bought natively in the app: pass it to `Query.inAppPurchaseForm`.
+  Null means open `storeUrl`, as for every cross-sell before the native flow.
+  """
+  inAppProduct: InAppProduct
+}
+type CrossSellCarouselItem {
+  title: String!
+  subtitle: String
+  """
+  The slide image, or the poster when the slide is a video
+  """
+  image: StoryblokImageAsset!
+  """
+  HEVC mp4 for iOS, set when the slide is a video; play it over the image
+  """
+  videoUrlMp4: String
+  """
+  VP9 webm for Android, same clip as videoUrlMp4
+  """
+  videoUrlWebm: String
+  """
+  Replay the video while the slide is shown; otherwise play once and hold the last frame
+  """
+  loop: Boolean!
 }
 """
 A/B testing experiment (name and variant must be SCREAMING_SNAKE_CASE)
@@ -1953,6 +2028,10 @@ input CrossSellExperimentInput {
   name: String!
   variant: String!
 }
+type CrossSellHeroIntro {
+  title: String!
+  description: String!
+}
 input CrossSellInput {
   userFlow: UserFlow!
   """
@@ -1960,7 +2039,8 @@ input CrossSellInput {
   """
   flowSource: FlowSource
   """
-  A/B test experiments for attribution tracking
+  A/B test experiments for attribution tracking. ACCIDENT_DISCOUNT with variant NO_DISCOUNT withholds the accident
+  cross-sell's discount.
   """
   experiments: [CrossSellExperimentInput!]!
   """
@@ -1972,6 +2052,29 @@ input CrossSellInput {
   """
   claimId: UUID
 }
+type CrossSellProductInfo {
+  heroImage: StoryblokImageAsset!
+  """
+  The intro text under the hero on the product's web page; null when the page has none
+  """
+  heroIntro: CrossSellHeroIntro
+  """
+  Selling points from the product's web page's image-text sections, in page order
+  """
+  usps: [CrossSellUsp!]!
+  """
+  Story-style slides from the product's web page, in page order
+  """
+  carousel: [CrossSellCarouselItem!]!
+  """
+  Set when the product can be bought natively in the app, as on `CrossSell.inAppProduct`
+  """
+  inAppProduct: InAppProduct
+  """
+  Questions and answers from the FAQ on the product's web page, in the member's language. Empty when it has none.
+  """
+  faq: [ProductFaqItem!]!
+}
 enum CrossSellSource {
   HOME
   CLOSED_CLAIM
@@ -1979,6 +2082,10 @@ enum CrossSellSource {
   ADDON
   EDIT_COINSURED
   MOVING_FLOW
+}
+type CrossSellUsp {
+  title: String!
+  description: String!
 }
 type CrossSellV2 {
   """
@@ -2712,6 +2819,144 @@ type IconVariants {
   light: IconVariant!
   dark: IconVariant!
 }
+enum InAppProduct {
+  ACCIDENT
+  PAYMENT_PROTECTION
+  DOG
+  CAT
+  CAR
+  APARTMENT_RENT
+  APARTMENT_BRF
+  APARTMENT_STUDENT
+  HOUSE
+  VACATION_HOME
+}
+type InAppPurchaseEligibility {
+  isEligible: Boolean!
+  """
+  Set when `isEligible` is false.
+  """
+  reason: InAppPurchaseIneligibilityReason
+  """
+  Set when `reason` is ALREADY_INSURED.
+  """
+  existingContractId: UUID
+}
+type InAppPurchaseFieldError {
+  fieldId: ID!
+  """
+  Localized message.
+  """
+  message: String!
+}
+input InAppPurchaseFieldInput {
+  fieldId: ID!
+  """
+  See `InAppPurchaseFormFieldType` for how many values each type takes and their format.
+  """
+  values: [String!]!
+}
+"""
+A single field to render in the form. Send its value back with `InAppPurchaseFieldInput.fieldId = id`.
+"""
+type InAppPurchaseFormField {
+  """
+  Echo back when submitting. Clients shouldn't branch on it.
+  """
+  id: ID!
+  type: InAppPurchaseFormFieldType!
+  """
+  Localized label.
+  """
+  title: String!
+  """
+  Present for SINGLE_SELECT and SEARCHABLE_SELECT; for EXTRA_BUILDINGS, the building types.
+  """
+  options: [InAppPurchaseFormFieldOption!]
+  """
+  Values to prefill the field with. Empty means no default.
+  """
+  defaultValues: [String!]!
+  """
+  Present for NUMBER and DATE, in the same format as the value.
+  """
+  minValue: String
+  maxValue: String
+  """
+  SEARCHABLE_SELECT only: how many options may be chosen. Null means one.
+  """
+  maxSelections: Int
+}
+type InAppPurchaseFormFieldOption {
+  value: String!
+  """
+  Localized label.
+  """
+  title: String!
+  """
+  False: show the option, but it can't be selected.
+  """
+  isSelectable: Boolean!
+  """
+  Localized explanation, e.g. why the option can't be selected.
+  """
+  additionalInfo: String
+}
+"""
+Value format per type: NUMBER is an integer like "2", DATE is ISO "2026-11-01", SINGLE_SELECT is the
+option's `value`, TEXT is free text. SEARCHABLE_SELECT sends one value per chosen option. EXTRA_BUILDINGS sends
+one value per building, as JSON `{"type":"GARAGE","area":25,"hasWaterConnected":false}` with `type` one of the
+field's options; no values means no buildings. Every other type takes exactly one value.
+"""
+enum InAppPurchaseFormFieldType {
+  NUMBER
+  DATE
+  SINGLE_SELECT
+  TEXT
+  SEARCHABLE_SELECT
+  EXTRA_BUILDINGS
+}
+type InAppPurchaseFormOutput {
+  product: Product!
+  eligibility: InAppPurchaseEligibility!
+  fields: [InAppPurchaseFormField!]!
+}
+enum InAppPurchaseIneligibilityReason {
+  ALREADY_INSURED
+  NOT_AVAILABLE
+}
+input InAppPurchaseQuoteInput {
+  product: InAppProduct!
+  fields: [InAppPurchaseFieldInput!]!
+  attribution: PriceIntentConfirmAttributionInput
+  """
+  Discount code the member entered. Send it with every quote: each quote sets the discount from this input
+  alone, so leaving it out or sending an empty string removes a code sent earlier.
+  A valid code replaces the Accident discount the app's cross-sell banner promises, since only one discount
+  applies. An invalid code returns a field error with `fieldId: "campaignCode"` and no offers.
+  """
+  campaignCode: String
+}
+type InAppPurchaseQuoteOutput {
+  """
+  Null unless `offers` is non-empty.
+  """
+  shopSessionId: UUID
+  offers: [ProductOffer!]!
+  """
+  Problems with specific fields, to show next to them. Nothing was quoted when this is non-empty.
+  """
+  fieldErrors: [InAppPurchaseFieldError!]!
+  """
+  A problem that isn't about one field.
+  """
+  userError: UserError
+}
+input InAppPurchaseSignInput {
+  shopSessionId: UUID!
+  offerId: UUID!
+  useBankIdSandbox: Boolean! = false
+}
 scalar Instant
 type InsurableLimit {
   label: String!
@@ -2970,6 +3215,10 @@ type Member {
   SMART_X_SELL. Where no discount applies it falls back to the plain product description.
   """
   crossSellV2(input: CrossSellInput!): CrossSellV2!
+  """
+  Product details for a tapped cross-sell, in the Hedvig-Language of the request. Errors for an unknown id and for the generic HOME, PET and ALL cross-sells.
+  """
+  crossSellProductInfo(crossSellId: ID!): CrossSellProductInfo!
   """
   Shop sessions started by this member that have not yet been signed and are not expired.
   Ordered by most recent activity first.
@@ -4017,6 +4266,8 @@ type Mutation {
   """
   conversationHideCrossSales(id: UUID!): Conversation!
   claimAcknowledgeClosedStatus(id: ID!): ClaimMutationOutput
+  claimSubmitRating(claimId: ID!, rating: Int!, comment: String): ClaimMutationOutput
+  claimDismissRating(claimId: ID!): ClaimMutationOutput
   """
   Create or (reuse and existing) unsubmitted claim intent.
   """
@@ -4135,6 +4386,17 @@ type Mutation {
   """
   productOffersCancellationRequestedUpdate(productOfferIds: [UUID!]!, requested: Boolean!): ProductOffersMutationOutput!
   """
+  Submit the form from `inAppPurchaseForm` and get priced offers.
+  Call again after the member changes any value. Every call returns new offer ids, and only offers from the
+  latest response can be signed.
+  """
+  inAppPurchaseQuote(input: InAppPurchaseQuoteInput!): InAppPurchaseQuoteOutput!
+  """
+  Sign the chosen offer with Swedish BankID. Poll `Query.shopSessionSigning` with the returned signing id.
+  `useBankIdSandbox` behaves as in `Mutation.shopSessionStartSign`.
+  """
+  inAppPurchaseSign(input: InAppPurchaseSignInput!): ShopSessionSigningMutationOutput!
+  """
   Called to save insurance recommendation form and save recommendation email.
   """
   insuranceGuide(input: InsuranceGuideInput!): InsuranceGuideOutput!
@@ -4244,6 +4506,15 @@ type Mutation {
    Accept move, for V2_TIERS_AND_DEDUCTIBLES API the homeQuoteId is required 
   """
   moveIntentCommit(intentId: ID!, homeQuoteId: ID, removedAddons: [ID!]): MoveIntentMutationOutput!
+  """
+  Creates quotes for all yearly mileage options the contract can be changed to.
+  """
+  changeMileageCreateIntent(contractId: ID!): ChangeMileageCreateIntentOutput!
+  """
+  Activates the given quote from changeMileageCreateIntent, the new mileage applies from the activation date
+  of the intent. Returns a UserError if it failed.
+  """
+  changeMileageCommitIntent(quoteId: ID!): UserError
   """
    Create change tier/deductible intent 
   """
@@ -4696,9 +4967,22 @@ type Product {
   """
   multiple: Boolean
   """
+  Questions and answers from the FAQ on the product's page on the website, in the member's language.
+  Empty when the page has none.
+  """
+  faq: [ProductFaqItem!]!
+  """
   A list of the external insurers valid for this specific product.
   """
   externalInsurers: [ExternalInsurer!]!
+}
+type ProductFaqItem {
+  question: String!
+  """
+  Storyblok rich text document (`"type": "doc"`), rendered by the client. Links to other website pages are
+  absolute URLs.
+  """
+  answer: JSON!
 }
 type ProductOffer {
   """
@@ -5085,6 +5369,11 @@ type Query {
   entrypointSearch(input: EntrypointSearchInput): [Entrypoint!]!
   shopSession(id: UUID!): ShopSession!
   carTrial(contractId: UUID!): TrialExtension
+  """
+  Screen 1 of the in-app purchase: product content, whether the member can buy it, and the form to fill in.
+  Has no side effects. When the member isn't eligible, `fields` is empty.
+  """
+  inAppPurchaseForm(product: InAppProduct!): InAppPurchaseFormOutput!
   """
   Outcome of shopSession.  Requires authentication
   Available forever, unlike shopSession which becomes hidden some time after creation

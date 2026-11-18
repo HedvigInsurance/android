@@ -4,6 +4,7 @@ import arrow.core.left
 import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
 import assertk.assertions.prop
@@ -39,12 +40,14 @@ class ChangeMileagePresenterTest {
       assertThat(state).isInstanceOf(ChangeMileageUiState.Success::class).apply {
         prop(ChangeMileageUiState.Success::selectedQuote).isEqualTo(currentQuote)
         prop(ChangeMileageUiState.Success::isCurrentSelected).isTrue()
+        prop(ChangeMileageUiState.Success::isLowerThanCurrentSelected).isFalse()
       }
       sendEvent(ChangeMileageEvent.Continue)
       sendEvent(ChangeMileageEvent.SelectQuote(lowerQuote.id))
-      assertThat(awaitItem()).isInstanceOf(ChangeMileageUiState.Success::class)
-        .prop(ChangeMileageUiState.Success::selectedQuote)
-        .isEqualTo(lowerQuote)
+      assertThat(awaitItem()).isInstanceOf(ChangeMileageUiState.Success::class).apply {
+        prop(ChangeMileageUiState.Success::selectedQuote).isEqualTo(lowerQuote)
+        prop(ChangeMileageUiState.Success::isLowerThanCurrentSelected).isTrue()
+      }
       assertThat(backstack.entries).isEqualTo(emptyList())
       sendEvent(ChangeMileageEvent.Continue)
       expectNoEvents()

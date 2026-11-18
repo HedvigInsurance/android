@@ -58,7 +58,6 @@ internal val lowerQuote = MileageQuote(
   displayName = "1 000 mil",
   isCurrent = false,
   totalCost = cost(371.0),
-  infoMessage = "Compensation can be lowered",
   displayItems = emptyList(),
 )
 
@@ -67,7 +66,6 @@ internal val currentQuote = MileageQuote(
   displayName = "1 500 mil",
   isCurrent = true,
   totalCost = cost(412.0),
-  infoMessage = null,
   displayItems = emptyList(),
 )
 

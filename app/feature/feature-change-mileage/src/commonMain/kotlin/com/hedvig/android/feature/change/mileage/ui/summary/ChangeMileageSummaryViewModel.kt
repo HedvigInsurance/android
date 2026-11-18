@@ -71,6 +71,7 @@ internal class ChangeMileageSummaryPresenter(
             ChangeMileageSuccessKey(
               newMileageDisplayName = params.quote.displayName,
               newMonthlyCost = params.quote.totalCost.monthlyNet,
+              activationDate = params.activationDate,
             ),
             inclusive = true,
           )

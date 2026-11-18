@@ -159,5 +159,8 @@ internal sealed interface ChangeMileageUiState {
   ) : ChangeMileageUiState {
     val selectedQuote: MileageQuote = quotes.first { it.id == selectedQuoteId }
     val isCurrentSelected: Boolean = selectedQuote.isCurrent
+
+    /** [quotes] are sorted ascending by mileage, so an earlier index is a lower band than today's. */
+    val isLowerThanCurrentSelected: Boolean = quotes.indexOf(selectedQuote) < quotes.indexOfFirst { it.isCurrent }
   }
 }

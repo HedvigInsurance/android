@@ -49,7 +49,10 @@ class ChangeMileageSummaryPresenterTest {
       commit.turbine.add(Unit.right())
       cancelAndIgnoreRemainingEvents()
       assertThat(backstack.entries).isEqualTo(
-        listOf(PreviousScreenKey, ChangeMileageSuccessKey(lowerQuote.displayName, lowerQuote.totalCost.monthlyNet)),
+        listOf(
+          PreviousScreenKey,
+          ChangeMileageSuccessKey(lowerQuote.displayName, lowerQuote.totalCost.monthlyNet, params.activationDate),
+        ),
       )
     }
   }

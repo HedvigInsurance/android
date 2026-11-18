@@ -25,6 +25,7 @@ internal data class ChangeMileageSummaryKey(val params: ChangeMileageSummaryPara
 internal data class ChangeMileageSuccessKey(
   val newMileageDisplayName: String,
   val newMonthlyCost: UiMoney,
+  val activationDate: LocalDate,
 ) : HedvigNavKey
 
 @Serializable

@@ -25,7 +25,6 @@ internal data class MileageQuote(
   val displayName: String,
   val isCurrent: Boolean,
   val totalCost: ItemCost,
-  val infoMessage: String?,
   val displayItems: List<MileageDisplayItem>,
 )
 

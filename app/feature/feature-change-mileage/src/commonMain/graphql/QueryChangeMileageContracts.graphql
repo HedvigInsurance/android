@@ -3,8 +3,7 @@ query ChangeMileageContracts {
     activeContracts {
       id
       exposureDisplayName
-      # TODO(change-mileage): uncomment once `Contract.supportsChangeMileage` is published in the schema.
-      # supportsChangeMileage
+      supportsChangeMileage
       currentAgreement {
         productVariant {
           displayName

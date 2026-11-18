@@ -7,7 +7,6 @@ import com.apollographql.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
-import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.toContractGroup
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -34,6 +33,7 @@ internal class GetMileageContractsUseCaseImpl(
       .mapLeft { ErrorMessage() }
       .map { data ->
         data.currentMember.activeContracts
+          .filter { it.supportsChangeMileage }
           .map { contract ->
             MileageContract(
               id = contract.id,
@@ -42,8 +42,6 @@ internal class GetMileageContractsUseCaseImpl(
               contractGroup = contract.currentAgreement.productVariant.typeOfContract.toContractGroup(),
             )
           }
-          // TODO(change-mileage): filter on `supportsChangeMileage` once it is published in the schema.
-          .filter { it.contractGroup == ContractGroup.CAR }
       }
   }
 }

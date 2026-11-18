@@ -56,8 +56,7 @@ fragment ContractFragment on Contract {
   supportsMoving
   supportsCoInsured
   supportsChangeTier
-  # TODO(change-mileage): uncomment once `Contract.supportsChangeMileage` is published in the schema.
-  # supportsChangeMileage
+  supportsChangeMileage
   supportsCoOwners
   supportsTermination
   coInsured {

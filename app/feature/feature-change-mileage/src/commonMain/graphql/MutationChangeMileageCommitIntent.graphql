@@ -1,9 +1,5 @@
-# TODO(change-mileage): the commit mutation is not in the shared API draft yet. This assumes it mirrors
-#  `changeTierDeductibleCommitIntent`; adjust the name and shape to the published schema, then uncomment.
-# mutation ChangeMileageCommitIntent($quoteId: ID!) {
-#   changeMileageCommitIntent(quoteId: $quoteId) {
-#     userError {
-#       message
-#     }
-#   }
-# }
+mutation ChangeMileageCommitIntent($quoteId: ID!) {
+  changeMileageCommitIntent(quoteId: $quoteId) {
+    message
+  }
+}

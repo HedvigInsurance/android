@@ -290,11 +290,12 @@ private fun MileageCustomizationCard(
         onCancel = onDismissRequest,
       )
     }
-    val infoMessage = uiState.selectedQuote.infoMessage
-    if (infoMessage != null) {
+    if (uiState.isLowerThanCurrentSelected) {
       Spacer(Modifier.height(4.dp))
       HedvigNotificationCard(
-        message = infoMessage,
+        // TODO: Add "If the car is driven further than you have chosen, the compensation can be lower in case of damage. You can change the mileage whenever you want." / "Om bilen körs längre än du har valt kan ersättningen bli lägre vid en skada. Du kan ändra körsträckan när du vill." to Lokalise
+        message = "Om bilen körs längre än du har valt kan ersättningen bli lägre vid en skada. " +
+          "Du kan ändra körsträckan när du vill.",
         priority = NotificationDefaults.NotificationPriority.Info,
         style = NotificationDefaults.InfoCardStyle.Default,
         modifier = Modifier.fillMaxWidth(),
@@ -455,11 +456,6 @@ internal val previewQuotes: List<MileageQuote> = listOf(
     displayName = name,
     isCurrent = index == 1,
     totalCost = previewCost(price),
-    infoMessage = if (index == 0) {
-      "Om bilen körs längre än du har valt kan ersättningen bli lägre vid en skada. Du kan ändra körsträckan när du vill."
-    } else {
-      null
-    },
     displayItems = listOf(
       MileageDisplayItem("Körsträcka per år", name, if (index == 1) null else "1 500 mil"),
       MileageDisplayItem("Registreringsnummer", "ABC 123", null),

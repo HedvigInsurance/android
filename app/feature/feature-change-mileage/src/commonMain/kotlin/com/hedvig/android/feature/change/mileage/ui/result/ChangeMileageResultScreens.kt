@@ -27,6 +27,7 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import hedvig.resources.GENERAL_RETRY
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
 import hedvig.resources.Res
@@ -34,21 +35,23 @@ import hedvig.resources.TIER_FLOW_COMMIT_PROCESSING_ERROR_DESCRIPTION
 import hedvig.resources.TIER_FLOW_COMMIT_PROCESSING_TITLE
 import hedvig.resources.general_close_button
 import hedvig.resources.something_went_wrong
+import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ChangeMileageSuccessScreen(
   newMileageDisplayName: String,
   newMonthlyCost: UiMoney,
+  activationDate: LocalDate,
   popBackstack: () -> Unit,
 ) {
   val price = stringResource(Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, newMonthlyCost)
+  val date = rememberHedvigDateTimeFormatter().format(activationDate)
   ResultScreenLayout(onClose = popBackstack) {
     EmptyState(
       text = stringResource(Res.string.TIER_FLOW_COMMIT_PROCESSING_TITLE),
-      // TODO: Add "Your mileage is now %1$s per year. The change applies from today and your new price is %2$s." / "Din körsträcka är nu %1$s per år. Ändringen gäller från idag och ditt nya pris är %2$s." to Lokalise
-      description = "Din körsträcka är nu $newMileageDisplayName per år. " +
-        "Ändringen gäller från idag och ditt nya pris är $price.",
+      // TODO: Add "Your mileage will be %1$s per year from %2$s, and your new price is %3$s." / "Din körsträcka blir %1$s per år från %2$s och ditt nya pris är %3$s." to Lokalise
+      description = "Din körsträcka blir $newMileageDisplayName per år från $date och ditt nya pris är $price.",
       iconStyle = SUCCESS,
       buttonStyle = NoButton,
       modifier = Modifier.fillMaxWidth(),
@@ -98,7 +101,7 @@ private fun ResultScreenLayout(onClose: () -> Unit, content: @Composable () -> U
 private fun PreviewChangeMileageSuccessScreen() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      ChangeMileageSuccessScreen("1 000 mil", UiMoney(371.0, UiCurrencyCode.SEK), {})
+      ChangeMileageSuccessScreen("1 000 mil", UiMoney(371.0, UiCurrencyCode.SEK), LocalDate(2026, 11, 19), {})
     }
   }
 }

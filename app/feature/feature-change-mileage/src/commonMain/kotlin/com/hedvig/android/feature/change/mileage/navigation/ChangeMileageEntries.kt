@@ -57,6 +57,7 @@ fun EntryProviderScope<HedvigNavKey>.changeMileageEntries(backstack: Backstack) 
     ChangeMileageSuccessScreen(
       newMileageDisplayName = key.newMileageDisplayName,
       newMonthlyCost = key.newMonthlyCost,
+      activationDate = key.activationDate,
       popBackstack = backstack::popBackstack,
     )
   }
