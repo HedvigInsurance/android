@@ -2712,6 +2712,11 @@ type IconVariants {
   light: IconVariant!
   dark: IconVariant!
 }
+enum ImportantMessageSeverity {
+  INFO
+  WARNING
+  ERROR
+}
 scalar Instant
 type InsurableLimit {
   label: String!
@@ -3185,6 +3190,7 @@ type MemberImportantMessage {
   message: String!
   link: Url! @deprecated(reason: "Use linkInfo instead, which allows for a message to not have a link at all attached and allows editing the button text too")
   linkInfo: LinkInfo
+  severity: ImportantMessageSeverity!
 }
 type MemberInsuranceCost {
   """
@@ -5001,6 +5007,12 @@ type ProductVariantComparisonRow {
   """
   covered: [String!]!
 }
+type PublicImportantMessage {
+  id: ID!
+  message: String!
+  severity: ImportantMessageSeverity!
+  linkInfo: LinkInfo
+}
 input PuppyEngagementInput {
   name: String!
   rating: Int
@@ -5132,6 +5144,10 @@ type Query {
   Call this to get the cost of an addon offer for selected addon(s).
   """
   addonOfferCost(quoteId: ID!, selectedAddonIds: [ID!]!): ItemCost!
+  """
+  Messages for clients that are not logged in. Needs no Authorization header.
+  """
+  publicImportantMessages: [PublicImportantMessage!]!
 }
 """
 External insurance details used to recommend a matching Hedvig product, even when no offer has been generated yet.

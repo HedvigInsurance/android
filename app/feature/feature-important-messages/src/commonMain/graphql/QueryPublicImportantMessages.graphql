@@ -1,0 +1,11 @@
+query PublicImportantMessages {
+  publicImportantMessages {
+    id
+    message
+    severity
+    linkInfo {
+      url
+      buttonText
+    }
+  }
+}
