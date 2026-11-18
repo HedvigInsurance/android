@@ -18,10 +18,6 @@ fun Backstack.navigateToCrossSellProduct(crossSell: CrossSell) {
 }
 
 /**
- * Replaces the options sheet with the chosen product page, so leaving that page returns to wherever the
- * cross-sell was tapped rather than to the sheet.
- */
-/**
  * Shows [result] in place of the product page and the purchase flow above it, so leaving it returns to wherever the
  * cross-sell was tapped.
  */
@@ -29,6 +25,10 @@ fun Backstack.showCrossSellPurchaseResult(result: HedvigNavKey) {
   navigateAndPopUpTo<CrossSellProductKey>(result, inclusive = true)
 }
 
+/**
+ * Replaces the options sheet with the chosen product page, so leaving that page returns to wherever the
+ * cross-sell was tapped rather than to the sheet.
+ */
 internal fun Backstack.navigateToSelectedOption(option: CrossSellProductKey) {
   navigateAndPopUpTo<CrossSellOptionsKey>(option, inclusive = true)
 }

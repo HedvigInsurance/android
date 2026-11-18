@@ -68,8 +68,8 @@ import hedvig.resources.TIER_FLOW_TOTAL
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_close_button
 import hedvig.resources.something_went_wrong
-import org.jetbrains.compose.resources.stringResource
 import kotlinx.datetime.LocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun InAppPurchaseSummaryDestination(

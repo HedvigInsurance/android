@@ -44,8 +44,6 @@ import com.hedvig.android.feature.home.home.navigation.homeEntries
 import com.hedvig.android.feature.imageviewer.navigation.ImageViewerKey
 import com.hedvig.android.feature.imageviewer.navigation.imageViewerEntries
 import com.hedvig.android.feature.inapppurchase.navigation.inAppPurchaseEntries
-import com.hedvig.android.feature.product.inapp.navigation.showCrossSellPurchaseResult
-import com.hedvig.android.feature.product.inapp.navigation.CrossSellProductKey
 import com.hedvig.android.feature.insurance.certificate.navigation.InsuranceEvidenceKey
 import com.hedvig.android.feature.insurance.certificate.navigation.insuranceEvidenceEntries
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
@@ -65,7 +63,9 @@ import com.hedvig.android.feature.payments.navigation.ManualChargeKey
 import com.hedvig.android.feature.payments.navigation.paymentsEntries
 import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountKey
 import com.hedvig.android.feature.payoutaccount.navigation.payoutAccountEntries
+import com.hedvig.android.feature.product.inapp.navigation.CrossSellProductKey
 import com.hedvig.android.feature.product.inapp.navigation.productInAppEntries
+import com.hedvig.android.feature.product.inapp.navigation.showCrossSellPurchaseResult
 import com.hedvig.android.feature.profile.navigation.ContactInfoKey
 import com.hedvig.android.feature.profile.navigation.UsageDataKey
 import com.hedvig.android.feature.profile.tab.profileEntries

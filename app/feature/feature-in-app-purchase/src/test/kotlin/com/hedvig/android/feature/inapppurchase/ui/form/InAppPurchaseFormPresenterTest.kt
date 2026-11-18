@@ -75,7 +75,9 @@ class InAppPurchaseFormPresenterTest {
       skipItems(1)
 
       sendEvent(InAppPurchaseFormEvent.Submit)
-      quote.results.add(InAppPurchaseQuote.InvalidFields(listOf(InAppPurchaseFieldError("name", "Required")), null).right())
+      quote.results.add(
+        InAppPurchaseQuote.InvalidFields(listOf(InAppPurchaseFieldError("name", "Required")), null).right(),
+      )
       val withError = awaitUntil { it.fieldState("name").errorMessage != null }
       assertThat(withError.fieldState("name").errorMessage).isEqualTo("Required")
 
