@@ -53,8 +53,10 @@ struct TravelCertificateTravellersView: View {
             }
         }
         .onChange(of: owner?.state, initial: true) { _, state in
-            if case let .created(summary) = state {
-                flow.finish(summary)
+            if case let .created(summary, request) = state {
+                owner?.perform(request) { _ in
+                    flow.finish(summary)
+                }
             }
         }
     }

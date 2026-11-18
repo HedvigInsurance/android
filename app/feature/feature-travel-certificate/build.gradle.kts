@@ -37,6 +37,7 @@ kotlin {
       implementation(libs.jetbrains.compose.ui)
       implementation(libs.jetbrains.compose.ui.tooling.preview)
       implementation(libs.jetbrains.lifecycle.runtime.compose)
+      implementation(projects.composeUi)
       implementation(projects.coreLocale)
       implementation(projects.coreResources)
       implementation(projects.designSystemHedvig)

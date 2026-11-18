@@ -8,9 +8,14 @@ import app.cash.turbine.test
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
+import assertk.Assert
 import assertk.assertThat
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isInstanceOf
+import assertk.assertions.isTrue
+import assertk.assertions.prop
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
@@ -21,7 +26,9 @@ import com.hedvig.android.feature.payments.data.ManualChargeInfoResult
 import com.hedvig.android.feature.payments.data.TriggerManualChargeUseCase
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.NavigationRequest
 import com.hedvig.android.molecule.test.test
+import com.hedvig.android.molecule.test.testFrames
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.runTest
@@ -92,7 +99,7 @@ class ManualChargePresenterTest {
       assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Success(info, payButtonLoading = true))
       trigger.responses.send(Unit.right())
 
-      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Charged(info))
+      assertThat(awaitItem()).isCharged(info)
       assertThat(trigger.calls).isEqualTo(1)
     }
   }
@@ -111,7 +118,7 @@ class ManualChargePresenterTest {
       sendEvent(ManualChargeEvent.Refresh)
       this@runTest.testScheduler.advanceUntilIdle()
       trigger.responses.send(Unit.right())
-      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Charged(info))
+      assertThat(awaitItem()).isCharged(info)
 
       getInfo.responses.send(ManualChargeInfoResult.NoLongerChargeable.right())
       this@runTest.testScheduler.advanceUntilIdle()
@@ -212,10 +219,10 @@ class ManualChargePresenterTest {
       this@runTest.testScheduler.advanceUntilIdle()
       trigger.responses.send(Unit.right())
 
-      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Charged(info))
+      assertThat(awaitItem()).isCharged(info)
       this@runTest.testScheduler.advanceUntilIdle()
       assertThat(trigger.calls).isEqualTo(1)
-      assertThat(remainingStates() - ManualChargeUiState.Charged(info)).isEmpty()
+      assertThat(remainingStates().filterNot { it.isChargedWith(info) }).isEmpty()
     }
   }
 
@@ -233,7 +240,7 @@ class ManualChargePresenterTest {
       this@runTest.testScheduler.advanceUntilIdle()
       trigger.responses.send(Unit.right())
 
-      assertThat(expectMostRecentItem()).isEqualTo(ManualChargeUiState.Charged(info))
+      assertThat(expectMostRecentItem()).isCharged(info)
       this@runTest.testScheduler.advanceUntilIdle()
       assertThat(trigger.calls).isEqualTo(1)
     }
@@ -250,13 +257,13 @@ class ManualChargePresenterTest {
       sendEvent(ManualChargeEvent.TriggerCharge)
       assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Success(info, payButtonLoading = true))
       trigger.responses.send(Unit.right())
-      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Charged(info))
+      assertThat(awaitItem()).isCharged(info)
 
       sendEvent(ManualChargeEvent.TriggerCharge)
       this@runTest.testScheduler.advanceUntilIdle()
 
       assertThat(trigger.calls).isEqualTo(1)
-      assertThat(remainingStates() - ManualChargeUiState.Charged(info)).isEmpty()
+      assertThat(remainingStates().filterNot { it.isChargedWith(info) }).isEmpty()
     }
   }
 
@@ -271,13 +278,13 @@ class ManualChargePresenterTest {
       sendEvent(ManualChargeEvent.TriggerCharge)
       assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Success(info, payButtonLoading = true))
       trigger.responses.send(Unit.right())
-      assertThat(awaitItem()).isEqualTo(ManualChargeUiState.Charged(info))
+      assertThat(awaitItem()).isCharged(info)
 
       sendEvent(ManualChargeEvent.Retry)
       this@runTest.testScheduler.advanceUntilIdle()
 
       assertThat(getInfo.calls).isEqualTo(1)
-      assertThat(remainingStates() - ManualChargeUiState.Charged(info)).isEmpty()
+      assertThat(remainingStates().filterNot { it.isChargedWith(info) }).isEmpty()
     }
   }
 
@@ -302,12 +309,57 @@ class ManualChargePresenterTest {
   fun `a presenter restarted after the charge went through stays charged without loading`() = runTest {
     val getInfo = FakeGetManualChargeInfoUseCase()
     val trigger = FakeTriggerManualChargeUseCase()
-    presenter(getInfo, trigger).restartedWith(lastState = ManualChargeUiState.Charged(info)) {
+    val charged = ManualChargeUiState.Charged(NavigationRequest.of(info))
+    presenter(getInfo, trigger).restartedWith(lastState = charged) {
       this@runTest.testScheduler.advanceUntilIdle()
 
-      assertThat(expectMostRecentItem()).isEqualTo(ManualChargeUiState.Charged(info))
+      assertThat(expectMostRecentItem()).isEqualTo(charged)
       assertThat(getInfo.calls).isEqualTo(0)
       assertThat(trigger.calls).isEqualTo(0)
+    }
+  }
+
+  @Test
+  fun `a restart after the success screen was opened keeps it opened, so it is not opened again`() = runTest {
+    val getInfo = FakeGetManualChargeInfoUseCase()
+    val trigger = FakeTriggerManualChargeUseCase()
+    presenter(getInfo, trigger).testFrames(ManualChargeUiState.Loading) {
+      getInfo.responses.trySend(ManualChargeInfoResult.Chargeable(info).right())
+      frame()
+      frame()
+      emit(ManualChargeEvent.TriggerCharge)
+      frame()
+      trigger.responses.trySend(Unit.right())
+      frame()
+      val charged = latest as ManualChargeUiState.Charged
+      assertThat(charged.exit.tryConsume()).isTrue()
+
+      restart()
+      frame()
+      assertThat((latest as ManualChargeUiState.Charged).exit.tryConsume()).isFalse()
+      assertThat(trigger.calls).isEqualTo(1)
+    }
+  }
+
+  @Test
+  fun `a restart while charging stops showing the charge and loads the details again`() = runTest {
+    val getInfo = FakeGetManualChargeInfoUseCase()
+    val trigger = FakeTriggerManualChargeUseCase()
+    presenter(getInfo, trigger).testFrames(ManualChargeUiState.Loading) {
+      getInfo.responses.trySend(ManualChargeInfoResult.Chargeable(info).right())
+      frame()
+      frame()
+      emit(ManualChargeEvent.TriggerCharge)
+      frame()
+      assertThat(latest).isEqualTo(ManualChargeUiState.Success(info, payButtonLoading = true))
+
+      restart()
+      frame()
+      assertThat(latest).isEqualTo(ManualChargeUiState.Loading)
+      getInfo.responses.trySend(ManualChargeInfoResult.NoLongerChargeable.right())
+      frame()
+      assertThat(latest).isEqualTo(ManualChargeUiState.NoLongerChargeable)
+      assertThat(trigger.calls).isEqualTo(1)
     }
   }
 
@@ -356,4 +408,12 @@ private class FakeTriggerManualChargeUseCase : TriggerManualChargeUseCase {
     calls++
     return responses.receive()
   }
+}
+
+private fun ManualChargeUiState.isChargedWith(info: ManualChargeInfo): Boolean =
+  this is ManualChargeUiState.Charged && manualChargeInfo == info
+
+/** Charged with [info]. The request in it is made by the presenter, so it is not compared. */
+private fun Assert<ManualChargeUiState>.isCharged(info: ManualChargeInfo) {
+  isInstanceOf<ManualChargeUiState.Charged>().prop(ManualChargeUiState.Charged::manualChargeInfo).isEqualTo(info)
 }

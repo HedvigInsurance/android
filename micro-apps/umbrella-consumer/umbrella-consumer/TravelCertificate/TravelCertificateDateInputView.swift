@@ -17,8 +17,6 @@ struct TravelCertificateDateInputView: View {
     @State private var copiedRevision: Int32?
     /// Kotlin's email while it is being copied into the field, so that copy is not sent back as an edit.
     @State private var copyInFlight: String?
-    /// The step last pushed, so a repeated state carrying the same step does not push it twice.
-    @State private var pushedStep: TravelCertificateTravellersStep?
     #if DEBUG
     @State private var usesBindingDesign = false
     /// What the D2 field last reported through its binding's setter.
@@ -85,18 +83,13 @@ struct TravelCertificateDateInputView: View {
                     emailText = content.email
                 }
             }
-            if let next = content.next {
-                if next != pushedStep {
-                    pushedStep = next
-                    // Sent here, with the push, not from the pushed view: until Kotlin sees it, Continue is ignored.
-                    flow.path.append(.travellers(next))
-                    owner?.stepShown()
-                }
-            } else {
-                pushedStep = nil
+            owner?.perform(content.next) { step in
+                flow.path.append(.travellers(step))
             }
-        case let .created(summary):
-            flow.finish(summary)
+        case let .created(summary, request):
+            owner?.perform(request) { _ in
+                flow.finish(summary)
+            }
         }
     }
 

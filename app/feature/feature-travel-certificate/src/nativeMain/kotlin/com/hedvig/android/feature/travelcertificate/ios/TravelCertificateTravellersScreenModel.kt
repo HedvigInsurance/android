@@ -88,7 +88,7 @@ internal fun TravelCertificateTravellersInputUiState.toScreenState(): TravelCert
     )
 
     is TravelCertificateTravellersInputUiState.Created -> TravelCertificateTravellersScreenState.Created(
-      url.toCreated(),
+      exit.map { it.toCreated() },
     )
   }
 

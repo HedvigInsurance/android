@@ -3,10 +3,14 @@ package com.hedvig.android.feature.travelcertificate.ios
 import assertk.assertThat
 import assertk.assertions.doesNotContain
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isSameInstanceAs
+import assertk.assertions.isTrue
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateTravellersStep
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.ui.generatewhen.EmailError
 import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputUiState
+import com.hedvig.android.molecule.public.NavigationRequest
 import kotlin.test.Test
 import kotlinx.datetime.LocalDate
 
@@ -82,37 +86,51 @@ class TravelCertificateDateInputScreenStateTest {
 
   @Test
   fun `the travellers step offered`() {
-    val step = TravelCertificateTravellersStep("member@hedvig.com", LocalDate(2026, 12, 1), "contract-1")
+    val step = NavigationRequest.of(
+      TravelCertificateTravellersStep("member@hedvig.com", LocalDate(2026, 12, 1), "contract-1"),
+    )
 
-    assertThat(form.copy(next = step).toScreenState()).isEqualTo(content.copy(next = step))
+    val mapped = form.copy(next = step).toScreenState() as TravelCertificateDateInputScreenState.Content
+    assertThat(mapped).isEqualTo(content.copy(next = step))
+    assertThat(mapped.next).isSameInstanceAs(step)
   }
 
   @Test
   fun `created carries the signed url`() {
-    val created = TravelCertificateDateInputUiState.Created(TravelCertificateUrl("https://example.com/c.pdf?s=1"))
-
-    assertThat(created.toScreenState()).isEqualTo(
-      TravelCertificateDateInputScreenState.Created(TravelCertificateCreated("https://example.com/c.pdf?s=1")),
+    val created = TravelCertificateDateInputUiState.Created(
+      NavigationRequest.of(TravelCertificateUrl("https://example.com/c.pdf?s=1")),
     )
+
+    val mapped = created.toScreenState() as TravelCertificateDateInputScreenState.Created
+    assertThat(mapped.certificate.target).isEqualTo(TravelCertificateCreated("https://example.com/c.pdf?s=1"))
+    // Swift taking the request it is shown takes the presenter's, so Android cannot perform it again.
+    assertThat(mapped.certificate.tryConsume()).isTrue()
+    assertThat(created.exit.isPending).isFalse()
   }
 
   @Test
   fun `the form and created leave out the email and the signed url from their text`() {
-    val step = TravelCertificateTravellersStep("member@hedvig.com", LocalDate(2026, 12, 1), "contract-1")
+    val step = NavigationRequest.of(
+      TravelCertificateTravellersStep("member@hedvig.com", LocalDate(2026, 12, 1), "contract-1"),
+    )
     val text = content.copy(next = step).toString()
 
     assertThat(text).isEqualTo(
       "Content(emailRevision=1, emailError=null, minDate=2026-11-17, maxDate=2027-02-05, selectedDate=2026-11-18, " +
         "daysValid=45, hasCoInsured=true, isCreating=false, createFailed=false, " +
-        "next=TravelCertificateTravellersStep(travelDate=2026-12-01, contractId=contract-1))",
+        "next=NavigationRequest(id=${step.id}, isPending=true))",
     )
-    assertThat(TravelCertificateDateInputScreenState.Created(TravelCertificateCreated("https://secret")).toString())
-      .doesNotContain("secret")
+    val created = TravelCertificateDateInputScreenState.Created(
+      NavigationRequest.of(TravelCertificateCreated("https://secret")),
+    )
+    assertThat(created.toString()).doesNotContain("secret")
   }
 
   @Test
   fun `handle calls the closure for each case`() {
-    val created = TravelCertificateDateInputScreenState.Created(TravelCertificateCreated("https://c"))
+    val created = TravelCertificateDateInputScreenState.Created(
+      NavigationRequest.of(TravelCertificateCreated("https://c")),
+    )
     val calls = listOf(
       TravelCertificateDateInputScreenState.Loading,
       TravelCertificateDateInputScreenState.Failed,
@@ -124,7 +142,7 @@ class TravelCertificateDateInputScreenStateTest {
         onLoading = { called = "loading" },
         onFailed = { called = "failed" },
         onContent = { called = "content:${it.daysValid}" },
-        onCreated = { called = "created:${it.certificate.certificateUrl}" },
+        onCreated = { called = "created:${it.certificate.target.certificateUrl}" },
       )
       called
     }

@@ -18,7 +18,14 @@ import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificate
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateKey
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateTravellersInputKey
 import com.hedvig.android.feature.travelcertificate.navigation.navigateToCreatedCertificate
+import com.hedvig.android.molecule.public.NavigationRequest
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 
 /**
@@ -43,6 +50,17 @@ class TravellersNavigationTest {
   private var uiState by mutableStateOf<TravelCertificateTravellersInputUiState>(content)
   private var recompositionTrigger by mutableIntStateOf(0)
 
+  @Before
+  fun setUp() {
+    // The effect waits for the resumed lifecycle on Dispatchers.Main, which the JVM has no platform implementation of.
+    Dispatchers.setMain(UnconfinedTestDispatcher())
+  }
+
+  @After
+  fun tearDown() {
+    Dispatchers.resetMain()
+  }
+
   /** The [recompositionTrigger] value of the composition whose callback navigated, once per navigation. */
   private val navigatedFrom = mutableListOf<Int>()
 
@@ -65,7 +83,7 @@ class TravellersNavigationTest {
   fun `created replaces the flow above the history with the certificate, once`() = runComposeUiTest {
     showEffect()
     val url = TravelCertificateUrl("https://example.com/new.pdf")
-    uiState = TravelCertificateTravellersInputUiState.Created(url)
+    uiState = TravelCertificateTravellersInputUiState.Created(NavigationRequest.of(url))
     waitForIdle()
     recompositionTrigger++
     waitForIdle()

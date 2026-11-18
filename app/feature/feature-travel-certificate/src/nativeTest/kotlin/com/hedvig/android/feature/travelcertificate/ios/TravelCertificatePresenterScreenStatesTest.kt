@@ -7,7 +7,10 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
+import assertk.assertions.isInstanceOf
+import assertk.assertions.isNotEqualTo
 import assertk.assertions.isNull
+import assertk.assertions.isTrue
 import com.hedvig.android.feature.travelcertificate.data.CoInsuredData
 import com.hedvig.android.feature.travelcertificate.data.CoInsuredDataWithMember
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateData
@@ -106,11 +109,19 @@ class TravelCertificatePresenterScreenStatesTest {
       run.send(TravelCertificateDateInputEvent.ChangeEmailInput("other@hedvig.com"))
       run.send(TravelCertificateDateInputEvent.Submit)
       val step = TravelCertificateTravellersStep("other@hedvig.com", LocalDate(2027, 2, 5), "contract-1")
-      assertThat(run.awaitStateMatching { (it as? TravelCertificateDateInputScreenState.Content)?.next != null })
-        .isEqualTo(withCoInsured.copy(email = "other@hedvig.com", selectedDate = "2027-02-05", next = step))
-      run.send(TravelCertificateDateInputEvent.StepShown)
-      assertThat(run.awaitState())
-        .isEqualTo(withCoInsured.copy(email = "other@hedvig.com", selectedDate = "2027-02-05", next = null))
+      val offered = run.awaitStateMatching {
+        (it as? TravelCertificateDateInputScreenState.Content)?.next != null
+      } as TravelCertificateDateInputScreenState.Content
+      val request = offered.next!!
+      assertThat(request.target).isEqualTo(step)
+      assertThat(offered)
+        .isEqualTo(withCoInsured.copy(email = "other@hedvig.com", selectedDate = "2027-02-05", next = request))
+      assertThat(request.tryConsume()).isTrue()
+      run.send(TravelCertificateDateInputEvent.Submit)
+      val offeredAgain = run.awaitState() as TravelCertificateDateInputScreenState.Content
+      assertThat(offeredAgain.next).isNotEqualTo(request)
+      assertThat(offeredAgain.next!!.target).isEqualTo(step)
+      assertThat(offeredAgain.next!!.isPending).isTrue()
       assertThat(transport.inputs()).containsExactly()
       run.cancel()
     }
@@ -132,11 +143,9 @@ class TravelCertificatePresenterScreenStatesTest {
     assertThat(run.awaitState()).isEqualTo(form.copy(isCreating = true))
     transport.responses.send("https://example.com/certificate.pdf?signature=secret")
 
-    assertThat(run.awaitState()).isEqualTo(
-      TravelCertificateDateInputScreenState.Created(
-        TravelCertificateCreated("https://example.com/certificate.pdf?signature=secret"),
-      ),
-    )
+    assertThat(run.awaitState()).isInstanceOf<TravelCertificateDateInputScreenState.Created>()
+      .transform { it.certificate.target }
+      .isEqualTo(TravelCertificateCreated("https://example.com/certificate.pdf?signature=secret"))
     assertThat(transport.inputs().map { it.email to it.startDate }).containsExactly(
       "member@hedvig.com" to LocalDate(2026, 11, 17),
       "member@hedvig.com" to LocalDate(2026, 11, 17),
@@ -194,11 +203,9 @@ class TravelCertificatePresenterScreenStatesTest {
       assertThat(run.awaitState()).isEqualTo(onlyBo.copy(isCreating = true))
       transport.responses.send("https://example.com/certificate.pdf?signature=secret")
 
-      assertThat(run.awaitState()).isEqualTo(
-        TravelCertificateTravellersScreenState.Created(
-          TravelCertificateCreated("https://example.com/certificate.pdf?signature=secret"),
-        ),
-      )
+      assertThat(run.awaitState()).isInstanceOf<TravelCertificateTravellersScreenState.Created>()
+        .transform { it.certificate.target }
+        .isEqualTo(TravelCertificateCreated("https://example.com/certificate.pdf?signature=secret"))
       val sent = transport.inputs()
       assertThat(sent.map { input -> input.isMemberIncluded to input.coInsured.map { it.fullName } }).containsExactly(
         false to listOf("Bo Berg"),

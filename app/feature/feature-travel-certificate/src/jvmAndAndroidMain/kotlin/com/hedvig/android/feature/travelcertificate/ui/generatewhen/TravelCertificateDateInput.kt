@@ -23,6 +23,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
+import com.hedvig.android.compose.ui.NavigationEffect
 import com.hedvig.android.core.locale.CommonLocale
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
@@ -77,46 +79,28 @@ internal fun TravelCertificateDateInputDestination(
   DateInputNavigationEffect(
     uiState = uiState,
     onNavigateToTravellers = onNavigateToTravellers,
-    onStepShown = { viewModel.emit(TravelCertificateDateInputEvent.StepShown) },
     onCertificateCreated = onCertificateCreated,
   )
   TravelCertificateDateInput(
     uiState = uiState,
     reload = { viewModel.emit(TravelCertificateDateInputEvent.RetryLoadData) },
     navigateUp = navigateUp,
-    submitInput = { viewModel.emit(TravelCertificateDateInputEvent.Submit) },
+    // A second tap during the push transition would offer the step again on a screen that is leaving.
+    submitInput = dropUnlessResumed { viewModel.emit(TravelCertificateDateInputEvent.Submit) },
     onEmailChanged = { viewModel.emit(TravelCertificateDateInputEvent.ChangeEmailInput(it)) },
     onTravelDateSelected = { viewModel.emit(TravelCertificateDateInputEvent.SelectTravelDate(it)) },
   )
 }
 
-/**
- * Opens the step in [Success.next] once per value and acknowledges it, and leaves for the certificate on
- * [TravelCertificateDateInputUiState.Created].
- */
+/** Opens the step in [Success.next], and leaves for the certificate on [TravelCertificateDateInputUiState.Created]. */
 @Composable
 internal fun DateInputNavigationEffect(
   uiState: TravelCertificateDateInputUiState,
   onNavigateToTravellers: (TravelCertificateTravellersStep) -> Unit,
-  onStepShown: () -> Unit,
   onCertificateCreated: (TravelCertificateUrl) -> Unit,
 ) {
-  val currentOnNavigateToTravellers by rememberUpdatedState(onNavigateToTravellers)
-  val currentOnStepShown by rememberUpdatedState(onStepShown)
-  val currentOnCertificateCreated by rememberUpdatedState(onCertificateCreated)
-  val next = (uiState as? Success)?.next
-  LaunchedEffect(next) {
-    if (next != null) {
-      currentOnNavigateToTravellers(next)
-      currentOnStepShown()
-    }
-  }
-  val createdUrl = (uiState as? TravelCertificateDateInputUiState.Created)?.url
-  LaunchedEffect(createdUrl) {
-    if (createdUrl != null) {
-      currentOnCertificateCreated(createdUrl)
-    }
-  }
+  NavigationEffect((uiState as? Success)?.next, onNavigateToTravellers)
+  NavigationEffect((uiState as? TravelCertificateDateInputUiState.Created)?.exit, onCertificateCreated)
 }
 
 @Composable

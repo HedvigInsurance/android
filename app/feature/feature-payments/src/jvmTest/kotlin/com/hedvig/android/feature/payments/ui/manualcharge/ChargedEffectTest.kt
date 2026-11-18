@@ -26,6 +26,7 @@ import com.hedvig.android.feature.payments.navigation.ManualChargeSuccessKey
 import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeUiState.Charged
 import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeUiState.Failure
 import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeUiState.Success
+import com.hedvig.android.molecule.public.NavigationRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -77,7 +78,7 @@ class ChargedEffectTest {
   fun `one charged state calls back once, across recomposition and re-collection`() = runComposeUiTest {
     showEffect()
     setState(Success(info, payButtonLoading = true))
-    setState(Charged(info))
+    setState(Charged(NavigationRequest.of(info)))
     assertThat(onChargedCalls).containsExactly(successKey)
 
     runOnIdle { recompositionTrigger++ }
@@ -95,7 +96,7 @@ class ChargedEffectTest {
     setState(Success(info, payButtonLoading = true))
     setLifecycleState(Lifecycle.State.CREATED)
 
-    setState(Charged(info))
+    setState(Charged(NavigationRequest.of(info)))
 
     assertThat(onChargedCalls).containsExactly(successKey)
   }
@@ -104,7 +105,7 @@ class ChargedEffectTest {
   fun `a charge that lands before the loading state is composed still calls back once`() = runComposeUiTest {
     showEffect()
 
-    setState(Charged(info))
+    setState(Charged(NavigationRequest.of(info)))
 
     assertThat(onChargedCalls).containsExactly(successKey)
   }
@@ -119,13 +120,23 @@ class ChargedEffectTest {
     assertThat(onChargedCalls).isEmpty()
   }
 
-  private fun ComposeUiTest.showEffect() {
+  @Test
+  fun `two screens sharing the ViewModel call back once for one charge`() = runComposeUiTest {
+    showEffect(screens = 2)
+    setState(Success(info, payButtonLoading = true))
+
+    setState(Charged(NavigationRequest.of(info)))
+
+    assertThat(onChargedCalls).containsExactly(successKey)
+  }
+
+  private fun ComposeUiTest.showEffect(screens: Int = 1) {
     setContent {
       CompositionLocalProvider(LocalLifecycleOwner provides lifecycleOwner) {
         val uiState by uiStates.collectAsStateWithLifecycle()
         // A new callback instance on every trigger, so the effect's call site cannot be skipped.
         val onCharged = remember(recompositionTrigger) { { key: ManualChargeSuccessKey -> onChargedCalls += key } }
-        ChargedEffect(uiState, uiStates, onCharged)
+        repeat(screens) { ChargedEffect(uiState, uiStates, onCharged) }
       }
     }
     waitForIdle()

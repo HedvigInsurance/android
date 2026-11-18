@@ -13,6 +13,7 @@ import com.hedvig.android.feature.travelcertificate.ui.generatewho.CoInsured
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.CoInsured.CoInsuredId
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertificateTravellersInputEvent
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertificateTravellersInputUiState
+import com.hedvig.android.molecule.public.NavigationRequest
 import kotlinx.datetime.LocalDate
 import org.junit.Test
 
@@ -81,8 +82,8 @@ class PersonalDataToStringTest {
   fun `both created states and the certificate key leave out the signed url`() {
     val url = TravelCertificateUrl(signedUrl)
     assertThat(url.toString()).isEqualTo("TravelCertificateUrl(redacted)")
-    assertHasNoPersonalData(TravelCertificateTravellersInputUiState.Created(url).toString())
-    assertHasNoPersonalData(TravelCertificateDateInputUiState.Created(url).toString())
+    assertHasNoPersonalData(TravelCertificateTravellersInputUiState.Created(NavigationRequest.of(url)).toString())
+    assertHasNoPersonalData(TravelCertificateDateInputUiState.Created(NavigationRequest.of(url)).toString())
     assertHasNoPersonalData(ShowCertificateKey(url).toString())
   }
 

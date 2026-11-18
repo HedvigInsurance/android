@@ -83,6 +83,15 @@ final class ScreenOwner<Model, ViewState: ScreenViewState> where Model: ScreenMo
     }
 }
 
+extension ScreenOwner {
+    /// Calls `navigate` with the request's target only when this call takes the request, so each Kotlin navigation
+    /// request is performed once however often the state carrying it is observed.
+    func perform<Target: AnyObject>(_ request: NavigationRequest<Target>?, _ navigate: (Target) -> Void) {
+        guard let request, request.tryConsume() else { return }
+        navigate(request.target)
+    }
+}
+
 /// Cancels a screen model's state collection and closes the model on the main thread, which `close()` requires. The
 /// owner sets it up on the main actor and only its `deinit` uses it again, so it is never used from two threads at once.
 private final class ScreenModelTeardown<KotlinState: AnyObject>: @unchecked Sendable {

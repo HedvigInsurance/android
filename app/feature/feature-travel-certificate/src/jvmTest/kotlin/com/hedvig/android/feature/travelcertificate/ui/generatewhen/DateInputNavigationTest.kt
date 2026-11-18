@@ -9,7 +9,7 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.v2.runComposeUiTest
 import assertk.assertThat
 import assertk.assertions.containsExactly
-import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import com.hedvig.android.feature.travelcertificate.TestBackstack
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateTravellersStep
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
@@ -19,7 +19,14 @@ import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificate
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateTravellersInputKey
 import com.hedvig.android.feature.travelcertificate.navigation.navigateToCreatedCertificate
 import com.hedvig.android.feature.travelcertificate.navigation.navigateToTravellersStep
+import com.hedvig.android.molecule.public.NavigationRequest
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 
 /**
@@ -48,7 +55,17 @@ class DateInputNavigationTest {
   )
   private var uiState by mutableStateOf<TravelCertificateDateInputUiState>(content)
   private var recompositionTrigger by mutableIntStateOf(0)
-  private var stepShownCalls = 0
+
+  @Before
+  fun setUp() {
+    // The effect waits for the resumed lifecycle on Dispatchers.Main, which the JVM has no platform implementation of.
+    Dispatchers.setMain(UnconfinedTestDispatcher())
+  }
+
+  @After
+  fun tearDown() {
+    Dispatchers.resetMain()
+  }
 
   private fun ComposeUiTest.showEffect() {
     setContent {
@@ -56,7 +73,6 @@ class DateInputNavigationTest {
       DateInputNavigationEffect(
         uiState = uiState,
         onNavigateToTravellers = { backstack.navigateToTravellersStep(it) },
-        onStepShown = { stepShownCalls++ },
         onCertificateCreated = { backstack.navigateToCreatedCertificate(it) },
       )
     }
@@ -70,38 +86,35 @@ class DateInputNavigationTest {
   }
 
   @Test
-  fun `a next step is pushed once and acknowledged, and pushed again when offered again`() = runComposeUiTest {
+  fun `a next step is pushed once and taken, and pushed again when offered again`() = runComposeUiTest {
     showEffect()
-    uiState = content.copy(next = step)
+    val offered = NavigationRequest.of(step)
+    uiState = content.copy(next = offered)
     waitForIdle()
-    // The acknowledgement reaches the presenter later, so states that keep the step arrive before it is cleared.
-    uiState = content.copy(next = step, pickedDate = LocalDate(2026, 12, 25), selectedDate = LocalDate(2026, 12, 25))
+    // The presenter keeps the taken step in the states it emits until the next Continue.
+    uiState = content.copy(next = offered, pickedDate = LocalDate(2026, 12, 25), selectedDate = LocalDate(2026, 12, 25))
     waitForIdle()
     recompositionTrigger++
     waitForIdle()
     val travellersKey = TravelCertificateTravellersInputKey(step)
     assertThat(backstack.entries).containsExactly(TravelCertificateKey, dateInputKey, travellersKey)
-    assertThat(stepShownCalls).isEqualTo(1)
+    assertThat(offered.isPending).isFalse()
 
-    uiState = content
-    waitForIdle()
     backstack.entries.removeLast()
-    uiState = content.copy(next = step)
+    uiState = content.copy(next = NavigationRequest.of(step))
     waitForIdle()
     assertThat(backstack.entries).containsExactly(TravelCertificateKey, dateInputKey, travellersKey)
-    assertThat(stepShownCalls).isEqualTo(2)
   }
 
   @Test
   fun `created replaces the flow above the history with the certificate`() = runComposeUiTest {
     showEffect()
     val url = TravelCertificateUrl("https://example.com/new.pdf")
-    uiState = TravelCertificateDateInputUiState.Created(url)
+    uiState = TravelCertificateDateInputUiState.Created(NavigationRequest.of(url))
     waitForIdle()
     recompositionTrigger++
     waitForIdle()
     assertThat(backstack.entries).containsExactly(TravelCertificateKey, ShowCertificateKey(url))
-    assertThat(stepShownCalls).isEqualTo(0)
   }
 
   @Test
@@ -117,6 +130,5 @@ class DateInputNavigationTest {
       waitForIdle()
     }
     assertThat(backstack.entries).containsExactly(TravelCertificateKey, dateInputKey)
-    assertThat(stepShownCalls).isEqualTo(0)
   }
 }

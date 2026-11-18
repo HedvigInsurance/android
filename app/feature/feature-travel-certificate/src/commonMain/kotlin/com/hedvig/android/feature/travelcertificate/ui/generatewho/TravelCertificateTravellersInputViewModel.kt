@@ -15,9 +15,12 @@ import com.hedvig.android.feature.travelcertificate.data.GetCoInsuredForContract
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateTravellersStep
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.CoInsured.CoInsuredId
+import com.hedvig.android.molecule.public.AttemptStatus
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.molecule.public.NavigationRequest
+import com.hedvig.android.molecule.public.rememberAttempts
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
 import kotlin.jvm.JvmInline
@@ -68,17 +71,32 @@ internal class TravelCertificateTravellersInputPresenter(
     var includedCoInsuredIds by remember {
       mutableStateOf(lastContent?.coInsuredList.orEmpty().filter { it.isIncluded }.map { it.id }.toSet())
     }
-    // A create in flight belongs to the stopped run, so it is not restored. It may have reached the server, so it is
-    // shown as failed rather than as a form nobody submitted.
-    var isCreating by remember { mutableStateOf(false) }
-    var createFailed by remember { mutableStateOf(lastContent?.let { it.createFailed || it.isCreating } ?: false) }
-    var requestToCreate by remember { mutableStateOf<CreateRequest?>(null) }
-    var createdUrl by remember {
-      mutableStateOf((lastState as? TravelCertificateTravellersInputUiState.Created)?.url)
+    var createFailed by remember { mutableStateOf(lastContent?.createFailed ?: false) }
+    var created by remember { mutableStateOf(lastState as? TravelCertificateTravellersInputUiState.Created) }
+    val create = rememberAttempts<CreateRequest>(
+      restoredWhileRunning = lastContent?.isCreating == true,
+      terminal = true,
+    ) { request ->
+      createTravelCertificateUseCase.invoke(
+        contractId = primaryInput.contractId,
+        startDate = primaryInput.travelDate,
+        isMemberIncluded = request.isMemberIncluded,
+        coInsured = request.coInsured,
+        email = primaryInput.email,
+      ).fold(
+        ifLeft = {
+          createFailed = true
+          false
+        },
+        ifRight = { url ->
+          created = TravelCertificateTravellersInputUiState.Created(NavigationRequest.of(url))
+          true
+        },
+      )
     }
 
     CollectEvents { event ->
-      if (createdUrl != null) return@CollectEvents
+      if (created != null) return@CollectEvents
       val loaded = travellers
       when (event) {
         TravelCertificateTravellersInputEvent.RetryLoadData -> {
@@ -86,11 +104,12 @@ internal class TravelCertificateTravellersInputPresenter(
         }
 
         is TravelCertificateTravellersInputEvent.SetMemberIncluded -> {
-          if (isCreating) return@CollectEvents
+          if (create.status == AttemptStatus.Running) return@CollectEvents
           isMemberIncluded = event.included
         }
 
         is TravelCertificateTravellersInputEvent.SetCoInsuredIncluded -> {
+          val isCreating = create.status == AttemptStatus.Running
           if (loaded == null || isCreating || loaded.coInsured.none { it.id == event.id }) return@CollectEvents
           includedCoInsuredIds = if (event.included) {
             includedCoInsuredIds + event.id
@@ -100,25 +119,19 @@ internal class TravelCertificateTravellersInputPresenter(
         }
 
         TravelCertificateTravellersInputEvent.GenerateTravelCertificate -> {
-          if (loaded == null || isCreating) return@CollectEvents
+          if (loaded == null || create.status == AttemptStatus.Running) return@CollectEvents
           val includedCoInsured = loaded.coInsured
             .filter { it.id in includedCoInsuredIds }
             .map { it.copy(isIncluded = true) }
           if (!isMemberIncluded && includedCoInsured.isEmpty()) return@CollectEvents
-          Snapshot.withMutableSnapshot {
-            isCreating = true
+          if (create.start(CreateRequest(isMemberIncluded = isMemberIncluded, coInsured = includedCoInsured))) {
             createFailed = false
-            requestToCreate = CreateRequest(
-              attempt = (requestToCreate?.attempt ?: 0) + 1,
-              isMemberIncluded = isMemberIncluded,
-              coInsured = includedCoInsured,
-            )
           }
         }
       }
     }
 
-    if (createdUrl == null) {
+    if (created == null) {
       LaunchedEffect(loadIteration) {
         getCoInsuredForContractUseCase.invoke(primaryInput.contractId).collectLatest { data ->
           data.fold(
@@ -155,39 +168,24 @@ internal class TravelCertificateTravellersInputPresenter(
       }
     }
 
-    LaunchedEffect(requestToCreate) {
-      val request = requestToCreate ?: return@LaunchedEffect
-      createTravelCertificateUseCase.invoke(
-        contractId = primaryInput.contractId,
-        startDate = primaryInput.travelDate,
-        isMemberIncluded = request.isMemberIncluded,
-        coInsured = request.coInsured,
-        email = primaryInput.email,
-      ).fold(
-        ifLeft = {
-          Snapshot.withMutableSnapshot {
-            isCreating = false
-            createFailed = true
-          }
-        },
-        ifRight = { url ->
-          createdUrl = url
-        },
-      )
-    }
-
-    val url = createdUrl
+    val createdState = created
     val loaded = travellers
     return when {
-      url != null -> TravelCertificateTravellersInputUiState.Created(url)
+      createdState != null -> createdState
 
       loaded != null -> TravelCertificateTravellersInputUiState.Success(
         memberFullName = loaded.memberFullName,
         isMemberIncluded = isMemberIncluded,
         coInsuredList = loaded.coInsured.map { it.copy(isIncluded = it.id in includedCoInsuredIds) },
         coInsuredHasMissingInfo = loaded.coInsuredHasMissingInfo,
-        isCreating = isCreating,
-        createFailed = createFailed,
+        isCreating = create.status == AttemptStatus.Running,
+        createFailed = when (create.status) {
+          // The create stopped with the last presenter run and may have reached the server, so it is shown as failed
+          // rather than as a form nobody submitted.
+          AttemptStatus.Interrupted -> true
+
+          AttemptStatus.Running, AttemptStatus.Idle -> createFailed
+        },
       )
 
       loadFailed -> TravelCertificateTravellersInputUiState.Failure
@@ -220,12 +218,7 @@ private class GeneratedCoInsuredIds(restored: List<CoInsured>) {
   private data class Identity(val name: String, val ssn: String?, val dateOfBirth: LocalDate?)
 }
 
-/**
- * [attempt] increases with every accepted create, so a retry equal to the failed request still restarts the effect
- * keyed on it, even when both are handled before the next composition.
- */
 private data class CreateRequest(
-  val attempt: Int,
   val isMemberIncluded: Boolean,
   val coInsured: List<CoInsured>,
 )
@@ -252,7 +245,13 @@ internal sealed interface TravelCertificateTravellersInputUiState {
   }
 
   /** The certificate exists; nothing follows on this screen. */
-  data class Created(val url: TravelCertificateUrl) : TravelCertificateTravellersInputUiState
+  data class Created(
+    /** The navigation to the certificate, made where the create succeeded, so every copy of this state shares it. */
+    val exit: NavigationRequest<TravelCertificateUrl>,
+  ) : TravelCertificateTravellersInputUiState {
+    val url: TravelCertificateUrl
+      get() = exit.target
+  }
 }
 
 internal sealed interface TravelCertificateTravellersInputEvent {

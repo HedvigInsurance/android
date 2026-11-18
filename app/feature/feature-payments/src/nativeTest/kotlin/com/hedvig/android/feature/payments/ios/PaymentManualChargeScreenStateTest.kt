@@ -11,6 +11,7 @@ import com.hedvig.android.data.paying.member.InvoiceDelivery
 import com.hedvig.android.data.paying.member.PayinAccount
 import com.hedvig.android.feature.payments.data.ManualChargeInfo
 import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeUiState
+import com.hedvig.android.molecule.public.NavigationRequest
 import kotlin.test.Test
 import kotlinx.datetime.LocalDate
 
@@ -92,7 +93,9 @@ class PaymentManualChargeScreenStateTest {
     val primaries = listOf(trustly, swish, invoice, null)
 
     val charged = primaries.mapIndexed { index, primary ->
-      ManualChargeUiState.Charged(info(primary = primary, showCancellationWarning = index % 2 == 0)).toScreenState()
+      ManualChargeUiState.Charged(
+        NavigationRequest.of(info(primary = primary, showCancellationWarning = index % 2 == 0)),
+      ).toScreenState()
     }
 
     assertThat(charged).containsExactly(

@@ -34,13 +34,6 @@ extension TravelCertificateDateInputScreenOwner {
             model.submit()
         }
     }
-
-    func stepShown() {
-        sendWhileCollecting("stepShown") {
-            ShellLog.info("TravelCertificateDateInputScreenOwner stepShown")
-            model.stepShown()
-        }
-    }
 }
 
 /// The email and date step, mirrored from Kotlin's `TravelCertificateDateInputScreenState`.
@@ -48,7 +41,8 @@ enum TravelCertificateDateInputViewState: ScreenViewState {
     case loading
     case failed
     case content(TravelDateInputContent)
-    case created(TravelCreatedSummary)
+    /// The summary to show and the request to leave for it, taken with `perform`.
+    case created(TravelCreatedSummary, NavigationRequest<TravelCertificateCreated>)
 
     init(_ kotlinState: TravelCertificateDateInputScreenState) {
         self = oneOf { pick in
@@ -75,7 +69,7 @@ enum TravelCertificateDateInputViewState: ScreenViewState {
                     )
                 },
                 onCreated: { created in
-                    pick(.created(TravelCreatedSummary(created.certificate)))
+                    pick(.created(TravelCreatedSummary(created.certificate.target), created.certificate))
                 }
             )
         }
@@ -91,7 +85,7 @@ enum TravelCertificateDateInputViewState: ScreenViewState {
         case .failed: "failed"
         case let .content(content):
             "content(email \(content.email.count) characters, revision \(content.emailRevision), error \(content.emailError.map { "\($0)" } ?? "none"), coInsured \(content.hasCoInsured), creating \(content.isCreating), createFailed \(content.createFailed), next \(content.next != nil))"
-        case let .created(summary): "created(url length \(summary.length))"
+        case let .created(summary, _): "created(url length \(summary.length))"
         }
     }
 }
@@ -108,8 +102,9 @@ struct TravelDateInputContent: Equatable {
     let hasCoInsured: Bool
     let isCreating: Bool
     let createFailed: Bool
-    /// Opaque: Swift can only hold it and pass it to `travelCertificateTravellersScreenModel(step:)`.
-    let next: TravelCertificateTravellersStep?
+    /// The travellers step to open, taken with `perform`. Its target is opaque: Swift can only hold it and pass it to
+    /// `travelCertificateTravellersScreenModel(step:)`.
+    let next: NavigationRequest<TravelCertificateTravellersStep>?
 }
 
 enum TravelEmailError: Equatable {

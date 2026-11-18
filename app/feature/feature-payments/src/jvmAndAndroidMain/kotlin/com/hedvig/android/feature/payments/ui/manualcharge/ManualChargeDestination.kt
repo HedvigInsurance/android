@@ -15,10 +15,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -30,6 +29,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.compose.ui.NavigationEffect
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode
@@ -94,8 +94,7 @@ import hedvig.resources.payment_details_receipt_card_total
 import hedvig.resources.something_went_wrong
 import hedvig.resources.swish
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 
@@ -145,12 +144,8 @@ internal fun ChargedEffect(
   onCharged: (ManualChargeSuccessKey) -> Unit,
 ) {
   val chargeInFlight = uiState is Charged || (uiState is Success && uiState.payButtonLoading)
-  val currentOnCharged by rememberUpdatedState(onCharged)
-  LaunchedEffect(uiStates, chargeInFlight) {
-    if (!chargeInFlight) return@LaunchedEffect
-    val charged = uiStates.filterIsInstance<Charged>().first()
-    currentOnCharged(charged.manualChargeInfo.toManualChargeSuccessKey())
-  }
+  val requests = remember(uiStates) { uiStates.map { (it as? Charged)?.exit } }
+  NavigationEffect(requests, active = chargeInFlight) { onCharged(it.toManualChargeSuccessKey()) }
 }
 
 internal fun ManualChargeInfo.toManualChargeSuccessKey(): ManualChargeSuccessKey = ManualChargeSuccessKey(

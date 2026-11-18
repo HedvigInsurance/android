@@ -7,13 +7,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
+import com.hedvig.android.compose.ui.NavigationEffect
 import com.hedvig.android.design.system.hedvig.Checkbox
 import com.hedvig.android.design.system.hedvig.CheckboxGroup
 import com.hedvig.android.design.system.hedvig.CheckboxOption
@@ -70,13 +69,7 @@ internal fun TravellersNavigationEffect(
   uiState: TravelCertificateTravellersInputUiState,
   onCertificateCreated: (TravelCertificateUrl) -> Unit,
 ) {
-  val currentOnCertificateCreated by rememberUpdatedState(onCertificateCreated)
-  val createdUrl = (uiState as? TravelCertificateTravellersInputUiState.Created)?.url
-  LaunchedEffect(createdUrl) {
-    if (createdUrl != null) {
-      currentOnCertificateCreated(createdUrl)
-    }
-  }
+  NavigationEffect((uiState as? TravelCertificateTravellersInputUiState.Created)?.exit, onCertificateCreated)
 }
 
 @Composable

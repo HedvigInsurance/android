@@ -1,13 +1,15 @@
 package com.hedvig.android.feature.travelcertificate.ui.generatewho
 
-import androidx.compose.runtime.BroadcastFrameClock
 import arrow.core.left
 import arrow.core.right
+import assertk.Assert
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
+import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
+import assertk.assertions.prop
 import com.apollographql.apollo.api.Optional
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.travelcertificate.FakeCreateTravelCertificateTransport
@@ -19,14 +21,10 @@ import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.expectNoStateChange
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.CoInsured.CoInsuredId
 import com.hedvig.android.logger.TestLogcatLoggingRule
-import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.molecule.public.NavigationRequest
 import com.hedvig.android.molecule.test.MoleculePresenterTestContext
 import com.hedvig.android.molecule.test.test
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.test.StandardTestDispatcher
+import com.hedvig.android.molecule.test.testFrames
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.type.TravelCertificateCreateCoInsured
@@ -363,7 +361,7 @@ class TravelCertificateTravellersInputPresenterTest {
       assertThat(createTransport.inputs).containsExactly(createInput(coInsured = listOf(annaInput, zedInput)))
 
       createTransport.responses.trySend("https://example.com/new.pdf")
-      assertThat(awaitItem()).isEqualTo(TravelCertificateTravellersInputUiState.Created(newUrl))
+      assertThat(awaitItem()).isCreated(newUrl)
     }
   }
 
@@ -405,7 +403,7 @@ class TravelCertificateTravellersInputPresenterTest {
       assertThat(createTransport.inputs).containsExactly(memberOnlyInput)
 
       createTransport.responses.trySend("https://example.com/new.pdf")
-      assertThat(awaitItem()).isEqualTo(TravelCertificateTravellersInputUiState.Created(newUrl))
+      assertThat(awaitItem()).isCreated(newUrl)
       testScheduler.advanceUntilIdle()
       assertThat(createTransport.inputs).containsExactly(memberOnlyInput)
     }
@@ -431,43 +429,27 @@ class TravelCertificateTravellersInputPresenterTest {
 
   @Test
   fun `a retry handled in the same frame as the end of a failed create is sent`() = runTest {
-    val frameClock = BroadcastFrameClock()
-    val scope = CoroutineScope(StandardTestDispatcher(testScheduler) + frameClock + Job())
-    val viewModel = object : MoleculeViewModel<
-      TravelCertificateTravellersInputEvent,
-      TravelCertificateTravellersInputUiState,
-    >(
-      initialState = TravelCertificateTravellersInputUiState.Loading,
-      presenter = presenter,
-      sharingStarted = SharingStarted.Eagerly,
-      coroutineScope = scope,
-    ) {}
+    presenter.testFrames(TravelCertificateTravellersInputUiState.Loading) {
+      coInsuredUseCase.responses.tryEmit(data(zed, anna).right())
+      frame()
+      frame()
+      assertThat(latest).isEqualTo(content())
+      emit(TravelCertificateTravellersInputEvent.GenerateTravelCertificate)
+      frame()
+      assertThat(latest).isEqualTo(content(isCreating = true))
 
-    fun frame() {
-      testScheduler.runCurrent()
-      frameClock.sendFrame(0L)
-      testScheduler.runCurrent()
+      // The failure and the retry are both handled before the next frame composes the presenter.
+      createTransport.responses.trySend(null)
+      runCurrent()
+      emit(TravelCertificateTravellersInputEvent.GenerateTravelCertificate)
+      frame()
+      assertThat(createTransport.inputs).containsExactly(memberOnlyInput, memberOnlyInput)
+      assertThat(latest).isEqualTo(content(isCreating = true))
+
+      createTransport.responses.trySend("https://example.com/new.pdf")
+      frame()
+      assertThat(latest).isCreated(newUrl)
     }
-    coInsuredUseCase.responses.tryEmit(data(zed, anna).right())
-    frame()
-    frame()
-    assertThat(viewModel.uiState.value).isEqualTo(content())
-    viewModel.emit(TravelCertificateTravellersInputEvent.GenerateTravelCertificate)
-    frame()
-    assertThat(viewModel.uiState.value).isEqualTo(content(isCreating = true))
-
-    // The failure and the retry are both handled before the next frame composes the presenter.
-    createTransport.responses.trySend(null)
-    testScheduler.runCurrent()
-    viewModel.emit(TravelCertificateTravellersInputEvent.GenerateTravelCertificate)
-    frame()
-    assertThat(createTransport.inputs).containsExactly(memberOnlyInput, memberOnlyInput)
-    assertThat(viewModel.uiState.value).isEqualTo(content(isCreating = true))
-
-    createTransport.responses.trySend("https://example.com/new.pdf")
-    frame()
-    assertThat(viewModel.uiState.value).isEqualTo(TravelCertificateTravellersInputUiState.Created(newUrl))
-    scope.cancel()
   }
 
   @Test
@@ -505,7 +487,7 @@ class TravelCertificateTravellersInputPresenterTest {
       assertThat(coInsuredUseCase.contractIds).containsExactly("contractId")
 
       createTransport.responses.trySend("https://example.com/new.pdf")
-      assertThat(awaitItem()).isEqualTo(TravelCertificateTravellersInputUiState.Created(newUrl))
+      assertThat(awaitItem()).isCreated(newUrl)
     }
   }
 
@@ -516,7 +498,8 @@ class TravelCertificateTravellersInputPresenterTest {
       sendEvent(TravelCertificateTravellersInputEvent.GenerateTravelCertificate)
       skipItems(1)
       createTransport.responses.trySend("https://example.com/new.pdf")
-      assertThat(awaitItem()).isEqualTo(TravelCertificateTravellersInputUiState.Created(newUrl))
+      val created = awaitItem()
+      assertThat(created).isCreated(newUrl)
       testScheduler.advanceUntilIdle()
       assertThat(coInsuredUseCase.responses.subscriptionCount.value).isEqualTo(0)
 
@@ -526,18 +509,38 @@ class TravelCertificateTravellersInputPresenterTest {
       sendEvent(TravelCertificateTravellersInputEvent.GenerateTravelCertificate)
       coInsuredUseCase.responses.tryEmit(data(anna).right())
       testScheduler.advanceUntilIdle()
-      expectNoStateChange(TravelCertificateTravellersInputUiState.Created(newUrl))
+      expectNoStateChange(created)
       assertThat(createTransport.inputs).containsExactly(memberOnlyInput)
       assertThat(coInsuredUseCase.contractIds).containsExactly("contractId")
     }
   }
 
   @Test
+  fun `a restart after the certificate was opened keeps it opened, so it is not opened again`() = runTest {
+    presenter.testFrames(TravelCertificateTravellersInputUiState.Loading) {
+      coInsuredUseCase.responses.tryEmit(data(zed, anna).right())
+      frame()
+      frame()
+      emit(TravelCertificateTravellersInputEvent.GenerateTravelCertificate)
+      frame()
+      createTransport.responses.trySend("https://example.com/new.pdf")
+      frame()
+      val created = latest as TravelCertificateTravellersInputUiState.Created
+      assertThat(created.exit.tryConsume()).isTrue()
+
+      restart()
+      frame()
+      assertThat((latest as TravelCertificateTravellersInputUiState.Created).exit.tryConsume()).isFalse()
+    }
+  }
+
+  @Test
   fun `starting from created stays created without fetching`() = runTest {
-    presenter.test(TravelCertificateTravellersInputUiState.Created(newUrl)) {
-      assertThat(awaitItem()).isEqualTo(TravelCertificateTravellersInputUiState.Created(newUrl))
+    val created = TravelCertificateTravellersInputUiState.Created(NavigationRequest.of(newUrl))
+    presenter.test(created) {
+      assertThat(awaitItem()).isEqualTo(created)
       testScheduler.advanceUntilIdle()
-      expectNoStateChange(TravelCertificateTravellersInputUiState.Created(newUrl))
+      expectNoStateChange(created)
       assertThat(coInsuredUseCase.contractIds).containsExactly()
     }
   }
@@ -575,4 +578,11 @@ class TravelCertificateTravellersInputPresenterTest {
       )
     }
   }
+}
+
+/** Created for [url]. The request in it is made by the presenter, so it is not compared. */
+private fun Assert<TravelCertificateTravellersInputUiState>.isCreated(url: TravelCertificateUrl) {
+  isInstanceOf<TravelCertificateTravellersInputUiState.Created>().prop(
+    TravelCertificateTravellersInputUiState.Created::url,
+  ).isEqualTo(url)
 }

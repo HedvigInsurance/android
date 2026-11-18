@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.travelcertificate.ios
 
+import com.hedvig.android.molecule.public.NavigationRequest
+
 sealed class TravelCertificateTravellersScreenState {
   data object Loading : TravelCertificateTravellersScreenState()
 
@@ -29,8 +31,12 @@ sealed class TravelCertificateTravellersScreenState {
       "createFailed=$createFailed)"
   }
 
-  /** The certificate exists. Nothing follows on this screen. */
-  data class Created(val certificate: TravelCertificateCreated) : TravelCertificateTravellersScreenState()
+  /**
+   * The certificate exists. Nothing follows on this screen. Leave for [certificate]'s target only when its
+   * `tryConsume()` returns true, which it does once, however often this state is observed.
+   */
+  data class Created(val certificate: NavigationRequest<TravelCertificateCreated>) :
+    TravelCertificateTravellersScreenState()
 
   /** Calls the closure for this state's case, so a Swift call site stops compiling when a case is added. */
   fun handle(onLoading: () -> Unit, onFailed: () -> Unit, onContent: (Content) -> Unit, onCreated: (Created) -> Unit) {
