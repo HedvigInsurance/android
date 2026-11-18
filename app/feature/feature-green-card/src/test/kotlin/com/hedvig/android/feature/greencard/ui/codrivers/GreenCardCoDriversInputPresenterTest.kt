@@ -8,8 +8,9 @@ import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
 import assertk.assertions.isTrue
-import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.feature.greencard.data.CreateGreenCardError
 import com.hedvig.android.feature.greencard.data.CreateGreenCardUseCase
 import com.hedvig.android.feature.greencard.data.GreenCardAddress
 import com.hedvig.android.feature.greencard.data.GreenCardCoDriver
@@ -84,14 +85,15 @@ internal class GreenCardCoDriversInputPresenterTest {
   }
 
   @Test
-  fun `a failed create shows the error and stays on the screen`() = runTest {
+  fun `a rejected create shows the backend message and stays on the screen`() = runTest {
     val backstack = TestBackstack(GreenCardKey, INPUT)
-    val createUseCase = FakeCreateGreenCardUseCase(ErrorMessage().left())
+    val userError = CreateGreenCardError.UserError("The trip is too long")
+    val createUseCase = FakeCreateGreenCardUseCase(userError.left())
     presenter(createUseCase, backstack).test(INITIAL_STATE) {
       skipItems(1)
       sendEvent(GreenCardCoDriversInputEvent.Submit)
       skipItems(1)
-      assertThat(awaitItem().showCreateError).isTrue()
+      assertThat(awaitItem().createError).isEqualTo(userError)
     }
     assertThat(backstack.entries.toList()).containsExactly(GreenCardKey, INPUT)
   }
@@ -106,7 +108,7 @@ internal class GreenCardCoDriversInputPresenterTest {
   }
 
   private class FakeCreateGreenCardUseCase(
-    private val result: Either<ErrorMessage, GreenCardUrl> = GreenCardUrl(PDF_URL).right(),
+    private val result: Either<CreateGreenCardError, GreenCardUrl> = GreenCardUrl(PDF_URL).right(),
   ) : CreateGreenCardUseCase {
     val requests = mutableListOf<List<GreenCardCoDriver>>()
 
@@ -116,7 +118,7 @@ internal class GreenCardCoDriversInputPresenterTest {
       travelEndDate: LocalDate,
       mailingAddress: GreenCardAddress,
       coDrivers: List<GreenCardCoDriver>,
-    ): Either<ErrorMessage, GreenCardUrl> {
+    ): Either<CreateGreenCardError, GreenCardUrl> {
       requests += coDrivers
       return result
     }
@@ -135,7 +137,7 @@ private val INITIAL_STATE = GreenCardCoDriversInputUiState(
   coDrivers = emptyList(),
   showMissingFieldErrors = false,
   isCreating = false,
-  showCreateError = false,
+  createError = null,
 )
 private val INPUT = GreenCardCoDriversInputKey(
   tripInput = GreenCardTripInput("contract-id", "ABC 123", LocalDate(2027, 1, 1), LocalDate(2027, 1, 5)),

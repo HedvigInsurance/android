@@ -1,8 +1,7 @@
-# TODO: Uncomment once the green card schema is published on Octopus.
-# query GreenCardAvailability {
-#   currentMember {
-#     memberActions {
-#       isGreenCardEnabled
-#     }
-#   }
-# }
+query GreenCardAvailability {
+  currentMember {
+    memberActions {
+      isCreatingOfGreenCardEnabled
+    }
+  }
+}

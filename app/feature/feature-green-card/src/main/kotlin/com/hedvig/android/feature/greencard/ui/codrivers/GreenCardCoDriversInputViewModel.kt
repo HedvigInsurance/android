@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.feature.greencard.data.CreateGreenCardError
 import com.hedvig.android.feature.greencard.data.CreateGreenCardUseCase
 import com.hedvig.android.feature.greencard.data.GreenCardCoDriver
 import com.hedvig.android.feature.greencard.navigation.GreenCardCoDriversInputKey
@@ -16,8 +17,6 @@ import com.hedvig.android.feature.greencard.navigation.GreenCardCreatedKey
 import com.hedvig.android.feature.greencard.navigation.GreenCardKey
 import com.hedvig.android.feature.greencard.ui.common.AddressFieldsState
 import com.hedvig.android.feature.greencard.ui.common.trimmedText
-import com.hedvig.android.logger.LogPriority
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -37,7 +36,7 @@ internal class GreenCardCoDriversInputViewModel(
       coDrivers = emptyList(),
       showMissingFieldErrors = false,
       isCreating = false,
-      showCreateError = false,
+      createError = null,
     ),
     presenter = GreenCardCoDriversInputPresenter(input, createGreenCardUseCase, backstack),
   )
@@ -54,7 +53,7 @@ internal class GreenCardCoDriversInputPresenter(
     var coDrivers by remember { mutableStateOf(lastState.coDrivers) }
     var showMissingFieldErrors by remember { mutableStateOf(lastState.showMissingFieldErrors) }
     var createRequest by remember { mutableStateOf<List<GreenCardCoDriver>?>(null) }
-    var showCreateError by remember { mutableStateOf(false) }
+    var createError by remember { mutableStateOf<CreateGreenCardError?>(null) }
 
     CollectEvents { event ->
       when (event) {
@@ -67,7 +66,7 @@ internal class GreenCardCoDriversInputPresenter(
         }
 
         GreenCardCoDriversInputEvent.DismissCreateError -> {
-          showCreateError = false
+          createError = null
         }
 
         GreenCardCoDriversInputEvent.Submit -> {
@@ -89,10 +88,7 @@ internal class GreenCardCoDriversInputPresenter(
         mailingAddress = input.mailingAddress,
         coDrivers = request,
       ).fold(
-        ifLeft = {
-          logcat(LogPriority.ERROR) { "Creating green card failed: $it" }
-          showCreateError = true
-        },
+        ifLeft = { createError = it },
         ifRight = { url ->
           backstack.navigateAndPopUpTo<GreenCardKey>(GreenCardCreatedKey(url), inclusive = false)
         },
@@ -104,7 +100,7 @@ internal class GreenCardCoDriversInputPresenter(
       coDrivers = coDrivers,
       showMissingFieldErrors = showMissingFieldErrors,
       isCreating = createRequest != null,
-      showCreateError = showCreateError,
+      createError = createError,
     )
   }
 }
@@ -135,5 +131,5 @@ internal data class GreenCardCoDriversInputUiState(
   val coDrivers: List<CoDriverFieldsState>,
   val showMissingFieldErrors: Boolean,
   val isCreating: Boolean,
-  val showCreateError: Boolean,
+  val createError: CreateGreenCardError?,
 )

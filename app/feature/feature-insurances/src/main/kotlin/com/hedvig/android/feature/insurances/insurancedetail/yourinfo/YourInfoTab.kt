@@ -467,7 +467,7 @@ private fun GreenCardButton(onClick: () -> Unit, modifier: Modifier = Modifier) 
         Row(
           horizontalArrangement = Arrangement.End,
           verticalAlignment = Alignment.CenterVertically,
-          modifier = Modifier.padding(end = 16.dp)
+          modifier = Modifier.padding(end = 16.dp),
         ) {
           Icon(HedvigIcons.ChevronRight, "", Modifier.size(24.dp))
         }

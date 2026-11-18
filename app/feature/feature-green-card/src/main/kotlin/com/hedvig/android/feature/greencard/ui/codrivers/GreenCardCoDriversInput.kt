@@ -29,6 +29,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
+import com.hedvig.android.feature.greencard.data.CreateGreenCardError
 import com.hedvig.android.feature.greencard.ui.common.AddressFields
 import com.hedvig.android.feature.greencard.ui.common.RequiredTextField
 import hedvig.resources.FULL_NAME_TEXT
@@ -60,10 +61,14 @@ private fun GreenCardCoDriversInputScreen(
   onDismissCreateError: () -> Unit,
   submit: () -> Unit,
 ) {
-  if (uiState.showCreateError) {
+  val createError = uiState.createError
+  if (createError != null) {
     ErrorDialog(
       title = stringResource(Res.string.general_error),
-      message = stringResource(Res.string.something_went_wrong),
+      message = when (createError) {
+        is CreateGreenCardError.UserError -> createError.message
+        CreateGreenCardError.Unknown -> stringResource(Res.string.something_went_wrong)
+      },
       onDismiss = onDismissCreateError,
     )
   }
@@ -162,7 +167,7 @@ private fun PreviewGreenCardCoDriversInput() {
           coDrivers = listOf(CoDriverFieldsState(name = TextFieldState("Anna Andersson"))),
           showMissingFieldErrors = true,
           isCreating = false,
-          showCreateError = false,
+          createError = null,
         ),
         navigateUp = {},
         onAddCoDriver = {},

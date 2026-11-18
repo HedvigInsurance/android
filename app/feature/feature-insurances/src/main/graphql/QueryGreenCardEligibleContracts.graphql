@@ -1,8 +1,7 @@
-# TODO: Uncomment once the green card schema is published on Octopus.
-# query GreenCardEligibleContracts {
-#   currentMember {
-#     greenCardSpecifications {
-#       contractId
-#     }
-#   }
-# }
+query GreenCardEligibleContracts {
+  currentMember {
+    greenCardSpecifications {
+      contractId
+    }
+  }
+}
