@@ -511,6 +511,25 @@ class TravelCertificateTravellersInputPresenterTest {
   }
 
   @Test
+  fun `a restart after the certificate was opened keeps it opened, so it is not opened again`() = runTest {
+    presenter.testFrames(TravelCertificateTravellersInputUiState.Loading) {
+      coInsuredUseCase.responses.tryEmit(data(zed, anna).right())
+      frame()
+      frame()
+      emit(TravelCertificateTravellersInputEvent.GenerateTravelCertificate)
+      frame()
+      createTransport.responses.trySend("https://example.com/new.pdf")
+      frame()
+      val created = latest as TravelCertificateTravellersInputUiState.Created
+      assertThat(created.leave.tryConsume()).isTrue()
+
+      restart()
+      frame()
+      assertThat((latest as TravelCertificateTravellersInputUiState.Created).leave.tryConsume()).isFalse()
+    }
+  }
+
+  @Test
   fun `starting from created stays created without fetching`() = runTest {
     presenter.test(TravelCertificateTravellersInputUiState.Created(newUrl)) {
       assertThat(awaitItem()).isEqualTo(TravelCertificateTravellersInputUiState.Created(newUrl))

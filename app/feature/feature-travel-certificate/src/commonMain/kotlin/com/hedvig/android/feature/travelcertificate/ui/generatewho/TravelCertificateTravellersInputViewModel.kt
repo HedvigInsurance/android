@@ -18,6 +18,8 @@ import com.hedvig.android.feature.travelcertificate.ui.generatewho.CoInsured.CoI
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.molecule.public.NavigationRequest
+import com.hedvig.android.molecule.public.rememberAttempts
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
 import kotlin.jvm.JvmInline
@@ -70,15 +72,29 @@ internal class TravelCertificateTravellersInputPresenter(
     }
     // A create in flight belongs to the stopped run, so it is not restored. It may have reached the server, so it is
     // shown as failed rather than as a form nobody submitted.
-    var isCreating by remember { mutableStateOf(false) }
     var createFailed by remember { mutableStateOf(lastContent?.let { it.createFailed || it.isCreating } ?: false) }
-    var requestToCreate by remember { mutableStateOf<CreateRequest?>(null) }
-    var createdUrl by remember {
-      mutableStateOf((lastState as? TravelCertificateTravellersInputUiState.Created)?.url)
+    var created by remember { mutableStateOf(lastState as? TravelCertificateTravellersInputUiState.Created) }
+    val create = rememberAttempts<CreateRequest>(terminal = true) { request ->
+      createTravelCertificateUseCase.invoke(
+        contractId = primaryInput.contractId,
+        startDate = primaryInput.travelDate,
+        isMemberIncluded = request.isMemberIncluded,
+        coInsured = request.coInsured,
+        email = primaryInput.email,
+      ).fold(
+        ifLeft = {
+          createFailed = true
+          false
+        },
+        ifRight = { url ->
+          created = TravelCertificateTravellersInputUiState.Created(url)
+          true
+        },
+      )
     }
 
     CollectEvents { event ->
-      if (createdUrl != null) return@CollectEvents
+      if (created != null) return@CollectEvents
       val loaded = travellers
       when (event) {
         TravelCertificateTravellersInputEvent.RetryLoadData -> {
@@ -86,12 +102,12 @@ internal class TravelCertificateTravellersInputPresenter(
         }
 
         is TravelCertificateTravellersInputEvent.SetMemberIncluded -> {
-          if (isCreating) return@CollectEvents
+          if (create.isRunning) return@CollectEvents
           isMemberIncluded = event.included
         }
 
         is TravelCertificateTravellersInputEvent.SetCoInsuredIncluded -> {
-          if (loaded == null || isCreating || loaded.coInsured.none { it.id == event.id }) return@CollectEvents
+          if (loaded == null || create.isRunning || loaded.coInsured.none { it.id == event.id }) return@CollectEvents
           includedCoInsuredIds = if (event.included) {
             includedCoInsuredIds + event.id
           } else {
@@ -100,25 +116,20 @@ internal class TravelCertificateTravellersInputPresenter(
         }
 
         TravelCertificateTravellersInputEvent.GenerateTravelCertificate -> {
-          if (loaded == null || isCreating) return@CollectEvents
+          if (loaded == null || create.isRunning) return@CollectEvents
           val includedCoInsured = loaded.coInsured
             .filter { it.id in includedCoInsuredIds }
             .map { it.copy(isIncluded = true) }
           if (!isMemberIncluded && includedCoInsured.isEmpty()) return@CollectEvents
           Snapshot.withMutableSnapshot {
-            isCreating = true
             createFailed = false
-            requestToCreate = CreateRequest(
-              attempt = (requestToCreate?.attempt ?: 0) + 1,
-              isMemberIncluded = isMemberIncluded,
-              coInsured = includedCoInsured,
-            )
+            create.start(CreateRequest(isMemberIncluded = isMemberIncluded, coInsured = includedCoInsured))
           }
         }
       }
     }
 
-    if (createdUrl == null) {
+    if (created == null) {
       LaunchedEffect(loadIteration) {
         getCoInsuredForContractUseCase.invoke(primaryInput.contractId).collectLatest { data ->
           data.fold(
@@ -155,38 +166,17 @@ internal class TravelCertificateTravellersInputPresenter(
       }
     }
 
-    LaunchedEffect(requestToCreate) {
-      val request = requestToCreate ?: return@LaunchedEffect
-      createTravelCertificateUseCase.invoke(
-        contractId = primaryInput.contractId,
-        startDate = primaryInput.travelDate,
-        isMemberIncluded = request.isMemberIncluded,
-        coInsured = request.coInsured,
-        email = primaryInput.email,
-      ).fold(
-        ifLeft = {
-          Snapshot.withMutableSnapshot {
-            isCreating = false
-            createFailed = true
-          }
-        },
-        ifRight = { url ->
-          createdUrl = url
-        },
-      )
-    }
-
-    val url = createdUrl
+    val createdState = created
     val loaded = travellers
     return when {
-      url != null -> TravelCertificateTravellersInputUiState.Created(url)
+      createdState != null -> createdState
 
       loaded != null -> TravelCertificateTravellersInputUiState.Success(
         memberFullName = loaded.memberFullName,
         isMemberIncluded = isMemberIncluded,
         coInsuredList = loaded.coInsured.map { it.copy(isIncluded = it.id in includedCoInsuredIds) },
         coInsuredHasMissingInfo = loaded.coInsuredHasMissingInfo,
-        isCreating = isCreating,
+        isCreating = create.isRunning,
         createFailed = createFailed,
       )
 
@@ -220,12 +210,7 @@ private class GeneratedCoInsuredIds(restored: List<CoInsured>) {
   private data class Identity(val name: String, val ssn: String?, val dateOfBirth: LocalDate?)
 }
 
-/**
- * [attempt] increases with every accepted create, so a retry equal to the failed request still restarts the effect
- * keyed on it, even when both are handled before the next composition.
- */
 private data class CreateRequest(
-  val attempt: Int,
   val isMemberIncluded: Boolean,
   val coInsured: List<CoInsured>,
 )
@@ -252,7 +237,13 @@ internal sealed interface TravelCertificateTravellersInputUiState {
   }
 
   /** The certificate exists; nothing follows on this screen. */
-  data class Created(val url: TravelCertificateUrl) : TravelCertificateTravellersInputUiState
+  data class Created(val url: TravelCertificateUrl) : TravelCertificateTravellersInputUiState {
+    /**
+     * Leaving for the certificate. The presenter keeps returning this instance, also after a restart from it, so a
+     * request the platform has taken is never performed again.
+     */
+    val leave: NavigationRequest<TravelCertificateUrl> = NavigationRequest.of(url)
+  }
 }
 
 internal sealed interface TravelCertificateTravellersInputEvent {
