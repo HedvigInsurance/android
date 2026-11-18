@@ -1,13 +1,15 @@
 package com.hedvig.android.feature.claim.details.ui.rating
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -21,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
@@ -29,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
-import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
@@ -37,7 +39,10 @@ import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.TextFieldSize.Large
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.Star
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -222,37 +227,36 @@ private fun Body(text: String) {
 private fun StarRatingRow(selectedRating: Int?, onRatingClick: (Int) -> Unit, modifier: Modifier = Modifier) {
   Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
     val hapticFeedback = LocalHapticFeedback.current
-    Row(horizontalArrangement = Arrangement.SpaceAround) {
+    Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
       (1..5).forEach { rating ->
-        val isSelected = selectedRating == rating
         // TODO: Add "%d of 5" / "%d av 5" to Lokalise
         val ratingDescription = "$rating of 5"
-        HedvigCard(
-          modifier = Modifier.weight(1f).semantics {
-            contentDescription = ratingDescription
-            selected = isSelected
-          },
-          onClick = {
-            hapticFeedback.performHapticFeedback(
-              if (rating >= 4) HapticFeedbackType.Confirm else HapticFeedbackType.TextHandleMove,
-            )
-            onRatingClick(rating)
-          },
-          color = if (isSelected) HedvigTheme.colorScheme.signalGreenFill else HedvigTheme.colorScheme.surfacePrimary,
-        ) {
-          HedvigText(
-            text = rating.toString(),
-            style = HedvigTheme.typography.bodyLarge,
-            color = if (isSelected) {
-              HedvigTheme.colorScheme.textBlack
-            } else {
-              HedvigTheme.colorScheme.textSecondaryTranslucent
+        Box(
+          contentAlignment = Alignment.Center,
+          modifier = Modifier
+            .size(48.dp)
+            .semantics {
+              contentDescription = ratingDescription
+              selected = selectedRating == rating
+            }
+            .clickable(role = Role.RadioButton) {
+              hapticFeedback.performHapticFeedback(
+                if (rating >= 4) HapticFeedbackType.Confirm else HapticFeedbackType.TextHandleMove,
+              )
+              onRatingClick(rating)
             },
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(vertical = 16.dp),
+        ) {
+          Icon(
+            imageVector = HedvigIcons.Star,
+            contentDescription = null,
+            tint = if (selectedRating != null && rating <= selectedRating) {
+              HedvigTheme.colorScheme.signalAmberElement
+            } else {
+              HedvigTheme.colorScheme.fillTertiary
+            },
+            modifier = Modifier.size(32.dp),
           )
         }
-        Spacer(Modifier.width(6.dp))
       }
     }
     Spacer(Modifier.height(8.dp))
