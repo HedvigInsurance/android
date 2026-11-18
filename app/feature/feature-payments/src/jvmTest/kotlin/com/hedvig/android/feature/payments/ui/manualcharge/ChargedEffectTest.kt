@@ -119,13 +119,23 @@ class ChargedEffectTest {
     assertThat(onChargedCalls).isEmpty()
   }
 
-  private fun ComposeUiTest.showEffect() {
+  @Test
+  fun `two screens sharing the ViewModel call back once for one charge`() = runComposeUiTest {
+    showEffect(screens = 2)
+    setState(Success(info, payButtonLoading = true))
+
+    setState(Charged(info))
+
+    assertThat(onChargedCalls).containsExactly(successKey)
+  }
+
+  private fun ComposeUiTest.showEffect(screens: Int = 1) {
     setContent {
       CompositionLocalProvider(LocalLifecycleOwner provides lifecycleOwner) {
         val uiState by uiStates.collectAsStateWithLifecycle()
         // A new callback instance on every trigger, so the effect's call site cannot be skipped.
         val onCharged = remember(recompositionTrigger) { { key: ManualChargeSuccessKey -> onChargedCalls += key } }
-        ChargedEffect(uiState, uiStates, onCharged)
+        repeat(screens) { ChargedEffect(uiState, uiStates, onCharged) }
       }
     }
     waitForIdle()

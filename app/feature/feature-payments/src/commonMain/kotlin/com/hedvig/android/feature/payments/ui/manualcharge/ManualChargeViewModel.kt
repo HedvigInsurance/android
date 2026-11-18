@@ -17,6 +17,8 @@ import com.hedvig.android.feature.payments.data.TriggerManualChargeUseCase
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.molecule.public.NavigationRequest
+import com.hedvig.android.molecule.public.rememberAttempts
 import dev.zacsweers.metro.Inject
 
 @Inject
@@ -38,9 +40,22 @@ internal class ManualChargePresenter(
     var dataLoadIteration by remember { mutableIntStateOf(0) }
     var refreshIteration by remember { mutableIntStateOf(0) }
     var screenState by remember { mutableStateOf(lastState) }
-    var triggerChargeIteration by remember { mutableIntStateOf(0) }
     // Details shown before this run started may be stale, so only details loaded in this run can be charged.
     var loadedInThisRun by remember { mutableStateOf(false) }
+    val charge = rememberAttempts<Unit>(terminal = true) {
+      val currentState = screenState as? ManualChargeUiState.Success ?: return@rememberAttempts false
+      screenState = currentState.copy(payButtonLoading = true)
+      triggerManualCharge.invoke().fold(
+        ifLeft = {
+          screenState = ManualChargeUiState.Failure(it)
+          false
+        },
+        ifRight = {
+          screenState = ManualChargeUiState.Charged(currentState.manualChargeInfo)
+          true
+        },
+      )
+    }
 
     CollectEvents {
       when (it) {
@@ -49,32 +64,16 @@ internal class ManualChargePresenter(
         }
 
         ManualChargeEvent.TriggerCharge -> {
-          // Starting a second charge would cancel the one in flight, whose request has usually been sent already.
           val current = screenState
           if (loadedInThisRun && current is ManualChargeUiState.Success && !current.payButtonLoading) {
             screenState = current.copy(payButtonLoading = true)
-            triggerChargeIteration++
+            charge.start(Unit)
           }
         }
 
         ManualChargeEvent.Refresh -> {
           refreshIteration++
         }
-      }
-    }
-
-    LaunchedEffect(triggerChargeIteration) {
-      if (triggerChargeIteration > 0) {
-        val currentState = screenState as? ManualChargeUiState.Success ?: return@LaunchedEffect
-        screenState = currentState.copy(payButtonLoading = true)
-        triggerManualCharge.invoke().fold(
-          ifLeft = {
-            screenState = ManualChargeUiState.Failure(it)
-          },
-          ifRight = {
-            screenState = ManualChargeUiState.Charged(currentState.manualChargeInfo)
-          },
-        )
       }
     }
 
@@ -137,7 +136,13 @@ internal sealed interface ManualChargeUiState {
   /** The charge went through. The platform leaves the screen; nothing follows this state. */
   data class Charged(
     val manualChargeInfo: ManualChargeInfo,
-  ) : ManualChargeUiState
+  ) : ManualChargeUiState {
+    /**
+     * Leaving for the success screen. It is not part of equality, so the state flow keeps the first of equal states,
+     * and a restart that produces this state again does not offer a second request.
+     */
+    val leave: NavigationRequest<ManualChargeInfo> = NavigationRequest.of(manualChargeInfo)
+  }
 }
 
 internal sealed interface ManualChargeEvent {

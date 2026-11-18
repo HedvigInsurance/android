@@ -11,6 +11,8 @@ import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isTrue
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
@@ -22,6 +24,7 @@ import com.hedvig.android.feature.payments.data.TriggerManualChargeUseCase
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.test.test
+import com.hedvig.android.molecule.test.testFrames
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.runTest
@@ -308,6 +311,28 @@ class ManualChargePresenterTest {
       assertThat(expectMostRecentItem()).isEqualTo(ManualChargeUiState.Charged(info))
       assertThat(getInfo.calls).isEqualTo(0)
       assertThat(trigger.calls).isEqualTo(0)
+    }
+  }
+
+  @Test
+  fun `a restart after the success screen was opened keeps it opened, so it is not opened again`() = runTest {
+    val getInfo = FakeGetManualChargeInfoUseCase()
+    val trigger = FakeTriggerManualChargeUseCase()
+    presenter(getInfo, trigger).testFrames(ManualChargeUiState.Loading) {
+      getInfo.responses.trySend(ManualChargeInfoResult.Chargeable(info).right())
+      frame()
+      frame()
+      emit(ManualChargeEvent.TriggerCharge)
+      frame()
+      trigger.responses.trySend(Unit.right())
+      frame()
+      val charged = latest as ManualChargeUiState.Charged
+      assertThat(charged.leave.tryConsume()).isTrue()
+
+      restart()
+      frame()
+      assertThat((latest as ManualChargeUiState.Charged).leave.tryConsume()).isFalse()
+      assertThat(trigger.calls).isEqualTo(1)
     }
   }
 
