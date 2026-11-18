@@ -178,7 +178,8 @@ internal class AddonSummaryPresenter(
       AttemptStatus.Running -> Submitting
 
       // The purchase stopped with the last presenter run and may have reached the server. The summary is loaded again
-      // and shown as before the purchase, so the member decides whether to buy again.
+      // and shown as before the purchase, with nothing telling the member a purchase was sent, and a Submit sends the
+      // same quote again. Whether the first one went through is not known here.
       AttemptStatus.Interrupted -> shown
 
       AttemptStatus.Idle -> shown

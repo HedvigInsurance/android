@@ -190,6 +190,28 @@ class AddonSummaryNavigationTest {
     assertThat(navigations).containsExactly("purchased" to 0)
   }
 
+  /**
+   * The flow sits in Home's run and the member switched to a side tab, whose run is on top of it, so the summary is not
+   * composed. The outcome waits until the member is back on the summary, and never clears the side tab's run.
+   */
+  @Test
+  fun `a purchase that lands under another tab's run navigates only once the member is back on the summary`() =
+    runComposeUiTest {
+      showEffect()
+      shown = false
+      backstack.entries += SideTabKey
+      waitForIdle()
+      uiState = AddonSummaryState.Purchased(NavigationRequest.of(activationDate))
+      waitForIdle()
+      assertThat(backstack.entries).isEqualTo(flowStack + SideTabKey)
+
+      backstack.entries.remove(SideTabKey)
+      shown = true
+      waitForIdle()
+      assertThat(backstack.entries).containsExactly(KeyBelowTheFlow, SubmitSuccessKey(activationDate))
+      assertThat(navigations).containsExactly("purchased" to 0)
+    }
+
   @Test
   fun `loading, error, the summary and a purchase in flight navigate nowhere`() = runComposeUiTest {
     showEffect()
@@ -209,3 +231,6 @@ class AddonSummaryNavigationTest {
 
 /** A screen of another feature that the addon flow was opened from. */
 private data object KeyBelowTheFlow : HedvigNavKey
+
+/** The root of a side tab, whose run sits on top of the flow's run while that tab is shown. */
+private data object SideTabKey : HedvigNavKey
