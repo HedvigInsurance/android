@@ -82,10 +82,34 @@ internal sealed interface InAppPurchaseFormField {
       val additionalInfo: String?,
     )
   }
+
+  data class Text(
+    override val id: String,
+    override val title: String,
+    val defaultValue: String?,
+  ) : InAppPurchaseFormField
+
+  data class SearchableSelect(
+    override val id: String,
+    override val title: String,
+    val options: List<SingleSelect.Option>,
+    val defaultValues: List<String>,
+    val maxSelections: Int,
+  ) : InAppPurchaseFormField
+
+  /**
+   * A list of buildings, each sent as one JSON value. [buildingTypes] are the types a building may have.
+   */
+  data class ExtraBuildings(
+    override val id: String,
+    override val title: String,
+    val buildingTypes: List<SingleSelect.Option>,
+  ) : InAppPurchaseFormField
 }
 
 /**
- * NUMBER: "2" · DATE: ISO "2026-11-01" · SINGLE_SELECT: the option's value.
+ * NUMBER: "2" · DATE: ISO "2026-11-01" · SINGLE_SELECT and TEXT: one value · SEARCHABLE_SELECT: one value per chosen
+ * option · EXTRA_BUILDINGS: one JSON value per building, none for no buildings.
  */
 internal data class InAppPurchaseFieldInput(
   val fieldId: String,

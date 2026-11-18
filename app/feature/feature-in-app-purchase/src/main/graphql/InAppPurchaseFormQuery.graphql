@@ -35,6 +35,7 @@ query InAppPurchaseForm($product: InAppProduct!) {
       defaultValues
       minValue
       maxValue
+      maxSelections
     }
   }
 }

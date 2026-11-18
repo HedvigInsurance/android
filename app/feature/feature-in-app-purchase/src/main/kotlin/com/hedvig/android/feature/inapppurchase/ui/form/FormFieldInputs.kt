@@ -66,9 +66,10 @@ import org.jetbrains.compose.resources.stringResource
 internal fun FormFieldInput(
   state: FormFieldUiState,
   enabled: Boolean,
-  onValueChange: (String?) -> Unit,
+  onValuesChange: (List<String>) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val onValueChange: (String?) -> Unit = { onValuesChange(listOfNotNull(it)) }
   when (val field = state.field) {
     is InAppPurchaseFormField.Number -> NumberFieldInput(
       field = field,
@@ -97,6 +98,11 @@ internal fun FormFieldInput(
       onValueChange = onValueChange,
       modifier = modifier,
     )
+
+    is InAppPurchaseFormField.Text,
+    is InAppPurchaseFormField.SearchableSelect,
+    is InAppPurchaseFormField.ExtraBuildings,
+    -> Unit
   }
 }
 

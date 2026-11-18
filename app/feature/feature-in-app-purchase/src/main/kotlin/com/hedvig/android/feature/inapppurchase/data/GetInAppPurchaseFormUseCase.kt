@@ -120,11 +120,33 @@ private fun InAppPurchaseFormQuery.Data.InAppPurchaseForm.Field.toFormField(): I
       )
     }
 
-    InAppPurchaseFormFieldType.TEXT,
-    InAppPurchaseFormFieldType.SEARCHABLE_SELECT,
-    InAppPurchaseFormFieldType.EXTRA_BUILDINGS,
-    InAppPurchaseFormFieldType.UNKNOWN__,
-    -> {
+    InAppPurchaseFormFieldType.TEXT -> {
+      InAppPurchaseFormField.Text(id = id, title = title, defaultValue = defaultValues.firstOrNull())
+    }
+
+    InAppPurchaseFormFieldType.SEARCHABLE_SELECT -> {
+      InAppPurchaseFormField.SearchableSelect(
+        id = id,
+        title = title,
+        options = options.orEmpty().map {
+          InAppPurchaseFormField.SingleSelect.Option(it.value, it.title, it.isSelectable, it.additionalInfo)
+        },
+        defaultValues = defaultValues,
+        maxSelections = maxSelections ?: 1,
+      )
+    }
+
+    InAppPurchaseFormFieldType.EXTRA_BUILDINGS -> {
+      InAppPurchaseFormField.ExtraBuildings(
+        id = id,
+        title = title,
+        buildingTypes = options.orEmpty().map {
+          InAppPurchaseFormField.SingleSelect.Option(it.value, it.title, it.isSelectable, it.additionalInfo)
+        },
+      )
+    }
+
+    InAppPurchaseFormFieldType.UNKNOWN__ -> {
       logcat(LogPriority.ERROR) { "InAppPurchaseForm field $id has unknown type ${type.rawValue}" }
       null
     }

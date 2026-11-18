@@ -54,8 +54,8 @@ internal class InAppPurchaseFormPresenter(
     var loadIteration by remember { mutableIntStateOf(0) }
     var submitIteration by remember { mutableIntStateOf(0) }
     var form: LoadedForm by remember { mutableStateOf(lastState.toLoadedForm()) }
-    var values: Map<String, String?> by remember {
-      mutableStateOf(lastContent?.fields?.associate { it.field.id to it.value }.orEmpty())
+    var values: Map<String, List<String>> by remember {
+      mutableStateOf(lastContent?.fields?.associate { it.field.id to it.values }.orEmpty())
     }
     var fieldErrors: Map<String, String> by remember {
       mutableStateOf(
@@ -76,7 +76,7 @@ internal class InAppPurchaseFormPresenter(
         }
 
         is InAppPurchaseFormEvent.UpdateField -> {
-          values = values + (event.fieldId to event.value)
+          values = values + (event.fieldId to event.values)
           fieldErrors = fieldErrors - event.fieldId
         }
 
@@ -88,7 +88,7 @@ internal class InAppPurchaseFormPresenter(
         InAppPurchaseFormEvent.Submit -> {
           val fields = (form as? LoadedForm.Loaded)?.form?.fields.orEmpty()
           val blocked = fields.any { field ->
-            FormFieldUiState(field = field, value = values[field.id], errorMessage = null).blocksSubmission
+            FormFieldUiState(field = field, values = values[field.id].orEmpty(), errorMessage = null).blocksSubmission
           }
           if (!isQuoting && !blocked) submitIteration++
         }
@@ -106,7 +106,7 @@ internal class InAppPurchaseFormPresenter(
       getInAppPurchaseFormUseCase.invoke(product).fold(
         ifLeft = { form = LoadedForm.Failure },
         ifRight = { loadedForm ->
-          values = loadedForm.fields.associate { it.id to it.defaultValueOrNull() }
+          values = loadedForm.fields.associate { it.id to it.defaultValues() }
           fieldErrors = emptyMap()
           form = LoadedForm.Loaded(loadedForm)
         },
@@ -118,7 +118,7 @@ internal class InAppPurchaseFormPresenter(
       val loadedForm = (form as? LoadedForm.Loaded)?.form ?: return@LaunchedEffect
       isQuoting = true
       val fieldInputs = loadedForm.fields.map { field ->
-        InAppPurchaseFieldInput(fieldId = field.id, values = listOfNotNull(values[field.id]))
+        InAppPurchaseFieldInput(fieldId = field.id, values = values[field.id].orEmpty())
       }
       quoteInAppPurchaseUseCase.invoke(product, fieldInputs, campaignCode).fold(
         ifLeft = { quoteError = QuoteError(it.message) },
@@ -159,7 +159,7 @@ internal class InAppPurchaseFormPresenter(
         InAppPurchaseEligibility.Eligible -> InAppPurchaseFormUiState.Content(
           product = currentForm.form.product,
           fields = currentForm.form.fields.map { field ->
-            FormFieldUiState(field = field, value = values[field.id], errorMessage = fieldErrors[field.id])
+            FormFieldUiState(field = field, values = values[field.id].orEmpty(), errorMessage = fieldErrors[field.id])
           },
           campaignCode = campaignCode,
           campaignCodeError = campaignCodeError,
@@ -194,18 +194,21 @@ private fun InAppPurchaseFormUiState.toLoadedForm(): LoadedForm = when (this) {
 }
 
 /**
- * The value as sent in [InAppPurchaseFieldInput.values]. A single select without a default starts on its first option.
+ * The values as sent in [InAppPurchaseFieldInput.values]. A single select without a default starts on its first option.
  */
-internal fun InAppPurchaseFormField.defaultValueOrNull(): String? = when (this) {
-  is InAppPurchaseFormField.Number -> defaultValue?.toString()
-  is InAppPurchaseFormField.Date -> defaultValue?.toString()
-  is InAppPurchaseFormField.SingleSelect -> defaultValue ?: options.firstOrNull()?.value
+internal fun InAppPurchaseFormField.defaultValues(): List<String> = when (this) {
+  is InAppPurchaseFormField.Number -> listOfNotNull(defaultValue?.toString())
+  is InAppPurchaseFormField.Date -> listOfNotNull(defaultValue?.toString())
+  is InAppPurchaseFormField.SingleSelect -> listOfNotNull(defaultValue ?: options.firstOrNull()?.value)
+  is InAppPurchaseFormField.Text -> listOfNotNull(defaultValue)
+  is InAppPurchaseFormField.SearchableSelect -> defaultValues
+  is InAppPurchaseFormField.ExtraBuildings -> emptyList()
 }
 
 internal sealed interface InAppPurchaseFormEvent {
   data object Reload : InAppPurchaseFormEvent
 
-  data class UpdateField(val fieldId: String, val value: String?) : InAppPurchaseFormEvent
+  data class UpdateField(val fieldId: String, val values: List<String>) : InAppPurchaseFormEvent
 
   data class UpdateCampaignCode(val code: String) : InAppPurchaseFormEvent
 
@@ -240,9 +243,14 @@ internal sealed interface InAppPurchaseFormUiState {
 
 internal data class FormFieldUiState(
   val field: InAppPurchaseFormField,
-  val value: String?,
+  val values: List<String>,
   val errorMessage: String?,
 ) {
+  /**
+   * The value of a field that takes one.
+   */
+  val value: String? = values.singleOrNull()
+
   val selectedOption: InAppPurchaseFormField.SingleSelect.Option? =
     (field as? InAppPurchaseFormField.SingleSelect)?.options?.firstOrNull { it.value == value }
 

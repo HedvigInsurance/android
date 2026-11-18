@@ -69,7 +69,7 @@ internal fun InAppPurchaseFormDestination(
     popBackstack = dropUnlessResumed { popBackstack() },
     navigateToContract = { contractId -> navigateToContract(contractId) },
     onReload = { viewModel.emit(InAppPurchaseFormEvent.Reload) },
-    onValueChange = { fieldId, value -> viewModel.emit(InAppPurchaseFormEvent.UpdateField(fieldId, value)) },
+    onValuesChange = { fieldId, values -> viewModel.emit(InAppPurchaseFormEvent.UpdateField(fieldId, values)) },
     onCampaignCodeChange = { code -> viewModel.emit(InAppPurchaseFormEvent.UpdateCampaignCode(code)) },
     onSubmit = { viewModel.emit(InAppPurchaseFormEvent.Submit) },
     dismissQuoteError = { viewModel.emit(InAppPurchaseFormEvent.DismissQuoteError) },
@@ -83,7 +83,7 @@ private fun InAppPurchaseFormScreen(
   popBackstack: () -> Unit,
   navigateToContract: (contractId: String) -> Unit,
   onReload: () -> Unit,
-  onValueChange: (fieldId: String, value: String?) -> Unit,
+  onValuesChange: (fieldId: String, values: List<String>) -> Unit,
   onCampaignCodeChange: (String) -> Unit,
   onSubmit: () -> Unit,
   dismissQuoteError: () -> Unit,
@@ -102,7 +102,7 @@ private fun InAppPurchaseFormScreen(
     is Content -> FormScreen(
       uiState,
       navigateUp,
-      onValueChange,
+      onValuesChange,
       onCampaignCodeChange,
       onSubmit,
       dismissQuoteError,
@@ -114,7 +114,7 @@ private fun InAppPurchaseFormScreen(
 private fun FormScreen(
   content: Content,
   navigateUp: () -> Unit,
-  onValueChange: (fieldId: String, value: String?) -> Unit,
+  onValuesChange: (fieldId: String, values: List<String>) -> Unit,
   onCampaignCodeChange: (String) -> Unit,
   onSubmit: () -> Unit,
   dismissQuoteError: () -> Unit,
@@ -140,7 +140,7 @@ private fun FormScreen(
         FormFieldInput(
           state = field,
           enabled = !content.isQuoting,
-          onValueChange = { onValueChange(field.field.id, it) },
+          onValuesChange = { onValuesChange(field.field.id, it) },
           modifier = Modifier.fillMaxWidth(),
         )
       }
@@ -259,14 +259,14 @@ private class InAppPurchaseFormUiStateProvider : CollectionPreviewParameterProvi
     previewContent(InAppPurchaseMocks.paymentProtectionForm).let { content ->
       content.copy(
         fields = content.fields.map { field ->
-          if (field.field.id == "employmentType") field.copy(value = "UNEMPLOYED") else field
+          if (field.field.id == "employmentType") field.copy(values = listOf("UNEMPLOYED")) else field
         },
       )
     },
     previewContent(InAppPurchaseMocks.paymentProtectionForm).let { content ->
       content.copy(
         fields = content.fields.map { field ->
-          if (field.field.id == "employmentType") field.copy(value = "PERMANENT_EMPLOYED_FULLTIME") else field
+          if (field.field.id == "employmentType") field.copy(values = listOf("PERMANENT_EMPLOYED_FULLTIME")) else field
         },
       )
     },
@@ -286,7 +286,7 @@ private class InAppPurchaseFormUiStateProvider : CollectionPreviewParameterProvi
 
 private fun previewContent(form: InAppPurchaseForm) = Content(
   product = form.product,
-  fields = form.fields.map { FormFieldUiState(field = it, value = it.defaultValueOrNull(), errorMessage = null) },
+  fields = form.fields.map { FormFieldUiState(field = it, values = it.defaultValues(), errorMessage = null) },
   campaignCode = "",
   campaignCodeError = null,
   isQuoting = false,
