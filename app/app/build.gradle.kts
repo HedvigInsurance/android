@@ -193,6 +193,7 @@ dependencies {
   implementation(projects.featureAddonPurchase)
   implementation(projects.featureChat)
   implementation(projects.featureChipId)
+  implementation(projects.featureChangeMileage)
   implementation(projects.featureChooseTier)
   implementation(projects.featureChooseTierNavigation)
   implementation(projects.featureClaimChat)

@@ -208,6 +208,8 @@ private fun ContractFragment.toContract(
     supportsEditCoOwners = supportsCoOwners,
     isTerminated = isTerminated,
     supportsTierChange = supportsChangeTier,
+    // TODO(change-mileage): read `supportsChangeMileage` once it is published in the schema.
+    supportsChangeMileage = contractGroup == ContractGroup.CAR,
     existingAddons = existingAddons?.map {
       ContractAddon(
         relatedContractId = ContractId(id),

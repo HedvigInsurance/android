@@ -94,6 +94,7 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
           contractHolderDisplayName = "Test Member",
           contractHolderSSN = "1111111111-33322",
           supportsTierChange = true,
+          supportsChangeMileage = false,
           tierName = "STANDARD",
           existingAddons = emptyList(),
           availableAddons = emptyList(),

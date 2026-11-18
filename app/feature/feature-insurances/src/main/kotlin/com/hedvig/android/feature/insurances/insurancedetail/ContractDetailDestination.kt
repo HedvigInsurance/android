@@ -104,6 +104,7 @@ internal fun ContractDetailDestination(
   onMissingCoInsuredInfoClick: (String) -> Unit,
   onMissingCoOwnersInfoClick: (String) -> Unit,
   onChangeTierClick: (contractId: String, isPaymentProtection: Boolean) -> Unit,
+  onChangeMileageClick: (contractId: String) -> Unit,
   onChangeAddressClick: () -> Unit,
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
   onNavigateToNewConversation: () -> Unit,
@@ -132,6 +133,7 @@ internal fun ContractDetailDestination(
     navigateUp = navigateUp,
     navigateBack = navigateBack,
     onChangeTierClick = onChangeTierClick,
+    onChangeMileageClick = onChangeMileageClick,
     navigateToAddAddon = navigateToAddAddon,
     navigateToRemoveAddon = navigateToRemoveAddon,
     navigateToUpgradeAddon = navigateToUpgradeAddon,
@@ -150,6 +152,7 @@ private fun ContractDetailScreen(
   onMissingCoInsuredInfoClick: (String) -> Unit,
   onMissingCoOwnersInfoClick: (String) -> Unit,
   onChangeTierClick: (contractId: String, isPaymentProtection: Boolean) -> Unit,
+  onChangeMileageClick: (contractId: String) -> Unit,
   onChangeAddressClick: () -> Unit,
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
   navigateUp: () -> Unit,
@@ -330,6 +333,10 @@ private fun ContractDetailScreen(
                       allowChangeTier = contract.supportsTierChange,
                       isPaymentProtection = isPaymentProtection,
                       allowRemovingAddon = contract.supportsRemovingAddon,
+                      allowChangeMileage = contract.supportsChangeMileage,
+                      onChangeMileageClick = {
+                        onChangeMileageClick(contract.id)
+                      },
                       onChangeTierClick = {
                         onChangeTierClick(contract.id, isPaymentProtection)
                       },
@@ -521,6 +528,7 @@ private fun PreviewContractDetailScreen() {
             contractHolderDisplayName = "Hugo Linder",
             contractHolderSSN = "199101131093",
             supportsTierChange = true,
+            supportsChangeMileage = false,
             existingAddons = emptyList(),
             availableAddons = emptyList(),
             chipId = ChipIdState.Missing,
@@ -542,6 +550,7 @@ private fun PreviewContractDetailScreen() {
         onMissingCoOwnersInfoClick = {},
         openUrl = {},
         onChangeTierClick = { _, _ -> },
+        onChangeMileageClick = {},
         navigateToAddAddon = {},
         navigateToRemoveAddon = { _, _ -> },
         navigateToUpgradeAddon = { _, _ -> },
@@ -572,6 +581,7 @@ private fun PreviewContractDetailScreenFailure() {
         onMissingCoOwnersInfoClick = {},
         openUrl = {},
         onChangeTierClick = { _, _ -> },
+        onChangeMileageClick = {},
         navigateToAddAddon = {},
         navigateToRemoveAddon = { _, _ -> },
         navigateToUpgradeAddon = { _, _ -> },

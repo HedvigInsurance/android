@@ -773,6 +773,7 @@ private val previewInsurance = EstablishedInsuranceContract(
   contractHolderSSN = "19910913-1893",
   tierName = "Bas",
   supportsTierChange = true,
+  supportsChangeMileage = false,
   existingAddons = emptyList(),
   availableAddons = emptyList(),
   chipId = ChipIdState.Missing,

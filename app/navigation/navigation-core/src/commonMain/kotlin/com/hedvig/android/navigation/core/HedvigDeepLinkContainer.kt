@@ -69,6 +69,10 @@ interface HedvigDeepLinkContainer {
   val changeTierWithoutContractId: List<String>
   val changeTierWithContractId: List<String> // The screen where member can change tier and deductible
 
+  // The screen where member can choose which car insurance to change the yearly mileage for
+  val changeMileageWithoutContractId: List<String>
+  val changeMileageWithContractId: List<String> // The screen where member can change the yearly mileage of a car
+
   val claimDetails: List<String> // The screen where member can see the details of a specific claim
 
   val insuranceEvidence: List<String> // The screen where member can generate insurance evidence
@@ -198,6 +202,12 @@ internal class HedvigDeepLinkContainerImpl(
   }
   override val changeTierWithContractId: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/change-tier?contractId={contractId}"
+  }
+  override val changeMileageWithoutContractId: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/change-mileage"
+  }
+  override val changeMileageWithContractId: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/change-mileage?contractId={contractId}"
   }
   override val claimDetails: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/claim-details?claimId={claimId}"

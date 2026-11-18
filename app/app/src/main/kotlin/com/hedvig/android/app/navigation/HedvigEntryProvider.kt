@@ -13,6 +13,8 @@ import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseKey
 import com.hedvig.android.feature.addon.purchase.navigation.addonPurchaseEntries
+import com.hedvig.android.feature.change.mileage.navigation.ChangeMileageKey
+import com.hedvig.android.feature.change.mileage.navigation.changeMileageEntries
 import com.hedvig.android.feature.change.tier.navigation.ChooseTierKey
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
 import com.hedvig.android.feature.change.tier.navigation.StartTierFlowKey
@@ -434,6 +436,9 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
     onNavigateToStartChangeTier = { contractId: String, isPaymentProtection: Boolean ->
       backstack.add(StartTierFlowKey(insuranceId = contractId, isPaymentProtection = isPaymentProtection))
     },
+    onNavigateToChangeMileage = { contractId: String ->
+      backstack.add(ChangeMileageKey(contractId))
+    },
     startEditCoInsuredAddMissingInfo = { contractId: String ->
       backstack.add(CoInsuredAddInfoKey(contractId, CoInsuredFlowType.CoInsured))
     },
@@ -601,6 +606,7 @@ private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
     backstack = backstack,
     onNavigateToNewConversation = navigateToNewConversation,
   )
+  changeMileageEntries(backstack = backstack)
   chipIdEntries(
     backstack = backstack,
     globalSnackBarState = globalSnackBarState,

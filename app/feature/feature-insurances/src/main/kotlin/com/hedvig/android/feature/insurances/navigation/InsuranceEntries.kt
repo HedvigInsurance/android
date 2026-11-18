@@ -31,6 +31,7 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEntries(
   openCrossSellUrl: (String) -> Boolean,
   startMovingFlow: () -> Unit,
   onNavigateToStartChangeTier: (contractId: String, isPaymentProtection: Boolean) -> Unit,
+  onNavigateToChangeMileage: (contractId: String) -> Unit,
   startTerminationFlow: (cancelInsuranceData: CancelInsuranceData) -> Unit,
   startEditCoInsured: (contractId: String) -> Unit,
   startEditCoOwners: (contractId: String) -> Unit,
@@ -88,6 +89,7 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEntries(
       onChangeTierClick = dropUnlessResumed { contractId: String, isPaymentProtection: Boolean ->
         onNavigateToStartChangeTier(contractId, isPaymentProtection)
       },
+      onChangeMileageClick = dropUnlessResumed { contractId: String -> onNavigateToChangeMileage(contractId) },
       navigateToRemoveAddon = onNavigateToRemoveAddon,
       navigateToUpgradeAddon = navigateToUpgradeAddon,
       navigateToAddAddon = { availableAddon ->

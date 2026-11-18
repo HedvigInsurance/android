@@ -1,0 +1,29 @@
+# TODO(change-mileage): uncomment once `changeMileageCreateIntent` is published in the schema.
+# mutation ChangeMileageCreateIntent($contractId: ID!) {
+#   changeMileageCreateIntent(contractId: $contractId) {
+#     __typename
+#     ... on ChangeMileageIntent {
+#       activationDate
+#       currentTotalCost {
+#         ...ItemCostFragment
+#       }
+#       quotes {
+#         id
+#         displayName
+#         isCurrent
+#         totalCost {
+#           ...ItemCostFragment
+#         }
+#         infoMessage
+#         displayItems {
+#           displayTitle
+#           displayValue
+#           previousDisplayValue
+#         }
+#       }
+#     }
+#     ... on UserError {
+#       message
+#     }
+#   }
+# }

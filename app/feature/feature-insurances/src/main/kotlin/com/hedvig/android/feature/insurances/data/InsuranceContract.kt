@@ -27,6 +27,7 @@ sealed interface InsuranceContract {
   val supportsEditCoOwners: Boolean
   val supportsAddressChange: Boolean
   val supportsTierChange: Boolean
+  val supportsChangeMileage: Boolean
   val supportsRemovingAddon: Boolean
   val upcomingInsuranceAgreement: InsuranceAgreement?
   val isTerminated: Boolean
@@ -57,6 +58,7 @@ sealed interface InsuranceContract {
     override val supportsEditCoInsured: Boolean,
     override val supportsEditCoOwners: Boolean,
     override val supportsTierChange: Boolean,
+    override val supportsChangeMileage: Boolean,
     override val isTerminated: Boolean,
     override val tierName: String?,
     override val existingAddons: List<ContractAddon>,
@@ -97,6 +99,7 @@ sealed interface InsuranceContract {
     override val supportsEditCoOwners: Boolean = false
     override val supportsAddressChange: Boolean = false
     override val supportsTierChange: Boolean = false
+    override val supportsChangeMileage: Boolean = false
     override val supportsRemovingAddon: Boolean = false
     override val upcomingInsuranceAgreement: InsuranceAgreement? = null
     override val isTerminated: Boolean = false

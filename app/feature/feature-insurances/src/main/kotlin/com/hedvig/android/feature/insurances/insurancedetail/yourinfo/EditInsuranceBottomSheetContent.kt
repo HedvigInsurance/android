@@ -55,16 +55,29 @@ internal fun EditInsuranceBottomSheetContent(
   isPaymentProtection: Boolean,
   allowTerminatingInsurance: Boolean,
   allowRemovingAddon: Boolean,
+  allowChangeMileage: Boolean,
   onEditCoInsuredClick: () -> Unit,
   onEditCoOwnersClick: () -> Unit,
   onChangeTierClick: () -> Unit,
   onCancelInsuranceClick: () -> Unit,
   onRemoveAddonClick: () -> Unit,
+  onChangeMileageClick: () -> Unit,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   var selectedItemId: String? by rememberSaveable { mutableStateOf(null) }
   val options = buildList {
+    if (allowChangeMileage) {
+      add(
+        RadioOption(
+          RadioOptionId("5"),
+          // TODO: Add "Change mileage" / "Ändra körsträcka" to Lokalise
+          "Ändra körsträcka",
+          // TODO: Add "How far the car is driven per year" / "Hur långt bilen körs per år" to Lokalise
+          "Hur långt bilen körs per år",
+        ),
+      )
+    }
     if (allowChangeTier) {
       add(
         RadioOption(
@@ -162,6 +175,10 @@ internal fun EditInsuranceBottomSheetContent(
             onRemoveAddonClick()
           }
 
+          "5" if allowChangeMileage -> {
+            onChangeMileageClick()
+          }
+
           else -> {}
         }
       },
@@ -191,12 +208,14 @@ private fun PreviewEditInsuranceBottomSheetContent() {
         allowChangeTier = true,
         isPaymentProtection = false,
         allowRemovingAddon = true,
+        allowChangeMileage = true,
         onChangeTierClick = {},
         onEditCoInsuredClick = {},
         onEditCoOwnersClick = {},
         onDismiss = {},
         onCancelInsuranceClick = {},
         onRemoveAddonClick = {},
+        onChangeMileageClick = {},
         modifier = Modifier.padding(horizontal = 16.dp),
       )
     }

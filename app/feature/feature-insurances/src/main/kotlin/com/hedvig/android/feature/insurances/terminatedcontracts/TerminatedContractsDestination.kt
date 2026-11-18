@@ -177,6 +177,7 @@ private class PreviewTerminatedContractsUiStateProvider :
             contractHolderDisplayName = "Hugo Linder",
             contractHolderSSN = "19910113-1093",
             supportsTierChange = false,
+            supportsChangeMileage = false,
             existingAddons = emptyList(),
             availableAddons = emptyList(),
             chipId = ChipIdState.Missing,

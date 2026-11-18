@@ -139,7 +139,9 @@ internal fun YourInfoTab(
   allowChangeTier: Boolean,
   isPaymentProtection: Boolean,
   allowRemovingAddon: Boolean,
+  allowChangeMileage: Boolean,
   onChangeTierClick: () -> Unit,
+  onChangeMileageClick: () -> Unit,
   isDecommissioned: Boolean,
   upcomingChangesInsuranceAgreement: InsuranceAgreement?,
   chipIdState: ChipIdState,
@@ -176,6 +178,7 @@ internal fun YourInfoTab(
       allowChangeTier = allowChangeTier,
       isPaymentProtection = isPaymentProtection,
       allowRemovingAddon = allowRemovingAddon,
+      allowChangeMileage = allowChangeMileage,
       onChangeTierClick = {
         editYourInfoBottomSheet.dismiss()
         onChangeTierClick()
@@ -198,6 +201,10 @@ internal fun YourInfoTab(
       onRemoveAddonClick = {
         editYourInfoBottomSheet.dismiss()
         navigateToRemoveAddon(ContractId(contractId), null)
+      },
+      onChangeMileageClick = {
+        editYourInfoBottomSheet.dismiss()
+        onChangeMileageClick()
       },
     )
   }
@@ -393,6 +400,7 @@ internal fun YourInfoTab(
         if (allowEditCoInsured ||
           allowEditCoOwners ||
           allowChangeTier ||
+          allowChangeMileage ||
           allowTerminatingInsurance
         ) {
           HedvigButton(
@@ -961,7 +969,9 @@ private fun PreviewYourInfoTab(
         allowChangeTier = true,
         isPaymentProtection = false,
         allowRemovingAddon = true,
+        allowChangeMileage = true,
         onChangeTierClick = {},
+        onChangeMileageClick = {},
         isDecommissioned = true,
         upcomingChangesInsuranceAgreement = InsuranceAgreement(
           activeFrom = LocalDate.fromEpochDays(200),
