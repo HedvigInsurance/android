@@ -1,5 +1,17 @@
 package com.hedvig.android.feature.claim.details.ui.rating
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,12 +27,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
@@ -51,6 +65,7 @@ import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 internal const val TRUSTPILOT_REVIEW_URL = "https://www.trustpilot.com/evaluate/hedvig.com"
 
@@ -117,91 +132,109 @@ private fun ClaimRatingSheetContent(
   onOpenTrustpilot: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-    when (step) {
-      RatingStep.Stars -> {
-        // TODO: Add "How happy are you with how we handled your claim?" / "Hur nöjd är du med hur vi hanterade din skada?" to Lokalise. The question wording is still unsettled with the data team, against Typeform's "Hur nöjd är du med upplevelsen av ditt skadeärende hos Hedvig?"
-        Title("How happy are you with how we handled your claim?")
-        Spacer(Modifier.height(24.dp))
-        StarRatingRow(selectedRating = null, onRatingClick = { onEvent(RatingEvent.StarSelected(it)) })
-        Spacer(Modifier.height(24.dp))
-        // TODO: Add "Skip" / "Hoppa över" to Lokalise
-        HedvigTextButton("Skip", onClick = { onEvent(RatingEvent.Skip) }, modifier = Modifier.fillMaxWidth())
-      }
+  AnimatedContent(
+    targetState = step,
+    contentKey = { it is RatingStep.ThankYou },
+    transitionSpec = { fadeIn() togetherWith fadeOut() },
+    modifier = modifier,
+    label = "ClaimRatingStep",
+  ) { step ->
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+      when (step) {
+        is RatingStep.Stars, is RatingStep.Comment -> {
+          val isComment = step is RatingStep.Comment
+          Crossfade(targetState = isComment, label = "ClaimRatingTitle") { showComment ->
+            if (showComment) {
+              // TODO: Add "Want to tell us more? (optional)" / "Vill du berätta mer? (valfritt)" to Lokalise
+              Title("Want to tell us more? (optional)")
+            } else {
+              // TODO: Add "How happy are you with how we handled your claim?" / "Hur nöjd är du med hur vi hanterade din skada?" to Lokalise. The question wording is still unsettled with the data team, against Typeform's "Hur nöjd är du med upplevelsen av ditt skadeärende hos Hedvig?"
+              Title("How happy are you with how we handled your claim?")
+            }
+          }
+          Spacer(Modifier.height(24.dp))
+          StarRatingRow(
+            selectedRating = (step as? RatingStep.Comment)?.rating,
+            onRatingClick = { onEvent(RatingEvent.StarSelected(it)) },
+          )
+          AnimatedVisibility(
+            visible = isComment,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut(),
+          ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+              Spacer(Modifier.height(16.dp))
+              HedvigTextField(
+                text = comment,
+                onValueChange = onCommentChange,
+                labelText = if ((step as? RatingStep.Comment)?.rating?.let { it >= 4 } == true) {
+                  // TODO: Add "What did we do best?" / "Vad var bäst med hanteringen?" to Lokalise
+                  "What did we do best?"
+                } else {
+                  // TODO: Add "What could we have done better?" / "Vad kunde vi ha gjort bättre?" to Lokalise
+                  "What could we have done better?"
+                },
+                textFieldSize = Large,
+                singleLine = false,
+                minLines = 3,
+                modifier = Modifier.fillMaxWidth(),
+              )
+              Spacer(Modifier.height(16.dp))
+              // TODO: Add "Send" / "Skicka" to Lokalise
+              HedvigButton(
+                text = "Send",
+                onClick = { onEvent(RatingEvent.Send(comment)) },
+                enabled = true,
+                modifier = Modifier.fillMaxWidth(),
+              )
+              Spacer(Modifier.height(8.dp))
+            }
+          }
+          AnimatedVisibility(visible = !isComment) { Spacer(Modifier.height(24.dp)) }
+          // TODO: Add "Skip" / "Hoppa över" to Lokalise
+          HedvigTextButton("Skip", onClick = { onEvent(RatingEvent.Skip) }, modifier = Modifier.fillMaxWidth())
+        }
 
-      is RatingStep.Comment -> {
-        // TODO: Add "Want to tell us more? (optional)" / "Vill du berätta mer? (valfritt)" to Lokalise
-        Title("Want to tell us more? (optional)")
-        Spacer(Modifier.height(24.dp))
-        StarRatingRow(selectedRating = step.rating, onRatingClick = { onEvent(RatingEvent.StarSelected(it)) })
-        Spacer(Modifier.height(16.dp))
-        HedvigTextField(
-          text = comment,
-          onValueChange = onCommentChange,
-          labelText = if (step.rating >= 4) {
-            // TODO: Add "What did we do best?" / "Vad var bäst med hanteringen?" to Lokalise
-            "What did we do best?"
+        is RatingStep.ThankYou -> {
+          if (step.rating >= 4) {
+            // TODO: Add "Thanks for your rating" / "Tack för ditt betyg" to Lokalise
+            Title("Thanks for your rating")
+            Spacer(Modifier.height(8.dp))
+            // TODO: Add "Would you like to share your experience on Trustpilot too? It helps others choose insurance." / "Vill du dela din upplevelse på Trustpilot också? Det hjälper andra att välja försäkring." to Lokalise
+            Body("Would you like to share your experience on Trustpilot too? It helps others choose insurance.")
+            Spacer(Modifier.height(24.dp))
+            // TODO: Add "Write a review on Trustpilot" / "Skriv ett omdöme på Trustpilot" to Lokalise
+            HedvigButton(
+              text = "Write a review on Trustpilot",
+              onClick = onOpenTrustpilot,
+              enabled = true,
+              modifier = Modifier.fillMaxWidth(),
+            )
+            Spacer(Modifier.height(8.dp))
+            // TODO: Add "No thanks" / "Nej tack" to Lokalise
+            HedvigTextButton(
+              "No thanks",
+              onClick = { onEvent(RatingEvent.Finish) },
+              modifier = Modifier.fillMaxWidth(),
+            )
           } else {
-            // TODO: Add "What could we have done better?" / "Vad kunde vi ha gjort bättre?" to Lokalise
-            "What could we have done better?"
-          },
-          textFieldSize = Large,
-          singleLine = false,
-          minLines = 3,
-          modifier = Modifier.fillMaxWidth(),
-        )
-        Spacer(Modifier.height(16.dp))
-        // TODO: Add "Send" / "Skicka" to Lokalise
-        HedvigButton(
-          text = "Send",
-          onClick = { onEvent(RatingEvent.Send(comment)) },
-          enabled = true,
-          modifier = Modifier.fillMaxWidth(),
-        )
-        Spacer(Modifier.height(8.dp))
-        // TODO: Add "Skip" / "Hoppa över" to Lokalise
-        HedvigTextButton("Skip", onClick = { onEvent(RatingEvent.Skip) }, modifier = Modifier.fillMaxWidth())
-      }
-
-      is RatingStep.ThankYou -> {
-        if (step.rating >= 4) {
-          // TODO: Add "Thanks for your rating" / "Tack för ditt betyg" to Lokalise
-          Title("Thanks for your rating")
-          Spacer(Modifier.height(8.dp))
-          // TODO: Add "Would you like to share your experience on Trustpilot too? It helps others choose insurance." / "Vill du dela din upplevelse på Trustpilot också? Det hjälper andra att välja försäkring." to Lokalise
-          Body("Would you like to share your experience on Trustpilot too? It helps others choose insurance.")
-          Spacer(Modifier.height(24.dp))
-          // TODO: Add "Write a review on Trustpilot" / "Skriv ett omdöme på Trustpilot" to Lokalise
-          HedvigButton(
-            text = "Write a review on Trustpilot",
-            onClick = onOpenTrustpilot,
-            enabled = true,
-            modifier = Modifier.fillMaxWidth(),
-          )
-          Spacer(Modifier.height(8.dp))
-          // TODO: Add "No thanks" / "Nej tack" to Lokalise
-          HedvigTextButton(
-            "No thanks",
-            onClick = { onEvent(RatingEvent.Finish) },
-            modifier = Modifier.fillMaxWidth(),
-          )
-        } else {
-          // TODO: Add "Thanks for telling us" / "Tack för att du berättade" to Lokalise
-          Title("Thanks for telling us")
-          Spacer(Modifier.height(8.dp))
-          // TODO: Add "We read every answer and use it to get better. If you have questions about your claim, you can write to us." / "Vi läser alla svar och använder dem för att bli bättre. Har du frågor om ditt ärende kan du skriva till oss." to Lokalise
-          Body(
-            "We read every answer and use it to get better. If you have questions about your claim, you can write to us.",
-          )
-          Spacer(Modifier.height(24.dp))
-          // TODO: Add "Continue" / "Fortsätt" to Lokalise
-          HedvigButton(
-            text = "Continue",
-            onClick = { onEvent(RatingEvent.Finish) },
-            enabled = true,
-            buttonStyle = Secondary,
-            modifier = Modifier.fillMaxWidth(),
-          )
+            // TODO: Add "Thanks for telling us" / "Tack för att du berättade" to Lokalise
+            Title("Thanks for telling us")
+            Spacer(Modifier.height(8.dp))
+            // TODO: Add "We read every answer and use it to get better. If you have questions about your claim, you can write to us." / "Vi läser alla svar och använder dem för att bli bättre. Har du frågor om ditt ärende kan du skriva till oss." to Lokalise
+            Body(
+              "We read every answer and use it to get better. If you have questions about your claim, you can write to us.",
+            )
+            Spacer(Modifier.height(24.dp))
+            // TODO: Add "Continue" / "Fortsätt" to Lokalise
+            HedvigButton(
+              text = "Continue",
+              onClick = { onEvent(RatingEvent.Finish) },
+              enabled = true,
+              buttonStyle = Secondary,
+              modifier = Modifier.fillMaxWidth(),
+            )
+          }
         }
       }
     }
@@ -227,6 +260,8 @@ private fun Body(text: String) {
 private fun StarRatingRow(selectedRating: Int?, onRatingClick: (Int) -> Unit, modifier: Modifier = Modifier) {
   Column(modifier = modifier.fillMaxWidth()) {
     val hapticFeedback = LocalHapticFeedback.current
+    val coroutineScope = rememberCoroutineScope()
+    val popScales = remember { List(5) { Animatable(1f) } }
     Row(
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically,
@@ -235,6 +270,15 @@ private fun StarRatingRow(selectedRating: Int?, onRatingClick: (Int) -> Unit, mo
       (1..5).forEach { rating ->
         // TODO: Add "%d of 5" / "%d av 5" to Lokalise
         val ratingDescription = "$rating of 5"
+        val popScale = popScales[rating - 1]
+        val starColor by animateColorAsState(
+          targetValue = if (selectedRating != null && rating <= selectedRating) {
+            HedvigTheme.colorScheme.signalAmberElement
+          } else {
+            HedvigTheme.colorScheme.fillTertiary
+          },
+          label = "StarColor",
+        )
         Box(
           contentAlignment = Alignment.Center,
           modifier = Modifier
@@ -248,17 +292,17 @@ private fun StarRatingRow(selectedRating: Int?, onRatingClick: (Int) -> Unit, mo
                 if (rating >= 4) HapticFeedbackType.Confirm else HapticFeedbackType.TextHandleMove,
               )
               onRatingClick(rating)
+              coroutineScope.launch {
+                popScale.animateTo(1.25f, spring(stiffness = Spring.StiffnessHigh))
+                popScale.animateTo(1f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
+              }
             },
         ) {
           Icon(
             imageVector = HedvigIcons.Star,
             contentDescription = null,
-            tint = if (selectedRating != null && rating <= selectedRating) {
-              HedvigTheme.colorScheme.signalAmberElement
-            } else {
-              HedvigTheme.colorScheme.fillTertiary
-            },
-            modifier = Modifier.size(48.dp),
+            tint = starColor,
+            modifier = Modifier.size(48.dp).scale(popScale.value),
           )
         }
       }
