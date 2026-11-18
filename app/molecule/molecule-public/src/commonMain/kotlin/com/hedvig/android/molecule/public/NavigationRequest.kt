@@ -27,8 +27,8 @@ class NavigationRequest<out T : Any> private constructor(
   /** Unique within the process, for observers that compare requests by a value. */
   val id: Long,
   val target: T,
+  private val consumed: AtomicBoolean,
 ) {
-  private val consumed = AtomicBoolean(false)
 
   /** True until the platform takes the request with [tryConsume]. */
   val isPending: Boolean
@@ -36,6 +36,13 @@ class NavigationRequest<out T : Any> private constructor(
 
   /** True for exactly one call per request. Perform the navigation only when it returns true. */
   fun tryConsume(): Boolean = consumed.compareAndSet(expectedValue = false, newValue = true)
+
+  /**
+   * The same request with [transform] applied to its target, for a platform-facing state that shows the target in
+   * another type. Taking either one takes both, and they are equal.
+   */
+  @HiddenFromObjC
+  fun <R : Any> map(transform: (T) -> R): NavigationRequest<R> = NavigationRequest(id, transform(target), consumed)
 
   override fun equals(other: Any?): Boolean = other is NavigationRequest<*> && other.id == id
 
@@ -48,7 +55,8 @@ class NavigationRequest<out T : Any> private constructor(
   companion object {
     private val lastId = AtomicLong(0L)
 
-    fun <T : Any> of(target: T): NavigationRequest<T> = NavigationRequest(lastId.incrementAndFetch(), target)
+    fun <T : Any> of(target: T): NavigationRequest<T> =
+      NavigationRequest(lastId.incrementAndFetch(), target, AtomicBoolean(false))
   }
 }
 

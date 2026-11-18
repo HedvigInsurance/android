@@ -74,6 +74,18 @@ class NavigationRequestTest {
   }
 
   @Test
+  fun `a mapped request is the same request with another target`() {
+    val request = NavigationRequest.of("https://example.com/c.pdf")
+    val mapped = request.map { it.length }
+    assertThat(mapped.target).isEqualTo(25)
+    assertThat(mapped).isEqualTo(request as NavigationRequest<Any>)
+
+    assertThat(mapped.tryConsume()).isTrue()
+    assertThat(request.isPending).isFalse()
+    assertThat(request.tryConsume()).isFalse()
+  }
+
+  @Test
   fun `the text of a request leaves out its target`() {
     val request = NavigationRequest.of("member@hedvig.com")
     assertThat(request.toString()).doesNotContain("member@hedvig.com")
