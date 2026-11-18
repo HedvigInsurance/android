@@ -23,9 +23,9 @@ import kotlinx.coroutines.flow.first
  * The request is taken only while the screen is resumed, so a request that arrives during a transition or behind an
  * overlay waits for the screen to resume, and one whose screen leaves before that stays pending for whichever screen
  * shows it next. Navigation 3 holds a leaving or covered entry at STARTED, so a lower minimum state would navigate a
- * second time from a screen on its way out. A desktop window is RESUMED only while focused, so there a request waits
- * for the window to be focused again. [navigate] must always navigate: it must not be wrapped in `dropUnlessResumed`
- * or similar, since a request it drops is taken and never performed.
+ * second time from a screen on its way out. The desktop host keeps a visible window RESUMED, focused or not, so there
+ * a request waits only while the window is minimised. [navigate] must always navigate: it must not be wrapped in
+ * `dropUnlessResumed` or similar, since a request it drops is taken and never performed.
  */
 @Composable
 fun <T : Any> NavigationEffect(request: NavigationRequest<T>?, navigate: (T) -> Unit) {

@@ -37,6 +37,16 @@ same interceptor as Android.
 even while typing. Holding a key goes back once per key repeat. Back at the root does nothing; the app quits when its
 window closes or an in-content close button pops the root.
 
+**Window lifecycle.** The app's composition gets a lifecycle that is RESUMED while the window is visible, focused or
+not, and follows the window otherwise: CREATED while minimised, DESTROYED once closed (`ProvideVisibleWindowLifecycle`
+in `Main.kt`). Compose desktop's own window lifecycle is RESUMED only while the window has focus. So a screen that
+navigates after a request (`NavigationEffect`, `TapOfferNavigationEffect`) and a click wrapped in `dropUnlessResumed`
+behave on an unfocused window as on a focused one; while the window is minimised a navigation waits and runs once it
+is shown again. Navigation 3 still holds a leaving or covered entry at STARTED, so a request that reaches a screen on
+its way out is not performed there (`VisibleWindowLifecycleTest`, `NavigationEffectInNavDisplayTest`). Effects that
+repeat on every resume (screen view tracking, the onboarding and app review checks in `HedvigApp`) run again after a
+restore from minimised, not after a focus change.
+
 **Links.** A link no deep link matcher handles does not open the browser when it is on a Hedvig deep link host
 (`DesktopUnmatchedLinkRouter`, used by `DesktopAppHost.uriHandler`). On the running flavour's hosts it lands on the
 Home tab (nothing while logged out); a production host link under staging is moved to the staging host of the same
@@ -207,7 +217,7 @@ Unfinished work and bugs. Most need only a JVM actual or a host change.
 | "Submit a bug" only logs when no mail client is configured | A notice with the address |
 | No experiment variants: the member is in no experiment, so the backend serves defaults | Keep variants in `JvmUnleashClient`, convert `experiments-unleash` |
 | Feature flags read never-fetched defaults on every start until the first fetch | Persist the toggle state under the data directory |
-| A screen that navigates after a request (travel certificate steps, add-on summary, moving flow house information) keeps its spinner while the window has no focus, and navigates once it is focused again. The window lifecycle is RESUMED only while focused, and `NavigationEffect` waits for RESUMED, since Navigation 3 holds a leaving entry at STARTED and a STARTED gate navigates twice from it (`NavigationEffectInNavDisplayTest`). Clicks wrapped in `dropUnlessResumed` are dropped on an unfocused window for the same reason | A host lifecycle in `Main.kt` that is RESUMED while the window is visible and not minimised, as on Android in multi-window; Navigation 3 still caps entries during transitions and under overlays |
+| Screens that refresh when shown again (payin and payout account overview, the onboarding pet id, co-insured and payment steps) refresh when the member returns to them in the app or restores the minimised window, not when the window regains focus, since a visible window stays RESUMED (see "Window lifecycle" above) | A refresh on window focus in those screens, if wanted |
 | No log file and no crash report: logs go to stdout only | A rotating log file under the data directory |
 | The backend gets no device row for a desktop login | A JVM `AuthEventListener` like `DeviceNameLoggingAuthListener` |
 | Home and Insurances: pull to refresh cannot be triggered with a mouse | A refresh action or wheel trigger |
