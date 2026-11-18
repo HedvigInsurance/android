@@ -117,7 +117,14 @@ internal fun FormFieldInput(
       modifier = modifier,
     )
 
-    is InAppPurchaseFormField.ExtraBuildings -> Unit
+    is InAppPurchaseFormField.ExtraBuildings -> ExtraBuildingsFieldInput(
+      field = field,
+      values = state.values,
+      errorMessage = state.errorMessage,
+      enabled = enabled,
+      onValuesChange = onValuesChange,
+      modifier = modifier,
+    )
   }
 }
 

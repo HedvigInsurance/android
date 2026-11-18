@@ -20,6 +20,7 @@ dependencies {
   implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
+  implementation(libs.kotlinx.serialization.json)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.composeUi)
