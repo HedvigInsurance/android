@@ -111,9 +111,7 @@ internal class AddonSummaryPresenter(
       when (event) {
         AddonSummaryEvent.Submit -> {
           if (currentState !is Content || submitFailure?.isPending == true) return@CollectEvents
-          if (purchase.start(Unit)) {
-            submitFailure = null
-          }
+          purchase.start(Unit)
         }
 
         AddonSummaryEvent.Reload -> {
