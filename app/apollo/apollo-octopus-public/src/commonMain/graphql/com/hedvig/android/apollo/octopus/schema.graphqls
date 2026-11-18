@@ -1103,6 +1103,10 @@ type Claim {
   claimType: String
   incidentDate: Date @deprecated(reason: "Use displayItems instead")
   showClaimClosedFlow: Boolean!
+  """
+  True once the member rated or dismissed this claim.
+  """
+  hasAnsweredRating: Boolean!
   appealInstructionsUrl: String
   isUploadingFilesEnabled: Boolean!
   infoText: String
@@ -4017,6 +4021,8 @@ type Mutation {
   """
   conversationHideCrossSales(id: UUID!): Conversation!
   claimAcknowledgeClosedStatus(id: ID!): ClaimMutationOutput
+  claimSubmitRating(claimId: ID!, rating: Int!, comment: String): ClaimMutationOutput
+  claimDismissRating(claimId: ID!): ClaimMutationOutput
   """
   Create or (reuse and existing) unsubmitted claim intent.
   """
