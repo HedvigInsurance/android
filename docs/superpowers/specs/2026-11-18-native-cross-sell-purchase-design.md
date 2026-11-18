@@ -34,11 +34,11 @@ the demo, products are rolled out to members one by one (no A/B test).
 
 ## Gating and rollout *(Claude's call)*
 
-- **Backend, per product and per member:** storefront checks one Unleash toggle per product
-  (`in_app_purchase_<product>`, evaluated with the member id, as `AccidentDiscountExperiment` already does) on top of
-  the existing global `inAppPurchaseEnabled`. Eligibility returns `NOT_AVAILABLE` and `CrossSell.inAppProduct` is
-  null when the toggle is off. `productName.available()` is not touched, so web sales are unaffected. Rolling out a
-  product = turning its toggle on; the demo member is targeted in each toggle.
+- **Backend, per product:** storefront has no server-side Unleash (its experiments are assigned in the app), so the
+  existing global `inAppPurchaseEnabled` boolean is replaced by a per-environment config list
+  `inAppPurchaseProducts` of enabled `InAppProduct`s. A product not in the list gets `NOT_AVAILABLE` and
+  `CrossSell.inAppProduct = null`. `productName.available()` is not touched, so web sales are unaffected. Rolling
+  out a product = adding it to the production list and deploying; staging lists every product.
 - **App:** the product page stays behind the existing `SHOW_PRODUCT_PAGES` Unleash flag. The native form is only
   reachable from the product page. Page flag off → today's behaviour (web), regardless of `inAppProduct`.
 
@@ -102,8 +102,9 @@ Generic cross-sells (`HOME`, `PET`) keep the options sheet from #3362, which lis
 
 ### One product page
 
-#3362's page is the single product page. #3305's separate product-info screen is removed; its FAQ and coverage-level
-("variants") content moves onto the product page below the carousel. *(Claude's call.)* The page's data comes from
+#3362's page is the single product page. #3305's separate product-info screen is removed; its FAQ moves onto the
+product page below the carousel, and coverage levels are shown where the member picks one, on the offers step.
+*(Claude's call.)* The page's data comes from
 `crossSellProductInfo` (Storyblok web page) plus `inAppPurchaseForm.product` (name, FAQ, variants), or the backend
 folds the latter into `crossSellProductInfo`; the builder picks whichever is a smaller change.
 
