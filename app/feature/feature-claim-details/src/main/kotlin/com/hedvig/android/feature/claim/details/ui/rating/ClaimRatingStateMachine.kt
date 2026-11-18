@@ -68,9 +68,7 @@ private fun reduceOpen(step: RatingStep, event: RatingEvent): RatingTransition? 
         ClaimRatingAnswer.Rated(step.rating, event.comment.trim().ifEmpty { null }),
       )
 
-      RatingEvent.Skip -> show(RatingStep.ThankYou(step.rating), ClaimRatingAnswer.Rated(step.rating, null))
-
-      RatingEvent.SheetDismissed -> close(ClaimRatingAnswer.Rated(step.rating, null))
+      RatingEvent.Skip, RatingEvent.SheetDismissed -> close(ClaimRatingAnswer.Dismissed)
 
       else -> null
     }

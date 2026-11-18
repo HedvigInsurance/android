@@ -56,15 +56,14 @@ class ClaimRatingStateMachineTest {
   }
 
   @Test
-  fun `skip on the comment step submits the rating without a comment and shows thank you`() {
-    assertThat(reduceRating(Open(Comment(2)), Skip))
-      .isEqualTo(RatingTransition(Open(ThankYou(2)), ClaimRatingAnswer.Rated(2, null)))
+  fun `skip on the comment step dismisses without submitting the rating and closes`() {
+    assertThat(reduceRating(Open(Comment(2)), Skip)).isEqualTo(RatingTransition(Closed, ClaimRatingAnswer.Dismissed))
   }
 
   @Test
-  fun `closing the sheet on the comment step submits the rating without the typed comment and closes`() {
+  fun `closing the sheet on the comment step dismisses without submitting the rating and closes`() {
     assertThat(reduceRating(Open(Comment(5)), SheetDismissed))
-      .isEqualTo(RatingTransition(Closed, ClaimRatingAnswer.Rated(5, null)))
+      .isEqualTo(RatingTransition(Closed, ClaimRatingAnswer.Dismissed))
   }
 
   @Test

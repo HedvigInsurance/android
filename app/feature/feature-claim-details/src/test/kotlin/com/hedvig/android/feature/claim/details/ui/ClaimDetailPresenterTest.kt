@@ -124,7 +124,7 @@ class ClaimDetailPresenterTest {
       awaitContent(content())
       sendRatingEvent(RatingEvent.OpenRequested)
       sendRatingEvent(RatingEvent.StarSelected(2))
-      sendRatingEvent(RatingEvent.Skip)
+      sendRatingEvent(RatingEvent.Send(""))
 
       getClaimDetailUiStateUseCase.emissions.send(content(hasUnreadMessages = true).right())
 
@@ -171,6 +171,38 @@ class ClaimDetailPresenterTest {
 
       assertThat(reopened.rating).isEqualTo(RatingState.Open(RatingStep.Stars))
       assertThat(reopened.ratingButton).isEqualTo(RatingButtonState.Enabled)
+      assertThat(recorder.recorded).containsExactly("claim-1" to ClaimRatingAnswer.Dismissed)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `closing the comment step after picking a star records a dismissal, keeps the button enabled and reopens fresh`() =
+    runTest {
+      presenter.test(ClaimDetailUiState.Loading) {
+        awaitContent(content())
+        sendRatingEvent(RatingEvent.OpenRequested)
+        sendRatingEvent(RatingEvent.StarSelected(4))
+        val afterClose = sendRatingEvent(RatingEvent.SheetDismissed)
+
+        assertThat(afterClose.rating).isEqualTo(RatingState.Closed)
+        assertThat(afterClose.ratingButton).isEqualTo(RatingButtonState.Enabled)
+        assertThat(recorder.recorded).containsExactly("claim-1" to ClaimRatingAnswer.Dismissed)
+        assertThat(sendRatingEvent(RatingEvent.OpenRequested).rating).isEqualTo(RatingState.Open(RatingStep.Stars))
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  @Test
+  fun `skipping the comment step after typing a comment records a dismissal and keeps the button enabled`() = runTest {
+    presenter.test(ClaimDetailUiState.Loading) {
+      awaitContent(content())
+      sendRatingEvent(RatingEvent.OpenRequested)
+      sendRatingEvent(RatingEvent.StarSelected(3))
+      val afterSkip = sendRatingEvent(RatingEvent.Skip)
+
+      assertThat(afterSkip.rating).isEqualTo(RatingState.Closed)
+      assertThat(afterSkip.ratingButton).isEqualTo(RatingButtonState.Enabled)
       assertThat(recorder.recorded).containsExactly("claim-1" to ClaimRatingAnswer.Dismissed)
       cancelAndIgnoreRemainingEvents()
     }

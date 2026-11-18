@@ -238,7 +238,7 @@ private fun StarRatingRow(selectedRating: Int?, onRatingClick: (Int) -> Unit, mo
         Box(
           contentAlignment = Alignment.Center,
           modifier = Modifier
-            .size(48.dp)
+            .size(56.dp)
             .semantics {
               contentDescription = ratingDescription
               selected = selectedRating == rating
@@ -258,7 +258,7 @@ private fun StarRatingRow(selectedRating: Int?, onRatingClick: (Int) -> Unit, mo
             } else {
               HedvigTheme.colorScheme.fillTertiary
             },
-            modifier = Modifier.size(32.dp),
+            modifier = Modifier.size(48.dp),
           )
         }
       }
