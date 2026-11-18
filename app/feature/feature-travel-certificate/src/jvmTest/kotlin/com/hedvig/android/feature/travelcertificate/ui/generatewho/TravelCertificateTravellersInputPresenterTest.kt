@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.travelcertificate.ui.generatewho
 
-import androidx.compose.runtime.BroadcastFrameClock
 import arrow.core.left
 import arrow.core.right
 import assertk.assertThat
@@ -19,14 +18,9 @@ import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.expectNoStateChange
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.CoInsured.CoInsuredId
 import com.hedvig.android.logger.TestLogcatLoggingRule
-import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.molecule.test.MoleculePresenterTestContext
 import com.hedvig.android.molecule.test.test
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.test.StandardTestDispatcher
+import com.hedvig.android.molecule.test.testFrames
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.type.TravelCertificateCreateCoInsured
@@ -431,43 +425,27 @@ class TravelCertificateTravellersInputPresenterTest {
 
   @Test
   fun `a retry handled in the same frame as the end of a failed create is sent`() = runTest {
-    val frameClock = BroadcastFrameClock()
-    val scope = CoroutineScope(StandardTestDispatcher(testScheduler) + frameClock + Job())
-    val viewModel = object : MoleculeViewModel<
-      TravelCertificateTravellersInputEvent,
-      TravelCertificateTravellersInputUiState,
-    >(
-      initialState = TravelCertificateTravellersInputUiState.Loading,
-      presenter = presenter,
-      sharingStarted = SharingStarted.Eagerly,
-      coroutineScope = scope,
-    ) {}
+    presenter.testFrames(TravelCertificateTravellersInputUiState.Loading) {
+      coInsuredUseCase.responses.tryEmit(data(zed, anna).right())
+      frame()
+      frame()
+      assertThat(latest).isEqualTo(content())
+      emit(TravelCertificateTravellersInputEvent.GenerateTravelCertificate)
+      frame()
+      assertThat(latest).isEqualTo(content(isCreating = true))
 
-    fun frame() {
-      testScheduler.runCurrent()
-      frameClock.sendFrame(0L)
-      testScheduler.runCurrent()
+      // The failure and the retry are both handled before the next frame composes the presenter.
+      createTransport.responses.trySend(null)
+      runCurrent()
+      emit(TravelCertificateTravellersInputEvent.GenerateTravelCertificate)
+      frame()
+      assertThat(createTransport.inputs).containsExactly(memberOnlyInput, memberOnlyInput)
+      assertThat(latest).isEqualTo(content(isCreating = true))
+
+      createTransport.responses.trySend("https://example.com/new.pdf")
+      frame()
+      assertThat(latest).isEqualTo(TravelCertificateTravellersInputUiState.Created(newUrl))
     }
-    coInsuredUseCase.responses.tryEmit(data(zed, anna).right())
-    frame()
-    frame()
-    assertThat(viewModel.uiState.value).isEqualTo(content())
-    viewModel.emit(TravelCertificateTravellersInputEvent.GenerateTravelCertificate)
-    frame()
-    assertThat(viewModel.uiState.value).isEqualTo(content(isCreating = true))
-
-    // The failure and the retry are both handled before the next frame composes the presenter.
-    createTransport.responses.trySend(null)
-    testScheduler.runCurrent()
-    viewModel.emit(TravelCertificateTravellersInputEvent.GenerateTravelCertificate)
-    frame()
-    assertThat(createTransport.inputs).containsExactly(memberOnlyInput, memberOnlyInput)
-    assertThat(viewModel.uiState.value).isEqualTo(content(isCreating = true))
-
-    createTransport.responses.trySend("https://example.com/new.pdf")
-    frame()
-    assertThat(viewModel.uiState.value).isEqualTo(TravelCertificateTravellersInputUiState.Created(newUrl))
-    scope.cancel()
   }
 
   @Test

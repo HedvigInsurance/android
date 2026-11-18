@@ -10,7 +10,11 @@ hedvig {
 dependencies {
   api(projects.moleculePublic)
   implementation(libs.androidx.annotation)
+  implementation(libs.coroutines.test)
   implementation(libs.jetbrains.compose.runtime)
   implementation(libs.molecule)
   implementation(libs.turbine)
+
+  testImplementation(libs.assertK)
+  testImplementation(libs.junit)
 }

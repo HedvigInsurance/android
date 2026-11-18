@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.travelcertificate.ui.generatewhen
 
-import androidx.compose.runtime.BroadcastFrameClock
 import arrow.core.left
 import arrow.core.right
 import assertk.assertThat
@@ -18,17 +17,11 @@ import com.hedvig.android.feature.travelcertificate.data.TravelCertificateTravel
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.expectNoStateChange
 import com.hedvig.android.logger.TestLogcatLoggingRule
-import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.molecule.test.MoleculePresenterTestContext
 import com.hedvig.android.molecule.test.test
+import com.hedvig.android.molecule.test.testFrames
 import kotlin.time.Clock
 import kotlin.time.Instant
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.type.TravelCertificateCreateInput
@@ -568,82 +561,52 @@ class TravelCertificateDateInputPresenterTest {
   @Test
   fun `a continue in the same frame as the acknowledgement is ignored, so the cleared step is always emitted`() =
     runTest {
-      val frameClock = BroadcastFrameClock()
-      val scope = CoroutineScope(StandardTestDispatcher(testScheduler) + frameClock + Job())
-      val viewModel = object : MoleculeViewModel<TravelCertificateDateInputEvent, TravelCertificateDateInputUiState>(
-        initialState = TravelCertificateDateInputUiState.Loading,
-        presenter = presenter(),
-        sharingStarted = SharingStarted.Eagerly,
-        coroutineScope = scope,
-      ) {}
-      val observedSteps = mutableListOf<TravelCertificateTravellersStep?>()
-      scope.launch {
-        viewModel.uiState.collect { observedSteps += (it as? TravelCertificateDateInputUiState.Success)?.next }
+      presenter().testFrames(TravelCertificateDateInputUiState.Loading) {
+        specifications.responses.trySend(specification(numberOfCoInsured = 1).right())
+        frame()
+        frame()
+        val step = TravelCertificateTravellersStep("member@hedvig.com", today, "contractId")
+        emit(TravelCertificateDateInputEvent.Submit)
+        frame()
+        assertThat(latest).isEqualTo(expectedContent(hasCoInsured = true, next = step))
+
+        // Both events are handled before the next frame composes the presenter.
+        emit(TravelCertificateDateInputEvent.StepShown, TravelCertificateDateInputEvent.Submit)
+        frame()
+        assertThat(latest).isEqualTo(expectedContent(hasCoInsured = true))
+
+        emit(TravelCertificateDateInputEvent.Submit)
+        frame()
+        assertThat(latest).isEqualTo(expectedContent(hasCoInsured = true, next = step))
+        val observedSteps = observed.map { (it as? TravelCertificateDateInputUiState.Success)?.next }
+        assertThat(observedSteps.dropWhile { it == null }).containsExactly(step, null, step)
       }
-
-      fun frame() {
-        testScheduler.runCurrent()
-        frameClock.sendFrame(0L)
-        testScheduler.runCurrent()
-      }
-      specifications.responses.trySend(specification(numberOfCoInsured = 1).right())
-      frame()
-      frame()
-      val step = TravelCertificateTravellersStep("member@hedvig.com", today, "contractId")
-      viewModel.emit(TravelCertificateDateInputEvent.Submit)
-      frame()
-      assertThat(viewModel.uiState.value).isEqualTo(expectedContent(hasCoInsured = true, next = step))
-
-      // Both events are handled before the next frame composes the presenter.
-      viewModel.emit(TravelCertificateDateInputEvent.StepShown)
-      viewModel.emit(TravelCertificateDateInputEvent.Submit)
-      frame()
-      assertThat(viewModel.uiState.value).isEqualTo(expectedContent(hasCoInsured = true))
-
-      viewModel.emit(TravelCertificateDateInputEvent.Submit)
-      frame()
-      assertThat(viewModel.uiState.value).isEqualTo(expectedContent(hasCoInsured = true, next = step))
-      assertThat(observedSteps.dropWhile { it == null }).containsExactly(step, null, step)
-      scope.cancel()
     }
 
   @Test
   fun `a continue handled in the same frame as the end of a failed create is sent`() = runTest {
-    val frameClock = BroadcastFrameClock()
-    val scope = CoroutineScope(StandardTestDispatcher(testScheduler) + frameClock + Job())
-    val viewModel = object : MoleculeViewModel<TravelCertificateDateInputEvent, TravelCertificateDateInputUiState>(
-      initialState = TravelCertificateDateInputUiState.Loading,
-      presenter = presenter(),
-      sharingStarted = SharingStarted.Eagerly,
-      coroutineScope = scope,
-    ) {}
+    presenter().testFrames(TravelCertificateDateInputUiState.Loading) {
+      specifications.responses.trySend(specification(numberOfCoInsured = 0).right())
+      frame()
+      frame()
+      emit(TravelCertificateDateInputEvent.Submit)
+      frame()
+      assertThat(latest).isEqualTo(expectedContent(isCreating = true))
 
-    fun frame() {
-      testScheduler.runCurrent()
-      frameClock.sendFrame(0L)
-      testScheduler.runCurrent()
+      // The failure and the retry are both handled before the next frame composes the presenter.
+      createTransport.responses.trySend(null)
+      runCurrent()
+      emit(TravelCertificateDateInputEvent.Submit)
+      frame()
+      assertThat(createTransport.inputs).containsExactly(createInput(), createInput())
+      assertThat(latest).isEqualTo(expectedContent(isCreating = true))
+
+      createTransport.responses.trySend("https://example.com/new.pdf")
+      frame()
+      assertThat(latest).isEqualTo(
+        TravelCertificateDateInputUiState.Created(TravelCertificateUrl("https://example.com/new.pdf")),
+      )
     }
-    specifications.responses.trySend(specification(numberOfCoInsured = 0).right())
-    frame()
-    frame()
-    viewModel.emit(TravelCertificateDateInputEvent.Submit)
-    frame()
-    assertThat(viewModel.uiState.value).isEqualTo(expectedContent(isCreating = true))
-
-    // The failure and the retry are both handled before the next frame composes the presenter.
-    createTransport.responses.trySend(null)
-    testScheduler.runCurrent()
-    viewModel.emit(TravelCertificateDateInputEvent.Submit)
-    frame()
-    assertThat(createTransport.inputs).containsExactly(createInput(), createInput())
-    assertThat(viewModel.uiState.value).isEqualTo(expectedContent(isCreating = true))
-
-    createTransport.responses.trySend("https://example.com/new.pdf")
-    frame()
-    assertThat(viewModel.uiState.value).isEqualTo(
-      TravelCertificateDateInputUiState.Created(TravelCertificateUrl("https://example.com/new.pdf")),
-    )
-    scope.cancel()
   }
 
   @Test
