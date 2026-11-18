@@ -468,6 +468,7 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
       )
     },
     navigateToChipIdScreen = { contractId -> backstack.add(ChipIdKey(contractId)) },
+    onNavigateToGreenCard = { backstack.add(GreenCardKey) },
   )
 }
 

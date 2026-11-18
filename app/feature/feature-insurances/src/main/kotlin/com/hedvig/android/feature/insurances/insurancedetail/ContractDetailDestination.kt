@@ -115,6 +115,7 @@ internal fun ContractDetailDestination(
   navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToAddAddon: (AvailableAddon) -> Unit,
   navigateToChipIdScreen: (String) -> Unit,
+  onGreenCardClick: () -> Unit,
 ) {
   val uiState: ContractDetailsUiState by viewModel.uiState.collectAsStateWithLifecycle()
   ContractDetailScreen(
@@ -136,6 +137,7 @@ internal fun ContractDetailDestination(
     navigateToRemoveAddon = navigateToRemoveAddon,
     navigateToUpgradeAddon = navigateToUpgradeAddon,
     navigateToChipIdScreen = navigateToChipIdScreen,
+    onGreenCardClick = onGreenCardClick,
   )
 }
 
@@ -160,6 +162,7 @@ private fun ContractDetailScreen(
   navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToChipIdScreen: (String) -> Unit,
   navigateToAddAddon: (AvailableAddon) -> Unit,
+  onGreenCardClick: () -> Unit,
 ) {
   Column(Modifier.fillMaxSize()) {
     val costBreakdownBottomSheetState = rememberHedvigBottomSheetState<PriceInfoForBottomSheet>()
@@ -380,6 +383,8 @@ private fun ContractDetailScreen(
                         navigateToChipIdScreen(contract.id)
                       },
                       showPolicyHolderRow = contract.shouldShowInsuredPeople(),
+                      showGreenCardButton = state.isGreenCardAvailable && !contract.isTerminated,
+                      onGreenCardClick = onGreenCardClick,
                     )
                   }
 
@@ -543,6 +548,7 @@ private fun PreviewContractDetailScreen() {
         openUrl = {},
         onChangeTierClick = { _, _ -> },
         navigateToAddAddon = {},
+        onGreenCardClick = {},
         navigateToRemoveAddon = { _, _ -> },
         navigateToUpgradeAddon = { _, _ -> },
         navigateToChipIdScreen = {},
@@ -573,6 +579,7 @@ private fun PreviewContractDetailScreenFailure() {
         openUrl = {},
         onChangeTierClick = { _, _ -> },
         navigateToAddAddon = {},
+        onGreenCardClick = {},
         navigateToRemoveAddon = { _, _ -> },
         navigateToUpgradeAddon = { _, _ -> },
         navigateToChipIdScreen = {},

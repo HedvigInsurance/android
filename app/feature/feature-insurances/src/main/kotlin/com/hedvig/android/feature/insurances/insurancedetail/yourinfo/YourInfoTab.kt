@@ -42,9 +42,11 @@ import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
+import com.hedvig.android.design.system.hedvig.ClickableListDefaults
 import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -73,6 +75,8 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.horizontalDivider
+import com.hedvig.android.design.system.hedvig.icon.ChevronRight
+import com.hedvig.android.design.system.hedvig.icon.Document
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.icon.Lock
@@ -164,6 +168,8 @@ internal fun YourInfoTab(
   navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToAddAddon: (AvailableAddon) -> Unit,
   showPolicyHolderRow: Boolean,
+  showGreenCardButton: Boolean,
+  onGreenCardClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
@@ -338,6 +344,12 @@ internal fun YourInfoTab(
         }
       }
     }
+    if (showGreenCardButton) {
+      GreenCardButton(
+        onClick = onGreenCardClick,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+    }
     val hasMissingCoInsuredInfoAndIsNotTerminating = coInsured.any { it.hasMissingInfo && it.terminatesOn == null }
     if (hasMissingCoInsuredInfoAndIsNotTerminating) {
       HedvigNotificationCard(
@@ -418,6 +430,50 @@ internal fun YourInfoTab(
         }
       }
     }
+  }
+}
+
+@Composable
+private fun GreenCardButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+  HedvigCard(
+    onClick = onClick,
+    modifier = modifier.fillMaxWidth(),
+  ) {
+    HorizontalItemsWithMaximumSpaceTaken(
+      startSlot = {
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier.padding(start = 16.dp, bottom = 14.dp, top = 12.dp, end = 12.dp),
+        ) {
+          Icon(
+            imageVector = HedvigIcons.Document,
+            contentDescription = null,
+            modifier = Modifier.size(24.dp),
+          )
+          Spacer(Modifier.width(12.dp))
+          Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            // TODO: Add "Green card" / "Grönt kort" to Lokalise
+            HedvigText(text = "Green card")
+            HedvigText(
+              // TODO: Add "Get a green card for driving abroad" / "Skaffa ett grönt kort för att köra utomlands" to Lokalise
+              text = "Get a green card for driving abroad",
+              color = HedvigTheme.colorScheme.textSecondary,
+              style = HedvigTheme.typography.finePrint,
+            )
+          }
+        }
+      },
+      endSlot = {
+        Row(
+          horizontalArrangement = Arrangement.End,
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier.padding(end = 16.dp)
+        ) {
+          Icon(HedvigIcons.ChevronRight, "", Modifier.size(24.dp))
+        }
+      },
+      spaceBetween = 4.dp,
+    )
   }
 }
 
@@ -1070,6 +1126,8 @@ private fun PreviewYourInfoTab(
         chipIdState = ChipIdState.Missing,
         onFillChipId = {},
         showPolicyHolderRow = false,
+        showGreenCardButton = true,
+        onGreenCardClick = {},
       )
     }
   }

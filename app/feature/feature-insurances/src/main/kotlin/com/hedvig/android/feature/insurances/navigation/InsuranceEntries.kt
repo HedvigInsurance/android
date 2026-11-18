@@ -41,6 +41,7 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEntries(
   onNavigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToChipIdScreen: (String) -> Unit,
+  onNavigateToGreenCard: () -> Unit,
 ) {
   nestedEntries()
   entry<InsurancesKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
@@ -98,6 +99,7 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEntries(
         )
       },
       navigateToChipIdScreen = navigateToChipIdScreen,
+      onGreenCardClick = dropUnlessResumed { onNavigateToGreenCard() },
     )
   }
   entry<TerminatedInsurancesKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {

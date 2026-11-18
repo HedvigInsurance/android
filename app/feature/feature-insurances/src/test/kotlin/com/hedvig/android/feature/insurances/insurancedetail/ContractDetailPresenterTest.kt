@@ -14,6 +14,7 @@ import com.hedvig.android.data.contract.ChipIdState
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.feature.insurances.data.GetGreenCardEligibleContractIdsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
 import com.hedvig.android.feature.insurances.data.MonthlyCost
@@ -32,11 +33,58 @@ class ContractDetailPresenterTest {
   val testLogcatLogger = TestLogcatLoggingRule()
 
   @Test
+  fun `green card is available when the contract is in the green card specifications`() = runTest {
+    val getContractForContractIdUseCase = FakeGetContractForContractIdUseCase()
+    val contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate()
+    val presenter = ContractDetailPresenter(
+      contractId = contractId,
+      getContractForContractIdUseCase = getContractForContractIdUseCase,
+      getGreenCardEligibleContractIdsUseCase = FakeGetGreenCardEligibleContractIdsUseCase(setOf(contractId).right()),
+    )
+    presenter.test(ContractDetailsUiState.Loading) {
+      skipItems(1)
+      getContractForContractIdUseCase.addInsuranceWithNoTerminationDateToResponseTurbine()
+      assertThat((awaitItem() as ContractDetailsUiState.Success).isGreenCardAvailable).isEqualTo(true)
+    }
+  }
+
+  @Test
+  fun `green card is not available when the contract is not in the green card specifications`() = runTest {
+    val getContractForContractIdUseCase = FakeGetContractForContractIdUseCase()
+    val presenter = ContractDetailPresenter(
+      contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
+      getContractForContractIdUseCase = getContractForContractIdUseCase,
+      getGreenCardEligibleContractIdsUseCase = FakeGetGreenCardEligibleContractIdsUseCase(setOf("other").right()),
+    )
+    presenter.test(ContractDetailsUiState.Loading) {
+      skipItems(1)
+      getContractForContractIdUseCase.addInsuranceWithNoTerminationDateToResponseTurbine()
+      assertThat((awaitItem() as ContractDetailsUiState.Success).isGreenCardAvailable).isEqualTo(false)
+    }
+  }
+
+  @Test
+  fun `green card is not available when the green card specifications fail to load`() = runTest {
+    val getContractForContractIdUseCase = FakeGetContractForContractIdUseCase()
+    val presenter = ContractDetailPresenter(
+      contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
+      getContractForContractIdUseCase = getContractForContractIdUseCase,
+      getGreenCardEligibleContractIdsUseCase = FakeGetGreenCardEligibleContractIdsUseCase(ErrorMessage().left()),
+    )
+    presenter.test(ContractDetailsUiState.Loading) {
+      skipItems(1)
+      getContractForContractIdUseCase.addInsuranceWithNoTerminationDateToResponseTurbine()
+      assertThat((awaitItem() as ContractDetailsUiState.Success).isGreenCardAvailable).isEqualTo(false)
+    }
+  }
+
+  @Test
   fun `if contract supports termination and no termination date show cancel insurance button`() = runTest {
     val getContractForContractIdUseCase = FakeGetContractForContractIdUseCase()
     val presenter = ContractDetailPresenter(
       contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
       getContractForContractIdUseCase = getContractForContractIdUseCase,
+      getGreenCardEligibleContractIdsUseCase = FakeGetGreenCardEligibleContractIdsUseCase(),
     )
     presenter.test(ContractDetailsUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(ContractDetailsUiState.Loading)
@@ -57,6 +105,7 @@ class ContractDetailPresenterTest {
       val presenter = ContractDetailPresenter(
         contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
         getContractForContractIdUseCase = getContractForContractIdUseCase,
+        getGreenCardEligibleContractIdsUseCase = FakeGetGreenCardEligibleContractIdsUseCase(),
       )
       presenter.test(
         ContractDetailsUiState.Success(
@@ -80,6 +129,7 @@ class ContractDetailPresenterTest {
     val presenter = ContractDetailPresenter(
       contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
       getContractForContractIdUseCase = getContractForContractIdUseCase,
+      getGreenCardEligibleContractIdsUseCase = FakeGetGreenCardEligibleContractIdsUseCase(),
     )
     presenter.test(
       ContractDetailsUiState.Error,
@@ -98,6 +148,7 @@ class ContractDetailPresenterTest {
     val presenter = ContractDetailPresenter(
       contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
       getContractForContractIdUseCase = getContractForContractIdUseCase,
+      getGreenCardEligibleContractIdsUseCase = FakeGetGreenCardEligibleContractIdsUseCase(),
     )
     presenter.test(
       ContractDetailsUiState.Error,
@@ -115,6 +166,7 @@ class ContractDetailPresenterTest {
     val presenter = ContractDetailPresenter(
       contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
       getContractForContractIdUseCase = getContractForContractIdUseCase,
+      getGreenCardEligibleContractIdsUseCase = FakeGetGreenCardEligibleContractIdsUseCase(),
     )
     val successState = ContractDetailsUiState.Success(
       getContractForContractIdUseCase.getInsuranceWithOutTerminationDate(),
@@ -136,6 +188,7 @@ class ContractDetailPresenterTest {
     val presenter = ContractDetailPresenter(
       contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
       getContractForContractIdUseCase = getContractForContractIdUseCase,
+      getGreenCardEligibleContractIdsUseCase = FakeGetGreenCardEligibleContractIdsUseCase(),
     )
     val successStateFirst = ContractDetailsUiState.Success(
       getContractForContractIdUseCase.getInsuranceWithOutTerminationDate(),
@@ -160,6 +213,7 @@ class ContractDetailPresenterTest {
     val presenter = ContractDetailPresenter(
       contractId = getContractForContractIdUseCase.getInvalidId(),
       getContractForContractIdUseCase = getContractForContractIdUseCase,
+      getGreenCardEligibleContractIdsUseCase = FakeGetGreenCardEligibleContractIdsUseCase(),
     )
     presenter.test(ContractDetailsUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(ContractDetailsUiState.Loading)
@@ -176,6 +230,7 @@ class ContractDetailPresenterTest {
     val presenter = ContractDetailPresenter(
       contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
       getContractForContractIdUseCase = getContractForContractIdUseCase,
+      getGreenCardEligibleContractIdsUseCase = FakeGetGreenCardEligibleContractIdsUseCase(),
     )
     presenter.test(ContractDetailsUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(ContractDetailsUiState.Loading)
@@ -190,6 +245,7 @@ class ContractDetailPresenterTest {
     val presenter = ContractDetailPresenter(
       contractId = getContractForContractIdUseCase.getValIdWithTerminationDate(),
       getContractForContractIdUseCase = getContractForContractIdUseCase,
+      getGreenCardEligibleContractIdsUseCase = FakeGetGreenCardEligibleContractIdsUseCase(),
     )
     presenter.test(ContractDetailsUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(ContractDetailsUiState.Loading)
@@ -336,4 +392,10 @@ class ContractDetailPresenterTest {
       responseTurbine.add(GetContractForContractIdError.GenericError(ErrorMessage()).left())
     }
   }
+}
+
+private class FakeGetGreenCardEligibleContractIdsUseCase(
+  private val result: Either<ErrorMessage, Set<String>> = emptySet<String>().right(),
+) : GetGreenCardEligibleContractIdsUseCase {
+  override suspend fun invoke(): Either<ErrorMessage, Set<String>> = result
 }
