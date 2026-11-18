@@ -239,8 +239,8 @@ internal sealed interface TravelCertificateTravellersInputUiState {
   /** The certificate exists; nothing follows on this screen. */
   data class Created(val url: TravelCertificateUrl) : TravelCertificateTravellersInputUiState {
     /**
-     * Leaving for the certificate. The presenter keeps returning this instance, also after a restart from it, so a
-     * request the platform has taken is never performed again.
+     * Leaving for the certificate. It is not part of equality, so the state flow keeps the first of equal states, and a
+     * restart that produces this state again does not offer a second request.
      */
     val leave: NavigationRequest<TravelCertificateUrl> = NavigationRequest.of(url)
   }
