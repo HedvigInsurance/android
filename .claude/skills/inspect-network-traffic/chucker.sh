@@ -15,6 +15,9 @@
 #   chucker.sh sql "<query>"    Any query against the `transactions` table
 #
 # Env: ANDROID_SERIAL picks the device when several are attached, PACKAGE overrides the app id.
+#
+# Every command's output goes through `redact`: signed download URLs (S3 presigned, CloudFront)
+# carry working credentials in their query string, in the request URL and in response bodies alike.
 set -euo pipefail
 
 PACKAGE="${PACKAGE:-com.hedvig.dev.app}"
@@ -57,7 +60,8 @@ query() {
 # Chucker's own graphQlOperationName column stays empty, Apollo sends no operation-name header.
 SUMMARY_COLUMNS="id,
   strftime('%H:%M:%f', requestDate / 1000.0, 'unixepoch', 'localtime') AS time,
-  coalesce(json_extract(requestBody, '\$.operationName'), method || ' ' || path) AS call,
+  coalesce(json_extract(requestBody, '\$.operationName'),
+    method || ' ' || CASE WHEN instr(path, '?') > 0 THEN substr(path, 1, instr(path, '?') - 1) ELSE path END) AS call,
   responseCode AS code,
   tookMs AS ms,
   responsePayloadSize AS bytes,
@@ -68,6 +72,13 @@ require_number() {
   [[ "$1" =~ ^[0-9]+$ ]] || die "expected a number, got '$1'"
 }
 
+# Masks the value of every credential-bearing query parameter. A value ends at `&`, a quote,
+# whitespace, or a backslash (JSON escapes `&` as \u0026).
+redact() {
+  perl -pe 's/\b(X-Amz-Security-Token|X-Amz-Signature|X-Amz-Credential|Signature|Policy|Key-Pair-Id|access_token|token)=[^&"\s\\]*/$1=<redacted>/gi'
+}
+
+main() {
 command="${1:-recent}"
 case "$command" in
   mark)
@@ -120,3 +131,6 @@ case "$command" in
     exit 1
     ;;
 esac
+}
+
+main "$@" | redact

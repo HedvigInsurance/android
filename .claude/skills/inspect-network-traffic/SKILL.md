@@ -44,6 +44,9 @@ transport error or a GraphQL `errors` array, and `sql "<query>"` for anything el
 - **What is not recorded.** Login and token refresh go through the auth library's own client.
   Coil's image downloads share the recorded client, so filter on `responseContentType` if
   they get in the way.
+- **Signed URLs.** `chucker.sh` masks credential query parameters (`X-Amz-*`, `Signature`,
+  `token`, ...) in all its output, so a presigned link (green card or insurance PDFs) shows up
+  but cannot be opened. Don't query the database another way to get around that.
 - **Bodies.** `Authorization` is redacted. Bodies are stored up to Chucker's 250 KB default,
   and only as far as the app read them. Calls are kept for a day.
 
