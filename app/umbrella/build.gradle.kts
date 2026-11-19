@@ -73,7 +73,9 @@ kotlin {
     getByName(if (iosTestHookInFramework) "iosSimulatorArm64Main" else "iosSimulatorArm64Test") {
       kotlin.srcDir("src/iosTestHook/kotlin")
       dependencies {
+        implementation(libs.kotlinx.serialization.json)
         implementation(libs.ktor.client.mock)
+        implementation(projects.dataConversations)
       }
     }
   }
