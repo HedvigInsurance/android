@@ -809,6 +809,51 @@ enum CarTrialProduct {
   HEDVIG_60_DAYS
   HEDVIG_14_DAYS
 }
+union ChangeMileageCreateIntentOutput = ChangeMileageIntent|UserError
+type ChangeMileageDisplayItem {
+  displayTitle: String!
+  displayValue: String!
+  """
+   The value without the change. Set only when this quote changes the row. 
+  """
+  previousDisplayValue: String
+}
+type ChangeMileageIntent {
+  """
+   The date the change will take effect. Tomorrow, or the start date of an upcoming change or renewal if there is one. 
+  """
+  activationDate: Date!
+  """
+   Total monthly cost of the contract on the activation date without the change (incl. addons) 
+  """
+  currentTotalCost: ItemCost!
+  """
+   Sorted ascending by mileage. Exactly one has isCurrent = true. 
+  """
+  quotes: [ChangeMileageQuote!]!
+}
+type ChangeMileageQuote {
+  """
+  The quote id. For the quote with isCurrent = true no quote is created, and this is the id of the agreement that is changed.
+  """
+  id: ID!
+  """
+   The mileage option, ex. "1 000 mil", "Över 2 500 mil" 
+  """
+  displayName: String!
+  """
+   Whether this is the mileage the contract already has on the activation date 
+  """
+  isCurrent: Boolean!
+  """
+   Total monthly contract cost if this mileage is chosen (incl. addons) 
+  """
+  totalCost: ItemCost!
+  """
+   Summary rows, ex. mileage, registration number and coverage level 
+  """
+  displayItems: [ChangeMileageDisplayItem!]!
+}
 """
 Returns changed price for an addon.
 """
@@ -1109,6 +1154,10 @@ type Claim {
   displayItems: [ClaimDisplayItem!]!
   contractId: String
   """
+  Every follow-up sent for this claim, oldest first, open and completed.
+  """
+  followups: [ClaimFollowup!]!
+  """
   Terms & conditions for the claim found using claims contractId and dateOfOccurrence, otherwise null.
   """
   productVariant: ProductVariant
@@ -1152,6 +1201,114 @@ type ClaimFile {
   """
   thumbnailUrl: Url
 }
+type ClaimFollowup {
+  id: ID!
+  status: ClaimFollowupStatus!
+  progress: Float!
+  """
+  When the member confirmed the answers; null until COMPLETED.
+  """
+  completedAt: DateTime
+  """
+  Once COMPLETED it is the summary step, read-only.
+  """
+  currentStep: ClaimFollowupStep!
+  """
+  Answered and skipped steps in question order, answers in currentValue / currentAudio / currentFiles.
+  """
+  previousSteps: [ClaimFollowupStep!]!
+}
+type ClaimFollowupBinary {
+  """
+  The answer of a previous or reopened step: "true" or "false".
+  """
+  currentValue: String
+}
+type ClaimFollowupDate {
+  """
+  The answer of a previous or reopened step, as yyyy-MM-dd.
+  """
+  currentValue: String
+}
+type ClaimFollowupFile {
+  """
+  The staged upload id; send it back to keep the file.
+  """
+  id: ID!
+  url: Url!
+  contentType: String!
+  fileName: String!
+}
+type ClaimFollowupFileUpload {
+  uploadUri: String!
+  """
+  The files of a previous or reopened step, send their ids back to keep them; empty otherwise.
+  """
+  currentFiles: [ClaimFollowupFile!]!
+}
+type ClaimFollowupFreeText {
+  uploadUri: String!
+  minLength: Int!
+  maxLength: Int!
+  """
+  The typed answer of a previous or reopened step.
+  """
+  currentValue: String
+  """
+  The recording of a previous or reopened step; send its id back to keep it.
+  """
+  currentAudio: ClaimFollowupFile
+}
+type ClaimFollowupNumber {
+  """
+  The answer of a previous or reopened step, as stored.
+  """
+  currentValue: String
+}
+type ClaimFollowupOutput {
+  task: ClaimFollowup
+  userError: UserError
+}
+type ClaimFollowupPhoneNumber {
+  """
+  The answer of a previous or reopened step, as stored.
+  """
+  currentValue: String
+}
+enum ClaimFollowupStatus {
+  SUBMITTED
+  OPENED
+  COMPLETED
+}
+type ClaimFollowupStep {
+  id: ID!
+  text: String!
+  isSkippable: Boolean!
+  isRegrettable: Boolean!
+  content: ClaimFollowupStepContent!
+}
+union ClaimFollowupStepContent = ClaimFollowupBinary|ClaimFollowupFreeText|ClaimFollowupDate|ClaimFollowupNumber|ClaimFollowupPhoneNumber|ClaimFollowupFileUpload|ClaimFollowupSummary
+type ClaimFollowupSummary {
+  answers: [ClaimFollowupSummaryAnswer!]!
+}
+type ClaimFollowupSummaryAnswer {
+  question: String!
+  """
+  Null when the member skipped the step.
+  """
+  value: ClaimFollowupSummaryValue
+}
+type ClaimFollowupSummaryAudio {
+  url: Url!
+  transcript: String
+}
+type ClaimFollowupSummaryFiles {
+  files: [ClaimFollowupFile!]!
+}
+type ClaimFollowupSummaryText {
+  text: String!
+}
+union ClaimFollowupSummaryValue = ClaimFollowupSummaryText|ClaimFollowupSummaryAudio|ClaimFollowupSummaryFiles
 """
 Root type expressing the entire flow for members trying to report a new claim.
 """
@@ -1686,6 +1843,10 @@ type Contract {
   """
   supportsChangeTier: Boolean!
   """
+  Whether the yearly mileage on this contract can be changed through the 'ChangeMileage' API.
+  """
+  supportsChangeMileage: Boolean!
+  """
   Whether or not this contract can be terminated by user
   """
   supportsTermination: Boolean!
@@ -1945,6 +2106,31 @@ type CrossSell {
   Products to choose between, e.g. dog or cat for pet. Empty for a single product.
   """
   options: [CrossSell!]!
+  """
+  Set when this cross-sell can be bought natively in the app: pass it to `Query.inAppPurchaseForm`.
+  Null means open `storeUrl`, as for every cross-sell before the native flow.
+  """
+  inAppProduct: InAppProduct
+}
+type CrossSellCarouselItem {
+  title: String!
+  subtitle: String
+  """
+  The slide image, or the poster when the slide is a video
+  """
+  image: StoryblokImageAsset!
+  """
+  HEVC mp4 for iOS, set when the slide is a video; play it over the image
+  """
+  videoUrlMp4: String
+  """
+  VP9 webm for Android, same clip as videoUrlMp4
+  """
+  videoUrlWebm: String
+  """
+  Replay the video while the slide is shown; otherwise play once and hold the last frame
+  """
+  loop: Boolean!
 }
 """
 A/B testing experiment (name and variant must be SCREAMING_SNAKE_CASE)
@@ -1953,6 +2139,10 @@ input CrossSellExperimentInput {
   name: String!
   variant: String!
 }
+type CrossSellHeroIntro {
+  title: String!
+  description: String!
+}
 input CrossSellInput {
   userFlow: UserFlow!
   """
@@ -1960,7 +2150,8 @@ input CrossSellInput {
   """
   flowSource: FlowSource
   """
-  A/B test experiments for attribution tracking
+  A/B test experiments for attribution tracking. ACCIDENT_DISCOUNT with variant NO_DISCOUNT withholds the accident
+  cross-sell's discount.
   """
   experiments: [CrossSellExperimentInput!]!
   """
@@ -1972,6 +2163,29 @@ input CrossSellInput {
   """
   claimId: UUID
 }
+type CrossSellProductInfo {
+  heroImage: StoryblokImageAsset!
+  """
+  The intro text under the hero on the product's web page; null when the page has none
+  """
+  heroIntro: CrossSellHeroIntro
+  """
+  Selling points from the product's web page's image-text sections, in page order
+  """
+  usps: [CrossSellUsp!]!
+  """
+  Story-style slides from the product's web page, in page order
+  """
+  carousel: [CrossSellCarouselItem!]!
+  """
+  Set when the product can be bought natively in the app, as on `CrossSell.inAppProduct`
+  """
+  inAppProduct: InAppProduct
+  """
+  Questions and answers from the FAQ on the product's web page, in the member's language. Empty when it has none.
+  """
+  faq: [ProductFaqItem!]!
+}
 enum CrossSellSource {
   HOME
   CLOSED_CLAIM
@@ -1979,6 +2193,10 @@ enum CrossSellSource {
   ADDON
   EDIT_COINSURED
   MOVING_FLOW
+}
+type CrossSellUsp {
+  title: String!
+  description: String!
 }
 type CrossSellV2 {
   """
@@ -2687,6 +2905,40 @@ type FlowTerminationSurveyStep implements FlowStep {
   id: ID!
   options: [FlowTerminationSurveyOption!]!
 }
+type GreenCard {
+  id: ID!
+  signedUrl: Url!
+  registrationNumber: String!
+  validFrom: Date!
+  validTo: Date!
+}
+input GreenCardAddressInput {
+  street: String!
+  postalCode: String!
+  city: String!
+  country: String!
+}
+input GreenCardCoDriverInput {
+  name: String!
+  address: GreenCardAddressInput!
+}
+type GreenCardContractSpecification {
+  contractId: ID!
+  registrationNumber: String!
+  minStartDate: Date!
+  maxEndDate: Date!
+}
+input GreenCardCreateInput {
+  contractId: ID!
+  travelStartDate: Date!
+  travelEndDate: Date!
+  mailingAddress: GreenCardAddressInput!
+  coDrivers: [GreenCardCoDriverInput!]!
+}
+type GreenCardOutput {
+  greenCard: GreenCard
+  userError: UserError
+}
 enum HedvigColor {
   Pink
   Turquoise
@@ -2716,6 +2968,144 @@ enum ImportantMessageSeverity {
   INFO
   WARNING
   ERROR
+}
+enum InAppProduct {
+  ACCIDENT
+  PAYMENT_PROTECTION
+  DOG
+  CAT
+  CAR
+  APARTMENT_RENT
+  APARTMENT_BRF
+  APARTMENT_STUDENT
+  HOUSE
+  VACATION_HOME
+}
+type InAppPurchaseEligibility {
+  isEligible: Boolean!
+  """
+  Set when `isEligible` is false.
+  """
+  reason: InAppPurchaseIneligibilityReason
+  """
+  Set when `reason` is ALREADY_INSURED.
+  """
+  existingContractId: UUID
+}
+type InAppPurchaseFieldError {
+  fieldId: ID!
+  """
+  Localized message.
+  """
+  message: String!
+}
+input InAppPurchaseFieldInput {
+  fieldId: ID!
+  """
+  See `InAppPurchaseFormFieldType` for how many values each type takes and their format.
+  """
+  values: [String!]!
+}
+"""
+A single field to render in the form. Send its value back with `InAppPurchaseFieldInput.fieldId = id`.
+"""
+type InAppPurchaseFormField {
+  """
+  Echo back when submitting. Clients shouldn't branch on it.
+  """
+  id: ID!
+  type: InAppPurchaseFormFieldType!
+  """
+  Localized label.
+  """
+  title: String!
+  """
+  Present for SINGLE_SELECT and SEARCHABLE_SELECT; for EXTRA_BUILDINGS, the building types.
+  """
+  options: [InAppPurchaseFormFieldOption!]
+  """
+  Values to prefill the field with. Empty means no default.
+  """
+  defaultValues: [String!]!
+  """
+  Present for NUMBER and DATE, in the same format as the value.
+  """
+  minValue: String
+  maxValue: String
+  """
+  SEARCHABLE_SELECT only: how many options may be chosen. Null means one.
+  """
+  maxSelections: Int
+}
+type InAppPurchaseFormFieldOption {
+  value: String!
+  """
+  Localized label.
+  """
+  title: String!
+  """
+  False: show the option, but it can't be selected.
+  """
+  isSelectable: Boolean!
+  """
+  Localized explanation, e.g. why the option can't be selected.
+  """
+  additionalInfo: String
+}
+"""
+Value format per type: NUMBER is an integer like "2", DATE is ISO "2026-11-01", SINGLE_SELECT is the
+option's `value`, TEXT is free text. SEARCHABLE_SELECT sends one value per chosen option. EXTRA_BUILDINGS sends
+one value per building, as JSON `{"type":"GARAGE","area":25,"hasWaterConnected":false}` with `type` one of the
+field's options; no values means no buildings. Every other type takes exactly one value.
+"""
+enum InAppPurchaseFormFieldType {
+  NUMBER
+  DATE
+  SINGLE_SELECT
+  TEXT
+  SEARCHABLE_SELECT
+  EXTRA_BUILDINGS
+}
+type InAppPurchaseFormOutput {
+  product: Product!
+  eligibility: InAppPurchaseEligibility!
+  fields: [InAppPurchaseFormField!]!
+}
+enum InAppPurchaseIneligibilityReason {
+  ALREADY_INSURED
+  NOT_AVAILABLE
+}
+input InAppPurchaseQuoteInput {
+  product: InAppProduct!
+  fields: [InAppPurchaseFieldInput!]!
+  attribution: PriceIntentConfirmAttributionInput
+  """
+  Discount code the member entered. Send it with every quote: each quote sets the discount from this input
+  alone, so leaving it out or sending an empty string removes a code sent earlier.
+  A valid code replaces the Accident discount the app's cross-sell banner promises, since only one discount
+  applies. An invalid code returns a field error with `fieldId: "campaignCode"` and no offers.
+  """
+  campaignCode: String
+}
+type InAppPurchaseQuoteOutput {
+  """
+  Null unless `offers` is non-empty.
+  """
+  shopSessionId: UUID
+  offers: [ProductOffer!]!
+  """
+  Problems with specific fields, to show next to them. Nothing was quoted when this is non-empty.
+  """
+  fieldErrors: [InAppPurchaseFieldError!]!
+  """
+  A problem that isn't about one field.
+  """
+  userError: UserError
+}
+input InAppPurchaseSignInput {
+  shopSessionId: UUID!
+  offerId: UUID!
+  useBankIdSandbox: Boolean! = false
 }
 scalar Instant
 type InsurableLimit {
@@ -2943,6 +3333,8 @@ type Member {
   The currently redeemed campaign of this member, if any.
   """
   redeemedCampaignsV2: [RedeemedCampaignV2!]!
+  greenCardSpecifications: [GreenCardContractSpecification!]!
+  greenCards: [GreenCard!]!
   """
   A breakdown of the total cost of this member's insurance.
   The exact charge every month can vary based on other factors,
@@ -2975,6 +3367,10 @@ type Member {
   SMART_X_SELL. Where no discount applies it falls back to the plain product description.
   """
   crossSellV2(input: CrossSellInput!): CrossSellV2!
+  """
+  Product details for a tapped cross-sell, in the Hedvig-Language of the request. Errors for an unknown id and for the generic HOME, PET and ALL cross-sells.
+  """
+  crossSellProductInfo(crossSellId: ID!): CrossSellProductInfo!
   """
   Shop sessions started by this member that have not yet been signed and are not expired.
   Ordered by most recent activity first.
@@ -3035,6 +3431,10 @@ type MemberActions {
   Indicate whether the travel certificate option should be displayed.
   """
   isTravelCertificateEnabled: Boolean
+  """
+  Indicate whether the possibility to create green card should be displayed.
+  """
+  isCreatingOfGreenCardEnabled: Boolean!
   """
   Indicate whether the possibility to create insurance evidence should be displayed.
   """
@@ -4023,6 +4423,25 @@ type Mutation {
   """
   conversationHideCrossSales(id: UUID!): Conversation!
   claimAcknowledgeClosedStatus(id: ID!): ClaimMutationOutput
+  claimFollowupOpen(followupId: ID!): ClaimFollowupOutput!
+  """
+  The value is "true" or "false".
+  """
+  claimFollowupAnswerBinary(followupId: ID!, stepId: ID!, value: String!): ClaimFollowupOutput!
+  """
+  Exactly one of text or audioFileId.
+  """
+  claimFollowupAnswerFreeText(followupId: ID!, stepId: ID!, text: String, audioFileId: ID): ClaimFollowupOutput!
+  """
+  The value is a date as yyyy-MM-dd.
+  """
+  claimFollowupAnswerDate(followupId: ID!, stepId: ID!, value: String!): ClaimFollowupOutput!
+  claimFollowupAnswerNumber(followupId: ID!, stepId: ID!, value: String!): ClaimFollowupOutput!
+  claimFollowupAnswerPhoneNumber(followupId: ID!, stepId: ID!, value: String!): ClaimFollowupOutput!
+  claimFollowupAnswerFileUpload(followupId: ID!, stepId: ID!, fileIds: [ID!]!): ClaimFollowupOutput!
+  claimFollowupSkipStep(followupId: ID!, stepId: ID!): ClaimFollowupOutput!
+  claimFollowupRegretStep(followupId: ID!, stepId: ID!): ClaimFollowupOutput!
+  claimFollowupConfirmSummary(followupId: ID!, stepId: ID!): ClaimFollowupOutput!
   """
   Create or (reuse and existing) unsubmitted claim intent.
   """
@@ -4109,6 +4528,7 @@ type Mutation {
   flowTerminationSurveyNext(input: FlowTerminationSurveyInput!, context: FlowContext!): Flow! @deprecated(reason: "Use Query.terminationSurvey instead")
   flowTerminationCarAutoDecomNext(input: FlowTerminationCarAutoDecomInput!, context: FlowContext!): Flow! @deprecated(reason: "Use Query.terminationSurvey instead")
   travelCertificateCreate(input: TravelCertificateCreateInput!): TravelCertificate!
+  greenCardCreate(input: GreenCardCreateInput!): GreenCardOutput!
   """
   The document includes details of the member’s home insurance,
   such as address, coverage duration, payment information, co-insured parties,
@@ -4140,6 +4560,17 @@ type Mutation {
   to help them with switching/cancellation, and false means that they don't.
   """
   productOffersCancellationRequestedUpdate(productOfferIds: [UUID!]!, requested: Boolean!): ProductOffersMutationOutput!
+  """
+  Submit the form from `inAppPurchaseForm` and get priced offers.
+  Call again after the member changes any value. Every call returns new offer ids, and only offers from the
+  latest response can be signed.
+  """
+  inAppPurchaseQuote(input: InAppPurchaseQuoteInput!): InAppPurchaseQuoteOutput!
+  """
+  Sign the chosen offer with Swedish BankID. Poll `Query.shopSessionSigning` with the returned signing id.
+  `useBankIdSandbox` behaves as in `Mutation.shopSessionStartSign`.
+  """
+  inAppPurchaseSign(input: InAppPurchaseSignInput!): ShopSessionSigningMutationOutput!
   """
   Called to save insurance recommendation form and save recommendation email.
   """
@@ -4250,6 +4681,15 @@ type Mutation {
    Accept move, for V2_TIERS_AND_DEDUCTIBLES API the homeQuoteId is required 
   """
   moveIntentCommit(intentId: ID!, homeQuoteId: ID, removedAddons: [ID!]): MoveIntentMutationOutput!
+  """
+  Creates quotes for all yearly mileage options the contract can be changed to.
+  """
+  changeMileageCreateIntent(contractId: ID!): ChangeMileageCreateIntentOutput!
+  """
+  Activates the given quote from changeMileageCreateIntent, the new mileage applies from the activation date
+  of the intent. Returns a UserError if it failed.
+  """
+  changeMileageCommitIntent(quoteId: ID!): UserError
   """
    Create change tier/deductible intent 
   """
@@ -4702,9 +5142,22 @@ type Product {
   """
   multiple: Boolean
   """
+  Questions and answers from the FAQ on the product's page on the website, in the member's language.
+  Empty when the page has none.
+  """
+  faq: [ProductFaqItem!]!
+  """
   A list of the external insurers valid for this specific product.
   """
   externalInsurers: [ExternalInsurer!]!
+}
+type ProductFaqItem {
+  question: String!
+  """
+  Storyblok rich text document (`"type": "doc"`), rendered by the client. Links to other website pages are
+  absolute URLs.
+  """
+  answer: JSON!
 }
 type ProductOffer {
   """
@@ -5093,10 +5546,19 @@ type Query {
   on the input Authorization header.
   """
   currentMember: Member!
+  """
+  Messages for clients that are not logged in. Needs no Authorization header.
+  """
+  publicImportantMessages: [PublicImportantMessage!]!
   entrypointGroups(type: EntrypointType!): [EntrypointGroup!]!
   entrypointSearch(input: EntrypointSearchInput): [Entrypoint!]!
   shopSession(id: UUID!): ShopSession!
   carTrial(contractId: UUID!): TrialExtension
+  """
+  Screen 1 of the in-app purchase: product content, whether the member can buy it, and the form to fill in.
+  Has no side effects. When the member isn't eligible, `fields` is empty.
+  """
+  inAppPurchaseForm(product: InAppProduct!): InAppPurchaseFormOutput!
   """
   Outcome of shopSession.  Requires authentication
   Available forever, unlike shopSession which becomes hidden some time after creation
@@ -5144,10 +5606,6 @@ type Query {
   Call this to get the cost of an addon offer for selected addon(s).
   """
   addonOfferCost(quoteId: ID!, selectedAddonIds: [ID!]!): ItemCost!
-  """
-  Messages for clients that are not logged in. Needs no Authorization header.
-  """
-  publicImportantMessages: [PublicImportantMessage!]!
 }
 """
 External insurance details used to recommend a matching Hedvig product, even when no offer has been generated yet.
