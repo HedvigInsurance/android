@@ -28,12 +28,11 @@ fun EntryProviderScope<HedvigNavKey>.claimDetailsEntries(
 ) {
   entry<ClaimDetailsKey> { key ->
     val viewModel: ClaimDetailsViewModel =
-      assistedMetroViewModel<ClaimDetailsViewModel, ClaimDetailsViewModelFactory> {
-        create(key.claimId, key.openRating)
-      }
+      assistedMetroViewModel<ClaimDetailsViewModel, ClaimDetailsViewModelFactory> { create(key.claimId) }
     val context = LocalContext.current
     ClaimDetailsDestination(
       viewModel = viewModel,
+      openRatingOnLoad = key.openRating,
       imageLoader = imageLoader,
       appPackageId = appPackageId,
       navigateUp = backstack::navigateUp,

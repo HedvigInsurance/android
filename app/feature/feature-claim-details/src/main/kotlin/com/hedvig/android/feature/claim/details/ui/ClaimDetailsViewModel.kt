@@ -46,7 +46,6 @@ import kotlinx.datetime.LocalDateTime
 @HedvigViewModel(ActivityRetainedScope::class)
 internal class ClaimDetailsViewModel(
   @Assisted claimId: String,
-  @Assisted openRatingOnLoad: Boolean,
   getClaimDetailUiStateUseCase: GetClaimDetailUiStateUseCase,
   claimsServiceUploadFileUseCase: ClaimsServiceUploadFileUseCase,
   downloadPdfUseCase: DownloadPdfUseCase,
@@ -56,7 +55,6 @@ internal class ClaimDetailsViewModel(
     ClaimDetailUiState.Loading,
     ClaimDetailPresenter(
       claimId,
-      openRatingOnLoad,
       getClaimDetailUiStateUseCase,
       claimsServiceUploadFileUseCase,
       downloadPdfUseCase,
@@ -67,7 +65,6 @@ internal class ClaimDetailsViewModel(
 
 internal class ClaimDetailPresenter(
   private val claimId: String,
-  private val openRatingOnLoad: Boolean,
   private val getClaimDetailUiStateUseCase: GetClaimDetailUiStateUseCase,
   private val claimsServiceUploadFileUseCase: ClaimsServiceUploadFileUseCase,
   private val downloadPdfUseCase: DownloadPdfUseCase,
@@ -84,9 +81,6 @@ internal class ClaimDetailPresenter(
     }
     var ratingSubmittedLocally by remember {
       mutableStateOf((lastState as? ClaimDetailUiState.Content)?.ratingButton == RatingButtonState.Submitted)
-    }
-    var ratingAutoOpenPending by remember {
-      mutableStateOf(openRatingOnLoad && lastState !is ClaimDetailUiState.Content)
     }
     var loadIteration by remember { mutableIntStateOf(0) }
     val mediaToSend = remember { Channel<Uri>(Channel.UNLIMITED) }
@@ -196,20 +190,11 @@ internal class ClaimDetailPresenter(
       }
     }
 
-    val ratingButton = content?.ratingButton(ratingSubmittedLocally)
-    LaunchedEffect(ratingAutoOpenPending, ratingButton) {
-      if (!ratingAutoOpenPending || ratingButton == null) return@LaunchedEffect
-      ratingAutoOpenPending = false
-      if (ratingButton == RatingButtonState.Enabled) {
-        rating = reduceRating(rating, RatingEvent.OpenRequested).state
-      }
-    }
-
     if (hasError) {
       return ClaimDetailUiState.Error
     }
     return content?.let {
-      it.copy(rating = rating, ratingButton = ratingButton)
+      it.copy(rating = rating, ratingButton = it.ratingButton(ratingSubmittedLocally))
     } ?: ClaimDetailUiState.Loading
   }
 }

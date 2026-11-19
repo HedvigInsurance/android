@@ -62,11 +62,8 @@ class ClaimDetailPresenterTest {
 
   private val getClaimDetailUiStateUseCase = FakeGetClaimDetailUiStateUseCase()
   private val recorder = FakeClaimRatingUseCases()
-  private val presenter = presenter(openRatingOnLoad = false)
-
-  private fun presenter(openRatingOnLoad: Boolean) = ClaimDetailPresenter(
+  private val presenter = ClaimDetailPresenter(
     claimId = "claim-1",
-    openRatingOnLoad = openRatingOnLoad,
     getClaimDetailUiStateUseCase = getClaimDetailUiStateUseCase,
     claimsServiceUploadFileUseCase = object : ClaimsServiceUploadFileUseCase {
       override suspend fun invoke(url: String, uri: Uri): Either<ErrorMessage, UploadSuccess> = error("Not used")
@@ -108,25 +105,6 @@ class ClaimDetailPresenterTest {
   fun `a closed claim already rated has a submitted rating button`() = runTest {
     presenter.test(ClaimDetailUiState.Loading) {
       assertThat(awaitContent(content(hasSubmittedRating = true)).ratingButton).isEqualTo(RatingButtonState.Submitted)
-      cancelAndIgnoreRemainingEvents()
-    }
-  }
-
-  @Test
-  fun `opening from the to-do opens the rating sheet once the claim has loaded`() = runTest {
-    presenter(openRatingOnLoad = true).test(ClaimDetailUiState.Loading) {
-      assertThat(awaitContent(content()).rating).isEqualTo(RatingState.Closed)
-
-      assertThat(awaitContentItem().rating).isEqualTo(RatingState.Open(RatingStep.Stars))
-      cancelAndIgnoreRemainingEvents()
-    }
-  }
-
-  @Test
-  fun `opening from the to-do leaves the sheet closed when the claim is already rated`() = runTest {
-    presenter(openRatingOnLoad = true).test(ClaimDetailUiState.Loading) {
-      assertThat(awaitContent(content(hasSubmittedRating = true)).rating).isEqualTo(RatingState.Closed)
-      awaitUnchanged()
       cancelAndIgnoreRemainingEvents()
     }
   }

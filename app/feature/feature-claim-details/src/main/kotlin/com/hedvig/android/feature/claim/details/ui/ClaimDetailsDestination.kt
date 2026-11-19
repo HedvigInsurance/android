@@ -100,6 +100,7 @@ import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.show
+import com.hedvig.android.feature.claim.details.ui.rating.AutoOpenRatingEffect
 import com.hedvig.android.feature.claim.details.ui.rating.ClaimRatingButton
 import com.hedvig.android.feature.claim.details.ui.rating.ClaimRatingSheet
 import com.hedvig.android.feature.claim.details.ui.rating.RatingButtonState
@@ -151,6 +152,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun ClaimDetailsDestination(
   viewModel: ClaimDetailsViewModel,
+  openRatingOnLoad: Boolean,
   imageLoader: ImageLoader,
   appPackageId: String,
   navigateUp: () -> Unit,
@@ -161,6 +163,11 @@ internal fun ClaimDetailsDestination(
   sharePdf: (File) -> Unit,
 ) {
   val viewState by viewModel.uiState.collectAsStateWithLifecycle()
+  AutoOpenRatingEffect(
+    openRatingOnLoad = openRatingOnLoad,
+    ratingButton = viewState.safeCast<ClaimDetailUiState.Content>()?.ratingButton,
+    openRating = { viewModel.emit(ClaimDetailsEvent.Rating(RatingEvent.OpenRequested)) },
+  )
   ClaimDetailScreen(
     uiState = viewState,
     imageLoader = imageLoader,
