@@ -4,17 +4,19 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.cache.normalized.api.NormalizedCacheFactory
 import com.apollographql.cache.normalized.memory.MemoryCacheFactory
 import com.apollographql.ktor.ktorClient
+import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.common.di.BaseHttpClient
 import com.hedvig.android.core.datastore.DeviceIdFetcher
+import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.network.clients.AccessTokenFetcher
 import com.hedvig.android.network.clients.DeviceIdInterceptor
-import com.hedvig.android.network.clients.ExtraApolloClientConfiguration
 import com.hedvig.android.network.clients.ExtraKtorClientConfiguration
 import com.hedvig.android.network.clients.HedvigHttpLogger
+import com.hedvig.android.network.clients.apollo.addHedvigInterceptors
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
@@ -65,7 +67,8 @@ interface NetworkMetroProviders {
   @Provides
   @SingleIn(AppScope::class)
   fun provideApolloClient(
-    extraApolloClientConfiguration: ExtraApolloClientConfiguration,
+    authTokenService: AuthTokenService,
+    demoManager: DemoManager,
     normalizedCacheFactory: NormalizedCacheFactory,
     httpClient: HttpClient,
     hedvigBuildConstants: HedvigBuildConstants,
@@ -74,7 +77,7 @@ interface NetworkMetroProviders {
       .cache(normalizedCacheFactory)
       .ktorClient(httpClient)
       .httpServerUrl(hedvigBuildConstants.urlGraphqlOctopus)
-      .run { extraApolloClientConfiguration.configure(this) }
+      .addHedvigInterceptors(authTokenService, demoManager)
       .build()
   }
 }

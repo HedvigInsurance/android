@@ -3,6 +3,7 @@ package com.hedvig.android.feature.connect.payment.trustly.di
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.buildconstants.AppBuildConfig
 import com.hedvig.android.core.buildconstants.Flavor
 import com.hedvig.android.core.common.di.ActivityRetainedScope
@@ -31,7 +32,7 @@ import org.junit.Test
 /**
  * A graph shaped like a desktop host's: [ActivityRetainedScope] collapsed into [AppScope], with every binding
  * taken from the JVM classpath of this module's dependencies and this module's own contributions. The factory
- * supplies only true host inputs, the data directory and the build config.
+ * supplies only true host inputs: the data directory, the build config and the Apollo client configuration.
  */
 @DependencyGraph(AppScope::class, additionalScopes = [ActivityRetainedScope::class])
 internal interface TrustlyBindingsTestGraph {

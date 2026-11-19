@@ -5,9 +5,7 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.common.di.AuthHttpClientEngine
 import com.hedvig.android.network.clients.AccessTokenFetcher
-import com.hedvig.android.network.clients.ExtraApolloClientConfiguration
 import com.hedvig.android.network.clients.ExtraKtorClientConfiguration
-import com.hedvig.android.network.clients.NoopExtraApolloClientConfiguration
 import com.hedvig.android.network.clients.NoopExtraKtorClientConfiguration
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
@@ -25,10 +23,6 @@ interface JvmNetworkMetroProviders {
     object : AccessTokenFetcher {
       override suspend fun fetch(): String? = accessTokenProvider.provide()
     }
-
-  @Provides
-  @SingleIn(AppScope::class)
-  fun provideExtraApolloClientConfiguration(): ExtraApolloClientConfiguration = NoopExtraApolloClientConfiguration()
 
   @Provides
   @SingleIn(AppScope::class)
