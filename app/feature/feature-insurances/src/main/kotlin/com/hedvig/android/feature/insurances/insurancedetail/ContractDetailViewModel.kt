@@ -9,6 +9,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.feature.insurances.data.GetInsurableLimitsUsageUseCase
+import com.hedvig.android.feature.insurances.data.InsurableLimitsUsage
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.insurancedetail.GetContractForContractIdUseCaseImpl.GetContractForContractIdError
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -22,14 +24,16 @@ import dev.zacsweers.metro.AssistedInject
 internal class ContractDetailViewModel(
   @Assisted contractId: String,
   getContractForContractIdUseCase: GetContractForContractIdUseCase,
+  getInsurableLimitsUsageUseCase: GetInsurableLimitsUsageUseCase,
 ) : MoleculeViewModel<ContractDetailsEvent, ContractDetailsUiState>(
     initialState = ContractDetailsUiState.Loading,
-    presenter = ContractDetailPresenter(contractId, getContractForContractIdUseCase),
+    presenter = ContractDetailPresenter(contractId, getContractForContractIdUseCase, getInsurableLimitsUsageUseCase),
   )
 
 internal class ContractDetailPresenter(
   private val contractId: String,
   private val getContractForContractIdUseCase: GetContractForContractIdUseCase,
+  private val getInsurableLimitsUsageUseCase: GetInsurableLimitsUsageUseCase,
 ) :
   MoleculePresenter<ContractDetailsEvent, ContractDetailsUiState> {
   @Composable
@@ -38,11 +42,18 @@ internal class ContractDetailPresenter(
   ): ContractDetailsUiState {
     var dataLoadIteration by remember { mutableIntStateOf(0) }
     var currentState by remember { mutableStateOf(lastState) }
+    var insurableLimitsUsage by remember {
+      mutableStateOf((lastState as? ContractDetailsUiState.Success)?.insurableLimitsUsage)
+    }
 
     CollectEvents { event ->
       when (event) {
         is ContractDetailsEvent.RetryLoadingContract -> dataLoadIteration++
       }
+    }
+
+    LaunchedEffect(dataLoadIteration) {
+      getInsurableLimitsUsageUseCase.invoke(contractId).onRight { insurableLimitsUsage = it }
     }
 
     LaunchedEffect(dataLoadIteration) {
@@ -61,12 +72,16 @@ internal class ContractDetailPresenter(
             currentState = ContractDetailsUiState.Success(
               insuranceContract = contract,
               allowTerminatingInsurance = contract.supportsTermination,
+              insurableLimitsUsage = null,
             )
           },
         )
       }
     }
-    return currentState
+    return when (val state = currentState) {
+      is ContractDetailsUiState.Success -> state.copy(insurableLimitsUsage = insurableLimitsUsage)
+      else -> state
+    }
   }
 }
 
@@ -74,6 +89,7 @@ internal sealed interface ContractDetailsUiState {
   data class Success(
     val insuranceContract: InsuranceContract,
     val allowTerminatingInsurance: Boolean,
+    val insurableLimitsUsage: InsurableLimitsUsage?,
   ) : ContractDetailsUiState
 
   data object Error : ContractDetailsUiState

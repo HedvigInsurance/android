@@ -14,9 +14,12 @@ import com.hedvig.android.data.contract.ChipIdState
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.feature.insurances.data.GetInsurableLimitsUsageUseCase
+import com.hedvig.android.feature.insurances.data.InsurableLimitsUsage
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
 import com.hedvig.android.feature.insurances.data.MonthlyCost
+import com.hedvig.android.feature.insurances.data.fakeInsurableLimitsUsage
 import com.hedvig.android.feature.insurances.insurancedetail.GetContractForContractIdUseCaseImpl.GetContractForContractIdError
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
@@ -37,6 +40,7 @@ class ContractDetailPresenterTest {
     val presenter = ContractDetailPresenter(
       contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
       getContractForContractIdUseCase = getContractForContractIdUseCase,
+      getInsurableLimitsUsageUseCase = FakeGetInsurableLimitsUsageUseCase(),
     )
     presenter.test(ContractDetailsUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(ContractDetailsUiState.Loading)
@@ -45,6 +49,7 @@ class ContractDetailPresenterTest {
         ContractDetailsUiState.Success(
           allowTerminatingInsurance = true,
           insuranceContract = getContractForContractIdUseCase.getInsuranceWithOutTerminationDate(),
+          insurableLimitsUsage = null,
         ),
       )
     }
@@ -57,11 +62,13 @@ class ContractDetailPresenterTest {
       val presenter = ContractDetailPresenter(
         contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
         getContractForContractIdUseCase = getContractForContractIdUseCase,
+        getInsurableLimitsUsageUseCase = FakeGetInsurableLimitsUsageUseCase(),
       )
       presenter.test(
         ContractDetailsUiState.Success(
           getContractForContractIdUseCase.getInsuranceWithOutTerminationDate(),
           true,
+          null,
         ),
       ) {
         assertThat(awaitItem()).isInstanceOf<ContractDetailsUiState.Success>()
@@ -80,6 +87,7 @@ class ContractDetailPresenterTest {
     val presenter = ContractDetailPresenter(
       contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
       getContractForContractIdUseCase = getContractForContractIdUseCase,
+      getInsurableLimitsUsageUseCase = FakeGetInsurableLimitsUsageUseCase(),
     )
     presenter.test(
       ContractDetailsUiState.Error,
@@ -98,6 +106,7 @@ class ContractDetailPresenterTest {
     val presenter = ContractDetailPresenter(
       contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
       getContractForContractIdUseCase = getContractForContractIdUseCase,
+      getInsurableLimitsUsageUseCase = FakeGetInsurableLimitsUsageUseCase(),
     )
     presenter.test(
       ContractDetailsUiState.Error,
@@ -115,10 +124,12 @@ class ContractDetailPresenterTest {
     val presenter = ContractDetailPresenter(
       contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
       getContractForContractIdUseCase = getContractForContractIdUseCase,
+      getInsurableLimitsUsageUseCase = FakeGetInsurableLimitsUsageUseCase(),
     )
     val successState = ContractDetailsUiState.Success(
       getContractForContractIdUseCase.getInsuranceWithOutTerminationDate(),
       true,
+      null,
     )
     presenter.test(
       successState,
@@ -136,14 +147,17 @@ class ContractDetailPresenterTest {
     val presenter = ContractDetailPresenter(
       contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
       getContractForContractIdUseCase = getContractForContractIdUseCase,
+      getInsurableLimitsUsageUseCase = FakeGetInsurableLimitsUsageUseCase(),
     )
     val successStateFirst = ContractDetailsUiState.Success(
       getContractForContractIdUseCase.getInsuranceWithOutTerminationDate(),
       true,
+      null,
     )
     val successStateSecond = ContractDetailsUiState.Success(
       getContractForContractIdUseCase.getInsuranceWithTerminationDate(),
       false,
+      null,
     )
     presenter.test(
       successStateFirst,
@@ -160,6 +174,7 @@ class ContractDetailPresenterTest {
     val presenter = ContractDetailPresenter(
       contractId = getContractForContractIdUseCase.getInvalidId(),
       getContractForContractIdUseCase = getContractForContractIdUseCase,
+      getInsurableLimitsUsageUseCase = FakeGetInsurableLimitsUsageUseCase(),
     )
     presenter.test(ContractDetailsUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(ContractDetailsUiState.Loading)
@@ -176,6 +191,7 @@ class ContractDetailPresenterTest {
     val presenter = ContractDetailPresenter(
       contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
       getContractForContractIdUseCase = getContractForContractIdUseCase,
+      getInsurableLimitsUsageUseCase = FakeGetInsurableLimitsUsageUseCase(),
     )
     presenter.test(ContractDetailsUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(ContractDetailsUiState.Loading)
@@ -190,6 +206,7 @@ class ContractDetailPresenterTest {
     val presenter = ContractDetailPresenter(
       contractId = getContractForContractIdUseCase.getValIdWithTerminationDate(),
       getContractForContractIdUseCase = getContractForContractIdUseCase,
+      getInsurableLimitsUsageUseCase = FakeGetInsurableLimitsUsageUseCase(),
     )
     presenter.test(ContractDetailsUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(ContractDetailsUiState.Loading)
@@ -198,9 +215,37 @@ class ContractDetailPresenterTest {
         ContractDetailsUiState.Success(
           insuranceContract = getContractForContractIdUseCase.getInsuranceWithTerminationDate(),
           allowTerminatingInsurance = false,
+          insurableLimitsUsage = null,
         ),
       )
     }
+  }
+
+  @Test
+  fun `insurable limits usage is added to the success state`() = runTest {
+    val getContractForContractIdUseCase = FakeGetContractForContractIdUseCase()
+    val presenter = ContractDetailPresenter(
+      contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
+      getContractForContractIdUseCase = getContractForContractIdUseCase,
+      getInsurableLimitsUsageUseCase = FakeGetInsurableLimitsUsageUseCase(fakeInsurableLimitsUsage),
+    )
+    presenter.test(ContractDetailsUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(ContractDetailsUiState.Loading)
+      getContractForContractIdUseCase.addInsuranceWithNoTerminationDateToResponseTurbine()
+      assertThat(awaitItem()).isEqualTo(
+        ContractDetailsUiState.Success(
+          insuranceContract = getContractForContractIdUseCase.getInsuranceWithOutTerminationDate(),
+          allowTerminatingInsurance = true,
+          insurableLimitsUsage = fakeInsurableLimitsUsage,
+        ),
+      )
+    }
+  }
+
+  private class FakeGetInsurableLimitsUsageUseCase(
+    private val usage: InsurableLimitsUsage? = null,
+  ) : GetInsurableLimitsUsageUseCase {
+    override suspend fun invoke(contractId: String): Either<ErrorMessage, InsurableLimitsUsage?> = usage.right()
   }
 
   internal class FakeGetContractForContractIdUseCase : GetContractForContractIdUseCase {

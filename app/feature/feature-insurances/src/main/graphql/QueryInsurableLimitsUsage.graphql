@@ -1,0 +1,32 @@
+# Uncomment once `Contract.insurableLimitsUsage` is published in the Octopus schema,
+# then switch GetInsurableLimitsUsageUseCaseImpl over to it.
+#
+#query InsurableLimitsUsage($contractId: UUID!) {
+#  contract(id: $contractId) {
+#    insurableLimitsUsage {
+#      periodStartDate
+#      periodEndDate
+#      total {
+#        ...InsurableLimitUsageFragment
+#      }
+#      medicine {
+#        ...InsurableLimitUsageFragment
+#      }
+#      deductible {
+#        ...InsurableLimitUsageFragment
+#      }
+#    }
+#  }
+#}
+#
+#fragment InsurableLimitUsageFragment on InsurableLimitUsage {
+#  used {
+#    ...MoneyFragment
+#  }
+#  limit {
+#    ...MoneyFragment
+#  }
+#  remaining {
+#    ...MoneyFragment
+#  }
+#}

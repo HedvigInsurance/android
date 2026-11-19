@@ -389,7 +389,7 @@ private fun ContractDetailScreen(
                       contract.productVariant.insurableLimits,
                       contract.productVariant.perils,
                       contract.addons,
-                      insurableLimitsUsage = null,
+                      insurableLimitsUsage = state.insurableLimitsUsage,
                     )
                   }
 
@@ -529,6 +529,7 @@ private fun PreviewContractDetailScreen() {
             supportsTermination = true,
           ),
           true,
+          null,
         ),
         imageLoader = rememberPreviewImageLoader(),
         retry = {},
