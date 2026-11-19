@@ -168,7 +168,7 @@ class IosGraphNetworkTest {
 }
 
 /** Sends the test operation from a background thread, as a read on `Dispatchers.Default` does. */
-private fun ApolloClient.query(fetchPolicy: FetchPolicy = FetchPolicy.NetworkOnly) = runBlocking {
+internal fun ApolloClient.query(fetchPolicy: FetchPolicy = FetchPolicy.NetworkOnly) = runBlocking {
   withContext(Dispatchers.Default) {
     query(PayingMemberPhoneNumberQuery()).fetchPolicy(fetchPolicy).execute()
   }

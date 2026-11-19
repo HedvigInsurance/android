@@ -37,10 +37,6 @@ import io.ktor.client.engine.mock.MockEngineConfig
   excludes = [NativeNetworkMetroProviders::class, NetworkMetroProviders::class, NativeDataStoreMetroProviders::class],
 )
 internal interface MockedNetworkIosGraph : IosGraphAccessors {
-  /** The token-free client every other client is built on. */
-  @BaseHttpClient
-  val baseHttpClient: HttpClient
-
   @Provides
   fun provideExtraKtorClientConfiguration(): ExtraKtorClientConfiguration = object : ExtraKtorClientConfiguration {
     override fun configure(config: HttpClientConfig<*>) {}

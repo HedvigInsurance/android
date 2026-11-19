@@ -20,6 +20,10 @@ import com.hedvig.android.logger.IosLogcatLogger
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.LogcatLogger
 import com.hedvig.android.network.clients.NetworkLogPolicy
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.HttpSend
+import io.ktor.client.plugins.plugin
+import io.ktor.http.HttpHeaders
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -134,6 +138,19 @@ class IosGraphTest {
   }
 
   @Test
+  fun `the real public client sends no token while a member is logged in`() {
+    val accessors = FakeInputs().realHolder().accessors
+    val memberAuthorizations = accessors.httpClient.authorizationsStoppedBeforeTheNetwork()
+    val publicAuthorizations = accessors.baseHttpClient.authorizationsStoppedBeforeTheNetwork()
+
+    accessors.apolloClient.query()
+    accessors.publicApolloClient.query()
+
+    assertThat(memberAuthorizations).containsExactly("Bearer $ACCESS_TOKEN")
+    assertThat(publicAuthorizations).containsExactly("")
+  }
+
+  @Test
   fun `the build is read from the bundle and the device and only the flavor comes from Swift`() {
     val production = IosAppBuildConfig(Flavor.Production)
     val staging = IosAppBuildConfig(Flavor.Staging)
@@ -160,4 +177,17 @@ private class RecordingRumLogger : RumLogger {
   ) {
     errors += message
   }
+}
+
+/**
+ * Records the `Authorization` header of every request [this] sends, "" where there was none, and fails the request
+ * before it reaches the Darwin engine. The interceptor is the client's last, so it sees the token the client added.
+ */
+private fun HttpClient.authorizationsStoppedBeforeTheNetwork(): List<String> {
+  val authorizations = mutableListOf<String>()
+  plugin(HttpSend).intercept { request ->
+    authorizations += request.headers[HttpHeaders.Authorization].orEmpty()
+    throw IllegalStateException("Stopped before the network")
+  }
+  return authorizations
 }
