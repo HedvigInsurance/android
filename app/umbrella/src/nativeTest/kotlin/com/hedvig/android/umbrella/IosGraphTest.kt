@@ -412,6 +412,42 @@ class IosGraphTest {
   }
 
   @Test
+  fun `publicImportantMessagesScreenModel loads without fetching a token`() {
+    val inputs = FakeInputs()
+    val holder = inputs.createHolder()
+    val sent = mutableListOf<Headers>()
+    val lock = NSLock()
+    // The graph's Darwin engine cannot be replaced, so the request is recorded just before the engine and aborted.
+    holder.graph.baseHttpClient.plugin(HttpSend).intercept { request ->
+      lock.lock()
+      try {
+        sent += request.headers.build()
+      } finally {
+        lock.unlock()
+      }
+      throw IllegalStateException("Request recorded, not sent")
+    }
+    val model = holder.publicImportantMessagesScreenModel()
+
+    val collection = MainScope().launch { model.stateUpdates.collect {} }
+    val requested = pumpMainLoopUntil {
+      lock.lock()
+      try {
+        sent.isNotEmpty()
+      } finally {
+        lock.unlock()
+      }
+    }
+    pumpMainLoop(1.seconds)
+    collection.cancel()
+    model.close()
+
+    assertThat(requested).isTrue()
+    assertThat(sent.single()["Authorization"]).isNull()
+    assertThat(inputs.accessTokenFetcher.calls.value).isEqualTo(0)
+  }
+
+  @Test
   fun `an UNAUTHENTICATED response does not log out or change demo mode`() {
     val inputs = FakeInputs()
     val holder = inputs.createHolder()

@@ -212,6 +212,7 @@ dependencies {
   implementation(projects.featureHelpCenterNavigation)
   implementation(projects.featureHome)
   implementation(projects.featureImageViewer)
+  implementation(projects.featureImportantMessages)
   implementation(projects.featureInsuranceCertificate)
   implementation(projects.featureInsurances)
   implementation(projects.featureLogin)

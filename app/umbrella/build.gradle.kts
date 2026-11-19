@@ -15,10 +15,10 @@ kotlin {
   }
   val frameworkName = "HedvigShared"
   val xcf = XCFramework(frameworkName)
-  // Only what iOS calls: the auth client, the logger, and the claim history, payments and travel
-  // certificate features. Everything a module here reaches through its public API is linked into
-  // the framework, so exporting a module iOS does not use only adds bytes and header surface
-  // (network-clients alone dragged Apollo, Arrow and Okio in, ~2.9 MB).
+  // Only what iOS calls: the auth client, the logger, and the claim history, important messages,
+  // payments and travel certificate features. Everything a module here reaches through its public
+  // API is linked into the framework, so exporting a module iOS does not use only adds bytes and
+  // header surface (network-clients alone dragged Apollo, Arrow and Okio in, ~2.9 MB).
   // Keep this list free of Compose UI: one such export pulls Skiko and ~70 MB of Skia, ICU and
   // HarfBuzz into the iOS app. iOS builds its UI natively. Every other KMP module keeps compiling
   // for iOS under the convention plugin, so re-exporting one later is a one-line change here.
@@ -26,6 +26,7 @@ kotlin {
     projects.authlib,
     projects.loggingPublic,
     projects.featureClaimHistory,
+    projects.featureImportantMessages,
     projects.featurePayments,
     projects.featureTravelCertificate,
   )

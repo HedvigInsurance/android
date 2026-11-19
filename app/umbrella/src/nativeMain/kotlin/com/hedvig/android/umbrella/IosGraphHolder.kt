@@ -6,6 +6,8 @@ import com.hedvig.android.core.demomode.IosDemoMode
 import com.hedvig.android.core.tracking.RumLogger
 import com.hedvig.android.feature.claimhistory.ios.ClaimHistoryScreenModel
 import com.hedvig.android.feature.claimhistory.ios.createClaimHistoryScreenModel
+import com.hedvig.android.feature.importantmessages.ios.PublicImportantMessagesScreenModel
+import com.hedvig.android.feature.importantmessages.ios.createPublicImportantMessagesScreenModel
 import com.hedvig.android.feature.payments.ios.PaymentDetailsScreenModel
 import com.hedvig.android.feature.payments.ios.PaymentHistoryScreenModel
 import com.hedvig.android.feature.payments.ios.PaymentManualChargeScreenModel
@@ -68,6 +70,10 @@ class IosGraphHolder internal constructor(
 ) {
   /** A new screen model with its own ViewModel. The caller owns it and must `close()` it. */
   fun claimHistoryScreenModel(): ClaimHistoryScreenModel = createClaimHistoryScreenModel(graph.metroViewModelFactory)
+
+  /** A new screen model with its own ViewModel. The caller owns it and must `close()` it. */
+  fun publicImportantMessagesScreenModel(): PublicImportantMessagesScreenModel =
+    createPublicImportantMessagesScreenModel(graph.metroViewModelFactory)
 
   /** A new screen model with its own ViewModel. The caller owns it and must `close()` it. */
   fun paymentHistoryScreenModel(): PaymentHistoryScreenModel =
