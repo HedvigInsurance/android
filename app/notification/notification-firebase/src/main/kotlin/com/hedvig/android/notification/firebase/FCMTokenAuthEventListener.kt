@@ -5,6 +5,7 @@ import com.hedvig.android.auth.event.AuthEventListener
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.logger.memberData
 import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
@@ -23,7 +24,7 @@ internal class FCMTokenAuthEventListener(
       fcmTokenManager.deleteTokenLocallyAndFromFirebaseMessaging()
       logcat { "Cleared existing push token on log in" }
       val freshToken = FirebaseMessaging.getInstance().token.await()
-      logcat { "Logged in, so storing a new push token:$freshToken" }
+      logcat { "Logged in, so storing a new push token:${memberData(freshToken)}" }
       fcmTokenManager.saveLocallyAndUploadTokenToBackend(freshToken)
     } catch (throwable: Throwable) {
       if (throwable is CancellationException) {
