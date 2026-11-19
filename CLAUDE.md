@@ -13,6 +13,8 @@ Two foundations are newer than most of the codebase and are easy to get wrong if
 
 A full narrative of *why* these look the way they do — the engineering decisions, the alternatives rejected, the invariants — lives in `docs/architecture/navigation-and-di.md`. Read it before making structural changes to navigation or DI. This file is the day-to-day quick reference.
 
+The same app also runs as a desktop (JVM) application. If a feature fails to compile for JVM, `checkCommonMainImports` fails, you need something Android-only from `commonMain`, or you want to see a change on desktop, read "Desktop app" below.
+
 ## Essential Setup Commands
 
 ### Initial Setup
@@ -38,14 +40,11 @@ A full narrative of *why* these look the way they do — the engineering decisio
 # Build the app
 ./gradlew :app:assemble
 
-# Run all tests
+# Run all unit tests (in a KMP module `test` runs `jvmTest` and any Android host tests)
 ./gradlew test
 
 # Run tests for a specific module
 ./gradlew :feature-home:test
-
-# Run unit tests
-./gradlew test
 
 # Formatting
 ./gradlew ktlintCheck          # Check formatting
@@ -72,9 +71,10 @@ A full narrative of *why* these look the way they do — the engineering decisio
 The codebase is organized under `/app` with 80+ modules following a strict modularization pattern:
 
 - **app/** - Android application module, a thin host of `:app-shell`. Owns the Android Metro `AppGraph` and the per-Activity `ActivityRetainedGraph`, `MainActivity`, back stack persistence, external deep links, and the Datadog view tracking effect.
-- **app-shell/** - KMP module (JVM and Android) with the platform-neutral app shell: `HedvigApp` and its single `NavDisplay`, the back stack controller, session reconciliation, and the shared cross-feature navigation wiring (`hedvigEntryProvider`). A host implements `AppHost` and may pass a fallback entry for keys without one.
+- **app-shell/**: KMP module (JVM and Android) with the app shell shared by the Android and desktop hosts, mostly Compose UI: `HedvigApp` and its single `NavDisplay`, the back stack controller, session reconciliation, and the shared cross-feature navigation wiring (`hedvigEntryProvider`). A host implements `AppHost` and may pass a fallback entry for keys without one.
+- **app-desktop/** - The desktop (JVM) host of `:app-shell`: `main()`, `DesktopGraph` and the desktop-only bindings. See "Desktop app".
 - **feature/** - Feature modules (feature-home, feature-chat, feature-login, etc.)
-- **feature/feature-{name}-navigation/** - Tiny modules holding *only* the public `@Serializable HedvigNavKey`s of a feature that other features may navigate to. These are the one carve-out to the "features can't depend on features" rule.
+- **feature/feature-{name}-navigation/** - Tiny modules holding *only* the public `@Serializable HedvigNavKey`s of a feature that another module must navigate to without depending on that feature. These are the one carve-out to the "features can't depend on features" rule. A feature's other keys live in the feature itself.
 - **data/** - Data layer modules (data-contract, data-chat, data-addons, etc.)
 - **core/** - Core utilities (core-common, core-datastore, core-resources, etc.)
 - **apollo/** - GraphQL client modules (apollo-octopus-public, apollo-core, etc.)
@@ -228,7 +228,7 @@ internal data class InsuranceContractDetailKey(val contractId: String) : HedvigN
 }
 ```
 
-Keys reachable cross-feature live in the feature's `-navigation` module and are public. Keys internal to a feature stay `internal` in the feature module.
+A feature's keys live in the feature. Keys that `:app-shell` or a host names are public, the rest stay `internal`. A key moves to a separate `feature-{name}-navigation` module only when another module must navigate to that feature without depending on it.
 
 **Marker interfaces** (in `navigation-common`) let the app shell reason about a key without depending on the feature:
 - `TopLevelTabRoot` — this key is the root of a bottom-nav tab (exposes `topLevelTab`).
@@ -571,12 +571,12 @@ When tempted to write "X instead of Y", drop the Y half and justify X on its own
 ```
 
 **Schema locations:**
-- `app/apollo/apollo-octopus-public/src/main/graphql/` - Main schema
+- `app/apollo/apollo-octopus-public/src/commonMain/graphql/` - Main schema
 - Client-side schema modifications supported via build plugin
 
 ### Writing GraphQL Queries
 
-Place `.graphql` files in module's `src/main/graphql/`. Apollo generates type-safe Kotlin code automatically. Keep generated `octopus.*` types confined to internal impl classes (see the data layer rule above).
+Place `.graphql` files in the module's `src/commonMain/graphql/` (`src/main/graphql/` in a module that is not KMP). Apollo generates type-safe Kotlin code automatically. Keep generated `octopus.*` types confined to internal impl classes (see the data layer rule above).
 
 ## Testing
 
@@ -584,7 +584,7 @@ Place `.graphql` files in module's `src/main/graphql/`. Apollo generates type-sa
 # Run all unit tests (JVM, Android and KMP modules; in KMP modules `test` runs `jvmTest` and any Android host tests)
 ./gradlew test
 
-# Run tests for specific module
+# Run tests for a specific module
 ./gradlew :feature-home:test
 ./gradlew :data-contract:test
 
@@ -593,7 +593,7 @@ Place `.graphql` files in module's `src/main/graphql/`. Apollo generates type-sa
 ```
 
 **Test patterns:**
-- Unit tests: `src/test/kotlin/` (or `src/commonTest/` for KMP)
+- Unit tests: `src/jvmTest/kotlin/` in KMP modules (Robolectric tests in `src/androidHostTest/kotlin/`), `src/test/kotlin/` in Android-only and plain JVM modules
 - Android tests: `src/androidTest/kotlin/`
 - Use Turbine for testing Flows
 - Use test modules for shared test utilities
@@ -695,25 +695,38 @@ GitHub Actions workflows (in `.github/workflows/`):
 2. Add `build.gradle.kts`:
 ```kotlin
 plugins {
-  id("hedvig.android.library")
+  id("hedvig.multiplatform.library")
+  id("hedvig.multiplatform.library.android")
   id("hedvig.gradle.plugin")
 }
 
 hedvig {
   compose()
   navKeys()          // if the module declares any HedvigNavKey
+  viewModels()       // if the module declares any @HedvigViewModel
   apollo("octopus")  // if needed
 }
 
-dependencies {
-  implementation(projects.coreCommonPublic)
-  implementation(projects.navigationCompose)
-  implementation(projects.designSystemHedvig)
+kotlin {
+  sourceSets {
+    commonMain.dependencies {
+      implementation(libs.jetbrains.compose.foundation)
+      implementation(libs.jetbrains.compose.runtime)
+      implementation(projects.coreCommonPublic)
+      implementation(projects.designSystemHedvig)
+      implementation(projects.navigationCommon)
+    }
+    jvmTest.dependencies {
+      implementation(libs.assertK)
+      implementation(libs.junit)
+    }
+  }
 }
 ```
+   Code goes in `src/commonMain/kotlin`, platform code behind a seam in `src/androidMain` and `src/jvmMain` (see "Desktop app"), tests in `src/jvmTest/kotlin`. Add `projects.navigationCompose` only if the entries use its scene strategies (`NavSuiteSceneDecoratorStrategy`, `BottomSheetSceneStrategy`).
 3. Create standard structure: `ui/`, `navigation/`, `di/` (contributions live next to the classes they bind via Metro annotations, not in a central `di` module).
-4. Define `@Serializable` `HedvigNavKey`s. Put any cross-feature-reachable keys in a `feature-{name}-navigation` module.
-5. Expose a `fun EntryProviderScope<HedvigNavKey>.{name}Entries(...)` and call it from `hedvigEntryProvider` in `:app-shell`.
+4. Define `@Serializable` `HedvigNavKey`s in the feature. Add a `feature-{name}-navigation` module only for keys another module must navigate to without depending on the feature.
+5. Expose a `fun EntryProviderScope<HedvigNavKey>.{name}Entries(...)` and call it from `hedvigEntryProvider` in `:app-shell`; add the module to the dependencies of `:app-shell`, `:app` and `:app-desktop`.
 6. Module will be auto-discovered by `settings.gradle.kts`.
 
 ### Adding a New Screen/Destination
@@ -726,7 +739,7 @@ dependencies {
 
 ### Adding a New GraphQL Query
 
-1. Create `.graphql` file in `src/main/graphql/`.
+1. Create a `.graphql` file in `src/commonMain/graphql/` (`src/main/graphql/` in a module that is not KMP).
 2. Enable Apollo in `build.gradle.kts`: `hedvig { apollo("octopus") }`.
 3. Build generates type-safe Kotlin code.
 4. Use the generated query in an internal repository/use case impl; return a project-owned type.
@@ -825,6 +838,18 @@ dividing two definitions for a whole window. Create the replacement under a new 
 metric starts empty and is not retroactive, so the SLO reads correctly immediately. Separately, the
 RUM query links embedded in a monitor's notification message are frozen copies of a filter that
 nothing validates, so re-check them whenever the metric changes.
+
+## Desktop app
+
+Every feature module except `feature-impersonation` is KMP with its code in `commonMain`, and `:app-desktop` runs the shared `HedvigApp` as a desktop (JVM) app: `./gradlew :app-desktop:run` (staging; `-Phedvig.desktop.production=true` for production). What works there, the seams, the skips, the iOS debt and the recipe for converting a module are in `docs/superpowers/specs/2026-11-12-desktop-app-as-built.md`.
+
+**The commonMain rule.** A module with only JVM and Android targets compiles `commonMain` against the JDK, so nothing stops it reaching code iOS cannot compile. `commonMain` may not use `java.*`, `javax.*`, `android.*`, Android-only `androidx` artifacts, libraries without iOS artifacts, or `hedvig.jvm.library` modules; such code goes behind a seam. `./gradlew checkCommonMainImports` (run by CI and by `./gradlew check`) fails on `java.*`, `javax.*`, `android.*` and Android-only `androidx` packages and declarations (such as `LocalContext`), imported or fully qualified. `config/commonMain-import-allowlist.txt` takes a file, or a file plus one forbidden name; keep feature code off it. A multiplatform port under an `androidx` path (such as JetBrains' `androidx.core.bundle`) is allowed by adding its sub-package to `allowedCommonMainSubPackages` in `CommonMainImportGuard.kt`. The guard does not check third-party libraries, and it misses members of a JDK type reached through a typealias, such as `Uuid.randomUUID()` on benasher's `Uuid` (`java.util.UUID` on the JVM) or `toLanguageTag()` on `CommonLocale`. Check those by hand; only an iOS compile catches them.
+
+**Seams.** Declare a module-local `expect` next to its caller: the Android `actual` holds the Android code unchanged, the JVM `actual` the simplest honest desktop behaviour, plus a `nativeMain` actual if the module compiles for iOS. For an injected type, put the interface in `commonMain` and a `@ContributesBinding` in `androidMain` and in `jvmMain`, never a default in `commonMain` (see the Metro KMP rule), so a missing desktop binding fails to compile. A JVM binding that needs a file location takes `@DesktopDataDirectory`. Where desktop support would complicate `commonMain` and make the Android code worse, the desktop actual renders `NotAvailableOnDesktop()` (`design-system-hedvig` `jvmMain`) instead, never a crash or a silent no-op, and the as-built file records it.
+
+**JVM graph tests.** `:app-desktop` `jvmTest` catches what the Android build cannot: `DesktopGraphTest` builds every ViewModel and factory from the real desktop graph, so a missing JVM binding fails there, and `DesktopEntryProviderTest` checks that `hedvigEntryProvider` registers every serializable key exactly once. Most modules with JVM bindings also have a `Jvm<Name>BindingsTest` or `Jvm<Name>GraphTest` building a small graph from their JVM contributions.
+
+**Build rule.** A `feature-*` module must not depend on `:app-shell`; `configureFeatureModuleGuidelines()` in `hedvig.gradle.plugin` fails the build. Take a `navigateToX` lambda in the entries function instead.
 
 ## Debugging
 
