@@ -1,6 +1,7 @@
 package com.hedvig.android.network.clients.di
 
 import assertk.assertThat
+import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.datastore.DeviceIdFetcher
@@ -15,6 +16,7 @@ import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respondOk
 import io.ktor.client.request.get
+import io.ktor.http.HttpHeaders
 import java.util.Locale
 import kotlin.test.Test
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,6 +31,27 @@ class NetworkMetroProvidersTest {
     authenticatedClient(engine, AccessTokenFetcher { "token" }).get("https://example.com")
 
     assertThat(engine.requestHistory.single().headers["hedvig-device-id"]).isEqualTo("device-id")
+  }
+
+  @Test
+  fun `each request reads the access token once and sends no authorization header without one`() = runTest {
+    val engine = MockEngine { respondOk() }
+    val tokens = ArrayDeque(listOf("token", null))
+    var fetchCount = 0
+    val client = authenticatedClient(
+      engine,
+      AccessTokenFetcher {
+        fetchCount++
+        tokens.removeFirstOrNull()
+      },
+    )
+
+    client.get("https://example.com")
+    client.get("https://example.com")
+
+    assertThat(engine.requestHistory.map { it.headers[HttpHeaders.Authorization] })
+      .containsExactly("Bearer token", null)
+    assertThat(fetchCount).isEqualTo(2)
   }
 
   private fun authenticatedClient(engine: MockEngine, accessTokenFetcher: AccessTokenFetcher): HttpClient {

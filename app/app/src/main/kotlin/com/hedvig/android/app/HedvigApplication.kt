@@ -4,7 +4,9 @@ import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.work.Configuration
 import com.hedvig.android.app.di.AppGraph
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.MetroGraphProvider
+import com.hedvig.android.logger.MemberDataLogging
 import com.hedvig.android.notification.firebase.PushNotificationGraphProvider
 import com.hedvig.android.notification.firebase.PushNotificationService
 import dev.zacsweers.metro.HasMemberInjections
@@ -28,9 +30,12 @@ open class HedvigApplication :
 
   @Inject private lateinit var appInitializers: AppInitializers
 
+  @Inject private lateinit var hedvigBuildConstants: HedvigBuildConstants
+
   override fun onCreate() {
     super.onCreate()
     appGraph.inject(this)
+    MemberDataLogging.isAllowed = !hedvigBuildConstants.isProduction
     AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
     appInitializers.initialize()
   }

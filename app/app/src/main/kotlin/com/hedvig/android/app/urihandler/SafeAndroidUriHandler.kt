@@ -8,6 +8,7 @@ import com.hedvig.android.core.tracking.ErrorSource
 import com.hedvig.android.core.tracking.logError
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.logger.urlForLog
 import kotlinx.coroutines.CancellationException
 
 /**
@@ -27,8 +28,13 @@ internal class SafeAndroidUriHandler(private val context: Context) : UriHandler 
       if (e is CancellationException) {
         throw e
       }
-      logcat(LogPriority.ERROR, e) { "Tried to launch $uri but the phone has nothing to support such an intent." }
-      logError("Tried to launch $uri but the phone has nothing to support such an intent.", ErrorSource.SOURCE)
+      logcat(LogPriority.ERROR, e) {
+        "Tried to launch ${urlForLog(uri)} but the phone has nothing to support such an intent."
+      }
+      logError(
+        "Tried to launch ${urlForLog(uri)} but the phone has nothing to support such an intent.",
+        ErrorSource.SOURCE,
+      )
     }
   }
 }
