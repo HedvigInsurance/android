@@ -32,7 +32,6 @@ kotlin {
       implementation(projects.featureFlags)
       implementation(projects.moleculePublic)
       implementation(projects.navigationCommon)
-      implementation(projects.navigationCompose)
       implementation(projects.navigationCore)
     }
   }

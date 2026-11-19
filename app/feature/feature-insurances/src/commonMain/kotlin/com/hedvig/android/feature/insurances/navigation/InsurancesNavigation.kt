@@ -1,0 +1,21 @@
+package com.hedvig.android.feature.insurances.navigation
+
+import com.hedvig.android.navigation.common.CrossSellEligibleDestination
+import com.hedvig.android.navigation.common.DeepLinkAncestry
+import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.common.TopLevelTab
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+internal data class InsuranceContractDetailKey(
+  /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer.contract] */
+  @SerialName("contractId")
+  val contractId: String,
+) : HedvigNavKey, DeepLinkAncestry, CrossSellEligibleDestination {
+  override val owningTab get() = TopLevelTab.Insurances
+  override val syntheticParents get() = emptyList<HedvigNavKey>()
+}
+
+@Serializable
+internal data object TerminatedInsurancesKey : HedvigNavKey

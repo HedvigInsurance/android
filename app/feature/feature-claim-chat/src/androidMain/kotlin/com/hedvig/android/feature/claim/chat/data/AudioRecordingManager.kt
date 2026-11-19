@@ -40,7 +40,7 @@ internal class AndroidAudioRecordingManager(
    */
   private var amplitudeSamplingJob: Job? = null
 
-  override fun startRecording(onStateUpdate: (AudioRecordingStepState.AudioRecording.Recording) -> Unit) {
+  override fun startRecording(onStateUpdate: (AudioRecordingStepState.AudioRecording) -> Unit) {
     if (recorder != null) return // Already recording
 
     val filePath = File.createTempFile(
