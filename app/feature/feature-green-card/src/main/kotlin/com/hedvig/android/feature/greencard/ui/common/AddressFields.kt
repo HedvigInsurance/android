@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -11,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextField
@@ -68,6 +70,12 @@ internal fun AddressFields(
       state = address.postalCode,
       labelText = stringResource(Res.string.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL),
       showMissingFieldError = showMissingFieldErrors,
+      // Swedish postal codes are all digits, but many other countries' have letters too (SW1A 1AA, 1012 AB).
+      keyboardOptions = if (address.country == Country.SWEDEN) {
+        KeyboardOptions(keyboardType = KeyboardType.Number)
+      } else {
+        KeyboardOptions.Default
+      },
     )
     RequiredTextField(
       state = address.city,
@@ -84,11 +92,17 @@ internal fun AddressFields(
 }
 
 @Composable
-internal fun RequiredTextField(state: TextFieldState, labelText: String, showMissingFieldError: Boolean) {
+internal fun RequiredTextField(
+  state: TextFieldState,
+  labelText: String,
+  showMissingFieldError: Boolean,
+  keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+) {
   HedvigTextField(
     state = state,
     labelText = labelText,
     textFieldSize = Medium,
+    keyboardOptions = keyboardOptions,
     errorState = if (showMissingFieldError && state.text.isBlank()) {
       ErrorState.Error.WithMessage(MISSING_FIELD_TEXT)
     } else {
