@@ -2,7 +2,7 @@ query ClaimRatingReminders {
   currentMember {
     claimsPendingRating {
       id
-      isRatingPending
+      hasSubmittedRating
     }
   }
 }

@@ -13,6 +13,12 @@ import dev.zacsweers.metro.Inject
 import octopus.ClaimDismissRatingMutation
 import octopus.ClaimSubmitRatingMutation
 
+internal sealed interface ClaimRatingAnswer {
+  data class Rated(val rating: Int, val comment: String?) : ClaimRatingAnswer
+
+  data object Dismissed : ClaimRatingAnswer
+}
+
 internal interface SubmitClaimRatingUseCase {
   suspend fun invoke(claimId: String, rating: Int, comment: String?): Either<ErrorMessage, Unit>
 }

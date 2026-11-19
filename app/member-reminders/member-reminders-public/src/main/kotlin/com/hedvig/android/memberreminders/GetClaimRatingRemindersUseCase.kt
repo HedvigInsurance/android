@@ -30,11 +30,11 @@ internal class GetClaimRatingRemindersUseCaseImpl(
       .fetchPolicy(FetchPolicy.NetworkOnly)
       .safeWatch()
       .map { result ->
-        // The rating mutations write isRatingPending back to the cached claim, so an answered claim drops out here
+        // Submitting a rating writes hasSubmittedRating back to the cached claim, so a rated claim drops out here
         // without refetching the list.
         result.mapLeft(::ErrorMessage).map { data ->
           data.currentMember.claimsPendingRating
-            .filter { it.isRatingPending }
+            .filterNot { it.hasSubmittedRating }
             .map { claim -> MemberReminder.ClaimRatingPending(claimId = claim.id) }
         }
       }

@@ -14,9 +14,10 @@ import com.hedvig.android.core.fileupload.DownloadPdfUseCase
 import com.hedvig.android.core.fileupload.DownloadedFile
 import com.hedvig.android.core.fileupload.UploadSuccess
 import com.hedvig.android.feature.claim.details.data.ClaimRatingAnswer
-import com.hedvig.android.feature.claim.details.data.ClaimRatingRecorder
+import com.hedvig.android.feature.claim.details.data.DismissClaimRatingUseCase
 import com.hedvig.android.feature.claim.details.data.Error
 import com.hedvig.android.feature.claim.details.data.GetClaimDetailUiStateUseCase
+import com.hedvig.android.feature.claim.details.data.SubmitClaimRatingUseCase
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimOutcome
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimStatus
 import com.hedvig.android.feature.claim.details.ui.rating.RatingButtonState
@@ -45,16 +46,22 @@ class ClaimDetailPresenterTest {
     override fun invoke(claimId: String): Flow<Either<Error, ClaimDetailUiState.Content>> = emissions.receiveAsFlow()
   }
 
-  private class FakeClaimRatingRecorder : ClaimRatingRecorder {
+  private class FakeClaimRatingUseCases : SubmitClaimRatingUseCase, DismissClaimRatingUseCase {
     val recorded = mutableListOf<Pair<String, ClaimRatingAnswer>>()
 
-    override fun record(claimId: String, answer: ClaimRatingAnswer) {
-      recorded.add(claimId to answer)
+    override suspend fun invoke(claimId: String, rating: Int, comment: String?): Either<ErrorMessage, Unit> {
+      recorded.add(claimId to ClaimRatingAnswer.Rated(rating, comment))
+      return Unit.right()
+    }
+
+    override suspend fun invoke(claimId: String): Either<ErrorMessage, Unit> {
+      recorded.add(claimId to ClaimRatingAnswer.Dismissed)
+      return Unit.right()
     }
   }
 
   private val getClaimDetailUiStateUseCase = FakeGetClaimDetailUiStateUseCase()
-  private val recorder = FakeClaimRatingRecorder()
+  private val recorder = FakeClaimRatingUseCases()
   private val presenter = presenter(openRatingOnLoad = false)
 
   private fun presenter(openRatingOnLoad: Boolean) = ClaimDetailPresenter(
@@ -69,7 +76,8 @@ class ClaimDetailPresenterTest {
     downloadPdfUseCase = object : DownloadPdfUseCase {
       override suspend fun invoke(url: String): Either<ErrorMessage, DownloadedFile> = error("Not used")
     },
-    claimRatingRecorder = recorder,
+    submitClaimRatingUseCase = recorder,
+    dismissClaimRatingUseCase = recorder,
   )
 
   @Test

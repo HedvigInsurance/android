@@ -18,8 +18,9 @@ import com.hedvig.android.core.fileupload.DownloadedFile
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.feature.claim.details.data.ClaimRatingAnswer
-import com.hedvig.android.feature.claim.details.data.ClaimRatingRecorder
+import com.hedvig.android.feature.claim.details.data.DismissClaimRatingUseCase
 import com.hedvig.android.feature.claim.details.data.GetClaimDetailUiStateUseCase
+import com.hedvig.android.feature.claim.details.data.SubmitClaimRatingUseCase
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimStatus.CLOSED
 import com.hedvig.android.feature.claim.details.ui.rating.RatingButtonState
@@ -38,6 +39,7 @@ import java.io.File
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 
 @AssistedInject
@@ -48,7 +50,8 @@ internal class ClaimDetailsViewModel(
   getClaimDetailUiStateUseCase: GetClaimDetailUiStateUseCase,
   claimsServiceUploadFileUseCase: ClaimsServiceUploadFileUseCase,
   downloadPdfUseCase: DownloadPdfUseCase,
-  claimRatingRecorder: ClaimRatingRecorder,
+  submitClaimRatingUseCase: SubmitClaimRatingUseCase,
+  dismissClaimRatingUseCase: DismissClaimRatingUseCase,
 ) : MoleculeViewModel<ClaimDetailsEvent, ClaimDetailUiState>(
     ClaimDetailUiState.Loading,
     ClaimDetailPresenter(
@@ -57,7 +60,8 @@ internal class ClaimDetailsViewModel(
       getClaimDetailUiStateUseCase,
       claimsServiceUploadFileUseCase,
       downloadPdfUseCase,
-      claimRatingRecorder,
+      submitClaimRatingUseCase,
+      dismissClaimRatingUseCase,
     ),
   )
 
@@ -67,7 +71,8 @@ internal class ClaimDetailPresenter(
   private val getClaimDetailUiStateUseCase: GetClaimDetailUiStateUseCase,
   private val claimsServiceUploadFileUseCase: ClaimsServiceUploadFileUseCase,
   private val downloadPdfUseCase: DownloadPdfUseCase,
-  private val claimRatingRecorder: ClaimRatingRecorder,
+  private val submitClaimRatingUseCase: SubmitClaimRatingUseCase,
+  private val dismissClaimRatingUseCase: DismissClaimRatingUseCase,
 ) : MoleculePresenter<ClaimDetailsEvent, ClaimDetailUiState> {
   @Composable
   override fun MoleculePresenterScope<ClaimDetailsEvent>.present(lastState: ClaimDetailUiState): ClaimDetailUiState {
@@ -177,11 +182,15 @@ internal class ClaimDetailPresenter(
         is ClaimDetailsEvent.Rating -> {
           val transition = reduceRating(rating, event.event)
           rating = transition.state
-          if (transition.answer != null) {
-            claimRatingRecorder.record(claimId, transition.answer)
-            if (transition.answer is ClaimRatingAnswer.Rated) {
-              ratingSubmittedLocally = true
-            }
+          val answer = transition.answer ?: return@CollectEvents
+          if (answer is ClaimRatingAnswer.Rated) {
+            ratingSubmittedLocally = true
+          }
+          launch {
+            when (answer) {
+              is ClaimRatingAnswer.Rated -> submitClaimRatingUseCase.invoke(claimId, answer.rating, answer.comment)
+              ClaimRatingAnswer.Dismissed -> dismissClaimRatingUseCase.invoke(claimId)
+            }.onLeft { logcat(LogPriority.WARN) { "Failed to record rating answer for claim $claimId: $it" } }
           }
         }
       }

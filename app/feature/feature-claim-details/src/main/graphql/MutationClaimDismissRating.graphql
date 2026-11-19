@@ -6,7 +6,6 @@ mutation ClaimDismissRating($claimId: ID!) {
     claim {
       id
       hasSubmittedRating
-      isRatingPending
     }
   }
 }
