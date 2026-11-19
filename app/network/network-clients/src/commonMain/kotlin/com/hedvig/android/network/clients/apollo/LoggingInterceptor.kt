@@ -3,8 +3,10 @@ package com.hedvig.android.network.clients.apollo
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.ApolloRequest
 import com.apollographql.apollo.api.ApolloResponse
+import com.apollographql.apollo.api.CustomScalarAdapters
 import com.apollographql.apollo.api.Error as ApolloKotlinError
 import com.apollographql.apollo.api.Operation.Data
+import com.apollographql.apollo.api.variables
 import com.apollographql.apollo.exception.CacheMissException
 import com.apollographql.apollo.interceptor.ApolloInterceptor
 import com.apollographql.apollo.interceptor.ApolloInterceptorChain
@@ -28,11 +30,14 @@ import kotlinx.coroutines.flow.onEach
 internal fun ApolloClient.Builder.addHedvigInterceptors(
   authTokenService: AuthTokenService,
   demoManager: DemoManager,
+  logMemberData: Boolean,
 ): ApolloClient.Builder = this
   .addInterceptor(LogoutOnUnauthenticatedInterceptor(authTokenService, demoManager))
-  .addInterceptor(LoggingInterceptor())
+  .addInterceptor(LoggingInterceptor(logMemberData))
 
-internal class LoggingInterceptor : ApolloInterceptor {
+internal class LoggingInterceptor(
+  private val logMemberData: Boolean,
+) : ApolloInterceptor {
   override fun <D : Data> intercept(
     request: ApolloRequest<D>,
     chain: ApolloInterceptorChain,
@@ -40,7 +45,8 @@ internal class LoggingInterceptor : ApolloInterceptor {
     logcat(LogPriority.DEBUG) { "GraphQL request for ${request.operation.name()} START." }
     return chain.proceed(request).onEach { response ->
       logcat(LogPriority.DEBUG) {
-        "GraphQL request for ${request.operation.name()} EMISSION. Response data: ${response.data}"
+        val responseData = if (logMemberData) " Response data: ${response.data}" else ""
+        "GraphQL request for ${request.operation.name()} EMISSION.$responseData"
       }
       val data = response.data
       val errors = response.errors.orEmpty().map { it.toGraphqlError() }
@@ -66,7 +72,10 @@ internal class LoggingInterceptor : ApolloInterceptor {
     val errorMessagesJoinedToString = errors.joinToString(", ", "[", "]") { it.message }
     val errorMessage = "GraphQL errors for ${request.operation.name()}: $errorMessagesJoinedToString"
     val errorAttributes = buildMap {
-      put("data", response.data)
+      if (logMemberData) {
+        put("data", response.data)
+        put("variables", request.variablesForLog())
+      }
       put("errors", errors)
       if (response.extensions.isNotEmpty()) {
         put("extensions", response.extensions.toList().joinToString(", ", "[", "]") { it.toString() })
@@ -78,7 +87,10 @@ internal class LoggingInterceptor : ApolloInterceptor {
         append(" attributes: ")
         append(errorAttributes)
         if (data != null) {
-          append(" There was data and errors at the same time! Data:$data")
+          append(" There was data and errors at the same time!")
+          if (logMemberData) {
+            append(" Data:$data")
+          }
         }
       }
     }
@@ -87,6 +99,18 @@ internal class LoggingInterceptor : ApolloInterceptor {
       source = ErrorSource.NETWORK,
       attributes = errorAttributes,
     )
+  }
+}
+
+/**
+ * Reading the variables runs the operation's own serialization. A failure there must not fail the request it describes.
+ */
+private fun <D : Data> ApolloRequest<D>.variablesForLog(): String {
+  return try {
+    val customScalarAdapters = executionContext[CustomScalarAdapters] ?: CustomScalarAdapters.Empty
+    operation.variables(customScalarAdapters).valueMap.toString()
+  } catch (e: Exception) {
+    "Could not read variables: ${e::class.simpleName}"
   }
 }
 

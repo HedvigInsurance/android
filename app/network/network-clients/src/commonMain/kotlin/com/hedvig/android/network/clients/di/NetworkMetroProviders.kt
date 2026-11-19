@@ -77,7 +77,7 @@ interface NetworkMetroProviders {
       .cache(normalizedCacheFactory)
       .ktorClient(httpClient)
       .httpServerUrl(hedvigBuildConstants.urlGraphqlOctopus)
-      .addHedvigInterceptors(authTokenService, demoManager)
+      .addHedvigInterceptors(authTokenService, demoManager, logMemberData = !hedvigBuildConstants.isProduction)
       .build()
   }
 }
