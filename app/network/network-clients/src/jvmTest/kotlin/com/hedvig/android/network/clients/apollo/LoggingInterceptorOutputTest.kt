@@ -19,11 +19,16 @@ import com.hedvig.android.network.clients.CapturedLog
 import com.hedvig.android.network.clients.CapturedRumError
 import com.hedvig.android.network.clients.CapturingLogcatLogger
 import com.hedvig.android.network.clients.CapturingRumLogger
+import com.hedvig.android.network.clients.FakeHedvigBuildConstants
 import com.hedvig.android.network.clients.SentinelQuery
+import com.hedvig.android.network.clients.di.ApolloClientMetroProviders
 import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
 
-/** Pins the exact lines [LoggingInterceptor] writes on Android and desktop. */
+/**
+ * Pins the exact lines [LoggingInterceptor] writes on Android and desktop, with the policy those platforms provide for
+ * a non-production and a production build.
+ */
 @OptIn(ApolloExperimental::class)
 class LoggingInterceptorOutputTest {
   @Test
@@ -117,21 +122,25 @@ class LoggingInterceptorOutputTest {
 
 private class Run(val logs: List<CapturedLog>, val rumErrors: List<CapturedRumError>)
 
-/** Runs [block] against a fresh client. */
+/** Runs [block] against a fresh client once per provided policy, for a non-production and a production build. */
 private fun runForEachProvidedPolicy(block: suspend (ApolloClient) -> Unit): List<Run> {
-  val logs = CapturingLogcatLogger()
-  val rum = CapturingRumLogger()
-  LogcatLogger.install(logs)
-  RumLogger.install(rum)
-  try {
-    val apolloClient = ApolloClient.Builder()
-      .networkTransport(QueueTestNetworkTransport())
-      .addHedvigInterceptors(emptyList())
-      .build()
-    runTest { block(apolloClient) }
-    return listOf(Run(logs.entries(), rum.errors()))
-  } finally {
-    LogcatLogger.uninstall()
-    RumLogger.uninstall()
+  return listOf(false, true).map { isProduction ->
+    val logs = CapturingLogcatLogger()
+    val rum = CapturingRumLogger()
+    LogcatLogger.install(logs)
+    RumLogger.install(rum)
+    try {
+      val networkLogPolicy = object : ApolloClientMetroProviders {}
+        .provideNetworkLogPolicy(FakeHedvigBuildConstants(isProduction))
+      val apolloClient = ApolloClient.Builder()
+        .networkTransport(QueueTestNetworkTransport())
+        .addHedvigInterceptors(emptyList(), networkLogPolicy)
+        .build()
+      runTest { block(apolloClient) }
+      Run(logs.entries(), rum.errors())
+    } finally {
+      LogcatLogger.uninstall()
+      RumLogger.uninstall()
+    }
   }
 }

@@ -16,6 +16,7 @@ import com.hedvig.android.core.tracking.ErrorSource
 import com.hedvig.android.core.tracking.logError
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.network.clients.NetworkLogPolicy
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onCompletion
@@ -27,11 +28,14 @@ import kotlinx.coroutines.flow.onEach
  */
 internal fun ApolloClient.Builder.addHedvigInterceptors(
   platformInterceptors: List<ApolloInterceptor>,
+  networkLogPolicy: NetworkLogPolicy,
 ): ApolloClient.Builder = this
   .apply { platformInterceptors.forEach(::addInterceptor) }
-  .addInterceptor(LoggingInterceptor())
+  .addInterceptor(LoggingInterceptor(networkLogPolicy))
 
-internal class LoggingInterceptor : ApolloInterceptor {
+internal class LoggingInterceptor(
+  private val networkLogPolicy: NetworkLogPolicy,
+) : ApolloInterceptor {
   override fun <D : Data> intercept(
     request: ApolloRequest<D>,
     chain: ApolloInterceptorChain,
@@ -39,7 +43,11 @@ internal class LoggingInterceptor : ApolloInterceptor {
     logcat(LogPriority.DEBUG) { "GraphQL request for ${request.operation.name()} START." }
     return chain.proceed(request).onEach { response ->
       logcat(LogPriority.DEBUG) {
-        "GraphQL request for ${request.operation.name()} EMISSION. Response data: ${response.data}"
+        if (networkLogPolicy.logsGraphqlData) {
+          "GraphQL request for ${request.operation.name()} EMISSION. Response data: ${response.data}"
+        } else {
+          "GraphQL request for ${request.operation.name()} EMISSION."
+        }
       }
       val data = response.data
       val errors = response.errors.orEmpty().map { it.toGraphqlError() }
@@ -65,7 +73,9 @@ internal class LoggingInterceptor : ApolloInterceptor {
     val errorMessagesJoinedToString = errors.joinToString(", ", "[", "]") { it.message }
     val errorMessage = "GraphQL errors for ${request.operation.name()}: $errorMessagesJoinedToString"
     val errorAttributes = buildMap {
-      put("data", response.data)
+      if (networkLogPolicy.logsGraphqlData) {
+        put("data", response.data)
+      }
       put("errors", errors)
       if (response.extensions.isNotEmpty()) {
         put("extensions", response.extensions.toList().joinToString(", ", "[", "]") { it.toString() })
@@ -77,7 +87,10 @@ internal class LoggingInterceptor : ApolloInterceptor {
         append(" attributes: ")
         append(errorAttributes)
         if (data != null) {
-          append(" There was data and errors at the same time! Data:$data")
+          append(" There was data and errors at the same time!")
+          if (networkLogPolicy.logsGraphqlData) {
+            append(" Data:$data")
+          }
         }
       }
     }

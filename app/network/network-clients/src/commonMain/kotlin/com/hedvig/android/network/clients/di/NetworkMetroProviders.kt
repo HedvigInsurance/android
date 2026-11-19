@@ -15,6 +15,7 @@ import com.hedvig.android.network.clients.AccessTokenFetcher
 import com.hedvig.android.network.clients.DeviceIdInterceptor
 import com.hedvig.android.network.clients.ExtraKtorClientConfiguration
 import com.hedvig.android.network.clients.HedvigHttpLogger
+import com.hedvig.android.network.clients.NetworkLogPolicy
 import com.hedvig.android.network.clients.apollo.addHedvigInterceptors
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
@@ -48,7 +49,15 @@ interface NetworkMetroProviders {
     languageService: LanguageService,
     deviceIdFetcher: DeviceIdFetcher,
     extraKtorClientConfiguration: ExtraKtorClientConfiguration,
-  ): HttpClient = buildKtorClient(hedvigBuildConstants, languageService, deviceIdFetcher, extraKtorClientConfiguration)
+    networkLogPolicy: NetworkLogPolicy,
+  ): HttpClient = buildKtorClient(
+    httpClientEngineFactory(),
+    hedvigBuildConstants,
+    languageService,
+    deviceIdFetcher,
+    extraKtorClientConfiguration,
+    networkLogPolicy,
+  )
 
   @Provides
   @SingleIn(AppScope::class)
@@ -73,22 +82,25 @@ internal fun buildHedvigApolloClient(
   httpClient: HttpClient,
   hedvigBuildConstants: HedvigBuildConstants,
   platformInterceptors: List<ApolloInterceptor>,
+  networkLogPolicy: NetworkLogPolicy,
 ): ApolloClient = with(Cache) {
   ApolloClient.Builder()
     .cache(normalizedCacheFactory)
     .ktorClient(httpClient)
     .httpServerUrl(hedvigBuildConstants.urlGraphqlOctopus)
-    .addHedvigInterceptors(platformInterceptors)
+    .addHedvigInterceptors(platformInterceptors, networkLogPolicy)
     .build()
 }
 
-private fun buildKtorClient(
+internal fun buildKtorClient(
+  engineFactory: HttpClientEngineFactory<*>,
   hedvigBuildConstants: HedvigBuildConstants,
   languageService: LanguageService,
   deviceIdFetcher: DeviceIdFetcher,
   extraKtorClientConfiguration: ExtraKtorClientConfiguration,
+  networkLogPolicy: NetworkLogPolicy,
 ): HttpClient {
-  return HttpClient(httpClientEngineFactory()) {
+  return HttpClient(engineFactory) {
     installDatadogKtorPlugin(hedvigBuildConstants)
     install(HttpTimeout) {
       connectTimeoutMillis = CONNECT_TIMEOUT.inWholeMilliseconds
@@ -97,7 +109,7 @@ private fun buildKtorClient(
     defaultRequest {
       commonHeaders(hedvigBuildConstants, languageService)
     }
-    if (!hedvigBuildConstants.isProduction) {
+    if (networkLogPolicy.logsHttpBodies) {
       Logging {
         level = LogLevel.BODY
         logger = HedvigHttpLogger()
