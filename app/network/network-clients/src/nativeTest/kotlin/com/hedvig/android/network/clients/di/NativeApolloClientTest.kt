@@ -24,6 +24,21 @@ class NativeApolloClientTest {
     apolloClient.close()
     httpClient.close()
   }
+
+  @Test
+  fun `the provided public Apollo client only logs and has no normalized cache`() {
+    val httpClient = HttpClient(Darwin)
+    val apolloClient = object : NativeNetworkMetroProviders {}.providePublicApolloClient(
+      httpClient = httpClient,
+      hedvigBuildConstants = FakeHedvigBuildConstants,
+      networkLogPolicy = NetworkLogPolicy(logsHttpBodies = false, logsGraphqlData = false, logsGraphqlErrors = true),
+    )
+
+    assertEquals(listOf("LoggingInterceptor"), apolloClient.interceptors.map { it::class.simpleName })
+    assertFailsWith<IllegalStateException> { apolloClient.apolloStore }
+    apolloClient.close()
+    httpClient.close()
+  }
 }
 
 private object FakeHedvigBuildConstants : HedvigBuildConstants {

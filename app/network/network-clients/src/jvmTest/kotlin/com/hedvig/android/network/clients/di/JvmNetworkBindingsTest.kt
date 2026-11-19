@@ -137,7 +137,7 @@ class JvmNetworkBindingsTest {
     }
     val baseClient = HttpClient(engine) { install(HttpSend) }
     val providers = object : NetworkMetroProviders {}
-    val publicClient = providers.providePublicApolloClient(
+    val publicClient = object : ApolloClientMetroProviders {}.providePublicApolloClient(
       baseClient,
       graph.hedvigBuildConstants,
       graph.networkLogPolicy,

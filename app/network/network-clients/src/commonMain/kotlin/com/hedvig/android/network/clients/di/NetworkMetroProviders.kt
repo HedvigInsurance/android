@@ -8,7 +8,6 @@ import com.apollographql.ktor.ktorClient
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.common.di.BaseHttpClient
-import com.hedvig.android.core.common.di.PublicApolloClient
 import com.hedvig.android.core.datastore.DeviceIdFetcher
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
@@ -68,25 +67,6 @@ interface NetworkMetroProviders {
   ): HttpClient = baseHttpClient
     .config {}
     .apply { addAuthPlugin(accessTokenFetcher) }
-
-  /**
-   * Built on the token-free [BaseHttpClient], so a request never carries an `Authorization` header and never asks for a
-   * token. It has its own small cache and no platform interceptors, so a rejected request cannot log the member out.
-   */
-  @Provides
-  @SingleIn(AppScope::class)
-  @PublicApolloClient
-  fun providePublicApolloClient(
-    @BaseHttpClient httpClient: HttpClient,
-    hedvigBuildConstants: HedvigBuildConstants,
-    networkLogPolicy: NetworkLogPolicy,
-  ): ApolloClient = buildHedvigApolloClient(
-    MemoryCacheFactory(maxSizeBytes = 1024 * 1024),
-    httpClient,
-    hedvigBuildConstants,
-    platformInterceptors = emptyList(),
-    networkLogPolicy = networkLogPolicy,
-  )
 
   @Provides
   @SingleIn(AppScope::class)
