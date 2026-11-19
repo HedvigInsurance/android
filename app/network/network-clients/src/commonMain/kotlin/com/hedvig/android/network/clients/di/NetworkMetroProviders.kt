@@ -90,7 +90,12 @@ internal fun buildHedvigApolloClient(
   .addHedvigInterceptors(platformInterceptors, networkLogPolicy)
   .build()
 
-internal fun buildKtorClient(
+/**
+ * The app's base Ktor client over [engineFactory]: timeouts, common headers, the device id and, when
+ * [networkLogPolicy] allows, body logging. Public so a test graph can build it over a fake engine and keep everything
+ * else real.
+ */
+fun buildKtorClient(
   engineFactory: HttpClientEngineFactory<*>,
   hedvigBuildConstants: HedvigBuildConstants,
   languageService: LanguageService,
