@@ -30,6 +30,7 @@ kotlin {
       implementation(projects.coreResources)
       implementation(projects.coreUiData)
       implementation(projects.dataContract)
+      implementation(projects.featureFlags)
       implementation(projects.designSystemHedvig)
       implementation(projects.moleculePublic)
       implementation(projects.navigationCommon)

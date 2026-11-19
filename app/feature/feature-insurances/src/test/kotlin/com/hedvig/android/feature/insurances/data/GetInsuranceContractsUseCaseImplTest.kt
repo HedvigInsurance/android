@@ -11,6 +11,7 @@ import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver
 import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.core.common.test.isRight
+import com.hedvig.android.featureflags.test.FakeFeatureManager
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -124,6 +125,7 @@ class GetInsuranceContractsUseCaseImplTest {
     runTest {
       val subjectUseCase = GetInsuranceContractsUseCaseImpl(
         apolloClient = apolloClientWithGoodResponseThatSupportsTier,
+        featureManager = FakeFeatureManager(fixedReturnForAll = true),
       )
       val result = subjectUseCase.invoke().first()
       assertThat(result).isRight().transform {
@@ -140,6 +142,7 @@ class GetInsuranceContractsUseCaseImplTest {
     runTest {
       val subjectUseCase = GetInsuranceContractsUseCaseImpl(
         apolloClient = apolloClientWithGoodResponseWithoutTier,
+        featureManager = FakeFeatureManager(fixedReturnForAll = true),
       )
       val result = subjectUseCase.invoke().first()
       assertThat(result).isRight().transform {

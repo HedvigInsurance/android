@@ -23,6 +23,10 @@ enum class Feature(
     "Kill switch for the home screen 'Your quotes' section, which lets a member resume an ongoing " +
       "shopping session they started on the web. When the toggle is on, the section is hidden.",
   ),
+  ENABLE_CHANGE_MILEAGE(
+    "Enables changing a car insurance's yearly mileage: the option in insurance details, the mileage queries " +
+      "behind it, and the change mileage flow itself, which a deep link can also open.",
+  ),
   ENABLE_CLAIM_INTENT_RESUME(
     "Enables resuming a draft claim: the draft card on the home screen, the draft-claim dialogs, " +
       "and the resumable-aware leave dialog in the claim chat.",

@@ -22,6 +22,8 @@ import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
 import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
 import com.hedvig.android.feature.insurances.data.InsuranceContract.PendingInsuranceContract
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
@@ -31,6 +33,7 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
@@ -51,6 +54,7 @@ internal interface GetInsuranceContractsUseCase {
 @SingleIn(AppScope::class)
 internal class GetInsuranceContractsUseCaseImpl(
   private val apolloClient: ApolloClient,
+  private val featureManager: FeatureManager,
 ) : GetInsuranceContractsUseCase {
   override fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
     return flow {
@@ -80,6 +84,7 @@ internal class GetInsuranceContractsUseCaseImpl(
         val contractHolderSSN = insuranceQueryData.currentMember.ssn?.let { formatSsn(it) }
         val isMovingEnabledForMember =
           insuranceQueryData.currentMember.memberActions?.isMovingEnabled == true
+        val isChangeMileageEnabled = featureManager.isFeatureEnabled(Feature.ENABLE_CHANGE_MILEAGE).first()
 
         val terminatedContracts = insuranceQueryData.currentMember.terminatedContracts.map {
           it.toContract(
@@ -87,6 +92,7 @@ internal class GetInsuranceContractsUseCaseImpl(
             contractHolderDisplayName = contractHolderDisplayName,
             contractHolderSSN = contractHolderSSN,
             isMovingFlowEnabled = isMovingEnabledForMember,
+            isChangeMileageEnabled = isChangeMileageEnabled,
           )
         }
 
@@ -96,6 +102,7 @@ internal class GetInsuranceContractsUseCaseImpl(
             contractHolderDisplayName = contractHolderDisplayName,
             contractHolderSSN = contractHolderSSN,
             isMovingFlowEnabled = isMovingEnabledForMember,
+            isChangeMileageEnabled = isChangeMileageEnabled,
           )
         }
 
@@ -147,6 +154,7 @@ private fun ContractFragment.toContract(
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
   isMovingFlowEnabled: Boolean,
+  isChangeMileageEnabled: Boolean,
 ): EstablishedInsuranceContract {
   val contractGroup = this.currentAgreement.productVariant.typeOfContract.toContractGroup()
   val exposure = when (contractGroup) {
@@ -208,7 +216,7 @@ private fun ContractFragment.toContract(
     supportsEditCoOwners = supportsCoOwners,
     isTerminated = isTerminated,
     supportsTierChange = supportsChangeTier,
-    supportsChangeMileage = supportsChangeMileage,
+    supportsChangeMileage = supportsChangeMileage && isChangeMileageEnabled,
     existingAddons = existingAddons?.map {
       ContractAddon(
         relatedContractId = ContractId(id),
