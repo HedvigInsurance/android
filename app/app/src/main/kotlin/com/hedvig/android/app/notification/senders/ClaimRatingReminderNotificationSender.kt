@@ -35,7 +35,7 @@ class ClaimRatingReminderNotificationSender(
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   private val languageService: LanguageService,
 ) : NotificationSender {
-  private val notificationChannel = HedvigNotificationChannel.Payments
+  private val notificationChannel = HedvigNotificationChannel.Other
 
   override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
     val claimId = remoteMessage.data["claimId"]
