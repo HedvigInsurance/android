@@ -235,7 +235,7 @@ private val languageSource = object : IosLanguageSource {
 
 private val quietPolicy = NetworkLogPolicy(logsHttpBodies = false, logsGraphqlData = false, logsGraphqlErrors = false)
 
-private fun testGraph(accessTokenFetcher: AccessTokenFetcher = tokenFetcher): TestIosGraph =
+internal fun testGraph(accessTokenFetcher: AccessTokenFetcher = tokenFetcher): TestIosGraph =
   createGraphFactory<TestIosGraph.Factory>().create(
     appBuildConfig = IosAppBuildConfig(Flavor.Staging),
     accessTokenFetcher = accessTokenFetcher,
@@ -248,7 +248,7 @@ private fun testGraph(accessTokenFetcher: AccessTokenFetcher = tokenFetcher): Te
  * Answers every request [this] sends with [json], or HTTP 500 when it is null, instead of sending it, and records the
  * request's headers. The interceptor is the client's last, so it sees every header the client added.
  */
-private fun HttpClient.answerWith(json: String?): List<Headers> {
+internal fun HttpClient.answerWith(json: String?): List<Headers> {
   val sent = mutableListOf<Headers>()
   val backend = HttpClient(
     MockEngine {
@@ -266,10 +266,10 @@ private fun HttpClient.answerWith(json: String?): List<Headers> {
   return sent
 }
 
-private class Delivered<T>(val value: T?, val error: NSError?)
+internal class Delivered<T>(val value: T?, val error: NSError?)
 
 /** Starts the read as Swift does and runs the main loop until its callback arrives. */
-private fun <T> NativeSuspend<T>.await(): Delivered<T> {
+internal fun <T> NativeSuspend<T>.await(): Delivered<T> {
   val delivered = AtomicReference<Delivered<T>?>(null)
   this(
     { value, unit ->

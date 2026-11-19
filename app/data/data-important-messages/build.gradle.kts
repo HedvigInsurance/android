@@ -1,6 +1,7 @@
 plugins {
   id("hedvig.multiplatform.library.ios")
   id("hedvig.gradle.plugin")
+  id("com.rickclephas.kmp.nativecoroutines")
 }
 
 hedvig {
@@ -25,6 +26,9 @@ kotlin {
       implementation(libs.coroutines.test)
       implementation(libs.kotlin.test)
       implementation(libs.ktor.client.mock)
+    }
+    nativeMain.dependencies {
+      implementation(projects.iosDataBridge)
     }
   }
 }
