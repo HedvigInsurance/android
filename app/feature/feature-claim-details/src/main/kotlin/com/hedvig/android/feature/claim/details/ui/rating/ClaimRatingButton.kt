@@ -11,6 +11,10 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
+import hedvig.resources.CLAIM_RATING_BUTTON
+import hedvig.resources.CLAIM_RATING_SUBMITTED
+import hedvig.resources.Res
+import org.jetbrains.compose.resources.stringResource
 
 internal enum class RatingButtonState {
   Enabled,
@@ -23,11 +27,8 @@ internal fun ClaimRatingButton(state: RatingButtonState, onClick: () -> Unit, mo
   HedvigCard(onClick = onClick.takeIf { isEnabled }, modifier = modifier.fillMaxWidth()) {
     HedvigText(
       text = when (state) {
-        // TODO: Add "Rate your claim" / "Betygsätt ditt ärende" to Lokalise
-        RatingButtonState.Enabled -> "Rate your claim"
-
-        // TODO: Add "Rating submitted" / "Betyg skickat" to Lokalise
-        RatingButtonState.Submitted -> "Rating submitted"
+        RatingButtonState.Enabled -> stringResource(Res.string.CLAIM_RATING_BUTTON)
+        RatingButtonState.Submitted -> stringResource(Res.string.CLAIM_RATING_SUBMITTED)
       },
       color = if (isEnabled) Color.Unspecified else HedvigTheme.colorScheme.textDisabled,
       modifier = Modifier.padding(16.dp),

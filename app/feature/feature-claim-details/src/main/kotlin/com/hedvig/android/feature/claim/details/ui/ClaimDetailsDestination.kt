@@ -113,6 +113,7 @@ import com.hedvig.android.ui.claimstatus.model.ClaimPillType
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import hedvig.resources.CLAIMS_YOUR_CLAIM
+import hedvig.resources.CLAIM_RATING_SECTION_TITLE
 import hedvig.resources.DASHBOARD_OPEN_CHAT
 import hedvig.resources.MY_DOCUMENTS_INSURANCE_TERMS
 import hedvig.resources.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION
@@ -642,8 +643,7 @@ private fun AfterGridContent(
     }
     if (uiState.ratingButton != null) {
       Spacer(Modifier.height(16.dp))
-      // TODO: Add "Claims rating" / "Skadebetyg" to Lokalise
-      HedvigText("Claims rating", Modifier.padding(horizontal = 2.dp))
+      HedvigText(stringResource(Res.string.CLAIM_RATING_SECTION_TITLE), Modifier.padding(horizontal = 2.dp))
       Spacer(Modifier.height(8.dp))
       ClaimRatingButton(state = uiState.ratingButton, onClick = onRateClaimClick)
     }

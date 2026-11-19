@@ -46,6 +46,7 @@ import com.hedvig.android.design.system.hedvig.icon.WarningOutline
 import com.hedvig.android.memberreminders.MemberReminder
 import hedvig.resources.HOME_TODO_ADD_COINSURED_TITLE
 import hedvig.resources.HOME_TODO_ADD_COOWNER_TITLE
+import hedvig.resources.HOME_TODO_CLAIM_RATING_TITLE
 import hedvig.resources.HOME_TODO_MISSING_CHIP_ID_TITLE
 import hedvig.resources.HOME_TODO_MISSING_PAYOUT_METHOD_TITLE
 import hedvig.resources.HOME_TODO_PAYMENT_OVERDUE_TITLE
@@ -239,7 +240,7 @@ private fun MemberReminder.toToDoRowOrNull(
   is MemberReminder.ClaimRatingPending -> ToDoRowData(
     icon = HedvigIcons.Star,
     iconTint = ToDoRowIconTint.Primary,
-    title = { claimRatingToDoTitle() },
+    title = { stringResource(Res.string.HOME_TODO_CLAIM_RATING_TITLE) },
     onClick = { navigateToClaimRating(claimId) },
   )
 
@@ -358,6 +359,3 @@ private fun PreviewMemberReminderToDoList() {
     }
   }
 }
-
-// TODO: Add "Rate how we handled your claim" / "Betygsätt hur vi hanterade din skada" to Lokalise
-internal fun claimRatingToDoTitle(): String = "Rate how we handled your claim"

@@ -63,7 +63,23 @@ import com.hedvig.android.design.system.hedvig.icon.CheckFilled
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Star
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import hedvig.resources.CLAIM_RATING_COMMENT_LABEL
+import hedvig.resources.CLAIM_RATING_COMMENT_PLACEHOLDER_HAPPY
+import hedvig.resources.CLAIM_RATING_COMMENT_PLACEHOLDER_UNHAPPY
+import hedvig.resources.CLAIM_RATING_QUESTION
+import hedvig.resources.CLAIM_RATING_SCALE_HIGH
+import hedvig.resources.CLAIM_RATING_SCALE_LOW
+import hedvig.resources.CLAIM_RATING_SEND
+import hedvig.resources.CLAIM_RATING_SKIP
+import hedvig.resources.CLAIM_RATING_STAR_DESCRIPTION
+import hedvig.resources.CLAIM_RATING_THANKS_HAPPY_BODY
+import hedvig.resources.CLAIM_RATING_THANKS_HAPPY_TITLE
+import hedvig.resources.CLAIM_RATING_THANKS_UNHAPPY_BODY
+import hedvig.resources.CLAIM_RATING_THANKS_UNHAPPY_TITLE
+import hedvig.resources.CLAIM_RATING_TRUSTPILOT_BUTTON
+import hedvig.resources.GENERAL_NO_THANKS
 import hedvig.resources.Res
+import hedvig.resources.general_continue_button
 import hedvig.resources.something_went_wrong
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -152,8 +168,7 @@ private fun ClaimRatingSheetContent(
         is RatingStep.Stars, is RatingStep.Comment -> {
           val isComment = step is RatingStep.Comment
           val sendStatus = (step as? RatingStep.Comment)?.sendStatus
-          // TODO: Add "How happy are you with how we handled your claim?" / "Hur nöjd är du med hur vi hanterade din skada?" to Lokalise. The question wording is still unsettled with the data team, against Typeform's "Hur nöjd är du med upplevelsen av ditt skadeärende hos Hedvig?"
-          Title("How happy are you with how we handled your claim?")
+          Title(stringResource(Res.string.CLAIM_RATING_QUESTION))
           Spacer(Modifier.height(24.dp))
           StarRatingRow(
             selectedRating = (step as? RatingStep.Comment)?.rating,
@@ -166,9 +181,8 @@ private fun ClaimRatingSheetContent(
           ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
               Spacer(Modifier.height(24.dp))
-              // TODO: Add "Want to tell us more? (optional)" / "Vill du berätta mer? (valfritt)" to Lokalise
               HedvigText(
-                "Want to tell us more? (optional)",
+                stringResource(Res.string.CLAIM_RATING_COMMENT_LABEL),
                 style = HedvigTheme.typography.label,
                 color = HedvigTheme.colorScheme.textSecondaryTranslucent,
                 modifier = Modifier.fillMaxWidth().padding(start = 2.dp),
@@ -178,11 +192,9 @@ private fun ClaimRatingSheetContent(
                 text = comment,
                 onValueChange = onCommentChange,
                 labelText = if ((step as? RatingStep.Comment)?.rating?.let { it >= 4 } == true) {
-                  // TODO: Add "What did we do best?" / "Vad var bäst med hanteringen?" to Lokalise
-                  "What did we do best?"
+                  stringResource(Res.string.CLAIM_RATING_COMMENT_PLACEHOLDER_HAPPY)
                 } else {
-                  // TODO: Add "What could we have done better?" / "Vad kunde vi ha gjort bättre?" to Lokalise
-                  "What could we have done better?"
+                  stringResource(Res.string.CLAIM_RATING_COMMENT_PLACEHOLDER_UNHAPPY)
                 },
                 textFieldSize = Medium,
                 singleLine = false,
@@ -190,9 +202,8 @@ private fun ClaimRatingSheetContent(
                 modifier = Modifier.fillMaxWidth(),
               )
               Spacer(Modifier.height(16.dp))
-              // TODO: Add "Send" / "Skicka" to Lokalise
               HedvigButton(
-                text = "Send",
+                text = stringResource(Res.string.CLAIM_RATING_SEND),
                 onClick = { onEvent(RatingEvent.Send(comment)) },
                 enabled = true,
                 isLoading = sendStatus == SendStatus.Sending,
@@ -211,9 +222,8 @@ private fun ClaimRatingSheetContent(
             }
           }
           AnimatedVisibility(visible = !isComment) { Spacer(Modifier.height(24.dp)) }
-          // TODO: Add "Skip" / "Hoppa över" to Lokalise
           HedvigTextButton(
-            "Skip",
+            stringResource(Res.string.CLAIM_RATING_SKIP),
             onClick = { onEvent(RatingEvent.Skip) },
             enabled = sendStatus != SendStatus.Sending,
             modifier = Modifier.fillMaxWidth(),
@@ -229,41 +239,34 @@ private fun ClaimRatingSheetContent(
           )
           Spacer(Modifier.height(16.dp))
           if (step.rating >= 4) {
-            // TODO: Add "Thanks for your rating" / "Tack för ditt betyg" to Lokalise
-            Title("Thanks for your rating")
+            Title(stringResource(Res.string.CLAIM_RATING_THANKS_HAPPY_TITLE))
             Spacer(Modifier.height(8.dp))
-            // TODO: Add "Would you like to share your experience on Trustpilot too? It helps others choose insurance." / "Vill du dela din upplevelse på Trustpilot också? Det hjälper andra att välja försäkring." to Lokalise
-            Body("Would you like to share your experience on Trustpilot too? It helps others choose insurance.")
+            Body(stringResource(Res.string.CLAIM_RATING_THANKS_HAPPY_BODY))
             Spacer(Modifier.height(24.dp))
-            // TODO: Add "Write a review on Trustpilot" / "Skriv ett omdöme på Trustpilot" to Lokalise
             HedvigButton(
               onClick = onOpenTrustpilot,
               enabled = true,
               modifier = Modifier.fillMaxWidth(),
             ) {
-              HedvigText("Write a review on Trustpilot")
+              HedvigText(stringResource(Res.string.CLAIM_RATING_TRUSTPILOT_BUTTON))
               Spacer(Modifier.width(8.dp))
               Icon(HedvigIcons.ArrowNorthEast, contentDescription = null)
             }
             Spacer(Modifier.height(8.dp))
-            // TODO: Add "No thanks" / "Nej tack" to Lokalise
             HedvigTextButton(
-              "No thanks",
+              stringResource(Res.string.GENERAL_NO_THANKS),
               onClick = { onEvent(RatingEvent.Finish) },
               modifier = Modifier.fillMaxWidth(),
             )
           } else {
-            // TODO: Add "Thanks for telling us" / "Tack för att du berättade" to Lokalise
-            Title("Thanks for telling us")
+            Title(stringResource(Res.string.CLAIM_RATING_THANKS_UNHAPPY_TITLE))
             Spacer(Modifier.height(8.dp))
-            // TODO: Add "We read every answer and use it to get better. If you have questions about your claim, you can write to us." / "Vi läser alla svar och använder dem för att bli bättre. Har du frågor om ditt ärende kan du skriva till oss." to Lokalise
             Body(
-              "We read every answer and use it to get better. If you have questions about your claim, you can write to us.",
+              stringResource(Res.string.CLAIM_RATING_THANKS_UNHAPPY_BODY),
             )
             Spacer(Modifier.height(24.dp))
-            // TODO: Add "Continue" / "Fortsätt" to Lokalise
             HedvigButton(
-              text = "Continue",
+              text = stringResource(Res.string.general_continue_button),
               onClick = { onEvent(RatingEvent.Finish) },
               enabled = true,
               buttonStyle = Secondary,
@@ -302,8 +305,7 @@ private fun StarRatingRow(selectedRating: Int?, onRatingClick: (Int) -> Unit, mo
       modifier = Modifier.fillMaxWidth(),
     ) {
       (1..5).forEach { rating ->
-        // TODO: Add "%d of 5" / "%d av 5" to Lokalise
-        val ratingDescription = "$rating of 5"
+        val ratingDescription = stringResource(Res.string.CLAIM_RATING_STAR_DESCRIPTION, rating)
         val popScale = popScales[rating - 1]
         val starColor by animateColorAsState(
           targetValue = if (selectedRating != null && rating <= selectedRating) {
@@ -349,18 +351,16 @@ private fun StarRatingRow(selectedRating: Int?, onRatingClick: (Int) -> Unit, mo
     HorizontalItemsWithMaximumSpaceTaken(
       modifier = Modifier.alpha(labelsAlpha),
       startSlot = {
-        // TODO: Add "Not happy at all" / "Inte alls nöjd" to Lokalise
         HedvigText(
-          "Not happy at all",
+          stringResource(Res.string.CLAIM_RATING_SCALE_LOW),
           style = HedvigTheme.typography.label,
           color = HedvigTheme.colorScheme.textSecondaryTranslucent,
         )
       },
       endSlot = {
         Row(horizontalArrangement = Arrangement.End) {
-          // TODO: Add "Very happy" / "Mycket nöjd" to Lokalise
           HedvigText(
-            "Very happy",
+            stringResource(Res.string.CLAIM_RATING_SCALE_HIGH),
             style = HedvigTheme.typography.label,
             color = HedvigTheme.colorScheme.textSecondaryTranslucent,
           )

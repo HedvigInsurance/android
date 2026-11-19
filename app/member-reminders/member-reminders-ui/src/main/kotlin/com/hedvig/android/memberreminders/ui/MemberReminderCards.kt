@@ -39,6 +39,7 @@ import hedvig.resources.CONTRACT_COINSURED_MISSING_INFO_TEXT
 import hedvig.resources.CONTRACT_COOWNERS_MISSING_INFO_TEXT
 import hedvig.resources.CONTRACT_VIEW_CERTIFICATE_BUTTON
 import hedvig.resources.DASHBOARD_RENEWAL_PROMPTER_BODY
+import hedvig.resources.HOME_TODO_CLAIM_RATING_TITLE
 import hedvig.resources.HOME_TODO_SELECT_USAGE_DATA_TITLE
 import hedvig.resources.MISSING_CONTACT_INFO_CARD_BUTTON
 import hedvig.resources.MISSING_CONTACT_INFO_CARD_TEXT
@@ -105,7 +106,7 @@ fun getMemberReminderMessage(reminder: MemberReminder): String {
     }
 
     is MemberReminder.ClaimRatingPending -> {
-      claimRatingToDoTitle()
+      stringResource(Res.string.HOME_TODO_CLAIM_RATING_TITLE)
     }
   }
 }
