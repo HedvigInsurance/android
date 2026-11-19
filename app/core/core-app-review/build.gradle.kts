@@ -1,11 +1,16 @@
 plugins {
-  id("hedvig.jvm.library")
+  id("hedvig.multiplatform.library.ios")
   id("hedvig.gradle.plugin")
 }
-dependencies {
-  implementation(libs.androidx.datastore.core)
-  implementation(libs.androidx.datastore.preferencesCore)
-  implementation(libs.coroutines.core)
-  implementation(projects.authEventCore)
-  implementation(projects.coreCommonPublic)
+
+kotlin {
+  sourceSets {
+    commonMain.dependencies {
+      implementation(libs.androidx.datastore.core)
+      implementation(libs.androidx.datastore.preferencesCore)
+      implementation(libs.coroutines.core)
+      implementation(projects.authEventCore)
+      implementation(projects.coreCommonPublic)
+    }
+  }
 }

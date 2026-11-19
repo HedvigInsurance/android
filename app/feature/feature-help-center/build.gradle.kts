@@ -46,7 +46,6 @@ kotlin {
       implementation(projects.featureTravelCertificateNavigation)
       implementation(projects.moleculePublic)
       implementation(projects.navigationCommon)
-      implementation(projects.navigationCompose)
       implementation(projects.navigationCore)
       implementation(projects.memberQuickActions)
       implementation(projects.partnersDeflect)

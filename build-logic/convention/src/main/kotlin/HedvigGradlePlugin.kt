@@ -104,6 +104,13 @@ private fun Project.configureFeatureModuleGuidelines() {
       eachDependency {
         if (requested.group != "hedvigandroid") return@eachDependency // Only check for our own modules
         if (requested.name == thisModuleName) return@eachDependency // Only check deps to other modules
+        require(requested.name != "app-shell") {
+          "Hedvig build error on a module marked as featureModule() in HGP." +
+            "\nYou are trying to depend on app-shell from a feature module." +
+            "\nIn particular, $thisModuleName is trying to depend on app-shell." +
+            "\napp-shell owns the back stack controller and the cross-feature navigation wiring, which features " +
+            "must not reach. Take a navigateToX lambda in your entries function instead."
+        }
         // A `-navigation` module exists precisely to be depended on across features.
         if (requested.name.isFeatureNavigationModule()) return@eachDependency
         val requestedModuleIsAFeatureModule = requested.name.isFeatureModule()
