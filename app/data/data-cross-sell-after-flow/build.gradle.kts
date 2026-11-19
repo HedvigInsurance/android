@@ -1,10 +1,14 @@
 plugins {
-  id("hedvig.jvm.library")
+  id("hedvig.multiplatform.library.ios")
   id("hedvig.gradle.plugin")
 }
 
-dependencies {
-  implementation(libs.arrow.core)
-  implementation(libs.coroutines.core)
-  implementation(projects.coreCommonPublic)
+kotlin {
+  sourceSets {
+    commonMain.dependencies {
+      implementation(libs.arrow.core)
+      implementation(libs.coroutines.core)
+      implementation(projects.coreCommonPublic)
+    }
+  }
 }

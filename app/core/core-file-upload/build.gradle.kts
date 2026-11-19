@@ -6,12 +6,14 @@ plugins {
 
 hedvig {
   serialization()
+  compose()
 }
 
 kotlin {
   sourceSets {
     commonMain.dependencies {
       implementation(libs.arrow.core)
+      implementation(libs.jetbrains.compose.runtime)
       implementation(libs.kotlinx.serialization.core)
       implementation(libs.kotlinx.serialization.json)
       implementation(libs.ktor.client.core)
@@ -33,6 +35,12 @@ kotlin {
       implementation(libs.coroutines.test)
       implementation(libs.junit)
       implementation(libs.ktor.client.mock)
+      implementation(projects.loggingTest)
     }
   }
+}
+
+// The failure dialog of openPdf must never open, and block, in a test run.
+tasks.withType<Test>().configureEach {
+  systemProperty("java.awt.headless", "true")
 }

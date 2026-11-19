@@ -1,0 +1,4 @@
+# Files under src/commonMain that checkCommonMainImports skips, as paths relative to the repository root.
+# A path alone skips the whole file. A path followed by an entry of forbiddenCommonMainNames (in
+# build-logic/.../CommonMainImportGuard.kt) allows only that entry in that file.
+# Precede every entry with a # comment giving the reason.
