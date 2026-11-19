@@ -82,13 +82,14 @@ interface NetworkMetroProviders {
   }
 }
 
-private fun buildKtorClient(
+internal fun buildKtorClient(
   hedvigBuildConstants: HedvigBuildConstants,
   languageService: LanguageService,
   deviceIdFetcher: DeviceIdFetcher,
   extraKtorClientConfiguration: ExtraKtorClientConfiguration,
+  engineFactory: HttpClientEngineFactory<*> = httpClientEngineFactory(),
 ): HttpClient {
-  return HttpClient(httpClientEngineFactory()) {
+  return HttpClient(engineFactory) {
     installDatadogKtorPlugin(hedvigBuildConstants)
     install(HttpTimeout) {
       connectTimeoutMillis = CONNECT_TIMEOUT.inWholeMilliseconds
@@ -104,9 +105,11 @@ private fun buildKtorClient(
       }
     }
     install(HttpSend)
+    // Registered on the config so that clients derived through HttpClient.config {} keep it too
+    install("DeviceIdInterceptor") {
+      plugin(HttpSend).intercept(DeviceIdInterceptor(deviceIdFetcher))
+    }
     extraKtorClientConfiguration.configure(this)
-  }.apply {
-    plugin(HttpSend).intercept(DeviceIdInterceptor(deviceIdFetcher))
   }
 }
 
