@@ -35,6 +35,12 @@ internal class SingleFlight<K : Any, V>(
 
   suspend fun await(key: K, scope: CoroutineScope, timeout: Duration, block: suspend () -> V): V {
     val entry = locked {
+      // A finished call's completion handler can run after its waiters already saw the result, so drop it here too;
+      // joining it would hand this caller that old result or failure instead of running the call again.
+      if (inFlight[key]?.call?.isCompleted == true) {
+        inFlight.remove(key)
+        stuck.remove(key)
+      }
       if (key in stuck) throw CallStuck()
       val entry = inFlight[key] ?: Entry(scope.async(start = CoroutineStart.LAZY) { block() }).also { entry ->
         inFlight[key] = entry
