@@ -668,13 +668,14 @@ other.
 ## CI/CD
 
 GitHub Actions workflows (in `.github/workflows/`):
-- **pr.yml** - PR checks (lint, test, build)
+- **pr.yml** - PR checks (lint, test, build, the iOS source sets compiled to klibs on Linux)
 - **staging.yml** - Staging builds
 - **upload-to-play-store.yml** - Production releases
 - **graphql-schema.yml** - Schema updates
 - **strings.yml** - Translation updates
 - **unused-resources.yml** - Resource cleanup checks
-- **umbrella.yml** - Publishes the iOS umbrella framework on weeknights, or on manual trigger
+- **umbrella.yml** - Publishes the iOS umbrella framework on weeknights, or on manual trigger, after ios-shared.yml passes
+- **ios-shared.yml** - Daily on macOS: iOS simulator tests of every iOS module, the release device framework link and its checks
 
 ## Important Files
 

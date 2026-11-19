@@ -1,0 +1,54 @@
+name: iOS shared code
+
+# Normal PRs run on Linux, which compiles the iOS source sets to klibs but cannot run them. This job runs what only
+# macOS can: every module's tests on the iOS simulator, the release device framework link, and the checks that the
+# test hook stays out of it and the framework stays within its size budget. It runs once a day and as a required step
+# of the umbrella release. GitHub emails a failed scheduled run to whoever last changed its schedule.
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+  workflow_call:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: false
+
+jobs:
+  ios_shared:
+    name: iOS simulator tests and framework link
+    runs-on: macos-26-xlarge
+    env:
+      # The release iosArm64 framework's shipped bytes (__TEXT plus non-zerofill __DATA) may not exceed this.
+      MAX_SHIPPED_BYTES: 20000000
+    steps:
+      - uses: actions/checkout@v7
+      - name: Setup CI
+        uses: ./.github/actions/common-setup
+        with:
+          gradle-cache-read-only: 'false'
+          download-schema: 'false'
+          download-strings: 'false'
+          datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
+          lokalise-id: ${{ secrets.LOKALISE_ID }}
+          lokalise-token: ${{ secrets.LOKALISE_TOKEN }}
+      - name: Tests on the iOS simulator
+        run: ./gradlew iosSimulatorArm64Test checkUmbrellaClasspath
+      - name: Umbrella tests with the test hook in the framework
+        # The header snapshot of the test hook only runs when the simulator framework carries it.
+        run: ./gradlew :umbrella:iosSimulatorArm64Test -Phedvig.ios.testHook=true
+      - name: Link the release device framework
+        run: ./gradlew :umbrella:linkReleaseFrameworkIosArm64
+      - name: Check the device framework
+        run: |
+          BIN=app/umbrella/build/bin/iosArm64/releaseFramework/HedvigShared.framework/HedvigShared
+          if nm "$BIN" | grep -E 'CannedBackend|MockedNetworkIosGraph|TestGraphs|ExampleReads'; then
+            echo "The test hook reached the device framework"
+            exit 1
+          fi
+          SHIPPED=$(size -m "$BIN" | grep -E 'Section \(__(TEXT|DATA), ' | grep -v zerofill | sed -E 's/.*: ([0-9]+).*/\1/' | paste -sd+ - | bc)
+          echo "Shipped bytes (__TEXT + non-zerofill __DATA): $SHIPPED, budget $MAX_SHIPPED_BYTES"
+          if [ "$SHIPPED" -gt "$MAX_SHIPPED_BYTES" ]; then
+            echo "The device framework is over its size budget"
+            exit 1
+          fi
