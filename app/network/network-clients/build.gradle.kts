@@ -47,6 +47,9 @@ kotlin {
     jvmMain.dependencies {
       implementation(libs.ktor.client.okhttp)
     }
+    jvmTest.dependencies {
+      implementation(libs.coroutines.test)
+    }
     nativeMain.dependencies {
       implementation(libs.ktor.client.darwin)
     }
