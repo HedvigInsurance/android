@@ -45,6 +45,17 @@ interface LogcatLogger {
     }
 
     /**
+     * Installs [logger] in place of the current one, if any, in one step, so no line is lost or reaches the no-op
+     * logger in between. For a host that installs a better logger once it can.
+     */
+    fun replace(logger: LogcatLogger) {
+      synchronized(this) {
+        installedThrowable = RuntimeException("Previous logger installed here")
+        this.logger = logger
+      }
+    }
+
+    /**
      * Replaces the current logger (if any) with a no-op logger.
      */
     fun uninstall() {

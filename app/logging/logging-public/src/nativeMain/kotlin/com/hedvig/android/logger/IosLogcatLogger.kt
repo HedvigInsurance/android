@@ -1,28 +1,83 @@
+@file:OptIn(ExperimentalObjCRefinement::class)
+
 package com.hedvig.android.logger
 
+import kotlin.experimental.ExperimentalObjCRefinement
+import kotlin.native.HiddenFromObjC
 import platform.Foundation.NSLog
 
-class IosLogcatLogger : LogcatLogger {
+/**
+ * Where the iOS app takes Kotlin's log lines, for example to forward them to its own logger. Implemented in Swift and
+ * installed with [IosLogcatLogger.Companion.install]. Called on whichever thread logged the line.
+ */
+interface IosLogSink {
+  /**
+   * One line at [priority] from [tag]. A throwable logged with the line is named by its class only, since its message
+   * can quote what was sent.
+   */
+  fun log(priority: LogPriority, tag: String?, message: String)
+}
+
+/** Writes every line at [minimumPriority] or above to [write], and drops the rest without building their message. */
+class IosLogcatLogger internal constructor(
+  private val minimumPriority: LogPriority,
+  private val write: (priority: LogPriority, tag: String?, message: String) -> Unit,
+) : LogcatLogger {
   override fun log(priority: LogPriority, throwable: Throwable?, tag: String?, message: () -> String) {
-    val prefix = when (priority) {
-      LogPriority.VERBOSE -> "V"
-      LogPriority.DEBUG -> "D"
-      LogPriority.INFO -> "I"
-      LogPriority.WARN -> "W"
-      LogPriority.ERROR -> "E"
-      LogPriority.ASSERT -> "A"
-    }
-    val tagPart = if (tag != null) "[$tag] " else ""
-    val messagePart = message()
-    val throwablePart = if (throwable != null) "\n${throwable.stackTraceToString()}" else ""
-    NSLog("%s", "$prefix/$tagPart$messagePart$throwablePart")
+    if (priority < minimumPriority) return
+    val throwablePart = if (throwable != null) " (${throwable::class.simpleName})" else ""
+    write(priority, tag, message() + throwablePart)
   }
 
   companion object {
+    /** Installs a logger writing every line, with its stack trace, to `NSLog`, unless a logger is installed. */
     fun install() {
       if (!LogcatLogger.isInstalled) {
-        LogcatLogger.install(IosLogcatLogger())
+        LogcatLogger.install(NSLogLogger)
+      }
+    }
+
+    /**
+     * Sends every line at [minimumPriority] or above to [sink], replacing the logger installed before, if any. Call it
+     * before anything else in Kotlin logs, so no line goes to `NSLog` instead.
+     */
+    fun install(sink: IosLogSink, minimumPriority: LogPriority) {
+      LogcatLogger.replace(IosLogcatLogger(minimumPriority, sink::log))
+    }
+
+    /**
+     * Installs a logger writing lines at [minimumPriority] or above to `NSLog`, unless a logger is installed. For Kotlin
+     * code that must not log into the void when the iOS app installed nothing.
+     */
+    @HiddenFromObjC
+    fun installFallback(minimumPriority: LogPriority) {
+      if (!LogcatLogger.isInstalled) {
+        LogcatLogger.install(
+          IosLogcatLogger(minimumPriority) { priority, tag, message ->
+            nsLog(priority, tag, message)
+          },
+        )
       }
     }
   }
+}
+
+private object NSLogLogger : LogcatLogger {
+  override fun log(priority: LogPriority, throwable: Throwable?, tag: String?, message: () -> String) {
+    val throwablePart = if (throwable != null) "\n${throwable.stackTraceToString()}" else ""
+    nsLog(priority, tag, message() + throwablePart)
+  }
+}
+
+private fun nsLog(priority: LogPriority, tag: String?, message: String) {
+  val prefix = when (priority) {
+    LogPriority.VERBOSE -> "V"
+    LogPriority.DEBUG -> "D"
+    LogPriority.INFO -> "I"
+    LogPriority.WARN -> "W"
+    LogPriority.ERROR -> "E"
+    LogPriority.ASSERT -> "A"
+  }
+  val tagPart = if (tag != null) "[$tag] " else ""
+  NSLog("%s", "$prefix/$tagPart$message")
 }
