@@ -18,7 +18,11 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 
-internal expect val mainDispatcher: CoroutineContext
+/**
+ * The context [MoleculeViewModel] runs its presenter in unless it is given another scope. It carries the
+ * `MonotonicFrameClock` that `RecompositionMode.ContextClock` requires.
+ */
+expect val mainDispatcher: CoroutineContext
 
 abstract class MoleculeViewModel<Event, State>(
   initialState: State,

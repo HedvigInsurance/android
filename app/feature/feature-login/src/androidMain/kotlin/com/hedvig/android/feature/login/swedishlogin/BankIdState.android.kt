@@ -1,0 +1,75 @@
+package com.hedvig.android.feature.login.swedishlogin
+
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import com.eygraber.uri.toAndroidUri
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
+
+@Composable
+internal actual fun rememberBankIdState(bankIdUri: com.eygraber.uri.Uri): BankIdState {
+  val context = LocalContext.current
+  return remember(context, bankIdUri) {
+    BankIdStateImpl(bankIdUri.toAndroidUri(), context).also {
+      it.initialize()
+    }
+  }
+}
+
+@Stable
+private class BankIdStateImpl(
+  val bankIdUri: Uri,
+  val context: Context,
+) : BankIdState {
+  override var canOpenBankId: Boolean by mutableStateOf(false)
+
+  override fun tryOpenBankId() {
+    if (!canOpenBankId) {
+      logcat(LogPriority.INFO) { "BankID not found, showing QR code instead" }
+      return
+    }
+    logcat(LogPriority.INFO) { "Opened BankID to handle login" }
+    context.startActivity(Intent(Intent.ACTION_VIEW, bankIdUri))
+  }
+
+  fun initialize() {
+    canOpenBankId = context.canBankIdAppHandleUri(bankIdUri).also {
+      // The URI carries a single-use autostart token, so log only what identifies the target.
+      logcat { "Trying to resolve BankID app for ${bankIdUri.host} | result: canOpenBankId=$it" }
+    }
+  }
+
+  @SuppressLint("QueryPermissionsNeeded")
+  private fun Context.canBankIdAppHandleUri(uri: Uri): Boolean {
+    return try {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        packageManager.getPackageInfo(
+          BankIdAppPackageName,
+          PackageManager.PackageInfoFlags.of(0),
+        )
+      } else {
+        @Suppress("DEPRECATION")
+        packageManager.getPackageInfo(BankIdAppPackageName, 0)
+      }
+      true
+    } catch (e: PackageManager.NameNotFoundException) {
+      logcat(LogPriority.WARN) {
+        "Could not resolve BankID app for ${uri.host} + exception: $e"
+      }
+      false
+    }
+  }
+}
+
+private const val BankIdAppPackageName = "com.bankid.bus"

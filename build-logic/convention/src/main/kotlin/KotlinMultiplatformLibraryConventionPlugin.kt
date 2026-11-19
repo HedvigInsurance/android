@@ -1,13 +1,19 @@
 import com.hedvig.android.configureKotlinCompilerOptions
 import org.gradle.accessors.dm.LibrariesForLibs
+import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.jvm.toolchain.JavaLanguageVersion
+import org.gradle.jvm.toolchain.JavaToolchainService
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.tasks.UsesKotlinJavaToolchain
 
 /**
  * A Kotlin Multiplatform library with a JVM target, plus an Android target when
@@ -37,6 +43,21 @@ private fun Project.applyKotlinMultiplatform(withIos: Boolean) {
     apply(libs.plugins.kotlinMultiplatform.get().pluginId)
   }
   configureKotlinMultiplatform(withIos)
+  registerTestLifecycleTask()
+}
+
+/**
+ * Gives the module a `test` task, so `./gradlew test` and `./gradlew :module:test` run its unit tests like they do
+ * in Android and JVM modules. The Kotlin plugin names the JVM test task `jvmTest`, and the Android host tests run
+ * as `testAndroidHostTest` in modules that enable them with `withHostTest {}`.
+ */
+private fun Project.registerTestLifecycleTask() {
+  tasks.register("test") {
+    group = "verification"
+    description = "Runs the JVM unit tests, and the Android host tests when the module has them."
+    dependsOn("jvmTest")
+    dependsOn(tasks.named { it == "testAndroidHostTest" })
+  }
 }
 
 /**
@@ -62,6 +83,27 @@ private fun Project.configureKotlinMultiplatform(withIos: Boolean) {
     jvm {
       compilerOptions {
         jvmTarget.set(JvmTarget.JVM_21)
+        jvmDefault.set(JvmDefaultMode.NO_COMPATIBILITY)
+      }
+      // The JDK 21 toolchain and release that `hedvig.jvm.library` gives a plain JVM module, set on the JVM target's
+      // tasks only, so the Android target's compilations are left to AGP.
+      val javaToolchains = project.extensions.getByType<JavaToolchainService>()
+      val jdk21 = JavaLanguageVersion.of(JavaVersion.VERSION_21.majorVersion)
+      compilations.configureEach {
+        compileTaskProvider.configure {
+          (this as UsesKotlinJavaToolchain).kotlinJavaToolchain.toolchain.use(
+            javaToolchains.launcherFor { languageVersion.set(jdk21) },
+          )
+        }
+        compileJavaTaskProvider?.configure {
+          javaCompiler.set(javaToolchains.compilerFor { languageVersion.set(jdk21) })
+          options.release.set(JavaVersion.VERSION_21.majorVersion.toInt())
+        }
+      }
+      testRuns.configureEach {
+        executionTask.configure {
+          javaLauncher.set(javaToolchains.launcherFor { languageVersion.set(jdk21) })
+        }
       }
     }
     compilerOptions {

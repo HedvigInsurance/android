@@ -7,7 +7,9 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.common.di.BaseHttpClient
 import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.MemberDataLogging
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.logger.memberData
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
@@ -69,7 +71,10 @@ internal class AndroidDownloadPdfUseCaseImpl(
         if (exception is CancellationException) {
           throw exception
         }
-        logcat(LogPriority.ERROR, exception) { "Could not download pdf with: $exception" }
+        // Ktor quotes the request URL, which is signed, in the messages of its timeout exceptions.
+        logcat(LogPriority.ERROR, exception.takeIf { MemberDataLogging.isAllowed }) {
+          "Could not download pdf with: ${memberData(exception, exception::class.simpleName.toString())}"
+        }
         raise(ErrorMessage("Could not download pdf"))
       }
     }

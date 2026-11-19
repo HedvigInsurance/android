@@ -49,11 +49,14 @@ enum class StoredLanguageMigration {
  */
 fun storedLanguageMigration(storedLocaleTags: List<String>, phoneLocaleTags: List<String>): StoredLanguageMigration {
   val storedTag = storedLocaleTags.firstOrNull() ?: return StoredLanguageMigration.Keep
-  if (storedTag.languageSubtag() !in setOf(SWEDISH, ENGLISH)) return StoredLanguageMigration.Clear
+  if (!isSupportedLocaleTag(storedTag)) return StoredLanguageMigration.Clear
   val storedLanguage = resolveLanguage(storedLocaleTags = storedLocaleTags, phoneLocaleTags = emptyList())
   val phoneLanguage = resolveLanguage(storedLocaleTags = emptyList(), phoneLocaleTags = phoneLocaleTags)
   return if (storedLanguage == phoneLanguage) StoredLanguageMigration.Clear else StoredLanguageMigration.Keep
 }
+
+/** Whether [localeTag] names a language the app is translated into, Swedish or English. */
+fun isSupportedLocaleTag(localeTag: String): Boolean = localeTag.languageSubtag() in setOf(SWEDISH, ENGLISH)
 
 private const val SWEDISH = "sv"
 private const val ENGLISH = "en"
