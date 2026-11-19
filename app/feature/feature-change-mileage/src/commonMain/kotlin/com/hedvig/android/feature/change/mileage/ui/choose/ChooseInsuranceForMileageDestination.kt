@@ -35,6 +35,8 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.change.mileage.data.MileageContract
+import hedvig.resources.CHANGE_MILEAGE_EMPTY_STATE
+import hedvig.resources.CHANGE_MILEAGE_OPTION_TITLE
 import hedvig.resources.Res
 import hedvig.resources.TIER_FLOW_SELECT_INSURANCE_SUBTITLE
 import hedvig.resources.general_close_button
@@ -82,8 +84,7 @@ private fun ChooseInsuranceForMileageScreen(
       HedvigScaffold(navigateUp = navigateUp) {
         Spacer(Modifier.weight(1f))
         EmptyState(
-          // TODO: Add "You have no car insurance where the mileage can be changed" / "Du har ingen bilförsäkring där körsträckan kan ändras" to Lokalise
-          text = "Du har ingen bilförsäkring där körsträckan kan ändras",
+          text = stringResource(Res.string.CHANGE_MILEAGE_EMPTY_STATE),
           description = null,
           iconStyle = INFO,
           buttonStyle = NoButton,
@@ -120,9 +121,8 @@ private fun ChooseInsuranceForMileageScreen(
         },
       ) {
         Spacer(Modifier.height(8.dp))
-        // TODO: Add "Change mileage" / "Ändra körsträcka" to Lokalise
         HedvigText(
-          text = "Ändra körsträcka",
+          text = stringResource(Res.string.CHANGE_MILEAGE_OPTION_TITLE),
           style = HedvigTheme.typography.headlineMedium,
           modifier = Modifier.padding(horizontal = 16.dp),
         )

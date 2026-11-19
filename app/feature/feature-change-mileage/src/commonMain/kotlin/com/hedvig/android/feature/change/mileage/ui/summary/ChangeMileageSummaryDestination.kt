@@ -50,6 +50,7 @@ import com.hedvig.android.feature.change.mileage.navigation.ChangeMileageSummary
 import com.hedvig.android.feature.change.mileage.ui.ContractHeader
 import com.hedvig.android.feature.change.mileage.ui.MileageCard
 import com.hedvig.android.feature.change.mileage.ui.start.previewQuotes
+import hedvig.resources.CHANGE_MILEAGE_SUMMARY_FOOTER
 import hedvig.resources.CONTRACT_ADD_COINSURED_STARTS_FROM
 import hedvig.resources.GENERAL_ARE_YOU_SURE
 import hedvig.resources.GENERAL_NO
@@ -143,8 +144,7 @@ private fun ChangeMileageSummaryScreen(
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
     HedvigText(
-      // TODO: Add "Your new price will be charged from your next payment." / "Ditt nya pris dras från och med nästa betalning." to Lokalise
-      text = "Ditt nya pris dras från och med nästa betalning.",
+      text = stringResource(Res.string.CHANGE_MILEAGE_SUMMARY_FOOTER),
       style = HedvigTheme.typography.label,
       color = HedvigTheme.colorScheme.textSecondary,
       textAlign = TextAlign.Center,

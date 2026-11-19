@@ -28,6 +28,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
+import hedvig.resources.CHANGE_MILEAGE_SUCCESS
 import hedvig.resources.GENERAL_RETRY
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
 import hedvig.resources.Res
@@ -50,8 +51,7 @@ internal fun ChangeMileageSuccessScreen(
   ResultScreenLayout(onClose = popBackstack) {
     EmptyState(
       text = stringResource(Res.string.TIER_FLOW_COMMIT_PROCESSING_TITLE),
-      // TODO: Add "Your mileage will be %1$s per year from %2$s, and your new price is %3$s." / "Din körsträcka blir %1$s per år från %2$s och ditt nya pris är %3$s." to Lokalise
-      description = "Din körsträcka blir $newMileageDisplayName per år från $date och ditt nya pris är $price.",
+      description = stringResource(Res.string.CHANGE_MILEAGE_SUCCESS, newMileageDisplayName, date, price),
       iconStyle = SUCCESS,
       buttonStyle = NoButton,
       modifier = Modifier.fillMaxWidth(),

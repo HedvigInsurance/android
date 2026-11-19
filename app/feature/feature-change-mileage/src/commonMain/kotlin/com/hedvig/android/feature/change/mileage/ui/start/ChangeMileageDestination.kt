@@ -41,7 +41,7 @@ import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIcon
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
-import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedLinearProgress
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -73,6 +73,15 @@ import com.hedvig.android.feature.change.mileage.data.MileageDisplayItem
 import com.hedvig.android.feature.change.mileage.data.MileageQuote
 import com.hedvig.android.feature.change.mileage.ui.ContractHeader
 import com.hedvig.android.feature.change.mileage.ui.MileageCard
+import hedvig.resources.CHANGE_MILEAGE_CURRENT_LABEL
+import hedvig.resources.CHANGE_MILEAGE_INFO_BUTTON
+import hedvig.resources.CHANGE_MILEAGE_INFO_TEXT
+import hedvig.resources.CHANGE_MILEAGE_LABEL
+import hedvig.resources.CHANGE_MILEAGE_LOADING_STATE
+import hedvig.resources.CHANGE_MILEAGE_NOTICE
+import hedvig.resources.CHANGE_MILEAGE_OPTION_TITLE
+import hedvig.resources.CHANGE_MILEAGE_PICKER_SUBTITLE
+import hedvig.resources.CHANGE_MILEAGE_SCREEN_SUBTITLE
 import hedvig.resources.GENERAL_CONFIRM
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
 import hedvig.resources.Res
@@ -112,7 +121,7 @@ private fun ChangeMileageScreen(
 ) {
   when (uiState) {
     ChangeMileageUiState.Loading -> {
-      HedvigFullScreenCenterAlignedProgress()
+      HedvigFullScreenCenterAlignedLinearProgress(title = stringResource(Res.string.CHANGE_MILEAGE_LOADING_STATE))
     }
 
     ChangeMileageUiState.Failure -> {
@@ -166,15 +175,12 @@ private fun ChangeMileageSuccessScreen(
 ) {
   val howFarDoIDriveSheetState = rememberHedvigBottomSheetState<Unit>()
   HedvigBottomSheet(howFarDoIDriveSheetState) {
-    // TODO: Add "How far do I drive?" / "Hur långt kör jag?" to Lokalise
     HedvigText(
-      text = "Hur långt kör jag?",
+      text = stringResource(Res.string.CHANGE_MILEAGE_INFO_BUTTON),
       modifier = Modifier.semantics { heading() },
     )
-    // TODO: Add the explanation copy for "How far do I drive?" to Lokalise once product has provided it
     HedvigText(
-      text = "Räkna med all körning under ett år, av alla som kör bilen. " +
-        "Jämför gärna mätarställningen med förra årets besiktning.",
+      text = stringResource(Res.string.CHANGE_MILEAGE_INFO_TEXT),
       color = HedvigTheme.colorScheme.textSecondary,
     )
     Spacer(Modifier.height(24.dp))
@@ -203,15 +209,13 @@ private fun ChangeMileageSuccessScreen(
     },
   ) {
     Spacer(Modifier.height(8.dp))
-    // TODO: Add "Change mileage" / "Ändra körsträcka" to Lokalise
     HedvigText(
-      text = "Ändra körsträcka",
+      text = stringResource(Res.string.CHANGE_MILEAGE_OPTION_TITLE),
       style = HedvigTheme.typography.headlineMedium,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
-    // TODO: Add "Choose how far the car is driven per year" / "Välj hur långt bilen körs per år" to Lokalise
     HedvigText(
-      text = "Välj hur långt bilen körs per år",
+      text = stringResource(Res.string.CHANGE_MILEAGE_SCREEN_SUBTITLE),
       style = HedvigTheme.typography.headlineMedium.copy(
         lineBreak = LineBreak.Heading,
         color = HedvigTheme.colorScheme.textSecondary,
@@ -237,8 +241,7 @@ private fun ChangeMileageSuccessScreen(
     )
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
-      // TODO: Add "How far do I drive?" / "Hur långt kör jag?" to Lokalise
-      text = "Hur långt kör jag?",
+      text = stringResource(Res.string.CHANGE_MILEAGE_INFO_BUTTON),
       buttonSize = Large,
       onClick = { howFarDoIDriveSheetState.show() },
       modifier = Modifier
@@ -262,8 +265,7 @@ private fun MileageCustomizationCard(
       subtitle = uiState.contract.exposureDisplayName,
     )
     Spacer(Modifier.height(16.dp))
-    // TODO: Add "Mileage per year" / "Körsträcka per år" to Lokalise
-    val label = "Körsträcka per år"
+    val label = stringResource(Res.string.CHANGE_MILEAGE_LABEL)
     DropdownWithDialog(
       dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
       style = Label(
@@ -293,9 +295,7 @@ private fun MileageCustomizationCard(
     if (uiState.isLowerThanCurrentSelected) {
       Spacer(Modifier.height(4.dp))
       HedvigNotificationCard(
-        // TODO: Add "If the car is driven further than you have chosen, the compensation can be lower in case of damage. You can change the mileage whenever you want." / "Om bilen körs längre än du har valt kan ersättningen bli lägre vid en skada. Du kan ändra körsträckan när du vill." to Lokalise
-        message = "Om bilen körs längre än du har valt kan ersättningen bli lägre vid en skada. " +
-          "Du kan ändra körsträckan när du vill.",
+        message = stringResource(Res.string.CHANGE_MILEAGE_NOTICE),
         priority = NotificationDefaults.NotificationPriority.Info,
         style = NotificationDefaults.InfoCardStyle.Default,
         modifier = Modifier.fillMaxWidth(),
@@ -351,23 +351,20 @@ private fun MileagePickerDialogContent(
   Column(Modifier.verticalScroll(rememberScrollState())) {
     Spacer(Modifier.height(16.dp))
     HedvigText(
-      // TODO: Add "Choose mileage" / "Välj körsträcka" to Lokalise
-      text = "Välj körsträcka",
+      text = stringResource(Res.string.CHANGE_MILEAGE_LABEL),
       textAlign = TextAlign.Center,
       modifier = Modifier
         .fillMaxWidth()
         .semantics { heading() },
     )
     HedvigText(
-      // TODO: Add "How far the car is driven per year, by everyone who drives it" / "Hur långt bilen körs per år, av alla som kör den" to Lokalise
-      text = "Hur långt bilen körs per år, av alla som kör den",
+      text = stringResource(Res.string.CHANGE_MILEAGE_PICKER_SUBTITLE),
       color = HedvigTheme.colorScheme.textSecondary,
       textAlign = TextAlign.Center,
       modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(24.dp))
-    // TODO: Add "Current" / "Nuvarande" to Lokalise
-    val currentLabel = "Nuvarande"
+    val currentLabel = stringResource(Res.string.CHANGE_MILEAGE_CURRENT_LABEL)
     RadioGroup(
       options = quotes.map { quote ->
         RadioOption(

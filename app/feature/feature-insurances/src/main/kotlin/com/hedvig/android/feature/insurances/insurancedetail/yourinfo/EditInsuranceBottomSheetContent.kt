@@ -29,6 +29,8 @@ import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
+import hedvig.resources.CHANGE_MILEAGE_OPTION_SUBTITLE
+import hedvig.resources.CHANGE_MILEAGE_OPTION_TITLE
 import hedvig.resources.CONTRACT_CHANGE_INFORMATION_TITLE
 import hedvig.resources.CONTRACT_EDIT_COINSURED
 import hedvig.resources.EDIT_COOWNER_SUBTITLE
@@ -71,10 +73,8 @@ internal fun EditInsuranceBottomSheetContent(
       add(
         RadioOption(
           RadioOptionId("5"),
-          // TODO: Add "Change mileage" / "Ändra körsträcka" to Lokalise
-          "Ändra körsträcka",
-          // TODO: Add "How far the car is driven per year" / "Hur långt bilen körs per år" to Lokalise
-          "Hur långt bilen körs per år",
+          stringResource(Res.string.CHANGE_MILEAGE_OPTION_TITLE),
+          stringResource(Res.string.CHANGE_MILEAGE_OPTION_SUBTITLE),
         ),
       )
     }
