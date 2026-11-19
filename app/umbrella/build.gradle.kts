@@ -81,4 +81,9 @@ kotlin {
   }
 }
 
+// HeaderSnapshotTest reads the header of the simulator debug framework.
+tasks.named("iosSimulatorArm64Test") {
+  dependsOn("linkDebugFrameworkIosSimulatorArm64")
+}
+
 registerUmbrellaClasspathGuard()
