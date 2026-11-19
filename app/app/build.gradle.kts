@@ -158,6 +158,7 @@ dependencies {
   implementation(projects.apolloCore)
   implementation(projects.apolloNetworkCacheManager)
   implementation(projects.apolloOperationError)
+  implementation(projects.appShell)
   implementation(projects.authCorePublic)
   implementation(projects.composeUi)
   implementation(projects.coreAppReview)

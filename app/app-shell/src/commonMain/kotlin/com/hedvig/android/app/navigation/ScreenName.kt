@@ -26,14 +26,14 @@ import kotlin.reflect.KClass
  * collide the same way, which is the other reason to keep that headroom. A fully qualified class name is
  * unique by construction, and `ScreenNameTest` asserts it holds across every key on the classpath.
  */
-internal fun HedvigNavKey.screenName(): String = when (this) {
+fun HedvigNavKey.screenName(): String = when (this) {
   is AnalyticsNamed -> analyticsName.removePrefix(FEATURE_PACKAGE_PREFIX)
   else -> screenNameFor(this::class)
 }
 
-internal fun screenNameFor(keyClass: KClass<*>): String {
-  val qualifiedName = keyClass.qualifiedName ?: return keyClass.simpleName ?: keyClass.java.name
+fun screenNameFor(keyClass: KClass<*>): String {
+  val qualifiedName = keyClass.qualifiedName ?: return keyClass.simpleName ?: keyClass.toString()
   return qualifiedName.removePrefix(FEATURE_PACKAGE_PREFIX)
 }
 
-internal const val FEATURE_PACKAGE_PREFIX = "com.hedvig.android.feature."
+const val FEATURE_PACKAGE_PREFIX = "com.hedvig.android.feature."

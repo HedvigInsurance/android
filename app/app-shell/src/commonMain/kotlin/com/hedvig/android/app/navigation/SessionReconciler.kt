@@ -43,7 +43,7 @@ import kotlinx.coroutines.launch
  */
 @SingleIn(ActivityRetainedScope::class)
 @Inject
-internal class SessionReconciler(
+class SessionReconciler(
   private val backstackController: BackstackController,
   private val authTokenService: AuthTokenService,
   private val demoManager: DemoManager,

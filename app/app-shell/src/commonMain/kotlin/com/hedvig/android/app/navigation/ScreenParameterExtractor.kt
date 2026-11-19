@@ -29,7 +29,7 @@ import kotlinx.serialization.modules.SerializersModule
  */
 @SingleIn(AppScope::class)
 @Inject
-internal class ScreenParameterExtractor(
+class ScreenParameterExtractor(
   serializersModules: Set<SerializersModule>,
 ) {
   private val json = Json {
