@@ -1803,6 +1803,7 @@ internal fun PreviewHomeScreen(
                 "Read more",
                 "",
               ),
+              VeryImportantMessage.Severity.Warning,
             ),
           ),
           memberReminders = MemberReminders(

@@ -29,7 +29,7 @@ class JvmNetworkLogPolicyTest {
   }
 
   @Test
-  fun `HTTP bodies are logged outside production builds and GraphQL data and errors in every build`() {
+  fun `HTTP bodies and GraphQL data are logged outside production builds and GraphQL errors in every build`() {
     val provided = buildConfigs.mapValues { (_, appBuildConfig) ->
       val dataDirectory = createTempDirectory("network-log-policy-test").toFile()
       try {
@@ -44,9 +44,9 @@ class JvmNetworkLogPolicyTest {
       mapOf(
         "Android debug" to listOf(true, true, true),
         "Android staging" to listOf(true, true, true),
-        "Android release" to listOf(false, true, true),
+        "Android release" to listOf(false, false, true),
         "desktop staging" to listOf(true, true, true),
-        "desktop production" to listOf(false, true, true),
+        "desktop production" to listOf(false, false, true),
       ),
       provided,
     )

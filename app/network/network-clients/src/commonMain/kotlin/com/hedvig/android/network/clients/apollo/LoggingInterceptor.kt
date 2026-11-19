@@ -3,8 +3,10 @@ package com.hedvig.android.network.clients.apollo
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.ApolloRequest
 import com.apollographql.apollo.api.ApolloResponse
+import com.apollographql.apollo.api.CustomScalarAdapters
 import com.apollographql.apollo.api.Error as ApolloKotlinError
 import com.apollographql.apollo.api.Operation.Data
+import com.apollographql.apollo.api.variables
 import com.apollographql.apollo.exception.CacheMissException
 import com.apollographql.apollo.interceptor.ApolloInterceptor
 import com.apollographql.apollo.interceptor.ApolloInterceptorChain
@@ -85,6 +87,7 @@ internal class LoggingInterceptor(
     val errorAttributes = buildMap {
       if (networkLogPolicy.logsGraphqlData) {
         put("data", response.data)
+        put("variables", request.variablesForLog())
       }
       if (networkLogPolicy.logsGraphqlErrors) {
         put("errors", errors)
@@ -111,6 +114,18 @@ internal class LoggingInterceptor(
       source = ErrorSource.NETWORK,
       attributes = errorAttributes,
     )
+  }
+}
+
+/**
+ * Reading the variables runs the operation's own serialization. A failure there must not fail the request it describes.
+ */
+private fun <D : Data> ApolloRequest<D>.variablesForLog(): String {
+  return try {
+    val customScalarAdapters = executionContext[CustomScalarAdapters] ?: CustomScalarAdapters.Empty
+    operation.variables(customScalarAdapters).valueMap.toString()
+  } catch (e: Exception) {
+    "Could not read variables: ${e::class.simpleName}"
   }
 }
 
