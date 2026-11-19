@@ -26,6 +26,8 @@ import com.hedvig.android.feature.claim.details.ui.rating.RatingEvent
 import com.hedvig.android.feature.claim.details.ui.rating.RatingState
 import com.hedvig.android.feature.claim.details.ui.rating.RatingStep
 import com.hedvig.android.feature.claim.details.ui.rating.SendStatus
+import com.hedvig.android.featureflags.flags.Feature
+import com.hedvig.android.featureflags.test.FakeFeatureManager
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.MoleculePresenterTestContext
 import com.hedvig.android.molecule.test.test
@@ -65,7 +67,9 @@ class ClaimDetailPresenterTest {
 
   private val getClaimDetailUiStateUseCase = FakeGetClaimDetailUiStateUseCase()
   private val recorder = FakeClaimRatingUseCases()
-  private val presenter = ClaimDetailPresenter(
+  private val presenter = presenter(isClaimRatingEnabled = true)
+
+  private fun presenter(isClaimRatingEnabled: Boolean) = ClaimDetailPresenter(
     claimId = "claim-1",
     getClaimDetailUiStateUseCase = getClaimDetailUiStateUseCase,
     claimsServiceUploadFileUseCase = object : ClaimsServiceUploadFileUseCase {
@@ -78,12 +82,21 @@ class ClaimDetailPresenterTest {
     },
     submitClaimRatingUseCase = recorder,
     dismissClaimRatingUseCase = recorder,
+    featureManager = FakeFeatureManager(mapOf(Feature.ENABLE_CLAIM_RATING to isClaimRatingEnabled)),
   )
 
   @Test
   fun `a claim that is not closed has no rating button`() = runTest {
     presenter.test(ClaimDetailUiState.Loading) {
       assertThat(awaitContent(content(status = ClaimStatus.IN_PROGRESS)).ratingButton).isNull()
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `a closed claim has no rating button while claim rating is turned off`() = runTest {
+    presenter(isClaimRatingEnabled = false).test(ClaimDetailUiState.Loading) {
+      assertThat(awaitContent(content()).ratingButton).isNull()
       cancelAndIgnoreRemainingEvents()
     }
   }

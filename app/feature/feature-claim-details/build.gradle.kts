@@ -59,6 +59,7 @@ dependencies {
   testImplementation(libs.turbine)
   testImplementation(projects.apolloOctopusTest)
   testImplementation(projects.apolloTest)
+  testImplementation(projects.featureFlagsTest)
   testImplementation(projects.loggingTest)
   testImplementation(projects.moleculeTest)
 }
