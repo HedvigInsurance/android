@@ -27,6 +27,7 @@ import com.hedvig.android.feature.claim.details.ui.rating.RatingButtonState
 import com.hedvig.android.feature.claim.details.ui.rating.RatingEvent
 import com.hedvig.android.feature.claim.details.ui.rating.RatingState
 import com.hedvig.android.feature.claim.details.ui.rating.reduceRating
+import com.hedvig.android.feature.claim.details.ui.rating.withInterruptedSendReset
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -77,7 +78,9 @@ internal class ClaimDetailPresenter(
     var hasError: Boolean by remember { mutableStateOf(lastState as? ClaimDetailUiState.Error != null) }
     var content: ClaimDetailUiState.Content? by remember { mutableStateOf(lastState as? ClaimDetailUiState.Content) }
     var rating: RatingState by remember {
-      mutableStateOf((lastState as? ClaimDetailUiState.Content)?.rating ?: RatingState.Closed)
+      mutableStateOf(
+        (lastState as? ClaimDetailUiState.Content)?.rating?.withInterruptedSendReset() ?: RatingState.Closed,
+      )
     }
     var ratingSubmittedLocally by remember {
       mutableStateOf((lastState as? ClaimDetailUiState.Content)?.ratingButton == RatingButtonState.Submitted)
@@ -176,15 +179,32 @@ internal class ClaimDetailPresenter(
         is ClaimDetailsEvent.Rating -> {
           val transition = reduceRating(rating, event.event)
           rating = transition.state
-          val answer = transition.answer ?: return@CollectEvents
-          if (answer is ClaimRatingAnswer.Rated) {
-            ratingSubmittedLocally = true
-          }
-          launch {
-            when (answer) {
-              is ClaimRatingAnswer.Rated -> submitClaimRatingUseCase.invoke(claimId, answer.rating, answer.comment)
-              ClaimRatingAnswer.Dismissed -> dismissClaimRatingUseCase.invoke(claimId)
-            }.onLeft { logcat(LogPriority.WARN) { "Failed to record rating answer for claim $claimId: $it" } }
+          when (val answer = transition.answer) {
+            null -> {}
+
+            is ClaimRatingAnswer.Rated -> {
+              launch {
+                val sendResult = submitClaimRatingUseCase.invoke(claimId, answer.rating, answer.comment).fold(
+                  ifLeft = {
+                    logcat(LogPriority.WARN) { "Failed to submit rating for claim $claimId: $it" }
+                    RatingEvent.SendFailed
+                  },
+                  ifRight = {
+                    ratingSubmittedLocally = true
+                    RatingEvent.SendSucceeded
+                  },
+                )
+                rating = reduceRating(rating, sendResult).state
+              }
+            }
+
+            ClaimRatingAnswer.Dismissed -> {
+              launch {
+                dismissClaimRatingUseCase.invoke(claimId).onLeft {
+                  logcat(LogPriority.WARN) { "Failed to dismiss rating for claim $claimId: $it" }
+                }
+              }
+            }
           }
         }
       }

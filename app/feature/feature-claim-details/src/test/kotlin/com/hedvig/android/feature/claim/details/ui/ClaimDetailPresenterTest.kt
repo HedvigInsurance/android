@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.claim.details.ui
 
 import arrow.core.Either
+import arrow.core.left
 import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.containsExactly
@@ -24,6 +25,7 @@ import com.hedvig.android.feature.claim.details.ui.rating.RatingButtonState
 import com.hedvig.android.feature.claim.details.ui.rating.RatingEvent
 import com.hedvig.android.feature.claim.details.ui.rating.RatingState
 import com.hedvig.android.feature.claim.details.ui.rating.RatingStep
+import com.hedvig.android.feature.claim.details.ui.rating.SendStatus
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.MoleculePresenterTestContext
 import com.hedvig.android.molecule.test.test
@@ -48,10 +50,11 @@ class ClaimDetailPresenterTest {
 
   private class FakeClaimRatingUseCases : SubmitClaimRatingUseCase, DismissClaimRatingUseCase {
     val recorded = mutableListOf<Pair<String, ClaimRatingAnswer>>()
+    val submitResults = Channel<Either<ErrorMessage, Unit>>(Channel.UNLIMITED)
 
     override suspend fun invoke(claimId: String, rating: Int, comment: String?): Either<ErrorMessage, Unit> {
       recorded.add(claimId to ClaimRatingAnswer.Rated(rating, comment))
-      return Unit.right()
+      return submitResults.receive()
     }
 
     override suspend fun invoke(claimId: String): Either<ErrorMessage, Unit> {
@@ -110,18 +113,81 @@ class ClaimDetailPresenterTest {
   }
 
   @Test
-  fun `sending a rating records it once and marks the button submitted before any refresh`() = runTest {
+  fun `sending a rating shows a spinner until the backend confirms, then thanks and marks the button submitted`() =
+    runTest {
+      presenter.test(ClaimDetailUiState.Loading) {
+        awaitContent(content())
+
+        assertThat(sendRatingEvent(RatingEvent.OpenRequested).rating).isEqualTo(RatingState.Open(RatingStep.Stars))
+        assertThat(sendRatingEvent(RatingEvent.StarSelected(4)).rating)
+          .isEqualTo(RatingState.Open(RatingStep.Comment(4)))
+        val whileSending = sendRatingEvent(RatingEvent.Send("Bra"))
+
+        assertThat(whileSending.rating).isEqualTo(RatingState.Open(RatingStep.Comment(4, SendStatus.Sending)))
+        assertThat(whileSending.ratingButton).isEqualTo(RatingButtonState.Enabled)
+        assertThat(recorder.recorded).containsExactly("claim-1" to ClaimRatingAnswer.Rated(4, "Bra"))
+
+        recorder.submitResults.send(Unit.right())
+        val afterSend = awaitContentItem()
+
+        assertThat(afterSend.rating).isEqualTo(RatingState.Open(RatingStep.ThankYou(4)))
+        assertThat(afterSend.ratingButton).isEqualTo(RatingButtonState.Submitted)
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  @Test
+  fun `a failed send shows the error, keeps the button enabled and can be sent again`() = runTest {
     presenter.test(ClaimDetailUiState.Loading) {
       awaitContent(content())
+      sendRatingEvent(RatingEvent.OpenRequested)
+      sendRatingEvent(RatingEvent.StarSelected(2))
+      sendRatingEvent(RatingEvent.Send("Slow"))
 
-      assertThat(sendRatingEvent(RatingEvent.OpenRequested).rating).isEqualTo(RatingState.Open(RatingStep.Stars))
-      assertThat(sendRatingEvent(RatingEvent.StarSelected(4)).rating)
-        .isEqualTo(RatingState.Open(RatingStep.Comment(4)))
-      val afterSend = sendRatingEvent(RatingEvent.Send("Bra"))
+      recorder.submitResults.send(ErrorMessage().left())
+      val afterFailure = awaitContentItem()
 
-      assertThat(afterSend.rating).isEqualTo(RatingState.Open(RatingStep.ThankYou(4)))
-      assertThat(afterSend.ratingButton).isEqualTo(RatingButtonState.Submitted)
-      assertThat(recorder.recorded).containsExactly("claim-1" to ClaimRatingAnswer.Rated(4, "Bra"))
+      assertThat(afterFailure.rating).isEqualTo(RatingState.Open(RatingStep.Comment(2, SendStatus.Failed)))
+      assertThat(afterFailure.ratingButton).isEqualTo(RatingButtonState.Enabled)
+
+      assertThat(sendRatingEvent(RatingEvent.Send("Slow")).rating)
+        .isEqualTo(RatingState.Open(RatingStep.Comment(2, SendStatus.Sending)))
+      recorder.submitResults.send(Unit.right())
+
+      assertThat(awaitContentItem().rating).isEqualTo(RatingState.Open(RatingStep.ThankYou(2)))
+      assertThat(recorder.recorded).containsExactly(
+        "claim-1" to ClaimRatingAnswer.Rated(2, "Slow"),
+        "claim-1" to ClaimRatingAnswer.Rated(2, "Slow"),
+      )
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `closing the sheet while sending records no dismissal and a later success marks the button submitted`() =
+    runTest {
+      presenter.test(ClaimDetailUiState.Loading) {
+        awaitContent(content())
+        sendRatingEvent(RatingEvent.OpenRequested)
+        sendRatingEvent(RatingEvent.StarSelected(5))
+        sendRatingEvent(RatingEvent.Send(""))
+
+        assertThat(sendRatingEvent(RatingEvent.SheetDismissed).rating).isEqualTo(RatingState.Closed)
+        recorder.submitResults.send(Unit.right())
+
+        val afterSuccess = awaitContentItem()
+        assertThat(afterSuccess.rating).isEqualTo(RatingState.Closed)
+        assertThat(afterSuccess.ratingButton).isEqualTo(RatingButtonState.Submitted)
+        assertThat(recorder.recorded).containsExactly("claim-1" to ClaimRatingAnswer.Rated(5, null))
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  @Test
+  fun `a send that was in flight when the presenter stopped can be sent again`() = runTest {
+    val sending = content().copy(rating = RatingState.Open(RatingStep.Comment(3, SendStatus.Sending)))
+    presenter.test(sending) {
+      assertThat(awaitContentItem().rating).isEqualTo(RatingState.Open(RatingStep.Comment(3)))
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -133,6 +199,8 @@ class ClaimDetailPresenterTest {
       sendRatingEvent(RatingEvent.OpenRequested)
       sendRatingEvent(RatingEvent.StarSelected(2))
       sendRatingEvent(RatingEvent.Send(""))
+      recorder.submitResults.send(Unit.right())
+      awaitContentItem()
 
       getClaimDetailUiStateUseCase.emissions.send(content(hasUnreadMessages = true).right())
 

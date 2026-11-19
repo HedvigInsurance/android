@@ -6,6 +6,8 @@ import com.hedvig.android.feature.claim.details.data.ClaimRatingAnswer
 import com.hedvig.android.feature.claim.details.ui.rating.RatingEvent.Finish
 import com.hedvig.android.feature.claim.details.ui.rating.RatingEvent.OpenRequested
 import com.hedvig.android.feature.claim.details.ui.rating.RatingEvent.Send
+import com.hedvig.android.feature.claim.details.ui.rating.RatingEvent.SendFailed
+import com.hedvig.android.feature.claim.details.ui.rating.RatingEvent.SendSucceeded
 import com.hedvig.android.feature.claim.details.ui.rating.RatingEvent.SheetDismissed
 import com.hedvig.android.feature.claim.details.ui.rating.RatingEvent.Skip
 import com.hedvig.android.feature.claim.details.ui.rating.RatingEvent.StarSelected
@@ -14,6 +16,8 @@ import com.hedvig.android.feature.claim.details.ui.rating.RatingState.Open
 import com.hedvig.android.feature.claim.details.ui.rating.RatingStep.Comment
 import com.hedvig.android.feature.claim.details.ui.rating.RatingStep.Stars
 import com.hedvig.android.feature.claim.details.ui.rating.RatingStep.ThankYou
+import com.hedvig.android.feature.claim.details.ui.rating.SendStatus.Failed
+import com.hedvig.android.feature.claim.details.ui.rating.SendStatus.Sending
 import org.junit.Test
 
 class ClaimRatingStateMachineTest {
@@ -44,15 +48,73 @@ class ClaimRatingStateMachineTest {
   }
 
   @Test
-  fun `send submits the rating and trimmed comment and shows thank you`() {
+  fun `send submits the rating and trimmed comment and waits on the comment step`() {
     assertThat(reduceRating(Open(Comment(4)), Send("  Snabbt \n")))
-      .isEqualTo(RatingTransition(Open(ThankYou(4)), ClaimRatingAnswer.Rated(4, "Snabbt")))
+      .isEqualTo(RatingTransition(Open(Comment(4, Sending)), ClaimRatingAnswer.Rated(4, "Snabbt")))
   }
 
   @Test
   fun `send with a blank comment submits no comment`() {
     assertThat(reduceRating(Open(Comment(3)), Send("   ")))
-      .isEqualTo(RatingTransition(Open(ThankYou(3)), ClaimRatingAnswer.Rated(3, null)))
+      .isEqualTo(RatingTransition(Open(Comment(3, Sending)), ClaimRatingAnswer.Rated(3, null)))
+  }
+
+  @Test
+  fun `a successful send shows thank you`() {
+    assertThat(reduceRating(Open(Comment(4, Sending)), SendSucceeded))
+      .isEqualTo(RatingTransition(Open(ThankYou(4)), null))
+  }
+
+  @Test
+  fun `a failed send stays on the comment step showing the failure`() {
+    assertThat(reduceRating(Open(Comment(4, Sending)), SendFailed))
+      .isEqualTo(RatingTransition(Open(Comment(4, Failed)), null))
+  }
+
+  @Test
+  fun `send after a failure submits again`() {
+    assertThat(reduceRating(Open(Comment(4, Failed)), Send("x")))
+      .isEqualTo(RatingTransition(Open(Comment(4, Sending)), ClaimRatingAnswer.Rated(4, "x")))
+  }
+
+  @Test
+  fun `changing the star after a failure clears the failure`() {
+    assertThat(reduceRating(Open(Comment(4, Failed)), StarSelected(5)))
+      .isEqualTo(RatingTransition(Open(Comment(5)), null))
+  }
+
+  @Test
+  fun `closing the sheet while sending closes without a dismissal`() {
+    assertThat(reduceRating(Open(Comment(4, Sending)), SheetDismissed)).isEqualTo(RatingTransition(Closed, null))
+  }
+
+  @Test
+  fun `member input while sending is ignored`() {
+    listOf(StarSelected(2), Send("x"), Skip, Finish).forEach { event ->
+      val sending = Open(Comment(4, Sending))
+      assertThat(reduceRating(sending, event)).isEqualTo(RatingTransition(sending, null))
+    }
+  }
+
+  @Test
+  fun `send results outside of a send are ignored`() {
+    listOf(Closed, Open(Stars), Open(Comment(4)), Open(Comment(4, Failed)), Open(ThankYou(4))).forEach { state ->
+      listOf(SendSucceeded, SendFailed).forEach { event ->
+        assertThat(reduceRating(state, event)).isEqualTo(RatingTransition(state, null))
+      }
+    }
+  }
+
+  @Test
+  fun `an interrupted send is reset so it can be sent again`() {
+    assertThat(Open(Comment(4, Sending)).withInterruptedSendReset()).isEqualTo(Open(Comment(4)))
+  }
+
+  @Test
+  fun `resetting an interrupted send leaves other states untouched`() {
+    listOf(Closed, Open(Stars), Open(Comment(4, Failed)), Open(ThankYou(4))).forEach { state ->
+      assertThat(state.withInterruptedSendReset()).isEqualTo(state)
+    }
   }
 
   @Test

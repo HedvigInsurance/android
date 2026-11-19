@@ -11,10 +11,16 @@ internal sealed interface RatingState {
 internal sealed interface RatingStep {
   data object Stars : RatingStep
 
-  data class Comment(val rating: Int) : RatingStep
+  data class Comment(val rating: Int, val sendStatus: SendStatus = SendStatus.NotSent) : RatingStep
 
   /** A [rating] of 4 or more shows the Trustpilot ask. */
   data class ThankYou(val rating: Int) : RatingStep
+}
+
+internal enum class SendStatus {
+  NotSent,
+  Sending,
+  Failed,
 }
 
 internal sealed interface RatingEvent {
@@ -23,6 +29,10 @@ internal sealed interface RatingEvent {
   data class StarSelected(val rating: Int) : RatingEvent
 
   data class Send(val comment: String) : RatingEvent
+
+  data object SendSucceeded : RatingEvent
+
+  data object SendFailed : RatingEvent
 
   data object Skip : RatingEvent
 
@@ -60,17 +70,26 @@ private fun reduceOpen(step: RatingStep, event: RatingEvent): RatingTransition? 
       else -> null
     }
 
-    is RatingStep.Comment -> when (event) {
-      is RatingEvent.StarSelected -> show(RatingStep.Comment(event.rating))
+    is RatingStep.Comment -> if (step.sendStatus == SendStatus.Sending) {
+      when (event) {
+        RatingEvent.SendSucceeded -> show(RatingStep.ThankYou(step.rating))
+        RatingEvent.SendFailed -> show(step.copy(sendStatus = SendStatus.Failed))
+        RatingEvent.SheetDismissed -> close()
+        else -> null
+      }
+    } else {
+      when (event) {
+        is RatingEvent.StarSelected -> show(RatingStep.Comment(event.rating))
 
-      is RatingEvent.Send -> show(
-        RatingStep.ThankYou(step.rating),
-        ClaimRatingAnswer.Rated(step.rating, event.comment.trim().ifEmpty { null }),
-      )
+        is RatingEvent.Send -> show(
+          step.copy(sendStatus = SendStatus.Sending),
+          ClaimRatingAnswer.Rated(step.rating, event.comment.trim().ifEmpty { null }),
+        )
 
-      RatingEvent.Skip, RatingEvent.SheetDismissed -> close(ClaimRatingAnswer.Dismissed)
+        RatingEvent.Skip, RatingEvent.SheetDismissed -> close(ClaimRatingAnswer.Dismissed)
 
-      else -> null
+        else -> null
+      }
     }
 
     is RatingStep.ThankYou -> when (event) {
@@ -78,4 +97,11 @@ private fun reduceOpen(step: RatingStep, event: RatingEvent): RatingTransition? 
       else -> null
     }
   }
+}
+
+/** A send still in flight when the presenter stopped was cancelled with it, so the member can send again. */
+internal fun RatingState.withInterruptedSendReset(): RatingState {
+  val step = (this as? RatingState.Open)?.step as? RatingStep.Comment ?: return this
+  if (step.sendStatus != SendStatus.Sending) return this
+  return RatingState.Open(step.copy(sendStatus = SendStatus.NotSent))
 }

@@ -63,6 +63,8 @@ import com.hedvig.android.design.system.hedvig.icon.CheckFilled
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Star
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import hedvig.resources.Res
+import hedvig.resources.something_went_wrong
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -71,6 +73,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 internal const val TRUSTPILOT_REVIEW_URL = "https://www.trustpilot.com/evaluate/hedvig.com"
 
@@ -148,6 +151,7 @@ private fun ClaimRatingSheetContent(
       when (step) {
         is RatingStep.Stars, is RatingStep.Comment -> {
           val isComment = step is RatingStep.Comment
+          val sendStatus = (step as? RatingStep.Comment)?.sendStatus
           // TODO: Add "How happy are you with how we handled your claim?" / "Hur nöjd är du med hur vi hanterade din skada?" to Lokalise. The question wording is still unsettled with the data team, against Typeform's "Hur nöjd är du med upplevelsen av ditt skadeärende hos Hedvig?"
           Title("How happy are you with how we handled your claim?")
           Spacer(Modifier.height(24.dp))
@@ -191,14 +195,29 @@ private fun ClaimRatingSheetContent(
                 text = "Send",
                 onClick = { onEvent(RatingEvent.Send(comment)) },
                 enabled = true,
+                isLoading = sendStatus == SendStatus.Sending,
                 modifier = Modifier.fillMaxWidth(),
               )
+              AnimatedVisibility(visible = sendStatus == SendStatus.Failed) {
+                HedvigText(
+                  stringResource(Res.string.something_went_wrong),
+                  style = HedvigTheme.typography.label,
+                  color = HedvigTheme.colorScheme.signalRedText,
+                  textAlign = TextAlign.Center,
+                  modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                )
+              }
               Spacer(Modifier.height(8.dp))
             }
           }
           AnimatedVisibility(visible = !isComment) { Spacer(Modifier.height(24.dp)) }
           // TODO: Add "Skip" / "Hoppa över" to Lokalise
-          HedvigTextButton("Skip", onClick = { onEvent(RatingEvent.Skip) }, modifier = Modifier.fillMaxWidth())
+          HedvigTextButton(
+            "Skip",
+            onClick = { onEvent(RatingEvent.Skip) },
+            enabled = sendStatus != SendStatus.Sending,
+            modifier = Modifier.fillMaxWidth(),
+          )
         }
 
         is RatingStep.ThankYou -> {
@@ -368,6 +387,18 @@ private fun PreviewRatingCommentHappy() {
 @Composable
 private fun PreviewRatingCommentUnhappy() {
   PreviewStep(RatingStep.Comment(rating = 2), comment = "The handling took too long.")
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewRatingCommentSending() {
+  PreviewStep(RatingStep.Comment(rating = 4, sendStatus = SendStatus.Sending))
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewRatingCommentSendFailed() {
+  PreviewStep(RatingStep.Comment(rating = 4, sendStatus = SendStatus.Failed))
 }
 
 @HedvigPreview
