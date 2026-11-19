@@ -1,7 +1,6 @@
 package com.hedvig.android.network.clients.di
 
 import com.apollographql.apollo.ApolloClient
-import com.apollographql.cache.normalized.api.NormalizedCacheFactory
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.network.clients.ExtraKtorClientConfiguration
@@ -21,18 +20,18 @@ interface NativeNetworkMetroProviders {
   fun provideExtraKtorClientConfiguration(): ExtraKtorClientConfiguration = NoopExtraKtorClientConfiguration()
 
   /**
-   * The interceptor chain is logging only: an `UNAUTHENTICATED` response is an ordinary error, and the session is
-   * owned by the iOS app.
+   * No normalized cache: every iOS read goes to the network and stores nothing, so one member's answer cannot reach
+   * the next member, and a fetch policy that asks for the cache is answered from the network. The interceptor chain
+   * is logging only: an `UNAUTHENTICATED` response is an ordinary error, and the session is owned by the iOS app.
    */
   @Provides
   @SingleIn(AppScope::class)
   fun provideApolloClient(
-    normalizedCacheFactory: NormalizedCacheFactory,
     httpClient: HttpClient,
     hedvigBuildConstants: HedvigBuildConstants,
     networkLogPolicy: NetworkLogPolicy,
   ): ApolloClient = buildHedvigApolloClient(
-    normalizedCacheFactory,
+    null,
     httpClient,
     hedvigBuildConstants,
     emptyList(),

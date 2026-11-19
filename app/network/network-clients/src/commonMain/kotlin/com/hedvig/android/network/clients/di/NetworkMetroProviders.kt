@@ -74,23 +74,21 @@ interface NetworkMetroProviders {
 }
 
 /**
- * The app's Apollo client: the normalized cache, [httpClient] with its headers, the Octopus URL, and the interceptor
- * chain of [addHedvigInterceptors] with [platformInterceptors] ahead of logging.
+ * The app's Apollo client: the normalized cache when [normalizedCacheFactory] is given, [httpClient] with its headers,
+ * the Octopus URL, and the interceptor chain of [addHedvigInterceptors] with [platformInterceptors] ahead of logging.
  */
 internal fun buildHedvigApolloClient(
-  normalizedCacheFactory: NormalizedCacheFactory,
+  normalizedCacheFactory: NormalizedCacheFactory?,
   httpClient: HttpClient,
   hedvigBuildConstants: HedvigBuildConstants,
   platformInterceptors: List<ApolloInterceptor>,
   networkLogPolicy: NetworkLogPolicy,
-): ApolloClient = with(Cache) {
-  ApolloClient.Builder()
-    .cache(normalizedCacheFactory)
-    .ktorClient(httpClient)
-    .httpServerUrl(hedvigBuildConstants.urlGraphqlOctopus)
-    .addHedvigInterceptors(platformInterceptors, networkLogPolicy)
-    .build()
-}
+): ApolloClient = ApolloClient.Builder()
+  .apply { if (normalizedCacheFactory != null) with(Cache) { cache(normalizedCacheFactory) } }
+  .ktorClient(httpClient)
+  .httpServerUrl(hedvigBuildConstants.urlGraphqlOctopus)
+  .addHedvigInterceptors(platformInterceptors, networkLogPolicy)
+  .build()
 
 internal fun buildKtorClient(
   engineFactory: HttpClientEngineFactory<*>,
