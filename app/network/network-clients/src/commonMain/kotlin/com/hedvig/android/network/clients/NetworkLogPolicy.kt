@@ -1,12 +1,15 @@
 package com.hedvig.android.network.clients
 
 /**
- * What the network clients log beyond GraphQL operation names, error messages, error extensions and exceptions.
+ * What the network clients log beyond GraphQL operation names, error counts, error types and exception classes.
  *
  * [logsHttpBodies] logs every HTTP request and response with its body. [logsGraphqlData] adds the GraphQL response
- * data to the GraphQL log lines and to the attributes of the RUM error a GraphQL error reports.
+ * data to the GraphQL log lines and to the attributes of the RUM error a GraphQL error reports. [logsGraphqlErrors]
+ * adds the GraphQL error messages, the errors with their extensions and the response extensions, and exception
+ * messages; they can quote what was sent, so they have their own switch.
  */
 class NetworkLogPolicy(
   val logsHttpBodies: Boolean,
   val logsGraphqlData: Boolean,
+  val logsGraphqlErrors: Boolean,
 )

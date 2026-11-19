@@ -51,14 +51,14 @@ class NetworkLogPolicyTest {
 
   @Test
   fun `with HTTP bodies off no logged line carries a request or response body`() = runTest {
-    exchangeHttpBodies(NetworkLogPolicy(logsHttpBodies = false, logsGraphqlData = false))
+    exchangeHttpBodies(NetworkLogPolicy(logsHttpBodies = false, logsGraphqlData = false, logsGraphqlErrors = true))
 
     assertEquals(emptyList(), loggedSentinels())
   }
 
   @Test
   fun `with HTTP bodies on the request and response bodies are logged`() = runTest {
-    exchangeHttpBodies(NetworkLogPolicy(logsHttpBodies = true, logsGraphqlData = false))
+    exchangeHttpBodies(NetworkLogPolicy(logsHttpBodies = true, logsGraphqlData = false, logsGraphqlErrors = true))
 
     assertEquals(listOf(REQUEST_BODY_SENTINEL, RESPONSE_BODY_SENTINEL), loggedSentinels())
   }
@@ -66,7 +66,7 @@ class NetworkLogPolicyTest {
   @Test
   fun `with GraphQL data off no logged line or RUM error carries response data and errors are still logged`() =
     runTest {
-      exchangeGraphql(NetworkLogPolicy(logsHttpBodies = false, logsGraphqlData = false))
+      exchangeGraphql(NetworkLogPolicy(logsHttpBodies = false, logsGraphqlData = false, logsGraphqlErrors = true))
 
       assertEquals(listOf(ERROR_EXTENSION_SENTINEL, RESPONSE_EXTENSION_SENTINEL), loggedSentinels())
       assertEquals(listOf(ERROR_EXTENSION_SENTINEL, RESPONSE_EXTENSION_SENTINEL), rumSentinels())
@@ -78,7 +78,7 @@ class NetworkLogPolicyTest {
 
   @Test
   fun `with GraphQL data on the response data and extensions are logged and reported`() = runTest {
-    exchangeGraphql(NetworkLogPolicy(logsHttpBodies = false, logsGraphqlData = true))
+    exchangeGraphql(NetworkLogPolicy(logsHttpBodies = false, logsGraphqlData = true, logsGraphqlErrors = true))
 
     assertEquals(
       listOf(DATA_SENTINEL, ERROR_EXTENSION_SENTINEL, RESPONSE_EXTENSION_SENTINEL),
@@ -86,6 +86,28 @@ class NetworkLogPolicyTest {
     )
     assertEquals(listOf(DATA_SENTINEL, ERROR_EXTENSION_SENTINEL, RESPONSE_EXTENSION_SENTINEL), rumSentinels())
   }
+
+  @Test
+  fun `with GraphQL data and errors off no logged line or RUM error carries data or error text or extensions`() =
+    runTest {
+      exchangeGraphql(NetworkLogPolicy(logsHttpBodies = false, logsGraphqlData = false, logsGraphqlErrors = false))
+
+      assertEquals(emptyList(), loggedSentinels())
+      assertEquals(emptyList(), rumSentinels())
+      val messages = logs.entries().map { it.message }
+      assertTrue("GraphQL request for Sentinel EMISSION." in messages, "$messages")
+      assertTrue(
+        "GraphQL errors for Sentinel: 1 (error types [null]) attributes: {} There was data and errors at the same time!"
+          in messages,
+        "$messages",
+      )
+      assertTrue("GraphQL exception for Sentinel: ApolloNetworkException" in messages, "$messages")
+      assertEquals(emptyList(), messages.filter { "Something failed" in it || "queued in" in it })
+      assertEquals(
+        listOf("GraphQL errors for Sentinel: 1 (error types [null])" to emptyMap<String, Any?>()),
+        rum.errors().map { it.message to it.attributes },
+      )
+    }
 
   private suspend fun exchangeHttpBodies(networkLogPolicy: NetworkLogPolicy) {
     val engine = mockEngineFactory {

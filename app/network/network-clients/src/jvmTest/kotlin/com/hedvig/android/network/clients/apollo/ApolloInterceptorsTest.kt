@@ -93,7 +93,7 @@ internal class ApolloInterceptorsTest {
       .networkTransport(QueueTestNetworkTransport())
       .addHedvigInterceptors(
         apolloPlatformInterceptors(authTokenService, FakeDemoManager(isDemoMode)),
-        NetworkLogPolicy(logsHttpBodies = true, logsGraphqlData = true),
+        NetworkLogPolicy(logsHttpBodies = true, logsGraphqlData = true, logsGraphqlErrors = true),
       )
       .build()
   }

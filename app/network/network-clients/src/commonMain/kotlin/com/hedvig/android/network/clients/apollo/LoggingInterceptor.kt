@@ -56,7 +56,12 @@ internal class LoggingInterceptor(
       }
       if (response.exception != null && response.exception !is CacheMissException) {
         logcat(LogPriority.WARN) {
-          "GraphQL exception for ${request.operation.name()}: ${response.exception}"
+          val exception = response.exception!!
+          if (networkLogPolicy.logsGraphqlErrors) {
+            "GraphQL exception for ${request.operation.name()}: $exception"
+          } else {
+            "GraphQL exception for ${request.operation.name()}: ${exception::class.simpleName}"
+          }
         }
       }
     }.onCompletion {
@@ -70,15 +75,22 @@ internal class LoggingInterceptor(
     request: ApolloRequest<D>,
     response: ApolloResponse<D>,
   ) {
-    val errorMessagesJoinedToString = errors.joinToString(", ", "[", "]") { it.message }
-    val errorMessage = "GraphQL errors for ${request.operation.name()}: $errorMessagesJoinedToString"
+    val errorMessage = if (networkLogPolicy.logsGraphqlErrors) {
+      val errorMessagesJoinedToString = errors.joinToString(", ", "[", "]") { it.message }
+      "GraphQL errors for ${request.operation.name()}: $errorMessagesJoinedToString"
+    } else {
+      val errorTypes = errors.map { it.extensions.errorType?.value }
+      "GraphQL errors for ${request.operation.name()}: ${errors.size} (error types $errorTypes)"
+    }
     val errorAttributes = buildMap {
       if (networkLogPolicy.logsGraphqlData) {
         put("data", response.data)
       }
-      put("errors", errors)
-      if (response.extensions.isNotEmpty()) {
-        put("extensions", response.extensions.toList().joinToString(", ", "[", "]") { it.toString() })
+      if (networkLogPolicy.logsGraphqlErrors) {
+        put("errors", errors)
+        if (response.extensions.isNotEmpty()) {
+          put("extensions", response.extensions.toList().joinToString(", ", "[", "]") { it.toString() })
+        }
       }
     }
     logcat(LogPriority.ERROR) {

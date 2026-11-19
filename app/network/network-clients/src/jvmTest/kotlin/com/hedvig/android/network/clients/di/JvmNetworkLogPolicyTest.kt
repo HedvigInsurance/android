@@ -29,12 +29,12 @@ class JvmNetworkLogPolicyTest {
   }
 
   @Test
-  fun `HTTP bodies are logged outside production builds and GraphQL data in every build`() {
+  fun `HTTP bodies are logged outside production builds and GraphQL data and errors in every build`() {
     val provided = buildConfigs.mapValues { (_, appBuildConfig) ->
       val dataDirectory = createTempDirectory("network-log-policy-test").toFile()
       try {
         createGraphFactory<NetworkTestGraph.Factory>().create(dataDirectory, appBuildConfig).networkLogPolicy
-          .let { it.logsHttpBodies to it.logsGraphqlData }
+          .let { listOf(it.logsHttpBodies, it.logsGraphqlData, it.logsGraphqlErrors) }
       } finally {
         dataDirectory.deleteRecursively()
       }
@@ -42,11 +42,11 @@ class JvmNetworkLogPolicyTest {
 
     assertEquals(
       mapOf(
-        "Android debug" to (true to true),
-        "Android staging" to (true to true),
-        "Android release" to (false to true),
-        "desktop staging" to (true to true),
-        "desktop production" to (false to true),
+        "Android debug" to listOf(true, true, true),
+        "Android staging" to listOf(true, true, true),
+        "Android release" to listOf(false, true, true),
+        "desktop staging" to listOf(true, true, true),
+        "desktop production" to listOf(false, true, true),
       ),
       provided,
     )

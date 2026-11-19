@@ -16,7 +16,7 @@ class NativeApolloClientTest {
       normalizedCacheFactory = MemoryCacheFactory(),
       httpClient = httpClient,
       hedvigBuildConstants = FakeHedvigBuildConstants,
-      networkLogPolicy = NetworkLogPolicy(logsHttpBodies = false, logsGraphqlData = false),
+      networkLogPolicy = NetworkLogPolicy(logsHttpBodies = false, logsGraphqlData = false, logsGraphqlErrors = true),
     )
 
     assertEquals(listOf("LoggingInterceptor"), apolloClient.interceptors.map { it::class.simpleName })
