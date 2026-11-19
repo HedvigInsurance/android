@@ -44,6 +44,7 @@ query Home(
         url
         buttonText
       }
+      severity
     }
     crossSellV2(input: { userFlow: HOME_X_SELL, flowSource: null, experiments: $experiments }) {
       recommendedCrossSell {

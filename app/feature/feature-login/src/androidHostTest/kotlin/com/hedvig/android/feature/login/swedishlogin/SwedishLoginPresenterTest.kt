@@ -5,6 +5,7 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import assertk.assertThat
+import assertk.assertions.contains
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
@@ -23,6 +24,8 @@ import com.hedvig.android.authlib.LoginStatusResult
 import com.hedvig.android.authlib.RefreshToken
 import com.hedvig.android.authlib.StatusUrl
 import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.LogcatLogger
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.network.clients.TlsDiagnostics
@@ -36,8 +39,16 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class SwedishLoginPresenterTest {
+  private val loggedMessages = mutableListOf<Pair<LogPriority, String>>()
+
   @get:Rule
-  val testLogcatLogger = TestLogcatLoggingRule()
+  val testLogcatLogger = TestLogcatLoggingRule(
+    testLogcatLogger = object : LogcatLogger {
+      override fun log(priority: LogPriority, throwable: Throwable?, tag: String?, message: () -> String) {
+        loggedMessages += priority to message()
+      }
+    },
+  )
 
   @Test
   fun `start login attempt failing results in an error state immediately`() = runTest {
@@ -189,6 +200,7 @@ class SwedishLoginPresenterTest {
         }
       authRepository.loginStatusResponse.add(LoginStatusResult.Failed("failed"))
       assertThat(awaitItem().bankIdUiState).isEqualTo(BankIdUiState.BankIdError("failed"))
+      assertThat(loggedMessages).contains(LogPriority.WARN to "Login status failed: failed")
       authTokenService.authEventTurbine.expectNoEvents()
     }
   }

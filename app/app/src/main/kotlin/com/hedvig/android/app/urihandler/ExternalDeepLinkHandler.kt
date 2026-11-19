@@ -4,6 +4,9 @@ import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.logger.memberData
+import com.hedvig.android.logger.urlForLog
+import com.hedvig.android.logger.withoutUrlQueries
 import com.hedvig.android.navigation.compose.HedvigDeepLinkMatcher
 import java.net.URI
 import kotlinx.coroutines.flow.StateFlow
@@ -44,18 +47,23 @@ internal class ExternalDeepLinkHandler(
     readySignal.first { it }
     val destination = matcher.match(uri)
     if (destination != null) {
-      logcat { "ExternalDeepLinkHandler landing external deep link $destination for uri:$uri" }
+      logcat {
+        val loggedDestination = memberData(destination, destination.toString().withoutUrlQueries())
+        "ExternalDeepLinkHandler landing external deep link $loggedDestination for uri:${urlForLog(uri)}"
+      }
       backstackController.navigateToExternalDeepLink(destination, hostedInForeignTask())
       return
     }
     if (targetsOwnDeepLink(uri)) {
       logcat(LogPriority.WARN) {
-        "ExternalDeepLinkHandler no specific match for own-host uri:$uri — falling back to Home"
+        "ExternalDeepLinkHandler no specific match for own-host uri:${urlForLog(uri)} — falling back to Home"
       }
       backstackController.navigateToExternalDeepLink(HomeKey, hostedInForeignTask())
       return
     }
-    logcat(LogPriority.ERROR) { "ExternalDeepLinkHandler ignoring unmatched foreign-host external deep link uri:$uri" }
+    logcat(LogPriority.ERROR) {
+      "ExternalDeepLinkHandler ignoring unmatched foreign-host external deep link uri:${urlForLog(uri)}"
+    }
   }
 
   /**

@@ -32,20 +32,17 @@ import kotlinx.coroutines.test.runTest
 @OptIn(ApolloExperimental::class)
 class LoggingInterceptorOutputTest {
   @Test
-  fun `a success response logs its data at DEBUG`() {
+  fun `a success response logs its data at DEBUG outside production`() {
     val runs = runForEachProvidedPolicy { apolloClient ->
       apolloClient.enqueueTestResponse(SentinelQuery, SentinelQuery.Data("data-sentinel"))
       apolloClient.query(SentinelQuery).execute()
     }
 
-    for (run in runs) {
+    for ((isProduction, run) in runs) {
+      val emission = if (isProduction) "" else " Response data: Data(value=data-sentinel)"
       assertThat(run.logs).containsExactly(
         CapturedLog(LogPriority.DEBUG, null, "GraphQL request for Sentinel START."),
-        CapturedLog(
-          LogPriority.DEBUG,
-          null,
-          "GraphQL request for Sentinel EMISSION. Response data: Data(value=data-sentinel)",
-        ),
+        CapturedLog(LogPriority.DEBUG, null, "GraphQL request for Sentinel EMISSION.$emission"),
         CapturedLog(LogPriority.DEBUG, null, "GraphQL request for Sentinel END."),
       )
       assertThat(run.rumErrors).isEmpty()
@@ -53,7 +50,7 @@ class LoggingInterceptorOutputTest {
   }
 
   @Test
-  fun `a GraphQL error logs data, errors and extensions at ERROR and to RUM`() {
+  fun `a GraphQL error logs errors and extensions at ERROR and to RUM, and data and variables outside production`() {
     val runs = runForEachProvidedPolicy { apolloClient ->
       apolloClient.enqueueTestResponse(
         ApolloResponse.Builder(SentinelQuery, uuid4())
@@ -67,21 +64,22 @@ class LoggingInterceptorOutputTest {
 
     val errors = "[LoggableGraphqlError(message=Something failed, locations=null, paths=null, " +
       "extensions=Extensions(errorType=null, uncategorizedExtensions={detail=error-extension-sentinel}))]"
-    val attributes =
-      "{data=Data(value=data-sentinel), errors=$errors, extensions=[(trace, response-extension-sentinel)]}"
-    for (run in runs) {
+    for ((isProduction, run) in runs) {
+      val attributes = if (isProduction) {
+        "{errors=$errors, extensions=[(trace, response-extension-sentinel)]}"
+      } else {
+        "{data=Data(value=data-sentinel), variables={}, errors=$errors, extensions=[(trace, response-extension-sentinel)]}"
+      }
+      val emission = if (isProduction) "" else " Response data: Data(value=data-sentinel)"
+      val dataSuffix = if (isProduction) "" else " Data:Data(value=data-sentinel)"
       assertThat(run.logs).containsExactly(
         CapturedLog(LogPriority.DEBUG, null, "GraphQL request for Sentinel START."),
-        CapturedLog(
-          LogPriority.DEBUG,
-          null,
-          "GraphQL request for Sentinel EMISSION. Response data: Data(value=data-sentinel)",
-        ),
+        CapturedLog(LogPriority.DEBUG, null, "GraphQL request for Sentinel EMISSION.$emission"),
         CapturedLog(
           LogPriority.ERROR,
           null,
           "GraphQL errors for Sentinel: [Something failed] attributes: $attributes" +
-            " There was data and errors at the same time! Data:Data(value=data-sentinel)",
+            " There was data and errors at the same time!$dataSuffix",
         ),
         CapturedLog(LogPriority.DEBUG, null, "GraphQL request for Sentinel END."),
       )
@@ -103,10 +101,11 @@ class LoggingInterceptorOutputTest {
       apolloClient.query(SentinelQuery).execute()
     }
 
-    for (run in runs) {
+    for ((isProduction, run) in runs) {
+      val emission = if (isProduction) "" else " Response data: null"
       assertThat(run.logs).containsExactly(
         CapturedLog(LogPriority.DEBUG, null, "GraphQL request for Sentinel START."),
-        CapturedLog(LogPriority.DEBUG, null, "GraphQL request for Sentinel EMISSION. Response data: null"),
+        CapturedLog(LogPriority.DEBUG, null, "GraphQL request for Sentinel EMISSION.$emission"),
         CapturedLog(
           LogPriority.WARN,
           null,
@@ -122,9 +121,12 @@ class LoggingInterceptorOutputTest {
 
 private class Run(val logs: List<CapturedLog>, val rumErrors: List<CapturedRumError>)
 
-/** Runs [block] against a fresh client once per provided policy, for a non-production and a production build. */
-private fun runForEachProvidedPolicy(block: suspend (ApolloClient) -> Unit): List<Run> {
-  return listOf(false, true).map { isProduction ->
+/**
+ * Runs [block] against a fresh client once per provided policy, for a non-production and a production build, keyed by
+ * whether the build is a production one.
+ */
+private fun runForEachProvidedPolicy(block: suspend (ApolloClient) -> Unit): Map<Boolean, Run> {
+  return listOf(false, true).associateWith { isProduction ->
     val logs = CapturingLogcatLogger()
     val rum = CapturingRumLogger()
     LogcatLogger.install(logs)
