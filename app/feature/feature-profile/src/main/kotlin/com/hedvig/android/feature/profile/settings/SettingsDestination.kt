@@ -26,9 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.permissions.PermissionStatus
-import com.google.accompanist.permissions.PermissionStatus.Granted
-import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.data.settings.datastore.AnalyticsConsent
 import com.hedvig.android.design.system.hedvig.DialogDefaults.ButtonSize.BIG
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
@@ -52,6 +49,9 @@ import com.hedvig.android.language.label
 import com.hedvig.android.memberreminders.ui.ReminderCardEnableNotifications
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState
+import com.hedvig.android.notification.permission.PermissionStatus
+import com.hedvig.android.notification.permission.PermissionStatus.Granted
+import com.hedvig.android.notification.permission.isGranted
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
 import com.hedvig.android.theme.Theme
 import hedvig.resources.GENERAL_DISABLED

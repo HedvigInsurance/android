@@ -49,7 +49,6 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
-import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
@@ -77,6 +76,7 @@ import com.hedvig.android.memberreminders.ui.MissingPayinMethodCard
 import com.hedvig.android.memberreminders.ui.cardReminders
 import com.hedvig.android.memberreminders.ui.missingPayinMethodReminder
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
+import com.hedvig.android.notification.permission.isGranted
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
