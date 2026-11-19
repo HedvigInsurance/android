@@ -12,6 +12,7 @@ import com.hedvig.android.data.chat.database.ChatMessageEntityBanner
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.LatestChatMessage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.logger.memberData
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -276,7 +277,8 @@ internal fun ChatMessageEntity.toChatMessage(): CbmChatMessage? {
 
         else -> {
           logcat(LogPriority.ERROR) {
-            "Tried to map a failed to be sent entity to ChatMessage which does not fit any case. Entity:$this"
+            "Tried to map a failed to be sent entity to ChatMessage which does not fit any case. " +
+              "Entity:${memberData(this)}"
           }
           null
         }

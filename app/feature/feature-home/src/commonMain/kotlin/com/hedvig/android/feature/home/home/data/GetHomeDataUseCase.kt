@@ -64,6 +64,7 @@ import octopus.HomeQuery
 import octopus.UnreadMessageCountQuery
 import octopus.fragment.HomeCrossSellFragment
 import octopus.type.CrossSellExperimentInput
+import octopus.type.ImportantMessageSeverity
 import octopus.type.MemberChargeStatus
 
 internal interface GetHomeDataUseCase {
@@ -177,6 +178,12 @@ internal class GetHomeDataUseCaseImpl(
                       link = linkInfo.url,
                     )
                   }
+                },
+                severity = when (it.severity) {
+                  ImportantMessageSeverity.INFO -> HomeData.VeryImportantMessage.Severity.Info
+                  ImportantMessageSeverity.WARNING -> HomeData.VeryImportantMessage.Severity.Warning
+                  ImportantMessageSeverity.ERROR -> HomeData.VeryImportantMessage.Severity.Error
+                  ImportantMessageSeverity.UNKNOWN__ -> HomeData.VeryImportantMessage.Severity.Warning
                 },
               )
             }
@@ -489,11 +496,14 @@ data class HomeData(
     val id: String,
     val message: String,
     val linkInfo: LinkInfo?,
+    val severity: Severity,
   ) {
     data class LinkInfo(
       val buttonText: String?,
       val link: String,
     )
+
+    enum class Severity { Info, Warning, Error }
   }
 
   data class DraftClaim(

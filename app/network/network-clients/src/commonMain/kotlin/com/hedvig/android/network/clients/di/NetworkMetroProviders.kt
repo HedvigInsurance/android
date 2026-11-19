@@ -116,9 +116,11 @@ internal fun buildKtorClient(
       }
     }
     install(HttpSend)
+    // Registered on the config so that clients derived through HttpClient.config {} keep it too
+    install("DeviceIdInterceptor") {
+      plugin(HttpSend).intercept(DeviceIdInterceptor(deviceIdFetcher))
+    }
     extraKtorClientConfiguration.configure(this)
-  }.apply {
-    plugin(HttpSend).intercept(DeviceIdInterceptor(deviceIdFetcher))
   }
 }
 
@@ -151,7 +153,7 @@ private fun HttpClient.addAuthPlugin(accessTokenFetcher: AccessTokenFetcher) {
     val accessToken = accessTokenFetcher.fetch()
     execute(
       if (accessToken != null) {
-        request.apply { header("Authorization", "Bearer ${accessTokenFetcher.fetch()}") }
+        request.apply { header("Authorization", "Bearer $accessToken") }
       } else {
         request
       },

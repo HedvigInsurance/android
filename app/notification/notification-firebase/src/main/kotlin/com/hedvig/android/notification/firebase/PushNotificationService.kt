@@ -4,6 +4,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.logger.memberData
 import com.hedvig.android.notification.core.NotificationSender
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -25,7 +26,7 @@ class PushNotificationService : FirebaseMessagingService() {
   }
 
   override fun onNewToken(token: String) {
-    logcat(LogPriority.INFO) { "FCM onNewToken:$token" }
+    logcat(LogPriority.INFO) { "FCM onNewToken:${memberData(token)}" }
     coroutineScope.launch {
       fcmTokenManager.saveLocallyAndUploadTokenToBackend(token)
     }

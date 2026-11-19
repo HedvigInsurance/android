@@ -34,11 +34,11 @@ interface ApolloClientMetroProviders {
     networkLogPolicy,
   )
 
-  /** HTTP bodies are logged outside production builds, GraphQL data and errors in every build. */
+  /** HTTP bodies and GraphQL data are logged outside production builds, GraphQL errors in every build. */
   @Provides
   fun provideNetworkLogPolicy(hedvigBuildConstants: HedvigBuildConstants): NetworkLogPolicy = NetworkLogPolicy(
     logsHttpBodies = !hedvigBuildConstants.isProduction,
-    logsGraphqlData = true,
+    logsGraphqlData = !hedvigBuildConstants.isProduction,
     logsGraphqlErrors = true,
   )
 }

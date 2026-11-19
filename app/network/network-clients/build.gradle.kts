@@ -44,10 +44,12 @@ kotlin {
       implementation(libs.ktor.client.okhttp)
     }
     jvmTest.dependencies {
+      implementation(kotlin("test"))
       implementation(libs.apollo.testingSupport)
       implementation(libs.assertK)
       implementation(libs.coroutines.test)
       implementation(libs.junit)
+      implementation(libs.ktor.client.mock)
       implementation(projects.authCoreTest)
       implementation(projects.loggingTest)
     }

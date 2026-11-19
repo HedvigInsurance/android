@@ -55,7 +55,7 @@ internal class GetAddonOfferUseCaseImpl(
 
               is AddonGenerateOfferMutation.Data.UserErrorAddonGenerateOffer -> {
                 logcat(LogPriority.ERROR) {
-                  "Tried to start AddonGenerateOfferMutation but got error: $response.addonGenerateOffer.message"
+                  "Tried to start AddonGenerateOfferMutation but got error: ${response.addonGenerateOffer.message}"
                 }
                 raise(ErrorMessage(response.addonGenerateOffer.message))
               }
