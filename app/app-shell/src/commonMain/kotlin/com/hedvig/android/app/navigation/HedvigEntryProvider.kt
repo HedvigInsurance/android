@@ -42,6 +42,7 @@ import com.hedvig.android.feature.help.center.navigation.HelpCenterKey
 import com.hedvig.android.feature.home.home.navigation.homeEntries
 import com.hedvig.android.feature.imageviewer.navigation.ImageViewerKey
 import com.hedvig.android.feature.imageviewer.navigation.imageViewerEntries
+import com.hedvig.android.feature.importantmessages.ui.PublicImportantMessages
 import com.hedvig.android.feature.insurance.certificate.navigation.InsuranceEvidenceKey
 import com.hedvig.android.feature.insurance.certificate.navigation.insuranceEvidenceEntries
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
@@ -151,6 +152,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     hedvigBuildConstants = hedvigBuildConstants,
     externalNavigator = externalNavigator,
     openUrl = openUrl,
+    openMessageLink = appHost.uriHandler::openUri,
   )
   addHomeEntries(
     backstack = backstack,
@@ -260,6 +262,7 @@ private fun EntryProviderScope<HedvigNavKey>.addLoginEntries(
   hedvigBuildConstants: HedvigBuildConstants,
   externalNavigator: ExternalNavigator,
   openUrl: (String) -> Unit,
+  openMessageLink: (String) -> Unit,
 ) {
   loginEntries(
     backstack = backstack,
@@ -271,6 +274,10 @@ private fun EntryProviderScope<HedvigNavKey>.addLoginEntries(
       scope.launch {
         backstack.setLoggedIn(memberIdService.getMemberId().first())
       }
+    },
+    publicImportantMessages = { reloadKey, modifier ->
+      // Logged out, an in-app deep link would only be stashed until after login, so a message link would look dead.
+      PublicImportantMessages(reloadKey = reloadKey, openUrl = openMessageLink, modifier = modifier)
     },
   )
 }
