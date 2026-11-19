@@ -66,7 +66,6 @@ kotlin {
       implementation(projects.moleculePublic)
       implementation(projects.navigationActivity)
       implementation(projects.navigationCommon)
-      implementation(projects.navigationCompose)
       implementation(projects.navigationCore)
     }
     androidMain.dependencies {

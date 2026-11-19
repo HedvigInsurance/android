@@ -98,7 +98,7 @@ private fun matcher(): HedvigDeepLinkMatcher = HedvigDeepLinkMatcher(
   },
 )
 
-class HedvigDeepLinkMatcherTest {
+open class HedvigDeepLinkMatcherTest {
   @Test fun unknownUri_returnsNull() {
     assertNull(matcher().match("$HOST/this-path-does-not-exist"))
   }
