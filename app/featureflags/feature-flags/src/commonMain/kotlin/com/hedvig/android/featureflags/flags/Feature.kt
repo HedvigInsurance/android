@@ -27,6 +27,10 @@ enum class Feature(
     "Enables resuming a draft claim: the draft card on the home screen, the draft-claim dialogs, " +
       "and the resumable-aware leave dialog in the claim chat.",
   ),
+  ENABLE_GREEN_CARD(
+    "Enables green cards: the entry points in profile certificates and insurance details, the green card " +
+      "queries behind them, and the green card screen itself, which a deep link can also open.",
+  ),
   ENABLE_NEW_CONVERSATION_FROM_INBOX(
     "Enables inbox icon always available on the Home screen " +
       "and New conversation button inside the inbox",

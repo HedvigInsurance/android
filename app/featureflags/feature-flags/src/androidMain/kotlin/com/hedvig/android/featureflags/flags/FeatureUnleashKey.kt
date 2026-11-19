@@ -8,6 +8,7 @@ internal val Feature.unleashKey: String
     Feature.DISABLE_TERMINATION_REDIRECTION -> "disable_termination_redirection"
     Feature.DISABLE_RESUMING_ONGOING_SHOP_SESSIONS -> "disable_resuming_ongoing_shop_sessions"
     Feature.ENABLE_CLAIM_INTENT_RESUME -> "enable_claim_intent_resume"
+    Feature.ENABLE_GREEN_CARD -> "enable_green_card"
     Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX -> "enable_new_conversation_from_inbox"
     Feature.HIDE_CANCEL_INSURANCE_FROM_HOME_SCREEN -> "hide_cancel_insurance_from_home_screen"
     Feature.UPDATE_NECESSARY -> "update_necessary"

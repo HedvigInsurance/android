@@ -7,11 +7,14 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
+import kotlinx.coroutines.flow.first
 import octopus.GreenCardAvailabilityQuery
 
 internal interface CheckGreenCardDestinationAvailabilityUseCase {
@@ -23,8 +26,12 @@ internal interface CheckGreenCardDestinationAvailabilityUseCase {
 @Inject
 internal class CheckGreenCardDestinationAvailabilityUseCaseImpl(
   private val apolloClient: ApolloClient,
+  private val featureManager: FeatureManager,
 ) : CheckGreenCardDestinationAvailabilityUseCase {
   override suspend fun invoke(): Either<GreenCardAvailabilityError, Unit> = either {
+    ensure(featureManager.isFeatureEnabled(Feature.ENABLE_GREEN_CARD).first()) {
+      GreenCardAvailabilityError.GreenCardNotAvailable
+    }
     val isGreenCardEnabled = apolloClient.query(GreenCardAvailabilityQuery())
       .safeExecute()
       .mapLeft {

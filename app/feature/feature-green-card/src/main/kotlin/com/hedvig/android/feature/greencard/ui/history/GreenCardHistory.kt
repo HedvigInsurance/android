@@ -90,6 +90,20 @@ private fun GreenCardHistoryScreen(
       }
     }
 
+    GreenCardHistoryUiState.NotAvailable -> {
+      HedvigScaffold(navigateUp = navigateUp, topAppBarText = GREEN_CARD_TITLE) {
+        Spacer(Modifier.weight(1f))
+        // TODO: Add "Green cards aren't available right now." / "Gröna kort är inte tillgängliga just nu." to Lokalise
+        EmptyState(
+          text = "Green cards aren't available right now.",
+          description = null,
+          iconStyle = INFO,
+          modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.weight(1f))
+      }
+    }
+
     is GreenCardHistoryUiState.Success -> {
       val downloadedGreenCard = uiState.downloadedGreenCard
       if (downloadedGreenCard != null) {
@@ -252,5 +266,6 @@ private class GreenCardHistoryUiStateProvider :
         downloadedGreenCard = null,
       ),
       GreenCardHistoryUiState.Failure,
+      GreenCardHistoryUiState.NotAvailable,
     ),
   )
