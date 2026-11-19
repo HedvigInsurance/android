@@ -100,6 +100,12 @@ import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.show
+import com.hedvig.android.feature.claim.details.ui.rating.AutoOpenRatingEffect
+import com.hedvig.android.feature.claim.details.ui.rating.ClaimRatingButton
+import com.hedvig.android.feature.claim.details.ui.rating.ClaimRatingSheet
+import com.hedvig.android.feature.claim.details.ui.rating.RatingButtonState
+import com.hedvig.android.feature.claim.details.ui.rating.RatingEvent
+import com.hedvig.android.feature.claim.details.ui.rating.RatingState
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.shared.file.upload.ui.FilePickerBottomSheet
 import com.hedvig.android.ui.claimstatus.ClaimStatusCard
@@ -146,6 +152,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun ClaimDetailsDestination(
   viewModel: ClaimDetailsViewModel,
+  openRatingOnLoad: Boolean,
   imageLoader: ImageLoader,
   appPackageId: String,
   navigateUp: () -> Unit,
@@ -156,6 +163,11 @@ internal fun ClaimDetailsDestination(
   sharePdf: (File) -> Unit,
 ) {
   val viewState by viewModel.uiState.collectAsStateWithLifecycle()
+  AutoOpenRatingEffect(
+    openRatingOnLoad = openRatingOnLoad,
+    ratingButton = viewState.safeCast<ClaimDetailUiState.Content>()?.ratingButton,
+    openRating = { viewModel.emit(ClaimDetailsEvent.Rating(RatingEvent.OpenRequested)) },
+  )
   ClaimDetailScreen(
     uiState = viewState,
     imageLoader = imageLoader,
@@ -165,6 +177,7 @@ internal fun ClaimDetailsDestination(
     onDismissUploadError = { viewModel.emit(ClaimDetailsEvent.DismissUploadError) },
     retry = { viewModel.emit(ClaimDetailsEvent.Retry) },
     navigateUp = navigateUp,
+    onRatingEvent = { viewModel.emit(ClaimDetailsEvent.Rating(it)) },
     navigateToConversation = navigateToConversation,
     onFilesToUploadSelected = onFilesToUploadSelected,
     downloadFromUrl = { viewModel.emit(ClaimDetailsEvent.DownloadPdf(it)) },
@@ -186,12 +199,18 @@ private fun ClaimDetailScreen(
   onDismissUploadError: () -> Unit,
   retry: () -> Unit,
   navigateUp: () -> Unit,
+  onRatingEvent: (RatingEvent) -> Unit,
   navigateToConversation: (String) -> Unit,
   onFilesToUploadSelected: (files: List<Uri>, uploadUri: String) -> Unit,
   downloadFromUrl: (String) -> Unit,
   sharePdf: (File) -> Unit,
   onDismissDownloadError: () -> Unit,
 ) {
+  ClaimRatingSheet(
+    step = (uiState.safeCast<ClaimDetailUiState.Content>()?.rating as? RatingState.Open)?.step,
+    onEvent = onRatingEvent,
+    openUrl = openUrl,
+  )
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,
     modifier = Modifier.fillMaxSize(),
@@ -230,6 +249,7 @@ private fun ClaimDetailScreen(
             onLaunchMediaRequest = { photoPicker.launch(PickVisualMediaRequest()) },
             onPickFile = { filePicker.launch("*/*") },
             onTakePhoto = { photoCaptureState.launchTakePhotoRequest() },
+            onRateClaimClick = { onRatingEvent(RatingEvent.OpenRequested) },
             hasUnreadMessages = uiState.safeCast<ClaimDetailUiState.Content>()?.hasUnreadMessages == true,
             navigateToConversation = uiState.safeCast<ClaimDetailUiState.Content>()?.conversationId?.let {
               { navigateToConversation(it) }
@@ -264,6 +284,7 @@ private fun ClaimDetailContentScreen(
   onLaunchMediaRequest: () -> Unit,
   onPickFile: () -> Unit,
   onTakePhoto: () -> Unit,
+  onRateClaimClick: () -> Unit,
   hasUnreadMessages: Boolean,
   navigateToConversation: (() -> Unit)?,
 ) {
@@ -308,6 +329,7 @@ private fun ClaimDetailContentScreen(
     hasUnreadMessages = hasUnreadMessages,
     navigateToConversation = navigateToConversation,
     onAddFilesButtonClick = fileTypeSelectBottomSheetState::show,
+    onRateClaimClick = onRateClaimClick,
   )
 }
 
@@ -330,6 +352,7 @@ private fun NonDynamicGrid(
   downloadFromUrl: (String) -> Unit,
   hasUnreadMessages: Boolean,
   onAddFilesButtonClick: () -> Unit,
+  onRateClaimClick: () -> Unit,
   navigateToConversation: (() -> Unit)?,
 ) {
   val explanationBottomSheetState = rememberHedvigBottomSheetState<Unit>()
@@ -385,6 +408,7 @@ private fun NonDynamicGrid(
       onAddFilesButtonClick = onAddFilesButtonClick,
       onDismissUploadError = onDismissUploadError,
       downloadFromUrl = downloadFromUrl,
+      onRateClaimClick = onRateClaimClick,
     )
   }
 }
@@ -559,6 +583,7 @@ private fun AfterGridContent(
   onAddFilesButtonClick: () -> Unit,
   onDismissUploadError: () -> Unit,
   downloadFromUrl: (url: String) -> Unit,
+  onRateClaimClick: () -> Unit,
 ) {
   Column {
     if (uiState.isUploadingFilesEnabled) {
@@ -619,6 +644,13 @@ private fun AfterGridContent(
         modifier = Modifier.padding(16.dp),
         isLoading = uiState.appealInstructionsUrl == uiState.isLoadingPdf,
       )
+    }
+    if (uiState.ratingButton != null) {
+      Spacer(Modifier.height(16.dp))
+      // TODO: Add "Claims rating" / "Skadebetyg" to Lokalise
+      HedvigText("Claims rating", Modifier.padding(horizontal = 2.dp))
+      Spacer(Modifier.height(8.dp))
+      ClaimRatingButton(state = uiState.ratingButton, onClick = onRateClaimClick)
     }
     Spacer(Modifier.height(16.dp))
   }
@@ -886,6 +918,7 @@ private fun PreviewClaimDetailScreen(
         appPackageId = "",
         retry = { },
         navigateUp = {},
+        onRatingEvent = {},
         navigateToConversation = {},
         onFilesToUploadSelected = { _, _ -> },
       )
@@ -974,6 +1007,8 @@ private fun PreviewClaimDetailScreen(
           externalId = "EIR-2026-000123",
           handlerEmail = "claims@eir.se",
           isPartnerClaim = true,
+          hasSubmittedRating = false,
+          ratingButton = RatingButtonState.Enabled,
         ),
         openUrl = {},
         imageLoader = rememberPreviewImageLoader(),
@@ -984,6 +1019,7 @@ private fun PreviewClaimDetailScreen(
         onLaunchMediaRequest = {},
         onTakePhoto = {},
         onPickFile = {},
+        onRateClaimClick = {},
         onNavigateToImageViewer = { _, _ -> },
         hasUnreadMessages = withNotification,
         navigateToConversation = {},

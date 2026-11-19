@@ -1,0 +1,11 @@
+mutation ClaimSubmitRating($claimId: ID!, $rating: Int!, $comment: String) {
+  claimSubmitRating(claimId: $claimId, rating: $rating, comment: $comment) {
+    userError {
+      message
+    }
+    claim {
+      id
+      hasSubmittedRating
+    }
+  }
+}

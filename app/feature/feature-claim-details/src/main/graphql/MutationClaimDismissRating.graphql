@@ -1,0 +1,11 @@
+mutation ClaimDismissRating($claimId: ID!) {
+  claimDismissRating(claimId: $claimId) {
+    userError {
+      message
+    }
+    claim {
+      id
+      hasSubmittedRating
+    }
+  }
+}

@@ -303,6 +303,7 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
     },
     navigateToChipIdScreen = { backstack.add(ChipIdKey()) },
     navigateToUsageData = { backstack.add(UsageDataKey) },
+    navigateToClaimRating = { claimId -> backstack.add(ClaimDetailsKey(claimId, openRating = true)) },
     openAppSettings = externalNavigator::openAppSettings,
     openUrl = openUrl,
     openCrossSellUrl = openCrossSellUrl,

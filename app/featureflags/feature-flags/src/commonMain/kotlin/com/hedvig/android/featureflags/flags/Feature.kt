@@ -23,6 +23,10 @@ enum class Feature(
     "Kill switch for the home screen 'Your quotes' section, which lets a member resume an ongoing " +
       "shopping session they started on the web. When the toggle is on, the section is hidden.",
   ),
+  ENABLE_CLAIM_RATING(
+    "Enables rating a closed claim in the app: the rating card on claim details and the Home to-do " +
+      "for claims pending a rating. Turned on together with stopping the claim-closed rating email.",
+  ),
   ENABLE_CLAIM_INTENT_RESUME(
     "Enables resuming a draft claim: the draft card on the home screen, the draft-claim dialogs, " +
       "and the resumable-aware leave dialog in the claim chat.",

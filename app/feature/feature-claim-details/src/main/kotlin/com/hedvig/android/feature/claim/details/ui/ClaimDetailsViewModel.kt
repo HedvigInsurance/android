@@ -2,6 +2,7 @@ package com.hedvig.android.feature.claim.details.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -17,9 +18,19 @@ import com.hedvig.android.core.fileupload.DownloadPdfUseCase
 import com.hedvig.android.core.fileupload.DownloadedFile
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.data.display.items.DisplayItem
+import com.hedvig.android.feature.claim.details.data.ClaimRatingAnswer
+import com.hedvig.android.feature.claim.details.data.DismissClaimRatingUseCase
 import com.hedvig.android.feature.claim.details.data.GetClaimDetailUiStateUseCase
+import com.hedvig.android.feature.claim.details.data.SubmitClaimRatingUseCase
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimStatus.CLOSED
+import com.hedvig.android.feature.claim.details.ui.rating.RatingButtonState
+import com.hedvig.android.feature.claim.details.ui.rating.RatingEvent
+import com.hedvig.android.feature.claim.details.ui.rating.RatingState
+import com.hedvig.android.feature.claim.details.ui.rating.reduceRating
+import com.hedvig.android.feature.claim.details.ui.rating.withInterruptedSendReset
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -32,6 +43,7 @@ import java.io.File
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 
 @AssistedInject
@@ -41,6 +53,9 @@ internal class ClaimDetailsViewModel(
   getClaimDetailUiStateUseCase: GetClaimDetailUiStateUseCase,
   claimsServiceUploadFileUseCase: ClaimsServiceUploadFileUseCase,
   downloadPdfUseCase: DownloadPdfUseCase,
+  submitClaimRatingUseCase: SubmitClaimRatingUseCase,
+  dismissClaimRatingUseCase: DismissClaimRatingUseCase,
+  featureManager: FeatureManager,
 ) : MoleculeViewModel<ClaimDetailsEvent, ClaimDetailUiState>(
     ClaimDetailUiState.Loading,
     ClaimDetailPresenter(
@@ -48,20 +63,37 @@ internal class ClaimDetailsViewModel(
       getClaimDetailUiStateUseCase,
       claimsServiceUploadFileUseCase,
       downloadPdfUseCase,
+      submitClaimRatingUseCase,
+      dismissClaimRatingUseCase,
+      featureManager,
     ),
   )
 
-private class ClaimDetailPresenter(
+internal class ClaimDetailPresenter(
   private val claimId: String,
   private val getClaimDetailUiStateUseCase: GetClaimDetailUiStateUseCase,
   private val claimsServiceUploadFileUseCase: ClaimsServiceUploadFileUseCase,
   private val downloadPdfUseCase: DownloadPdfUseCase,
+  private val submitClaimRatingUseCase: SubmitClaimRatingUseCase,
+  private val dismissClaimRatingUseCase: DismissClaimRatingUseCase,
+  private val featureManager: FeatureManager,
 ) : MoleculePresenter<ClaimDetailsEvent, ClaimDetailUiState> {
   @Composable
   override fun MoleculePresenterScope<ClaimDetailsEvent>.present(lastState: ClaimDetailUiState): ClaimDetailUiState {
     var isLoading: Boolean by remember { mutableStateOf(lastState as? ClaimDetailUiState.Loading != null) }
     var hasError: Boolean by remember { mutableStateOf(lastState as? ClaimDetailUiState.Error != null) }
     var content: ClaimDetailUiState.Content? by remember { mutableStateOf(lastState as? ClaimDetailUiState.Content) }
+    var rating: RatingState by remember {
+      mutableStateOf(
+        (lastState as? ClaimDetailUiState.Content)?.rating?.withInterruptedSendReset() ?: RatingState.Closed,
+      )
+    }
+    var ratingSubmittedLocally by remember {
+      mutableStateOf((lastState as? ClaimDetailUiState.Content)?.ratingButton == RatingButtonState.Submitted)
+    }
+    val isClaimRatingEnabled by remember {
+      featureManager.isFeatureEnabled(Feature.ENABLE_CLAIM_RATING)
+    }.collectAsState(initial = false)
     var loadIteration by remember { mutableIntStateOf(0) }
     val mediaToSend = remember { Channel<Uri>(Channel.UNLIMITED) }
 
@@ -152,13 +184,47 @@ private class ClaimDetailPresenter(
         ClaimDetailsEvent.HandledSharingPdfFile -> {
           content = content?.copy(downloadError = null, savedFileUri = null)
         }
+
+        is ClaimDetailsEvent.Rating -> {
+          val transition = reduceRating(rating, event.event)
+          rating = transition.state
+          when (val answer = transition.answer) {
+            null -> {}
+
+            is ClaimRatingAnswer.Rated -> {
+              launch {
+                val sendResult = submitClaimRatingUseCase.invoke(claimId, answer.rating, answer.comment).fold(
+                  ifLeft = {
+                    logcat(LogPriority.WARN) { "Failed to submit rating for claim $claimId: $it" }
+                    RatingEvent.SendFailed
+                  },
+                  ifRight = {
+                    ratingSubmittedLocally = true
+                    RatingEvent.SendSucceeded
+                  },
+                )
+                rating = reduceRating(rating, sendResult).state
+              }
+            }
+
+            ClaimRatingAnswer.Dismissed -> {
+              launch {
+                dismissClaimRatingUseCase.invoke(claimId).onLeft {
+                  logcat(LogPriority.WARN) { "Failed to dismiss rating for claim $claimId: $it" }
+                }
+              }
+            }
+          }
+        }
       }
     }
 
     if (hasError) {
       return ClaimDetailUiState.Error
     }
-    return content ?: ClaimDetailUiState.Loading
+    return content?.let {
+      it.copy(rating = rating, ratingButton = it.ratingButton(isClaimRatingEnabled, ratingSubmittedLocally))
+    } ?: ClaimDetailUiState.Loading
   }
 }
 
@@ -172,6 +238,8 @@ internal sealed interface ClaimDetailsEvent {
   data class DownloadPdf(val url: String) : ClaimDetailsEvent
 
   data object HandledSharingPdfFile : ClaimDetailsEvent
+
+  data class Rating(val event: RatingEvent) : ClaimDetailsEvent
 }
 
 internal sealed interface ClaimDetailUiState {
@@ -205,6 +273,10 @@ internal sealed interface ClaimDetailUiState {
     val externalId: String?,
     val handlerEmail: String?,
     val isPartnerClaim: Boolean,
+    val hasSubmittedRating: Boolean,
+    val rating: RatingState = RatingState.Closed,
+    /** Null when the claim cannot be rated in the app. */
+    val ratingButton: RatingButtonState? = null,
   ) : ClaimDetailUiState {
     val claimIsInUndeterminedState: Boolean = claimStatus == CLOSED && claimOutcome == UNKNOWN
 
@@ -232,4 +304,13 @@ internal sealed interface ClaimDetailUiState {
 
     companion object
   }
+}
+
+private fun ClaimDetailUiState.Content.ratingButton(
+  isClaimRatingEnabled: Boolean,
+  ratingSubmittedLocally: Boolean,
+): RatingButtonState? = when {
+  !isClaimRatingEnabled || claimStatus != CLOSED || isPartnerClaim -> null
+  hasSubmittedRating || ratingSubmittedLocally -> RatingButtonState.Submitted
+  else -> RatingButtonState.Enabled
 }

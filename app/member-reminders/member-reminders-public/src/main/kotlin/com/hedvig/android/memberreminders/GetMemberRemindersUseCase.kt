@@ -34,6 +34,7 @@ internal class GetMemberRemindersUseCaseImpl(
   private val getContactInfoUpdateIsNeededUseCase: GetContactInfoUpdateIsNeededUseCase,
   private val getMissingChipIdReminderUseCase: GetMissingChipIdReminderUseCase,
   private val getAnalyticsConsentUseCase: GetAnalyticsConsentUseCase,
+  private val getClaimRatingRemindersUseCase: GetClaimRatingRemindersUseCase,
 ) : GetMemberRemindersUseCase {
   override fun invoke(): Flow<MemberReminders> {
     return combine(
@@ -72,6 +73,7 @@ internal class GetMemberRemindersUseCaseImpl(
       getAnalyticsConsentUseCase.invoke().map { consent ->
         if (consent == AnalyticsConsent.NOT_DECIDED) MemberReminder.DecideAnalyticsConsent() else null
       },
+      getClaimRatingRemindersUseCase.invoke(),
     ) { values ->
       val enableNotifications = values[0] as MemberReminder.EnableNotifications?
       val connectPayment = values[1] as MemberReminder.PaymentReminder?
@@ -81,6 +83,7 @@ internal class GetMemberRemindersUseCaseImpl(
       val contactInfoReminder = values[4] as? Either<ErrorMessage, ContactInfoUpdateNeeded?>
       val missingChipIdReminder = values[5] as? Either<ErrorMessage, MemberReminder.MissingChipId?>
       val decideAnalyticsConsent = values[6] as MemberReminder.DecideAnalyticsConsent?
+      val claimRatingResult = values[7] as? Either<ErrorMessage, List<MemberReminder.ClaimRatingPending>>
 
       MemberReminders(
         connectPayment = connectPayment,
@@ -90,6 +93,7 @@ internal class GetMemberRemindersUseCaseImpl(
         updateContactInfo = contactInfoReminder?.getOrNull(),
         missingChipId = missingChipIdReminder?.getOrNull(),
         decideAnalyticsConsent = decideAnalyticsConsent,
+        claimRatings = claimRatingResult?.getOrNull().orEmpty(),
       )
     }
   }
@@ -103,6 +107,7 @@ data class MemberReminders(
   val updateContactInfo: ContactInfoUpdateNeeded? = null,
   val missingChipId: MemberReminder.MissingChipId? = null,
   val decideAnalyticsConsent: MemberReminder.DecideAnalyticsConsent? = null,
+  val claimRatings: List<MemberReminder.ClaimRatingPending> = emptyList(),
 ) {
   /**
    * In some cases a reminder may be present but may not be applicable in our current app state.
@@ -134,6 +139,7 @@ data class MemberReminders(
       decideAnalyticsConsent?.let {
         add(it)
       }
+      addAll(claimRatings)
     }
   }
 }
@@ -187,5 +193,11 @@ sealed interface MemberReminder {
    */
   data class DecideAnalyticsConsent(
     override val id: String = UUID.randomUUID().toString(),
+  ) : MemberReminder
+
+  /** A recently closed claim the member has not rated yet. Home "To do" list only. */
+  data class ClaimRatingPending(
+    val claimId: String,
+    override val id: String = "claim-rating-$claimId",
   ) : MemberReminder
 }

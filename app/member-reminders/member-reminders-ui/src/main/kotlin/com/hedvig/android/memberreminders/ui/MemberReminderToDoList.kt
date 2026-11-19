@@ -41,6 +41,7 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.ID
 import com.hedvig.android.design.system.hedvig.icon.InfoOutline
 import com.hedvig.android.design.system.hedvig.icon.ProfileOutline
+import com.hedvig.android.design.system.hedvig.icon.Star
 import com.hedvig.android.design.system.hedvig.icon.WarningOutline
 import com.hedvig.android.memberreminders.MemberReminder
 import hedvig.resources.HOME_TODO_ADD_COINSURED_TITLE
@@ -54,7 +55,6 @@ import hedvig.resources.HOME_TODO_UPDATE_CONTACT_DETAILS_TITLE
 import hedvig.resources.Res
 import hedvig.resources.open_chat
 import kotlinx.datetime.LocalDate
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -74,6 +74,7 @@ fun MemberReminderToDoList(
   navigateToContactInfo: () -> Unit,
   navigateToChipId: () -> Unit,
   navigateToUsageData: () -> Unit,
+  navigateToClaimRating: (claimId: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   var showMissedPaymentsDialog by rememberSaveable { mutableStateOf(false) }
@@ -95,6 +96,7 @@ fun MemberReminderToDoList(
       navigateToContactInfo = navigateToContactInfo,
       navigateToChipId = navigateToChipId,
       navigateToUsageData = navigateToUsageData,
+      navigateToClaimRating = navigateToClaimRating,
     )
   }
   if (rows.isEmpty()) return
@@ -112,7 +114,7 @@ fun MemberReminderToDoList(
         ToDoRow(
           icon = row.icon,
           iconTint = row.iconTint,
-          title = row.title,
+          title = row.title(),
           onClick = row.onClick,
           modifier = Modifier.horizontalDivider(DividerPosition.Top, show = index != 0),
         )
@@ -146,6 +148,7 @@ private fun MemberReminder.homeToDoOrder(): Int? = when (this) {
   is MemberReminder.CoInsuredInfo -> 3
   is MemberReminder.ContactInfoUpdateNeeded -> 4
   is MemberReminder.DecideAnalyticsConsent -> 5
+  is MemberReminder.ClaimRatingPending -> 6
   is MemberReminder.PaymentReminder.ConnectPayment -> null
   is MemberReminder.UpcomingRenewal -> null
   is MemberReminder.EnableNotifications -> null
@@ -154,7 +157,7 @@ private fun MemberReminder.homeToDoOrder(): Int? = when (this) {
 private data class ToDoRowData(
   val icon: ImageVector,
   val iconTint: ToDoRowIconTint,
-  val title: StringResource,
+  val title: @Composable () -> String,
   val onClick: () -> Unit,
 )
 
@@ -182,34 +185,39 @@ private fun MemberReminder.toToDoRowOrNull(
   navigateToContactInfo: () -> Unit,
   navigateToChipId: () -> Unit,
   navigateToUsageData: () -> Unit,
+  navigateToClaimRating: (claimId: String) -> Unit,
 ): ToDoRowData? = when (this) {
   is MemberReminder.PaymentReminder.TerminationDueToMissedPayments -> ToDoRowData(
     icon = HedvigIcons.WarningOutline,
     iconTint = ToDoRowIconTint.Attention,
-    title = Res.string.HOME_TODO_PAYMENT_OVERDUE_TITLE,
+    title = { stringResource(Res.string.HOME_TODO_PAYMENT_OVERDUE_TITLE) },
     onClick = onShowMissedPaymentsDialog,
   )
 
   is MemberReminder.PaymentReminder.ConnectPayout -> ToDoRowData(
     icon = HedvigIcons.Card,
     iconTint = ToDoRowIconTint.Primary,
-    title = Res.string.HOME_TODO_MISSING_PAYOUT_METHOD_TITLE,
+    title = { stringResource(Res.string.HOME_TODO_MISSING_PAYOUT_METHOD_TITLE) },
     onClick = navigateToConnectPayout,
   )
 
   is MemberReminder.MissingChipId -> ToDoRowData(
     icon = HedvigIcons.ID,
     iconTint = ToDoRowIconTint.Primary,
-    title = Res.string.HOME_TODO_MISSING_CHIP_ID_TITLE,
+    title = { stringResource(Res.string.HOME_TODO_MISSING_CHIP_ID_TITLE) },
     onClick = navigateToChipId,
   )
 
   is MemberReminder.CoInsuredInfo -> ToDoRowData(
     icon = HedvigIcons.ProfileOutline,
     iconTint = ToDoRowIconTint.Primary,
-    title = when (coInsuredType) {
-      CoInsuredFlowType.CoInsured -> Res.string.HOME_TODO_ADD_COINSURED_TITLE
-      CoInsuredFlowType.CoOwners -> Res.string.HOME_TODO_ADD_COOWNER_TITLE
+    title = {
+      stringResource(
+        when (coInsuredType) {
+          CoInsuredFlowType.CoInsured -> Res.string.HOME_TODO_ADD_COINSURED_TITLE
+          CoInsuredFlowType.CoOwners -> Res.string.HOME_TODO_ADD_COOWNER_TITLE
+        },
+      )
     },
     onClick = { navigateToAddMissingInfo(contractId, coInsuredType) },
   )
@@ -217,15 +225,22 @@ private fun MemberReminder.toToDoRowOrNull(
   is MemberReminder.ContactInfoUpdateNeeded -> ToDoRowData(
     icon = HedvigIcons.InfoOutline,
     iconTint = ToDoRowIconTint.Primary,
-    title = Res.string.HOME_TODO_UPDATE_CONTACT_DETAILS_TITLE,
+    title = { stringResource(Res.string.HOME_TODO_UPDATE_CONTACT_DETAILS_TITLE) },
     onClick = navigateToContactInfo,
   )
 
   is MemberReminder.DecideAnalyticsConsent -> ToDoRowData(
     icon = HedvigIcons.EQ,
     iconTint = ToDoRowIconTint.Primary,
-    title = Res.string.HOME_TODO_SELECT_USAGE_DATA_TITLE,
+    title = { stringResource(Res.string.HOME_TODO_SELECT_USAGE_DATA_TITLE) },
     onClick = navigateToUsageData,
+  )
+
+  is MemberReminder.ClaimRatingPending -> ToDoRowData(
+    icon = HedvigIcons.Star,
+    iconTint = ToDoRowIconTint.Primary,
+    title = { claimRatingToDoTitle() },
+    onClick = { navigateToClaimRating(claimId) },
   )
 
   is MemberReminder.PaymentReminder.ConnectPayment -> null
@@ -276,7 +291,7 @@ private fun MissedPaymentsDialog(
 private fun ToDoRow(
   icon: ImageVector,
   iconTint: ToDoRowIconTint,
-  title: StringResource,
+  title: String,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -296,7 +311,7 @@ private fun ToDoRow(
     )
     Column(Modifier.weight(1f)) {
       HedvigText(
-        text = stringResource(title),
+        text = title,
         style = HedvigTheme.typography.label,
         color = HedvigTheme.colorScheme.textPrimary,
       )
@@ -329,6 +344,7 @@ private fun PreviewMemberReminderToDoList() {
           MemberReminder.CoInsuredInfo("contractId", CoInsuredFlowType.CoOwners),
           MemberReminder.ContactInfoUpdateNeeded,
           MemberReminder.DecideAnalyticsConsent(),
+          MemberReminder.ClaimRatingPending("claimId"),
         ),
         navigateToConnectPayout = {},
         navigateToAddMissingInfo = { _, _ -> },
@@ -336,8 +352,12 @@ private fun PreviewMemberReminderToDoList() {
         navigateToContactInfo = {},
         navigateToChipId = {},
         navigateToUsageData = {},
+        navigateToClaimRating = {},
         modifier = Modifier.padding(16.dp),
       )
     }
   }
 }
+
+// TODO: Add "Rate how we handled your claim" / "Betygsätt hur vi hanterade din skada" to Lokalise
+internal fun claimRatingToDoTitle(): String = "Rate how we handled your claim"

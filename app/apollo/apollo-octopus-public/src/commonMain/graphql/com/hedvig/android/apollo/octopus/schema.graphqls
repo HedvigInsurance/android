@@ -1103,6 +1103,10 @@ type Claim {
   claimType: String
   incidentDate: Date @deprecated(reason: "Use displayItems instead")
   showClaimClosedFlow: Boolean!
+  """
+  True once the member has submitted a rating for this claim. Dismissals do not count.
+  """
+  hasSubmittedRating: Boolean!
   appealInstructionsUrl: String
   isUploadingFilesEnabled: Boolean!
   infoText: String
@@ -2907,6 +2911,10 @@ type Member {
   claims: [Claim!]!
   claimsActive: [Claim!]!
   claimsHistory: [Claim!]!
+  """
+  Closed claims from the last 30 days that the member has not rated. Dismissing the rating keeps a claim here.
+  """
+  claimsPendingRating: [Claim!]!
   partnerClaimsActive: [PartnerClaim!]!
   partnerClaimsHistory: [PartnerClaim!]!
   firstName: String!
@@ -4017,6 +4025,8 @@ type Mutation {
   """
   conversationHideCrossSales(id: UUID!): Conversation!
   claimAcknowledgeClosedStatus(id: ID!): ClaimMutationOutput
+  claimSubmitRating(claimId: ID!, rating: Int!, comment: String): ClaimMutationOutput
+  claimDismissRating(claimId: ID!): ClaimMutationOutput
   """
   Create or (reuse and existing) unsubmitted claim intent.
   """

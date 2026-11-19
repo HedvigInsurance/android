@@ -32,6 +32,7 @@ fun EntryProviderScope<HedvigNavKey>.claimDetailsEntries(
     val context = LocalContext.current
     ClaimDetailsDestination(
       viewModel = viewModel,
+      openRatingOnLoad = key.openRating,
       imageLoader = imageLoader,
       appPackageId = appPackageId,
       navigateUp = backstack::navigateUp,

@@ -41,6 +41,7 @@ private data class TestChatKey(val conversationId: String) : HedvigNavKey
 @Serializable
 private data class TestClaimDetailsKey(
   @SerialName("claimId") val claimId: String,
+  @SerialName("openRating") val openRating: Boolean = false,
 ) : HedvigNavKey
 
 @Serializable
@@ -79,7 +80,15 @@ private fun matcher(): HedvigDeepLinkMatcher = HedvigDeepLinkMatcher(
     addAll(uriDeepLinkMatchers(listOf("$HOST/help-center/topic?id={id}"), TestHelpCenterTopicKey.serializer()))
     addAll(uriDeepLinkMatchers(listOf("$HOST/forever"), TestForeverKey.serializer()))
     addAll(uriDeepLinkMatchers(listOf("$HOST/direct-debit"), TestDirectDebitKey.serializer()))
-    addAll(uriDeepLinkMatchers(listOf("$HOST/claim-details?claimId={claimId}"), TestClaimDetailsKey.serializer()))
+    addAll(
+      uriDeepLinkMatchers(
+        listOf(
+          "$HOST/claim-details?claimId={claimId}&openRating={openRating}",
+          "$HOST/claim-details?claimId={claimId}",
+        ),
+        TestClaimDetailsKey.serializer(),
+      ),
+    )
     // insurances + contract-without-id both resolve to insurances; contract-with-id is separate
     addAll(uriDeepLinkMatchers(listOf("$HOST/insurances", "$HOST/contract"), TestInsurancesKey.serializer()))
     addAll(uriDeepLinkMatchers(listOf("$HOST/contract?contractId={contractId}"), TestContractDetailKey.serializer()))
@@ -145,6 +154,13 @@ class HedvigDeepLinkMatcherTest {
 
   @Test fun claimDetails_extractsClaimId() {
     assertEquals(TestClaimDetailsKey("claim-7"), matcher().match("$HOST/claim-details?claimId=claim-7"))
+  }
+
+  @Test fun claimDetailsWithOpenRating_opensTheRatingSheet() {
+    assertEquals(
+      TestClaimDetailsKey("claim-7", openRating = true),
+      matcher().match("$HOST/claim-details?claimId=claim-7&openRating=true"),
+    )
   }
 
   @Test fun claimDetails_missingRequiredArg_doesNotMatch() {
