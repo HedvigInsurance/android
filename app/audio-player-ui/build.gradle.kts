@@ -22,5 +22,10 @@ kotlin {
       implementation(projects.coreResources)
       implementation(projects.designSystemHedvig)
     }
+    jvmTest.dependencies {
+      implementation(libs.coroutines.test)
+      implementation(libs.junit)
+      implementation(projects.loggingTest)
+    }
   }
 }
