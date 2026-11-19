@@ -18,6 +18,7 @@ import com.hedvig.android.sample.design.showcase.DesignShowcase.ShowMaterialBott
 import com.hedvig.android.sample.design.showcase.DesignShowcase.ShowPerils
 import com.hedvig.android.sample.design.showcase.DesignShowcase.ShowProgressBar
 import com.hedvig.android.sample.design.showcase.DesignShowcase.ShowRadio
+import com.hedvig.android.sample.design.showcase.DesignShowcase.ShowSearchablePicker
 import com.hedvig.android.sample.design.showcase.DesignShowcase.ShowSnacks
 import com.hedvig.android.sample.design.showcase.DesignShowcase.ShowStepper
 import com.hedvig.android.sample.design.showcase.DesignShowcase.ShowTabs
@@ -40,6 +41,7 @@ import com.hedvig.android.sample.design.showcase.notifications.NotificationsSnac
 import com.hedvig.android.sample.design.showcase.peril.PerilsShowcase
 import com.hedvig.android.sample.design.showcase.progress.ProgressBarShowcase
 import com.hedvig.android.sample.design.showcase.radio.ShowcaseRadioGroups
+import com.hedvig.android.sample.design.showcase.searchablepicker.SearchablePickerShowcase
 import com.hedvig.android.sample.design.showcase.stepper.StepperShowcase
 import com.hedvig.android.sample.design.showcase.tabs.TabsShowcase
 import com.hedvig.android.sample.design.showcase.textfield.ShowcaseTextField
@@ -48,7 +50,7 @@ import com.hedvig.android.sample.design.showcase.topbar.TopAppBarShowcase
 
 @Composable
 internal fun DesignShowcase(modifier: Modifier = Modifier) {
-  val showcase = ShowRadio
+  val showcase = ShowSearchablePicker
   Box(modifier) {
     @Suppress("KotlinConstantConditions")
     when (showcase) {
@@ -73,6 +75,7 @@ internal fun DesignShowcase(modifier: Modifier = Modifier) {
       ShowTopBar -> TopAppBarShowcase()
       ShowBigCard -> BigCardShowcase()
       ShowMaterialBottomSheet -> MaterialExperiment()
+      ShowSearchablePicker -> SearchablePickerShowcase()
     }
   }
 }
@@ -99,4 +102,5 @@ enum class DesignShowcase {
   ShowDropdown,
   ShowBigCard,
   ShowMaterialBottomSheet,
+  ShowSearchablePicker,
 }
