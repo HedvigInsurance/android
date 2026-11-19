@@ -105,7 +105,11 @@ internal fun ChatInput(
       onSendMessage(message)
       text = ""
     },
-    takePicture = { photoCaptureState.launchTakePhotoRequest() },
+    takePicture = if (photoCaptureState.isAvailable) {
+      { photoCaptureState.launchTakePhotoRequest() }
+    } else {
+      null
+    },
     selectMedia = { photoPicker.launch() },
     selectFile = { filePicker.launch() },
     modifier = modifier,
@@ -120,7 +124,7 @@ private fun ChatInput(
   areChatOptionsExpanded: Boolean,
   expandChatOptions: () -> Unit,
   onSendMessage: (message: String) -> Unit,
-  takePicture: () -> Unit,
+  takePicture: (() -> Unit)?,
   selectMedia: () -> Unit,
   selectFile: () -> Unit,
   showUploading: Boolean,
@@ -208,7 +212,7 @@ private fun ChatInput(
 @Composable
 private fun ChatOptions(
   areChatOptionsExpanded: Boolean,
-  takePicture: () -> Unit,
+  takePicture: (() -> Unit)?,
   shape: Shape,
   outlineColor: Color,
   selectMedia: () -> Unit,
@@ -233,13 +237,15 @@ private fun ChatOptions(
         verticalAlignment = Alignment.Bottom,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
       ) {
-        ChatClickableSquare(
-          onClick = takePicture,
-          imageVector = HedvigIcons.Camera,
-          contentDescription = stringResource(Res.string.TALKBACK_TAKE_PHOTO),
-          chatShape = shape,
-          outlineColor = outlineColor,
-        )
+        if (takePicture != null) {
+          ChatClickableSquare(
+            onClick = takePicture,
+            imageVector = HedvigIcons.Camera,
+            contentDescription = stringResource(Res.string.TALKBACK_TAKE_PHOTO),
+            chatShape = shape,
+            outlineColor = outlineColor,
+          )
+        }
         ChatClickableSquare(
           onClick = selectMedia,
           imageVector = HedvigIcons.Image,

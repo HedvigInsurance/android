@@ -88,6 +88,7 @@ kotlin {
       implementation(libs.apollo.testingSupport)
       implementation(libs.assertK)
       implementation(libs.coroutines.test)
+      implementation(libs.jetbrains.compose.ui.test)
       implementation(libs.junit)
       implementation(libs.sqlite.bundled)
       implementation(projects.apolloOctopusTest)
@@ -103,6 +104,7 @@ kotlin {
       implementation(projects.loggingTest)
       implementation(projects.networkClients)
       implementation(projects.trackingTest)
+      implementation(org.jetbrains.compose.ComposePlugin.DesktopDependencies.currentOs)
     }
   }
 }
