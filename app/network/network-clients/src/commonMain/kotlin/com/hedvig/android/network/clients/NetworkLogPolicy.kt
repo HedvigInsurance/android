@@ -1,4 +1,9 @@
+@file:OptIn(ExperimentalObjCName::class)
+
 package com.hedvig.android.network.clients
+
+import kotlin.experimental.ExperimentalObjCName
+import kotlin.native.ObjCName
 
 /**
  * What the network clients log beyond GraphQL operation names, error counts, error types and exception classes.
@@ -8,6 +13,7 @@ package com.hedvig.android.network.clients
  * adds the GraphQL error messages, the errors with their extensions and the response extensions, and exception
  * messages; they can quote what was sent, so they have their own switch.
  */
+@ObjCName(name = "HedvigSharedNetworkLogPolicy", swiftName = "NetworkLogPolicy", exact = true)
 class NetworkLogPolicy(
   val logsHttpBodies: Boolean,
   val logsGraphqlData: Boolean,

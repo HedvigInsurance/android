@@ -1,4 +1,9 @@
+@file:OptIn(ExperimentalObjCName::class)
+
 package com.hedvig.android.core.buildconstants
+
+import kotlin.experimental.ExperimentalObjCName
+import kotlin.native.ObjCName
 
 interface AppBuildConfig {
   val debug: Boolean
@@ -23,6 +28,7 @@ interface AppBuildConfig {
     get() = defaultPlatformName
 }
 
+@ObjCName(name = "HedvigSharedFlavor", swiftName = "Flavor", exact = true)
 enum class Flavor {
   Production,
   Staging,
