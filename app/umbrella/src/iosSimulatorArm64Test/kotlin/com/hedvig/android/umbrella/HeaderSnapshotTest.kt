@@ -34,6 +34,7 @@ class HeaderSnapshotTest {
     "HedvigSharedLanguage",
     "HedvigSharedNetworkLogPolicy",
     "HedvigSharedIosLogSink",
+    "HedvigSharedLogPriority",
     "HedvigSharedIosLogcatLoggerCompanion",
     "HedvigSharedReadFailure",
     "HedvigSharedReadFailureKind",
@@ -59,7 +60,7 @@ class HeaderSnapshotTest {
     "HedvigSharedKotlinThrowable",
     "HedvigSharedKotlinUnit",
     "HedvigSharedLanguageCompanion",
-    "HedvigSharedLogPriority",
+    "HedvigSharedLogPriorityNSEnum",
     "HedvigSharedLogcatLogger",
     "HedvigSharedIosLogcatLogger",
     "HedvigSharedReadFailureKindNSEnum",
@@ -161,6 +162,20 @@ class HeaderSnapshotTest {
 @protocol HedvigSharedIosLogSink
 @required
 - (void)logPriority:(HedvigSharedLogPriority *)priority tag:(NSString * _Nullable)tag message:(NSString *)message __attribute__((swift_name("log(priority:tag:message:)")));
+@interface HedvigSharedLogPriority : HedvigSharedKotlinEnum<HedvigSharedLogPriority *>
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
+- (instancetype)initWithName:(NSString *)name ordinal:(int32_t)ordinal __attribute__((swift_name("init(name:ordinal:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
+@property (readonly) HedvigSharedLogPriorityNSEnum nsEnum;
+@property (class, readonly) HedvigSharedLogPriority *verbose __attribute__((swift_name("verbose")));
+@property (class, readonly) HedvigSharedLogPriority *debug __attribute__((swift_name("debug")));
+@property (class, readonly) HedvigSharedLogPriority *info __attribute__((swift_name("info")));
+@property (class, readonly) HedvigSharedLogPriority *warn __attribute__((swift_name("warn")));
+@property (class, readonly) HedvigSharedLogPriority *error __attribute__((swift_name("error")));
+@property (class, readonly) HedvigSharedLogPriority *assert __attribute__((swift_name("assert")));
++ (HedvigSharedKotlinArray<HedvigSharedLogPriority *> *)values __attribute__((swift_name("values()")));
+@property (class, readonly) NSArray<HedvigSharedLogPriority *> *entries __attribute__((swift_name("entries")));
+- (HedvigSharedLogPriority *)atMostLogPriority:(HedvigSharedLogPriority *)logPriority __attribute__((swift_name("atMost(logPriority:)")));
 @interface HedvigSharedIosLogcatLoggerCompanion : HedvigSharedBase
 + (instancetype)alloc __attribute__((unavailable));
 + (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
