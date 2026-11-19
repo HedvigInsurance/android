@@ -52,6 +52,7 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.insurances.data.Addon
+import com.hedvig.android.feature.insurances.data.InsurableLimitsUsage
 import hedvig.resources.INSURANCE_PERILS_INFO
 import hedvig.resources.Res
 import hedvig.resources.general_close_button
@@ -62,6 +63,7 @@ internal fun CoverageTab(
   insurableLimits: List<InsurableLimit>,
   perils: List<ProductVariantPeril>,
   addons: List<Addon>?,
+  insurableLimitsUsage: InsurableLimitsUsage?,
   modifier: Modifier = Modifier,
 ) {
   val bottomSheetState = rememberHedvigBottomSheetState<InsurableLimit>()
@@ -85,6 +87,10 @@ internal fun CoverageTab(
   }
 
   Column(modifier = modifier) {
+    if (insurableLimitsUsage != null) {
+      InsurableLimitsUsageSection(insurableLimitsUsage, Modifier.padding(horizontal = 16.dp))
+      Spacer(Modifier.height(8.dp))
+    }
     InsurableLimitSection(
       insurableLimits = insurableLimits,
       onInsurableLimitClick = { insurableLimit: InsurableLimit ->
@@ -220,6 +226,7 @@ private fun PreviewCoverageTab(
           Addon(fakeAddonVariant2, UiMoney(19.0, UiCurrencyCode.SEK)),
           Addon(fakeAddonVariant3, UiMoney(19.0, UiCurrencyCode.SEK)),
         ),
+        previewInsurableLimitsUsage,
       )
     }
   }
@@ -236,6 +243,7 @@ private fun PreviewCoverageTabAddonHasNoPerils() {
         listOf(
           Addon(fakeAddonVariant2, UiMoney(19.0, UiCurrencyCode.SEK)),
         ),
+        null,
       )
     }
   }

@@ -389,6 +389,7 @@ private fun ContractDetailScreen(
                       contract.productVariant.insurableLimits,
                       contract.productVariant.perils,
                       contract.addons,
+                      insurableLimitsUsage = null,
                     )
                   }
 
