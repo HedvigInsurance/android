@@ -1,0 +1,396 @@
+package com.hedvig.android.feature.profile.settings
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.data.settings.datastore.AnalyticsConsent
+import com.hedvig.android.design.system.hedvig.DialogDefaults.ButtonSize.BIG
+import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
+import com.hedvig.android.design.system.hedvig.HedvigBigCard
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigRedTextButton
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
+import com.hedvig.android.design.system.hedvig.SingleSelectDialog
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.clearFocusOnTap
+import com.hedvig.android.feature.profile.settings.SettingsUiState.Loaded
+import com.hedvig.android.language.Language
+import com.hedvig.android.language.Language.EN_SE
+import com.hedvig.android.language.Language.SV_SE
+import com.hedvig.android.language.label
+import com.hedvig.android.memberreminders.ui.ReminderCardEnableNotifications
+import com.hedvig.android.notification.permission.NotificationPermissionDialog
+import com.hedvig.android.notification.permission.NotificationPermissionState
+import com.hedvig.android.notification.permission.PermissionStatus
+import com.hedvig.android.notification.permission.PermissionStatus.Granted
+import com.hedvig.android.notification.permission.isGranted
+import com.hedvig.android.notification.permission.rememberNotificationPermissionState
+import com.hedvig.android.theme.Theme
+import hedvig.resources.GENERAL_DISABLED
+import hedvig.resources.GENERAL_ENABLED
+import hedvig.resources.GENERAL_NOT_SELECTED
+import hedvig.resources.GENERAL_SUBSCRIBED
+import hedvig.resources.GENERAL_UNSUBSCRIBED
+import hedvig.resources.Res
+import hedvig.resources.SETTINGS_SCREEN_CONFIRM_UNSUBSCRIBE
+import hedvig.resources.SETTINGS_SCREEN_DELETE_ACCOUNT_BUTTON
+import hedvig.resources.SETTINGS_SCREEN_EMAIL_PREFERENCES
+import hedvig.resources.SETTINGS_SCREEN_UNSUBSCRIBE_DESCRIPTION
+import hedvig.resources.SETTINGS_THEME_DARK
+import hedvig.resources.SETTINGS_THEME_LIGHT
+import hedvig.resources.SETTINGS_THEME_SYSTEM_DEFAULT
+import hedvig.resources.SETTINGS_THEME_TITLE
+import hedvig.resources.SETTINGS_TITLE
+import hedvig.resources.SETTINGS_USAGE_DATA_TITLE
+import hedvig.resources.general_close_button
+import hedvig.resources.language_picker_modal_title
+import hedvig.resources.something_went_wrong
+import org.jetbrains.compose.resources.stringResource
+
+@Composable
+internal fun SettingsDestination(
+  viewModel: SettingsViewModel,
+  navigateUp: () -> Unit,
+  openAppSettings: () -> Unit,
+  onNavigateToDeleteAccountFeature: () -> Unit,
+  onNavigateToUsageData: () -> Unit,
+) {
+  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  SettingsScreen(
+    uiState = uiState,
+    notificationPermissionState = rememberNotificationPermissionState(),
+    navigateUp = navigateUp,
+    openAppSettings = openAppSettings,
+    onNotificationInfoDismissed = { viewModel.emit(SettingsEvent.SnoozeNotificationPermissionReminder) },
+    onLanguageSelected = { viewModel.emit(SettingsEvent.ChangeLanguage(it)) },
+    onThemeSelected = { viewModel.emit(SettingsEvent.ChangeTheme(it)) },
+    onTerminateAccountClicked = onNavigateToDeleteAccountFeature,
+    changeSubscriptionPreference = {
+      viewModel.emit(SettingsEvent.ChangeSubscriptionPreference(it))
+    },
+    onNavigateToUsageData = onNavigateToUsageData,
+  )
+}
+
+@Composable
+private fun SettingsScreen(
+  uiState: SettingsUiState,
+  notificationPermissionState: NotificationPermissionState,
+  navigateUp: () -> Unit,
+  changeSubscriptionPreference: (Boolean) -> Unit,
+  onNavigateToUsageData: () -> Unit,
+  openAppSettings: () -> Unit,
+  onNotificationInfoDismissed: () -> Unit,
+  onLanguageSelected: (Language) -> Unit,
+  onThemeSelected: (Theme) -> Unit,
+  onTerminateAccountClicked: () -> Unit,
+) {
+  LaunchedEffect(uiState.selectedTheme) {
+    uiState.selectedTheme?.apply()
+  }
+  HedvigScaffold(
+    topAppBarText = stringResource(Res.string.SETTINGS_TITLE),
+    navigateUp = navigateUp,
+    modifier = Modifier.clearFocusOnTap(),
+  ) {
+    when (uiState) {
+      is SettingsUiState.Loading -> {
+        HedvigFullScreenCenterAlignedProgressDebounced()
+      }
+
+      is Loaded -> {
+        Spacer(Modifier.height(8.dp))
+        LanguageWithDialog(
+          languageOptions = uiState.languageOptions,
+          selectedLanguage = uiState.selectedLanguage,
+          selectLanguage = onLanguageSelected,
+          enabled = true,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        )
+        Spacer(Modifier.height(4.dp))
+        ThemeWithDialog(
+          selectedTheme = uiState.selectedTheme,
+          selectTheme = onThemeSelected,
+          enabled = true,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        )
+        Spacer(Modifier.height(4.dp))
+        NotificationPermissionDialog(
+          notificationPermissionState = notificationPermissionState,
+          openAppSettings = openAppSettings,
+        )
+        NotificationSettingsRow(
+          notificationPermissionState = notificationPermissionState,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        )
+        EmailSubscriptionWithDialog(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+          onConfirmUnsubscribeClick = { changeSubscriptionPreference(false) },
+          onSubscribeClick = { changeSubscriptionPreference(true) },
+          isSubscribedToEmails = uiState.isSubscribedToEmails ?: true,
+          enabled = true,
+          hasError = uiState.emailSubscriptionPreferenceError,
+        )
+        val analyticsConsent = uiState.analyticsConsent
+        if (analyticsConsent != null) {
+          Spacer(Modifier.height(4.dp))
+          HedvigBigCard(
+            onClick = onNavigateToUsageData,
+            inputText = when (analyticsConsent) {
+              AnalyticsConsent.GRANTED -> stringResource(Res.string.GENERAL_ENABLED)
+
+              AnalyticsConsent.DENIED -> stringResource(Res.string.GENERAL_DISABLED)
+
+              // No explicit choice made yet: nothing is forwarded to Firebase, but this is shown
+              // as distinct from an explicit "Disabled".
+              AnalyticsConsent.NOT_DECIDED -> stringResource(Res.string.GENERAL_NOT_SELECTED)
+            },
+            labelText = stringResource(Res.string.SETTINGS_USAGE_DATA_TITLE),
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
+          )
+        }
+        Spacer(Modifier.height(16.dp))
+
+        AnimatedVisibility(
+          visible = uiState.showNotificationReminder && !notificationPermissionState.status.isGranted,
+          enter = fadeIn(),
+          exit = fadeOut(),
+        ) {
+          Column {
+            ReminderCardEnableNotifications(
+              snoozeNotificationPermissionReminder = onNotificationInfoDismissed,
+              requestNotificationPermission = notificationPermissionState::launchPermissionRequest,
+              modifier = Modifier.padding(horizontal = 16.dp),
+            )
+            Spacer(Modifier.height(16.dp))
+          }
+        }
+        Spacer(Modifier.weight(1f))
+        Row(
+          Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.Center,
+        ) {
+          HedvigRedTextButton(
+            text = stringResource(Res.string.SETTINGS_SCREEN_DELETE_ACCOUNT_BUTTON),
+            onClick = onTerminateAccountClicked,
+            modifier = Modifier
+              .padding(horizontal = 16.dp),
+          )
+        }
+        Spacer(Modifier.height(16.dp))
+      }
+    }
+  }
+}
+
+@Composable
+internal fun LanguageWithDialog(
+  languageOptions: List<Language>,
+  selectedLanguage: Language,
+  selectLanguage: (Language) -> Unit,
+  enabled: Boolean,
+  modifier: Modifier = Modifier,
+) {
+  var showLanguagePickerDialog by rememberSaveable { mutableStateOf(false) }
+  if (showLanguagePickerDialog) {
+    SingleSelectDialog(
+      title = stringResource(Res.string.language_picker_modal_title),
+      options = languageOptions.map { language ->
+        RadioOption(
+          id = RadioOptionId(language.name),
+          text = stringResource(language.label),
+        )
+      },
+      selectedOption = RadioOptionId(selectedLanguage.name),
+      onRadioOptionSelected = {
+        selectLanguage(Language.valueOf(it.id))
+      },
+      onDismissRequest = { showLanguagePickerDialog = false },
+    )
+  }
+
+  HedvigBigCard(
+    onClick = { showLanguagePickerDialog = true },
+    labelText = stringResource(Res.string.language_picker_modal_title),
+    inputText = stringResource(selectedLanguage.label),
+    enabled = enabled,
+    modifier = modifier,
+  )
+}
+
+@Composable
+internal fun EmailSubscriptionWithDialog(
+  onConfirmUnsubscribeClick: () -> Unit,
+  onSubscribeClick: () -> Unit,
+  isSubscribedToEmails: Boolean,
+  enabled: Boolean,
+  hasError: Boolean,
+  modifier: Modifier = Modifier,
+) {
+  var showSubscriptionPrefDialog by rememberSaveable { mutableStateOf(false) }
+  if (showSubscriptionPrefDialog) {
+    HedvigAlertDialog(
+      buttonSize = BIG,
+      onDismissRequest = { showSubscriptionPrefDialog = false },
+      onConfirmClick = {
+        onConfirmUnsubscribeClick()
+        showSubscriptionPrefDialog = false
+      },
+      dismissButtonLabel = stringResource(Res.string.general_close_button),
+      confirmButtonLabel = stringResource(Res.string.SETTINGS_SCREEN_CONFIRM_UNSUBSCRIBE),
+      title = stringResource(Res.string.SETTINGS_SCREEN_EMAIL_PREFERENCES),
+      text = stringResource(Res.string.SETTINGS_SCREEN_UNSUBSCRIBE_DESCRIPTION),
+    )
+  }
+  Column {
+    HedvigBigCard(
+      onClick = {
+        if (isSubscribedToEmails) {
+          showSubscriptionPrefDialog = true
+        } else {
+          onSubscribeClick()
+        }
+      },
+      labelText = stringResource(Res.string.SETTINGS_SCREEN_EMAIL_PREFERENCES),
+      inputText = if (isSubscribedToEmails) {
+        stringResource(Res.string.GENERAL_SUBSCRIBED)
+      } else {
+        stringResource(Res.string.GENERAL_UNSUBSCRIBED)
+      },
+      enabled = enabled,
+      modifier = modifier,
+    )
+    AnimatedVisibility(visible = hasError) {
+      HedvigText(
+        text = stringResource(Res.string.something_went_wrong),
+        style = HedvigTheme.typography.bodySmall,
+        color = HedvigTheme.colorScheme.signalRedText,
+        modifier = Modifier.padding(horizontal = 32.dp),
+      )
+    }
+  }
+}
+
+@Composable
+internal fun ThemeWithDialog(
+  selectedTheme: Theme?,
+  selectTheme: (Theme) -> Unit,
+  enabled: Boolean,
+  modifier: Modifier = Modifier,
+) {
+  var showThemePickerDialog by rememberSaveable { mutableStateOf(false) }
+  if (showThemePickerDialog) {
+    SingleSelectDialog(
+      title = stringResource(Res.string.SETTINGS_THEME_TITLE),
+      options = Theme.entries.map { theme ->
+        RadioOption(
+          id = RadioOptionId(theme.name),
+          text = stringResource(theme.getLabel()),
+        )
+      },
+      selectedOption = selectedTheme?.name?.let { RadioOptionId(it) },
+      onRadioOptionSelected = { id ->
+        selectTheme(Theme.valueOf(id.id))
+      },
+      onDismissRequest = { showThemePickerDialog = false },
+    )
+  }
+  HedvigBigCard(
+    onClick = { showThemePickerDialog = true },
+    labelText = stringResource(Res.string.SETTINGS_THEME_TITLE),
+    inputText = stringResource(selectedTheme.getLabel()),
+    enabled = enabled,
+    modifier = modifier,
+  )
+}
+
+/**
+ * The row showing whether notifications are on, followed by its spacing. Clicking it opens the system notification
+ * settings.
+ */
+@Composable
+internal expect fun NotificationSettingsRow(
+  notificationPermissionState: NotificationPermissionState,
+  modifier: Modifier = Modifier,
+)
+
+fun Theme?.getLabel() = when (this) {
+  Theme.LIGHT -> Res.string.SETTINGS_THEME_LIGHT
+  Theme.DARK -> Res.string.SETTINGS_THEME_DARK
+  Theme.SYSTEM_DEFAULT -> Res.string.SETTINGS_THEME_SYSTEM_DEFAULT
+  null -> Res.string.GENERAL_NOT_SELECTED
+}
+
+/**
+ * Applies the stored theme choice to the platform's own light and dark mode.
+ */
+internal expect fun Theme.apply()
+
+@Composable
+@HedvigPreview
+fun PreviewSettingsScreen() {
+  HedvigTheme {
+    Surface {
+      SettingsScreen(
+        uiState = Loaded(
+          selectedLanguage = SV_SE,
+          languageOptions = listOf(SV_SE, EN_SE),
+          selectedTheme = Theme.SYSTEM_DEFAULT,
+          showNotificationReminder = true,
+          isSubscribedToEmails = true,
+          emailSubscriptionPreferenceError = true,
+          analyticsConsent = null,
+        ),
+        notificationPermissionState = object : NotificationPermissionState {
+          override val showDialog = false
+
+          override fun dismissDialog() {}
+
+          override fun launchPermissionRequest() {}
+
+          override val permission: String = ""
+          override val status: PermissionStatus = Granted
+        },
+        navigateUp = {},
+        openAppSettings = {},
+        onNotificationInfoDismissed = {},
+        onLanguageSelected = {},
+        onThemeSelected = {},
+        onTerminateAccountClicked = {},
+        changeSubscriptionPreference = {},
+        onNavigateToUsageData = {},
+      )
+    }
+  }
+}
