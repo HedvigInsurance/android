@@ -809,6 +809,51 @@ enum CarTrialProduct {
   HEDVIG_60_DAYS
   HEDVIG_14_DAYS
 }
+union ChangeMileageCreateIntentOutput = ChangeMileageIntent|UserError
+type ChangeMileageDisplayItem {
+  displayTitle: String!
+  displayValue: String!
+  """
+   The value without the change. Set only when this quote changes the row. 
+  """
+  previousDisplayValue: String
+}
+type ChangeMileageIntent {
+  """
+   The date the change will take effect. Tomorrow, or the start date of an upcoming change or renewal if there is one. 
+  """
+  activationDate: Date!
+  """
+   Total monthly cost of the contract on the activation date without the change (incl. addons) 
+  """
+  currentTotalCost: ItemCost!
+  """
+   Sorted ascending by mileage. Exactly one has isCurrent = true. 
+  """
+  quotes: [ChangeMileageQuote!]!
+}
+type ChangeMileageQuote {
+  """
+  The quote id. For the quote with isCurrent = true no quote is created, and this is the id of the agreement that is changed.
+  """
+  id: ID!
+  """
+   The mileage option, ex. "1 000 mil", "Över 2 500 mil" 
+  """
+  displayName: String!
+  """
+   Whether this is the mileage the contract already has on the activation date 
+  """
+  isCurrent: Boolean!
+  """
+   Total monthly contract cost if this mileage is chosen (incl. addons) 
+  """
+  totalCost: ItemCost!
+  """
+   Summary rows, ex. mileage, registration number and coverage level 
+  """
+  displayItems: [ChangeMileageDisplayItem!]!
+}
 """
 Returns changed price for an addon.
 """
@@ -1167,15 +1212,15 @@ type Claim {
   claimType: String
   incidentDate: Date @deprecated(reason: "Use displayItems instead")
   showClaimClosedFlow: Boolean!
+  """
+  True once the member has submitted a rating for this claim. Dismissals do not count.
+  """
+  hasSubmittedRating: Boolean!
   appealInstructionsUrl: String
   isUploadingFilesEnabled: Boolean!
   infoText: String
   displayItems: [ClaimDisplayItem!]!
   contractId: String
-  """
-  Every follow-up sent for this claim, oldest first, open and completed.
-  """
-  followups: [ClaimFollowup!]!
   """
   Terms & conditions for the claim found using claims contractId and dateOfOccurrence, otherwise null.
   """
@@ -1220,114 +1265,6 @@ type ClaimFile {
   """
   thumbnailUrl: Url
 }
-type ClaimFollowup {
-  id: ID!
-  status: ClaimFollowupStatus!
-  progress: Float!
-  """
-  When the member confirmed the answers; null until COMPLETED.
-  """
-  completedAt: DateTime
-  """
-  Once COMPLETED it is the summary step, read-only.
-  """
-  currentStep: ClaimFollowupStep!
-  """
-  Answered and skipped steps in question order, answers in currentValue / currentAudio / currentFiles.
-  """
-  previousSteps: [ClaimFollowupStep!]!
-}
-type ClaimFollowupBinary {
-  """
-  The answer of a previous or reopened step: "true" or "false".
-  """
-  currentValue: String
-}
-type ClaimFollowupDate {
-  """
-  The answer of a previous or reopened step, as yyyy-MM-dd.
-  """
-  currentValue: String
-}
-type ClaimFollowupFile {
-  """
-  The staged upload id; send it back to keep the file.
-  """
-  id: ID!
-  url: Url!
-  contentType: String!
-  fileName: String!
-}
-type ClaimFollowupFileUpload {
-  uploadUri: String!
-  """
-  The files of a previous or reopened step, send their ids back to keep them; empty otherwise.
-  """
-  currentFiles: [ClaimFollowupFile!]!
-}
-type ClaimFollowupFreeText {
-  uploadUri: String!
-  minLength: Int!
-  maxLength: Int!
-  """
-  The typed answer of a previous or reopened step.
-  """
-  currentValue: String
-  """
-  The recording of a previous or reopened step; send its id back to keep it.
-  """
-  currentAudio: ClaimFollowupFile
-}
-type ClaimFollowupNumber {
-  """
-  The answer of a previous or reopened step, as stored.
-  """
-  currentValue: String
-}
-type ClaimFollowupOutput {
-  task: ClaimFollowup
-  userError: UserError
-}
-type ClaimFollowupPhoneNumber {
-  """
-  The answer of a previous or reopened step, as stored.
-  """
-  currentValue: String
-}
-enum ClaimFollowupStatus {
-  SUBMITTED
-  OPENED
-  COMPLETED
-}
-type ClaimFollowupStep {
-  id: ID!
-  text: String!
-  isSkippable: Boolean!
-  isRegrettable: Boolean!
-  content: ClaimFollowupStepContent!
-}
-union ClaimFollowupStepContent = ClaimFollowupBinary|ClaimFollowupFreeText|ClaimFollowupDate|ClaimFollowupNumber|ClaimFollowupPhoneNumber|ClaimFollowupFileUpload|ClaimFollowupSummary
-type ClaimFollowupSummary {
-  answers: [ClaimFollowupSummaryAnswer!]!
-}
-type ClaimFollowupSummaryAnswer {
-  question: String!
-  """
-  Null when the member skipped the step.
-  """
-  value: ClaimFollowupSummaryValue
-}
-type ClaimFollowupSummaryAudio {
-  url: Url!
-  transcript: String
-}
-type ClaimFollowupSummaryFiles {
-  files: [ClaimFollowupFile!]!
-}
-type ClaimFollowupSummaryText {
-  text: String!
-}
-union ClaimFollowupSummaryValue = ClaimFollowupSummaryText|ClaimFollowupSummaryAudio|ClaimFollowupSummaryFiles
 """
 Root type expressing the entire flow for members trying to report a new claim.
 """
@@ -1803,6 +1740,11 @@ called Agreements.
 """
 type Contract {
   id: UUID!
+  """
+  Usage of insurable limits and deductible for the current contract year.
+  Only available for pet contracts; null otherwise.
+  """
+  insurableLimitsUsage: ContractInsurableLimitsUsage
   discountsDetails: ContractDiscountDetails!
   """
   The first date this insurance became active - i.e. the "from date" of the first agreement.
@@ -1866,6 +1808,10 @@ type Contract {
   Whether or not this contract can be changed through the 'ChangeTier' API.
   """
   supportsChangeTier: Boolean!
+  """
+  Whether the yearly mileage on this contract can be changed through the 'ChangeMileage' API.
+  """
+  supportsChangeMileage: Boolean!
   """
   Whether or not this contract can be terminated by user
   """
@@ -2039,6 +1985,22 @@ enum ContractDiscountStatus {
   ACTIVE
   PENDING
   TERMINATED
+}
+type ContractInsurableLimitsUsage {
+  """
+  First day of the contract year these numbers apply to.
+  """
+  periodStartDate: Date!
+  """
+  Last day of the contract year these numbers apply to.
+  """
+  periodEndDate: Date!
+  total: InsurableLimitUsage!
+  """
+  Null if the product has no separate medicine limit.
+  """
+  medicine: InsurableLimitUsage
+  deductible: InsurableLimitUsage!
 }
 type ContractSelfChangeBlocker {
   reason: String!
@@ -3339,6 +3301,19 @@ enum InAppPurchaseFormFieldType {
 type InAppPurchaseFormOutput {
   product: Product!
   eligibility: InAppPurchaseEligibility!
+  """
+  The form in the order to show it, one screen per step. Empty when the member isn't eligible.
+  """
+  steps: [InAppPurchaseFormStep!]!
+}
+type InAppPurchaseFormStep {
+  """
+  Localized heading for the step. Null shows no heading.
+  """
+  title: String
+  """
+  At most three, and at most two on the last step, which also shows the campaign code input.
+  """
   fields: [InAppPurchaseFormField!]!
 }
 enum InAppPurchaseIneligibilityReason {
@@ -3402,6 +3377,14 @@ enum InsurableLimitType {
   TRAVEL_DELAYED_ON_TRIP
   TRAVEL_DELAYED_LUGGAGE
   TRAVEL_CANCELLATION
+}
+type InsurableLimitUsage {
+  used: Money!
+  limit: Money!
+  """
+  limit - used, never below zero.
+  """
+  remaining: Money!
 }
 type InsuranceDocument {
   displayName: String!
@@ -3572,6 +3555,10 @@ type Member {
   claims: [Claim!]!
   claimsActive: [Claim!]!
   claimsHistory: [Claim!]!
+  """
+  Closed claims from the last 30 days that the member has not rated. Dismissing the rating keeps a claim here.
+  """
+  claimsPendingRating: [Claim!]!
   partnerClaimsActive: [PartnerClaim!]!
   partnerClaimsHistory: [PartnerClaim!]!
   firstName: String!
@@ -4702,25 +4689,8 @@ type Mutation {
   """
   conversationHideCrossSales(id: UUID!): Conversation!
   claimAcknowledgeClosedStatus(id: ID!): ClaimMutationOutput
-  claimFollowupOpen(followupId: ID!): ClaimFollowupOutput!
-  """
-  The value is "true" or "false".
-  """
-  claimFollowupAnswerBinary(followupId: ID!, stepId: ID!, value: String!): ClaimFollowupOutput!
-  """
-  Exactly one of text or audioFileId.
-  """
-  claimFollowupAnswerFreeText(followupId: ID!, stepId: ID!, text: String, audioFileId: ID): ClaimFollowupOutput!
-  """
-  The value is a date as yyyy-MM-dd.
-  """
-  claimFollowupAnswerDate(followupId: ID!, stepId: ID!, value: String!): ClaimFollowupOutput!
-  claimFollowupAnswerNumber(followupId: ID!, stepId: ID!, value: String!): ClaimFollowupOutput!
-  claimFollowupAnswerPhoneNumber(followupId: ID!, stepId: ID!, value: String!): ClaimFollowupOutput!
-  claimFollowupAnswerFileUpload(followupId: ID!, stepId: ID!, fileIds: [ID!]!): ClaimFollowupOutput!
-  claimFollowupSkipStep(followupId: ID!, stepId: ID!): ClaimFollowupOutput!
-  claimFollowupRegretStep(followupId: ID!, stepId: ID!): ClaimFollowupOutput!
-  claimFollowupConfirmSummary(followupId: ID!, stepId: ID!): ClaimFollowupOutput!
+  claimSubmitRating(claimId: ID!, rating: Int!, comment: String): ClaimMutationOutput
+  claimDismissRating(claimId: ID!): ClaimMutationOutput
   """
   Create or (reuse and existing) unsubmitted claim intent.
   """
@@ -4960,6 +4930,15 @@ type Mutation {
    Accept move, for V2_TIERS_AND_DEDUCTIBLES API the homeQuoteId is required 
   """
   moveIntentCommit(intentId: ID!, homeQuoteId: ID, removedAddons: [ID!]): MoveIntentMutationOutput!
+  """
+  Creates quotes for all yearly mileage options the contract can be changed to.
+  """
+  changeMileageCreateIntent(contractId: ID!): ChangeMileageCreateIntentOutput!
+  """
+  Activates the given quote from changeMileageCreateIntent, the new mileage applies from the activation date
+  of the intent. Returns a UserError if it failed.
+  """
+  changeMileageCommitIntent(quoteId: ID!): UserError
   """
    Create change tier/deductible intent 
   """
@@ -5826,7 +5805,7 @@ type Query {
   carTrial(contractId: UUID!): TrialExtension
   """
   Screen 1 of the in-app purchase: product content, whether the member can buy it, and the form to fill in.
-  Has no side effects. When the member isn't eligible, `fields` is empty.
+  Has no side effects. When the member isn't eligible, `steps` is empty.
   """
   inAppPurchaseForm(product: InAppProduct!): InAppPurchaseFormOutput!
   """
