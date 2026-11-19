@@ -50,6 +50,7 @@ query InsuranceContracts(
 fragment ContractFragment on Contract {
   id
   masterInceptionDate
+  renewalDate
   terminationDate
   exposureDisplayName
   exposureDisplayNameShort

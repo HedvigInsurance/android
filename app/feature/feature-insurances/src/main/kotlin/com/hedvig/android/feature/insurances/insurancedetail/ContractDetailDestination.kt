@@ -361,6 +361,7 @@ private fun ContractDetailScreen(
                       contractHolderDisplayName = contract.contractHolderDisplayName,
                       contractHolderSSN = contract.contractHolderSSN,
                       priceToShow = cost?.monthlyNet,
+                      renewalDate = (contract as? EstablishedInsuranceContract)?.renewalDate,
                       showPriceInfoIcon = cost != null && (
                         cost.monthlyNet != cost.monthlyGross ||
                           contract.basePremium != cost.monthlyNet

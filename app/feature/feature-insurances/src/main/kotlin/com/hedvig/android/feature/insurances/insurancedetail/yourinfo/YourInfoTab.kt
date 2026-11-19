@@ -156,6 +156,7 @@ internal fun YourInfoTab(
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
   priceToShow: UiMoney?,
+  renewalDate: LocalDate?,
   showPriceInfoIcon: Boolean,
   onInfoIconClick: () -> Unit,
   existingAddons: List<ContractAddon>,
@@ -309,12 +310,20 @@ internal fun YourInfoTab(
     ) {
       Column {
         CoverageRows(coverageItems, Modifier.padding(horizontal = 16.dp))
+        val showRenewalDateRow = renewalDate != null && !isTerminated
+        if (renewalDate != null && !isTerminated) {
+          RenewalDateRow(
+            renewalDate = renewalDate,
+            isFirstRow = coverageItems.isEmpty(),
+            modifier = Modifier.padding(horizontal = 16.dp),
+          )
+        }
         if (priceToShow != null && !isTerminated) {
           PriceRow(
             priceToShow = priceToShow,
             showInfoIcon = showPriceInfoIcon,
             onInfoIconClick = onInfoIconClick,
-            isFirstRow = coverageItems.isEmpty(),
+            isFirstRow = coverageItems.isEmpty() && !showRenewalDateRow,
             modifier = Modifier.padding(horizontal = 16.dp),
           )
         }
@@ -705,6 +714,30 @@ internal fun CoverageRows(coverageRowItems: List<DisplayItem>, modifier: Modifie
 }
 
 @Composable
+private fun RenewalDateRow(renewalDate: LocalDate, isFirstRow: Boolean, modifier: Modifier = Modifier) {
+  val dateTimeFormatter = rememberHedvigDateTimeFormatter()
+  HorizontalItemsWithMaximumSpaceTaken(
+    modifier = modifier
+      .then(
+        if (isFirstRow) Modifier else Modifier.horizontalDivider(DividerPosition.Top),
+      ),
+    startSlot = {
+      // TODO: Add "Renewal date" / "Förnyelsedatum" to Lokalise
+      HedvigText("Renewal date", modifier = Modifier.padding(vertical = 16.dp))
+    },
+    endSlot = {
+      HedvigText(
+        text = dateTimeFormatter.format(renewalDate),
+        color = HedvigTheme.colorScheme.textSecondary,
+        textAlign = TextAlign.End,
+        modifier = Modifier.padding(vertical = 16.dp),
+      )
+    },
+    spaceBetween = 8.dp,
+  )
+}
+
+@Composable
 internal fun PriceRow(
   priceToShow: UiMoney,
   showInfoIcon: Boolean,
@@ -1027,6 +1060,7 @@ private fun PreviewYourInfoTab(
         contractHolderDisplayName = "Hugo Linder",
         contractHolderSSN = "19910113-1093",
         priceToShow = UiMoney(89.0, UiCurrencyCode.SEK),
+        renewalDate = LocalDate(2027, 3, 1),
         showPriceInfoIcon = true,
         onInfoIconClick = {},
         existingAddons = listOf(

@@ -161,7 +161,7 @@ private fun ContractFragment.toContract(
     contractHolderSSN = contractHolderSSN,
     exposureDisplayName = exposure,
     inceptionDate = masterInceptionDate,
-    renewalDate = upcomingChangedAgreement?.activeFrom,
+    renewalDate = renewalDate,
     terminationDate = terminationDate,
     currentInsuranceAgreement = InsuranceAgreement(
       activeFrom = currentAgreement.activeFrom,
