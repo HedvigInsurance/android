@@ -217,7 +217,7 @@ The factory and map contribution in the example above are **not hand-written**. 
 
 The `scope` is named explicitly at every call site (mirroring the other Metro annotations). Almost every VM is `ActivityRetainedScope` — it needs this Activity's `Backstack`, and is collected by the merged factory above. The rare `AppScope` case is a VM resolved by its own standalone Activity (e.g. `ImpersonationReceiverActivity`), which has no `ActivityRetainedGraph` and resolves through the plain `AppViewModelFactory`.
 
-**KMP wiring (the non-obvious part).** A ViewModel is fundamentally an Android-screen concern, but VMs live in `commonMain` so iOS can share their Presenter logic, and their generated DI must be visible to every target (including iOS's `IosGraph`, see I.6). So a KMP module wires the processor into **two** passes:
+**KMP wiring (the non-obvious part).** A ViewModel is fundamentally an Android-screen concern, but VMs live in `commonMain` so iOS can share their Presenter logic, and their generated DI must be visible to every target (including an iOS graph, see I.6). So a KMP module wires the processor into **two** passes:
 
 - `kspCommonMainMetadata` — generates into `commonMain`, the common *ancestor* every target sees.
 - `kspAndroid` — covers `androidMain`-only VMs (a screen iOS never renders).
@@ -266,26 +266,7 @@ A `ProdOrDemoProvider<T>` is always `@SingleIn(AppScope::class)`. Consumers inje
 
 ## I.6 iOS / KMP: the second graph
 
-The iOS target has its own Metro graph in `:shareddi`:
-
-```kotlin
-@DependencyGraph(AppScope::class)
-internal interface IosGraph : ViewModelGraph {
-  val imageLoader: ImageLoader
-  @DependencyGraph.Factory
-  interface Factory {
-    fun create(
-      @Provides accessTokenFetcher: AccessTokenFetcher,
-      @Provides deviceIdFetcher: DeviceIdFetcher,
-      @Provides featureManager: FeatureManager,
-      @Provides languageStorage: LanguageStorage,
-      @Provides appBuildConfig: AppBuildConfig,
-    ): IosGraph
-  }
-}
-```
-
-Both graphs target `AppScope`, so the **same `@ContributesBinding`/`@ContributesTo` declarations in shared KMP modules populate both** — that's the whole point of a compile-time, contribution-based graph for KMP. The iOS host provides the platform seams (token fetcher, device id, feature flags, language, build config) via the factory. `metro-viewmodel` is Android-only; iOS resolves its ViewModels through `ViewModelGraph` differently (the iOS Compose UI view controllers wire them directly).
+No module declares an iOS graph today. One declared on `AppScope` in a native source set is populated by the **same `@ContributesBinding`/`@ContributesTo` declarations in shared KMP modules** as the Android graph, which is the whole point of a compile-time, contribution-based graph for KMP. The iOS host provides the platform seams it does not share (for example the token fetcher, device id, feature flags, language and build config) through that graph's factory.
 
 ## I.7 Build wiring
 
