@@ -15,6 +15,7 @@ import kotlinx.datetime.LocalDate
 import octopus.GreenCardCreateMutation
 import octopus.type.GreenCardAddressInput
 import octopus.type.GreenCardCoDriverInput
+import octopus.type.GreenCardCountry
 import octopus.type.GreenCardCreateInput
 
 internal interface CreateGreenCardUseCase {
@@ -78,6 +79,5 @@ private fun GreenCardAddress.toInput() = GreenCardAddressInput(
   street = street,
   postalCode = postalCode,
   city = city,
-  // TODO: Map to octopus.type.Country by name once the schema's country field becomes the Country enum.
-  country = country.name,
+  country = GreenCardCountry.safeValueOf(country.name),
 )

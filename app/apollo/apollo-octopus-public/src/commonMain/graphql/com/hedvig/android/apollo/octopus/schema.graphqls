@@ -1148,16 +1148,15 @@ type Claim {
   claimType: String
   incidentDate: Date @deprecated(reason: "Use displayItems instead")
   showClaimClosedFlow: Boolean!
-  hasSubmittedRating: Boolean!
-  """
-  True while the claim is listed in Member.claimsPendingRating.
-  """
-  isRatingPending: Boolean!
   appealInstructionsUrl: String
   isUploadingFilesEnabled: Boolean!
   infoText: String
   displayItems: [ClaimDisplayItem!]!
   contractId: String
+  """
+  Every follow-up sent for this claim, oldest first, open and completed.
+  """
+  followups: [ClaimFollowup!]!
   """
   Terms & conditions for the claim found using claims contractId and dateOfOccurrence, otherwise null.
   """
@@ -1202,6 +1201,114 @@ type ClaimFile {
   """
   thumbnailUrl: Url
 }
+type ClaimFollowup {
+  id: ID!
+  status: ClaimFollowupStatus!
+  progress: Float!
+  """
+  When the member confirmed the answers; null until COMPLETED.
+  """
+  completedAt: DateTime
+  """
+  Once COMPLETED it is the summary step, read-only.
+  """
+  currentStep: ClaimFollowupStep!
+  """
+  Answered and skipped steps in question order, answers in currentValue / currentAudio / currentFiles.
+  """
+  previousSteps: [ClaimFollowupStep!]!
+}
+type ClaimFollowupBinary {
+  """
+  The answer of a previous or reopened step: "true" or "false".
+  """
+  currentValue: String
+}
+type ClaimFollowupDate {
+  """
+  The answer of a previous or reopened step, as yyyy-MM-dd.
+  """
+  currentValue: String
+}
+type ClaimFollowupFile {
+  """
+  The staged upload id; send it back to keep the file.
+  """
+  id: ID!
+  url: Url!
+  contentType: String!
+  fileName: String!
+}
+type ClaimFollowupFileUpload {
+  uploadUri: String!
+  """
+  The files of a previous or reopened step, send their ids back to keep them; empty otherwise.
+  """
+  currentFiles: [ClaimFollowupFile!]!
+}
+type ClaimFollowupFreeText {
+  uploadUri: String!
+  minLength: Int!
+  maxLength: Int!
+  """
+  The typed answer of a previous or reopened step.
+  """
+  currentValue: String
+  """
+  The recording of a previous or reopened step; send its id back to keep it.
+  """
+  currentAudio: ClaimFollowupFile
+}
+type ClaimFollowupNumber {
+  """
+  The answer of a previous or reopened step, as stored.
+  """
+  currentValue: String
+}
+type ClaimFollowupOutput {
+  task: ClaimFollowup
+  userError: UserError
+}
+type ClaimFollowupPhoneNumber {
+  """
+  The answer of a previous or reopened step, as stored.
+  """
+  currentValue: String
+}
+enum ClaimFollowupStatus {
+  SUBMITTED
+  OPENED
+  COMPLETED
+}
+type ClaimFollowupStep {
+  id: ID!
+  text: String!
+  isSkippable: Boolean!
+  isRegrettable: Boolean!
+  content: ClaimFollowupStepContent!
+}
+union ClaimFollowupStepContent = ClaimFollowupBinary|ClaimFollowupFreeText|ClaimFollowupDate|ClaimFollowupNumber|ClaimFollowupPhoneNumber|ClaimFollowupFileUpload|ClaimFollowupSummary
+type ClaimFollowupSummary {
+  answers: [ClaimFollowupSummaryAnswer!]!
+}
+type ClaimFollowupSummaryAnswer {
+  question: String!
+  """
+  Null when the member skipped the step.
+  """
+  value: ClaimFollowupSummaryValue
+}
+type ClaimFollowupSummaryAudio {
+  url: Url!
+  transcript: String
+}
+type ClaimFollowupSummaryFiles {
+  files: [ClaimFollowupFile!]!
+}
+type ClaimFollowupSummaryText {
+  text: String!
+}
+union ClaimFollowupSummaryValue = ClaimFollowupSummaryText|ClaimFollowupSummaryAudio|ClaimFollowupSummaryFiles
 """
 Root type expressing the entire flow for members trying to report a new claim.
 """
@@ -2809,7 +2916,7 @@ input GreenCardAddressInput {
   street: String!
   postalCode: String!
   city: String!
-  country: String!
+  country: GreenCardCountry!
 }
 input GreenCardCoDriverInput {
   name: String!
@@ -2819,7 +2926,263 @@ type GreenCardContractSpecification {
   contractId: ID!
   registrationNumber: String!
   minStartDate: Date!
-  maxEndDate: Date!
+  maxEndDate: Date
+  maxPeriod: Int!
+}
+"""
+All countries and territories in ISO 3166-1 (249 entries).
+Values match the Kotlin `Country` enum constants one-to-one.
+"""
+enum GreenCardCountry {
+  AFGHANISTAN
+  ALAND_ISLANDS
+  ALBANIA
+  ALGERIA
+  AMERICAN_SAMOA
+  ANDORRA
+  ANGOLA
+  ANGUILLA
+  ANTARCTICA
+  ANTIGUA_AND_BARBUDA
+  ARGENTINA
+  ARMENIA
+  ARUBA
+  AUSTRALIA
+  AUSTRIA
+  AZERBAIJAN
+  BAHAMAS
+  BAHRAIN
+  BANGLADESH
+  BARBADOS
+  BELARUS
+  BELGIUM
+  BELIZE
+  BENIN
+  BERMUDA
+  BHUTAN
+  BOLIVIA
+  BONAIRE_SINT_EUSTATIUS_AND_SABA
+  BOSNIA_AND_HERZEGOVINA
+  BOTSWANA
+  BOUVET_ISLAND
+  BRAZIL
+  BRITISH_INDIAN_OCEAN_TERRITORY
+  BRITISH_VIRGIN_ISLANDS
+  BRUNEI
+  BULGARIA
+  BURKINA_FASO
+  BURUNDI
+  CABO_VERDE
+  CAMBODIA
+  CAMEROON
+  CANADA
+  CAYMAN_ISLANDS
+  CENTRAL_AFRICAN_REPUBLIC
+  CHAD
+  CHILE
+  CHINA
+  CHRISTMAS_ISLAND
+  COCOS_KEELING_ISLANDS
+  COLOMBIA
+  COMOROS
+  CONGO
+  CONGO_DEMOCRATIC_REPUBLIC
+  COOK_ISLANDS
+  COSTA_RICA
+  COTE_D_IVOIRE
+  CROATIA
+  CUBA
+  CURACAO
+  CYPRUS
+  CZECHIA
+  DENMARK
+  DJIBOUTI
+  DOMINICA
+  DOMINICAN_REPUBLIC
+  ECUADOR
+  EGYPT
+  EL_SALVADOR
+  EQUATORIAL_GUINEA
+  ERITREA
+  ESTONIA
+  ESWATINI
+  ETHIOPIA
+  FALKLAND_ISLANDS
+  FAROE_ISLANDS
+  FIJI
+  FINLAND
+  FRANCE
+  FRENCH_GUIANA
+  FRENCH_POLYNESIA
+  FRENCH_SOUTHERN_TERRITORIES
+  GABON
+  GAMBIA
+  GEORGIA
+  GERMANY
+  GHANA
+  GIBRALTAR
+  GREECE
+  GREENLAND
+  GRENADA
+  GUADELOUPE
+  GUAM
+  GUATEMALA
+  GUERNSEY
+  GUINEA
+  GUINEA_BISSAU
+  GUYANA
+  HAITI
+  HEARD_ISLAND_AND_MCDONALD_ISLANDS
+  HOLY_SEE
+  HONDURAS
+  HONG_KONG
+  HUNGARY
+  ICELAND
+  INDIA
+  INDONESIA
+  IRAN
+  IRAQ
+  IRELAND
+  ISLE_OF_MAN
+  ISRAEL
+  ITALY
+  JAMAICA
+  JAPAN
+  JERSEY
+  JORDAN
+  KAZAKHSTAN
+  KENYA
+  KIRIBATI
+  KUWAIT
+  KYRGYZSTAN
+  LAOS
+  LATVIA
+  LEBANON
+  LESOTHO
+  LIBERIA
+  LIBYA
+  LIECHTENSTEIN
+  LITHUANIA
+  LUXEMBOURG
+  MACAO
+  MADAGASCAR
+  MALAWI
+  MALAYSIA
+  MALDIVES
+  MALI
+  MALTA
+  MARSHALL_ISLANDS
+  MARTINIQUE
+  MAURITANIA
+  MAURITIUS
+  MAYOTTE
+  MEXICO
+  MICRONESIA
+  MOLDOVA
+  MONACO
+  MONGOLIA
+  MONTENEGRO
+  MONTSERRAT
+  MOROCCO
+  MOZAMBIQUE
+  MYANMAR
+  NAMIBIA
+  NAURU
+  NEPAL
+  NETHERLANDS
+  NEW_CALEDONIA
+  NEW_ZEALAND
+  NICARAGUA
+  NIGER
+  NIGERIA
+  NIUE
+  NORFOLK_ISLAND
+  NORTH_KOREA
+  NORTH_MACEDONIA
+  NORTHERN_MARIANA_ISLANDS
+  NORWAY
+  OMAN
+  PAKISTAN
+  PALAU
+  PALESTINE
+  PANAMA
+  PAPUA_NEW_GUINEA
+  PARAGUAY
+  PERU
+  PHILIPPINES
+  PITCAIRN
+  POLAND
+  PORTUGAL
+  PUERTO_RICO
+  QATAR
+  REUNION
+  ROMANIA
+  RUSSIA
+  RWANDA
+  SAINT_BARTHELEMY
+  SAINT_HELENA_ASCENSION_AND_TRISTAN_DA_CUNHA
+  SAINT_KITTS_AND_NEVIS
+  SAINT_LUCIA
+  SAINT_MARTIN
+  SAINT_PIERRE_AND_MIQUELON
+  SAINT_VINCENT_AND_THE_GRENADINES
+  SAMOA
+  SAN_MARINO
+  SAO_TOME_AND_PRINCIPE
+  SAUDI_ARABIA
+  SENEGAL
+  SERBIA
+  SEYCHELLES
+  SIERRA_LEONE
+  SINGAPORE
+  SINT_MAARTEN
+  SLOVAKIA
+  SLOVENIA
+  SOLOMON_ISLANDS
+  SOMALIA
+  SOUTH_AFRICA
+  SOUTH_GEORGIA_AND_THE_SOUTH_SANDWICH_ISLANDS
+  SOUTH_KOREA
+  SOUTH_SUDAN
+  SPAIN
+  SRI_LANKA
+  SUDAN
+  SURINAME
+  SVALBARD_AND_JAN_MAYEN
+  SWEDEN
+  SWITZERLAND
+  SYRIA
+  TAIWAN
+  TAJIKISTAN
+  TANZANIA
+  THAILAND
+  TIMOR_LESTE
+  TOGO
+  TOKELAU
+  TONGA
+  TRINIDAD_AND_TOBAGO
+  TUNISIA
+  TURKIYE
+  TURKMENISTAN
+  TURKS_AND_CAICOS_ISLANDS
+  TUVALU
+  UGANDA
+  UKRAINE
+  UNITED_ARAB_EMIRATES
+  UNITED_KINGDOM
+  UNITED_STATES
+  UNITED_STATES_MINOR_OUTLYING_ISLANDS
+  URUGUAY
+  US_VIRGIN_ISLANDS
+  UZBEKISTAN
+  VANUATU
+  VENEZUELA
+  VIETNAM
+  WALLIS_AND_FUTUNA
+  WESTERN_SAHARA
+  YEMEN
+  ZAMBIA
+  ZIMBABWE
 }
 input GreenCardCreateInput {
   contractId: ID!
@@ -2856,6 +3219,11 @@ type IconVariant {
 type IconVariants {
   light: IconVariant!
   dark: IconVariant!
+}
+enum ImportantMessageSeverity {
+  INFO
+  WARNING
+  ERROR
 }
 enum InAppProduct {
   ACCIDENT
@@ -3190,10 +3558,6 @@ type Member {
   claims: [Claim!]!
   claimsActive: [Claim!]!
   claimsHistory: [Claim!]!
-  """
-  Closed claims from the last 30 days that the member has neither rated nor dismissed the rating for.
-  """
-  claimsPendingRating: [Claim!]!
   partnerClaimsActive: [PartnerClaim!]!
   partnerClaimsHistory: [PartnerClaim!]!
   firstName: String!
@@ -3482,6 +3846,7 @@ type MemberImportantMessage {
   message: String!
   link: Url! @deprecated(reason: "Use linkInfo instead, which allows for a message to not have a link at all attached and allows editing the button text too")
   linkInfo: LinkInfo
+  severity: ImportantMessageSeverity!
 }
 type MemberInsuranceCost {
   """
@@ -4314,8 +4679,25 @@ type Mutation {
   """
   conversationHideCrossSales(id: UUID!): Conversation!
   claimAcknowledgeClosedStatus(id: ID!): ClaimMutationOutput
-  claimSubmitRating(claimId: ID!, rating: Int!, comment: String): ClaimMutationOutput
-  claimDismissRating(claimId: ID!): ClaimMutationOutput
+  claimFollowupOpen(followupId: ID!): ClaimFollowupOutput!
+  """
+  The value is "true" or "false".
+  """
+  claimFollowupAnswerBinary(followupId: ID!, stepId: ID!, value: String!): ClaimFollowupOutput!
+  """
+  Exactly one of text or audioFileId.
+  """
+  claimFollowupAnswerFreeText(followupId: ID!, stepId: ID!, text: String, audioFileId: ID): ClaimFollowupOutput!
+  """
+  The value is a date as yyyy-MM-dd.
+  """
+  claimFollowupAnswerDate(followupId: ID!, stepId: ID!, value: String!): ClaimFollowupOutput!
+  claimFollowupAnswerNumber(followupId: ID!, stepId: ID!, value: String!): ClaimFollowupOutput!
+  claimFollowupAnswerPhoneNumber(followupId: ID!, stepId: ID!, value: String!): ClaimFollowupOutput!
+  claimFollowupAnswerFileUpload(followupId: ID!, stepId: ID!, fileIds: [ID!]!): ClaimFollowupOutput!
+  claimFollowupSkipStep(followupId: ID!, stepId: ID!): ClaimFollowupOutput!
+  claimFollowupRegretStep(followupId: ID!, stepId: ID!): ClaimFollowupOutput!
+  claimFollowupConfirmSummary(followupId: ID!, stepId: ID!): ClaimFollowupOutput!
   """
   Create or (reuse and existing) unsubmitted claim intent.
   """
@@ -5334,6 +5716,12 @@ type ProductVariantComparisonRow {
   """
   covered: [String!]!
 }
+type PublicImportantMessage {
+  id: ID!
+  message: String!
+  severity: ImportantMessageSeverity!
+  linkInfo: LinkInfo
+}
 input PuppyEngagementInput {
   name: String!
   rating: Int
@@ -5414,6 +5802,10 @@ type Query {
   on the input Authorization header.
   """
   currentMember: Member!
+  """
+  Messages for clients that are not logged in. Needs no Authorization header.
+  """
+  publicImportantMessages: [PublicImportantMessage!]!
   entrypointGroups(type: EntrypointType!): [EntrypointGroup!]!
   entrypointSearch(input: EntrypointSearchInput): [Entrypoint!]!
   shopSession(id: UUID!): ShopSession!

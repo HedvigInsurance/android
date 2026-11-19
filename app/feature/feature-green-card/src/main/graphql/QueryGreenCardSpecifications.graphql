@@ -5,6 +5,7 @@ query GreenCardSpecifications {
       registrationNumber
       minStartDate
       maxEndDate
+      maxPeriod
     }
   }
 }

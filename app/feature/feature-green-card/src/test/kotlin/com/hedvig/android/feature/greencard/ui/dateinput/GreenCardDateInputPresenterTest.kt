@@ -35,6 +35,7 @@ internal class GreenCardDateInputPresenterTest {
     registrationNumber = "ABC 123",
     minStartDate = LocalDate(2026, 12, 1),
     maxEndDate = LocalDate(2027, 2, 28),
+    maxPeriodDays = 60,
   )
 
   @Test
@@ -70,6 +71,31 @@ internal class GreenCardDateInputPresenterTest {
       form.endDatePickerState.selectedDateMillis = LocalDate(2027, 1, 5).toUtcMillis()
       sendEvent(GreenCardDateInputEvent.Submit)
       assertThat((awaitItem() as GreenCardDateInputUiState.Success).dateError).isEqualTo(DateError.EndBeforeStart)
+    }
+  }
+
+  @Test
+  fun `a return date past the maximum period shows an error`() = runTest {
+    val presenter = presenter()
+    presenter.test(GreenCardDateInputUiState.Loading) {
+      skipItems(1)
+      val form = (awaitItem() as GreenCardDateInputUiState.Success).form
+      form.endDatePickerState.selectedDateMillis = LocalDate(2027, 2, 5).toUtcMillis()
+      sendEvent(GreenCardDateInputEvent.Submit)
+      assertThat((awaitItem() as GreenCardDateInputUiState.Success).dateError).isEqualTo(DateError.EndTooLate)
+    }
+  }
+
+  @Test
+  fun `the termination date caps the return date before the maximum period does`() = runTest {
+    val presenter = presenter()
+    presenter.test(GreenCardDateInputUiState.Loading) {
+      skipItems(1)
+      val form = (awaitItem() as GreenCardDateInputUiState.Success).form
+      form.startDatePickerState.selectedDateMillis = LocalDate(2027, 2, 20).toUtcMillis()
+      form.endDatePickerState.selectedDateMillis = LocalDate(2027, 3, 1).toUtcMillis()
+      sendEvent(GreenCardDateInputEvent.Submit)
+      assertThat((awaitItem() as GreenCardDateInputUiState.Success).dateError).isEqualTo(DateError.EndTooLate)
     }
   }
 

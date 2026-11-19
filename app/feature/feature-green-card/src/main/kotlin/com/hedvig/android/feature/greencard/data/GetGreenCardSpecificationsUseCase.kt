@@ -38,6 +38,7 @@ internal class GetGreenCardSpecificationsUseCaseImpl(
               registrationNumber = it.registrationNumber,
               minStartDate = it.minStartDate,
               maxEndDate = it.maxEndDate,
+              maxPeriodDays = it.maxPeriod,
             )
           },
         )

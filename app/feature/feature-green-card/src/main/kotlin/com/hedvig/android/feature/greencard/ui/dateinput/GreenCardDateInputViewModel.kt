@@ -84,6 +84,7 @@ internal class GreenCardDateInputPresenter(
             startDate == null -> DateError.MissingStartDate
             endDate == null -> DateError.MissingEndDate
             endDate < startDate -> DateError.EndBeforeStart
+            endDate > currentForm.specification.latestEndDateFor(startDate) -> DateError.EndTooLate
             else -> null
           }
           if (dateError == null) {
@@ -137,23 +138,30 @@ internal class GreenCardDateInputPresenter(
   }
 
   private fun createForm(specification: GreenCardContractSpecification): GreenCardForm {
-    val dateRange = specification.minStartDate..specification.maxEndDate
-    val yearRange = dateRange.start.year..dateRange.endInclusive.year
+    val minStartDate = specification.minStartDate
+    val maxEndDate = specification.maxEndDate
+    // Without a termination date nothing bounds the departure, so the picker offers the next year.
+    val startYearRange = minStartDate.year..(maxEndDate?.year ?: (minStartDate.year + 1))
+    val endYearRange = startYearRange.first..(
+      maxEndDate?.year ?: specification.latestEndDateFor(LocalDate(startYearRange.last, 12, 31)).year
+    )
     val startDatePickerState = HedvigDatePickerState(
       locale = languageService.getLocale(),
-      initialSelectedDateMillis = specification.minStartDate.toUtcMillis(),
+      initialSelectedDateMillis = minStartDate.toUtcMillis(),
       initialDisplayedMonthMillis = null,
-      yearRange = yearRange,
-      selectableDates = selectableDatesIn(yearRange) { it in dateRange },
+      yearRange = startYearRange,
+      selectableDates = selectableDatesIn(startYearRange) { date ->
+        date >= minStartDate && (maxEndDate == null || date <= maxEndDate)
+      },
     )
     val endDatePickerState = HedvigDatePickerState(
       locale = languageService.getLocale(),
       initialSelectedDateMillis = null,
       initialDisplayedMonthMillis = null,
-      yearRange = yearRange,
-      selectableDates = selectableDatesIn(yearRange) { date ->
-        val earliestEndDate = startDatePickerState.selectedDate() ?: specification.minStartDate
-        date in earliestEndDate..specification.maxEndDate
+      yearRange = endYearRange,
+      selectableDates = selectableDatesIn(endYearRange) { date ->
+        val startDate = startDatePickerState.selectedDate() ?: minStartDate
+        date in startDate..specification.latestEndDateFor(startDate)
       },
     )
     return GreenCardForm(
@@ -183,7 +191,7 @@ internal data class GreenCardForm(
   val endDatePickerState: HedvigDatePickerState,
 )
 
-internal enum class DateError { MissingStartDate, MissingEndDate, EndBeforeStart }
+internal enum class DateError { MissingStartDate, MissingEndDate, EndBeforeStart, EndTooLate }
 
 internal sealed interface GreenCardDateInputEvent {
   data object RetryLoadData : GreenCardDateInputEvent

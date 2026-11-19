@@ -114,6 +114,9 @@ private fun GreenCardDateInputScreen(
             // TODO: Add "The return date can't be before the departure date" / "Hemresedatumet kan inte vara före avresedatumet" to Lokalise
             DateError.EndBeforeStart -> "The return date can't be before the departure date"
 
+            // TODO: Add "Pick an earlier return date" / "Välj ett tidigare hemresedatum" to Lokalise
+            DateError.EndTooLate -> "Pick an earlier return date"
+
             else -> null
           },
           modifier = Modifier.padding(horizontal = 16.dp),
@@ -201,6 +204,7 @@ private fun PreviewGreenCardDateInput() {
               registrationNumber = "ABC 123",
               minStartDate = LocalDate(2026, 11, 18),
               maxEndDate = LocalDate(2027, 2, 18),
+              maxPeriodDays = 90,
             ),
             startDatePickerState = HedvigDatePickerState(
               Locale.ENGLISH,

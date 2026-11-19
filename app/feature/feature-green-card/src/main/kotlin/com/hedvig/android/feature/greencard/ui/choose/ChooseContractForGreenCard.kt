@@ -110,8 +110,8 @@ private fun PreviewChooseContractForGreenCard() {
       ChooseContractForGreenCardScreen(
         uiState = ChooseContractForGreenCardUiState.Success(
           listOf(
-            GreenCardContractSpecification("a", "ABC 123", LocalDate(2026, 11, 18), LocalDate(2027, 2, 18)),
-            GreenCardContractSpecification("b", "XYZ 789", LocalDate(2026, 11, 18), LocalDate(2027, 2, 18)),
+            GreenCardContractSpecification("a", "ABC 123", LocalDate(2026, 11, 18), LocalDate(2027, 2, 18), 90),
+            GreenCardContractSpecification("b", "XYZ 789", LocalDate(2026, 11, 18), LocalDate(2027, 2, 18), 90),
           ),
         ),
         navigateUp = {},

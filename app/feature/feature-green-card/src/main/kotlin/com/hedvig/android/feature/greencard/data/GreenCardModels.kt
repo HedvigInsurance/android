@@ -1,6 +1,8 @@
 package com.hedvig.android.feature.greencard.data
 
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
 import kotlinx.serialization.Serializable
 
 internal data class GreenCard(
@@ -20,8 +22,17 @@ internal data class GreenCardContractSpecification(
   val contractId: String,
   val registrationNumber: String,
   val minStartDate: LocalDate,
-  val maxEndDate: LocalDate,
-)
+  /**
+   * The day the contract terminates, or null when it is not terminating. Also the latest possible departure date.
+   */
+  val maxEndDate: LocalDate?,
+  val maxPeriodDays: Int,
+) {
+  fun latestEndDateFor(startDate: LocalDate): LocalDate {
+    val endOfPeriod = startDate.plus(maxPeriodDays, DateTimeUnit.DAY)
+    return if (maxEndDate == null) endOfPeriod else minOf(maxEndDate, endOfPeriod)
+  }
+}
 
 @Serializable
 internal data class GreenCardAddress(
