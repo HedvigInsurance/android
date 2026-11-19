@@ -24,7 +24,7 @@ import kotlinx.coroutines.SupervisorJob
  *
  * The block of a read starts when the iOS app starts awaiting, so a read built before a session change and awaited after
  * it runs in the new session. A member read's block receives only the member client and a logged-out read's block only
- * the token-free one, so the wrong client cannot be reached through either.
+ * the token-free one, so the receiver never hands a block the wrong client.
  */
 @HiddenFromObjC
 @SingleIn(AppScope::class)
@@ -61,7 +61,13 @@ class SessionReads(
     return nativeSuspend(waiters) { core.read(name, key, operation, block) }.deliveringOnce()
   }
 
-  /** A read made before login, as [read] in everything but the client and the session, which never ends it. */
+  /**
+   * A read made before login, as [read] in everything but the client and the session, which never ends it.
+   *
+   * Only the receiver's client is token-free. The unqualified `ApolloClient` in the graph is the member client and sends
+   * the member's token whenever one exists, so code that [block] calls, a shared use case included, must inject
+   * `@PublicApolloClient ApolloClient` when it needs a client.
+   */
   fun <T> publicRead(
     name: String,
     vararg arguments: Any?,
