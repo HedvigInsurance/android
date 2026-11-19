@@ -25,7 +25,6 @@ dependencies {
   implementation(libs.media3.ui)
   implementation(projects.apolloCore)
   implementation(projects.authCorePublic)
-  implementation(projects.authCoreTest)
   implementation(projects.composeUi)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
