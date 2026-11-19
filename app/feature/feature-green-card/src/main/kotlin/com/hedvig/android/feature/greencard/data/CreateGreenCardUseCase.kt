@@ -78,5 +78,6 @@ private fun GreenCardAddress.toInput() = GreenCardAddressInput(
   street = street,
   postalCode = postalCode,
   city = city,
-  country = country,
+  // TODO: Map to octopus.type.Country by name once the schema's country field becomes the Country enum.
+  country = country.name,
 )

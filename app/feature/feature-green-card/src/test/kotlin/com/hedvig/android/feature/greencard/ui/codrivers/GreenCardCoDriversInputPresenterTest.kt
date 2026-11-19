@@ -10,6 +10,7 @@ import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isTrue
+import com.hedvig.android.feature.greencard.data.Country
 import com.hedvig.android.feature.greencard.data.CreateGreenCardError
 import com.hedvig.android.feature.greencard.data.CreateGreenCardUseCase
 import com.hedvig.android.feature.greencard.data.GreenCardAddress
@@ -130,7 +131,7 @@ private fun CoDriverFieldsState.fillWith(coDriver: GreenCardCoDriver) {
   address.street.setTextAndPlaceCursorAtEnd(coDriver.address.street)
   address.postalCode.setTextAndPlaceCursorAtEnd(coDriver.address.postalCode)
   address.city.setTextAndPlaceCursorAtEnd(coDriver.address.city)
-  address.country.setTextAndPlaceCursorAtEnd(coDriver.address.country)
+  address.country = coDriver.address.country
 }
 
 private val INITIAL_STATE = GreenCardCoDriversInputUiState(
@@ -141,10 +142,10 @@ private val INITIAL_STATE = GreenCardCoDriversInputUiState(
 )
 private val INPUT = GreenCardCoDriversInputKey(
   tripInput = GreenCardTripInput("contract-id", "ABC 123", LocalDate(2027, 1, 1), LocalDate(2027, 1, 5)),
-  mailingAddress = GreenCardAddress("Storgatan 1", "111 22", "Stockholm", "Sverige"),
+  mailingAddress = GreenCardAddress("Storgatan 1", "111 22", "Stockholm", Country.SWEDEN),
 )
 private val CO_DRIVER = GreenCardCoDriver(
   "Anna Andersson",
-  GreenCardAddress("Lillgatan 2", "222 33", "Uppsala", "Sverige"),
+  GreenCardAddress("Storgata 3", "0155", "Oslo", Country.NORWAY),
 )
 private const val PDF_URL = "https://example.com/green-card.pdf"

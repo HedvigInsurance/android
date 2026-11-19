@@ -20,6 +20,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
+import com.hedvig.android.feature.greencard.data.Country
 import com.hedvig.android.feature.greencard.data.GreenCardAddress
 import com.hedvig.android.feature.greencard.ui.common.AddressFields
 import com.hedvig.android.feature.greencard.ui.common.AddressFieldsState
@@ -32,7 +33,7 @@ internal fun GreenCardAddressInputDestination(navigateUp: () -> Unit, onContinue
   val street = rememberTextFieldState()
   val postalCode = rememberTextFieldState()
   val city = rememberTextFieldState()
-  val country = rememberTextFieldState()
+  val country = rememberSaveable { mutableStateOf<Country?>(Country.SWEDEN) }
   val address = remember(street, postalCode, city, country) { AddressFieldsState(street, postalCode, city, country) }
   var showMissingFieldErrors by rememberSaveable { mutableStateOf(false) }
   GreenCardAddressInputScreen(

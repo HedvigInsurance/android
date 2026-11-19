@@ -28,7 +28,7 @@ internal data class GreenCardAddress(
   val street: String,
   val postalCode: String,
   val city: String,
-  val country: String,
+  val country: Country,
 )
 
 internal data class GreenCardCoDriver(
