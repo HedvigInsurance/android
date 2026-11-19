@@ -110,6 +110,9 @@ internal class SwedishLoginPresenter(
             if (latestLoginStatusResult is LoginStatusResult.Exception) {
               logcat(LogPriority.ERROR) { "Got exception for login status: ${latestLoginStatusResult.message}" }
             }
+            if (latestLoginStatusResult is LoginStatusResult.Failed) {
+              logcat(LogPriority.WARN) { "Login status failed: ${latestLoginStatusResult.localisedMessage}" }
+            }
             loginStatusResult = latestLoginStatusResult
           }
         }

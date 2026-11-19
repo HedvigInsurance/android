@@ -22,6 +22,7 @@ import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.Cl
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimStatus.CLOSED
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.logger.urlForLog
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -89,7 +90,7 @@ private class ClaimDetailPresenter(
 
     LaunchedEffect(downloadingUrl) {
       val downloadingUrlValue = downloadingUrl ?: return@LaunchedEffect
-      logcat(LogPriority.INFO) { "Downloading terms and conditions with url:$downloadingUrl" }
+      logcat(LogPriority.INFO) { "Downloading terms and conditions with url:${urlForLog(downloadingUrl)}" }
       downloadPdfUseCase.invoke(downloadingUrlValue)
         .fold(
           ifLeft = { errorMessage ->

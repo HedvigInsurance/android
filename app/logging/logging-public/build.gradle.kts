@@ -13,5 +13,9 @@ kotlin {
     androidMain.dependencies {
       implementation(libs.timber)
     }
+    jvmTest.dependencies {
+      implementation(libs.assertK)
+      implementation(libs.junit)
+    }
   }
 }

@@ -3,6 +3,9 @@ package com.hedvig.android.app.urihandler
 import androidx.compose.ui.platform.UriHandler
 import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.logger.memberData
+import com.hedvig.android.logger.urlForLog
+import com.hedvig.android.logger.withoutUrlQueries
 import com.hedvig.android.navigation.compose.HedvigDeepLinkMatcher
 
 /**
@@ -21,10 +24,13 @@ internal class DeepLinkFirstUriHandler(
   override fun openUri(uri: String) {
     val destination = matcher.match(uri)
     if (destination != null) {
-      logcat { "DeepLinkFirstUriHandler navigating to $destination for uri:$uri" }
+      logcat {
+        val loggedDestination = memberData(destination, destination.toString().withoutUrlQueries())
+        "DeepLinkFirstUriHandler navigating to $loggedDestination for uri:${urlForLog(uri)}"
+      }
       backstackController.navigateToInAppLink(destination)
     } else {
-      logcat { "DeepLinkFirstUriHandler falling back to default UriHandler for uri:$uri" }
+      logcat { "DeepLinkFirstUriHandler falling back to default UriHandler for uri:${urlForLog(uri)}" }
       delegate.openUri(uri)
     }
   }

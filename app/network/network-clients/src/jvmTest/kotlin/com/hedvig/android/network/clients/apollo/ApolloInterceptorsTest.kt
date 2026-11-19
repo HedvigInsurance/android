@@ -90,7 +90,10 @@ internal class ApolloInterceptorsTest {
   private fun apolloClient(isDemoMode: Boolean): ApolloClient {
     return ApolloClient.Builder()
       .networkTransport(QueueTestNetworkTransport())
-      .addHedvigInterceptors(apolloPlatformInterceptors(authTokenService, FakeDemoManager(isDemoMode)))
+      .addHedvigInterceptors(
+        apolloPlatformInterceptors(authTokenService, FakeDemoManager(isDemoMode)),
+        logMemberData = false,
+      )
       .build()
   }
 

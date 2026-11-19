@@ -43,6 +43,7 @@ import com.hedvig.android.experiments.Experiment
 import com.hedvig.android.experiments.ExperimentProvider
 import com.hedvig.android.experiments.test.FakeExperimentProvider
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage.LinkInfo
+import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage.Severity
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.featureflags.test.FakeFeatureManager
@@ -88,6 +89,7 @@ import octopus.builder.buildStoryblokImageAsset
 import octopus.type.ChatMessageSender
 import octopus.type.CrossSellExperimentInput
 import octopus.type.CurrencyCode
+import octopus.type.ImportantMessageSeverity
 import octopus.type.MemberChargeStatus
 import org.junit.Before
 import org.junit.Rule
@@ -282,10 +284,89 @@ internal class GetHomeUseCaseTest {
       .isRight()
       .prop(HomeData::veryImportantMessages)
       .containsExactly(
-        HomeData.VeryImportantMessage("0", "message#0", LinkInfo("buttonText#0", "link#0")),
-        HomeData.VeryImportantMessage("1", "message#1", LinkInfo("buttonText#1", "link#1")),
-        HomeData.VeryImportantMessage("2", "message#2", LinkInfo("buttonText#2", "link#2")),
+        HomeData.VeryImportantMessage("0", "message#0", LinkInfo("buttonText#0", "link#0"), Severity.Warning),
+        HomeData.VeryImportantMessage("1", "message#1", LinkInfo("buttonText#1", "link#1"), Severity.Warning),
+        HomeData.VeryImportantMessage("2", "message#2", LinkInfo("buttonText#2", "link#2"), Severity.Warning),
       )
+  }
+
+  @Test
+  fun `each important message severity is mapped to its own Severity`() = runTest {
+    val getHomeDataUseCase = testUseCaseWithoutReminders()
+    val severities = listOf(
+      ImportantMessageSeverity.INFO,
+      ImportantMessageSeverity.WARNING,
+      ImportantMessageSeverity.ERROR,
+    )
+
+    apolloClient.registerTestResponse(
+      HomeQuery(true, true, emptyList()),
+      HomeQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          importantMessages = severities.mapIndexed { index, severityValue ->
+            buildMemberImportantMessage {
+              id = "$index"
+              message = "message#$index"
+              linkInfo = null
+              severity = severityValue
+            }
+          }
+        }
+      },
+    )
+    apolloClient.registerTestResponse(
+      UnreadMessageCountQuery(),
+      UnreadMessageCountQuery.Data(OctopusFakeResolver),
+    )
+    apolloClient.registerTestResponse(
+      CbmNumberOfChatMessagesQuery(),
+      CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+    )
+    val result = getHomeDataUseCase.invoke(true).first()
+
+    assertThat(result)
+      .isNotNull()
+      .isRight()
+      .prop(HomeData::veryImportantMessages)
+      .transform { messages -> messages.map { it.severity } }
+      .containsExactly(Severity.Info, Severity.Warning, Severity.Error)
+  }
+
+  @Test
+  fun `an unknown important message severity becomes Warning`() = runTest {
+    val getHomeDataUseCase = testUseCaseWithoutReminders()
+
+    apolloClient.registerTestResponse(
+      HomeQuery(true, true, emptyList()),
+      HomeQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          importantMessages = listOf(
+            buildMemberImportantMessage {
+              id = "0"
+              message = "message#0"
+              linkInfo = null
+              severity = ImportantMessageSeverity.UNKNOWN__
+            },
+          )
+        }
+      },
+    )
+    apolloClient.registerTestResponse(
+      UnreadMessageCountQuery(),
+      UnreadMessageCountQuery.Data(OctopusFakeResolver),
+    )
+    apolloClient.registerTestResponse(
+      CbmNumberOfChatMessagesQuery(),
+      CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+    )
+    val result = getHomeDataUseCase.invoke(true).first()
+
+    assertThat(result)
+      .isNotNull()
+      .isRight()
+      .prop(HomeData::veryImportantMessages)
+      .transform { messages -> messages.map { it.severity } }
+      .containsExactly(Severity.Warning)
   }
 
   @Test

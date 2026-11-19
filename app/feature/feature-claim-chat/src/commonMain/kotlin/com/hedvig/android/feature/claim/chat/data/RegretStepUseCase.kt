@@ -31,7 +31,7 @@ internal class RegretStepUseCaseImpl(
       )
       .safeExecute()
       .mapLeft {
-        logcat { "SkipStepUseCase error: $it" }
+        logcat { "RegretStepUseCase error: $it" }
         it.toClaimChatErrorMessage()
       }
       .bind()

@@ -6,10 +6,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import com.hedvig.android.compose.pager.indicator.CardCarousel
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.ui.getMemberReminderMessage
@@ -117,7 +122,11 @@ private fun VeryImportantMessageCard(
   key(veryImportantMessage.id) {
     HedvigNotificationCard(
       message = veryImportantMessage.message,
-      priority = NotificationPriority.Attention,
+      priority = when (veryImportantMessage.severity) {
+        VeryImportantMessage.Severity.Info -> NotificationPriority.Info
+        VeryImportantMessage.Severity.Warning -> NotificationPriority.Attention
+        VeryImportantMessage.Severity.Error -> NotificationPriority.Error
+      },
       modifier = modifier.fillMaxSize(),
       withIcon = false,
       style = if (veryImportantMessage.linkInfo != null) {
@@ -162,3 +171,27 @@ private fun UpcomingRenewalCard(
     )
   }
 }
+
+@HedvigPreview
+@Composable
+private fun PreviewVeryImportantMessageCard(
+  @PreviewParameter(SeverityPreviewParameterProvider::class) severity: VeryImportantMessage.Severity,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      VeryImportantMessageCard(
+        openUrl = {},
+        hideImportantMessage = {},
+        veryImportantMessage = VeryImportantMessage(
+          id = "id",
+          message = "Our systems are experiencing issues. Some features may be unavailable.",
+          linkInfo = VeryImportantMessage.LinkInfo(buttonText = "Read more", link = "https://hedvig.com"),
+          severity = severity,
+        ),
+      )
+    }
+  }
+}
+
+private class SeverityPreviewParameterProvider :
+  CollectionPreviewParameterProvider<VeryImportantMessage.Severity>(VeryImportantMessage.Severity.entries)

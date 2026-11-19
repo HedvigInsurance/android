@@ -78,17 +78,18 @@ internal fun buildHedvigApolloClient(
     .cache(normalizedCacheFactory)
     .ktorClient(httpClient)
     .httpServerUrl(hedvigBuildConstants.urlGraphqlOctopus)
-    .addHedvigInterceptors(platformInterceptors)
+    .addHedvigInterceptors(platformInterceptors, logMemberData = !hedvigBuildConstants.isProduction)
     .build()
 }
 
-private fun buildKtorClient(
+internal fun buildKtorClient(
   hedvigBuildConstants: HedvigBuildConstants,
   languageService: LanguageService,
   deviceIdFetcher: DeviceIdFetcher,
   extraKtorClientConfiguration: ExtraKtorClientConfiguration,
+  engineFactory: HttpClientEngineFactory<*> = httpClientEngineFactory(),
 ): HttpClient {
-  return HttpClient(httpClientEngineFactory()) {
+  return HttpClient(engineFactory) {
     installDatadogKtorPlugin(hedvigBuildConstants)
     install(HttpTimeout) {
       connectTimeoutMillis = CONNECT_TIMEOUT.inWholeMilliseconds
@@ -104,9 +105,11 @@ private fun buildKtorClient(
       }
     }
     install(HttpSend)
+    // Registered on the config so that clients derived through HttpClient.config {} keep it too
+    install("DeviceIdInterceptor") {
+      plugin(HttpSend).intercept(DeviceIdInterceptor(deviceIdFetcher))
+    }
     extraKtorClientConfiguration.configure(this)
-  }.apply {
-    plugin(HttpSend).intercept(DeviceIdInterceptor(deviceIdFetcher))
   }
 }
 
@@ -139,7 +142,7 @@ private fun HttpClient.addAuthPlugin(accessTokenFetcher: AccessTokenFetcher) {
     val accessToken = accessTokenFetcher.fetch()
     execute(
       if (accessToken != null) {
-        request.apply { header("Authorization", "Bearer ${accessTokenFetcher.fetch()}") }
+        request.apply { header("Authorization", "Bearer $accessToken") }
       } else {
         request
       },
