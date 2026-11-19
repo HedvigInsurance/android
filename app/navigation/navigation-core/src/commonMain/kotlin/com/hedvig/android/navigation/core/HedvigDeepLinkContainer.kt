@@ -199,8 +199,11 @@ internal class HedvigDeepLinkContainerImpl(
   override val changeTierWithContractId: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/change-tier?contractId={contractId}"
   }
-  override val claimDetails: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
-    "$baseDeepLinkDomain/claim-details?claimId={claimId}"
+  override val claimDetails: List<String> = baseDeepLinkDomains.flatMap { baseDeepLinkDomain ->
+    listOf(
+      "$baseDeepLinkDomain/claim-details?claimId={claimId}",
+      "$baseDeepLinkDomain/claim-details?claimId={claimId}&openRating={openRating}",
+    )
   }
   override val insuranceEvidence: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/insurance-evidence"
