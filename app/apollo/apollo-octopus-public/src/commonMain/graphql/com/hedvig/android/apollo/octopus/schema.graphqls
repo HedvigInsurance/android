@@ -2000,7 +2000,10 @@ type ContractInsurableLimitsUsage {
   Null if the product has no separate medicine limit.
   """
   medicine: InsurableLimitUsage
-  deductible: InsurableLimitUsage!
+  """
+  Fixed deductible. Null if the fixed deductible is 0 (e.g. 0 kr + 25%).
+  """
+  deductible: InsurableLimitUsage
 }
 type ContractSelfChangeBlocker {
   reason: String!

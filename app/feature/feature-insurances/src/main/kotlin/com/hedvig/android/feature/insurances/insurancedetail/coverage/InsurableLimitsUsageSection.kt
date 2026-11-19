@@ -72,9 +72,11 @@ internal fun InsurableLimitsUsageSection(
 private fun UsageDetails(usage: InsurableLimitsUsage) {
   Column {
     Spacer(Modifier.height(16.dp))
-    // TODO: Add "Deductible" / "Självrisk" to Lokalise
-    LimitUsageRow(label = "Deductible", usage = usage.deductible)
-    HorizontalDivider(Modifier.padding(vertical = 16.dp))
+    if (usage.deductible != null) {
+      // TODO: Add "Deductible" / "Självrisk" to Lokalise
+      LimitUsageRow(label = "Deductible", usage = usage.deductible)
+      HorizontalDivider(Modifier.padding(vertical = 16.dp))
+    }
     // TODO: Add "Insurable limit" / "Ersättningstak" to Lokalise
     LimitUsageRow(label = "Insurable limit", usage = usage.total)
     if (usage.medicine != null) {
@@ -154,6 +156,12 @@ private fun PreviewInsurableLimitsUsageSection() {
 @Composable
 private fun PreviewInsurableLimitsUsageSectionNoMedicine() {
   PreviewUsage(previewInsurableLimitsUsage.copy(medicine = null))
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewInsurableLimitsUsageSectionNoDeductible() {
+  PreviewUsage(previewInsurableLimitsUsage.copy(deductible = null))
 }
 
 @HedvigPreview

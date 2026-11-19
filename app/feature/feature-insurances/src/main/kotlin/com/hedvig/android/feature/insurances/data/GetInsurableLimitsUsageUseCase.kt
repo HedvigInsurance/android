@@ -45,7 +45,7 @@ internal class GetInsurableLimitsUsageUseCaseImpl(
         periodEndDate = usage.periodEndDate,
         total = usage.total.toLimitUsage(),
         medicine = usage.medicine?.toLimitUsage(),
-        deductible = usage.deductible.toLimitUsage(),
+        deductible = usage.deductible?.toLimitUsage(),
       )
     }
   }

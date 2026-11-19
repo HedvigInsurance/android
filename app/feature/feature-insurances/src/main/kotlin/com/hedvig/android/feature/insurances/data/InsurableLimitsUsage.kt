@@ -12,7 +12,8 @@ internal data class InsurableLimitsUsage(
   val total: LimitUsage,
   /** Part of [total], tracked separately. Null if the product has no separate medicine limit. */
   val medicine: LimitUsage?,
-  val deductible: LimitUsage,
+  /** Null when the product has no fixed deductible, e.g. one that is only a percentage of the claim. */
+  val deductible: LimitUsage?,
 ) {
   data class LimitUsage(
     val used: UiMoney,
