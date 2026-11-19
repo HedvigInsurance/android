@@ -169,7 +169,7 @@
   <string name="CHANGE_MILEAGE_OPTION_TITLE">Ändra körsträcka</string>
   <string name="CHANGE_MILEAGE_PICKER_SUBTITLE">Hur långt bilen körs per år, av alla som kör den</string>
   <string name="CHANGE_MILEAGE_SCREEN_SUBTITLE">Välj hur långt bilen körs per år</string>
-  <string name="CHANGE_MILEAGE_SUCCESS" formatted="false">Din körsträcka blir %s per år från %s och ditt nya pris är %s.</string>
+  <string name="CHANGE_MILEAGE_SUCCESS" formatted="false">Din körsträcka blir %s från %s och ditt nya pris är %s.</string>
   <string name="CHANGE_MILEAGE_SUMMARY_FOOTER">Ditt nya pris dras från och med nästa betalning.</string>
   <string name="CHANGE_PAYOUT_METHOD_BUTTON_LABEL">Ändra utbetalningskonto</string>
   <string name="CHANGE_TIER_BUTTON_TITLE">Ändra skyddsnivå</string>
@@ -300,6 +300,23 @@
   <string name="CLAIM_CHAT_USE_TEXT_INPUT_SHORT">Skriv</string>
   <string name="CLAIM_DETAILS_DATE_OF_ACCIDENT">Händelsedatum</string>
   <string name="CLAIM_FLOW_CHAT_SUBMIT_CLAIM_BUTTON">Skicka in din skadeanmälan</string>
+  <string name="CLAIM_RATING_BUTTON">Betygsätt ditt ärende</string>
+  <string name="CLAIM_RATING_COMMENT_LABEL">Vill du berätta mer? (valfritt)</string>
+  <string name="CLAIM_RATING_COMMENT_PLACEHOLDER_HAPPY">Vad var bäst med hanteringen?</string>
+  <string name="CLAIM_RATING_COMMENT_PLACEHOLDER_UNHAPPY">Vad kunde vi ha gjort bättre?</string>
+  <string name="CLAIM_RATING_QUESTION">Hur nöjd är du med hur vi hanterade din skada?</string>
+  <string name="CLAIM_RATING_SCALE_HIGH">Mycket nöjd</string>
+  <string name="CLAIM_RATING_SCALE_LOW">Inte alls nöjd</string>
+  <string name="CLAIM_RATING_SECTION_TITLE">Skadebetyg</string>
+  <string name="CLAIM_RATING_SEND">Skicka</string>
+  <string name="CLAIM_RATING_SKIP">Hoppa över</string>
+  <string name="CLAIM_RATING_STAR_DESCRIPTION">%1$d av 5</string>
+  <string name="CLAIM_RATING_SUBMITTED">Betyg skickat</string>
+  <string name="CLAIM_RATING_THANKS_HAPPY_BODY">Vill du dela din upplevelse på Trustpilot också? Det hjälper andra att välja försäkring.</string>
+  <string name="CLAIM_RATING_THANKS_HAPPY_TITLE">Tack för ditt betyg</string>
+  <string name="CLAIM_RATING_THANKS_UNHAPPY_BODY">Vi läser alla svar och använder dem för att bli bättre. Har du frågor om ditt ärende kan du skriva till oss.</string>
+  <string name="CLAIM_RATING_THANKS_UNHAPPY_TITLE">Tack för att du berättade</string>
+  <string name="CLAIM_RATING_TRUSTPILOT_BUTTON">Skriv ett omdöme på Trustpilot</string>
   <string name="CLAIM_TRIAGING_ABOUT_TITILE">Vilken försäkring gäller det?</string>
   <string name="CLAIM_TRIAGING_NAVIGATION_TITLE">Vad gäller ditt ärende?</string>
   <string name="CLAIM_TRIAGING_TITLE">Berätta vad som hände</string>
@@ -548,6 +565,7 @@
   <string name="HOME_QUOTES_SECTION_TITLE">Dina prisförslag</string>
   <string name="HOME_TODO_ADD_COINSURED_TITLE">Lägg till medförsäkrad</string>
   <string name="HOME_TODO_ADD_COOWNER_TITLE">Lägg till medägare</string>
+  <string name="HOME_TODO_CLAIM_RATING_TITLE">Betygsätt hur vi hanterade din skada</string>
   <string name="HOME_TODO_MISSING_CHIP_ID_TITLE">Chip-ID för husdjur saknas</string>
   <string name="HOME_TODO_MISSING_PAYMENT_METHOD_TITLE">Betalningsmetod saknas</string>
   <string name="HOME_TODO_MISSING_PAYOUT_METHOD_TITLE">Utbetalningsmetod saknas</string>

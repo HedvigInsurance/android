@@ -169,7 +169,7 @@
   <string name="CHANGE_MILEAGE_OPTION_TITLE">Change mileage</string>
   <string name="CHANGE_MILEAGE_PICKER_SUBTITLE">How far the car is driven per year, by everyone who drives it</string>
   <string name="CHANGE_MILEAGE_SCREEN_SUBTITLE">Choose how far the car is driven per year</string>
-  <string name="CHANGE_MILEAGE_SUCCESS" formatted="false">Your mileage will be %s per year from %s, and your new price is %s.</string>
+  <string name="CHANGE_MILEAGE_SUCCESS" formatted="false">Your mileage will be %s from %s, and your new price is %s.</string>
   <string name="CHANGE_MILEAGE_SUMMARY_FOOTER">Your new price will be charged from your next payment.</string>
   <string name="CHANGE_PAYOUT_METHOD_BUTTON_LABEL">Change payout account</string>
   <string name="CHANGE_TIER_BUTTON_TITLE">Change coverage level</string>
@@ -300,6 +300,23 @@
   <string name="CLAIM_CHAT_USE_TEXT_INPUT_SHORT">Write</string>
   <string name="CLAIM_DETAILS_DATE_OF_ACCIDENT">Date of occurrence</string>
   <string name="CLAIM_FLOW_CHAT_SUBMIT_CLAIM_BUTTON">Submit your claim</string>
+  <string name="CLAIM_RATING_BUTTON">Rate your claim</string>
+  <string name="CLAIM_RATING_COMMENT_LABEL">Want to tell us more? (optional)</string>
+  <string name="CLAIM_RATING_COMMENT_PLACEHOLDER_HAPPY">What did we do best?</string>
+  <string name="CLAIM_RATING_COMMENT_PLACEHOLDER_UNHAPPY">What could we have done better?</string>
+  <string name="CLAIM_RATING_QUESTION">How happy are you with how we handled your claim?</string>
+  <string name="CLAIM_RATING_SCALE_HIGH">Very happy</string>
+  <string name="CLAIM_RATING_SCALE_LOW">Not happy at all</string>
+  <string name="CLAIM_RATING_SECTION_TITLE">Claims rating</string>
+  <string name="CLAIM_RATING_SEND">Send</string>
+  <string name="CLAIM_RATING_SKIP">Skip</string>
+  <string name="CLAIM_RATING_STAR_DESCRIPTION">%1$d of 5</string>
+  <string name="CLAIM_RATING_SUBMITTED">Rating submitted</string>
+  <string name="CLAIM_RATING_THANKS_HAPPY_BODY">Would you like to share your experience on Trustpilot too? It helps others choose insurance.</string>
+  <string name="CLAIM_RATING_THANKS_HAPPY_TITLE">Thanks for your rating</string>
+  <string name="CLAIM_RATING_THANKS_UNHAPPY_BODY">We read every answer and use it to get better. If you have questions about your claim, you can write to us.</string>
+  <string name="CLAIM_RATING_THANKS_UNHAPPY_TITLE">Thanks for telling us</string>
+  <string name="CLAIM_RATING_TRUSTPILOT_BUTTON">Write a review on Trustpilot</string>
   <string name="CLAIM_TRIAGING_ABOUT_TITILE">What insurance is it about?</string>
   <string name="CLAIM_TRIAGING_NAVIGATION_TITLE">What does your claim concern?</string>
   <string name="CLAIM_TRIAGING_TITLE">Tell us what happened</string>
@@ -548,6 +565,7 @@
   <string name="HOME_QUOTES_SECTION_TITLE">Your quotes</string>
   <string name="HOME_TODO_ADD_COINSURED_TITLE">Add co-insured</string>
   <string name="HOME_TODO_ADD_COOWNER_TITLE">Add co-owner</string>
+  <string name="HOME_TODO_CLAIM_RATING_TITLE">Rate how we handled your claim</string>
   <string name="HOME_TODO_MISSING_CHIP_ID_TITLE">Missing pet chip-ID</string>
   <string name="HOME_TODO_MISSING_PAYMENT_METHOD_TITLE">Missing payment method</string>
   <string name="HOME_TODO_MISSING_PAYOUT_METHOD_TITLE">Missing payout method</string>
