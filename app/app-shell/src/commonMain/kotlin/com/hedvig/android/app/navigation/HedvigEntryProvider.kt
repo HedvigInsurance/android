@@ -3,11 +3,13 @@ package com.hedvig.android.app.navigation
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.navigation3.runtime.EntryProviderScope
 import coil3.ImageLoader
-import com.benasher44.uuid.Uuid
+import com.benasher44.uuid.uuid4
 import com.hedvig.android.app.AppHost
 import com.hedvig.android.auth.MemberIdService
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.data.addons.data.AddonBannerSource
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
+import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseKey
 import com.hedvig.android.feature.addon.purchase.navigation.addonPurchaseEntries
@@ -17,29 +19,62 @@ import com.hedvig.android.feature.change.tier.navigation.StartTierFlowKey
 import com.hedvig.android.feature.change.tier.navigation.changeTierEntries
 import com.hedvig.android.feature.chat.navigation.ChatKey
 import com.hedvig.android.feature.chat.navigation.InboxKey
+import com.hedvig.android.feature.chat.navigation.cbmChatEntries
 import com.hedvig.android.feature.chip.id.navigation.ChipIdKey
 import com.hedvig.android.feature.chip.id.navigation.chipIdEntries
+import com.hedvig.android.feature.claim.chat.navigation.ClaimChatKey
 import com.hedvig.android.feature.claim.chat.navigation.claimChatEntries
 import com.hedvig.android.feature.claim.details.navigation.ClaimDetailsKey
+import com.hedvig.android.feature.claim.details.navigation.claimDetailsEntries
+import com.hedvig.android.feature.claimhistory.nav.ClaimHistoryKey
 import com.hedvig.android.feature.claimhistory.nav.claimHistoryEntries
+import com.hedvig.android.feature.connect.payment.connectPaymentEntries
 import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyKey
+import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountKey
 import com.hedvig.android.feature.deleteaccount.navigation.deleteAccountEntries
+import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddInfoKey
+import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddOrRemoveKey
+import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredTriageKey
 import com.hedvig.android.feature.editcoinsured.navigation.editCoInsuredEntries
+import com.hedvig.android.feature.forever.navigation.foreverEntries
 import com.hedvig.android.feature.help.center.helpCenterEntries
+import com.hedvig.android.feature.help.center.navigation.HelpCenterKey
+import com.hedvig.android.feature.home.home.navigation.homeEntries
 import com.hedvig.android.feature.imageviewer.navigation.ImageViewerKey
+import com.hedvig.android.feature.imageviewer.navigation.imageViewerEntries
+import com.hedvig.android.feature.insurance.certificate.navigation.InsuranceEvidenceKey
+import com.hedvig.android.feature.insurance.certificate.navigation.insuranceEvidenceEntries
+import com.hedvig.android.feature.insurances.data.CancelInsuranceData
+import com.hedvig.android.feature.insurances.navigation.insuranceEntries
+import com.hedvig.android.feature.login.navigation.loginEntries
 import com.hedvig.android.feature.movingflow.MovingSource
 import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
 import com.hedvig.android.feature.movingflow.movingFlowEntries
 import com.hedvig.android.feature.onboarding.data.ResetOnboardingSeenUseCase
+import com.hedvig.android.feature.onboarding.navigation.onboardingEntries
 import com.hedvig.android.feature.payin.account.navigation.PayinAccountKey
+import com.hedvig.android.feature.payin.account.navigation.PayinMethodDetailsKey
+import com.hedvig.android.feature.payin.account.navigation.SelectPrimaryPayinMethodKey
+import com.hedvig.android.feature.payin.account.navigation.payinAccountEntries
+import com.hedvig.android.feature.payments.navigation.ManualChargeKey
+import com.hedvig.android.feature.payments.navigation.paymentsEntries
 import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountKey
 import com.hedvig.android.feature.payoutaccount.navigation.payoutAccountEntries
+import com.hedvig.android.feature.profile.navigation.ContactInfoKey
+import com.hedvig.android.feature.profile.navigation.UsageDataKey
+import com.hedvig.android.feature.profile.tab.profileEntries
+import com.hedvig.android.feature.remove.addons.RemoveAddonsKey
 import com.hedvig.android.feature.remove.addons.removeAddonsEntries
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceKey
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceEntries
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateKey
+import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateEntries
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.logger.logcat
+import com.hedvig.android.memberquickactions.InnerHelpCenterDestination
+import com.hedvig.android.memberquickactions.QuickLinkDestination
+import com.hedvig.android.memberquickactions.toNavKey
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.TopLevelTab
@@ -48,15 +83,15 @@ import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.popUpTo
 import com.hedvig.android.navigation.compose.removeAllOf
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 /**
- * Registers every in-app destination on the [EntryProviderScope]: the entries of features every host can
- * render here, the rest through [hostEntries]. Decomposed into per-domain sub-builders so each tab/flow's
- * wiring is readable in isolation. The shared cross-feature `navigateToX` closures are derived once here and
- * threaded down to the sub-builders that need them, and to [hostEntries] through [HostEntryContext]. All
- * wiring stays out of the features because feature `*Key`s live in feature *impl* modules and the
- * feature-isolation build rule blocks one feature from referencing another's key.
+ * Registers every in-app destination on the [EntryProviderScope]. Decomposed into per-domain sub-builders so
+ * each tab/flow's wiring is readable in isolation. The shared cross-feature `navigateToX` closures are derived
+ * once here and threaded down to the sub-builders that need them. All wiring stays out of the features because
+ * feature `*Key`s live in feature *impl* modules and the feature-isolation build rule blocks one feature from
+ * referencing another's key.
  */
 internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   backstack: BackstackController,
@@ -72,14 +107,13 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
   resetOnboardingSeenUseCase: ResetOnboardingSeenUseCase,
-  hostEntries: EntryProviderScope<HedvigNavKey>.(HostEntryContext) -> Unit,
 ) {
   val shouldShowRequestPermissionRationale: (String) -> Boolean = appHost::shouldShowPermissionRationale
   val navigateToTrustly: () -> Unit = { backstack.add(TrustlyKey()) }
   val navigateToPayinAccount: () -> Unit = { backstack.add(PayinAccountKey) }
   val navigateToPayoutAccount: () -> Unit = { backstack.add(PayoutAccountKey) }
   val navigateToInbox: () -> Unit = { backstack.add(InboxKey) }
-  val navigateToNewConversation: () -> Unit = { backstack.add(ChatKey(Uuid.randomUUID().toString())) }
+  val navigateToNewConversation: () -> Unit = { backstack.add(ChatKey(uuid4().toString())) }
   val navigateToConversation: (String) -> Unit = { conversationId -> backstack.add(ChatKey(conversationId)) }
   val navigateToTravelCertificate: () -> Unit = { backstack.add(TravelCertificateKey) }
   val navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit = { ids, source ->
@@ -110,6 +144,14 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
       ChangePayinMethodTarget.PopOne -> backstack.popBackstack()
     }
   }
+  addLoginEntries(
+    backstack = backstack,
+    scope = scope,
+    memberIdService = memberIdService,
+    hedvigBuildConstants = hedvigBuildConstants,
+    externalNavigator = externalNavigator,
+    openUrl = openUrl,
+  )
   addHomeEntries(
     backstack = backstack,
     appPackageId = hedvigBuildConstants.appPackageId,
@@ -117,22 +159,70 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     externalNavigator = externalNavigator,
     imageLoader = imageLoader,
     openUrl = openUrl,
+    openCrossSellUrl = openCrossSellUrl,
     onNavigateToImageViewer = onNavigateToImageViewer,
     navigateToNewConversation = navigateToNewConversation,
+    navigateToConversation = navigateToConversation,
+    navigateToInbox = navigateToInbox,
+    navigateToPayinAccount = navigateToPayinAccount,
+    navigateToPayoutAccount = navigateToPayoutAccount,
+    navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
   )
   addInsuranceEntries(
     backstack = backstack,
     windowSizeClass = windowSizeClass,
     imageLoader = imageLoader,
     openUrl = openUrl,
+    openCrossSellUrl = openCrossSellUrl,
     externalNavigator = externalNavigator,
     navigateToNewConversation = navigateToNewConversation,
+    navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
+    navigateToMovingFlow = navigateToMovingFlow,
+  )
+  onboardingEntries(
+    backstack = backstack,
+    imageLoader = imageLoader,
+    openCrossSellUrl = openCrossSellUrl,
+    openPrivacyPolicy = openPrivacyPolicy,
+    navigateToChipId = { contractId -> backstack.add(ChipIdKey(contractId)) },
   )
   payoutAccountEntries(
     backstack = backstack,
     navigateToTrustly = navigateToTrustly,
   )
-  addProfileEntries(backstack = backstack)
+  foreverEntries()
+  paymentsEntries(
+    backstack = backstack,
+    navigateToPayinAccount = navigateToPayinAccount,
+    navigateToPayinMethodDetails = { method -> backstack.add(PayinMethodDetailsKey(method)) },
+    navigateToPayoutAccount = navigateToPayoutAccount,
+    navigateToSelectPrimaryPayinMethod = { backstack.add(SelectPrimaryPayinMethodKey) },
+    openConversation = navigateToNewConversation,
+  )
+  payinAccountEntries(
+    backstack = backstack,
+    hedvigBuildConstants = hedvigBuildConstants,
+    navigateToTrustly = navigateToTrustly,
+    returnToPayinOverview = changePayinMethod,
+  )
+  connectPaymentEntries(
+    backstack = backstack,
+    changePaymentMethod = changePayinMethod,
+  )
+  addProfileEntries(
+    backstack = backstack,
+    globalSnackBarState = globalSnackBarState,
+    hedvigBuildConstants = hedvigBuildConstants,
+    languageService = languageService,
+    externalNavigator = externalNavigator,
+    openUrl = openUrl,
+    openPrivacyPolicy = openPrivacyPolicy,
+    navigateToPayinAccount = navigateToPayinAccount,
+    navigateToPayoutAccount = navigateToPayoutAccount,
+    navigateToNewConversation = navigateToNewConversation,
+    navigateToTravelCertificate = navigateToTravelCertificate,
+    onResetOnboardingForDebug = onResetOnboardingForDebug,
+  )
   addSharedFlowEntries(
     backstack = backstack,
     globalSnackBarState = globalSnackBarState,
@@ -142,66 +232,16 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     navigateToNewConversation = navigateToNewConversation,
     navigateToInbox = navigateToInbox,
   )
-  hostEntries(
-    HostEntryContext(
-      backstack = backstack,
-      scope = scope,
-      memberIdService = memberIdService,
-      globalSnackBarState = globalSnackBarState,
-      externalNavigator = externalNavigator,
-      imageLoader = imageLoader,
-      languageService = languageService,
-      hedvigBuildConstants = hedvigBuildConstants,
-      openUrl = openUrl,
-      openCrossSellUrl = openCrossSellUrl,
-      navigateToTrustly = navigateToTrustly,
-      navigateToPayinAccount = navigateToPayinAccount,
-      navigateToPayoutAccount = navigateToPayoutAccount,
-      navigateToInbox = navigateToInbox,
-      navigateToNewConversation = navigateToNewConversation,
-      navigateToConversation = navigateToConversation,
-      navigateToTravelCertificate = navigateToTravelCertificate,
-      navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
-      navigateToMovingFlow = navigateToMovingFlow,
-      onNavigateToImageViewer = onNavigateToImageViewer,
-      openPrivacyPolicy = openPrivacyPolicy,
-      onResetOnboardingForDebug = onResetOnboardingForDebug,
-      changePayinMethod = changePayinMethod,
-    ),
+  addChatEntries(
+    backstack = backstack,
+    hedvigBuildConstants = hedvigBuildConstants,
+    imageLoader = imageLoader,
+    openUrl = openUrl,
+    openCrossSellUrl = openCrossSellUrl,
+    onNavigateToImageViewer = onNavigateToImageViewer,
+    navigateToNewConversation = navigateToNewConversation,
   )
 }
-
-/**
- * What [hedvigEntryProvider] hands to the host's own entries: the dependencies those entries need and the
- * cross-feature closures derived once in [hedvigEntryProvider]. A closure this context provides is taken from
- * it and never rebuilt by a host; closures it does not provide are built in the host's entries. A field is
- * removed when its last host-side consumer moves into the shared provider.
- */
-class HostEntryContext internal constructor(
-  val backstack: BackstackController,
-  val scope: CoroutineScope,
-  val memberIdService: MemberIdService,
-  val globalSnackBarState: GlobalSnackBarState,
-  val externalNavigator: ExternalNavigator,
-  val imageLoader: ImageLoader,
-  val languageService: LanguageService,
-  val hedvigBuildConstants: HedvigBuildConstants,
-  val openUrl: (String) -> Unit,
-  val openCrossSellUrl: (String) -> Boolean,
-  val navigateToTrustly: () -> Unit,
-  val navigateToPayinAccount: () -> Unit,
-  val navigateToPayoutAccount: () -> Unit,
-  val navigateToInbox: () -> Unit,
-  val navigateToNewConversation: () -> Unit,
-  val navigateToConversation: (String) -> Unit,
-  val navigateToTravelCertificate: () -> Unit,
-  val navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
-  val navigateToMovingFlow: (MovingSource) -> Unit,
-  val onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
-  val openPrivacyPolicy: () -> Unit,
-  val onResetOnboardingForDebug: () -> Unit,
-  val changePayinMethod: () -> Unit,
-)
 
 /**
  * The app-specific privacy notice, per language. Mirrors the "Privacy policy (Hedvig app)" link on the
@@ -212,7 +252,30 @@ private fun privacyPolicyInAppUrl(language: Language): String = when (language) 
   Language.EN_SE -> "https://www.hedvig.com/se-en/hedvig/privacy-notice-app"
 }
 
-/** The home tab's nested destinations that every host can render. */
+/** The login screens. */
+private fun EntryProviderScope<HedvigNavKey>.addLoginEntries(
+  backstack: BackstackController,
+  scope: CoroutineScope,
+  memberIdService: MemberIdService,
+  hedvigBuildConstants: HedvigBuildConstants,
+  externalNavigator: ExternalNavigator,
+  openUrl: (String) -> Unit,
+) {
+  loginEntries(
+    backstack = backstack,
+    appVersionName = hedvigBuildConstants.appVersionName,
+    urlBaseWeb = hedvigBuildConstants.urlBaseWeb,
+    openUrl = openUrl,
+    onOpenEmailApp = externalNavigator::openEmailApp,
+    onNavigateToLoggedIn = {
+      scope.launch {
+        backstack.setLoggedIn(memberIdService.getMemberId().first())
+      }
+    },
+  )
+}
+
+/** The home tab and its nested destinations that every host can render. */
 private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
   backstack: BackstackController,
   appPackageId: String,
@@ -220,9 +283,77 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
   externalNavigator: ExternalNavigator,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Boolean,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   navigateToNewConversation: () -> Unit,
+  navigateToConversation: (String) -> Unit,
+  navigateToInbox: () -> Unit,
+  navigateToPayinAccount: () -> Unit,
+  navigateToPayoutAccount: () -> Unit,
+  navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
 ) {
+  homeEntries(
+    nestedEntries = {},
+    backstack = backstack,
+    onNavigateToInbox = navigateToInbox,
+    onNavigateToNewConversation = navigateToNewConversation,
+    navigateToClaimDetails = { claimId -> backstack.add(ClaimDetailsKey(claimId)) },
+    navigateToConnectPayment = navigateToPayinAccount,
+    navigateToManualCharge = { backstack.add(ManualChargeKey) },
+    navigateToConnectPayout = navigateToPayoutAccount,
+    navigateToContactInfo = { backstack.add(ContactInfoKey) },
+    navigateToMissingInfo = { contractId: String, type: CoInsuredFlowType ->
+      backstack.add(CoInsuredAddInfoKey(contractId, type))
+    },
+    navigateToHelpCenter = { backstack.add(HelpCenterKey) },
+    navigateToQuickLink = { destination ->
+      when (destination) {
+        is QuickLinkDestination.OuterDestination -> backstack.add(destination.toNavKey())
+
+        // FirstVet is handled by feature-home before reaching here.
+        is InnerHelpCenterDestination -> error("Inner quick-link destinations are routed by the feature")
+      }
+    },
+    navigateToClaimChat = { resumeClaim ->
+      backstack.add(
+        ClaimChatKey(
+          messageId = null,
+          isDevelopmentFlow = false,
+          resumeClaim = resumeClaim,
+        ),
+      )
+    },
+    navigateToChipIdScreen = { backstack.add(ChipIdKey()) },
+    navigateToUsageData = { backstack.add(UsageDataKey) },
+    openAppSettings = externalNavigator::openAppSettings,
+    openUrl = openUrl,
+    openCrossSellUrl = openCrossSellUrl,
+    imageLoader = imageLoader,
+    navigateToAddonPurchaseFlow = navigateToAddonPurchaseFlow,
+  )
+  travelCertificateEntries(
+    backstack = backstack,
+    applicationId = appPackageId,
+    onNavigateToCoInsuredAddInfo = { contractId ->
+      backstack.add(CoInsuredAddInfoKey(contractId, CoInsuredFlowType.CoInsured))
+    },
+    onNavigateToAddonPurchaseFlow = { ids ->
+      navigateToAddonPurchaseFlow(ids, AddonBannerSource.TRAVEL_CERTIFICATES)
+    },
+  )
+  insuranceEvidenceEntries(
+    backstack = backstack,
+    applicationId = appPackageId,
+  )
+  claimDetailsEntries(
+    imageLoader = imageLoader,
+    openUrl = openUrl,
+    onNavigateToImageViewer = onNavigateToImageViewer,
+    appPackageId = appPackageId,
+    navigateToConversation = navigateToConversation,
+    backstack = backstack,
+    applicationId = appPackageId,
+  )
   claimChatEntries(
     backstack = backstack,
     shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
@@ -242,15 +373,63 @@ private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
   )
 }
 
-/** The insurances tab's nested destinations that every host can render. */
+/** The insurances tab and its nested destinations that every host can render. */
 private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
   backstack: BackstackController,
   windowSizeClass: WindowSizeClass,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Boolean,
   externalNavigator: ExternalNavigator,
   navigateToNewConversation: () -> Unit,
+  navigateToAddonPurchaseFlow: (List<String>, AddonBannerSource) -> Unit,
+  navigateToMovingFlow: (MovingSource) -> Unit,
 ) {
+  insuranceEntries(
+    nestedEntries = {},
+    backstack = backstack,
+    openUrl = openUrl,
+    openCrossSellUrl = openCrossSellUrl,
+    onNavigateToNewConversation = navigateToNewConversation,
+    startMovingFlow = {
+      navigateToMovingFlow(MovingSource.INSURANCE)
+    },
+    startTerminationFlow = { data: CancelInsuranceData ->
+      backstack.add(TerminateInsuranceKey(insuranceId = data.contractId))
+    },
+    imageLoader = imageLoader,
+    startEditCoInsured = { contractId: String ->
+      backstack.add(CoInsuredAddOrRemoveKey(contractId, CoInsuredFlowType.CoInsured))
+    },
+    startEditCoOwners = { contractId: String ->
+      backstack.add(EditCoInsuredTriageKey(contractId, CoInsuredFlowType.CoOwners))
+    },
+    onNavigateToStartChangeTier = { contractId: String, isPaymentProtection: Boolean ->
+      backstack.add(StartTierFlowKey(insuranceId = contractId, isPaymentProtection = isPaymentProtection))
+    },
+    startEditCoInsuredAddMissingInfo = { contractId: String ->
+      backstack.add(CoInsuredAddInfoKey(contractId, CoInsuredFlowType.CoInsured))
+    },
+    startEditCoOwnersAddMissingInfo = { contractId: String ->
+      backstack.add(CoInsuredAddInfoKey(contractId, CoInsuredFlowType.CoOwners))
+    },
+    onNavigateToAddonPurchaseFlow = { insuranceIds, availableAddon, source ->
+      backstack.add(
+        AddonPurchaseKey(
+          insuranceIds.map(ContractId::id),
+          availableAddon?.displayName,
+          source,
+        ),
+      )
+    },
+    onNavigateToRemoveAddon = { contractId, addonVariant ->
+      backstack.add(RemoveAddonsKey(contractId, addonVariant))
+    },
+    navigateToUpgradeAddon = { contractId, _ ->
+      navigateToAddonPurchaseFlow(listOfNotNull(contractId?.id), AddonBannerSource.CONTRACT_DETAIL)
+    },
+    navigateToChipIdScreen = { contractId -> backstack.add(ChipIdKey(contractId)) },
+  )
   terminateInsuranceEntries(
     windowSizeClass = windowSizeClass,
     backstack = backstack,
@@ -286,8 +465,44 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
   )
 }
 
-/** The profile tab's nested destinations that every host can render. */
-private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(backstack: BackstackController) {
+/** The profile tab and its nested destinations. */
+private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
+  backstack: BackstackController,
+  globalSnackBarState: GlobalSnackBarState,
+  hedvigBuildConstants: HedvigBuildConstants,
+  languageService: LanguageService,
+  externalNavigator: ExternalNavigator,
+  openUrl: (String) -> Unit,
+  openPrivacyPolicy: () -> Unit,
+  navigateToPayinAccount: () -> Unit,
+  navigateToPayoutAccount: () -> Unit,
+  navigateToNewConversation: () -> Unit,
+  navigateToTravelCertificate: () -> Unit,
+  onResetOnboardingForDebug: () -> Unit,
+) {
+  profileEntries(
+    settingsDestinationNestedGraphs = {},
+    nestedEntries = {},
+    globalSnackBarState = globalSnackBarState,
+    backstack = backstack,
+    hedvigBuildConstants = hedvigBuildConstants,
+    navigateToConnectPayment = navigateToPayinAccount,
+    navigateToConnectPayout = navigateToPayoutAccount,
+    navigateToAddMissingInfo = { contractId: String, type: CoInsuredFlowType ->
+      backstack.add(CoInsuredAddInfoKey(contractId, type))
+    },
+    navigateToDeleteAccountFeature = { backstack.add(DeleteAccountKey) },
+    navigateToClaimHistory = { backstack.add(ClaimHistoryKey) },
+    openAppSettings = externalNavigator::openAppSettings,
+    onNavigateToNewConversation = navigateToNewConversation,
+    onNavigateToTravelCertificate = navigateToTravelCertificate,
+    onNavigateToInsuranceEvidence = { backstack.add(InsuranceEvidenceKey) },
+    openUrl = openUrl,
+    openPrivacyPolicy = openPrivacyPolicy,
+    navigateToChipId = { backstack.add(ChipIdKey()) },
+    languageService = languageService,
+    onResetOnboardingForDebug = onResetOnboardingForDebug,
+  )
   deleteAccountEntries(backstack)
   claimHistoryEntries(
     backstack = backstack,
@@ -297,7 +512,7 @@ private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(backstack: Backst
 
 /**
  * Cross-cutting flows reachable from more than one tab: addon purchase/removal, tier changes,
- * co-insured editing, moving, chip-id and the help center.
+ * co-insured editing, moving, chip-id, the help center and the image viewer.
  */
 private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
   backstack: BackstackController,
@@ -341,4 +556,33 @@ private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
     imageLoader = imageLoader,
   )
   removeAddonsEntries(backstack = backstack)
+  imageViewerEntries(backstack, imageLoader)
+}
+
+/** The inbox and the conversations. */
+private fun EntryProviderScope<HedvigNavKey>.addChatEntries(
+  backstack: BackstackController,
+  hedvigBuildConstants: HedvigBuildConstants,
+  imageLoader: ImageLoader,
+  openUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Boolean,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  navigateToNewConversation: () -> Unit,
+) {
+  cbmChatEntries(
+    hedvigBuildConstants = hedvigBuildConstants,
+    imageLoader = imageLoader,
+    openUrl = openUrl,
+    openCrossSellUrl = openCrossSellUrl,
+    onNavigateToClaimDetails = { claimId ->
+      logcat { "Navigating to claim details from chat" }
+      backstack.add(ClaimDetailsKey(claimId))
+    },
+    onNavigateToImageViewer = onNavigateToImageViewer,
+    onNavigateToNewConversation = navigateToNewConversation,
+    navigateToClaimChat = { resumeClaim ->
+      backstack.add(ClaimChatKey(messageId = null, isDevelopmentFlow = false, resumeClaim = resumeClaim))
+    },
+    backstack = backstack,
+  )
 }

@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.chat.model
 
 import com.benasher44.uuid.Uuid
+import com.benasher44.uuid.uuid4
 import com.eygraber.uri.Uri
 import com.hedvig.android.data.chat.database.ChatMessageEntity
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.MEDIA
@@ -61,7 +62,7 @@ sealed interface CbmChatMessage {
 
   companion object {
     fun aiGeneratingIndicator(sentAt: Instant) = ChatMessageText(
-      id = Uuid.randomUUID().toString(),
+      id = uuid4().toString(),
       sender = Sender.HEDVIG,
       sentAt = sentAt,
       banner = null,

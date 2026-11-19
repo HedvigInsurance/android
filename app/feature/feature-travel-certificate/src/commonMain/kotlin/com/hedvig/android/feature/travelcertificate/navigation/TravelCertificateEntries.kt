@@ -1,7 +1,7 @@
 package com.hedvig.android.feature.travelcertificate.navigation
 
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation3.runtime.EntryProviderScope
+import com.hedvig.android.core.fileupload.rememberOpenPdf
 import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForCertificateDestination
 import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForCertificateViewModel
 import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputDestination
@@ -18,10 +18,8 @@ import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificat
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
-import com.hedvig.core.common.android.sharePDF
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
-import java.io.File
 
 fun EntryProviderScope<HedvigNavKey>.travelCertificateEntries(
   backstack: Backstack,
@@ -31,7 +29,7 @@ fun EntryProviderScope<HedvigNavKey>.travelCertificateEntries(
 ) {
   entry<TravelCertificateKey> {
     val viewModel: CertificateHistoryViewModel = metroViewModel()
-    val localContext = LocalContext.current
+    val openPdf = rememberOpenPdf(applicationId)
     TravelCertificateHistoryDestination(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
@@ -43,7 +41,7 @@ fun EntryProviderScope<HedvigNavKey>.travelCertificateEntries(
       },
       onShareTravelCertificate = {
         viewModel.emit(CertificateHistoryEvent.HaveProcessedCertificateUri)
-        localContext.sharePDF(File(it.path), applicationId)
+        openPdf(it)
       },
       onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
     )
@@ -90,14 +88,12 @@ fun EntryProviderScope<HedvigNavKey>.travelCertificateEntries(
 
   entry<ShowCertificateKey> { key ->
     val viewModel: TravelCertificateOverviewViewModel = metroViewModel()
-    val context = LocalContext.current
+    val openPdf = rememberOpenPdf(applicationId)
     TravelCertificateOverviewDestination(
       travelCertificateUrl = key.travelCertificateUrl,
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
-      onShareTravelCertificate = {
-        context.sharePDF(File(it.path), applicationId)
-      },
+      onShareTravelCertificate = openPdf,
     )
   }
 }

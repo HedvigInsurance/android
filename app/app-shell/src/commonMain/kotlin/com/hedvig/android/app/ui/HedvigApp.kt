@@ -44,7 +44,6 @@ import com.hedvig.android.app.GlobalHedvigSnackBar
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
-import com.hedvig.android.app.navigation.HostEntryContext
 import com.hedvig.android.app.navigation.ScreenParameterExtractor
 import com.hedvig.android.app.navigation.hedvigEntryProvider
 import com.hedvig.android.app.navigation.screenName
@@ -96,9 +95,8 @@ import org.jetbrains.compose.resources.stringResource
 /**
  * The app's root composable, rendered by each host.
  *
- * [hostEntries] registers the destinations the shared entry provider leaves to the host. A host registers an entry
- * for every key the shared provider can put on the back stack, or supplies [fallbackEntry], which then renders any key
- * without a registered entry. Without a [fallbackEntry] such a key throws, which is Navigation 3's default.
+ * The shared entry provider registers every destination. [fallbackEntry] renders a key without a registered entry;
+ * without it such a key throws, which is Navigation 3's default.
  */
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -126,7 +124,6 @@ fun HedvigApp(
   screenParameterExtractor: ScreenParameterExtractor,
   onboardingGate: OnboardingGate,
   resetOnboardingSeenUseCase: ResetOnboardingSeenUseCase,
-  hostEntries: EntryProviderScope<HedvigNavKey>.(HostEntryContext) -> Unit,
   fallbackEntry: ((HedvigNavKey) -> NavEntry<HedvigNavKey>)? = null,
 ) {
   ReportCurrentDestinationEffect(backstackController, currentDestinationHolder)
@@ -245,7 +242,6 @@ fun HedvigApp(
                           languageService = languageService,
                           hedvigBuildConstants = hedvigBuildConstants,
                           resetOnboardingSeenUseCase = resetOnboardingSeenUseCase,
-                          hostEntries = hostEntries,
                         )
                       },
                     ),

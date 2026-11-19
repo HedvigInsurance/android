@@ -12,6 +12,8 @@ kotlin {
   sourceSets {
     commonMain.dependencies {
       implementation(libs.kotlinx.serialization.core)
+      implementation(libs.metro.viewmodel)
+      implementation(libs.metro.viewmodel.compose)
       implementation(projects.coreBuildConstants)
       implementation(projects.coreCommonPublic)
       implementation(projects.designSystemHedvig)
@@ -22,10 +24,6 @@ kotlin {
       implementation(projects.navigationCommon)
       implementation(projects.navigationCompose)
       implementation(projects.navigationCore)
-    }
-    androidMain.dependencies {
-      implementation(libs.metro.viewmodel)
-      implementation(libs.metro.viewmodel.compose)
     }
   }
 }
