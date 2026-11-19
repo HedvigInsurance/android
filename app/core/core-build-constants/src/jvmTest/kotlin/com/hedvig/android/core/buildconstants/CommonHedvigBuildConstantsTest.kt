@@ -35,6 +35,21 @@ class CommonHedvigBuildConstantsTest {
 
     assertEquals("com.hedvig.dev.app 1.2.3 (Android 16; brand model; device; sv-SE)", buildConstants.userAgent)
   }
+
+  @Test
+  fun `the deep link hosts are those of the configured flavor, in the same order for every flavor`() {
+    val buildConstants = CommonHedvigBuildConstants(FakeAppBuildConfig(), FakeLanguageService())
+
+    assertEquals(deepLinkHostsOf(Flavor.Develop), buildConstants.deepLinkHosts)
+    assertEquals(
+      listOf("link.dev.hedvigit.com", "dev.hedvigit.com/deeplink", "hedvigdevelop.page.link"),
+      deepLinkHostsOf(Flavor.Develop),
+    )
+    assertEquals(
+      listOf("link.hedvig.com", "www.hedvig.com/deeplink", "hedvig.page.link"),
+      deepLinkHostsOf(Flavor.Production),
+    )
+  }
 }
 
 private class FakeAppBuildConfig : AppBuildConfig {

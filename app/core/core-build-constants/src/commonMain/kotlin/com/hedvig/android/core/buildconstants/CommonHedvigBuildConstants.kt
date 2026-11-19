@@ -123,43 +123,35 @@ private class AppConfigUrlHolder(private val appBuildConfig: AppBuildConfig) : U
     Develop -> "https://gateway.dev.hedvigit.com/claims"
   }
 
-  override fun deepLinkHosts(flavor: Flavor): List<String> = when (appBuildConfig.appFlavor) {
-    Production -> listOf(
-      deepLinkDomainHostNew(flavor),
-      deepLinkDomainHost(flavor) + deepLinkDomainPathPrefix(),
-      deepLinkDomainHostOld(flavor),
-    )
+  override fun deepLinkHosts(flavor: Flavor): List<String> = deepLinkHostsOf(flavor)
+}
 
-    Staging -> listOf(
-      deepLinkDomainHostNew(flavor),
-      deepLinkDomainHost(flavor) + deepLinkDomainPathPrefix(),
-      deepLinkDomainHostOld(flavor),
-    )
+/**
+ * The deep link hosts of the app built as [flavor], each a bare host or a host followed by a path prefix. Every
+ * flavor lists its hosts in the same order, so the entries at one index are the same kind of link across flavors.
+ */
+fun deepLinkHostsOf(flavor: Flavor): List<String> = listOf(
+  deepLinkDomainHostNew(flavor),
+  deepLinkDomainHost(flavor) + deepLinkDomainPathPrefix(),
+  deepLinkDomainHostOld(flavor),
+)
 
-    Develop -> listOf(
-      deepLinkDomainHostNew(flavor),
-      deepLinkDomainHost(flavor) + deepLinkDomainPathPrefix(),
-      deepLinkDomainHostOld(flavor),
-    )
-  }
+private fun deepLinkDomainHostNew(flavor: Flavor): String = when (flavor) {
+  Production -> "link.hedvig.com"
+  Staging -> "link.dev.hedvigit.com"
+  Develop -> "link.dev.hedvigit.com"
+}
 
-  private fun deepLinkDomainHostNew(flavor: Flavor): String = when (flavor) {
-    Production -> "link.hedvig.com"
-    Staging -> "link.dev.hedvigit.com"
-    Develop -> "link.dev.hedvigit.com"
-  }
+private fun deepLinkDomainHost(flavor: Flavor): String = when (flavor) {
+  Production -> "www.hedvig.com"
+  Staging -> "dev.hedvigit.com"
+  Develop -> "dev.hedvigit.com"
+}
 
-  private fun deepLinkDomainHost(flavor: Flavor): String = when (flavor) {
-    Production -> "www.hedvig.com"
-    Staging -> "dev.hedvigit.com"
-    Develop -> "dev.hedvigit.com"
-  }
+private fun deepLinkDomainPathPrefix(): String = "/deeplink"
 
-  private fun deepLinkDomainPathPrefix(): String = "/deeplink"
-
-  private fun deepLinkDomainHostOld(flavor: Flavor): String = when (flavor) {
-    Production -> "hedvig.page.link"
-    Staging -> "hedvigtest.page.link"
-    Develop -> "hedvigdevelop.page.link"
-  }
+private fun deepLinkDomainHostOld(flavor: Flavor): String = when (flavor) {
+  Production -> "hedvig.page.link"
+  Staging -> "hedvigtest.page.link"
+  Develop -> "hedvigdevelop.page.link"
 }

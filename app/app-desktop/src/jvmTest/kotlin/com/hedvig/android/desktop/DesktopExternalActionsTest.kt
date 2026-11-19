@@ -68,6 +68,13 @@ class DesktopExternalActionsTest {
   }
 
   @Test
+  fun `the update action asks to update the checkout`() {
+    DesktopExternalNavigator(RecordingDesktopIntegration(), notices::add).tryOpenPlayStore()
+
+    assertThat(notices.single()).contains("Update your checkout")
+  }
+
+  @Test
   fun `a phone number is handed to the system as a tel link`() {
     val desktop = RecordingDesktopIntegration()
 
