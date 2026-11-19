@@ -12,6 +12,7 @@ import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isTrue
 import assertk.assertions.startsWith
+import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.feature.chat.navigation.ChatKey
 import com.hedvig.android.feature.chat.navigation.InboxKey
@@ -165,6 +166,7 @@ private fun registerSharedEntries(scope: EntryProviderScope<HedvigNavKey>, graph
     DesktopAppHost(showNotice = {}),
     { _: String -> },
     { _: String -> true },
+    { _: CrossSell -> true },
     graph.imageLoader,
     graph.languageService,
     graph.hedvigBuildConstants,

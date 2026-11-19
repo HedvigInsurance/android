@@ -385,6 +385,43 @@ internal class GetHomeDataUseCaseImpl(
           description = pillowImageLarge.alt,
         ),
         buttonText = this.buttonTitle,
+        // TODO: Temporary fake until the backend serves CrossSell.options. Restore the mapping below before merging.
+        options = fakeCrossSellOptions(id, storeUrl),
+        // options = options.map { option ->
+        //   CrossSell(
+        //     id = option.id,
+        //     title = option.title,
+        //     subtitle = option.description,
+        //     storeUrl = option.storeUrl,
+        //     pillowImageSmall = ImageAsset(
+        //       id = option.pillowImageSmall.id,
+        //       src = option.pillowImageSmall.src,
+        //       description = option.pillowImageSmall.alt,
+        //     ),
+        //     pillowImageLarge = ImageAsset(
+        //       id = option.pillowImageLarge.id,
+        //       src = option.pillowImageLarge.src,
+        //       description = option.pillowImageLarge.alt,
+        //     ),
+        //     buttonText = option.buttonTitle,
+        //   )
+        // },
+      )
+    }
+  }
+
+  private fun fakeCrossSellOptions(crossSellId: String, storeUrl: String): List<CrossSell> {
+    if (crossSellId != "crossSell:PET") return emptyList()
+    val pillow = "https://a.storyblok.com/f/165473/832x832/c89ddd009f/pet-pillow-832x832px.png"
+    return listOf("Dog" to "crossSell:PET_DOG", "Cat" to "crossSell:PET_CAT").map { (animal, optionId) ->
+      CrossSell(
+        id = optionId,
+        title = "$animal Insurance",
+        subtitle = "For your ${animal.lowercase()}",
+        storeUrl = storeUrl,
+        pillowImageSmall = ImageAsset(id = "$optionId-small", src = pillow, description = ""),
+        pillowImageLarge = ImageAsset(id = "$optionId-large", src = pillow, description = ""),
+        buttonText = "See price",
       )
     }
   }

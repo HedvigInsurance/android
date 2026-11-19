@@ -10,5 +10,6 @@ internal val Feature.unleashKey: String
     Feature.ENABLE_CLAIM_INTENT_RESUME -> "enable_claim_intent_resume"
     Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX -> "enable_new_conversation_from_inbox"
     Feature.HIDE_CANCEL_INSURANCE_FROM_HOME_SCREEN -> "hide_cancel_insurance_from_home_screen"
+    Feature.SHOW_PRODUCT_PAGES -> "show_product_pages"
     Feature.UPDATE_NECESSARY -> "update_necessary"
   }

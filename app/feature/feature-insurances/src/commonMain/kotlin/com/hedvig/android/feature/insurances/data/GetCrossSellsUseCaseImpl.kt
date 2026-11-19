@@ -59,6 +59,25 @@ internal class GetCrossSellsUseCaseImpl(
               src = crossSell.pillowImageLarge.src,
               description = crossSell.pillowImageLarge.alt,
             ),
+            options = crossSell.options.map { option ->
+              CrossSell(
+                id = option.id,
+                title = option.title,
+                subtitle = option.description,
+                storeUrl = option.storeUrl,
+                pillowImageSmall = ImageAsset(
+                  id = option.pillowImageSmall.id,
+                  src = option.pillowImageSmall.src,
+                  description = option.pillowImageSmall.alt,
+                ),
+                pillowImageLarge = ImageAsset(
+                  id = option.pillowImageLarge.id,
+                  src = option.pillowImageLarge.src,
+                  description = option.pillowImageLarge.alt,
+                ),
+                buttonText = option.buttonTitle,
+              )
+            },
           )
         }
         crossSells

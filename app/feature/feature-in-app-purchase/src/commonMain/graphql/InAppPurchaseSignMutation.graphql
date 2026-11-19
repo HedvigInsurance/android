@@ -1,0 +1,10 @@
+mutation InAppPurchaseSign($shopSessionId: UUID!, $offerId: UUID!) {
+  inAppPurchaseSign(input: { shopSessionId: $shopSessionId, offerId: $offerId }) {
+    signing {
+      ...InAppPurchaseSigningFragment
+    }
+    userError {
+      message
+    }
+  }
+}

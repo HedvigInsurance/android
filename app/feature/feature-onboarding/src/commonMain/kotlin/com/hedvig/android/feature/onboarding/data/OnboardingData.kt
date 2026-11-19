@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.onboarding.data
 
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
+import com.hedvig.android.data.contract.CrossSell
 
 /**
  * Everything the onboarding flow needs, fetched eagerly in one round trip before the flow is
@@ -17,7 +18,7 @@ internal data class OnboardingData(
   /** The provider of the method behind [payinStatus], or null when none is connected or onboarding can't offer it. */
   val connectedPayinProvider: OnboardingPayinProvider? = null,
   val availablePayinProviders: List<OnboardingPayinProvider>,
-  val crossSells: List<OnboardingCrossSell>,
+  val crossSells: List<CrossSell>,
 ) {
   /** Contracts missing co-insured OR co-owner info, i.e. anything the co-insured step should show. */
   val contractsMissingInsuredOrOwnerInfo: List<OnboardingContract> =
@@ -83,13 +84,4 @@ internal data class OnboardingReferralInformation(
   val code: String,
   val monthlyDiscountPerReferralAmount: Double,
   val currencyCode: String,
-)
-
-internal data class OnboardingCrossSell(
-  val id: String,
-  val title: String,
-  val description: String,
-  val storeUrl: String,
-  val pillowImageUrl: String?,
-  val buttonTitle: String,
 )
