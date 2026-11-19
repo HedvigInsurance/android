@@ -1,0 +1,191 @@
+package com.hedvig.android.memberreminders
+
+import arrow.core.Either
+import arrow.core.NonEmptyList
+import arrow.core.merge
+import com.benasher44.uuid.uuid4
+import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
+import com.hedvig.android.data.settings.datastore.AnalyticsConsent
+import com.hedvig.android.data.settings.datastore.GetAnalyticsConsentUseCase
+import com.hedvig.android.memberreminders.MemberReminder.ContactInfoUpdateNeeded
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.datetime.LocalDate
+
+interface GetMemberRemindersUseCase {
+  fun invoke(): Flow<MemberReminders>
+}
+
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
+internal class GetMemberRemindersUseCaseImpl(
+  private val enableNotificationsReminderSnoozeManager: EnableNotificationsReminderSnoozeManager,
+  private val getConnectPaymentReminderUseCase: GetConnectPaymentReminderUseCase,
+  private val getUpcomingRenewalRemindersUseCase: GetUpcomingRenewalRemindersUseCase,
+  private val getNeedsCoInsuredInfoRemindersUseCase: GetNeedsCoInsuredInfoRemindersUseCase,
+  private val getContactInfoUpdateIsNeededUseCase: GetContactInfoUpdateIsNeededUseCase,
+  private val getMissingChipIdReminderUseCase: GetMissingChipIdReminderUseCase,
+  private val getAnalyticsConsentUseCase: GetAnalyticsConsentUseCase,
+) : GetMemberRemindersUseCase {
+  override fun invoke(): Flow<MemberReminders> {
+    return combine(
+      enableNotificationsReminderSnoozeManager.timeToShowNotificationReminder().map { showReminder ->
+        if (showReminder) {
+          MemberReminder.EnableNotifications()
+        } else {
+          null
+        }
+      },
+      flow {
+        emit(
+          getConnectPaymentReminderUseCase.invoke().getOrNull()?.let { paymentReminder ->
+            when (paymentReminder) {
+              PaymentReminder.ShowConnectPaymentReminder -> {
+                MemberReminder.PaymentReminder.ConnectPayment()
+              }
+
+              PaymentReminder.ShowConnectPayoutReminder -> {
+                MemberReminder.PaymentReminder.ConnectPayout()
+              }
+
+              is PaymentReminder.ShowMissingPaymentsReminder -> {
+                MemberReminder.PaymentReminder.TerminationDueToMissedPayments(
+                  terminationDate = paymentReminder.terminationDate,
+                )
+              }
+            }
+          },
+        )
+      },
+      getUpcomingRenewalRemindersUseCase.invoke().map { it.mapLeft { null }.merge() },
+      getNeedsCoInsuredInfoRemindersUseCase.invoke(),
+      getContactInfoUpdateIsNeededUseCase.invoke(),
+      getMissingChipIdReminderUseCase.invoke(),
+      getAnalyticsConsentUseCase.invoke().map { consent ->
+        if (consent == AnalyticsConsent.NOT_DECIDED) MemberReminder.DecideAnalyticsConsent() else null
+      },
+    ) { values ->
+      val enableNotifications = values[0] as MemberReminder.EnableNotifications?
+      val connectPayment = values[1] as MemberReminder.PaymentReminder?
+      val upcomingRenewalReminders = values[2] as? NonEmptyList<MemberReminder.UpcomingRenewal>?
+      val coInsuredInfoResult =
+        values[3] as? Either<CoInsuredInfoReminderError, NonEmptyList<MemberReminder.CoInsuredInfo>>
+      val contactInfoReminder = values[4] as? Either<ErrorMessage, ContactInfoUpdateNeeded?>
+      val missingChipIdReminder = values[5] as? Either<ErrorMessage, MemberReminder.MissingChipId?>
+      val decideAnalyticsConsent = values[6] as MemberReminder.DecideAnalyticsConsent?
+
+      MemberReminders(
+        connectPayment = connectPayment,
+        upcomingRenewals = upcomingRenewalReminders,
+        enableNotifications = enableNotifications,
+        coInsuredInfo = coInsuredInfoResult?.getOrNull(),
+        updateContactInfo = contactInfoReminder?.getOrNull(),
+        missingChipId = missingChipIdReminder?.getOrNull(),
+        decideAnalyticsConsent = decideAnalyticsConsent,
+      )
+    }
+  }
+}
+
+data class MemberReminders(
+  val connectPayment: MemberReminder.PaymentReminder? = null,
+  val upcomingRenewals: List<MemberReminder.UpcomingRenewal>? = null,
+  val enableNotifications: MemberReminder.EnableNotifications? = null,
+  val coInsuredInfo: List<MemberReminder.CoInsuredInfo>? = null,
+  val updateContactInfo: ContactInfoUpdateNeeded? = null,
+  val missingChipId: MemberReminder.MissingChipId? = null,
+  val decideAnalyticsConsent: MemberReminder.DecideAnalyticsConsent? = null,
+) {
+  /**
+   * In some cases a reminder may be present but may not be applicable in our current app state.
+   *
+   * If [alreadyHasNotificationPermission] is true, then the notification permission reminder should not be shown.
+   */
+  fun onlyApplicableReminders(alreadyHasNotificationPermission: Boolean): List<MemberReminder> {
+    return buildList {
+      connectPayment?.let {
+        add(connectPayment)
+      }
+      coInsuredInfo?.let {
+        addAll(coInsuredInfo)
+      }
+      missingChipId?.let {
+        add(it)
+      }
+      if (!alreadyHasNotificationPermission) {
+        enableNotifications?.let {
+          add(enableNotifications)
+        }
+      }
+      upcomingRenewals?.let {
+        addAll(it)
+      }
+      updateContactInfo?.let {
+        add(it)
+      }
+      decideAnalyticsConsent?.let {
+        add(it)
+      }
+    }
+  }
+}
+
+sealed interface MemberReminder {
+  val id: String
+
+  sealed interface PaymentReminder : MemberReminder {
+    data class TerminationDueToMissedPayments(
+      override val id: String = uuid4().toString(),
+      val terminationDate: LocalDate,
+    ) : PaymentReminder
+
+    data class ConnectPayment(
+      override val id: String = uuid4().toString(),
+    ) : PaymentReminder
+
+    data class ConnectPayout(
+      override val id: String = uuid4().toString(),
+    ) : PaymentReminder
+  }
+
+  data class UpcomingRenewal(
+    val contractDisplayName: String,
+    val renewalDate: LocalDate,
+    val draftCertificateUrl: String?,
+    override val id: String = uuid4().toString(),
+  ) : MemberReminder
+
+  data class EnableNotifications(
+    override val id: String = uuid4().toString(),
+  ) : MemberReminder
+
+  data class CoInsuredInfo(
+    val contractId: String,
+    val coInsuredType: CoInsuredFlowType,
+    override val id: String = uuid4().toString(),
+  ) : MemberReminder
+
+  data object ContactInfoUpdateNeeded : MemberReminder {
+    override val id: String = uuid4().toString()
+  }
+
+  data class MissingChipId(
+    override val id: String = uuid4().toString(),
+  ) : MemberReminder
+
+  /**
+   * The member has not answered the analytics-consent question yet. Offered only as a row in the
+   * home "To do" list, so it has no reminder card.
+   */
+  data class DecideAnalyticsConsent(
+    override val id: String = uuid4().toString(),
+  ) : MemberReminder
+}

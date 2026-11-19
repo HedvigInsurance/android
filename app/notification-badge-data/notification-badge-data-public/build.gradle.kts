@@ -1,5 +1,5 @@
 plugins {
-  id("hedvig.jvm.library")
+  id("hedvig.multiplatform.library.ios")
   id("hedvig.gradle.plugin")
 }
 
@@ -7,24 +7,29 @@ hedvig {
   apollo("octopus")
 }
 
-dependencies {
-  implementation(libs.androidx.datastore.core)
-  implementation(libs.androidx.datastore.preferencesCore)
-  implementation(libs.apollo.normalizedCache)
-  implementation(libs.arrow.core)
-  implementation(projects.apolloCore)
-  implementation(projects.apolloOctopusPublic)
-  implementation(projects.coreDemoMode)
-  implementation(projects.featureFlags)
-  implementation(projects.languageCore)
-
-  testImplementation(libs.apollo.testingSupport)
-  testImplementation(libs.assertK)
-  testImplementation(libs.coroutines.test)
-  testImplementation(libs.junit)
-  testImplementation(libs.turbine)
-  testImplementation(projects.apolloOctopusTest)
-  testImplementation(projects.apolloTest)
-  testImplementation(projects.coreDatastoreTest)
-  testImplementation(projects.featureFlagsTest)
+kotlin {
+  sourceSets {
+    commonMain.dependencies {
+      implementation(libs.androidx.datastore.core)
+      implementation(libs.androidx.datastore.preferencesCore)
+      implementation(libs.apollo.normalizedCache)
+      implementation(libs.arrow.core)
+      implementation(projects.apolloCore)
+      implementation(projects.apolloOctopusPublic)
+      implementation(projects.coreDemoMode)
+      implementation(projects.featureFlags)
+      implementation(projects.languageCore)
+    }
+    jvmTest.dependencies {
+      implementation(libs.apollo.testingSupport)
+      implementation(libs.assertK)
+      implementation(libs.coroutines.test)
+      implementation(libs.junit)
+      implementation(libs.turbine)
+      implementation(projects.apolloOctopusTest)
+      implementation(projects.apolloTest)
+      implementation(projects.coreDatastoreTest)
+      implementation(projects.featureFlagsTest)
+    }
+  }
 }

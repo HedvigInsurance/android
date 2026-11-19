@@ -34,7 +34,6 @@ kotlin {
       implementation(projects.moleculePublic)
       implementation(projects.navigationCore)
       implementation(projects.navigationCommon)
-      implementation(projects.navigationCompose)
     }
     jvmTest.dependencies {
       implementation(libs.assertK)

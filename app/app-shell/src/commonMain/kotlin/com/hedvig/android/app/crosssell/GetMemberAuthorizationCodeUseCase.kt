@@ -1,0 +1,61 @@
+package com.hedvig.android.app.crosssell
+
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
+import com.hedvig.android.network.clients.safePost
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
+import io.ktor.client.HttpClient
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.isSuccess
+import kotlinx.coroutines.CancellationException
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+
+interface GetMemberAuthorizationCodeUseCase {
+  /** A one-time code the web store exchanges for the member's session, or null when none could be fetched. */
+  suspend fun invoke(): String?
+}
+
+@SingleIn(AppScope::class)
+@ContributesBinding(AppScope::class)
+@Inject
+class GetMemberAuthorizationCodeUseCaseImpl(
+  private val httpClient: HttpClient,
+  private val hedvigBuildConstants: HedvigBuildConstants,
+) : GetMemberAuthorizationCodeUseCase {
+  override suspend fun invoke(): String? {
+    return try {
+      httpClient
+        .safePost("${hedvigBuildConstants.urlAuthService}/member-authorization-codes")
+        .fold(
+          ifLeft = { networkError ->
+            logcat(LogPriority.WARN) { "Failed to fetch member authorization code: ${networkError.message}" }
+            null
+          },
+          ifRight = { httpResponse ->
+            if (httpResponse.status.isSuccess()) {
+              Json.decodeFromString<MemberAuthorizationCodeResponse>(httpResponse.bodyAsText()).authorizationCode
+            } else {
+              logcat(LogPriority.WARN) {
+                "Failed to fetch member authorization code, status: ${httpResponse.status}"
+              }
+              null
+            }
+          },
+        )
+    } catch (e: Exception) {
+      if (e is CancellationException) {
+        throw e
+      }
+      logcat(LogPriority.WARN, e) { "Failed to fetch member authorization code" }
+      null
+    }
+  }
+}
+
+@Serializable
+private data class MemberAuthorizationCodeResponse(val authorizationCode: String)

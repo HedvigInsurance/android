@@ -3256,7 +3256,7 @@ git commit -m "Add onboarding bundle discount step"
 - Modify: `app/app/src/main/kotlin/com/hedvig/android/app/MainActivity.kt` (or wherever `HedvigApp(...)` is invoked; follow how `backstackController` reaches it)
 
 **Interfaces:**
-- Consumes: everything produced by Tasks 4-18; `MemberIdService`, `AuthTokenService.authStatus`/`AuthStatus.LoggedIn`, `BackstackController.currentDestination`/`pendingDeepLink` (both accessible inside `:app`), `HomeKey` (import from the home navigation module; grep `HomeKey` in `HedvigEntryProvider.kt` for the exact import), `ChipIdKey` (`com.hedvig.android.feature.chip.id.navigation`).
+- Consumes: everything produced by Tasks 4-18; `MemberIdService`, `AuthTokenService.authStatus`/`AuthStatus.LoggedIn`, `BackstackController.currentDestination`/`pendingDeepLink` (both accessible inside `:app`), `HomeKey` (import from `feature-home`; grep `HomeKey` in `HedvigEntryProvider.kt` for the exact import), `ChipIdKey` (`com.hedvig.android.feature.chip.id.navigation`).
 - Produces: `fun EntryProviderScope<HedvigNavKey>.onboardingEntries(backstack, openUrl, openPrivacyPolicy, navigateToChipId)`; `interface OnboardingGate { suspend fun shouldShowOnboarding(): Boolean }` bound in `ActivityRetainedScope`.
 
 - [ ] **Step 1: Create the gate**
