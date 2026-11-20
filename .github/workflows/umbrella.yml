@@ -11,14 +11,30 @@ on:
         description: 'Build the XCFramework and print its size without publishing a release'
         type: boolean
         default: false
+      skip_ios_shared:
+        description: 'Release without the iOS simulator tests and framework link, for an urgent release while they fail'
+        type: boolean
+        default: false
 
 concurrency:
   group: ref-${{ github.workflow }}
   cancel-in-progress: false
 
 jobs:
+  ios_shared:
+    name: iOS simulator tests and framework link
+    # Only a manual run can skip it; on the schedule `inputs` is empty.
+    if: ${{ !inputs.skip_ios_shared }}
+    uses: ./.github/workflows/ios-shared.yml
+    secrets: inherit
   umbrella_release:
     name: Build and release new umbrella version
+    needs: ios_shared
+    # A skipped needed job would skip this one too, so the condition is spelled out: ios_shared passed, or a manual run
+    # chose to skip it.
+    if: >-
+      ${{ !cancelled() && (needs.ios_shared.result == 'success'
+      || (github.event_name == 'workflow_dispatch' && inputs.skip_ios_shared && needs.ios_shared.result == 'skipped')) }}
     runs-on: macos-26-xlarge
     steps:
       - uses: actions/checkout@v7

@@ -88,6 +88,27 @@ jobs:
       - name: check commonMain imports
         if: ${{ !cancelled() }}
         run: ./gradlew checkCommonMainImports
+  ios_klibs:
+    runs-on: ${{ github.event_name == 'push' && 'ubuntu-latest' || 'ubuntu-latest-8-vcpu' }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - name: Setup CI
+        uses: ./.github/actions/common-setup
+        with:
+          gradle-cache-read-only: ${{ github.event_name == 'pull_request' }}
+          download-schema: 'false'
+          download-strings: 'false'
+          datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
+          lokalise-id: ${{ secrets.LOKALISE_ID }}
+          lokalise-token: ${{ secrets.LOKALISE_TOKEN }}
+      - name: Compile the iOS source sets
+        # Kotlin/Native compiles klibs for iOS on Linux, so a commonMain or nativeMain change that does not compile for
+        # iOS fails here. Linking the framework and running the simulator tests need macOS: ios-shared.yml does that
+        # once a day and before every umbrella release.
+        run: ./gradlew compileKotlinIosArm64 compileKotlinIosSimulatorArm64 compileTestKotlinIosSimulatorArm64
+      - name: Check the umbrella classpath
+        run: ./gradlew :umbrella:checkUmbrellaClasspath
   build:
     runs-on: ${{ github.event_name == 'push' && 'ubuntu-latest' || 'ubuntu-latest-8-vcpu' }}
     steps:
