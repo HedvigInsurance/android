@@ -27,6 +27,9 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.importantmessages.PublicImportantMessagesEvent
 import com.hedvig.android.feature.importantmessages.PublicImportantMessagesViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
+import hedvig.resources.Res
+import hedvig.resources.TALKBACK_OPEN_EXTERNAL_LINK
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * The important messages for people who are not logged in, one card per message, or nothing when there are none.
@@ -68,6 +71,7 @@ private fun PublicImportantMessageCards(
   modifier: Modifier = Modifier,
 ) {
   if (messages.isEmpty()) return
+  val linkClickLabel = stringResource(Res.string.TALKBACK_OPEN_EXTERNAL_LINK)
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
     for (message in messages) {
       HedvigNotificationCard(
@@ -79,7 +83,11 @@ private fun PublicImportantMessageCards(
         },
         modifier = Modifier.fillMaxWidth(),
         style = message.link?.let { link ->
-          InfoCardStyle.Button(buttonText = link.buttonText, onButtonClick = { openUrl(link.url) })
+          InfoCardStyle.Button(
+            buttonText = link.buttonText,
+            onButtonClick = { openUrl(link.url) },
+            onButtonClickLabel = linkClickLabel,
+          )
         } ?: InfoCardStyle.Default,
       )
     }

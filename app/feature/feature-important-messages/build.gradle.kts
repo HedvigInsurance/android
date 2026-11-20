@@ -13,11 +13,13 @@ kotlin {
   sourceSets {
     commonMain.dependencies {
       implementation(libs.arrow.core)
+      implementation(libs.jetbrains.components.resources)
       implementation(libs.jetbrains.compose.foundation)
       implementation(libs.jetbrains.compose.runtime)
       implementation(libs.jetbrains.compose.ui.tooling.preview)
       implementation(libs.jetbrains.lifecycle.runtime.compose)
       implementation(projects.coreCommonPublic)
+      implementation(projects.coreResources)
       implementation(projects.dataImportantMessages)
       implementation(projects.designSystemHedvig)
       implementation(projects.moleculePublic)
