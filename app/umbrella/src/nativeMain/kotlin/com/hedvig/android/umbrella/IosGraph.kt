@@ -7,7 +7,6 @@ import com.hedvig.android.core.common.di.BaseHttpClient
 import com.hedvig.android.core.common.di.PublicApolloClient
 import com.hedvig.android.core.datastore.DeviceIdFetcher
 import com.hedvig.android.core.datastore.di.NativeDataStoreMetroProviders
-import com.hedvig.android.iosdata.bridge.IosReadsGraph
 import com.hedvig.android.language.IosLanguageSource
 import com.hedvig.android.network.clients.AccessTokenFetcher
 import com.hedvig.android.network.clients.NetworkLogPolicy
@@ -16,7 +15,7 @@ import dev.zacsweers.metro.Provides
 import io.ktor.client.HttpClient
 
 /** What tests read from a graph: [IosGraph], or the test graph with a canned HTTP engine. */
-internal interface IosGraphAccessors : IosReadsGraph {
+internal interface IosGraphAccessors {
   val apolloClient: ApolloClient
 
   @PublicApolloClient

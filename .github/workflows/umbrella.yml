@@ -36,17 +36,6 @@ jobs:
           lokalise-token: ${{ secrets.LOKALISE_TOKEN }}
       - name: Build umbrella XCFramework
         run: ./gradlew :umbrella:assembleHedvigSharedReleaseXCFramework
-      # The test hook is compiled in only with -Phedvig.ios.testHook=true, which this workflow never sets.
-      - name: Check that no slice carries the test hook
-        run: |
-          FOUND=0
-          for BIN in app/umbrella/build/XCFrameworks/release/HedvigShared.xcframework/*/HedvigShared.framework/HedvigShared; do
-            if nm "$BIN" | grep -E 'CannedBackend|MockedNetworkIosGraph|TestGraphs|ExampleReads'; then
-              echo "$BIN carries the test hook"
-              FOUND=1
-            fi
-          done
-          exit $FOUND
       # The zip overstates what iOS ships by ~3x (debug info, symbol tables, simulator slice). The
       # number that reaches the app is __TEXT plus non-zerofill __DATA of the device slice.
       - name: Measure the device slice

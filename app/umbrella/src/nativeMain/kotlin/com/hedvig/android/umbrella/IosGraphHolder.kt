@@ -12,18 +12,12 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.network.clients.AccessTokenFetcher
 import com.hedvig.android.network.clients.NetworkLogPolicy
 import dev.zacsweers.metro.createGraphFactory
-import kotlin.concurrent.AtomicReference
-import kotlin.experimental.ExperimentalNativeApi
-import kotlin.native.Platform
 import kotlin.time.TimeSource
 
 /**
  * The shared Kotlin graph for the iOS app, built on first use. Creating the holder only keeps the inputs: it builds
  * nothing, calls no input, installs no logger and sends no request, so it is safe to create at launch whether or not
- * anything uses it.
- *
- * Create one per process and keep it. A second call is a mistake: a debug framework fails it with an
- * [IllegalStateException]; a release framework logs it at ERROR and returns the first holder, whose inputs stay.
+ * anything uses it. Create one per process and keep it.
  *
  * The first call that needs the graph builds it on the calling thread and logs how long that took at INFO. Before
  * building, it installs an `NSLog` logger at WARN if the iOS app installed no log sink (see
@@ -31,8 +25,7 @@ import kotlin.time.TimeSource
  *
  * [appFlavor] decides the backend and what may be logged: a production flavor never logs HTTP bodies or GraphQL data,
  * whatever [networkLogPolicy] says. Everything else about the build comes from the app's bundle and the device.
- * [accessTokenFetcher], [deviceIdFetcher] and [languageSource] are called from any thread; Kotlin bounds every wait on
- * them inside its reads.
+ * [accessTokenFetcher], [deviceIdFetcher] and [languageSource] are called from any thread.
  */
 fun createIosGraphHolder(
   appFlavor: Flavor,
@@ -40,41 +33,21 @@ fun createIosGraphHolder(
   deviceIdFetcher: DeviceIdFetcher,
   languageSource: IosLanguageSource,
   networkLogPolicy: NetworkLogPolicy,
-): IosGraphHolder {
-  val created = iosGraphHolder {
-    IosLogcatLogger.installFallback(LogPriority.WARN)
-    if (!RumLogger.isInstalled) {
-      RumLogger.install(LogcatRumLogger)
-    }
-    val start = TimeSource.Monotonic.markNow()
-    createGraphFactory<IosGraph.Factory>().create(
-      appBuildConfig = IosAppBuildConfig(appFlavor),
-      accessTokenFetcher = accessTokenFetcher,
-      deviceIdFetcher = deviceIdFetcher,
-      languageSource = languageSource,
-      networkLogPolicy = networkLogPolicy.allowedFor(appFlavor),
-    ).also {
-      logcat(LogPriority.INFO) { "Built the shared Kotlin graph in ${start.elapsedNow().inWholeMilliseconds} ms" }
-    }
-  }
-  if (processHolder.compareAndSet(null, created)) return created
-  return secondHolder(processHolder.value!!)
-}
-
-@OptIn(ExperimentalNativeApi::class)
-private fun secondHolder(first: IosGraphHolder): IosGraphHolder {
-  val message = "createIosGraphHolder was called again; create one holder per process and keep it"
-  check(!Platform.isDebugBinary) { message }
+): IosGraphHolder = iosGraphHolder {
   IosLogcatLogger.installFallback(LogPriority.WARN)
-  logcat(LogPriority.ERROR) { "$message. Returning the first holder." }
-  return first
-}
-
-private val processHolder = AtomicReference<IosGraphHolder?>(null)
-
-/** Lets the next [createIosGraphHolder] call create a holder again, for tests only. */
-internal fun forgetProcessHolder() {
-  processHolder.value = null
+  if (!RumLogger.isInstalled) {
+    RumLogger.install(LogcatRumLogger)
+  }
+  val start = TimeSource.Monotonic.markNow()
+  createGraphFactory<IosGraph.Factory>().create(
+    appBuildConfig = IosAppBuildConfig(appFlavor),
+    accessTokenFetcher = accessTokenFetcher,
+    deviceIdFetcher = deviceIdFetcher,
+    languageSource = languageSource,
+    networkLogPolicy = networkLogPolicy.allowedFor(appFlavor),
+  ).also {
+    logcat(LogPriority.INFO) { "Built the shared Kotlin graph in ${start.elapsedNow().inWholeMilliseconds} ms" }
+  }
 }
 
 /** [this], or nothing logged beyond error text in a production build. */

@@ -1,10 +1,9 @@
 name: iOS shared code
 
 # Normal PRs run on Linux, which compiles the iOS source sets to klibs but cannot run them. This job runs what only
-# macOS can: every module's tests on the iOS simulator, the release device framework link, and the checks that the
-# test hook stays out of it and the framework stays within its size budget. It runs as a required step of the umbrella
-# release on weeknights and on its own schedule at weekends, so once a day. GitHub emails a failed scheduled run to
-# whoever last changed its schedule.
+# macOS can: every module's tests on the iOS simulator, the release device framework link, and the check that the
+# framework stays within its size budget. It runs as a required step of the umbrella release on weeknights and on its
+# own schedule at weekends, so once a day. GitHub emails a failed scheduled run to whoever last changed its schedule.
 on:
   schedule:
     - cron: '0 3 * * 0,6'
@@ -44,18 +43,11 @@ jobs:
           key: konan-${{ runner.os }}-${{ steps.kotlin.outputs.version }}
       - name: Tests on the iOS simulator
         run: ./gradlew iosSimulatorArm64Test checkUmbrellaClasspath
-      - name: Umbrella tests with the test hook in the framework
-        # The header snapshot of the test hook only runs when the simulator framework carries it.
-        run: ./gradlew :umbrella:iosSimulatorArm64Test -Phedvig.ios.testHook=true
       - name: Link the release device framework
         run: ./gradlew :umbrella:linkReleaseFrameworkIosArm64
-      - name: Check the device framework
+      - name: Check the device framework size
         run: |
           BIN=app/umbrella/build/bin/iosArm64/releaseFramework/HedvigShared.framework/HedvigShared
-          if nm "$BIN" | grep -E 'CannedBackend|MockedNetworkIosGraph|TestGraphs|ExampleReads'; then
-            echo "The test hook reached the device framework"
-            exit 1
-          fi
           SHIPPED=$(size -m "$BIN" | grep -E 'Section \(__(TEXT|DATA), ' | grep -v zerofill | sed -E 's/.*: ([0-9]+).*/\1/' | paste -sd+ - | bc)
           echo "Shipped bytes (__TEXT + non-zerofill __DATA): $SHIPPED, budget $MAX_SHIPPED_BYTES"
           if [ "$SHIPPED" -gt "$MAX_SHIPPED_BYTES" ]; then

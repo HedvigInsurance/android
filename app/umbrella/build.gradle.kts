@@ -9,8 +9,6 @@ plugins {
   id("com.rickclephas.kmp.nativecoroutines")
 }
 
-val iosTestHookInFramework = providers.gradleProperty("hedvig.ios.testHook").orNull.toBoolean()
-
 kotlin {
   sourceSets.configureEach {
     languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
@@ -65,25 +63,11 @@ kotlin {
       implementation(libs.apollo.normalizedCache)
       implementation(libs.assertK)
       implementation(libs.kotlinx.serialization.json)
+      implementation(libs.ktor.client.mock)
+      implementation(projects.apolloCore)
       implementation(projects.dataPayingMember)
     }
-    // The test hook: a graph over a canned HTTP engine for the umbrella's tests and the iOS app's simulator tests.
-    // Tests always compile it. A simulator framework carries it only when built with -Phedvig.ios.testHook=true, for
-    // the iOS app's tests in local umbrella mode; the release workflow never sets it, so no published framework does.
-    getByName(if (iosTestHookInFramework) "iosSimulatorArm64Main" else "iosSimulatorArm64Test") {
-      kotlin.srcDir("src/iosTestHook/kotlin")
-      dependencies {
-        implementation(libs.kotlinx.serialization.json)
-        implementation(libs.ktor.client.mock)
-        implementation(projects.dataConversations)
-      }
-    }
   }
-}
-
-// HeaderSnapshotTest reads the header of the simulator debug framework.
-tasks.named("iosSimulatorArm64Test") {
-  dependsOn("linkDebugFrameworkIosSimulatorArm64")
 }
 
 registerUmbrellaClasspathGuard()

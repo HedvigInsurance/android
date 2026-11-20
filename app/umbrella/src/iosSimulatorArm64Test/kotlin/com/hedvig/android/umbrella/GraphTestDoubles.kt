@@ -10,7 +10,6 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.network.clients.AccessTokenFetcher
 import com.hedvig.android.network.clients.NetworkLogPolicy
 import kotlin.concurrent.AtomicInt
-import kotlin.coroutines.suspendCoroutine
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.TimeSource
@@ -72,15 +71,10 @@ internal open class ThreadRecorder {
   }
 }
 
-internal class FakeAccessTokenFetcher(
-  private val throws: Boolean = false,
-  private val neverAnswers: Boolean = false,
-) : ThreadRecorder(), AccessTokenFetcher {
+internal class FakeAccessTokenFetcher(private val throws: Boolean = false) : ThreadRecorder(), AccessTokenFetcher {
   override suspend fun fetch(): String? {
     record()
     if (throws) throw IllegalStateException("token refresh failed")
-    // A Swift token fetcher that never calls back: no resume, and Kotlin's cancel does not reach it.
-    if (neverAnswers) suspendCoroutine<Nothing> { }
     return ACCESS_TOKEN
   }
 }

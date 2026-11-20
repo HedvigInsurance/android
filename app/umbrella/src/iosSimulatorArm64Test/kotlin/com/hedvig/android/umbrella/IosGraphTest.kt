@@ -33,13 +33,11 @@ class IosGraphTest {
 
   @BeforeTest
   fun installSink() {
-    forgetProcessHolder()
     IosLogcatLogger.install(sink, LogPriority.VERBOSE)
   }
 
   @AfterTest
   fun uninstallLoggers() {
-    forgetProcessHolder()
     LogcatLogger.uninstall()
     RumLogger.uninstall()
   }
@@ -51,9 +49,7 @@ class IosGraphTest {
     LogcatLogger.uninstall()
     val inputs = FakeInputs()
 
-    val holder = inputs.realHolder()
-    holder.sessionStarted()
-    holder.sessionEnded()
+    inputs.realHolder()
 
     assertThat(inputs.inputCalls()).isEqualTo(0)
     assertThat(LogcatLogger.isInstalled).isFalse()
@@ -92,13 +88,6 @@ class IosGraphTest {
     logError("an error", ErrorSource.SOURCE)
 
     assertThat(installed.errors).containsExactly("an error")
-  }
-
-  @Test
-  fun `a second holder in a debug framework fails loudly`() {
-    FakeInputs().realHolder()
-
-    assertFailure { FakeInputs().realHolder() }.isInstanceOf(IllegalStateException::class)
   }
 
   @Test
