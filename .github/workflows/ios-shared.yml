@@ -18,6 +18,7 @@ jobs:
   ios_shared:
     name: iOS simulator tests and framework link
     runs-on: macos-26-xlarge
+    timeout-minutes: 60
     env:
       # The release iosArm64 framework's shipped bytes (__TEXT plus non-zerofill __DATA) may not exceed this.
       MAX_SHIPPED_BYTES: 20000000
