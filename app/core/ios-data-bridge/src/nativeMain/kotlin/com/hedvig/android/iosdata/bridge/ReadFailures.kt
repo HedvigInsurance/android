@@ -3,9 +3,6 @@ package com.hedvig.android.iosdata.bridge
 import platform.Foundation.NSError
 
 object ReadFailures {
-  /**
-   * The failure inside [error], an error a [SessionReads] read delivered, or null when the awaiting task cancelled the
-   * read itself.
-   */
-  fun from(error: NSError): ReadFailure? = error.kotlinThrowable() as? ReadFailure
+  /** The [ReadFailure] inside [error], an error a read delivered to Swift, or null when it holds something else. */
+  fun from(error: NSError): ReadFailure? = error.userInfo["KotlinException"] as? ReadFailure
 }
