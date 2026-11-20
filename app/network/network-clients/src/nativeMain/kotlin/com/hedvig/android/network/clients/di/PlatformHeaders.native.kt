@@ -1,10 +1,8 @@
 package com.hedvig.android.network.clients.di
 
-import io.ktor.http.HeadersBuilder
-import kotlinx.datetime.TimeZone
-
-internal actual fun HeadersBuilder.appendPlatformHeaders() {
-  append("Hedvig-TimeZone", TimeZone.currentSystemDefault().id)
-}
+import platform.Foundation.NSTimeZone
+import platform.Foundation.localTimeZone
 
 internal actual fun platformClientName(appPackageId: String): String = "iOS:$appPackageId"
+
+internal actual fun deviceTimeZoneId(): String = NSTimeZone.localTimeZone.name
