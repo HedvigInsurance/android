@@ -21,7 +21,7 @@ import kotlin.native.ObjCEnum
 class PublicImportantMessagesReads internal constructor(
   private val getPublicImportantMessages: GetPublicImportantMessagesUseCase,
 ) {
-  /** The active messages, most severe first, in the app's language. */
+  /** The active messages in the app's language, in the order the backend sends them, which is most severe first. */
   @NativeCoroutines
   suspend fun messages(): List<PublicImportantMessageItem> = iosRead {
     getPublicImportantMessages.invoke().bind().map { it.toItem() }
