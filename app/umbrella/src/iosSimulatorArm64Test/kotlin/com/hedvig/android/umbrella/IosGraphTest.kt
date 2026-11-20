@@ -8,6 +8,7 @@ import assertk.assertions.isInstanceOf
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import com.apollographql.apollo.ApolloClient
+import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.buildconstants.AppBuildConfig
 import com.hedvig.android.core.buildconstants.Flavor
@@ -89,6 +90,8 @@ internal interface TestIosGraph {
   @PublicApolloClient
   val publicApolloClient: ApolloClient
 
+  val networkCacheManager: NetworkCacheManager
+
   @DependencyGraph.Factory
   interface Factory {
     fun create(
@@ -134,6 +137,22 @@ class IosGraphTest {
   }
 
   @Test
+  fun `a production holder given a permissive policy builds a graph that logs no bodies or GraphQL data`() {
+    val permissive = NetworkLogPolicy(logsHttpBodies = true, logsGraphqlData = true, logsGraphqlErrors = true)
+    val holder = createIosGraphHolder(Flavor.Production, tokenFetcher, deviceIdFetcher, languageSource, permissive)
+
+    val policy = holder.component<IosGraph>().networkLogPolicy
+
+    assertThat(listOf(policy.logsHttpBodies, policy.logsGraphqlData, policy.logsGraphqlErrors))
+      .containsExactly(false, false, true)
+  }
+
+  @Test
+  fun `clearing the network cache does not throw on iOS`() {
+    runBlocking { testGraph().networkCacheManager.clearCache() }
+  }
+
+  @Test
   fun `a read delivers its value and sends the token and the device id`() {
     val graph = testGraph()
     val sent = graph.httpClient.answerWith(MEMBER_JSON)
@@ -159,6 +178,18 @@ class IosGraphTest {
   }
 
   @Test
+  fun `a read without a token that the backend answers unauthenticated fails as UNAUTHENTICATED`() {
+    val graph = testGraph(accessTokenFetcher = noTokenFetcher)
+    val sent = graph.httpClient.answerWith(UNAUTHENTICATED_JSON)
+
+    val delivered = iosGraphHolder { graph }.exampleReads().memberIdNative().await()
+
+    assertThat(sent.single()[HttpHeaders.Authorization]).isNull()
+    val failure = delivered.error?.userInfo?.get("KotlinException") as? ReadFailure
+    assertThat(failure?.kind).isEqualTo(ReadFailureKind.UNAUTHENTICATED)
+  }
+
+  @Test
   fun `the public client sends no token while the member has one`() {
     val graph = testGraph()
     val sent = graph.baseHttpClient.answerWith(MEMBER_JSON)
@@ -173,6 +204,10 @@ private val tokenFetcher = object : AccessTokenFetcher {
   override suspend fun fetch(): String = ACCESS_TOKEN
 }
 
+private val noTokenFetcher = object : AccessTokenFetcher {
+  override suspend fun fetch(): String? = null
+}
+
 private val deviceIdFetcher = object : DeviceIdFetcher {
   override suspend fun fetch(): String = DEVICE_ID
 }
@@ -183,13 +218,14 @@ private val languageSource = object : IosLanguageSource {
 
 private val quietPolicy = NetworkLogPolicy(logsHttpBodies = false, logsGraphqlData = false, logsGraphqlErrors = false)
 
-private fun testGraph(): TestIosGraph = createGraphFactory<TestIosGraph.Factory>().create(
-  appBuildConfig = IosAppBuildConfig(Flavor.Staging),
-  accessTokenFetcher = tokenFetcher,
-  deviceIdFetcher = deviceIdFetcher,
-  languageSource = languageSource,
-  networkLogPolicy = quietPolicy,
-)
+private fun testGraph(accessTokenFetcher: AccessTokenFetcher = tokenFetcher): TestIosGraph =
+  createGraphFactory<TestIosGraph.Factory>().create(
+    appBuildConfig = IosAppBuildConfig(Flavor.Staging),
+    accessTokenFetcher = accessTokenFetcher,
+    deviceIdFetcher = deviceIdFetcher,
+    languageSource = languageSource,
+    networkLogPolicy = quietPolicy,
+  )
 
 /**
  * Answers every request [this] sends with [json], or HTTP 500 when it is null, instead of sending it, and records the
@@ -244,4 +280,8 @@ private const val DEVICE_ID = "test-device-id"
 
 private val MEMBER_JSON = """
   {"data": {"currentMember": {"__typename": "Member", "id": "member-1", "phoneNumber": null}}}
+""".trimIndent()
+
+private val UNAUTHENTICATED_JSON = """
+  {"data": null, "errors": [{"message": "Unauthenticated", "extensions": {"errorType": "UNAUTHENTICATED"}}]}
 """.trimIndent()

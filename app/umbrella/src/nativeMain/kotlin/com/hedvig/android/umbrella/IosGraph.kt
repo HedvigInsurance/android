@@ -17,6 +17,9 @@ import dev.zacsweers.metro.Provides
  */
 @DependencyGraph(AppScope::class, excludes = [NativeDataStoreMetroProviders::class])
 internal interface IosGraph {
+  /** The policy the network clients follow, after [createIosGraphHolder] limited it for the flavor. */
+  val networkLogPolicy: NetworkLogPolicy
+
   @DependencyGraph.Factory
   interface Factory {
     fun create(

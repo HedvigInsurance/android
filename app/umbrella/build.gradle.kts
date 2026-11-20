@@ -63,6 +63,7 @@ kotlin {
       implementation(libs.assertK)
       implementation(libs.ktor.client.mock)
       implementation(projects.apolloCore)
+      implementation(projects.apolloNetworkCacheManager)
       implementation(projects.dataPayingMember)
     }
   }
