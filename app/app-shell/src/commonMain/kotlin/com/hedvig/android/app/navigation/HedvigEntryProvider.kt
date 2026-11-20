@@ -276,7 +276,9 @@ private fun EntryProviderScope<HedvigNavKey>.addLoginEntries(
       }
     },
     publicImportantMessages = { reloadKey, modifier ->
-      // Logged out, an in-app deep link would only be stashed until after login, so a message link would look dead.
+      // The host's own handler, not the deep link matcher, which would stash a matched link until after login. It opens
+      // a web link outside the app, except one on a Hedvig deep link host, which comes back into the app and also
+      // waits for login.
       PublicImportantMessages(reloadKey = reloadKey, openUrl = openMessageLink, modifier = modifier)
     },
   )
