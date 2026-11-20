@@ -6,7 +6,6 @@ import com.hedvig.android.core.tracking.RumLogger
 import com.hedvig.android.iosdata.bridge.IosGraphHolder
 import com.hedvig.android.iosdata.bridge.iosGraphHolder
 import com.hedvig.android.language.IosLanguageSource
-import com.hedvig.android.logger.IosLogcatLogger
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.network.clients.AccessTokenFetcher
@@ -20,8 +19,8 @@ import kotlin.time.TimeSource
  * anything uses it. Create one per process and keep it.
  *
  * The first call that needs the graph builds it on the calling thread and logs how long that took at INFO. Before
- * building, it installs an `NSLog` logger at WARN if the iOS app installed no log sink (see
- * `IosLogcatLogger.install(sink:minimumPriority:)`), and a [RumLogger] that writes to the log if none is installed.
+ * building, it installs a [RumLogger] that writes to the log if none is installed. The iOS app installs its logger
+ * with `IosLogcatLogger.install` before that first call.
  *
  * [appFlavor] decides the backend and what may be logged: a production flavor never logs HTTP bodies or GraphQL data,
  * whatever [networkLogPolicy] says. Everything else about the build comes from the app's bundle and the device.
@@ -34,7 +33,6 @@ fun createIosGraphHolder(
   languageSource: IosLanguageSource,
   networkLogPolicy: NetworkLogPolicy,
 ): IosGraphHolder = iosGraphHolder {
-  IosLogcatLogger.installFallback(LogPriority.WARN)
   if (!RumLogger.isInstalled) {
     RumLogger.install(LogcatRumLogger)
   }

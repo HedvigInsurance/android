@@ -101,22 +101,6 @@ jobs:
           datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
           lokalise-id: ${{ secrets.LOKALISE_ID }}
           lokalise-token: ${{ secrets.LOKALISE_TOKEN }}
-      # setup-gradle does not cache the Kotlin/Native toolchain, which only changes with the Kotlin version.
-      - name: Read the Kotlin version
-        id: kotlin
-        run: echo "version=$(sed -nE 's/^kotlin = "(.*)"/\1/p' gradle/libs.versions.toml)" >> "$GITHUB_OUTPUT"
-      - name: Restore the Kotlin/Native toolchain
-        if: ${{ github.event_name == 'pull_request' }}
-        uses: actions/cache/restore@v5
-        with:
-          path: ~/.konan
-          key: konan-${{ runner.os }}-${{ steps.kotlin.outputs.version }}
-      - name: Cache the Kotlin/Native toolchain
-        if: ${{ github.event_name != 'pull_request' }}
-        uses: actions/cache@v5
-        with:
-          path: ~/.konan
-          key: konan-${{ runner.os }}-${{ steps.kotlin.outputs.version }}
       - name: Compile the iOS source sets
         # Kotlin/Native compiles klibs for iOS on Linux, so a commonMain or nativeMain change that does not compile for
         # iOS fails here. Linking the framework and running the simulator tests need macOS: ios-shared.yml does that

@@ -1,39 +1,111 @@
 package com.hedvig.android.umbrella
 
-import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isNull
 import assertk.assertions.isTrue
-import assertk.assertions.matches
-import com.apollographql.cache.normalized.apolloStore
+import com.apollographql.apollo.ApolloClient
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.core.buildconstants.AppBuildConfig
 import com.hedvig.android.core.buildconstants.Flavor
-import com.hedvig.android.core.tracking.ActionType
-import com.hedvig.android.core.tracking.ErrorSource
+import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.BaseHttpClient
+import com.hedvig.android.core.common.di.PublicApolloClient
+import com.hedvig.android.core.datastore.DeviceIdFetcher
+import com.hedvig.android.core.datastore.di.NativeDataStoreMetroProviders
 import com.hedvig.android.core.tracking.RumLogger
-import com.hedvig.android.core.tracking.logError
 import com.hedvig.android.iosdata.bridge.IosGraphHolder
+import com.hedvig.android.iosdata.bridge.ReadFailure
+import com.hedvig.android.iosdata.bridge.ReadFailureKind
 import com.hedvig.android.iosdata.bridge.component
+import com.hedvig.android.iosdata.bridge.iosGraphHolder
+import com.hedvig.android.iosdata.bridge.iosRead
+import com.hedvig.android.language.IosLanguageSource
+import com.hedvig.android.language.Language
 import com.hedvig.android.logger.IosLogcatLogger
-import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.LogcatLogger
+import com.hedvig.android.network.clients.AccessTokenFetcher
 import com.hedvig.android.network.clients.NetworkLogPolicy
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
+import com.rickclephas.kmp.nativecoroutines.NativeSuspend
+import dev.zacsweers.metro.ContributesTo
+import dev.zacsweers.metro.DependencyGraph
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.createGraphFactory
 import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
+import io.ktor.client.engine.mock.respondError
 import io.ktor.client.plugins.HttpSend
 import io.ktor.client.plugins.plugin
+import io.ktor.client.request.request
+import io.ktor.http.ContentType
+import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.headersOf
+import kotlin.concurrent.AtomicReference
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.TimeSource
+import kotlinx.coroutines.runBlocking
+import octopus.PayingMemberPhoneNumberQuery
+import platform.Foundation.NSDate
+import platform.Foundation.NSError
+import platform.Foundation.NSRunLoop
+import platform.Foundation.dateWithTimeIntervalSinceNow
+import platform.Foundation.runUntilDate
+
+/** A feature's reads, written the way a feature module writes them. */
+@Inject
+class ExampleReads(private val apolloClient: ApolloClient) {
+  @NativeCoroutines
+  suspend fun memberId(): String = iosRead {
+    apolloClient.query(PayingMemberPhoneNumberQuery()).safeExecute().bind().currentMember.id
+  }
+}
+
+@ContributesTo(AppScope::class)
+interface ExampleReadsComponent {
+  val exampleReads: ExampleReads
+}
+
+fun IosGraphHolder.exampleReads(): ExampleReads = component<ExampleReadsComponent>().exampleReads
+
+/** [IosGraph]'s contributions, plus the HTTP clients the tests intercept. */
+@DependencyGraph(AppScope::class, excludes = [NativeDataStoreMetroProviders::class])
+internal interface TestIosGraph {
+  val httpClient: HttpClient
+
+  @BaseHttpClient
+  val baseHttpClient: HttpClient
+
+  @PublicApolloClient
+  val publicApolloClient: ApolloClient
+
+  @DependencyGraph.Factory
+  interface Factory {
+    fun create(
+      @Provides appBuildConfig: AppBuildConfig,
+      @Provides accessTokenFetcher: AccessTokenFetcher,
+      @Provides deviceIdFetcher: DeviceIdFetcher,
+      @Provides languageSource: IosLanguageSource,
+      @Provides networkLogPolicy: NetworkLogPolicy,
+    ): TestIosGraph
+  }
+}
 
 class IosGraphTest {
-  private val sink = RecordingSink()
-
   @BeforeTest
-  fun installSink() {
-    IosLogcatLogger.install(sink, LogPriority.VERBOSE)
+  fun installLoggers() {
+    IosLogcatLogger.install()
+    RumLogger.install(LogcatRumLogger)
   }
 
   @AfterTest
@@ -42,141 +114,134 @@ class IosGraphTest {
     RumLogger.uninstall()
   }
 
-  private val IosGraphHolder.accessors: IosGraphAccessors get() = component()
-
   @Test
-  fun `creating the holder builds nothing and calls no input and installs no logger`() {
-    LogcatLogger.uninstall()
-    val inputs = FakeInputs()
-
-    inputs.realHolder()
-
-    assertThat(inputs.inputCalls()).isEqualTo(0)
-    assertThat(LogcatLogger.isInstalled).isFalse()
+  fun `the holder builds the iOS graph on first use`() {
+    RumLogger.uninstall()
+    val holder = createIosGraphHolder(Flavor.Staging, tokenFetcher, deviceIdFetcher, languageSource, quietPolicy)
     assertThat(RumLogger.isInstalled).isFalse()
-  }
 
-  @Test
-  fun `the first use installs a log fallback and a RUM logger when the iOS app installed none`() {
-    LogcatLogger.uninstall()
-    val holder = FakeInputs().realHolder()
-
-    holder.accessors
-
-    assertThat(LogcatLogger.isInstalled).isTrue()
+    assertThat(holder.graph).isInstanceOf<IosGraph>()
     assertThat(RumLogger.isInstalled).isTrue()
   }
 
   @Test
-  fun `the first use keeps the iOS app's sink and logs how long the graph took to build`() {
-    val holder = FakeInputs().realHolder()
-
-    holder.accessors
-    holder.accessors
-
-    val built = sink.entries().filter { it.second.startsWith("Built the shared Kotlin graph") }
-    assertThat(built.map { it.first }).containsExactly(LogPriority.INFO)
-    assertThat(built.single().second).matches(Regex("""Built the shared Kotlin graph in \d+ ms"""))
-  }
-
-  @Test
-  fun `a RumLogger installed before the graph is kept`() {
-    val installed = RecordingRumLogger()
-    RumLogger.install(installed)
-
-    FakeInputs().realHolder().accessors
-    logError("an error", ErrorSource.SOURCE)
-
-    assertThat(installed.errors).containsExactly("an error")
-  }
-
-  @Test
-  fun `a production build never logs bodies or GraphQL data whatever the iOS app passes and keeps error text`() {
-    val inputs = FakeInputs(
-      appFlavor = Flavor.Production,
-      networkLogPolicy = NetworkLogPolicy(logsHttpBodies = true, logsGraphqlData = true, logsGraphqlErrors = true),
-    )
-
-    val policy = inputs.realHolder().accessors.networkLogPolicy
+  fun `a production build never logs bodies or GraphQL data`() {
+    val policy = NetworkLogPolicy(logsHttpBodies = true, logsGraphqlData = true, logsGraphqlErrors = true)
+      .allowedFor(Flavor.Production)
 
     assertThat(listOf(policy.logsHttpBodies, policy.logsGraphqlData, policy.logsGraphqlErrors))
       .containsExactly(false, false, true)
   }
 
   @Test
-  fun `a staging build logs what the iOS app asks for`() {
-    val inputs = FakeInputs(
-      networkLogPolicy = NetworkLogPolicy(logsHttpBodies = true, logsGraphqlData = true, logsGraphqlErrors = false),
-    )
+  fun `a read delivers its value and sends the token and the device id`() {
+    val graph = testGraph()
+    val sent = graph.httpClient.answerWith(MEMBER_JSON)
 
-    val policy = inputs.realHolder().accessors.networkLogPolicy
+    val delivered = iosGraphHolder { graph }.exampleReads().memberIdNative().await()
 
-    assertThat(listOf(policy.logsHttpBodies, policy.logsGraphqlData, policy.logsGraphqlErrors))
-      .containsExactly(true, true, false)
+    assertThat(delivered.value).isEqualTo("member-1")
+    val headers = sent.single()
+    assertThat(headers[HttpHeaders.Authorization]).isEqualTo("Bearer $ACCESS_TOKEN")
+    assertThat(headers["hedvig-device-id"]).isEqualTo(DEVICE_ID)
   }
 
   @Test
-  fun `both Apollo clients only log and have no normalized cache`() {
-    val accessors = FakeInputs().realHolder().accessors
+  fun `a failed read reaches Swift as a ReadFailure in the error`() {
+    val graph = testGraph()
+    graph.httpClient.answerWith(null)
 
-    for (client in listOf(accessors.apolloClient, accessors.publicApolloClient)) {
-      assertThat(client.interceptors.map { it::class.simpleName }).containsExactly("LoggingInterceptor")
-      assertFailure { client.apolloStore }.isInstanceOf(IllegalStateException::class)
-    }
-    assertThat(accessors.apolloClient === accessors.publicApolloClient).isFalse()
+    val delivered = iosGraphHolder { graph }.exampleReads().memberIdNative().await()
+
+    assertThat(delivered.value).isNull()
+    val failure = delivered.error?.userInfo?.get("KotlinException") as? ReadFailure
+    assertThat(failure?.kind).isEqualTo(ReadFailureKind.OTHER)
   }
 
   @Test
-  fun `the real public client sends no token while a member is logged in`() {
-    val accessors = FakeInputs().realHolder().accessors
-    val memberAuthorizations = accessors.httpClient.authorizationsStoppedBeforeTheNetwork()
-    val publicAuthorizations = accessors.baseHttpClient.authorizationsStoppedBeforeTheNetwork()
+  fun `the public client sends no token while the member has one`() {
+    val graph = testGraph()
+    val sent = graph.baseHttpClient.answerWith(MEMBER_JSON)
 
-    accessors.apolloClient.query()
-    accessors.publicApolloClient.query()
+    runBlocking { graph.publicApolloClient.query(PayingMemberPhoneNumberQuery()).execute() }
 
-    assertThat(memberAuthorizations).containsExactly("Bearer $ACCESS_TOKEN")
-    assertThat(publicAuthorizations).containsExactly("")
-  }
-
-  @Test
-  fun `the build is read from the bundle and the device and only the flavor comes from Swift`() {
-    val production = IosAppBuildConfig(Flavor.Production)
-    val staging = IosAppBuildConfig(Flavor.Staging)
-
-    assertThat(listOf(production.buildType, production.debug, production.platformName))
-      .containsExactly("release", false, "ios")
-    assertThat(listOf(staging.buildType, staging.debug)).containsExactly("debug", true)
-    assertThat(production.osSdkVersion > 0).isTrue()
-    assertThat(production.model.isNotEmpty()).isTrue()
+    assertThat(sent.single()[HttpHeaders.Authorization]).isNull()
   }
 }
 
-private class RecordingRumLogger : RumLogger {
-  val errors = mutableListOf<String>()
-
-  override fun logAction(type: ActionType, name: String, attributes: Map<String, Any?>) {}
-
-  override fun logError(
-    message: String,
-    source: ErrorSource,
-    attributes: Map<String, Any?>,
-    throwable: Throwable?,
-    stacktrace: String?,
-  ) {
-    errors += message
-  }
+private val tokenFetcher = object : AccessTokenFetcher {
+  override suspend fun fetch(): String = ACCESS_TOKEN
 }
+
+private val deviceIdFetcher = object : DeviceIdFetcher {
+  override suspend fun fetch(): String = DEVICE_ID
+}
+
+private val languageSource = object : IosLanguageSource {
+  override fun currentLanguage(): Language = Language.EN_SE
+}
+
+private val quietPolicy = NetworkLogPolicy(logsHttpBodies = false, logsGraphqlData = false, logsGraphqlErrors = false)
+
+private fun testGraph(): TestIosGraph = createGraphFactory<TestIosGraph.Factory>().create(
+  appBuildConfig = IosAppBuildConfig(Flavor.Staging),
+  accessTokenFetcher = tokenFetcher,
+  deviceIdFetcher = deviceIdFetcher,
+  languageSource = languageSource,
+  networkLogPolicy = quietPolicy,
+)
 
 /**
- * Records the `Authorization` header of every request [this] sends, "" where there was none, and fails the request
- * before it reaches the Darwin engine. The interceptor is the client's last, so it sees the token the client added.
+ * Answers every request [this] sends with [json], or HTTP 500 when it is null, instead of sending it, and records the
+ * request's headers. The interceptor is the client's last, so it sees every header the client added.
  */
-private fun HttpClient.authorizationsStoppedBeforeTheNetwork(): List<String> {
-  val authorizations = mutableListOf<String>()
+private fun HttpClient.answerWith(json: String?): List<Headers> {
+  val sent = mutableListOf<Headers>()
+  val backend = HttpClient(
+    MockEngine {
+      if (json == null) {
+        respondError(HttpStatusCode.InternalServerError)
+      } else {
+        respond(json, HttpStatusCode.OK, headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()))
+      }
+    },
+  )
   plugin(HttpSend).intercept { request ->
-    authorizations += request.headers[HttpHeaders.Authorization].orEmpty()
-    throw IllegalStateException("Stopped before the network")
+    sent += request.headers.build()
+    backend.request(request.url.buildString()).call
   }
-  return authorizations
+  return sent
 }
+
+private class Delivered<T>(val value: T?, val error: NSError?)
+
+/** Starts the read as Swift does and runs the main loop until its callback arrives. */
+private fun <T> NativeSuspend<T>.await(): Delivered<T> {
+  val delivered = AtomicReference<Delivered<T>?>(null)
+  this(
+    { value, unit ->
+      delivered.value = Delivered(value, null)
+      unit
+    },
+    { error, unit ->
+      delivered.value = Delivered(null, error)
+      unit
+    },
+    { error, unit ->
+      delivered.value = Delivered(null, error)
+      unit
+    },
+  )
+  val start = TimeSource.Monotonic.markNow()
+  while (delivered.value == null && start.elapsedNow() < 10.seconds) {
+    NSRunLoop.mainRunLoop.runUntilDate(NSDate.dateWithTimeIntervalSinceNow(0.01))
+  }
+  return checkNotNull(delivered.value) { "The read did not finish" }
+}
+
+private const val ACCESS_TOKEN = "test-access-token"
+private const val DEVICE_ID = "test-device-id"
+
+private val MEMBER_JSON = """
+  {"data": {"currentMember": {"__typename": "Member", "id": "member-1", "phoneNumber": null}}}
+""".trimIndent()

@@ -60,9 +60,7 @@ kotlin {
       implementation(projects.trackingCore)
     }
     nativeTest.dependencies {
-      implementation(libs.apollo.normalizedCache)
       implementation(libs.assertK)
-      implementation(libs.kotlinx.serialization.json)
       implementation(libs.ktor.client.mock)
       implementation(projects.apolloCore)
       implementation(projects.dataPayingMember)
