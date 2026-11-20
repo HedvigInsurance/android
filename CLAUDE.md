@@ -674,7 +674,7 @@ GitHub Actions workflows (in `.github/workflows/`):
 - **graphql-schema.yml** - Schema updates
 - **strings.yml** - Translation updates
 - **unused-resources.yml** - Resource cleanup checks
-- **umbrella.yml** - Publishes the iOS umbrella framework on weeknights, or on manual trigger, after ios-shared.yml passes
+- **umbrella.yml** - Publishes the iOS umbrella framework on weeknights, or on manual trigger, after ios-shared.yml passes (a manual run can skip it with `skip_ios_shared`)
 - **ios-shared.yml** - Daily on macOS: iOS simulator tests of every iOS module, the release device framework link and its checks
 
 ## Important Files
@@ -851,6 +851,15 @@ Every feature module except `feature-impersonation` is KMP with its code in `com
 **JVM graph tests.** `:app-desktop` `jvmTest` catches what the Android build cannot: `DesktopGraphTest` builds every ViewModel and factory from the real desktop graph, so a missing JVM binding fails there, and `DesktopEntryProviderTest` checks that `hedvigEntryProvider` registers every serializable key exactly once. Most modules with JVM bindings also have a `Jvm<Name>BindingsTest` or `Jvm<Name>GraphTest` building a small graph from their JVM contributions.
 
 **Build rule.** A `feature-*` module must not depend on `:app-shell`; `configureFeatureModuleGuidelines()` in `hedvig.gradle.plugin` fails the build. Take a `navigateToX` lambda in the entries function instead.
+
+## Reads for the iOS app
+
+The iOS app calls shared Kotlin through `:umbrella`. A feature that serves iOS writes a class of plain
+`@NativeCoroutines suspend fun x() = iosRead { ... }` reads, contributes an `AppScope` component exposing it, adds an
+extension on `IosGraphHolder` that returns it via `component<...>()`, and adds its module to `projectsToExport` in
+`app/umbrella/build.gradle.kts`. A read made before login injects `@PublicApolloClient ApolloClient`. The iOS Apollo
+clients keep no normalized cache, so `watch`, `safeWatch` and `apolloStore` are not available there. The worked example
+is the `IosGraphHolder` KDoc in `:ios-data-bridge`.
 
 ## Debugging
 
