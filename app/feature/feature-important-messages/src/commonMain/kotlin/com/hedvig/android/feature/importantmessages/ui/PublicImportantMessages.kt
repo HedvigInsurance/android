@@ -19,6 +19,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -26,7 +27,6 @@ import com.hedvig.android.data.importantmessages.PublicImportantMessage
 import com.hedvig.android.data.importantmessages.PublicImportantMessage.Link
 import com.hedvig.android.data.importantmessages.PublicImportantMessage.Severity
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
-import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
@@ -50,7 +50,11 @@ fun PublicImportantMessages(reloadKey: Any?, openUrl: (String) -> Unit, modifier
   PublicImportantMessageCards(messages = uiState.messages, openUrl = openUrl, modifier = modifier)
 }
 
-/** The presenter loads once when it starts, so neither the first composition nor the first resume asks again. */
+/**
+ * Asks for a reload when [reloadKey] changes and on every resume except the screen's first one, which is remembered
+ * across recreation. The presenter also loads by itself whenever it starts, so a resume that follows a presenter
+ * restart loads twice, and the second load replaces the first.
+ */
 @Composable
 internal fun ReloadOnKeyChangeAndResume(reloadKey: Any?, reload: () -> Unit) {
   var loadedReloadKey by remember { mutableStateOf(reloadKey) }
@@ -115,25 +119,25 @@ internal fun PublicImportantMessageCards(
   }
 }
 
-@HedvigPreview
+@Preview
 @Composable
 private fun PreviewPublicImportantMessageInfo() {
   PreviewCards(previewMessage(Severity.Info, link = Link("https://hedvig.com", "Read more")))
 }
 
-@HedvigPreview
+@Preview
 @Composable
 private fun PreviewPublicImportantMessageWarning() {
   PreviewCards(previewMessage(Severity.Warning))
 }
 
-@HedvigPreview
+@Preview
 @Composable
 private fun PreviewPublicImportantMessageError() {
   PreviewCards(previewMessage(Severity.Error, link = Link("https://hedvig.com", "See status")))
 }
 
-@HedvigPreview
+@Preview
 @Composable
 private fun PreviewPublicImportantMessagesStacked() {
   PreviewCards(
@@ -142,9 +146,10 @@ private fun PreviewPublicImportantMessagesStacked() {
   )
 }
 
+/** In the light theme only, as the login screen that shows these cards is always light. */
 @Composable
 private fun PreviewCards(vararg messages: PublicImportantMessage) {
-  HedvigTheme {
+  HedvigTheme(darkTheme = false) {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       PublicImportantMessageCards(messages = messages.toList(), openUrl = {}, modifier = Modifier.padding(16.dp))
     }
