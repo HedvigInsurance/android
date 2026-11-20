@@ -2,6 +2,7 @@ package com.hedvig.android.umbrella
 
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
@@ -190,6 +191,18 @@ class IosGraphTest {
   }
 
   @Test
+  fun `a throwing fetcher fails the read as NETWORK and sends no request`() {
+    val graph = testGraph(accessTokenFetcher = throwingFetcher)
+    val sent = graph.httpClient.answerWith(MEMBER_JSON)
+
+    val delivered = iosGraphHolder { graph }.exampleReads().memberIdNative().await()
+
+    assertThat(sent).isEmpty()
+    val failure = delivered.error?.userInfo?.get("KotlinException") as? ReadFailure
+    assertThat(failure?.kind).isEqualTo(ReadFailureKind.NETWORK)
+  }
+
+  @Test
   fun `the public client sends no token while the member has one`() {
     val graph = testGraph()
     val sent = graph.baseHttpClient.answerWith(MEMBER_JSON)
@@ -206,6 +219,10 @@ private val tokenFetcher = object : AccessTokenFetcher {
 
 private val noTokenFetcher = object : AccessTokenFetcher {
   override suspend fun fetch(): String? = null
+}
+
+private val throwingFetcher = object : AccessTokenFetcher {
+  override suspend fun fetch(): String? = throw IllegalStateException("The token could not be refreshed")
 }
 
 private val deviceIdFetcher = object : DeviceIdFetcher {
