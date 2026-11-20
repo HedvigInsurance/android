@@ -1,8 +1,13 @@
+@file:OptIn(ExperimentalObjCName::class)
+
 package com.hedvig.android.language
 
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import kotlin.experimental.ExperimentalObjCName
+import kotlin.native.ObjCName
 
+@ObjCName(name = "HedvigSharedLanguage", swiftName = "Language", exact = true)
 enum class Language {
   SV_SE,
   EN_SE,

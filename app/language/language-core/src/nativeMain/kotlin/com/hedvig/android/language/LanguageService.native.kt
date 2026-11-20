@@ -10,35 +10,28 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import platform.Foundation.NSLocale
 
+/** The iOS app's language. The iOS app owns the setting, so [setLanguage] only changes what Kotlin reports. */
 @ContributesBinding(AppScope::class)
 @SingleIn(AppScope::class)
 @Inject
 internal class NativeLanguageService(
-  private val storage: LanguageStorage,
+  private val source: IosLanguageSource,
 ) : LanguageService {
-  private val mutableLanguage = MutableStateFlow(Language.from(storage.getCurrentLanguageTag()))
+  private val mutableLanguage = MutableStateFlow(source.currentLanguage())
 
-  /**
-   * Updated only when [setLanguage] or [getLanguage] runs, since the iOS app changes the language without going
-   * through Kotlin, so read [getLanguage] for the current value.
-   */
+  /** Updated only when [setLanguage] or [getLanguage] runs, so read [getLanguage] for the current value. */
   override val language: StateFlow<Language> = mutableLanguage.asStateFlow()
 
   override fun setLanguage(language: Language) {
-    storage.setLanguageTag(language.toBcp47Format())
     mutableLanguage.value = language
   }
 
-  /**
-   * Read from the storage on every call, since the iOS app changes the language through its own layer without going
-   * through [setLanguage].
-   */
+  /** Asks the iOS app on every call, since it changes the language without telling Kotlin. */
   override fun getLanguage(): Language {
-    val languageTag = storage.getCurrentLanguageTag()
-    return Language.from(languageTag).also { mutableLanguage.value = it }
+    return source.currentLanguage().also { mutableLanguage.value = it }
   }
 
   override fun getLocale(): CommonLocale {
-    return NSLocale(localeIdentifier = storage.getCurrentLanguageTag())
+    return NSLocale(localeIdentifier = getLanguage().toBcp47Format())
   }
 }
