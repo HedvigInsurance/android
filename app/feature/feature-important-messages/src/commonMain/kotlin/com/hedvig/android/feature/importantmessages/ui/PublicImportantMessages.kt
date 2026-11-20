@@ -1,5 +1,11 @@
 package com.hedvig.android.feature.importantmessages.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
@@ -64,32 +71,46 @@ internal fun ReloadOnKeyChangeAndResume(reloadKey: Any?, reload: () -> Unit) {
   }
 }
 
+/**
+ * One card per message, fading and growing in when the first messages arrive and out when the last ones go. With no
+ * messages it takes no space at all.
+ */
 @Composable
-private fun PublicImportantMessageCards(
+internal fun PublicImportantMessageCards(
   messages: List<PublicImportantMessage>,
   openUrl: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  if (messages.isEmpty()) return
-  val linkClickLabel = stringResource(Res.string.TALKBACK_OPEN_EXTERNAL_LINK)
-  Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-    for (message in messages) {
-      HedvigNotificationCard(
-        message = message.message,
-        priority = when (message.severity) {
-          Severity.Info -> NotificationPriority.Info
-          Severity.Warning -> NotificationPriority.Attention
-          Severity.Error -> NotificationPriority.Error
-        },
-        modifier = Modifier.fillMaxWidth(),
-        style = message.link?.let { link ->
-          InfoCardStyle.Button(
-            buttonText = link.buttonText,
-            onButtonClick = { openUrl(link.url) },
-            onButtonClickLabel = linkClickLabel,
-          )
-        } ?: InfoCardStyle.Default,
-      )
+  var lastShownMessages by remember { mutableStateOf(messages) }
+  LaunchedEffect(messages) {
+    if (messages.isNotEmpty()) lastShownMessages = messages
+  }
+  AnimatedVisibility(
+    visible = messages.isNotEmpty(),
+    enter = fadeIn() + expandVertically(expandFrom = Alignment.Bottom),
+    exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Bottom),
+    modifier = modifier,
+  ) {
+    val linkClickLabel = stringResource(Res.string.TALKBACK_OPEN_EXTERNAL_LINK)
+    Column(Modifier.animateContentSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+      for (message in messages.ifEmpty { lastShownMessages }) {
+        HedvigNotificationCard(
+          message = message.message,
+          priority = when (message.severity) {
+            Severity.Info -> NotificationPriority.Info
+            Severity.Warning -> NotificationPriority.Attention
+            Severity.Error -> NotificationPriority.Error
+          },
+          modifier = Modifier.fillMaxWidth(),
+          style = message.link?.let { link ->
+            InfoCardStyle.Button(
+              buttonText = link.buttonText,
+              onButtonClick = { openUrl(link.url) },
+              onButtonClickLabel = linkClickLabel,
+            )
+          } ?: InfoCardStyle.Default,
+        )
+      }
     }
   }
 }

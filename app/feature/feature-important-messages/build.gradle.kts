@@ -14,6 +14,7 @@ kotlin {
     commonMain.dependencies {
       implementation(libs.arrow.core)
       implementation(libs.jetbrains.components.resources)
+      implementation(libs.jetbrains.compose.animation)
       implementation(libs.jetbrains.compose.foundation)
       implementation(libs.jetbrains.compose.runtime)
       implementation(libs.jetbrains.compose.ui.tooling.preview)
