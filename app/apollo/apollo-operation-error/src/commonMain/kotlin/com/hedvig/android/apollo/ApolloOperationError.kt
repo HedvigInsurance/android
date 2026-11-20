@@ -46,3 +46,8 @@ sealed interface ApolloOperationError {
     }
   }
 }
+
+/** A value made from an [ApolloOperationError] that keeps it, so whoever receives the value can still read it. */
+interface WrapsApolloOperationError {
+  val apolloOperationError: ApolloOperationError
+}

@@ -8,9 +8,10 @@ import kotlin.native.HiddenFromObjC
 /**
  * The shared Kotlin graph the iOS app holds, built on first use.
  *
- * A feature reaches Swift from its own module, without a change here or in the graph. It writes a class of plain
- * suspend functions annotated `@NativeCoroutines` (the module applies the `com.rickclephas.kmp.nativecoroutines`
- * plugin), contributes an accessor for it, and adds an extension on this class, which Swift sees as a method:
+ * A feature reaches Swift from its own module, with no change here or in the graph and one line in `:umbrella`. It
+ * writes a class of plain suspend functions annotated `@NativeCoroutines` (the module applies the
+ * `com.rickclephas.kmp.nativecoroutines` plugin), contributes an accessor for it, and adds an extension on this class,
+ * which Swift sees as a method:
  *
  * ```
  * @Inject
@@ -30,6 +31,9 @@ import kotlin.native.HiddenFromObjC
  * The umbrella exports the feature's module, and Swift calls
  * `try await asyncFunction(for: holder.foreverReads().referrals())`. A read made before login injects
  * `@PublicApolloClient ApolloClient`, which never sends a token.
+ *
+ * The iOS Apollo clients keep no normalized cache, so `watch`, `safeWatch` and `apolloStore` fail there; a read uses
+ * `query(...).safeExecute()`.
  */
 class IosGraphHolder internal constructor(createGraph: () -> Any) {
   private val built: Lazy<Any> = lazy(createGraph)
@@ -45,4 +49,7 @@ fun iosGraphHolder(createGraph: () -> Any): IosGraphHolder = IosGraphHolder(crea
 
 /** The part [T] of the holder's graph, for a feature's accessor extension on [IosGraphHolder]. */
 @HiddenFromObjC
-inline fun <reified T : Any> IosGraphHolder.component(): T = graph as T
+inline fun <reified T : Any> IosGraphHolder.component(): T = graph as? T
+  ?: error(
+    "${T::class.simpleName} is not in the iOS graph: export its module in :umbrella and contribute it to AppScope",
+  )

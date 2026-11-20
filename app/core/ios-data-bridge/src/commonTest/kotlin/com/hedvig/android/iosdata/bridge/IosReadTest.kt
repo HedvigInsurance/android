@@ -9,6 +9,7 @@ import assertk.assertions.isSameInstanceAs
 import assertk.assertions.prop
 import com.apollographql.apollo.exception.ApolloNetworkException
 import com.hedvig.android.apollo.ApolloOperationError
+import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.core.common.ErrorMessage
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.test.Test
@@ -23,6 +24,12 @@ class IosReadTest {
   @Test
   fun `an unauthenticated operation error is UNAUTHENTICATED`() = runTest {
     assertFailure { iosRead { Either.Left(ApolloOperationError.OperationError.Unathenticated).bind() } }
+      .isInstanceOf<ReadFailure>().prop(ReadFailure::kind).isEqualTo(ReadFailureKind.UNAUTHENTICATED)
+  }
+
+  @Test
+  fun `an error message made from an unauthenticated operation error is UNAUTHENTICATED`() = runTest {
+    assertFailure { iosRead { Either.Left(ErrorMessage(ApolloOperationError.OperationError.Unathenticated)).bind() } }
       .isInstanceOf<ReadFailure>().prop(ReadFailure::kind).isEqualTo(ReadFailureKind.UNAUTHENTICATED)
   }
 
