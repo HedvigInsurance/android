@@ -1,9 +1,5 @@
-@file:OptIn(ExperimentalObjCRefinement::class)
-
 package com.hedvig.android.logger
 
-import kotlin.experimental.ExperimentalObjCRefinement
-import kotlin.native.HiddenFromObjC
 import platform.Foundation.NSLog
 
 /**
@@ -43,21 +39,6 @@ class IosLogcatLogger internal constructor(
      */
     fun install(sink: IosLogSink, minimumPriority: LogPriority) {
       LogcatLogger.replace(IosLogcatLogger(minimumPriority, sink::log))
-    }
-
-    /**
-     * Installs a logger writing lines at [minimumPriority] or above to `NSLog`, unless a logger is installed. For Kotlin
-     * code that must not log into the void when the iOS app installed nothing.
-     */
-    @HiddenFromObjC
-    fun installFallback(minimumPriority: LogPriority) {
-      if (!LogcatLogger.isInstalled) {
-        LogcatLogger.install(
-          IosLogcatLogger(minimumPriority) { priority, tag, message ->
-            nsLog(priority, tag, message)
-          },
-        )
-      }
     }
   }
 }
