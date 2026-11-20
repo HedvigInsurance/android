@@ -1,6 +1,5 @@
 package com.hedvig.android.network.clients.di
 
-import io.ktor.http.HeadersBuilder
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import platform.Foundation.NSTimeZone
@@ -13,9 +12,7 @@ class NativePlatformHeadersTest {
   }
 
   @Test
-  fun `the time zone header is the device's zone identifier`() {
-    val headers = HeadersBuilder().apply { appendPlatformHeaders() }.build()
-
-    assertEquals(NSTimeZone.localTimeZone.name, headers["Hedvig-TimeZone"])
+  fun `the time zone is the device's zone identifier`() {
+    assertEquals(NSTimeZone.localTimeZone.name, deviceTimeZoneId())
   }
 }
