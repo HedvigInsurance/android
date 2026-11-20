@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.login.marketing
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.heading
@@ -90,7 +97,7 @@ internal fun MarketingDestination(
 }
 
 @Composable
-private fun MarketingScreen(
+internal fun MarketingScreen(
   uiState: MarketingUiState,
   appVersionName: String,
   selectLanguage: (Language) -> Unit,
@@ -159,10 +166,12 @@ private fun MarketingScreen(
             ),
         ) {
           // Measured after the buttons, so the cards get only the height left over and scroll within it.
+          val cardsScrollState = rememberScrollState()
           Column(
             Modifier
               .weight(1f, fill = false)
-              .verticalScroll(rememberScrollState()),
+              .fadeTowardScrollableEdges(cardsScrollState)
+              .verticalScroll(cardsScrollState),
           ) {
             if (uiState is MarketingUiState.Success) {
               publicImportantMessages(uiState.language, Modifier.padding(top = 16.dp, bottom = 8.dp))
@@ -225,6 +234,34 @@ private fun MarketingScreen(
     }
   }
 }
+
+/**
+ * Fades the content out toward each edge that has more of it beyond, so a cut-off card reads as scrollable. Drawn over
+ * any background, as it fades the content itself.
+ */
+private fun Modifier.fadeTowardScrollableEdges(scrollState: ScrollState): Modifier = this
+  .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+  .drawWithContent {
+    drawContent()
+    val fadeLength = 32.dp.toPx().coerceAtMost(size.height / 2)
+    if (scrollState.canScrollBackward) {
+      drawRect(
+        brush = Brush.verticalGradient(0f to Color.Transparent, 1f to Color.Black, endY = fadeLength),
+        blendMode = BlendMode.DstIn,
+      )
+    }
+    if (scrollState.canScrollForward) {
+      drawRect(
+        brush = Brush.verticalGradient(
+          0f to Color.Black,
+          1f to Color.Transparent,
+          startY = size.height - fadeLength,
+          endY = size.height,
+        ),
+        blendMode = BlendMode.DstIn,
+      )
+    }
+  }
 
 @Suppress("UnusedReceiverParameter")
 @Composable
