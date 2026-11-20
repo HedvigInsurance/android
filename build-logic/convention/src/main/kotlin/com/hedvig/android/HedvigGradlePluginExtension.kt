@@ -54,8 +54,6 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
     project.objects.newInstance<NavKeysHandler>()
   private val viewModelsHandler: ViewModelsHandler =
     project.objects.newInstance<ViewModelsHandler>()
-  private var isSharedWithIos = false
-  private var viewModelsConfigured = false
 
   fun apolloSchema(apolloServiceAction: Action<Service>) {
     apolloSchemaHandler.configure(project, apolloServiceAction)
@@ -111,27 +109,7 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
    * from JVM-plus-Android KMP modules and plain JVM libraries.
    */
   fun viewModels() {
-    viewModelsConfigured = true
-    viewModelsHandler.configure(project, pluginManager, libs, isSharedWithIos)
-  }
-
-  /**
-   * Marks this module's `commonMain` as shared with iOS: it registers the module's `checkCommonMainImports`, which
-   * forbids Compose UI, the design system and compose resources in `commonMain` (see [registerSharedCommonMainGuard]),
-   * and makes [viewModels] put `metrox-viewmodel-compose` in `jvmAndAndroidMain`.
-   */
-  fun sharedWithIos() {
-    if (viewModelsConfigured) {
-      throw GradleException("${project.path}: call sharedWithIos() before viewModels().")
-    }
-    val kotlin = project.extensions.findByType<KotlinMultiplatformExtension>()
-    if (kotlin?.sourceSets?.findByName("jvmAndAndroidMain") == null) {
-      throw GradleException(
-        "${project.path}: sharedWithIos() needs a jvmAndAndroidMain source set for the code iOS does not share.",
-      )
-    }
-    isSharedWithIos = true
-    project.registerSharedCommonMainGuard()
+    viewModelsHandler.configure(project, pluginManager, libs)
   }
 
   companion object {
@@ -386,7 +364,7 @@ private abstract class NavKeysHandler {
 private const val VIEW_MODEL_PASS_OPTION = "hedvig.viewmodel.pass"
 
 private abstract class ViewModelsHandler {
-  fun configure(project: Project, pluginManager: PluginManager, libs: LibrariesForLibs, isSharedWithIos: Boolean) {
+  fun configure(project: Project, pluginManager: PluginManager, libs: LibrariesForLibs) {
     pluginManager.apply(libs.plugins.ksp.get().pluginId)
     val processor = project.dependencies.project(":viewmodel-processor")
     val isMultiplatform = project.extensions.findByType<KotlinMultiplatformExtension>() != null
@@ -405,11 +383,9 @@ private abstract class ViewModelsHandler {
       add("kspCommonMainMetadata", processor)
       add("kspAndroid", processor)
       // Android-library modules get these from configureMetro through the AGP plugin; a KMP module's
-      // ViewModels live in commonMain, so the artifacts go there. A module shared with iOS keeps the Compose half in
-      // jvmAndAndroidMain, where its UI is.
+      // ViewModels live in commonMain, so the artifacts go there.
       add("commonMainImplementation", libs.metro.viewmodel)
-      val composeConfiguration = if (isSharedWithIos) "jvmAndAndroidMainImplementation" else "commonMainImplementation"
-      add(composeConfiguration, libs.metro.viewmodel.compose)
+      add("commonMainImplementation", libs.metro.viewmodel.compose)
     }
     project.extensions.configure<KotlinMultiplatformExtension> {
       sourceSets.getByName("commonMain").kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")

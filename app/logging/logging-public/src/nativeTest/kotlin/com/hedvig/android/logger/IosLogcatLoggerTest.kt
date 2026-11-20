@@ -3,7 +3,6 @@ package com.hedvig.android.logger
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class IosLogcatLoggerTest {
   @AfterTest
@@ -60,24 +59,6 @@ class IosLogcatLoggerTest {
     logcat(LogPriority.DEBUG) { "Dropped" }
 
     assertEquals(listOf("INFO null After"), sink.lines)
-  }
-
-  @Test
-  fun `the fallback does not replace the sink`() {
-    val sink = RecordingSink()
-    IosLogcatLogger.install(sink, LogPriority.VERBOSE)
-
-    IosLogcatLogger.installFallback(LogPriority.WARN)
-    logcat(LogPriority.INFO) { "Still the sink" }
-
-    assertEquals(listOf("INFO null Still the sink"), sink.lines)
-  }
-
-  @Test
-  fun `the fallback installs a logger when there is none`() {
-    IosLogcatLogger.installFallback(LogPriority.WARN)
-
-    assertTrue(LogcatLogger.isInstalled)
   }
 
   private class RecordingSink : IosLogSink {
