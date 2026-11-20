@@ -46,7 +46,7 @@ interface LogcatLogger {
 
     /**
      * Installs [logger] in place of the current one, if any, in one step, so no line is lost or reaches the no-op
-     * logger in between. For a host that installs a better logger once it can.
+     * logger in between. Unlike [install], it logs no error when a logger is already installed.
      */
     fun replace(logger: LogcatLogger) {
       synchronized(this) {
