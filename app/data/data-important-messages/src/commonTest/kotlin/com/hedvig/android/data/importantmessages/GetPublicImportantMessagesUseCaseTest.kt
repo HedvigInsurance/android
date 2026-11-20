@@ -69,6 +69,42 @@ class GetPublicImportantMessagesUseCaseTest {
   }
 
   @Test
+  fun `a link that is not an absolute http or https url is dropped and the message kept`() = runTest {
+    val links = listOf(
+      "www.hedvig.com/status",
+      "/se/hjalp",
+      "hedvig://chat",
+      "javascript:alert(1)",
+      "mailto:help@hedvig.com",
+      "https://",
+      "https:// www.hedvig.com",
+    )
+    val json = messagesJson(
+      *links.mapIndexed { index, url -> messageJson("info-$index", linkUrl = url, linkButtonText = "Open") }
+        .toTypedArray(),
+    )
+
+    val result = useCaseAnswering(json).invoke()
+
+    assertThat(result.messages().map { it.id to it.link }).containsExactly(
+      *links.indices.map { index -> "info-$index" to null }.toTypedArray(),
+    )
+  }
+
+  @Test
+  fun `a link with an http or https url in any letter case is kept`() = runTest {
+    val links = listOf("https://www.hedvig.com/se/hjalp", "http://example.test", "HTTPS://example.test?a=b")
+    val json = messagesJson(
+      *links.mapIndexed { index, url -> messageJson("info-$index", linkUrl = url, linkButtonText = "Open") }
+        .toTypedArray(),
+    )
+
+    val result = useCaseAnswering(json).invoke()
+
+    assertThat(result.messages().map { it.link?.url }).containsExactly(*links.toTypedArray())
+  }
+
+  @Test
   fun `a message with blank text is left out`() = runTest {
     val json = messagesJson(messageJson("blank-1", message = " "), messageJson("kept-1", message = "Kept"))
 

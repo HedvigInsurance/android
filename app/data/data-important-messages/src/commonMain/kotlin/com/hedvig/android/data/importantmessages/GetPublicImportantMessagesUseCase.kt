@@ -20,7 +20,10 @@ import kotlin.native.HiddenFromObjC
 import octopus.PublicImportantMessagesQuery
 import octopus.type.ImportantMessageSeverity
 
-/** The important messages for people who are not logged in, always from the network. */
+/**
+ * The important messages for people who are not logged in, always from the network. A message keeps its link only
+ * when the link is an absolute http or https URL with a button text; otherwise it is shown without one.
+ */
 @HiddenFromObjC
 interface GetPublicImportantMessagesUseCase {
   suspend fun invoke(): Either<ErrorMessage, List<PublicImportantMessage>>
@@ -49,9 +52,19 @@ internal class GetPublicImportantMessagesUseCaseImpl(
               ImportantMessageSeverity.UNKNOWN__ -> Severity.Warning
             },
             link = message.linkInfo
-              ?.takeIf { it.url.isNotBlank() && it.buttonText.isNotBlank() }
+              ?.takeIf { it.url.isAbsoluteWebUrl() && it.buttonText.isNotBlank() }
               ?.let { Link(url = it.url, buttonText = it.buttonText) },
           )
         }
     }
+}
+
+private fun String.isAbsoluteWebUrl(): Boolean {
+  val afterScheme = when {
+    startsWith("https://", ignoreCase = true) -> substring("https://".length)
+    startsWith("http://", ignoreCase = true) -> substring("http://".length)
+    else -> return false
+  }
+  val host = afterScheme.takeWhile { it != '/' && it != '?' && it != '#' }
+  return host.isNotBlank() && none { it.isWhitespace() }
 }
