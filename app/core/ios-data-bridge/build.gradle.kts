@@ -13,6 +13,7 @@ kotlin {
     }
     commonTest.dependencies {
       implementation(libs.assertK)
+      implementation(projects.apolloCore)
       implementation(libs.coroutines.test)
       implementation(libs.kotlin.test)
     }
