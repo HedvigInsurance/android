@@ -24,15 +24,14 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 
 /**
- * The app's Apollo interceptors, the same on every platform and in this order: a member whose session the backend
- * rejects is logged out first, then the request is logged.
+ * Adds [platformInterceptors] in order, then [LoggingInterceptor], so a request is logged after every other
+ * interceptor has seen its response.
  */
 internal fun ApolloClient.Builder.addHedvigInterceptors(
-  authTokenService: AuthTokenService,
-  demoManager: DemoManager,
+  platformInterceptors: List<ApolloInterceptor>,
   logMemberData: Boolean,
 ): ApolloClient.Builder = this
-  .addInterceptor(LogoutOnUnauthenticatedInterceptor(authTokenService, demoManager))
+  .apply { platformInterceptors.forEach(::addInterceptor) }
   .addInterceptor(LoggingInterceptor(logMemberData))
 
 internal class LoggingInterceptor(

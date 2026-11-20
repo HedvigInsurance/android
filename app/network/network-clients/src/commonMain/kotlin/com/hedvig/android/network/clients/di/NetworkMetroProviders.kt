@@ -1,15 +1,14 @@
 package com.hedvig.android.network.clients.di
 
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.interceptor.ApolloInterceptor
 import com.apollographql.cache.normalized.api.NormalizedCacheFactory
 import com.apollographql.cache.normalized.memory.MemoryCacheFactory
 import com.apollographql.ktor.ktorClient
-import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.common.di.BaseHttpClient
 import com.hedvig.android.core.datastore.DeviceIdFetcher
-import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.network.clients.AccessTokenFetcher
@@ -63,23 +62,24 @@ interface NetworkMetroProviders {
   @Provides
   @SingleIn(AppScope::class)
   fun provideNormalizedCacheFactory(): NormalizedCacheFactory = MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)
+}
 
-  @Provides
-  @SingleIn(AppScope::class)
-  fun provideApolloClient(
-    authTokenService: AuthTokenService,
-    demoManager: DemoManager,
-    normalizedCacheFactory: NormalizedCacheFactory,
-    httpClient: HttpClient,
-    hedvigBuildConstants: HedvigBuildConstants,
-  ): ApolloClient = with(Cache) {
-    ApolloClient.Builder()
-      .cache(normalizedCacheFactory)
-      .ktorClient(httpClient)
-      .httpServerUrl(hedvigBuildConstants.urlGraphqlOctopus)
-      .addHedvigInterceptors(authTokenService, demoManager, logMemberData = !hedvigBuildConstants.isProduction)
-      .build()
-  }
+/**
+ * The app's Apollo client: the normalized cache, [httpClient] with its headers, the Octopus URL, and the interceptor
+ * chain of [addHedvigInterceptors] with [platformInterceptors] ahead of logging.
+ */
+internal fun buildHedvigApolloClient(
+  normalizedCacheFactory: NormalizedCacheFactory,
+  httpClient: HttpClient,
+  hedvigBuildConstants: HedvigBuildConstants,
+  platformInterceptors: List<ApolloInterceptor>,
+): ApolloClient = with(Cache) {
+  ApolloClient.Builder()
+    .cache(normalizedCacheFactory)
+    .ktorClient(httpClient)
+    .httpServerUrl(hedvigBuildConstants.urlGraphqlOctopus)
+    .addHedvigInterceptors(platformInterceptors, logMemberData = !hedvigBuildConstants.isProduction)
+    .build()
 }
 
 internal fun buildKtorClient(
@@ -122,7 +122,7 @@ private fun DefaultRequest.DefaultRequestBuilder.commonHeaders(
     append("User-Agent", hedvigBuildConstants.userAgent)
     append("Accept-Language", languageTag)
     append("hedvig-language", languageTag)
-    append("apollographql-client-name", hedvigBuildConstants.appPackageId)
+    append("apollographql-client-name", platformClientName(hedvigBuildConstants.appPackageId))
     append("apollographql-client-version", hedvigBuildConstants.appVersionName)
     append("X-Build-Version", hedvigBuildConstants.appVersionCode)
     append("X-App-Version", hedvigBuildConstants.appVersionName)
@@ -133,6 +133,7 @@ private fun DefaultRequest.DefaultRequestBuilder.commonHeaders(
       "Hedvig-App-Version",
       "${hedvigBuildConstants.platformName.lowercase()};${hedvigBuildConstants.appVersionName}",
     )
+    append("Hedvig-TimeZone", deviceTimeZoneId())
   }
 }
 

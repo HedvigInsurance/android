@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-
 plugins {
   id("hedvig.multiplatform.library.ios")
   id("hedvig.multiplatform.library.android")
@@ -10,15 +8,6 @@ hedvig {
 }
 
 kotlin {
-  @OptIn(ExperimentalKotlinGradlePluginApi::class)
-  applyDefaultHierarchyTemplate {
-    common {
-      group("mobile") {
-        withAndroidLibraryTarget()
-        withNative()
-      }
-    }
-  }
   sourceSets {
     commonMain.dependencies {
       implementation(libs.apollo.api)
@@ -39,14 +28,10 @@ kotlin {
       implementation(projects.languageCore)
       implementation(projects.trackingCore)
     }
-    getByName("mobileMain") {
-      dependencies {
-        implementation(libs.datadog.sdk.ktor)
-        implementation(projects.datadogCore)
-      }
-    }
     androidMain.dependencies {
+      implementation(libs.datadog.sdk.ktor)
       implementation(libs.ktor.client.okhttp)
+      implementation(projects.datadogCore)
     }
     jvmMain.dependencies {
       implementation(libs.ktor.client.okhttp)
