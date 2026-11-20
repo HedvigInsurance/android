@@ -19,6 +19,7 @@ import io.ktor.client.engine.mock.respondOk
 import io.ktor.client.request.get
 import io.ktor.http.HttpHeaders
 import java.util.Locale
+import java.util.TimeZone
 import kotlin.test.Test
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,6 +33,20 @@ class NetworkMetroProvidersTest {
     authenticatedClient(engine, AccessTokenFetcher { "token" }).get("https://example.com")
 
     assertThat(engine.requestHistory.single().headers["hedvig-device-id"]).isEqualTo("device-id")
+  }
+
+  @Test
+  fun `every request sends the device's time zone`() = runTest {
+    val engine = MockEngine { respondOk() }
+    val original = TimeZone.getDefault()
+    TimeZone.setDefault(TimeZone.getTimeZone("America/Sao_Paulo"))
+    try {
+      authenticatedClient(engine, AccessTokenFetcher { null }).get("https://example.com")
+    } finally {
+      TimeZone.setDefault(original)
+    }
+
+    assertThat(engine.requestHistory.single().headers["Hedvig-TimeZone"]).isEqualTo("America/Sao_Paulo")
   }
 
   @Test

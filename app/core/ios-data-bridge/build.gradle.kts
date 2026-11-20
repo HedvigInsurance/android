@@ -7,18 +7,14 @@ kotlin {
   sourceSets {
     commonMain.dependencies {
       implementation(libs.apollo.api)
-      implementation(libs.apollo.runtime)
-      implementation(libs.atomicfu)
-      implementation(libs.coroutines.core)
+      implementation(libs.arrow.core)
+      implementation(projects.apolloOperationError)
       implementation(projects.coreCommonPublic)
-      implementation(projects.loggingPublic)
     }
     commonTest.dependencies {
       implementation(libs.assertK)
+      implementation(libs.coroutines.test)
       implementation(libs.kotlin.test)
-    }
-    nativeMain.dependencies {
-      implementation(libs.kmpNativeCoroutines.core)
     }
   }
 }

@@ -7,9 +7,8 @@ import kotlin.native.ObjCName
 
 /**
  * The member's access token, or null when there is none. Called before every request that sends one, from any thread,
- * usually a background one; when it throws, the request fails without being sent. An iOS implementation must complete
- * it exactly once: Kotlin cannot cancel it, so one that never completes holds its caller until that caller's own time
- * limit.
+ * usually a background one; when it throws, the request fails without being sent. Kotlin cannot cancel a suspend
+ * function implemented in Swift, so an iOS implementation must always complete, or the request waits forever.
  */
 @ObjCName(name = "HedvigSharedAccessTokenFetcher", swiftName = "AccessTokenFetcher", exact = true)
 interface AccessTokenFetcher {
