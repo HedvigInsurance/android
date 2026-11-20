@@ -2,6 +2,7 @@ package com.hedvig.android.network.clients.di
 
 import com.apollographql.cache.normalized.memory.MemoryCacheFactory
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.network.clients.NetworkLogPolicy
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.darwin.Darwin
 import kotlin.test.Test
@@ -15,6 +16,7 @@ class NativeApolloClientTest {
       normalizedCacheFactory = MemoryCacheFactory(),
       httpClient = httpClient,
       hedvigBuildConstants = FakeHedvigBuildConstants,
+      networkLogPolicy = NetworkLogPolicy(logsHttpBodies = false, logsGraphqlData = false, logsGraphqlErrors = true),
     )
 
     assertEquals(listOf("LoggingInterceptor"), apolloClient.interceptors.map { it::class.simpleName })

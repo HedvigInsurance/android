@@ -23,6 +23,7 @@ import com.hedvig.android.core.tracking.ActionType
 import com.hedvig.android.core.tracking.ErrorSource
 import com.hedvig.android.core.tracking.RumLogger
 import com.hedvig.android.logger.TestLogcatLoggingRule
+import com.hedvig.android.network.clients.NetworkLogPolicy
 import com.hedvig.android.network.clients.di.apolloPlatformInterceptors
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -92,7 +93,7 @@ internal class ApolloInterceptorsTest {
       .networkTransport(QueueTestNetworkTransport())
       .addHedvigInterceptors(
         apolloPlatformInterceptors(authTokenService, FakeDemoManager(isDemoMode)),
-        logMemberData = false,
+        NetworkLogPolicy(logsHttpBodies = true, logsGraphqlData = true, logsGraphqlErrors = true),
       )
       .build()
   }

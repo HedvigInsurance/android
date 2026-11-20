@@ -8,6 +8,7 @@ import com.hedvig.android.core.datastore.DeviceIdFetcher
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.network.clients.AccessTokenFetcher
+import com.hedvig.android.network.clients.NetworkLogPolicy
 import com.hedvig.android.network.clients.NoopExtraKtorClientConfiguration
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
@@ -78,6 +79,7 @@ class NetworkMetroProvidersTest {
       engineFactory = object : HttpClientEngineFactory<HttpClientEngineConfig> {
         override fun create(block: HttpClientEngineConfig.() -> Unit): HttpClientEngine = engine
       },
+      networkLogPolicy = NetworkLogPolicy(logsHttpBodies = false, logsGraphqlData = false, logsGraphqlErrors = true),
     )
     return object : NetworkMetroProviders {}.provideHttpClient(baseHttpClient, accessTokenFetcher)
   }

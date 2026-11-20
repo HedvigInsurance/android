@@ -19,6 +19,7 @@ import com.hedvig.android.core.tracking.ErrorSource
 import com.hedvig.android.core.tracking.RumLogger
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.LogcatLogger
+import com.hedvig.android.network.clients.NetworkLogPolicy
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
@@ -115,7 +116,12 @@ class LoggingInterceptorTest {
         return flowOf(response as ApolloResponse<D>)
       }
     }
-    LoggingInterceptor(logMemberData).intercept(request, chain).toList()
+    val networkLogPolicy = NetworkLogPolicy(
+      logsHttpBodies = logMemberData,
+      logsGraphqlData = logMemberData,
+      logsGraphqlErrors = true,
+    )
+    LoggingInterceptor(networkLogPolicy).intercept(request, chain).toList()
   }
 
   private object FakeQuery : Operation<FakeQuery.FakeData> {
