@@ -6,9 +6,11 @@ plugins {
 kotlin {
   sourceSets {
     commonMain.dependencies {
+      implementation(projects.coreCommonPublic)
+    }
+    jvmMain.dependencies {
       implementation(libs.apollo.normalizedCache)
       implementation(libs.apollo.runtime)
-      implementation(projects.coreCommonPublic)
     }
   }
 }
