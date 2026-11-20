@@ -82,7 +82,8 @@ private fun GreenCardOverviewScreen(
           // TODO: Add "Your green card is ready" / "Ditt gröna kort är klart" to Lokalise
           text = "Your green card is ready",
           // TODO: Add "We will send the physical copy to the address you entered." / "Vi skickar det fysiska kortet till adressen du angav." to Lokalise
-          description = "We will send the physical copy to the address you entered.",
+          // description = "We will send the physical copy to the address you entered.",
+          description = "We'll send it to you in Kivra. ",
           iconStyle = SUCCESS,
         )
         Spacer(Modifier.weight(1f))

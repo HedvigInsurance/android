@@ -79,12 +79,18 @@ private fun GreenCardImportantInfoScreen(
         text = "The green card isn't valid in Russia (RUS), Ukraine (UA), Belarus (BY) and Iran (IR).",
       )
       Spacer(Modifier.height(16.dp))
+//      InfoParagraph(
+//        // TODO: Add "The card must be printed on green paper" / "Kortet måste skrivas ut på grönt papper" to Lokalise
+//        title = "The card must be printed on green paper",
+//        // TODO: Add "We'll post a printed green card to the address you enter in the next step. If you need it sooner, you can print it yourself in colour, but remember that the paper must be green." / "Vi skickar ett tryckt grönt kort till adressen du anger i nästa steg. Behöver du det tidigare kan du skriva ut det själv i färg, men kom ihåg att papperet måste vara grönt." to Lokalise
+//        text = "We'll post a printed green card to the address you enter in the next step. If you need it sooner, " +
+//          "you can print it yourself in colour, but remember that the paper must be green.",
+//      )
       InfoParagraph(
         // TODO: Add "The card must be printed on green paper" / "Kortet måste skrivas ut på grönt papper" to Lokalise
-        title = "The card must be printed on green paper",
+        title = "The digital version of the card is valid",
         // TODO: Add "We'll post a printed green card to the address you enter in the next step. If you need it sooner, you can print it yourself in colour, but remember that the paper must be green." / "Vi skickar ett tryckt grönt kort till adressen du anger i nästa steg. Behöver du det tidigare kan du skriva ut det själv i färg, men kom ihåg att papperet måste vara grönt." to Lokalise
-        text = "We'll post a printed green card to the address you enter in the next step. If you need it sooner, " +
-          "you can print it yourself in colour, but remember that the paper must be green.",
+        text = "We'll send it you in Kivra. You will also be able to download it here in app right away.",
       )
     }
     Spacer(Modifier.weight(1f))
