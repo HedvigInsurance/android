@@ -43,7 +43,7 @@ internal class PublicImportantMessagesPresenter(
     }
     LaunchedEffect(loadIteration) {
       getPublicImportantMessagesUseCase.invoke().fold(
-        ifLeft = { error -> logcat(LogPriority.WARN, error.throwable) { "Failed to load public important messages" } },
+        ifLeft = { error -> logcat(LogPriority.INFO, error.throwable) { "Failed to load public important messages" } },
         ifRight = { messages = it },
       )
     }
