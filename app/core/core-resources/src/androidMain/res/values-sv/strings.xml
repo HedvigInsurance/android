@@ -1115,11 +1115,16 @@
   <string name="TERMINATION_FLOW_CANCEL_INFO_TITLE">Avsluta din försäkring</string>
   <string name="TERMINATION_FLOW_CANCEL_INSURANCE_BUTTON">Avsluta försäkring</string>
   <string name="TERMINATION_FLOW_CAR_BACK_TITLE">Din bil är tillbaka på vägen</string>
+  <string name="TERMINATION_FLOW_CHOICE_CANCELLATION_SUBTITLE">Försäkringen gäller tills det datum du väljer.</string>
+  <string name="TERMINATION_FLOW_CHOICE_SUBTITLE">Vad vill du göra?</string>
+  <string name="TERMINATION_FLOW_CHOICE_TITLE">Avsluta försäkringen</string>
+  <string name="TERMINATION_FLOW_CHOICE_WITHDRAWAL_SUBTITLE">Försäkringen avslutas idag. Du betalar bara för dagarna du har varit försäkrad.</string>
   <string name="TERMINATION_FLOW_CHOOSE_CONTRACT_INFO">Observera att du bara kan säga upp en försäkring åt gången</string>
   <string name="TERMINATION_FLOW_CHOOSE_CONTRACT_SUBTITLE">Välj den försäkring du vill säga upp</string>
   <string name="TERMINATION_FLOW_CONFIRMATION">Din försäkring kommer avlutas direkt</string>
   <string name="TERMINATION_FLOW_CONFIRMATION_SUBTITLE_DELETION">Din försäkring kommer att avslutas före startdatumet</string>
   <string name="TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION">Din försäkring kommer att avslutas den %s</string>
+  <string name="TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TODAY">Din försäkring avslutas idag, %s.</string>
   <string name="TERMINATION_FLOW_CONFIRM_BUTTON">Ja, avsluta</string>
   <string name="TERMINATION_FLOW_CONFIRM_INFORMATION">Bekräfta din information</string>
   <string name="TERMINATION_FLOW_CONTINUE_CANCELLING">Nej tack, fortsätt</string>
@@ -1140,6 +1145,10 @@
   <string name="TERMINATION_FLOW_SUCCESS_TITLE">Försäkring avslutad</string>
   <string name="TERMINATION_FLOW_SUMMARY_SUBTITLE">Granska och bekräfta</string>
   <string name="TERMINATION_FLOW_TODAY">Idag</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_BUTTON">Ångra försäkringen</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_CONFIRM_BUTTON">Ja, ångra försäkringen</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE">Försäkringen är ångrad</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_TITLE">Ångra försäkringen</string>
   <string name="TERMINATION_KEEP_INSURANCE_BUTTON">Behåll försäkring</string>
   <string name="TERMINATION_NOT_SUCCESSFUL_TITLE">Uppsägningen misslyckades</string>
   <string name="TERMINATION_NO_TIER_QUOTES_SUBTITLE">Du har redan det bästa skyddet och priset för den här försäkringen</string>

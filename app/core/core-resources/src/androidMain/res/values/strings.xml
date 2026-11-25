@@ -1115,11 +1115,16 @@
   <string name="TERMINATION_FLOW_CANCEL_INFO_TITLE">Cancelling your insurance</string>
   <string name="TERMINATION_FLOW_CANCEL_INSURANCE_BUTTON">Cancel insurance</string>
   <string name="TERMINATION_FLOW_CAR_BACK_TITLE">Your car is back on the road</string>
+  <string name="TERMINATION_FLOW_CHOICE_CANCELLATION_SUBTITLE">Your insurance stays active until the date you choose.</string>
+  <string name="TERMINATION_FLOW_CHOICE_SUBTITLE">What do you want to do?</string>
+  <string name="TERMINATION_FLOW_CHOICE_TITLE">Cancel insurance</string>
+  <string name="TERMINATION_FLOW_CHOICE_WITHDRAWAL_SUBTITLE">Your insurance ends today. You only pay for the days you have been insured.</string>
   <string name="TERMINATION_FLOW_CHOOSE_CONTRACT_INFO">Please note that you can only cancel one insurance at a time</string>
   <string name="TERMINATION_FLOW_CHOOSE_CONTRACT_SUBTITLE">Select the insurance you want to cancel</string>
   <string name="TERMINATION_FLOW_CONFIRMATION">Your insurance will be cancelled directly</string>
   <string name="TERMINATION_FLOW_CONFIRMATION_SUBTITLE_DELETION">Your insurance will be cancelled before the activation date</string>
   <string name="TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION">Your insurance will be cancelled on %s</string>
+  <string name="TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TODAY">Your insurance ends today, %s.</string>
   <string name="TERMINATION_FLOW_CONFIRM_BUTTON">Yes, cancel</string>
   <string name="TERMINATION_FLOW_CONFIRM_INFORMATION">Confirm your information</string>
   <string name="TERMINATION_FLOW_CONTINUE_CANCELLING">No thanks, continue</string>
@@ -1140,6 +1145,10 @@
   <string name="TERMINATION_FLOW_SUCCESS_TITLE">Insurance cancelled</string>
   <string name="TERMINATION_FLOW_SUMMARY_SUBTITLE">Review and confirm</string>
   <string name="TERMINATION_FLOW_TODAY">Today</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_BUTTON">Withdraw insurance</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_CONFIRM_BUTTON">Yes, withdraw insurance</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE">Insurance is withdrawed</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_TITLE">Withdraw insurance</string>
   <string name="TERMINATION_KEEP_INSURANCE_BUTTON">Keep insurance</string>
   <string name="TERMINATION_NOT_SUCCESSFUL_TITLE">Cancellation unsuccessful</string>
   <string name="TERMINATION_NO_TIER_QUOTES_SUBTITLE">You already have the best coverage and price for this insurance</string>

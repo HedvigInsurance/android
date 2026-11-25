@@ -28,6 +28,12 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
 import hedvig.resources.Res
+import hedvig.resources.TERMINATION_BUTTON
+import hedvig.resources.TERMINATION_FLOW_CHOICE_CANCELLATION_SUBTITLE
+import hedvig.resources.TERMINATION_FLOW_CHOICE_SUBTITLE
+import hedvig.resources.TERMINATION_FLOW_CHOICE_TITLE
+import hedvig.resources.TERMINATION_FLOW_CHOICE_WITHDRAWAL_SUBTITLE
+import hedvig.resources.TERMINATION_FLOW_WITHDRAWAL_BUTTON
 import hedvig.resources.general_continue_button
 import hedvig.resources.something_went_wrong
 import org.jetbrains.compose.resources.stringResource
@@ -61,10 +67,8 @@ private fun TerminationChooseActionScreen(
     closeTerminationFlow = closeTerminationFlow,
   ) {
     FlowHeading(
-      // TODO: Add "Cancel insurance" / "Avsluta försäkringen" to Lokalise
-      "Avsluta försäkringen",
-      // TODO: Add "What would you like to do?" / "Vad vill du göra?" to Lokalise
-      "Vad vill du göra?",
+      stringResource(Res.string.TERMINATION_FLOW_CHOICE_TITLE),
+      stringResource(Res.string.TERMINATION_FLOW_CHOICE_SUBTITLE),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))
@@ -91,19 +95,13 @@ private fun TerminationChooseActionScreen(
       options = listOf(
         RadioOption(
           id = RadioOptionId(TerminationChooseAction.Withdraw.name),
-          // TODO: Add "Withdraw insurance" / "Ångra försäkringen" to Lokalise
-          text = "Ångra försäkringen",
-          // TODO: Add "The insurance ends today. You only pay for the days you have been insured." /
-          //  "Försäkringen avslutas idag. Du betalar bara för dagarna du har varit försäkrad." to Lokalise
-          label = "Försäkringen avslutas idag. Du betalar bara för dagarna du har varit försäkrad.",
+          text = stringResource(Res.string.TERMINATION_FLOW_WITHDRAWAL_BUTTON),
+          label = stringResource(Res.string.TERMINATION_FLOW_CHOICE_WITHDRAWAL_SUBTITLE),
         ),
         RadioOption(
           id = RadioOptionId(TerminationChooseAction.Terminate.name),
-          // TODO: Add "Cancel insurance" / "Säg upp försäkringen" to Lokalise
-          text = "Säg upp försäkringen",
-          // TODO: Add "The insurance is valid until the date you choose." /
-          //  "Försäkringen gäller tills det datum du väljer." to Lokalise
-          label = "Försäkringen gäller tills det datum du väljer.",
+          text = stringResource(Res.string.TERMINATION_BUTTON),
+          label = stringResource(Res.string.TERMINATION_FLOW_CHOICE_CANCELLATION_SUBTITLE),
         ),
       ),
       selectedOption = uiState.selectedAction?.let { RadioOptionId(it.name) },

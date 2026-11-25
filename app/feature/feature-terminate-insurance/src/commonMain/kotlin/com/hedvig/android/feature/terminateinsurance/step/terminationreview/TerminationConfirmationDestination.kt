@@ -125,8 +125,20 @@ private fun AreYouSureScreen(
   onContinue: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val dateTimeFormatter = rememberHedvigDateTimeFormatter()
   val areYouSureSheetState = rememberHedvigBottomSheetState<Unit>()
-  AreYouSureSheet(state = areYouSureSheetState, type = type, confirmCancellation = onContinue)
+  AreYouSureSheet(
+    state = areYouSureSheetState,
+    description = when (type) {
+      TerminationType.Deletion -> stringResource(Res.string.TERMINATION_FLOW_CONFIRMATION)
+
+      is Termination -> stringResource(
+        Res.string.TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION,
+        dateTimeFormatter.format(type.terminationDate),
+      )
+    },
+    confirmCancellation = onContinue,
+  )
   TerminationScaffold(
     navigateUp = navigateUp,
     closeTerminationFlow = closeTerminationFlow,
@@ -152,7 +164,6 @@ private fun AreYouSureScreen(
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     if (type is Termination) {
-      val dateTimeFormatter = rememberHedvigDateTimeFormatter()
       Spacer(Modifier.height(4.dp))
       HedvigCard(modifier.padding(horizontal = 16.dp)) {
         Column(Modifier.padding(16.dp)) {
@@ -195,14 +206,16 @@ private fun AreYouSureScreen(
 }
 
 @Composable
-private fun AreYouSureSheet(
+internal fun AreYouSureSheet(
   state: HedvigBottomSheetState<Unit>,
-  type: TerminationType,
+  description: String,
   confirmCancellation: () -> Unit,
+  confirmButtonText: String = stringResource(Res.string.TERMINATION_FLOW_CONFIRM_BUTTON),
 ) {
   HedvigBottomSheet(state) {
     AreYouSureSheetContent(
-      type = type,
+      description = description,
+      confirmButtonText = confirmButtonText,
       confirmCancellation = {
         state.dismiss()
         confirmCancellation()
@@ -214,33 +227,22 @@ private fun AreYouSureSheet(
 
 @Composable
 private fun AreYouSureSheetContent(
-  type: TerminationType,
+  description: String,
+  confirmButtonText: String,
   confirmCancellation: () -> Unit,
   dismissSheet: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val dateTimeFormatter = rememberHedvigDateTimeFormatter()
   Column(modifier) {
     EmptyState(
       iconStyle = ERROR,
       text = stringResource(Res.string.GENERAL_ARE_YOU_SURE),
-      description = when (type) {
-        TerminationType.Deletion -> {
-          stringResource(Res.string.TERMINATION_FLOW_CONFIRMATION)
-        }
-
-        is Termination -> {
-          stringResource(
-            Res.string.TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION,
-            dateTimeFormatter.format(type.terminationDate),
-          )
-        }
-      },
+      description = description,
       modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = stringResource(Res.string.TERMINATION_FLOW_CONFIRM_BUTTON),
+      text = confirmButtonText,
       onClick = confirmCancellation,
       enabled = true,
       modifier = Modifier.fillMaxWidth(),
@@ -259,7 +261,7 @@ private fun AreYouSureSheetContent(
 }
 
 @Composable
-private fun InsuranceInfoCard(
+internal fun InsuranceInfoCard(
   insuranceInfo: TerminationGraphParameters,
   extraCoverageItems: List<ExtraCoverageItem>,
   modifier: Modifier = Modifier,
@@ -347,7 +349,8 @@ private fun PreviewAreYouSureSheetContent() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       AreYouSureSheetContent(
-        type = Termination(LocalDate(2024, 8, 9)),
+        description = "Your insurance will end on 9 Aug 2024.",
+        confirmButtonText = "Yes, cancel",
         confirmCancellation = {},
         dismissSheet = {},
       )

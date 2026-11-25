@@ -17,6 +17,13 @@ internal data class TerminationChooseActionKey(
 ) : TerminationFlowKey
 
 @Serializable
+internal data class TerminationWithdrawalKey(
+  val commonParams: TerminationGraphParameters,
+  val statusText: String,
+  val action: TerminationAction,
+) : TerminationFlowKey
+
+@Serializable
 internal data class TerminationSurveyFirstStepKey(
   val options: List<TerminationSurveyOption>,
   val action: TerminationAction,
@@ -121,6 +128,11 @@ internal data class TerminationSuccessKey(
     const val ANALYTICS_NAME = "com.hedvig.android.feature.terminateinsurance.navigation.TerminationSuccessKey"
   }
 }
+
+@Serializable
+internal data class WithdrawalSuccessKey(
+  val endDate: LocalDate,
+) : HedvigNavKey
 
 @Serializable
 internal data class TerminationFailureKey(

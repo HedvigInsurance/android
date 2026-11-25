@@ -116,6 +116,7 @@ import hedvig.resources.REMOVE_ADDON_DESCRIPTION
 import hedvig.resources.REMOVE_ADDON_DESCRIPTION_RENEWAL
 import hedvig.resources.Res
 import hedvig.resources.TALKBACK_DOUBLE_TAP_TO_READ_DETAILS
+import hedvig.resources.TERMINATION_FLOW_WITHDRAWAL_BUTTON
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_continue_button
 import hedvig.resources.insurance_details_move_button
@@ -415,8 +416,7 @@ internal fun YourInfoTab(
         }
         if (allowWithdrawal) {
           HedvigButton(
-            // TODO: Add "Withdraw insurance" / "Ångra försäkringen" to Lokalise
-            text = "Ångra försäkringen",
+            text = stringResource(Res.string.TERMINATION_FLOW_WITHDRAWAL_BUTTON),
             buttonStyle = Ghost,
             enabled = true,
             onClick = { onCancelInsuranceClick() },

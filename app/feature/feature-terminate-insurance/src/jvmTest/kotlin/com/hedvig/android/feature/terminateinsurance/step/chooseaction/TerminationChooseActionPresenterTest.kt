@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import assertk.assertThat
+import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
@@ -11,13 +12,16 @@ import assertk.assertions.isTrue
 import assertk.assertions.prop
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.ContractGroup.RENTAL
+import com.hedvig.android.feature.terminateinsurance.FakeContractWithdrawalRepository
 import com.hedvig.android.feature.terminateinsurance.TestBackstack
+import com.hedvig.android.feature.terminateinsurance.data.ContractWithdrawalData
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminationAction
 import com.hedvig.android.feature.terminateinsurance.data.TerminationResult
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyData
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationSurveyFirstStepKey
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationWithdrawalKey
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import kotlinx.coroutines.test.runTest
@@ -52,10 +56,18 @@ class TerminationChooseActionPresenterTest {
   )
 
   @Test
-  fun `continuing with withdrawal never fetches the termination survey`() = runTest {
+  fun `continuing with withdrawal opens the withdrawal step without fetching the survey`() = runTest {
     val repository = FakeTerminateInsuranceRepository(surveyData.right())
+    val withdrawalAction = TerminationAction.TerminateWithDate(
+      minDate = LocalDate(2026, 11, 25),
+      maxDate = LocalDate(2026, 11, 25),
+      extraCoverageItems = emptyList(),
+    )
+    val withdrawalRepository = FakeContractWithdrawalRepository(
+      withdrawalData = ContractWithdrawalData(statusText = "status", action = withdrawalAction).right(),
+    )
     val backstack = TestBackstack()
-    val presenter = TerminationChooseActionPresenter(commonParams, repository, backstack)
+    val presenter = TerminationChooseActionPresenter(commonParams, repository, withdrawalRepository, backstack)
     presenter.test(initialState) {
       skipItems(1)
       sendEvent(TerminationChooseActionEvent.SelectAction(TerminationChooseAction.Withdraw))
@@ -63,6 +75,31 @@ class TerminationChooseActionPresenterTest {
       sendEvent(TerminationChooseActionEvent.Continue)
       testScheduler.advanceUntilIdle()
       assertThat(repository.surveyRequests).isEmpty()
+      assertThat(withdrawalRepository.withdrawalRequests).containsExactly("contractId")
+      assertThat(backstack.entries).containsExactly(
+        TerminationWithdrawalKey(commonParams = commonParams, statusText = "status", action = withdrawalAction),
+      )
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `a failed withdrawal fetch shows the error and stays on the screen`() = runTest {
+    val withdrawalRepository = FakeContractWithdrawalRepository(withdrawalData = ErrorMessage().left())
+    val backstack = TestBackstack()
+    val presenter = TerminationChooseActionPresenter(
+      commonParams,
+      FakeTerminateInsuranceRepository(surveyData.right()),
+      withdrawalRepository,
+      backstack,
+    )
+    presenter.test(initialState) {
+      skipItems(1)
+      sendEvent(TerminationChooseActionEvent.SelectAction(TerminationChooseAction.Withdraw))
+      skipItems(1)
+      sendEvent(TerminationChooseActionEvent.Continue)
+      testScheduler.advanceUntilIdle()
+      assertThat(expectMostRecentItem().navigationStepFailedToLoad).isTrue()
       assertThat(backstack.entries).isEmpty()
       cancelAndIgnoreRemainingEvents()
     }
@@ -72,7 +109,12 @@ class TerminationChooseActionPresenterTest {
   fun `continuing with termination fetches the survey and opens its first step`() = runTest {
     val repository = FakeTerminateInsuranceRepository(surveyData.right())
     val backstack = TestBackstack()
-    val presenter = TerminationChooseActionPresenter(commonParams, repository, backstack)
+    val presenter = TerminationChooseActionPresenter(
+      commonParams,
+      repository,
+      FakeContractWithdrawalRepository(),
+      backstack,
+    )
     presenter.test(initialState) {
       skipItems(1)
       sendEvent(TerminationChooseActionEvent.SelectAction(TerminationChooseAction.Terminate))
@@ -92,7 +134,12 @@ class TerminationChooseActionPresenterTest {
   fun `a failed survey fetch shows the error and stays on the screen`() = runTest {
     val repository = FakeTerminateInsuranceRepository(ErrorMessage().left())
     val backstack = TestBackstack()
-    val presenter = TerminationChooseActionPresenter(commonParams, repository, backstack)
+    val presenter = TerminationChooseActionPresenter(
+      commonParams,
+      repository,
+      FakeContractWithdrawalRepository(),
+      backstack,
+    )
     presenter.test(initialState) {
       skipItems(1)
       sendEvent(TerminationChooseActionEvent.SelectAction(TerminationChooseAction.Terminate))

@@ -3,15 +3,16 @@ package com.hedvig.android.feature.terminateinsurance.step.chooseaction
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.feature.terminateinsurance.data.ContractWithdrawalRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationSurveyFirstStepKey
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationWithdrawalKey
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -24,6 +25,7 @@ import dev.zacsweers.metro.AssistedInject
 internal class TerminationChooseActionViewModel @AssistedInject constructor(
   @Assisted commonParams: TerminationGraphParameters,
   terminateInsuranceRepository: TerminateInsuranceRepository,
+  contractWithdrawalRepository: ContractWithdrawalRepository,
   backstack: Backstack,
 ) : MoleculeViewModel<TerminationChooseActionEvent, TerminationChooseActionUiState>(
     initialState = TerminationChooseActionUiState(
@@ -34,6 +36,7 @@ internal class TerminationChooseActionViewModel @AssistedInject constructor(
     presenter = TerminationChooseActionPresenter(
       commonParams = commonParams,
       terminateInsuranceRepository = terminateInsuranceRepository,
+      contractWithdrawalRepository = contractWithdrawalRepository,
       backstack = backstack,
     ),
   )
@@ -41,6 +44,7 @@ internal class TerminationChooseActionViewModel @AssistedInject constructor(
 internal class TerminationChooseActionPresenter(
   private val commonParams: TerminationGraphParameters,
   private val terminateInsuranceRepository: TerminateInsuranceRepository,
+  private val contractWithdrawalRepository: ContractWithdrawalRepository,
   private val backstack: Backstack,
 ) : MoleculePresenter<TerminationChooseActionEvent, TerminationChooseActionUiState> {
   @Composable
@@ -48,7 +52,7 @@ internal class TerminationChooseActionPresenter(
     lastState: TerminationChooseActionUiState,
   ): TerminationChooseActionUiState {
     var currentState by remember { mutableStateOf(lastState.copy(isNavigationStepLoading = false)) }
-    var surveyLoadIteration by remember { mutableIntStateOf(0) }
+    var actionToLoad by remember { mutableStateOf<ActionLoadRequest?>(null) }
 
     CollectEvents { event ->
       when (event) {
@@ -57,36 +61,43 @@ internal class TerminationChooseActionPresenter(
         }
 
         TerminationChooseActionEvent.Continue -> {
-          when (currentState.selectedAction) {
-            TerminationChooseAction.Withdraw -> {
-              // TODO: Navigate to the withdrawal flow
-            }
-
-            TerminationChooseAction.Terminate -> {
-              surveyLoadIteration++
-            }
-
-            null -> {}
-          }
+          val selectedAction = currentState.selectedAction ?: return@CollectEvents
+          if (currentState.isNavigationStepLoading) return@CollectEvents
+          actionToLoad = ActionLoadRequest(selectedAction)
         }
       }
     }
 
-    LaunchedEffect(surveyLoadIteration) {
-      if (surveyLoadIteration == 0) return@LaunchedEffect
+    LaunchedEffect(actionToLoad) {
+      val request = actionToLoad ?: return@LaunchedEffect
       currentState = currentState.copy(isNavigationStepLoading = true, navigationStepFailedToLoad = false)
-      terminateInsuranceRepository.getTerminationSurvey(commonParams.contractId).fold(
-        ifLeft = {
-          currentState = currentState.copy(isNavigationStepLoading = false, navigationStepFailedToLoad = true)
-        },
-        ifRight = { surveyData ->
-          backstack.add(
+      val nextStep = when (request.action) {
+        TerminationChooseAction.Withdraw -> {
+          contractWithdrawalRepository.getContractWithdrawal(commonParams.contractId).map { withdrawal ->
+            TerminationWithdrawalKey(
+              commonParams = commonParams,
+              statusText = withdrawal.statusText,
+              action = withdrawal.action,
+            )
+          }
+        }
+
+        TerminationChooseAction.Terminate -> {
+          terminateInsuranceRepository.getTerminationSurvey(commonParams.contractId).map { surveyData ->
             TerminationSurveyFirstStepKey(
               options = surveyData.options,
               action = surveyData.action,
               commonParams = commonParams,
-            ),
-          )
+            )
+          }
+        }
+      }
+      nextStep.fold(
+        ifLeft = {
+          currentState = currentState.copy(isNavigationStepLoading = false, navigationStepFailedToLoad = true)
+        },
+        ifRight = { key ->
+          backstack.add(key)
           currentState = currentState.copy(isNavigationStepLoading = false)
         },
       )
@@ -95,6 +106,11 @@ internal class TerminationChooseActionPresenter(
     return currentState
   }
 }
+
+/**
+ * Identity equality, so continuing again with the same action after a failed load starts a new load.
+ */
+private class ActionLoadRequest(val action: TerminationChooseAction)
 
 internal enum class TerminationChooseAction {
   Withdraw,
