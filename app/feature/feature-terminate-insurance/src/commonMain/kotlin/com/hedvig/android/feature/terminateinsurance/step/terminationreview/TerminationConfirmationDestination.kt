@@ -55,6 +55,8 @@ import com.hedvig.android.feature.terminateinsurance.navigation.TerminationConfi
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationConfirmationKey.TerminationType.Termination
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
+import com.hedvig.android.feature.terminateinsurance.ui.TerminationSubmitError
+import com.hedvig.android.feature.terminateinsurance.ui.TerminationSubmitErrorDialog
 import hedvig.resources.GENERAL_ARE_YOU_SURE
 import hedvig.resources.Res
 import hedvig.resources.TERMINATE_CONTRACT_TERMINATING_PROGRESS
@@ -82,6 +84,7 @@ internal fun TerminationConfirmationDestination(
   TerminationConfirmationScreen(
     uiState = uiState,
     onContinue = onContinue,
+    onDismissSubmitError = { viewModel.emit(TerminationConfirmationEvent.DismissSubmitError) },
     navigateBack = navigateUp,
     closeTerminationFlow = closeTerminationFlow,
   )
@@ -91,9 +94,13 @@ internal fun TerminationConfirmationDestination(
 private fun TerminationConfirmationScreen(
   uiState: OverviewUiState,
   onContinue: () -> Unit,
+  onDismissSubmitError: () -> Unit,
   navigateBack: () -> Unit,
   closeTerminationFlow: () -> Unit,
 ) {
+  if (uiState.submitError != null) {
+    TerminationSubmitErrorDialog(uiState.submitError, onDismiss = onDismissSubmitError)
+  }
   if (uiState.isSubmittingContractTermination) {
     HedvigFullScreenCenterAlignedLinearProgress(
       title = stringResource(Res.string.TERMINATE_CONTRACT_TERMINATING_PROGRESS),
@@ -104,7 +111,6 @@ private fun TerminationConfirmationScreen(
       insuranceInfo = uiState.insuranceInfo,
       extraCoverageItems = uiState.extraCoverageItems,
       notificationMessage = uiState.notificationMessage,
-      userError = uiState.userError,
       navigateUp = navigateBack,
       closeTerminationFlow = closeTerminationFlow,
       onContinue = onContinue,
@@ -119,7 +125,6 @@ private fun AreYouSureScreen(
   insuranceInfo: TerminationGraphParameters,
   extraCoverageItems: List<ExtraCoverageItem>,
   notificationMessage: String?,
-  userError: String?,
   navigateUp: () -> Unit,
   closeTerminationFlow: () -> Unit,
   onContinue: () -> Unit,
@@ -150,14 +155,6 @@ private fun AreYouSureScreen(
       Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f).heightIn(min = 8.dp))
-    if (userError != null) {
-      HedvigNotificationCard(
-        message = userError,
-        priority = NotificationDefaults.NotificationPriority.Attention,
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(16.dp))
-    }
     InsuranceInfoCard(
       insuranceInfo = insuranceInfo,
       extraCoverageItems = extraCoverageItems,
@@ -320,28 +317,67 @@ private fun PreviewTerminationConfirmationScreen(
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       TerminationConfirmationScreen(
-        uiState = OverviewUiState(
-          terminationType = type,
-          insuranceInfo = TerminationGraphParameters(
-            contractId = "contractId",
-            insuranceDisplayName = "insuranceDisplayName",
-            exposureName = "exposureName",
-            HOMEOWNER,
-          ),
-          extraCoverageItems = List(if (withExtraCoverage) 2 else 0) {
-            ExtraCoverageItem(displayName = "displayName#$it", displayValue = "displayValue#$it")
-          },
-          notificationMessage = "Your insurance will be deactivated when you no longer have two insurances with us",
-          userError = null,
-          isSubmittingContractTermination = isLoading,
-        ),
+        uiState = previewOverviewUiState(type, withExtraCoverage, submitError = null, isLoading = isLoading),
         onContinue = {},
+        onDismissSubmitError = {},
         navigateBack = {},
         closeTerminationFlow = {},
       )
     }
   }
 }
+
+@HedvigPreview
+@Composable
+private fun PreviewTerminationConfirmationScreenWithError(
+  @PreviewParameter(PreviewTerminationSubmitErrorProvider::class) submitError: TerminationSubmitError,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      TerminationConfirmationScreen(
+        uiState = previewOverviewUiState(
+          type = Termination(LocalDate(2024, 8, 9)),
+          withExtraCoverage = false,
+          submitError = submitError,
+          isLoading = false,
+        ),
+        onContinue = {},
+        onDismissSubmitError = {},
+        navigateBack = {},
+        closeTerminationFlow = {},
+      )
+    }
+  }
+}
+
+private class PreviewTerminationSubmitErrorProvider :
+  CollectionPreviewParameterProvider<TerminationSubmitError>(
+    listOf(
+      TerminationSubmitError.Generic,
+      TerminationSubmitError.UserError("This insurance can no longer be terminated"),
+    ),
+  )
+
+private fun previewOverviewUiState(
+  type: TerminationType,
+  withExtraCoverage: Boolean,
+  submitError: TerminationSubmitError?,
+  isLoading: Boolean,
+) = OverviewUiState(
+  terminationType = type,
+  insuranceInfo = TerminationGraphParameters(
+    contractId = "contractId",
+    insuranceDisplayName = "insuranceDisplayName",
+    exposureName = "exposureName",
+    HOMEOWNER,
+  ),
+  extraCoverageItems = List(if (withExtraCoverage) 2 else 0) {
+    ExtraCoverageItem(displayName = "displayName#$it", displayValue = "displayValue#$it")
+  },
+  notificationMessage = "Your insurance will be deactivated when you no longer have two insurances with us",
+  submitError = submitError,
+  isSubmittingContractTermination = isLoading,
+)
 
 @HedvigPreview
 @Composable

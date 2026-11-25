@@ -133,6 +133,62 @@ class ChooseInsuranceToTerminatePresenterTest {
   }
 
   @Test
+  fun `a requested contract that is not eligible shows the choose step instead of skipping into another`() = runTest {
+    val repository = FakeTerminateInsuranceRepository(surveyData.right())
+    val backstack = TestBackstack(mutableListOf(ContractDetailTestKey, TerminateInsuranceKey("not-eligible")))
+    val presenter = presenter("not-eligible", nonEmptyListOf(regular), repository, backstack)
+    presenter.test(ChooseInsuranceToTerminateStepUiState.Loading) {
+      testScheduler.advanceUntilIdle()
+      assertThat(expectMostRecentItem())
+        .isInstanceOf<ChooseInsuranceToTerminateStepUiState.Success>()
+        .prop(ChooseInsuranceToTerminateStepUiState.Success::selectedInsurance)
+        .isEqualTo(regular)
+      assertThat(backstack.entries).containsExactly(ContractDetailTestKey, TerminateInsuranceKey("not-eligible"))
+      assertThat(repository.surveyRequests).isEmpty()
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `returning to a choose step that was already shown does not skip it`() = runTest {
+    val repository = FakeTerminateInsuranceRepository(surveyData.right())
+    val backstack = TestBackstack(mutableListOf(ContractDetailTestKey, TerminateInsuranceKey(null)))
+    val presenter = presenter(null, nonEmptyListOf(withdrawable, regular), repository, backstack)
+    val shownState = ChooseInsuranceToTerminateStepUiState.Success(
+      insuranceList = listOf(withdrawable, regular),
+      selectedInsurance = withdrawable,
+      isNavigationStepLoading = false,
+      navigationStepFailedToLoad = false,
+    )
+    presenter.test(shownState) {
+      testScheduler.advanceUntilIdle()
+      assertThat(expectMostRecentItem()).isInstanceOf<ChooseInsuranceToTerminateStepUiState.Success>()
+      assertThat(backstack.entries).containsExactly(ContractDetailTestKey, TerminateInsuranceKey(null))
+      assertThat(repository.surveyRequests).isEmpty()
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `returning to the choose step of the only contract does not skip it`() = runTest {
+    val repository = FakeTerminateInsuranceRepository(surveyData.right())
+    val backstack = TestBackstack(mutableListOf(ContractDetailTestKey, TerminateInsuranceKey(null)))
+    val presenter = presenter(null, nonEmptyListOf(regular), repository, backstack)
+    val shownState = ChooseInsuranceToTerminateStepUiState.Success(
+      insuranceList = listOf(regular),
+      selectedInsurance = regular,
+      isNavigationStepLoading = false,
+      navigationStepFailedToLoad = true,
+    )
+    presenter.test(shownState) {
+      testScheduler.advanceUntilIdle()
+      assertThat(backstack.entries).containsExactly(ContractDetailTestKey, TerminateInsuranceKey(null))
+      assertThat(repository.surveyRequests).isEmpty()
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
   fun `closing a flow whose choose step was skipped returns to the screen that started it`() = runTest {
     val repository = FakeTerminateInsuranceRepository(surveyData.right())
     val backstack = TestBackstack(mutableListOf(ContractDetailTestKey, TerminateInsuranceKey("withdrawable")))

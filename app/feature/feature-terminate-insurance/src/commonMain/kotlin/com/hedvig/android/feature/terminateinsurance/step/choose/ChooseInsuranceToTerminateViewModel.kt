@@ -55,7 +55,11 @@ internal class ChooseInsuranceToTerminatePresenter(
   ): ChooseInsuranceToTerminateStepUiState {
     var loadIteration by remember { mutableIntStateOf(0) }
     var nextStepRequest: NextStepRequest? by remember { mutableStateOf(null) }
-    var hasTriedSkippingChooseStep by remember { mutableStateOf(false) }
+    // The presenter restarts when the screen is observed again. A Success lastState means the member has already
+    // seen the choose list, so skipping it now would throw them forward from a screen they navigated back to.
+    var hasTriedSkippingChooseStep by remember {
+      mutableStateOf(lastState is ChooseInsuranceToTerminateStepUiState.Success)
+    }
     var isSkippingChooseStep by remember { mutableStateOf(false) }
     val initialSelected = if (lastState is ChooseInsuranceToTerminateStepUiState.Success) {
       lastState.selectedInsurance?.id
@@ -157,7 +161,10 @@ internal class ChooseInsuranceToTerminatePresenter(
               } else {
                 eligibleInsurances.firstOrNull { it.id == initialSelected }
               }
-              if (selectedInsurance != null && !hasTriedSkippingChooseStep) {
+              // The only eligible contract is pre-selected even when it is not the one the member asked for, but
+              // the member must then see the list rather than be taken into another contract's flow.
+              val isRequestedInsurance = insuranceId == null || selectedInsurance?.id == insuranceId
+              if (selectedInsurance != null && isRequestedInsurance && !hasTriedSkippingChooseStep) {
                 hasTriedSkippingChooseStep = true
                 isSkippingChooseStep = true
                 nextStepRequest = NextStepRequest(selectedInsurance, skipsChooseStep = true)

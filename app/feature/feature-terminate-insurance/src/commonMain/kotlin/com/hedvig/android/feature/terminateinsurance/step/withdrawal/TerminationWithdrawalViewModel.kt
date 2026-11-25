@@ -13,6 +13,7 @@ import com.hedvig.android.feature.terminateinsurance.data.WithdrawalResult
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import com.hedvig.android.feature.terminateinsurance.navigation.WithdrawalSuccessKey
 import com.hedvig.android.feature.terminateinsurance.navigation.replaceTerminationFlow
+import com.hedvig.android.feature.terminateinsurance.ui.TerminationSubmitError
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -39,7 +40,7 @@ internal class TerminationWithdrawalViewModel @AssistedInject constructor(
       statusText = statusText,
       action = action,
       endDate = withdrawalEndDate(action, clock),
-      userError = null,
+      submitError = null,
       isSubmitting = false,
     ),
     presenter = TerminationWithdrawalPresenter(
@@ -62,18 +63,25 @@ internal class TerminationWithdrawalPresenter(
 
     CollectEvents { event ->
       when (event) {
+        TerminationWithdrawalEvent.DismissSubmitError -> {
+          uiState = uiState.copy(submitError = null)
+        }
+
         TerminationWithdrawalEvent.Submit -> {
           if (uiState.isSubmitting) return@CollectEvents
-          uiState = uiState.copy(isSubmitting = true, userError = null)
+          uiState = uiState.copy(isSubmitting = true, submitError = null)
           launch {
             contractWithdrawalRepository.withdrawContract(contractId).fold(
-              ifLeft = { errorMessage ->
-                uiState = uiState.copy(isSubmitting = false, userError = errorMessage.message)
+              ifLeft = {
+                uiState = uiState.copy(isSubmitting = false, submitError = TerminationSubmitError.Generic)
               },
               ifRight = { result ->
                 when (result) {
                   is WithdrawalResult.UserError -> {
-                    uiState = uiState.copy(isSubmitting = false, userError = result.message)
+                    uiState = uiState.copy(
+                      isSubmitting = false,
+                      submitError = TerminationSubmitError.UserError(result.message),
+                    )
                   }
 
                   WithdrawalResult.Withdrawn -> {
@@ -93,6 +101,8 @@ internal class TerminationWithdrawalPresenter(
 
 internal sealed interface TerminationWithdrawalEvent {
   data object Submit : TerminationWithdrawalEvent
+
+  data object DismissSubmitError : TerminationWithdrawalEvent
 }
 
 internal data class TerminationWithdrawalUiState(
@@ -100,7 +110,7 @@ internal data class TerminationWithdrawalUiState(
   val statusText: String,
   val action: TerminationAction,
   val endDate: LocalDate,
-  val userError: String?,
+  val submitError: TerminationSubmitError?,
   val isSubmitting: Boolean,
 )
 

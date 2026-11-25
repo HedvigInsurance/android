@@ -18,6 +18,7 @@ import com.hedvig.android.feature.terminateinsurance.navigation.TerminationConfi
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationSuccessKey
 import com.hedvig.android.feature.terminateinsurance.navigation.replaceTerminationFlow
+import com.hedvig.android.feature.terminateinsurance.ui.TerminationSubmitError
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -46,7 +47,7 @@ internal class TerminationConfirmationViewModel @AssistedInject constructor(
       insuranceInfo = insuranceInfo,
       extraCoverageItems = extraCoverageItems,
       notificationMessage = null,
-      userError = null,
+      submitError = null,
       isSubmittingContractTermination = false,
     ),
     TerminationConfirmationPresenter(
@@ -63,6 +64,8 @@ internal class TerminationConfirmationViewModel @AssistedInject constructor(
 
 sealed interface TerminationConfirmationEvent {
   data object Submit : TerminationConfirmationEvent
+
+  data object DismissSubmitError : TerminationConfirmationEvent
 }
 
 internal class TerminationConfirmationPresenter(
@@ -96,8 +99,12 @@ internal class TerminationConfirmationPresenter(
 
     CollectEvents { event ->
       when (event) {
+        TerminationConfirmationEvent.DismissSubmitError -> {
+          uiState = uiState.copy(submitError = null)
+        }
+
         TerminationConfirmationEvent.Submit -> {
-          uiState = uiState.copy(isSubmittingContractTermination = true, userError = null)
+          uiState = uiState.copy(isSubmittingContractTermination = true, submitError = null)
           launch {
             val result = when (terminationType) {
               Deletion -> terminateInsuranceRepository.deleteContract(
@@ -114,17 +121,17 @@ internal class TerminationConfirmationPresenter(
               )
             }
             result.fold(
-              ifLeft = { errorMessage ->
+              ifLeft = {
                 uiState = uiState.copy(
                   isSubmittingContractTermination = false,
-                  userError = errorMessage.message,
+                  submitError = TerminationSubmitError.Generic,
                 )
               },
               ifRight = { terminationResult ->
                 when (terminationResult) {
                   is TerminationResult.UserError -> uiState = uiState.copy(
                     isSubmittingContractTermination = false,
-                    userError = terminationResult.message,
+                    submitError = TerminationSubmitError.UserError(terminationResult.message),
                   )
 
                   is TerminationResult.Terminated -> backstack.replaceTerminationFlow(
@@ -151,6 +158,6 @@ internal data class OverviewUiState(
   val insuranceInfo: TerminationGraphParameters,
   val extraCoverageItems: List<ExtraCoverageItem>,
   val notificationMessage: String?,
-  val userError: String?,
+  val submitError: TerminationSubmitError?,
   val isSubmittingContractTermination: Boolean,
 )

@@ -34,6 +34,8 @@ import com.hedvig.android.feature.terminateinsurance.step.terminationreview.AreY
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.InsuranceInfoCard
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoCardDate
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
+import com.hedvig.android.feature.terminateinsurance.ui.TerminationSubmitError
+import com.hedvig.android.feature.terminateinsurance.ui.TerminationSubmitErrorDialog
 import hedvig.resources.Res
 import hedvig.resources.TERMINATE_CONTRACT_TERMINATING_PROGRESS
 import hedvig.resources.TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TODAY
@@ -55,6 +57,7 @@ internal fun TerminationWithdrawalDestination(
   TerminationWithdrawalScreen(
     uiState = uiState,
     onConfirm = { viewModel.emit(TerminationWithdrawalEvent.Submit) },
+    onDismissSubmitError = { viewModel.emit(TerminationWithdrawalEvent.DismissSubmitError) },
     navigateUp = navigateUp,
     closeTerminationFlow = closeTerminationFlow,
   )
@@ -64,9 +67,13 @@ internal fun TerminationWithdrawalDestination(
 private fun TerminationWithdrawalScreen(
   uiState: TerminationWithdrawalUiState,
   onConfirm: () -> Unit,
+  onDismissSubmitError: () -> Unit,
   navigateUp: () -> Unit,
   closeTerminationFlow: () -> Unit,
 ) {
+  if (uiState.submitError != null) {
+    TerminationSubmitErrorDialog(uiState.submitError, onDismiss = onDismissSubmitError)
+  }
   if (uiState.isSubmitting) {
     HedvigFullScreenCenterAlignedLinearProgress(
       title = stringResource(Res.string.TERMINATE_CONTRACT_TERMINATING_PROGRESS),
@@ -92,14 +99,6 @@ private fun TerminationWithdrawalScreen(
       Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f).heightIn(min = 8.dp))
-    if (uiState.userError != null) {
-      HedvigNotificationCard(
-        message = uiState.userError,
-        priority = NotificationDefaults.NotificationPriority.Attention,
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(16.dp))
-    }
     InsuranceInfoCard(
       insuranceInfo = uiState.insuranceInfo,
       extraCoverageItems = uiState.action.extraCoverageItems,
@@ -150,6 +149,7 @@ private fun PreviewTerminationWithdrawalScreen(
       TerminationWithdrawalScreen(
         uiState = uiState,
         onConfirm = {},
+        onDismissSubmitError = {},
         navigateUp = {},
         closeTerminationFlow = {},
       )
@@ -166,25 +166,30 @@ private class TerminationWithdrawalUiStateProvider :
           maxDate = LocalDate(2026, 11, 25),
           extraCoverageItems = listOf(ExtraCoverageItem("Travel Plus", "45 dagar")),
         ),
-        userError = null,
+        submitError = null,
       ),
       previewWithdrawalUiState(
         TerminationAction.DeleteInsurance(extraCoverageItems = emptyList()),
-        userError = "Something went wrong",
+        submitError = TerminationSubmitError.Generic,
+      ),
+      previewWithdrawalUiState(
+        TerminationAction.DeleteInsurance(extraCoverageItems = emptyList()),
+        submitError = TerminationSubmitError.UserError("This insurance can no longer be withdrawn"),
       ),
     ),
   )
 
-private fun previewWithdrawalUiState(action: TerminationAction, userError: String?) = TerminationWithdrawalUiState(
-  insuranceInfo = TerminationGraphParameters(
-    contractId = "contractId",
-    insuranceDisplayName = "Hemförsäkring",
-    exposureName = "Bellmansgatan 19",
-    contractGroup = HOMEOWNER,
-  ),
-  statusText = "Din försäkring är aktiv sedan 20 nov. 2026",
-  action = action,
-  endDate = LocalDate(2026, 11, 25),
-  userError = userError,
-  isSubmitting = false,
-)
+private fun previewWithdrawalUiState(action: TerminationAction, submitError: TerminationSubmitError?) =
+  TerminationWithdrawalUiState(
+    insuranceInfo = TerminationGraphParameters(
+      contractId = "contractId",
+      insuranceDisplayName = "Hemförsäkring",
+      exposureName = "Bellmansgatan 19",
+      contractGroup = HOMEOWNER,
+    ),
+    statusText = "Din försäkring är aktiv sedan 20 nov. 2026",
+    action = action,
+    endDate = LocalDate(2026, 11, 25),
+    submitError = submitError,
+    isSubmitting = false,
+  )

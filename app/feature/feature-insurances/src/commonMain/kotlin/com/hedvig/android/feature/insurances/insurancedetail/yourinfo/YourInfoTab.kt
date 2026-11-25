@@ -169,7 +169,9 @@ internal fun YourInfoTab(
   modifier: Modifier = Modifier,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
-  val showChangeAddressInEditSheet = allowChangeAddress && allowWithdrawal
+  // Withdrawal goes through the termination flow, which only offers contracts that can be terminated.
+  val showWithdrawButton = allowWithdrawal && allowTerminatingInsurance
+  val showChangeAddressInEditSheet = allowChangeAddress && showWithdrawButton
   val editYourInfoBottomSheet = rememberHedvigBottomSheetState<Unit>()
   HedvigBottomSheet(editYourInfoBottomSheet) {
     EditInsuranceBottomSheetContent(
@@ -414,7 +416,7 @@ internal fun YourInfoTab(
               .fillMaxWidth(),
           )
         }
-        if (allowWithdrawal) {
+        if (showWithdrawButton) {
           HedvigButton(
             text = stringResource(Res.string.TERMINATION_FLOW_WITHDRAWAL_BUTTON),
             buttonStyle = Ghost,

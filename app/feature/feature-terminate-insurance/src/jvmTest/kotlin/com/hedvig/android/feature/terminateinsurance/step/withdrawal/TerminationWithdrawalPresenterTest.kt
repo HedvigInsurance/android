@@ -6,6 +6,7 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
+import assertk.assertions.isNull
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.ContractGroup.RENTAL
 import com.hedvig.android.feature.terminateinsurance.FakeContractWithdrawalRepository
@@ -15,6 +16,7 @@ import com.hedvig.android.feature.terminateinsurance.data.WithdrawalResult
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationWithdrawalKey
 import com.hedvig.android.feature.terminateinsurance.navigation.WithdrawalSuccessKey
+import com.hedvig.android.feature.terminateinsurance.ui.TerminationSubmitError
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.navigation.common.HedvigNavKey
@@ -42,7 +44,7 @@ class TerminationWithdrawalPresenterTest {
     statusText = "status",
     action = action,
     endDate = today,
-    userError = null,
+    submitError = null,
     isSubmitting = false,
   )
 
@@ -90,7 +92,7 @@ class TerminationWithdrawalPresenterTest {
       sendEvent(TerminationWithdrawalEvent.Submit)
       testScheduler.advanceUntilIdle()
       val state = expectMostRecentItem()
-      assertThat(state.userError).isEqualTo("nope")
+      assertThat(state.submitError).isEqualTo(TerminationSubmitError.UserError("nope"))
       assertThat(state.isSubmitting).isFalse()
       assertThat(backstack.entries.size).isEqualTo(2)
       cancelAndIgnoreRemainingEvents()
@@ -98,15 +100,33 @@ class TerminationWithdrawalPresenterTest {
   }
 
   @Test
-  fun `a network error is shown and the member stays on the screen`() = runTest {
-    val repository = FakeContractWithdrawalRepository(withdrawResult = ErrorMessage("offline").left())
+  fun `a failure without a message shows a generic error and the member stays on the screen`() = runTest {
+    val repository = FakeContractWithdrawalRepository(withdrawResult = ErrorMessage().left())
     val backstack = flowBackstack(endsToday)
     TerminationWithdrawalPresenter("contractId", repository, backstack).test(initialState(endsToday)) {
       skipItems(1)
       sendEvent(TerminationWithdrawalEvent.Submit)
       testScheduler.advanceUntilIdle()
-      assertThat(expectMostRecentItem().userError).isEqualTo("offline")
+      val state = expectMostRecentItem()
+      assertThat(state.submitError).isEqualTo(TerminationSubmitError.Generic)
+      assertThat(state.isSubmitting).isFalse()
       assertThat(backstack.entries.size).isEqualTo(2)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `dismissing the error clears it`() = runTest {
+    val repository = FakeContractWithdrawalRepository(withdrawResult = ErrorMessage().left())
+    val backstack = flowBackstack(endsToday)
+    TerminationWithdrawalPresenter("contractId", repository, backstack).test(initialState(endsToday)) {
+      skipItems(1)
+      sendEvent(TerminationWithdrawalEvent.Submit)
+      testScheduler.advanceUntilIdle()
+      assertThat(expectMostRecentItem().submitError).isEqualTo(TerminationSubmitError.Generic)
+      sendEvent(TerminationWithdrawalEvent.DismissSubmitError)
+      testScheduler.advanceUntilIdle()
+      assertThat(expectMostRecentItem().submitError).isNull()
       cancelAndIgnoreRemainingEvents()
     }
   }
