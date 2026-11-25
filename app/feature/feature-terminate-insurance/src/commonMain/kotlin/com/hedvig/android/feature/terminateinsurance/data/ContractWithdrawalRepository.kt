@@ -27,6 +27,7 @@ internal interface ContractWithdrawalRepository {
 internal data class ContractWithdrawalData(
   val statusText: String,
   val action: TerminationAction,
+  val confirmationEmail: String,
 )
 
 internal sealed interface WithdrawalResult {
@@ -43,17 +44,21 @@ internal class ContractWithdrawalRepositoryImpl(
 ) : ContractWithdrawalRepository {
   override suspend fun getContractWithdrawal(contractId: String): Either<ErrorMessage, ContractWithdrawalData> {
     return either {
-      val withdrawal = apolloClient
+      val member = apolloClient
         .query(ContractWithdrawalQuery(contractId = contractId))
         .fetchPolicy(FetchPolicy.NetworkOnly)
         .safeExecute(::ErrorMessage)
         .bind()
         .currentMember
-        .contractWithdrawal
+      val withdrawal = member.contractWithdrawal
       val action = ensureNotNull(withdrawal.action.toTerminationAction()) {
         ErrorMessage("Unknown withdrawal action type: ${withdrawal.action::class.simpleName}")
       }
-      ContractWithdrawalData(statusText = withdrawal.statusText, action = action)
+      ContractWithdrawalData(
+        statusText = withdrawal.statusText,
+        action = action,
+        confirmationEmail = member.email,
+      )
     }
   }
 

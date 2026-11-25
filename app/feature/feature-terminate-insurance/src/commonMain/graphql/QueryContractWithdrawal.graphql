@@ -1,6 +1,7 @@
 query ContractWithdrawal($contractId: UUID!) {
   currentMember {
     id
+    email
     contractWithdrawal(contractId: $contractId) {
       statusText
       action {

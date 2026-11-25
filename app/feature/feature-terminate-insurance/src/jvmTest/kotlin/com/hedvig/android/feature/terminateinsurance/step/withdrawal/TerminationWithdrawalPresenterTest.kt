@@ -1,17 +1,19 @@
 package com.hedvig.android.feature.terminateinsurance.step.withdrawal
 
+import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
+import assertk.assertions.isInstanceOf
 import assertk.assertions.isNull
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.ContractGroup.RENTAL
 import com.hedvig.android.feature.terminateinsurance.FakeContractWithdrawalRepository
-import com.hedvig.android.feature.terminateinsurance.FakeGetMemberEmailUseCase
 import com.hedvig.android.feature.terminateinsurance.TestBackstack
+import com.hedvig.android.feature.terminateinsurance.data.ContractWithdrawalData
 import com.hedvig.android.feature.terminateinsurance.data.TerminationAction
 import com.hedvig.android.feature.terminateinsurance.data.WithdrawalResult
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
@@ -39,62 +41,105 @@ class TerminationWithdrawalPresenterTest {
   private val commonParams = TerminationGraphParameters("contractId", "name", "exposure", RENTAL)
   private val today = LocalDate(2026, 11, 25)
   private val endsToday = TerminationAction.TerminateWithDate(today, today, emptyList())
-
-  private fun initialState(action: TerminationAction) = TerminationWithdrawalUiState(
-    insuranceInfo = commonParams,
+  private val withdrawalData = ContractWithdrawalData(
     statusText = "status",
-    action = action,
-    endDate = today,
-    confirmationEmail = null,
-    submitError = null,
-    isSubmitting = false,
+    action = endsToday,
+    confirmationEmail = "member@example.com",
   )
 
-  private fun presenter(
-    repository: FakeContractWithdrawalRepository,
-    backstack: TestBackstack,
-    getMemberEmailUseCase: FakeGetMemberEmailUseCase = FakeGetMemberEmailUseCase(),
-  ) = TerminationWithdrawalPresenter("contractId", repository, getMemberEmailUseCase, backstack)
+  private fun flowBackstack() = TestBackstack(mutableListOf(StartingTestKey, TerminationWithdrawalKey(commonParams)))
+
+  private fun presenter(repository: FakeContractWithdrawalRepository, backstack: TestBackstack) =
+    TerminationWithdrawalPresenter(commonParams, repository, fixedClockAt(today), backstack)
+
+  private fun repository(
+    withdrawalData: Either<ErrorMessage, ContractWithdrawalData> = this.withdrawalData.right(),
+    withdrawResult: Either<ErrorMessage, WithdrawalResult> = ErrorMessage().left(),
+  ) = FakeContractWithdrawalRepository(withdrawalData = withdrawalData, withdrawResult = withdrawResult)
 
   @Test
-  fun `the member's email is loaded for the confirmation field`() = runTest {
-    val backstack = flowBackstack(endsToday)
-    presenter(FakeContractWithdrawalRepository(), backstack).test(initialState(endsToday)) {
+  fun `the screen loads its withdrawal details and the member's email`() = runTest {
+    val repository = repository()
+    presenter(repository, flowBackstack()).test(TerminationWithdrawalUiState.Loading) {
       testScheduler.advanceUntilIdle()
-      assertThat(expectMostRecentItem().confirmationEmail).isEqualTo("member@example.com")
+      assertThat(repository.withdrawalRequests).containsExactly("contractId")
+      assertThat(expectMostRecentItem()).isEqualTo(
+        TerminationWithdrawalUiState.Content(
+          insuranceInfo = commonParams,
+          statusText = "status",
+          action = endsToday,
+          endDate = today,
+          confirmationEmail = "member@example.com",
+          submitError = null,
+          isSubmitting = false,
+        ),
+      )
       cancelAndIgnoreRemainingEvents()
     }
   }
 
   @Test
-  fun `a failed email load hides the field and still lets the member withdraw`() = runTest {
-    val repository = FakeContractWithdrawalRepository(withdrawResult = WithdrawalResult.Withdrawn.right())
-    val backstack = flowBackstack(endsToday)
-    presenter(repository, backstack, FakeGetMemberEmailUseCase(ErrorMessage().left()))
-      .test(initialState(endsToday)) {
-        testScheduler.advanceUntilIdle()
-        assertThat(expectMostRecentItem().confirmationEmail).isNull()
-        sendEvent(TerminationWithdrawalEvent.Submit)
-        testScheduler.advanceUntilIdle()
-        assertThat(backstack.entries).containsExactly(StartingTestKey, WithdrawalSuccessKey(today))
-        cancelAndIgnoreRemainingEvents()
-      }
+  fun `a failed load shows the failure state and retry loads again`() = runTest {
+    val repository = repository(withdrawalData = ErrorMessage().left())
+    presenter(repository, flowBackstack()).test(TerminationWithdrawalUiState.Loading) {
+      testScheduler.advanceUntilIdle()
+      assertThat(expectMostRecentItem()).isEqualTo(TerminationWithdrawalUiState.Failure)
+      sendEvent(TerminationWithdrawalEvent.Retry)
+      testScheduler.advanceUntilIdle()
+      assertThat(repository.withdrawalRequests).containsExactly("contractId", "contractId")
+      cancelAndIgnoreRemainingEvents()
+    }
   }
-
-  private fun flowBackstack(action: TerminationAction) = TestBackstack(
-    mutableListOf(StartingTestKey, TerminationWithdrawalKey(commonParams, "status", action)),
-  )
 
   @Test
   fun `a withdrawn contract replaces the flow with success carrying its end date`() = runTest {
-    val repository = FakeContractWithdrawalRepository(withdrawResult = WithdrawalResult.Withdrawn.right())
-    val backstack = flowBackstack(endsToday)
-    presenter(repository, backstack).test(initialState(endsToday)) {
-      skipItems(1)
+    val repository = repository(withdrawResult = WithdrawalResult.Withdrawn.right())
+    val backstack = flowBackstack()
+    presenter(repository, backstack).test(TerminationWithdrawalUiState.Loading) {
+      testScheduler.advanceUntilIdle()
       sendEvent(TerminationWithdrawalEvent.Submit)
       testScheduler.advanceUntilIdle()
       assertThat(repository.withdrawRequests).containsExactly("contractId")
       assertThat(backstack.entries).containsExactly(StartingTestKey, WithdrawalSuccessKey(today))
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `a user error is shown and the member stays on the screen`() = runTest {
+    val repository = repository(withdrawResult = WithdrawalResult.UserError("nope").right())
+    val backstack = flowBackstack()
+    presenter(repository, backstack).test(TerminationWithdrawalUiState.Loading) {
+      testScheduler.advanceUntilIdle()
+      sendEvent(TerminationWithdrawalEvent.Submit)
+      testScheduler.advanceUntilIdle()
+      val state = expectMostRecentItem()
+      assertThat(state).isInstanceOf<TerminationWithdrawalUiState.Content>().given {
+        assertThat(it.submitError).isEqualTo(TerminationSubmitError.UserError("nope"))
+        assertThat(it.isSubmitting).isFalse()
+      }
+      assertThat(backstack.entries.size).isEqualTo(2)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `a failure without a message shows a generic error that can be dismissed`() = runTest {
+    val backstack = flowBackstack()
+    presenter(repository(), backstack).test(TerminationWithdrawalUiState.Loading) {
+      testScheduler.advanceUntilIdle()
+      sendEvent(TerminationWithdrawalEvent.Submit)
+      testScheduler.advanceUntilIdle()
+      assertThat(expectMostRecentItem()).isInstanceOf<TerminationWithdrawalUiState.Content>().given {
+        assertThat(it.submitError).isEqualTo(TerminationSubmitError.Generic)
+        assertThat(it.isSubmitting).isFalse()
+      }
+      sendEvent(TerminationWithdrawalEvent.DismissSubmitError)
+      testScheduler.advanceUntilIdle()
+      assertThat(expectMostRecentItem()).isInstanceOf<TerminationWithdrawalUiState.Content>().given {
+        assertThat(it.submitError).isNull()
+      }
+      assertThat(backstack.entries.size).isEqualTo(2)
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -114,54 +159,6 @@ class TerminationWithdrawalPresenterTest {
 
   private fun fixedClockAt(date: LocalDate): Clock = object : Clock {
     override fun now(): Instant = date.atTime(12, 0).toInstant(TimeZone.currentSystemDefault())
-  }
-
-  @Test
-  fun `a user error is shown and the member stays on the screen`() = runTest {
-    val repository = FakeContractWithdrawalRepository(withdrawResult = WithdrawalResult.UserError("nope").right())
-    val backstack = flowBackstack(endsToday)
-    presenter(repository, backstack).test(initialState(endsToday)) {
-      skipItems(1)
-      sendEvent(TerminationWithdrawalEvent.Submit)
-      testScheduler.advanceUntilIdle()
-      val state = expectMostRecentItem()
-      assertThat(state.submitError).isEqualTo(TerminationSubmitError.UserError("nope"))
-      assertThat(state.isSubmitting).isFalse()
-      assertThat(backstack.entries.size).isEqualTo(2)
-      cancelAndIgnoreRemainingEvents()
-    }
-  }
-
-  @Test
-  fun `a failure without a message shows a generic error and the member stays on the screen`() = runTest {
-    val repository = FakeContractWithdrawalRepository(withdrawResult = ErrorMessage().left())
-    val backstack = flowBackstack(endsToday)
-    presenter(repository, backstack).test(initialState(endsToday)) {
-      skipItems(1)
-      sendEvent(TerminationWithdrawalEvent.Submit)
-      testScheduler.advanceUntilIdle()
-      val state = expectMostRecentItem()
-      assertThat(state.submitError).isEqualTo(TerminationSubmitError.Generic)
-      assertThat(state.isSubmitting).isFalse()
-      assertThat(backstack.entries.size).isEqualTo(2)
-      cancelAndIgnoreRemainingEvents()
-    }
-  }
-
-  @Test
-  fun `dismissing the error clears it`() = runTest {
-    val repository = FakeContractWithdrawalRepository(withdrawResult = ErrorMessage().left())
-    val backstack = flowBackstack(endsToday)
-    presenter(repository, backstack).test(initialState(endsToday)) {
-      skipItems(1)
-      sendEvent(TerminationWithdrawalEvent.Submit)
-      testScheduler.advanceUntilIdle()
-      assertThat(expectMostRecentItem().submitError).isEqualTo(TerminationSubmitError.Generic)
-      sendEvent(TerminationWithdrawalEvent.DismissSubmitError)
-      testScheduler.advanceUntilIdle()
-      assertThat(expectMostRecentItem().submitError).isNull()
-      cancelAndIgnoreRemainingEvents()
-    }
   }
 }
 

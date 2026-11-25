@@ -127,7 +127,7 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceEntries(
   entry<TerminationWithdrawalKey> { key ->
     val viewModel: TerminationWithdrawalViewModel =
       assistedMetroViewModel<TerminationWithdrawalViewModel, TerminationWithdrawalViewModelFactory> {
-        create(key.commonParams, key.statusText, key.action)
+        create(key.commonParams)
       }
     TerminationWithdrawalDestination(
       viewModel = viewModel,

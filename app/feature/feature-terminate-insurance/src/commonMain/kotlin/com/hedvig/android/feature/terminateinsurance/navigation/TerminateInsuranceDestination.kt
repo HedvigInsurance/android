@@ -19,8 +19,6 @@ internal data class TerminationChooseActionKey(
 @Serializable
 internal data class TerminationWithdrawalKey(
   val commonParams: TerminationGraphParameters,
-  val statusText: String,
-  val action: TerminationAction,
 ) : TerminationFlowKey
 
 @Serializable

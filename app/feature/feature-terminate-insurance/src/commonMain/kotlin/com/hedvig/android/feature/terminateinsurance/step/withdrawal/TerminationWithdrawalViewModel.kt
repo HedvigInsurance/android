@@ -3,13 +3,13 @@ package com.hedvig.android.feature.terminateinsurance.step.withdrawal
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.terminateinsurance.data.ContractWithdrawalRepository
-import com.hedvig.android.feature.terminateinsurance.data.GetMemberEmailUseCase
 import com.hedvig.android.feature.terminateinsurance.data.TerminationAction
 import com.hedvig.android.feature.terminateinsurance.data.WithdrawalResult
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
@@ -31,74 +31,86 @@ import kotlinx.datetime.toLocalDateTime
 @HedvigViewModel(ActivityRetainedScope::class)
 internal class TerminationWithdrawalViewModel @AssistedInject constructor(
   @Assisted insuranceInfo: TerminationGraphParameters,
-  @Assisted statusText: String,
-  @Assisted action: TerminationAction,
   contractWithdrawalRepository: ContractWithdrawalRepository,
-  getMemberEmailUseCase: GetMemberEmailUseCase,
   clock: Clock,
   backstack: Backstack,
 ) : MoleculeViewModel<TerminationWithdrawalEvent, TerminationWithdrawalUiState>(
-    initialState = TerminationWithdrawalUiState(
-      insuranceInfo = insuranceInfo,
-      statusText = statusText,
-      action = action,
-      endDate = withdrawalEndDate(action, clock),
-      confirmationEmail = null,
-      submitError = null,
-      isSubmitting = false,
-    ),
+    initialState = TerminationWithdrawalUiState.Loading,
     presenter = TerminationWithdrawalPresenter(
-      contractId = insuranceInfo.contractId,
+      insuranceInfo = insuranceInfo,
       contractWithdrawalRepository = contractWithdrawalRepository,
-      getMemberEmailUseCase = getMemberEmailUseCase,
+      clock = clock,
       backstack = backstack,
     ),
   )
 
 internal class TerminationWithdrawalPresenter(
-  private val contractId: String,
+  private val insuranceInfo: TerminationGraphParameters,
   private val contractWithdrawalRepository: ContractWithdrawalRepository,
-  private val getMemberEmailUseCase: GetMemberEmailUseCase,
+  private val clock: Clock,
   private val backstack: Backstack,
 ) : MoleculePresenter<TerminationWithdrawalEvent, TerminationWithdrawalUiState> {
   @Composable
   override fun MoleculePresenterScope<TerminationWithdrawalEvent>.present(
     lastState: TerminationWithdrawalUiState,
   ): TerminationWithdrawalUiState {
-    var uiState by remember { mutableStateOf(lastState.copy(isSubmitting = false)) }
+    var loadIteration by remember { mutableIntStateOf(0) }
+    var uiState by remember {
+      mutableStateOf(
+        if (lastState is TerminationWithdrawalUiState.Content) lastState.copy(isSubmitting = false) else lastState,
+      )
+    }
 
-    LaunchedEffect(Unit) {
-      if (uiState.confirmationEmail != null) return@LaunchedEffect
-      getMemberEmailUseCase.invoke().onRight { email ->
-        uiState = uiState.copy(confirmationEmail = email)
-      }
+    LaunchedEffect(loadIteration) {
+      if (uiState is TerminationWithdrawalUiState.Content) return@LaunchedEffect
+      uiState = TerminationWithdrawalUiState.Loading
+      uiState = contractWithdrawalRepository.getContractWithdrawal(insuranceInfo.contractId).fold(
+        ifLeft = { TerminationWithdrawalUiState.Failure },
+        ifRight = { withdrawal ->
+          TerminationWithdrawalUiState.Content(
+            insuranceInfo = insuranceInfo,
+            statusText = withdrawal.statusText,
+            action = withdrawal.action,
+            endDate = withdrawalEndDate(withdrawal.action, clock),
+            confirmationEmail = withdrawal.confirmationEmail,
+            submitError = null,
+            isSubmitting = false,
+          )
+        },
+      )
     }
 
     CollectEvents { event ->
       when (event) {
+        TerminationWithdrawalEvent.Retry -> {
+          loadIteration++
+        }
+
         TerminationWithdrawalEvent.DismissSubmitError -> {
-          uiState = uiState.copy(submitError = null)
+          val content = uiState as? TerminationWithdrawalUiState.Content ?: return@CollectEvents
+          uiState = content.copy(submitError = null)
         }
 
         TerminationWithdrawalEvent.Submit -> {
-          if (uiState.isSubmitting) return@CollectEvents
-          uiState = uiState.copy(isSubmitting = true, submitError = null)
+          val content = uiState as? TerminationWithdrawalUiState.Content ?: return@CollectEvents
+          if (content.isSubmitting) return@CollectEvents
+          uiState = content.copy(isSubmitting = true, submitError = null)
           launch {
-            contractWithdrawalRepository.withdrawContract(contractId).fold(
+            contractWithdrawalRepository.withdrawContract(insuranceInfo.contractId).fold(
               ifLeft = {
-                uiState = uiState.copy(isSubmitting = false, submitError = TerminationSubmitError.Generic)
+                uiState = content.copy(isSubmitting = false, submitError = TerminationSubmitError.Generic)
               },
               ifRight = { result ->
                 when (result) {
                   is WithdrawalResult.UserError -> {
-                    uiState = uiState.copy(
+                    uiState = content.copy(
                       isSubmitting = false,
                       submitError = TerminationSubmitError.UserError(result.message),
                     )
                   }
 
                   WithdrawalResult.Withdrawn -> {
-                    backstack.replaceTerminationFlow(WithdrawalSuccessKey(uiState.endDate))
+                    backstack.replaceTerminationFlow(WithdrawalSuccessKey(content.endDate))
                   }
                 }
               },
@@ -113,21 +125,28 @@ internal class TerminationWithdrawalPresenter(
 }
 
 internal sealed interface TerminationWithdrawalEvent {
+  data object Retry : TerminationWithdrawalEvent
+
   data object Submit : TerminationWithdrawalEvent
 
   data object DismissSubmitError : TerminationWithdrawalEvent
 }
 
-internal data class TerminationWithdrawalUiState(
-  val insuranceInfo: TerminationGraphParameters,
-  val statusText: String,
-  val action: TerminationAction,
-  val endDate: LocalDate,
-  /** Shown once loaded. Withdrawing does not depend on it, so it stays null if loading fails. */
-  val confirmationEmail: String?,
-  val submitError: TerminationSubmitError?,
-  val isSubmitting: Boolean,
-)
+internal sealed interface TerminationWithdrawalUiState {
+  data object Loading : TerminationWithdrawalUiState
+
+  data object Failure : TerminationWithdrawalUiState
+
+  data class Content(
+    val insuranceInfo: TerminationGraphParameters,
+    val statusText: String,
+    val action: TerminationAction,
+    val endDate: LocalDate,
+    val confirmationEmail: String,
+    val submitError: TerminationSubmitError?,
+    val isSubmitting: Boolean,
+  ) : TerminationWithdrawalUiState
+}
 
 /**
  * An active contract comes as [TerminationAction.TerminateWithDate] with `minDate == maxDate`, the only date it can

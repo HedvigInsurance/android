@@ -16,9 +16,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.data.contract.ContractGroup.HOMEOWNER
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedLinearProgress
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
@@ -57,6 +60,7 @@ internal fun TerminationWithdrawalDestination(
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   TerminationWithdrawalScreen(
     uiState = uiState,
+    onRetry = { viewModel.emit(TerminationWithdrawalEvent.Retry) },
     onConfirm = { viewModel.emit(TerminationWithdrawalEvent.Submit) },
     onDismissSubmitError = { viewModel.emit(TerminationWithdrawalEvent.DismissSubmitError) },
     navigateUp = navigateUp,
@@ -67,6 +71,38 @@ internal fun TerminationWithdrawalDestination(
 @Composable
 private fun TerminationWithdrawalScreen(
   uiState: TerminationWithdrawalUiState,
+  onRetry: () -> Unit,
+  onConfirm: () -> Unit,
+  onDismissSubmitError: () -> Unit,
+  navigateUp: () -> Unit,
+  closeTerminationFlow: () -> Unit,
+) {
+  when (uiState) {
+    TerminationWithdrawalUiState.Loading -> {
+      HedvigFullScreenCenterAlignedProgress()
+    }
+
+    TerminationWithdrawalUiState.Failure -> {
+      HedvigScaffold(navigateUp = navigateUp) {
+        HedvigErrorSection(onButtonClick = onRetry, modifier = Modifier.weight(1f))
+      }
+    }
+
+    is TerminationWithdrawalUiState.Content -> {
+      TerminationWithdrawalContent(
+        uiState = uiState,
+        onConfirm = onConfirm,
+        onDismissSubmitError = onDismissSubmitError,
+        navigateUp = navigateUp,
+        closeTerminationFlow = closeTerminationFlow,
+      )
+    }
+  }
+}
+
+@Composable
+private fun TerminationWithdrawalContent(
+  uiState: TerminationWithdrawalUiState.Content,
   onConfirm: () -> Unit,
   onDismissSubmitError: () -> Unit,
   navigateUp: () -> Unit,
@@ -113,13 +149,11 @@ private fun TerminationWithdrawalScreen(
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(4.dp))
-    if (uiState.confirmationEmail != null) {
-      TerminationInfoCardConfirmationEmail(
-        email = uiState.confirmationEmail,
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(4.dp))
-    }
+    TerminationInfoCardConfirmationEmail(
+      email = uiState.confirmationEmail,
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
+    Spacer(Modifier.height(4.dp))
     HedvigNotificationCard(
       message = uiState.statusText,
       priority = NotificationDefaults.NotificationPriority.Info,
@@ -156,6 +190,7 @@ private fun PreviewTerminationWithdrawalScreen(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       TerminationWithdrawalScreen(
         uiState = uiState,
+        onRetry = {},
         onConfirm = {},
         onDismissSubmitError = {},
         navigateUp = {},
@@ -184,11 +219,13 @@ private class TerminationWithdrawalUiStateProvider :
         TerminationAction.DeleteInsurance(extraCoverageItems = emptyList()),
         submitError = TerminationSubmitError.UserError("This insurance can no longer be withdrawn"),
       ),
+      TerminationWithdrawalUiState.Loading,
+      TerminationWithdrawalUiState.Failure,
     ),
   )
 
 private fun previewWithdrawalUiState(action: TerminationAction, submitError: TerminationSubmitError?) =
-  TerminationWithdrawalUiState(
+  TerminationWithdrawalUiState.Content(
     insuranceInfo = TerminationGraphParameters(
       contractId = "contractId",
       insuranceDisplayName = "Hemförsäkring",
