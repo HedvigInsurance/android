@@ -32,6 +32,7 @@ import com.hedvig.android.feature.terminateinsurance.data.TerminationAction
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.AreYouSureSheet
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.InsuranceInfoCard
+import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoCardConfirmationEmail
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoCardDate
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationSubmitError
@@ -112,10 +113,17 @@ private fun TerminationWithdrawalScreen(
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(4.dp))
+    if (uiState.confirmationEmail != null) {
+      TerminationInfoCardConfirmationEmail(
+        email = uiState.confirmationEmail,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+      Spacer(Modifier.height(4.dp))
+    }
     HedvigNotificationCard(
       message = uiState.statusText,
       priority = NotificationDefaults.NotificationPriority.Info,
-      modifier = Modifier.padding(horizontal = 16.dp),
+      modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
     HedvigButton(
@@ -190,6 +198,7 @@ private fun previewWithdrawalUiState(action: TerminationAction, submitError: Ter
     statusText = "Din försäkring är aktiv sedan 20 nov. 2026",
     action = action,
     endDate = LocalDate(2026, 11, 25),
+    confirmationEmail = "member@example.com",
     submitError = submitError,
     isSubmitting = false,
   )

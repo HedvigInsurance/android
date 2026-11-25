@@ -10,6 +10,7 @@ import assertk.assertions.isNull
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.ContractGroup.RENTAL
 import com.hedvig.android.feature.terminateinsurance.FakeContractWithdrawalRepository
+import com.hedvig.android.feature.terminateinsurance.FakeGetMemberEmailUseCase
 import com.hedvig.android.feature.terminateinsurance.TestBackstack
 import com.hedvig.android.feature.terminateinsurance.data.TerminationAction
 import com.hedvig.android.feature.terminateinsurance.data.WithdrawalResult
@@ -44,9 +45,41 @@ class TerminationWithdrawalPresenterTest {
     statusText = "status",
     action = action,
     endDate = today,
+    confirmationEmail = null,
     submitError = null,
     isSubmitting = false,
   )
+
+  private fun presenter(
+    repository: FakeContractWithdrawalRepository,
+    backstack: TestBackstack,
+    getMemberEmailUseCase: FakeGetMemberEmailUseCase = FakeGetMemberEmailUseCase(),
+  ) = TerminationWithdrawalPresenter("contractId", repository, getMemberEmailUseCase, backstack)
+
+  @Test
+  fun `the member's email is loaded for the confirmation field`() = runTest {
+    val backstack = flowBackstack(endsToday)
+    presenter(FakeContractWithdrawalRepository(), backstack).test(initialState(endsToday)) {
+      testScheduler.advanceUntilIdle()
+      assertThat(expectMostRecentItem().confirmationEmail).isEqualTo("member@example.com")
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `a failed email load hides the field and still lets the member withdraw`() = runTest {
+    val repository = FakeContractWithdrawalRepository(withdrawResult = WithdrawalResult.Withdrawn.right())
+    val backstack = flowBackstack(endsToday)
+    presenter(repository, backstack, FakeGetMemberEmailUseCase(ErrorMessage().left()))
+      .test(initialState(endsToday)) {
+        testScheduler.advanceUntilIdle()
+        assertThat(expectMostRecentItem().confirmationEmail).isNull()
+        sendEvent(TerminationWithdrawalEvent.Submit)
+        testScheduler.advanceUntilIdle()
+        assertThat(backstack.entries).containsExactly(StartingTestKey, WithdrawalSuccessKey(today))
+        cancelAndIgnoreRemainingEvents()
+      }
+  }
 
   private fun flowBackstack(action: TerminationAction) = TestBackstack(
     mutableListOf(StartingTestKey, TerminationWithdrawalKey(commonParams, "status", action)),
@@ -56,7 +89,7 @@ class TerminationWithdrawalPresenterTest {
   fun `a withdrawn contract replaces the flow with success carrying its end date`() = runTest {
     val repository = FakeContractWithdrawalRepository(withdrawResult = WithdrawalResult.Withdrawn.right())
     val backstack = flowBackstack(endsToday)
-    TerminationWithdrawalPresenter("contractId", repository, backstack).test(initialState(endsToday)) {
+    presenter(repository, backstack).test(initialState(endsToday)) {
       skipItems(1)
       sendEvent(TerminationWithdrawalEvent.Submit)
       testScheduler.advanceUntilIdle()
@@ -87,7 +120,7 @@ class TerminationWithdrawalPresenterTest {
   fun `a user error is shown and the member stays on the screen`() = runTest {
     val repository = FakeContractWithdrawalRepository(withdrawResult = WithdrawalResult.UserError("nope").right())
     val backstack = flowBackstack(endsToday)
-    TerminationWithdrawalPresenter("contractId", repository, backstack).test(initialState(endsToday)) {
+    presenter(repository, backstack).test(initialState(endsToday)) {
       skipItems(1)
       sendEvent(TerminationWithdrawalEvent.Submit)
       testScheduler.advanceUntilIdle()
@@ -103,7 +136,7 @@ class TerminationWithdrawalPresenterTest {
   fun `a failure without a message shows a generic error and the member stays on the screen`() = runTest {
     val repository = FakeContractWithdrawalRepository(withdrawResult = ErrorMessage().left())
     val backstack = flowBackstack(endsToday)
-    TerminationWithdrawalPresenter("contractId", repository, backstack).test(initialState(endsToday)) {
+    presenter(repository, backstack).test(initialState(endsToday)) {
       skipItems(1)
       sendEvent(TerminationWithdrawalEvent.Submit)
       testScheduler.advanceUntilIdle()
@@ -119,7 +152,7 @@ class TerminationWithdrawalPresenterTest {
   fun `dismissing the error clears it`() = runTest {
     val repository = FakeContractWithdrawalRepository(withdrawResult = ErrorMessage().left())
     val backstack = flowBackstack(endsToday)
-    TerminationWithdrawalPresenter("contractId", repository, backstack).test(initialState(endsToday)) {
+    presenter(repository, backstack).test(initialState(endsToday)) {
       skipItems(1)
       sendEvent(TerminationWithdrawalEvent.Submit)
       testScheduler.advanceUntilIdle()

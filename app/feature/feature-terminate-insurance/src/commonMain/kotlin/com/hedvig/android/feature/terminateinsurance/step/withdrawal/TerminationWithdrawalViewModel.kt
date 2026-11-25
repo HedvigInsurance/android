@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.terminateinsurance.step.withdrawal
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -8,6 +9,7 @@ import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.terminateinsurance.data.ContractWithdrawalRepository
+import com.hedvig.android.feature.terminateinsurance.data.GetMemberEmailUseCase
 import com.hedvig.android.feature.terminateinsurance.data.TerminationAction
 import com.hedvig.android.feature.terminateinsurance.data.WithdrawalResult
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
@@ -32,6 +34,7 @@ internal class TerminationWithdrawalViewModel @AssistedInject constructor(
   @Assisted statusText: String,
   @Assisted action: TerminationAction,
   contractWithdrawalRepository: ContractWithdrawalRepository,
+  getMemberEmailUseCase: GetMemberEmailUseCase,
   clock: Clock,
   backstack: Backstack,
 ) : MoleculeViewModel<TerminationWithdrawalEvent, TerminationWithdrawalUiState>(
@@ -40,12 +43,14 @@ internal class TerminationWithdrawalViewModel @AssistedInject constructor(
       statusText = statusText,
       action = action,
       endDate = withdrawalEndDate(action, clock),
+      confirmationEmail = null,
       submitError = null,
       isSubmitting = false,
     ),
     presenter = TerminationWithdrawalPresenter(
       contractId = insuranceInfo.contractId,
       contractWithdrawalRepository = contractWithdrawalRepository,
+      getMemberEmailUseCase = getMemberEmailUseCase,
       backstack = backstack,
     ),
   )
@@ -53,6 +58,7 @@ internal class TerminationWithdrawalViewModel @AssistedInject constructor(
 internal class TerminationWithdrawalPresenter(
   private val contractId: String,
   private val contractWithdrawalRepository: ContractWithdrawalRepository,
+  private val getMemberEmailUseCase: GetMemberEmailUseCase,
   private val backstack: Backstack,
 ) : MoleculePresenter<TerminationWithdrawalEvent, TerminationWithdrawalUiState> {
   @Composable
@@ -60,6 +66,13 @@ internal class TerminationWithdrawalPresenter(
     lastState: TerminationWithdrawalUiState,
   ): TerminationWithdrawalUiState {
     var uiState by remember { mutableStateOf(lastState.copy(isSubmitting = false)) }
+
+    LaunchedEffect(Unit) {
+      if (uiState.confirmationEmail != null) return@LaunchedEffect
+      getMemberEmailUseCase.invoke().onRight { email ->
+        uiState = uiState.copy(confirmationEmail = email)
+      }
+    }
 
     CollectEvents { event ->
       when (event) {
@@ -110,6 +123,8 @@ internal data class TerminationWithdrawalUiState(
   val statusText: String,
   val action: TerminationAction,
   val endDate: LocalDate,
+  /** Shown once loaded. Withdrawing does not depend on it, so it stays null if loading fails. */
+  val confirmationEmail: String?,
   val submitError: TerminationSubmitError?,
   val isSubmitting: Boolean,
 )
