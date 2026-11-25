@@ -10,6 +10,9 @@ import com.hedvig.android.feature.terminateinsurance.data.TerminationAction
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateDestination
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModel
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModelFactory
+import com.hedvig.android.feature.terminateinsurance.step.chooseaction.TerminationChooseActionDestination
+import com.hedvig.android.feature.terminateinsurance.step.chooseaction.TerminationChooseActionViewModel
+import com.hedvig.android.feature.terminateinsurance.step.chooseaction.TerminationChooseActionViewModelFactory
 import com.hedvig.android.feature.terminateinsurance.step.deflect.DeflectSuggestionDestination
 import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDeletionDestination
 import com.hedvig.android.feature.terminateinsurance.step.redirection.TerminationRedirectionDestination
@@ -92,6 +95,18 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceEntries(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
       onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
+      closeTerminationFlow = closeTerminationFlow,
+    )
+  }
+
+  entry<TerminationChooseActionKey> { key ->
+    val viewModel: TerminationChooseActionViewModel =
+      assistedMetroViewModel<TerminationChooseActionViewModel, TerminationChooseActionViewModelFactory> {
+        create(key.commonParams)
+      }
+    TerminationChooseActionDestination(
+      viewModel = viewModel,
+      navigateUp = backstack::navigateUp,
       closeTerminationFlow = closeTerminationFlow,
     )
   }

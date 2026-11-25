@@ -181,6 +181,7 @@ private class PreviewTerminatedContractsUiStateProvider :
             availableAddons = emptyList(),
             chipId = ChipIdState.Missing,
             supportsTermination = true,
+            supportsWithdrawal = false,
           ),
         ),
       ),

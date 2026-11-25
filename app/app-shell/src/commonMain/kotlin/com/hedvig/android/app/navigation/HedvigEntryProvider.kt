@@ -66,6 +66,8 @@ import com.hedvig.android.feature.profile.tab.profileEntries
 import com.hedvig.android.feature.remove.addons.RemoveAddonsKey
 import com.hedvig.android.feature.remove.addons.removeAddonsEntries
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceKey
+import com.hedvig.android.feature.terminateinsurance.navigation.closeTerminationFlow
+import com.hedvig.android.feature.terminateinsurance.navigation.replaceTerminationFlow
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceEntries
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateKey
 import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateEntries
@@ -79,7 +81,6 @@ import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.add
-import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.popUpTo
 import com.hedvig.android.navigation.compose.removeAllOf
 import kotlinx.coroutines.CoroutineScope
@@ -438,20 +439,19 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
     openUrl = openUrl,
     openPlayStore = externalNavigator::tryOpenPlayStore,
     navigateToInsurances = {
-      backstack.popUpTo<TerminateInsuranceKey>(inclusive = true)
+      backstack.closeTerminationFlow()
       backstack.selectTopLevel(TopLevelTab.Insurances)
     },
     navigateToMovingFlow = {
-      backstack.navigateAndPopUpTo<TerminateInsuranceKey>(
+      backstack.replaceTerminationFlow(
         SelectContractForMovingKey(MovingSource.TERMINATION),
-        inclusive = true,
       )
     },
     closeTerminationFlow = {
-      backstack.popUpTo<TerminateInsuranceKey>(inclusive = true)
+      backstack.closeTerminationFlow()
     },
     redirectToChangeTierFlow = { idWithIntent ->
-      backstack.navigateAndPopUpTo<TerminateInsuranceKey>(
+      backstack.replaceTerminationFlow(
         ChooseTierKey(
           InsuranceCustomizationParameters(
             insuranceId = idWithIntent.first,
@@ -459,7 +459,6 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
             quoteIds = idWithIntent.second.quotes.map { it.id },
           ),
         ),
-        inclusive = true,
       )
     },
   )

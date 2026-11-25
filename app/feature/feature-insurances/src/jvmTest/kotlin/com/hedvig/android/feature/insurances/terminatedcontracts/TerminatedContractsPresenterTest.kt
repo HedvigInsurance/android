@@ -236,6 +236,7 @@ class TerminatedContractsPresenterTest {
         availableAddons = emptyList(),
         chipId = ChipIdState.Missing,
         supportsTermination = true,
+        supportsWithdrawal = false,
       ),
       EstablishedInsuranceContract(
         "contractId2",
@@ -285,6 +286,7 @@ class TerminatedContractsPresenterTest {
         availableAddons = emptyList(),
         chipId = ChipIdState.Missing,
         supportsTermination = true,
+        supportsWithdrawal = false,
       ),
     )
 
@@ -336,6 +338,7 @@ class TerminatedContractsPresenterTest {
       availableAddons = emptyList(),
       chipId = ChipIdState.Missing,
       supportsTermination = true,
+      supportsWithdrawal = false,
     )
 
     private val activeInsurances = listOf(
@@ -387,6 +390,7 @@ class TerminatedContractsPresenterTest {
         availableAddons = emptyList(),
         chipId = ChipIdState.Missing,
         supportsTermination = true,
+        supportsWithdrawal = false,
       ),
       EstablishedInsuranceContract(
         "contractId4",
@@ -436,6 +440,7 @@ class TerminatedContractsPresenterTest {
         availableAddons = emptyList(),
         chipId = ChipIdState.Missing,
         supportsTermination = true,
+        supportsWithdrawal = false,
       ),
     )
   }

@@ -12,17 +12,16 @@ import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
 import com.hedvig.android.feature.terminateinsurance.data.GetTerminationNotificationUseCase
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminationResult
-import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceKey
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationConfirmationKey
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationConfirmationKey.TerminationType.Deletion
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationConfirmationKey.TerminationType.Termination
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationSuccessKey
+import com.hedvig.android.feature.terminateinsurance.navigation.replaceTerminationFlow
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.navigation.compose.Backstack
-import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
 import kotlin.time.Clock
@@ -128,14 +127,12 @@ internal class TerminationConfirmationPresenter(
                     userError = terminationResult.message,
                   )
 
-                  is TerminationResult.Terminated -> backstack.navigateAndPopUpTo<TerminateInsuranceKey>(
+                  is TerminationResult.Terminated -> backstack.replaceTerminationFlow(
                     TerminationSuccessKey(terminationResult.terminationDate),
-                    inclusive = true,
                   )
 
-                  TerminationResult.Deleted -> backstack.navigateAndPopUpTo<TerminateInsuranceKey>(
+                  TerminationResult.Deleted -> backstack.replaceTerminationFlow(
                     TerminationSuccessKey(terminationDate = null),
-                    inclusive = true,
                   )
                 }
               },

@@ -43,6 +43,7 @@ query InsuranceContracts(
         ...MoneyFragment
       }
       supportsTermination
+      supportsWithdrawal
     }
   }
 }
@@ -58,6 +59,7 @@ fragment ContractFragment on Contract {
   supportsChangeTier
   supportsCoOwners
   supportsTermination
+  supportsWithdrawal
   coInsured {
     ...ContractCoInsuredFragment
   }

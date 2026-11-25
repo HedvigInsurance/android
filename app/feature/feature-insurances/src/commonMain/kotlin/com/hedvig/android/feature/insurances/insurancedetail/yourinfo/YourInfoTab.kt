@@ -133,6 +133,7 @@ internal fun YourInfoTab(
   coInsured: List<CoInsured>,
   coOwners: List<CoInsured>,
   allowChangeAddress: Boolean,
+  allowWithdrawal: Boolean,
   allowTerminatingInsurance: Boolean,
   allowEditCoInsured: Boolean,
   allowEditCoOwners: Boolean,
@@ -167,6 +168,7 @@ internal fun YourInfoTab(
   modifier: Modifier = Modifier,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
+  val showChangeAddressInEditSheet = allowChangeAddress && allowWithdrawal
   val editYourInfoBottomSheet = rememberHedvigBottomSheetState<Unit>()
   HedvigBottomSheet(editYourInfoBottomSheet) {
     EditInsuranceBottomSheetContent(
@@ -176,6 +178,7 @@ internal fun YourInfoTab(
       allowChangeTier = allowChangeTier,
       isPaymentProtection = isPaymentProtection,
       allowRemovingAddon = allowRemovingAddon,
+      allowChangeAddress = showChangeAddressInEditSheet,
       onChangeTierClick = {
         editYourInfoBottomSheet.dismiss()
         onChangeTierClick()
@@ -198,6 +201,10 @@ internal fun YourInfoTab(
       onRemoveAddonClick = {
         editYourInfoBottomSheet.dismiss()
         navigateToRemoveAddon(ContractId(contractId), null)
+      },
+      onChangeAddressClick = {
+        editYourInfoBottomSheet.dismiss()
+        onChangeAddressClick()
       },
     )
   }
@@ -393,7 +400,8 @@ internal fun YourInfoTab(
         if (allowEditCoInsured ||
           allowEditCoOwners ||
           allowChangeTier ||
-          allowTerminatingInsurance
+          allowTerminatingInsurance ||
+          showChangeAddressInEditSheet
         ) {
           HedvigButton(
             text = stringResource(Res.string.CONTRACT_EDIT_INFO_LABEL),
@@ -405,7 +413,18 @@ internal fun YourInfoTab(
               .fillMaxWidth(),
           )
         }
-        if (allowChangeAddress) {
+        if (allowWithdrawal) {
+          HedvigButton(
+            // TODO: Add "Withdraw insurance" / "Ångra försäkringen" to Lokalise
+            text = "Ångra försäkringen",
+            buttonStyle = Ghost,
+            enabled = true,
+            onClick = { onCancelInsuranceClick() },
+            modifier = Modifier
+              .padding(horizontal = 16.dp)
+              .fillMaxWidth(),
+          )
+        } else if (allowChangeAddress) {
           HedvigButton(
             text = stringResource(Res.string.insurance_details_move_button),
             buttonStyle = Ghost,
@@ -955,6 +974,7 @@ private fun PreviewYourInfoTab(
         },
         coOwners = listOf(),
         allowChangeAddress = true,
+        allowWithdrawal = false,
         allowTerminatingInsurance = true,
         allowEditCoInsured = true,
         allowEditCoOwners = false,
