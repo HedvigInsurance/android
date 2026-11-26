@@ -20,8 +20,8 @@ interface NativeNetworkMetroProviders {
   fun provideExtraKtorClientConfiguration(): ExtraKtorClientConfiguration = NoopExtraKtorClientConfiguration()
 
   /**
-   * The interceptor chain is logging only: an `UNAUTHENTICATED` response is an ordinary error, and the session is
-   * owned by the iOS app.
+   * Unlike Android, there is no logout interceptor here. An `UNAUTHENTICATED` response is returned as an ordinary
+   * error, because the iOS app owns the session and decides when to log out.
    */
   @Provides
   @SingleIn(AppScope::class)
