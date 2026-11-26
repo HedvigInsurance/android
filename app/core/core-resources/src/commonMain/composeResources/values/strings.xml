@@ -1145,6 +1145,7 @@
   <string name="TERMINATION_FLOW_SUMMARY_SUBTITLE">Review and confirm</string>
   <string name="TERMINATION_FLOW_TODAY">Today</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_BUTTON">Withdraw insurance</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_CONFIRMATION_SENT_TO">The confirmation is sent to</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_CONFIRM_BUTTON">Yes, withdraw insurance</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE">Your insurance is cancelled</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_TITLE">Withdraw insurance</string>
@@ -1225,6 +1226,7 @@
   <string name="VOICEOVER_MORE_INFO">Tap for more info</string>
   <string name="VOICE_OVER_CAMPAIGN_IMAGE_DESCRIPTION">Campaign image</string>
   <string name="VOICE_OVER_INFO_IMAGE_DESCRIPTION">Information image</string>
+  <string name="YEAR_IN_REVIEW_TITLE">Year in review</string>
   <string name="app_info_submit_bug_button">Report technical issue</string>
   <string name="app_info_submit_bug_continue">Continue</string>
   <string name="app_info_submit_bug_go_back">Go back</string>

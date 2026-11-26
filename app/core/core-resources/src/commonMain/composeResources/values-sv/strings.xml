@@ -1145,6 +1145,7 @@
   <string name="TERMINATION_FLOW_SUMMARY_SUBTITLE">Granska och bekräfta</string>
   <string name="TERMINATION_FLOW_TODAY">Idag</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_BUTTON">Ångra försäkringen</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_CONFIRMATION_SENT_TO">Bekräftelsen skickas till</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_CONFIRM_BUTTON">Ja, ångra försäkringen</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE">Du har ångrat försäkringen</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_TITLE">Ångra försäkringen</string>
@@ -1225,6 +1226,7 @@
   <string name="VOICEOVER_MORE_INFO">Tryck för mer information</string>
   <string name="VOICE_OVER_CAMPAIGN_IMAGE_DESCRIPTION">Kampanjikon</string>
   <string name="VOICE_OVER_INFO_IMAGE_DESCRIPTION">Informationsikon</string>
+  <string name="YEAR_IN_REVIEW_TITLE">Året som gått</string>
   <string name="app_info_submit_bug_button">Rapportera tekniska problem</string>
   <string name="app_info_submit_bug_continue">Fortsätt</string>
   <string name="app_info_submit_bug_go_back">Gå tillbaka</string>
