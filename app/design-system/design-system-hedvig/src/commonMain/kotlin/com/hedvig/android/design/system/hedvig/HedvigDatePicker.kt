@@ -13,6 +13,7 @@ import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterPr
 import com.hedvig.android.core.locale.CommonLocale
 import com.hedvig.android.core.locale.previewCommonLocale
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
+import com.hedvig.android.design.system.hedvig.a11y.accessibilityForDatePickerField
 import com.hedvig.android.design.system.hedvig.api.HedvigDisplayMode
 import com.hedvig.android.design.system.hedvig.api.HedvigSelectableDates
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
@@ -66,15 +67,21 @@ fun DatePickerWithDialog(
       )
     }
   }
+  val onClick = {
+    onBeforeShow?.invoke()
+    showDatePicker = true
+  }
   HedvigBigCard(
-    onClick = {
-      onBeforeShow?.invoke()
-      showDatePicker = true
-    },
+    onClick = onClick,
     labelText = startText,
     inputText = selectedDateText,
     enabled = canInteract,
-    modifier = modifier,
+    modifier = modifier.accessibilityForDatePickerField(
+      labelText = startText,
+      selectedDate = selectedDateText,
+      isEnabled = canInteract,
+      onClick = onClick,
+    ),
   )
 }
 

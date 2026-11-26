@@ -26,6 +26,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -50,6 +51,8 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDefaultStyleSize
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
+import com.hedvig.android.design.system.hedvig.a11y.accessibilityForDatePickerField
+import com.hedvig.android.design.system.hedvig.clearFocusOnControlTap
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerImmutableState
@@ -69,10 +72,14 @@ import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressV
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidMovingDate
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidPostalCode
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidSquareMeters
+import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.SquareMetersMissing
+import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.SquareMetersOverLimit
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import hedvig.resources.CHANGE_ADDRESS_CO_INSURED_LABEL
 import hedvig.resources.CHANGE_ADDRESS_ENTER_NEW_ADDRESS_TITLE
+import hedvig.resources.CHANGE_ADDRESS_LIVING_SPACE_ERROR
+import hedvig.resources.CHANGE_ADDRESS_LIVING_SPACE_OVER_LIMIT_WITH_INPUT_ERROR
 import hedvig.resources.CHANGE_ADDRESS_MOVING_DATE_ERROR
 import hedvig.resources.CHANGE_ADDRESS_MOVING_DATE_LABEL
 import hedvig.resources.CHANGE_ADDRESS_NEW_ADDRESS_LABEL
@@ -274,6 +281,7 @@ private fun EnterNewAddressScreen(
           onPlusClick = { uiState.numberCoInsured.updateValue(uiState.numberCoInsured.value + 1) },
           isPlusEnabled = !uiState.isLoadingNextStep && uiState.numberCoInsured.canIncrement,
           isMinusEnabled = !uiState.isLoadingNextStep && uiState.numberCoInsured.canDecrement,
+          modifier = Modifier.clearFocusOnControlTap(),
         )
         DatePickerField(uiState.movingDate, uiState.allowedMovingDateRange, uiState.shouldDisableInput)
         if (uiState.propertyType is WithStudentOption) {
@@ -283,6 +291,7 @@ private fun EnterNewAddressScreen(
             onClick = { uiState.propertyType.selectedIsStudent.updateValue(it) },
             enabled = !uiState.shouldDisableInput,
             toggleStyle = ToggleStyle.Default(ToggleDefaultStyleSize.Medium),
+            modifier = Modifier.clearFocusOnControlTap(),
           )
         }
       }
@@ -339,21 +348,34 @@ private fun DatePickerField(
   val text = input.value?.let { localDate ->
     rememberHedvigDateTimeFormatter.format(localDate)
   }
+  val label = stringResource(Res.string.CHANGE_ADDRESS_MOVING_DATE_LABEL)
+  val errorText = input.validationError?.string()
+  val focusManager = LocalFocusManager.current
+  val onClick = {
+    focusManager.clearFocus()
+    showDatePicker = true
+  }
   // Workaround to get the layout of the hedvigTextField, without the functionality of it. Perhaps room for another
   //  component here
-  Box(modifier) {
+  Box(
+    modifier.accessibilityForDatePickerField(
+      labelText = label,
+      selectedDate = text,
+      isEnabled = !shouldDisableInput,
+      onClick = onClick,
+      errorText = errorText,
+    ),
+  ) {
     HedvigTextField(
       text = text ?: "",
       onValueChange = {},
       readOnly = true,
       enabled = !shouldDisableInput,
-      labelText = stringResource(Res.string.CHANGE_ADDRESS_MOVING_DATE_LABEL),
+      labelText = label,
       textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
       trailingContent = {},
-      errorState = if (input.validationError != null) {
-        HedvigTextFieldDefaults.ErrorState.Error.WithMessage(
-          input.validationError!!.string(),
-        )
+      errorState = if (errorText != null) {
+        HedvigTextFieldDefaults.ErrorState.Error.WithMessage(errorText)
       } else {
         HedvigTextFieldDefaults.ErrorState.NoError
       },
@@ -362,9 +384,8 @@ private fun DatePickerField(
       Modifier
         .matchParentSize()
         .clip(HedvigTheme.shapes.cornerLarge)
-        .clickable(enabled = !shouldDisableInput) {
-          showDatePicker = true
-        },
+        .clearFocusOnControlTap()
+        .clickable(enabled = !shouldDisableInput, onClick = onClick),
     )
   }
 }
@@ -411,6 +432,18 @@ private fun EnterNewAddressValidationError.string(): String {
 
     is InvalidSquareMeters -> {
       stringResource(Res.string.GENERAL_INVALID_INPUT)
+    }
+
+    SquareMetersMissing -> {
+      stringResource(Res.string.CHANGE_ADDRESS_LIVING_SPACE_ERROR)
+    }
+
+    is SquareMetersOverLimit -> {
+      stringResource(
+        Res.string.CHANGE_ADDRESS_LIVING_SPACE_OVER_LIMIT_WITH_INPUT_ERROR,
+        maxSquareMeters,
+        stringResource(Res.string.CHANGE_ADDRESS_SIZE_SUFFIX),
+      )
     }
   }
 }

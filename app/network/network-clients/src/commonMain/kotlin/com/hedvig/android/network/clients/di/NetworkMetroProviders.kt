@@ -4,17 +4,19 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.cache.normalized.api.NormalizedCacheFactory
 import com.apollographql.cache.normalized.memory.MemoryCacheFactory
 import com.apollographql.ktor.ktorClient
+import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.common.di.BaseHttpClient
 import com.hedvig.android.core.datastore.DeviceIdFetcher
+import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.network.clients.AccessTokenFetcher
 import com.hedvig.android.network.clients.DeviceIdInterceptor
-import com.hedvig.android.network.clients.ExtraApolloClientConfiguration
 import com.hedvig.android.network.clients.ExtraKtorClientConfiguration
 import com.hedvig.android.network.clients.HedvigHttpLogger
+import com.hedvig.android.network.clients.apollo.addHedvigInterceptors
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
@@ -65,7 +67,8 @@ interface NetworkMetroProviders {
   @Provides
   @SingleIn(AppScope::class)
   fun provideApolloClient(
-    extraApolloClientConfiguration: ExtraApolloClientConfiguration,
+    authTokenService: AuthTokenService,
+    demoManager: DemoManager,
     normalizedCacheFactory: NormalizedCacheFactory,
     httpClient: HttpClient,
     hedvigBuildConstants: HedvigBuildConstants,
@@ -74,18 +77,19 @@ interface NetworkMetroProviders {
       .cache(normalizedCacheFactory)
       .ktorClient(httpClient)
       .httpServerUrl(hedvigBuildConstants.urlGraphqlOctopus)
-      .run { extraApolloClientConfiguration.configure(this) }
+      .addHedvigInterceptors(authTokenService, demoManager, logMemberData = !hedvigBuildConstants.isProduction)
       .build()
   }
 }
 
-private fun buildKtorClient(
+internal fun buildKtorClient(
   hedvigBuildConstants: HedvigBuildConstants,
   languageService: LanguageService,
   deviceIdFetcher: DeviceIdFetcher,
   extraKtorClientConfiguration: ExtraKtorClientConfiguration,
+  engineFactory: HttpClientEngineFactory<*> = httpClientEngineFactory(),
 ): HttpClient {
-  return HttpClient(httpClientEngineFactory()) {
+  return HttpClient(engineFactory) {
     installDatadogKtorPlugin(hedvigBuildConstants)
     install(HttpTimeout) {
       connectTimeoutMillis = CONNECT_TIMEOUT.inWholeMilliseconds
@@ -101,9 +105,11 @@ private fun buildKtorClient(
       }
     }
     install(HttpSend)
+    // Registered on the config so that clients derived through HttpClient.config {} keep it too
+    install("DeviceIdInterceptor") {
+      plugin(HttpSend).intercept(DeviceIdInterceptor(deviceIdFetcher))
+    }
     extraKtorClientConfiguration.configure(this)
-  }.apply {
-    plugin(HttpSend).intercept(DeviceIdInterceptor(deviceIdFetcher))
   }
 }
 
@@ -135,7 +141,7 @@ private fun HttpClient.addAuthPlugin(accessTokenFetcher: AccessTokenFetcher) {
     val accessToken = accessTokenFetcher.fetch()
     execute(
       if (accessToken != null) {
-        request.apply { header("Authorization", "Bearer ${accessTokenFetcher.fetch()}") }
+        request.apply { header("Authorization", "Bearer $accessToken") }
       } else {
         request
       },

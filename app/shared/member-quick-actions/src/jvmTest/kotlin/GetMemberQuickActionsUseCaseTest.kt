@@ -1,6 +1,7 @@
 import app.cash.turbine.Turbine
 import arrow.core.Either
 import arrow.core.right
+import assertk.assertions.isFalse
 import assertk.assertions.isTrue
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.annotations.ApolloExperimental
@@ -10,6 +11,7 @@ import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.isRight
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.featureflags.test.FakeFeatureManager
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.memberquickactions.GetMemberActionsUseCase
@@ -125,6 +127,66 @@ class GetMemberQuickActionsUseCaseTest {
       }
       .isTrue()
   }
+
+  @Test
+  fun `home quick actions omit cancellation when hide_cancel_insurance_from_home_screen is on`() = runTest {
+    val featureManager = FakeFeatureManager(mapOf(Feature.HIDE_CANCEL_INSURANCE_FROM_HOME_SCREEN to true))
+    val getMemberActionsUseCase = FakeGetMemberActionsUseCase()
+    getMemberActionsUseCase.turbine.add(fakeMemberActionWithTier.right())
+    val useCase = GetMemberQuickActionsUseCaseImpl(
+      apolloClient = apolloClientWithGoodResponse,
+      featureManager = featureManager,
+      getMemberActionsUseCase = getMemberActionsUseCase,
+    )
+    val result = useCase.invoke(QuickActionsSource.HOME)
+    assertk
+      .assertThat(result)
+      .isRight()
+      .transform { it.containsCancellationLink() }
+      .isFalse()
+  }
+
+  @Test
+  fun `home quick actions keep cancellation when hide_cancel_insurance_from_home_screen is off`() = runTest {
+    val featureManager = FakeFeatureManager(mapOf(Feature.HIDE_CANCEL_INSURANCE_FROM_HOME_SCREEN to false))
+    val getMemberActionsUseCase = FakeGetMemberActionsUseCase()
+    getMemberActionsUseCase.turbine.add(fakeMemberActionWithTier.right())
+    val useCase = GetMemberQuickActionsUseCaseImpl(
+      apolloClient = apolloClientWithGoodResponse,
+      featureManager = featureManager,
+      getMemberActionsUseCase = getMemberActionsUseCase,
+    )
+    val result = useCase.invoke(QuickActionsSource.HOME)
+    assertk
+      .assertThat(result)
+      .isRight()
+      .transform { it.containsCancellationLink() }
+      .isTrue()
+  }
+
+  @Test
+  fun `help center quick actions keep cancellation when hide_cancel_insurance_from_home_screen is on`() = runTest {
+    val featureManager = FakeFeatureManager(mapOf(Feature.HIDE_CANCEL_INSURANCE_FROM_HOME_SCREEN to true))
+    val getMemberActionsUseCase = FakeGetMemberActionsUseCase()
+    getMemberActionsUseCase.turbine.add(fakeMemberActionWithTier.right())
+    val useCase = GetMemberQuickActionsUseCaseImpl(
+      apolloClient = apolloClientWithGoodResponse,
+      featureManager = featureManager,
+      getMemberActionsUseCase = getMemberActionsUseCase,
+    )
+    val result = useCase.invoke(QuickActionsSource.HELP_CENTER)
+    assertk
+      .assertThat(result)
+      .isRight()
+      .transform { it.containsCancellationLink() }
+      .isTrue()
+  }
+}
+
+private fun List<QuickAction>.containsCancellationLink(): Boolean {
+  return filterIsInstance<MultiSelectExpandedLink>()
+    .flatMap { it.links }
+    .any { it.quickLinkDestination == QuickLinkDestination.OuterDestination.QuickLinkTermination }
 }
 
 private class FakeGetMemberActionsUseCase : GetMemberActionsUseCase {

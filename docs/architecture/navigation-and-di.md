@@ -217,7 +217,7 @@ The factory and map contribution in the example above are **not hand-written**. 
 
 The `scope` is named explicitly at every call site (mirroring the other Metro annotations). Almost every VM is `ActivityRetainedScope` — it needs this Activity's `Backstack`, and is collected by the merged factory above. The rare `AppScope` case is a VM resolved by its own standalone Activity (e.g. `ImpersonationReceiverActivity`), which has no `ActivityRetainedGraph` and resolves through the plain `AppViewModelFactory`.
 
-**KMP wiring (the non-obvious part).** A ViewModel is fundamentally an Android-screen concern, but VMs live in `commonMain` so iOS can share their Presenter logic, and their generated DI must be visible to every target (including iOS's `IosGraph`, see I.6). So a KMP module wires the processor into **two** passes:
+**KMP wiring (the non-obvious part).** A ViewModel is fundamentally an Android-screen concern, but VMs live in `commonMain` so iOS can share their Presenter logic, and their generated DI must be visible to every target (including an iOS graph, see I.6). So a KMP module wires the processor into **two** passes:
 
 - `kspCommonMainMetadata` — generates into `commonMain`, the common *ancestor* every target sees.
 - `kspAndroid` — covers `androidMain`-only VMs (a screen iOS never renders).
@@ -266,26 +266,7 @@ A `ProdOrDemoProvider<T>` is always `@SingleIn(AppScope::class)`. Consumers inje
 
 ## I.6 iOS / KMP: the second graph
 
-The iOS target has its own Metro graph in `:shareddi`:
-
-```kotlin
-@DependencyGraph(AppScope::class)
-internal interface IosGraph : ViewModelGraph {
-  val imageLoader: ImageLoader
-  @DependencyGraph.Factory
-  interface Factory {
-    fun create(
-      @Provides accessTokenFetcher: AccessTokenFetcher,
-      @Provides deviceIdFetcher: DeviceIdFetcher,
-      @Provides featureManager: FeatureManager,
-      @Provides languageStorage: LanguageStorage,
-      @Provides appBuildConfig: AppBuildConfig,
-    ): IosGraph
-  }
-}
-```
-
-Both graphs target `AppScope`, so the **same `@ContributesBinding`/`@ContributesTo` declarations in shared KMP modules populate both** — that's the whole point of a compile-time, contribution-based graph for KMP. The iOS host provides the platform seams (token fetcher, device id, feature flags, language, build config) via the factory. `metro-viewmodel` is Android-only; iOS resolves its ViewModels through `ViewModelGraph` differently (the iOS Compose UI view controllers wire them directly).
+No module declares an iOS graph today. One declared on `AppScope` in a native source set is populated by the **same `@ContributesBinding`/`@ContributesTo` declarations in shared KMP modules** as the Android graph, which is the whole point of a compile-time, contribution-based graph for KMP. The iOS host provides the platform seams it does not share (for example the token fetcher, device id, feature flags, language and build config) through that graph's factory.
 
 ## I.7 Build wiring
 
@@ -351,21 +332,21 @@ internal data class InsuranceContractDetailKey(val contractId: String) :
 
 ### The marker-interface family (in `navigation-common`, KMP `commonMain`)
 
-This is one of the most important design ideas in the whole migration, so it's worth dwelling on. `:app` needs to reason about destinations — which tab does this belong to? can the cross-sell sheet show here? should we stash the session on logout? — **without depending on the feature module that defines the key** (that would break "features can't depend on features", and `:app` would have to import every feature's internal keys).
+This is one of the most important design ideas in the whole migration, so it's worth dwelling on. The app shell needs to reason about destinations (which tab does this belong to? can the cross-sell sheet show here? should we stash the session on logout?) **without depending on the feature module that defines the key** (that would break "features can't depend on features", and the shell would have to import every feature's internal keys).
 
-The solution: keys *declare their own capabilities* by implementing small marker interfaces that live in the shared `navigation-common` module. `:app` reasons against the markers, never the concrete key.
+The solution: keys *declare their own capabilities* by implementing small marker interfaces that live in the shared `navigation-common` module. The shell reasons against the markers, never the concrete key.
 
 | Marker | Exposes | Meaning |
 |---|---|---|
 | `TopLevelTabRoot` | `topLevelTab: TopLevelTab` | This key is the root of a bottom-nav tab. Lets the runs model map any tab root back to its tab without naming the feature. |
-| `DeepLinkAncestry` | `owningTab`, `syntheticParents: List<HedvigNavKey>` | How to rebuild a synthetic back stack when this key is entered alone (e.g. from a notification). |
+| `DeepLinkAncestry` | `owningTab`, `syntheticParents: List<HedvigNavKey>` | The synthetic back stack a deep link to this key lands on (e.g. from a notification). |
 | `CrossSellEligibleDestination` | — | The cross-sell bottom sheet may appear when this screen is on top. |
 | `SuppressesChatPushNotification` | — | A chat push must be suppressed while this screen is shown (the screen already shows the message). |
 | `DeliberateLogoutOrigin` | — | Reaching the logged-out state from here is an intentional sign-out — don't stash the session for restore. |
 
 Note the **same-module invariant** baked into `DeepLinkAncestry.syntheticParents`: a key may only list parents from its *own* feature. The jump *up to a tab* is expressed abstractly via `owningTab`, so no feature ever names another feature's key. This is what keeps the feature-isolation rule intact while still allowing rich synthetic back stacks.
 
-## II.3 The `Backstack` seam: interface for Presenters, concrete for `:app`
+## II.3 The `Backstack` seam: interface for Presenters, concrete for the app shell
 
 `navigation-compose` defines a thin interface:
 
@@ -373,7 +354,7 @@ Note the **same-module invariant** baked into `DeepLinkAncestry.syntheticParents
 @Stable
 interface Backstack {
   val entries: MutableList<HedvigNavKey>
-  fun navigateUp(): Boolean = popBackstack()   // default: plain pop; :app overrides it
+  fun navigateUp(): Boolean = popBackstack()   // default: plain pop; the shell's controller overrides it
   fun popBackstack(): Boolean = Snapshot.withMutableSnapshot { /* pop if size > 1, else false */ }
 }
 
@@ -386,9 +367,9 @@ inline fun <reified T : HedvigNavKey> Backstack.removeAllOf() { … }
 
 `entries` is public and is the single source of truth; the helpers exist so navigation operations are discoverable on a dedicated type rather than drowning in the full `MutableList` API. Features can add their own flow-specific extensions on the same receiver.
 
-**Both `navigateUp` and `popBackstack` are interface methods, not extensions, precisely so `:app`'s controller can override them.** The defaults are pure list operations (`popBackstack` returns `false` at the root, no side effect) — that keeps the KMP module Android-free and lets the `commonTest` `TestBackstack` exercise them. `BackstackController` overrides `popBackstack` so that a pop at the root **finishes the Activity** (Back/close from the last screen exits the app instead of silently no-opping). `navigateUp`'s override deliberately falls through to the *pure* `super.popBackstack()`, so an Up press at the root stays a no-op and never exits — Up is not Back. A caller that wants a different at-root outcome (e.g. termination-success reached as a lone deep link routes to the Insurances tab) must branch on `entries` itself, because in `:app` the root case no longer returns `false` from `popBackstack` — it finishes.
+**Both `navigateUp` and `popBackstack` are interface methods, not extensions, precisely so the app shell's controller can override them.** The defaults are pure list operations (`popBackstack` returns `false` at the root, no side effect), which keeps the KMP module Android-free and lets the `commonTest` `TestBackstack` exercise them. `BackstackController` overrides `popBackstack` so that a pop at the root **finishes the Activity** (Back/close from the last screen exits the app instead of silently no-opping). `navigateUp`'s override deliberately falls through to the *pure* `super.popBackstack()`, so an Up press at the root stays a no-op and never exits: Up is not Back. A caller that wants a different at-root outcome (e.g. termination-success reached as a lone deep link routes to the Insurances tab) must branch on `entries` itself, because in the app the root case no longer returns `false` from `popBackstack`; it finishes.
 
-**Why a narrow interface for Presenters.** Presenters (Molecule) are long-lived. They get the `Backstack` interface, which exposes navigation verbs but hides the controller's tab-switching / login-stash internals. The concrete `BackstackController` is handed only to `:app` and `HedvigApp`, which legitimately need the full surface.
+**Why a narrow interface for Presenters.** Presenters (Molecule) are long-lived. They get the `Backstack` interface, which exposes navigation verbs but hides the controller's tab-switching / login-stash internals. The concrete `BackstackController` is handed only to the app shell (`:app-shell`) and its hosts, which legitimately need the full surface. `configureFeatureModuleGuidelines` fails the build when a `feature-*` module depends on `app-shell`, so no feature can reach it.
 
 ## II.4 The central decision: a retained, per-Activity controller, not composition state
 
@@ -420,26 +401,27 @@ internal class NavRetainedViewModel(appGraph: AppGraph) : ViewModel() {
 
 ```kotlin
 @Stable
-internal class BackstackController(
+class BackstackController(
   override val entries: SnapshotStateList<HedvigNavKey>,
-  internal val parkedRuns: SnapshotStateMap<TopLevelTab, List<HedvigNavKey>>,
+  val parkedRuns: SnapshotStateMap<TopLevelTab, List<HedvigNavKey>>,
   pendingDeepLinkState: MutableState<HedvigNavKey?>,
   stashedSessionState: MutableState<StashedSession?>,
-  var isOwnTask: () -> Boolean = { true },
+  pendingDeepLinkStashedAtState: MutableState<Long?> = mutableStateOf(null),
   var escapeToOwnTask: (List<HedvigNavKey>) -> Unit = {},
   var finishApp: () -> Unit = {},
+  private val clock: Clock = Clock.System,
 ) : Backstack { … }
 ```
 
-`ActivityRetainedGraph` (I.1) binds the controller as `Backstack`, so a Presenter can hold that reference for its whole life and always mutate the live, rendered stack. The four state holders are created once and owned by the controller, so they survive configuration changes while remaining the live objects the UI renders. The controller is exposed two ways: as `BackstackController` to `:app`, and as `Backstack` to feature Presenters.
+`ActivityRetainedGraph` (I.1) binds the controller as `Backstack`, so a Presenter can hold that reference for its whole life and always mutate the live, rendered stack. The four state holders are created once and owned by the controller, so they survive configuration changes while remaining the live objects the UI renders. The controller is exposed two ways: as `BackstackController` to the shell and its hosts, and as `Backstack` to feature Presenters.
 
 **Why per-Activity and not an app singleton.** An earlier iteration made the controller a `@SingleIn(AppScope::class)` singleton. That outlives the Activity too *much*: two `MainActivity` instances (e.g. a relaunch into a warm process) would share one controller and one back stack. Tying it to a retained `ViewModel` gives the precise lifetime we want — it outlives every screen ViewModel and config changes, yet each Activity gets its own. Process death is handled separately, at the Activity seam (Part III), because a retained `ViewModel` is wiped when the process dies.
 
-**The `isOwnTask` / `escapeToOwnTask` / `finishApp` hooks are Activity-bound and attached in `onCreate` (via `attachBackstackTaskHooks`), never in the constructor.** The controller is 1:1 with its Activity, so there is no shared, process-wide controller a backgrounded Activity could steal — the hooks are wired once at creation, no resume re-attachment needed. They default to in-process behaviour (and `finishApp` to a no-op) so unit tests need no Activity.
+**The `escapeToOwnTask` / `finishApp` hooks are Activity-bound and attached in `onCreate`, never in the constructor.** The controller is 1:1 with its Activity, so there is no shared, process-wide controller a backgrounded Activity could steal — the hooks are wired once at creation, no resume re-attachment needed. They default to in-process behaviour (and `finishApp` to a no-op) so unit tests need no Activity.
 
 ## II.5 Registering destinations: `hedvigEntryProvider` and cross-feature lambdas
 
-Every feature exposes a `fun EntryProviderScope<HedvigNavKey>.featureEntries(...)` that registers its screens with `entry<Key> { }`. `:app`'s `hedvigEntryProvider` calls all of them, decomposed into readable per-domain sub-builders (`addHomeEntries`, `addInsuranceEntries`, `addProfileEntries`, `addSharedFlowEntries`, …).
+Every feature exposes a `fun EntryProviderScope<HedvigNavKey>.featureEntries(...)` that registers its screens with `entry<Key> { }`. `hedvigEntryProvider` in `:app-shell` calls those of the features every host can render, decomposed into readable per-domain sub-builders (`addHomeEntries`, `addInsuranceEntries`, `addProfileEntries`, `addSharedFlowEntries`, …), and hands the rest to the host's own entries block (II.5.1).
 
 ```kotlin
 internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
@@ -455,13 +437,24 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
 }
 ```
 
-**Why all wiring lives in `:app`.** A feature's `*Key`s live in the feature *impl* module, and the build rule blocks one feature from referencing another's key. So the only place that can legally know "Insurances → start a chat conversation" is `:app`. The pattern: `:app` derives a `navigateToX` lambda once and threads it down to whichever feature entries need it. Features expose *callbacks*, never imports of sibling keys.
+**Why the wiring lives outside the features.** A feature's `*Key`s live in the feature *impl* module, and the build rule blocks one feature from referencing another's key. So the only places that can legally know "Insurances → start a chat conversation" are modules that are not features, and that module is `:app-shell`. The pattern: `hedvigEntryProvider` threads its `navigateToX` closures down to whichever feature entries need them. Features expose *callbacks*, never imports of sibling keys.
+
+### II.5.1 The shell and its hosts
+
+`:app-shell` is a Kotlin Multiplatform module (JVM and Android targets) holding everything above that does not depend on Android: `BackstackController` and `TopLevelRunLogic`, `SessionReconciler`, `hedvigEntryProvider`, `HedvigApp` and its state, the navigation suite, the content key and screen name helpers, and the in-app URI handlers. `:app` is its Android host: `MainActivity`, `AppGraph`, `ActivityRetainedGraph`, `NavRetainedViewModel`, `NavigationStateBridge`, external deep links and the Datadog view tracking effect, which `MainActivity` composes right before `HedvigApp`.
+
+A host gives the shell an `AppHost`, and may give it a fallback entry:
+
+- **An `AppHost`**: the URI handler for links that are not ours, the permission rationale check, the store review prompt and a system bars effect. On Android, `AndroidAppHostImpl` implements it over the Activity.
+- **Every reachable key has an entry.** `hedvigEntryProvider` registers every destination for every host. A key on the back stack with no registered entry makes Navigation 3 throw, unless the host passes `HedvigApp` a `fallbackEntry`, which renders any key without one. Android passes no fallback, so a missing registration fails loudly there; the desktop host (`:app-desktop`) passes a fallback that shows "Not available on desktop" and logs the key once.
+
+Keys the shell's closures construct must be reachable from the shell, so they live in KMP modules: a converted feature, or its `-navigation` module.
 
 Inside an entry, the ViewModel is resolved with `metroViewModel()` / `assistedMetroViewModel(...)` and the destination composable is rendered. `dropUnlessResumed { }` guards navigation callbacks so a double-tap or a click during a transition can't push twice.
 
 ## II.6 `feature-x-navigation` modules and the enforced carve-out
 
-Sometimes a feature genuinely needs to navigate to *another* feature's entry point (e.g. anywhere → chat). The keys that are meant to be reachable cross-feature live in a dedicated `feature-{name}-navigation` module containing **only** those public `@Serializable` keys. Everything else — entries, screens, internal keys — stays private in the owning feature.
+A feature's keys live in the feature. Sometimes another feature must navigate to a feature's entry point without depending on it (e.g. onboarding → edit co-insured). Only then do the keys it needs live in a dedicated `feature-{name}-navigation` module containing **only** those public `@Serializable` keys. Everything else (entries, screens, other keys) stays in the owning feature.
 
 The feature-isolation rule has a precise carve-out for exactly these modules (`configureFeatureModuleGuidelines` in `HedvigGradlePlugin.kt`):
 
@@ -475,7 +468,7 @@ if (requested.name.isFeatureNavigationModule()) return@eachDependency  // allowe
 require(!requested.name.isFeatureModule()) { "…feature cannot depend on feature…" }
 ```
 
-So: depend on `feature-chat-navigation` to get `ChatKey`; you still cannot depend on `feature-chat`.
+So: `feature-onboarding` depends on `feature-edit-coinsured-navigation` to get `CoInsuredAddInfoKey`; it still cannot depend on `feature-edit-coinsured`.
 
 ## II.7 Multiple back stacks: the "runs model"
 
@@ -557,19 +550,15 @@ The persistent bottom bar / side rail is rendered *inside* the scene via a `Scen
 
 Chrome is opt-in per destination: only scenes whose metadata carries `NavSuiteSceneDecoratorStrategy.showNavBar()` (the tab roots plus the handful of deeper screens that keep the bar) get wrapped; everything else is full-screen.
 
-A lone deep link is a special case. The runs-model invariant (`entries[0] == HomeKey`) is briefly broken when a deep link stands alone, so showing the rail would expose that. The controller classifies the situation and the decorator obeys:
+A deep link hosted in another app's task is a special case (V.3): it lands alone, so the runs-model invariant (`entries[0] == HomeKey`) does not hold and showing the rail would expose that. The controller classifies the situation from the stack shape and the decorator obeys:
 
 ```kotlin
 enum class LoneDeepLinkChrome { ShowSuite, ShowUpBar, ShowNothing }
 
-val loneDeepLinkChrome: LoneDeepLinkChrome get() {
-  val first = entries.firstOrNull()
-  val isAlone = entries.size == 1 && first !is HomeKey && first !is LoginKey
-  return when {
-    !isAlone -> LoneDeepLinkChrome.ShowSuite                         // normal: rail
-    first?.topLevelTabOrNull() != null -> LoneDeepLinkChrome.ShowUpBar // lone tab root: decorator supplies Up
-    else -> LoneDeepLinkChrome.ShowNothing                           // deep screen renders its own Up
-  }
+val loneDeepLinkChrome: LoneDeepLinkChrome get() = when {
+  !isDeepLinkHostedInForeignTask -> LoneDeepLinkChrome.ShowSuite                     // normal: rail
+  entries.lastOrNull()?.topLevelTabOrNull() != null -> LoneDeepLinkChrome.ShowUpBar  // tab root on top: decorator supplies Up
+  else -> LoneDeepLinkChrome.ShowNothing                                             // deep screen renders its own Up
 }
 ```
 
@@ -714,7 +703,8 @@ fun setLoggedIn(memberId: String?) = Snapshot.withMutableSnapshot {
   val stash = stashedSession?.takeIf { memberId != null && it.memberId == memberId }; stashedSession = null
   parkedRuns.clear()
   when {
-    pending != null -> entries.replaceWith(listOf(pending))           // deep link lands alone
+    pending != null -> entries.replaceWith(                           // lands as it would have logged in
+      if (pendingHostedInForeignTask) listOf(pending) else syntheticStackFor(pending))
     stash != null   -> { parkedRuns.putAll(stash.parkedRuns); entries.replaceWith(stash.entries) }
     else            -> entries.replaceWith(listOf(HomeKey))           // fresh Home
   }
@@ -727,7 +717,7 @@ Rules encoded here:
 - `memberId == null` (demo / unknown identity) stashes nothing — that session can never be safely restored.
 - A `DeliberateLogoutOrigin` top screen (e.g. Profile → Log out) means "log me out now"; we don't stash even with a known member.
 - `StashedSession` is **excluded from `allLiveContentKeys`**, so the retained decorators dispose every per-entry state (ViewModels, saved state) while it waits. On restore, history comes back but state is freshly recreated.
-- A `pendingDeepLink` takes precedence over a stash and lands **alone** (re-enabling the runs model on the next Up via the synthetic stack).
+- A `pendingDeepLink` takes precedence over a stash and lands the way it would have logged in: alone in another app's task, on its synthetic ancestry in ours (V.3).
 
 ---
 
@@ -739,20 +729,24 @@ Each feature builds `DeepLinkMatcher`s from its `HedvigDeepLinkContainer` URI pa
 
 ## V.2 From Intent to navigation
 
-`MainActivity` forwards `ACTION_VIEW` intents as raw URI strings down an unlimited `deepLinkChannel`. `HedvigApp` collects them and routes each through the matcher once the member is logged in. This replaces Nav2's automatic launch-intent deep-link handling on the (now removed) `NavController`.
+`MainActivity` forwards `ACTION_VIEW` intents (external App Links and notification taps alike) down an unlimited `deepLinkChannel` as the raw URI string plus the flags of the delivering intent, from `onCreate` on a cold start and from `addOnNewIntentListener` when an existing instance is reused. A per-Activity `ExternalDeepLinkHandler` collects them, waits for the `SessionReconciler` to resolve the start scene, matches each to a key (an unmatched path on one of our own hosts lands on Home; a foreign host is ignored, never bounced to a browser) and hands it to the controller together with whether another app's task hosts us:
 
 ```kotlin
-fun navigateToDeepLink(key: HedvigNavKey) {
-  if (!isLoggedIn) { pendingDeepLink = key; return }   // held; landed by setLoggedIn
-  Snapshot.withMutableSnapshot { entries.remove(key); entries.add(key) }  // dedup + append (Nav2 parity)
+fun navigateToExternalDeepLink(key: HedvigNavKey, hostedInForeignTask: Boolean) {
+  if (!isLoggedIn) { stashPendingDeepLink(key); return }   // held; landed by setLoggedIn
+  reseed(if (hostedInForeignTask) listOf(key) else syntheticStackFor(key))
 }
 ```
 
-Logged in, a deep link **joins the current task** (dedup then append). Logged out, it's held as `pendingDeepLink` (persisted across rotation / process death — e.g. mid-OTP) and landed alone after login.
+An external deep link is an entry into the app from outside, not navigation within a live session, so it **replaces** the stack. Logged out, it's held as `pendingDeepLink` (persisted across rotation / process death — e.g. mid-OTP — and dropped after 30 minutes) together with whether another app's task hosted it, and landed after login by the same two-task rule.
 
-## V.3 Synthetic back stacks and task-aware Up
+In-app link taps go through `DeepLinkFirstUriHandler` (the Compose `LocalUriHandler`) and `navigateToInAppLink` instead: the member is navigating within a live session, so the key is deduped and appended onto the live stack, and a link we can't match opens in the browser.
 
-When a deep link is entered alone, Back/Up must behave as if the user had navigated there inside the app. `syntheticStackFor` rebuilds the ancestry, reusing the abstract `DeepLinkAncestry` markers so no feature names another's key:
+## V.3 Synthetic back stacks, and the two tasks a link can arrive in
+
+This follows the [principles of navigation](https://developer.android.com/guide/navigation/principles): within our own task Up and Back are identical and a deep link brings a realistic back stack with it; on another app's task Back returns to that app while Up moves the member into our own task.
+
+`syntheticStackFor` builds the path the member would have taken by hand, reusing the abstract `DeepLinkAncestry` markers so no feature names another's key:
 
 ```kotlin
 internal fun syntheticStackFor(key: HedvigNavKey): List<HedvigNavKey> {
@@ -767,33 +761,34 @@ internal fun syntheticStackFor(key: HedvigNavKey): List<HedvigNavKey> {
 }
 ```
 
-`navigateUp` is task-aware:
+**In our own task** (a notification tap, a link opened with `FLAG_ACTIVITY_NEW_TASK`) the link lands on that whole stack. `HomeKey` is at index 0, so the runs model, the nav bar and tab switching work from the first frame, and Back and Up both walk the ancestry.
+
+**In another app's task** (`isHostedInForeignTask`: not the task root, and delivered without `NEW_TASK`) the link lands as the key alone. Back pops to nothing and finishes the Activity, returning straight to the app that linked here. Up hands the key's parent ancestry to `escapeToOwnTask` (V.4).
+
+The task is consulted exactly once, when the link lands. After that **the stack shape is the record**: a stack not rooted at `HomeKey`/`LoginKey` can only be a foreign-hosted deep link (plus whatever was pushed on top of it), so Up and the chrome (II.9) ask that one question instead of tracking task identity as state. It also survives process death for free, since the stack is what is persisted.
 
 ```kotlin
 override fun navigateUp(): Boolean {
-  val top = entries.lastOrNull() ?: return false
-  val synthetic = syntheticStackFor(top)
-  if (entries.size == 1 && synthetic.size > 1) {        // lone deep link with real ancestry
-    val parentStack = synthetic.dropLast(1)
-    if (isOwnTask()) entries.replaceWith(parentStack)   // materialize in place
-    else escapeToOwnTask(parentStack)                   // re-root into our own task
+  val loneDeepLink = entries.singleOrNull()?.takeIf { isDeepLinkHostedInForeignTask }
+  if (loneDeepLink != null) {                              // foreign-hosted deep link, nothing above it
+    escapeToOwnTask(syntheticStackFor(loneDeepLink).dropLast(1))
     return true
   }
-  return super.popBackstack()                            // everywhere else: PURE pop (no app-finish)
+  return super.popBackstack()                              // everywhere else: pure pop, no-op at the root
 }
 
-override fun popBackstack(): Boolean {                   // Back / close
+override fun popBackstack(): Boolean {                     // Back / close
   val popped = super.popBackstack()
-  if (!popped) finishApp()                               // at the root → exit the app
+  if (!popped) finishApp()                                 // at the root → exit the app
   return popped
 }
 ```
 
-`navigateUp` falls through to `super.popBackstack()` (the pure interface default) on purpose: an Up press that can't go up is a no-op, whereas a Back press at the root exits the app. The `finishApp` lambda is an Activity-bound hook attached in `onCreate` alongside `isOwnTask` / `escapeToOwnTask` (same stale-reference reasoning), and is a no-op by default so unit tests never try to finish.
+A Home link in another app's task is just `[HomeKey]`: an ordinary Home with its nav bar, where Back returns to the caller. `finishApp` and `escapeToOwnTask` are Activity-bound hooks attached in `onCreate`, no-ops by default so unit tests never try to finish or relaunch.
 
 ## V.4 Escaping a foreign task
 
-If we were launched into the *caller's* task by an external deep link (`isTaskRoot == false`, so `isOwnTask()` is false), pressing Up shouldn't rebuild our ancestry hosted under the foreign app. Instead we relaunch in our own task:
+When a deep link stands alone in the *caller's* task, pressing Up shouldn't rebuild our ancestry hosted under the foreign app. Instead we relaunch in our own task:
 
 ```kotlin
 fun escapeToOwnTask(activity, parentStack, serializersModules) {
@@ -814,11 +809,11 @@ The fresh instance reads the ancestry back in `restoreAndPersist` via the **same
 ## VI.1 Invariants you must not break
 
 1. **`entries` is never empty.** There is always at least a root (`LoginKey` or `HomeKey`). The pure pop refuses to remove the last entry; `BackstackController.popBackstack` finishes the Activity in that case instead, so Back/close from the root exits the app rather than emptying the stack.
-2. **`entries[0]` is `HomeKey` (logged in) or `LoginKey` (logged out)** — except the transient lone-deep-link state, which is exactly why `loneDeepLinkChrome` exists.
+2. **`entries[0]` is `HomeKey` (logged in) or `LoginKey` (logged out)** — except a deep link hosted in another app's task (V.3), which is exactly why `loneDeepLinkChrome` exists. Nothing else may produce a stack rooted elsewhere: Up and the chrome read that shape as "foreign-hosted deep link".
 3. **Home is never parked.** Only side tabs go into `parkedRuns`.
 4. **Every `@Serializable HedvigNavKey` must be registered for polymorphic serialization** → its module needs `navKeys()`.
 5. **A `DeepLinkAncestry.syntheticParents` list contains only the key's own feature's keys.** Cross-tab jumps go through `owningTab`.
-6. **Features never import another feature's keys.** Cross-feature navigation is a `navigateToX` lambda from `:app`, or a dependency on a `-navigation` module.
+6. **Features never import another feature's keys.** Cross-feature navigation is a `navigateToX` lambda passed in by `hedvigEntryProvider`, or a dependency on a `-navigation` module.
 7. **No Activity-bound reference is captured in the `BackstackController` constructor.** Activity hooks are attached in `onCreate`; each Activity owns its own controller, so a recreated Activity gets a fresh controller (or reuses the retained one across a config change) without ever sharing hooks with another Activity.
 8. **GraphQL `octopus.*` types never appear in public APIs** (see CLAUDE.md data-layer rule).
 9. **A destination's `contentKey` comes from `HedvigNavKey.contentKey()` on both sides** — stamped onto entries by `withHedvigContentKeys`, derived directly by the controller for parked and restored keys. Never hand-roll one at an `entry<>` call site, and never reintroduce a bare `toString()` on the controller side (II.8).
@@ -826,10 +821,10 @@ The fresh instance reads the ancestry back in `restoreAndPersist` via the **same
 ## VI.2 Tests that guard the architecture
 
 - **`ExhaustiveBackStackSerializationTest`** (`:app`) — round-trips every `HedvigNavKey` through the merged serializers module. This is the safety net for invariant #4: forget `navKeys()` on a module and this test fails instead of users hitting a process-death crash.
-- **`BackstackTest`** (`navigation-compose`) — the `Backstack` helper extensions.
+- **`BackstackTest`** (`navigation-common`) — the `Backstack` helper extensions.
 - **`HedvigDeepLinkMatcherTest`** — matching/priority/throw-as-non-match behaviour.
 - **`HedvigNavKeySavedStateTest`** (`navigation-common`) — key saved-state behaviour.
-- **`HedvigContentKeysTest`** (`:app`) — pins the content-key contract (II.8): entries carry our derivation, the controller reports the same value as live for both rendered and *parked* destinations, and repeated provider calls for one key stay equal. Every case fails if the stamping is removed.
+- **`HedvigContentKeysTest`** (`:app-shell`): pins the content-key contract (II.8): entries carry our derivation, the controller reports the same value as live for both rendered and *parked* destinations, and repeated provider calls for one key stay equal. Every case fails if the stamping is removed.
 - **`ContentKeyTest`** (`navigation-common`, JVM + iOS) — two destinations sharing a `toString` must not share a content key. Fails if the type qualification is dropped.
 - The `TopLevelRunLogic` helpers are pure list functions, unit-testable without a controller.
 
@@ -839,7 +834,7 @@ The fresh instance reads the ancestry back in `restoreAndPersist` via the **same
 |---|---|---|
 | Two scopes: global `AppScope` + per-Activity `ActivityRetainedScope` | Screen lifetime is owned by Nav3 ViewModelStores; the Activity is the one extra lifetime DI must respect (the back stack) | Per-screen/per-feature DI scopes (redundant); one global scope only (can't bound the controller to an Activity) |
 | Per-Activity `BackstackController` (retained `ViewModel` + `ActivityRetainedGraph`) | Long-lived Presenters need a stable reference; composition state goes stale on rotation; an app-singleton would be shared across two Activities | `rememberSerializable` in `setContent`; `@SingleIn(AppScope::class)` app-singleton |
-| Markers in `navigation-common` | `:app` reasons about keys without depending on features | `:app` importing every feature's keys |
+| Markers in `navigation-common` | The shell reasons about keys without depending on features | The shell importing every feature's keys |
 | `-navigation` modules | Allow targeted cross-feature navigation while keeping isolation | Relaxing the feature-isolation rule globally |
 | Runs model (one list + parked map) | Multiple back stacks with retention, all serializable as one snapshot | N `NavController`s / N back stacks |
 | KSP-generated serializer registrations | No hand-written boilerplate, no reflection (iOS-safe), can't silently rot | Per-module hand-written `SerializersModule` |
@@ -855,9 +850,9 @@ The fresh instance reads the ancestry back in `restoreAndPersist` via the **same
 
 **Navigate to it from the same feature.** `backstack.add(FooKey(...))` (or `popUpTo`, `navigateAndPopUpTo`, …).
 
-**Navigate to it from another feature.** Put `FooKey` in `feature-foo-navigation`; in `:app`, derive a `navigateToFoo` lambda and thread it to the calling feature's entries function. The calling feature exposes a callback, never imports `FooKey`.
+**Navigate to it from another feature.** Put `FooKey` in `feature-foo-navigation`; build a `navigateToFoo` lambda where the calling feature's entries function is called (`hedvigEntryProvider`) and pass it in. The calling feature exposes a callback, never imports `FooKey`.
 
-**Make it deep-linkable.** Add patterns to the feature's `HedvigDeepLinkContainer`, build matchers via `uriDeepLinkMatchers`, contribute a `DeepLinkMatcherProvider` (`@ContributesIntoSet`). If it can be entered alone, implement `DeepLinkAncestry`.
+**Make it deep-linkable.** Add patterns to the feature's `HedvigDeepLinkContainer`, build matchers via `uriDeepLinkMatchers`, contribute a `DeepLinkMatcherProvider` (`@ContributesIntoSet`). If the natural path to it is more than just Home (it belongs under a side tab, or has parents of its own), implement `DeepLinkAncestry`.
 
 **Make it a tab root.** Implement `TopLevelTabRoot`; add the tab to `TopLevelTab`; map its start destination in `startDestination`.
 

@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "14.6.2"
+    versionName = "14.6.3"
   }
 
   androidResources {
@@ -158,6 +158,7 @@ dependencies {
   implementation(projects.apolloCore)
   implementation(projects.apolloNetworkCacheManager)
   implementation(projects.apolloOperationError)
+  implementation(projects.appShell)
   implementation(projects.authCorePublic)
   implementation(projects.composeUi)
   implementation(projects.coreAppReview)
@@ -247,7 +248,6 @@ dependencies {
   implementation(projects.notificationBadgeDataPublic)
   implementation(projects.notificationCore)
   implementation(projects.notificationFirebase)
-  implementation(projects.shareddi)
   implementation(projects.theme)
   implementation(projects.tierComparison)
   implementation(projects.trackingCore)

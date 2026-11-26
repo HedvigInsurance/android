@@ -109,7 +109,7 @@ private fun PreviewCoInsuredList() {
             lastName = "Membersson",
             ssn = "197312331093",
           ),
-          allCoInsured = listOf(),
+          coInsuredFromOtherContracts = listOf(),
         ),
         type = CoInsuredFlowType.CoInsured,
         onRemove = {},

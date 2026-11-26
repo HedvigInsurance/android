@@ -31,7 +31,6 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightC
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.LIGHT
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
-import com.hedvig.android.feature.help.center.ShowNavigateToInboxViewModel
 import com.hedvig.android.feature.help.center.data.FAQItem
 import com.hedvig.android.feature.help.center.data.FAQTopic
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicUiState.Failure
@@ -53,7 +52,6 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun HelpCenterTopicDestination(
-  showNavigateToInboxViewModel: ShowNavigateToInboxViewModel,
   helpCenterTopicViewModel: HelpCenterTopicViewModel,
   onNavigateToQuestion: (questionId: String) -> Unit,
   onNavigateToInbox: () -> Unit,
@@ -62,10 +60,8 @@ internal fun HelpCenterTopicDestination(
   onNavigateBack: () -> Unit,
 ) {
   val uiState by helpCenterTopicViewModel.uiState.collectAsStateWithLifecycle()
-  val showNavigateToInboxButton by showNavigateToInboxViewModel.uiState.collectAsStateWithLifecycle()
   HelpCenterTopicScreen(
     uiState = uiState,
-    showNavigateToInboxButton = showNavigateToInboxButton,
     onNavigateUp = onNavigateUp,
     onReload = { helpCenterTopicViewModel.emit(HelpCenterTopicEvent.Reload) },
     onNavigateBack = onNavigateBack,
@@ -78,7 +74,6 @@ internal fun HelpCenterTopicDestination(
 @Composable
 private fun HelpCenterTopicScreen(
   uiState: HelpCenterTopicUiState,
-  showNavigateToInboxButton: Boolean,
   onNavigateUp: () -> Unit,
   onReload: () -> Unit,
   onNavigateBack: () -> Unit,
@@ -123,7 +118,6 @@ private fun HelpCenterTopicScreen(
           HelpCenterTopicScreen(
             commonQuestions = state.topic.commonFAQ,
             allQuestions = state.topic.commonFAQ + state.topic.otherFAQ,
-            showNavigateToInboxButton = showNavigateToInboxButton,
             onNavigateToQuestion = onNavigateToQuestion,
             onNavigateToInbox = onNavigateToInbox,
             onNavigateToNewConversation = onNavigateToNewConversation,
@@ -158,7 +152,6 @@ private fun FailureScreen(onClick: () -> Unit, errorText: String, buttonText: St
 private fun HelpCenterTopicScreen(
   commonQuestions: List<FAQItem>,
   allQuestions: List<FAQItem>,
-  showNavigateToInboxButton: Boolean,
   onNavigateToQuestion: (questionId: String) -> Unit,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
@@ -218,7 +211,6 @@ private fun HelpCenterTopicScreen(
         StillNeedHelpSection(
           onNavigateToInbox = onNavigateToInbox,
           onNavigateToNewConversation = onNavigateToNewConversation,
-          showNavigateToInboxButton = showNavigateToInboxButton,
           contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues() +
             PaddingValues(horizontal = 16.dp),
         )
@@ -236,7 +228,6 @@ private fun PreviewHelpCenterTopicScreen(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       HelpCenterTopicScreen(
         uiState,
-        false,
         {},
         {},
         {},

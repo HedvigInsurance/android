@@ -10,6 +10,7 @@ import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.toContractGroup
 import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.memberquickactions.QuickLinkDestination.OuterDestination
@@ -50,6 +51,7 @@ import hedvig.resources.HOME_QUICK_ACTIONS_UPGRADE_COVERAGE
 import hedvig.resources.Res
 import hedvig.resources.insurance_details_change_amount
 import hedvig.resources.insurance_details_change_amount_subtitle
+import kotlinx.coroutines.flow.first
 import octopus.AvailableSelfServiceOnContractsQuery
 
 interface GetMemberQuickActionsUseCase {
@@ -118,7 +120,11 @@ internal class GetMemberQuickActionsUseCaseImpl(
             ),
           )
         }
-        if (memberActionOptions.isCancelInsuranceEnabled) {
+        // The home screen must not prompt cancellation, so its 'Change insurance' sheet leaves the option out
+        // while the flag is on. The help center keeps it, as does insurance details, so cancelling stays possible.
+        val hideCancelInsurance = source == QuickActionsSource.HOME &&
+          featureManager.isFeatureEnabled(Feature.HIDE_CANCEL_INSURANCE_FROM_HOME_SCREEN).first()
+        if (memberActionOptions.isCancelInsuranceEnabled && !hideCancelInsurance) {
           add(
             QuickAction.StandaloneQuickLink(
               quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkTermination,

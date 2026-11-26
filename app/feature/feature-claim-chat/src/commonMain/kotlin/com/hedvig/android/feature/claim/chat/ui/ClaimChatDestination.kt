@@ -84,6 +84,7 @@ import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationEventHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import coil3.ImageLoader
+import com.hedvig.android.compose.ui.LocalClock
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
@@ -156,7 +157,6 @@ import hedvig.resources.general_cancel_button
 import hedvig.resources.general_close_button
 import hedvig.resources.general_error
 import hedvig.resources.something_went_wrong
-import kotlin.time.Clock
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -1168,7 +1168,7 @@ private fun StepBottomContent(
             onEvent(ClaimChatEvent.Skip(stepItem.id))
           },
           isCurrentStep = isCurrentStep,
-          clock = Clock.System,
+          clock = LocalClock.current,
           onShouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           openAppSettings = openAppSettings,
           onEvent = onEvent,

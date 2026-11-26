@@ -24,7 +24,9 @@ import kotlin.time.Duration.Companion.milliseconds
  */
 @SingleIn(AppScope::class)
 @Inject
-internal class DemoClaimIntentScript {
+internal class DemoClaimIntentScript(
+  private val clock: Clock,
+) {
   private var index = 0
 
   fun start(): ClaimIntent {
@@ -54,7 +56,7 @@ internal class DemoClaimIntentScript {
       ?: ClaimIntent.Next.Outcome(
         ClaimIntentOutcome.Claim(
           claimId = "demo-claim",
-          claimSubmissionDate = Clock.System.now(),
+          claimSubmissionDate = clock.now(),
         ),
       )
     return ClaimIntent(

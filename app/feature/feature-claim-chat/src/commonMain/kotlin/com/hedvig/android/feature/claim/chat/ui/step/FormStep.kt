@@ -101,6 +101,7 @@ import hedvig.resources.CLAIM_CHAT_FIELD_SEARCH_SUGGESTION
 import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MAX_CHAR
 import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MIN_CHAR
 import hedvig.resources.CLAIM_CHAT_FORM_REQUIRED_FIELD
+import hedvig.resources.GENERAL_INVALID_INPUT
 import hedvig.resources.GENERAL_REMOVE
 import hedvig.resources.Res
 import hedvig.resources.TALKBACK_CLAIM_CHAT_YOUR_ANSWER
@@ -161,6 +162,7 @@ private fun getErrorText(field: Field): String? {
     FieldError.Missing -> stringResource(Res.string.CLAIM_CHAT_FORM_REQUIRED_FIELD)
     FieldError.LessThanMinValue -> stringResource(Res.string.CLAIM_CHAT_FORM_NUMBER_MIN_CHAR)
     FieldError.BiggerThanMaxValue -> stringResource(Res.string.CLAIM_CHAT_FORM_NUMBER_MAX_CHAR)
+    FieldError.NotANumber -> stringResource(Res.string.GENERAL_INVALID_INPUT)
     null -> null
   }
 }
@@ -185,6 +187,7 @@ private fun FormContent(
 ) {
   val errorDescription = firstFieldWithError?.let { "${getErrorText(it)}: ${it.title}" }
   val isSubmitting = continueButtonLoading || skipButtonLoading
+  val hasInvalidNumber = content.fields.any { it.hasError == FieldError.NotANumber }
   Column(modifier) {
     if (isCurrentStep) {
       Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -225,7 +228,9 @@ private fun FormContent(
               )
             }
 
-            FieldType.NUMBER -> {
+            FieldType.NUMBER,
+            FieldType.PHONE_NUMBER,
+            -> {
               TextInputBubble(
                 questionLabel = field.title,
                 text = field.selectedOptions.getOrNull(0)?.text,
@@ -347,7 +352,7 @@ private fun FormContent(
       Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         HedvigButton(
           text = stringResource(Res.string.general_continue_button),
-          enabled = !isSubmitting,
+          enabled = !isSubmitting && !hasInvalidNumber,
           isLoading = continueButtonLoading,
           onClick = onSubmit,
           modifier = Modifier.fillMaxWidth().semantics {

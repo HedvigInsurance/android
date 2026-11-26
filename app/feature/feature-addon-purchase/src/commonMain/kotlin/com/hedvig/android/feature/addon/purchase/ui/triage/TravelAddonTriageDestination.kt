@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
+import com.hedvig.android.core.common.KeepKmp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -37,7 +38,7 @@ import hedvig.resources.general_close_button
 import hedvig.resources.open_chat
 import org.jetbrains.compose.resources.stringResource
 
-@androidx.annotation.Keep
+@KeepKmp
 @Composable
 internal fun TravelAddonTriageDestination(
   viewModel: TravelAddonTriageViewModel,

@@ -22,12 +22,13 @@ import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 
-internal class UnexpectedHttpStatusException(status: HttpStatusCode) : Exception("Unexpected HTTP status $status")
+internal class UnexpectedHttpStatusException(val status: HttpStatusCode) : Exception("Unexpected HTTP status $status")
 
 /**
  * Service mapping the API of `HedvigInsurance/auth`
@@ -36,17 +37,17 @@ internal class AuthService(
   private val environment: AuthEnvironment,
   private val ktorClient: HttpClient,
 ) {
-  @Throws(NoTransformationFoundException::class, Throwable::class)
+  @Throws(NoTransformationFoundException::class, UnexpectedHttpStatusException::class, Throwable::class)
   suspend fun memberLoginSweden(personalNumber: String?): LoginSwedenResponse {
     val response = ktorClient.post("${environment.baseUrl}/member-login") {
       headers["hedvig-bankid-v6"] = "true"
       contentType(ContentType.Application.Json)
       setBody(LoginSwedenInput(personalNumber))
     }
-    return response.body<LoginSwedenResponse>()
+    return response.loginResponseBody<LoginSwedenResponse>()
   }
 
-  @Throws(NoTransformationFoundException::class, Throwable::class)
+  @Throws(NoTransformationFoundException::class, UnexpectedHttpStatusException::class, Throwable::class)
   suspend fun memberLoginOtp(
     otpLoginCountry: LoginOtpInput.OtpLoginCountry,
     personalNumber: String,
@@ -55,19 +56,19 @@ internal class AuthService(
       contentType(ContentType.Application.Json)
       setBody(LoginOtpInput(otpLoginCountry, personalNumber))
     }
-    return response.body<LoginOtpResponse>()
+    return response.loginResponseBody<LoginOtpResponse>()
   }
 
   /**
    * Used for Qasa login attempts
    */
-  @Throws(NoTransformationFoundException::class, Throwable::class)
+  @Throws(NoTransformationFoundException::class, UnexpectedHttpStatusException::class, Throwable::class)
   suspend fun memberLoginOtpSweden(email: String): LoginOtpResponse {
     val response = ktorClient.post("${environment.baseUrl}/member-login") {
       contentType(ContentType.Application.Json)
       setBody(LoginOtpSwedenInput(email))
     }
-    return response.body<LoginOtpResponse>()
+    return response.loginResponseBody<LoginOtpResponse>()
   }
 
   @Throws(NoTransformationFoundException::class, Throwable::class)
@@ -118,4 +119,15 @@ internal class AuthService(
     }
     return response.status == HttpStatusCode.OK
   }
+}
+
+/**
+ * The login response types are sealed on a `result` discriminator that a 5xx body never carries, so decoding one
+ * only produces a deserialization failure that hides the status code. Surface the status instead.
+ */
+private suspend inline fun <reified T> HttpResponse.loginResponseBody(): T {
+  if (status.value in 500..599) {
+    throw UnexpectedHttpStatusException(status)
+  }
+  return body<T>()
 }

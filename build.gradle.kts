@@ -1,3 +1,5 @@
+import com.hedvig.android.registerCommonMainImportGuard
+
 plugins {
   // Every other plugin's classpath is supplied by the `hedvig.settings` convention plugin (see
   // build-logic/convention/build.gradle.kts), so project scripts apply them by id without a version.
@@ -16,6 +18,8 @@ tasks.register("accessibilityChecks") {
     "Start one first: the task fails with \"No online devices found\" otherwise."
   dependsOn(":accessibility-test:connectedAndroidTest")
 }
+
+registerCommonMainImportGuard()
 
 dependencyAnalysis {
   issues {

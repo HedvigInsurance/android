@@ -13,6 +13,8 @@ Two foundations are newer than most of the codebase and are easy to get wrong if
 
 A full narrative of *why* these look the way they do — the engineering decisions, the alternatives rejected, the invariants — lives in `docs/architecture/navigation-and-di.md`. Read it before making structural changes to navigation or DI. This file is the day-to-day quick reference.
 
+The same app also runs as a desktop (JVM) application. If a feature fails to compile for JVM, `checkCommonMainImports` fails, you need something Android-only from `commonMain`, or you want to see a change on desktop, read "Desktop app" below.
+
 ## Essential Setup Commands
 
 ### Initial Setup
@@ -38,14 +40,11 @@ A full narrative of *why* these look the way they do — the engineering decisio
 # Build the app
 ./gradlew :app:assemble
 
-# Run all tests
+# Run all unit tests (in a KMP module `test` runs `jvmTest` and any Android host tests)
 ./gradlew test
 
 # Run tests for a specific module
 ./gradlew :feature-home:test
-
-# Run unit tests
-./gradlew test
 
 # Formatting
 ./gradlew ktlintCheck          # Check formatting
@@ -71,19 +70,20 @@ A full narrative of *why* these look the way they do — the engineering decisio
 
 The codebase is organized under `/app` with 80+ modules following a strict modularization pattern:
 
-- **app/** - Main application module. Owns the single Metro `AppGraph`, the single `NavDisplay`, the back stack controller, and all cross-feature navigation wiring.
+- **app/** - Android application module, a thin host of `:app-shell`. Owns the Android Metro `AppGraph` and the per-Activity `ActivityRetainedGraph`, `MainActivity`, back stack persistence, external deep links, and the Datadog view tracking effect.
+- **app-shell/**: KMP module (JVM and Android) with the app shell shared by the Android and desktop hosts, mostly Compose UI: `HedvigApp` and its single `NavDisplay`, the back stack controller, session reconciliation, and the shared cross-feature navigation wiring (`hedvigEntryProvider`). A host implements `AppHost` and may pass a fallback entry for keys without one.
+- **app-desktop/** - The desktop (JVM) host of `:app-shell`: `main()`, `DesktopGraph` and the desktop-only bindings. See "Desktop app".
 - **feature/** - Feature modules (feature-home, feature-chat, feature-login, etc.)
-- **feature/feature-{name}-navigation/** - Tiny modules holding *only* the public `@Serializable HedvigNavKey`s of a feature that other features may navigate to. These are the one carve-out to the "features can't depend on features" rule.
+- **feature/feature-{name}-navigation/** - Tiny modules holding *only* the public `@Serializable HedvigNavKey`s of a feature that another module must navigate to without depending on that feature. These are the one carve-out to the "features can't depend on features" rule. A feature's other keys live in the feature itself.
 - **data/** - Data layer modules (data-contract, data-chat, data-addons, etc.)
 - **core/** - Core utilities (core-common, core-datastore, core-resources, etc.)
 - **apollo/** - GraphQL client modules (apollo-octopus-public, apollo-core, etc.)
-- **navigation/** - Navigation infrastructure: `navigation-common` (KMP, holds `HedvigNavKey` + marker interfaces), `navigation-compose` (KMP, the `Backstack` interface, deep-link matching, decorators), `navigation-keys-processor` (KSP processor generating serializer registrations), `navigation-activity` (Android `ExternalNavigator`).
+- **navigation/** - Navigation infrastructure: `navigation-common` (KMP, UI-free: `HedvigNavKey` + marker interfaces, the `Backstack` interface, deep-link matching), `navigation-compose` (KMP, Compose UI only: scene strategies and decorators), `navigation-keys-processor` (KSP processor generating serializer registrations), `navigation-activity` (Android `ExternalNavigator`).
 - **design-system/** - Design system components
 - **ui/** - Shared UI components
 - **auth/** - Authentication modules
 - **database/** - Room database modules
 - **language/** - Localization modules
-- **shareddi/** - KMP module declaring the iOS `IosGraph` (Metro graph for the iOS target).
 - **Other utilities** - payment, tracking, logging, featureflags, etc.
 
 **Critical architectural rule:** Feature modules CANNOT depend on other feature modules. This is enforced at build time by `hedvig.gradle.plugin` (`configureFeatureModuleGuidelines()`). The single exception: any module can depend on a `feature-{name}-navigation` module, because those exist precisely to be shared cross-feature.
@@ -228,23 +228,23 @@ internal data class InsuranceContractDetailKey(val contractId: String) : HedvigN
 }
 ```
 
-Keys reachable cross-feature live in the feature's `-navigation` module and are public. Keys internal to a feature stay `internal` in the feature module.
+A feature's keys live in the feature. Keys that `:app-shell` or a host names are public, the rest stay `internal`. A key moves to a separate `feature-{name}-navigation` module only when another module must navigate to that feature without depending on it.
 
-**Marker interfaces** (in `navigation-common`) let `:app` reason about a key without depending on the feature:
+**Marker interfaces** (in `navigation-common`) let the app shell reason about a key without depending on the feature:
 - `TopLevelTabRoot` — this key is the root of a bottom-nav tab (exposes `topLevelTab`).
-- `DeepLinkAncestry` — how to build a synthetic back stack when this key is entered alone (exposes `owningTab` + `syntheticParents`).
+- `DeepLinkAncestry` — the synthetic back stack a deep link to this key lands on (exposes `owningTab` + `syntheticParents`).
 - `CrossSellEligibleDestination` — the cross-sell sheet may appear here.
 - `SuppressesChatPushNotification` — suppress chat push while this screen is shown.
 - `DeliberateLogoutOrigin` — reaching logout from here is intentional; don't stash the session for restore.
 
-**The back stack API.** Presenters and entries receive the `Backstack` interface (the `:app` `BackstackController` is bound to it). `entries` is the source of truth; helpers are extensions:
+**The back stack API.** Presenters and entries receive the `Backstack` interface (the app shell's `BackstackController` is bound to it). `entries` is the source of truth; helpers are extensions:
 
 ```kotlin
 backstack.add(ChatKey(id))                              // push
 backstack.popBackstack()                                 // pop one; at the root it finishes the app (Back/close exits)
 backstack.popUpTo<TerminateInsuranceKey>(inclusive = true)
 backstack.navigateAndPopUpTo<FooKey>(BarKey, inclusive = true)
-backstack.navigateUp()                                   // task-aware up (deep links)
+backstack.navigateUp()                                   // pop one; no-op at the root; re-roots a foreign-hosted deep link
 backstack.removeAllOf<InboxKey>()
 ```
 
@@ -254,13 +254,13 @@ Never hold a long-lived reference to `entries` snapshot contents; mutate through
 
 `backstack.navigateUp()` may **only** be wired to the back arrow in a screen's top app bar. In every other case — "done"/"close"/"continue" buttons, success screens, dismissing a flow, programmatic pops after an action — call `backstack.popBackstack()` instead.
 
-**Why:** `navigateUp` carries deep-link/synthetic-stack semantics (the `:app` `BackstackController` overrides it to rebuild a parent stack when the user arrived via a lone deep link). That behavior is correct for the top app bar's "up" affordance, but wrong for an in-content button, where the user expects a plain temporal pop of the current entry. Mixing them makes a button behave differently depending on how the screen was reached, and can diverge from predictive (system) back.
+**Why:** the two differ where the stack runs out. At the root `popBackstack` finishes the app (Back/close exits) while `navigateUp` is a no-op (Up never exits the app). On a deep link standing alone in another app's task, `popBackstack` returns to that app while `navigateUp` relaunches us in our own task on the key's parent stack. Both are right for the top app bar's "up" affordance and wrong for an in-content button, which must behave like the system back gesture.
 
 **How to apply:** When arranging the backstack for a flow, do it *at navigation time* (when navigating to a screen), so that a later plain `popBackstack()` and the system back gesture always land in the same place — never special-case the pop inside a button handler.
 
 ### Dependency Injection
 
-**Registering destinations.** Each feature exposes a `fun EntryProviderScope<HedvigNavKey>.featureEntries(...)` that calls `entry<Key> { }` for each of its screens. `:app` calls all of them from `hedvigEntryProvider`. Cross-feature navigation is done by `:app` passing `navigateToX` lambdas into each feature's entries function — features never import each other's keys.
+**Registering destinations.** Each feature exposes a `fun EntryProviderScope<HedvigNavKey>.featureEntries(...)` that calls `entry<Key> { }` for each of its screens. `hedvigEntryProvider` in `:app-shell` calls all of them, for every host. Cross-feature navigation is done with `navigateToX` lambdas passed into each feature's entries function by `hedvigEntryProvider`. Features never import each other's keys.
 
 ```kotlin
 fun EntryProviderScope<HedvigNavKey>.insuranceEntries(backstack: Backstack, /* navigateToX lambdas */) {
@@ -276,10 +276,10 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEntries(backstack: Backstack, /* n
 **Multiple back stacks (tabs)** are handled by the "runs model" in `BackstackController`/`TopLevelRunLogic`: Home's run is always at the base of `entries`; side tabs are parked in `parkedRuns` when you switch away and restored when you switch back. Tab state (saveable state + ViewModels) of parked runs is kept alive by the retained `NavEntryDecorator`s, which consult `allLiveContentKeys`.
 
 **Where the heavy logic lives** (read these, don't reinvent):
-- `BackstackController.kt` — per-Activity controller (owned by `NavRetainedViewModel`, a retained `ViewModel`; survives config changes, dies with its Activity), owns all nav state, tab switching, login/logout stash, deep-link routing, task-aware Up.
-- `NavigationStateBridge.kt` — the single seam between Activity lifecycle and the controller (seed/restore/persist + escape-to-own-task handoff).
-- `SessionReconciler.kt` — auth↔back-stack reconciliation; gates the splash via `isReady`; forced logout.
-- `HedvigEntryProvider.kt` — all destination registration and cross-feature lambda wiring.
+- `BackstackController.kt` (`:app-shell`): per-Activity controller (owned by `NavRetainedViewModel`, a retained `ViewModel`; survives config changes, dies with its Activity), owns all nav state, tab switching, login/logout stash, deep-link landing, Up.
+- `NavigationStateBridge.kt` (`:app`): the single seam between Activity lifecycle and the controller (seed/restore/persist + escape-to-own-task handoff).
+- `SessionReconciler.kt` (`:app-shell`): auth↔back-stack reconciliation; gates the splash via `isReady`; forced logout.
+- `HedvigEntryProvider.kt` (`:app-shell`): all destination registration, for every host, and the shared cross-feature lambda wiring.
 
 **Critical Metro KMP rule — never put a platform-overridable `@ContributesBinding` default in `commonMain`:**
 
@@ -291,7 +291,7 @@ If an interface needs a different implementation per platform, bind it **per-pla
 
 ### Deep Links
 
-Each feature builds `DeepLinkMatcher`s from its `HedvigDeepLinkContainer` patterns and contributes a `DeepLinkMatcherProvider` (`@ContributesIntoSet`). `:app` aggregates them into one `HedvigDeepLinkMatcher`. `MainActivity` forwards `ACTION_VIEW` intents as raw URI strings down a `deepLinkChannel`; `HedvigApp` matches each to a key and routes it through the controller once logged in. A `DeepLinkAncestry` key entered while logged out is held as `pendingDeepLink` and landed after login.
+Each feature builds `DeepLinkMatcher`s from its `HedvigDeepLinkContainer` patterns and contributes a `DeepLinkMatcherProvider` (`@ContributesIntoSet`). `:app` aggregates them into one `HedvigDeepLinkMatcher`. `MainActivity` forwards `ACTION_VIEW` intents as raw URI strings down a `deepLinkChannel`; `ExternalDeepLinkHandler` matches each to a key once the start scene is resolved and lands it through the controller. An external deep link replaces the stack. In our own task it lands on the key's synthetic ancestry (`syntheticStackFor`: Home, the owning tab root, the key's `DeepLinkAncestry` parents, the key), so Back and Up walk the path the member would have taken by hand. In another app's task (`isHostedInForeignTask`) it lands alone, so Back returns to that app and Up re-roots us in our own task. The task is checked once at landing; afterwards a stack not rooted at Home *is* the foreign-hosted case, and Up and the nav-bar chrome key off that shape. A link arriving while logged out is held as `pendingDeepLink`, with which task hosted it, and landed by the same rule after login. In-app link taps (`DeepLinkFirstUriHandler`) instead append onto the live stack.
 
 ### Data Layer
 
@@ -352,6 +352,15 @@ internal class SetArticleRatingUseCaseImpl(...) : SetArticleRatingUseCase {
   }
 }
 ```
+
+### Dates from the date picker
+
+`HedvigDatePickerState`, `HedvigDatePickerImmutableState` and `HedvigSelectableDates.isSelectableDate` carry a
+calendar day as epoch millis at **UTC midnight** (Material 3's convention, not configurable). Always convert with
+`TimeZone.UTC`, both ways. Reading them with `TimeZone.currentSystemDefault()` returns the right day in Sweden and
+the previous day on any phone set to a zone behind UTC, so the bug never shows in local testing. Use the device zone
+only for "what is today" (`clock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date`). The plan to replace
+the millis with a `LocalDate` API is in `docs/plans/2026-11-06-date-picker-localdate-api.md`.
 
 ### Logging
 
@@ -443,7 +452,7 @@ The project uses custom Gradle convention plugins for consistent configuration:
 - **hedvig.android.library** - Android library configuration
 - **hedvig.jvm.library** - Pure Kotlin (JVM) libraries
 - **hedvig.multiplatform.library** - KMP module with a JVM target. Not exported to iOS.
-- **hedvig.multiplatform.library.ios** - KMP module that `:umbrella` exports to iOS, directly or transitively. Adds the iOS targets; every `expect` needs a `nativeMain` actual.
+- **hedvig.multiplatform.library.ios** - KMP module that compiles for iOS so `:umbrella` can export it, directly or transitively. Adds the iOS targets; every `expect` needs a `nativeMain` actual. A module keeps the plugin even while `:umbrella` does not currently reach it, so it stays exportable without a porting effort.
 - **hedvig.multiplatform.library.android** - adds an android target to a KMP module when it needs android-specific code, Compose previews, resources, or the `navKeys()`/`viewModels()` processors.
 
 ### HedvigGradlePluginExtension DSL
@@ -562,32 +571,29 @@ When tempted to write "X instead of Y", drop the Y half and justify X on its own
 ```
 
 **Schema locations:**
-- `app/apollo/apollo-octopus-public/src/main/graphql/` - Main schema
+- `app/apollo/apollo-octopus-public/src/commonMain/graphql/` - Main schema
 - Client-side schema modifications supported via build plugin
 
 ### Writing GraphQL Queries
 
-Place `.graphql` files in module's `src/main/graphql/`. Apollo generates type-safe Kotlin code automatically. Keep generated `octopus.*` types confined to internal impl classes (see the data layer rule above).
+Place `.graphql` files in the module's `src/commonMain/graphql/` (`src/main/graphql/` in a module that is not KMP). Apollo generates type-safe Kotlin code automatically. Keep generated `octopus.*` types confined to internal impl classes (see the data layer rule above).
 
 ## Testing
 
 ```bash
-# Run all tests
+# Run all unit tests (JVM, Android and KMP modules; in KMP modules `test` runs `jvmTest` and any Android host tests)
 ./gradlew test
 
-# Run tests for specific module
+# Run tests for a specific module
 ./gradlew :feature-home:test
 ./gradlew :data-contract:test
 
-# Run unit tests only
-./gradlew test
-
-# Filter to specific tests (works on Android library modules too)
+# Filter to specific tests (in a KMP module this is the same as :feature-home:jvmTest --tests ...)
 ./gradlew :feature-home:test --tests "*HomePresenterTest*"
 ```
 
 **Test patterns:**
-- Unit tests: `src/test/kotlin/` (or `src/commonTest/` for KMP)
+- Unit tests: `src/jvmTest/kotlin/` in KMP modules (Robolectric tests in `src/androidHostTest/kotlin/`), `src/test/kotlin/` in Android-only and plain JVM modules
 - Android tests: `src/androidTest/kotlin/`
 - Use Turbine for testing Flows
 - Use test modules for shared test utilities
@@ -674,7 +680,7 @@ GitHub Actions workflows (in `.github/workflows/`):
 
 - **build-logic/convention/** - Gradle convention plugins (Metro wiring, feature isolation, the `hedvig {}` DSL)
 - **app/app/.../di/AppGraph.kt** - the global Metro graph; **app/app/.../di/ActivityRetainedGraph.kt** - the per-Activity graph extension (built by **app/app/.../navigation/NavRetainedViewModel.kt**)
-- **app/app/.../navigation/BackstackController.kt** - the per-Activity source of navigation truth
+- **app/app-shell/.../navigation/BackstackController.kt** - the per-Activity source of navigation truth
 - **app/navigation/** - navigation infrastructure + KSP processor
 - **docs/architecture/navigation-and-di.md** - the deep design spec for navigation + DI
 - **settings.gradle.kts** - Module discovery and configuration
@@ -689,25 +695,38 @@ GitHub Actions workflows (in `.github/workflows/`):
 2. Add `build.gradle.kts`:
 ```kotlin
 plugins {
-  id("hedvig.android.library")
+  id("hedvig.multiplatform.library")
+  id("hedvig.multiplatform.library.android")
   id("hedvig.gradle.plugin")
 }
 
 hedvig {
   compose()
   navKeys()          // if the module declares any HedvigNavKey
+  viewModels()       // if the module declares any @HedvigViewModel
   apollo("octopus")  // if needed
 }
 
-dependencies {
-  implementation(projects.coreCommonPublic)
-  implementation(projects.navigationCompose)
-  implementation(projects.designSystemHedvig)
+kotlin {
+  sourceSets {
+    commonMain.dependencies {
+      implementation(libs.jetbrains.compose.foundation)
+      implementation(libs.jetbrains.compose.runtime)
+      implementation(projects.coreCommonPublic)
+      implementation(projects.designSystemHedvig)
+      implementation(projects.navigationCommon)
+    }
+    jvmTest.dependencies {
+      implementation(libs.assertK)
+      implementation(libs.junit)
+    }
+  }
 }
 ```
+   Code goes in `src/commonMain/kotlin`, platform code behind a seam in `src/androidMain` and `src/jvmMain` (see "Desktop app"), tests in `src/jvmTest/kotlin`. Add `projects.navigationCompose` only if the entries use its scene strategies (`NavSuiteSceneDecoratorStrategy`, `BottomSheetSceneStrategy`).
 3. Create standard structure: `ui/`, `navigation/`, `di/` (contributions live next to the classes they bind via Metro annotations, not in a central `di` module).
-4. Define `@Serializable` `HedvigNavKey`s. Put any cross-feature-reachable keys in a `feature-{name}-navigation` module.
-5. Expose a `fun EntryProviderScope<HedvigNavKey>.{name}Entries(...)` and call it from `HedvigEntryProvider` in `:app`.
+4. Define `@Serializable` `HedvigNavKey`s in the feature. Add a `feature-{name}-navigation` module only for keys another module must navigate to without depending on the feature.
+5. Expose a `fun EntryProviderScope<HedvigNavKey>.{name}Entries(...)` and call it from `hedvigEntryProvider` in `:app-shell`; add the module to the dependencies of `:app-shell`, `:app` and `:app-desktop`.
 6. Module will be auto-discovered by `settings.gradle.kts`.
 
 ### Adding a New Screen/Destination
@@ -716,11 +735,11 @@ dependencies {
 2. Register it: `entry<{Name}Key> { key -> ... }` in the feature's entries function.
 3. Resolve the ViewModel with `metroViewModel()` / `assistedMetroViewModel(...)`.
 4. Ensure the module has `navKeys()` so the key survives process death.
-5. For cross-feature entry, thread a `navigateToX` lambda from `:app` rather than importing the key.
+5. For cross-feature entry, pass a `navigateToX` lambda in from `hedvigEntryProvider`, where the entries function is called, rather than importing the key.
 
 ### Adding a New GraphQL Query
 
-1. Create `.graphql` file in `src/main/graphql/`.
+1. Create a `.graphql` file in `src/commonMain/graphql/` (`src/main/graphql/` in a module that is not KMP).
 2. Enable Apollo in `build.gradle.kts`: `hedvig { apollo("octopus") }`.
 3. Build generates type-safe Kotlin code.
 4. Use the generated query in an internal repository/use case impl; return a project-owned type.
@@ -735,7 +754,7 @@ resolved when Unleash has never been fetched, and when a never-fetched default i
 To add a new flag:
 1. Add the enum value to `Feature` (commonMain), named to mirror its Unleash key polarity
    (`ENABLE_X` for `enable_x`, `DISABLE_X` for `disable_x`), with a short explanation.
-2. Map it to its raw Unleash key in `Feature.unleashKey` (androidMain).
+2. Map it to its raw Unleash key in `Feature.unleashKey` (commonMain).
 3. `UnleashFeatureFlagProvider` needs no change — every flag resolves through
    `HedvigUnleashClient.valueOf(feature)`. At the read site, use the value directly for a
    positive flag, or invert it (`if (!disableX)`) for a kill switch.
@@ -744,7 +763,7 @@ To add a new flag:
 what the flag should resolve to when it has *never been fetched* (offline first launch /
 fresh install before the first poll returns). If the natural polarity default is
 acceptable, do nothing. If a rollout needs the opposite default, add an entry to
-`neverFetchedDefaults` in `HedvigUnleashClient`. Never default an app-gating flag (e.g.
+`neverFetchedDefaults` in `UnleashSettings.kt`. Never default an app-gating flag (e.g.
 `UPDATE_NECESSARY`) into its blocking state — that can brick the app for offline users.
 
 **Never pass `bootstrap` to `client.start(...)`.** It is the SDK's own seeding mechanism and
@@ -793,7 +812,7 @@ one by another. Three rules and two mechanical traps, each learned by breaking o
 reporting, it just stops matching, so nothing alerts. Dropping `NavigationViewTrackingEffect` in
 the Nav3 migration left `ActivityViewTrackingStrategy` naming every view after the single Activity,
 which broke all 18 view-filtered metrics for ten weeks before anyone noticed.
-`Navigation3TrackingEffect` in `HedvigApp`, wired off `Backstack.entries`, is what keeps them
+`Navigation3TrackingEffect` in `MainActivity`, composed right before `HedvigApp` and wired off `Backstack.entries`, is what keeps them
 working. Monitor 124820537 now watches for a recurrence.
 
 A destination that an analytics query names should implement `AnalyticsNamed` and pin the exact
@@ -820,14 +839,30 @@ metric starts empty and is not retroactive, so the SLO reads correctly immediate
 RUM query links embedded in a monitor's notification message are frozen copies of a filter that
 nothing validates, so re-check them whenever the metric changes.
 
+## Desktop app
+
+Every feature module except `feature-impersonation` is KMP with its code in `commonMain`, and `:app-desktop` runs the shared `HedvigApp` as a desktop (JVM) app: `./gradlew :app-desktop:run` (staging; `-Phedvig.desktop.production=true` for production). What works there, the seams, the skips, the iOS debt and the recipe for converting a module are in `docs/superpowers/specs/2026-11-12-desktop-app-as-built.md`.
+
+**The commonMain rule.** A module with only JVM and Android targets compiles `commonMain` against the JDK, so nothing stops it reaching code iOS cannot compile. `commonMain` may not use `java.*`, `javax.*`, `android.*`, Android-only `androidx` artifacts, libraries without iOS artifacts, or `hedvig.jvm.library` modules; such code goes behind a seam. `./gradlew checkCommonMainImports` (run by CI and by `./gradlew check`) fails on `java.*`, `javax.*`, `android.*` and Android-only `androidx` packages and declarations (such as `LocalContext`), imported or fully qualified. `config/commonMain-import-allowlist.txt` takes a file, or a file plus one forbidden name; keep feature code off it. A multiplatform port under an `androidx` path (such as JetBrains' `androidx.core.bundle`) is allowed by adding its sub-package to `allowedCommonMainSubPackages` in `CommonMainImportGuard.kt`. The guard does not check third-party libraries, and it misses members of a JDK type reached through a typealias, such as `Uuid.randomUUID()` on benasher's `Uuid` (`java.util.UUID` on the JVM) or `toLanguageTag()` on `CommonLocale`. Check those by hand; only an iOS compile catches them.
+
+**Seams.** Declare a module-local `expect` next to its caller: the Android `actual` holds the Android code unchanged, the JVM `actual` the simplest honest desktop behaviour, plus a `nativeMain` actual if the module compiles for iOS. For an injected type, put the interface in `commonMain` and a `@ContributesBinding` in `androidMain` and in `jvmMain`, never a default in `commonMain` (see the Metro KMP rule), so a missing desktop binding fails to compile. A JVM binding that needs a file location takes `@DesktopDataDirectory`. Where desktop support would complicate `commonMain` and make the Android code worse, the desktop actual renders `NotAvailableOnDesktop()` (`design-system-hedvig` `jvmMain`) instead, never a crash or a silent no-op, and the as-built file records it.
+
+**JVM graph tests.** `:app-desktop` `jvmTest` catches what the Android build cannot: `DesktopGraphTest` builds every ViewModel and factory from the real desktop graph, so a missing JVM binding fails there, and `DesktopEntryProviderTest` checks that `hedvigEntryProvider` registers every serializable key exactly once. Most modules with JVM bindings also have a `Jvm<Name>BindingsTest` or `Jvm<Name>GraphTest` building a small graph from their JVM contributions.
+
+**Build rule.** A `feature-*` module must not depend on `:app-shell`; `configureFeatureModuleGuidelines()` in `hedvig.gradle.plugin` fails the build. Take a `navigateToX` lambda in the entries function instead.
+
 ## Debugging
 
 ### Seeing a composable without a device
 
-To see what a composable looks like, or to compare a few layout, alignment or wrapping variants
-of it as images, do not build the app or reach for Android Studio previews. Any KMP module with
-a JVM target can render through Skia from a `jvmTest` and write PNGs; use the
-`render-composables-on-jvm` skill, which carries a template test for it.
+Neither path needs an emulator, a device, Android Studio or an app install. Pick by the question:
+
+- **"Does what I built look right?"** Render its `@Preview` with the `render-previews` skill, in
+  any module, Android-only ones included. This is the check to run before calling a UI change done.
+- **"Which of these candidates?"** In a KMP module with a JVM target, the
+  `render-composables-on-jvm` skill composes throwaway variants side by side without touching
+  committed code; its text shaping is Skia's, so the winner is confirmed through its preview. In an
+  Android-only module, `render-previews` with one edit per candidate.
 
 ### Network traffic on a device
 

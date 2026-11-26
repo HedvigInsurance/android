@@ -1,0 +1,132 @@
+query Home(
+  $claimsHistoryFlag: Boolean!
+  $resumeClaimEnabled: Boolean!
+  $experiments: [CrossSellExperimentInput!]!
+) {
+  currentMember {
+    firstName
+    resumableClaimIntent @include(if: $resumeClaimEnabled) {
+      id
+      displayName
+      createdAt
+    }
+    claims@skip(if: $claimsHistoryFlag) {
+      ...ClaimFragment
+    }
+    claimsActive@include(if: $claimsHistoryFlag) {
+      ...ClaimFragment
+    }
+    partnerClaimsActive {
+      ...PartnerClaimFragment
+    }
+    terminatedContracts {
+      id
+      currentAgreement {
+        productVariant {
+          typeOfContract
+        }
+      }
+    }
+    pendingContracts {
+      id
+      externalInsuranceCancellationHandledByHedvig
+      exposureDisplayName
+
+        productVariant {
+          typeOfContract
+        }
+
+    }
+    importantMessages {
+      id
+      message
+      linkInfo {
+        url
+        buttonText
+      }
+      severity
+    }
+    crossSellV2(input: { userFlow: HOME_X_SELL, flowSource: null, experiments: $experiments }) {
+      recommendedCrossSell {
+        crossSell {
+          ...HomeCrossSellFragment
+        }
+        bannerText
+        discountText
+        buttonText
+        buttonDescription
+        numberOfEligibleContracts
+        discountPercent
+        backgroundPillowImages {
+          leftImage {
+            src
+          }
+          rightImage {
+            src
+          }
+        }
+      }
+      otherCrossSells {
+        ...HomeCrossSellFragment
+      }
+      recommendedAddon {
+        id
+        title
+        description
+        buttonText
+        deepLink
+        bannerText
+        benefits
+        pillowImageLarge {
+          src
+        }
+        pillowImageSmall {
+          src
+        }
+      }
+    }
+    discoverCrossSells: crossSellV2(input: { userFlow: HOME, flowSource: null, experiments: $experiments }) {
+      otherCrossSells {
+        ...HomeCrossSellFragment
+      }
+    }
+    memberActions {
+      firstVetAction {
+        sections {
+          title
+          buttonTitle
+          description
+          url
+        }
+      }
+    }
+    missedChargeIdToChargeManually
+    activeContracts {
+      id
+      masterInceptionDate
+      currentAgreement {
+        productVariant {
+          typeOfContract
+        }
+      }
+    }
+  }
+}
+
+fragment HomeCrossSellFragment on CrossSell {
+  id
+  title
+  description
+  storeUrl
+  buttonTitle
+  pillowImageSmall {
+    src
+    id
+    alt
+  }
+  pillowImageLarge {
+    src
+    id
+    alt
+  }
+}

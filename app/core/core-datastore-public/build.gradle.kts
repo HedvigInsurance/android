@@ -15,5 +15,8 @@ kotlin {
       implementation(libs.uuid)
       implementation(projects.coreCommonPublic)
     }
+    jvmTest.dependencies {
+      implementation(libs.coroutines.test)
+    }
   }
 }

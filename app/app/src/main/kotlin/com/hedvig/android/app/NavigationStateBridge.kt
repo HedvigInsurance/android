@@ -12,6 +12,7 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.StashedSession
 import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.merge
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.PolymorphicSerializer
@@ -61,6 +62,7 @@ internal object NavigationStateBridge {
     intent: Intent,
     isColdStart: Boolean,
     serializersModules: Set<SerializersModule>,
+    clock: Clock,
   ) {
     val savedStateConfiguration = SavedStateConfiguration {
       this.serializersModule = serializersModules.merge()
@@ -79,7 +81,7 @@ internal object NavigationStateBridge {
       if (snapshot != null) {
         // Discard a pending deep link that is too old to still belong to an in-flight login, so it
         // can't bleed into an unrelated later login as a lone deep-link stack.
-        val now = System.currentTimeMillis()
+        val now = clock.now().toEpochMilliseconds()
         val stashedAt = snapshot.pendingDeepLinkStashedAtEpochMs
         val pendingStillValid = snapshot.pendingDeepLink != null &&
           isPendingDeepLinkStashTimeFresh(stashedAt, now)
@@ -89,6 +91,7 @@ internal object NavigationStateBridge {
           pendingDeepLink = snapshot.pendingDeepLink.takeIf { pendingStillValid },
           pendingDeepLinkStashedAtEpochMs = stashedAt.takeIf { pendingStillValid },
           stashedSession = snapshot.stashedSession,
+          pendingDeepLinkHostedInForeignTask = snapshot.pendingDeepLinkHostedInForeignTask,
         )
       }
       backstackController.seedIfEmpty(listOf(LoginKey))
@@ -105,6 +108,7 @@ internal object NavigationStateBridge {
           pendingDeepLink = backstackController.pendingDeepLink,
           pendingDeepLinkStashedAtEpochMs = backstackController.pendingDeepLinkStashedAtEpochMs,
           stashedSession = backstackController.stashedSession,
+          pendingDeepLinkHostedInForeignTask = backstackController.pendingDeepLinkHostedInForeignTask,
         ),
         savedStateConfiguration,
       )
@@ -171,4 +175,5 @@ private data class NavStateSnapshot(
   val pendingDeepLink: (@Polymorphic HedvigNavKey)?,
   val stashedSession: StashedSession?,
   val pendingDeepLinkStashedAtEpochMs: Long? = null,
+  val pendingDeepLinkHostedInForeignTask: Boolean = false,
 )

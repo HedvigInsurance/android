@@ -1,0 +1,51 @@
+package com.hedvig.android.feature.home.home.ui
+
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.common.ApplicationScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
+import com.hedvig.android.core.tracking.EventTrackingClient
+import com.hedvig.android.data.claimintent.DeleteClaimIntentDraftUseCase
+import com.hedvig.android.data.paying.member.GetMemberTypeUseCase
+import com.hedvig.android.feature.home.home.data.DismissedShopSessionsStorage
+import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
+import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
+import com.hedvig.android.feature.home.yearinreview.data.IsYearInReviewAvailableUseCase
+import com.hedvig.android.memberquickactions.GetMemberQuickActionsUseCase
+import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.notification.badge.data.crosssell.home.CrossSellHomeNotificationService
+import dev.zacsweers.metro.Inject
+import kotlin.time.Clock
+
+@Inject
+@HedvigViewModel(ActivityRetainedScope::class)
+internal class HomeViewModel(
+  getHomeDataUseCase: GetHomeDataUseCase,
+  seenImportantMessagesStorage: SeenImportantMessagesStorage,
+  crossSellHomeNotificationService: CrossSellHomeNotificationService,
+  applicationScope: ApplicationScope,
+  hedvigBuildConstants: HedvigBuildConstants,
+  deleteClaimIntentDraftUseCase: DeleteClaimIntentDraftUseCase,
+  getMemberQuickActionsUseCase: GetMemberQuickActionsUseCase,
+  dismissedShopSessionsStorage: DismissedShopSessionsStorage,
+  getMemberTypeUseCase: GetMemberTypeUseCase,
+  eventTrackingClient: EventTrackingClient,
+  isYearInReviewAvailableUseCase: IsYearInReviewAvailableUseCase,
+  clock: Clock,
+) : MoleculeViewModel<HomeEvent, HomeUiState>(
+    HomeUiState.Loading,
+    HomePresenter(
+      getHomeDataUseCase,
+      seenImportantMessagesStorage,
+      crossSellHomeNotificationService,
+      applicationScope,
+      hedvigBuildConstants.isProduction,
+      deleteClaimIntentDraftUseCase,
+      getMemberQuickActionsUseCase,
+      dismissedShopSessionsStorage,
+      getMemberTypeUseCase,
+      eventTrackingClient,
+      isYearInReviewAvailableUseCase,
+      clock,
+    ),
+  )

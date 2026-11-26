@@ -39,10 +39,22 @@ kotlin {
       implementation(projects.featureMovingflowNavigation)
       implementation(projects.moleculePublic)
       implementation(projects.navigationCommon)
-      implementation(projects.navigationCompose)
       implementation(projects.navigationCore)
       implementation(projects.tierComparison)
       implementation(projects.uiTiersAndAddons)
+    }
+    jvmTest.dependencies {
+      implementation(libs.apollo.testingSupport)
+      implementation(libs.assertK)
+      implementation(libs.coroutines.test)
+      implementation(libs.junit)
+      implementation(libs.turbine)
+      implementation(projects.apolloOctopusTest)
+      implementation(projects.apolloTest)
+      implementation(projects.coreCommonTest)
+      implementation(projects.coreDatastoreTest)
+      implementation(projects.loggingTest)
+      implementation(projects.moleculeTest)
     }
   }
 }

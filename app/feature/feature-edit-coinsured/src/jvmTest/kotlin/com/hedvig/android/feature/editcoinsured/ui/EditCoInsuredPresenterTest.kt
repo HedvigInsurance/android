@@ -19,6 +19,7 @@ import com.hedvig.android.feature.editcoinsured.ui.data.TestFetchCoInsuredPerson
 import com.hedvig.android.feature.editcoinsured.ui.data.TestGetCoInsuredUseCase
 import com.hedvig.android.feature.editcoinsured.ui.data.coInsuredTestList
 import com.hedvig.android.feature.editcoinsured.ui.data.testContractId
+import com.hedvig.android.feature.editcoinsured.ui.data.testContractInfo
 import com.hedvig.android.feature.editcoinsured.ui.data.testMember
 import com.hedvig.android.molecule.test.test
 import kotlinx.coroutines.test.runTest
@@ -50,7 +51,8 @@ internal class EditCoInsuredPresenterTest {
         CoInsuredResult(
           member = testMember,
           coInsuredOnContract = coInsuredTestList,
-          allCoInsured = listOf(),
+          coInsuredFromOtherContracts = listOf(),
+          contractInfo = testContractInfo,
         ),
       )
 
@@ -89,7 +91,8 @@ internal class EditCoInsuredPresenterTest {
         CoInsuredResult(
           member = testMember,
           coInsuredOnContract = coInsuredTestList,
-          allCoInsured = listOf(),
+          coInsuredFromOtherContracts = listOf(),
+          contractInfo = testContractInfo,
         ),
       )
       assertThat(awaitItem()).isInstanceOf<EditCoInsuredState.Loaded>()
@@ -119,7 +122,7 @@ internal class EditCoInsuredPresenterTest {
         listState = EditCoInsuredState.Loaded.CoInsuredListState(
           originalCoInsured = coInsuredTestList,
           member = testMember,
-          allCoInsured = listOf(),
+          coInsuredFromOtherContracts = listOf(),
         ),
         addBottomSheetContentState = EditCoInsuredState.Loaded.AddBottomSheetContentState(
           infoFromSsn = InfoFromSsn(),
@@ -166,7 +169,7 @@ internal class EditCoInsuredPresenterTest {
         listState = EditCoInsuredState.Loaded.CoInsuredListState(
           originalCoInsured = coInsuredTestList,
           member = testMember,
-          allCoInsured = listOf(),
+          coInsuredFromOtherContracts = listOf(),
         ),
         addBottomSheetContentState = EditCoInsuredState.Loaded.AddBottomSheetContentState(
           showManualInput = false,

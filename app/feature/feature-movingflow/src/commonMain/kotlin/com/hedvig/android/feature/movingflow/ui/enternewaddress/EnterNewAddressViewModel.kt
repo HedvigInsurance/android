@@ -52,6 +52,8 @@ import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressV
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidPostalCode.Missing
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidPostalCode.MustBeOnlyDigits
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidSquareMeters
+import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.SquareMetersMissing
+import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.SquareMetersOverLimit
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -404,13 +406,10 @@ private fun MovingFlowState.toContent(): Content {
       initialValue = propertyState?.squareMetersState?.selectedSquareMeters,
       validator = { squareMeters ->
         either {
-          val invalidSquareMetersError = InvalidSquareMeters(
-            propertyState?.squareMetersState?.allowedSquareMetersRange!!,
-          )
-          ensureNotNull(squareMeters) { invalidSquareMetersError }
-          ensure(squareMeters in propertyState.squareMetersState.allowedSquareMetersRange) {
-            invalidSquareMetersError
-          }
+          val allowedRange = propertyState?.squareMetersState?.allowedSquareMetersRange!!
+          ensureNotNull(squareMeters) { SquareMetersMissing }
+          ensure(squareMeters <= allowedRange.endInclusive) { SquareMetersOverLimit(allowedRange.endInclusive) }
+          ensure(squareMeters in allowedRange) { InvalidSquareMeters(allowedRange) }
           squareMeters
         }
       },
@@ -453,6 +452,10 @@ internal sealed interface EnterNewAddressValidationError {
   data class InvalidSquareMeters(
     val allowedSquareMetersRange: ClosedRange<Int>,
   ) : EnterNewAddressValidationError
+
+  data object SquareMetersMissing : EnterNewAddressValidationError
+
+  data class SquareMetersOverLimit(val maxSquareMeters: Int) : EnterNewAddressValidationError
 
   sealed interface InvalidPostalCode : EnterNewAddressValidationError {
     data object InvalidLength : InvalidPostalCode

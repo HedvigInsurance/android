@@ -119,6 +119,8 @@ internal sealed interface StepContent {
       data object LessThanMinValue : FieldError
 
       data object Missing : FieldError
+
+      data object NotANumber : FieldError
     }
 
     data class FieldOption(
@@ -133,6 +135,7 @@ internal sealed interface StepContent {
       TEXT,
       DATE,
       NUMBER,
+      PHONE_NUMBER,
       SINGLE_SELECT,
       MULTI_SELECT,
       BINARY,
@@ -255,3 +258,9 @@ sealed interface AudioPath {
 sealed interface FreeTextErrorType {
   data class TooShort(val minLength: Int) : FreeTextErrorType
 }
+
+/**
+ * Number fields accept ASCII digits only. Prices written as `500,-`, `1 500:-` or `1000-1500` cannot be parsed by the
+ * backend.
+ */
+internal fun isValidNumberFieldInput(text: String): Boolean = text.all { it in '0'..'9' }

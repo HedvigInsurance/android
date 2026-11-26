@@ -63,7 +63,7 @@ fun Modifier.hedvigPlaceholder(
 ): Modifier = this.composed {
   val themedColor = if (color.isSpecified) color else PlaceholderDefaults.color()
   Modifier
-    .semantics { hideFromAccessibility() }
+    .then(if (visible) Modifier.semantics { hideFromAccessibility() } else Modifier)
     .corePlaceholder(
       visible = visible,
       color = themedColor,

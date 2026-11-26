@@ -34,8 +34,12 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import coil3.ImageLoader
+import com.datadog.android.compose.ExperimentalTrackingApi
+import com.datadog.android.compose.Navigation3TrackingEffect
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.externalnavigator.ExternalNavigatorImpl
+import com.hedvig.android.app.navigation.AnalyticsNamePredicate
+import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
 import com.hedvig.android.app.navigation.NavRetainedViewModel
 import com.hedvig.android.app.navigation.ScreenParameterExtractor
@@ -44,6 +48,7 @@ import com.hedvig.android.app.urihandler.ExternalDeepLinkHandler
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.auth.MemberIdService
+import com.hedvig.android.compose.ui.LocalClock
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
@@ -64,6 +69,7 @@ import com.hedvig.android.theme.Theme
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import java.util.Locale
+import kotlin.time.Clock
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -125,6 +131,9 @@ class MainActivity : AppCompatActivity() {
   @Inject
   private lateinit var resetOnboardingSeenUseCase: ResetOnboardingSeenUseCase
 
+  @Inject
+  private lateinit var clock: Clock
+
   /**
    * Per-Activity host for the navigation state. A retained `ViewModel`, so it (and the
    * [BackstackController] it owns) survives a config change but dies with this Activity — giving each
@@ -132,15 +141,10 @@ class MainActivity : AppCompatActivity() {
    * top of [onCreate]; the controller, session reconciler and merged ViewModel factory are read off it.
    */
   private val navRetainedViewModel: NavRetainedViewModel by lazy {
-    // Seed isOwnTask with isTaskRoot at construction so the controller never starts from a guessed
-    // default; it is refreshed authoritatively on every onResume (see refreshIsOwnTask). Captured as a
-    // value here because the initializer lambda's receiver is not this Activity. Only used on the
-    // genuine first creation — a config change reuses the retained instance and skips the initializer.
-    val isOwnTaskAtCreation = isTaskRoot
     ViewModelProvider(
       this,
       viewModelFactory {
-        initializer { NavRetainedViewModel((application as HedvigApplication).appGraph, isOwnTaskAtCreation) }
+        initializer { NavRetainedViewModel((application as HedvigApplication).appGraph) }
       },
     )[NavRetainedViewModel::class.java]
   }
@@ -149,10 +153,11 @@ class MainActivity : AppCompatActivity() {
   private val sessionReconciler get() = navRetainedViewModel.sessionReconciler
 
   /**
-   * External/notification VIEW intents are forwarded here as raw URI strings. The per-Activity collector in
-   * [onCreate] routes each through [externalDeepLinkHandler] once the start scene is resolved.
+   * External/notification VIEW intents are forwarded here as raw URI strings, with the flags of the
+   * intent that delivered them. The per-Activity collector in [onCreate] routes each through
+   * [externalDeepLinkHandler] once the start scene is resolved.
    */
-  private val deepLinkChannel = Channel<String>(Channel.UNLIMITED)
+  private val deepLinkChannel = Channel<ExternalDeepLink>(Channel.UNLIMITED)
 
   /**
    * Per-Activity router for external/notification deep links. Lives outside composition because it is
@@ -183,7 +188,7 @@ class MainActivity : AppCompatActivity() {
    * in onCreate, so it must not touch any @Inject field. Deferring to first access (in/after onCreate)
    * keeps this safe even if someone later gives AndroidAppHostImpl an injected dependency.
    */
-  private val androidAppHost: AndroidAppHostImpl by lazy { AndroidAppHostImpl(this) }
+  private val androidAppHost: AndroidAppHostImpl by lazy { AndroidAppHostImpl(this, splashIsRemovedSignal) }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     (application as HedvigApplication).appGraph.inject(this)
@@ -222,8 +227,7 @@ class MainActivity : AppCompatActivity() {
         "intent.categories=${intent.categories} | " +
         "intent.data=${intent.data} | " +
         "launchedFromHistory=$launchedFromHistory | " +
-        "intent.flags=0x${Integer.toHexString(intent.flags)} | " +
-        "isHostedInForeignTask=${isHostedInForeignTask(isTaskRoot, intent.flags)}"
+        "intent.flags=0x${Integer.toHexString(intent.flags)}"
     }
     if (savedInstanceState == null) {
       handleDeepLinkIntent(intent)
@@ -236,7 +240,10 @@ class MainActivity : AppCompatActivity() {
     // never silently dropped.
     addOnNewIntentListener { newIntent -> handleDeepLinkIntent(newIntent) }
 
-    attachBackstackTaskHooks()
+    backstackController.escapeToOwnTask = { parentStack ->
+      NavigationStateBridge.escapeToOwnTask(this@MainActivity, parentStack, serializersModules)
+    }
+    backstackController.finishApp = androidAppHost::finishApp
     val externalNavigator = ExternalNavigatorImpl(this, hedvigBuildConstants.appPackageId, languageService)
     RiveInitializer.init(this)
     NavigationStateBridge.restoreAndPersist(
@@ -245,14 +252,15 @@ class MainActivity : AppCompatActivity() {
       intent = intent,
       isColdStart = savedInstanceState == null,
       serializersModules = serializersModules,
+      clock = clock,
     )
     lifecycleScope.launch {
       sessionReconciler.reconcile()
       sessionReconciler.observeForcedLogout(lifecycle)
     }
     lifecycleScope.launch {
-      deepLinkChannel.receiveAsFlow().collect { uri ->
-        externalDeepLinkHandler.handle(uri)
+      deepLinkChannel.receiveAsFlow().collect { deepLink ->
+        externalDeepLinkHandler.handle(deepLink.uri) { isHostedInForeignTask(isTaskRoot, deepLink.launchFlags) }
       }
     }
     setContent {
@@ -261,6 +269,7 @@ class MainActivity : AppCompatActivity() {
         LocalMetroViewModelFactory provides navRetainedViewModel.viewModelFactory,
         LocalAppLocale provides remember(appLanguage) { Locale.forLanguageTag(appLanguage.toBcp47Format()) },
         LocalResources provides rememberAppLanguageResources(appLanguage),
+        LocalClock provides clock,
       ) {
         // Compute the window size class from Configuration. Do not switch this to
         // calculateWindowSizeClass(activity) or LocalWindowInfo.containerSize: both route through
@@ -270,13 +279,13 @@ class MainActivity : AppCompatActivity() {
         val windowSizeClass = WindowSizeClass.calculateFromSize(
           DpSize(configuration.screenWidthDp.dp, configuration.screenHeightDp.dp),
         )
+        DatadogViewTrackingEffect(backstackController)
         HedvigApp(
           backstackController = backstackController,
           deepLinkReadySignal = sessionReconciler.isReady,
           windowSizeClass = windowSizeClass,
           settingsDataStore = settingsDataStore,
           featureManager = featureManager,
-          splashIsRemovedSignal = splashIsRemovedSignal,
           authTokenService = authTokenService,
           demoManager = demoManager,
           memberIdService = memberIdService,
@@ -285,7 +294,7 @@ class MainActivity : AppCompatActivity() {
           languageService = languageService,
           hedvigBuildConstants = hedvigBuildConstants,
           waitUntilAppReviewDialogShouldBeOpenedUseCase = waitUntilAppReviewDialogShouldBeOpenedUseCase,
-          androidAppHost = androidAppHost,
+          appHost = androidAppHost,
           externalNavigator = externalNavigator,
           logoutUseCase = logoutUseCase,
           getMemberAuthorizationCodeUseCase = getMemberAuthorizationCodeUseCase,
@@ -300,56 +309,42 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
-  /**
-   * Points this Activity's [com.hedvig.android.app.navigation.BackstackController] task hooks at
-   * *this* instance. The controller is owned by [navRetainedViewModel] and is 1:1 with this Activity
-   * (created with it, retained across config changes, dies on finish), so the hooks are attached once
-   * in onCreate — there is no shared, process-wide controller that a backgrounded Activity could
-   * steal, which is why no resume/top-resume re-attachment is needed.
-   */
-  override fun onResume() {
-    super.onResume()
-    refreshIsOwnTask()
-  }
-
-  /**
-   * Pushes the current own-task value into the controller (see [isHostedInForeignTask] for why this is
-   * not just [isTaskRoot]). Unlike the one-time hooks in [attachBackstackTaskHooks], this is a *value*
-   * that can change over the Activity's life (e.g. an Activity below us finishes, or [isTaskRoot] reads
-   * more reliably once resumed than at onCreate), so it is refreshed on every onResume to keep the
-   * snapshot-backed value honest — otherwise the lone-deep-link chrome can latch a stale reading. See
-   * [BackstackController.isOwnTask].
-   */
-  private fun refreshIsOwnTask() {
-    backstackController.isOwnTask = !isHostedInForeignTask(isTaskRoot, intent.flags)
-  }
-
-  private fun attachBackstackTaskHooks() {
-    refreshIsOwnTask()
-    backstackController.escapeToOwnTask = { parentStack ->
-      NavigationStateBridge.escapeToOwnTask(this@MainActivity, parentStack, serializersModules)
-    }
-    backstackController.finishApp = androidAppHost::finishApp
-  }
-
   private fun handleDeepLinkIntent(intent: Intent) {
     if (intent.action != Intent.ACTION_VIEW) return
     val uri = intent.data?.toString() ?: return
-    deepLinkChannel.trySend(uri)
+    deepLinkChannel.trySend(ExternalDeepLink(uri, intent.flags))
   }
 }
 
 /**
+ * Reports the top of the back stack as a Datadog RUM view, so RUM attributes errors, resources and
+ * view durations to a screen rather than to the hosting Activity.
+ *
+ * The wrapper is what keeps the back stack read inside its own restart scope: [Navigation3TrackingEffect]
+ * is non-restartable, so calling it straight from `setContent` would attribute the read there and
+ * recompose the whole app shell on every navigation.
+ */
+@OptIn(ExperimentalTrackingApi::class)
+@Composable
+private fun DatadogViewTrackingEffect(backstackController: BackstackController) {
+  Navigation3TrackingEffect(
+    backStack = backstackController.entries,
+    keyPredicate = AnalyticsNamePredicate,
+  )
+}
+
+/**
  * Logcat tag for the per-launch navigation breadcrumb emitted in [MainActivity.onCreate]. Grep this to
- * see how each launch was classified (action/flags/isTaskRoot -> isHostedInForeignTask) when diagnosing
- * task/back-stack oddities like the deep-link-stack-on-Home report.
+ * see how each launch arrived (action/flags/isTaskRoot) when diagnosing task/back-stack oddities.
  */
 internal const val DEEP_LINK_STACK_DEBUG_TAG = "DeepLinkStackDebug"
 
+private data class ExternalDeepLink(val uri: String, val launchFlags: Int)
+
 /**
- * Whether this Activity was launched into another app's task (genuinely foreign-hosted), given the
- * task-root position and the [launchFlags] of the intent that started it. This is the one case that
- * wants the lone-deep-link Up/escape affordance; everything else is our own task.
+ * Whether a deep link reached this Activity inside another app's task, given the task-root position
+ * and the [launchFlags] of the intent that delivered it. Such a link lands alone, so Back returns
+ * straight to that app; everything else is our own task and lands on its synthetic ancestry.
  *
  * Both conditions must hold to be foreign-hosted:
  *  - **not the task root** (`!isTaskRoot`): some other activity sits below us in the task; and
@@ -357,10 +352,8 @@ internal const val DEEP_LINK_STACK_DEBUG_TAG = "DeepLinkStackDebug"
  *    the *caller's* task rather than one of our own, so we joined whoever started us.
  *
  * `NEW_TASK` being set means the system gave us our own task (a fresh one, or an existing one brought
- * forward), so we are NOT foreign-hosted even when not its root. That is why a launcher relaunch or a
- * notification tap that fronted our task (both carry `NEW_TASK`, both can be non-root) is correctly
- * treated as own-task and does not render the Up bar on a normal Home. Only a real foreign deep link
- * (e.g. an https link tapped in another app, launched with no flags) is foreign-hosted.
+ * forward), so we are not foreign-hosted even when not its root, as with a notification tap that
+ * fronted our task.
  */
 internal fun isHostedInForeignTask(isTaskRoot: Boolean, launchFlags: Int): Boolean =
   !isTaskRoot && (launchFlags and Intent.FLAG_ACTIVITY_NEW_TASK) == 0

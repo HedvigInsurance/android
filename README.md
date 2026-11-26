@@ -61,4 +61,4 @@ The `:umbrella` module produces the binary the iOS app consumes for shared KMP c
 
 (`:umbrella:embedAndSignAppleFrameworkForXcode` only works from an Xcode build phase — it reads `CONFIGURATION`, `SDK_NAME`, `ARCHS`, `BUILT_PRODUCTS_DIR` from the env.)
 
-`:umbrella` is `isStatic = true`. Compose Resources you add to shared modules land at `<App>.app/compose-resources/composeResources/...` on iOS via `ugglan/scripts/post-build-action.sh` — that script is the source of truth for the iOS bundle layout.
+`:umbrella` is `isStatic = true`. It currently exports no Compose module, so the framework ships no Compose Resources. If an exported module adds some, they land at `<App>.app/compose-resources/composeResources/...` on iOS via `ugglan/scripts/post-build-action.sh`, which is the source of truth for the iOS bundle layout.

@@ -6,6 +6,11 @@ on:
   schedule:
     - cron: '0 2 * * 1-5'
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Build the XCFramework and print its size without publishing a release'
+        type: boolean
+        default: false
 
 concurrency:
   group: ref-${{ github.workflow }}
@@ -26,6 +31,15 @@ jobs:
           lokalise-token: ${{ secrets.LOKALISE_TOKEN }}
       - name: Build umbrella XCFramework
         run: ./gradlew :umbrella:assembleHedvigSharedReleaseXCFramework
+      # The zip overstates what iOS ships by ~3x (debug info, symbol tables, simulator slice). The
+      # number that reaches the app is __TEXT plus non-zerofill __DATA of the device slice.
+      - name: Measure the device slice
+        run: |
+          BIN=app/umbrella/build/XCFrameworks/release/HedvigShared.xcframework/ios-arm64/HedvigShared.framework/HedvigShared
+          size -m "$BIN"
+          SHIPPED=$(size -m "$BIN" | grep -E 'Section \(__(TEXT|DATA), ' | grep -v zerofill | sed -E 's/.*: ([0-9]+).*/\1/' | paste -sd+ - | bc)
+          echo "Shipped bytes (__TEXT + non-zerofill __DATA): $SHIPPED ($((SHIPPED / 1048576)) MiB)"
+          echo "SHIPPED_BYTES=$SHIPPED" >> $GITHUB_ENV
       - name: Generate version timestamp
         id: time
         uses: nanzm/get-time-action@v2.0
@@ -95,16 +109,19 @@ jobs:
         env:
           VERSION_CODE: ${{ env.VERSION_CODE }}
       - name: Checkout umbrella repo under the path_umbrella path
+        if: ${{ !inputs.dry_run }}
         uses: actions/checkout@v7
         with:
           path: path_umbrella
           repository: hedviginsurance/umbrella
           token: ${{ secrets.UMBRELLA_REPO_PAT }}
       - name: Update Package.swift inside umbrella repo
+        if: ${{ !inputs.dry_run }}
         run: echo $PACKAGE_SWIFT_FILE_CONTENT_ENCODED | base64 -d > path_umbrella/Package.swift
         env:
           PACKAGE_SWIFT_FILE_CONTENT_ENCODED: ${{ env.PACKAGE_SWIFT_FILE_CONTENT_ENCODED }}
       - name: Commit the changes, tag and release the new umbrella version
+        if: ${{ !inputs.dry_run }}
         run: |
           cd path_umbrella
           git remote rm origin
@@ -118,7 +135,9 @@ jobs:
           gh release create "$VERSION_CODE" app/umbrella/build/XCFrameworks/release/HedvigShared.xcframework.zip \
             --fail-on-no-commits \
             --verify-tag \
+            --notes "Device slice shipped size (__TEXT + non-zerofill __DATA): $SHIPPED_BYTES bytes" \
             --repo https://github.com/HedvigInsurance/umbrella
         env:
           VERSION_CODE: ${{ env.VERSION_CODE }}
+          SHIPPED_BYTES: ${{ env.SHIPPED_BYTES }}
           GH_TOKEN: ${{ secrets.UMBRELLA_REPO_PAT }}

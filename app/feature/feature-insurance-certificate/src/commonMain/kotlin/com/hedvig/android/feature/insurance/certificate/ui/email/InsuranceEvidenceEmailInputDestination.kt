@@ -1,0 +1,328 @@
+package com.hedvig.android.feature.insurance.certificate.ui.email
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigSnackbar
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTextField
+import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.ErrorState
+import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.TextFieldSize.Medium
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HedvigTooltip
+import com.hedvig.android.design.system.hedvig.HedvigVerySmallScreenPreview
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.IconButton
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.TopEnd
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
+import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.InfoOutline
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import hedvig.resources.CERTIFICATES_CREATE_CERTIFICATE
+import hedvig.resources.CERTIFICATES_VERIFY_EMAIL
+import hedvig.resources.INSURANCE_EVIDENCE_DOCUMENT_TITLE
+import hedvig.resources.INSURANCE_EVIDENCE_READ_MORE_DESCRIPTION
+import hedvig.resources.INSURANCE_EVIDENCE_READ_MORE_TITLE
+import hedvig.resources.PROFILE_MY_INFO_EMAIL_LABEL
+import hedvig.resources.PROFILE_MY_INFO_INVALID_EMAIL
+import hedvig.resources.Res
+import hedvig.resources.TOAST_READ_MORE
+import hedvig.resources.general_close_button
+import hedvig.resources.travel_certificate_email_empty_error
+import org.jetbrains.compose.resources.stringResource
+
+@Composable
+internal fun InsuranceEvidenceEmailInputDestination(
+  viewModel: InsuranceEvidenceEmailInputViewModel,
+  navigateUp: () -> Unit,
+) {
+  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  InsuranceEvidenceEmailInputScreen(
+    uiState,
+    navigateUp = navigateUp,
+    onRetry = {
+      viewModel.emit(InsuranceEvidenceEmailInputEvent.RetryLoadData)
+    },
+    onChangeEmail = { email ->
+      viewModel.emit(InsuranceEvidenceEmailInputEvent.ChangeEmailInput(email))
+    },
+    onSubmit = {
+      viewModel.emit(InsuranceEvidenceEmailInputEvent.Submit)
+    },
+    showedErrorMessage = {
+      viewModel.emit(InsuranceEvidenceEmailInputEvent.ClearErrorMessage)
+    },
+  )
+}
+
+@Composable
+private fun InsuranceEvidenceEmailInputScreen(
+  uiState: InsuranceEvidenceEmailInputState,
+  navigateUp: () -> Unit,
+  onRetry: () -> Unit,
+  onChangeEmail: (email: String) -> Unit,
+  onSubmit: () -> Unit,
+  showedErrorMessage: () -> Unit,
+) {
+  when (uiState) {
+    InsuranceEvidenceEmailInputState.Failure -> {
+      Box(Modifier.fillMaxSize()) {
+        HedvigErrorSection(
+          onButtonClick = onRetry,
+          modifier = Modifier.fillMaxSize(),
+        )
+      }
+    }
+
+    InsuranceEvidenceEmailInputState.Loading -> {
+      HedvigFullScreenCenterAlignedProgress()
+    }
+
+    is InsuranceEvidenceEmailInputState.Success -> {
+      InsuranceEvidenceEmailSuccessScreen(
+        uiState,
+        onSubmit = onSubmit,
+        navigateUp = navigateUp,
+        onChangeEmail = onChangeEmail,
+        showedErrorMessage = showedErrorMessage,
+      )
+    }
+  }
+}
+
+@Composable
+private fun InsuranceEvidenceEmailSuccessScreen(
+  uiState: InsuranceEvidenceEmailInputState.Success,
+  onSubmit: () -> Unit,
+  navigateUp: () -> Unit,
+  showedErrorMessage: () -> Unit,
+  onChangeEmail: (email: String) -> Unit,
+) {
+  val explanationBottomSheetState = rememberHedvigBottomSheetState<Unit>()
+  ExplanationBottomSheet(explanationBottomSheetState)
+  var showReadMoreTooltip by rememberSaveable { mutableStateOf(true) }
+  HedvigScaffold(
+    navigateUp = navigateUp,
+    topAppBarText = "",
+    topAppBarActions = {
+      IconButton(
+        modifier = Modifier.size(24.dp),
+        onClick = {
+          showReadMoreTooltip = false
+          explanationBottomSheetState.show(Unit)
+        },
+        content = {
+          Icon(
+            imageVector = HedvigIcons.InfoOutline,
+            contentDescription = stringResource(Res.string.TOAST_READ_MORE),
+          )
+        },
+      )
+    },
+  ) {
+    Box(Modifier.weight(1f)) {
+      SuccessContent(
+        uiState = uiState,
+        onSubmit = onSubmit,
+        onChangeEmail = onChangeEmail,
+        modifier = Modifier.fillMaxSize(),
+      )
+      Column(
+        Modifier.fillMaxSize(),
+      ) {
+        if (showReadMoreTooltip) {
+          HedvigTooltip(
+            message = stringResource(Res.string.TOAST_READ_MORE),
+            showTooltip = true,
+            beakDirection = TopEnd,
+            tooltipShown = {},
+            modifier = Modifier
+              .padding(horizontal = 8.dp)
+              .align(Alignment.End),
+          )
+        }
+      }
+      if (uiState.generatingErrorMessage != null) {
+        HedvigSnackbar(
+          snackbarText = stringResource(uiState.generatingErrorMessage),
+          showSnackbar = true,
+          showedSnackbar = showedErrorMessage,
+          priority = NotificationPriority.Attention,
+          modifier = Modifier
+            .align(Alignment.BottomCenter)
+            .windowInsetsPadding(WindowInsets.safeDrawing)
+            .padding(16.dp),
+        )
+      }
+    }
+  }
+}
+
+@Composable
+private fun SuccessContent(
+  uiState: InsuranceEvidenceEmailInputState.Success,
+  onChangeEmail: (email: String) -> Unit,
+  onSubmit: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  var emailInput by remember {
+    mutableStateOf(uiState.email ?: "")
+  }
+  Column(
+    modifier
+      .verticalScroll(rememberScrollState()),
+  ) {
+    Spacer(modifier = Modifier.height(8.dp))
+    FlowHeading(
+      stringResource(Res.string.INSURANCE_EVIDENCE_DOCUMENT_TITLE),
+      stringResource(Res.string.CERTIFICATES_VERIFY_EMAIL),
+      Modifier.padding(horizontal = 16.dp),
+    )
+    Spacer(Modifier.height(24.dp))
+    Spacer(Modifier.weight(1f))
+    EmailTextField(
+      email = emailInput,
+      onEmailChanged = {
+        emailInput = it
+        onChangeEmail(it)
+      },
+      modifier = Modifier.padding(horizontal = 16.dp),
+      errorText = uiState.emailValidationErrorMessage
+        ?.let { stringResource(it) },
+    )
+    Spacer(Modifier.height(16.dp))
+    HedvigButton(
+      stringResource(Res.string.CERTIFICATES_CREATE_CERTIFICATE),
+      onClick = onSubmit,
+      enabled = true,
+      isLoading = uiState.buttonLoading,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+    )
+    Spacer(Modifier.height(16.dp))
+  }
+}
+
+@Composable
+private fun EmailTextField(
+  email: String,
+  errorText: String?,
+  onEmailChanged: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  HedvigTextField(
+    text = email,
+    onValueChange = {
+      onEmailChanged(it)
+    },
+    errorState = if (errorText != null) {
+      ErrorState.Error.WithMessage(errorText)
+    } else {
+      ErrorState.NoError
+    },
+    textFieldSize = Medium,
+    labelText = stringResource(Res.string.PROFILE_MY_INFO_EMAIL_LABEL),
+    modifier = modifier.fillMaxWidth(),
+  )
+}
+
+@Composable
+internal fun ExplanationBottomSheet(sheetState: HedvigBottomSheetState<Unit>) {
+  HedvigBottomSheet(sheetState) { discount ->
+    HedvigText(
+      text = stringResource(Res.string.INSURANCE_EVIDENCE_READ_MORE_TITLE),
+      modifier = Modifier
+        .fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    HedvigText(
+      text = stringResource(Res.string.INSURANCE_EVIDENCE_READ_MORE_DESCRIPTION),
+      color = HedvigTheme.colorScheme.textSecondary,
+      modifier = Modifier
+        .fillMaxWidth(),
+    )
+    Spacer(Modifier.height(32.dp))
+    HedvigTextButton(
+      text = stringResource(Res.string.general_close_button),
+      buttonSize = Large,
+      onClick = { sheetState.dismiss() },
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+  }
+}
+
+@HedvigVerySmallScreenPreview
+@HedvigPreview
+@Composable
+private fun PreviewInsuranceEvidenceEmailInputScreen(
+  @PreviewParameter(InsuranceEvidenceEmailInputStateProvider::class) state: InsuranceEvidenceEmailInputState,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      InsuranceEvidenceEmailInputScreen(
+        state,
+        {},
+        {},
+        {},
+        {},
+        {},
+      )
+    }
+  }
+}
+
+private class InsuranceEvidenceEmailInputStateProvider :
+  CollectionPreviewParameterProvider<InsuranceEvidenceEmailInputState>(
+    listOf(
+      InsuranceEvidenceEmailInputState.Success(
+        email = "myemail@email.com",
+      ),
+      InsuranceEvidenceEmailInputState.Success(
+        email = "myemail@email",
+        emailValidationErrorMessage = Res.string.PROFILE_MY_INFO_INVALID_EMAIL,
+      ),
+      InsuranceEvidenceEmailInputState.Success(
+        email = "",
+        emailValidationErrorMessage = Res.string.travel_certificate_email_empty_error,
+      ),
+      InsuranceEvidenceEmailInputState.Failure,
+      InsuranceEvidenceEmailInputState.Loading,
+    ),
+  )

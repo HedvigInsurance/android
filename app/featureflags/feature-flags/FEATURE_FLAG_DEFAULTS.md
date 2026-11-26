@@ -16,9 +16,9 @@ returns, etc.). Read this before adding a new flag.
   1. **Flag naming polarity** (`enable_x` vs `disable_x`). Each `Feature` enum value is
      named to mirror its underlying Unleash key, and there is no per-flag negation anywhere, so
      a `disable_x` flag reports "is the kill switch on"; the consumer inverts at the read site.
-  2. **`neverFetchedDefaults`**, a map in `HedvigUnleashClient`, for the flags where polarity
+  2. **`neverFetchedDefaults`**, a map in `UnleashSettings.kt` (commonMain), for the flags where polarity
      alone gives the wrong default.
-- `neverFetchedDefaults` holds four entries today. Adding others is usually noise and, for
+- `neverFetchedDefaults` holds five entries today. Adding others is usually noise and, for
   app-gating flags like `UPDATE_NECESSARY`, actively dangerous.
 
 ## The bug: Unleash Android SDK issue #141
@@ -147,7 +147,7 @@ and `OnboardingSessionStore` are the app's startup-time one-shot reads.
 
 ## Never-fetched defaults: when and why
 
-`neverFetchedDefaults` in `HedvigUnleashClient` supplies a flag's value for the window before the
+`neverFetchedDefaults` in `UnleashSettings.kt` supplies a flag's value for the window before the
 client holds real toggle state. It is consulted only while the cache holds no state; once a fetch or
 the stored state lands, the real value takes over. An entry is only needed when the **desired**
 never-fetched default differs from the **natural** polarity default.
@@ -155,15 +155,16 @@ never-fetched default differs from the **natural** polarity default.
 Today:
 
 ```kotlin
-private val neverFetchedDefaults: Map<Feature, Boolean> = mapOf(
+internal val neverFetchedDefaults: Map<Feature, Boolean> = mapOf(
   Feature.DISABLE_ANALYTICS to true,
   Feature.DISABLE_PUPPY_GUIDE to true,
   Feature.DISABLE_TERMINATION_REDIRECTION to true,
   Feature.DISABLE_RESUMING_ONGOING_SHOP_SESSIONS to true,
+  Feature.HIDE_CANCEL_INSURANCE_FROM_HOME_SCREEN to true,
 )
 ```
 
-All four are kill switches, so their natural absent default is "feature on". Each instead needs to
+All five are kill switches, so their natural absent default is "feature on". Each instead needs to
 stay **hidden** until a fetch confirms it should show, which is what a rollout wants. Polarity gives
 the wrong default, so each gets an entry of `true` (kill switch on → feature hidden).
 
@@ -183,7 +184,7 @@ is offline on first launch. Leave it alone.
 
 1. Add the enum value to `Feature` (commonMain), named to mirror its Unleash key polarity
    (`ENABLE_X` for `enable_x`, `DISABLE_X` for `disable_x`), with a short explanation.
-2. Add its raw Unleash key to `Feature.unleashKey` (androidMain).
+2. Add its raw Unleash key to `Feature.unleashKey` (commonMain).
 3. `UnleashFeatureFlagProvider` needs no change — every flag resolves through
    `HedvigUnleashClient.valueOf(feature)`. At the read site, use the value directly for a
    positive flag, or invert it (`if (!disableX)`) for a kill switch.

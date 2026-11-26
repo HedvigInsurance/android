@@ -14,6 +14,7 @@ import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.CoInsuredPersonalInformation
 import com.hedvig.android.feature.editcoinsured.data.CommitMidtermChangeUseCase
+import com.hedvig.android.feature.editcoinsured.data.ContractInfo
 import com.hedvig.android.feature.editcoinsured.data.CreateMidtermChangeUseCase
 import com.hedvig.android.feature.editcoinsured.data.FetchCoInsuredPersonalInformationUseCase
 import com.hedvig.android.feature.editcoinsured.data.GetCoInsuredUseCase
@@ -91,8 +92,9 @@ internal class EditCoInsuredPresenter(
           isLoading = false
           listState = Loaded.CoInsuredListState(
             originalCoInsured = result.coInsuredOnContract,
-            allCoInsured = result.allCoInsured,
+            coInsuredFromOtherContracts = result.coInsuredFromOtherContracts,
             member = result.member,
+            contractInfo = result.contractInfo,
           )
         }
       }.onLeft {
@@ -185,7 +187,7 @@ internal class EditCoInsuredPresenter(
               lastName = event.coInsured.lastName,
               ssn = event.coInsured.ssn,
             ),
-            selectableCoInsured = listState.allCoInsured,
+            selectableCoInsured = listState.selectableCoInsured,
           )
         }
 
@@ -199,7 +201,7 @@ internal class EditCoInsuredPresenter(
         OnAddCoInsuredClicked -> {
           finishedAdding = false
           addBottomSheetContentState = Loaded.AddBottomSheetContentState(
-            selectableCoInsured = listState.allCoInsured,
+            selectableCoInsured = listState.selectableCoInsured,
             manualInfo = ManualInfo(),
             infoFromSsn = InfoFromSsn(),
           )
@@ -488,12 +490,17 @@ internal sealed interface EditCoInsuredState {
     data class CoInsuredListState(
       val originalCoInsured: List<CoInsured>? = null,
       val updatedCoInsured: List<CoInsured>? = null,
-      val allCoInsured: List<CoInsured>? = null,
+      val coInsuredFromOtherContracts: List<CoInsured>? = null,
       val member: Member? = null,
+      val contractInfo: ContractInfo? = null,
       val priceInfo: PriceInfo? = null,
       val isCommittingUpdate: Boolean = false,
     ) {
       val coInsured = updatedCoInsured ?: originalCoInsured ?: listOf()
+
+      /** People from the member's other contracts who are not yet on this one, including additions not yet saved. */
+      val selectableCoInsured: List<CoInsured>?
+        get() = coInsuredFromOtherContracts?.filter { candidate -> coInsured.none { it.id == candidate.id } }
 
       fun hasMadeChanges() = priceInfo != null &&
         originalCoInsured != null &&

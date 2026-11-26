@@ -1,0 +1,512 @@
+package com.hedvig.android.memberreminders.ui
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFontFamilyResolver
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Constraints
+import com.hedvig.android.compose.pager.indicator.CardCarousel
+import com.hedvig.android.compose.ui.LocalClock
+import com.hedvig.android.core.common.daysUntil
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.LocalTextStyle
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.memberreminders.MemberReminder
+import com.hedvig.android.memberreminders.MemberReminder.UpcomingRenewal
+import com.hedvig.android.notification.permission.NotificationPermissionState
+import hedvig.resources.CHIP_ID_MISSING_BUTTON
+import hedvig.resources.CHIP_ID_MISSING_MESSAGE
+import hedvig.resources.CONTRACT_COINSURED_MISSING_ADD_INFO
+import hedvig.resources.CONTRACT_COINSURED_MISSING_INFO_TEXT
+import hedvig.resources.CONTRACT_COOWNERS_MISSING_INFO_TEXT
+import hedvig.resources.CONTRACT_VIEW_CERTIFICATE_BUTTON
+import hedvig.resources.DASHBOARD_RENEWAL_PROMPTER_BODY
+import hedvig.resources.HOME_TODO_SELECT_USAGE_DATA_TITLE
+import hedvig.resources.MISSING_CONTACT_INFO_CARD_BUTTON
+import hedvig.resources.MISSING_CONTACT_INFO_CARD_TEXT
+import hedvig.resources.PAYOUT_ADD_PAYOUT_METHOD
+import hedvig.resources.PAYOUT_MISSING_INFO
+import hedvig.resources.PROFILE_ALLOW_NOTIFICATIONS_INFO_LABEL
+import hedvig.resources.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON
+import hedvig.resources.PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW
+import hedvig.resources.PUSH_NOTIFICATIONS_ALERT_ACTION_OK
+import hedvig.resources.Res
+import hedvig.resources.info_card_missing_payment_body
+import hedvig.resources.info_card_missing_payment_missing_payments_body
+import hedvig.resources.open_chat
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import org.jetbrains.compose.resources.stringResource
+
+@Composable
+fun getMemberReminderMessage(reminder: MemberReminder): String {
+  return when (reminder) {
+    is MemberReminder.CoInsuredInfo -> {
+      stringResource(
+        when (reminder.coInsuredType) {
+          CoInsuredFlowType.CoInsured -> Res.string.CONTRACT_COINSURED_MISSING_INFO_TEXT
+          CoInsuredFlowType.CoOwners -> Res.string.CONTRACT_COOWNERS_MISSING_INFO_TEXT
+        },
+      )
+    }
+
+    is MemberReminder.PaymentReminder.ConnectPayment -> {
+      stringResource(Res.string.info_card_missing_payment_body)
+    }
+
+    is MemberReminder.PaymentReminder.ConnectPayout -> {
+      stringResource(Res.string.PAYOUT_MISSING_INFO)
+    }
+
+    is MemberReminder.PaymentReminder.TerminationDueToMissedPayments -> {
+      stringResource(Res.string.info_card_missing_payment_missing_payments_body, reminder.terminationDate)
+    }
+
+    is UpcomingRenewal -> {
+      val clock = LocalClock.current
+      val daysUntilRenewal = remember(TimeZone.currentSystemDefault(), clock, reminder.renewalDate) {
+        daysUntil(reminder.renewalDate, clock)
+      }
+      stringResource(Res.string.DASHBOARD_RENEWAL_PROMPTER_BODY, daysUntilRenewal)
+    }
+
+    is MemberReminder.EnableNotifications -> {
+      stringResource(Res.string.PROFILE_ALLOW_NOTIFICATIONS_INFO_LABEL)
+    }
+
+    is MemberReminder.ContactInfoUpdateNeeded -> {
+      stringResource(Res.string.MISSING_CONTACT_INFO_CARD_TEXT)
+    }
+
+    is MemberReminder.MissingChipId -> {
+      stringResource(Res.string.CHIP_ID_MISSING_MESSAGE)
+    }
+
+    is MemberReminder.DecideAnalyticsConsent -> {
+      stringResource(Res.string.HOME_TODO_SELECT_USAGE_DATA_TITLE)
+    }
+  }
+}
+
+@Composable
+fun rememberMaxLineCountForReminders(memberReminders: List<MemberReminder>, maxWidthPx: Int): Int {
+  val textMeasurer = rememberTextMeasurer()
+  val density = LocalDensity.current
+  val fontFamilyResolver = LocalFontFamilyResolver.current
+
+  val messages = memberReminders.map { reminder -> getMemberReminderMessage(reminder) }
+  val textStyle = LocalTextStyle.current
+
+  return remember(messages, textMeasurer, maxWidthPx, textStyle, density, fontFamilyResolver) {
+    messages.maxOfOrNull { message ->
+      val textLayout = textMeasurer.measure(
+        text = AnnotatedString(message),
+        style = textStyle,
+        constraints = Constraints(maxWidth = maxWidthPx),
+        density = density,
+        fontFamilyResolver = fontFamilyResolver,
+      )
+      textLayout.lineCount
+    } ?: 1
+  }
+}
+
+@Composable
+fun MemberReminderCards(
+  memberReminders: List<MemberReminder>,
+  navigateToConnectPayout: () -> Unit,
+  openUrl: (String) -> Unit,
+  navigateToAddMissingInfo: (String, CoInsuredFlowType) -> Unit,
+  snoozeNotificationPermissionReminder: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
+  navigateToContactInfo: () -> Unit,
+  navigateToChipId: () -> Unit,
+  notificationPermissionState: NotificationPermissionState?,
+  contentPadding: PaddingValues,
+  modifier: Modifier = Modifier,
+) {
+  Column(modifier) {
+    val cardReminders = memberReminders.cardReminders()
+    if (cardReminders.isEmpty()) return@Column
+    // Every card is given the line count of the longest message, so that swiping between them
+    // doesn't change the height of the carousel.
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+      val minLineCount = rememberMaxLineCountForReminders(
+        memberReminders = cardReminders,
+        maxWidthPx = constraints.maxWidth,
+      )
+      CardCarousel(
+        items = cardReminders,
+        contentPadding = contentPadding,
+        key = { reminder -> reminder.id },
+        indicatorColor = HedvigTheme.colorScheme.fillPrimary,
+      ) { reminder, cardModifier ->
+        MemberReminderCard(
+          memberReminder = reminder,
+          navigateToAddMissingInfo = navigateToAddMissingInfo,
+          navigateToConnectPayout = navigateToConnectPayout,
+          openUrl = openUrl,
+          onNavigateToNewConversation = onNavigateToNewConversation,
+          snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
+          notificationPermissionState = notificationPermissionState,
+          navigateToContactInfo = navigateToContactInfo,
+          navigateToChipId = navigateToChipId,
+          modifier = cardModifier,
+          minLines = minLineCount,
+        )
+      }
+    }
+  }
+}
+
+/**
+ * The reminders [MemberReminderCards] actually renders. A reminder offered only elsewhere would
+ * otherwise take up an empty page in the carousel, so callers deciding whether to surround the
+ * carousel with anything should ask this first.
+ */
+fun List<MemberReminder>.cardReminders(): List<MemberReminder> {
+  return filter {
+    it !is MemberReminder.DecideAnalyticsConsent && it !is MemberReminder.PaymentReminder.ConnectPayment
+  }
+}
+
+@Composable
+private fun MemberReminderCard(
+  memberReminder: MemberReminder,
+  navigateToAddMissingInfo: (String, CoInsuredFlowType) -> Unit,
+  navigateToConnectPayout: () -> Unit,
+  navigateToContactInfo: () -> Unit,
+  navigateToChipId: () -> Unit,
+  openUrl: (String) -> Unit,
+  snoozeNotificationPermissionReminder: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
+  notificationPermissionState: NotificationPermissionState?,
+  minLines: Int,
+  modifier: Modifier = Modifier,
+) {
+  when (memberReminder) {
+    is MemberReminder.CoInsuredInfo -> {
+      ReminderCoInsuredInfo(
+        memberReminder = memberReminder,
+        navigateToAddMissingInfo = {
+          navigateToAddMissingInfo(memberReminder.contractId, memberReminder.coInsuredType)
+        },
+        modifier = modifier,
+        minLines = minLines,
+      )
+    }
+
+    is MemberReminder.PaymentReminder.ConnectPayout -> {
+      ReminderCardConnectPayout(
+        navigateToConnectPayout = navigateToConnectPayout,
+        modifier = modifier,
+        minLines = minLines,
+        memberReminder = memberReminder,
+      )
+    }
+
+    is MemberReminder.PaymentReminder.TerminationDueToMissedPayments -> {
+      ReminderCardMissingPayment(
+        memberReminder = memberReminder,
+        onNavigateToNewConversation = onNavigateToNewConversation,
+        modifier = modifier,
+        minLines = minLines,
+      )
+    }
+
+    is UpcomingRenewal -> {
+      ReminderCardUpcomingRenewals(
+        openUrl = openUrl,
+        memberReminder = memberReminder,
+        modifier = modifier,
+        minLines = minLines,
+      )
+    }
+
+    is MemberReminder.EnableNotifications -> {
+      if (notificationPermissionState != null) {
+        AnimatedVisibility(
+          visible = true,
+          enter = cardReminderEnterTransition,
+          exit = cardReminderExitTransition,
+          label = "enableNotifications animated visibility",
+          modifier = modifier,
+        ) {
+          ReminderCardEnableNotifications(
+            snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
+            requestNotificationPermission = notificationPermissionState::launchPermissionRequest,
+            minLines = minLines,
+          )
+        }
+      }
+    }
+
+    is MemberReminder.ContactInfoUpdateNeeded -> {
+      ReminderCardUpdateContactInfo(
+        navigateToContactInfo = navigateToContactInfo,
+        modifier = modifier,
+        minLines = minLines,
+      )
+    }
+
+    is MemberReminder.MissingChipId -> {
+      ReminderMissingChipId(
+        navigateToChipId = navigateToChipId,
+        minLines = minLines,
+        modifier = modifier,
+      )
+    }
+
+    // Both are filtered out by [cardReminders] before reaching here: the analytics prompt is offered
+    // in the home "To do" list, and a missing payin method by [MissingPayinMethodCard].
+    is MemberReminder.DecideAnalyticsConsent -> {}
+
+    is MemberReminder.PaymentReminder.ConnectPayment -> {}
+  }
+}
+
+private val cardReminderEnterTransition = fadeIn() + expandVertically(
+  expandFrom = Alignment.Top,
+  initialHeight = { (it * 0.9).toInt() },
+  clip = false,
+)
+private val cardReminderExitTransition = fadeOut() + shrinkVertically(
+  shrinkTowards = Alignment.CenterVertically,
+)
+
+@Composable
+fun ReminderCardEnableNotifications(
+  snoozeNotificationPermissionReminder: () -> Unit,
+  requestNotificationPermission: () -> Unit,
+  modifier: Modifier = Modifier,
+  minLines: Int = 1,
+) {
+  val message = getMemberReminderMessage(MemberReminder.EnableNotifications())
+  HedvigNotificationCard(
+    message = message,
+    modifier = modifier,
+    priority = NotificationPriority.Info,
+    style = InfoCardStyle.Buttons(
+      leftButtonText = stringResource(Res.string.PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW),
+      onLeftButtonClick = snoozeNotificationPermissionReminder,
+      rightButtonText = stringResource(Res.string.PUSH_NOTIFICATIONS_ALERT_ACTION_OK),
+      onRightButtonClick = requestNotificationPermission,
+    ),
+    minLines = minLines,
+  )
+}
+
+@Composable
+fun ReminderCardUpdateContactInfo(
+  navigateToContactInfo: () -> Unit,
+  modifier: Modifier = Modifier,
+  minLines: Int = 1,
+) {
+  val message = getMemberReminderMessage(MemberReminder.ContactInfoUpdateNeeded)
+  HedvigNotificationCard(
+    message = message,
+    modifier = modifier,
+    priority = NotificationPriority.Info,
+    style = InfoCardStyle.Button(
+      buttonText = stringResource(Res.string.MISSING_CONTACT_INFO_CARD_BUTTON),
+      onButtonClick = navigateToContactInfo,
+    ),
+    minLines = minLines,
+  )
+}
+
+@Composable
+internal fun ReminderMissingChipId(navigateToChipId: () -> Unit, minLines: Int, modifier: Modifier = Modifier) {
+  val message = getMemberReminderMessage(MemberReminder.MissingChipId())
+  HedvigNotificationCard(
+    message = message,
+    modifier = modifier,
+    priority = NotificationPriority.Attention,
+    style = InfoCardStyle.Button(
+      buttonText = stringResource(Res.string.CHIP_ID_MISSING_BUTTON),
+      onButtonClick = navigateToChipId,
+    ),
+    minLines = minLines,
+  )
+}
+
+@Composable
+private fun ReminderCardConnectPayout(
+  memberReminder: MemberReminder,
+  navigateToConnectPayout: () -> Unit,
+  modifier: Modifier = Modifier,
+  minLines: Int = 1,
+) {
+  val message = getMemberReminderMessage(memberReminder)
+  HedvigNotificationCard(
+    message = message,
+    modifier = modifier,
+    priority = NotificationPriority.Attention,
+    style = InfoCardStyle.Button(
+      buttonText = stringResource(Res.string.PAYOUT_ADD_PAYOUT_METHOD),
+      onButtonClick = navigateToConnectPayout,
+    ),
+    minLines = minLines,
+  )
+}
+
+@Composable
+private fun ReminderCardMissingPayment(
+  memberReminder: MemberReminder,
+  onNavigateToNewConversation: () -> Unit,
+  modifier: Modifier = Modifier,
+  minLines: Int = 1,
+) {
+  val message = getMemberReminderMessage(memberReminder)
+  HedvigNotificationCard(
+    message = message,
+    modifier = modifier,
+    priority = NotificationPriority.Attention,
+    style = InfoCardStyle.Button(
+      buttonText = stringResource(Res.string.open_chat),
+      onButtonClick = onNavigateToNewConversation,
+    ),
+    minLines = minLines,
+  )
+}
+
+@Composable
+private fun ReminderCardUpcomingRenewals(
+  memberReminder: MemberReminder.UpcomingRenewal,
+  openUrl: (String) -> Unit,
+  modifier: Modifier = Modifier,
+  minLines: Int = 1,
+) {
+  val message = getMemberReminderMessage(memberReminder)
+  val style = memberReminder.draftCertificateUrl?.let {
+    InfoCardStyle.Button(
+      onButtonClick = { openUrl(it) },
+      buttonText = stringResource(Res.string.CONTRACT_VIEW_CERTIFICATE_BUTTON),
+    )
+  } ?: InfoCardStyle.Default
+  HedvigNotificationCard(
+    message = message,
+    modifier = modifier,
+    priority = NotificationPriority.Info,
+    style = style,
+    minLines = minLines,
+  )
+}
+
+@Composable
+private fun ReminderCoInsuredInfo(
+  memberReminder: MemberReminder,
+  navigateToAddMissingInfo: () -> Unit,
+  modifier: Modifier = Modifier,
+  minLines: Int = 1,
+) {
+  val message = getMemberReminderMessage(memberReminder)
+  HedvigNotificationCard(
+    message = message,
+    modifier = modifier,
+    priority = NotificationPriority.Attention,
+    style = InfoCardStyle.Button(
+      buttonText = stringResource(Res.string.CONTRACT_COINSURED_MISSING_ADD_INFO),
+      onButtonClick = navigateToAddMissingInfo,
+    ),
+    minLines = minLines,
+  )
+}
+
+@Preview
+@Composable
+private fun PreviewReminderCardEnableNotifications() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ReminderCardEnableNotifications(
+        snoozeNotificationPermissionReminder = {},
+        requestNotificationPermission = {},
+      )
+    }
+  }
+}
+
+@Preview
+@Composable
+private fun PreviewReminderCardMissingPayment() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ReminderCardMissingPayment(
+        onNavigateToNewConversation = {},
+        memberReminder = MemberReminder.PaymentReminder.TerminationDueToMissedPayments(
+          terminationDate = LocalDate(2029, 1, 1),
+        ),
+      )
+    }
+  }
+}
+
+@Preview
+@Composable
+private fun PreviewReminderCardUpcomingRenewals() {
+  val upcomingRenewal = UpcomingRenewal("contract name", LocalDate.parse("2024-03-05"), "")
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ReminderCardUpcomingRenewals(
+        openUrl = {},
+        memberReminder = upcomingRenewal,
+      )
+    }
+  }
+}
+
+@Preview
+@Composable
+private fun PreviewReminderCardCoInsuredInfo() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ReminderCoInsuredInfo(
+        memberReminder = MemberReminder.CoInsuredInfo("", CoInsuredFlowType.CoInsured),
+        navigateToAddMissingInfo = {},
+      )
+    }
+  }
+}
+
+@Preview
+@Composable
+private fun PreviewReminderCardUpdateContactInfo() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ReminderCardUpdateContactInfo(
+        navigateToContactInfo = {},
+      )
+    }
+  }
+}
+
+@Preview
+@Composable
+private fun PreviewReminderMissingChipId() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ReminderMissingChipId(
+        navigateToChipId = {},
+        minLines = 1,
+      )
+    }
+  }
+}

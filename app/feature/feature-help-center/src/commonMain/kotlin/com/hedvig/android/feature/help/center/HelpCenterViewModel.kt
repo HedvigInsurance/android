@@ -2,7 +2,6 @@ package com.hedvig.android.feature.help.center
 
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
-import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.feature.help.center.data.GetHelpCenterFAQUseCase
 import com.hedvig.android.feature.help.center.data.GetPuppyGuideUseCase
 import com.hedvig.android.featureflags.FeatureManager
@@ -15,7 +14,6 @@ import dev.zacsweers.metro.Inject
 @HedvigViewModel(ActivityRetainedScope::class)
 internal class HelpCenterViewModel(
   getMemberQuickActionsUseCase: GetMemberQuickActionsUseCase,
-  hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
   getHelpCenterFAQUseCase: GetHelpCenterFAQUseCase,
   getPuppyGuideUseCase: GetPuppyGuideUseCase,
   featureManager: FeatureManager,
@@ -27,12 +25,10 @@ internal class HelpCenterViewModel(
       selectedQuickAction = null,
       quickLinksUiState = HelpCenterUiState.QuickLinkUiState.Loading,
       search = null,
-      showNavigateToInboxButton = false,
       puppyGuide = null,
     ),
     presenter = HelpCenterPresenter(
       getMemberQuickActionsUseCase = getMemberQuickActionsUseCase,
-      hasAnyActiveConversationUseCase = hasAnyActiveConversationUseCase,
       getHelpCenterFAQUseCase = getHelpCenterFAQUseCase,
       featureManager = featureManager,
       getPuppyGuideUseCase = getPuppyGuideUseCase,

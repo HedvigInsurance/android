@@ -7,12 +7,18 @@ import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
 import assertk.assertions.isTrue
 import kotlin.test.Test
+import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlinx.coroutines.test.runTest
+
+private val fixedClock = object : Clock {
+  override fun now(): Instant = Instant.parse("2026-01-15T10:00:00Z")
+}
 
 class DemoClaimIntentScriptTest {
   @Test
   fun `the script walks every step and then reaches an outcome`() {
-    val script = DemoClaimIntentScript()
+    val script = DemoClaimIntentScript(fixedClock)
 
     val visited = mutableListOf<StepContent>()
     var intent = script.start()
@@ -41,7 +47,7 @@ class DemoClaimIntentScriptTest {
 
   @Test
   fun `regretting rewinds to the step being edited`() {
-    val script = DemoClaimIntentScript()
+    val script = DemoClaimIntentScript(fixedClock)
     val firstStepId = (script.start().next as ClaimIntent.Next.Step).claimIntentStep.id
     script.advance()
     script.advance()
@@ -55,7 +61,7 @@ class DemoClaimIntentScriptTest {
 
   @Test
   fun `regretting an unknown step leaves the position alone`() {
-    val script = DemoClaimIntentScript()
+    val script = DemoClaimIntentScript(fixedClock)
     script.start()
     script.advance()
     val before = script.currentStep()!!.id
@@ -67,7 +73,7 @@ class DemoClaimIntentScriptTest {
 
   @Test
   fun `progress increases as the script advances`() {
-    val script = DemoClaimIntentScript()
+    val script = DemoClaimIntentScript(fixedClock)
 
     val first = script.start().progress!!
     script.advance()
@@ -78,7 +84,7 @@ class DemoClaimIntentScriptTest {
 
   @Test
   fun `the single select step offers the contract options without a prefill`() {
-    val script = DemoClaimIntentScript()
+    val script = DemoClaimIntentScript(fixedClock)
     var intent = script.start()
     var form: StepContent.Form? = null
     while (intent.next is ClaimIntent.Next.Step) {
@@ -100,7 +106,7 @@ class DemoClaimIntentScriptTest {
 
   @Test
   fun `every combination of prefill and skippability is represented among the select steps`() {
-    val script = DemoClaimIntentScript()
+    val script = DemoClaimIntentScript(fixedClock)
 
     val selects = buildList {
       var intent = script.start()
@@ -121,7 +127,7 @@ class DemoClaimIntentScriptTest {
 
   @Test
   fun `the task flow emits every scheduled description including the ones that arrive together`() = runTest {
-    val demo = GetClaimIntentUseCaseDemo(DemoClaimIntentScript())
+    val demo = GetClaimIntentUseCaseDemo(DemoClaimIntentScript(fixedClock))
 
     demo.invoke(DemoClaimIntentScript.intentId).test {
       val emitted = buildList {

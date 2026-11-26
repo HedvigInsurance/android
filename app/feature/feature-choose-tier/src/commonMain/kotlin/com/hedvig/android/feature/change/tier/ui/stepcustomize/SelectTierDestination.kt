@@ -687,7 +687,11 @@ internal fun PillAndBasicInfo(contractGroup: ContractGroup, displayName: String,
 @HedvigPreview
 @Composable
 private fun FailureScreenPreview() {
-  FailureScreen({}, {})
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      FailureScreen({}, {})
+    }
+  }
 }
 
 @HedvigPreview

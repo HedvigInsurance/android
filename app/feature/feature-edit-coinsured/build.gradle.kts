@@ -24,6 +24,7 @@ kotlin {
       implementation(libs.kotlinx.serialization.core)
       implementation(libs.uuid)
       implementation(projects.dataCoinsured)
+      implementation(projects.dataContract)
       implementation(projects.apolloCore)
       implementation(projects.apolloNetworkCacheManager)
       implementation(projects.apolloOctopusPublic)
@@ -38,7 +39,6 @@ kotlin {
       implementation(projects.featureEditCoinsuredNavigation)
       implementation(projects.moleculePublic)
       implementation(projects.navigationCommon)
-      implementation(projects.navigationCompose)
       implementation(projects.navigationCore)
     }
     jvmTest.dependencies {
