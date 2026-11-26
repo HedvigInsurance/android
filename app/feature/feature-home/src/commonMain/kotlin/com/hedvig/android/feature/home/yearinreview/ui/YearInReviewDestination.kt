@@ -15,6 +15,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,8 +27,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -43,11 +48,15 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.ImageLoader
@@ -168,7 +177,7 @@ private fun rememberImagesLoaded(imageUrls: List<String>, imageLoader: ImageLoad
   val loaded by produceState(false, imageUrls, imageLoader) {
     coroutineScope {
       // Keeps the loading indicator up long enough to read as loading rather than a flash.
-      launch { delay(800.milliseconds) }
+      launch { delay(600.milliseconds) }
       imageUrls.distinct().forEach { url ->
         launch { imageLoader.execute(ImageRequest.Builder(context).data(url).build()) }
       }
@@ -336,9 +345,10 @@ private fun StoryPage(
 ) {
   // Previews render a single frame, so they start where the animations end.
   val isPreview = LocalInspectionMode.current
-  val initialAlpha = if (isPreview) 1f else 0f
-  val titleAndImageAlpha = remember(story.id) { Animatable(initialAlpha) }
+  val titleAndImageAlpha = remember(story.id) { Animatable(if (isPreview) 1f else 0f) }
   var showText by remember(story.id) { mutableStateOf(isPreview) }
+  var showAction by remember(story.id) { mutableStateOf(isPreview) }
+
   LaunchedEffect(story.id) {
     delay(500.milliseconds)
     // The title and image fade in together, centered on the screen. After a pause the text opens up
@@ -346,72 +356,153 @@ private fun StoryPage(
     titleAndImageAlpha.animateTo(1f, tween(durationMillis = 500))
     delay(1.seconds)
     showText = true
+    delay(1.seconds)
+    showAction = true
   }
   // Added only after the delay, so the image keeps its place until the button pushes it up.
-  var showThanksButton by remember(isLastStory) { mutableStateOf(isPreview && isLastStory) }
-  LaunchedEffect(isLastStory) {
-    if (isLastStory) {
-      delay(4.seconds)
-      showThanksButton = true
+//  var showThanksButton by remember(isLastStory) { mutableStateOf(isLastStory) }
+//  LaunchedEffect(isLastStory) {
+//    if (isLastStory) {
+//      delay(4.seconds)
+//      showThanksButton = true
+//    }
+//  }
+  val textBringIntoViewRequester = remember(story.id) { BringIntoViewRequester() }
+  LaunchedEffect(showText) {
+    if (showText) {
+      // Once the text has expanded, scrolls it into view in case it opened below the visible area.
+      delay(800.milliseconds)
+      textBringIntoViewRequester.bringIntoView()
     }
   }
   Column(modifier.padding(16.dp)) {
-    Spacer(Modifier.weight(1f))
-    HedvigText(
-      text = story.title,
-      textAlign = TextAlign.Center,
-      color = HedvigTheme.colorScheme.textPrimary,
-      style = HedvigTheme.typography.bodyMedium,
-      modifier = Modifier
-        .fillMaxWidth()
-        .alpha(titleAndImageAlpha.value),
-    )
-    if (story.media != null) {
-      Spacer(Modifier.height(16.dp))
-      StoryMedia(
-        media = story.media,
-        imageLoader = imageLoader,
-        isPaused = isPaused,
-        modifier = Modifier
-          .fillMaxWidth()
-          // Every image is shown as a square, cropped to fill it.
-          .aspectRatio(1f)
-          .clip(RoundedCornerShape(16.dp))
-          .alpha(titleAndImageAlpha.value),
-      )
-    }
-    AnimatedVisibility(
-      visible = showText,
-      enter = expandVertically(tween(durationMillis = 600), expandFrom = Alignment.Top) +
-        fadeIn(tween(durationMillis = 500, delayMillis = 300)),
+    BoxWithConstraints(
+      Modifier
+        .weight(1f)
+        .fillMaxWidth(),
     ) {
-      Column {
-        HedvigMarkdownText(
-          content = story.description,
-          style = HedvigTheme.typography.bodyMedium.copy(color = HedvigTheme.colorScheme.textSecondary),
-          strongStyle = SpanStyle(color = HedvigTheme.colorScheme.textPrimary),
-          modifier = Modifier.padding(top = 16.dp),
-        )
-        story.action?.let { action ->
-          HedvigButton(
-            text = action.title,
-            onClick = { openUrl(action.url) },
-            enabled = true,
-            buttonStyle = ButtonDefaults.ButtonStyle.Primary,
+      StoryContentLayout(
+        viewportHeight = maxHeight,
+        title = {
+          HedvigText(
+            text = story.title,
+            color = HedvigTheme.colorScheme.textPrimary,
+            style = HedvigTheme.typography.bodySmall,
             modifier = Modifier
               .fillMaxWidth()
-              .padding(top = 16.dp),
+              .alpha(titleAndImageAlpha.value),
           )
-        }
-      }
+        },
+        media = story.media?.let { media ->
+          {
+            StoryMedia(
+              media = media,
+              imageLoader = imageLoader,
+              isPaused = isPaused,
+              modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(16.dp))
+                .alpha(titleAndImageAlpha.value),
+            )
+          }
+        },
+        text = {
+          StoryText(
+            description = story.description,
+            visible = showText,
+            modifier = Modifier.bringIntoViewRequester(textBringIntoViewRequester),
+          )
+        },
+        modifier = Modifier.verticalScroll(rememberScrollState()),
+      )
     }
-    Spacer(Modifier.weight(1f))
-    AnimatedVisibility(
-      visible = showThanksButton,
-      enter = expandVertically() + fadeIn(),
-      exit = shrinkVertically() + fadeOut(),
-    ) {
-      ThanksButton(onClick = close)
+    story.action?.let { action ->
+      val actionAlpha by animateFloatAsState(
+        targetValue = if (showAction) 1f else 0f,
+        animationSpec = tween(durationMillis = 500),
+        label = "actionAlpha",
+      )
+      HedvigButton(
+        text = action.title,
+        // Laid out from the start so its space is reserved, so it ignores taps until it has appeared.
+        onClick = { if (showAction) openUrl(action.url) },
+        enabled = true,
+        buttonStyle = ButtonDefaults.ButtonStyle.Primary,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(top = 16.dp)
+          .alpha(actionAlpha),
+      )
+    }
+  }
+}
+
+@Composable
+private fun StoryText(description: String, visible: Boolean, modifier: Modifier = Modifier) {
+  AnimatedVisibility(
+    visible = visible,
+    enter = expandVertically(tween(durationMillis = 800), expandFrom = Alignment.Top) +
+      fadeIn(tween(durationMillis = 500, delayMillis = 300)),
+    modifier = modifier,
+  ) {
+    HedvigMarkdownText(
+      content = description,
+      style = HedvigTheme.typography.bodySmall.copy(color = HedvigTheme.colorScheme.textSecondary),
+      strongStyle = SpanStyle(color = HedvigTheme.colorScheme.textPrimary),
+      modifier = Modifier.padding(top = 16.dp),
+    )
+  }
+}
+
+private val MinMediaSize = 120.dp
+
+/**
+ * Stacks [title], [media] and [text], centered in [viewportHeight]. The media is a square as wide as the
+ * content when there is room, and shrinks to leave room for the title and text, down to [MinMediaSize]. Past
+ * that the content grows taller than [viewportHeight], to be scrolled.
+ */
+@Composable
+private fun StoryContentLayout(
+  viewportHeight: Dp,
+  title: @Composable () -> Unit,
+  media: (@Composable () -> Unit)?,
+  text: @Composable () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Layout(
+    contents = listOf(title, media ?: {}, text),
+    modifier = modifier,
+  ) { (titleMeasurables, mediaMeasurables, textMeasurables), constraints ->
+    val width = constraints.maxWidth
+    val childConstraints = Constraints(maxWidth = width)
+    val titlePlaceables = titleMeasurables.map { it.measure(childConstraints) }
+    val textPlaceables = textMeasurables.map { it.measure(childConstraints) }
+    val titleHeight = titlePlaceables.sumOf { it.height }
+    val textHeight = textPlaceables.sumOf { it.height }
+    val hasMedia = mediaMeasurables.isNotEmpty()
+    val mediaGap = if (hasMedia) 16.dp.roundToPx() else 0
+    val mediaSize = if (hasMedia) {
+      val minSize = minOf(MinMediaSize.roundToPx(), width)
+      (viewportHeight.roundToPx() - titleHeight - mediaGap - textHeight).coerceIn(minSize, width)
+    } else {
+      0
+    }
+    val mediaPlaceables = mediaMeasurables.map { it.measure(Constraints.fixed(mediaSize, mediaSize)) }
+    val contentHeight = titleHeight + mediaGap + mediaSize + textHeight
+    val height = maxOf(contentHeight, viewportHeight.roundToPx())
+    layout(width, height) {
+      var y = (height - contentHeight) / 2
+      titlePlaceables.forEach {
+        it.place(0, y)
+        y += it.height
+      }
+      y += mediaGap
+      mediaPlaceables.forEach { it.place((width - mediaSize) / 2, y) }
+      y += mediaSize
+      textPlaceables.forEach {
+        it.place(0, y)
+        y += it.height
+      }
     }
   }
 }
@@ -485,7 +576,7 @@ private val previewStories = listOf(
   YearInReviewStory(
     id = "1",
     title = "Antal hanterade skador",
-    description = "**Vi hjälpte till med 29 125 skador under året.** Hela 2 000 fler än förra året.",
+    description = "Vi hjälpte till med 29 125 skador under året. **Hela 2 000 fler än förra året.**",
     media = YearInReviewMedia.Video("https://example.com/second.mp4"),
     action = null,
   ),
@@ -497,6 +588,37 @@ private val previewStories = listOf(
     action = YearInReviewAction(title = "Läs mer", url = "https://example.com"),
   ),
 )
+
+@Preview(name = "Large font, small phone", fontScale = 2f, device = "spec:width=320dp,height=640dp")
+@Preview(name = "Large font, landscape", fontScale = 1.5f, device = "spec:parent=pixel_5,orientation=landscape")
+@Composable
+private fun PreviewYearInReviewLongText() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      YearInReviewScreen(
+        uiState = YearInReviewUiState.Content(
+          stories = listOf(
+            YearInReviewStory(
+              id = "0",
+              title = "Antal hanterade skador",
+              description = "**Vi hjälpte till med 29 125 skador under året.** Hela 2 000 fler än förra året, " +
+                "och de flesta av dem fick sin ersättning samma dag som de anmälde skadan i appen.",
+              media = YearInReviewMedia.Image("https://example.com/second.gif"),
+              action = YearInReviewAction(title = "Läs mer", url = "https://example.com"),
+            ),
+          ),
+          currentIndex = 0,
+          progress = 0.3f,
+          isPaused = false,
+        ),
+        imageLoader = rememberPreviewImageLoader(),
+        openUrl = {},
+        close = {},
+        onEvent = {},
+      )
+    }
+  }
+}
 
 private class YearInReviewUiStatePreviewProvider : CollectionPreviewParameterProvider<YearInReviewUiState>(
   listOf(
