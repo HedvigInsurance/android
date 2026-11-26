@@ -8,8 +8,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -18,8 +16,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -50,7 +46,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.Constraints
@@ -71,19 +66,15 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigThreeDotsProgressIndicator
-import com.hedvig.android.design.system.hedvig.HighlightLabel
-import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.home.yearinreview.data.YearInReviewAction
 import com.hedvig.android.feature.home.yearinreview.data.YearInReviewMedia
 import com.hedvig.android.feature.home.yearinreview.data.YearInReviewStory
-import hedvig.resources.PROFILE_ABOUT_APP_TITLE
 import hedvig.resources.Res
 import hedvig.resources.general_close_button
 import kotlin.time.Duration.Companion.milliseconds
@@ -287,10 +278,8 @@ private fun StoriesContent(
         StoryPage(
           story = story,
           imageLoader = imageLoader,
-          isLastStory = uiState.isLastStory,
           isPaused = uiState.isPaused,
           openUrl = openUrl,
-          close = close,
           modifier = Modifier.fillMaxSize(),
         )
       }
@@ -342,10 +331,8 @@ private fun StoryProgressBar(storyCount: Int, currentIndex: Int, progress: Float
 private fun StoryPage(
   story: YearInReviewStory,
   imageLoader: ImageLoader,
-  isLastStory: Boolean,
   isPaused: Boolean,
   openUrl: (String) -> Unit,
-  close: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val titleAndImageAlpha = remember(story.id) { Animatable(0f) }
