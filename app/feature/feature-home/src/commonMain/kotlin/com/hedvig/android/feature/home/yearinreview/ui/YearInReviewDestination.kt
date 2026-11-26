@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +25,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
@@ -42,10 +45,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.Constraints
@@ -69,6 +74,7 @@ import com.hedvig.android.design.system.hedvig.HedvigThreeDotsProgressIndicator
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.debugBorder
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
@@ -365,66 +371,153 @@ private fun StoryPage(
       textBringIntoViewRequester.bringIntoView()
     }
   }
-  Column(modifier.padding(16.dp)) {
-    BoxWithConstraints(
-      Modifier
-        .weight(1f)
-        .fillMaxWidth(),
-    ) {
-      StoryContentLayout(
-        viewportHeight = maxHeight,
-        title = {
-          HedvigText(
-            text = story.title,
-            color = HedvigTheme.colorScheme.textPrimary,
-            style = HedvigTheme.typography.bodySmall,
-            modifier = Modifier
-              .fillMaxWidth()
-              .alpha(titleAndImageAlpha.value),
-          )
-        },
-        media = story.media?.let { media ->
-          {
-            StoryMedia(
-              media = media,
-              imageLoader = imageLoader,
-              isPaused = isPaused,
-              modifier = Modifier
-                .fillMaxSize()
-                .clip(RoundedCornerShape(16.dp))
-                .alpha(titleAndImageAlpha.value),
-            )
-          }
-        },
-        text = {
-          StoryText(
-            description = story.description,
-            visible = showText,
-            modifier = Modifier.bringIntoViewRequester(textBringIntoViewRequester),
-          )
-        },
-        modifier = Modifier.verticalScroll(rememberScrollState()),
-      )
-    }
-    story.action?.let { action ->
-      val actionAlpha by animateFloatAsState(
-        targetValue = if (showAction) 1f else 0f,
-        animationSpec = tween(durationMillis = 500),
-        label = "actionAlpha",
-      )
-      HedvigButton(
-        text = action.title,
-        // Laid out from the start so its space is reserved, so it ignores taps until it has appeared.
-        onClick = { if (showAction) openUrl(action.url) },
-        enabled = true,
-        buttonStyle = ButtonDefaults.ButtonStyle.Primary,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(top = 16.dp)
-          .alpha(actionAlpha),
+  val title: @Composable () -> Unit = {
+    HedvigText(
+      text = story.title,
+      color = HedvigTheme.colorScheme.textPrimary,
+      style = HedvigTheme.typography.bodySmall,
+      modifier = Modifier
+        .fillMaxWidth()
+        .alpha(titleAndImageAlpha.value),
+    )
+  }
+  val media: (@Composable (Modifier) -> Unit)? = story.media?.let { media ->
+    { mediaModifier ->
+      StoryMedia(
+        media = media,
+        imageLoader = imageLoader,
+        isPaused = isPaused,
+        modifier = mediaModifier
+          .clip(RoundedCornerShape(16.dp))
+          .alpha(titleAndImageAlpha.value),
       )
     }
   }
+  val text: @Composable () -> Unit = {
+    StoryText(
+      description = story.description,
+      visible = showText,
+      modifier = Modifier.bringIntoViewRequester(textBringIntoViewRequester),
+    )
+  }
+  val actionButton: @Composable () -> Unit = {
+    story.action?.let { action ->
+      StoryActionButton(action = action, visible = showAction, openUrl = openUrl)
+    }
+  }
+  BoxWithConstraints(modifier.padding(16.dp)) {
+    val isLandscape = maxWidth > maxHeight || maxWidth >= WideLayoutMinWidth
+    if (isLandscape) {
+      Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize()) {
+        WideStoryMediaColumn(
+          title = title,
+          media = media?.let { { it(Modifier.fillMaxSize()) } },
+          modifier = Modifier.fillMaxHeight(),
+        )
+        Spacer(Modifier.width(16.dp))
+        Column(
+          Modifier
+            .weight(1f)
+            .fillMaxHeight(),
+        ) {
+          Box(
+            contentAlignment = Alignment.CenterStart,
+            modifier = Modifier
+              .weight(1f)
+              .fillMaxWidth(),
+          ) {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
+              text()
+            }
+          }
+          actionButton()
+        }
+      }
+    } else {
+      Column(Modifier.fillMaxSize()) {
+        BoxWithConstraints(
+          Modifier
+            .weight(1f)
+            .fillMaxWidth(),
+        ) {
+          StoryContentLayout(
+            viewportHeight = maxHeight,
+            title = title,
+            media = media?.let { { it(Modifier.fillMaxSize()) } },
+            text = text,
+            modifier = Modifier.verticalScroll(rememberScrollState()),
+          )
+        }
+        actionButton()
+      }
+    }
+  }
+}
+
+/**
+ * The [title] above the [media], as wide as the media. The media is a square that takes the height the title
+ * leaves, and at most half the available width, so the content beside it keeps the rest. Without media the
+ * title takes half the width.
+ */
+@Composable
+private fun WideStoryMediaColumn(
+  title: @Composable () -> Unit,
+  media: (@Composable () -> Unit)?,
+  modifier: Modifier = Modifier,
+) {
+  Layout(
+    contents = listOf(title, media ?: {}),
+    modifier = modifier,
+  ) { (titleMeasurables, mediaMeasurables), constraints ->
+    val maxWidth = constraints.maxWidth / 2
+    val hasMedia = mediaMeasurables.isNotEmpty()
+    val gap = if (hasMedia) 16.dp.roundToPx() else 0
+
+    fun titleHeight(width: Int): Int = titleMeasurables.sumOf { it.minIntrinsicHeight(width) }
+    // The title wraps to the media's width, which in turn depends on the title's height. A few rounds settle it.
+    var side = if (hasMedia) minOf(maxWidth, constraints.maxHeight) else maxWidth
+    if (hasMedia) {
+      repeat(3) {
+        side = (constraints.maxHeight - titleHeight(side) - gap).coerceIn(0, maxWidth)
+      }
+    }
+    val titlePlaceables = titleMeasurables.map { it.measure(Constraints(minWidth = side, maxWidth = side)) }
+    val mediaPlaceables = mediaMeasurables.map { it.measure(Constraints.fixed(side, side)) }
+    val contentHeight = titlePlaceables.sumOf { it.height } + gap + if (hasMedia) side else 0
+    val height = contentHeight.coerceIn(constraints.minHeight, constraints.maxHeight)
+    layout(side, height) {
+      var y = (height - contentHeight) / 2
+      titlePlaceables.forEach {
+        it.place(0, y)
+        y += it.height
+      }
+      y += gap
+      mediaPlaceables.forEach { it.place(0, y) }
+    }
+  }
+}
+
+/** Wide enough to put the media beside the text even in portrait, as on a tablet. */
+private val WideLayoutMinWidth = 600.dp
+
+/** Laid out from the start so its space is reserved, fading in once [visible], and ignoring taps until then. */
+@Composable
+private fun StoryActionButton(action: YearInReviewAction, visible: Boolean, openUrl: (String) -> Unit) {
+  val alpha by animateFloatAsState(
+    targetValue = if (visible) 1f else 0f,
+    animationSpec = tween(durationMillis = 500),
+    label = "actionAlpha",
+  )
+  HedvigButton(
+    text = action.title,
+    onClick = { if (visible) openUrl(action.url) },
+    enabled = true,
+    buttonStyle = ButtonDefaults.ButtonStyle.Primary,
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(top = 16.dp)
+      .alpha(alpha),
+  )
 }
 
 @Composable
@@ -534,6 +627,8 @@ private fun ThanksButton(onClick: () -> Unit) {
 }
 
 @HedvigPreview
+@Preview(name = "Landscape phone", device = "spec:width=891dp,height=411dp")
+@Preview(name = "Tablet", device = "spec:width=800dp,height=1280dp,dpi=240")
 @Composable
 private fun PreviewYearInReviewScreen(
   @PreviewParameter(YearInReviewUiStatePreviewProvider::class) uiState: YearInReviewUiState,
