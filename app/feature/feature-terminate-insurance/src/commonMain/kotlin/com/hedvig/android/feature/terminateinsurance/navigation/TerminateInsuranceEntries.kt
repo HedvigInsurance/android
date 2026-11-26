@@ -35,10 +35,8 @@ import com.hedvig.android.feature.terminateinsurance.step.withdrawal.Termination
 import com.hedvig.android.feature.terminateinsurance.step.withdrawal.TerminationWithdrawalViewModel
 import com.hedvig.android.feature.terminateinsurance.step.withdrawal.TerminationWithdrawalViewModelFactory
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
-import com.hedvig.android.navigation.compose.popUpTo
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.terminateInsuranceEntries(
@@ -115,7 +113,7 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceEntries(
   entry<TerminationChooseActionKey> { key ->
     val viewModel: TerminationChooseActionViewModel =
       assistedMetroViewModel<TerminationChooseActionViewModel, TerminationChooseActionViewModelFactory> {
-        create(key.commonParams)
+        create(key.terminationParams)
       }
     TerminationChooseActionDestination(
       viewModel = viewModel,
@@ -127,7 +125,7 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceEntries(
   entry<TerminationWithdrawalKey> { key ->
     val viewModel: TerminationWithdrawalViewModel =
       assistedMetroViewModel<TerminationWithdrawalViewModel, TerminationWithdrawalViewModelFactory> {
-        create(key.commonParams)
+        create(key.terminationParams)
       }
     TerminationWithdrawalDestination(
       viewModel = viewModel,

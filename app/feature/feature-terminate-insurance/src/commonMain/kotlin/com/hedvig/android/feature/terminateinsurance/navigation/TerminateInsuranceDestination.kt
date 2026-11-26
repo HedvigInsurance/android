@@ -13,12 +13,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 internal data class TerminationChooseActionKey(
-  val commonParams: TerminationGraphParameters,
+  val terminationParams: TerminationGraphParameters,
 ) : TerminationFlowKey
 
 @Serializable
 internal data class TerminationWithdrawalKey(
-  val commonParams: TerminationGraphParameters,
+  val terminationParams: TerminationGraphParameters,
 ) : TerminationFlowKey
 
 @Serializable
