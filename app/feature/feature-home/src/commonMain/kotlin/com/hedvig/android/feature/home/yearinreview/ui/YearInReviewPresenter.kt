@@ -2,6 +2,7 @@ package com.hedvig.android.feature.home.yearinreview.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -11,6 +12,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import com.hedvig.android.feature.home.yearinreview.data.GetYearInReviewUseCase
 import com.hedvig.android.feature.home.yearinreview.data.YearInReviewStory
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlin.time.Duration
@@ -22,6 +25,7 @@ private const val ProgressSteps = 100
 
 internal class YearInReviewPresenter(
   private val getYearInReviewUseCase: GetYearInReviewUseCase,
+  private val featureManager: FeatureManager,
 ) : MoleculePresenter<YearInReviewEvent, YearInReviewUiState> {
   @Composable
   override fun MoleculePresenterScope<YearInReviewEvent>.present(lastState: YearInReviewUiState): YearInReviewUiState {
@@ -73,8 +77,11 @@ internal class YearInReviewPresenter(
       }
     }
 
-    LaunchedEffect(loadIteration) {
-      if (stories != null) return@LaunchedEffect
+    val isEnabled: Boolean? by remember { featureManager.isFeatureEnabled(Feature.YEAR_IN_REVIEW) }
+      .collectAsState(null)
+
+    LaunchedEffect(loadIteration, isEnabled) {
+      if (isEnabled != true || stories != null) return@LaunchedEffect
       hasError = false
       getYearInReviewUseCase.invoke().fold(
         ifLeft = { hasError = true },
@@ -101,6 +108,8 @@ internal class YearInReviewPresenter(
     }
 
     return when {
+      isEnabled == false -> YearInReviewUiState.Unavailable
+
       loadedStories != null -> YearInReviewUiState.Content(
         stories = loadedStories,
         currentIndex = currentIndex,
@@ -131,6 +140,9 @@ internal sealed interface YearInReviewUiState {
   data object Loading : YearInReviewUiState
 
   data object Failure : YearInReviewUiState
+
+  /** The year in review is turned off, so the screen has nothing to show. */
+  data object Unavailable : YearInReviewUiState
 
   data class Content(
     val stories: List<YearInReviewStory>,

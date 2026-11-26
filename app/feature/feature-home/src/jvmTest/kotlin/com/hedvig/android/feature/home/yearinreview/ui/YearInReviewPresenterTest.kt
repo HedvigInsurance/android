@@ -10,12 +10,28 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.home.yearinreview.data.GetYearInReviewUseCase
 import com.hedvig.android.feature.home.yearinreview.data.YearInReview
 import com.hedvig.android.feature.home.yearinreview.data.YearInReviewStory
+import com.hedvig.android.featureflags.flags.Feature
+import com.hedvig.android.featureflags.test.FakeFeatureManager
 import com.hedvig.android.molecule.test.MoleculePresenterTestContext
 import com.hedvig.android.molecule.test.test
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 internal class YearInReviewPresenterTest {
+  private val enabledFeatureManager = FakeFeatureManager(mapOf(Feature.YEAR_IN_REVIEW to true))
+
+  @Test
+  fun `with the feature turned off the screen is unavailable and nothing is fetched`() = runTest {
+    val useCase = FakeGetYearInReviewUseCase(YearInReview(stories).right())
+    YearInReviewPresenter(useCase, FakeFeatureManager(mapOf(Feature.YEAR_IN_REVIEW to false)))
+      .test(YearInReviewUiState.Loading) {
+        assertThat(awaitItem()).isEqualTo(YearInReviewUiState.Loading)
+        assertThat(awaitItem()).isEqualTo(YearInReviewUiState.Unavailable)
+        assertThat(useCase.invocations).isEqualTo(0)
+        cancelAndIgnoreRemainingEvents()
+      }
+  }
+
   private val stories = List(3) { index ->
     YearInReviewStory(
       id = "$index",
@@ -28,7 +44,7 @@ internal class YearInReviewPresenterTest {
 
   @Test
   fun `loading the stories starts on the first one`() = runTest {
-    YearInReviewPresenter(FakeGetYearInReviewUseCase(YearInReview(stories).right()))
+    YearInReviewPresenter(FakeGetYearInReviewUseCase(YearInReview(stories).right()), enabledFeatureManager)
       .test(YearInReviewUiState.Loading) {
         assertThat(awaitItem()).isEqualTo(YearInReviewUiState.Loading)
         assertThat(awaitContent().currentIndex).isEqualTo(0)
@@ -39,7 +55,7 @@ internal class YearInReviewPresenterTest {
   @Test
   fun `a failed load shows the failure and retrying recovers`() = runTest {
     val useCase = FakeGetYearInReviewUseCase(ErrorMessage().left())
-    YearInReviewPresenter(useCase).test(YearInReviewUiState.Loading) {
+    YearInReviewPresenter(useCase, enabledFeatureManager).test(YearInReviewUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(YearInReviewUiState.Loading)
       assertThat(awaitItem()).isEqualTo(YearInReviewUiState.Failure)
 
@@ -52,7 +68,7 @@ internal class YearInReviewPresenterTest {
 
   @Test
   fun `tapping forward and back moves between stories without leaving the ends`() = runTest {
-    YearInReviewPresenter(FakeGetYearInReviewUseCase(YearInReview(stories).right()))
+    YearInReviewPresenter(FakeGetYearInReviewUseCase(YearInReview(stories).right()), enabledFeatureManager)
       .test(YearInReviewUiState.Loading) {
         awaitContent()
 
@@ -72,7 +88,7 @@ internal class YearInReviewPresenterTest {
 
   @Test
   fun `a story advances to the next one once its timer runs out`() = runTest {
-    YearInReviewPresenter(FakeGetYearInReviewUseCase(YearInReview(stories).right()))
+    YearInReviewPresenter(FakeGetYearInReviewUseCase(YearInReview(stories).right()), enabledFeatureManager)
       .test(YearInReviewUiState.Loading) {
         val first = awaitContent()
         assertThat(first.currentIndex).isEqualTo(0)
@@ -97,5 +113,10 @@ private suspend fun MoleculePresenterTestContext<YearInReviewEvent, YearInReview
 private class FakeGetYearInReviewUseCase(
   var result: Either<ErrorMessage, YearInReview>,
 ) : GetYearInReviewUseCase {
-  override suspend fun invoke(fetchPolicy: FetchPolicy): Either<ErrorMessage, YearInReview> = result
+  var invocations = 0
+
+  override suspend fun invoke(fetchPolicy: FetchPolicy): Either<ErrorMessage, YearInReview> {
+    invocations++
+    return result
+  }
 }

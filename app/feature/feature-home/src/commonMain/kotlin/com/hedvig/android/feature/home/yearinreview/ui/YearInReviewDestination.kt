@@ -49,10 +49,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.Constraints
@@ -131,6 +129,10 @@ private fun YearInReviewScreen(
         StoriesLoading()
       }
 
+      YearInReviewUiState.Unavailable -> {
+        LaunchedEffect(Unit) { close() }
+      }
+
       YearInReviewUiState.Failure -> {
         HedvigErrorSection(
           onButtonClick = { onEvent(YearInReviewEvent.Retry) },
@@ -139,9 +141,12 @@ private fun YearInReviewScreen(
       }
 
       is YearInReviewUiState.Content -> {
-        // Previews cannot load images, so they skip the preload.
-        val imagesLoaded = LocalInspectionMode.current ||
-          rememberImagesLoaded(uiState.stories.mapNotNull { (it.media as? YearInReviewMedia.Image)?.url }, imageLoader)
+        val imagesLoaded = rememberImagesLoaded(
+          uiState.stories.mapNotNull {
+            (it.media as? YearInReviewMedia.Image)?.url
+          },
+          imageLoader,
+        )
         if (!imagesLoaded) {
           StoriesLoading()
         } else {
@@ -343,11 +348,9 @@ private fun StoryPage(
   close: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  // Previews render a single frame, so they start where the animations end.
-  val isPreview = LocalInspectionMode.current
-  val titleAndImageAlpha = remember(story.id) { Animatable(if (isPreview) 1f else 0f) }
-  var showText by remember(story.id) { mutableStateOf(isPreview) }
-  var showAction by remember(story.id) { mutableStateOf(isPreview) }
+  val titleAndImageAlpha = remember(story.id) { Animatable(0f) }
+  var showText by remember(story.id) { mutableStateOf(false) }
+  var showAction by remember(story.id) { mutableStateOf(false) }
 
   LaunchedEffect(story.id) {
     delay(500.milliseconds)
@@ -514,10 +517,6 @@ private fun StoryMedia(
   isPaused: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  if (LocalInspectionMode.current) {
-    Box(modifier.background(HedvigTheme.colorScheme.surfacePrimary))
-    return
-  }
   when (media) {
     is YearInReviewMedia.Image -> AsyncImage(
       model = media.url,
@@ -569,56 +568,26 @@ private val previewStories = listOf(
   YearInReviewStory(
     id = "0",
     title = "Du har varit med oss i 412 dagar",
-    description = "Tack för att du är medlem hos Hedvig.",
+    description = "Tack för att du är **medlem hos Hedvig**.",
     media = YearInReviewMedia.Image("https://example.com/first.png"),
     action = null,
   ),
   YearInReviewStory(
     id = "1",
     title = "Antal hanterade skador",
-    description = "Vi hjälpte till med 29 125 skador under året. **Hela 2 000 fler än förra året.**",
-    media = YearInReviewMedia.Video("https://example.com/second.mp4"),
-    action = null,
+    description = "**Vi hjälpte till med 29 125 skador under året.** Hela 2 000 fler än förra året, och de " +
+      "flesta av dem fick sin ersättning samma dag som de anmälde skadan i appen.",
+    media = YearInReviewMedia.Image("https://example.com/second.gif"),
+    action = YearInReviewAction(title = "Läs mer", url = "https://example.com"),
   ),
   YearInReviewStory(
     id = "2",
     title = "Djur-vabb",
-    description = "Under året har 71 procent fler valt Djurförsäkring Premium, där ersättning för djur-vabb ingår.",
+    description = "Under året har 71 procent fler valt **Djurförsäkring Premium**, där ersättning för djur-vabb ingår.",
     media = null,
     action = YearInReviewAction(title = "Läs mer", url = "https://example.com"),
   ),
 )
-
-@Preview(name = "Large font, small phone", fontScale = 2f, device = "spec:width=320dp,height=640dp")
-@Preview(name = "Large font, landscape", fontScale = 1.5f, device = "spec:parent=pixel_5,orientation=landscape")
-@Composable
-private fun PreviewYearInReviewLongText() {
-  HedvigTheme {
-    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      YearInReviewScreen(
-        uiState = YearInReviewUiState.Content(
-          stories = listOf(
-            YearInReviewStory(
-              id = "0",
-              title = "Antal hanterade skador",
-              description = "**Vi hjälpte till med 29 125 skador under året.** Hela 2 000 fler än förra året, " +
-                "och de flesta av dem fick sin ersättning samma dag som de anmälde skadan i appen.",
-              media = YearInReviewMedia.Image("https://example.com/second.gif"),
-              action = YearInReviewAction(title = "Läs mer", url = "https://example.com"),
-            ),
-          ),
-          currentIndex = 0,
-          progress = 0.3f,
-          isPaused = false,
-        ),
-        imageLoader = rememberPreviewImageLoader(),
-        openUrl = {},
-        close = {},
-        onEvent = {},
-      )
-    }
-  }
-}
 
 private class YearInReviewUiStatePreviewProvider : CollectionPreviewParameterProvider<YearInReviewUiState>(
   listOf(
