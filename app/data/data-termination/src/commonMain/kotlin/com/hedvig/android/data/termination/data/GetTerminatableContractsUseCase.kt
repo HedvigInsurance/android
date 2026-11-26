@@ -48,6 +48,7 @@ data class TerminatableInsurance(
   val displayName: String,
   val contractExposure: String,
   val contractGroup: ContractGroup,
+  val supportsWithdrawal: Boolean,
 )
 
 private fun ContractsToTerminateQuery.Data.CurrentMember.toInsurancesForCancellation(): List<TerminatableInsurance> {
@@ -61,6 +62,7 @@ private fun ContractsToTerminateQuery.Data.CurrentMember.toInsurancesForCancella
         displayName = it.currentAgreement.productVariant.displayName,
         contractGroup = it.currentAgreement.productVariant.typeOfContract.toContractGroup(),
         contractExposure = it.exposureDisplayName,
+        supportsWithdrawal = it.supportsWithdrawal,
       )
     }
   val pending = pendingContracts.map {
@@ -69,6 +71,7 @@ private fun ContractsToTerminateQuery.Data.CurrentMember.toInsurancesForCancella
       displayName = it.productVariant.displayName,
       contractGroup = it.productVariant.typeOfContract.toContractGroup(),
       contractExposure = it.exposureDisplayName,
+      supportsWithdrawal = it.supportsWithdrawal,
     )
   }
   return active + pending

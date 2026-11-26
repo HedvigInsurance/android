@@ -35,6 +35,8 @@ import hedvig.resources.EDIT_COOWNER_SUBTITLE
 import hedvig.resources.EDIT_COOWNER_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_CANCELLATION_TITLE
+import hedvig.resources.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_REMOVE_ADDON_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
@@ -55,11 +57,13 @@ internal fun EditInsuranceBottomSheetContent(
   isPaymentProtection: Boolean,
   allowTerminatingInsurance: Boolean,
   allowRemovingAddon: Boolean,
+  allowChangeAddress: Boolean,
   onEditCoInsuredClick: () -> Unit,
   onEditCoOwnersClick: () -> Unit,
   onChangeTierClick: () -> Unit,
   onCancelInsuranceClick: () -> Unit,
   onRemoveAddonClick: () -> Unit,
+  onChangeAddressClick: () -> Unit,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -97,6 +101,15 @@ internal fun EditInsuranceBottomSheetContent(
           RadioOptionId("2"),
           stringResource(Res.string.EDIT_COOWNER_TITLE),
           stringResource(Res.string.EDIT_COOWNER_SUBTITLE),
+        ),
+      )
+    }
+    if (allowChangeAddress) {
+      add(
+        RadioOption(
+          RadioOptionId("5"),
+          stringResource(Res.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE),
+          stringResource(Res.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE),
         ),
       )
     }
@@ -162,6 +175,10 @@ internal fun EditInsuranceBottomSheetContent(
             onRemoveAddonClick()
           }
 
+          "5" if allowChangeAddress -> {
+            onChangeAddressClick()
+          }
+
           else -> {}
         }
       },
@@ -191,12 +208,14 @@ private fun PreviewEditInsuranceBottomSheetContent() {
         allowChangeTier = true,
         isPaymentProtection = false,
         allowRemovingAddon = true,
+        allowChangeAddress = true,
         onChangeTierClick = {},
         onEditCoInsuredClick = {},
         onEditCoOwnersClick = {},
         onDismiss = {},
         onCancelInsuranceClick = {},
         onRemoveAddonClick = {},
+        onChangeAddressClick = {},
         modifier = Modifier.padding(horizontal = 16.dp),
       )
     }

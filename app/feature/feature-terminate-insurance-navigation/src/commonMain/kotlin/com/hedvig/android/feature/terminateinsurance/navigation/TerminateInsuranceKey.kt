@@ -8,4 +8,4 @@ import kotlinx.serialization.Serializable
 data class TerminateInsuranceKey(
   @SerialName("contractId")
   val insuranceId: String? = null,
-) : HedvigNavKey
+) : TerminationFlowKey

@@ -2,6 +2,7 @@ query ContractsToTerminate {
   currentMember {
     activeContracts {
       supportsTermination
+      supportsWithdrawal
       id
       exposureDisplayName
       terminationDate
@@ -14,6 +15,7 @@ query ContractsToTerminate {
     }
     pendingContracts {
       supportsTermination
+      supportsWithdrawal
       productVariant {
         displayName
         typeOfContract

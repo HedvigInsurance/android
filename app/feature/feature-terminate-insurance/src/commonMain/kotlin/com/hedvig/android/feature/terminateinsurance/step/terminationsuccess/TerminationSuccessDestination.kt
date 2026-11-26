@@ -30,14 +30,42 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import hedvig.resources.Res
 import hedvig.resources.TERMINATE_CONTRACT_TERMINATION_COMPLETE
+import hedvig.resources.TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TODAY
 import hedvig.resources.TERMINATION_FLOW_SUCCESS_SUBTITLE_WITH_DATE
 import hedvig.resources.TERMINATION_FLOW_SUCCESS_TITLE
+import hedvig.resources.TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE
 import hedvig.resources.general_done_button
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TerminationSuccessDestination(terminationDate: LocalDate?, onDone: () -> Unit) {
+  SuccessScreen(
+    title = stringResource(Res.string.TERMINATION_FLOW_SUCCESS_TITLE),
+    description = terminationDate?.let {
+      stringResource(
+        Res.string.TERMINATION_FLOW_SUCCESS_SUBTITLE_WITH_DATE,
+        rememberHedvigDateTimeFormatter().format(terminationDate),
+      )
+    } ?: stringResource(Res.string.TERMINATE_CONTRACT_TERMINATION_COMPLETE),
+    onDone = onDone,
+  )
+}
+
+@Composable
+internal fun WithdrawalSuccessDestination(endDate: LocalDate, onDone: () -> Unit) {
+  SuccessScreen(
+    title = stringResource(Res.string.TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE),
+    description = stringResource(
+      Res.string.TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TODAY,
+      rememberHedvigDateTimeFormatter().format(endDate),
+    ),
+    onDone = onDone,
+  )
+}
+
+@Composable
+private fun SuccessScreen(title: String, description: String, onDone: () -> Unit) {
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,
     modifier = Modifier.fillMaxSize(),
@@ -61,13 +89,8 @@ internal fun TerminationSuccessDestination(terminationDate: LocalDate?, onDone: 
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.weight(1f))
       EmptyState(
-        text = stringResource(Res.string.TERMINATION_FLOW_SUCCESS_TITLE),
-        description = terminationDate?.let {
-          stringResource(
-            Res.string.TERMINATION_FLOW_SUCCESS_SUBTITLE_WITH_DATE,
-            rememberHedvigDateTimeFormatter().format(terminationDate),
-          )
-        } ?: stringResource(Res.string.TERMINATE_CONTRACT_TERMINATION_COMPLETE),
+        text = title,
+        description = description,
         iconStyle = SUCCESS,
       )
       Spacer(Modifier.height(16.dp))
@@ -104,6 +127,16 @@ private fun PreviewTerminationSuccessScreen(
         },
         {},
       )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewWithdrawalSuccessScreen() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      WithdrawalSuccessDestination(endDate = LocalDate(2026, 11, 25), onDone = {})
     }
   }
 }

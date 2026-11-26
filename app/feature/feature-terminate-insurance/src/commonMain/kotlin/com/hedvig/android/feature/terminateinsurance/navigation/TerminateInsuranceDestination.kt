@@ -12,11 +12,21 @@ import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 @Serializable
+internal data class TerminationChooseActionKey(
+  val terminationParams: TerminationGraphParameters,
+) : TerminationFlowKey
+
+@Serializable
+internal data class TerminationWithdrawalKey(
+  val terminationParams: TerminationGraphParameters,
+) : TerminationFlowKey
+
+@Serializable
 internal data class TerminationSurveyFirstStepKey(
   val options: List<TerminationSurveyOption>,
   val action: TerminationAction,
   val commonParams: TerminationGraphParameters,
-) : HedvigNavKey, AnalyticsNamed {
+) : TerminationFlowKey, AnalyticsNamed {
   override val analyticsName get() = ANALYTICS_NAME
 
   companion object {
@@ -29,7 +39,7 @@ internal data class TerminationSurveySecondStepKey(
   val subOptions: List<TerminationSurveyOption>,
   val action: TerminationAction,
   val commonParams: TerminationGraphParameters,
-) : HedvigNavKey, AnalyticsNamed {
+) : TerminationFlowKey, AnalyticsNamed {
   override val analyticsName get() = ANALYTICS_NAME
 
   companion object {
@@ -44,7 +54,7 @@ internal data class TerminationRedirectionKey(
   val action: TerminationAction,
   val commonParams: TerminationGraphParameters,
   val feedbackComment: String?,
-) : HedvigNavKey, AnalyticsNamed {
+) : TerminationFlowKey, AnalyticsNamed {
   override val analyticsName get() = ANALYTICS_NAME
 
   companion object {
@@ -60,7 +70,7 @@ internal data class TerminationDateKey(
   val commonParams: TerminationGraphParameters,
   val selectedReasonId: String,
   val feedbackComment: String?,
-) : HedvigNavKey, AnalyticsNamed {
+) : TerminationFlowKey, AnalyticsNamed {
   override val analyticsName get() = ANALYTICS_NAME
 
   companion object {
@@ -75,7 +85,7 @@ internal data class TerminationConfirmationKey(
   val commonParams: TerminationGraphParameters,
   val selectedReasonId: String,
   val feedbackComment: String?,
-) : HedvigNavKey, AnalyticsNamed {
+) : TerminationFlowKey, AnalyticsNamed {
   override val analyticsName get() = ANALYTICS_NAME
 
   companion object {
@@ -98,7 +108,7 @@ internal data class InsuranceDeletionKey(
   val extraCoverageItems: List<ExtraCoverageItem>,
   val selectedReasonId: String,
   val feedbackComment: String?,
-) : HedvigNavKey, AnalyticsNamed {
+) : TerminationFlowKey, AnalyticsNamed {
   override val analyticsName get() = ANALYTICS_NAME
 
   companion object {
@@ -118,9 +128,14 @@ internal data class TerminationSuccessKey(
 }
 
 @Serializable
+internal data class WithdrawalSuccessKey(
+  val endDate: LocalDate,
+) : HedvigNavKey
+
+@Serializable
 internal data class TerminationFailureKey(
   val message: String?,
-) : HedvigNavKey, AnalyticsNamed {
+) : TerminationFlowKey, AnalyticsNamed {
   override val analyticsName get() = ANALYTICS_NAME
 
   companion object {
@@ -129,7 +144,7 @@ internal data class TerminationFailureKey(
 }
 
 @Serializable
-internal data object UnknownScreenKey : HedvigNavKey, AnalyticsNamed {
+internal data object UnknownScreenKey : TerminationFlowKey, AnalyticsNamed {
   override val analyticsName get() = ANALYTICS_NAME
 
   const val ANALYTICS_NAME = "com.hedvig.android.feature.terminateinsurance.navigation.UnknownScreenKey"
@@ -144,7 +159,7 @@ internal data class DeflectSuggestionKey(
   val action: TerminationAction,
   val selectedReasonId: String,
   val feedbackComment: String?,
-) : HedvigNavKey, AnalyticsNamed {
+) : TerminationFlowKey, AnalyticsNamed {
   override val analyticsName get() = ANALYTICS_NAME
 
   companion object {

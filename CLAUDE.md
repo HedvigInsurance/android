@@ -258,6 +258,14 @@ Never hold a long-lived reference to `entries` snapshot contents; mutate through
 
 **How to apply:** When arranging the backstack for a flow, do it *at navigation time* (when navigating to a screen), so that a later plain `popBackstack()` and the system back gesture always land in the same place — never special-case the pop inside a button handler.
 
+**Critical navigation rule — a key identifies a screen, the screen loads its own data:**
+
+A `HedvigNavKey` carries only what identifies the destination (ids, and small parameters the previous screen already holds, such as `TerminationGraphParameters`). The destination's presenter runs its own query and owns the `Loading` / `Failure` (with retry) / `Content` states. The previous screen navigates immediately; it never fetches the next screen's data to pass it through the key.
+
+**Why:** keys are serialized into the Activity's saved state, so data in them goes stale across process death, counts against the saved-state size limit, and can put member data (emails, addresses) into the saved state. A screen that loads its own data also handles its own loading and error states, instead of the previous screen showing a spinner and an error for data that isn't its own.
+
+**How to apply:** when a destination needs data, add the query to that destination's presenter, not to the screen that navigates to it. When a destination needs more data, extend its own query. Some older flows still pass fetched data through keys (for example the termination survey's options in `TerminationSurveyFirstStepKey`); don't copy that pattern.
+
 ### Dependency Injection
 
 **Registering destinations.** Each feature exposes a `fun EntryProviderScope<HedvigNavKey>.featureEntries(...)` that calls `entry<Key> { }` for each of its screens. `hedvigEntryProvider` in `:app-shell` calls all of them, for every host. Cross-feature navigation is done with `navigateToX` lambdas passed into each feature's entries function by `hedvigEntryProvider`. Features never import each other's keys.
@@ -731,7 +739,7 @@ kotlin {
 
 ### Adding a New Screen/Destination
 
-1. Define `@Serializable {Name}Key : HedvigNavKey` (add marker interfaces as needed).
+1. Define `@Serializable {Name}Key : HedvigNavKey` (add marker interfaces as needed). It holds identifiers only; the screen loads its own data (see the navigation rule above).
 2. Register it: `entry<{Name}Key> { key -> ... }` in the feature's entries function.
 3. Resolve the ViewModel with `metroViewModel()` / `assistedMetroViewModel(...)`.
 4. Ensure the module has `navKeys()` so the key survives process death.

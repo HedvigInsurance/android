@@ -62,6 +62,38 @@ internal fun TerminationInfoCardDate(
   isLocked: Boolean,
   modifier: Modifier = Modifier,
 ) {
+  TerminationInfoCardField(
+    label = stringResource(Res.string.TERMINATION_FLOW_DATE_FIELD_TEXT),
+    value = dateValue ?: stringResource(Res.string.TERMINATION_FLOW_DATE_FIELD_PLACEHOLDER),
+    isPlaceholder = dateValue == null,
+    onClick = onClick,
+    isLocked = isLocked,
+    modifier = modifier,
+  )
+}
+
+@Composable
+internal fun TerminationInfoCardConfirmationEmail(email: String, modifier: Modifier = Modifier) {
+  TerminationInfoCardField(
+    // TODO: Add "Confirmation will be sent to" / "Bekräftelsen skickas till" to Lokalise
+    label = "Confirmation will be sent to",
+    value = email,
+    isPlaceholder = false,
+    onClick = null,
+    isLocked = true,
+    modifier = modifier,
+  )
+}
+
+@Composable
+private fun TerminationInfoCardField(
+  label: String,
+  value: String,
+  isPlaceholder: Boolean,
+  onClick: (() -> Unit)?,
+  isLocked: Boolean,
+  modifier: Modifier = Modifier,
+) {
   val modifierWithClick = if (onClick != null) {
     modifier
       .clip(HedvigTheme.shapes.cornerLarge)
@@ -81,14 +113,14 @@ internal fun TerminationInfoCardDate(
       startSlot = {
         Column {
           HedvigText(
-            text = stringResource(Res.string.TERMINATION_FLOW_DATE_FIELD_TEXT),
+            text = label,
             style = HedvigTheme.typography.label,
             color = HedvigTheme.colorScheme.textSecondary,
           )
           HedvigText(
-            text = dateValue ?: stringResource(Res.string.TERMINATION_FLOW_DATE_FIELD_PLACEHOLDER),
+            text = value,
             style = HedvigTheme.typography.bodySmall,
-            color = if (dateValue == null) {
+            color = if (isPlaceholder) {
               HedvigTheme.colorScheme.textSecondary
             } else {
               Color.Unspecified
@@ -138,6 +170,16 @@ private fun PreviewTerminationInfoCardDateNotLocked() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       TerminationInfoCardDate(LocalDate(2023, 9, 8).toString(), {}, true)
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewTerminationInfoCardConfirmationEmail() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      TerminationInfoCardConfirmationEmail("member@example.com")
     }
   }
 }

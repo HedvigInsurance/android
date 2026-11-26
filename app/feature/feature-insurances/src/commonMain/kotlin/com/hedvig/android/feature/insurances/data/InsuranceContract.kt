@@ -42,6 +42,8 @@ sealed interface InsuranceContract {
 
   val supportsTermination: Boolean
 
+  val supportsWithdrawal: Boolean
+
   data class EstablishedInsuranceContract(
     override val id: String,
     override val displayName: String,
@@ -63,6 +65,7 @@ sealed interface InsuranceContract {
     override val availableAddons: List<AvailableAddon>,
     override val chipId: ChipIdState,
     override val supportsTermination: Boolean,
+    override val supportsWithdrawal: Boolean,
   ) : InsuranceContract {
     override val productVariant: ProductVariant = currentInsuranceAgreement.productVariant
     override val displayItems: List<DisplayItem> = currentInsuranceAgreement.displayItems
@@ -90,6 +93,7 @@ sealed interface InsuranceContract {
     override val basePremium: UiMoney,
     override val chipId: ChipIdState,
     override val supportsTermination: Boolean,
+    override val supportsWithdrawal: Boolean,
   ) : InsuranceContract {
     override val coInsured: List<InsuranceAgreement.CoInsured> = listOf()
     override val coOwners: List<InsuranceAgreement.CoInsured> = listOf()

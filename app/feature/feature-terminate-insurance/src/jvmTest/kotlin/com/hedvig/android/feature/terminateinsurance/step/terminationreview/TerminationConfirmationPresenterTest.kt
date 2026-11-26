@@ -19,6 +19,7 @@ import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuran
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationConfirmationKey.TerminationType
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationSuccessKey
+import com.hedvig.android.feature.terminateinsurance.ui.TerminationSubmitError
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.navigation.compose.Backstack
@@ -48,7 +49,7 @@ class TerminationConfirmationPresenterTest {
     insuranceInfo = testInsuranceInfo,
     extraCoverageItems = emptyList(),
     notificationMessage = null,
-    userError = null,
+    submitError = null,
     isSubmittingContractTermination = false,
   )
 
@@ -116,16 +117,17 @@ class TerminationConfirmationPresenterTest {
       sendEvent(TerminationConfirmationEvent.Submit)
       val states = cancelAndConsumeRemainingEvents().filterIsInstance<app.cash.turbine.Event.Item<OverviewUiState>>()
       val lastState = states.last().value
-      assertThat(lastState.userError).isEqualTo("Cannot terminate this contract")
+      assertThat(lastState.submitError)
+        .isEqualTo(TerminationSubmitError.UserError("Cannot terminate this contract"))
       assertThat(lastState.isSubmittingContractTermination).isFalse()
       assertThat(backstack.entries.last()).isInstanceOf<TerminateInsuranceKey>()
     }
   }
 
   @Test
-  fun `submit shows error message when network call fails`() = runTest {
+  fun `submit shows a generic error when the call fails without a message`() = runTest {
     val repository = FakeTerminateInsuranceRepository(
-      terminateResult = ErrorMessage("Network error").left(),
+      terminateResult = ErrorMessage().left(),
     )
     val backstack = TestBackstack(mutableListOf(TerminateInsuranceKey()))
     val presenter = createPresenter(
@@ -138,8 +140,30 @@ class TerminationConfirmationPresenterTest {
       sendEvent(TerminationConfirmationEvent.Submit)
       val states = cancelAndConsumeRemainingEvents().filterIsInstance<app.cash.turbine.Event.Item<OverviewUiState>>()
       val lastState = states.last().value
-      assertThat(lastState.userError).isEqualTo("Network error")
+      assertThat(lastState.submitError).isEqualTo(TerminationSubmitError.Generic)
       assertThat(backstack.entries.last()).isInstanceOf<TerminateInsuranceKey>()
+    }
+  }
+
+  @Test
+  fun `dismissing the error clears it`() = runTest {
+    val repository = FakeTerminateInsuranceRepository(
+      terminateResult = ErrorMessage().left(),
+    )
+    val presenter = createPresenter(
+      terminationType = TerminationType.Termination(terminationDate),
+      repository = repository,
+      backstack = TestBackstack(mutableListOf(TerminateInsuranceKey())),
+    )
+    presenter.test(initialState = initialState(TerminationType.Termination(terminationDate))) {
+      skipItems(1)
+      sendEvent(TerminationConfirmationEvent.Submit)
+      testScheduler.advanceUntilIdle()
+      assertThat(expectMostRecentItem().submitError).isEqualTo(TerminationSubmitError.Generic)
+      sendEvent(TerminationConfirmationEvent.DismissSubmitError)
+      testScheduler.advanceUntilIdle()
+      assertThat(expectMostRecentItem().submitError).isNull()
+      cancelAndIgnoreRemainingEvents()
     }
   }
 

@@ -99,6 +99,7 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
           availableAddons = emptyList(),
           chipId = ChipIdState.NotRequired,
           supportsTermination = true,
+          supportsWithdrawal = false,
         ),
       ).right(),
     )

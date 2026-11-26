@@ -116,6 +116,7 @@ import hedvig.resources.REMOVE_ADDON_DESCRIPTION
 import hedvig.resources.REMOVE_ADDON_DESCRIPTION_RENEWAL
 import hedvig.resources.Res
 import hedvig.resources.TALKBACK_DOUBLE_TAP_TO_READ_DETAILS
+import hedvig.resources.TERMINATION_FLOW_WITHDRAWAL_BUTTON
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_continue_button
 import hedvig.resources.insurance_details_move_button
@@ -133,6 +134,7 @@ internal fun YourInfoTab(
   coInsured: List<CoInsured>,
   coOwners: List<CoInsured>,
   allowChangeAddress: Boolean,
+  allowWithdrawal: Boolean,
   allowTerminatingInsurance: Boolean,
   allowEditCoInsured: Boolean,
   allowEditCoOwners: Boolean,
@@ -167,6 +169,9 @@ internal fun YourInfoTab(
   modifier: Modifier = Modifier,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
+  // Withdrawal goes through the termination flow, which only offers contracts that can be terminated.
+  val showWithdrawButton = allowWithdrawal && allowTerminatingInsurance
+  val showChangeAddressInEditSheet = allowChangeAddress && showWithdrawButton
   val editYourInfoBottomSheet = rememberHedvigBottomSheetState<Unit>()
   HedvigBottomSheet(editYourInfoBottomSheet) {
     EditInsuranceBottomSheetContent(
@@ -176,6 +181,7 @@ internal fun YourInfoTab(
       allowChangeTier = allowChangeTier,
       isPaymentProtection = isPaymentProtection,
       allowRemovingAddon = allowRemovingAddon,
+      allowChangeAddress = showChangeAddressInEditSheet,
       onChangeTierClick = {
         editYourInfoBottomSheet.dismiss()
         onChangeTierClick()
@@ -198,6 +204,10 @@ internal fun YourInfoTab(
       onRemoveAddonClick = {
         editYourInfoBottomSheet.dismiss()
         navigateToRemoveAddon(ContractId(contractId), null)
+      },
+      onChangeAddressClick = {
+        editYourInfoBottomSheet.dismiss()
+        onChangeAddressClick()
       },
     )
   }
@@ -393,7 +403,8 @@ internal fun YourInfoTab(
         if (allowEditCoInsured ||
           allowEditCoOwners ||
           allowChangeTier ||
-          allowTerminatingInsurance
+          allowTerminatingInsurance ||
+          showChangeAddressInEditSheet
         ) {
           HedvigButton(
             text = stringResource(Res.string.CONTRACT_EDIT_INFO_LABEL),
@@ -405,7 +416,17 @@ internal fun YourInfoTab(
               .fillMaxWidth(),
           )
         }
-        if (allowChangeAddress) {
+        if (showWithdrawButton) {
+          HedvigButton(
+            text = stringResource(Res.string.TERMINATION_FLOW_WITHDRAWAL_BUTTON),
+            buttonStyle = Ghost,
+            enabled = true,
+            onClick = { onCancelInsuranceClick() },
+            modifier = Modifier
+              .padding(horizontal = 16.dp)
+              .fillMaxWidth(),
+          )
+        } else if (allowChangeAddress) {
           HedvigButton(
             text = stringResource(Res.string.insurance_details_move_button),
             buttonStyle = Ghost,
@@ -955,6 +976,7 @@ private fun PreviewYourInfoTab(
         },
         coOwners = listOf(),
         allowChangeAddress = true,
+        allowWithdrawal = false,
         allowTerminatingInsurance = true,
         allowEditCoInsured = true,
         allowEditCoOwners = false,

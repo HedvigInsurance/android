@@ -1,0 +1,25 @@
+query ContractWithdrawal($contractId: UUID!) {
+  currentMember {
+    id
+    email
+    contractWithdrawal(contractId: $contractId) {
+      statusText
+      action {
+        ... on TerminationFlowActionTerminateWithDate {
+          minDate
+          maxDate
+          extraCoverage {
+            displayName
+            displayValue
+          }
+        }
+        ... on TerminationFlowActionDeleteInsurance {
+          extraCoverage {
+            displayName
+            displayValue
+          }
+        }
+      }
+    }
+  }
+}
