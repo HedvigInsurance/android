@@ -105,6 +105,22 @@ internal class YearInReviewPresenterTest {
   }
 
   @Test
+  fun `going to a story jumps straight to it and ignores stories that do not exist`() = runTest {
+    YearInReviewPresenter(FakeGetYearInReviewUseCase(YearInReview(stories).right()), enabledFeatureManager)
+      .test(YearInReviewUiState.Loading) {
+        awaitContent()
+
+        sendEvent(YearInReviewEvent.GoTo(2))
+        assertThat(awaitContent { it.currentIndex == 2 }.progress).isEqualTo(0f)
+
+        sendEvent(YearInReviewEvent.GoTo(5))
+        sendEvent(YearInReviewEvent.GoTo(0))
+        awaitContent { it.currentIndex == 0 }
+        cancelAndIgnoreRemainingEvents()
+      }
+  }
+
+  @Test
   fun `with an infinite story duration a story waits for the member to move on`() = runTest {
     YearInReviewPresenter(FakeGetYearInReviewUseCase(YearInReview(stories).right()), enabledFeatureManager)
       .test(YearInReviewUiState.Loading) {

@@ -72,6 +72,16 @@ internal class YearInReviewPresenter(
           isPaused = false
         }
 
+        is YearInReviewEvent.GoTo -> {
+          if (event.index in 0..lastIndex) {
+            Snapshot.withMutableSnapshot {
+              currentIndex = event.index
+              progress = 0f
+              restartCount++
+            }
+          }
+        }
+
         is YearInReviewEvent.SetStoryDuration -> {
           storyDuration = event.duration
         }
@@ -141,6 +151,8 @@ internal sealed interface YearInReviewEvent {
   data object Resume : YearInReviewEvent
 
   data object Retry : YearInReviewEvent
+
+  data class GoTo(val index: Int) : YearInReviewEvent
 
   /** How long each story stays up before moving on by itself. */
   data class SetStoryDuration(val duration: Duration) : YearInReviewEvent
