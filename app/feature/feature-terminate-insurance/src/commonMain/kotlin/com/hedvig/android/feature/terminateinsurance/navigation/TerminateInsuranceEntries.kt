@@ -48,6 +48,7 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceEntries(
   navigateToMovingFlow: () -> Unit,
   openPlayStore: () -> Unit,
   navigateToInsurances: () -> Unit,
+  navigateToContactInfo: () -> Unit,
   closeTerminationFlow: () -> Unit,
   redirectToChangeTierFlow: (Pair<String, IntentOutput>) -> Unit,
 ) {
@@ -130,6 +131,7 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceEntries(
     TerminationWithdrawalDestination(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
+      navigateToContactInfo = dropUnlessResumed { navigateToContactInfo() },
       closeTerminationFlow = closeTerminationFlow,
     )
   }

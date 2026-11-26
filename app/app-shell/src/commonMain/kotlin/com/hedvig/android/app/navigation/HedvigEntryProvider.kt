@@ -442,6 +442,7 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
       backstack.closeTerminationFlow()
       backstack.selectTopLevel(TopLevelTab.Insurances)
     },
+    navigateToContactInfo = { backstack.add(ContactInfoKey) },
     navigateToMovingFlow = {
       backstack.replaceTerminationFlow(
         SelectContractForMovingKey(MovingSource.TERMINATION),
