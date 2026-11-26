@@ -861,24 +861,6 @@ extension on `IosGraphHolder` that returns it via `component<...>()`, and adds i
 clients keep no normalized cache, so `watch`, `safeWatch` and `apolloStore` are not available there. The worked example
 is the `IosGraphHolder` KDoc in `:ios-data-bridge`.
 
-### Export a module or annotate a type
-
-A type does not need its module exported to be usable from Swift. Kotlin adds every type that an exported API mentions
-in a signature to the framework header, wherever it lives. The only difference is the name: a type from a module that is
-not exported gets the module name as a prefix (`Core_datastore_publicDeviceIdFetcher`). Two ways to give it a clean name:
-
-- **Export the module** (`projectsToExport`). Its whole public API goes into the header, the linker keeps all of it and
-  everything it reaches, and all of it becomes callable from Swift. Right for a module whose purpose is to serve iOS,
-  such as one holding reads.
-- **Annotate the type** with `@ObjCName(name = "HedvigSharedX", swiftName = "X", exact = true)`. Only that type comes
-  in. Right for the odd type Swift has to name or implement from a module that otherwise has nothing for iOS
-  (`Flavor`, `DeviceIdFetcher`, `AccessTokenFetcher`). The `HedvigShared` prefix on the Objective-C name avoids clashes,
-  since Objective-C has no namespaces.
-
-Decide by what the module's public API reaches, not by its size: exporting `network-clients` cost about 2.9 MB because it
-reaches Apollo, Arrow and Okio, while a small leaf module costs close to nothing. When unsure, measure the shipped
-framework both ways. The budget is 20 MB, so prefer whichever reads better unless the export is expensive.
-
 ## Debugging
 
 ### Seeing a composable without a device
