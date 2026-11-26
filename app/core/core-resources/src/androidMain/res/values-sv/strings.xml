@@ -1147,7 +1147,7 @@
   <string name="TERMINATION_FLOW_TODAY">Idag</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_BUTTON">Ångra försäkringen</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_CONFIRM_BUTTON">Ja, ångra försäkringen</string>
-  <string name="TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE">Försäkringen är ångrad</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE">Du har ångrat försäkringen</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_TITLE">Ångra försäkringen</string>
   <string name="TERMINATION_KEEP_INSURANCE_BUTTON">Behåll försäkring</string>
   <string name="TERMINATION_NOT_SUCCESSFUL_TITLE">Uppsägningen misslyckades</string>

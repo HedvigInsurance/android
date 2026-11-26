@@ -1147,7 +1147,7 @@
   <string name="TERMINATION_FLOW_TODAY">Today</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_BUTTON">Withdraw insurance</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_CONFIRM_BUTTON">Yes, withdraw insurance</string>
-  <string name="TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE">Insurance is withdrawed</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE">Your insurance is cancelled</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_TITLE">Withdraw insurance</string>
   <string name="TERMINATION_KEEP_INSURANCE_BUTTON">Keep insurance</string>
   <string name="TERMINATION_NOT_SUCCESSFUL_TITLE">Cancellation unsuccessful</string>
