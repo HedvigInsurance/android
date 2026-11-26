@@ -36,7 +36,7 @@ internal class GetYearInReviewUseCaseImpl(
         id = index.toString(),
         title = article.title,
         description = article.description,
-        imageUrl = article.fileUrl,
+        media = article.fileUrl?.let(::yearInReviewMedia),
         action = article.action?.let { YearInReviewAction(title = it.title, url = it.url) },
       )
     }
@@ -44,3 +44,15 @@ internal class GetYearInReviewUseCaseImpl(
     YearInReview(stories)
   }
 }
+
+/** The backend does not say what kind of file an article has, so a video is told apart by its file extension. */
+internal fun yearInReviewMedia(url: String): YearInReviewMedia {
+  val extension = url.substringBefore('?').substringBefore('#').substringAfterLast('/').substringAfterLast('.', "")
+  return if (extension.lowercase() in videoExtensions) {
+    YearInReviewMedia.Video(url)
+  } else {
+    YearInReviewMedia.Image(url)
+  }
+}
+
+private val videoExtensions = setOf("mp4", "mov", "webm")

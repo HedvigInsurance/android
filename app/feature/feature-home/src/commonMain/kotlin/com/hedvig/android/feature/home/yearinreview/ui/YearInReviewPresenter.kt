@@ -105,6 +105,7 @@ internal class YearInReviewPresenter(
         stories = loadedStories,
         currentIndex = currentIndex,
         progress = progress,
+        isPaused = isPaused,
       )
 
       hasError -> YearInReviewUiState.Failure
@@ -136,6 +137,7 @@ internal sealed interface YearInReviewUiState {
     val currentIndex: Int,
     /** How far the current story's timer has run, from 0 to 1. */
     val progress: Float,
+    val isPaused: Boolean,
   ) : YearInReviewUiState {
     val currentStory: YearInReviewStory = stories[currentIndex]
     val isLastStory: Boolean = currentIndex == stories.lastIndex

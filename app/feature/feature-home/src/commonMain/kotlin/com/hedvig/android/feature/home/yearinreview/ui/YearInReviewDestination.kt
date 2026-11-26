@@ -44,6 +44,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -58,6 +59,7 @@ import com.hedvig.android.data.contract.pillowResource
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigMarkdownText
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -72,6 +74,7 @@ import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.home.yearinreview.data.YearInReviewAction
+import com.hedvig.android.feature.home.yearinreview.data.YearInReviewMedia
 import com.hedvig.android.feature.home.yearinreview.data.YearInReviewStory
 import hedvig.resources.PROFILE_ABOUT_APP_TITLE
 import hedvig.resources.Res
@@ -129,7 +132,7 @@ private fun YearInReviewScreen(
       is YearInReviewUiState.Content -> {
         // Previews cannot load images, so they skip the preload.
         val imagesLoaded = LocalInspectionMode.current ||
-          rememberImagesLoaded(uiState.stories.mapNotNull { it.imageUrl }, imageLoader)
+          rememberImagesLoaded(uiState.stories.mapNotNull { (it.media as? YearInReviewMedia.Image)?.url }, imageLoader)
         if (!imagesLoaded) {
           StoriesLoading()
         } else {
@@ -271,6 +274,7 @@ private fun StoriesContent(
           story = story,
           imageLoader = imageLoader,
           isLastStory = uiState.isLastStory,
+          isPaused = uiState.isPaused,
           openUrl = openUrl,
           close = close,
           modifier = Modifier.fillMaxSize(),
@@ -325,6 +329,7 @@ private fun StoryPage(
   story: YearInReviewStory,
   imageLoader: ImageLoader,
   isLastStory: Boolean,
+  isPaused: Boolean,
   openUrl: (String) -> Unit,
   close: () -> Unit,
   modifier: Modifier = Modifier,
@@ -361,11 +366,12 @@ private fun StoryPage(
         .fillMaxWidth()
         .alpha(titleAndImageAlpha.value),
     )
-    if (story.imageUrl != null) {
+    if (story.media != null) {
       Spacer(Modifier.height(16.dp))
-      StoryImage(
-        imageUrl = story.imageUrl,
+      StoryMedia(
+        media = story.media,
         imageLoader = imageLoader,
+        isPaused = isPaused,
         modifier = Modifier
           .fillMaxWidth()
           // Every image is shown as a square, cropped to fill it.
@@ -380,10 +386,10 @@ private fun StoryPage(
         fadeIn(tween(durationMillis = 500, delayMillis = 300)),
     ) {
       Column {
-        HedvigText(
-          text = story.description,
-          color = HedvigTheme.colorScheme.textSecondary,
-          style = HedvigTheme.typography.bodyMedium,
+        HedvigMarkdownText(
+          content = story.description,
+          style = HedvigTheme.typography.bodyMedium.copy(color = HedvigTheme.colorScheme.textSecondary),
+          strongStyle = SpanStyle(color = HedvigTheme.colorScheme.textPrimary),
           modifier = Modifier.padding(top = 16.dp),
         )
         story.action?.let { action ->
@@ -411,17 +417,28 @@ private fun StoryPage(
 }
 
 @Composable
-private fun StoryImage(imageUrl: String, imageLoader: ImageLoader, modifier: Modifier = Modifier) {
+private fun StoryMedia(
+  media: YearInReviewMedia,
+  imageLoader: ImageLoader,
+  isPaused: Boolean,
+  modifier: Modifier = Modifier,
+) {
   if (LocalInspectionMode.current) {
     Box(modifier.background(HedvigTheme.colorScheme.surfacePrimary))
-  } else {
-    AsyncImage(
-      model = imageUrl,
+    return
+  }
+  when (media) {
+    is YearInReviewMedia.Image -> AsyncImage(
+      model = media.url,
       contentDescription = null,
       imageLoader = imageLoader,
       contentScale = ContentScale.Crop,
       modifier = modifier,
     )
+
+    is YearInReviewMedia.Video -> Box(modifier.background(HedvigTheme.colorScheme.surfacePrimary)) {
+      YearInReviewVideo(url = media.url, isPaused = isPaused, modifier = Modifier.fillMaxSize())
+    }
   }
 }
 
@@ -462,21 +479,21 @@ private val previewStories = listOf(
     id = "0",
     title = "Du har varit med oss i 412 dagar",
     description = "Tack för att du är medlem hos Hedvig.",
-    imageUrl = "https://example.com/first.png",
+    media = YearInReviewMedia.Image("https://example.com/first.png"),
     action = null,
   ),
   YearInReviewStory(
     id = "1",
     title = "Antal hanterade skador",
-    description = "Vi hjälpte till med 29 125 skador under året. Hela 2 000 fler än förra året.",
-    imageUrl = "https://example.com/second.gif",
+    description = "**Vi hjälpte till med 29 125 skador under året.** Hela 2 000 fler än förra året.",
+    media = YearInReviewMedia.Video("https://example.com/second.mp4"),
     action = null,
   ),
   YearInReviewStory(
     id = "2",
     title = "Djur-vabb",
     description = "Under året har 71 procent fler valt Djurförsäkring Premium, där ersättning för djur-vabb ingår.",
-    imageUrl = null,
+    media = null,
     action = YearInReviewAction(title = "Läs mer", url = "https://example.com"),
   ),
 )
@@ -485,8 +502,8 @@ private class YearInReviewUiStatePreviewProvider : CollectionPreviewParameterPro
   listOf(
     YearInReviewUiState.Loading,
     YearInReviewUiState.Failure,
-    YearInReviewUiState.Content(stories = previewStories, currentIndex = 0, progress = 0.3f),
-    YearInReviewUiState.Content(stories = previewStories, currentIndex = 1, progress = 0.6f),
-    YearInReviewUiState.Content(stories = previewStories, currentIndex = 2, progress = 1f),
+    YearInReviewUiState.Content(stories = previewStories, currentIndex = 0, progress = 0.3f, isPaused = false),
+    YearInReviewUiState.Content(stories = previewStories, currentIndex = 1, progress = 0.6f, isPaused = false),
+    YearInReviewUiState.Content(stories = previewStories, currentIndex = 2, progress = 1f, isPaused = false),
   ),
 )

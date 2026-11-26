@@ -21,7 +21,7 @@ internal class YearInReviewPresenterTest {
       id = "$index",
       title = "title $index",
       description = "description $index",
-      imageUrl = "https://example.com/$index.png",
+      media = null,
       action = null,
     )
   }

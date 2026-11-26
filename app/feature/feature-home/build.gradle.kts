@@ -63,6 +63,10 @@ kotlin {
       implementation(projects.pullrefresh)
       implementation(projects.uiEmergency)
     }
+    androidMain.dependencies {
+      implementation(libs.media3.exoplayer)
+      implementation(libs.media3.ui)
+    }
     jvmTest.dependencies {
       implementation(libs.apollo.testingSupport)
       implementation(libs.assertK)
