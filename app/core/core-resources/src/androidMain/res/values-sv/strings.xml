@@ -1146,6 +1146,9 @@
   <string name="TERMINATION_FLOW_SUMMARY_SUBTITLE">Granska och bekräfta</string>
   <string name="TERMINATION_FLOW_TODAY">Idag</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_BUTTON">Ångra försäkringen</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_CHANGE_EMAIL_BODY_1">Om du behöver ändra e-postadressen som bekräftelsen skickas till kan du ändra den %s. Observera att det ändrar din email för alla framtida utskick.</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_CHANGE_EMAIL_BODY_2">här</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_CHANGE_EMAIL_TITLE">Vill du ändra e-post?</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_CONFIRMATION_SENT_TO">Bekräftelsen skickas till</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_CONFIRM_BUTTON">Ja, ångra försäkringen</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE">Du har ångrat försäkringen</string>

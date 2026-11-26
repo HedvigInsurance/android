@@ -1145,6 +1145,9 @@
   <string name="TERMINATION_FLOW_SUMMARY_SUBTITLE">Review and confirm</string>
   <string name="TERMINATION_FLOW_TODAY">Today</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_BUTTON">Withdraw insurance</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_CHANGE_EMAIL_BODY_1">If you need to change the email address the confirmation is sent to, you can change it %1$s. Please note that this changes your email address for all future communications.</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_CHANGE_EMAIL_BODY_2">here</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_CHANGE_EMAIL_TITLE">Do you want to change email?</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_CONFIRMATION_SENT_TO">The confirmation is sent to</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_CONFIRM_BUTTON">Yes, withdraw insurance</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE">Your insurance is cancelled</string>

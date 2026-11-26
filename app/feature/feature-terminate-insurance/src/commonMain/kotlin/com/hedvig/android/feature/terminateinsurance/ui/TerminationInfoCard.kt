@@ -73,13 +73,17 @@ internal fun TerminationInfoCardDate(
 }
 
 @Composable
-internal fun TerminationInfoCardConfirmationEmail(email: String, modifier: Modifier = Modifier) {
+internal fun TerminationInfoCardConfirmationEmail(
+  email: String,
+  onClick: (() -> Unit)?,
+  modifier: Modifier = Modifier,
+) {
   TerminationInfoCardField(
     // TODO: Add "Confirmation will be sent to" / "Bekräftelsen skickas till" to Lokalise
     label = "Confirmation will be sent to",
     value = email,
     isPlaceholder = false,
-    onClick = null,
+    onClick = onClick,
     isLocked = true,
     modifier = modifier,
   )
@@ -179,7 +183,7 @@ private fun PreviewTerminationInfoCardDateNotLocked() {
 private fun PreviewTerminationInfoCardConfirmationEmail() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      TerminationInfoCardConfirmationEmail("member@example.com")
+      TerminationInfoCardConfirmationEmail("member@example.com", {})
     }
   }
 }
