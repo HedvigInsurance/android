@@ -12,13 +12,16 @@ import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.termination.data.GetTerminatableContractsUseCase
 import com.hedvig.android.data.termination.data.TerminatableInsurance
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationChooseActionKey
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationSurveyFirstStepKey
+import com.hedvig.android.feature.terminateinsurance.navigation.replaceTerminationFlow
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
 import dev.zacsweers.metro.Assisted
@@ -40,7 +43,7 @@ internal class ChooseInsuranceToTerminateViewModel @AssistedInject constructor(
     ),
   )
 
-private class ChooseInsuranceToTerminatePresenter(
+internal class ChooseInsuranceToTerminatePresenter(
   private val insuranceId: String?,
   private val getTerminatableContractsUseCase: GetTerminatableContractsUseCase,
   private val terminateInsuranceRepository: TerminateInsuranceRepository,
@@ -51,7 +54,13 @@ private class ChooseInsuranceToTerminatePresenter(
     lastState: ChooseInsuranceToTerminateStepUiState,
   ): ChooseInsuranceToTerminateStepUiState {
     var loadIteration by remember { mutableIntStateOf(0) }
-    var terminatableInsuranceToFetchNextStepFor: TerminatableInsurance? by remember { mutableStateOf(null) }
+    var nextStepRequest: NextStepRequest? by remember { mutableStateOf(null) }
+    // The presenter restarts when the screen is observed again. A Success lastState means the member has already
+    // seen the choose list, so skipping it now would throw them forward from a screen they navigated back to.
+    var hasTriedSkippingChooseStep by remember {
+      mutableStateOf(lastState is ChooseInsuranceToTerminateStepUiState.Success)
+    }
+    var isSkippingChooseStep by remember { mutableStateOf(false) }
     val initialSelected = if (lastState is ChooseInsuranceToTerminateStepUiState.Success) {
       lastState.selectedInsurance?.id
     } else {
@@ -68,7 +77,7 @@ private class ChooseInsuranceToTerminatePresenter(
         }
 
         is ChooseInsuranceToTerminateEvent.SubmitSelectedInsuranceToTerminate -> {
-          terminatableInsuranceToFetchNextStepFor = event.insurance
+          nextStepRequest = NextStepRequest(event.insurance, skipsChooseStep = false)
         }
 
         is ChooseInsuranceToTerminateEvent.SelectInsurance -> {
@@ -84,11 +93,23 @@ private class ChooseInsuranceToTerminatePresenter(
       }
     }
 
-    LaunchedEffect(terminatableInsuranceToFetchNextStepFor) {
+    LaunchedEffect(nextStepRequest) {
       val currentStateValue = currentState as? ChooseInsuranceToTerminateStepUiState.Success ?: return@LaunchedEffect
-      val terminatableInsurance = terminatableInsuranceToFetchNextStepFor
-      if (terminatableInsurance == null) {
-        currentState = currentStateValue.copy(navigationStepFailedToLoad = false)
+      val request = nextStepRequest ?: return@LaunchedEffect
+      val terminatableInsurance = request.insurance
+      // A skipped choose step must not stay underneath, so Back from the next step leaves the flow.
+      val navigateToNextStep: (HedvigNavKey) -> Unit = { key ->
+        if (request.skipsChooseStep) backstack.replaceTerminationFlow(key) else backstack.add(key)
+      }
+      val commonParams = TerminationGraphParameters(
+        terminatableInsurance.id,
+        terminatableInsurance.displayName,
+        terminatableInsurance.contractExposure,
+        terminatableInsurance.contractGroup,
+      )
+      if (terminatableInsurance.supportsWithdrawal) {
+        navigateToNextStep(TerminationChooseActionKey(commonParams))
+        nextStepRequest = null
         return@LaunchedEffect
       }
       val loadingState = currentStateValue.copy(
@@ -100,28 +121,24 @@ private class ChooseInsuranceToTerminatePresenter(
         .getTerminationSurvey(terminatableInsurance.id)
         .fold(
           ifLeft = {
+            isSkippingChooseStep = false
             loadingState.copy(
               navigationStepFailedToLoad = true,
               isNavigationStepLoading = false,
             )
           },
           ifRight = { surveyData ->
-            backstack.add(
+            navigateToNextStep(
               TerminationSurveyFirstStepKey(
                 options = surveyData.options,
                 action = surveyData.action,
-                commonParams = TerminationGraphParameters(
-                  terminatableInsurance.id,
-                  terminatableInsurance.displayName,
-                  terminatableInsurance.contractExposure,
-                  terminatableInsurance.contractGroup,
-                ),
+                commonParams = commonParams,
               ),
             )
             loadingState.copy(isNavigationStepLoading = false)
           },
         )
-      terminatableInsuranceToFetchNextStepFor = null
+      nextStepRequest = null
     }
 
     LaunchedEffect(loadIteration) {
@@ -144,6 +161,14 @@ private class ChooseInsuranceToTerminatePresenter(
               } else {
                 eligibleInsurances.firstOrNull { it.id == initialSelected }
               }
+              // The only eligible contract is pre-selected even when it is not the one the member asked for, but
+              // the member must then see the list rather than be taken into another contract's flow.
+              val isRequestedInsurance = insuranceId == null || selectedInsurance?.id == insuranceId
+              if (selectedInsurance != null && isRequestedInsurance && !hasTriedSkippingChooseStep) {
+                hasTriedSkippingChooseStep = true
+                isSkippingChooseStep = true
+                nextStepRequest = NextStepRequest(selectedInsurance, skipsChooseStep = true)
+              }
               ChooseInsuranceToTerminateStepUiState.Success(
                 insuranceList = eligibleInsurances,
                 selectedInsurance = selectedInsurance,
@@ -155,9 +180,14 @@ private class ChooseInsuranceToTerminatePresenter(
         )
       }
     }
-    return currentState
+    return if (isSkippingChooseStep) ChooseInsuranceToTerminateStepUiState.Loading else currentState
   }
 }
+
+private data class NextStepRequest(
+  val insurance: TerminatableInsurance,
+  val skipsChooseStep: Boolean,
+)
 
 internal sealed interface ChooseInsuranceToTerminateEvent {
   data class SelectInsurance(val insuranceId: String) :

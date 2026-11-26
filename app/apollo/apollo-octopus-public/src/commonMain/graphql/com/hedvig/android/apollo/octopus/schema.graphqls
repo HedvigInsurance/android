@@ -809,51 +809,6 @@ enum CarTrialProduct {
   HEDVIG_60_DAYS
   HEDVIG_14_DAYS
 }
-union ChangeMileageCreateIntentOutput = ChangeMileageIntent|UserError
-type ChangeMileageDisplayItem {
-  displayTitle: String!
-  displayValue: String!
-  """
-   The value without the change. Set only when this quote changes the row. 
-  """
-  previousDisplayValue: String
-}
-type ChangeMileageIntent {
-  """
-   The date the change will take effect. Tomorrow, or the start date of an upcoming change or renewal if there is one. 
-  """
-  activationDate: Date!
-  """
-   Total monthly cost of the contract on the activation date without the change (incl. addons) 
-  """
-  currentTotalCost: ItemCost!
-  """
-   Sorted ascending by mileage. Exactly one has isCurrent = true. 
-  """
-  quotes: [ChangeMileageQuote!]!
-}
-type ChangeMileageQuote {
-  """
-  The quote id. For the quote with isCurrent = true no quote is created, and this is the id of the agreement that is changed.
-  """
-  id: ID!
-  """
-   The mileage option, ex. "1 000 mil", "Över 2 500 mil" 
-  """
-  displayName: String!
-  """
-   Whether this is the mileage the contract already has on the activation date 
-  """
-  isCurrent: Boolean!
-  """
-   Total monthly contract cost if this mileage is chosen (incl. addons) 
-  """
-  totalCost: ItemCost!
-  """
-   Summary rows, ex. mileage, registration number and coverage level 
-  """
-  displayItems: [ChangeMileageDisplayItem!]!
-}
 """
 Returns changed price for an addon.
 """
@@ -1126,6 +1081,70 @@ type ChatMessageTextAction {
   url: Url!
   title: String!
 }
+type CioMessageContent {
+  """
+  The rendered message body.
+  """
+  content: String!
+  """
+  Media type of `content`, such as `text/html`.
+  """
+  contentType: String!
+  """
+  Email "preview text". Null for non-email messages, and for messages cached before we stored it.
+  """
+  preheader: String
+  messageType: CioMessageType
+}
+"""
+A Customer.io delivery. Only the fields worth showing are exposed; we store more than this.
+"""
+type CioMessageDetails {
+  """
+  Our own id for this row.
+  """
+  id: ID!
+  """
+  The Customer.io delivery id. Pass this to `Member.cioMessageContent`.
+  """
+  externalMessageId: String!
+  """
+  The channel the message was sent over. Null for types we don't surface, such as push.
+  """
+  messageType: CioMessageType
+  subject: String
+  """
+  Email "preview text". Only emails have one, and only when the template sets it.
+  """
+  preheader: String
+  """
+  The address the message was sent from.
+  """
+  sender: String
+  """
+  ISO-8601 instant for when Customer.io created the delivery.
+  """
+  timestamp: String!
+}
+input CioMessageFilter {
+  """
+  Only return messages sent over this channel.
+  """
+  messageType: CioMessageType
+  """
+  Oldest day to return messages from. Inclusive, read in Europe/Stockholm.
+  """
+  from: Date
+  """
+  Newest day to return messages from. Inclusive, so the whole day counts.
+  """
+  to: Date
+}
+enum CioMessageType {
+  EMAIL
+  SMS
+  KIVRA
+}
 type Claim {
   id: ID!
   """
@@ -1148,13 +1167,17 @@ type Claim {
   claimType: String
   incidentDate: Date @deprecated(reason: "Use displayItems instead")
   showClaimClosedFlow: Boolean!
+  """
+  True once the member has submitted a rating for this claim. Dismissals do not count.
+  """
+  hasSubmittedRating: Boolean!
   appealInstructionsUrl: String
   isUploadingFilesEnabled: Boolean!
   infoText: String
   displayItems: [ClaimDisplayItem!]!
   contractId: String
   """
-  Every follow-up sent for this claim, oldest first, open and completed.
+  Follow-ups sent for this claim, oldest first. Drafts and withdrawn ones are never listed.
   """
   followups: [ClaimFollowup!]!
   """
@@ -1203,112 +1226,121 @@ type ClaimFile {
 }
 type ClaimFollowup {
   id: ID!
+  claimId: ID!
   status: ClaimFollowupStatus!
-  progress: Float!
   """
-  When the member confirmed the answers; null until COMPLETED.
+  When the member sent the answers; null until COMPLETED.
   """
   completedAt: DateTime
-  """
-  Once COMPLETED it is the summary step, read-only.
-  """
-  currentStep: ClaimFollowupStep!
-  """
-  Answered and skipped steps in question order, answers in currentValue / currentAudio / currentFiles.
-  """
-  previousSteps: [ClaimFollowupStep!]!
+  questions: [ClaimFollowupQuestion!]!
 }
 type ClaimFollowupBinary {
   """
-  The answer of a previous or reopened step: "true" or "false".
+  "true" or "false".
   """
   currentValue: String
 }
 type ClaimFollowupDate {
   """
-  The answer of a previous or reopened step, as yyyy-MM-dd.
+  yyyy-MM-dd.
   """
   currentValue: String
+  """
+  Advisory earliest date as yyyy-MM-dd: the app warns before it, the server accepts any date.
+  """
+  min: String
+  """
+  Advisory latest date as yyyy-MM-dd: the app warns after it, the server accepts any date.
+  """
+  max: String
 }
 type ClaimFollowupFile {
-  """
-  The staged upload id; send it back to keep the file.
-  """
   id: ID!
   url: Url!
   contentType: String!
   fileName: String!
+  relevance: ClaimFollowupFileRelevance!
+}
+"""
+UNKNOWN: not checked (not an image, not a file question, or the check failed).
+"""
+enum ClaimFollowupFileRelevance {
+  MATCH
+  MISMATCH
+  UNKNOWN
 }
 type ClaimFollowupFileUpload {
   uploadUri: String!
-  """
-  The files of a previous or reopened step, send their ids back to keep them; empty otherwise.
-  """
   currentFiles: [ClaimFollowupFile!]!
 }
 type ClaimFollowupFreeText {
+  """
+  Where to upload a recording.
+  """
   uploadUri: String!
   minLength: Int!
   maxLength: Int!
-  """
-  The typed answer of a previous or reopened step.
-  """
   currentValue: String
   """
-  The recording of a previous or reopened step; send its id back to keep it.
+  A spoken answer; set instead of currentValue.
   """
   currentAudio: ClaimFollowupFile
 }
 type ClaimFollowupNumber {
   """
-  The answer of a previous or reopened step, as stored.
+  A whole number.
   """
   currentValue: String
+  """
+  Advisory lower bound: the app warns below it, the server accepts any whole number.
+  """
+  min: Int
+  """
+  Advisory upper bound: the app warns above it, the server accepts any whole number.
+  """
+  max: Int
 }
 type ClaimFollowupOutput {
-  task: ClaimFollowup
+  followup: ClaimFollowup
   userError: UserError
 }
 type ClaimFollowupPhoneNumber {
-  """
-  The answer of a previous or reopened step, as stored.
-  """
   currentValue: String
+}
+type ClaimFollowupQuestion {
+  id: ID!
+  text: String!
+  """
+  An optional line shown under the question, such as which forms of a document are fine.
+  """
+  hint: String
+  """
+  A short label for this question's own pass button, such as "I don't have a receipt". Null means the app shows its generic one.
+  """
+  cantAnswerLabel: String
+  state: ClaimFollowupQuestionState!
+  """
+  What the member wrote when passing on the question; null unless state is CANT_ANSWER, and optional even then.
+  """
+  cantAnswerComment: String
+  """
+  The input for this question, carrying the current answer when there is one.
+  """
+  content: ClaimFollowupQuestionContent!
+}
+union ClaimFollowupQuestionContent = ClaimFollowupBinary|ClaimFollowupFreeText|ClaimFollowupDate|ClaimFollowupNumber|ClaimFollowupPhoneNumber|ClaimFollowupFileUpload
+"""
+TODO: untouched. ANSWERED: has an answer. CANT_ANSWER: the member passed on it.
+"""
+enum ClaimFollowupQuestionState {
+  TODO
+  ANSWERED
+  CANT_ANSWER
 }
 enum ClaimFollowupStatus {
   SUBMITTED
-  OPENED
   COMPLETED
 }
-type ClaimFollowupStep {
-  id: ID!
-  text: String!
-  isSkippable: Boolean!
-  isRegrettable: Boolean!
-  content: ClaimFollowupStepContent!
-}
-union ClaimFollowupStepContent = ClaimFollowupBinary|ClaimFollowupFreeText|ClaimFollowupDate|ClaimFollowupNumber|ClaimFollowupPhoneNumber|ClaimFollowupFileUpload|ClaimFollowupSummary
-type ClaimFollowupSummary {
-  answers: [ClaimFollowupSummaryAnswer!]!
-}
-type ClaimFollowupSummaryAnswer {
-  question: String!
-  """
-  Null when the member skipped the step.
-  """
-  value: ClaimFollowupSummaryValue
-}
-type ClaimFollowupSummaryAudio {
-  url: Url!
-  transcript: String
-}
-type ClaimFollowupSummaryFiles {
-  files: [ClaimFollowupFile!]!
-}
-type ClaimFollowupSummaryText {
-  text: String!
-}
-union ClaimFollowupSummaryValue = ClaimFollowupSummaryText|ClaimFollowupSummaryAudio|ClaimFollowupSummaryFiles
 """
 Root type expressing the entire flow for members trying to report a new claim.
 """
@@ -1794,6 +1826,11 @@ type Contract {
   """
   terminationDate: Date
   """
+  The upcoming date this contract renews, i.e. when the next contract year starts.
+  Null if there is no upcoming renewal, e.g. if the contract terminates before it.
+  """
+  renewalDate: Date
+  """
   Whether or not this contract has termination status because of missed payments
   """
   terminationDueToMissedPayments: Boolean!
@@ -1843,9 +1880,10 @@ type Contract {
   """
   supportsChangeTier: Boolean!
   """
-  Whether the yearly mileage on this contract can be changed through the 'ChangeMileage' API.
+  Whether or not this contract can still be withdrawn from (cancelled with right of withdrawal): it was created
+  within the last 14 days, the member can terminate it, it hasn't ended yet and it wasn't already withdrawn.
   """
-  supportsChangeMileage: Boolean!
+  supportsWithdrawal: Boolean!
   """
   Whether or not this contract can be terminated by user
   """
@@ -2029,6 +2067,18 @@ type ContractSelfChangeBlockers {
   contract is in a renewal period or there exists future changes on the contract.
   """
   coInsured: ContractSelfChangeBlocker
+}
+type ContractWithdrawal {
+  """
+   Translated text describing the state of the contract: active (with its start date), active in the future, or pending. 
+  """
+  statusText: String!
+  """
+  Same action types as the termination survey. An active contract gets TerminationFlowActionTerminateWithDate
+  with minDate = maxDate = the date it ends (today, or tomorrow if it started today). A contract that has not
+  started yet gets TerminationFlowActionDeleteInsurance.
+  """
+  action: TerminationFlowAction!
 }
 type Conversation {
   id: UUID!
@@ -2231,6 +2281,9 @@ enum CurrencyCode {
   """
   NOK
 }
+"""
+An ISO-8601 calendar date, such as `2026-01-15`.
+"""
 scalar Date
 scalar DateTime
 type Deductible {
@@ -2254,15 +2307,6 @@ type DirectDebitResponse2 {
 input DisplayItemOptions {
   hidePrice: Boolean! = false
   hideAddons: Boolean! = false
-}
-type EmailMessage {
-  id: ID!
-  recipient: String
-  subject: String
-  body: String
-  deliveryType: String
-  createdAt: DateTime
-  category: String
 }
 """
 Employment type for Payment Protection, mirroring underwriter's `SwedishPaymentProtection.EmploymentType`.
@@ -2916,7 +2960,7 @@ input GreenCardAddressInput {
   street: String!
   postalCode: String!
   city: String!
-  country: String!
+  country: GreenCardCountry!
 }
 input GreenCardCoDriverInput {
   name: String!
@@ -2926,7 +2970,263 @@ type GreenCardContractSpecification {
   contractId: ID!
   registrationNumber: String!
   minStartDate: Date!
-  maxEndDate: Date!
+  maxEndDate: Date
+  maxPeriod: Int!
+}
+"""
+All countries and territories in ISO 3166-1 (249 entries).
+Values match the Kotlin `Country` enum constants one-to-one.
+"""
+enum GreenCardCountry {
+  AFGHANISTAN
+  ALAND_ISLANDS
+  ALBANIA
+  ALGERIA
+  AMERICAN_SAMOA
+  ANDORRA
+  ANGOLA
+  ANGUILLA
+  ANTARCTICA
+  ANTIGUA_AND_BARBUDA
+  ARGENTINA
+  ARMENIA
+  ARUBA
+  AUSTRALIA
+  AUSTRIA
+  AZERBAIJAN
+  BAHAMAS
+  BAHRAIN
+  BANGLADESH
+  BARBADOS
+  BELARUS
+  BELGIUM
+  BELIZE
+  BENIN
+  BERMUDA
+  BHUTAN
+  BOLIVIA
+  BONAIRE_SINT_EUSTATIUS_AND_SABA
+  BOSNIA_AND_HERZEGOVINA
+  BOTSWANA
+  BOUVET_ISLAND
+  BRAZIL
+  BRITISH_INDIAN_OCEAN_TERRITORY
+  BRITISH_VIRGIN_ISLANDS
+  BRUNEI
+  BULGARIA
+  BURKINA_FASO
+  BURUNDI
+  CABO_VERDE
+  CAMBODIA
+  CAMEROON
+  CANADA
+  CAYMAN_ISLANDS
+  CENTRAL_AFRICAN_REPUBLIC
+  CHAD
+  CHILE
+  CHINA
+  CHRISTMAS_ISLAND
+  COCOS_KEELING_ISLANDS
+  COLOMBIA
+  COMOROS
+  CONGO
+  CONGO_DEMOCRATIC_REPUBLIC
+  COOK_ISLANDS
+  COSTA_RICA
+  COTE_D_IVOIRE
+  CROATIA
+  CUBA
+  CURACAO
+  CYPRUS
+  CZECHIA
+  DENMARK
+  DJIBOUTI
+  DOMINICA
+  DOMINICAN_REPUBLIC
+  ECUADOR
+  EGYPT
+  EL_SALVADOR
+  EQUATORIAL_GUINEA
+  ERITREA
+  ESTONIA
+  ESWATINI
+  ETHIOPIA
+  FALKLAND_ISLANDS
+  FAROE_ISLANDS
+  FIJI
+  FINLAND
+  FRANCE
+  FRENCH_GUIANA
+  FRENCH_POLYNESIA
+  FRENCH_SOUTHERN_TERRITORIES
+  GABON
+  GAMBIA
+  GEORGIA
+  GERMANY
+  GHANA
+  GIBRALTAR
+  GREECE
+  GREENLAND
+  GRENADA
+  GUADELOUPE
+  GUAM
+  GUATEMALA
+  GUERNSEY
+  GUINEA
+  GUINEA_BISSAU
+  GUYANA
+  HAITI
+  HEARD_ISLAND_AND_MCDONALD_ISLANDS
+  HOLY_SEE
+  HONDURAS
+  HONG_KONG
+  HUNGARY
+  ICELAND
+  INDIA
+  INDONESIA
+  IRAN
+  IRAQ
+  IRELAND
+  ISLE_OF_MAN
+  ISRAEL
+  ITALY
+  JAMAICA
+  JAPAN
+  JERSEY
+  JORDAN
+  KAZAKHSTAN
+  KENYA
+  KIRIBATI
+  KUWAIT
+  KYRGYZSTAN
+  LAOS
+  LATVIA
+  LEBANON
+  LESOTHO
+  LIBERIA
+  LIBYA
+  LIECHTENSTEIN
+  LITHUANIA
+  LUXEMBOURG
+  MACAO
+  MADAGASCAR
+  MALAWI
+  MALAYSIA
+  MALDIVES
+  MALI
+  MALTA
+  MARSHALL_ISLANDS
+  MARTINIQUE
+  MAURITANIA
+  MAURITIUS
+  MAYOTTE
+  MEXICO
+  MICRONESIA
+  MOLDOVA
+  MONACO
+  MONGOLIA
+  MONTENEGRO
+  MONTSERRAT
+  MOROCCO
+  MOZAMBIQUE
+  MYANMAR
+  NAMIBIA
+  NAURU
+  NEPAL
+  NETHERLANDS
+  NEW_CALEDONIA
+  NEW_ZEALAND
+  NICARAGUA
+  NIGER
+  NIGERIA
+  NIUE
+  NORFOLK_ISLAND
+  NORTH_KOREA
+  NORTH_MACEDONIA
+  NORTHERN_MARIANA_ISLANDS
+  NORWAY
+  OMAN
+  PAKISTAN
+  PALAU
+  PALESTINE
+  PANAMA
+  PAPUA_NEW_GUINEA
+  PARAGUAY
+  PERU
+  PHILIPPINES
+  PITCAIRN
+  POLAND
+  PORTUGAL
+  PUERTO_RICO
+  QATAR
+  REUNION
+  ROMANIA
+  RUSSIA
+  RWANDA
+  SAINT_BARTHELEMY
+  SAINT_HELENA_ASCENSION_AND_TRISTAN_DA_CUNHA
+  SAINT_KITTS_AND_NEVIS
+  SAINT_LUCIA
+  SAINT_MARTIN
+  SAINT_PIERRE_AND_MIQUELON
+  SAINT_VINCENT_AND_THE_GRENADINES
+  SAMOA
+  SAN_MARINO
+  SAO_TOME_AND_PRINCIPE
+  SAUDI_ARABIA
+  SENEGAL
+  SERBIA
+  SEYCHELLES
+  SIERRA_LEONE
+  SINGAPORE
+  SINT_MAARTEN
+  SLOVAKIA
+  SLOVENIA
+  SOLOMON_ISLANDS
+  SOMALIA
+  SOUTH_AFRICA
+  SOUTH_GEORGIA_AND_THE_SOUTH_SANDWICH_ISLANDS
+  SOUTH_KOREA
+  SOUTH_SUDAN
+  SPAIN
+  SRI_LANKA
+  SUDAN
+  SURINAME
+  SVALBARD_AND_JAN_MAYEN
+  SWEDEN
+  SWITZERLAND
+  SYRIA
+  TAIWAN
+  TAJIKISTAN
+  TANZANIA
+  THAILAND
+  TIMOR_LESTE
+  TOGO
+  TOKELAU
+  TONGA
+  TRINIDAD_AND_TOBAGO
+  TUNISIA
+  TURKIYE
+  TURKMENISTAN
+  TURKS_AND_CAICOS_ISLANDS
+  TUVALU
+  UGANDA
+  UKRAINE
+  UNITED_ARAB_EMIRATES
+  UNITED_KINGDOM
+  UNITED_STATES
+  UNITED_STATES_MINOR_OUTLYING_ISLANDS
+  URUGUAY
+  US_VIRGIN_ISLANDS
+  UZBEKISTAN
+  VANUATU
+  VENEZUELA
+  VIETNAM
+  WALLIS_AND_FUTUNA
+  WESTERN_SAHARA
+  YEMEN
+  ZAMBIA
+  ZIMBABWE
 }
 input GreenCardCreateInput {
   contractId: ID!
@@ -3069,6 +3369,19 @@ enum InAppPurchaseFormFieldType {
 type InAppPurchaseFormOutput {
   product: Product!
   eligibility: InAppPurchaseEligibility!
+  """
+  The form in the order to show it, one screen per step. Empty when the member isn't eligible.
+  """
+  steps: [InAppPurchaseFormStep!]!
+}
+type InAppPurchaseFormStep {
+  """
+  Localized heading for the step. Null shows no heading.
+  """
+  title: String
+  """
+  At most three, and at most two on the last step, which also shows the campaign code input.
+  """
   fields: [InAppPurchaseFormField!]!
 }
 enum InAppPurchaseIneligibilityReason {
@@ -3292,6 +3605,10 @@ type Member {
   """
   memberFAQ: MemberFAQ!
   """
+  The member's follow-ups, oldest first; only that claim's when claimId is given.
+  """
+  claimFollowups(claimId: ID): [ClaimFollowup!]!
+  """
   Returns the most recent claim intent for this member, that can be "resumed" by querying `ClaimIntent.previousSteps`.
   Will return `null` if the server considers it too old to be resumed.
   Pass `resume: true` when the member actually continues the draft, rather than only being shown that one
@@ -3302,6 +3619,10 @@ type Member {
   claims: [Claim!]!
   claimsActive: [Claim!]!
   claimsHistory: [Claim!]!
+  """
+  Closed claims from the last 30 days that the member has not rated. Dismissing the rating keeps a claim here.
+  """
+  claimsPendingRating: [Claim!]!
   partnerClaimsActive: [PartnerClaim!]!
   partnerClaimsHistory: [PartnerClaim!]!
   firstName: String!
@@ -3317,7 +3638,16 @@ type Member {
   """
   importantMessages: [MemberImportantMessage!]!
   partnerData: PartnerData
-  emailMessages: [EmailMessage!]!
+  """
+  The member's email and SMS deliveries from Customer.io, newest first. Push and other delivery
+  types are excluded. Details beyond the list fields are filled in for the most recent few only.
+  """
+  cioMessages(filter: CioMessageFilter): [CioMessageDetails!]!
+  """
+  The rendered content of one of this member's deliveries. Fetched from Customer.io the first
+  time and served from our own database afterwards.
+  """
+  cioMessageContent(messageId: ID!): CioMessageContent
   """
    Get contract info during termination flow. Null if no message to display. 
   """
@@ -3399,6 +3729,11 @@ type Member {
   Whether this member is entitled to make a claim, based on their historical contracts.
   """
   isEligibleToMakeClaim: Boolean!
+  """
+  Details for withdrawing from one of the member's contracts under the right of withdrawal (within 14 days of signing).
+  Fails if the contract does not support withdrawal, see `Contract.supportsWithdrawal`.
+  """
+  contractWithdrawal(contractId: UUID!): ContractWithdrawal!
   memberActions: MemberActions
   """
    Get contract info during termination flow. Null if no message to display. 
@@ -4423,25 +4758,41 @@ type Mutation {
   """
   conversationHideCrossSales(id: UUID!): Conversation!
   claimAcknowledgeClosedStatus(id: ID!): ClaimMutationOutput
-  claimFollowupOpen(followupId: ID!): ClaimFollowupOutput!
+  claimSubmitRating(claimId: ID!, rating: Int!, comment: String): ClaimMutationOutput
+  claimDismissRating(claimId: ID!): ClaimMutationOutput
   """
   The value is "true" or "false".
   """
-  claimFollowupAnswerBinary(followupId: ID!, stepId: ID!, value: String!): ClaimFollowupOutput!
+  claimFollowupAnswerBinary(followupId: ID!, questionId: ID!, value: String!): ClaimFollowupOutput!
   """
-  Exactly one of text or audioFileId.
+  A typed answer to a free-text question.
   """
-  claimFollowupAnswerFreeText(followupId: ID!, stepId: ID!, text: String, audioFileId: ID): ClaimFollowupOutput!
+  claimFollowupAnswerFreeText(followupId: ID!, questionId: ID!, text: String!): ClaimFollowupOutput!
+  """
+  A spoken answer to a free-text question; audioFileId comes from the upload endpoint.
+  """
+  claimFollowupAnswerAudio(followupId: ID!, questionId: ID!, audioFileId: ID!): ClaimFollowupOutput!
   """
   The value is a date as yyyy-MM-dd.
   """
-  claimFollowupAnswerDate(followupId: ID!, stepId: ID!, value: String!): ClaimFollowupOutput!
-  claimFollowupAnswerNumber(followupId: ID!, stepId: ID!, value: String!): ClaimFollowupOutput!
-  claimFollowupAnswerPhoneNumber(followupId: ID!, stepId: ID!, value: String!): ClaimFollowupOutput!
-  claimFollowupAnswerFileUpload(followupId: ID!, stepId: ID!, fileIds: [ID!]!): ClaimFollowupOutput!
-  claimFollowupSkipStep(followupId: ID!, stepId: ID!): ClaimFollowupOutput!
-  claimFollowupRegretStep(followupId: ID!, stepId: ID!): ClaimFollowupOutput!
-  claimFollowupConfirmSummary(followupId: ID!, stepId: ID!): ClaimFollowupOutput!
+  claimFollowupAnswerDate(followupId: ID!, questionId: ID!, value: String!): ClaimFollowupOutput!
+  """
+  The value is a whole number.
+  """
+  claimFollowupAnswerNumber(followupId: ID!, questionId: ID!, value: String!): ClaimFollowupOutput!
+  claimFollowupAnswerPhoneNumber(followupId: ID!, questionId: ID!, value: String!): ClaimFollowupOutput!
+  """
+  The files to keep as the answer; the ids come from the upload endpoint.
+  """
+  claimFollowupAnswerFileUpload(followupId: ID!, questionId: ID!, fileIds: [ID!]!): ClaimFollowupOutput!
+  """
+  The member cannot answer this question; the comment says why and may be left out.
+  """
+  claimFollowupCantAnswer(followupId: ID!, questionId: ID!, comment: String): ClaimFollowupOutput!
+  """
+  Completes the follow-up and copies answered files to the claim. Refused while any question is TODO. Calling it again returns the follow-up unchanged.
+  """
+  claimFollowupSend(followupId: ID!): ClaimFollowupOutput!
   """
   Create or (reuse and existing) unsubmitted claim intent.
   """
@@ -4682,15 +5033,6 @@ type Mutation {
   """
   moveIntentCommit(intentId: ID!, homeQuoteId: ID, removedAddons: [ID!]): MoveIntentMutationOutput!
   """
-  Creates quotes for all yearly mileage options the contract can be changed to.
-  """
-  changeMileageCreateIntent(contractId: ID!): ChangeMileageCreateIntentOutput!
-  """
-  Activates the given quote from changeMileageCreateIntent, the new mileage applies from the activation date
-  of the intent. Returns a UserError if it failed.
-  """
-  changeMileageCommitIntent(quoteId: ID!): UserError
-  """
    Create change tier/deductible intent 
   """
   changeTierDeductibleCreateIntent(input: ChangeTierDeductibleCreateIntentInput!): ChangeTierDeductibleCreateIntentOutput!
@@ -4698,6 +5040,11 @@ type Mutation {
    Accept quote 
   """
   changeTierDeductibleCommitIntent(input: ChangeTierDeductibleCommitIntentInput!): ChangeTierDeductibleCommitIntentOutput!
+  """
+  Withdraws from the contract: an active contract is terminated on the date given by `ContractWithdrawal.action`,
+  a contract that has not started yet is deleted.
+  """
+  withdrawContract(contractId: UUID!): TerminationFlowContractMutationOutput!
   """
   Send a batch of events to the EventTrackingService
   """
@@ -4906,6 +5253,11 @@ type PendingContract {
   Whether or not this contract can be terminated by user
   """
   supportsTermination: Boolean!
+  """
+  Whether or not this contract can still be withdrawn from (cancelled with right of withdrawal): it was created
+  within the last 14 days, the member can terminate it, it hasn't ended yet and it wasn't already withdrawn.
+  """
+  supportsWithdrawal: Boolean!
   """
   List of addons on the agreement.
   """
@@ -5556,7 +5908,7 @@ type Query {
   carTrial(contractId: UUID!): TrialExtension
   """
   Screen 1 of the in-app purchase: product content, whether the member can buy it, and the form to fill in.
-  Has no side effects. When the member isn't eligible, `fields` is empty.
+  Has no side effects. When the member isn't eligible, `steps` is empty.
   """
   inAppPurchaseForm(product: InAppProduct!): InAppPurchaseFormOutput!
   """

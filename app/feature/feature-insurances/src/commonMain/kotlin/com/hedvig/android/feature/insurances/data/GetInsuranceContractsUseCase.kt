@@ -139,6 +139,7 @@ private fun InsuranceContractsQuery.Data.CurrentMember.PendingContract.toPending
     basePremium = UiMoney.fromMoneyFragment(this.basePremium),
     chipId = ChipIdState.NotRequired,
     supportsTermination = supportsTermination,
+    supportsWithdrawal = supportsWithdrawal,
   )
 }
 
@@ -235,6 +236,7 @@ private fun ContractFragment.toContract(
       false -> ChipIdState.NotRequired
     },
     supportsTermination = supportsTermination,
+    supportsWithdrawal = supportsWithdrawal,
   )
 }
 

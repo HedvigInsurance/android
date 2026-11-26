@@ -252,6 +252,7 @@ class ContractDetailPresenterTest {
       availableAddons = emptyList(),
       chipId = ChipIdState.Missing,
       supportsTermination = true,
+      supportsWithdrawal = false,
     )
 
     private val insuranceWithTerminationDate = EstablishedInsuranceContract(
@@ -302,6 +303,7 @@ class ContractDetailPresenterTest {
       availableAddons = emptyList(),
       chipId = ChipIdState.Missing,
       supportsTermination = false,
+      supportsWithdrawal = false,
     )
 
     private val responseTurbine = Turbine<Either<GetContractForContractIdError, EstablishedInsuranceContract>>()

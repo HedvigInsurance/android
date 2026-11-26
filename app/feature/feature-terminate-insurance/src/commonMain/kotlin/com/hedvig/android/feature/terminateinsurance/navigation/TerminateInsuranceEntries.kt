@@ -10,6 +10,9 @@ import com.hedvig.android.feature.terminateinsurance.data.TerminationAction
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateDestination
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModel
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModelFactory
+import com.hedvig.android.feature.terminateinsurance.step.chooseaction.TerminationChooseActionDestination
+import com.hedvig.android.feature.terminateinsurance.step.chooseaction.TerminationChooseActionViewModel
+import com.hedvig.android.feature.terminateinsurance.step.chooseaction.TerminationChooseActionViewModelFactory
 import com.hedvig.android.feature.terminateinsurance.step.deflect.DeflectSuggestionDestination
 import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDeletionDestination
 import com.hedvig.android.feature.terminateinsurance.step.redirection.TerminationRedirectionDestination
@@ -26,12 +29,14 @@ import com.hedvig.android.feature.terminateinsurance.step.terminationreview.Term
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationConfirmationViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationConfirmationViewModelFactory
 import com.hedvig.android.feature.terminateinsurance.step.terminationsuccess.TerminationSuccessDestination
+import com.hedvig.android.feature.terminateinsurance.step.terminationsuccess.WithdrawalSuccessDestination
 import com.hedvig.android.feature.terminateinsurance.step.unknown.UnknownScreenDestination
+import com.hedvig.android.feature.terminateinsurance.step.withdrawal.TerminationWithdrawalDestination
+import com.hedvig.android.feature.terminateinsurance.step.withdrawal.TerminationWithdrawalViewModel
+import com.hedvig.android.feature.terminateinsurance.step.withdrawal.TerminationWithdrawalViewModelFactory
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
-import com.hedvig.android.navigation.compose.popUpTo
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.terminateInsuranceEntries(
@@ -64,21 +69,30 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceEntries(
     )
   }
 
+  val leaveSuccessScreen: () -> Unit = {
+    // The flow is collapsed to this single success key on success, so one pop returns
+    // to whatever launched it. Keep that collapse intact if steps are ever added after success,
+    // otherwise this plain pop would land on an intermediate screen instead of the caller.
+    // Reached alone via deep link → land on the Insurances tab rather than exiting the app
+    // (popBackstack would finish the Activity at the root).
+    if (backstack.entries.size > 1) {
+      backstack.popBackstack()
+    } else {
+      navigateToInsurances()
+    }
+  }
+
   entry<TerminationSuccessKey> { key ->
     TerminationSuccessDestination(
       terminationDate = key.terminationDate,
-      onDone = {
-        // The flow is collapsed to this single TerminationSuccessKey on success, so one pop returns
-        // to whatever launched it. Keep that collapse intact if steps are ever added after success,
-        // otherwise this plain pop would land on an intermediate screen instead of the caller.
-        // Reached alone via deep link → land on the Insurances tab rather than exiting the app
-        // (popBackstack would finish the Activity at the root).
-        if (backstack.entries.size > 1) {
-          backstack.popBackstack()
-        } else {
-          navigateToInsurances()
-        }
-      },
+      onDone = leaveSuccessScreen,
+    )
+  }
+
+  entry<WithdrawalSuccessKey> { key ->
+    WithdrawalSuccessDestination(
+      endDate = key.endDate,
+      onDone = leaveSuccessScreen,
     )
   }
 
@@ -92,6 +106,30 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceEntries(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
       onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
+      closeTerminationFlow = closeTerminationFlow,
+    )
+  }
+
+  entry<TerminationChooseActionKey> { key ->
+    val viewModel: TerminationChooseActionViewModel =
+      assistedMetroViewModel<TerminationChooseActionViewModel, TerminationChooseActionViewModelFactory> {
+        create(key.terminationParams)
+      }
+    TerminationChooseActionDestination(
+      viewModel = viewModel,
+      navigateUp = backstack::navigateUp,
+      closeTerminationFlow = closeTerminationFlow,
+    )
+  }
+
+  entry<TerminationWithdrawalKey> { key ->
+    val viewModel: TerminationWithdrawalViewModel =
+      assistedMetroViewModel<TerminationWithdrawalViewModel, TerminationWithdrawalViewModelFactory> {
+        create(key.terminationParams)
+      }
+    TerminationWithdrawalDestination(
+      viewModel = viewModel,
+      navigateUp = backstack::navigateUp,
       closeTerminationFlow = closeTerminationFlow,
     )
   }
