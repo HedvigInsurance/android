@@ -16,6 +16,7 @@ kotlin {
       implementation(libs.arrow.core)
       implementation(projects.apolloCore)
       implementation(projects.apolloOctopusPublic)
+      implementation(projects.authCorePublic)
       implementation(projects.coreDemoMode)
       implementation(projects.featureFlags)
       implementation(projects.languageCore)
@@ -28,6 +29,7 @@ kotlin {
       implementation(libs.turbine)
       implementation(projects.apolloOctopusTest)
       implementation(projects.apolloTest)
+      implementation(projects.authCoreTest)
       implementation(projects.coreDatastoreTest)
       implementation(projects.featureFlagsTest)
     }
