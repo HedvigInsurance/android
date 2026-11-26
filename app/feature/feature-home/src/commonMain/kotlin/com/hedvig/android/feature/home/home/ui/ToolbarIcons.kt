@@ -37,6 +37,7 @@ import com.hedvig.android.design.system.hedvig.liquidGlass
 import hedvig.resources.DASHBOARD_OPEN_CHAT
 import hedvig.resources.HC_QUICK_ACTIONS_FIRSTVET_SUBTITLE
 import hedvig.resources.Res
+import hedvig.resources.YEAR_IN_REVIEW_TITLE
 import hedvig.resources.home_tab_claim_button_text
 import hedvig.resources.insurance_tab_cross_sells_title
 import org.jetbrains.compose.resources.stringResource
@@ -112,8 +113,7 @@ fun ToolbarYearInReviewIcon(onClick: () -> Unit, modifier: Modifier = Modifier) 
   ToolbarIconButton(onClick = onClick, modifier = modifier) {
     Icon(
       imageVector = HedvigIcons.Star,
-      // TODO: Add "Year in review" / "Året som gått" to Lokalise
-      contentDescription = "Year in review",
+      contentDescription = stringResource(Res.string.YEAR_IN_REVIEW_TITLE),
       tint = HedvigTheme.colorScheme.signalAmberElement,
       modifier = Modifier.size(toolbarGlyphSize),
     )

@@ -40,6 +40,7 @@ internal class YearInReviewPresenter(
     var isPaused by remember { mutableStateOf(true) }
     // Bumped to restart the current story's timer when the index itself does not change.
     var restartCount by remember { mutableIntStateOf(0) }
+    var storyDuration by remember { mutableStateOf(StoryDuration) }
 
     CollectEvents { event ->
       val lastIndex = stories?.lastIndex ?: -1
@@ -71,6 +72,10 @@ internal class YearInReviewPresenter(
           isPaused = false
         }
 
+        is YearInReviewEvent.SetStoryDuration -> {
+          storyDuration = event.duration
+        }
+
         YearInReviewEvent.Retry -> {
           loadIteration++
         }
@@ -90,9 +95,11 @@ internal class YearInReviewPresenter(
     }
 
     val loadedStories = stories
-    LaunchedEffect(loadedStories, currentIndex, isPaused, restartCount) {
+    LaunchedEffect(loadedStories, currentIndex, isPaused, restartCount, storyDuration) {
       if (loadedStories == null || isPaused) return@LaunchedEffect
-      val stepDuration = StoryDuration / ProgressSteps
+      // An infinite duration leaves each story up until the member moves on.
+      if (storyDuration.isInfinite()) return@LaunchedEffect
+      val stepDuration = storyDuration / ProgressSteps
       var step = (progress * ProgressSteps).toInt()
       while (step < ProgressSteps) {
         delay(stepDuration)
@@ -134,6 +141,9 @@ internal sealed interface YearInReviewEvent {
   data object Resume : YearInReviewEvent
 
   data object Retry : YearInReviewEvent
+
+  /** How long each story stays up before moving on by itself. */
+  data class SetStoryDuration(val duration: Duration) : YearInReviewEvent
 }
 
 internal sealed interface YearInReviewUiState {
@@ -152,6 +162,5 @@ internal sealed interface YearInReviewUiState {
     val isPaused: Boolean,
   ) : YearInReviewUiState {
     val currentStory: YearInReviewStory = stories[currentIndex]
-    val isLastStory: Boolean = currentIndex == stories.lastIndex
   }
 }

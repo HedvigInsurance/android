@@ -10,6 +10,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,10 +46,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.platform.LocalAccessibilityManager
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -74,7 +83,6 @@ import com.hedvig.android.design.system.hedvig.HedvigThreeDotsProgressIndicator
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.debugBorder
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
@@ -83,6 +91,7 @@ import com.hedvig.android.feature.home.yearinreview.data.YearInReviewMedia
 import com.hedvig.android.feature.home.yearinreview.data.YearInReviewStory
 import hedvig.resources.Res
 import hedvig.resources.general_close_button
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.coroutineScope
@@ -148,11 +157,14 @@ private fun YearInReviewScreen(
           StoriesLoading()
         } else {
           LaunchedEffect(Unit) { onEvent(YearInReviewEvent.Resume) }
+          val isScreenReaderOn = rememberIsScreenReaderOn()
+          val storyDuration = rememberStoryDuration(isScreenReaderOn)
+          LaunchedEffect(storyDuration) { onEvent(YearInReviewEvent.SetStoryDuration(storyDuration)) }
           PillowBackground(
             pillow = storyPillows[uiState.currentIndex % storyPillows.size],
             modifier = Modifier.fillMaxSize(),
           )
-          StoriesContent(uiState, imageLoader, openUrl, close, onEvent)
+          StoriesContent(uiState, imageLoader, isScreenReaderOn, openUrl, close, onEvent)
         }
       }
     }
@@ -187,6 +199,26 @@ private fun rememberImagesLoaded(imageUrls: List<String>, imageLoader: ImageLoad
     value = true
   }
   return loaded
+}
+
+/**
+ * How long each story stays up. With a screen reader on, stories wait for the member to move on, since
+ * listening to one takes longer than reading it. Otherwise it is [StoryDuration], lengthened when the member
+ * asked for more time to act in the system accessibility settings.
+ */
+@Composable
+private fun rememberStoryDuration(isScreenReaderOn: Boolean): Duration {
+  val accessibilityManager = LocalAccessibilityManager.current
+  return remember(isScreenReaderOn, accessibilityManager) {
+    if (isScreenReaderOn) return@remember Duration.INFINITE
+    val millis = accessibilityManager?.calculateRecommendedTimeoutMillis(
+      originalTimeoutMillis = StoryDuration.inWholeMilliseconds,
+      containsIcons = true,
+      containsText = true,
+      containsControls = true,
+    ) ?: StoryDuration.inWholeMilliseconds
+    if (millis == Long.MAX_VALUE) Duration.INFINITE else millis.milliseconds
+  }
 }
 
 /** Cycled through as the stories' backgrounds. */
@@ -227,6 +259,7 @@ private fun PillowBackground(pillow: PillowType, modifier: Modifier = Modifier) 
 private fun StoriesContent(
   uiState: YearInReviewUiState.Content,
   imageLoader: ImageLoader,
+  isScreenReaderOn: Boolean,
   openUrl: (String) -> Unit,
   close: () -> Unit,
   onEvent: (YearInReviewEvent) -> Unit,
@@ -254,10 +287,27 @@ private fun StoriesContent(
         )
       }
     }
+    // TODO: Add "Next" / "Nästa" and "Previous" / "Föregående" to Lokalise
+    val nextStoryLabel = "Next"
+    val previousStoryLabel = "Previous"
     Box(
       Modifier
         .weight(1f)
         .fillMaxWidth()
+        // Screen readers cannot tell the two halves of the screen apart, so moving between stories is offered as
+        // actions instead.
+        .semantics {
+          customActions = listOf(
+            CustomAccessibilityAction(nextStoryLabel) {
+              onEvent(YearInReviewEvent.Next)
+              true
+            },
+            CustomAccessibilityAction(previousStoryLabel) {
+              onEvent(YearInReviewEvent.Previous)
+              true
+            },
+          )
+        }
         .pointerInput(Unit) {
           detectTapGestures(
             onPress = {
@@ -285,6 +335,7 @@ private fun StoriesContent(
           story = story,
           imageLoader = imageLoader,
           isPaused = uiState.isPaused,
+          isScreenReaderOn = isScreenReaderOn,
           openUrl = openUrl,
           modifier = Modifier.fillMaxSize(),
         )
@@ -304,9 +355,10 @@ private fun StoryProgressBar(storyCount: Int, currentIndex: Int, progress: Float
       label = "storyProgress",
     )
   }
+  val description = "${currentIndex + 1}"
   Row(
     horizontalArrangement = Arrangement.spacedBy(4.dp),
-    modifier = modifier,
+    modifier = modifier.clearAndSetSemantics { contentDescription = description },
   ) {
     repeat(storyCount) { index ->
       val fill = when {
@@ -338,9 +390,15 @@ private fun StoryPage(
   story: YearInReviewStory,
   imageLoader: ImageLoader,
   isPaused: Boolean,
+  isScreenReaderOn: Boolean,
   openUrl: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val titleFocusRequester = remember(story.id) { FocusRequester() }
+  LaunchedEffect(story.id, isScreenReaderOn) {
+    // Moves the screen reader to the new story, which would otherwise stay on the previous one's position.
+    if (isScreenReaderOn) titleFocusRequester.requestFocus()
+  }
   val titleAndImageAlpha = remember(story.id) { Animatable(0f) }
   var showText by remember(story.id) { mutableStateOf(false) }
   var showAction by remember(story.id) { mutableStateOf(false) }
@@ -355,14 +413,6 @@ private fun StoryPage(
     delay(1.seconds)
     showAction = true
   }
-  // Added only after the delay, so the image keeps its place until the button pushes it up.
-//  var showThanksButton by remember(isLastStory) { mutableStateOf(isLastStory) }
-//  LaunchedEffect(isLastStory) {
-//    if (isLastStory) {
-//      delay(4.seconds)
-//      showThanksButton = true
-//    }
-//  }
   val textBringIntoViewRequester = remember(story.id) { BringIntoViewRequester() }
   LaunchedEffect(showText) {
     if (showText) {
@@ -378,6 +428,9 @@ private fun StoryPage(
       style = HedvigTheme.typography.bodySmall,
       modifier = Modifier
         .fillMaxWidth()
+        .semantics { heading() }
+        .focusRequester(titleFocusRequester)
+        .focusable()
         .alpha(titleAndImageAlpha.value),
     )
   }
@@ -615,20 +668,6 @@ private fun StoryMedia(
       YearInReviewVideo(url = media.url, isPaused = isPaused, modifier = Modifier.fillMaxSize())
     }
   }
-}
-
-@Composable
-private fun ThanksButton(onClick: () -> Unit) {
-  HedvigButton(
-    // TODO: Add "Thanks!" / "Tack!" to Lokalise
-    text = "Tack!",
-    onClick = onClick,
-    enabled = true,
-    buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(top = 16.dp),
-  )
 }
 
 @HedvigPreview

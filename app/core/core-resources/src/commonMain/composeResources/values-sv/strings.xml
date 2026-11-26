@@ -21,6 +21,7 @@
     <item quantity="other">Inskickade värden</item>
   </plurals>
   <string name="A11Y_VIEW_DETAILS">Visa detaljer</string>
+  <string name="A11Y_YEAR_IN_REVIEW_ICON_DESCRIPTION">Året som gått</string>
   <string name="ADDON_ADDED_COVERAGE">Tillagd</string>
   <string name="ADDON_ADD_COVERAGE">Lägg till skydd</string>
   <string name="ADDON_BADGE">Populär</string>
@@ -1145,6 +1146,10 @@
   <string name="TERMINATION_FLOW_SUMMARY_SUBTITLE">Granska och bekräfta</string>
   <string name="TERMINATION_FLOW_TODAY">Idag</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_BUTTON">Ångra försäkringen</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_CHANGE_EMAIL_BODY_1">Om du behöver ändra e-postadressen som bekräftelsen skickas till kan du ändra den %1$s. Observera att det ändrar din email för alla framtida utskick.</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_CHANGE_EMAIL_BODY_2">här</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_CHANGE_EMAIL_TITLE">Vill du ändra e-post?</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_CONFIRMATION_SENT_TO">Bekräftelsen skickas till</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_CONFIRM_BUTTON">Ja, ångra försäkringen</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE">Du har ångrat försäkringen</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_TITLE">Ångra försäkringen</string>
@@ -1225,6 +1230,7 @@
   <string name="VOICEOVER_MORE_INFO">Tryck för mer information</string>
   <string name="VOICE_OVER_CAMPAIGN_IMAGE_DESCRIPTION">Kampanjikon</string>
   <string name="VOICE_OVER_INFO_IMAGE_DESCRIPTION">Informationsikon</string>
+  <string name="YEAR_IN_REVIEW_TITLE">Året som gått</string>
   <string name="app_info_submit_bug_button">Rapportera tekniska problem</string>
   <string name="app_info_submit_bug_continue">Fortsätt</string>
   <string name="app_info_submit_bug_go_back">Gå tillbaka</string>

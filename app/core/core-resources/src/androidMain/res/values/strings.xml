@@ -22,6 +22,7 @@
     <item quantity="other">Submitted values</item>
   </plurals>
   <string name="A11Y_VIEW_DETAILS">View details</string>
+  <string name="A11Y_YEAR_IN_REVIEW_ICON_DESCRIPTION">Year in review</string>
   <string name="ADDON_ADDED_COVERAGE">Added</string>
   <string name="ADDON_ADD_COVERAGE">Add coverage</string>
   <string name="ADDON_BADGE">Popular</string>
@@ -1146,6 +1147,10 @@
   <string name="TERMINATION_FLOW_SUMMARY_SUBTITLE">Review and confirm</string>
   <string name="TERMINATION_FLOW_TODAY">Today</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_BUTTON">Withdraw insurance</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_CHANGE_EMAIL_BODY_1">If you need to change the email address the confirmation is sent to, you can change it %s. Please note that this changes your email address for all future communications.</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_CHANGE_EMAIL_BODY_2">here</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_CHANGE_EMAIL_TITLE">Do you want to change email?</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_CONFIRMATION_SENT_TO">The confirmation is sent to</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_CONFIRM_BUTTON">Yes, withdraw insurance</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE">Your insurance is cancelled</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_TITLE">Withdraw insurance</string>
@@ -1226,6 +1231,7 @@
   <string name="VOICEOVER_MORE_INFO">Tap for more info</string>
   <string name="VOICE_OVER_CAMPAIGN_IMAGE_DESCRIPTION">Campaign image</string>
   <string name="VOICE_OVER_INFO_IMAGE_DESCRIPTION">Information image</string>
+  <string name="YEAR_IN_REVIEW_TITLE">Year in review</string>
   <string name="app_info_submit_bug_button">Report technical issue</string>
   <string name="app_info_submit_bug_continue">Continue</string>
   <string name="app_info_submit_bug_go_back">Go back</string>
