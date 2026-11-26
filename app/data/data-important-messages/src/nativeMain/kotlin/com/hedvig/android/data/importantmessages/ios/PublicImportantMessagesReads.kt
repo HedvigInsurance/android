@@ -7,7 +7,7 @@ import com.hedvig.android.data.importantmessages.GetPublicImportantMessagesUseCa
 import com.hedvig.android.data.importantmessages.PublicImportantMessage
 import com.hedvig.android.iosdata.bridge.IosGraphHolder
 import com.hedvig.android.iosdata.bridge.component
-import com.hedvig.android.iosdata.bridge.iosRead
+import com.hedvig.android.iosdata.bridge.iosReadOrThrow
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Inject
@@ -23,7 +23,7 @@ class PublicImportantMessagesReads internal constructor(
 ) {
   /** The active messages in the app's language, in the order the backend sends them, which is most severe first. */
   @NativeCoroutines
-  suspend fun messages(): List<PublicImportantMessageItem> = iosRead {
+  suspend fun messages(): List<PublicImportantMessageItem> = iosReadOrThrow {
     getPublicImportantMessages.invoke().bind().map { it.toItem() }
   }
 }
