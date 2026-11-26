@@ -17,7 +17,7 @@ import kotlin.native.HiddenFromObjC
  * @Inject
  * class ForeverReads(private val apolloClient: ApolloClient) {
  *   @NativeCoroutines
- *   suspend fun referrals(): ForeverInfo = iosRead {
+ *   suspend fun referrals(): ForeverInfo = iosReadOrThrow {
  *     apolloClient.query(FullReferralsQuery()).safeExecute().bind().toForeverInfo()
  *   }
  * }

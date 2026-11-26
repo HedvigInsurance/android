@@ -855,9 +855,9 @@ Every feature module except `feature-impersonation` is KMP with its code in `com
 ## Reads for the iOS app
 
 The iOS app calls shared Kotlin through `:umbrella`. A feature that serves iOS writes a class of plain
-`@NativeCoroutines suspend fun x() = iosRead { ... }` reads, contributes an `AppScope` component exposing it, adds an
-extension on `IosGraphHolder` that returns it via `component<...>()`, and adds its module to `projectsToExport` in
-`app/umbrella/build.gradle.kts`. A read made before login injects `@PublicApolloClient ApolloClient`. The iOS Apollo
+`@NativeCoroutines suspend fun x() = iosReadOrThrow { ... }` reads, contributes an `AppScope` component exposing it,
+adds an extension on `IosGraphHolder` that returns it via `component<...>()`, and adds its module to `projectsToExport`
+in `app/umbrella/build.gradle.kts`. A read made before login injects `@PublicApolloClient ApolloClient`. The iOS Apollo
 clients keep no normalized cache, so `watch`, `safeWatch` and `apolloStore` are not available there. The worked example
 is the `IosGraphHolder` KDoc in `:ios-data-bridge`.
 

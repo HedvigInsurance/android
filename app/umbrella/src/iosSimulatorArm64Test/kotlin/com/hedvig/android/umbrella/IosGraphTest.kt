@@ -24,7 +24,7 @@ import com.hedvig.android.iosdata.bridge.ReadFailure
 import com.hedvig.android.iosdata.bridge.ReadFailureKind
 import com.hedvig.android.iosdata.bridge.component
 import com.hedvig.android.iosdata.bridge.iosGraphHolder
-import com.hedvig.android.iosdata.bridge.iosRead
+import com.hedvig.android.iosdata.bridge.iosReadOrThrow
 import com.hedvig.android.language.IosLanguageSource
 import com.hedvig.android.language.Language
 import com.hedvig.android.logger.IosLogcatLogger
@@ -68,7 +68,7 @@ import platform.Foundation.runUntilDate
 @Inject
 class ExampleReads(private val apolloClient: ApolloClient) {
   @NativeCoroutines
-  suspend fun memberId(): String = iosRead {
+  suspend fun memberId(): String = iosReadOrThrow {
     apolloClient.query(PayingMemberPhoneNumberQuery()).safeExecute().bind().currentMember.id
   }
 }
