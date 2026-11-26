@@ -20,7 +20,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 
-internal val StoryDuration: Duration = 10.seconds
+internal val StoryDuration: Duration = 7.seconds
 private const val ProgressSteps = 100
 
 internal class YearInReviewPresenter(
