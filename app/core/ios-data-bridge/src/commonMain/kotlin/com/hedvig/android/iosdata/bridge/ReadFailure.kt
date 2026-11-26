@@ -38,7 +38,7 @@ enum class ReadFailureKind {
  * [ApolloOperationError] fails the way that error would.
  */
 @HiddenFromObjC
-suspend fun <T> iosRead(block: suspend Raise<Any>.() -> T): T = try {
+suspend fun <T> iosReadOrThrow(block: suspend Raise<Any>.() -> T): T = try {
   either { block() }.getOrElse { throw readFailureOf(it) }
 } catch (e: CancellationException) {
   throw e
