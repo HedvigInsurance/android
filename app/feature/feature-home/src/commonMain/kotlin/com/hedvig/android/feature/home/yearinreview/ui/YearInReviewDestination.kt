@@ -393,10 +393,11 @@ private fun StoryPage(
       )
     }
   }
-  val text: @Composable () -> Unit = {
+  val text: @Composable (topPadding: Dp) -> Unit = { topPadding ->
     StoryText(
       description = story.description,
       visible = showText,
+      topPadding = topPadding,
       modifier = Modifier.bringIntoViewRequester(textBringIntoViewRequester),
     )
   }
@@ -408,31 +409,24 @@ private fun StoryPage(
   BoxWithConstraints(modifier.padding(16.dp)) {
     val isLandscape = maxWidth > maxHeight || maxWidth >= WideLayoutMinWidth
     if (isLandscape) {
-      Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize()) {
-        WideStoryMediaColumn(
-          title = title,
-          media = media?.let { { it(Modifier.fillMaxSize()) } },
-          modifier = Modifier.fillMaxHeight(),
-        )
-        Spacer(Modifier.width(16.dp))
-        Column(
-          Modifier
-            .weight(1f)
-            .fillMaxHeight(),
-        ) {
-          Box(
-            contentAlignment = Alignment.CenterStart,
-            modifier = Modifier
-              .weight(1f)
-              .fillMaxWidth(),
-          ) {
-            Column(Modifier.verticalScroll(rememberScrollState())) {
-              text()
+      WideStoryLayout(
+        title = title,
+        media = media?.let { { it(Modifier.fillMaxSize()) } },
+        details = {
+          Column(Modifier.fillMaxSize()) {
+            Column(
+              Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
+            ) {
+              text(0.dp)
             }
+            actionButton()
           }
-          actionButton()
-        }
-      }
+        },
+        modifier = Modifier.fillMaxSize(),
+      )
     } else {
       Column(Modifier.fillMaxSize()) {
         BoxWithConstraints(
@@ -444,7 +438,7 @@ private fun StoryPage(
             viewportHeight = maxHeight,
             title = title,
             media = media?.let { { it(Modifier.fillMaxSize()) } },
-            text = text,
+            text = { text(16.dp) },
             modifier = Modifier.verticalScroll(rememberScrollState()),
           )
         }
@@ -455,44 +449,55 @@ private fun StoryPage(
 }
 
 /**
- * The [title] above the [media], as wide as the media. The media is a square that takes the height the title
- * leaves, and at most half the available width, so the content beside it keeps the rest. Without media the
- * title takes half the width.
+ * The [title] above the [media] on the left, as wide as the media, and the [details] on the right. The media is
+ * a square that takes the height the title leaves, and at most half the width. The left side is centered
+ * vertically, and the [details] start level with the top of the media, or of the title without media, and
+ * reach the bottom.
  */
 @Composable
-private fun WideStoryMediaColumn(
+private fun WideStoryLayout(
   title: @Composable () -> Unit,
   media: (@Composable () -> Unit)?,
+  details: @Composable () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Layout(
-    contents = listOf(title, media ?: {}),
+    contents = listOf(title, media ?: {}, details),
     modifier = modifier,
-  ) { (titleMeasurables, mediaMeasurables), constraints ->
-    val maxWidth = constraints.maxWidth / 2
+  ) { (titleMeasurables, mediaMeasurables, detailsMeasurables), constraints ->
+    val width = constraints.maxWidth
+    val height = constraints.maxHeight
+    val leftMaxWidth = width / 2
+    val spacing = 16.dp.roundToPx()
     val hasMedia = mediaMeasurables.isNotEmpty()
     val gap = if (hasMedia) 16.dp.roundToPx() else 0
 
     fun titleHeight(width: Int): Int = titleMeasurables.sumOf { it.minIntrinsicHeight(width) }
     // The title wraps to the media's width, which in turn depends on the title's height. A few rounds settle it.
-    var side = if (hasMedia) minOf(maxWidth, constraints.maxHeight) else maxWidth
+    var side = if (hasMedia) minOf(leftMaxWidth, height) else leftMaxWidth
     if (hasMedia) {
       repeat(3) {
-        side = (constraints.maxHeight - titleHeight(side) - gap).coerceIn(0, maxWidth)
+        side = (height - titleHeight(side) - gap).coerceIn(0, leftMaxWidth)
       }
     }
     val titlePlaceables = titleMeasurables.map { it.measure(Constraints(minWidth = side, maxWidth = side)) }
     val mediaPlaceables = mediaMeasurables.map { it.measure(Constraints.fixed(side, side)) }
-    val contentHeight = titlePlaceables.sumOf { it.height } + gap + if (hasMedia) side else 0
-    val height = contentHeight.coerceIn(constraints.minHeight, constraints.maxHeight)
-    layout(side, height) {
-      var y = (height - contentHeight) / 2
+    val titleHeight = titlePlaceables.sumOf { it.height }
+    val leftHeight = titleHeight + gap + if (hasMedia) side else 0
+    val leftTop = ((height - leftHeight) / 2).coerceAtLeast(0)
+    val detailsTop = if (hasMedia) leftTop + titleHeight + gap else leftTop
+    val detailsPlaceables = detailsMeasurables.map {
+      it.measure(Constraints.fixed((width - side - spacing).coerceAtLeast(0), height - detailsTop))
+    }
+    layout(width, height) {
+      var y = leftTop
       titlePlaceables.forEach {
         it.place(0, y)
         y += it.height
       }
       y += gap
       mediaPlaceables.forEach { it.place(0, y) }
+      detailsPlaceables.forEach { it.place(side + spacing, detailsTop) }
     }
   }
 }
@@ -521,7 +526,7 @@ private fun StoryActionButton(action: YearInReviewAction, visible: Boolean, open
 }
 
 @Composable
-private fun StoryText(description: String, visible: Boolean, modifier: Modifier = Modifier) {
+private fun StoryText(description: String, visible: Boolean, topPadding: Dp, modifier: Modifier = Modifier) {
   AnimatedVisibility(
     visible = visible,
     enter = expandVertically(tween(durationMillis = 800), expandFrom = Alignment.Top) +
@@ -532,7 +537,7 @@ private fun StoryText(description: String, visible: Boolean, modifier: Modifier 
       content = description,
       style = HedvigTheme.typography.bodySmall.copy(color = HedvigTheme.colorScheme.textSecondary),
       strongStyle = SpanStyle(color = HedvigTheme.colorScheme.textPrimary),
-      modifier = Modifier.padding(top = 16.dp),
+      modifier = Modifier.padding(top = topPadding),
     )
   }
 }
