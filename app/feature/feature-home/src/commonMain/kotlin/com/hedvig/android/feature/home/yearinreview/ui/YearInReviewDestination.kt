@@ -41,14 +41,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -75,6 +71,7 @@ import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
+import com.hedvig.android.feature.home.yearinreview.data.YearInReviewAction
 import com.hedvig.android.feature.home.yearinreview.data.YearInReviewStory
 import hedvig.resources.PROFILE_ABOUT_APP_TITLE
 import hedvig.resources.Res
@@ -88,11 +85,17 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun YearInReviewDestination(viewModel: YearInReviewViewModel, imageLoader: ImageLoader, close: () -> Unit) {
+internal fun YearInReviewDestination(
+  viewModel: YearInReviewViewModel,
+  imageLoader: ImageLoader,
+  openUrl: (String) -> Unit,
+  close: () -> Unit,
+) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   YearInReviewScreen(
     uiState = uiState,
     imageLoader = imageLoader,
+    openUrl = openUrl,
     close = close,
     onEvent = viewModel::emit,
   )
@@ -102,6 +105,7 @@ internal fun YearInReviewDestination(viewModel: YearInReviewViewModel, imageLoad
 private fun YearInReviewScreen(
   uiState: YearInReviewUiState,
   imageLoader: ImageLoader,
+  openUrl: (String) -> Unit,
   close: () -> Unit,
   onEvent: (YearInReviewEvent) -> Unit,
 ) {
@@ -131,11 +135,10 @@ private fun YearInReviewScreen(
         } else {
           LaunchedEffect(Unit) { onEvent(YearInReviewEvent.Resume) }
           PillowBackground(
-            pillow = uiState.currentStory.backgroundPillow
-              ?: storyPillows[uiState.currentIndex % storyPillows.size],
+            pillow = storyPillows[uiState.currentIndex % storyPillows.size],
             modifier = Modifier.fillMaxSize(),
           )
-          StoriesContent(uiState, imageLoader, close, onEvent)
+          StoriesContent(uiState, imageLoader, openUrl, close, onEvent)
         }
       }
     }
@@ -172,7 +175,7 @@ private fun rememberImagesLoaded(imageUrls: List<String>, imageLoader: ImageLoad
   return loaded
 }
 
-/** Cycled through as the background of stories that do not name their own pillow. */
+/** Cycled through as the stories' backgrounds. */
 private val storyPillows = listOf(
   PillowType.HOME,
   PillowType.RENTAL,
@@ -210,6 +213,7 @@ private fun PillowBackground(pillow: PillowType, modifier: Modifier = Modifier) 
 private fun StoriesContent(
   uiState: YearInReviewUiState.Content,
   imageLoader: ImageLoader,
+  openUrl: (String) -> Unit,
   close: () -> Unit,
   onEvent: (YearInReviewEvent) -> Unit,
 ) {
@@ -267,6 +271,7 @@ private fun StoriesContent(
           story = story,
           imageLoader = imageLoader,
           isLastStory = uiState.isLastStory,
+          openUrl = openUrl,
           close = close,
           modifier = Modifier.fillMaxSize(),
         )
@@ -320,6 +325,7 @@ private fun StoryPage(
   story: YearInReviewStory,
   imageLoader: ImageLoader,
   isLastStory: Boolean,
+  openUrl: (String) -> Unit,
   close: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -346,21 +352,19 @@ private fun StoryPage(
   }
   Column(modifier.padding(16.dp)) {
     Spacer(Modifier.weight(1f))
-    story.title?.let {
-      HedvigText(
-        text = story.title,
-        textAlign = TextAlign.Center,
-        color = HedvigTheme.colorScheme.textPrimary,
-        style = HedvigTheme.typography.bodyMedium,
-        modifier = Modifier
-          .fillMaxWidth()
-          .alpha(titleAndImageAlpha.value),
-      )
-    }
+    HedvigText(
+      text = story.title,
+      textAlign = TextAlign.Center,
+      color = HedvigTheme.colorScheme.textPrimary,
+      style = HedvigTheme.typography.bodyMedium,
+      modifier = Modifier
+        .fillMaxWidth()
+        .alpha(titleAndImageAlpha.value),
+    )
     if (story.imageUrl != null) {
       Spacer(Modifier.height(16.dp))
       StoryImage(
-        story = story,
+        imageUrl = story.imageUrl,
         imageLoader = imageLoader,
         modifier = Modifier
           .fillMaxWidth()
@@ -375,7 +379,25 @@ private fun StoryPage(
       enter = expandVertically(tween(durationMillis = 600), expandFrom = Alignment.Top) +
         fadeIn(tween(durationMillis = 500, delayMillis = 300)),
     ) {
-      StoryText(story, Modifier.padding(top = 16.dp))
+      Column {
+        HedvigText(
+          text = story.description,
+          color = HedvigTheme.colorScheme.textSecondary,
+          style = HedvigTheme.typography.bodyMedium,
+          modifier = Modifier.padding(top = 16.dp),
+        )
+        story.action?.let { action ->
+          HedvigButton(
+            text = action.title,
+            onClick = { openUrl(action.url) },
+            enabled = true,
+            buttonStyle = ButtonDefaults.ButtonStyle.Primary,
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(top = 16.dp),
+          )
+        }
+      }
     }
     Spacer(Modifier.weight(1f))
     AnimatedVisibility(
@@ -389,52 +411,18 @@ private fun StoryPage(
 }
 
 @Composable
-private fun StoryImage(story: YearInReviewStory, imageLoader: ImageLoader, modifier: Modifier = Modifier) {
-  if (LocalInspectionMode.current && !story.showImageOnCard) {
+private fun StoryImage(imageUrl: String, imageLoader: ImageLoader, modifier: Modifier = Modifier) {
+  if (LocalInspectionMode.current) {
     Box(modifier.background(HedvigTheme.colorScheme.surfacePrimary))
-  } else if (story.showImageOnCard) {
-    Box(
-      contentAlignment = Alignment.Center,
-      modifier = modifier.background(Color.White),
-    ) {
-      AsyncImage(
-        model = story.imageUrl,
-        contentDescription = null,
-        imageLoader = imageLoader,
-        contentScale = ContentScale.Fit,
-        modifier = Modifier
-          .fillMaxSize()
-          .padding(16.dp),
-      )
-    }
   } else {
     AsyncImage(
-      model = story.imageUrl,
+      model = imageUrl,
       contentDescription = null,
       imageLoader = imageLoader,
       contentScale = ContentScale.Crop,
       modifier = modifier,
     )
   }
-}
-
-/** The story's text, with its lead emphasized ahead of the rest. */
-@Composable
-private fun StoryText(story: YearInReviewStory, modifier: Modifier = Modifier) {
-  val textPrimary = HedvigTheme.colorScheme.textPrimary
-  val text = remember(story, textPrimary) {
-    buildAnnotatedString {
-      withStyle(SpanStyle(color = textPrimary)) { append(story.leadText) }
-      append(" ")
-      append(story.text)
-    }
-  }
-  HedvigText(
-    text = text,
-    color = HedvigTheme.colorScheme.textSecondary,
-    style = HedvigTheme.typography.bodyMedium,
-    modifier = modifier,
-  )
 }
 
 @Composable
@@ -461,6 +449,7 @@ private fun PreviewYearInReviewScreen(
       YearInReviewScreen(
         uiState = uiState,
         imageLoader = rememberPreviewImageLoader(),
+        openUrl = {},
         close = {},
         onEvent = {},
       )
@@ -470,26 +459,25 @@ private fun PreviewYearInReviewScreen(
 
 private val previewStories = listOf(
   YearInReviewStory(
-    id = "first",
-    title = "Höjdpunkter från året som gått – Hedvig 2024",
-    leadText = "Året börjar lida mot sitt slut.",
-    text = "För att runda av 2024 har vi på Hedvig sammanfattat några höjdpunkter och kuriosa från året som gått.",
+    id = "0",
+    title = "Du har varit med oss i 412 dagar",
+    description = "Tack för att du är medlem hos Hedvig.",
     imageUrl = "https://example.com/first.png",
-    showImageOnCard = true,
+    action = null,
   ),
   YearInReviewStory(
-    id = "second",
+    id = "1",
     title = "Antal hanterade skador",
-    leadText = "Vi hjälpte till med 29 125 skador under 2024.",
-    text = "Hela 2 000 fler än förra året.",
+    description = "Vi hjälpte till med 29 125 skador under året. Hela 2 000 fler än förra året.",
     imageUrl = "https://example.com/second.gif",
+    action = null,
   ),
   YearInReviewStory(
-    id = "third",
+    id = "2",
     title = "Djur-vabb",
-    leadText = "Under året har 71 procent fler valt Djurförsäkring Premium,",
-    text = "där ersättning för djur-vabb ingår.",
-    imageUrl = "https://example.com/third.png",
+    description = "Under året har 71 procent fler valt Djurförsäkring Premium, där ersättning för djur-vabb ingår.",
+    imageUrl = null,
+    action = YearInReviewAction(title = "Läs mer", url = "https://example.com"),
   ),
 )
 

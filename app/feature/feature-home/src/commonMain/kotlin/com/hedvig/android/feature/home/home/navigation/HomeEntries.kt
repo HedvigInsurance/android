@@ -87,6 +87,7 @@ fun EntryProviderScope<HedvigNavKey>.homeEntries(
     YearInReviewDestination(
       viewModel = viewModel,
       imageLoader = imageLoader,
+      openUrl = openUrl,
       close = backstack::popBackstack,
     )
   }

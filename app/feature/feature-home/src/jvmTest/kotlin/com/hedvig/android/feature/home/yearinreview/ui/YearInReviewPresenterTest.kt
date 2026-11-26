@@ -5,6 +5,7 @@ import arrow.core.left
 import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import com.apollographql.cache.normalized.FetchPolicy
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.home.yearinreview.data.GetYearInReviewUseCase
 import com.hedvig.android.feature.home.yearinreview.data.YearInReview
@@ -19,9 +20,9 @@ internal class YearInReviewPresenterTest {
     YearInReviewStory(
       id = "$index",
       title = "title $index",
-      leadText = "lead $index",
-      text = "text $index",
+      description = "description $index",
       imageUrl = "https://example.com/$index.png",
+      action = null,
     )
   }
 
@@ -96,5 +97,5 @@ private suspend fun MoleculePresenterTestContext<YearInReviewEvent, YearInReview
 private class FakeGetYearInReviewUseCase(
   var result: Either<ErrorMessage, YearInReview>,
 ) : GetYearInReviewUseCase {
-  override suspend fun invoke(): Either<ErrorMessage, YearInReview> = result
+  override suspend fun invoke(fetchPolicy: FetchPolicy): Either<ErrorMessage, YearInReview> = result
 }
