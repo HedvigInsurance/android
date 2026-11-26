@@ -10,7 +10,6 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -46,17 +45,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalAccessibilityManager
-import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -164,7 +163,7 @@ private fun YearInReviewScreen(
             pillow = storyPillows[uiState.currentIndex % storyPillows.size],
             modifier = Modifier.fillMaxSize(),
           )
-          StoriesContent(uiState, imageLoader, isScreenReaderOn, openUrl, close, onEvent)
+          StoriesContent(uiState, imageLoader, openUrl, close, onEvent)
         }
       }
     }
@@ -259,7 +258,6 @@ private fun PillowBackground(pillow: PillowType, modifier: Modifier = Modifier) 
 private fun StoriesContent(
   uiState: YearInReviewUiState.Content,
   imageLoader: ImageLoader,
-  isScreenReaderOn: Boolean,
   openUrl: (String) -> Unit,
   close: () -> Unit,
   onEvent: (YearInReviewEvent) -> Unit,
@@ -277,6 +275,7 @@ private fun StoriesContent(
         storyCount = uiState.stories.size,
         currentIndex = uiState.currentIndex,
         progress = uiState.progress,
+        onSelectStory = { onEvent(YearInReviewEvent.GoTo(it)) },
         modifier = Modifier.weight(1f),
       )
       IconButton(onClick = close) {
@@ -287,27 +286,10 @@ private fun StoriesContent(
         )
       }
     }
-    // TODO: Add "Next" / "Nästa" and "Previous" / "Föregående" to Lokalise
-    val nextStoryLabel = "Next"
-    val previousStoryLabel = "Previous"
     Box(
       Modifier
         .weight(1f)
         .fillMaxWidth()
-        // Screen readers cannot tell the two halves of the screen apart, so moving between stories is offered as
-        // actions instead.
-        .semantics {
-          customActions = listOf(
-            CustomAccessibilityAction(nextStoryLabel) {
-              onEvent(YearInReviewEvent.Next)
-              true
-            },
-            CustomAccessibilityAction(previousStoryLabel) {
-              onEvent(YearInReviewEvent.Previous)
-              true
-            },
-          )
-        }
         .pointerInput(Unit) {
           detectTapGestures(
             onPress = {
@@ -335,7 +317,6 @@ private fun StoriesContent(
           story = story,
           imageLoader = imageLoader,
           isPaused = uiState.isPaused,
-          isScreenReaderOn = isScreenReaderOn,
           openUrl = openUrl,
           modifier = Modifier.fillMaxSize(),
         )
@@ -345,7 +326,13 @@ private fun StoriesContent(
 }
 
 @Composable
-private fun StoryProgressBar(storyCount: Int, currentIndex: Int, progress: Float, modifier: Modifier = Modifier) {
+private fun StoryProgressBar(
+  storyCount: Int,
+  currentIndex: Int,
+  progress: Float,
+  onSelectStory: (index: Int) -> Unit,
+  modifier: Modifier = Modifier,
+) {
   // The presenter ticks in steps; easing linearly across each step keeps the bar moving smoothly. Each story
   // gets its own animation, so a new segment starts from empty instead of the previous story's progress.
   val animatedProgress by key(currentIndex) {
@@ -355,10 +342,9 @@ private fun StoryProgressBar(storyCount: Int, currentIndex: Int, progress: Float
       label = "storyProgress",
     )
   }
-  val description = "${currentIndex + 1}"
   Row(
     horizontalArrangement = Arrangement.spacedBy(4.dp),
-    modifier = modifier.clearAndSetSemantics { contentDescription = description },
+    modifier = modifier,
   ) {
     repeat(storyCount) { index ->
       val fill = when {
@@ -370,6 +356,17 @@ private fun StoryProgressBar(storyCount: Int, currentIndex: Int, progress: Float
         Modifier
           .weight(1f)
           .height(4.dp)
+          // Each segment is a button for screen readers, the way they move between stories, while touch moves
+          // by tapping the sides of the story.
+          .clearAndSetSemantics {
+            contentDescription = "${index + 1}"
+            role = Role.Button
+            selected = index == currentIndex
+            onClick {
+              onSelectStory(index)
+              true
+            }
+          }
           .clip(CircleShape)
           .background(HedvigTheme.colorScheme.fillTertiary),
       ) {
@@ -390,15 +387,9 @@ private fun StoryPage(
   story: YearInReviewStory,
   imageLoader: ImageLoader,
   isPaused: Boolean,
-  isScreenReaderOn: Boolean,
   openUrl: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val titleFocusRequester = remember(story.id) { FocusRequester() }
-  LaunchedEffect(story.id, isScreenReaderOn) {
-    // Moves the screen reader to the new story, which would otherwise stay on the previous one's position.
-    if (isScreenReaderOn) titleFocusRequester.requestFocus()
-  }
   val titleAndImageAlpha = remember(story.id) { Animatable(0f) }
   var showText by remember(story.id) { mutableStateOf(false) }
   var showAction by remember(story.id) { mutableStateOf(false) }
@@ -429,8 +420,6 @@ private fun StoryPage(
       modifier = Modifier
         .fillMaxWidth()
         .semantics { heading() }
-        .focusRequester(titleFocusRequester)
-        .focusable()
         .alpha(titleAndImageAlpha.value),
     )
   }
